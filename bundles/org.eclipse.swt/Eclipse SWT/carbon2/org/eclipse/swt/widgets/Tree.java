@@ -682,6 +682,7 @@ void hookEvents () {
 	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	callbacks.version = OS.kDataBrowserLatestCallbacks;
 	OS.InitDataBrowserCallbacks (callbacks);
+	callbacks.v1_itemCompareCallback = display.itemCompareProc;
 	callbacks.v1_itemDataCallback = display.itemDataProc;
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
@@ -692,6 +693,14 @@ void hookEvents () {
 	custom.v1_hitTestCallback = display.hitTestProc;
 	custom.v1_trackingCallback = display.trackingProc;
 	OS.SetDataBrowserCustomCallbacks (handle, custom);
+}
+
+int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
+	int index1 = itemOne - 1;
+	if (!(0 <= index1 && index1 < items.length)) return OS.noErr;
+	int index2 = itemTwo - 1;
+	if (!(0 <= index2 && index2 < items.length)) return OS.noErr;
+	return items [index1].index < items [index2].index ? 1 : 0;
 }
 
 int itemDataProc (int browser, int id, int property, int itemData, int setValue) {

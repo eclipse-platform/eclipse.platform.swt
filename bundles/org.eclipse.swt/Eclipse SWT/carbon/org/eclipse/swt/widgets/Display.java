@@ -105,11 +105,11 @@ public class Display extends Device {
 	static final int WAKE_KIND = 0;
 	Event [] eventQueue;
 	Callback actionCallback, appleEventCallback, commandCallback, controlCallback;
-	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, helpCallback;
-	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback;
+	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback;
+	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback;
 	Callback mouseCallback, trackingCallback, windowCallback, colorCallback;
 	int actionProc, appleEventProc, commandProc, controlProc;
-	int drawItemProc, itemDataProc, itemNotificationProc, helpProc;
+	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc;
 	int mouseProc, trackingProc, windowProc, colorProc;
 	EventTable eventTable, filterTable;
@@ -1323,6 +1323,9 @@ void initializeCallbacks () {
 	drawItemCallback = new Callback (this, "drawItemProc", 7);
 	drawItemProc = drawItemCallback.getAddress ();
 	if (drawItemProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	itemCompareCallback = new Callback (this, "itemCompareProc", 4);
+	itemCompareProc = itemCompareCallback.getAddress ();
+	if (itemCompareProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	itemDataCallback = new Callback (this, "itemDataProc", 5);
 	itemDataProc = itemDataCallback.getAddress ();
 	if (itemDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1479,6 +1482,12 @@ static boolean isValidClass (Class clazz) {
 
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
+}
+
+int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.itemCompareProc (browser, itemOne, itemTwo, sortProperty);
+	return OS.noErr;
 }
 
 int itemDataProc (int browser, int item, int property, int itemData, int setValue) {
@@ -1737,6 +1746,7 @@ void releaseDisplay () {
 	commandCallback.dispose ();
 	controlCallback.dispose ();
 	drawItemCallback.dispose ();
+	itemCompareCallback.dispose ();
 	itemDataCallback.dispose ();
 	itemNotificationCallback.dispose ();
 	helpCallback.dispose ();
@@ -1750,10 +1760,10 @@ void releaseDisplay () {
 	colorCallback.dispose ();
 	actionCallback = appleEventCallback = caretCallback = commandCallback = null;
 	controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
-	helpCallback = hitTestCallback = keyboardCallback = menuCallback = null;
+	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = null;
 	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = null;
 	actionProc = appleEventProc = caretProc = commandProc = 0;
-	controlProc = drawItemProc = itemDataProc = itemNotificationProc = 0;
+	controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
 	timerCallback.dispose ();

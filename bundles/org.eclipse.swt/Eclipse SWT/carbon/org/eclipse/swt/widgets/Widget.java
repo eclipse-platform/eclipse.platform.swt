@@ -770,6 +770,10 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
+int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
+	return OS.noErr;
+}
+
 int itemDataProc (int browser, int item, int property, int itemData, int setValue) {
 	return OS.noErr;
 }
