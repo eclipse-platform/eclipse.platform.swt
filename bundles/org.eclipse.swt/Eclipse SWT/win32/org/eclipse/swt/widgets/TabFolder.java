@@ -31,11 +31,13 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>BOTTOM</dd>
+ * <dd>TOP, BOTTOM</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles TOP and BOTTOM may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -150,6 +152,7 @@ int callWindowProc (int msg, int wParam, int lParam) {
 }
 
 static int checkStyle (int style) {
+	style = checkBits (style, SWT.TOP, SWT.BOTTOM, 0, 0, 0, 0);
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
