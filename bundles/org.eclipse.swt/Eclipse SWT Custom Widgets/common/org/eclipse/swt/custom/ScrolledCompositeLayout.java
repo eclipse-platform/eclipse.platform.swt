@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -21,9 +22,17 @@ import org.eclipse.swt.widgets.*;
 class ScrolledCompositeLayout extends Layout {
 	
 	boolean inLayout = false;
+	static final int DEFAULT_WIDTH	= 64;
+	static final int DEFAULT_HEIGHT	= 64;
 	
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	ScrolledComposite sc = (ScrolledComposite)composite;
+	if (sc.content == null) {
+		int w = (wHint != SWT.DEFAULT) ? wHint : DEFAULT_WIDTH;
+		int h = (hHint != SWT.DEFAULT) ? hHint : DEFAULT_HEIGHT;
+		Rectangle trim = sc.computeTrim(0, 0, w, h);
+		return new Point(trim.width, trim.height);
+	}
 	Point size = sc.content.computeSize (wHint, hHint, flushCache);
 	if (sc.alwaysShowScroll) {
 		ScrollBar hBar = sc.getHorizontalBar();
