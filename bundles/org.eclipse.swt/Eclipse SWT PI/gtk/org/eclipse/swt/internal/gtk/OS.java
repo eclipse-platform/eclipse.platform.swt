@@ -673,6 +673,8 @@ public static final native int gtk_toolbar_insert_element(int toolbar, int type,
 public static final native void gtk_toolbar_insert_widget(int toolbar, int widget, byte[] tooltip_text, byte[] tooltip_private_text, int position);
 public static final native int gtk_toolbar_new();
 public static final native void gtk_toolbar_set_orientation(int toolbar, int orientation);
+public static final native void gtk_tooltips_disable(int tooltips);
+public static final native void gtk_tooltips_enable(int tooltips);
 public static final native int gtk_tooltips_new();
 public static final native void gtk_tooltips_set_tip(int tooltips, int widget, byte[] tip_text, byte[] tip_private);
 public static final native int gtk_vbox_new(boolean homogeneous, int spacing);

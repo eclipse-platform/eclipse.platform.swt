@@ -304,6 +304,17 @@ void setForegroundColor (GdkColor color) {
 	}
 }
 
+public void setToolTipText (String string) {
+	checkWidget();
+	super.setToolTipText (string);
+	int tooltipsHandle = tooltipsHandle ();
+	if (string == null) {
+		OS.gtk_tooltips_enable (tooltipsHandle);
+	} else {
+		OS.gtk_tooltips_disable (tooltipsHandle);
+	}
+}
+
 int tooltipsHandle() {
 	if (tooltipsHandle == 0) {
 		tooltipsHandle = OS.gtk_tooltips_new ();

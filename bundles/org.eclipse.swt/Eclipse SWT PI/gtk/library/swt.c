@@ -3733,6 +3733,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1toolbar_1set_1o
 	gtk_toolbar_set_orientation((GtkToolbar *)arg0, (GtkOrientation)arg1);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tooltips_1disable
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tooltips_1disable\n")
+
+	gtk_tooltips_disable((GtkTooltips *)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tooltips_1enable
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tooltips_1enable\n")
+
+	gtk_tooltips_enable((GtkTooltips *)arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tooltips_1new
 	(JNIEnv *env, jclass that)
 {
