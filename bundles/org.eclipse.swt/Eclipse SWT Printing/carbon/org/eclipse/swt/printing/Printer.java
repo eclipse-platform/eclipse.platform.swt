@@ -169,8 +169,6 @@ protected void create(DeviceData deviceData) {
 	if (data != null) {
 //		if (data.display_name != null) display_name = data.display_name;
 		if (data.driver != null) display_name = data.driver;
-		if (data.application_name != null) application_name = data.application_name;
-		if (data.application_class != null) application_class = data.application_class;
 	}
 	/* Use the character encoding for the default locale */
 	byte [] displayName = null, appName = null, appClass = null;

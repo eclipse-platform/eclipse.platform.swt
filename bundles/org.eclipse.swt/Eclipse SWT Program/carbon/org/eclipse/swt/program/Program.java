@@ -23,6 +23,10 @@ public final class Program {
 	String name;
 	String command;
 	String iconName;
+	
+	// AW
+	ImageData fImageData;
+	// AW
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -259,7 +263,6 @@ public boolean execute (String fileName) {
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
-	System.out.println("Program.getImageData: nyi");
 	/* AW
 	int nIconIndex = 0;
 	String fileName = iconName;
@@ -281,25 +284,44 @@ public ImageData getImageData () {
 	Image image = Image.win32_new (null, SWT.ICON, phiconSmall[0]);
 	*/
 	
-	ImageData id= new ImageData(16, 16, 2, 
-		new PaletteData(
-			new RGB[] {
-				new RGB(0, 0, 0), 
-				new RGB(128, 128, 128)
-			}
-		)
-	);
-	id.transparentPixel= 0;			// use black for transparency
+	if (fImageData == null) {
+		fImageData= new ImageData(16, 16, 4, 
+			new PaletteData(
+				new RGB[] {
+					new RGB(0xff, 0xff, 0xff), 
+					new RGB(0x5f, 0x5f, 0x5f),
+					new RGB(0x80, 0x80, 0x80),
+					new RGB(0xC0, 0xC0, 0xC0),
+					new RGB(0xDF, 0xDF, 0xBF),
+					new RGB(0xFF, 0xDF, 0x9F),
+					new RGB(0x00, 0x00, 0x00),
+				}
+			)
+		);
+		fImageData.transparentPixel= 6;			// use black for transparency
 	
-	for (int y= 2; y < 14; y++) 
-		for (int x= 2; x < 14; x++)
-			if (x == 2 || x == 13 || y == 2 || y == 13)
-				id.setPixel(x, y, 1);
-				
-	//Image im= new Image(null, id);
-	//id= im.getImageData();
-
-	return id;
+		String[] p= {
+			"CCCCCCCCGGG",
+			"CFAAAAACBGG",
+			"CAAAAAACFBG",
+			"CAAAAAACBBB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CDDDDDDDDDB",
+			"CBBBBBBBBBB"
+		};
+		
+		for (int y= 0; y < p.length; y++)
+			for (int x= 0; x < 11; x++)
+				fImageData.setPixel(x+3, y+1, p[y].charAt(x)-'A');
+	}		
+	return fImageData;
 }
 
 /**
