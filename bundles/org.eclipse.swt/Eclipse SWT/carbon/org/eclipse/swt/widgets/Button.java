@@ -123,7 +123,7 @@ public void addSelectionListener(SelectionListener listener) {
 
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO, SWT.TOGGLE, 0);
-	if ((style & SWT.PUSH | SWT.TOGGLE) != 0) {
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
 		return checkBits (style, SWT.CENTER, SWT.LEFT, SWT.RIGHT, 0, 0, 0);
 	}
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
