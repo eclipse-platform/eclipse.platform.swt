@@ -214,8 +214,6 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_MBUTTONDOWN:
 		case OS.WM_RBUTTONDOWN:
 		case OS.WM_XBUTTONDOWN:
-			// Keep a local reference to display because the widget could be
-			// disposed during the call to CallWindowProc().
 			Display display = this.display;
 			display.ignoreMsgFilter = true;
 			int code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
@@ -979,6 +977,7 @@ public TreeColumn [] getColumns () {
 	System.arraycopy (columns, 0, result, 0, count);
 	return result;
 }
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -3370,14 +3369,14 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							return new LRESULT (OS.CDRF_DODEFAULT | OS.CDRF_NOTIFYPOSTPAINT);
 						}
 					}
-					TVITEM tvItem = new TVITEM ();
-					tvItem.mask = OS.TVIF_STATE;
-					tvItem.hItem = item.handle;
-					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					int hFont = item.cellFont != null ? item.cellFont [0] : item.font;
 					if (hFont != -1) OS.SelectObject (hDC, hFont);
-					if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) == 0) {
-						if (OS.IsWindowEnabled (handle)) {
+					if (OS.IsWindowEnabled (handle)) {
+						TVITEM tvItem = new TVITEM ();
+						tvItem.mask = OS.TVIF_STATE;
+						tvItem.hItem = item.handle;
+						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+						if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) == 0) {
 							int clrText = item.cellForeground != null ? item.cellForeground [0] : item.foreground;
 							nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 							int clrTextBk = item.cellBackground != null ? item.cellBackground [0] : item.background;
@@ -3450,7 +3449,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						GCData data = new GCData();
 						data.device = display;
 						GC gc = GC.win32_new (hDC, data);
-						int x = 0;
+						int x = 0, gridWidth = linesVisible ? GRID_WIDTH : 0;
 						Point size = null;
 						RECT rect = new RECT ();
 						HDITEM hdItem = new HDITEM ();
@@ -3459,7 +3458,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						for (int i=0; i<count; i++) {
 							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
 							if (i > 0) {
-								OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom - GRID_WIDTH);
+								OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom - gridWidth);
 								if (printClient || (style & SWT.FULL_SELECTION) != 0) {
 									drawBackground (hDC, OS.GetBkColor (hDC), rect);
 								}
@@ -3504,6 +3503,10 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 								}
 							}
 							x += hdItem.cxy;
+							if (printClient || (style & SWT.FULL_SELECTION) != 0) {
+								OS.SetRect (rect, x, nmcd.top, nmcd.right, nmcd.bottom - gridWidth);
+								drawBackground (hDC, OS.GetBkColor (hDC), rect);
+							}
 						}
 						gc.dispose ();
 					}
