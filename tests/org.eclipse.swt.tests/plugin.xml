@@ -2,7 +2,7 @@
 <!-- File written by PDE 1.0 -->
 <plugin
    id="org.eclipse.swt.tests"
-   name="Tests"
+   name="%pluginName"
    provider-name="%providerName"
    version="2.1.0">
 
