@@ -31,7 +31,7 @@ public class TableItem extends SelectableItem {
 
 	private Vector dataLabels = new Vector();				// Original text set by the user. Items that don't 
 															// have a label are represented by a null slot
-	private String[] trimmedLabels = new String[0];			// Text that is actually displayed, may be trimmed 
+	private String[] trimmedLabels;							// Text that is actually displayed, may be trimmed 
 															// to fit the column
 	private Vector images = new Vector();					// Item images. Items that don't have an image 
 															// are represented by a null slot
@@ -112,7 +112,15 @@ public TableItem(Table parent, int style) {
 public TableItem(Table parent, int style, int index) {
 	super(parent, style);
 	parent.addItem(this, index);
-	trimmedLabels = new String[ parent.getColumnCount() ];
+
+	int columnCount = parent.getColumnCount();
+	// columnCount will be 0 if table has no user created columns
+	if (columnCount == 0) {
+		trimmedLabels = new String[1];
+	}
+	else {
+		trimmedLabels = new String[columnCount];
+	}
 }
 
 /**
