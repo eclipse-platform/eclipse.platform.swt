@@ -72,11 +72,11 @@ public CoolBar (Composite parent, int style) {
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Dispose:		onDispose();		break;
+				case SWT.Dispose:	onDispose();		break;
 				case SWT.MouseDown:	onMouseDown(event);	break;
 				case SWT.MouseExit:	onMouseExit();		break;
 				case SWT.MouseMove:	onMouseMove(event);	break;
-				case SWT.MouseUp:		onMouseUp(event);	break;
+				case SWT.MouseUp:	onMouseUp(event);	break;
 				case SWT.Paint:		onPaint(event);		break;
 			}
 		}
