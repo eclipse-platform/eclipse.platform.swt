@@ -920,8 +920,7 @@ void redrawTabs() {
 }
 void removeControl (Control control) {
 	super.removeControl (control);
-	int count = getItemCount ();
-	for (int i=0; i<count; i++) {
+	for (int i=0; i<items.length; i++) {
 		TabItem item = items [i];
 		if (item.control == control) item.setControl (null);
 	}
@@ -1132,13 +1131,11 @@ boolean pageTraversal(Event event) {
 boolean mnemonicTraversal (Event event) {
 	char key = event.character;
 	for (int i = 0; i < items.length; i++) {
-		if (items[i] != null) {
-			char mnemonic = getMnemonic (items[i].getText ());
-			if (mnemonic != '\0') {
-				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
-					setSelection(i, true);
-					return true;
-				}
+		char mnemonic = getMnemonic (items[i].getText ());
+		if (mnemonic != '\0') {
+			if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+				setSelection(i, true);
+				return true;
 			}
 		}
 	}
