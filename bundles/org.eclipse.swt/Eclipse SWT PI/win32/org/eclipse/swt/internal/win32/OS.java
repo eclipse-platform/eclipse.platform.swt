@@ -841,9 +841,11 @@ public class OS extends Platform {
 	public static final int PBM_GETRANGE = 0x407;
 	public static final int PBM_SETBARCOLOR = 0x409;
 	public static final int PBM_SETBKCOLOR = 0x2001;
+	public static final int PBM_SETMARQUEE = OS.WM_USER + 10;
 	public static final int PBM_SETPOS = 0x402;
 	public static final int PBM_SETRANGE32 = 0x406;
 	public static final int PBM_STEPIT = 0x405;
+	public static final int PBS_MARQUEE = 0x08;
 	public static final int PBS_SMOOTH = 0x1;
 	public static final int PBS_VERTICAL = 0x4;
 	public static final int PD_ALLPAGES = 0x0;
@@ -2868,6 +2870,7 @@ public static final native boolean SetMenuDefaultItem (int hMenu, int uItem, int
 public static final native boolean SetMenuInfo (int hmenu, MENUINFO lpcmi);
 public static final native boolean SetMenuItemInfoW (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 public static final native boolean SetMenuItemInfoA (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native int SetMetaRgn (int hdc);
 public static final native int SetPaletteEntries (int hPal, int iStart, int cEntries, byte[] lppe);
 public static final native int SetParent (int hWndChild, int hWndNewParent);
 public static final native int SetPixel (int hdc, int X, int Y, int crColor);

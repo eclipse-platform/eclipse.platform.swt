@@ -134,7 +134,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	if ((style & SWT.INDETERMINATE) != 0) {
-		OS.SetTimer (handle, TIMER_ID, DELAY, 0);
+		if (OS.COMCTL32_MAJOR < 6) {
+			OS.SetTimer (handle, TIMER_ID, DELAY, 0);
+		} else {
+			OS.SendMessage (handle, OS.PBM_SETMARQUEE, 1, DELAY);
+		}
 	}
 }
 
@@ -190,7 +194,9 @@ public int getSelection () {
 void releaseWidget () {
 	super.releaseWidget ();
 	if ((style & SWT.INDETERMINATE) != 0) {
-		OS.KillTimer (handle, TIMER_ID);
+		if (OS.COMCTL32_MAJOR < 6) {
+			OS.KillTimer (handle, TIMER_ID);
+		}
 	}
 }
 
@@ -271,6 +277,7 @@ int widgetStyle () {
 	int bits = super.widgetStyle ();
 	if ((style & SWT.SMOOTH) != 0) bits |= OS.PBS_SMOOTH;
 	if ((style & SWT.VERTICAL) != 0) bits |= OS.PBS_VERTICAL;
+	if ((style & SWT.INDETERMINATE) != 0) bits |= OS.PBS_MARQUEE;
 	return bits;
 }
 
@@ -300,8 +307,10 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 LRESULT WM_TIMER (int wParam, int lParam) {
 	LRESULT result = super.WM_TIMER (wParam, lParam);
 	if (result != null) return result;
-	if (wParam == TIMER_ID) {
-		OS.SendMessage (handle, OS.PBM_STEPIT, 0, 0);
+	if (OS.COMCTL32_MAJOR < 6) {
+		if (wParam == TIMER_ID) {
+			OS.SendMessage (handle, OS.PBM_STEPIT, 0, 0);
+		}
 	}
 	return null;
 }
