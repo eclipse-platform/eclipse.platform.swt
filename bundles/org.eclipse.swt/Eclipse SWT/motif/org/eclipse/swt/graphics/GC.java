@@ -217,7 +217,7 @@ public void dispose () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawArc(int x, int y, int width, int height, int startAngle, int endAngle) {
+public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -227,10 +227,10 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || endAngle == 0) {
+	if (width == 0 || height == 0 || arcAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	OS.XDrawArc(data.display,data.drawable,handle,x,y,width,height,startAngle * 64 ,endAngle * 64);
+	OS.XDrawArc(data.display, data.drawable, handle, x, y, width, height, startAngle * 64, arcAngle * 64);
 }
 /** 
  * Draws a rectangle, based on the specified arguments, which has
@@ -1162,7 +1162,7 @@ public boolean equals (Object object) {
  *
  * @see #drawArc
  */
-public void fillArc(int x, int y, int width, int height, int startAngle, int endAngle) {
+public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -1172,14 +1172,14 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int end
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || endAngle == 0) {
+	if (width == 0 || height == 0 || arcAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int xDisplay = data.display;
 	XGCValues values = new XGCValues ();
 	OS.XGetGCValues (xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
 	OS.XSetForeground (xDisplay, handle, values.background);
-	OS.XFillArc(xDisplay,data.drawable,handle,x,y,width,height,startAngle * 64 ,endAngle * 64);
+	OS.XFillArc(xDisplay, data.drawable, handle, x, y, width, height, startAngle * 64, arcAngle * 64);
 	OS.XSetForeground (xDisplay, handle, values.foreground);
 }
 
