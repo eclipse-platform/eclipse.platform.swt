@@ -17,7 +17,9 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
-* UNDER CONSTRUCTION
+* DO NOT USE - UNDER CONSTRUCTION
+*
+* @ since 3.0
 */
 
 /**
@@ -176,11 +178,22 @@ public class CTabFolder extends Composite {
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
 	static final int BUTTON_SIZE = 16;
-	static final int[] TOP_LEFT_CORNER = new int[] {0,9, 1,8, 1,7, 2,6, 2,5, 3,4, 4,3, 5,2, 6,2, 7,1, 8,1, 9,0};
-	static final int[] TOP_RIGHT_CORNER = new int[] {-9,0, -8,1, -7,1, -6,2, -5,2, -4,3, -3,4, -2,5, -2,6, -1,7, -1,8, 0,9};
-	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-9, 1,-8, 1,-7, 2,-6, 2,-5, 3,-4, 4,-3, 5,-2, 6,-2, 7,-1, 8,-1, 9,0};
-	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-9,0, -8,-1, -7,-1, -6,-2, -5,-2, -4,-3, -3,-4, -2,-5, -2,-6, -1,-7, -1,-8, 0,-9};
-
+// Linda's curve
+//	static final int[] TOP_LEFT_CORNER = new int[] {0,9, 1,8, 1,7, 2,6, 2,5, 3,4, 4,3, 5,2, 6,2, 7,1, 8,1, 9,0};
+//	static final int[] TOP_RIGHT_CORNER = new int[] {-9,0, -8,1, -7,1, -6,2, -5,2, -4,3, -3,4, -2,5, -2,6, -1,7, -1,8, 0,9};
+//	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-9, 1,-8, 1,-7, 2,-6, 2,-5, 3,-4, 4,-3, 5,-2, 6,-2, 7,-1, 8,-1, 9,0};
+//	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-9,0, -8,-1, -7,-1, -6,-2, -5,-2, -4,-3, -3,-4, -2,-5, -2,-6, -1,-7, -1,-8, 0,-9};
+// Mac curve
+	static final int[] TOP_LEFT_CORNER = new int[] {0,6, 1,5, 1,4, 4,1, 5,1, 6,0};
+	static final int[] TOP_RIGHT_CORNER = new int[] {-6,0, -5,1, -4,1, -1,4, -1,5, 0,6};
+	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-6, 1,-5, 1,-4, 4,-1, 5,-1, 6,0};
+	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-6,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-6};
+// Windows XP curve
+//	static final int[] TOP_LEFT_CORNER = new int[] {0,5, 1,4, 1,3, 2,2, 3,1, 4,1, 5,0};
+//	static final int[] TOP_RIGHT_CORNER = new int[] {-5,0, -4,1, -3,1, -2,2, -1,3, -1,4, 0,5};
+//	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-5, 1,-4, 1,-3, 2,-2, 3,-1, 4,-1, 5,0};
+//	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-5,0, -4,-1, -3,-1, -2,-2, -1,-3, -1,-4, 0,-5};
+	
 	static final int SELECTION_FOREGROUND = SWT.COLOR_LIST_FOREGROUND;
 	static final int SELECTION_BACKGROUND = SWT.COLOR_LIST_BACKGROUND;
 	static final int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
@@ -1714,7 +1727,7 @@ void onMouse(Event event) {
 					return;
 				}
 				if (bounds.contains(x, y)) {
-					if (event.button == 1 && i == selectedIndex && chevronRect.width > 0) {
+					if (event.button == 1 && i == selectedIndex && items.length > 1) {
 						showList = true;
 					}
 					if (!single && i != topTabIndex && bounds.x + bounds.width >= getRightItemEdge())return;
@@ -1887,7 +1900,7 @@ void onMouse(Event event) {
 					return;
 				}
 			}
-			if (showList && event.button == 1 && selectedIndex != -1 && chevronRect.width > 0) {
+			if (showList && event.button == 1 && selectedIndex != -1 && items.length > 1) {
 				Rectangle bounds = items[selectedIndex].getBounds();
 				if (bounds.contains(event.x, event.y)) {
 					Rectangle rect = bounds;
