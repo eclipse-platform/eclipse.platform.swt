@@ -2338,7 +2338,11 @@ public void setBackground (Color color) {
 		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		gdkColor = color.handle;
 	}
-	setBackgroundColor (gdkColor);
+	GdkColor oldColor = new GdkColor ();
+	OS.gtk_style_get_bg (OS.gtk_widget_get_style (fontHandle ()), OS.GTK_STATE_NORMAL, oldColor);
+	if (gdkColor == null || (oldColor.pixel != gdkColor.pixel)) {
+		setBackgroundColor (gdkColor);
+	}
 }
 
 void setBackgroundColor (int /*long*/ handle, GdkColor color) {
@@ -2515,7 +2519,11 @@ public void setForeground (Color color) {
 		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		gdkColor = color.handle;
 	}
-	setForegroundColor (gdkColor);
+	GdkColor oldColor = new GdkColor ();
+	OS.gtk_style_get_fg (OS.gtk_widget_get_style (fontHandle ()), OS.GTK_STATE_NORMAL, oldColor);
+	if (gdkColor == null || (oldColor.pixel != gdkColor.pixel)) {
+		setForegroundColor (gdkColor);
+	}
 }
 
 void setForegroundColor (GdkColor color) {
