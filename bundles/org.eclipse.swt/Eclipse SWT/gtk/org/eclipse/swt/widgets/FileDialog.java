@@ -38,6 +38,7 @@ public class FileDialog extends Dialog {
 	String fullPath = "";
 	int /*long*/ handle;
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
+	static final char EXTENSION_SEPARATOR = ';';
 	
 /**
  * Constructs a new instance of this class given only its parent.
@@ -317,6 +318,103 @@ String openClassicDialog () {
 	OS.gtk_widget_destroy (handle);
 	return answer;
 }
+void presetChooserDialog () {
+	/* MULTI is only valid if the native dialog's action is Open */   
+	if ((style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {
+		OS.gtk_file_chooser_set_select_multiple (handle, true);
+	}
+	if (filterPath == null) filterPath = "";
+	if (fileName == null) fileName = "";
+	if (filterPath.length () > 0) {
+		StringBuffer stringBuffer = new StringBuffer ();
+		/* filename must be a full path */
+		if (filterPath.charAt (0) != SEPARATOR) {
+			stringBuffer.append (SEPARATOR);
+		}
+		stringBuffer.append (filterPath);
+		if (filterPath.charAt (filterPath.length () - 1) != SEPARATOR) {
+			stringBuffer.append (SEPARATOR);
+		}
+		if (fileName.length () > 0) {
+			stringBuffer.append (fileName);
+		} else {
+			/* go into the specified directory */
+			stringBuffer.append ('.');
+		}
+		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
+		OS.gtk_file_chooser_set_filename (handle, buffer);
+	}
+	if ((style & SWT.SAVE) != 0 && fileName.length () > 0) {
+		byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
+		OS.gtk_file_chooser_set_current_name (handle, buffer);
+	}
+
+	/* Set the extension filters */
+	if (filterNames == null) filterNames = new String [0];
+	if (filterExtensions == null) filterExtensions = new String [0];
+	for (int i = 0; i < filterExtensions.length; i++) {
+		if (filterExtensions [i] != null) {
+			int /*long*/ filter = OS.gtk_file_filter_new ();
+			if (filterNames.length > i && filterNames [i] != null) {
+				byte [] name = Converter.wcsToMbcs (null, filterNames [i], true);
+				OS.gtk_file_filter_set_name (filter, name);
+			} else {
+				byte [] name = Converter.wcsToMbcs (null, filterExtensions [i], true);
+				OS.gtk_file_filter_set_name (filter, name);
+			}
+			int start = 0;
+			int index = filterExtensions [i].indexOf (EXTENSION_SEPARATOR);
+			while (index != -1) {
+				String current = filterExtensions [i].substring (start, index);
+				byte [] filterString = Converter.wcsToMbcs (null, current, true);
+				OS.gtk_file_filter_add_pattern (filter, filterString);
+				start = index + 1;
+				index = filterExtensions [i].indexOf (EXTENSION_SEPARATOR, start);
+			}
+			String current = filterExtensions [i].substring (start);
+			byte [] filterString = Converter.wcsToMbcs (null, current, true);
+			OS.gtk_file_filter_add_pattern (filter, filterString);
+			OS.gtk_file_chooser_add_filter (handle, filter);
+		}
+	}
+	fullPath = null;
+	fileNames = new String [0];
+}
+void presetClassicDialog () {
+	OS.gtk_file_selection_set_select_multiple(handle, (style & SWT.MULTI) != 0);
+
+	/* Calculate the fully-specified file name and convert to bytes */
+	StringBuffer stringBuffer = new StringBuffer ();
+	if (filterPath == null) {
+		filterPath = "";
+	} else {
+		if (filterPath.length () > 0) {
+			stringBuffer.append (filterPath);
+			if (filterPath.charAt (filterPath.length () - 1) != SEPARATOR) {
+				stringBuffer.append (SEPARATOR);
+			}
+		}
+	}
+	if (fileName == null) {
+		fileName = "";
+	} else {
+		stringBuffer.append (fileName);
+	}
+	fullPath = stringBuffer.toString ();
+	int length = fullPath.length ();
+	char [] buffer = new char [length + 1];
+	fullPath.getChars (0, length, buffer, 0);
+	int /*long*/ utf8Ptr = OS.g_utf16_to_utf8 (buffer, -1, null, null, null);
+	int /*long*/ fileNamePtr = OS.g_filename_from_utf8 (utf8Ptr, -1, null, null, null);
+	OS.gtk_file_selection_set_filename (handle, fileNamePtr);
+	OS.g_free (utf8Ptr);
+	OS.g_free (fileNamePtr);
+				
+	if (filterNames == null) filterNames = new String [0];
+	if (filterExtensions == null) filterExtensions = new String [0];
+	fullPath = null;
+	fileNames = new String [0];
+}
 /**
  * Set the initial filename which the dialog will
  * select by default when opened to the argument,
@@ -360,89 +458,5 @@ public void setFilterNames (String [] names) {
  */
 public void setFilterPath (String string) {
 	filterPath = string;
-}
-void presetChooserDialog () {
-	/* MULTI is only valid if the native dialog's action is Open */   
-	if ((style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {
-		OS.gtk_file_chooser_set_select_multiple (handle, true);
-	}
-	if (filterPath == null) filterPath = "";
-	if (fileName == null) fileName = "";
-	if (filterPath.length () > 0) {
-		StringBuffer stringBuffer = new StringBuffer ();
-		/* filename must be a full path */
-		if (filterPath.charAt (0) != SEPARATOR) {
-			stringBuffer.append (SEPARATOR);
-		}
-		stringBuffer.append (filterPath);
-		if (filterPath.charAt (filterPath.length () - 1) != SEPARATOR) {
-			stringBuffer.append (SEPARATOR);
-		}
-		if (fileName.length () > 0) {
-			stringBuffer.append (fileName);
-		} else {
-			/* go into the specified directory */
-			stringBuffer.append ('.');
-		}
-		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
-		OS.gtk_file_chooser_set_filename (handle, buffer);
-	}
-	if ((style & SWT.SAVE) != 0 && fileName.length () > 0) {
-		byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
-		OS.gtk_file_chooser_set_current_name (handle, buffer);
-	}
-
-	/* Set the extension filters */
-	if (filterNames == null) filterNames = new String [0];
-	if (filterExtensions == null) filterExtensions = new String [0];
-	for (int i = 0; i < filterExtensions.length; i++) {
-		if (filterExtensions [i] != null) {
-			byte [] filterString = Converter.wcsToMbcs (null, filterExtensions [i], true);
-			int /*long*/ filter = OS.gtk_file_filter_new ();
-			OS.gtk_file_filter_add_pattern (filter, filterString);
-			if (filterNames.length > i && filterNames [i] != null) {
-				filterString = Converter.wcsToMbcs (null, filterNames [i], true);
-			}
-			OS.gtk_file_filter_set_name (filter, filterString);
-			OS.gtk_file_chooser_add_filter (handle, filter);
-		}
-	}
-	fullPath = null;
-	fileNames = new String [0];
-}
-void presetClassicDialog () {
-	OS.gtk_file_selection_set_select_multiple(handle, (style & SWT.MULTI) != 0);
-
-	/* Calculate the fully-specified file name and convert to bytes */
-	StringBuffer stringBuffer = new StringBuffer ();
-	if (filterPath == null) {
-		filterPath = "";
-	} else {
-		if (filterPath.length () > 0) {
-			stringBuffer.append (filterPath);
-			if (filterPath.charAt (filterPath.length () - 1) != SEPARATOR) {
-				stringBuffer.append (SEPARATOR);
-			}
-		}
-	}
-	if (fileName == null) {
-		fileName = "";
-	} else {
-		stringBuffer.append (fileName);
-	}
-	fullPath = stringBuffer.toString ();
-	int length = fullPath.length ();
-	char [] buffer = new char [length + 1];
-	fullPath.getChars (0, length, buffer, 0);
-	int /*long*/ utf8Ptr = OS.g_utf16_to_utf8 (buffer, -1, null, null, null);
-	int /*long*/ fileNamePtr = OS.g_filename_from_utf8 (utf8Ptr, -1, null, null, null);
-	OS.gtk_file_selection_set_filename (handle, fileNamePtr);
-	OS.g_free (utf8Ptr);
-	OS.g_free (fileNamePtr);
-				
-	if (filterNames == null) filterNames = new String [0];
-	if (filterExtensions == null) filterExtensions = new String [0];
-	fullPath = null;
-	fileNames = new String [0];
 }
 }
