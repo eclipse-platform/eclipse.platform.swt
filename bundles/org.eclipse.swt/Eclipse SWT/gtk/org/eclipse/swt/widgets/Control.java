@@ -1973,12 +1973,14 @@ int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	OS.memmove (gdkEvent, eventPtr, GdkEventScroll.sizeof);
 	switch (gdkEvent.direction) {
 		case OS.GDK_SCROLL_UP:
+			if (!sendMouseEvent (SWT.MouseWheel, 0, 3, SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, gdkEvent.state, eventPtr)) {
+				return 1;
+			}
+			break;
 		case OS.GDK_SCROLL_DOWN:
-			Event event = new Event ();
-			event.detail = SWT.SCROLL_LINE;
-			event.count = gdkEvent.direction == OS.GDK_SCROLL_UP ? 3 : -3;
-			sendEvent (SWT.MouseWheel, event);
-			if (!event.doit) return 1;
+			if (!sendMouseEvent (SWT.MouseWheel, 0, -3, SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, gdkEvent.state, eventPtr)) {
+				return 1;
+			}
 			break;
 		case OS.GDK_SCROLL_LEFT:
 			sendMouseEvent (SWT.MouseDown, 4, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, gdkEvent.state, eventPtr);
@@ -2354,17 +2356,29 @@ boolean sendHelpEvent (int /*long*/ helpType) {
 	return false;
 }
 
-void sendMouseEvent (int type, int button, int time, double x_root, double y_root, int state, int /*long*/ eventPtr) {
+boolean sendMouseEvent (int type, int button, int time, double x_root, double y_root, int state, int /*long*/ eventPtr) {
+	return sendMouseEvent (type, button, 0, 0, false, time, x_root, y_root, state, eventPtr);
+}
+
+boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int time, double x_root, double y_root, int state, int /*long*/ eventPtr) {
 	Event event = new Event ();
 	event.time = time;
 	event.button = button;
+	event.detail = detail;
+	event.count = count;
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle ());
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
-	event.x = (int)(x_root - origin_x [0]);
-	event.y = (int)(y_root - origin_y [0]);
+	event.x = (int)x_root - origin_x [0];
+	event.y = (int)y_root - origin_y [0];
 	setInputState (event, state);
-	postEvent (type, event);
+	if (send) {
+		sendEvent (type, event);
+		if (isDisposed()) return false;
+	} else {
+		postEvent (type, event);
+	}
+	return event.doit;
 }
 
 /**
