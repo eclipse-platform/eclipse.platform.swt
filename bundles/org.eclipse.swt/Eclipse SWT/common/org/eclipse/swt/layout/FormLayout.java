@@ -163,7 +163,7 @@ int computeHeight (FormData data) {
 	FormAttachment height = bottom.minus (top);
 	if (height.numerator == 0) {
 		if (bottom.numerator == 0) return bottom.offset;
-		if (top.numerator == top.denominator) return -top.offset;
+		if (bottom.numerator == bottom.denominator) return -top.offset;
 		if (bottom.offset <= 0) {
 			return -top.offset * top.denominator / bottom.numerator;
 		}
@@ -190,7 +190,7 @@ int computeWidth (FormData data) {
 	FormAttachment width = right.minus (left);
 	if (width.numerator == 0) {
 		if (right.numerator == 0) return right.offset;
-		if (left.numerator == left.denominator) return -left.offset;
+		if (right.numerator == right.denominator) return -left.offset;
 		if (right.offset <= 0) {
 			return -left.offset * left.denominator / left.numerator;
 		}
