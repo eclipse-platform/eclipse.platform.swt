@@ -83,100 +83,143 @@ public FormData (int width, int height) {
 	this.height = height;
 }
 
-FormAttachment getBottomAttachment () {
+FormAttachment getBottomAttachment (int spacing) {
 	if (cacheBottom != null) return cacheBottom;
 	if (isVisited) return cacheBottom = new FormAttachment (0, cacheHeight);
 	if (bottom == null) {
 		if (top == null) return cacheBottom = new FormAttachment (0, cacheHeight);
-		return cacheBottom = getTopAttachment ().plus (cacheHeight);
+		return cacheBottom = getTopAttachment (spacing).plus (cacheHeight);
 	}
 	Control control = bottom.control;
 	if (control != null && control.isDisposed ()) bottom.control = control = null;
 	if (control == null) return cacheBottom = bottom;
 	isVisited = true;
-	FormData bottomData = (FormData) control.getLayoutData ();
-	FormAttachment topAttachment = bottomData.getTopAttachment ();
-	FormAttachment bottomAttachment = bottomData.getBottomAttachment ();
-	isVisited = false;
+	FormData formData = (FormData) control.getLayoutData ();
+	FormAttachment bottomAttachment = formData.getBottomAttachment (spacing);
 	switch (bottom.alignment) {
-		case SWT.BOTTOM: return cacheBottom = bottomAttachment.plus (bottom.offset);
-		case SWT.CENTER:
+		case SWT.BOTTOM: 
+			cacheBottom = bottomAttachment.plus (bottom.offset);
+			break;
+		case SWT.CENTER: {
+			FormAttachment topAttachment = formData.getTopAttachment (spacing);
 			FormAttachment bottomHeight = bottomAttachment.minus (topAttachment);
-			return cacheBottom = bottomAttachment.minus (bottomHeight.minus (cacheHeight).divide (2));
+			cacheBottom = bottomAttachment.minus (bottomHeight.minus (cacheHeight).divide (2));
+			break;
+		}
+//		case SWT.TOP:
+//		case SWT.DEFAULT:
+		default: {
+			FormAttachment topAttachment = formData.getTopAttachment (spacing);
+			cacheBottom = topAttachment.plus (bottom.offset - spacing);	
+			break;
+		}
 	}
-	return cacheBottom = topAttachment.plus (bottom.offset);	
+	isVisited = false;
+	return cacheBottom;
 }
 
-FormAttachment getLeftAttachment () {
+FormAttachment getLeftAttachment (int spacing) {
 	if (cacheLeft != null) return cacheLeft;
 	if (isVisited) return cacheLeft = new FormAttachment (0, 0);
 	if (left == null) {
 		if (right == null) return cacheLeft = new FormAttachment (0, 0);
-		return cacheLeft = getRightAttachment ().minus (cacheWidth);
+		return cacheLeft = getRightAttachment (spacing).minus (cacheWidth);
 	}
 	Control control = left.control;
 	if (control != null && control.isDisposed ()) left.control = control = null;
 	if (control == null) return cacheLeft = left;
 	isVisited = true;
-	FormData leftData = (FormData) control.getLayoutData ();
-	FormAttachment rightAttachment = leftData.getRightAttachment ();
-	FormAttachment leftAttachment = leftData.getLeftAttachment ();
-	isVisited = false; 
+	FormData formData = (FormData) control.getLayoutData ();
+	FormAttachment leftAttachment = formData.getLeftAttachment (spacing);
 	switch (left.alignment) {
-		case SWT.LEFT: return cacheLeft = leftAttachment.plus (left.offset);
-		case SWT.CENTER:
+		case SWT.LEFT:
+			cacheLeft = leftAttachment.plus (left.offset);
+			break;
+		case SWT.CENTER: {
+			FormAttachment rightAttachment = formData.getRightAttachment (spacing);
 			FormAttachment leftWidth = rightAttachment.minus (leftAttachment);
-			return cacheLeft = leftAttachment.plus (leftWidth.minus (cacheWidth).divide (2));
+			cacheLeft = leftAttachment.plus (leftWidth.minus (cacheWidth).divide (2));
+			break;
+		}
+//		case SWT.RIGHT:
+//		case SWT.DEFAULT:
+		default: {
+			FormAttachment rightAttachment = formData.getRightAttachment (spacing);
+			cacheLeft = rightAttachment.plus (left.offset + spacing); 
+		}
 	}
-	return cacheLeft = rightAttachment.plus (left.offset); 
+	isVisited = false; 
+	return cacheLeft;
 }	
 
-FormAttachment getRightAttachment () {
+FormAttachment getRightAttachment (int spacing) {
 	if (cacheRight != null) return cacheRight;
 	if (isVisited) return cacheRight = new FormAttachment (0, cacheWidth);
 	if (right == null) {
 		if (left == null) return cacheRight = new FormAttachment (0, cacheWidth);
-		return cacheRight = getLeftAttachment ().plus (cacheWidth);
+		return cacheRight = getLeftAttachment (spacing).plus (cacheWidth);
 	}
 	Control control = right.control;
 	if (control != null && control.isDisposed ()) right.control = control = null;
 	if (control == null) return cacheRight = right;
 	isVisited = true;
-	FormData rightData = (FormData) control.getLayoutData ();
-	FormAttachment leftAttachment = rightData.getLeftAttachment ();
-	FormAttachment rightAttachment = rightData.getRightAttachment ();
-	isVisited = false;
+	FormData formData = (FormData) control.getLayoutData ();
+	FormAttachment rightAttachment = formData.getRightAttachment (spacing);
 	switch (right.alignment) {
-		case SWT.RIGHT: return cacheRight = rightAttachment.plus (right.offset);
-		case SWT.CENTER:
+		case SWT.RIGHT: 
+			cacheRight = rightAttachment.plus (right.offset);
+			break;
+		case SWT.CENTER: {
+			FormAttachment leftAttachment = formData.getLeftAttachment (spacing);
 			FormAttachment rightWidth = rightAttachment.minus (leftAttachment);
-			return cacheRight = rightAttachment.minus (rightWidth.minus (cacheWidth).divide (2));
+			cacheRight = rightAttachment.minus (rightWidth.minus (cacheWidth).divide (2));
+			break;
+		}
+//		case SWT.LEFT:
+//		case SWT.DEFAULT:
+		default: {
+			FormAttachment leftAttachment = formData.getLeftAttachment (spacing);
+			cacheRight = leftAttachment.plus (right.offset - spacing);
+			break;
+		}
 	}
-	return cacheRight = leftAttachment.plus (right.offset);
+	isVisited = false;
+	return cacheRight;
 }
 
-FormAttachment getTopAttachment () {
+FormAttachment getTopAttachment (int spacing) {
 	if (cacheTop != null) return cacheTop;
 	if (isVisited) return cacheTop = new FormAttachment (0, 0);
 	if (top == null) {
 		if (bottom == null) return cacheTop = new FormAttachment (0, 0);
-		return cacheTop = getBottomAttachment ().minus (cacheHeight);
+		return cacheTop = getBottomAttachment (spacing).minus (cacheHeight);
 	}
 	Control control = top.control;
 	if (control != null && control.isDisposed ()) top.control = control = null;
 	if (control == null) return cacheTop = top;
 	isVisited = true;
-	FormData topData = (FormData) control.getLayoutData ();
-	FormAttachment topAttachment = topData.getTopAttachment ();
-	FormAttachment bottomAttachment = topData.getBottomAttachment ();
-	isVisited = false;
+	FormData formData = (FormData) control.getLayoutData ();
+	FormAttachment topAttachment = formData.getTopAttachment (spacing);
 	switch (top.alignment) {
-		case SWT.TOP: return cacheTop = topAttachment.plus (top.offset);
-		case SWT.CENTER:
+		case SWT.TOP:
+			cacheTop = topAttachment.plus (top.offset);
+			break;
+		case SWT.CENTER: {
+			FormAttachment bottomAttachment = formData.getBottomAttachment (spacing);
 			FormAttachment topHeight = bottomAttachment.minus (topAttachment);
-			return cacheTop = topAttachment.plus (topHeight.minus (cacheHeight).divide (2));
+			cacheTop = topAttachment.plus (topHeight.minus (cacheHeight).divide (2));
+			break;
+		}
+//		case SWT.BOTTOM:
+//		case SWT.DEFAULT:
+		default: {
+			FormAttachment bottomAttachment = formData.getBottomAttachment (spacing);
+			cacheTop = bottomAttachment.plus (top.offset + spacing);
+			break;
+		}
 	}
-	return cacheTop = bottomAttachment.plus (top.offset);
+	isVisited = false;
+	return cacheTop;
 }
 
 }

@@ -128,6 +128,34 @@ FormAttachment () {
 }
 
 /**
+ * Constructs a new instance of this class given a numerator
+ * Since no denominator or offset is specified, the default
+ * is to treat the numerator as a percentage of the form, with a 
+ * denominator of 100. The offset is zero.
+ * 
+ * @param numerator the percentage of the position
+ * @param offset the offset of the side from the position
+ * 
+ * @since 3.0
+ */
+public FormAttachment (int numerator) {
+	this (numerator, 100, 0);
+}
+
+/**
+ * Constructs a new instance of this class given a numerator
+ * and an offset. Since no denominator is specified, the default
+ * is to treat the numerator as a percentage of the form, with a 
+ * denominator of 100.
+ * 
+ * @param numerator the percentage of the position
+ * @param offset the offset of the side from the position
+ */
+public FormAttachment (int numerator, int offset) {
+	this (numerator, 100, offset);
+}
+
+/**
  * Constructs a new instance of this class given a numerator 
  * and denominator and an offset. The position of the side is
  * given by the fraction of the form defined by the numerator
@@ -145,32 +173,18 @@ public FormAttachment (int numerator, int denominator, int offset) {
 }
 
 /**
- * Constructs a new instance of this class given a numerator
- * and an offset. Since no denominator is specified, the default
- * is to read the numerator as a percentage of the form, with a 
- * denominator of 100.
- * 
- * @param numerator the percentage of the position
- * @param offset the offset of the side from the position
- */
-public FormAttachment (int numerator, int offset) {
-	this (numerator, 100, offset);
-}
-
-/**
- * Constructs a new instance of this class given a control,
- * an offset and an alignment.
+ * Constructs a new instance of this class given a control.
+ * Since no alignment is specified, the default alignment is
+ * to attach the side to the adjacent side of the specified 
+ * control. Since no offset is specified, an offset of 0 is
+ * used.
  * 
  * @param control the control the side is attached to
- * @param offset the offset of the side from the control
- * @param alignment the alignment of the side to the control it is attached to
  */
-public FormAttachment (Control control, int offset, int alignment) {
-	this.control = control;
-	this.offset = offset;
-	this.alignment = alignment;
+public FormAttachment (Control control) {
+	this (control, 0, SWT.DEFAULT);
 }
-	
+
 /**
  * Constructs a new instance of this class given a control
  * and an offset. Since no alignment is specified, the default
@@ -185,16 +199,17 @@ public FormAttachment (Control control, int offset) {
 }
 
 /**
- * Constructs a new instance of this class given a control.
- * Since no alignment is specified, the default alignment is
- * to attach the side to the adjacent side of the specified 
- * control. Since no offset is specified, an offset of 0 is
- * used.
+ * Constructs a new instance of this class given a control,
+ * an offset and an alignment.
  * 
  * @param control the control the side is attached to
+ * @param offset the offset of the side from the control
+ * @param alignment the alignment of the side to the control it is attached to
  */
-public FormAttachment (Control control) {
-	this (control, 0, SWT.DEFAULT);
+public FormAttachment (Control control, int offset, int alignment) {
+	this.control = control;
+	this.offset = offset;
+	this.alignment = alignment;
 }
 
 FormAttachment divide (int value) {

@@ -84,6 +84,7 @@ import org.eclipse.swt.widgets.*;
  * 
  */
 public final class FormLayout extends Layout {
+	
 	/**
 	 * marginWidth specifies the number of pixels of horizontal margin
 	 * that will be placed along the left and right edges of the layout.
@@ -91,6 +92,7 @@ public final class FormLayout extends Layout {
 	 * The default value is 0.
 	 */
  	public int marginWidth = 0;
+ 	
 	/**
 	 * marginHeight specifies the number of pixels of vertical margin
 	 * that will be placed along the top and bottom edges of the layout.
@@ -98,6 +100,16 @@ public final class FormLayout extends Layout {
 	 * The default value is 0.
 	 */
  	public int marginHeight = 0;
+ 	
+	/**
+	 * spacing specifies the number of pixels between the edge of one control
+	 * and the edge of its neighbouring control.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.0
+	 */
+	public int spacing = 0;
 	
 /**
  * Constructs a new instance of this class.
@@ -166,8 +178,8 @@ public FormLayout () {
  * 		CX = -B. Solving in terms of U and V gives us X = (-B * V) / U.
  */
 int computeHeight (FormData data) {
-	FormAttachment top = data.getTopAttachment ();
-	FormAttachment bottom = data.getBottomAttachment ();
+	FormAttachment top = data.getTopAttachment (spacing);
+	FormAttachment bottom = data.getBottomAttachment (spacing);
 	FormAttachment height = bottom.minus (top);
 	if (height.numerator == 0) {
 		if (bottom.numerator == 0) return bottom.offset;
@@ -199,8 +211,8 @@ Point computeSize (Control control, boolean flushCache) {
  * respect to the preferred height of the control.
  */
 int computeWidth (FormData data) {
-	FormAttachment left = data.getLeftAttachment ();
-	FormAttachment right = data.getRightAttachment ();
+	FormAttachment left = data.getLeftAttachment (spacing);
+	FormAttachment right = data.getRightAttachment (spacing);
 	FormAttachment width = right.minus (left);
 	if (width.numerator == 0) {
 		if (right.numerator == 0) return right.offset;
@@ -237,10 +249,10 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		Control child = children [i];
 		FormData data = (FormData) child.getLayoutData ();
 		if (move) {
-			int x1 = data.getLeftAttachment ().solveX (width);
-			int y1 = data.getTopAttachment ().solveX (height);
-			int x2 = data.getRightAttachment ().solveX (width);
-			int y2 = data.getBottomAttachment ().solveX (height);
+			int x1 = data.getLeftAttachment (spacing).solveX (width);
+			int y1 = data.getTopAttachment (spacing).solveX (height);
+			int x2 = data.getRightAttachment (spacing).solveX (width);
+			int y2 = data.getBottomAttachment (spacing).solveX (height);
 			child.setBounds (x + x1, y + y1, x2 - x1, y2 - y1);
 		} else {
 			width = Math.max (computeWidth (data), width);
