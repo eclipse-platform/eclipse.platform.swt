@@ -207,17 +207,17 @@ public static void error (int code, int hresult) {
 		/* OS Failure/Limit (fatal, may occur only on some platforms) */
 		case DND.ERROR_CANNOT_INIT_DRAG:{
 			String msg = DND.INIT_DRAG_MESSAGE;
-			if (hresult != 0) msg += "result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;
 			throw new SWTError (code, msg);
 		}
 		case DND.ERROR_CANNOT_INIT_DROP:{
 			String msg = DND.INIT_DROP_MESSAGE;
-			if (hresult != 0) msg += "result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;
 			throw new SWTError (code, msg);
 		}
 		case DND.ERROR_CANNOT_SET_CLIPBOARD:{
 			String msg = DND.CANNOT_SET_CLIPBOARD_MESSAGE;
-			if (hresult != 0) msg += "result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;
 			throw new SWTError (code, msg);
 		}
 	}
