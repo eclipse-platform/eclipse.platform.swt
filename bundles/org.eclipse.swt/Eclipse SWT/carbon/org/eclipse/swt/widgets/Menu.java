@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
+import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.MenuTrackingData;
 import org.eclipse.swt.internal.carbon.Rect;
@@ -562,21 +563,47 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 	if (item.accelerator == 0) {
 		int accelIndex = item.text.indexOf ('\t');
 		if (accelIndex != -1) {
-			String accelText = item.text.substring (accelIndex);
-			int result = OS.CallNextEventHandler (nextHandler, theEvent);
-			Rect rect = new Rect ();
-			OS.GetEventParameter (theEvent, OS.kEventParamMenuItemBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rect);
-			int [] context = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
-			char [] buffer = new char [accelText.length ()];
-			accelText.getChars (0, buffer.length, buffer, 0);
-			int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			short [] extraHeight = new short [1], extraWidth = new short [1];
-			OS.GetThemeMenuItemExtra ((short) OS.kThemeMenuItemHierarchical, extraHeight, extraWidth);
-			rect.right -= extraWidth [0] / 2;
-			OS.DrawThemeTextBox (str, (short) OS.kThemeMenuItemCmdKeyFont, OS.kThemeStateActive, false, rect, (short) OS.teFlushRight, context [0]);
-			OS.CFRelease (str);
-			return result;
+			String accelText = item.text.substring (accelIndex + 1);
+			int length = accelText.length ();
+			if (length != 0) {
+				int result = OS.CallNextEventHandler (nextHandler, theEvent);
+				Rect rect = new Rect ();
+				OS.GetEventParameter (theEvent, OS.kEventParamMenuItemBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rect);
+				int [] context = new int [1];
+				OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+
+				/* Draw the key */
+				short left = rect.left;	
+				int modifierIndex = modifierIndex (accelText);
+				char [] buffer = new char [length - modifierIndex - 1];
+				accelText.getChars (modifierIndex + 1, length, buffer, 0);
+				int font = OS.kThemeMenuItemFont;
+				if (buffer.length > 1) font = OS.kThemeMenuItemCmdKeyFont;
+				byte [] family = new byte [256];
+				short [] size = new short [1];
+				byte [] style = new byte [1];
+				OS.GetThemeFont ((short) font, (short) OS.smSystemScript, family, size, style);
+				FontInfo info = new FontInfo ();
+				OS.FetchFontInfo (family[0], size[0], style[0], info);
+				int [] metric = new int [1];
+				OS.GetThemeMetric (OS.kThemeMetricMenuIconTrailingEdgeMargin, metric);
+				rect.left = (short) (rect.right - info.widMax - metric [0]);
+				int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+				OS.DrawThemeTextBox (str, (short) font, OS.kThemeStateActive, false, rect, (short) OS.teFlushDefault, context [0]);
+				OS.CFRelease (str);
+				
+				/* Draw the modifiers */
+				if (modifierIndex != -1) {
+					buffer = new char [modifierIndex + 1];
+					accelText.getChars (0, buffer.length, buffer, 0);
+					rect.right = rect.left;
+					rect.left = left;
+					str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+					OS.DrawThemeTextBox (str, (short) OS.kThemeMenuItemCmdKeyFont, OS.kThemeStateActive, false, rect, (short) OS.teFlushRight, context [0]);
+					OS.CFRelease (str);
+				}
+				return result;
+			}
 		}			
 	}
 	return OS.eventNotHandledErr;
@@ -589,19 +616,23 @@ int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
 	if (item.accelerator == 0) {
 		int accelIndex = item.text.indexOf ('\t');
 		if (accelIndex != -1) {
-			String accelText = item.text.substring (accelIndex);
-			int result = OS.CallNextEventHandler (nextHandler, theEvent);
-			char [] buffer = new char [accelText.length ()];
-			accelText.getChars (0, buffer.length, buffer, 0);
-			int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			org.eclipse.swt.internal.carbon.Point size = new org.eclipse.swt.internal.carbon.Point ();
-			OS.GetThemeTextDimensions (str, (short) OS.kThemeMenuItemCmdKeyFont, 0, false, size, null);
-			OS.CFRelease (str);
-			short [] width = new short [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamMenuItemWidth, OS.typeSInt16, null, 2, null, width);
-			width [0] += 5 + size.h;
-			OS.SetEventParameter (theEvent, OS.kEventParamMenuItemWidth, OS.typeSInt16, 2, width);
-			return result;
+			String accelText = item.text.substring (accelIndex + 1);
+			if (accelText.length () != 0) {
+				int result = OS.CallNextEventHandler (nextHandler, theEvent);
+				char [] buffer = new char [accelText.length ()];
+				accelText.getChars (0, buffer.length, buffer, 0);
+				int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+				org.eclipse.swt.internal.carbon.Point size = new org.eclipse.swt.internal.carbon.Point ();
+				OS.GetThemeTextDimensions (str, (short) OS.kThemeMenuItemCmdKeyFont, 0, false, size, null);
+				OS.CFRelease (str);
+				short [] width = new short [1];
+				OS.GetEventParameter (theEvent, OS.kEventParamMenuItemWidth, OS.typeSInt16, null, 2, null, width);
+				int [] metric = new int [1];
+				OS.GetThemeMetric (OS.kThemeMetricMenuTextTrailingEdgeMargin, metric);
+				width [0] += metric [0] + size.h;
+				OS.SetEventParameter (theEvent, OS.kEventParamMenuItemWidth, OS.typeSInt16, 2, width);
+				return result;
+			}
 		}			
 	}
 	return OS.eventNotHandledErr;
@@ -694,6 +725,26 @@ public boolean isEnabled () {
 public boolean isVisible () {
 	checkWidget ();
 	return getVisible ();
+}
+
+int modifierIndex (String accelText) {
+	int start = accelText.length () - 1;
+	int index = start;
+	while (index >= 0) {
+		char c = accelText.charAt (index);
+		switch (c) {
+			case ' ':
+				if (index != start) return index;
+				break;
+			case '\u2303':
+			case '\u2325':
+			case '\u21E7':
+			case '\u2318':
+				return index;
+		}
+		index--;
+	}
+	return -1;
 }
 
 void releaseChild () {
