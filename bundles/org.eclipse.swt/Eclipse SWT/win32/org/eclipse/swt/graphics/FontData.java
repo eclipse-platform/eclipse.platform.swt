@@ -393,7 +393,12 @@ public String getName() {
 		data.lfFaceName24, data.lfFaceName25, data.lfFaceName26, data.lfFaceName27,
 		data.lfFaceName28, data.lfFaceName29, data.lfFaceName30, data.lfFaceName31,
 	};
-	return new String (chars).trim();
+	int index = 0;
+	while (index < chars.length) {
+		if (chars [index] == 0) break;
+		index++;
+	}
+	return new String (chars, 0, index);
 }
 
 /**
@@ -644,7 +649,16 @@ public String toString() {
  * @private
  */
 public static FontData win32_new(LOGFONT data, int height) {
-	return new FontData(data, height);
+	/*
+	 * Feature in Windows 98.  When setting the faceName,
+	 * Windows 98 null terminates the string but does not
+	 * clear the rest of the buffer while Windows NT does.
+	 * The fix is to get and set the name which fills the
+	 * rest of the faceName buffer with null.
+	 */
+	FontData fontData = new FontData(data, height);
+	fontData.setName(fontData.getName());
+	return fontData;
 }
 
 }
