@@ -175,6 +175,8 @@ public class OS {
 	public static final int kEventClassAppearance	= ('a'<<24) + ('p'<<16) + ('p'<<8) + 'm';
 	public static final int kEventClassService		= ('s'<<24) + ('e'<<16) + ('r'<<8) + 'v';
 	public static final int kEventClassCommand		= ('c'<<24) + ('m'<<16) + ('d'<<8) + 's';
+		public static final int kEventProcessCommand	= 1;
+
 	
 	public static final int typeUInt32= ('m'<<24) + ('a'<<16) + ('g'<<8) + 'n';
 	public static final int typeChar= ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
@@ -235,6 +237,8 @@ public class OS {
 	public static final int kEventParamAttributes	= ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r'; /* typeUInt32*/
 
 	public static final int kEventTextInputUnicodeForKeyEvent = 2;
+	
+	public static final int kAEQuitApplication = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
 
 	public static native int CallNextEventHandler(int nextHandler, int eventRefHandle); 
 	
@@ -789,6 +793,7 @@ public class OS {
 	public static native short GetMenuWidth(int mHandle);
 	public static native void CalcMenuSize(int mHandle);
 	public static native int SetMenuItemIconHandle(int mHandle, short item, byte iconType, int iconHandle);
+	public static native int SetMenuItemCommandID(int mHandle, short item, int commandID);
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Control Manager
