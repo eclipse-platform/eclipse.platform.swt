@@ -379,7 +379,6 @@ public RGB open() {
 	setDialogShell(dialog);
 	createChildren();
 	installListeners();
-
 	openModal();
 	rgb = null;
 	if (isOkSelected() == true) {
@@ -487,8 +486,8 @@ void openDialog() {
 	
 	// Ensure that the width of the shell fits the display.
 	Rectangle displayRect = dialog.getDisplay().getBounds();
-	int widthLimit = displayRect.width;
-	int heightLimit = displayRect.height;
+	int widthLimit = displayRect.width * 7 / 8;
+	int heightLimit = displayRect.height * 7 / 8;
 	if (pt.x > widthLimit) {
 		pt = dialog.computeSize (widthLimit, -1, false);
 	}
