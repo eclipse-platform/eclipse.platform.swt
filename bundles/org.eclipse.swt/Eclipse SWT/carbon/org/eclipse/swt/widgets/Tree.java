@@ -49,7 +49,7 @@ public class Tree extends Composite {
 	TreeItem [] items;
 	GC paintGC;
 	int anchorFirst, anchorLast, lastHittest;
-	boolean ignoreSelect, wasSelected, wasToggled;
+	boolean ignoreSelect, wasSelected, ignoreToggled, wasToggled;
 	TreeItem showItem;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
@@ -157,7 +157,7 @@ int calculateWidth (TreeItem [] items, GC gc) {
 	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items [i];
 		width = Math.max (width, item.calculateWidth (gc));
-		if (item.getExpanded ()) {			
+		if (item._getExpanded ()) {
 			width = Math.max (width, calculateWidth (item.getItems (), gc));
 		}
 	}
@@ -333,7 +333,7 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 	boolean expanded = true;
 	if (parentItem != null) {
 		parentID = parentItem.id;
-		expanded = parentItem.getExpanded ();
+		expanded = parentItem._getExpanded ();
 	}
 	if (expanded) {
 		if (OS.AddDataBrowserItems (handle, parentID, 1, new int[] {item.id}, OS.kDataBrowserItemNoProperty) != OS.noErr) {
@@ -818,19 +818,6 @@ int itemNotificationProc (int browser, int id, int message) {
 			postEvent (SWT.DefaultSelection, event);
 			break;
 		}
-		case OS.kDataBrowserUserToggledContainer: {
-			wasToggled = true;
-			int [] state = new int [1];
-			Event event = new Event ();
-			event.item = item;
-			OS.GetDataBrowserItemState (handle, id, state);
-			if ((state [0] & OS.kDataBrowserContainerIsOpen) != 0) {
-				sendEvent (SWT.Collapse, event);
-			} else {
-				sendEvent (SWT.Expand, event);
-			}
-			break;
-		}
 		case OS.kDataBrowserContainerClosing: {
 			/*
 			* Bug in the Macintosh.  For some reason, if the selected sub items of an item
@@ -861,10 +848,27 @@ int itemNotificationProc (int browser, int id, int message) {
 			break;
 		}
 		case OS.kDataBrowserContainerClosed: {
+			wasToggled = true;
+			if (!ignoreToggled) {
+				Event event = new Event ();
+				event.item = item;
+				sendEvent (SWT.Collapse, event);
+			}
 			setScrollWidth ();
 			break;
 		}
 		case OS.kDataBrowserContainerOpened: {
+			wasToggled = true;
+			if (!ignoreToggled) {
+				Event event = new Event ();
+				event.item = item;
+				try {
+					item.state |= EXPANDING;
+					sendEvent (SWT.Expand, event);
+				} finally {
+					item.state &= ~EXPANDING;
+				}
+			}
 			int count = 0;
 			for (int i=0; i<items.length; i++) {
 				if (items [i] != null && items [i].parentItem == item) count++;
@@ -1124,7 +1128,7 @@ void setScrollWidth () {
 void setScrollWidth (TreeItem item) {
 	if (drawCount != 0) return;
 	TreeItem parentItem = item.parentItem;
-	if (parentItem != null && !parentItem.getExpanded ()) return;
+	if (parentItem != null && !parentItem._getExpanded ()) return;
 	GC gc = new GC (this);
 	int newWidth = item.calculateWidth (gc);
 	gc.dispose ();
@@ -1268,14 +1272,14 @@ public void showItem (TreeItem item) {
 void showItem (TreeItem item, boolean scroll) {
 	int count = 0;
 	TreeItem parentItem = item.parentItem;
-	while (parentItem != null && !parentItem.getExpanded ()) {
+	while (parentItem != null && !parentItem._getExpanded ()) {
 		count++;
 		parentItem = parentItem.parentItem;
 	}
 	int index = 0;
 	parentItem = item.parentItem;
 	TreeItem [] path = new TreeItem [count];
-	while (parentItem != null && !parentItem.getExpanded ()) {
+	while (parentItem != null && !parentItem._getExpanded ()) {
 		path [index++] = parentItem;
 		parentItem = parentItem.parentItem;
 	}

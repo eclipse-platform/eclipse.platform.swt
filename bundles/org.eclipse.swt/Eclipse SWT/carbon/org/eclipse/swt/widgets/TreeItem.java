@@ -189,6 +189,13 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 	parent.createItem (this, parentItem, index);
 }
 
+boolean _getExpanded () {
+	checkWidget ();
+	int [] state = new int [1];
+	OS.GetDataBrowserItemState (parent.handle, id, state);
+	return (state [0] & OS.kDataBrowserContainerIsOpen) != 0;
+}
+
 static TreeItem checkNull (TreeItem item) {
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return item;
@@ -293,9 +300,7 @@ public boolean getChecked () {
  */
 public boolean getExpanded () {
 	checkWidget ();
-	int [] state = new int [1];
-	OS.GetDataBrowserItemState (parent.handle, id, state);
-	return (state [0] & OS.kDataBrowserContainerIsOpen) != 0;
+	return (state & EXPANDING) != 0 ? false : _getExpanded ();
 }
 
 /**
