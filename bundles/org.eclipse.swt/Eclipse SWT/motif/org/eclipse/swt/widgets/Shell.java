@@ -522,16 +522,17 @@ void destroyWidget () {
 
 public void dispose () {
 	/*
+	* Note:  It is valid to attempt to dispose a widget
+	* more than once.  If this happens, fail silently.
+	*/
+	if (!isValidWidget ()) return;
+
+	/*
 	* This code is intentionally commented.  On some
 	* platforms, the owner window is repainted right
 	* away when the dialog window exits.  This behavior
 	* is currently unspecified.
 	*/
-//	/*
-//	* Note:  It is valid to attempt to dispose a widget
-//	* more than once.  If this happens, fail silently.
-//	*/
-//	if (!isValidWidget ()) return;
 //	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 //	Display oldDisplay = display;
 
