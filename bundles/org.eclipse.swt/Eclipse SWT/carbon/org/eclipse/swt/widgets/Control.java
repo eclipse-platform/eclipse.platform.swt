@@ -1073,6 +1073,7 @@ public int internal_new_GC (GCData data) {
 			data.style |= style & (mask | SWT.MIRRORED);
 		}
 		data.device = display;
+		data.thread = display.thread;
 		data.background = background != null ? background : new float [] {1, 1, 1, 1};
 		data.foreground = foreground != null ? foreground : new float [] {0, 0, 0, 1};
 		data.font = font != null ? font : defaultFont ();

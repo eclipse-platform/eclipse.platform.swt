@@ -47,6 +47,8 @@ public final class GCData {
 	public int drawFlags;
 	public int stringPtr;
 	
+	public Thread thread;
+
 	public int window;	
 	public int paintEvent;
 	public int visibleRgn;

@@ -360,7 +360,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Math.PI / 180,  -(startAngle + arcAngle) * (float)Math.PI / 180, true);
 	OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /** 
@@ -385,7 +385,7 @@ public void drawFocus(int x, int y, int width, int height) {
 	if (data.updateClip) setCGClipping();
 	//NOT DONE
 //	drawRectangle (x, y, width - 1, height - 1);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /**
@@ -501,7 +501,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		}
  	}
  	OS.CGContextRestoreGState(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+ 	flush();
 }
 
 /** 
@@ -540,7 +540,7 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 		OS.CGContextAddLineToPoint(handle, x2 + offset, y2 + offset);
 		OS.CGContextStrokePath(handle);
 	}
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /** 
@@ -584,7 +584,7 @@ public void drawOval(int x, int y, int width, int height) {
 	OS.CGContextAddArc(handle, 0, 0, 1, 0, (float)(2 *Math.PI), true);
 	OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /** 
@@ -616,7 +616,7 @@ public void drawPolygon(int[] pointArray) {
 	OS.CGContextAddLines(handle, points, points.length / 2);
 	OS.CGContextClosePath(handle);
 	OS.CGContextStrokePath(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /** 
@@ -647,7 +647,7 @@ public void drawPolyline(int[] pointArray) {
 	OS.CGContextBeginPath(handle);
 	OS.CGContextAddLines(handle, points, points.length / 2);
 	OS.CGContextStrokePath(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /** 
@@ -683,7 +683,7 @@ public void drawRectangle(int x, int y, int width, int height) {
 	rect.width = width;
 	rect.height = height;
 	OS.CGContextStrokeRect(handle, rect);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /** 
@@ -768,7 +768,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 	OS.CGContextClosePath(handle);
 	OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /** 
@@ -926,7 +926,7 @@ public void drawText (String string, int x, int y, int flags) {
 		drawText(x, y, 0, length, flags);
 	}
 	OS.CGContextRestoreGState(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 void drawText(int x, int y, int start, int length, int flags) {
@@ -1020,7 +1020,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
     OS.CGContextClosePath(handle);
     OS.CGContextRestoreGState(handle);
 	OS.CGContextFillPath(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /**
@@ -1114,7 +1114,7 @@ public void fillOval(int x, int y, int width, int height) {
     OS.CGContextClosePath(handle);
     OS.CGContextRestoreGState(handle);
 	OS.CGContextFillPath(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /** 
@@ -1148,7 +1148,7 @@ public void fillPolygon(int[] pointArray) {
 	OS.CGContextAddLines(handle, points, points.length / 2);
 	OS.CGContextClosePath(handle);
 	OS.CGContextEOFillPath(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /** 
@@ -1183,7 +1183,7 @@ public void fillRectangle(int x, int y, int width, int height) {
 	rect.width = width;
 	rect.height = height;
 	OS.CGContextFillRect(handle, rect);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
 }
 
 /** 
@@ -1265,7 +1265,17 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	OS.CGContextClosePath(handle);
 	OS.CGContextRestoreGState(handle);
 	OS.CGContextFillPath(handle);
-	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
+	flush();
+}
+
+void flush () {
+	if (data.control != 0 && data.paintEvent == 0) {
+		if (data.thread != Thread.currentThread()) {
+			OS.CGContextFlush(handle);
+		} else {
+			OS.CGContextSynchronize(handle);
+		}
+	}
 }
 
 /**
