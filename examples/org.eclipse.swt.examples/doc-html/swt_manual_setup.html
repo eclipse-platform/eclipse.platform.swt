@@ -23,14 +23,14 @@
 <li>Locate the source zip file for the SWT examples.  For example:
 	<ul>
     <li><em>win32: </em><code>INSTALLDIR\eclipse\plugins\org.eclipse.swt.examples_2.1.0\swtexamplessrc.zip</code>
-    <li><em>*nix: </em><code>INSTALLDIR/eclipse/plugins/org.eclipse.swt.examples_2.1.0/swtexamplessrc.zip</code>
+    <li><em>*ix: </em><code>INSTALLDIR/eclipse/plugins/org.eclipse.swt.examples_2.1.0/swtexamplessrc.zip</code>
     </ul>
 <li>Click <strong>Finish</strong>.
 <li>Select the <strong>File</strong> &gt; <strong>Import</strong> menu, then select <strong>Zip File</strong> from the subsequent dialog and click <strong>Next</strong>.
 <li>Locate the jar file for the SWT examples.  For example:
     <ul>
     <li><em>win32: </em><code>INSTALLDIR\eclipse\plugins\org.eclipse.swt.examples_2.1.0\swtexamples.jar</code>
-    <li><em>*nix: </em><code>INSTALLDIR/eclipse/plugins/org.eclipse.swt.examples_2.1.0/swtexamples.jar</code>
+    <li><em>*ix: </em><code>INSTALLDIR/eclipse/plugins/org.eclipse.swt.examples_2.1.0/swtexamples.jar</code>
     </ul>
 <li>Expand the top level directory of the zip file (/), and uncheck "org" and "META-INF".
 <li>Click on Finish.
@@ -77,7 +77,7 @@ JNI libraries on the library path so that the VM can find them:
 <li>In the Launch Configurations dialog that appears, select <strong>Java Application</strong> and click 
     on the <strong>New</strong> button.
 <li>Fill in the <strong>Name</strong>, <strong>Project</strong> and <strong>Main</strong> class fields according to the example that you wish to run.
-<li>Select the <strong>Arguments</strong> tab.  In the <strong>VM Arguements</strong> area specify the location of the SWT 
+<li>Select the <strong>Arguments</strong> tab.  In the <strong>VM Arguments</strong> area specify the location of the SWT 
     library depending on your target platform as follows:
     <ul>
 	<li><em>win32: </em><code>-Djava.library.path=INSTALLDIR\plugins\org.eclipse.swt.win32_2.1.0\os\win32\x86</code>
