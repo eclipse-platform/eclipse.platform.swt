@@ -118,7 +118,15 @@ public CLabel(Composite parent, int style) {
 private static int checkStyle (int style) {
 	int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE;
 	style = style & mask;
-	style |= SWT.NO_FOCUS | SWT.NO_BACKGROUND;
+	style |= SWT.NO_FOCUS;
+	// The default background on carbon is not a solid color but a texture.
+	// To show the correct default background on carbon, we must
+	// allow the OS to draw it and therefore, we can not use the 
+	// NO_BACKGROUND style.  This is not an issue because
+	// carbon has double buffering which makes the NO_BACKGROUND style
+	// unneccessary.
+	if (!"carbon".equals(SWT.getPlatform()))
+		style |= SWT.NO_BACKGROUND;
 	return style;
 }
 public Point computeSize(int wHint, int hHint, boolean changed) {
@@ -353,12 +361,16 @@ private void onPaint(PaintEvent event) {
 			}
 			gc.setBackground(oldBackground);
 		} else {
+			if ((getStyle() & SWT.NO_BACKGROUND) != 0) {
+				gc.setBackground(getBackground());
+				gc.fillRectangle(rect);
+			}
+		}
+	} catch (SWTException e) {
+		if ((getStyle() & SWT.NO_BACKGROUND) != 0) {
 			gc.setBackground(getBackground());
 			gc.fillRectangle(rect);
 		}
-	} catch (SWTException e) {
-		gc.setBackground(getBackground());
-		gc.fillRectangle(rect);
 	}
 
 	// draw border
