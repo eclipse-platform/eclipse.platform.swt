@@ -2228,17 +2228,21 @@ public void showColumn (TableColumn column) {
 	if (count <= 1 || !(0 <= index && index < count)) return; 
 	RECT rect = new RECT ();
 	if (index == 0) {
+		// Can't get subitemrect for first column (with no item)
+		// so get subitemrect for second column and subtract width
+		// of first column.
 		int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, index, 0);
 		rect.top = 1;
 		rect.left = OS.LVIR_BOUNDS;
 		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
-		rect.left = rect.left - width;
-		rect.right = rect.left + width;
+		rect.right = rect.left;
+		rect.left = rect.right - width;
 	} else {
 		rect.top = index;
 		rect.left = OS.LVIR_BOUNDS;
 		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
 	}
+	
 	RECT area = new RECT ();
 	OS.GetClientRect (handle, area);
 	if (rect.left < area.left) {
