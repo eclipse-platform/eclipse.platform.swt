@@ -1794,7 +1794,7 @@ public static String getMessage(String key) {
  * Returns the SWT platform name.
  * Examples: "win32", "motif", "gtk", "photon"
  *
- * @return the SWT version number
+ * @return the SWT platform name
  */
 public static String getPlatform () {
 	return Callback.getPlatform ();
