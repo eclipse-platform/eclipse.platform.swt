@@ -1439,7 +1439,7 @@ public int getStyle() {
  */
 public int getTabHeight(){
 	checkWidget();
-	return tabHeight;
+	return tabHeight - 1; // -1 for line drawn across top of tab
 }
 /**
  * Returns the control in the top right corner of the tab folder. 
@@ -3127,7 +3127,7 @@ public void setTabHeight(int height) {
 	}
 	fixedTabHeight = height > -1;
 	int oldHeight = tabHeight;
-	tabHeight = height;
+	tabHeight = height + 1; // +1 for line drawn across top of tab
 	updateTabHeight(oldHeight, false);
 }
 /**
