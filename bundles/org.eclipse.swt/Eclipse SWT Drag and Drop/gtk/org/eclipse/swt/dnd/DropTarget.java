@@ -565,13 +565,18 @@ public void removeDropListener(DropTargetListener listener) {
  *
  * @param transferAgents a list of Transfer objects which define the types of data that can be
  *						 dropped on this target
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if transferAgents is null</li>
+ * </ul>
  */
 public void setTransfer(Transfer[] transferAgents){
+	if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
+	
 	if (this.transferAgents != null) {
 		OS.gtk_drag_dest_unset(control.handle);
 	}
 	this.transferAgents = transferAgents;
-	if (transferAgents == null) return;
 	
 	GtkTargetEntry[] targets = new GtkTargetEntry[0];
 	for (int i = 0; i < transferAgents.length; i++) {
