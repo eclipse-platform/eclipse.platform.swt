@@ -2678,6 +2678,7 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	if (xEvent.button == 3 && menu != null) {
 		setFocus ();
 //		menu.setLocation (xEvent.x_root, xEvent.y_root);
+		display.runDeferredEvents ();
 		menu.setVisible (true);
 	}
 	int clickTime = display.getDoubleClickTime ();
