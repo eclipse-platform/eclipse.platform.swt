@@ -51,6 +51,10 @@ public final class FillLayout extends Layout {
 public FillLayout () {
 }
 
+public FillLayout (int type) {
+	this.type = type;
+}
+
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
 	Control [] children = composite.getChildren ();
 	int count = children.length;
