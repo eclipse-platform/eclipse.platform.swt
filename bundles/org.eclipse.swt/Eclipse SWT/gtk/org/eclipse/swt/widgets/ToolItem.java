@@ -178,6 +178,7 @@ void createHandle (int index) {
 			if (arrowBoxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 			arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
 			if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_widget_set_size_request (arrowHandle, 8, 6);
 			OS.gtk_container_add (handle, arrowBoxHandle);
 			OS.gtk_container_add (arrowBoxHandle, boxHandle);	
 			OS.gtk_container_add (arrowBoxHandle, arrowHandle);	
