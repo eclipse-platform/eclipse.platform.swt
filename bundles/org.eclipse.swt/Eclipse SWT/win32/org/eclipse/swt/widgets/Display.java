@@ -1107,6 +1107,15 @@ ImageList getToolDisabledImageList (Point size) {
 	return list;
 }
 
+
+int getLastEventTime () {
+	return OS.IsWinCE ? OS.GetTickCount () : OS.GetMessageTime ();
+}
+
+int getMessageCount () {
+	return synchronizer.getMessageCount ();
+}
+
 Shell getModalShell () {
 	if (modalWidgets == null) return null;
 	int index = modalWidgets.length;
@@ -1115,10 +1124,6 @@ Shell getModalShell () {
 		if (shell != null) return shell;
 	}
 	return null;
-}
-
-int getLastEventTime () {
-	return OS.IsWinCE ? OS.GetTickCount () : OS.GetMessageTime ();
 }
 
 /**
@@ -2325,6 +2330,7 @@ int shiftedKey (int key) {
  */
 public boolean sleep () {
 	checkDevice ();
+	if (getMessageCount () != 0) return false;
 	if (OS.IsWinCE) {
 		OS.MsgWaitForMultipleObjectsEx (0, 0, OS.INFINITE, OS.QS_ALLINPUT, OS.MWMO_INPUTAVAILABLE);
 		return true;
