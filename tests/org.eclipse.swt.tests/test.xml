@@ -26,8 +26,8 @@
   <target name="suite" unless="performance">
     <property name="data" value="${eclipse-home}/swt_sniff_folder"/>
     <delete dir="${location1}" quiet="true"/>
-    <!-- Run all SWT tests on Windows. Run only Browser tests otherwise. -->
-    <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllBrowserTests">
+    <!-- Run all SWT tests on Windows. Run only Gtk tests otherwise. -->
+    <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllGtkTests">
       <os family="unix"/>
     </condition>
     <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllTests">
