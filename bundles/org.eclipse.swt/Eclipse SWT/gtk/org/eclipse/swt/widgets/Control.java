@@ -219,10 +219,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 Point computeNativeSize (int h, int wHint, int hHint, boolean changed) {
+	int width = OS.GTK_WIDGET_WIDTH (h);
+	int height = OS.GTK_WIDGET_HEIGHT (h);
+	OS.gtk_widget_set_size_request (h, -1, -1);
 	GtkRequisition requisition = new GtkRequisition ();
 	OS.gtk_widget_size_request (h, requisition);
-	int width = wHint == SWT.DEFAULT ? requisition.width : wHint;
-	int height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	OS.gtk_widget_set_size_request (h, width, height);
+	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	return new Point (width, height);	
 }
 
@@ -1938,11 +1942,7 @@ public void setForeground (Color color) {
 }
 
 void setInitialSize () {
-	//FIXME - setting the size to (1,1) if already (1,1) causes sizing problems
-	int topHandle = topHandle ();
-	int width = OS.GTK_WIDGET_WIDTH (topHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
-	if (width != 1 && height != 1) resizeHandle (1, 1);
+	resizeHandle (1, 1);
 }
 
 /**

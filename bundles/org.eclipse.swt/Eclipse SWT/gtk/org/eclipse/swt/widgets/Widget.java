@@ -556,6 +556,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		case SWT.MouseHover:		return processMouseHover      	(int0, int1, int2);
 		case SWT.MouseMove:			return processMouseMove       	(int0, int1, int2);
 //		case SWT.MouseUp:			return processMouseUp         	(int0, int1, int2);
+		case SWT.Move:				return processMove		       	(int0, int1, int2);
 		case SWT.Paint:				return processPaint           	(int0, int1, int2);
 		case SWT.Resize:			return processResize          	(int0, int1, int2);
 		case SWT.Show:				return processShow            	(int0, int1, int2);
@@ -654,6 +655,11 @@ int processMouseMove (int arg0, int arg1, int int2) {
 int processMouseUp (int arg0, int arg1, int int2) {
 	return 0;
 }
+
+int processMove (int arg0, int arg1, int int2) {
+	return 0;
+}
+
 int processPaint (int int0, int int1, int int2) {
 	return 0;
 }

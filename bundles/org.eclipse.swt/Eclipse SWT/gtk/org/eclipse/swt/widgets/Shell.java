@@ -92,7 +92,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	Display display;
-	int shellHandle, vboxHandle;
+	int shellHandle;
 	int modal;
 	int accelGroup;
 	boolean hasFocus;
@@ -371,8 +371,8 @@ void createHandle (int index) {
 	if (parent != null) {
 		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 	}
-	vboxHandle = OS.gtk_vbox_new (false, 0);
-	if (vboxHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	fixedHandle = OS.gtk_fixed_new ();
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int vadj = OS.gtk_adjustment_new(0, 0, 100, 1, 10, 10);
 	if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
 	int hadj = OS.gtk_adjustment_new(0, 0, 100, 1, 10, 10);
@@ -385,14 +385,14 @@ void createHandle (int index) {
 	//??
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
 	
-	OS.gtk_container_add (shellHandle, vboxHandle);
-	OS.gtk_box_pack_end (vboxHandle, scrolledHandle, true, true, 0);
+	OS.gtk_container_add (shellHandle, fixedHandle);
+	OS.gtk_container_add (fixedHandle, scrolledHandle);
 
 	//COMMENT
 	OS.GTK_BIN_SET_CHILD(scrolledHandle, handle);
 	OS.gtk_widget_set_parent(handle, scrolledHandle);
 	
-	OS.gtk_widget_show (vboxHandle);
+	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (scrolledHandle);
 	OS.gtk_widget_show (handle);
 	
@@ -434,14 +434,13 @@ void hookEvents () {
 	super.hookEvents ();
 	signal_connect_after(shellHandle, "map-event", SWT.Deiconify, 3);
 	signal_connect_after(shellHandle, "unmap-event", SWT.Iconify, 3);
-//	signal_connect(shellHandle, "size-allocate", SWT.Resize, 3);
-	signal_connect(shellHandle, "configure-event", SWT.Resize, 3);
+	signal_connect(shellHandle, "size-allocate", SWT.Resize, 3);
+	signal_connect(shellHandle, "configure-event", SWT.Move, 3);
 	signal_connect(shellHandle, "delete-event", SWT.Dispose, 3);
 }
 
 void register () {
 	super.register ();
-	WidgetTable.put (vboxHandle, this);
 	WidgetTable.put (shellHandle, this);
 }
 
@@ -577,30 +576,25 @@ int processFocusOut(int int0, int int1, int int2) {
 	return 0;
 }
 
-int processResize (int int0, int int1, int int2) {
+int processMove (int int0, int int1, int int2) {
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
+	if (oldX != x [0] || oldY != y [0]) {
+		oldX = x [0];
+		oldY = y [0];
+		sendEvent (SWT.Move);
+	}
+	return 0;
+}
+
+int processResize (int int0, int int1, int int2) {
 	int [] width = new int [1], height = new int [1];
 	OS.gtk_window_get_size (shellHandle, width, height);
-	//TEMPORARY CODE
-//	if (oldX != x [0]|| oldY != y [0]) sendEvent (SWT.Move);
-	if (true) sendEvent (SWT.Move);
-	//TEMPORARY CODE
-//	if (oldWidth != width [0] || oldHeight != height [0]) {
-	if (true) {
-		OS.gtk_widget_set_size_request (vboxHandle, width [0], height [0]);
-		Display display = getDisplay ();
-		boolean warnings = display.getWarnings ();
-		display.setWarnings (false);
-		OS.gtk_container_resize_children (shellHandle);
-		display.setWarnings (warnings);
-		sendEvent (SWT.Resize);
-		if (layout != null) layout.layout (this, false);
+	if (oldWidth != width [0] || oldHeight != height [0]) {
+		oldWidth = width [0];
+		oldHeight = height [0];
+		resizeBounds (width [0], height [0], true);
 	}
-	oldWidth = width [0];
-	oldHeight = height [0];
-	oldX = x [0];
-	oldY = y [0];
 	return 0;
 }
 
@@ -632,6 +626,30 @@ public void removeShellListener (ShellListener listener) {
 	eventTable.unhook (SWT.Deactivate, listener);
 }
 
+void resizeBounds (int width, int height, boolean notify) {
+	int menuHeight = 0;
+	if (menuBar != null) {
+		int menuHandle = menuBar.handle;
+		OS.gtk_widget_set_size_request (menuHandle, -1, -1);
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (menuHandle, requisition);
+		menuHeight = requisition.height;
+		OS.gtk_widget_set_size_request (menuHandle, width, menuHeight);
+		height = height - menuHeight;
+	}
+	OS.gtk_fixed_move (fixedHandle, scrolledHandle, 0, menuHeight);
+	OS.gtk_widget_set_size_request (scrolledHandle, width, height);
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	OS.gtk_container_resize_children (fixedHandle);
+	display.setWarnings (warnings);
+	if (notify) {
+		sendEvent (SWT.Resize);
+		if (layout != null) layout.layout (this, false);
+	}
+}
+
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	if (move) {
 		int [] x_pos = new int [1], y_pos = new int [1];
@@ -644,13 +662,8 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		OS.gtk_window_get_size (shellHandle, w, h);
 		oldWidth = w [0];  oldHeight = h [0];
 		width -= trimWidth ();  height -= trimHeight ();
-		OS.gtk_widget_set_size_request (vboxHandle, width, height);
 		OS.gtk_window_resize (shellHandle, width, height);
-		Display display = getDisplay ();
-		boolean warnings = display.getWarnings ();
-		display.setWarnings (false);
-		OS.gtk_container_resize_children (shellHandle);
-		display.setWarnings (warnings);
+		resizeBounds (width, height, true);
 	}
 	return move || resize;
 }
@@ -675,12 +688,12 @@ public void setImeInputMode (int mode) {
 	checkWidget();
 }
 
-void setInitialSize () {	
+void setInitialSize () {
 	int width  = OS.gdk_screen_width () * 5 / 8;
 	int height = OS.gdk_screen_height () * 5 / 8;
-	OS.gtk_widget_set_size_request (vboxHandle, width, height);
+	OS.gtk_widget_set_size_request (scrolledHandle, width, height);
 	OS.gtk_window_resize (shellHandle, width, height);
-	OS.gtk_container_resize_children (shellHandle);
+	OS.gtk_container_resize_children (fixedHandle);
 }
 
 public void setMaximized (boolean maximized) {
@@ -695,21 +708,23 @@ public void setMaximized (boolean maximized) {
 public void setMenuBar (Menu menu) {
 	checkWidget();
 	if (menuBar == menu) return;
+	boolean both = menu != null && menuBar != null;
 	if (menu != null) {
 		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}
-	if (menu == null) {
-		if (menuBar != null) {
-			OS.gtk_object_ref (menuBar.handle);
-			OS.gtk_container_remove (vboxHandle, menuBar.handle);
-		}
+	if (menuBar != null) {
+		int menuHandle = menuBar.handle;
+		OS.gtk_widget_hide (menuHandle);
 	}
 	menuBar = menu;
 	if (menuBar != null) {
 		int menuHandle = menu.handle;
-		OS.gtk_box_pack_start (vboxHandle, menuHandle, false, false, 0);
+		OS.gtk_widget_show (menuHandle);
 	}
+	int [] width = new int [1], height = new int [1];
+	OS.gtk_window_get_size (shellHandle, width, height);
+	resizeBounds (width [0], height [0], !both);
 }
 
 public void setMinimized (boolean minimized) {
@@ -733,6 +748,12 @@ public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible) {
 		sendEvent (SWT.Show);
+		
+		//TEMPORARY CODE
+		int [] width = new int [1], height = new int [1];
+		OS.gtk_window_get_size (shellHandle, width, height);
+		resizeBounds (width [0], height [0], true);
+		
 		// NOT DONE - shell should be fully drawn before setVisible()
 		// returns. Note we cannot use gtk_widget_show_now because
 		// it dispatches events.
@@ -780,7 +801,6 @@ int trimWidth () {
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (vboxHandle);
 	WidgetTable.remove (shellHandle);
 }
 
@@ -794,7 +814,7 @@ public Rectangle getBounds () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	vboxHandle = shellHandle = 0;
+	shellHandle = 0;
 }
 
 void releaseShells () {

@@ -116,7 +116,8 @@ void createHandle (int index) {
 	state |= HANDLE;
 	if ((style & SWT.BAR) != 0) {
 		handle = OS.gtk_menu_bar_new ();
-		OS.gtk_widget_show (handle);
+		int parentHandle = parent.fixedHandle;
+		OS.gtk_container_add (parentHandle, handle);
 	} else {
 		handle = OS.gtk_menu_new ();
 	}
