@@ -164,7 +164,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (ptr [0] != 0) {
 			org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
 			if (font == null) {
-				OS.GetThemeTextDimensions (ptr [0], (short)OS.kThemePushButtonFont, OS.kThemeStateActive, false, ioBounds, null);
+				OS.GetThemeTextDimensions (ptr [0], (short) defaultThemeFont (), OS.kThemeStateActive, false, ioBounds, null);
 			} else {
 				int [] currentPort = new int [1];
 				OS.GetPort (currentPort);

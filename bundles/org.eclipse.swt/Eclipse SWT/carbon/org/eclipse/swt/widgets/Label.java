@@ -120,7 +120,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 					org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
 					if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) ioBounds.h = (short) wHint;					
 					if (font == null) {
-						OS.GetThemeTextDimensions (ptr [0], (short)OS.kThemePushButtonFont, OS.kThemeStateActive, ioBounds.h != 0, ioBounds, null);
+						OS.GetThemeTextDimensions (ptr [0], (short) defaultThemeFont (), OS.kThemeStateActive, ioBounds.h != 0, ioBounds, null);
 					} else {
 						int [] currentPort = new int [1];
 						OS.GetPort (currentPort);
@@ -166,6 +166,10 @@ void createHandle () {
 	}
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
+}
+
+int defaultThemeFont () {	
+	return OS.kThemePushButtonFont;
 }
 
 void drawBackground (int control) {

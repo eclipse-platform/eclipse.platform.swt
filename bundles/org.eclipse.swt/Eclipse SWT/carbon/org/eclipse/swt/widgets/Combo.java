@@ -316,7 +316,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	int [] currentPort = new int [1];
-	short themeFont = (short) OS.kThemeSystemFont;
+	short themeFont = (short) defaultThemeFont ();
 	if (font != null) {
 		themeFont = OS.kThemeCurrentPortFont;
 		OS.GetPort (currentPort);
