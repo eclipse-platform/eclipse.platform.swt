@@ -121,7 +121,7 @@ public String getMessage () {
 	return message;
 }
 
-int getCFString (String id) {
+int createCFString (String id) {
 	String string = SWT.getMessage(id);
 	char [] buffer = new char [string.length ()];
 	string.getChars (0, buffer.length, buffer, 0);
@@ -176,7 +176,7 @@ public int open () {
 			break;
 		case SWT.CANCEL:
 			param.defaultButton = (short)OS.kAlertStdAlertOKButton;
-			param.defaultText = defaultStr = getCFString ("SWT_Cancel");
+			param.defaultText = defaultStr = createCFString ("SWT_Cancel");
 			break;
 		case SWT.OK | SWT.CANCEL:
 			param.defaultButton = (short)OS.kAlertStdAlertOKButton;
@@ -186,37 +186,37 @@ public int open () {
 			break;
 		case SWT.YES:
 			param.defaultButton = (short)OS.kAlertStdAlertOKButton;
-			param.defaultText = defaultStr = getCFString ("SWT_Yes");
+			param.defaultText = defaultStr = createCFString ("SWT_Yes");
 			break;
 		case SWT.NO:
 			param.cancelButton = (short)OS.kAlertStdAlertOKButton;
-			param.cancelText = defaultStr = getCFString ("SWT_No");
+			param.cancelText = defaultStr = createCFString ("SWT_No");
 			break;
 		case SWT.YES | SWT.NO:
 			param.defaultButton = (short)OS.kAlertStdAlertOKButton;
-			param.defaultText = defaultStr = getCFString ("SWT_Yes");
+			param.defaultText = defaultStr = createCFString ("SWT_Yes");
 			param.cancelButton = (short)OS.kAlertStdAlertCancelButton;
-			param.cancelText = cancelStr = getCFString ("SWT_No");
+			param.cancelText = cancelStr = createCFString ("SWT_No");
 			break;
 		case SWT.YES | SWT.NO | SWT.CANCEL:				
 			param.defaultButton = (short)OS.kAlertStdAlertOKButton;
-			param.defaultText = defaultStr = getCFString ("SWT_Yes");
-			param.otherText = cancelStr = getCFString ("SWT_No");
+			param.defaultText = defaultStr = createCFString ("SWT_Yes");
+			param.otherText = cancelStr = createCFString ("SWT_No");
 			param.cancelButton = (short)OS.kAlertStdAlertCancelButton;
 			param.cancelText = OS.kAlertDefaultCancelText;
 			break;
 		case SWT.RETRY | SWT.CANCEL:
 			param.defaultButton = (short)OS.kAlertStdAlertOKButton;
-			param.defaultText = defaultStr = getCFString ("SWT_Retry");
+			param.defaultText = defaultStr = createCFString ("SWT_Retry");
 			param.cancelButton = (short)OS.kAlertStdAlertCancelButton;
 			param.cancelText = OS.kAlertDefaultCancelText;
 			break;
 		case SWT.ABORT | SWT.RETRY | SWT.IGNORE:
 			param.defaultButton = (short)OS.kAlertStdAlertOKButton;
-			param.defaultText = defaultStr = getCFString ("SWT_Abort");
-			param.otherText = cancelStr = getCFString ("SWT_Retry");
+			param.defaultText = defaultStr = createCFString ("SWT_Abort");
+			param.otherText = cancelStr = createCFString ("SWT_Retry");
 			param.cancelButton = (short)OS.kAlertStdAlertCancelButton;
-			param.cancelText = otherStr = getCFString ("SWT_Ignore");
+			param.cancelText = otherStr = createCFString ("SWT_Ignore");
 			break;
 	}
 	
