@@ -1479,6 +1479,10 @@ public void setClipping(Region region) {
 }
 
 void setCGClipping () {
+	if (data.control == 0) {
+		//NOT DONE
+		return;
+	}
 	int window = OS.GetControlOwner(data.control);
 	int port = OS.GetWindowPort(window);
 	Rect rect = new Rect();
