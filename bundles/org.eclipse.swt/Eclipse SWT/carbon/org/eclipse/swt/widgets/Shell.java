@@ -790,6 +790,11 @@ boolean isEnabledCursor () {
 	return true;
 }
 
+public boolean isLayoutDeferred () {
+	checkWidget ();
+	return layoutCount > 0;
+}
+
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
@@ -831,7 +836,10 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 		resizeBounds ();
 		sendEvent (SWT.Resize);
 		if (isDisposed ()) return OS.noErr;
-		if (layout != null) layout.layout (this, false);
+		if (layout != null) {
+			markLayout (false, false);
+			updateLayout (false);
+		}
 		if (region != null && !region.isDisposed()) {
 			OS.GetEventParameter (theEvent, OS.kEventParamCurrentBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rgnRect);
 			OS.SetRect (rgnRect, (short) 0, (short) 0, (short) (rgnRect.right - rgnRect.left), (short) (rgnRect.bottom - rgnRect.top));
@@ -1361,7 +1369,10 @@ void setWindowVisible (boolean visible) {
 		if (!resized) {
 			sendEvent (SWT.Resize);
 			if (isDisposed ()) return;
-			if (layout != null) layout.layout (this, false);
+			if (layout != null) {
+				markLayout (false, false);
+				updateLayout (false);
+			}
 		}
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;

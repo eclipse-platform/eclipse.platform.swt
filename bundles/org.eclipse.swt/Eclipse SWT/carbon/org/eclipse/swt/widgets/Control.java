@@ -1457,6 +1457,10 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	return OS.eventNotHandledErr;
 }
 
+void markLayout (boolean changed, boolean all) {
+	/* Do nothing */
+}
+
 /**
  * Moves the receiver above the specified control in the
  * drawing order. If the argument is null, then the receiver
@@ -2938,6 +2942,10 @@ void update (boolean all) {
 		OS.DisposeRgn (updateRgn);
 	}
 	OS.DisposeRgn (portRgn);
+}
+
+void updateLayout (boolean all) {
+	/* Do nothing */
 }
 
 }
