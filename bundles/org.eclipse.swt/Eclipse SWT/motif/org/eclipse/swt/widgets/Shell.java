@@ -1204,8 +1204,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 public void setClipping(Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
-	OS.XtSetMappedWhenManaged (shellHandle, false);
-	OS.XtRealizeWidget (shellHandle);
+	if (!OS.XtIsRealized (shellHandle)) realizeWidget ();
 	int xDisplay = OS.XtDisplay (shellHandle);
 	if (xDisplay == 0) return;
 	int xWindow = OS.XtWindow (shellHandle);
