@@ -31,7 +31,7 @@ import org.eclipse.swt.graphics.*;
 public class ProgressBar extends Control {
 	int timerId;
 	static final int DELAY = 100;
-	int lastForeground = -1;
+	int lastForeground = defaultForeground ();
 
 /**
  * Constructs a new instance of this class given its parent
@@ -98,11 +98,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
+	int background = defaultBackground ();
 	int parentHandle = parent.handle;
 	int [] argList = {
 		OS.XmNshowArrows, 0,
 		OS.XmNsliderSize, 1,
 		OS.XmNtraversalOn, 0,
+		OS.XmNtroughColor, background,
+		OS.XmNtopShadowColor, background,
+		OS.XmNbottomShadowColor, background,
+		OS.XmNforeground, background,
 		OS.XmNshadowThickness, 1,
 		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,
 		OS.XmNorientation, ((style & SWT.H_SCROLL) != 0) ? OS.XmHORIZONTAL : OS.XmVERTICAL,
@@ -134,6 +139,11 @@ void disableButtonPress () {
 	XSetWindowAttributes attributes = new XSetWindowAttributes ();
 	attributes.event_mask = event_mask & ~OS.ButtonPressMask;
 	OS.XChangeWindowAttributes (xDisplay, xWindow, OS.CWEventMask, attributes);
+}
+int getForegroundPixel () {
+	boolean invisible = lastForeground != -1;
+	if (invisible) return lastForeground;
+	return super.getForegroundPixel ();
 }
 /**
  * Returns the maximum value which the receiver will allow.
@@ -210,6 +220,58 @@ void realizeChildren () {
 void releaseWidget () {
 	super.releaseWidget ();
 	destroyTimer ();
+}
+/**
+ * Sets the receiver's background color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setBackground (Color color) {
+	checkWidget();
+	super.setBackground (color);
+	boolean invisible = lastForeground != -1;
+	if (invisible) {
+		int [] argList = {
+			OS.XmNtroughColor, 0
+		};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		argList [0] = OS.XmNforeground;
+		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
+}
+
+/**
+ * Sets the receiver's foreground color to the color specified by the argument,
+ * or to the default system color for the control if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setForeground (Color color) {
+	checkWidget();
+	boolean invisible = lastForeground != -1;
+	if (invisible) {
+		lastForeground = color.handle.pixel;
+	} else {
+		super.setForeground (color);
+	}
 }
 /**
  * Sets the maximum value which the receiver will allow
@@ -323,6 +385,7 @@ void setThumb (int sliderSize) {
 					OS.XmNforeground, lastForeground, 
 				};
 				OS.XtSetValues (handle, argList2, argList2.length / 2);
+				lastForeground = -1;
 			}
 		}
 	}
