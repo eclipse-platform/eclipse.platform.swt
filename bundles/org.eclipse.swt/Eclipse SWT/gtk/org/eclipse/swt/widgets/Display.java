@@ -645,14 +645,11 @@ synchronized void createDisplay (DeviceData data) {
 }
 
 int /*long*/[] createImage (String name) {
-	int /*long*/ shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
-	if (shellHandle == 0) return null;
-	int /*long*/ style = OS.gtk_widget_get_style (shellHandle);
+	int /*long*/ style = OS.gtk_widget_get_default_style ();
 	byte[] buffer = Converter.wcsToMbcs (null, name, true);
 	int /*long*/ pixbuf = OS.gtk_icon_set_render_icon (
 		OS.gtk_icon_factory_lookup_default (buffer), style,
 		OS.GTK_TEXT_DIR_NONE, OS.GTK_STATE_NORMAL, -1, 0, 0);
-	OS.gtk_widget_destroy (shellHandle);
 	if (pixbuf == 0) return null;
 	int /*long*/[] pixmap_return = new int /*long*/[1];
 	int /*long*/[] mask_return = new int /*long*/[1];
