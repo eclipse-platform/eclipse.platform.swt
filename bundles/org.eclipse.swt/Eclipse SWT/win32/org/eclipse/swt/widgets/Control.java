@@ -3027,7 +3027,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	
 	/* Map the virtual key */
 	/*
-	* Bug on WinCE.  MapVirtualKey90 returns incorrect values.
+	* Bug on WinCE.  MapVirtualKey() returns incorrect values.
 	* The fix is to rely on a key mappings table to determine
 	* whether the key event must be sent now or if a WM_CHAR
 	* event will follow.
