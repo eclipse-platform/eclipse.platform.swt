@@ -241,6 +241,9 @@ void drawSelected(GC gc ) {
 		if (this.parent.onBottom) {
 			int[] left = parent.simple ? CTabFolder.SIMPLE_BOTTOM_LEFT_CORNER : CTabFolder.BOTTOM_LEFT_CORNER;
 			int[] right = parent.simple ? CTabFolder.SIMPLE_BOTTOM_RIGHT_CORNER : parent.curve;
+			if (parent.borderLeft == 0 && parent.indexOf(this) == parent.firstIndex) {
+				left = new int[]{x, y+height};
+			}
 			shape = new int[left.length+right.length+8];
 			int index = 0;
 			shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
@@ -262,6 +265,9 @@ void drawSelected(GC gc ) {
 		} else {
 			int[] left = parent.simple ? CTabFolder.SIMPLE_TOP_LEFT_CORNER : CTabFolder.TOP_LEFT_CORNER;
 			int[] right = parent.simple ? CTabFolder.SIMPLE_TOP_RIGHT_CORNER : parent.curve;
+			if (parent.borderLeft == 0 && parent.indexOf(this) == parent.firstIndex) {
+				left = new int[]{x, y};
+			}
 			shape = new int[left.length+right.length+8];
 			int index = 0;
 			shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
@@ -309,6 +315,10 @@ void drawSelected(GC gc ) {
 		
 		// draw outline
 		shape[0] = Math.max(0, parent.borderLeft - 1);
+		if (parent.borderLeft == 0 && parent.indexOf(this) == parent.firstIndex) {
+			shape[1] = parent.onBottom ? y + height - 1 : y; 
+			shape[5] = shape[3] = shape[1];
+		}
 		shape[shape.length - 2] = size.x - parent.borderRight + 1;
 		for (int i = 0; i < shape.length/2; i++) {
 			if (shape[2*i + 1] == y + height + 1) shape[2*i + 1] -= 1;
