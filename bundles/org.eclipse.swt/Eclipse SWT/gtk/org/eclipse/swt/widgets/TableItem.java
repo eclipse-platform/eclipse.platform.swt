@@ -443,9 +443,12 @@ public void setGrayed (boolean grayed) {
  */
 public void setImage (int index, Image image) {
 	checkWidget ();
+	if (image != null && image.isDisposed()) {
+		error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (index == 0) {
-		setImage (image);
-		return;
+		if ((parent.style & SWT.CHECK) != 0) return;
+		super.setImage (image);
 	}
 	int row = parent.indexOf (this);
 	if (row == -1) return;
@@ -454,27 +457,26 @@ public void setImage (int index, Image image) {
 	if (image == null) {
 		OS.gtk_clist_set_text (clist, row, 0, buffer);
 	} else {
+		int pixmap = image.pixmap, mask = image.mask;
 		byte [] spacing = new byte [] {2};
 //		OS.gtk_clist_get_pixtext (clist, row, index, null, spacing, null, null);
-		OS.gtk_clist_set_pixtext (clist, row, index, buffer, spacing [0], image.pixmap, image.mask);
+		OS.gtk_clist_set_pixtext (clist, row, index, buffer, spacing [0], pixmap, mask);
+		if (parent.imageHeight == 0) {		
+			int [] width = new int [1], height = new int [1];
+			OS.gdk_drawable_get_size (pixmap, width, height);
+			GtkCList widget = new GtkCList (clist);
+			if (height [0] > widget.row_height) {
+				parent.imageHeight = height [0];
+				OS.gtk_widget_realize (clist);
+				OS.gtk_clist_set_row_height (clist, height [0]);
+			}
+		}
 	}
 }
 
 public void setImage (Image image) {
 	checkWidget ();
-	if ((parent.style & SWT.CHECK) != 0) return;
-	int row = parent.indexOf (this);
-	if (row == -1) return;
-	super.setImage (image);
-	int clist = parent.handle;
-	byte [] buffer = Converter.wcsToMbcs (null, text, true);
-	if (image == null) {
-		OS.gtk_clist_set_text (clist, row, 0, buffer);
-	} else {
-		byte [] spacing = new byte [] {2};
-//		OS.gtk_clist_get_pixtext (clist, row, 0, null, spacing, null, null);
-		OS.gtk_clist_set_pixtext (clist, row, 0, buffer, spacing [0], image.pixmap, image.mask);
-	}
+	setImage (0, image);
 }
 
 /**
@@ -533,8 +535,7 @@ public void setText (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == 0) {
-		setText (string);
-		return;
+		super.setText (string);
 	}
 	int row = parent.indexOf (this);
 	if (row == -1) return;
@@ -552,20 +553,7 @@ public void setText (int index, String string) {
 
 public void setText (String string) {
 	checkWidget ();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int row = parent.indexOf (this);
-	if (row == -1) return;
-	super.setText (string);
-	int clist = parent.handle;
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	byte [] spacing = new byte [1];
-	int [] pixmap = new int [1], mask = new int [1];
-	OS.gtk_clist_get_pixtext (clist, row, 0, new int [1], spacing, pixmap, mask);
-	if (pixmap [0] == 0) {
-		OS.gtk_clist_set_text (clist, row, 0, buffer);
-	} else {
-		OS.gtk_clist_set_pixtext (clist, row, 0, buffer, spacing [0], pixmap [0], mask [0]);
-	}
+	setText (0, string);
 }
 
 /**

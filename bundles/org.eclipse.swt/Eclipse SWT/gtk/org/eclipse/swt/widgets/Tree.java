@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
 public class Tree extends Composite {
 	TreeItem [] items;
 	boolean selected, doubleSelected;
-	int check, uncheck;
+	int check, uncheck, imageHeight;
 	static int CELL_SPACING = 1;
 
 	/*
@@ -802,6 +802,19 @@ public void removeTreeListener(TreeListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Expand, listener);
 	eventTable.unhook (SWT.Collapse, listener);
+}
+
+public void setFont (Font font) {
+	checkWidget ();
+	super.setFont (font);
+	if (imageHeight != 0) {
+		OS.gtk_widget_realize (handle);
+		OS.gtk_clist_set_row_height (handle, 0);
+		GtkCList clist = new GtkCList (handle);
+		if (imageHeight > clist.row_height) {
+			OS.gtk_clist_set_row_height (handle, imageHeight);
+		}
+	}
 }
 
 /**

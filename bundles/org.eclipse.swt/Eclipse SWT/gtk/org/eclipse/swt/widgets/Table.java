@@ -35,7 +35,7 @@ import org.eclipse.swt.events.*;
  */
 public class Table extends Composite {
 	boolean selected;
-	int itemCount, columnCount;
+	int itemCount, columnCount, imageHeight;
 	TableItem [] items;
 	TableColumn [] columns;
 	int check, uncheck;
@@ -1126,6 +1126,19 @@ public void selectAll () {
 public boolean getHeaderVisible () {
 	checkWidget();
 	return (OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_CLIST_SHOW_TITLES) != 0;
+}
+
+public void setFont (Font font) {
+	checkWidget ();
+	super.setFont (font);
+	if (imageHeight != 0) {
+		OS.gtk_widget_realize (handle);
+		OS.gtk_clist_set_row_height (handle, 0);
+		GtkCList clist = new GtkCList (handle);
+		if (imageHeight > clist.row_height) {
+			OS.gtk_clist_set_row_height (handle, imageHeight);
+		}
+	}
 }
 
 /**
