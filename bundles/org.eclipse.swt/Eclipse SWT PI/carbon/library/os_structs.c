@@ -10,7 +10,7 @@
 *******************************************************************************/
 
 #include "swt.h"
-#include "structs.h"
+#include "os_structs.h"
 
 #ifndef NO_AEDesc
 typedef struct AEDesc_FID_CACHE {
@@ -365,7 +365,7 @@ ColorPickerInfo *getColorPickerInfoFields(JNIEnv *env, jobject lpObject, ColorPi
 	lpStruct->colorProcData = (UInt32)(*env)->GetIntField(env, lpObject, ColorPickerInfoFc.colorProcData);
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, ColorPickerInfoFc.prompt);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->prompt), lpStruct->prompt);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->prompt), (void *)lpStruct->prompt);
 	}
 	lpStruct->mInfo.editMenuID = (SInt16)(*env)->GetShortField(env, lpObject, ColorPickerInfoFc.editMenuID);
 	lpStruct->mInfo.cutItem = (SInt16)(*env)->GetShortField(env, lpObject, ColorPickerInfoFc.cutItem);
@@ -395,7 +395,7 @@ void setColorPickerInfoFields(JNIEnv *env, jobject lpObject, ColorPickerInfo *lp
 	(*env)->SetIntField(env, lpObject, ColorPickerInfoFc.colorProcData, (jint)lpStruct->colorProcData);
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, ColorPickerInfoFc.prompt);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->prompt), lpStruct->prompt);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->prompt), (void *)lpStruct->prompt);
 	}
 	(*env)->SetShortField(env, lpObject, ColorPickerInfoFc.editMenuID, (jshort)lpStruct->mInfo.editMenuID);
 	(*env)->SetShortField(env, lpObject, ColorPickerInfoFc.cutItem, (jshort)lpStruct->mInfo.cutItem);
@@ -604,11 +604,11 @@ Cursor *getCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
 	if (!CursorFc.cached) cacheCursorFields(env, lpObject);
 	{
 	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, CursorFc.data);
-	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data) / 2, lpStruct->data);
+	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data) / 2, (void *)lpStruct->data);
 	}
 	{
 	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, CursorFc.mask);
-	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->mask) / 2, lpStruct->mask);
+	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->mask) / 2, (void *)lpStruct->mask);
 	}
 	lpStruct->hotSpot.v = (*env)->GetShortField(env, lpObject, CursorFc.hotSpot_v);
 	lpStruct->hotSpot.h = (*env)->GetShortField(env, lpObject, CursorFc.hotSpot_h);
@@ -620,11 +620,11 @@ void setCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
 	if (!CursorFc.cached) cacheCursorFields(env, lpObject);
 	{
 	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, CursorFc.data);
-	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data) / 2, lpStruct->data);
+	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data) / 2, (void *)lpStruct->data);
 	}
 	{
 	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, CursorFc.mask);
-	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->mask) / 2, lpStruct->mask);
+	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->mask) / 2, (void *)lpStruct->mask);
 	}
 	(*env)->SetShortField(env, lpObject, CursorFc.hotSpot_v, (jshort)lpStruct->hotSpot.v);
 	(*env)->SetShortField(env, lpObject, CursorFc.hotSpot_h, (jshort)lpStruct->hotSpot.h);
@@ -1432,7 +1432,7 @@ NavReplyRecord *getNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyR
 	lpStruct->reserved2 = (UInt8)(*env)->GetByteField(env, lpObject, NavReplyRecordFc.reserved2);
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NavReplyRecordFc.reserved);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), lpStruct->reserved);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), (void *)lpStruct->reserved);
 	}
 	return lpStruct;
 }
@@ -1455,7 +1455,7 @@ void setNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpSt
 	(*env)->SetByteField(env, lpObject, NavReplyRecordFc.reserved2, (jbyte)lpStruct->reserved2);
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NavReplyRecordFc.reserved);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), lpStruct->reserved);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), (void *)lpStruct->reserved);
 	}
 }
 #endif

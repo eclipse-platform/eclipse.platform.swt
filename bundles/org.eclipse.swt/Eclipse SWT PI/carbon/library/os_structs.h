@@ -9,7 +9,7 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-#include "swt_os.h"
+#include "os.h"
 
 #ifndef NO_AEDesc
 AEDesc *getAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct);
