@@ -1588,22 +1588,19 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	int code = hdr.code;
 	switch (code) {
 		case OS.NM_CUSTOMDRAW: {
-			if (!customDraw || items == null) break; //null check due to bug in dispose (WinXP)
+			if (!customDraw) break;
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
-			OS.MoveMemory (nmcd,lParam,NMTVCUSTOMDRAW.sizeof);
-			TreeItem item = items [nmcd.lItemlParam];
-			if (item == null) break; //null check due to bug in first call (WinXP)
-			
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) break;
-			
+			OS.MoveMemory (nmcd,lParam,NMTVCUSTOMDRAW.sizeof);		
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREPAINT:
 					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
 				case OS.CDDS_ITEMPREPAINT:
+					TreeItem item = items [nmcd.lItemlParam];
+					TVITEM tvItem = new TVITEM ();
+					tvItem.mask = OS.TVIF_STATE;
+					tvItem.hItem = item.handle;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					if ((tvItem.state & OS.TVIS_SELECTED) != 0) break;
 					nmcd.clrText = (item.foreground == -1) ? getForegroundPixel () : item.foreground;
 					nmcd.clrTextBk = (item.background == -1) ? getBackgroundPixel () : item.background;
 					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
