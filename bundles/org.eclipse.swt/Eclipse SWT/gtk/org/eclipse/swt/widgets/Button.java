@@ -339,7 +339,7 @@ int processFocusIn(int int0, int int1, int int2) {
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0 && OS.GTK_WIDGET_HAS_DEFAULT (handle)) {
 		Decorations menuShell = menuShell ();
-		menuShell.currentDefault = this;
+		menuShell.defaultButton = this;
 	}
 	return result;
 }
@@ -350,8 +350,8 @@ int processFocusOut (int int0, int int1, int int2) {
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0 && !OS.GTK_WIDGET_HAS_DEFAULT (handle)) {
 		Decorations menuShell = menuShell ();
-		if (menuShell.currentDefault == this) {
-			menuShell.currentDefault = null;
+		if (menuShell.defaultButton == this) {
+			menuShell.defaultButton = null;
 		}
 	}
 	return result;

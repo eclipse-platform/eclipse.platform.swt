@@ -91,7 +91,7 @@ public class Decorations extends Canvas {
 	boolean minimized, maximized;
 	Menu menuBar;
 	Menu [] menus;
-	Button defaultButton, currentDefault;
+	Button defaultButton, saveDefault;
 	int accelGroup;	
 	
 Decorations () {
@@ -209,7 +209,7 @@ void destroyAccelGroup () {
  */
 public Button getDefaultButton () {
 	checkWidget();
-	return currentDefault != null ? currentDefault : defaultButton;
+	return defaultButton != null ? defaultButton : saveDefault;
 }
 
 /**
@@ -379,7 +379,7 @@ public void setDefaultButton (Button button) {
 		if (button.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		buttonHandle = button.handle;
 	}
-	this.defaultButton = button;
+	this.saveDefault = button;
 	OS.gtk_window_set_default (topHandle (), buttonHandle);
 }
 
@@ -519,9 +519,10 @@ boolean traverseItem (boolean next) {
 }
 
 boolean traverseReturn () {
+	if (defaultButton == null || defaultButton.isDisposed ()) return false;
+	if (!defaultButton.isVisible () || !defaultButton.isEnabled ()) return false;
 	int shellHandle = _getShell ().topHandle ();
-	boolean processed = OS.gtk_window_activate_default(shellHandle);
-	return processed;
+	return OS.gtk_window_activate_default (shellHandle);
 }
 
 }
