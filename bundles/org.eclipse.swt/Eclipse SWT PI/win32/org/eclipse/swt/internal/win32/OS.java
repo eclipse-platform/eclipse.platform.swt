@@ -767,6 +767,7 @@ public class OS {
 	public static final String REBARCLASSNAME = "ReBarWindow32"; //$NON-NLS-1$
 	public static final int RGN_AND = 0x1;
 	public static final int RGN_DIFF = 0x4;
+	public static final int RGN_ERROR = 0;
 	public static final int RGN_OR = 0x2;
 	public static final int SBS_HORZ = 0x0;
 	public static final int SBS_VERT = 0x1;
