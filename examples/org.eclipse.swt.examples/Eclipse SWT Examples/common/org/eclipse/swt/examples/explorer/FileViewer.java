@@ -225,7 +225,10 @@ public class FileViewer {
 		item.setText(getResourceString("About_menuitem"));		
 		item.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				/*  + " " + System.getProperty ("os.name") */
+				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+				box.setText(getResourceString("About_title"));
+				box.setMessage(getResourceString("About_description") + System.getProperty("os.name"));
+				box.open();
 			}
 		});
 	}
