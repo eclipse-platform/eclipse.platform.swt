@@ -1085,7 +1085,7 @@ void releaseDisplay () {
 	
 	/* Dispose the timer callback */
 	if (timerIDs != null) {
-		for (int i=0; i<=timerIDs.length; i++) {
+		for (int i=0; i<timerIDs.length; i++) {
 			if (timerIDs [i] != 0) OS.XtRemoveTimeOut (timerIDs [i]);
 		}
 	}
