@@ -72,9 +72,7 @@ public static Frame new_Frame (final Composite parent) {
 		/* Call registerListeners() to make XEmbed focus traversal work */
 		Method method = clazz.getMethod("registerListeners", null);
 		if (method != null) method.invoke(value, null);
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
-	}
+	} catch (Throwable e) {}
 	final Frame frame = (Frame) value;
 	parent.getShell ().addListener (SWT.Move, new Listener () {
 		public void handleEvent (Event e) {
