@@ -38,6 +38,10 @@
 #include <Xm/XmAll.h>
 #include <Mrm/MrmPublic.h>
 
+#ifndef _XmSetMenuTraversal
+void _XmSetMenuTraversal(Widget wid, int traversalOn);
+#endif
+
 #include <stdio.h>
 #include <assert.h>
 #include <langinfo.h>
