@@ -147,7 +147,6 @@ public void append (String string) {
 
 public void copy () {
 	checkWidget();
-
 	int [] start = new int [1], end = new int [1];
 	int length = OS.PtTextGetSelection (handle, start, end);
 	if (length <= 0) return;
@@ -161,7 +160,6 @@ public void copy () {
 
 public void cut () {
 	checkWidget();
-
 	int [] start = new int [1], end = new int [1];
 	int length = OS.PtTextGetSelection (handle, start, end);
 	if (length <= 0) return;
@@ -370,7 +368,6 @@ public int getTopIndex () {
 
 public int getTopPixel () {
 	checkWidget();
-
 	//NOT DONE - NOT NEEDED
 	return 0;
 }
@@ -398,7 +395,6 @@ public void insert (String string) {
 
 public void paste () {
 	checkWidget();
-
 	int ig = OS.PhInputGroup (0);
 	int ptr = OS.PhClipboardPasteString((short)ig);
 	if (ptr == 0) return;
@@ -577,7 +573,6 @@ public void setEchoChar (char echo) {
 
 public void setDoubleClickEnabled (boolean doubleClick) {
 	checkWidget();
-	
 	//NOT DONE - NOT NEEDED
 }
 
@@ -665,7 +660,6 @@ public void setTopIndex (int index) {
 
 public void showSelection () {
 	checkWidget();
-	
 	//NOT DONE - NOT NEEDED
 }
 

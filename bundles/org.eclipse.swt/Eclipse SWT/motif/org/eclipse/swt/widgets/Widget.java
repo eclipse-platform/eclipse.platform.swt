@@ -146,8 +146,7 @@ public Widget (Widget parent, int style) {
  * @see #removeListener
  */
 public void addListener (int eventType, Listener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, handler);
@@ -172,8 +171,7 @@ public void addListener (int eventType, Listener handler) {
  * @see #removeDisposeListener
  */
 public void addDisposeListener (DisposeListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Dispose, typedListener);
@@ -192,6 +190,7 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 }
 /**
  * Checks that this class can be subclassed.
@@ -238,7 +237,7 @@ protected void checkSubclass () {
 */
 protected void checkWidget () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 void createHandle (int index) {
 	/* Do nothing */
@@ -288,7 +287,7 @@ public void dispose () {
 	* Note:  It is valid to attempt to dispose a widget
 	* more than once.  If this happens, fail silently.
 	*/
-	if (!isValidWidget ()) return;
+	if (isDisposed()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	releaseChild ();
 	releaseWidget ();
@@ -320,8 +319,7 @@ void error (int code) {
  * @see #setData
  */
 public Object getData () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return data;
 }
 
@@ -350,8 +348,7 @@ public Object getData () {
  * @see #setData
  */
 public Object getData (String key) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
@@ -407,8 +404,7 @@ String getNameText () {
  * </ul>
  */
 public int getStyle () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return style;
 }
 void hookEvents () {
@@ -450,8 +446,7 @@ public boolean isDisposed () {
  *	</ul>
  */
 protected boolean isListening (int eventType) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return hooks (eventType);
 }
 boolean isValidSubclass () {
@@ -459,11 +454,6 @@ boolean isValidSubclass () {
 }
 boolean isValidThread () {
 	return getDisplay ().isValidThread ();
-}
-boolean isValidWidget () {
-	if (handle != 0) return true;
-	if ((state & HANDLE) != 0) return false;
-	return (state & DISPOSED) == 0;
 }
 void manageChildren () {
 	/* Do nothing */
@@ -501,8 +491,7 @@ char mbcsToWcs (char ch) {
  * </ul>
  */
 public void notifyListeners (int eventType, Event event) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	event.type = eventType;
@@ -650,8 +639,7 @@ void releaseWidget () {
  * @see #addListener
  */
 public void removeListener (int eventType, Listener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
@@ -660,8 +648,7 @@ public void removeListener (int eventType, Listener handler) {
 * Warning: API under construction.
 */
 protected void removeListener (int eventType, EventListener handler) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
@@ -684,8 +671,7 @@ protected void removeListener (int eventType, EventListener handler) {
  * @see #removeDisposeListener
  */
 public void removeDisposeListener (DisposeListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
@@ -725,8 +711,7 @@ void sendEvent (int eventType, Event event) {
  * </ul>
  */
 public void setData (Object data) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	this.data = data;
 }
 
@@ -755,8 +740,7 @@ public void setData (Object data) {
  * @see #getData
  */
 public void setData (String key, Object value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	
 	/* Remove the key/value pair */

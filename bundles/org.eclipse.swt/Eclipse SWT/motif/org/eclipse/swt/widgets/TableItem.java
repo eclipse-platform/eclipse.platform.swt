@@ -241,7 +241,6 @@ public Rectangle getBounds(int index) {
  */
 public boolean getChecked() {
 	checkWidget();
-	
 	return super.getChecked();
 }
 /**
@@ -307,12 +306,10 @@ int getDotStartX(int columnIndex, int columnWidth) {
  */
 public boolean getGrayed() {
 	checkWidget();
-	
 	return super.getGrayed();
 }
 public Image getImage() {
 	checkWidget();
-
 	return getImage(0);
 }
 /**
@@ -529,7 +526,6 @@ int getSelectionX() {
 }
 public String getText() {
 	checkWidget();
-
 	return getText(0);
 }
 /**
@@ -904,7 +900,6 @@ public void setImage(int columnIndex, Image image) {
 }
 public void setImage(Image image) {
 	checkWidget();
-
 	setImage(0, image);
 }
 /**
@@ -985,7 +980,6 @@ public void setText (int columnIndex, String string) {
 }
 public void setText(String text) {
 	checkWidget();
-
 	if (text == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -1034,7 +1028,6 @@ public void setChecked(boolean checked) {
  */
 public void setGrayed (boolean grayed) {
 	checkWidget();
-	
 	super.setGrayed(grayed);
 }
 /**

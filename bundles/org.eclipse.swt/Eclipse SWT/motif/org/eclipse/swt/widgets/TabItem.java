@@ -112,7 +112,6 @@ public Display getDisplay() {
  */
 public TabFolder getParent () {
 	checkWidget();
-
 	return parent;
 }
 /**
