@@ -3304,6 +3304,20 @@ public Color getBackground() {
 	return background;
 }
 /**
+ * Gets the baseline, in pixels. 
+ * 
+ * @return baseline the baseline
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.0
+ */
+public int getBaseline() {
+	checkWidget();
+	return renderer.getBaseLine();
+}
+/**
  * Gets the BIDI coloring mode.  When true the BIDI text display
  * algorithm is applied to segments of text that are the same
  * color.

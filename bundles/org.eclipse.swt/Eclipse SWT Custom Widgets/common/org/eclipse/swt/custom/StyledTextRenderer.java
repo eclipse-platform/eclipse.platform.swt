@@ -186,6 +186,9 @@ protected abstract StyledTextContent getContent();
 Device getDevice() {
 	return device;
 }
+int getBaseLine() {
+	return ascent;
+}
 /**
  * Returns the text segments that should be treated as if they 
  * had a different direction than the surrounding text.
