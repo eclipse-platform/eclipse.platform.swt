@@ -556,6 +556,7 @@ public void setWidth (int width) {
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}
+	parent.layoutItems ();
 }
 
 void updateImages () {
