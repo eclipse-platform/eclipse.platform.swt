@@ -513,13 +513,16 @@ void createHandle (int index) {
 		if ((style & SWT.TITLE) != 0) decorations |= NSWindow.TitledWindowMask;
 	}
     */
+    
+	if (MacUtil.HIVIEW)
+    	decorations |= OS.kWindowCompositingAttribute;
+	
 	if (style == SWT.NONE) {
 	} else if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.CLOSE) != 0) decorations |= OS.kWindowCloseBoxAttribute;
 		if ((style & SWT.MIN) != 0) decorations |= OS.kWindowCollapseBoxAttribute;
 		if ((style & SWT.MAX) != 0) decorations |= OS.kWindowFullZoomAttribute;
-		if ((style & SWT.RESIZE) != 0) ;
-		decorations |= OS.kWindowResizableAttribute /* | OS.kWindowLiveResizeAttribute */;
+		if ((style & SWT.RESIZE) != 0) decorations |= OS.kWindowResizableAttribute | OS.kWindowLiveResizeAttribute;
 		//if ((style & SWT.BORDER) == 0) decorations |= OS.kWindowNoShadowAttribute;
 	//} else {
 	//	decorations |= OS.kWindowNoShadowAttribute;
@@ -537,9 +540,6 @@ void createHandle (int index) {
 	if ((style & SWT.SYSTEM_MODAL) != 0) inputMode = OS.kWindowModalitySystemModal;	
 
     /* AW
-	byte [] buffer = {(byte)' ', 0, 0, 0};
-	int ptr = OS.XtMalloc (buffer.length);
-	OS.memmove (ptr, buffer, buffer.length);
 	int [] argList1 = {
 		OS.XmNmwmInputMode, inputMode,
 		OS.XmNmwmDecorations, decorations,
@@ -739,6 +739,31 @@ void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	enableHandle (enabled, shellHandle);
 }
+/**
+ * Moves the receiver to the top of the drawing order for
+ * the display on which it was created (so that all other
+ * shells on that display, which are not the receiver's
+ * children will be drawn behind it) and forces the window
+ * manager to make the shell active.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 2.0
+ * @see Control#moveAbove
+ * @see Control#setFocus
+ * @see Control#setVisible
+ * @see Display#getActiveShell
+ * @see Decorations#setDefaultButton
+ * @see Shell#open
+ * @see Shell#setActive
+ */
+public void forceActive () {
+	checkWidget ();
+	OS.SelectWindow(shellHandle);
+}
 public int getBorderWidth () {
 	checkWidget();
     /* AW
@@ -928,11 +953,11 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowClose,
 		OS.kEventClassWindow, OS.kEventWindowDrawContent,
 
-		// the window only tracks the down and move events;
-		// up and dragged events are handled by the application because
+		// the window only tracks the down and mouse wheel events;
+		// up, dragged, and move  events are handled by the application because
 		// we need to get these events even if the mouse is outside of the window.
 		OS.kEventClassMouse, OS.kEventMouseDown,
-		//OS.kEventClassMouse, OS.kEventMouseMoved,
+		OS.kEventClassMouse, OS.kEventMouseWheelMoved,
 	};
 	OS.InstallEventHandler(ref, display.fWindowProc, mask, shellHandle);
 }
