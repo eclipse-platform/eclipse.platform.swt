@@ -167,8 +167,8 @@ public class CTabFolder2 extends Composite {
 	
 	static final int SELECTION_BORDER = 4;
 	static final int CURVE_WIDTH = 50;
-	static final int CURVE_TOP = 25;
-	static final int CURVE_BOTTOM = 25;
+	static final int CURVE_TOP = 30;
+	static final int CURVE_BOTTOM = 30;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -295,6 +295,7 @@ static void fillRegion(GC gc, Region region) {
 	gc.setClipping(region);
 	gc.fillRectangle(region.getBounds());
 	gc.setClipping(clipping);
+	clipping.dispose();
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -573,6 +574,8 @@ void destroyItem (CTabItem2 item) {
 void drawBorder(GC gc) {
 	if (border == 0) return;
 	Point size = getSize();
+	
+	//draw heavy border around outside
 	if (!showBorder) {
 		// draw parent colors where border would be
 		gc.setForeground(getParent().getBackground());
@@ -658,6 +661,142 @@ void drawBorder(GC gc) {
 		gc.setBackground(getParent().getBackground());
 		fillRegion(gc, r);
 		r.dispose();
+	}
+	
+	// Draw selection border across all tabs
+	if (selectedIndex == -1) { // no selected item
+		int x = border;
+		int y = onBottom ? size.y - border - tabHeight : border + tabHeight - SELECTION_BORDER + 1;
+		int width = size.x - 2*border;
+		int height = SELECTION_BORDER-1;
+		gc.setBackground(getBackground());
+		gc.fillRectangle(x, y, width, height);
+		if (border > 0) {
+			Color c = new Color(getDisplay(), borderRGB);
+			x = border - 1;
+			y = (onBottom) ? border - 1 : border + tabHeight - SELECTION_BORDER;
+			width += 1;
+			height = size.y - border - tabHeight + 1;
+			gc.setForeground(c);
+			gc.drawRectangle(x, y, width, height);
+			c.dispose();
+		}
+	} else { //selected item
+		int x = border;
+		int y = onBottom ? size.y - border - tabHeight : border+tabHeight-SELECTION_BORDER+1;
+		int width = size.x - 2*border;
+		int height = SELECTION_BORDER-1;
+		int[] shape = new int[] {x,y, x+width,y, x+width,y+height, x,y+height};
+		drawSelectionBackground(gc, y, shape);
+		if (border > 0) {
+			CTabItem2 item = items[selectedIndex];
+			int itemX = item.x;
+			int itemY = item.y;
+			int itemW = item.width;
+			int itemH = item.height;
+			int extra = CTabFolder2.CURVE_WIDTH/2;
+			if (onBottom) {
+				int[] left = bottomLeftCorner;
+				int[] right = curve;
+				shape = new int[left.length + right.length + 14];
+				int index = 0;
+				shape[index++] = border - 1;
+				shape[index++] = itemY + SELECTION_BORDER - 1;
+				
+				shape[index++] = itemX;
+				shape[index++] = itemY + SELECTION_BORDER - 1;
+				
+				for (int i = 0; i < left.length/2; i++) {
+					shape[index++]=itemX + left[2*i];
+					shape[index++]=itemY + itemH + left[2*i+1]-1;
+				}
+				
+				shape[index++] = itemX + itemW-extra;
+				shape[index++] = itemY + itemH - 1;
+				
+				for (int i = 0; i < right.length/2; i++) {
+					shape[index++]=itemX + itemW - extra + right[2*i];
+					shape[index++]=itemY + right[2*i+1] - 2;
+				}
+				
+				int temp = 0;
+				int rightTabEdge = size.x - border - chevronRect.width - closeRect.width - 1;
+				for (int i = 0; i < shape.length/2; i++) {
+					if (shape[2*i] > rightTabEdge) {
+						if (temp == 0 && i > 0) {
+							temp = shape[2*i-1];
+						} else {
+							temp = itemY + SELECTION_BORDER - 1;
+						}
+						shape[2*i] = rightTabEdge;
+						shape[2*i+1] = temp;
+					}
+				}
+				
+				shape[index++] = size.x - border;
+				shape[index++] = itemY + SELECTION_BORDER - 1;
+				
+				shape[index++] = size.x - border;
+				shape[index++] = border - 1;
+				
+				shape[index++] = border - 1;
+				shape[index++] = border - 1;
+				
+				shape[index++] = border - 1;
+				shape[index++] = itemY + SELECTION_BORDER - 1;
+				
+			} else {
+				int[] left = topLeftCorner;
+				int[] right = curve;
+				shape = new int[left.length+right.length+12];
+				int index = 0;
+				shape[index++] = border - 1;
+				shape[index++] = itemY + itemH - SELECTION_BORDER;
+				
+				shape[index++] = itemX;
+				shape[index++] = itemY + itemH - SELECTION_BORDER;
+				
+				for (int i = 0; i < left.length/2; i++) {
+					shape[index++]=itemX + left[2*i];
+					shape[index++]=itemY + left[2*i+1];
+				}
+				for (int i = 0; i < right.length/2; i++) {
+					shape[index++]=itemX + itemW - extra + right[2*i];
+					shape[index++]=itemY + right[2*i+1];
+				}
+				
+				int temp = 0;
+				int rightTabEdge = size.x - border - chevronRect.width - closeRect.width - 1;
+				for (int i = 0; i < shape.length/2; i++) {
+					if (shape[2*i] > rightTabEdge) {
+						if (temp == 0 && i > 0) {
+							temp = shape[2*i-1];
+						} else {
+							temp = itemY + itemH - SELECTION_BORDER;
+						}
+						shape[2*i] = rightTabEdge;
+						shape[2*i+1] = temp;
+					}
+				}
+				
+				shape[index++] = size.x - border;
+				shape[index++] = itemY + item.height - SELECTION_BORDER;
+				
+				shape[index++] = size.x - border;
+				shape[index++] = size.y - border;
+				
+				shape[index++] = border - 1;
+				shape[index++] = size.y - border;
+				
+				shape[index++] = border - 1;
+				shape[index++] = itemY + itemH - SELECTION_BORDER;
+			}
+	
+			Color c = new Color(getDisplay(), borderRGB);
+			gc.setForeground(c);
+			gc.drawPolyline(shape);
+			c.dispose();
+		}
 	}
 }
 void drawChevron(GC gc) {
@@ -1422,13 +1561,6 @@ void onPaint(Event event) {
 		gc.fillRectangle(0, 0, size.x, size.y);
 		return;
 	}
-
-	// draw close
-	drawClose(gc);
-	// draw chevron
-	drawChevron(gc);
-	// draw expand 
-	drawExpand(gc);
 	
 	if (single) {
 		// Fill in the empty spaces to the right and left of the tab
@@ -1452,9 +1584,9 @@ void onPaint(Event event) {
 		int edge = lastItem.x+lastItem.width;
 		if (edge < size.x) {
 			int x = edge;
-			int y = onBottom ? size.y-border-tabHeight+SELECTION_BORDER : border;
-			int width = size.x-edge-border;
-			int height = tabHeight-SELECTION_BORDER;
+			int y = onBottom ? size.y-border-tabHeight+SELECTION_BORDER-1 : border;
+			int width = size.x-edge-border+1;
+			int height = tabHeight-SELECTION_BORDER+1;
 			gc.setBackground(parentBackground);
 			gc.fillRectangle(x, y, width, height);
 		}
@@ -1467,42 +1599,6 @@ void onPaint(Event event) {
 		}
 	}
 	
-	// redraw the Border
-	drawBorder(gc);
-	
-	// Draw selection border across all tabs
-	int x1 = border;
-	int y1 = onBottom ? size.y - border - tabHeight : border+tabHeight-SELECTION_BORDER+1;
-	int width1 = size.x - 2*border;
-	int height1 = SELECTION_BORDER-1;
-	if (selectedIndex != -1) {
-		int[] shape = new int[] {x1,y1, x1+width1,y1, x1+width1,y1+height1, x1,y1+height1};
-		drawSelectionBackground(gc, y1, shape);
-	} else {
-		gc.setBackground(background);
-		gc.fillRectangle(x1, y1, width1, height1);
-	}
-	if (border > 0) {
-		Color c = new Color(getDisplay(), borderRGB);
-		gc.setForeground(c);
-		int[] points = null;
-		if (onBottom) {
-			points = new int[] {border-1, size.y - border - tabHeight + SELECTION_BORDER - 1,
-			                    size.x-border, size.y - border - tabHeight + SELECTION_BORDER - 1,
-			                    size.x-border, border-1,
-			                    border-1, border-1,
-			                    border-1, size.y - border - tabHeight + SELECTION_BORDER - 1,};
-		} else {
-			points = new int[] {border-1,  border+tabHeight-SELECTION_BORDER,
-			                    size.x-border, border+tabHeight-SELECTION_BORDER,
-			                    size.x-border, size.y - border,
-			                    border-1, size.y - border,
-			                    border-1,  border+tabHeight-SELECTION_BORDER,};
-		}
-		gc.drawPolyline(points);
-		c.dispose();
-	}
-	
 	// Draw selected tab
 	if (selectedIndex != -1) {
 		CTabItem2 item = items[selectedIndex];
@@ -1510,6 +1606,12 @@ void onPaint(Event event) {
 			item.onPaint(gc, true);
 		}
 	}
+	
+	drawClose(gc);
+	drawChevron(gc);
+	drawExpand(gc);
+	drawBorder(gc);
+	
 	
 	// draw insertion mark
 //	if (insertionIndex > -2) {
@@ -1535,7 +1637,6 @@ void onPaint(Event event) {
 	gc.setForeground(getForeground());
 	gc.setBackground(getBackground());	
 }
-
 
 void onResize() {
 	if (items.length == 0) {
@@ -1931,7 +2032,7 @@ boolean setItemLocation() {
 			if (item.x != oldX || item.y != oldY) changed = true;
 		}
 	} else {
-		int x = border+expandRect.width;
+		int x = (expandRect.width == 0) ? ((border > 0) ? border-1 : 0) : border + expandRect.width;
 		for (int i = topTabIndex - 1; i>=0; i--) { 
 			// if the first visible tab is not the first tab
 			CTabItem2 tab = items[i];
@@ -1942,7 +2043,7 @@ boolean setItemLocation() {
 			tab.y = y;
 		}
 		
-		x = border+expandRect.width;
+		x = (expandRect.width == 0) ? ((border > 0) ? border-1 : 0) : border + expandRect.width;
 		for (int i = topTabIndex; i < items.length; i++) {
 			// continue laying out remaining, visible items left to right 
 			CTabItem2 tab = items[i];
