@@ -404,3 +404,9 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1get_1fo
     return (jint)gtk_window_get_focus((GtkWindow*)window);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1destroy_1with_1parent
+  (JNIEnv *env, jclass that, jint window, jboolean setting)
+{
+    gtk_window_set_destroy_with_parent((GtkWindow*)window, (gboolean)setting);
+}
+

@@ -963,4 +963,6 @@ public static final native void  gtk_button_set_relief(int button, int newstyle)
 /* Temporary code */
 public static final native void  gtk_style_set_xthickness(int style, int xthickness);
 public static final native void  gtk_style_set_ythickness(int style, int ythickness);
+
+public static final native void  gtk_window_set_destroy_with_parent (int window, boolean setting);
 }

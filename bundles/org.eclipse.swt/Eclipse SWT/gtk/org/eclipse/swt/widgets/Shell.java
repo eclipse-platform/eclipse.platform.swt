@@ -381,7 +381,10 @@ void createHandle (int index) {
 	int type = (style & SWT.NO_TRIM) == 0 ? OS.GTK_WINDOW_TOPLEVEL : OS.GTK_WINDOW_POPUP;
 	shellHandle = OS.gtk_window_new (type);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	if (parent != null) OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
+	if (parent != null) {
+		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
+		OS.gtk_window_set_destroy_with_parent(shellHandle, true);
+	}
 	// The following line represents the approach we used in 1.2.
 	// The set_policy call is deprecated, and we achieve the same effect
 	// with the two lines that follow.
