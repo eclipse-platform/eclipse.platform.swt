@@ -96,6 +96,7 @@ class ProgressBarTab extends RangeTab {
 	 */
 	void setWidgetMaximum () {
 		progressBar1.setMaximum (maximumScale.getSelection ());
+		updateScales ();
 	}
 	
 	/**
@@ -103,6 +104,7 @@ class ProgressBarTab extends RangeTab {
 	 */
 	void setWidgetMinimum () { 
 		progressBar1.setMinimum (minimumScale.getSelection ());
+		updateScales ();
 	}
 	
 	/**
@@ -110,5 +112,16 @@ class ProgressBarTab extends RangeTab {
 	 */
 	void setWidgetSelection () {
 		progressBar1.setSelection (selectionScale.getSelection ());
+		updateScales ();
 	}
+
+	/**
+	 * Update the scale widgets to reflect the actual value set 
+	 * on the "Example" widget.
+	 */
+	void updateScales () {
+		minimumScale.setSelection (progressBar1.getMinimum ());
+		selectionScale.setSelection (progressBar1.getSelection ());
+		maximumScale.setSelection (progressBar1.getMaximum ());				
+ 	}
 }
