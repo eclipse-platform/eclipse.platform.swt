@@ -33,6 +33,7 @@ public abstract class Control extends Widget implements Drawable {
 	int fixedHandle;
 	Composite parent;
 	Menu menu;
+	Font font;
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
@@ -1334,7 +1335,8 @@ public boolean getEnabled () {
  */
 public Font getFont () {
 	checkWidget();
-	return Font.gtk_new (getDisplay (), getFontDescription ());
+	if (font != null) return font;
+	return Font.gtk_new (getDisplay (), defaultFont ());
 }
 	
 int getFontDescription () {
@@ -1778,7 +1780,7 @@ public int internal_new_GC (GCData data) {
 		data.device = getDisplay ();
 		data.background = background;
 		data.foreground = foreground;
-		data.font = style.font_desc;
+		data.font = font != null ? font.handle : defaultFont (); 
 	}	
 	return gdkGC;
 }
@@ -2199,6 +2201,7 @@ public boolean setFocus () {
  */
 public void setFont (Font font) {
 	checkWidget();
+	this.font = font;
 	int fontDesc;
 	if (font == null) {
 		fontDesc = defaultFont ();
