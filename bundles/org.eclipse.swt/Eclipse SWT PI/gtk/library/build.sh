@@ -13,4 +13,4 @@
 
 #!/bin/sh
 
-make -f make_gtk.mak ${1+"$@"}
+make -f make_gtk.mak ${1} ${2} ${3} ${4}
