@@ -43,11 +43,6 @@ import org.eclipse.swt.internal.*;
  */
 public class SWT {
 	
-	/* Initialize the class */
-//	static {
-//		/* NOTE: the static initialization is at the end of file */
-//	}
-	
 	/* Widget Event Constants */
 	
 	/**
