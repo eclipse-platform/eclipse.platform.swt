@@ -534,7 +534,7 @@ boolean mnemonicMatch (char ch) {
 	int [] id = new int [1];
 	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, id) == 0) {
 		return false;
-}
+	}
 	/*
 	* Feature in Windows.  TB_MAPACCELERATOR matches either the mnemonic
 	* character or the first character in a tool item.  This behavior is
