@@ -67,8 +67,8 @@ public class GLContext {
 			0,
 			XGL.GLX_RGBA,
 			XGL.GLX_DOUBLEBUFFER,
-			XGL.GLX_DEPTH_SIZE,
-			depth,
+//			XGL.GLX_DEPTH_SIZE,
+//			depth,
 			0
 		};
 		int infoPtr = XGL.glXChooseVisual (xDisplay, screen, attrib);
