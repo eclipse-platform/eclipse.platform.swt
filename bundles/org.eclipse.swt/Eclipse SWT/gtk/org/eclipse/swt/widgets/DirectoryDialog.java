@@ -25,6 +25,7 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";
+	static final String SEPARATOR = System.getProperty ("file.separator");
 
 /**
  * Constructs a new instance of this class given only its
@@ -124,9 +125,13 @@ public String open () {
 	}
 	String answer = null;
 	if (filterPath != null) {
-		int length = filterPath.length ();
+		String path = filterPath;
+		if (path.length () > 0 && !path.endsWith (SEPARATOR)) {
+			path += SEPARATOR;
+		}
+		int length = path.length ();
 		char [] buffer = new char [length + 1];
-		filterPath.getChars (0, length, buffer, 0);
+		path.getChars (0, length, buffer, 0);
 		int utf8Ptr = OS.g_utf16_to_utf8 (buffer, -1, null, null, null);
 		int fileNamePtr = OS.g_filename_from_utf8 (utf8Ptr, -1, null, null, null);
 		OS.gtk_file_selection_set_filename (handle, fileNamePtr);
@@ -158,12 +163,11 @@ public String open () {
 		OS.g_free (utf16Ptr);
 		OS.g_free (utf8Ptr);
 		if (osAnswer != null) {
-			answer = osAnswer;
-			// add trailing separator if not already present
-			char separator = System.getProperty ("file.separator").charAt (0);
-			int separatorIndex = answer.lastIndexOf (separator);
-			if (separatorIndex != answer.length () - 1) answer += separator;
-			filterPath = answer;
+			// remove trailing separator
+			if (osAnswer.endsWith (SEPARATOR)) {
+				osAnswer = osAnswer.substring (0, osAnswer.length () - 1);
+			}
+			answer = filterPath = osAnswer;
 		}
 	}
 	OS.gtk_widget_destroy (handle);
