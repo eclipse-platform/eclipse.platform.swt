@@ -796,13 +796,12 @@ public static final synchronized native int /*long*/ gtk_range_get_adjustment(in
 public static final synchronized native void gtk_range_set_increments(int /*long*/ range, double step, double page);
 public static final synchronized native void gtk_range_set_range(int /*long*/ range, double min, double max);
 public static final synchronized native void gtk_range_set_value(int /*long*/ range, double value);
+public static final synchronized native void gtk_rc_parse_string(byte[] rc_string);
 public static final synchronized native int /*long*/ gtk_rc_style_get_bg_pixmap_name(int /*long*/ style, int index);
 public static final synchronized native int gtk_rc_style_get_color_flags(int /*long*/ style, int index);
 public static final synchronized native void gtk_rc_style_set_bg(int /*long*/ style, int index, GdkColor color);
 public static final synchronized native void gtk_rc_style_set_bg_pixmap_name(int /*long*/ style, int index, int /*long*/ name);
 public static final synchronized native void gtk_rc_style_set_color_flags(int /*long*/ style, int index, int flag);
-public static final synchronized native void gtk_rc_style_set_xthickness(int /*long*/ style, int thickness);
-public static final synchronized native void gtk_rc_style_set_ythickness(int /*long*/ style, int thickness);
 public static final synchronized native void gtk_scale_set_digits(int /*long*/ scale, int digits);
 public static final synchronized native void gtk_scale_set_draw_value(int /*long*/ scale, boolean draw_value);
 public static final synchronized native int /*long*/ gtk_scrolled_window_get_hadjustment(int /*long*/ scrolled_window);

@@ -5377,6 +5377,19 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1range_1set_1value)
 }
 #endif
 
+#ifndef NO_gtk_1rc_1parse_1string
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1parse_1string)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	NATIVE_ENTER(env, that, "gtk_1rc_1parse_1string\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	gtk_rc_parse_string(lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "gtk_1rc_1parse_1string\n")
+}
+#endif
+
 #ifndef NO_gtk_1rc_1style_1get_1bg_1pixmap_1name
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1rc_1style_1get_1bg_1pixmap_1name)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -5430,26 +5443,6 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1style_1set_1color_1flags)
 	NATIVE_ENTER(env, that, "gtk_1rc_1style_1set_1color_1flags\n")
 	gtk_rc_style_set_color_flags((GtkRcStyle *)arg0, arg1, arg2);
 	NATIVE_EXIT(env, that, "gtk_1rc_1style_1set_1color_1flags\n")
-}
-#endif
-
-#ifndef NO_gtk_1rc_1style_1set_1xthickness
-JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1style_1set_1xthickness)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	NATIVE_ENTER(env, that, "gtk_1rc_1style_1set_1xthickness\n")
-	gtk_rc_style_set_xthickness((GtkRcStyle *)arg0, arg1);
-	NATIVE_EXIT(env, that, "gtk_1rc_1style_1set_1xthickness\n")
-}
-#endif
-
-#ifndef NO_gtk_1rc_1style_1set_1ythickness
-JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1style_1set_1ythickness)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	NATIVE_ENTER(env, that, "gtk_1rc_1style_1set_1ythickness\n")
-	gtk_rc_style_set_ythickness((GtkRcStyle *)arg0, arg1);
-	NATIVE_EXIT(env, that, "gtk_1rc_1style_1set_1ythickness\n")
 }
 #endif
 

@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 
@@ -135,10 +136,8 @@ void createHandle (int index) {
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
 	if ((style & SWT.FLAT) != 0) {
-		int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
-		OS.gtk_rc_style_set_xthickness (style, 0);
-		OS.gtk_rc_style_set_ythickness (style, 0);
-		OS.gtk_widget_modify_style (handle, style);
+		byte [] swt_toolbar_flat = Converter.wcsToMbcs (null, "swt-toolbar-flat", true);
+		OS.gtk_widget_set_name (handle, swt_toolbar_flat);
 	}
 }
 
