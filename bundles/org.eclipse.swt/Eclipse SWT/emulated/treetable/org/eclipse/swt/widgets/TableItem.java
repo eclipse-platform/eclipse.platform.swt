@@ -49,6 +49,7 @@ public class TableItem extends SelectableItem {
 
 	Color background = null;
 	Color foreground = null;
+	Color [] cellBackground, cellForeground;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -186,17 +187,25 @@ Point drawImage(GC gc, Point destinationPosition, int index) {
 	Rectangle sourceImageBounds;
 	Point destinationImageExtent = parent.getImageExtent();
 	int imageOffset;
+	int itemHeight = parent.getItemHeight();
 	
 	if (image != null) {
 		sourceImageBounds = image.getBounds();
-		// full row select would obscure transparent images in all but the first column
-		// so always clear the image area in this case. Fixes 1FYNITC
-		if ((parent.getStyle() & SWT.FULL_SELECTION) != 0 && index != TableColumn.FIRST) {
+		if (index == TableColumn.FIRST){
+			gc.setBackground(getBackground(index));
 			gc.fillRectangle(
 				destinationPosition.x, destinationPosition.y,			
-				destinationImageExtent.x, destinationImageExtent.y);
+				destinationImageExtent.x, itemHeight);
+		} else {
+			// full row select would obscure transparent images in all but the first column
+			// so always clear the image area in this case. Fixes 1FYNITC
+			if ((parent.getStyle() & SWT.FULL_SELECTION) != 0) {
+				gc.fillRectangle(
+					destinationPosition.x, destinationPosition.y,			
+					destinationImageExtent.x, destinationImageExtent.y);
+			}
 		}
-		imageOffset = (parent.getItemHeight() - destinationImageExtent.y) / 2;
+		imageOffset = (itemHeight - destinationImageExtent.y) / 2;
 		gc.drawImage(
 			image, 0, 0, 													// source x, y
 			sourceImageBounds.width, sourceImageBounds.height, 				// source width, height
@@ -231,7 +240,7 @@ void drawText(String label, GC gc, Point position, int index) {
 		if (isSelected() == true && drawSelection == true) {
 			gc.setForeground(getSelectionForegroundColor());
 		} else {
-			gc.setForeground(getForeground());
+			gc.setForeground(getForeground(index));
 		}
 		alignmentOffset = getAlignmentOffset (index, getBounds(index).width, gc);
 		textOffset = (parent.getItemHeight() - parent.getFontHeight()) / 2;			// vertically center the text
@@ -298,11 +307,10 @@ public Color getBackground(){
  */
 public Color getBackground (int index) {
 	checkWidget ();
-	Table parent = getParent ();
-	int count = parent.getColumnCount ();
-	if (0 > index || index > (count == 0 ? 0 : count -1 )) return getBackground ();
-	// TODO
-	return getBackground ();
+	int count = Math.max (1, getParent ().getColumnCount ());
+	if (0 > index || index > count - 1) return getBackground ();
+	if (cellBackground == null || cellBackground [index] == null) return getBackground ();
+	return cellBackground [index];
 }
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -341,11 +349,13 @@ public Rectangle getBounds(int index) {
 		if (index == TableColumn.FIRST) {
 			if (isCheckable() == true) {
 				checkboxBounds = getCheckboxBounds();
-				itemBounds.x += checkboxBounds.x + checkboxBounds.width + CHECKBOX_PADDING;	// add checkbox start, width and space behind checkbox
+				itemBounds.x = checkboxBounds.x + checkboxBounds.width + CHECKBOX_PADDING;	// add checkbox start, width and space behind checkbox
 				itemBounds.width -= itemBounds.x;
 			}
 			else {
-				itemBounds.x += getImageIndentPixel();
+				int imageIndent = getImageIndentPixel();
+				itemBounds.x += imageIndent;
+				itemBounds.width -= imageIndent;
 			}
 		}
 	}
@@ -453,11 +463,10 @@ public Color getForeground(){
  */
 public Color getForeground (int index) {
 	checkWidget ();
-	Table parent = getParent ();
-	int count = parent.getColumnCount ();
-	if (0 > index || index > (count == 0 ? 0 : count -1 )) return getForeground ();
-	// TODO
-	return getForeground ();
+	int count = Math.max (1, getParent ().getColumnCount ());
+	if (0 > index || index > count - 1) return getForeground ();
+	if (cellForeground == null || cellForeground [index] == null) return getForeground ();
+	return cellForeground [index];
 }
 /**
  * Returns <code>true</code> if the receiver is grayed,
@@ -533,9 +542,6 @@ public Rectangle getImageBounds(int index) {
 		}
 	}
 	imageBounds.width = imageWidth;
-	if (imageBounds.height > 0 && !parent.getLinesVisible()) {
-		imageBounds.height -= parent.getGridLineWidth();
-	}
 	return imageBounds;
 }
 /**
@@ -991,10 +997,33 @@ void paint(GC gc, Point paintPosition, TableColumn column) {
 	int columnIndex = column.getIndex();
 	String label = getText(gc, column);
 	String oldLabel = getTrimmedText(columnIndex);
-
+	Table parent = getParent ();
+	int itemHeight = parent.getItemHeight ();
+	
 	if (label != null && label.equals(oldLabel) == false) {
 		setTrimmedText(label, columnIndex);
 		selectionExtent = null;		// force a recalculation next time the selection extent is needed
+	}
+	Color background = gc.getBackground();
+	if (!isSelected() || ((parent.getStyle() & SWT.HIDE_SELECTION) != 0 && !parent.isFocusControl())) {
+		int width = column.getBounds().width;
+		int height = itemHeight;
+		gc.setBackground(getBackground(columnIndex));
+		gc.fillRectangle(paintPosition.x, paintPosition.y, width, height);
+	} else {
+		if (columnIndex == TableColumn.FIRST) {
+			int width = getImageIndentPixel();
+			int height = itemHeight;
+			gc.setBackground(getBackground (columnIndex));
+			gc.fillRectangle(paintPosition.x, paintPosition.y, width, height);
+		} else {
+			if ((parent.getStyle() & SWT.FULL_SELECTION) == 0) {
+				int width = column.getBounds ().width;
+				int height = itemHeight;
+				gc.setBackground(getBackground (columnIndex));
+				gc.fillRectangle(paintPosition.x, paintPosition.y, width, height);
+			}
+		}
 	}
 	if (columnIndex == TableColumn.FIRST) {
 		paintPosition.x += getImageIndentPixel();
@@ -1005,6 +1034,7 @@ void paint(GC gc, Point paintPosition, TableColumn column) {
 	paintPosition = drawImage(gc, paintPosition, columnIndex);
 	paintPosition.x += getTextIndent(columnIndex);
 	drawText(label, gc, paintPosition, columnIndex);
+	gc.setBackground(background);
 }
 /**
  * Remove 'column' from the receiver.
@@ -1110,9 +1140,13 @@ public void setBackground (int index, Color color) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Table parent = getParent ();
-	int count = parent.getColumnCount ();
-	if (0 > index || index > (count == 0 ? 0 : count -1 )) return;
-	// TODO
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return;
+	if (cellBackground == null) {
+		cellBackground = new Color [count];
+	}
+	cellBackground [index] = color;
+	redraw ();
 }
 /**
  * Sets the receiver's foreground color to the color specified
@@ -1164,9 +1198,13 @@ public void setForeground (int index, Color color){
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Table parent = getParent ();
-	int count = parent.getColumnCount ();
-	if (0 > index || index > (count == 0 ? 0 : count -1 )) return;
-	// TODO
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count -1) return;
+	if (cellForeground == null) {
+		cellForeground = new Color [count];
+	}
+	cellForeground [index] = color;
+	redraw ();
 }
 /**
  * Sets the image for multiple columns in the Table. 

@@ -117,8 +117,28 @@ void addColumn(TableColumn column) {
 	// is there more than one user created column?
 	// There always is the data and visual of the default column
 	// so we don't need to create those for the first user column
-	if (getColumnCount() > 1) {
+	int columnCount = getColumnCount();
+	if (columnCount > 1) {
 		insertColumnData(column);
+		Enumeration items = getItemVector ().elements ();
+		while (items.hasMoreElements()) {
+			TableItem item = (TableItem)items.nextElement();
+			Color [] cellBackground = item.cellBackground;
+			if (cellBackground != null) {
+				Color [] temp = new Color [columnCount];
+				System.arraycopy (cellBackground, 0, temp, 0, index);
+				System.arraycopy (cellBackground, index, temp, index+1, columnCount - index - 1);
+				item.cellBackground = temp;
+			}
+			Color [] cellForeground = item.cellForeground;
+			if (cellForeground != null) {
+				Color [] temp = new Color [columnCount];
+				System.arraycopy (cellForeground, 0, temp, 0, index);
+				System.arraycopy (cellForeground, index, temp, index+1, columnCount - index - 1);
+				item.cellForeground = temp;
+			}
+		}
+	
 	}
 	else {								// first user created column
 		setContentWidth(0);				// pretend it's ground zero for column resizings
@@ -1686,7 +1706,6 @@ TableItem paintItems(Event event, int topPaintIndex, int bottomPaintIndex, Vecto
 	Point selectionExtent;
 	GC gc = event.gc;
 	Color selectionColor = display.getSystemColor(SWT.COLOR_LIST_SELECTION);
-	Point fullSelectionExtent;	
 	int paintXPosition;
 	int paintYPosition;
 		
@@ -1696,10 +1715,7 @@ TableItem paintItems(Event event, int topPaintIndex, int bottomPaintIndex, Vecto
 		paintItem = (TableItem) getVisibleItem(i);
 		paintXPosition = paintItem.getSelectionX();
 		paintYPosition = getRedrawY(paintItem);
-		fullSelectionExtent = getFullSelectionExtent(paintItem);
-		gc.setBackground(paintItem.getBackground());
-		gc.fillRectangle(paintXPosition, paintYPosition, fullSelectionExtent.x, fullSelectionExtent.y);
-		
+				
 		if (paintItem.isSelected() == true) {
 			if ((style & SWT.HIDE_SELECTION) == 0 || isFocusControl()) {
 				selectionExtent = paintItem.getSelectionExtent();
@@ -1919,6 +1935,24 @@ void removeColumn(TableColumn column) {
 		if (columnCount > 0) {
 			removeColumnData(column);
 			removeColumnVisual(column);		
+			Enumeration items = getItemVector ().elements ();
+			while (items.hasMoreElements()) {
+				TableItem item = (TableItem)items.nextElement();
+				Color [] cellBackground = item.cellBackground;
+				if (cellBackground != null) {
+					Color [] temp = new Color [columnCount];
+					System.arraycopy (cellBackground, 0, temp, 0, index);
+					System.arraycopy (cellBackground, index + 1, temp, index, columnCount - index);
+					item.cellBackground = temp;
+				}
+				Color [] cellForeground = item.cellForeground;
+				if (cellForeground != null) {
+					Color [] temp = new Color [columnCount];
+					System.arraycopy (cellForeground, 0, temp, 0, index);
+					System.arraycopy (cellForeground, index + 1, temp, index, columnCount - index);
+					item.cellForeground = temp;
+				}
+			}		
 		}
 		else {
 			redraw();
