@@ -1017,13 +1017,9 @@ public void open () {
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
-	if (enabled) {
-		if (shellHandle != 0) propagateHandle (true, shellHandle, OS.None);
-	} else {
-		/* Allow the busy cursor to be displayed in a disabled shell */
-		int xCursor = cursor != null ? cursor.handle : OS.None;
-		propagateHandle (enabled, shellHandle, xCursor);
-	}
+	/* Allow the busy cursor to be displayed in a disabled shell */
+	int xCursor = cursor != null && !enabled ? cursor.handle : OS.None;
+	propagateHandle (enabled, shellHandle, xCursor);
 }
 void realizeWidget () {
 	if (realized) return;
