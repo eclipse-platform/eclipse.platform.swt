@@ -952,7 +952,6 @@ void onResize() {
 	rc = baseWindow.SetPositionAndSize(rect.x, rect.y, rect.width, rect.height, true);
 	if (rc != XPCOM.NS_OK) error(rc);
 	baseWindow.Release();
-
 }
 
 /**
@@ -1646,7 +1645,7 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 				inputStream.Release();
 			}
 		}
-		
+
 		/*
 		* Feature on Mozilla.  When a request is redirected (STATE_REDIRECTING),
 		* it never reaches the state STATE_STOP and it is replaced with a new request.
@@ -1839,7 +1838,7 @@ int GetDimensions(int flags, int x, int y, int cx, int cy) {
 	return XPCOM.NS_OK;     	
 }	
 
-int SetFocus() {	
+int SetFocus() {
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);

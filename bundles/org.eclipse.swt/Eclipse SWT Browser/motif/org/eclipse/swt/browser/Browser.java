@@ -69,11 +69,9 @@ public class Browser extends Composite {
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocProvider; 
-	static PromptService PromptService;
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
 	static boolean mozilla;
-	static boolean IsWindows;
 	static boolean IsLinux;
 
 	/* Package Name */
@@ -81,7 +79,6 @@ public class Browser extends Composite {
 	
 	static {
 		String osName = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
-		IsWindows = osName.startsWith("windows");
 		IsLinux = osName.startsWith("linux");
 	}
 
@@ -145,22 +142,9 @@ public Browser(Composite parent, int style) {
 		path.dispose();
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (retVal[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
-
-		/*
-		* Feature on Mozilla.  On Windows, the mozilla libraries are split
-		* up into 2 locations indicated by the GRE and Mozilla paths.  The
-		* default nsIDirectoryServiceProvider only works when the libraries
-		* are in the same folder.  The workaround is to provide a custom
-		* nsIDirectoryServiceProvider on this platform.  It provides the 
-		* 2 locations set by Mozilla in the Windows registry.
-		*/
-		if (IsWindows) {
-			LocProvider = new AppFileLocProvider();
-			LocProvider.AddRef();
-		}
 		
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
-		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), IsWindows ? LocProvider.getAddress() : 0);
+		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), 0);
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
 			if (LocProvider != null) LocProvider.Release();
@@ -177,8 +161,7 @@ public Browser(Composite parent, int style) {
 		result[0] = 0;
 		rc = componentManager.CreateInstance(XPCOM.NS_APPSHELL_CID, 0, nsIAppShell.NS_IAPPSHELL_IID, result);
 		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
-		componentManager.Release();
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 		
 		AppShell = new nsIAppShell(result[0]);
 		rc = AppShell.Create(null, null);
@@ -212,16 +195,9 @@ public Browser(Composite parent, int style) {
 		PromptServiceFactory factory = new PromptServiceFactory();
 		factory.AddRef();
 		
-		rc = XPCOM.NS_GetComponentManager(result);
-		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-		
-		componentManager = new nsIComponentManager(result[0]);
-		result[0] = 0;
 		rc = componentManager.QueryInterface(nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
 		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
-		componentManager.Release();
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 		
 		nsIComponentRegistrar componentRegistrar = new nsIComponentRegistrar(result[0]);
 		result[0] = 0;
@@ -234,8 +210,35 @@ public Browser(Composite parent, int style) {
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_PROMPTSERVICE_CID, aClassName, aContractID, factory.getAddress());
 		if (rc != XPCOM.NS_OK) error(rc);
 		factory.Release();
-		componentRegistrar.Release();
 		
+		HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory();
+		dialogFactory.AddRef();
+		
+		buffer = XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID.getBytes();
+		aContractID = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		buffer = "Helper App Launcher Dialog".getBytes();
+		aClassName = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		rc = componentRegistrar.RegisterFactory(XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CID, aClassName, aContractID, dialogFactory.getAddress());
+		if (rc != XPCOM.NS_OK) error(rc);
+		dialogFactory.Release();
+		
+		DownloadFactory downloadFactory = new DownloadFactory();
+		downloadFactory.AddRef();
+		
+		buffer = XPCOM.NS_DOWNLOAD_CONTRACTID.getBytes();
+		aContractID = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		buffer = "Download".getBytes();
+		aClassName = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		rc = componentRegistrar.RegisterFactory(XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory.getAddress());
+		if (rc != XPCOM.NS_OK) error(rc);
+		downloadFactory.Release();
+		
+		componentRegistrar.Release();
+		componentManager.Release();
 		mozilla = true;
 	}
 	BrowserCount++;
@@ -2044,5 +2047,4 @@ int OnHideTooltip() {
 	tip = null;
 	return XPCOM.NS_OK;
 }
-
 }
