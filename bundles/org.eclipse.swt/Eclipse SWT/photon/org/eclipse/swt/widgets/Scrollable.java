@@ -120,11 +120,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	rect.lr_x = (short) (x + width - 1);
 	rect.lr_y = (short) (y + height - 1);
 	OS.PtSetAreaFromWidgetCanvas (scrolledHandle != 0 ? scrolledHandle : handle, rect, area);
-	if (horizontalBar != null && horizontalBar.getVisible ()) {
+	if (horizontalBar != null) {
 		Point size = horizontalBar.getSize ();
 		area.size_h += size.y;
 	}
-	if (verticalBar != null && verticalBar.getVisible ()) {
+	if (verticalBar != null) {
 		Point size = verticalBar.getSize ();
 		area.size_w += size.x;
 	}
