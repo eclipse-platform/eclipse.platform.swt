@@ -25,6 +25,12 @@ public abstract class Device implements Drawable {
 	/**
 	* the handle to the X Display
 	* (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	*/
 	public int xDisplay;
 	
@@ -32,6 +38,12 @@ public abstract class Device implements Drawable {
 	* whether the XLFD resolution should match the
 	* resolution of the device when fonts are created
 	* (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	*/
 	// TEMPORARY CODE
 	public boolean setDPI;
@@ -65,6 +77,12 @@ public abstract class Device implements Drawable {
 	/**
 	 * parse table mappings for tab and cr
 	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	// TEMPORARY CODE
 	public int tabMapping, crMapping;

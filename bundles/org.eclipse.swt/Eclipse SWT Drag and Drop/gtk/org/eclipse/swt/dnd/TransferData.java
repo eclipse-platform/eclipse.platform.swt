@@ -29,12 +29,24 @@ public class TransferData {
 	/**
 	 * The type is a unique identifier of a system format or user defined format.
 	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public int /*long*/ type;
 	
 	/**
 	 * Specifies the number of units in pValue.
 	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 * 
 	 * @see TransferData#format for the size of one unit
 	 */
@@ -43,6 +55,12 @@ public class TransferData {
 	/**
 	 * Specifies the size in bits of a single unit in pValue.
  	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
  	 * 
  	 * This is most commonly 8 bits.
 	 */
@@ -51,6 +69,12 @@ public class TransferData {
 	/**
 	 * Pointer to the data being transferred.
 	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public int /*long*/ pValue;
 
@@ -58,6 +82,12 @@ public class TransferData {
 	 * The result field contains the result of converting a
 	 * java data type into a platform specific value.
 	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 * 
  	 * <p>The value of result is 1 if the conversion was successful.
 	 * The value of result is 0 if the conversion failed.</p>
