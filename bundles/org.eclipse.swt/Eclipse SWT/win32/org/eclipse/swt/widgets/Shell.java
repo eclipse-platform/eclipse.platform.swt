@@ -567,6 +567,16 @@ public boolean isEnabled () {
 public void open () {
 	checkWidget ();
 	bringToTop ();
+	if (OS.IsWinCE) {
+		/*
+		* Feature on WinCE PPC.  A new application becomes the
+		* foreground application only if it has at least one
+		* visible Shell before the event loop is started.
+		* The workaround is to explicitely force the Shell to
+		* be the foreground window.
+		*/
+		OS.SetForegroundWindow(handle);
+	}
 	setVisible (true);
 	if (!restoreFocus ()) {
 		traverseGroup (true);
