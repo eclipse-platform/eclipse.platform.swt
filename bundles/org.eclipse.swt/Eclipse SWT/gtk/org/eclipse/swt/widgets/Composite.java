@@ -437,6 +437,26 @@ int gtk_expose_event (int widget, int eventPtr) {
 	return 0;
 }
 
+int gtk_key_press_event (int widget, int event) {
+	int result = super.gtk_key_press_event (widget, event);
+	if (result != 0) return result;
+	/*
+	* Feature in GTK.  The default behavior when the return key
+	* is pressed is to select the default button.  This is not the
+	* expected behavior for Composite and its subclasses.  The
+	* fix is to avoid calling the default handler.
+	*/
+	if ((state & CANVAS) != 0) {
+		GdkEventKey keyEvent = new GdkEventKey ();
+		OS.memmove (keyEvent, event, GdkEventKey.sizeof);
+		int key = keyEvent.keyval;
+		switch (key) {
+			case OS.GDK_Return:
+			case OS.GDK_KP_Enter: return 1;
+		}
+	}
+	return result;
+}
 int gtk_focus_in_event (int widget, int event) {
 	int result = super.gtk_focus_in_event (widget, event);
 	return (state & CANVAS) != 0 ? 1 : result;
