@@ -285,7 +285,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	Display display = getDisplay ();
 	if (display.currentCaret == this) {
-		if (isShowing) hideCaret ();
+		hideCaret ();
 		display.setCurrentCaret (null);
 	}
 	parent = null;
@@ -311,12 +311,11 @@ void releaseWidget () {
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
 	if (this.x == x && this.y == y && this.width == width && this.height == height) return;
-	boolean showing = isShowing;
 	boolean isFocus = isFocusCaret ();
-	if (isFocus && showing) hideCaret ();
+	if (isFocus) hideCaret ();
 	this.x = x; this.y = y;
 	this.width = width; this.height = height;
-	if (isFocus && showing) showCaret ();
+	if (isFocus) showCaret ();
 }
 
 /**
@@ -387,11 +386,10 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	boolean showing = isShowing;
 	boolean isFocus = isFocusCaret ();
-	if (isFocus && showing) hideCaret ();
+	if (isFocus) hideCaret ();
 	this.image = image;
-	if (isFocus && showing) showCaret ();
+	if (isFocus) showCaret ();
 }
 
 /**
