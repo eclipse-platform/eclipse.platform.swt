@@ -409,6 +409,14 @@ public void setFont (Font font) {
 	}
 	relayout ();
 }
+void setForegroundPixel (int pixel) {
+	super.setForegroundPixel (pixel);
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setForegroundPixel (pixel);
+		}
+	}
+}
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {

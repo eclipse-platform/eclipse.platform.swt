@@ -648,6 +648,15 @@ public void setEnabled (boolean enabled) {
 	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
+void setForegroundPixel(int pixel) {
+	int [] argList = {OS.XmNforeground, pixel};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (handle);
+	if (xWindow == 0) return;
+	OS.XClearArea (xDisplay, xWindow, 0, 0, 0, 0, true);
+}
 /**
  * Sets the receiver's disabled image to the argument, which may be
  * null indicating that no disabled image should be displayed.
