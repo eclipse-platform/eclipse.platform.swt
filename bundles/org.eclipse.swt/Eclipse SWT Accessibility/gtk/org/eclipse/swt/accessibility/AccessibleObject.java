@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.accessibility.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
-public class AccessibleObject {
+class AccessibleObject {
 	int handle, parentType, index = -1, id = ACC.CHILDID_SELF;
 	Accessible accessible;
 	AccessibleObject parent;
