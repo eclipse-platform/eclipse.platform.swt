@@ -41,7 +41,7 @@ public void hook (int eventType, Listener listener) {
 			}
 			for (int i=index; i<types.length; i++) {
 				types [i] = 0;
-				listeners [index] = null;
+				listeners [i] = null;
 			}
 		}
 		if (index == length) {
