@@ -42,6 +42,7 @@ public class Spinner extends Composite {
 	int textVisibleRgn, buttonVisibleRgn;
 	int increment = 1;
 	int pageIncrement = 10;
+	int digits = 0;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -214,6 +215,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	height = info.ascent + info.descent;	
 	int max = OS.GetControl32BitMaximum (buttonHandle);
 	String string = String.valueOf (max);
+	if (digits > 0) {
+		StringBuffer buffer = new StringBuffer ();
+		buffer.append (string);
+		buffer.append (getDecimalSeparator ());
+		int count = digits - string.length ();
+		while (count >= 0) {
+			buffer.append ("0");
+			count--;
+		}
+		string = buffer.toString ();
+	}
 	char [] buffer = new char [string.length ()];
 	string.getChars (0, buffer.length, buffer, 0);
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
@@ -351,6 +363,27 @@ int focusHandle () {
 	return textHandle;
 }
 
+public int getDigits () {
+	checkWidget ();
+	return digits;
+}
+
+String getDecimalSeparator () {
+	int locale = OS.CFLocaleCopyCurrent ();
+	int formatter = OS.CFNumberFormatterCreate (OS.kCFAllocatorDefault, locale, OS.kCFNumberFormatterDecimalStyle);
+	int key = OS.kCFNumberFormatterDecimalSeparator ();
+	int result = OS.CFNumberFormatterCopyProperty (formatter, key);
+	CFRange range = new CFRange ();
+	range.location = 0;
+	range.length = OS.CFStringGetLength (result);
+	char [] buffer= new char [range.length];
+	OS.CFStringGetCharacters (result, range, buffer);
+	OS.CFRelease (result);
+	OS.CFRelease (formatter);
+	OS.CFRelease (locale);
+	return new String (buffer);
+}
+
 /**
  * Returns the amount that the receiver's value will be
  * modified by when the up/down arrows are pressed.
@@ -440,13 +473,37 @@ int getSelectionText () {
 		OS.CFRelease (ptr [0]);
 		String string = new String (buffer);
 		try {
-			int value = Integer.parseInt (string);
+			int value;
+			if (digits > 0) {
+				String decimalSeparator = getDecimalSeparator ();
+				int index = string.indexOf (decimalSeparator);
+				if (index != -1)  {
+					String wholePart = string.substring (0, index);
+					String decimalPart = string.substring (index + 1);
+					if (decimalPart.length () > digits) {
+						decimalPart = decimalPart.substring (0, digits);
+					} else {
+						int i = digits - decimalPart.length ();
+						for (int j = 0; j < i; j++) {
+							decimalPart = decimalPart + "0";
+						}
+					}
+					int wholeValue = Integer.parseInt (wholePart);
+					int decimalValue = Integer.parseInt (decimalPart);
+					for (int i = 0; i < digits; i++) wholeValue *= 10;
+					value = wholeValue + decimalValue;
+				} else {
+					value = Integer.parseInt (string);
+				}
+			} else {
+				value = Integer.parseInt (string);
+			}
 			int max = OS.GetControl32BitMaximum (buttonHandle);
 			int min = OS.GetControl32BitMinimum (buttonHandle);
 			if (min <= value && value <= max) return value;
 		} catch (NumberFormatException e) {
 		}
-	}	
+	}
 	return OS.GetControl32BitValue (buttonHandle);
 }
 
@@ -739,6 +796,15 @@ void setBackground (float [] color) {
 	setBackground (textHandle, color);
 }
 
+public void setDigits (int value) {
+	checkWidget ();
+	if (value < 0) return;
+	if (value == this.digits) return;
+	this.digits = value;
+	int pos = OS.GetControl32BitValue (buttonHandle);	
+	setSelection (pos, false);
+}
+
 void setFontStyle (Font font) {
 	super.setFontStyle (font);
 	setFontStyle (textHandle, font);
@@ -855,6 +921,22 @@ public void setSelection (int value) {
 void setSelection (int value, boolean notify) {
 	OS.SetControl32BitValue (buttonHandle, value);
 	String string = String.valueOf (value);
+	if (digits > 0) {
+		String decimalSeparator = getDecimalSeparator ();
+		int index = string.length () - digits;
+		StringBuffer buffer = new StringBuffer ();
+		if (index > 0) {
+			buffer.append (string.substring (0, index));
+			buffer.append (decimalSeparator);
+			buffer.append (string.substring (index));
+		} else {
+			buffer.append ("0");
+			buffer.append (decimalSeparator);
+			while (index++ < 0) buffer.append ("0");
+			buffer.append (string);
+		}
+		string = buffer.toString ();
+	}
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int [] actualSize = new int [1];
 		int [] ptr = new int [1];
@@ -934,6 +1016,14 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		event.stateMask = keyEvent.stateMask;
 	}
 	int index = 0;
+	if (digits > 0) {
+		String decimalSeparator = getDecimalSeparator ();
+		index = string.indexOf (decimalSeparator);
+		if (index != -1) {
+			string = string.substring (0, index) + string.substring (index + 1);
+		}
+		index = 0;
+	}
 	while (index < string.length ()) {
 		if (!Character.isDigit (string.charAt (index))) break;
 		index++;
