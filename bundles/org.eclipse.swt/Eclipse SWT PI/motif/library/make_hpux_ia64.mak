@@ -57,12 +57,12 @@ all: make_swt make_cde
 make_swt: $(SWT_LIB)
 
 $(SWT_LIB): $(SWT_OBJS)
-	ld -b -z -o $@ $(SWT_OBJS) $(SWT_LIBS)
+	ld +nodefaultrpath -b -z -o $@ $(SWT_OBJS) $(SWT_LIBS)
 
 make_cde: $(CDE_LIB)
 
 $(CDE_LIB): $(CDE_OBJS)
-	ld -b -z -o $@ $(CDE_OBJS) $(CDE_LIBS)
+	ld +nodefaultrpath -b -z -o $@ $(CDE_OBJS) $(CDE_LIBS)
 
 clean:
 	rm -f *.so *.o
