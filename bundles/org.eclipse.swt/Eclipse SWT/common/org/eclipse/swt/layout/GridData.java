@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.*;
 /**
  * <code>GridData</code> is the layout data object associated with 
  * <code>GridLayout</code>. To set a <code>GridData</code> object into a 
- * control, you use the <code>setLayoutData ()</code> method. 
+ * control, you use the <code>Control#setLayoutData(Object)</code> method. 
  * <p>
  * There are two ways to create a <code>GridData</code> object with certain 
  * fields set. The first is to set the fields directly, like this:
@@ -75,16 +75,18 @@ public final class GridData {
 	public int horizontalAlignment = BEGINNING;
 	
 	/**
-	 * widthHint specifies a minimum width for the column. A value of 
-	 * SWT.DEFAULT indicates that no minimum width is specified.
+	 * widthHint specifies the desired width in pixels. This value
+	 * is the wHint passed into Control#computeSize(int, int, boolean) 
+	 * to determine the preferred size of the control.
 	 *
 	 * The default value is SWT.DEFAULT.
 	 */
 	public int widthHint = SWT.DEFAULT;
 	
 	/**
-	 * heightHint specifies a minimum height for the row. A value of
-	 * SWT.DEFAULT indicates that no minimum height is specified.
+	 * heightHint specifies the preferred height in pixels. This value
+	 * is the hHint passed into Control#computeSize(int, int, boolean) 
+	 * to determine the preferred size of the control.
 	 *
 	 * The default value is SWT.DEFAULT.
 	 */
@@ -138,6 +140,32 @@ public final class GridData {
 	 */	
 	public boolean grabExcessVerticalSpace = false;
 
+	/**
+	 * minHeight specifies the minimum height in pixels.  This value
+	 * applies only if grabExcessVerticalSpace is true.  A value of 
+	 * SWT#DEFAULT means that the minimum height will be the result
+	 * of Control#computeSize(int, int, boolean) where hHint is 
+	 * determined by GridData#heightHint.
+	 *
+	 * The default value is 0.
+	 *
+	 * @since 3.1
+	 */
+	public int minHeight = 0;
+	
+	/**
+	 * minWidth specifies the minimum desired width in pixels.  This value
+	 * applies only if grabExcessHorizontalSpace is true. A value of 
+	 * SWT#DEFAULT means that the minimum width will be the result
+	 * of Control#computeSize(int, int, boolean) where wHint is 
+	 * determined by GridData#widthHint.
+	 *
+	 * The default value is 0.
+	 *
+	 * @since 3.1
+	 */
+	public int minWidth = 0;
+	
 	/**
 	 * Value for horizontalAlignment or verticalAlignment.
 	 * Position the control at the top or left of the cell.
@@ -442,10 +470,12 @@ public String toString () {
  	if (horizontalSpan != 1) string += "horizontalSpan="+horizontalSpan+" ";
  	if (grabExcessHorizontalSpace) string += "grabExcessHorizontalSpace="+grabExcessHorizontalSpace+" ";
  	if (widthHint != SWT.DEFAULT) string += "widthHint="+widthHint+" ";
+ 	if (minWidth != 0) string += "minWidth="+minWidth+" ";
  	string += "verticalAlignment="+vAlign+" ";
 	if (verticalSpan != 1) string += "verticalSpan="+verticalSpan+" ";
  	if (grabExcessVerticalSpace) string += "grabExcessVerticalSpace="+grabExcessVerticalSpace+" ";
  	if (heightHint != SWT.DEFAULT) string += "heightHint="+heightHint+" ";
+ 	if (minHeight != 0) string += "minHeight="+minHeight+" ";
  	string = string.trim();
  	string += "}";
 	return string;

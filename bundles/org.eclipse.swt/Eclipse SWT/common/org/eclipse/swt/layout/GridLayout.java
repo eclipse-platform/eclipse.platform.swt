@@ -217,7 +217,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 						if (!expandColumn [j]) expandCount++;
 						expandColumn [j] = true;
 					}
-					if (data.widthHint != SWT.DEFAULT || !data.grabExcessHorizontalSpace) {
+					if (!data.grabExcessHorizontalSpace || data.minWidth != 0) {
+						w = !data.grabExcessHorizontalSpace || data.minWidth == SWT.DEFAULT ? data.cacheWidth : data.minWidth;
+						w += data.horizontalIndent;
 						minWidths [j] = Math.max (minWidths [j], w);
 					}
 				}
@@ -253,8 +255,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 							if (last > -1) widths [last] += remainder;	
 						}
 					}
-					if (data.widthHint != SWT.DEFAULT || !data.grabExcessHorizontalSpace) {
-						w = data.cacheWidth + data.horizontalIndent - spanMinWidth - (hSpan - 1) * horizontalSpacing;
+					if (!data.grabExcessHorizontalSpace || data.minWidth != 0) {
+						w = !data.grabExcessHorizontalSpace || data.minWidth == SWT.DEFAULT ? data.cacheWidth : data.minWidth;
+						w += data.horizontalIndent - spanMinWidth - (hSpan - 1) * horizontalSpacing;
 						if (w > 0) {
 							if (spanExpandCount == 0) {
 								minWidths [j] += w;
@@ -316,13 +319,14 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 						if (data != null) {		
 							int hSpan = Math.max (1, Math.min (data.horizontalSpan, columnCount));
 							if (hSpan > 1) {
-								if (data.widthHint != SWT.DEFAULT || !data.grabExcessHorizontalSpace) {
+								if (!data.grabExcessHorizontalSpace || data.minWidth != 0) {
 									int spanWidth = 0, spanExpandCount = 0;
 									for (int k=0; k<hSpan; k++) {
 										spanWidth += widths [j-k];
 										if (expandColumn [j-k]) spanExpandCount++;
 									}
-									int w = data.cacheWidth + data.horizontalIndent - spanWidth - (hSpan - 1) * horizontalSpacing;
+									int w = !data.grabExcessHorizontalSpace || data.minWidth == SWT.DEFAULT ? data.cacheWidth : data.minWidth;
+									w += data.horizontalIndent - spanWidth - (hSpan - 1) * horizontalSpacing;
 									if (w > 0) {
 										if (spanExpandCount == 0) {
 											widths [j] += w;
@@ -412,7 +416,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 						if (!expandRow [i]) expandCount++;
 						expandRow [i] = true;
 					}
-					if (data.heightHint != SWT.DEFAULT || !data.grabExcessVerticalSpace) {
+					if (!data.grabExcessVerticalSpace || data.minHeight != 0) {
+						h = !data.grabExcessVerticalSpace || data.minHeight == SWT.DEFAULT ? data.cacheHeight : data.minHeight;
+						h += data.verticalIndent;
 						minHeights [i] = Math.max (minHeights [i], h);
 					}
 				}
@@ -448,8 +454,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 							if (last > -1) heights [last] += remainder;	
 						}
 					}
-					if (data.heightHint != SWT.DEFAULT || !data.grabExcessVerticalSpace) {
-						h = data.cacheHeight + data.verticalIndent - spanMinHeight - (vSpan - 1) * verticalSpacing;
+					if (!data.grabExcessVerticalSpace || data.minHeight != 0) {
+						h = !data.grabExcessVerticalSpace || data.minHeight == SWT.DEFAULT ? data.cacheHeight : data.minHeight;
+						h += data.verticalIndent - spanMinHeight - (vSpan - 1) * verticalSpacing;
 						if (h > 0) {
 							if (spanExpandCount == 0) {
 								minHeights [i] += h;
@@ -498,13 +505,14 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					if (data != null) {		
 						int vSpan = Math.max (1, Math.min (data.verticalSpan, rowCount));
 						if (vSpan > 1) {
-							if (data.heightHint != SWT.DEFAULT || !data.grabExcessVerticalSpace) {
+							if (!data.grabExcessVerticalSpace || data.minHeight != 0) {
 								int spanHeight = 0, spanExpandCount = 0;
 								for (int k=0; k<vSpan; k++) {
 									spanHeight += heights [i-k];
 									if (expandRow [i-k]) spanExpandCount++;
 								}
-								int h = data.cacheHeight + data.verticalIndent - spanHeight - (vSpan - 1) * verticalSpacing;
+								int h = !data.grabExcessVerticalSpace || data.minHeight == SWT.DEFAULT ? data.cacheHeight : data.minHeight;
+								h += data.verticalIndent - spanHeight - (vSpan - 1) * verticalSpacing;
 								if (h > 0) {
 									if (spanExpandCount == 0) {
 										heights [i] += h;
