@@ -38,6 +38,11 @@ public class Display extends Device {
 	Runnable [] timerList;
 	Callback timerCallback;
 	int timerProc;	
+		
+	/* Current caret */
+	Caret currentCaret;
+	Callback caretCallback;
+	int caretID, caretProc;
 	
 	/* Grabs */
 	Control grabControl;
@@ -221,6 +226,17 @@ public void asyncExec (Runnable runnable) {
 public void beep () {
 	checkDevice ();
 	OS.SysBeep ((short) 100);
+}
+
+int caretProc (int id, int clientData) {
+	if (currentCaret == null) return 0;
+	if (currentCaret.blinkCaret ()) {
+		int blinkRate = currentCaret.blinkRate;
+		OS.SetEventLoopTimerNextFireTime (id, blinkRate / 1000.0);
+	} else {
+		currentCaret = null;
+	}
+	return 0;
 }
 
 protected void checkDevice () {
@@ -550,6 +566,9 @@ protected void init () {
 	actionCallback = new Callback (this, "actionProc", 2);
 	actionProc = actionCallback.getAddress ();
 	if (actionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	caretCallback = new Callback(this, "caretProc", 2);
+	caretProc = caretCallback.getAddress();
+	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	commandCallback = new Callback (this, "commandProc", 3);
 	commandProc = commandCallback.getAddress ();
 	if (commandProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -782,6 +801,7 @@ protected void release () {
 
 void releaseDisplay () {
 	actionCallback.dispose ();
+	caretCallback.dispose ();
 	commandCallback.dispose ();
 	controlCallback.dispose ();
 	itemDataCallback.dispose ();
@@ -790,8 +810,8 @@ void releaseDisplay () {
 	menuCallback.dispose ();
 	mouseCallback.dispose ();
 	windowCallback.dispose ();
-	actionCallback = commandCallback = controlCallback = itemDataCallback = itemNotificationCallback = keyboardCallback = menuCallback = mouseCallback = windowCallback = null;
-	actionProc = commandProc = controlProc = itemDataProc = itemNotificationProc = keyboardProc = menuProc = mouseProc = windowProc = 0;
+	actionCallback = caretCallback = commandCallback = controlCallback = itemDataCallback = itemNotificationCallback = keyboardCallback = menuCallback = mouseCallback = windowCallback = null;
+	actionProc = caretProc = commandProc = controlProc = itemDataProc = itemNotificationProc = keyboardProc = menuProc = mouseProc = windowProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
 	timerProc = 0;
@@ -967,6 +987,20 @@ void sendEvent (int eventType, Event event) {
  * @param name the new app name
  */
 public static void setAppName (String name) {
+}
+
+void setCurrentCaret (Caret caret) {
+	if (caretID != 0) OS.RemoveEventLoopTimer (caretID);
+	caretID = 0;
+	currentCaret = caret;
+	if (currentCaret != null) {
+		int blinkRate = currentCaret.blinkRate;
+		int [] timerId = new int [1];
+		double time = blinkRate / 1000.0;
+		int eventLoop = OS.GetCurrentEventLoop ();
+		OS.InstallEventLoopTimer (eventLoop, time, time, caretProc, 0, timerId);
+		caretID = timerId [0];
+	}
 }
 
 /**

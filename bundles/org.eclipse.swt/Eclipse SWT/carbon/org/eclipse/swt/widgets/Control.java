@@ -547,10 +547,10 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	short [] part = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-	if (part [0] == 0) {
-		sendEvent (SWT.FocusOut);
-	} else {
+	if (part [0] != 0) {
 		sendEvent (SWT.FocusIn);
+	} else {
+		sendEvent (SWT.FocusOut);
 	}
 	return OS.eventNotHandledErr;
 }
