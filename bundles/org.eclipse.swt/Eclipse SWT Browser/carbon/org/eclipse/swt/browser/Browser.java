@@ -51,8 +51,7 @@ public class Browser extends Composite {
 	/* Objective-C WebView delegate */
 	static int Delegate;
 	
-	static Hashtable Map = new Hashtable();
-	static Callback Callback3, Callback6;
+	static Callback Callback3, Callback7;
 
 	/* Carbon HIView handle */
 	int webViewHandle;
@@ -178,7 +177,6 @@ public Browser(Composite parent, int style) {
 					} while (c != shell);
 
 					e.display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), null});
-					Map.remove(new Integer(webView));
 					WebKit.objc_msgSend(notificationCenter, WebKit.S_removeObserver_name_object, Delegate, 0, webView);
 					break;
 				}
@@ -293,23 +291,21 @@ public Browser(Composite parent, int style) {
 		c = c.getParent();
 	} while (c != shell);
 	
-	Map.put(new Integer(webView), this);
-
 	if (Callback3 == null) {
 		Callback3 = new Callback(this.getClass(), "eventProc3", 3); //$NON-NLS-1$
 		int[] keyboardMask = new int[] {OS.kEventClassKeyboard, OS.kEventRawKeyDown};
 		int controlTarget = OS.GetControlEventTarget(webViewHandle);
-		OS.InstallEventHandler(controlTarget, Callback3.getAddress(), keyboardMask.length / 2, keyboardMask, webView, null);
+		OS.InstallEventHandler(controlTarget, Callback3.getAddress(), keyboardMask.length / 2, keyboardMask, webViewHandle, null);
 	}
 	getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), this});
 
 	
-	if (Callback6 == null) {
-		Callback6 = new Callback(this.getClass(), "eventProc6", 6); //$NON-NLS-1$
-		int eventProc = Callback6.getAddress();
+	if (Callback7 == null) {
+		Callback7 = new Callback(this.getClass(), "eventProc7", 7); //$NON-NLS-1$
+		int eventProc = Callback7.getAddress();
 		// Delegate = [[WebResourceLoadDelegate alloc] init eventProc];
 		Delegate = WebKit.objc_msgSend(WebKit.C_WebKitDelegate, WebKit.S_alloc);
-		Delegate = WebKit.objc_msgSend(Delegate, WebKit.S_initWithProc, eventProc);
+		Delegate = WebKit.objc_msgSend(Delegate, WebKit.S_initWithProc, eventProc, webViewHandle);
 	}
 				
 	// [webView setFrameLoadDelegate:delegate];
@@ -329,16 +325,16 @@ public Browser(Composite parent, int style) {
 }
 
 static int eventProc3(int nextHandler, int theEvent, int userData) {
-	Object o = Map.get(new Integer(userData));
-	if (o instanceof Browser)
-		return ((Browser)o).handleCallback(nextHandler, theEvent);
+	Widget widget = Display.getCurrent().findWidget(userData);
+	if (widget instanceof Browser)
+		return ((Browser)widget).handleCallback(nextHandler, theEvent);
 	return OS.eventNotHandledErr;
 }
 
-static int eventProc6(int webview, int selector, int arg0, int arg1, int arg2, int arg3) {
-	Object o = Map.get(new Integer(webview));
-	if (o instanceof Browser)
-		return ((Browser)o).handleCallback(selector, arg0, arg1, arg2, arg3);
+static int eventProc7(int webview, int userData, int selector, int arg0, int arg1, int arg2, int arg3) {
+	Widget widget = Display.getCurrent().findWidget(userData);
+	if (widget instanceof Browser)
+		return ((Browser)widget).handleCallback(selector, arg0, arg1, arg2, arg3);
 	return 0;
 }
 
