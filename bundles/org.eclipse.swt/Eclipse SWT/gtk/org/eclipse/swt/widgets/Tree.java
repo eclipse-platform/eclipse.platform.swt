@@ -687,6 +687,7 @@ public void setSelection (TreeItem [] items) {
 		if (items[i].isDisposed ()) break;
 		OS.gtk_tree_selection_select_iter (selection, items[i].handle);
 	}
+	if (items.length > 0) showItem(items[0]);
 	unblockSignal(handle, SWT.Selection);
 }
 
