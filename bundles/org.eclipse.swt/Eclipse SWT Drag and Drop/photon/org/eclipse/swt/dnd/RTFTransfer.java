@@ -19,7 +19,7 @@ public static RTFTransfer getInstance () {
 }
 public void javaToNative (Object object, TransferData transferData){
 	if (object == null || !(object instanceof String)) return;
-	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
+	byte [] buffer = Converter.wcsToMbcs (null, (String)object, false);
 	super.javaToNative(buffer, transferData);
 }
 public Object nativeToJava(TransferData transferData){
