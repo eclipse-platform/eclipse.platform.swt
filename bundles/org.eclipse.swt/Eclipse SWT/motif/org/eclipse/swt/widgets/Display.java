@@ -91,6 +91,7 @@ public class Display extends Device {
 
 	/* Motif Only Public Fields */
 	public XAnyEvent xEvent = new XAnyEvent ();
+	int lastSerial;
 	
 	/* Windows, Events and Callbacks */
 	Callback windowCallback;
@@ -694,10 +695,21 @@ boolean filterEvent (XAnyEvent event) {
 	int keysym = buffer2 [0] & 0xFFFF;
 	keyEvent.state = oldState;
 
-	/* Filter the event for the IME */
-	if (!OS.IsLinux) {
-		if (keysym == OS.XK_Return || keysym == OS.XK_KP_Enter) {
+	/* 
+	* Bug in AIX.  If XFilterEvent() is called for every key event, accelerators
+	* do not work. XFilterEvent() is needed on AIX to invoke the default button.
+	* The fix is to call XFilterEvent() only for return keys. This means that an
+	* accelerator that is only a return key will not work.
+	*/
+	if (keysym == OS.XK_Return || keysym == OS.XK_KP_Enter) {
+		/*
+		* Bug in Linux. If XFilter() is called more than once for the same
+		* event, it causes an infinite loop.  The fix to remember the serial
+		* number and never call XFilterEvent() twice for the same event.
+		*/
+		if (event.serial != lastSerial) {	
 			if (OS.XFilterEvent (event, OS.XtWindow (handle))) return true;
+			lastSerial = event.serial;
 		}
 	}
 
