@@ -308,10 +308,6 @@ SWT_PTR callback(int index, ...)
 	callbackEntryCount--;
 	
 done:
-	if (detach) {
-		(*jvm)->DetachCurrentThread(jvm);
-	}
-
 	/* If an exception has occurred in Java, return the error result. */
 	if ((*env)->ExceptionOccurred(env)) {
 #ifdef DEBUG_CALL_PRINTS
@@ -319,6 +315,11 @@ done:
 		(*env)->ExceptionDescribe(env);
 #endif
 		result = callbackData[index].errorResult;
+	}
+
+	if (detach) {
+		(*jvm)->DetachCurrentThread(jvm);
+		env = NULL;
 	}
 
 noEnv:
