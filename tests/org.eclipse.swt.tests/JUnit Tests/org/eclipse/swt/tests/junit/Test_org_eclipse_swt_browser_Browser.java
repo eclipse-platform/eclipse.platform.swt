@@ -12,6 +12,8 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.browser.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.Browser
@@ -30,6 +32,7 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	super.setUp();
+	browser = new Browser(shell, SWT.NONE);
 }
 
 protected void tearDown() {
@@ -37,55 +40,96 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
+	Browser browser = new Browser(shell, SWT.NONE);
+	browser.dispose();
+	browser = new Browser(shell, SWT.BORDER);
+	browser.dispose();
+	try {
+		browser = new Browser(null, SWT.NONE);
+		fail("No exception thrown for parent == null");
+	}	catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() {
-	warnUnimpl("Test test_addLocationListenerLorg_eclipse_swt_browser_LocationListener not written");
+	LocationListener listener = new LocationListener() {
+		public void changed(LocationEvent event) {
+		}
+		public void changing(LocationEvent event) {
+		}
+	};
+	for (int i = 0; i < 100; i++) browser.addLocationListener(listener);
+	for (int i = 0; i < 100; i++) browser.removeLocationListener(listener);
 }
 
 public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
-	warnUnimpl("Test test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener not written");
+	ProgressListener listener = new ProgressListener() {
+		public void changed(ProgressEvent event) {
+		}
+		public void completed(ProgressEvent event) {
+		}
+	};
+	for (int i = 0; i < 100; i++) browser.addProgressListener(listener);
+	for (int i = 0; i < 100; i++) browser.removeProgressListener(listener);
 }
 
 public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
-	warnUnimpl("Test test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener not written");
+	StatusTextListener listener = new StatusTextListener() {
+		public void changed(StatusTextEvent event) {
+		}
+	};
+	for (int i = 0; i < 100; i++) browser.addStatusTextListener(listener);
+	for (int i = 0; i < 100; i++) browser.removeStatusTextListener(listener);
 }
 
 public void test_back() {
-	warnUnimpl("Test test_back not written");
+	for (int i = 0; i < 50; i++) {
+		browser.back();
+	}
+	/* returning 50 times in history - expecting false is returned */
+	boolean result = browser.back();
+	assertFalse(result);
 }
 
 public void test_forward() {
-	warnUnimpl("Test test_forward not written");
+	for (int i = 0; i < 50; i++) {
+		browser.forward();
+	}
+	/* going forward 50 times in history - expecting false is returned */
+	boolean result = browser.forward();
+	assertFalse(result);
 }
 
 public void test_getUrl() {
-	warnUnimpl("Test test_getUrl not written");
+	String string = browser.getUrl();
+	assertTrue(string != null);
 }
 
 public void test_refresh() {
-	warnUnimpl("Test test_refresh not written");
+	for (int i = 0; i < 50; i++) browser.refresh();
 }
 
 public void test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener() {
-	warnUnimpl("Test test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener not written");
+	// tested in addLocationListener
 }
 
 public void test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
-	warnUnimpl("Test test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener not written");
+	// tested in addProgressListener
 }
 
 public void test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
-	warnUnimpl("Test test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener not written");
+	// tested in addStatusTextListener
 }
 
 public void test_setUrlLjava_lang_String() {
-	warnUnimpl("Test test_setUrlLjava_lang_String not written");
+	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
+	browser.setUrl("http://www.eclipse.org/swt");
 }
 
 public void test_stop() {
-	warnUnimpl("Test test_stop not written");
+	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
+	browser.setUrl("http://www.eclipse.org/swt");
+	browser.stop();
 }
 
 
@@ -134,4 +178,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_stop")) test_stop();
 	else super.runTest();
 }
+
+/* custom */
+Browser browser;
 }
