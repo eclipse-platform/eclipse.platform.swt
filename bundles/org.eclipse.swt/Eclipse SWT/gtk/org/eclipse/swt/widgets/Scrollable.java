@@ -187,7 +187,7 @@ public ScrollBar getVerticalBar () {
 }
 
 boolean isTabGroup() {
-	if ((state&CANVAS) != 0) return true;
+	if ((state & CANVAS) != 0) return true;
 	return super.isTabGroup();
 }
 
