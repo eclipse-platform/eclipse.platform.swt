@@ -2013,8 +2013,7 @@ public boolean setParent (Composite parent) {
  * @see #update
  */
 public void setRedraw (boolean redraw) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
 /**
  * Sets the receiver's tool tip text to the argument, which
@@ -2028,8 +2027,7 @@ public void setRedraw (boolean redraw) {
  * </ul>
  */
 public void setToolTipText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	toolTipText = string;
 }
 /**
@@ -2098,33 +2096,123 @@ public boolean traverse (int traversal) {
 	event.detail = traversal;
 	return traverse (event);
 }
-
+boolean translateTraversal (int event) {
+	int detail = SWT.TRAVERSE_NONE;
+	int key = OS.gdk_event_key_get_keyval (event);
+	int code = traversalCode (key, event);
+	int [] state = new int [1];
+	OS.gdk_event_get_state (event, state);
+	int shellHandle = _getShell ().topHandle ();
+	boolean all = false;
+	switch (key) {
+		case OS.GDK_Escape:
+		case OS.GDK_Cancel: {
+			all = true;
+			detail = SWT.TRAVERSE_ESCAPE;
+			break;
+		}
+		case OS.GDK_Return: {
+			all = true;
+			detail = SWT.TRAVERSE_RETURN;
+			break;
+		}
+		case OS.GDK_Tab: {
+			boolean next = (state[0] & OS.GDK_SHIFT_MASK) == 0;
+			/*
+			 * NOTE: This code emulates a bug/feature on Windows where
+			 * the default is that that Shift+Tab and Ctrl+Tab traverses
+			 * instead of going to the widget.  StyledText currently
+			 * relies on this behavior.
+			 */
+			switch (state[0]) {
+				case OS.GDK_SHIFT_MASK:
+				case OS.GDK_CONTROL_MASK:
+					code |= SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT;
+			}
+			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
+			break;
+		}
+		case OS.GDK_Up:
+		case OS.GDK_Left: 
+		case OS.GDK_Down:
+		case OS.GDK_Right: {
+			boolean next = key == OS.GDK_Down || key == OS.GDK_Right;
+			detail = next ? SWT.TRAVERSE_ARROW_NEXT : SWT.TRAVERSE_ARROW_PREVIOUS;
+			break;
+		}
+		case OS.GDK_Page_Up:
+		case OS.GDK_Page_Down: {
+			all = true;
+			if ((state[0] & OS.GDK_CONTROL_MASK) == 0) return false;
+			detail = key == OS.GDK_Page_Down ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
+			break;
+		}
+		default:
+			return false;
+	}
+	Event swtEvent = new Event ();
+	swtEvent.doit = (code & detail) != 0;
+	swtEvent.detail = detail;
+	swtEvent.time = OS.gdk_event_get_time (event);
+	setInputState (swtEvent, event);
+	Shell shell = getShell ();
+	Control control = this;
+	do {
+		if (control.traverse (swtEvent)) return true;
+		if (control == shell) return false;
+		control = control.parent;
+	} while (all && control != null);
+	return false;
+}
+int traversalCode (int key, int event) {
+	int code = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
+	Shell shell = getShell ();
+	if (shell.parent != null) code |= SWT.TRAVERSE_ESCAPE;
+//	FIXME - Needs to be implemented
+//	if (getNavigationType () == OS.XmNONE) {
+//		code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
+//	}
+	return code;
+}
 boolean traverse (Event event) {
-	/*
-	 * It is possible (but unlikely), that application
-	 * code could have disposed the widget in the traverse
-	 * event.  If this happens, return true to stop further
-	 * event processing.
-	 */	
 	sendEvent (SWT.Traverse, event);
 	if (isDisposed ()) return false;
 	if (!event.doit) return false;
 	switch (event.detail) {
-		case SWT.TRAVERSE_NONE:			return true;
-		/*
+		case SWT.TRAVERSE_NONE:				return true;
 		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
 		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
-		case SWT.TRAVERSE_TAB_NEXT:		return traverseGroup (true);
-		case SWT.TRAVERSE_TAB_PREVIOUS:	return traverseGroup (false);
+		case SWT.TRAVERSE_TAB_NEXT:			return traverseGroup (true);
+		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
 		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
 		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
-		case SWT.TRAVERSE_MNEMONIC:		return traverseMnemonic (event.character);	
+		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (event.character);	
 		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
 		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
-		*/
 	}
-	error(SWT.ERROR_NOT_IMPLEMENTED);
 	return false;
+}
+boolean traverseEscape () {
+	return false;
+}
+boolean traverseGroup (boolean next) {
+	// FIXME - Needs to be implemented
+	return true;
+}
+boolean traverseItem (boolean next) {
+	// FIXME - Needs to be implemented
+	return true;
+}
+boolean traverseReturn () {
+	int shellHandle = _getShell ().topHandle ();
+	boolean processed = OS.gtk_window_activate_default(shellHandle);
+	return processed;  // Should we really propagate to the parent shell?
+}
+boolean traversePage (boolean next) {
+	return false;
+}
+boolean traverseMnemonic (char key) {
+	return true; /* Handled natively.  Should get rid of the whole thing */
 }
 
 
