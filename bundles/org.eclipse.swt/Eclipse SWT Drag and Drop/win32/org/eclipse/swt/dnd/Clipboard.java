@@ -29,8 +29,6 @@ public class Clipboard {
 	// ole interfaces
 	private COMObject iDataObject;
 	private int refCount;
-
-	private final int MAX_RETRIES = 10;
 	private Transfer[] transferAgents = new Transfer[0];
 	private Object[] data = new Object[0];
 	private int CFSTR_PREFERREDDROPEFFECT;
@@ -62,7 +60,6 @@ public Clipboard(Display display) {
 		SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 	this.display = display;
-	
 	TCHAR chFormatName = new TCHAR(0, "Preferred DropEffect", true); //$NON-NLS-1$
 	CFSTR_PREFERREDDROPEFFECT = COM.RegisterClipboardFormat(chFormatName);
 	createCOMInterfaces();
@@ -145,30 +142,23 @@ public Object getContents(Transfer transfer) {
 	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
+
 	int[] ppv = new int[1];
-	int retries = 0;
-	while ((COM.OleGetClipboard(ppv) != COM.S_OK) && retries < MAX_RETRIES) {
-		// Clipboard may be in use by some other application.
-		// Wait for 10 milliseconds before trying again.
-		try {Thread.sleep(10);} catch (InterruptedException e) {}
-		retries++;
-	}
-	if (retries == MAX_RETRIES) return null;
-	
+	if (COM.OleGetClipboard(ppv) != COM.S_OK) return null;
 	IDataObject dataObject = new IDataObject(ppv[0]);
-	
-	TransferData[] allowed = transfer.getSupportedTypes();
-	TransferData match = null;
-	for (int i = 0; i < allowed.length; i++) {
-		if (dataObject.QueryGetData(allowed[i].formatetc) == COM.S_OK) {
-			match = allowed[i];
-			break;
-		}
+	try {
+		TransferData[] allowed = transfer.getSupportedTypes();
+		for (int i = 0; i < allowed.length; i++) {
+			if (dataObject.QueryGetData(allowed[i].formatetc) == COM.S_OK) {
+				TransferData data = allowed[i];
+				data.pIDataObject = ppv[0];
+				return transfer.nativeToJava(data);
+			}
+		}		
+	} finally {
+		dataObject.Release();
 	}
-	if (match == null) return null;
-	
-	match.pIDataObject = ppv[0];
-	return transfer.nativeToJava(match);
+	return null; // No data available for this transfer
 }
 /**
  * Place data of the specified type on the system clipboard.  More than one type of
@@ -215,33 +205,15 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 	
 	this.data = data;
 	this.transferAgents = dataTypes;
-	
-	int retries = 0;
-	int result = 0;
-	while ((result = COM.OleSetClipboard(this.iDataObject.getAddress())) != COM.S_OK && retries < MAX_RETRIES){
-		// Clipboard may be in use by some other application.
-		// Wait for 10 milliseconds before trying again.
-		try {Thread.sleep(10);} catch (InterruptedException e) {}
-		retries++;
+	if (COM.OleSetClipboard(this.iDataObject.getAddress()) != COM.S_OK ) {
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	}
-	if (retries == MAX_RETRIES) {
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD, result);
+	if (COM.OleIsCurrentClipboard(this.iDataObject.getAddress()) != COM.S_OK) {
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	}
-	
-	result = COM.OleIsCurrentClipboard(this.iDataObject.getAddress());
-	if (result != COM.S_OK) {
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD, result);
+	if (COM.OleFlushClipboard() != COM.S_OK) {
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	}
-	
-	retries = 0;
-	while ((COM.OleFlushClipboard() != COM.S_OK)  && (retries < MAX_RETRIES)) {
-		try {Thread.sleep(10);} catch (InterruptedException e) {}
-		retries++;
-	}
-	if (retries == MAX_RETRIES) {
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD, result);
-	}
-	
 	this.data = new Object[0];
 	this.transferAgents = new Transfer[0];
 }
@@ -274,7 +246,6 @@ private void disposeCOMInterfaces() {
 private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 	// only allow getting of data - SetData is not currently supported
 	if (dwDirection == COM.DATADIR_SET) return COM.E_NOTIMPL;
-	
 	// what types have been registered?
 	TransferData[] allowedDataTypes = new TransferData[0];
 	for (int i = 0; i < transferAgents.length; i++){
@@ -284,10 +255,8 @@ private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 		System.arraycopy(formats, 0, newAllowedDataTypes, allowedDataTypes.length, formats.length);
 		allowedDataTypes = newAllowedDataTypes;
 	}
-	
 	OleEnumFORMATETC enumFORMATETC = new OleEnumFORMATETC();
 	enumFORMATETC.AddRef();
-	
 	FORMATETC[] formats = new FORMATETC[allowedDataTypes.length + 1];
 	for (int i = 0; i < allowedDataTypes.length; i++){
 		formats[i] = allowedDataTypes[i].formatetc;
@@ -299,9 +268,7 @@ private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 	dropeffect.lindex = -1;
 	dropeffect.tymed = COM.TYMED_HGLOBAL;
 	formats[formats.length -1] = dropeffect;
-	
-	enumFORMATETC.setFormats(formats);
-	
+	enumFORMATETC.setFormats(formats);	
 	COM.MoveMemory(ppenumFormatetc, new int[] {enumFORMATETC.getAddress()}, 4);
 	return COM.S_OK;
 }
@@ -312,7 +279,6 @@ private int GetData(int pFormatetc, int pmedium) {
 	   The caller then assumes responsibility for releasing the STGMEDIUM structure.
 	*/
 	if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
-
 	if (QueryGetData(pFormatetc) != COM.S_OK) return COM.DV_E_FORMATETC;
 
 	TransferData transferData = new TransferData();
@@ -342,22 +308,18 @@ private int GetData(int pFormatetc, int pmedium) {
 		}
 	}
 	if (transferIndex == -1) return COM.DV_E_FORMATETC;
-	
 	transferAgents[transferIndex].javaToNative(data[transferIndex], transferData);
 	COM.MoveMemory(pmedium, transferData.stgmedium, STGMEDIUM.sizeof);
 	return transferData.result;
 }
+
 private int QueryGetData(int pFormatetc) {
-
 	if (transferAgents == null) return COM.E_FAIL;
-
 	TransferData transferData = new TransferData();
 	transferData.formatetc = new FORMATETC();
 	COM.MoveMemory(transferData.formatetc, pFormatetc, FORMATETC.sizeof);
 	transferData.type = transferData.formatetc.cfFormat;
-	
 	if (transferData.type == CFSTR_PREFERREDDROPEFFECT) return COM.S_OK;
-	
 	// is this type supported by the transfer agent?
 	for (int i = 0; i < transferAgents.length; i++){
 		if (transferAgents[i].isSupportedType(transferData))
@@ -367,18 +329,14 @@ private int QueryGetData(int pFormatetc) {
 	return COM.DV_E_FORMATETC;
 }
 private int QueryInterface(int riid, int ppvObject) {
-	
-	if (riid == 0 || ppvObject == 0)
-		return COM.E_INVALIDARG;
+	if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
-	
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDataObject) ) {
 		COM.MoveMemory(ppvObject, new int[] {iDataObject.getAddress()}, 4);
 		AddRef();
 		return COM.S_OK;
 	}
-	
 	COM.MoveMemory(ppvObject, new int[] {0}, 4);
 	return COM.E_NOINTERFACE;
 }
@@ -388,7 +346,6 @@ private int Release() {
 		disposeCOMInterfaces();
 		COM.CoFreeUnusedLibraries();
 	}
-	
 	return refCount;
 }
 
@@ -406,105 +363,84 @@ private int Release() {
 public String[] getAvailableTypeNames() {
 	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
-	int[] ppv = new int[1];
-	int retrys = 0;
-	while ((COM.OleGetClipboard(ppv) != COM.S_OK) && retrys < MAX_RETRIES) {
-		retrys++;
+	FORMATETC[] types = _getAvailableTypes();
+	String[] names = new String[types.length];
+	int maxSize = 128;
+	for (int i = 0; i < types.length; i++){
+		TCHAR buffer = new TCHAR(0, maxSize);
+		int size = COM.GetClipboardFormatName(types[i].cfFormat, buffer, maxSize);
+		if (size != 0) {
+			names[i] = buffer.toString(0, size);
+		} else {
+			switch (types[i].cfFormat) {
+				case COM.CF_HDROP: names[i] = "CF_HDROP"; break; //$NON-NLS-1$
+				case COM.CF_TEXT: names[i] = "CF_TEXT"; break; //$NON-NLS-1$
+				case COM.CF_BITMAP: names[i] = "CF_BITMAP"; break; //$NON-NLS-1$
+				case COM.CF_METAFILEPICT: names[i] = "CF_METAFILEPICT"; break; //$NON-NLS-1$
+				case COM.CF_SYLK: names[i] = "CF_SYLK"; break; //$NON-NLS-1$
+				case COM.CF_DIF: names[i] = "CF_DIF"; break; //$NON-NLS-1$
+				case COM.CF_TIFF: names[i] = "CF_TIFF"; break; //$NON-NLS-1$
+				case COM.CF_OEMTEXT: names[i] = "CF_OEMTEXT"; break; //$NON-NLS-1$
+				case COM.CF_DIB: names[i] = "CF_DIB"; break; //$NON-NLS-1$
+				case COM.CF_PALETTE: names[i] = "CF_PALETTE"; break; //$NON-NLS-1$
+				case COM.CF_PENDATA: names[i] = "CF_PENDATA"; break; //$NON-NLS-1$
+				case COM.CF_RIFF: names[i] = "CF_RIFF"; break; //$NON-NLS-1$
+				case COM.CF_WAVE: names[i] = "CF_WAVE"; break; //$NON-NLS-1$
+				case COM.CF_UNICODETEXT: names[i] = "CF_UNICODETEXT"; break; //$NON-NLS-1$
+				case COM.CF_ENHMETAFILE: names[i] = "CF_ENHMETAFILE"; break; //$NON-NLS-1$
+				case COM.CF_LOCALE: names[i] = "CF_LOCALE"; break; //$NON-NLS-1$
+				case COM.CF_MAX: names[i] = "CF_MAX"; break; //$NON-NLS-1$
+				default: names[i] = "UNKNOWN";
+			}
+		}
 	}
-	if (retrys == MAX_RETRIES) return null;
+	return names;
+}
+
+/**
+ * 
+ * @return array of TransferData
+ * 
+ * @since 3.0
+ */
+public TransferData[] getAvailableTypes() {
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
 	
+	FORMATETC[] types = _getAvailableTypes();
+	TransferData[] data = new TransferData[types.length];
+	for (int i = 0; i < types.length; i++) {
+		data[i] = new TransferData();
+		data[i].type = types[i].cfFormat;
+		data[i].formatetc = types[i];
+	}
+	return data;
+}
+
+public FORMATETC[] _getAvailableTypes() {
+	FORMATETC[] types = new FORMATETC[0];
+	int[] ppv = new int[1];
+	if (COM.OleGetClipboard(ppv) != COM.S_OK) return types;
 	IDataObject dataObject = new IDataObject(ppv[0]);
-	
 	int[] ppFormatetc = new int[1];
 	int rc = dataObject.EnumFormatEtc(COM.DATADIR_GET, ppFormatetc);
 	dataObject.Release();
-	if (rc != COM.S_OK)
-		DND.error(SWT.ERROR_UNSPECIFIED);
-
+	if (rc != COM.S_OK)return types;
 	IEnumFORMATETC enum = new IEnumFORMATETC(ppFormatetc[0]);
-	
 	// Loop over enumerator and save any types that match what we are looking for
 	int rgelt = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, FORMATETC.sizeof);
 	int[] pceltFetched = new int[1];
 	enum.Reset();
-	String[] types = new String[0];
 	while (enum.Next(1, rgelt, pceltFetched) == COM.S_OK && pceltFetched[0] == 1) {
 		FORMATETC formatetc = new FORMATETC();
 		COM.MoveMemory(formatetc, rgelt, FORMATETC.sizeof);
-		int maxSize = 128;
-		TCHAR buffer = new TCHAR(0, maxSize);
-		int size = COM.GetClipboardFormatName(formatetc.cfFormat, buffer, maxSize);
-		String type = null;
-		if (size != 0) {
-			type = buffer.toString(0, size);
-		} else {
-			switch (formatetc.cfFormat) {
-				case COM.CF_HDROP:
-					type = "CF_HDROP"; //$NON-NLS-1$
-					break;
-				case COM.CF_TEXT:
-					type = "CF_TEXT"; //$NON-NLS-1$
-					break;
-				case COM.CF_BITMAP:
-					type = "CF_BITMAP"; //$NON-NLS-1$
-					break;
-				case COM.CF_METAFILEPICT:
-					type = "CF_METAFILEPICT"; //$NON-NLS-1$
-					break;
-				case COM.CF_SYLK:
-					type = "CF_SYLK"; //$NON-NLS-1$
-					break;
-				case COM.CF_DIF:
-					type = "CF_DIF"; //$NON-NLS-1$
-					break;
-				case COM.CF_TIFF:
-					type = "CF_TIFF"; //$NON-NLS-1$
-					break;
-				case COM.CF_OEMTEXT:
-					type = "CF_OEMTEXT"; //$NON-NLS-1$
-					break;
-				case COM.CF_DIB:
-					type = "CF_DIB"; //$NON-NLS-1$
-					break;
-				case COM.CF_PALETTE:
-					type = "CF_PALETTE"; //$NON-NLS-1$
-					break;
-				case COM.CF_PENDATA:
-					type = "CF_PENDATA"; //$NON-NLS-1$
-					break;
-				case COM.CF_RIFF:
-					type = "CF_RIFF"; //$NON-NLS-1$
-					break;
-				case COM.CF_WAVE:
-					type = "CF_WAVE"; //$NON-NLS-1$
-					break;
-				case COM.CF_UNICODETEXT:
-					type = "CF_UNICODETEXT"; //$NON-NLS-1$
-					break;
-				case COM.CF_ENHMETAFILE:
-					type = "CF_ENHMETAFILE"; //$NON-NLS-1$
-					break;
-				case COM.CF_LOCALE:
-					type = "CF_LOCALE"; //$NON-NLS-1$
-					break;
-				case COM.CF_MAX:
-					type = "CF_MAX"; //$NON-NLS-1$
-					break;
-				default:
-					continue;
-			}
-		}
-		
-		String[] newTypes = new String[types.length + 1];
+		FORMATETC[] newTypes = new FORMATETC[types.length + 1];
 		System.arraycopy(types, 0, newTypes, 0, types.length);
-		newTypes[types.length] = type;
+		newTypes[types.length] = formatetc;
 		types = newTypes;
 	}
 	OS.GlobalFree(rgelt);
 	enum.Release();
-	
 	return types;
-
 }
-
 }
