@@ -125,15 +125,6 @@ void createHandle (int index) {
 	OS.gtk_widget_show (handle);
 }
 
-void hookEvents () {
-	//TO DO - get rid of enter/exit for mouse crossing border
-	super.hookEvents();
-	signal_connect_after (handle, "changed", SWT.Modify, 2);
-	signal_connect (handle, "insert-text", SWT.Verify, 5);
-	signal_connect (handle, "delete-text", SWT.Verify, 4);
-	signal_connect (handle, "activate", SWT.DefaultSelection, 2);
-}
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's text is modified, by sending
@@ -743,9 +734,13 @@ public int getTopPixel () {
 	return 0;
 }
 
-boolean getWrap () {
-	checkWidget ();
-	return false;
+void hookEvents () {
+	//TO DO - get rid of enter/exit for mouse crossing border
+	super.hookEvents();
+	signal_connect_after (handle, "changed", SWT.Modify, 2);
+	signal_connect (handle, "insert-text", SWT.Verify, 5);
+	signal_connect (handle, "delete-text", SWT.Verify, 4);
+	signal_connect (handle, "activate", SWT.DefaultSelection, 2);
 }
 
 /**
