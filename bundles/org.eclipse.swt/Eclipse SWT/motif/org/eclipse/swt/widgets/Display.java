@@ -1072,6 +1072,11 @@ protected void release () {
 	super.release ();
 }
 void releaseDisplay () {
+
+	/* Destroy the hidden Override shell parent */
+	if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);
+	shellHandle = 0;
+	
 	/* Dispose the caret callback */
 	if (caretID != 0) OS.XtRemoveTimeOut (caretID);
 	caretID = caretProc = 0;
@@ -1081,7 +1086,7 @@ void releaseDisplay () {
 	/* Dispose the timer callback */
 	if (timerIDs != null) {
 		for (int i=0; i<=timerIDs.length; i++) {
-			 OS.XtRemoveTimeOut (timerIDs [i]);
+			if (timerIDs [i] != 0) OS.XtRemoveTimeOut (timerIDs [i]);
 		}
 	}
 	timerIDs = null;
@@ -1124,10 +1129,6 @@ void releaseDisplay () {
 	/* Free the translations (no documentation describes how to do this) */
 	//OS.XtFree (arrowTranslations);
 	//OS.XtFree (tabTranslations);
-
-	/* Destroy the hidden Override shell parent */
-	if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);
-	shellHandle = 0;
 
 	/* Release references */
 	thread = null;
