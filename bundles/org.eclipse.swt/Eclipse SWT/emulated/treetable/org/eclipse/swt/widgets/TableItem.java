@@ -284,6 +284,31 @@ public Color getBackground(){
 	return parent.getBackground();
 }
 /**
+ * Returns the background color at the given column index in the receiver.
+ *
+ * @param index the column index
+ * @return the background color
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_Range - if the column index is invalid</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public Color getBackground (int index) {
+	checkWidget ();
+	Table parent = getParent();
+	if (0 > index || index >= parent.getColumnCount ()) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	// TODO
+	return getBackground ();
+}
+/**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent at a column in the table.
  *
@@ -415,6 +440,32 @@ public Color getForeground(){
 	if (foreground != null) return foreground;
 	Table parent = getParent();
 	return parent.getForeground();
+}
+/**
+ * 
+ * Returns the foreground color at the given column index in the receiver.
+ *
+ * @param index the column index
+ * @return the foreground color
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_Range - if the column index is invalid</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public Color getForeground (int index) {
+	checkWidget ();
+	Table parent = getParent();
+	if (0 > index || index >= parent.getColumnCount ()) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	// TODO
+	return getForeground ();
 }
 /**
  * Returns <code>true</code> if the receiver is grayed,
@@ -1043,6 +1094,36 @@ public void setBackground (Color color) {
 	redraw();
 }
 /**
+ * Sets the background color at the given column index in the receiver 
+ * to the color specified by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param index the column index
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ * 
+ */
+public void setBackground (int index, Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	Table parent = getParent();
+	if (0 > index || index >= parent.getColumnCount ()) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	// TODO
+}
+/**
  * Sets the receiver's foreground color to the color specified
  * by the argument, or to the default system color for the item
  * if the argument is null.
@@ -1066,6 +1147,36 @@ public void setForeground (Color color){
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	foreground = color;
 	redraw(); 
+}
+/**
+ * Sets the foreground color at the given column index in the receiver 
+ * to the color specified by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param index the column index
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ * 
+ */
+public void setForeground (int index, Color color){
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	Table parent = getParent();
+	if (0 > index || index >= parent.getColumnCount()) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	// TODO
 }
 /**
  * Sets the image for multiple columns in the Table. 
