@@ -426,9 +426,9 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 		int pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
 		if (gdkImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		byte[] line = new byte[stride];
-		for (int y=0; y<srcWidth; y++) {
+		for (int y=0; y<srcHeight; y++) {
 			OS.memmove(line, pixels + (y * stride), stride);
-			for (int x=0; x<srcHeight; x++) {
+			for (int x=0; x<srcWidth; x++) {
 				if (OS.gdk_image_get_pixel(gdkImagePtr, x + srcX, y + srcY) != 0) {
 					line[x*4+3] = (byte)0xFF;
 				} else {
