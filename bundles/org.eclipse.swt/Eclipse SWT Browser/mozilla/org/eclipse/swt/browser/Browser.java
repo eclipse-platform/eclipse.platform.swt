@@ -55,7 +55,6 @@ public class Browser extends Composite {
 	String html;
 
 	/* External Listener management */
-	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
 	LocationListener[] locationListeners = new LocationListener[0];
 	NewWindowListener[] newWindowListeners = new NewWindowListener[0];
 	ProgressListener[] progressListeners = new ProgressListener[0];
@@ -245,32 +244,6 @@ public Browser(Composite parent, int style) {
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
 	}
-}
-
-/**	 
- * Adds the listener to receive events.
- * <p>
- *
- * @param listener the listener
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTError <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);	
-	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length + 1];
-	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, closeWindowListeners.length);
-	closeWindowListeners = newCloseWindowListeners;
-	closeWindowListeners[closeWindowListeners.length - 1] = listener;
 }
 
 /**	 
@@ -761,44 +734,6 @@ public void refresh() {
 	*/
 	if (rc != XPCOM.NS_OK && rc != XPCOM.NS_ERROR_INVALID_POINTER) error(rc);	
 	webNavigation.Release();
-}
-
-/**	 
- * Removes the listener.
- *
- * @param listener the listener
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTError <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (closeWindowListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < closeWindowListeners.length; i++) {
-		if (listener == closeWindowListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (closeWindowListeners.length == 1) {
-		closeWindowListeners = new CloseWindowListener[0];
-		return;
-	}
-	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length - 1];
-	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, index);
-	System.arraycopy(closeWindowListeners, index + 1, newCloseWindowListeners, index, closeWindowListeners.length - index - 1);
-	closeWindowListeners = newCloseWindowListeners;
 }
 
 /**	 
@@ -1542,11 +1477,6 @@ int SetChromeFlags(int aChromeFlags) {
 }
    
 int DestroyBrowserWindow() {
-	CloseWindowEvent newEvent = new CloseWindowEvent(this);
-	newEvent.data = getDisplay();
-	newEvent.widget = this;
-	for (int i = 0; i < closeWindowListeners.length; i++)
-		closeWindowListeners[i].close(newEvent);
 	return XPCOM.NS_OK;
 }
    	

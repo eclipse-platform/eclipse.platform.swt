@@ -23,11 +23,6 @@ public Browser(Composite parent, int style) {
 	SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
-public void addCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-}
-
 public void addLocationListener(LocationListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);	
@@ -78,11 +73,6 @@ public String getUrl() {
 
 public void refresh() {
 	checkWidget();
-}
-
-public void removeCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 }
 
 public void removeLocationListener(LocationListener listener) {

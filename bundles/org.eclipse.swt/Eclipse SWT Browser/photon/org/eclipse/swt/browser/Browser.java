@@ -176,28 +176,6 @@ static int webProc(int handle, int data, int info) {
  *
  * @since 3.0
  */
-public void addCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-}
-
-/**	 
- * Adds the listener to receive events.
- * <p>
- *
- * @param listener the listener
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTError <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
 public void addLocationListener(LocationListener listener) {
 	checkWidget();
 	if (listener == null)
@@ -514,27 +492,6 @@ int Pt_CB_WEB_URL(int info) {
 public void refresh() {
 	checkWidget();
 	OS.PtSetResource(webHandle, OS.Pt_ARG_WEB_RELOAD, 1, 0);
-}
-
-/**	 
- * Removes the listener.
- *
- * @param listener the listener
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTError <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 }
 
 /**	 
