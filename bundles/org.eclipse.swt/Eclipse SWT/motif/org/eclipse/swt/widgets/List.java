@@ -1031,7 +1031,7 @@ public void select (int start, int end) {
 		int [] argList = {OS.XmNitemCount, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		int index = Math.min (argList[1] - 1, end) + 1;
-		if (index != 0 && index >= start) OS.XmListSelectPos (handle, index, false);
+		if (index != 0 && index >= start + 1) OS.XmListSelectPos (handle, index, false);
 		return;
 	}
 	/*
