@@ -168,6 +168,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.XtGetValues (handle, argList1, argList1.length / 2);
 		int xmString = argList1 [1];
 		if (OS.XmStringEmpty (xmString)) height += getFontHeight ();
+		if (xmString != 0) OS.XmStringFree (xmString);
 	}
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {	
 		int [] argList4 = new int [] {OS.XmNmarginLeft, 0, OS.XmNmarginRight, 0, OS.XmNmarginTop, 0, OS.XmNmarginBottom, 0};
@@ -414,7 +415,7 @@ public String getText () {
 		OS.XtFree (address);
 		result = Converter.mbcsToWcs (getCodePage (), buffer);
 	}	
-	if (xmString != 0) OS.XmStringFree (xmString);
+	OS.XmStringFree (xmString);
 	int count = 0;
 	if (mnemonic != 0) count++;
 	for (int i=0; i<result.length-1; i++)
