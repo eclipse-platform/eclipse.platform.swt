@@ -1395,6 +1395,13 @@ public void setVisibleItemCount (int count) {
 	checkWidget ();
 	if (count < 0) return;
 	visibleCount = count;
+	if ((style & SWT.DROP_DOWN) != 0) {
+		forceResize ();
+		RECT rect = new RECT ();
+		OS.GetWindowRect (handle, rect);
+		int flags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+		setBounds (0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
+	}
 }
 
 void subclass () {
