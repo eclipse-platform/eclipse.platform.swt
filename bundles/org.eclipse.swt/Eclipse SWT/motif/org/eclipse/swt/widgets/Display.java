@@ -1857,6 +1857,7 @@ int windowProc (int handle, int clientData, int callData, int unused) {
 }
 String wrapText (String text, int fontList, int width) {
 	String Lf = "\n";
+	text = convertToLf (text);
 	int length = text.length ();
 	if (width <= 0 || length == 0 || length == 1) return text;
 	StringBuffer result = new StringBuffer ();
@@ -1905,6 +1906,34 @@ String wrapText (String text, int fontList, int width) {
 			result.append (Lf);
 		}
 		lineStart = nextStart;
+	}
+	return result.toString ();
+}
+
+String convertToLf(String text) {
+	char Cr = '\r';
+	char Lf = '\n';
+	int length = text.length ();
+	if (length == 0) return text;
+	
+	/* Check for an LF or CR/LF.  Assume the rest of the string 
+	 * is formated that way.  This will not work if the string 
+	 * contains mixed delimiters. */
+	int i = text.indexOf (Lf, 0);
+	if (i == -1 || i == 0) return text;
+	if (text.charAt (i - 1) != Cr) return text;
+
+	/* The string is formatted with CR/LF.
+	 * Create a new string with the LF line delimiter. */
+	i = 0;
+	StringBuffer result = new StringBuffer ();
+	while (i < length) {
+		int j = text.indexOf (Cr, i);
+		if (j == -1) j = length;
+		String s = text.substring (i, j);
+		result.append (s);
+		i = j + 2;
+		result.append (Lf);
 	}
 	return result.toString ();
 }
