@@ -56,6 +56,7 @@ public class ControlExample {
 	Tab[] createTabs() {
 		return new Tab [] {
 			new ButtonTab (this),
+			new CanvasTab (this),
 			new ComboTab (this),
 			new CoolBarTab (this),
 			new DialogTab (this),

@@ -37,13 +37,13 @@ class CoolBarTab extends Tab {
 	}
 	
 	/**
-	 * Creates the "Display" group.
+	 * Creates the "Other" group.
 	 */
-	void createDisplayGroup () {
-		super.createDisplayGroup ();
+	void createOtherGroup () {
+		super.createOtherGroup ();
 	
 		/* Create display controls specific to this example */
-		lockedButton = new Button (displayGroup, SWT.CHECK);
+		lockedButton = new Button (otherGroup, SWT.CHECK);
 		lockedButton.setText (ControlExample.getResourceString("Locked"));
 	
 		/* Add the listeners */

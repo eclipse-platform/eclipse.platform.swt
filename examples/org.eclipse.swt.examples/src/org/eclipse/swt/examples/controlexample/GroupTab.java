@@ -34,13 +34,13 @@ class GroupTab extends Tab {
 	}
 	
 	/**
-	 * Creates the "Display" group.
+	 * Creates the "Other" group.
 	 */
-	void createDisplayGroup () {
-		super.createDisplayGroup ();
+	void createOtherGroup () {
+		super.createOtherGroup ();
 	
 		/* Create display controls specific to this example */
-		titleButton = new Button (displayGroup, SWT.CHECK);
+		titleButton = new Button (otherGroup, SWT.CHECK);
 		titleButton.setText (ControlExample.getResourceString("Title_Text"));
 	
 		/* Add the listeners */

@@ -31,7 +31,7 @@ import org.eclipse.swt.events.*;
  * column contains "Control" group.  The "Control" group
  * contains controls that allow the user to interact with
  * the example control.  The "Control" group typically
- * contains a "Style", "State" and "Size" group.  Subclasses
+ * contains a "Style", "Other" and "Size" group.  Subclasses
  * can override these defaults to augment a group or stop
  * a group from being created.
  */
@@ -42,7 +42,7 @@ abstract class Tab {
 
 	/* Common groups and composites */
 	Composite tabFolderPage;
-	Group exampleGroup, controlGroup, listenersGroup, displayGroup, sizeGroup, styleGroup, colorGroup;
+	Group exampleGroup, controlGroup, listenersGroup, otherGroup, sizeGroup, styleGroup, colorGroup;
 
 	/* Controlling instance */
 	final ControlExample instance;
@@ -100,7 +100,7 @@ abstract class Tab {
 		/*
 		 * Create the "Control" group.  This is the group on the
 		 * right half of each example tab.  It consists of the
-		 * style group, the display group and the size group.
+		 * "Style" group, the "Other" group and the "Size" group.
 		 */	
 		controlGroup = new Group (tabFolderPage, SWT.NONE);
 		controlGroup.setLayout (new GridLayout (2, true));
@@ -109,7 +109,7 @@ abstract class Tab {
 	
 		/* Create individual groups inside the "Control" group */
 		createStyleGroup ();
-		createDisplayGroup ();
+		createOtherGroup ();
 		createSizeGroup ();
 		createColorGroup ();
 		if (RTL_SUPPORT_ENABLE) {
@@ -153,7 +153,7 @@ abstract class Tab {
 	 * Creates the "Control" widget children.
 	 * Subclasses override this method to augment
 	 * the standard controls created in the "Style",
-	 * "State" and "Size" groups.
+	 * "Other" and "Size" groups.
 	 */
 	void createControlWidgets () {
 	}
@@ -262,20 +262,20 @@ abstract class Tab {
 	}
 	
 	/**
-	 * Creates the "State" group.  This is typically
+	 * Creates the "Other" group.  This is typically
 	 * a child of the "Control" group.
 	 */
-	void createDisplayGroup () {
+	void createOtherGroup () {
 		/* Create the group */
-		displayGroup = new Group (controlGroup, SWT.NONE);
-		displayGroup.setLayout (new GridLayout ());
-		displayGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		displayGroup.setText (ControlExample.getResourceString("State"));
+		otherGroup = new Group (controlGroup, SWT.NONE);
+		otherGroup.setLayout (new GridLayout ());
+		otherGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		otherGroup.setText (ControlExample.getResourceString("Other"));
 	
 		/* Create the controls */
-		enabledButton = new Button(displayGroup, SWT.CHECK);
+		enabledButton = new Button(otherGroup, SWT.CHECK);
 		enabledButton.setText(ControlExample.getResourceString("Enabled"));
-		visibleButton = new Button(displayGroup, SWT.CHECK);
+		visibleButton = new Button(otherGroup, SWT.CHECK);
 		visibleButton.setText(ControlExample.getResourceString("Visible"));
 	
 		/* Add the listeners */

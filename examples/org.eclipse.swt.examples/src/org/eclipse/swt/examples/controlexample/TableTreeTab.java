@@ -25,7 +25,7 @@ class TableTreeTab extends ScrollableTab {
 	/* Style widgets added to the "Style" group */
 	Button checkButton, fullSelectionButton;
 	
-	/* Display widgets added to the "Display" group */
+	/* Other widgets added to the "Other" group */
 	Button headerVisibleButton, linesVisibleButton;
 
 	/**
@@ -36,15 +36,15 @@ class TableTreeTab extends ScrollableTab {
 	}
 	
 	/**
-	 * Creates the "Display" group.
+	 * Creates the "Other" group.
 	 */
-	void createDisplayGroup () {
-		super.createDisplayGroup ();
+	void createOtherGroup () {
+		super.createOtherGroup ();
 	
 		/* Create display controls specific to this example */
-		headerVisibleButton = new Button (displayGroup, SWT.CHECK);
+		headerVisibleButton = new Button (otherGroup, SWT.CHECK);
 		headerVisibleButton.setText (ControlExample.getResourceString("Header_Visible"));
-		linesVisibleButton = new Button (displayGroup, SWT.CHECK);
+		linesVisibleButton = new Button (otherGroup, SWT.CHECK);
 		linesVisibleButton.setText (ControlExample.getResourceString("Lines_Visible"));
 	
 		/* Add the listeners */
