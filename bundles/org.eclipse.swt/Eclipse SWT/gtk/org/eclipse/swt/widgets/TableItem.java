@@ -176,8 +176,15 @@ public Rectangle getBounds (int index) {
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
-	int headerHeight = parent.getHeaderHeight ();
-	return new Rectangle (rect.x, rect.y + headerHeight, rect.width, rect.height);
+	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
+		if (OS.gtk_major_version () * 100 + OS.gtk_minor_version ()  * 10 + OS.gtk_micro_version () >= 213) {
+			int [] x = new int [1], w = new int [1];
+			OS.gtk_tree_view_column_cell_get_position (column, parent.checkRenderer, x, w);
+			rect.x += x [0] + w [0];
+			rect.width -= x [0] + w [0];
+		}
+	}
+	return new Rectangle (rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
@@ -354,10 +361,11 @@ public Rectangle getImageBounds (int index) {
 		OS.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, false, false);
 		OS.gtk_cell_renderer_get_size (pixbufRenderer, parentHandle, null, null, null, w, null);
 	} else {
-		OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
+		int [] x = new int [1];
+		OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
+		rect.x += x [0];
 	}
-	int headerHeight = parent.getHeaderHeight ();
-	return new Rectangle (rect.x, rect.y + headerHeight, w [0], rect.height);
+	return new Rectangle (rect.x, rect.y, w [0], rect.height);
 }
 
 /**
