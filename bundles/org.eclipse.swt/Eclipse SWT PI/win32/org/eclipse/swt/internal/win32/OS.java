@@ -703,6 +703,8 @@ public class OS {
 	public static final int SM_CXCURSOR = 0xd;
 	public static final int SM_CXEDGE = 0x2d;
 	public static final int SM_CXHSCROLL = 0x15;
+	public static final int SM_CXICON = 0x0b;
+	public static final int SM_CYICON = 0x0c;
 	public static final int SM_CXSCREEN = 0x0;
 	public static final int SM_CXVSCROLL = 0x2;
 	public static final int SM_CYBORDER = 0x6;

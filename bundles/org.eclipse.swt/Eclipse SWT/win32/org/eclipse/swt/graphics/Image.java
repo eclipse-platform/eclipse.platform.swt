@@ -784,12 +784,26 @@ public Color getBackground() {
 	int hOldObject = OS.SelectObject(hdcMem, handle);
 	int red = 0, green = 0, blue = 0;
 	if (bm.bmBitsPixel <= 8)  {
-		byte[] color = new byte[4];
-		if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-		int numColors = OS.GetDIBColorTable(hdcMem, transparentPixel, 1, color);
-		blue = color[0] & 0xFF;
-		green = color[1] & 0xFF;
-		red = color[2] & 0xFF;
+		if (OS.IsWinCE) {
+			byte[] pBits = new byte[1];
+			OS.MoveMemory(pBits, bm.bmBits, 1);
+			byte oldValue = pBits[0];			
+			int mask = (0xFF << (8 - bm.bmBitsPixel)) & 0x00FF;
+			pBits[0] = (byte)((transparentPixel << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
+			OS.MoveMemory(bm.bmBits, pBits, 1);
+			int color = OS.GetPixel(hdcMem, 0, 0);
+       		pBits[0] = oldValue;
+       		OS.MoveMemory(bm.bmBits, pBits, 1);				
+			blue = (color & 0xFF0000) >> 16;
+			green = (color & 0xFF00) >> 8;
+			red = color & 0xFF;
+		} else {
+			byte[] color = new byte[4];
+			int numColors = OS.GetDIBColorTable(hdcMem, transparentPixel, 1, color);
+			blue = color[0] & 0xFF;
+			green = color[1] & 0xFF;
+			red = color[2] & 0xFF;
+		}
 	} else {
 		switch (bm.bmBitsPixel) {
 			case 16:
@@ -839,17 +853,22 @@ public Rectangle getBounds() {
 			OS.GetObject(handle, BITMAP.sizeof, bm);
 			return new Rectangle(0, 0, bm.bmWidth, bm.bmHeight);
 		case SWT.ICON:
-			ICONINFO info = new ICONINFO();
-			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-			OS.GetIconInfo(handle, info);
-			int hBitmap = info.hbmColor;
-			if (hBitmap == 0) hBitmap = info.hbmMask;
-			bm = new BITMAP();
-			OS.GetObject(hBitmap, BITMAP.sizeof, bm);
-			if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
-			if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
-			if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
-			return new Rectangle(0, 0, bm.bmWidth, bm.bmHeight);
+			if (OS.IsWinCE) {
+				int width = OS.GetSystemMetrics (OS.SM_CXICON);
+				int height = OS.GetSystemMetrics (OS.SM_CYICON);
+				return new Rectangle(0, 0, width, height);
+			} else {
+				ICONINFO info = new ICONINFO();
+				OS.GetIconInfo(handle, info);
+				int hBitmap = info.hbmColor;
+				if (hBitmap == 0) hBitmap = info.hbmMask;
+				bm = new BITMAP();
+				OS.GetObject(hBitmap, BITMAP.sizeof, bm);
+				if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
+				if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
+				if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
+				return new Rectangle(0, 0, bm.bmWidth, bm.bmHeight);
+			}
 		default:
 			SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 			return null;
@@ -1620,6 +1639,10 @@ public boolean isDisposed() {
  * </ul>
  */
 public void setBackground(Color color) {
+	/*
+	* Note.  Not implemented on WinCE.
+	*/
+	if (OS.IsWinCE) return;
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);

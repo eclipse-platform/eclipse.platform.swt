@@ -106,27 +106,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	boolean isIcon = (bits & OS.SS_ICON) == OS.SS_ICON;
 	if (isBitmap || isIcon) {
 		if (image != null) {
-			BITMAP bm = new BITMAP ();
-			int hImage = image.handle;
-			switch (image.type) {
-				case SWT.BITMAP:
-					OS.GetObject (hImage, BITMAP.sizeof, bm);
-					width = bm.bmWidth;  height = bm.bmHeight;
-					break;
-				case SWT.ICON: {
-					ICONINFO info = new ICONINFO ();
-					if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
-					OS.GetIconInfo (hImage, info);
-					int hBitmap = info.hbmColor;
-					if (hBitmap == 0) hBitmap = info.hbmMask;
-					OS.GetObject (hBitmap, BITMAP.sizeof, bm);
-					if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
-					if (info.hbmColor != 0) OS.DeleteObject (info.hbmColor);
-					if (info.hbmMask != 0) OS.DeleteObject (info.hbmMask);
-					width = bm.bmWidth;  height = bm.bmHeight;
-					break;
-				}
-			}
+			Rectangle rect = image.getBounds();
+			width = rect.width;
+			height = rect.height;
 		}
 	} else {
 		int hDC = OS.GetDC (handle);

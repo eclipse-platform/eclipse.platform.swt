@@ -178,31 +178,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.ReleaseDC (handle, hDC);
 	} else {
 		if (image != null) {
+			Rectangle rect = image.getBounds();
+			width = rect.width;
+			height = rect.height;
 			extra = 8;
-			switch (image.type) {
-				case SWT.BITMAP: {
-					BITMAP bm = new BITMAP ();
-					int hImage = image.handle;
-					OS.GetObject (hImage, BITMAP.sizeof, bm);
-					width += bm.bmWidth;  height += bm.bmHeight;
-					break;
-				}
-				case SWT.ICON: {
-					BITMAP bm = new BITMAP ();
-					ICONINFO info = new ICONINFO ();
-					int hImage = image.handle;
-					if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
-					OS.GetIconInfo (hImage, info);
-					int hBitmap = info.hbmColor;
-					if (hBitmap == 0) hBitmap = info.hbmMask;
-					OS.GetObject (hBitmap, BITMAP.sizeof, bm);
-					if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
-					if (info.hbmColor != 0) OS.DeleteObject (info.hbmColor);
-					if (info.hbmMask != 0) OS.DeleteObject (info.hbmMask);
-					width += bm.bmWidth;  height += bm.bmHeight;
-					break;
-				}
-			}
 		}
 	}
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {

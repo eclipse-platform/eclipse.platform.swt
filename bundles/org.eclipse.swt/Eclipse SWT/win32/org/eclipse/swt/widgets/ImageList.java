@@ -57,17 +57,17 @@ public int add (Image image) {
 		if (images [index] == null) break;
 		index++;
 	}
-	int hImage = image.handle;
 	int [] cx = new int [1], cy = new int [1];
+	if (count == 0) {
+		Rectangle rect = image.getBounds();
+		cx [0] = rect.width;
+		cy [0] = rect.height;
+		OS.ImageList_SetIconSize (handle, cx [0], cy [0]);
+	}
+	int hImage = image.handle;
 	OS.ImageList_GetIconSize (handle, cx, cy);
 	switch (image.type) {
 		case SWT.BITMAP: {
-			if (count == 0) {
-				BITMAP bm = new BITMAP ();
-				OS.GetObject (hImage, BITMAP.sizeof, bm);
-				cx [0] = bm.bmWidth; cy [0] = bm.bmHeight;
-				OS.ImageList_SetIconSize (handle, cx [0], cy [0]);
-			}
 			int hBitmap = copyBitmap (hImage, cx [0], cy [0]);
 			int background = -1;
 			Color color = image.getBackground ();
@@ -83,20 +83,6 @@ public int add (Image image) {
 			break;
 		}
 		case SWT.ICON: {
-			if (count == 0) {
-				BITMAP bm = new BITMAP ();
-				ICONINFO info = new ICONINFO ();
-				if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
-				OS.GetIconInfo (hImage, info);
-				int hBitmap = info.hbmColor;
-				if (hBitmap == 0) hBitmap = info.hbmMask;
-				OS.GetObject (hBitmap, BITMAP.sizeof, bm);
-				if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
-				if (info.hbmColor != 0) OS.DeleteObject (info.hbmColor);
-				if (info.hbmMask != 0) OS.DeleteObject (info.hbmMask);
-				cx [0] = bm.bmWidth;  cy [0] = bm.bmHeight;
-				OS.ImageList_SetIconSize (handle, cx [0], cy [0]);
-			}
 			int hIcon = copyIcon (hImage, cx [0], cy [0]);
 			OS.ImageList_ReplaceIcon (handle, index == count ? -1 : index, hIcon);
 			OS.DestroyIcon (hIcon);
