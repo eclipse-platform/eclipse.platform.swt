@@ -9,8 +9,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.widgets;
-
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -115,6 +113,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
 	wrapItems(wHint);
+	boolean flat = (style & SWT.FLAT) != 0;
 	for (int row = 0; row < items.length; row++) {
 		int rowWidth = 0, rowHeight = 0;
 		for (int i = 0; i < items[row].length; i++) {
@@ -122,7 +121,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			rowHeight = Math.max(rowHeight, items[row][i].getSize().y);
 		}
 		height += rowHeight;
-		if (row > 0) height += ROW_SPACING;
+		if (!flat && row > 0) height += ROW_SPACING;
 		width = Math.max(width, rowWidth);
 	}
 	wrapItems(getSize().x);
@@ -648,6 +647,7 @@ void onPaint(Event event) {
 	Color shadowColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 	Color highlightColor = display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
 
+	boolean flat = (style & SWT.FLAT) != 0;
 	int stopX = getBounds().width;
 	for (int row = 0; row < items.length; row++) {
 		Rectangle bounds = new Rectangle(0, 0, 0, 0);
@@ -656,7 +656,7 @@ void onPaint(Event event) {
 			if (!gc.getClipping().intersects(bounds)) continue;
 
 			/* Draw separator. */
-			if (i != 0) {
+			if (!flat && i != 0) {
 				gc.setForeground(shadowColor);
 				gc.drawLine(bounds.x, bounds.y, bounds.x, bounds.y + bounds.height - 1);
 				gc.setForeground(highlightColor);
@@ -686,7 +686,7 @@ void onPaint(Event event) {
 					bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim);
 			}	
 		}
-		if (row + 1 < items.length) {
+		if (!flat && row + 1 < items.length) {
 			/* Draw row separator. */
 			int separatorY = bounds.y + bounds.height;
 			gc.setForeground(shadowColor);
@@ -742,6 +742,7 @@ void removeItemFromRow(CoolItem item, int rowIndex, boolean disposed) {
 int layoutItems () {
 	int y = 0, width = getSize().x;
 	wrapItems(width);
+	int rowSpacing = (style & SWT.FLAT) != 0 ? 0 : ROW_SPACING; 
 	for (int row = 0; row < items.length; row++) {
 		int count = items[row].length;
 		int x = 0;
@@ -757,7 +758,7 @@ int layoutItems () {
 			available -= item.internalGetMinimumWidth();	
 		}
 		rowHeight += 2 * CoolItem.MARGIN_HEIGHT;
-		if (row > 0) y += ROW_SPACING;
+		if (row > 0) y += rowSpacing;
 	
 		/* lay the items out */
 		for (int i = 0; i < count; i++) {
@@ -777,15 +778,15 @@ int layoutItems () {
 					damage = newBounds;
 					damage.add(oldBounds);
 					/* Redraw the row separator as well. */
-					damage.y -= ROW_SPACING;
-					damage.height += 2 * ROW_SPACING;
+					damage.y -= rowSpacing;
+					damage.height += 2 * rowSpacing;
 				} else if (oldBounds.height != newBounds.height) {
 					/* 
 					 * Draw from the bottom of the gripper to the bottom of the new area.
 					 * (Bottom of the gripper is -3 from the bottom of the item).
 					 */
 					damage.y = newBounds.y + Math.min(oldBounds.height, newBounds.height) - 3;
-					damage.height = newBounds.y + newBounds.height + ROW_SPACING;
+					damage.height = newBounds.y + newBounds.height + rowSpacing;
 					damage.x = oldBounds.x - CoolItem.MARGIN_WIDTH;
 					damage.width = oldBounds.width + CoolItem.MARGIN_WIDTH;
 				} else if (oldBounds.x != newBounds.x) {
