@@ -1965,7 +1965,7 @@ LRESULT wmClipboard (int msg, int wParam, int lParam) {
 			}
 			break;
 	}
-	if (newText != null && !newText.equals (oldText)) {
+	if (newText != null) {
 		oldText = newText;
 		newText = verifyText (newText, start [0], end [0], null);
 		if (newText == null) return LRESULT.ZERO;

@@ -114,10 +114,6 @@ int getNextValue(PngDecodingDataStream stream) {
 	return codeValues[index];
 }	
 	
-class CodeValuePair {
-	int value;
-	int code;
-}
 class CodeLengthInfo {
 	int length;
 	int max;

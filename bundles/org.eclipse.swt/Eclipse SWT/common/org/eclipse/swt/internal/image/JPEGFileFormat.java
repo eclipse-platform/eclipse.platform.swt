@@ -36,12 +36,10 @@ final class JPEGFileFormat extends FileFormat {
 	int bufferCurrentPosition;
 	int restartsToGo;
 	int nextRestartNumber;
-	JPEGArithmeticConditioningTable arithmeticTables;
 	JPEGHuffmanTable[] acHuffmanTables;
 	JPEGHuffmanTable[] dcHuffmanTables;
 	int[][] quantizationTables;
 	int currentByte;
-	int decoderQFactor;
 	int encoderQFactor = 75;
 	int eobrun = 0;
 	/* JPEGConstants */
@@ -1116,8 +1114,7 @@ void getCOM() {
 	new JPEGComment(inputStream);
 }
 void getDAC() {
-	JPEGArithmeticConditioningTable dac = new JPEGArithmeticConditioningTable(inputStream);
-	arithmeticTables = dac;
+	new JPEGArithmeticConditioningTable(inputStream);
 }
 void getDHT() {
 	JPEGHuffmanTable dht = new JPEGHuffmanTable(inputStream);

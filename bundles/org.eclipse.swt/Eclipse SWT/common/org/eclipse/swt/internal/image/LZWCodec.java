@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.*;
 final class LZWCodec {
 	int bitsPerPixel, blockSize, blockIndex, currentByte, bitsLeft,
 		codeSize, clearCode, endCode, newCodes, topSlot, currentSlot,
-		imageWidth, imageHeight, imageX, imageY, pass, line, codeMask, buffer;
+		imageWidth, imageHeight, imageX, imageY, pass, line, codeMask;
 	byte[] block, lineArray;
 	int[] stack, suffix, prefix;
 	LZWNode[] nodeStack;

@@ -103,7 +103,7 @@ public class Display extends Device {
 	/* Windows and Events */
 	Event [] eventQueue;
 	Callback windowCallback;
-	int windowProc, threadId, processId;
+	int windowProc, threadId;
 	TCHAR windowClass;
 	static int WindowClassCount;
 	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
@@ -1808,7 +1808,7 @@ protected void init () {
 	
 	/* Remember the current procsss and thread */
 	threadId = OS.GetCurrentThreadId ();
-	processId = OS.GetCurrentProcessId ();
+	//processId = OS.GetCurrentProcessId ();
 	
 	/* Use the character encoding for the default locale */
 	windowClass = new TCHAR (0, WindowName + WindowClassCount++, true);

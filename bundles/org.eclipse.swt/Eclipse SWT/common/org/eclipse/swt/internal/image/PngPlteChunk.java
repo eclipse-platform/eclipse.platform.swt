@@ -57,7 +57,6 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	if (!readState.readIHDR
 		|| readState.readPLTE
 		|| readState.readTRNS
-		|| readState.readBKGD
 		|| readState.readIDAT
 		|| readState.readIEND) 
 	{

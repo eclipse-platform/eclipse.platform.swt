@@ -20,7 +20,6 @@ final class PNGFileFormat extends FileFormat {
 	PngDecodingDataStream decodingStream;
 	PngIhdrChunk headerChunk;
 	PngPlteChunk paletteChunk;
-	PngTrnsChunk trnsChunk;
 	ImageData imageData;
 	byte[] data;
 	byte[] alphaPalette;

@@ -82,7 +82,7 @@ public final class FormData {
 	public FormAttachment bottom;
 	
 	int cacheWidth = -1, cacheHeight = -1;
-	int defaultWhint, defaultHhint, defaultWidth = -1, defaultHeight = -1;
+	int defaultWidth = -1, defaultHeight = -1;
 	int currentWhint, currentHhint, currentWidth = -1, currentHeight = -1;
 	FormAttachment cacheLeft, cacheRight, cacheTop, cacheBottom;
 	boolean isVisited, needed;
@@ -100,8 +100,6 @@ void computeSize (Control control, int wHint, int hHint, boolean flushCache) {
 	if (wHint == this.width && hHint == this.height) {
 		if (defaultWidth == -1 || defaultHeight == -1) {
 			Point size =  control.computeSize (wHint, hHint, flushCache);
-			defaultWhint = wHint;
-			defaultHhint = hHint;
 			defaultWidth = size.x;
 			defaultHeight = size.y;
 		}

@@ -637,8 +637,8 @@ public class StyledText extends Canvas {
 	 * </p>
 	 */
 	class RTFWriter extends TextWriter {
-		final int DEFAULT_FOREGROUND = 0;
-		final int DEFAULT_BACKGROUND = 1;
+		static final int DEFAULT_FOREGROUND = 0;
+		static final int DEFAULT_BACKGROUND = 1;
 		Vector colorTable = new Vector();
 		boolean WriteUnicode;
 		
@@ -720,8 +720,7 @@ public class StyledText extends Canvas {
 				}
 			}
 		}
-		if (osName != null &&
-			osName.startsWith(Win95) == false &&
+		if (osName.startsWith(Win95) == false &&
 			osName.startsWith(Win98) == false &&
 			osName.startsWith(WinME) == false &&
 			(osName.startsWith(WinNT) == false || majorVersion > 4)) {

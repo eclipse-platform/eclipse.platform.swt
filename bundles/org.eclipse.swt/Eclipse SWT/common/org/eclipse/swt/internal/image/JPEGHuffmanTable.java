@@ -25,8 +25,6 @@ final class JPEGHuffmanTable extends JPEGVariableSizeSegment {
 	JPEGHuffmanTable[] allTables;
 	int tableClass;
 	int tableIdentifier;
-	int[] dhCodes;
-	int[] dhCodeLengths;
 	int[] dhMaxCodes;
 	int[] dhMinCodes;
 	int[] dhValPtrs;
@@ -248,8 +246,6 @@ void initialize() {
 		dhtTable.tableClass = tc;
 		dhtTable.tableIdentifier = tid;
 		dhtTable.dhValues = huffVals;
-		dhtTable.dhCodes = huffCodes;
-		dhtTable.dhCodeLengths = huffCodeLengths;
 		dhtTable.dhMinCodes = minCodes;
 		dhtTable.dhMaxCodes = maxCodes;
 		dhtTable.dhValPtrs = valPtrs;

@@ -18,7 +18,6 @@ class DefaultLineStyler implements LineStyleListener, LineBackgroundListener {
 	StyledTextContent content;
 	StyleRange styles[] = new StyleRange[0];
 	int styleCount = 0;	// the number of styles	
-	int styleExpandExp = 1; // the expansion exponent, used to increase the styles array exponentially
 	int lineExpandExp = 1; 	// the expansion exponent, used to increase the lines array exponentially
 	int lineCount = 0;
 	Color lineBackgrounds[];
@@ -345,7 +344,6 @@ void setLineBackground(int startLine, int count, Color background) {
 void setStyleRange(StyleRange newStyle) {
 	if (newStyle == null) {
 		styles = new StyleRange[0];
-		styleExpandExp = 1;
 		styleCount = 0;
 		return;
 	}
@@ -470,7 +468,6 @@ void setStyleRanges(StyleRange[] styles) {
 	this.styles = new StyleRange[styles.length];
 	System.arraycopy(styles, 0, this.styles, 0, styles.length);
 	styleCount = styles.length;
-	styleExpandExp = 1;
 }
 /** 
  * Updates the style ranges and line backgrounds to reflect a pending text 

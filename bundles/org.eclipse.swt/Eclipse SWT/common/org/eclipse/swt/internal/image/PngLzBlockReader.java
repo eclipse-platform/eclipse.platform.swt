@@ -12,7 +12,6 @@ package org.eclipse.swt.internal.image;
 
 
 public class PngLzBlockReader {
-	boolean readHeader;
 	boolean isLastBlock;
 	byte compressionType;
 	int uncompressedBytesRemaining;
@@ -57,7 +56,6 @@ public class PngLzBlockReader {
 
 PngLzBlockReader(PngDecodingDataStream stream) {
 	this.stream = stream;
-	readHeader = false;
 	isLastBlock = false;
 }
 

@@ -18,7 +18,6 @@ class PngFileReadState extends Object {
 	boolean readIEND;
 	
 	// Non - critical chunks
-	boolean readBKGD;
 	boolean readTRNS;
 	
 	// Set to true after IDATs have been read.
