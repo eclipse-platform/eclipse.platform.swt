@@ -67,6 +67,10 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
+	if (Printer.getDefaultPrinterData() == null) {
+		// No printer installed. Skip test.
+		return;
+	}
 	Class printerClass = null;
 	try {
 		printerClass = Class.forName("org.eclipse.swt.printing.Printer");
@@ -121,6 +125,10 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 	testGC.dispose();
 	canvas.dispose();
 
+	if (Printer.getDefaultPrinterData() == null) {
+		// No printer installed. Skip test.
+		return;
+	}
 	Class printerClass = null;
 	try {
 		printerClass = Class.forName("org.eclipse.swt.printing.Printer");
