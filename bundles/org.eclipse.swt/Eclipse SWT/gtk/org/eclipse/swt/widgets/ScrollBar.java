@@ -595,7 +595,7 @@ public void setThumb (int value) {
 	if (value < 1) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle);
-	if (value > adjustment.upper - adjustment.lower) return;
+	value = (int) Math.min (value, adjustment.upper - adjustment.lower); 
 	adjustment.page_size = (double) value;
 	adjustment.value = Math.min (adjustment.value, adjustment.upper - value);
 	OS.memmove (handle, adjustment);
@@ -630,9 +630,9 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (minimum < 0) return;
 	if (maximum < 0) return;
 	if (thumb < 1) return;
-	if (maximum - minimum - thumb < 0) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
+	thumb = Math.min (thumb, maximum - minimum);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle);
 	adjustment.lower = minimum;
