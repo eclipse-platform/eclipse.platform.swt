@@ -592,11 +592,11 @@ void updateImages () {
 		}
 		disabledImageList.add (disabled);
 		parent.setDisabledImageList (disabledImageList);
-		if ((parent.style & SWT.FLAT) != 0) {
+//		if ((parent.style & SWT.FLAT) != 0) {
 			if (hotImageList == null) hotImageList = display.getToolHotImageList (size);
 			hotImageList.add (hotImage != null ? hotImage : image);
 			parent.setHotImageList (hotImageList);
-		}
+//		}
 	} else {
 		if (imageList != null) imageList.put (info.iImage, image);
 		if (disabledImageList != null) {
