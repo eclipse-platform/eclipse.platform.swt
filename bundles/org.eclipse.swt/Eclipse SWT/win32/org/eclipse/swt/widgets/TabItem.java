@@ -226,6 +226,23 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int index = parent.indexOf (this);
 	if (index == -1) return;
+	if (COMCTL32_MAJOR >= 6) {
+		/*
+		* Feature in comctl version 6.0.  Tab items with an image
+		* and a label including the character '&' are rendered
+		* incorrectly (even when it is a sequence '&&'). The image
+		* overlaps the label.  The fix is to remove all '&' from
+		* the string. 
+		*/
+		int length = string.length ();
+		char[] text = new char [length];
+		string.getChars( 0, length, text, 0);
+		int i = 0, j = 0;
+		for (i=0; i<length; i++) {
+			if (text[i] != '&') text [j++] = text [i];
+		}
+		if (j < i) string = new String (text, 0, j);
+	}
 	super.setText (string);
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
