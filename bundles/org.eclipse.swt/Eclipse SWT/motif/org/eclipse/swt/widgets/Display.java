@@ -811,9 +811,9 @@ public Control getCursorControl () {
 	int [] unused = new int [1], buffer = new int [1];
 	int xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
 	do {
-		if (OS.XQueryPointer (
-			xDisplay, xParent, unused, buffer,
-			unused, unused, unused, unused, unused) == 0) return null;
+		if (OS.XQueryPointer (xDisplay, xParent, unused, buffer, unused, unused, unused, unused, unused) == 0) {
+			return null;
+		}
 		if ((xWindow = buffer [0]) != 0) xParent = xWindow;
 	} while (xWindow != 0);
 	int handle = OS.XtWindowToWidget (xDisplay, xParent);
@@ -841,7 +841,7 @@ public Point getCursorLocation () {
 	checkDevice ();
 	int window = OS.XDefaultRootWindow (xDisplay);
 	int [] rootX = new int [1], rootY = new int [1], unused = new int [1];
-	OS.XQueryPointer(xDisplay, window, unused, unused, rootX, rootY, unused, unused, unused);
+	OS.XQueryPointer (xDisplay, window, unused, unused, rootX, rootY, unused, unused, unused);
 	return new Point (rootX [0], rootY [0]);
 }
 /**
