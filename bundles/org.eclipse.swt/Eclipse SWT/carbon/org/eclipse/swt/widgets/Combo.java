@@ -1004,13 +1004,16 @@ public void select (int index) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	
-	if (menuHandle != 0)
-		OS.SetControl32BitValue(handle, index+1);
-	else {
+	if (menuHandle != 0) {
+		int selected= OS.GetControlValue(handle)-1;
+		if (index != selected)	{
+			OS.SetControl32BitValue(handle, index+1);
+			sendEvent(SWT.Modify);
+		}
+	} else {
 		String string= _getItem(index);
 		_setText(string);
 		_selectAll();
-		//sendEvent(SWT.Modify);
 	}
 }
 /**
