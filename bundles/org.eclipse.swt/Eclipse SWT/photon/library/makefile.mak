@@ -3,8 +3,8 @@
 # (c) Copyright IBM Corp., 2000, 2001
 # All Rights Reserved.
 
-maj_ver=0
-min_ver=125
+maj_ver=2
+min_ver=001
 revision=0
 
 #assumes IVE_HOME is set in the environment

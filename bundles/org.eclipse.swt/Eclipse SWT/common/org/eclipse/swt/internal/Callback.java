@@ -31,12 +31,12 @@ public class Callback {
 	/**
 	 * SWT Major version number (must be >= 0)
 	 */
-	public static int MAJOR_VERSION = 0;
+	public static int MAJOR_VERSION = 2;
 	
 	/**
 	 * SWT Minor version number (must be in the range 0..999)
 	 */
-	public static int MINOR_VERSION = 125;
+	public static int MINOR_VERSION = 1;
 	
 	/**
 	 * SWT revision number (must be >= 0)
