@@ -376,6 +376,17 @@ public void copy () {
 
 void createHandle () {
 	super.createHandle ();
+	/*
+	* Bug in Windows.  If the combo box has the CBS_SIMPLE style,
+	* the list portion of the combo box is not drawn correctly the
+	* first time, causing pixel corruption.  The fix is to ensure
+	* that the combo box has been resized more than once.
+	*/
+	if ((style & SWT.SIMPLE) != 0) {
+		int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+		OS.SetWindowPos (handle, 0, 0, 0, 0x3FFF, 0x3FFF, flags);
+		OS.SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
+	}
 	state &= ~CANVAS;
 }
 
