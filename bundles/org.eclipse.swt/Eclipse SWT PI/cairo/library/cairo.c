@@ -383,16 +383,6 @@ fail:
 }
 #endif
 
-#ifndef NO_cairo_1font_1current_1transform
-JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1font_1current_1transform)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	Cairo_NATIVE_ENTER(env, that, cairo_1font_1current_1transform_FUNC);
-	cairo_font_current_transform((cairo_font_t *)arg0, (cairo_matrix_t *)arg1);
-	Cairo_NATIVE_EXIT(env, that, cairo_1font_1current_1transform_FUNC);
-}
-#endif
-
 #ifndef NO_cairo_1font_1destroy
 JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1font_1destroy)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -422,16 +412,6 @@ JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1font_1reference)
 	Cairo_NATIVE_ENTER(env, that, cairo_1font_1reference_FUNC);
 	cairo_font_reference((cairo_font_t *)arg0);
 	Cairo_NATIVE_EXIT(env, that, cairo_1font_1reference_FUNC);
-}
-#endif
-
-#ifndef NO_cairo_1font_1set_1transform
-JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1font_1set_1transform)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	Cairo_NATIVE_ENTER(env, that, cairo_1font_1set_1transform_FUNC);
-	cairo_font_set_transform((cairo_font_t *)arg0, (cairo_matrix_t *)arg1);
-	Cairo_NATIVE_EXIT(env, that, cairo_1font_1set_1transform_FUNC);
 }
 #endif
 

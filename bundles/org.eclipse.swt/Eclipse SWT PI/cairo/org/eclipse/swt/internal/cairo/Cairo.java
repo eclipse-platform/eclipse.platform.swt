@@ -149,8 +149,6 @@ public static final synchronized native void cairo_text_path  (int /*long*/ ct, 
 public static final synchronized native void cairo_glyph_path (int /*long*/ ct, int /*long*/ glyphs, int num_glyphs);
 public static final synchronized native void cairo_font_reference (int /*long*/ font);
 public static final synchronized native void cairo_font_destroy (int /*long*/ font);
-public static final synchronized native void cairo_font_set_transform (int /*long*/ font, int /*long*/ matrix);
-public static final synchronized native void cairo_font_current_transform (int /*long*/ font, int /*long*/ matrix);
 public static final synchronized native void cairo_show_surface (int /*long*/ cr, int /*long*/ surface, int width, int height);
 public static final synchronized native int /*long*/ cairo_current_operator (int /*long*/ cr);
 public static final synchronized native void cairo_current_rgb_color (int /*long*/ cr, double[] red, double[] green, double[] blue);
