@@ -145,6 +145,17 @@ public Browser(Composite parent, int style) {
 		public void handleEvent(Event e) {
 			switch (e.type) {
 				case SWT.Dispose: {
+					Shell shell = getShell();
+					shell.removeListener(SWT.Resize, this);
+					shell.removeListener(SWT.Show, this);
+					shell.removeListener(SWT.Hide, this);
+					Control c = Browser.this;
+					do {
+						c.removeListener(SWT.Show, this);
+						c.removeListener(SWT.Hide, this);
+						c = c.getParent();
+					} while (c != shell);
+
 					Map.remove(new Integer(webView));
 					WebKit.objc_msgSend(notificationCenter, WebKit.S_removeObserver_name_object, Delegate, 0, webView);
 					break;
