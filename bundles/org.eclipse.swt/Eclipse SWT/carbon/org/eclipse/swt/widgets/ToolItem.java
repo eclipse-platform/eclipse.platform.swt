@@ -1087,12 +1087,13 @@ void updateText () {
 	if (text.length () > 0) {
 		Font font = parent.getFont ();
 		GC gc = new GC (parent);
-		Point size = gc.stringExtent (text);
+		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
+		Point size = gc.textExtent (text, flags);
 		gc.dispose ();
 		Image image = new Image (display, size.x, size.y);
 		gc = new GC (image);
 		gc.setFont (font);
-		gc.drawString (text, 0, 0);
+		gc.drawText (text, 0, 0, flags);
 		gc.dispose ();
 		ImageData data = image.getImageData ();
 		data.transparentPixel = 0xFFFFFFFF;
