@@ -245,7 +245,14 @@ void createHandle (int index) {
 	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", TEXT_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
+	
+	/*
+	 * Bug on GTK. Gtk renders the background of the text renderer on top of the pixbuf renderer.
+	 * This only happens in version 2.2.1 and earlier. The fix is not to set the background.   
+	 */
+	if (OS.gtk_major_version () * 100 + OS.gtk_minor_version () * 10 + OS.gtk_micro_version () > 221) {
+		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
+	}
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "font-desc", FONT_COLUMN);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);

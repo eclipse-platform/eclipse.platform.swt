@@ -502,7 +502,7 @@ public void setMinimumSize (Point size) {
 public void setPreferredSize (int width, int height) {
 	checkWidget();
 	ideal = true;
-	preferredWidth = Math.max (width, minimumWidth + MINIMUM_WIDTH);
+	preferredWidth = Math.max (width, MINIMUM_WIDTH);
 	preferredHeight = height;
 }
 /**
