@@ -422,7 +422,7 @@ public class StyledText extends Canvas {
 		pageSize = clientArea.height / renderer.getLineHeight();
 		StyledTextContent content = renderer.getContent();
 		startLine = 0;
-		endLine = content.getLineCount() - 1;
+			endLine = content.getLineCount() - 1;
 		PrinterData data = printer.getPrinterData();
 		if (data.scope == PrinterData.PAGE_RANGE) {
 			startLine = (startPage - 1) * pageSize;
@@ -479,11 +479,11 @@ public class StyledText extends Canvas {
 				line, i, paintY, gc, background, foreground, true);
 			if (paintY + lineHeight * 2 > clientArea.y + clientArea.height) {
 				endPage(page);
-				paintY = clientArea.y;
+				paintY = clientArea.y - lineHeight;
 				page++;
 				if (page > endPage || i == lineCount - 1) {
 					break;
-				}				
+				}
 			}
 		}
 		if (paintY > clientArea.y && paintY <= clientArea.y + clientArea.height) {
