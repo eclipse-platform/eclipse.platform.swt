@@ -163,6 +163,7 @@ public class OS {
 	public static final int kDataBrowserDefaultPropertyFlags = 0;
 	public static final int kDataBrowserDragSelect = 1 << 0;
 	public static final int kDataBrowserIconAndTextType = ('t'<<24) + ('i'<<16) + ('c'<<8) + 'n';
+	public static final int kDataBrowserItemAnyState = -1;
 	public static final int kDataBrowserItemIsActiveProperty = 1;
 	public static final int kDataBrowserItemIsContainerProperty = 4;
 	public static final int kDataBrowserItemIsEditableProperty = 3;
