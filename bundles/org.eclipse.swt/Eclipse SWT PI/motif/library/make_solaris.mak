@@ -32,7 +32,7 @@ WS_PREFIX    = motif
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWT_OBJ      = callback.o structs.o swt.o 
 SWT_LIB      = -L$(MOTIF_HOME)/lib -L/usr/lib  \
-	       -G -lXm -lXt -lX11 -lm
+	       -G -lXm -lXt -lX11 -lm -lXp
 
 CDE_PREFIX   = swt-cde
 CDE_DLL      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
