@@ -391,7 +391,7 @@ void createItem (TableColumn column, int index) {
 void createItem (TableItem item) {
 	int index = item.index;
 	if (itemsCount == items.length) {
-		int grow = redraw ? 4 : 1000;
+		int grow = redraw ? 4 : Math.max (4, items.length * 3 / 2);
 		TableItem[] newItems = new TableItem [items.length + grow];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
