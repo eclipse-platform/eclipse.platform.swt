@@ -287,7 +287,7 @@ public void dispose () {
 }
 
 void error (int code) {
-	throw new SWTError (code);
+	SWT.error (code);
 }
 
 /**

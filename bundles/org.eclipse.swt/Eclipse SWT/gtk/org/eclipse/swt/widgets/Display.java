@@ -473,7 +473,7 @@ public void disposeExec (Runnable runnable) {
  * @see SWTError#error
  */
 void error (int code) {
-	throw new SWTError (code);
+	SWT.error (code);
 }
 
 /**
