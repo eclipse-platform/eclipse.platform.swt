@@ -28,11 +28,11 @@ public class Display extends Device {
 	static final int WAKE_CLASS = 0;
 	static final int WAKE_KIND = 0;
 	Event [] eventQueue;
-	Callback actionCallback, commandCallback, controlCallback;
+	Callback actionCallback, appleEventCallback, commandCallback, controlCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, helpCallback;
 	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback;
 	Callback mouseCallback, trackingCallback, windowCallback;
-	int actionProc, commandProc, controlProc;
+	int actionProc, appleEventProc, commandProc, controlProc;
 	int drawItemProc, itemDataProc, itemNotificationProc, helpProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc;
 	int mouseProc, trackingProc, windowProc;
@@ -196,6 +196,14 @@ int actionProc (int theControl, int partCode) {
 	Widget widget = WidgetTable.get (theControl);
 	if (widget != null) return widget.actionProc (theControl, partCode);
 	return OS.noErr;
+}
+
+int appleEventProc (int nextHandler, int theEvent, int userData) {
+	int [] aeEventID = new int [1];
+	if (OS.GetEventParameter (theEvent, OS.kEventParamAEEventID, OS.typeType, null, 4, null, aeEventID) == OS.noErr) {
+		if (aeEventID [0] == OS.kAEQuitApplication) close ();
+	}
+	return OS.eventNotHandledErr;
 }
 
 public void addFilter (int eventType, Listener listener) {
@@ -727,6 +735,9 @@ void initializeCallbacks () {
 	actionCallback = new Callback (this, "actionProc", 2);
 	actionProc = actionCallback.getAddress ();
 	if (actionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	appleEventCallback = new Callback (this, "appleEventProc", 3);
+	appleEventProc = appleEventCallback.getAddress ();
+	if (appleEventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	caretCallback = new Callback(this, "caretProc", 2);
 	caretProc = caretCallback.getAddress();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -790,13 +801,17 @@ void initializeCallbacks () {
 	};
 	OS.InstallEventHandler (appTarget, mouseProc, mask2.length / 2, mask2, 0, null);
 	int [] mask3 = new int[] {
+		OS.kEventClassAppleEvent, OS.kEventAppleEvent,
+	};
+	OS.InstallEventHandler (appTarget, appleEventProc, mask3.length / 2, mask3, 0, null);
+	int [] mask4 = new int[] {
 		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
 		OS.kEventClassKeyboard, OS.kEventRawKeyModifiersChanged,
 		OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
 		OS.kEventClassKeyboard, OS.kEventRawKeyUp,
 	};
 	int focusTarget = OS.GetUserFocusEventTarget ();
-	OS.InstallEventHandler (focusTarget, keyboardProc, mask3.length / 2, mask3, 0, null);
+	OS.InstallEventHandler (focusTarget, keyboardProc, mask4.length / 2, mask4, 0, null);
 }
 
 void initializeInsets () {
@@ -1048,6 +1063,7 @@ protected void release () {
 
 void releaseDisplay () {
 	actionCallback.dispose ();
+	appleEventCallback.dispose ();
 	caretCallback.dispose ();
 	commandCallback.dispose ();
 	controlCallback.dispose ();
@@ -1062,11 +1078,11 @@ void releaseDisplay () {
 	mouseCallback.dispose ();
 	trackingCallback.dispose ();
 	windowCallback.dispose ();
-	actionCallback = caretCallback = commandCallback = null;
+	actionCallback = appleEventCallback = caretCallback = commandCallback = null;
 	controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
 	helpCallback = hitTestCallback = keyboardCallback = menuCallback = null;
 	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = null;
-	actionProc = caretProc = commandProc = 0;
+	actionProc = appleEventProc = caretProc = commandProc = 0;
 	controlProc = drawItemProc = itemDataProc = itemNotificationProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = 0;
