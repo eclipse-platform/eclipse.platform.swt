@@ -149,16 +149,20 @@ public class ImageAnalyzer {
 				resizeShell(event);
 			}
 		});
-		shell.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				if (animate && animateThread != null) {
-					// Stop the animation and wait for the
-					// thread to die before disposing the shell.
-					animate = false;
+		shell.addShellListener(new ShellAdapter() {
+			public void shellClosed(ShellEvent e) {
+				animate = false; // stop any animation in progress
+				if (animateThread != null) {
+					// wait for the thread to die before disposing the shell.
 					while (animateThread.isAlive()) {
 						if (!display.readAndDispatch()) display.sleep();
 					}
 				}
+				e.doit = true;
+			}
+		});
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
 				// Clean up.
 				if (image != null)
 					image.dispose();
@@ -690,7 +694,6 @@ public class ImageAnalyzer {
 		item.setText(bundle.getString("Exit"));
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				animate = false; // stop any animation in progress
 				shell.close();
 			}
 		});
