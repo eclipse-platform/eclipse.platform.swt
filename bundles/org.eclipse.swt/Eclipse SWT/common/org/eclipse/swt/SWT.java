@@ -233,6 +233,13 @@ public class SWT {
 	 * @since 3.0
 	 */
 	public static final int MenuDetect = 35;
+	
+	/**
+	 * The set data event type (value is 36).
+	 * 
+	 * @since 3.0
+	 */
+	public static final int SetData = 36;
 		
 	/* Event Details */
 	
@@ -794,7 +801,7 @@ public class SWT {
 	public static final int MIRRORED = 1 << 27;
 	
 	/**
-	 * Style constant to allow embedding (value is 1&lt;&lt;1).
+	 * Style constant to allow embedding (value is 1&lt;&lt;24).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Composite</code></li>
 	 * </ul></p>
@@ -802,6 +809,16 @@ public class SWT {
 	 * @since 3.0
 	 */
 	public static final int EMBEDDED = 1 << 24;
+	
+	/**
+	 * Style constant to allow virtual data (value is 1&lt;&lt;28).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Table</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.0
+	 */
+	public static final int VIRTUAL = 1 << 28;
 
 	/**
 	 * Style constant for align up behavior (value is 1&lt;&lt;7,
