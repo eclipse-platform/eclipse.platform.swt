@@ -79,9 +79,9 @@ public final class OleAutomation {
 	private String exceptionDescription;
 	private ITypeInfo objITypeInfo;
 	
-OleAutomation(int address) {
-	if (address == 0) OLE.error(OLE.ERROR_INVALID_INTERFACE_ADDRESS);
-	objIDispatch = new IDispatch(address);
+OleAutomation(IDispatch idispatch) {
+	if (idispatch == null) OLE.error(OLE.ERROR_INVALID_INTERFACE_ADDRESS);
+	objIDispatch = idispatch;
 	objIDispatch.AddRef();
 }
 /**

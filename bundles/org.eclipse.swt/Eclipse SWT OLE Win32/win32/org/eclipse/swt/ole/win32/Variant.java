@@ -23,7 +23,6 @@ public final class Variant
 	// Variant are used to hold either an object reference, or a 
 	// pointer to the string or array. The actual data are stored elsewhere.
 	public static final int sizeof = 16;
-
 	private short type; // OLE.VT_* type
 	
 	private boolean booleanData;
@@ -32,9 +31,15 @@ public final class Variant
 	private short   shortData;
 	private String  stringData;
 	private int     byRefPtr;
-	private OleAutomation dispatchData;
+	private IDispatch dispatchData;
 	private IUnknown unknownData;
-Variant(){
+
+/**
+ * Create an empty Variant object with type VT_EMPTY.
+ * 
+ * @since 2.0
+ */	
+public Variant(){
 	type = COM.VT_EMPTY;
 }
 /**
@@ -81,7 +86,19 @@ public Variant(int ptr, short byRefType) {
  */
 public Variant(OleAutomation automation) {
 	type = COM.VT_DISPATCH;
-	dispatchData = automation;
+	dispatchData = new IDispatch(automation.getAddress());
+}
+/**
+ * Create a Variant object which represents an IDispatch interface as a VT_Dispatch.
+ *
+ * @since 2.0
+ * 
+ * @param idispatch the IDispatch object that this Variant represents
+ *
+ */
+public Variant(IDispatch idispatch) {
+	type = COM.VT_DISPATCH;
+	dispatchData = idispatch;
 }
 /**
  * Create a Variant object which represents an IUnknown interface as a VT_UNKNOWN.
@@ -140,9 +157,9 @@ public Variant(boolean val) {
  *		ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into an OleAutomation object
  */
 public OleAutomation getAutomation() {
-	if (type == COM.VT_DISPATCH)
-		return dispatchData;
-
+	if (type == COM.VT_DISPATCH) {
+		return new OleAutomation(dispatchData);
+	}
 	// try to coerce the value to the desired type
 	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
 	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -154,6 +171,45 @@ public OleAutomation getAutomation() {
 		Variant autoVar = new Variant();
 		autoVar.setData(newPtr);
 		return autoVar.getAutomation();
+	} finally {
+		COM.VariantClear(oldPtr);
+		OS.GlobalFree(oldPtr);
+		COM.VariantClear(newPtr); // Note: This must absolutely be done AFTER the 
+		                          // OleAutomation object is created as Variant Clear 
+		                          // will result in a Release being performed on the 
+		                          // Dispatch object
+		OS.GlobalFree(newPtr);
+	}
+}
+/**
+ * Returns the IDispatch object represented by this Variant.
+ *
+ * <p>If this Variant does not contain an IDispatch object, an attempt is made to
+ * coerce the Variant type into an IDIspatch object.  If this fails, an error is
+ * thrown.
+ *
+ * @since 2.0
+ * 
+ * @return the IDispatch object represented by this Variant
+ *
+ * @exception SWTError
+ *		ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into an IDispatch object
+ */
+public IDispatch getDispatch() {
+	if (type == COM.VT_DISPATCH) {
+		return dispatchData;
+	}
+	// try to coerce the value to the desired type
+	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	try {
+		getData(oldPtr);
+		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_DISPATCH);
+		if (result != COM.S_OK)
+			OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, result);
+		Variant autoVar = new Variant();
+		autoVar.setData(newPtr);
+		return autoVar.getDispatch();
 	} finally {
 		COM.VariantClear(oldPtr);
 		OS.GlobalFree(oldPtr);
@@ -239,10 +295,9 @@ void getData(int pData){
 			COM.MoveMemory(pData + 8, new int[]{intData}, 4);
 			break;
 		case COM.VT_DISPATCH :
-			IDispatch dispatch = new IDispatch(dispatchData.getAddress());
-			dispatch.AddRef();
+			dispatchData.AddRef();
 			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new int[]{dispatch.getAddress()}, 4);
+			COM.MoveMemory(pData + 8, new int[]{dispatchData.getAddress()}, 4);
 			break;
 		case COM.VT_UNKNOWN :
 			unknownData.AddRef();
@@ -473,17 +528,19 @@ void setData(int pData){
 			OS.MoveMemory(newIntData, pData + 8, 4);
 			intData = newIntData[0];
 			break;
-		case COM.VT_DISPATCH :
-			int[] newDispatchData = new int[1];
-			OS.MoveMemory(newDispatchData, pData + 8, 4);
-			dispatchData = new OleAutomation(newDispatchData[0]);
+		case COM.VT_DISPATCH : {
+			int[] ppvObject = new int[1];
+			OS.MoveMemory(ppvObject, pData + 8, 4);
+			dispatchData = new IDispatch(ppvObject[0]);
 			break;
-		case COM.VT_UNKNOWN :
-			int[] newUnknownData = new int[1];
-			OS.MoveMemory(newUnknownData, pData + 8, 4);
-			unknownData = new IUnknown(newUnknownData[0]);
+		}
+		case COM.VT_UNKNOWN : {
+			int[] ppvObject = new int[1];
+			OS.MoveMemory(ppvObject, pData + 8, 4);
+			unknownData = new IUnknown(ppvObject[0]);
 			unknownData.AddRef();
 			break;
+		}
 		case COM.VT_I2 :
 			short[] newShortData = new short[1];
 			COM.MoveMemory(newShortData, pData + 8, 2);
