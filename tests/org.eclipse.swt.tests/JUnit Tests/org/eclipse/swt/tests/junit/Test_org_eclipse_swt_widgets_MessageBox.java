@@ -52,14 +52,12 @@ protected void tearDown() {
  * </ul>
  */
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell(){
-	if (fCheckSwtNullExceptions) {
-		MessageBox mb = new MessageBox(shell);
-		try {
-			mb = new MessageBox(null);
-			fail("No exception thrown for parent == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	MessageBox mb = new MessageBox(shell);
+	try {
+		new MessageBox(null);
+		fail("No exception thrown for parent == null");
+	}
+	catch (IllegalArgumentException e) {
 	}
 }
 
@@ -95,13 +93,11 @@ public void test_setMessageLjava_lang_String(){
 	assertEquals(messageBox.getMessage(), testStr);
 	messageBox.setMessage("");
 	assertEquals(messageBox.getMessage(), "");
-	if (fCheckSwtNullExceptions) {
-		try {
-			messageBox.setMessage(null);
-			fail("No exception thrown");
-		} 
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		messageBox.setMessage(null);
+		fail("No exception thrown");
+	} 
+	catch (IllegalArgumentException e) {
 	}
 }
 

@@ -66,13 +66,11 @@ public void test_setTextLjava_lang_String() {
 	assertTrue(":2:", dialog.getText().equals(testStr));
 	dialog.setText("");
 	assertTrue(":3:", dialog.getText().equals(""));
-	if (fCheckSwtNullExceptions) {
-		try {
-			dialog.setText(null);
-			fail("No exception thrown for string = null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		dialog.setText(null);
+		fail("No exception thrown for string = null");
+	}
+	catch (IllegalArgumentException e) {
 	}
 }
 

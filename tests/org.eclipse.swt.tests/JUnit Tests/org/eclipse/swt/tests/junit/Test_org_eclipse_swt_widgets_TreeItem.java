@@ -43,13 +43,11 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_TreeI() {
-	if (fCheckSwtNullExceptions) {
-		try {
-			TreeItem tItem = new TreeItem((TreeItem)null, SWT.NULL);
-			fail("No exception thrown for parent == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		new TreeItem((TreeItem)null, SWT.NULL);
+		fail("No exception thrown for parent == null");
+	}
+	catch (IllegalArgumentException e) {
 	}
 
 	for (int i=0; i<10; i++) {

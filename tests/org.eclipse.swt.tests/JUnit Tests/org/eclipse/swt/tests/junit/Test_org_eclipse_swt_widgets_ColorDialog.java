@@ -81,15 +81,8 @@ public void test_setRGBLorg_eclipse_swt_graphics_RGB() {
 	colorDialog.setRGB(rgb);
 	assertTrue(":b:", colorDialog.getRGB() == rgb);
 
-	if (fCheckSwtNullExceptions) {
-		try {
-			colorDialog.setRGB(null);
-			fail("No exception thrown for rgb == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
-	}
-	assertTrue(":c:", colorDialog.getRGB() == rgb);	
+	colorDialog.setRGB(null);
+	assertTrue(":c:", colorDialog.getRGB() == null);	
 }
 
 public static Test suite() {

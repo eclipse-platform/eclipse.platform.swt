@@ -43,13 +43,11 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderI() {
-	if (fCheckSwtNullExceptions) {
-		try {
-			TabItem tItem = new TabItem(null, SWT.NULL);
-			fail("No exception thrown for parent == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		new TabItem(null, SWT.NULL);
+		fail("No exception thrown for parent == null");
+	}
+	catch (IllegalArgumentException e) {
 	}
 }
 
@@ -82,13 +80,11 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderII() {
 	finally {
 		assertTrue(":e:", tabFolder.getItems()[1] == tItem);
 	}
-	if (fCheckSwtNullExceptions) {
-		try {
-			new TabItem(null, SWT.NULL, 0);
-			fail("No exception thrown");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		new TabItem(null, SWT.NULL, 0);
+		fail("No exception thrown");
+	}
+	catch (IllegalArgumentException e) {
 	}
 }
 

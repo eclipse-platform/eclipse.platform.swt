@@ -41,14 +41,11 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	if (fCheckSwtNullExceptions) {
-		Table newTable;
-		try {
-			newTable = new Table(null, 0);
-			fail("No exception thrown for parent == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		new Table(null, 0);
+		fail("No exception thrown for parent == null");
+	}
+	catch (IllegalArgumentException e) {
 	}
 }
 

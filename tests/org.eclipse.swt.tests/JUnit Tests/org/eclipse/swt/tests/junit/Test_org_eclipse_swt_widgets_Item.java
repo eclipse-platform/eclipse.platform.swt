@@ -74,13 +74,11 @@ public void test_setTextLjava_lang_String() {
 	assertTrue("a", item.getText().equals(testStr));
 	item.setText("");
 	assertTrue("b", item.getText().equals(""));
-	if (fCheckSwtNullExceptions) {
-		try {
-			item.setText(null);
-			fail("No exception thrown for string == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		item.setText(null);
+		fail("No exception thrown for string == null");
+	}
+	catch (IllegalArgumentException e) {
 	}
 }
 

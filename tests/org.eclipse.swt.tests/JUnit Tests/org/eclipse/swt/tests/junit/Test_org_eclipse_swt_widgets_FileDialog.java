@@ -42,14 +42,12 @@ protected void tearDown() {
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	// Test FileDialog(Shell)
-	if (fCheckSwtNullExceptions) {
-		FileDialog fd = new FileDialog(shell);
-		try {
-			fd = new FileDialog(null);
-			fail("No exception thrown for parent == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	FileDialog fd = new FileDialog(shell);
+	try {
+		new FileDialog(null);
+		fail("No exception thrown for parent == null");
+	}
+	catch (IllegalArgumentException e) {
 	}
 }
 
@@ -138,14 +136,8 @@ public void test_setFilterPathLjava_lang_String() {
 	assertTrue(":2:", fileDialog.getFilterPath().equals(testStr));
 	fileDialog.setFilterPath("");
 	assertTrue(":3:", fileDialog.getFilterPath().equals(""));
-	if (fCheckSwtNullExceptions) {
-		try {
-			fileDialog.setFilterPath(null);
-			fail("No exception thrown for filterPath == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
-	}
+	fileDialog.setFilterPath(null);
+	assertTrue(":4:", fileDialog.getFilterPath() == null);
 }
 
 public static Test suite() {

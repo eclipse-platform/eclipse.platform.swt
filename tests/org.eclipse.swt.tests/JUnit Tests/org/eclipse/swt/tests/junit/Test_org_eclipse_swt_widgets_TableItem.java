@@ -41,13 +41,11 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
- 	if (fCheckSwtNullExceptions) {
-		try {
-			TableItem tItem = new TableItem(null, SWT.NULL);
-			fail("No exception thrown for parent == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		new TableItem(null, SWT.NULL);
+		fail("No exception thrown for parent == null");
+	}
+	catch (IllegalArgumentException e) {
 	}
 }
 

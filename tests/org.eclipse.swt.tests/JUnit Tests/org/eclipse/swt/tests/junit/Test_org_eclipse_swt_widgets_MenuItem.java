@@ -46,14 +46,12 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuI() {
 	MenuItem mItem = new MenuItem(menu, SWT.NULL);
 	assertNotNull(mItem);
 	
-	if (fCheckSwtNullExceptions) {
-		try {
-			mItem = new MenuItem(null, SWT.NULL);
-			fail("No exception thrown");
-		} 
-		catch (IllegalArgumentException e) {
-		}
-	};
+	try {
+		new MenuItem(null, SWT.NULL);
+		fail("No exception thrown");
+	} 
+	catch (IllegalArgumentException e) {
+	}
 	mItem = new MenuItem(menu, SWT.CHECK);
 	assertTrue(mItem.getStyle()==SWT.CHECK);
 	mItem.dispose();

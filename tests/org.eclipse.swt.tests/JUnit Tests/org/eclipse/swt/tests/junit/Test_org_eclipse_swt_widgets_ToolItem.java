@@ -43,13 +43,11 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_ToolBarI() {
-	if (fCheckSwtNullExceptions) {
-		try {
-			ToolItem tItem = new ToolItem(null, SWT.NULL);
-			fail("No exception thrown for parent == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		new ToolItem(null, SWT.NULL);
+		fail("No exception thrown for parent == null");
+	}
+	catch (IllegalArgumentException e) {
 	}
 }
 

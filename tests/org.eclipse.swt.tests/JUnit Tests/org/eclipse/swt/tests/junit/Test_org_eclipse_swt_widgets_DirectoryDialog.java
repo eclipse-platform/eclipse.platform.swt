@@ -41,15 +41,13 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
-	if (fCheckSwtNullExceptions) {
-		DirectoryDialog dd = new DirectoryDialog(shell);
-		try {
-			dd = new DirectoryDialog(null);
-			fail("No exception thrown for null parent");
-		}
-		catch (IllegalArgumentException e) {
-		}		
+	DirectoryDialog dd = new DirectoryDialog(shell);
+	try {
+		new DirectoryDialog(null);
+		fail("No exception thrown for null parent");
 	}
+	catch (IllegalArgumentException e) {
+	}		
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
@@ -76,14 +74,8 @@ public void test_setFilterPathLjava_lang_String() {
 	assertTrue(":2:", dirDialog.getFilterPath().equals(testStr));
 	dirDialog.setFilterPath("");
 	assertTrue(":3:", dirDialog.getFilterPath().equals(""));
-	if (fCheckSwtNullExceptions) {
-		try {
-			dirDialog.setFilterPath(null);
-			fail("No exception thrown for filterPath == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
-	}
+	dirDialog.setFilterPath(null);
+	assertTrue(":4:", dirDialog.getFilterPath() == null);
 }
 
 public void test_setMessageLjava_lang_String() {
@@ -93,14 +85,8 @@ public void test_setMessageLjava_lang_String() {
 	assertTrue(":2:", dirDialog.getMessage().equals(testStr));
 	dirDialog.setMessage("");
 	assertTrue(":3:", dirDialog.getMessage().equals(""));
-	if (fCheckSwtNullExceptions) {
-		try {
-			dirDialog.setMessage(null);
-			fail("No exception thrown for message == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
-	}
+	dirDialog.setMessage(null);
+	assertTrue(":4:", dirDialog.getMessage() == null);
 }
 
 public static Test suite() {

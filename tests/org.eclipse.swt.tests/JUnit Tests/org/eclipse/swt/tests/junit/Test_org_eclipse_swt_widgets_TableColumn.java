@@ -43,38 +43,34 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
-	if (fCheckSwtNullExceptions) {
-		try {
-			new TableColumn(null, SWT.NULL);
-			fail("No exception thrown for parent == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		new TableColumn(null, SWT.NULL);
+		fail("No exception thrown for parent == null");
+	}
+	catch (IllegalArgumentException e) {
 	}
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_TableII() {
-	if (fCheckSwtNullExceptions) {
-		try {
-			new TableColumn(null, SWT.NULL, 0);
-			fail("No exception thrown for parent == null");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		new TableColumn(null, SWT.NULL, 0);
+		fail("No exception thrown for parent == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
 
-		try {
-			new TableColumn(table, SWT.NULL, -1);
-			fail("No exception thrown for index == -1");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		new TableColumn(table, SWT.NULL, -1);
+		fail("No exception thrown for index == -1");
+	}
+	catch (IllegalArgumentException e) {
+	}
 
-		try {
-			new TableColumn(table, SWT.NULL, 2);
-			fail("No exception thrown for illegal index argument");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	try {
+		new TableColumn(table, SWT.NULL, 2);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
 	}
 }
 
