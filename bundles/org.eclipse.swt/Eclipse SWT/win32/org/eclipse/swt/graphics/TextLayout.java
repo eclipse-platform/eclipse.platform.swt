@@ -1056,17 +1056,18 @@ int _getOffset(int offset, int movement, boolean forward) {
 				if (isComplex) {
 					OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 				}
-				if (!logAttr.fInvalid) {
-					if ((movement & SWT.MOVEMENT_CLUSTER) != 0) {
+				switch (movement) {
+					case SWT.MOVEMENT_CLUSTER: {
 						if (properties.fNeedsCaretInfo) {
-							if (logAttr.fCharStop) return untranslateOffset(offset);
+							if (!logAttr.fInvalid && logAttr.fCharStop) return untranslateOffset(offset);
 						} else {
 							return untranslateOffset(offset);
 						}
+						break;
 					}
-					if ((movement & SWT.MOVEMENT_WORD) != 0) {
+					case SWT.MOVEMENT_WORD: {
 						if (properties.fNeedsWordBreaking) {
-							if (logAttr.fWordStop) return untranslateOffset(offset);
+							if (!logAttr.fInvalid && logAttr.fWordStop) return untranslateOffset(offset);
 						} else {
 							if (offset > 0) {
 								boolean letterOrDigit = Compatibility.isLetterOrDigit(text.charAt(offset));
@@ -1078,6 +1079,7 @@ int _getOffset(int offset, int movement, boolean forward) {
 								}
 							}
 						}
+						break;
 					}
 				}
 				offset = validadeOffset(offset, step);
