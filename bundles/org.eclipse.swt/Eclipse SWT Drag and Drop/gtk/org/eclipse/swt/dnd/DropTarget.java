@@ -664,4 +664,12 @@ boolean setEventData(int context, int x, int y, int time, DNDEvent event) {
 	event.time = (int)(long)time;
 	return true;
 }
+
+protected void checkSubclass () {
+	String name = getClass().getName ();
+	String validName = DropTarget.class.getName();
+	if (!validName.equals(name)) {
+		DND.error (SWT.ERROR_INVALID_SUBCLASS);
+	}
+}
 }

@@ -221,8 +221,10 @@ public Shell (Display display) {
 public Shell (Display display, int style) {
 	this (display, null, style);
 }
+
 Shell (Display display, Shell parent, int style) {
 	super ();
+	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
 	if (display == null) display = Display.getDefault ();
 	if (!display.isValidThread ()) {
@@ -233,6 +235,7 @@ Shell (Display display, Shell parent, int style) {
 	this.display = display;
 	createWidget (0);
 }
+
 /**
  * Constructs a new instance of this class given only its
  * parent. It is created with style <code>SWT.DIALOG_TRIM</code>.
@@ -258,6 +261,7 @@ Shell (Display display, Shell parent, int style) {
 public Shell (Shell parent) {
 	this (parent, SWT.TITLE | SWT.CLOSE | SWT.BORDER);
 }
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.

@@ -444,4 +444,11 @@ public void setTransfer(Transfer[] transferAgents){
 	}
 }
 
+protected void checkSubclass () {
+	String name = getClass().getName ();
+	String validName = DragSource.class.getName();
+	if (!validName.equals(name)) {
+		DND.error (SWT.ERROR_INVALID_SUBCLASS);
+	}
+}
 }
