@@ -964,6 +964,7 @@ public void setSelection (TreeItem [] items) {
 			tvItem.hItem = hNewItem;
 			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 		}
+		if ((style & SWT.SINGLE) != 0) showSelection ();
 	}
 	if ((style & SWT.SINGLE) != 0) return;
 
@@ -996,6 +997,7 @@ public void setSelection (TreeItem [] items) {
 			}
 		}
 	}
+	if (items.length > 0) showSelection ();
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
 }
 
