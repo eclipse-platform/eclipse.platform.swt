@@ -590,30 +590,17 @@ public void test_setExpandedZ() {
 	assertEquals(false, ti.getExpanded());
 }
 
-boolean compareFonts(Font font1, Font font2) {
-	if (SwtJunit.isGTK) {
-		FontData[] fontData1 = font1.getFontData();
-		FontData[] fontData2 = font2.getFontData();
-		if (fontData1.length != fontData2.length) return false;
-		for (int i = 0; i < fontData1.length; i++) {
-			if (!fontData1[i].equals(fontData2[i])) return false;
-		};
-		return true;
-	}
-	return font1.handle == font2.handle;
-}
-
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Font font = treeItem.getFont();
 	treeItem.setFont(font);
-	assertTrue(compareFonts(font, treeItem.getFont()));
+	assertTrue(font.equals(treeItem.getFont()));
 	
 	font = new Font(treeItem.getDisplay(), SwtJunit.testFontName, 10, SWT.NORMAL);
 	treeItem.setFont(font);
-	assertTrue(compareFonts(font,treeItem.getFont()));
+	assertTrue(font.equals(treeItem.getFont()));
 
 	treeItem.setFont(null);
-	assertTrue(compareFonts(tree.getFont(), treeItem.getFont()));
+	assertTrue(tree.getFont().equals( treeItem.getFont()));
 	
 	font.dispose();
 	try {
@@ -629,14 +616,14 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	
 	// no columns
-	assertTrue(compareFonts(tree.getFont(), treeItem.getFont(0)));
-	assertTrue(compareFonts(treeItem.getFont(), treeItem.getFont(0)));
+	assertTrue(tree.getFont().equals( treeItem.getFont(0)));
+	assertTrue(treeItem.getFont().equals(treeItem.getFont(0)));
 	treeItem.setFont(0, font);
-	assertTrue(compareFonts(font, treeItem.getFont(0)));
+	assertTrue(font.equals(treeItem.getFont(0)));
 	
 	// index beyond range - no error
 	treeItem.setFont(10, font);
-	assertTrue(compareFonts(treeItem.getFont(), treeItem.getFont(10)));
+	assertTrue(treeItem.getFont().equals(treeItem.getFont(10)));
 	
 	// with columns
 	TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
@@ -644,24 +631,24 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	
 	// index beyond range - no error
 	treeItem.setFont(10, font);
-	assertTrue(compareFonts(treeItem.getFont(), treeItem.getFont(10)));
+	assertTrue(treeItem.getFont().equals(treeItem.getFont(10)));
 	
 	treeItem.setFont(0, font);
-	assertTrue(compareFonts(font, treeItem.getFont(0)));
+	assertTrue(font.equals(treeItem.getFont(0)));
 	treeItem.setFont(0, null);
-	assertTrue(compareFonts(tree.getFont(), treeItem.getFont(0)));
+	assertTrue(tree.getFont().equals(treeItem.getFont(0)));
 	
 	Font font2 = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
 	
 	treeItem.setFont(0, font);
 	treeItem.setFont(font2);
-	assertTrue(compareFonts(font, treeItem.getFont(0)));
+	assertTrue(font.equals(treeItem.getFont(0)));
 	
 	treeItem.setFont(0, null);
-	assertTrue(compareFonts(font2, treeItem.getFont(0)));
+	assertTrue(font2.equals(treeItem.getFont(0)));
 	
 	treeItem.setFont(null);
-	assertTrue(compareFonts(tree.getFont(),treeItem.getFont(0)));
+	assertTrue(tree.getFont().equals(treeItem.getFont(0)));
 	
 	font.dispose();
 	font2.dispose();
