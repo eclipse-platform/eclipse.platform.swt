@@ -46,16 +46,6 @@ switch ($OS )
 	endif
 	breaksw
 
-    case SunOS:
-	if ( "$1" == "clean" ) then
-	    make -f make_solaris.mak clean
-	else
-	    echo "Building Solaris version of SWT and CDE DLLs."
-	    make -f make_solaris.mak make_swt 
-	    # KJC make -f make_solaris.mak make_cde 
-	endif
-	breaksw
-
     default:
        echo "Unknown"
        breaksw
