@@ -90,6 +90,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	GtkRequisition requisition = new GtkRequisition ();
 	if (frameHandle != 0) {
 		OS.gtk_widget_set_size_request (frameHandle, -1, -1);
+		/*
+		 * Temporary code.
+		 * If the wHint is set, the GtkLabel will believe it has
+		 * more width at its disposal than it actually does (by a few pixels).
+		 * In other words, the frame width is included in the hint and
+		 * it shouldn't.  It is possible (but unlikely) that this will
+		 * cause the label to answer the wrong (smaller) height.
+		 */
 		OS.gtk_widget_set_size_request (handle, wHint, hHint);
 		OS.gtk_widget_size_request (frameHandle, requisition);
 		OS.gtk_widget_set_size_request (frameHandle, width, height);
