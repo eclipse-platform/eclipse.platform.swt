@@ -482,7 +482,7 @@ void destroyWidget () {
 //	OS.HideWindow (shellHandle);
 	releaseHandle ();
 	if (theWindow != 0) {
-		display.addDisposeWindow (theWindow);
+		OS.DisposeWindow (theWindow);
 	} 
 }
 

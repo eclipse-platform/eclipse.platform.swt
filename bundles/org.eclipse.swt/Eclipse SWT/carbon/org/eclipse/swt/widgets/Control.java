@@ -506,7 +506,7 @@ void destroyWidget () {
 	int theControl = topHandle ();
 	releaseHandle ();
 	if (theControl != 0) {
-		display.addDisposeControl (theControl);
+		OS.DisposeControl (theControl);
 	}
 }
 
