@@ -226,6 +226,7 @@ public class Display extends Device {
 	// callback procs
 	int fApplicationProc;
 	int fWindowProc;
+	int fTooltipWindowProc;
 	int fMouseProc;
 	int fMenuProc;
 	int fControlActionProc;
@@ -234,7 +235,6 @@ public class Display extends Device {
 	int fControlProc;
 	
 	private boolean fMenuIsVisible;
-	//private int fUpdateRegion;
 	private int fTrackedControl;
 	private int fFocusControl;
 	private int fCurrentControl;
@@ -889,6 +889,7 @@ protected void init () {
 	mouseHoverProc= createCallback("mouseHoverProc", 2);
 
 	fWindowProc= createCallback("handleWindowCallback", 3);
+	fTooltipWindowProc= createCallback("handleTooltipWindowCallback", 3);
 	fMouseProc= createCallback("handleMouseCallback", 3);
 	
 	fControlActionProc= createCallback("handleControlAction", 2);
@@ -1558,7 +1559,8 @@ void showToolTip (int handle, String toolTipText) {
 		int[] mask= new int[] {
 			OS.kEventClassWindow, OS.kEventWindowDrawContent
 		};
-		OS.InstallEventHandler(OS.GetWindowEventTarget(toolTipWindowHandle), fWindowProc, mask.length / 2, mask, toolTipWindowHandle, null);
+		OS.InstallEventHandler(OS.GetWindowEventTarget(toolTipWindowHandle), fTooltipWindowProc,
+					mask.length / 2, mask, toolTipWindowHandle, null);
 		OS.ShowWindow(toolTipWindowHandle);
 		fLastHoverHandle= handle;
 	}
@@ -1682,6 +1684,7 @@ public void update () {
 	OS.XSync (xDisplay, false); OS.XSync (xDisplay, false);
 	while (OS.XCheckMaskEvent (xDisplay, mask, event)) OS.XtDispatchEvent (event);
 	*/
+	/*
 	int wHandle= 0;
 	int[] macEvent= new int[6];
 	while (OS.GetNextEvent((short)OS.updateMask, macEvent)) {
@@ -1690,7 +1693,7 @@ public void update () {
 			updateWindow(wHandle);
 		}
 	}
-	
+	*/
 	/*
 	if (wHandle != 0) {
 		int port= OS.GetWindowPort(wHandle);
@@ -2004,25 +2007,14 @@ static String convertToLf(String text) {
 				
 			case OS.kEventWindowBoundsChanged:
 				int[] attr= new int[1];
-				OS.GetEventParameter(eRefHandle, OS.kEventParamAttributes, OS.typeUInt32, null, attr.length*4, null, attr);	
+				OS.GetEventParameter(eRefHandle, OS.kEventParamAttributes, OS.typeUInt32, null, attr.length*4, null, attr);
 				windowProc(whichWindow, SWT.Resize, attr[0]);
 				return OS.noErr;
 				
 			case OS.kEventWindowClose:
 				windowProc(whichWindow, SWT.Dispose);
 				return OS.noErr;
-				
-			case OS.kEventWindowDrawContent:
-				if (toolTipWindowHandle == whichWindow) {
-					processPaintToolTip(whichWindow);
-				} else {
-					//if (MacUtil.HIVIEW)
-					//return OS.eventNotHandledErr;
-					//updateWindow2(whichWindow);
-				}
-				return OS.eventNotHandledErr;
-				//return OS.noErr;
-				
+							
 			default:
 				System.out.println("handleWindowCallback: kEventClassWindow kind:" + eventKind);
 				break;
@@ -2034,6 +2026,14 @@ static String convertToLf(String text) {
 			break;
 		}
 		return OS.eventNotHandledErr;
+	}
+	
+	private int handleTooltipWindowCallback(int nextHandler, int eRefHandle, int whichWindow) {
+		if (OS.GetEventClass(eRefHandle) != OS.kEventClassWindow
+						|| OS.GetEventKind(eRefHandle) != OS.kEventWindowDrawContent)
+			return OS.eventNotHandledErr;
+		processPaintToolTip(whichWindow);
+		return OS.noErr;
 	}
 	
 	private int handleApplicationCallback(int nextHandler, int eRefHandle, int userData) {
@@ -2339,27 +2339,16 @@ static String convertToLf(String text) {
 		OS.SetPortWindowPort(whichWindow);
 		OS.BeginUpdate(whichWindow);
 		
-		updateWindow2(whichWindow);
+		int updateRegion= OS.NewRgn();
+		OS.GetPortVisibleRegion(OS.GetWindowPort(whichWindow), updateRegion);
+		OS.EraseRgn(updateRegion);
+		OS.UpdateControls(whichWindow, updateRegion);			
+		OS.DisposeRgn(updateRegion);
 
 		OS.EndUpdate(whichWindow);
 		OS.SetPort(curPort[0]);
 	}
 
-	public void updateWindow2(int whichWindow) {
-		if (toolTipWindowHandle == whichWindow) {
-			processPaintToolTip(whichWindow);
-		} else {
-			System.out.println("Display.updateWindow2");
-			int updateRegion= OS.NewRgn();
-			OS.GetPortVisibleRegion(OS.GetWindowPort(whichWindow), updateRegion);
-
-			OS.EraseRgn(updateRegion);
-			OS.UpdateControls(whichWindow, updateRegion);
-							
-			OS.DisposeRgn(updateRegion);
-		}
-	}
-		
 	/*
 	static void processAllUpdateEvents2(int cHandle) {
 		
@@ -2395,23 +2384,18 @@ static String convertToLf(String text) {
 	
 	private void processPaintToolTip(int wHandle) {
 			
-		Color infoForeground = getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-		Color infoBackground = getSystemColor (SWT.COLOR_INFO_BACKGROUND);
-		MacUtil.RGBBackColor(infoBackground.handle);
-		MacUtil.RGBForeColor(infoForeground.handle);
-		
 		Rect bounds= new Rect();
 		OS.GetWindowBounds(wHandle, (short)OS.kWindowContentRgn, bounds);
-		
-		OS.SetRect(bounds, (short)0, (short)0, (short)(bounds.right - bounds.left), (short)(bounds.bottom - bounds.top));
-		
+		int width= bounds.right - bounds.left;
+		int height= bounds.bottom - bounds.top;
+		OS.SetRect(bounds, (short)0, (short)0, (short)width, (short)height);
+		MacUtil.RGBBackColor(getSystemColor(SWT.COLOR_INFO_BACKGROUND).handle);
+		MacUtil.RGBForeColor(getSystemColor(SWT.COLOR_INFO_FOREGROUND).handle);
 		OS.EraseRect(bounds);
 		
 		if (fToolTipText != null) {
-			int sHandle= OS.CFStringCreateWithCharacters(fToolTipText);
-			int width = bounds.right - bounds.left;
-			int height = bounds.bottom - bounds.top;
 			OS.SetRect(bounds, (short)TOOLTIP_MARGIN, (short)TOOLTIP_MARGIN, (short)(width-TOOLTIP_MARGIN), (short)(height-TOOLTIP_MARGIN));
+			int sHandle= OS.CFStringCreateWithCharacters(fToolTipText);
 			OS.DrawThemeTextBox(sHandle, fHoverThemeFont, OS.kThemeStateActive, true, bounds, (short)0, 0);
 			OS.CFRelease(sHandle);
 		}

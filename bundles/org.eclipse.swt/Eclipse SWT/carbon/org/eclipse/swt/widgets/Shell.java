@@ -322,11 +322,11 @@ static int checkStyle (int style) {
 	if ((style & SWT.PRIMARY_MODAL) != 0) return bits | SWT.PRIMARY_MODAL;
 	return bits;
 }
-
-public static Shell macosx_new (Display display, int handle) {
+/* AW
+public static Shell carbon_new (Display display, int handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle);
 }
-
+*/
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when operations are performed on the receiver,
@@ -504,8 +504,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	
-	int decorations = OS.kWindowCompositingAttribute;
-    /* AW
+	int windowActivationScope= -1;
+
+	int decorations = OS.kWindowCompositingAttribute | OS.kWindowStandardHandlerAttribute;
+
+	/* AW
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.MIN) != 0) decorations |= NSWindow.MiniaturizableWindowMask;
 		if ((style & SWT.MAX) != 0) decorations |= OS.MWM_DECOR_MAXIMIZE;
@@ -521,18 +524,14 @@ void createHandle (int index) {
 		if ((style & SWT.CLOSE) != 0) decorations |= OS.kWindowCloseBoxAttribute;
 		if ((style & SWT.MIN) != 0) decorations |= OS.kWindowCollapseBoxAttribute;
 		if ((style & SWT.MAX) != 0) decorations |= OS.kWindowFullZoomAttribute;
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.kWindowResizableAttribute | OS.kWindowLiveResizeAttribute;
-		//if ((style & SWT.BORDER) == 0) decorations |= OS.kWindowNoShadowAttribute;
-	//} else {
-	//	decorations |= OS.kWindowNoShadowAttribute;
+		if ((style & SWT.RESIZE) != 0) decorations |= OS.kWindowResizableAttribute;
 	}
 	
-    /* AW
-	int inputMode = OS.MWM_INPUT_MODELESS;
-	if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.MWM_INPUT_PRIMARY_APPLICATION_MODAL;
-	if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.MWM_INPUT_FULL_APPLICATION_MODAL;
-	if ((style & SWT.SYSTEM_MODAL) != 0) inputMode = OS.MWM_INPUT_SYSTEM_MODAL;
-    */
+	// if resizable enable 'live resize'
+	if ((decorations & OS.kWindowResizableAttribute) != 0)
+		decorations |= OS.kWindowLiveResizeAttribute;
+	
+	// determine modality
 	int inputMode = OS.kWindowModalityNone;
 	if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.kWindowModalityWindowModal;
 	if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.kWindowModalityAppModal;
@@ -545,99 +544,65 @@ void createHandle (int index) {
 		OS.XmNoverrideRedirect, (style & SWT.ON_TOP) != 0 ? 1 : 0,
 		OS.XmNtitle, ptr,
 	};
-	byte [] appClass = display.appClass;
     */
 	
 	int windowClass= 0;
 	int themeBrush= OS.kThemeBrushDialogBackgroundActive;
 	if (parent == null && (style & SWT.ON_TOP) == 0) {
-        /* AW
-		int xDisplay = display.xDisplay;
-		int widgetClass = OS.TopLevelShellWidgetClass ();
-		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList1, argList1.length / 2);
-        */
-		if ((style & SWT.NO_TRIM) != 0)
-			windowClass= OS.kHelpWindowClass;
-		else {
+		if ((style & SWT.NO_TRIM) != 0) {
+			windowClass= OS.kSheetWindowClass;
+			windowActivationScope= OS.kWindowActivationScopeNone;
+		} else {
 			windowClass= OS.kDocumentWindowClass;
 			//themeBrush= OS.kThemeBrushDocumentWindowBackground;
 		}
 	} else {
-        /* AW
-		int widgetClass = OS.TransientShellWidgetClass ();
-//		if ((style & SWT.ON_TOP) != 0) {
-//			widgetClass = OS.OverrideShellWidgetClass ();
-//		}
-        */
         /* AW
 		int parentHandle = display.shellHandle;
 		if (parent != null) parentHandle = parent.handle;
 		shellHandle = OS.XtCreatePopupShell (appClass, widgetClass, parentHandle, argList1, argList1.length / 2);
         */
 		if (style == SWT.NONE) {
-			//System.out.println("Shell.createHandle: SWT.NONE");
-			windowClass= OS.kHelpWindowClass;
+			windowClass= OS.kSheetWindowClass;
+			windowActivationScope= OS.kWindowActivationScopeNone;
 		} else if ((style & SWT.NO_TRIM) != 0 && (style & SWT.ON_TOP) != 0) {
-			//System.out.println("Shell.createHandle: SWT.NO_TRIM | SWT.ON_TOP");
-			windowClass= OS.kHelpWindowClass;
+			windowClass= OS.kSheetWindowClass;
+			windowActivationScope= OS.kWindowActivationScopeNone;
 		} else if ((style & SWT.NO_TRIM) != 0) {
-			//System.out.println("Shell.createHandle: SWT.NO_TRIM");
-			windowClass= OS.kHelpWindowClass;
+			windowClass= OS.kSheetWindowClass;
+			windowActivationScope= OS.kWindowActivationScopeNone;
 		} else if (inputMode == OS.kWindowModalityAppModal) {
-			//System.out.println("Shell.createHandle: kMovableModalWindowClass");
 			windowClass= OS.kMovableModalWindowClass;
 		} else if (inputMode == OS.kWindowModalitySystemModal) {
-			//System.out.println("Shell.createHandle: kModalWindowClass");
 			windowClass= OS.kModalWindowClass;
 		} else if ((style & SWT.ON_TOP) != 0) {
-			//System.out.println("Shell.createHandle: SWT.ON_TOP");
-			//windowClass= OS.kFloatingWindowClass;
-			windowClass= OS.kHelpWindowClass;
+			windowClass= OS.kSheetWindowClass;
+			windowActivationScope= OS.kWindowActivationScopeNone;
 			decorations= 0;
 		} else {
-			//System.out.println("Shell.createHandle: kDocumentWindowClass");
 			windowClass= OS.kDocumentWindowClass;
 		}
 	}
 	
-	// check whether window class supports a given decoration 
-	if ((decorations & OS.kWindowCloseBoxAttribute) != 0 &&
-			windowClass != OS.kDocumentWindowClass &&
-				windowClass != OS.kFloatingWindowClass &&
-					windowClass != OS.kUtilityWindowClass) {
-		decorations&= ~OS.kWindowCloseBoxAttribute;
-	}
-	if ((decorations & OS.kWindowFullZoomAttribute) != 0 &&
-			windowClass != OS.kDocumentWindowClass &&
-				windowClass != OS.kFloatingWindowClass &&
-					windowClass != OS.kUtilityWindowClass) {
-		decorations&= ~OS.kWindowFullZoomAttribute;
-	}
-	if ((decorations & OS.kWindowCollapseBoxAttribute) != 0 &&
-			windowClass != OS.kDocumentWindowClass) {
-		decorations&= ~OS.kWindowCollapseBoxAttribute;
-	}
-	if ((decorations & OS.kWindowCollapseBoxAttribute) != 0 &&
-			windowClass != OS.kDocumentWindowClass &&
-				windowClass != OS.kMovableModalWindowClass &&
-					windowClass != OS.kFloatingWindowClass &&
-						windowClass != OS.kUtilityWindowClass &&
-							windowClass != OS.kSheetWindowClass) {
-		decorations&= ~OS.kWindowCollapseBoxAttribute;
+	// check whether window class supports a given decoration
+	int allowedAttr= OS.GetAvailableWindowAttributes(windowClass);
+	if (decorations != (decorations & allowedAttr)) {
+		System.out.println("Shell.createHandle: some attributes are not supported");
+		decorations&= allowedAttr;	
 	}
 
 	int[] wHandle= new int[1];
 	Rect bounds= new Rect();
 	OS.SetRect(bounds, (short)100, (short)100, (short)200, (short)200);
-	if (OS.CreateNewWindow(windowClass, decorations | OS.kWindowStandardHandlerAttribute, bounds, wHandle) == OS.noErr)
-		shellHandle= wHandle[0];
-	else {
-		System.out.println("Shell.createHandle: can't create window with these attributes; creating default window");
-		if (OS.CreateNewWindow(OS.kDocumentWindowClass, OS.kWindowStandardHandlerAttribute, bounds, wHandle) == OS.noErr)
-			shellHandle= wHandle[0];
-	}
-
+	int rc= OS.CreateNewWindow(windowClass, decorations, bounds, wHandle);
+	if (rc != OS.noErr)
+		System.out.println("Shell.createHandle: can't create window: " + rc);
+	shellHandle= wHandle[0];
 	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	
+	if (windowActivationScope != -1)	
+		if (OS.SetWindowActivationScope(shellHandle, windowActivationScope) != OS.noErr)
+			System.out.println("Shell.createHandle: can't set activation scope");
 	
 	if (themeBrush != 0)
 		OS.SetThemeWindowBackground(shellHandle, (short)themeBrush, false);
@@ -652,20 +617,6 @@ void createHandle (int index) {
 
 	/* Create scrolled handle */
 	createScrolledHandle (shellHandle);
-
-	/*
-	* Feature in Motif.  There is no way to get the single pixel
-	* border surrounding a TopLevelShell or a TransientShell.
-	* Also, attempts to set a border on either the shell handle
-	* or the main window handle fail.  The fix is to set the border
-	* on the client area.
-	*/
-    /* AW
-	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
-		int [] argList2 = {OS.XmNborderWidth, 1};
-		OS.XtSetValues (handle, argList2, argList2.length / 2);
-	}
-    */
 }
 void deregister () {
 	super.deregister ();
@@ -944,15 +895,13 @@ void hookEvents () {
 		OS.XmAddWMProtocolCallback (shellHandle, atom, windowProc, SWT.Dispose);
 	}
     */
-	Display display= getDisplay();	
+	Display display= getDisplay();
 	int ref= OS.GetWindowEventTarget(shellHandle);
 	int[] mask= new int[] {
 		OS.kEventClassWindow, OS.kEventWindowActivated,
 		OS.kEventClassWindow, OS.kEventWindowDeactivated,
 		OS.kEventClassWindow, OS.kEventWindowBoundsChanged,
 		OS.kEventClassWindow, OS.kEventWindowClose,
-		OS.kEventClassWindow, OS.kEventWindowDrawContent,
-
 		// the window only tracks the down and mouse wheel events;
 		// up, dragged, and move  events are handled by the application because
 		// we need to get these events even if the mouse is outside of the window.
