@@ -67,6 +67,20 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+void configureBar (int selection, int minimum, int maximum) {
+	OS.gtk_progress_configure (handle, selection, minimum, maximum);
+	/*
+	* Feature in GTK.  The progress bar does
+	* not redraw right away when a value is
+	* changed.  This is not strictly incorrect
+	* but unexpected.  The fix is to force all
+	* outstanding redraws to be delivered.
+	*/
+	OS.gdk_flush ();
+	int window = paintWindow ();
+	OS.gdk_window_process_updates (window, false);
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	handle = OS.gtk_progress_bar_new ();
@@ -143,15 +157,7 @@ public void setMaximum (int maximum) {
 	if (maximum < 0) return;
 	max = maximum;
 	if (value > maximum) value = maximum;
-	OS.gtk_progress_configure (handle, value, min, max);
-	/*
-	* Feature in GTK.  The progress bar does
-	* not redraw right away when a value is
-	* changed.  This is not strictly incorrect
-	* but unexpected.  The fix is to force all
-	* outstanding redraws to be delivered.
-	*/
-	updateBar ();
+	configureBar (value, min, max);
 }
 
 /**
@@ -171,15 +177,7 @@ public void setMinimum (int minimum) {
 	if (minimum < 0) return;
 	if (value < minimum) value = minimum;
 	min = minimum;
-	OS.gtk_progress_configure (handle, value, min, max);
-	/*
-	* Feature in GTK.  The progress bar does
-	* not redraw right away when a value is
-	* changed.  This is not strictly incorrect
-	* but unexpected.  The fix is to force all
-	* outstanding redraws to be delivered.
-	*/
-	updateBar ();
+	configureBar (value, min, max);
 }
 
 /**
@@ -198,21 +196,8 @@ public void setSelection (int x) {
 	checkWidget ();
 	if (x < 0) return;
 	value = x;
-	OS.gtk_progress_configure (handle, value, min, max);
-	/*
-	* Feature in GTK.  The progress bar does
-	* not redraw right away when a value is
-	* changed.  This is not strictly incorrect
-	* but unexpected.  The fix is to force all
-	* outstanding redraws to be delivered.
-	*/
-	updateBar ();
+	configureBar (value, min, max);
 }
 
-void updateBar () {
-	OS.gdk_flush ();
-	int window = paintWindow ();
-	OS.gdk_window_process_updates (window, false);
-}
 
 }
