@@ -71,7 +71,6 @@ public class Browser extends Composite {
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
 	static boolean mozilla;
-	static String profileFolder = null;
 	static boolean IsLinux;
 
 	/* Package Name */
@@ -261,80 +260,6 @@ public Browser(Composite parent, int style) {
 		componentManager.Release();
 		mozilla = true;
 	}
-	if (profileFolder == null) {
-		int rc = XPCOM.NS_GetServiceManager(result);
-		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-		
-		nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
-		result[0] = 0;		
-		/* Create a temporary profile */
-		byte[] buffer = XPCOM.NS_PROFILE_CONTRACTID.getBytes();
-		byte[] aContractID = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
-		rc = serviceManager.GetServiceByContractID(aContractID, nsIProfile.NS_IPROFILE_IID, result);
-		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
-		serviceManager.Release();
-
-		nsIProfile profile = new nsIProfile(result[0]);
-		result[0] = 0;
-		String randomName = "org.eclipse.swt.browser.Browser_" + Long.toHexString(System.currentTimeMillis()); //$NON-NLS-1$
-		char[] profileName = new char[randomName.length() + 1];
-		randomName.getChars(0, randomName.length(), profileName, 0);
-		String folder = new File(System.getProperty("java.io.tmpdir"), randomName).getAbsolutePath();
-		char[] nativeProfileDir = new char[folder.length() + 1];
-		folder.getChars(0, folder.length(), nativeProfileDir, 0);
-		rc = profile.CreateNewProfile(profileName, nativeProfileDir, null, false);
-		if (rc != XPCOM.NS_OK) error(rc);
-		rc = profile.SetCurrentProfile(profileName);
-		if (rc != XPCOM.NS_OK) error(rc);
-		/*
-		* Feature in Mozilla.  The guest profile created with CreateNewProfile can be seen in a
-		* standalone Mozilla inside the "User Profile Dialog". That behaviour is unwanted.  The
-		* workaround is to remove the profile from the profile list immediately after it has been
-		* created. The temporary folder storing the profile must be deleted when the display is disposed.
-		*/
-		rc = profile.DeleteProfile(profileName, false);
-		if (rc != XPCOM.NS_OK) error(rc);
-		profile.Release();
-		
-		profileFolder = folder;
-		
-		getDisplay().addListener(SWT.Dispose, new Listener() {
-			public void handleEvent(Event e) {
-				/* Delete the temporary profile */
-				int /*long*/[] result = new int /*long*/[1];
-				int rc = XPCOM.NS_GetServiceManager(result);
-				if (rc != XPCOM.NS_OK) error(rc);
-				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-							
-				nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
-				result[0] = 0;
-				byte[] buffer = XPCOM.NS_PROFILE_CONTRACTID.getBytes();
-				byte[] aContractID = new byte[buffer.length + 1];
-				System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
-				rc = serviceManager.GetServiceByContractID(aContractID, nsIProfile.NS_IPROFILE_IID, result);
-				if (rc != XPCOM.NS_OK) error(rc);
-				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
-				serviceManager.Release();
-				
-				nsIProfile profile = new nsIProfile(result[0]);
-				result[0] = 0;
-				rc = profile.ShutDownCurrentProfile(nsIProfile.SHUTDOWN_CLEANSE);
-				if (rc != XPCOM.NS_OK) error(rc);
-				profile.Release();			
-
-				deleteFile(new File(profileFolder));
-				
-				/*
-				* Note.  It is possible a new Display and a new Browser be created
-				* next.  In that case, a new profile must be created. 
-				*/
-				profileFolder = null;
-			}
-		});
-	}
 	BrowserCount++;
 	if (BrowserCount == 1) {
 		GTK.gtk_init_check(new int[1], null);
@@ -417,18 +342,6 @@ public Browser(Composite parent, int style) {
 	}
 
 	GTK.gtk_widget_show(gtkHandle);
-}
-
-static void deleteFile(File file) {
-	if (!file.exists()) return;
-	if (file.isDirectory()) {
-		File[] files = file.listFiles();
-		if (files != null) {
-			for (int i = 0; i < files.length; i++) 
-				deleteFile(files[i]);
-		}
-	}
-	file.delete();
 }
 
 /**	 
@@ -2049,14 +1962,28 @@ int /*long*/ OnStartURIOpen(int /*long*/ aURI, int /*long*/ retval) {
 		XPCOM.memmove(dest, buffer, length);
 		XPCOM.nsEmbedCString_delete(aSpec);
 		String value = new String(dest);
-		LocationEvent event = new LocationEvent(this);
-		event.display = getDisplay();
-		event.widget = this;
-		event.location = value;
-		event.doit = true;
-		for (int i = 0; i < locationListeners.length; i++)
-			locationListeners[i].changing(event);
-		doit = event.doit;
+		/*
+		* Feature in Mozilla.  In Mozilla 1.7.5, navigating to an 
+		* HTTPS link without a user profile set causes a crash. 
+		* HTTPS requires a user profile to be set to persist security
+		* information.  This requires creating a new user profile
+		* (i.e. creating a new folder) or locking an existing Mozilla 
+		* user profile.  The Mozilla Profile API is not frozen and it is not 
+		* currently implemented.  The workaround is to not load 
+		* HTTPS resources to avoid the crash.
+		*/
+		if (value.startsWith(XPCOM.HTTPS_PROTOCOL)) {
+			doit = false;
+		} else {
+			LocationEvent event = new LocationEvent(this);
+			event.display = getDisplay();
+			event.widget = this;
+			event.location = value;
+			event.doit = true;
+			for (int i = 0; i < locationListeners.length; i++)
+				locationListeners[i].changing(event);
+			doit = event.doit;
+		}
 	}
 	/* Note. boolean remains of size 4 on 64 bit machine */
 	XPCOM.memmove(retval, new int[] {doit ? 0 : 1}, 4);
