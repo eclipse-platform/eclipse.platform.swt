@@ -2525,7 +2525,8 @@ boolean translateMnemonic (char key, int keysym, XKeyEvent xEvent) {
 		int code = traversalCode (key, xEvent);
 		if ((code & SWT.TRAVERSE_MNEMONIC) == 0) return false;
 	} else {
-		if (xEvent.state != OS.Mod1Mask) return false;
+		int mask = OS.ControlMask | OS.ShiftMask | OS.Mod1Mask;
+		if ((xEvent.state & mask) != OS.Mod1Mask) return false;
 	}
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {

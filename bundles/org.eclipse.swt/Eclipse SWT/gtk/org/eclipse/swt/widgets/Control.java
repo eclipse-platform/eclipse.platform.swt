@@ -2767,7 +2767,8 @@ boolean translateMnemonic (int keyval, GdkEventKey gdkEvent) {
 		if ((code & SWT.TRAVERSE_MNEMONIC) == 0) return false;
 	} else {
 		Shell shell = _getShell ();
-		if (gdkEvent.state != OS.gtk_window_get_mnemonic_modifier (shell.shellHandle)) return false;
+		int mask = OS.GDK_CONTROL_MASK | OS.GDK_SHIFT_MASK | OS.GDK_MOD1_MASK;
+		if ((gdkEvent.state & mask) != OS.gtk_window_get_mnemonic_modifier (shell.shellHandle)) return false;
 	}
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {
