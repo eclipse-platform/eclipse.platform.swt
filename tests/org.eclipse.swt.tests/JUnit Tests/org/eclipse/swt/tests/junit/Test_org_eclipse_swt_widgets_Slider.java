@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Slider
@@ -22,8 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.Slider
  */
 public class Test_org_eclipse_swt_widgets_Slider extends Test_org_eclipse_swt_widgets_Control {
-
-Slider slider;
 
 public Test_org_eclipse_swt_widgets_Slider(String name) {
 	super(name);
@@ -42,6 +39,195 @@ protected void setUp() {
 protected void tearDown() {
 	super.tearDown();
 }
+
+public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
+	try {
+		slider = new Slider(null, 0);
+		fail("No exception thrown for parent == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+
+	int[] cases = {0, SWT.HORIZONTAL, SWT.VERTICAL};
+	for (int i = 0; i < cases.length; i++)
+		slider = new Slider(shell, cases[i]);
+}
+
+public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
+	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+}
+
+public void test_computeSizeIIZ() {
+	warnUnimpl("Test test_computeSizeIIZ not written");
+}
+
+public void test_getEnabled() {
+	warnUnimpl("Test test_getEnabled not written");
+}
+
+public void test_getIncrement() {
+	int[] cases = {1, 10, 10000};
+	for (int i=0; i<cases.length; i++)
+	{
+	  slider.setIncrement(cases[i]);
+	  assertTrue("case: " + String.valueOf(i), slider.getIncrement()==cases[i]);
+	} 
+}
+
+public void test_getMaximum() {
+	warnUnimpl("Test test_getMaximum not written");
+}
+
+public void test_getMinimum() {
+	warnUnimpl("Test test_getMinimum not written");
+}
+
+public void test_getPageIncrement() {
+	int[] cases = {1, 10, 10000};
+	for (int i=0; i<cases.length; i++)
+	{
+	  slider.setPageIncrement(cases[i]);
+	  assertTrue("case: " + String.valueOf(i), slider.getPageIncrement()==cases[i]);
+	} 
+}
+
+public void test_getSelection() {
+	warnUnimpl("Test test_getSelection not written");
+}
+
+public void test_getThumb() {
+	warnUnimpl("Test test_getThumb not written");
+}
+
+public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
+	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+}
+
+public void test_setEnabledZ() {
+	warnUnimpl("Test test_setEnabledZ not written");
+}
+
+public void test_setIncrementI() {
+	warnUnimpl("Test test_setIncrementI not written");
+}
+
+public void test_setMaximumI() {
+
+	int [][] testValues = getSetMaximumValues();
+
+	for (int i = 0; i < testValues.length; i++) {
+		int[] intArray = testValues[i];
+		setDefaults();
+		slider.setMaximum(intArray[0]);
+		report("setMaximum", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+	}
+}
+
+public void test_setMinimumI() {
+
+	int [][] testValues = getSetMinimumValues();
+
+	for (int i = 0; i < testValues.length; i++) {
+		int[] intArray = testValues[i];
+		setDefaults();
+		slider.setMinimum(intArray[0]);
+		report("setMinimum", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+	}
+}
+
+public void test_setPageIncrementI() {
+	warnUnimpl("Test test_setPageIncrementI not written");
+}
+
+public void test_setSelectionI() {
+	int [][] testValues = getSetSelectionValues();
+	for (int i = 0; i < testValues.length; i++) {
+		int[] intArray = testValues[i];
+		setDefaults();
+		slider.setSelection(intArray[0]);
+		report("setSelection", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+	}
+}
+
+public void test_setThumbI() {
+
+	int [][] testValues = getSetThumbValues();
+
+	for (int i = 0; i < testValues.length; i++) {
+		int[] intArray = testValues[i];
+		setDefaults();
+		slider.setThumb(intArray[0]);
+		report("setThumb", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+	}
+}
+
+public void test_setValuesIIIIII() {
+	warnUnimpl("Test test_setValuesIIIIII not written");
+}
+
+public static Test suite() {
+	TestSuite suite = new TestSuite();
+	java.util.Vector methodNames = methodNames();
+	java.util.Enumeration e = methodNames.elements();
+	while (e.hasMoreElements()) {
+		suite.addTest(new Test_org_eclipse_swt_widgets_Slider((String)e.nextElement()));
+	}
+	return suite;
+}
+public static java.util.Vector methodNames() {
+	java.util.Vector methodNames = new java.util.Vector();
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
+	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
+	methodNames.addElement("test_computeSizeIIZ");
+	methodNames.addElement("test_getEnabled");
+	methodNames.addElement("test_getIncrement");
+	methodNames.addElement("test_getMaximum");
+	methodNames.addElement("test_getMinimum");
+	methodNames.addElement("test_getPageIncrement");
+	methodNames.addElement("test_getSelection");
+	methodNames.addElement("test_getThumb");
+	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
+	methodNames.addElement("test_setEnabledZ");
+	methodNames.addElement("test_setIncrementI");
+	methodNames.addElement("test_setMaximumI");
+	methodNames.addElement("test_setMinimumI");
+	methodNames.addElement("test_setPageIncrementI");
+	methodNames.addElement("test_setSelectionI");
+	methodNames.addElement("test_setThumbI");
+	methodNames.addElement("test_setValuesIIIIII");
+	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
+	return methodNames;
+}
+protected void runTest() throws Throwable {
+	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
+	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
+	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
+	else if (getName().equals("test_getEnabled")) test_getEnabled();
+	else if (getName().equals("test_getIncrement")) test_getIncrement();
+	else if (getName().equals("test_getMaximum")) test_getMaximum();
+	else if (getName().equals("test_getMinimum")) test_getMinimum();
+	else if (getName().equals("test_getPageIncrement")) test_getPageIncrement();
+	else if (getName().equals("test_getSelection")) test_getSelection();
+	else if (getName().equals("test_getThumb")) test_getThumb();
+	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
+	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
+	else if (getName().equals("test_setIncrementI")) test_setIncrementI();
+	else if (getName().equals("test_setMaximumI")) test_setMaximumI();
+	else if (getName().equals("test_setMinimumI")) test_setMinimumI();
+	else if (getName().equals("test_setPageIncrementI")) test_setPageIncrementI();
+	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
+	else if (getName().equals("test_setThumbI")) test_setThumbI();
+	else if (getName().equals("test_setValuesIIIIII")) test_setValuesIIIIII();
+	else super.runTest();
+}
+
+/* custom */
+public void test_setFontLorg_eclipse_swt_graphics_Font() {
+	// overridden from Control because it does not make sense
+	// to set the font of a Slider.
+}
+
+Slider slider;
 
 // this method must be private or protected so the auto-gen tool keeps it
 private void report(String call, int set, int minExpected, int maxExpected, int selectionExpected, int thumbExpected) {
@@ -654,191 +840,5 @@ return new int[][] {
 {123, 10, 100, 90, 10},
 {124, 10, 100, 90, 10},
 };
-}
-
-public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
-	try {
-		slider = new Slider(null, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-
-	int[] cases = {0, SWT.HORIZONTAL, SWT.VERTICAL};
-	for (int i = 0; i < cases.length; i++)
-		slider = new Slider(shell, cases[i]);
-}
-
-public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
-public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
-}
-
-public void test_getEnabled() {
-	warnUnimpl("Test test_getEnabled not written");
-}
-
-public void test_getIncrement(){
-	int[] cases = {1, 10, 10000};
-	for (int i=0; i<cases.length; i++)
-	{
-	  slider.setIncrement(cases[i]);
-	  assertTrue("case: " + String.valueOf(i), slider.getIncrement()==cases[i]);
-	} 
-}
-
-public void test_getMaximum() {
-	warnUnimpl("Test test_getMaximum not written");
-}
-
-public void test_getMinimum() {
-	warnUnimpl("Test test_getMinimum not written");
-}
-
-public void test_getPageIncrement(){
-	int[] cases = {1, 10, 10000};
-	for (int i=0; i<cases.length; i++)
-	{
-	  slider.setPageIncrement(cases[i]);
-	  assertTrue("case: " + String.valueOf(i), slider.getPageIncrement()==cases[i]);
-	} 
-}
-
-public void test_getSelection() {
-	warnUnimpl("Test test_getSelection not written");
-}
-
-public void test_getThumb() {
-	warnUnimpl("Test test_getThumb not written");
-}
-
-public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
-public void test_setEnabledZ() {
-	warnUnimpl("Test test_setEnabledZ not written");
-}
-
-public void test_setFontLorg_eclipse_swt_graphics_Font() {
-	// overridden from Control because it does not make sense
-	// to set the font of a Slider.
-}
-
-public void test_setIncrementI() {
-	warnUnimpl("Test test_setIncrementI not written");
-}
-
-public void test_setMaximumI(){
-
-	int [][] testValues = getSetMaximumValues();
-
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
-		setDefaults();
-		slider.setMaximum(intArray[0]);
-		report("setMaximum", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
-	}
-}
-
-public void test_setMinimumI(){
-
-	int [][] testValues = getSetMinimumValues();
-
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
-		setDefaults();
-		slider.setMinimum(intArray[0]);
-		report("setMinimum", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
-	}
-}
-
-public void test_setPageIncrementI() {
-	warnUnimpl("Test test_setPageIncrementI not written");
-}
-
-public void test_setSelectionI(){
-	int [][] testValues = getSetSelectionValues();
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
-		setDefaults();
-		slider.setSelection(intArray[0]);
-		report("setSelection", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
-	}
-}
-
-public void test_setThumbI(){
-
-	int [][] testValues = getSetThumbValues();
-
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
-		setDefaults();
-		slider.setThumb(intArray[0]);
-		report("setThumb", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
-	}
-}
-
-public void test_setValuesIIIIII() {
-	warnUnimpl("Test test_setValuesIIIIII not written");
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Slider((String)e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_getEnabled");
-	methodNames.addElement("test_getIncrement");
-	methodNames.addElement("test_getMaximum");
-	methodNames.addElement("test_getMinimum");
-	methodNames.addElement("test_getPageIncrement");
-	methodNames.addElement("test_getSelection");
-	methodNames.addElement("test_getThumb");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_setEnabledZ");
-	methodNames.addElement("test_setIncrementI");
-	methodNames.addElement("test_setMaximumI");
-	methodNames.addElement("test_setMinimumI");
-	methodNames.addElement("test_setPageIncrementI");
-	methodNames.addElement("test_setSelectionI");
-	methodNames.addElement("test_setThumbI");
-	methodNames.addElement("test_setValuesIIIIII");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
-	return methodNames;
-}
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_getEnabled")) test_getEnabled();
-	else if (getName().equals("test_getIncrement")) test_getIncrement();
-	else if (getName().equals("test_getMaximum")) test_getMaximum();
-	else if (getName().equals("test_getMinimum")) test_getMinimum();
-	else if (getName().equals("test_getPageIncrement")) test_getPageIncrement();
-	else if (getName().equals("test_getSelection")) test_getSelection();
-	else if (getName().equals("test_getThumb")) test_getThumb();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
-	else if (getName().equals("test_setIncrementI")) test_setIncrementI();
-	else if (getName().equals("test_setMaximumI")) test_setMaximumI();
-	else if (getName().equals("test_setMinimumI")) test_setMinimumI();
-	else if (getName().equals("test_setPageIncrementI")) test_setPageIncrementI();
-	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
-	else if (getName().equals("test_setThumbI")) test_setThumbI();
-	else if (getName().equals("test_setValuesIIIIII")) test_setValuesIIIIII();
-	else super.runTest();
 }
 }

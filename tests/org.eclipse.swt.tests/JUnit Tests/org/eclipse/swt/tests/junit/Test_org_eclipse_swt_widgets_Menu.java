@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
+import junit.framework.*;
+import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
-import junit.framework.*;
-import junit.textui.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Menu
@@ -23,8 +22,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.Menu
  */
 public class Test_org_eclipse_swt_widgets_Menu extends Test_org_eclipse_swt_widgets_Widget {
-
-Menu menu;
 
 public Test_org_eclipse_swt_widgets_Menu(String name) {
 	super(name);
@@ -44,20 +41,19 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-/* tests Menu(Window) */
-public void test_ConstructorLorg_eclipse_swt_widgets_Control(){
+public void test_ConstructorLorg_eclipse_swt_widgets_Control() {
 	Composite comp = new Composite(shell, SWT.NULL);
 	Menu testMenu = new Menu(comp);
 	comp.dispose();
 }
 
-public void test_ConstructorLorg_eclipse_swt_widgets_DecorationsI(){
+public void test_ConstructorLorg_eclipse_swt_widgets_DecorationsI() {
 	Menu newMenu;
 	MenuItem mItem = new MenuItem(menu, SWT.NULL);
 	newMenu = new Menu(mItem);
 }
 
-public void test_ConstructorLorg_eclipse_swt_widgets_Menu(){
+public void test_ConstructorLorg_eclipse_swt_widgets_Menu() {
 	Menu newMenu;
 	newMenu = new Menu(menu);
 }
@@ -78,36 +74,11 @@ public void test_getDefaultItem() {
 	warnUnimpl("Test test_getDefaultItem not written");
 }
 
-public void test_getDisplay() {
-	warnUnimpl("Test test_getDisplay not written");
-}
-
 public void test_getEnabled() {
 	warnUnimpl("Test test_getEnabled not written");
 }
 
-/**
- * Returns the item at the given, zero-relative index in the
- * receiver. Throws an exception if the index is out of range.
- *
- * @param index the index of the item to return
- * @return the item at the given index
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
- * </ul>
- */
-public void test_getItemI(){
-	MenuItem mItem0 = new MenuItem(menu, SWT.NULL);
-	MenuItem mItem1 = new MenuItem(menu, SWT.NULL);
-	assertEquals(menu.getItem(0), mItem0);
-	assertEquals(menu.getItem(1), mItem1);
-}
-
-/**
- * Returns the number of items contained in the receiver.
- */
-public void test_getItemCount(){
+public void test_getItemCount() {
 	int number = 10;
 	MenuItem ti;
 	for (int i = 0; i<number ; i++){
@@ -116,16 +87,14 @@ public void test_getItemCount(){
 	}
 }
 
-/**
- * Returns an array of <code>MenuItem</code>s which are the items
- * in the receiver. 
- * <p>
- * Note: This is not the actual structure used by the receiver
- * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
- * </p>
- */
-public void test_getItems(){
+public void test_getItemI() {
+	MenuItem mItem0 = new MenuItem(menu, SWT.NULL);
+	MenuItem mItem1 = new MenuItem(menu, SWT.NULL);
+	assertEquals(menu.getItem(0), mItem0);
+	assertEquals(menu.getItem(1), mItem1);
+}
+
+public void test_getItems() {
 	int number = 5;
 	MenuItem[] items = new MenuItem[number];
 	for (int i = 0; i<number ; i++){
@@ -143,19 +112,11 @@ public void test_getItems(){
 	assertEquals(":d:", new MenuItem[]{items[1], items[3]}, menu.getItems());
 }
 
-/**
- * Returns the receiver's parent, which must be a <code>Decorations</code>.
- */
-public void test_getParent(){
+public void test_getParent() {
 	assertEquals(menu.getParent(), shell);
 }
 
-/**
- * Returns the receiver's parent item, which must be a
- * <code>MenuItem</code> or null when the receiver is a
- * root.
- */
-public void test_getParentItem(){
+public void test_getParentItem() {
 	MenuItem mItem = new MenuItem(menu, SWT.CASCADE);
 	Menu newMenu = new Menu(shell, SWT.DROP_DOWN);
 	assertNull(newMenu.getParentItem());
@@ -163,12 +124,7 @@ public void test_getParentItem(){
 	assertEquals(newMenu.getParentItem(), mItem);
 }
 
-/**
- * Returns the receiver's parent item, which must be a
- * <code>Menu</code> or null when the receiver is a
- * root.
- */
-public void test_getParentMenu(){
+public void test_getParentMenu() {
 	MenuItem mItem = new MenuItem(menu, SWT.CASCADE);
 	Menu newMenu = new Menu(shell, SWT.DROP_DOWN);
 	assertNull(newMenu.getParentMenu());
@@ -176,13 +132,7 @@ public void test_getParentMenu(){
 	assertEquals(newMenu.getParentMenu(), menu);
 }
 
-/**
- * Returns the receiver's shell. For all controls other than
- * shells, this simply returns the control's nearest ancestor
- * shell. Shells return themselves, even if they are children
- * of other shells.
- */
-public void test_getShell(){
+public void test_getShell() {
 	assertEquals(menu.getShell(), shell);
 }
 
@@ -190,20 +140,7 @@ public void test_getVisible() {
 	warnUnimpl("Test test_getVisible not written");
 }
 
-/**
- * Searches the receiver's list starting at the first item
- * (index 0) until an item is found that is equal to the 
- * argument, and returns the index of that item. If no item
- * is found, returns -1.
- *
- * @param item the search item
- * @return the index of the item
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>
- */
-public void test_indexOfLorg_eclipse_swt_widgets_MenuItem(){
+public void test_indexOfLorg_eclipse_swt_widgets_MenuItem() {
 	int number = 10;
 	MenuItem[] mis = new MenuItem[number];
 	for (int i = 0; i<number ; i++){
@@ -220,17 +157,7 @@ public void test_isEnabled() {
 	warnUnimpl("Test test_isEnabled not written");
 }
 
-/**
- * Returns <code>true</code> if the receiver is visible, and
- * <code>false</code> otherwise.
- * <p>
- * If one of the receiver's ancestors is not visible or some
- * other condition makes the receiver not visible, this method
- * may still indicate that it is considered visible even though
- * it may not actually be showing.
- * </p>
- */
-public void test_isVisible(){
+public void test_isVisible() {
 	// This test can not be run as it currently is written.  On Windows, if a 
 	// menu has no menu items, it will not become visible.
 	// If we add menu items to the menu then a second problem is encountered 
@@ -255,17 +182,7 @@ public void test_removeMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	warnUnimpl("Test test_removeMenuListenerLorg_eclipse_swt_events_MenuListener not written");
 }
 
-/**
- * Sets the default menu item to the argument or removes
- * the default emphasis when the argument is <code>null</code>.
- * 
- * @param item the default menu item or null
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu item has been disposed</li> 
- * </ul>
- */
-public void test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem(){
+public void test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem() {
 	MenuItem mItem0 = new MenuItem(menu, SWT.NULL);
 	MenuItem mItem1 = new MenuItem(menu, SWT.NULL);
 	menu.setDefaultItem(mItem0);
@@ -294,17 +211,7 @@ public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 	}	
 }
 
-/**
- * Marks the receiver as visible if the argument is <code>true</code>,
- * and marks it invisible otherwise. 
- * <p>
- * If one of the receiver's ancestors is not visible or some
- * other condition makes the receiver not visible, marking
- * it visible may not actually cause it to be displayed.
- * </p>
- */
-/* tests both getVisible and setVisble */
-public void test_setVisibleZ(){
+public void test_setVisibleZ() {
 	// This test can not be run as it currently is written.  On Windows, if a 
 	// menu has no menu items, it will not become visible.
 	// If we add menu items to the menu then a second problem is encountered 
@@ -338,10 +245,9 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_addHelpListenerLorg_eclipse_swt_events_HelpListener");
 	methodNames.addElement("test_addMenuListenerLorg_eclipse_swt_events_MenuListener");
 	methodNames.addElement("test_getDefaultItem");
-	methodNames.addElement("test_getDisplay");
 	methodNames.addElement("test_getEnabled");
-	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItemCount");
+	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getParent");
 	methodNames.addElement("test_getParentItem");
@@ -369,10 +275,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addHelpListenerLorg_eclipse_swt_events_HelpListener")) test_addHelpListenerLorg_eclipse_swt_events_HelpListener();
 	else if (getName().equals("test_addMenuListenerLorg_eclipse_swt_events_MenuListener")) test_addMenuListenerLorg_eclipse_swt_events_MenuListener();
 	else if (getName().equals("test_getDefaultItem")) test_getDefaultItem();
-	else if (getName().equals("test_getDisplay")) test_getDisplay();
 	else if (getName().equals("test_getEnabled")) test_getEnabled();
-	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
+	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_getParentItem")) test_getParentItem();
@@ -391,4 +296,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
 	else super.runTest();
 }
+
+/* custom */
+Menu menu;
 }

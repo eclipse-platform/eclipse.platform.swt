@@ -39,13 +39,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Display() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_Display not written");
 }
 
-public void test_asyncExecLjava_lang_Runnable() {
-	warnUnimpl("Test test_asyncExecLjava_lang_Runnable not written");
-}
-
-public void test_syncExecLjava_lang_Runnable() {
-	warnUnimpl("Test test_syncExecLjava_lang_Runnable not written");
-}
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
@@ -56,16 +49,14 @@ public static Test suite() {
 	}
 	return suite;
 }
+
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Display");
-	methodNames.addElement("test_asyncExecLjava_lang_Runnable");
-	methodNames.addElement("test_syncExecLjava_lang_Runnable");
 	return methodNames;
 }
+
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Display")) test_ConstructorLorg_eclipse_swt_widgets_Display();
-	else if (getName().equals("test_asyncExecLjava_lang_Runnable")) test_asyncExecLjava_lang_Runnable();
-	else if (getName().equals("test_syncExecLjava_lang_Runnable")) test_syncExecLjava_lang_Runnable();
 }
 }

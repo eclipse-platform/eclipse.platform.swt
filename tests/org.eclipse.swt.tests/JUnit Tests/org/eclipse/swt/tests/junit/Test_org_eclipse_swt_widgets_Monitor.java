@@ -1,26 +1,26 @@
-package org.eclipse.swt.tests.junit;
-
-/*
- * (c) Copyright IBM Corp. 2000, 2002. All rights reserved.
- * This file is made available under the terms of the Common Public License v1.0
+/*******************************************************************************
+ * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
- */
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Monitor
  *
  * @see org.eclipse.swt.widgets.Monitor
  */
 public class Test_org_eclipse_swt_widgets_Monitor extends SwtTestCase {
-
-Display display = null;
-Monitor[] monitors = null;
-Monitor primary = null;
 	
 public Test_org_eclipse_swt_widgets_Monitor(String name) {
 	super(name);
@@ -108,4 +108,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getClientArea")) test_getClientArea();
 	else if (getName().equals("test_hashCode")) test_hashCode();
 }
+
+/* custom */
+Display display = null;
+Monitor[] monitors = null;
+Monitor primary = null;
 }

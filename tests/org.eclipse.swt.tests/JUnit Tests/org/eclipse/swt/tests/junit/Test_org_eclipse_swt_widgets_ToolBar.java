@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ToolBar
@@ -22,8 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.ToolBar
  */
 public class Test_org_eclipse_swt_widgets_ToolBar extends Test_org_eclipse_swt_widgets_Composite {
-
-protected ToolBar toolBar;
 
 public Test_org_eclipse_swt_widgets_ToolBar(String name) {
 	super(name);
@@ -43,7 +40,7 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
+public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	if (fCheckSwtNullExceptions) {	
 		ToolBar newToolBar;
 		try {
@@ -55,10 +52,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 	}
 }
 
-public void test_checkSubclass() {
-	warnUnimpl("Test test_checkSubclass not written");
-}
-
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
@@ -67,7 +60,16 @@ public void test_computeTrimIIII() {
 	warnUnimpl("Test test_computeTrimIIII not written");
 }
 
-public void test_getItemI(){
+public void test_getItemCount() {
+	int number = 10;
+	ToolItem ti;
+	for (int i = 0; i<number ; i++){
+		assertTrue(":a:" + i, toolBar.getItemCount()==i);
+	  	ti = new ToolItem(toolBar, 0);
+	}
+}
+
+public void test_getItemI() {
 	int number = 5;
 	ToolItem[] items = new ToolItem[number];
 	for (int i = 0; i<number ; i++){
@@ -95,16 +97,7 @@ public void test_getItemLorg_eclipse_swt_graphics_Point() {
 	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
 }
 
-public void test_getItemCount(){
-	int number = 10;
-	ToolItem ti;
-	for (int i = 0; i<number ; i++){
-		assertTrue(":a:" + i, toolBar.getItemCount()==i);
-	  	ti = new ToolItem(toolBar, 0);
-	}
-}
-
-public void test_getItems(){
+public void test_getItems() {
 	int number = 5;
 	ToolItem[] items = new ToolItem[number];
 	for (int i = 0; i<number ; i++){
@@ -122,7 +115,7 @@ public void test_getItems(){
 	assertEquals(new ToolItem[]{items[1], items[3]}, toolBar.getItems());
 }
 
-public void test_getRowCount(){
+public void test_getRowCount() {
 	toolBar = new ToolBar(shell, SWT.WRAP);
 	int number = 5;
 	ToolItem[] items = new ToolItem[number];
@@ -140,7 +133,7 @@ public void test_getRowCount(){
 	assertTrue(":a:", toolBar.getRowCount()==1);
 }
 
-public void test_indexOfLorg_eclipse_swt_widgets_ToolItem(){
+public void test_indexOfLorg_eclipse_swt_widgets_ToolItem() {
 	int number = 10;
 	ToolItem[] tis = new ToolItem[number];
 	for (int i = 0; i<number ; i++){
@@ -181,31 +174,30 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_checkSubclass");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_computeTrimIIII");
+	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getRowCount");
 	methodNames.addElement("test_indexOfLorg_eclipse_swt_widgets_ToolItem");
-	methodNames.addElement("test_setFocus");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_checkSubclass")) test_checkSubclass();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
+	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getRowCount")) test_getRowCount();
 	else if (getName().equals("test_indexOfLorg_eclipse_swt_widgets_ToolItem")) test_indexOfLorg_eclipse_swt_widgets_ToolItem();
-	else if (getName().equals("test_setFocus")) test_setFocus();
 	else super.runTest();
 }
+
+/* custom */
+protected ToolBar toolBar;
 }

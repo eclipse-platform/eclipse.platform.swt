@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ProgressBar
@@ -22,8 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.ProgressBar
  */
 public class Test_org_eclipse_swt_widgets_ProgressBar extends Test_org_eclipse_swt_widgets_Control {
-
-ProgressBar progressBar;
 
 public Test_org_eclipse_swt_widgets_ProgressBar(String name) {
 	super(name);
@@ -43,6 +40,111 @@ protected void tearDown() {
 	super.tearDown();
 }
 
+public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
+	try {
+		progressBar = new ProgressBar(null, 0);
+		fail("No exception thrown"); //should never get here
+	}
+	catch (IllegalArgumentException e) {
+	}
+
+	int[] cases = {0, SWT.HORIZONTAL, SWT.VERTICAL};
+	for (int i = 0; i < cases.length; i++)
+		progressBar = new ProgressBar(shell, cases[i]);
+}
+
+public void test_computeSizeIIZ() {
+	warnUnimpl("Test test_computeSizeIIZ not written");
+}
+
+public void test_getMaximum() {
+	warnUnimpl("Test test_getMaximum not written");
+}
+
+public void test_getMinimum() {
+	warnUnimpl("Test test_getMinimum not written");
+}
+
+public void test_getSelection() {
+	warnUnimpl("Test test_getSelection not written");
+}
+
+public void test_setFocus() {
+	warnUnimpl("Test test_setFocus not written");
+}
+
+public void test_setMaximumI() {
+
+	int [][] testValues = getSetMaximumValues();
+
+	for (int i = 0; i < testValues.length; i++) {
+		int[] intArray = testValues[i];
+		setDefaults();
+		progressBar.setMaximum(intArray[0]);
+		report("setMaximum", intArray[0], intArray[1], intArray[2], intArray[3]);
+	}
+}
+
+public void test_setMinimumI() {
+
+	int [][] testValues = getSetMinimumValues();
+
+	for (int i = 0; i < testValues.length; i++) {
+		int[] intArray = testValues[i];
+		setDefaults();
+		progressBar.setMinimum(intArray[0]);
+		report("setMinimum", intArray[0], intArray[1], intArray[2], intArray[3]);
+	}
+}
+
+public void test_setSelectionI() {
+	int [][] testValues = getSetSelectionValues();
+	for (int i = 0; i < testValues.length; i++) {
+		int[] intArray = testValues[i];
+		setDefaults();
+		progressBar.setSelection(intArray[0]);
+		report("setSelection", intArray[0], intArray[1], intArray[2], intArray[3]);
+	}
+}
+
+public static Test suite() {
+	TestSuite suite = new TestSuite();
+	java.util.Vector methodNames = methodNames();
+	java.util.Enumeration e = methodNames.elements();
+	while (e.hasMoreElements()) {
+		suite.addTest(new Test_org_eclipse_swt_widgets_ProgressBar((String)e.nextElement()));
+	}
+	return suite;
+}
+public static java.util.Vector methodNames() {
+	java.util.Vector methodNames = new java.util.Vector();
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
+	methodNames.addElement("test_computeSizeIIZ");
+	methodNames.addElement("test_getMaximum");
+	methodNames.addElement("test_getMinimum");
+	methodNames.addElement("test_getSelection");
+	methodNames.addElement("test_setFocus");
+	methodNames.addElement("test_setMaximumI");
+	methodNames.addElement("test_setMinimumI");
+	methodNames.addElement("test_setSelectionI");
+	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
+	return methodNames;
+}
+protected void runTest() throws Throwable {
+	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
+	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
+	else if (getName().equals("test_getMaximum")) test_getMaximum();
+	else if (getName().equals("test_getMinimum")) test_getMinimum();
+	else if (getName().equals("test_getSelection")) test_getSelection();
+	else if (getName().equals("test_setFocus")) test_setFocus();
+	else if (getName().equals("test_setMaximumI")) test_setMaximumI();
+	else if (getName().equals("test_setMinimumI")) test_setMinimumI();
+	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
+	else super.runTest();
+}
+
+/* custom */
+ProgressBar progressBar;
 // this method must be private or protected so the auto-gen tool keeps it
 private void report(String call, int set, int minExpected, int maxExpected, int selectionExpected) {
 	// Uncomment these lines and comment out call to check() if you want the test to report all errors without
@@ -505,126 +607,4 @@ return new int[][] {
 };
 }
 
-/**
- * Possible exceptions:
- * 
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- */
-public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
-	try {
-		progressBar = new ProgressBar(null, 0);
-		fail("No exception thrown"); //should never get here
-	}
-	catch (IllegalArgumentException e) {
-	}
-
-	int[] cases = {0, SWT.HORIZONTAL, SWT.VERTICAL};
-	for (int i = 0; i < cases.length; i++)
-		progressBar = new ProgressBar(shell, cases[i]);
-}
-
-public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
-}
-
-public void test_getMaximum() {
-	warnUnimpl("Test test_getMaximum not written");
-}
-
-public void test_getMinimum() {
-	warnUnimpl("Test test_getMinimum not written");
-}
-
-public void test_getSelection() {
-	warnUnimpl("Test test_getSelection not written");
-}
-
-/**
- * Sets the maximum value which the receiver will allow
- * to be the argument which must be greater than or
- * equal to zero.
- */
-public void test_setMaximumI(){
-
-	int [][] testValues = getSetMaximumValues();
-
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
-		setDefaults();
-		progressBar.setMaximum(intArray[0]);
-		report("setMaximum", intArray[0], intArray[1], intArray[2], intArray[3]);
-	}
-}
-
-/**
- * Sets the minimum value which the receiver will allow
- * to be the argument which must be greater than or
- * equal to zero.
- */
-public void test_setMinimumI(){
-
-	int [][] testValues = getSetMinimumValues();
-
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
-		setDefaults();
-		progressBar.setMinimum(intArray[0]);
-		report("setMinimum", intArray[0], intArray[1], intArray[2], intArray[3]);
-	}
-}
-
-/**
- * Sets the single <em>selection</em> that is the receiver's
- * position to the argument which must be greater than or equal
- * to zero.
- */
-public void test_setSelectionI(){
-	int [][] testValues = getSetSelectionValues();
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
-		setDefaults();
-		progressBar.setSelection(intArray[0]);
-		report("setSelection", intArray[0], intArray[1], intArray[2], intArray[3]);
-	}
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_ProgressBar((String)e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_getMaximum");
-	methodNames.addElement("test_getMinimum");
-	methodNames.addElement("test_getSelection");
-	methodNames.addElement("test_setMaximumI");
-	methodNames.addElement("test_setMinimumI");
-	methodNames.addElement("test_setSelectionI");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
-	return methodNames;
-}
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_getMaximum")) test_getMaximum();
-	else if (getName().equals("test_getMinimum")) test_getMinimum();
-	else if (getName().equals("test_getSelection")) test_getSelection();
-	else if (getName().equals("test_setMaximumI")) test_setMaximumI();
-	else if (getName().equals("test_setMinimumI")) test_setMinimumI();
-	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
-	else super.runTest();
-}
 }

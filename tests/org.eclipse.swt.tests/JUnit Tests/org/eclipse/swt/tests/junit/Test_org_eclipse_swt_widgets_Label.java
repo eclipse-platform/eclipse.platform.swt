@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
+import junit.framework.*;
+import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
-import junit.framework.*;
-import junit.textui.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Label
@@ -23,8 +22,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.Label
  */
 public class Test_org_eclipse_swt_widgets_Label extends Test_org_eclipse_swt_widgets_Control {
-
-Label label;
 
 public Test_org_eclipse_swt_widgets_Label(String name) {
 	super(name);
@@ -55,17 +52,6 @@ protected void tearDown() {
 	}
 }
 
-/**
- * Possible exceptions:
- * 
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- */
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 	try {
 		label = new Label(null, 0);
@@ -85,13 +71,6 @@ public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
-/**
- * Returns a value which describes the position of the
- * text or image in the receiver. The value will be one of
- * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is a <code>SEPARATOR</code> label, in 
- * which case, <code>NONE</code> is returned.
- */
 public void test_getAlignment(){
 	int[] cases = {SWT.LEFT, SWT.RIGHT, SWT.CENTER};
 	for (int i=0; i<cases.length; i++)
@@ -101,10 +80,6 @@ public void test_getAlignment(){
 	} 
 }
 
-/**
- * Returns the receiver's image if it has one, or null
- * if it does not.
- */
 public void test_getImage(){
 	Image[] cases = {null, new Image(null, 100, 100)};
 	for(int i=0; i<cases.length; i++){
@@ -115,11 +90,6 @@ public void test_getImage(){
 	}
 }
 
-/**
- * Returns the receiver's text, which will be an empty
- * string if it has never been set or if the receiver is
- * a <code>SEPARATOR</code> label.
- */
 public void test_getText(){
 	String[] cases = {"", "some name", "sdasdlkjshcdascecoewcwe"};
 	for(int i=0; i<cases.length; i++){
@@ -128,12 +98,6 @@ public void test_getText(){
 	}
 }
 
-/**
- * Controls how text and images will be displayed in the receiver.
- * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
- * or <code>CENTER</code>.  If the receiver is a <code>SEPARATOR</code>
- * label, the argument is ignored and the alignment is not changed.
- */
 public void test_setAlignmentI(){
 	int[] cases = {SWT.LEFT, SWT.RIGHT, SWT.CENTER};
 	for (int i=0; i<cases.length; i++)
@@ -151,19 +115,6 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
 }
 
-/**
- * Sets the receiver's text.
- * <p>
- * This method sets the widget label.  The label may include
- * the mnemonic characters and line delimiters.
- * </p>
- * 
- * @param string the new text
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
- * </ul>
- */
 public void test_setTextLjava_lang_String(){
 	try {
 		label.setText(null);
@@ -208,4 +159,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else super.runTest();
 }
+
+/* custom */
+Label label;
 }

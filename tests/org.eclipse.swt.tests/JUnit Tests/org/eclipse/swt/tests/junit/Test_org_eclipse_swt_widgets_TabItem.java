@@ -11,10 +11,10 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TabItem
@@ -22,9 +22,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.TabItem
  */
 public class Test_org_eclipse_swt_widgets_TabItem extends Test_org_eclipse_swt_widgets_Item {
-
-TabFolder tabFolder;
-TabItem tabItem;
 
 public Test_org_eclipse_swt_widgets_TabItem(String name) {
 	super(name);
@@ -45,7 +42,7 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderI(){
+public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderI() {
 	if (fCheckSwtNullExceptions) {
 		try {
 			TabItem tItem = new TabItem(null, SWT.NULL);
@@ -56,7 +53,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderI(){
 	}
 }
 
-public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderII(){
+public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderII() {
 	TabItem tItem = new TabItem(tabFolder, SWT.NULL, 0);
 	
 	assertTrue(":a:", tabFolder.getItems()[0] == tItem);
@@ -99,16 +96,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderII(){
 	}
 }
 
-public void test_checkSubclass() {
-	warnUnimpl("Test test_checkSubclass not written");
-}
-
 public void test_getControl() {
 	warnUnimpl("Test test_getControl not written");
-}
-
-public void test_getDisplay() {
-	assertTrue(tabItem.getDisplay() == tabFolder.getDisplay());
 }
 
 public void test_getParent() {
@@ -119,7 +108,7 @@ public void test_getToolTipText() {
 	warnUnimpl("Test test_getToolTipText not written");
 }
 
-public void test_setControlLorg_eclipse_swt_widgets_Control(){
+public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	Control control = new Table(tabFolder, SWT.NULL);
 
 	assertTrue(":a: ", tabItem.getControl() == null);	
@@ -139,7 +128,7 @@ public void test_setTextLjava_lang_String() {
 	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
 
-public void test_setToolTipTextLjava_lang_String(){
+public void test_setToolTipTextLjava_lang_String() {
 	tabItem.setToolTipText("fred");
 	assertTrue(":a: ", tabItem.getToolTipText().equals("fred"));
 	tabItem.setToolTipText("fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
@@ -161,9 +150,7 @@ public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TabFolderI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_TabFolderII");
-	methodNames.addElement("test_checkSubclass");
 	methodNames.addElement("test_getControl");
-	methodNames.addElement("test_getDisplay");
 	methodNames.addElement("test_getParent");
 	methodNames.addElement("test_getToolTipText");
 	methodNames.addElement("test_setControlLorg_eclipse_swt_widgets_Control");
@@ -176,9 +163,7 @@ public static java.util.Vector methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TabFolderI")) test_ConstructorLorg_eclipse_swt_widgets_TabFolderI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_TabFolderII")) test_ConstructorLorg_eclipse_swt_widgets_TabFolderII();
-	else if (getName().equals("test_checkSubclass")) test_checkSubclass();
 	else if (getName().equals("test_getControl")) test_getControl();
-	else if (getName().equals("test_getDisplay")) test_getDisplay();
 	else if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_getToolTipText")) test_getToolTipText();
 	else if (getName().equals("test_setControlLorg_eclipse_swt_widgets_Control")) test_setControlLorg_eclipse_swt_widgets_Control();
@@ -187,4 +172,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();
 	else super.runTest();
 }
+
+/* custom */
+TabFolder tabFolder;
+TabItem tabItem;
+
 }

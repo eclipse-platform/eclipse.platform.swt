@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.TabFolder
@@ -22,8 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.TabFolder
  */
 public class Test_org_eclipse_swt_widgets_TabFolder extends Test_org_eclipse_swt_widgets_Composite {
-
-protected TabFolder tabFolder;
 
 public Test_org_eclipse_swt_widgets_TabFolder(String name) {
 	super(name);
@@ -42,28 +39,7 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-/**
- * (Re)initializes tabFolder. This is called from setUp before each test
- * method is invoked, but also inside the test methods themselves to 
- * re-initialize the environment for a fresh test.
- * 
- * Basically a shim for coalescing the old test methods (several test
- * methods testing the same target method) into a single test method for
- * every target method. This way the original tests should work with little
- * modification, as long as this method is called before each test.
- * 
- * Caveat: the Widget TestCase defines the tearDown method, which asserts that
- * the main widget (defined by the last call to setWidget) has been disposed.
- * So using this inside test methods means that only the widget created by
- * the last call to this method will be tested for this. 
- */
-private void makeCleanEnvironment() {
-// this method must be private or protected so the auto-gen tool keeps it
-	tabFolder = new TabFolder(shell, 0);
-	setWidget(tabFolder);
-}
-
-public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
+public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	TabFolder newTabFolder;
 	try {
 		newTabFolder = new TabFolder(null, 0);
@@ -75,10 +51,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
-}
-
-public void test_checkSubclass() {
-	warnUnimpl("Test test_checkSubclass not written");
 }
 
 public void test_computeSizeIIZ() {
@@ -93,7 +65,16 @@ public void test_getClientArea() {
 	warnUnimpl("Test test_getClientArea not written");
 }
 
-public void test_getItemI(){
+public void test_getItemCount() {
+	int number = 10;
+	TabItem ti;
+	for (int i = 0; i<number ; i++){
+		assertTrue(":a:" + i, tabFolder.getItemCount()==i);
+	  	ti = new TabItem(tabFolder, 0);
+	}
+}
+
+public void test_getItemI() {
 	int number = 15;
 	TabItem[] items = new TabItem[number];
 	for (int i = 0; i < number; i++) {
@@ -125,16 +106,7 @@ public void test_getItemI(){
 	}
 }
 
-public void test_getItemCount() {
-	int number = 10;
-	TabItem ti;
-	for (int i = 0; i<number ; i++){
-		assertTrue(":a:" + i, tabFolder.getItemCount()==i);
-	  	ti = new TabItem(tabFolder, 0);
-	}
-}
-
-public void test_getItems() {	
+public void test_getItems() {
 	int number = 5;
 	TabItem[] items = new TabItem[number];
 
@@ -183,7 +155,7 @@ public void test_getSelectionIndex() {
 	assertTrue(":c:", tabFolder.getSelectionIndex()==0);
 }
 
-public void test_indexOfLorg_eclipse_swt_widgets_TabItem(){
+public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
 	int number = 10;
 	TabItem[] tis = new TabItem[number];
 	for (int i = 0; i<number ; i++){
@@ -245,7 +217,7 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TabItem() {
 	warnUnimpl("Test test_setSelection$Lorg_eclipse_swt_widgets_TabItem not written");
 }
 
-public void test_setSelectionI(){
+public void test_setSelectionI() {
 	int number = 10;
 	TabItem ti;
 	for (int i = 0; i<number ; i++){
@@ -370,12 +342,11 @@ public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_checkSubclass");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_computeTrimIIII");
 	methodNames.addElement("test_getClientArea");
-	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItemCount");
+	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionIndex");
@@ -383,19 +354,17 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_widgets_TabItem");
 	methodNames.addElement("test_setSelectionI");
-	methodNames.addElement("test_setSelectionIZ");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_checkSubclass")) test_checkSubclass();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
 	else if (getName().equals("test_getClientArea")) test_getClientArea();
-	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
+	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionIndex")) test_getSelectionIndex();
@@ -403,7 +372,16 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_widgets_TabItem")) test_setSelection$Lorg_eclipse_swt_widgets_TabItem();
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
-	else if (getName().equals("test_setSelectionIZ")) test_setSelectionIZ();
 	else super.runTest();
 }
+
+/* custom */
+protected TabFolder tabFolder;
+
+private void makeCleanEnvironment() {
+// this method must be private or protected so the auto-gen tool keeps it
+	tabFolder = new TabFolder(shell, 0);
+	setWidget(tabFolder);
+}
+
 }

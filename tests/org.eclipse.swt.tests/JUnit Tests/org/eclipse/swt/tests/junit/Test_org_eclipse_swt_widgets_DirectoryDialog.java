@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.DirectoryDialog
@@ -22,8 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.DirectoryDialog
  */
 public class Test_org_eclipse_swt_widgets_DirectoryDialog extends Test_org_eclipse_swt_widgets_Dialog {
-
-DirectoryDialog dirDialog;
 
 public Test_org_eclipse_swt_widgets_DirectoryDialog(String name) {
 	super(name);
@@ -137,4 +134,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setMessageLjava_lang_String")) test_setMessageLjava_lang_String();
 	else super.runTest();
 }
+
+/* custom */
+DirectoryDialog dirDialog;
 }

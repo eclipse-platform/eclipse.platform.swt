@@ -10,7 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
+import junit.framework.*;
+import junit.textui.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -20,14 +21,13 @@ import org.eclipse.swt.widgets.*;
  */
 public class Test_org_eclipse_swt_widgets_Dialog extends SwtTestCase {
 
-public Shell shell;
-private Dialog dialog;
-private int junitStyle;
-
 public Test_org_eclipse_swt_widgets_Dialog(String name) {
 	super(name);
 }
 
+public static void main(String[] args) {
+	TestRunner.run(suite());
+}
 
 protected void setUp() {
 	shell = new Shell();
@@ -35,13 +35,6 @@ protected void setUp() {
 
 protected void tearDown() {
 	shell.dispose();
-}
-
-protected void setDialog(Dialog newDialog) {
-	dialog = newDialog;
-}
-protected void setStyle(int style) {
-	style = junitStyle;
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
@@ -52,15 +45,11 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_ShellI not written");
 }
 
-public void test_checkSubclass() {
-	warnUnimpl("Test test_checkSubclass not written");
-}
-
 public void test_getParent() {
 	assertTrue(":a:", dialog.getParent() == shell);
 }
 
-public void test_getStyle () {
+public void test_getStyle() {
 	// we use this call in a Constructor test so that we can
 	// check if the style is the one that was created
 	dialog.getStyle();
@@ -87,11 +76,20 @@ public void test_setTextLjava_lang_String() {
 	}
 }
 
+public static Test suite() {
+	TestSuite suite = new TestSuite();
+	java.util.Vector methodNames = methodNames();
+	java.util.Enumeration e = methodNames.elements();
+	while (e.hasMoreElements()) {
+		suite.addTest(new Test_org_eclipse_swt_widgets_Dialog((String)e.nextElement()));
+	}
+	return suite;
+}
+
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Shell");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ShellI");
-	methodNames.addElement("test_checkSubclass");
 	methodNames.addElement("test_getParent");
 	methodNames.addElement("test_getStyle");
 	methodNames.addElement("test_getText");
@@ -101,10 +99,21 @@ public static java.util.Vector methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();
-	else if (getName().equals("test_checkSubclass")) test_checkSubclass();
 	else if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_getStyle")) test_getStyle();
 	else if (getName().equals("test_getText")) test_getText();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
+}
+
+/* custom */
+public Shell shell;
+private Dialog dialog;
+private int junitStyle;
+
+protected void setDialog(Dialog newDialog) {
+	dialog = newDialog;
+}
+protected void setStyle(int style) {
+	style = junitStyle;
 }
 }

@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Sash
@@ -22,8 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.Sash
  */
 public class Test_org_eclipse_swt_widgets_Sash extends Test_org_eclipse_swt_widgets_Control {
-
-Sash sash;
 
 public Test_org_eclipse_swt_widgets_Sash(String name) {
 	super(name);
@@ -43,18 +40,7 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-/**
- * Possible exceptions:
- * 
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
+public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		sash = new Sash(null, 0);
 		fail("No exception thrown"); //should never get here
@@ -109,4 +95,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else super.runTest();
 }
+
+/* custom */
+Sash sash;
 }

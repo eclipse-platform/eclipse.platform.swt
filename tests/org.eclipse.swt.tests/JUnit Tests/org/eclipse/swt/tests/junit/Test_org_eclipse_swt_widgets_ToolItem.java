@@ -11,10 +11,10 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.ToolItem
@@ -22,9 +22,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.ToolItem
  */
 public class Test_org_eclipse_swt_widgets_ToolItem extends Test_org_eclipse_swt_widgets_Item {
-
-ToolBar toolBar;
-ToolItem toolItem;
 
 public Test_org_eclipse_swt_widgets_ToolItem(String name) {
 	super(name);
@@ -45,7 +42,7 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-public void test_ConstructorLorg_eclipse_swt_widgets_ToolBarI(){
+public void test_ConstructorLorg_eclipse_swt_widgets_ToolBarI() {
 	if (fCheckSwtNullExceptions) {
 		try {
 			ToolItem tItem = new ToolItem(null, SWT.NULL);
@@ -64,10 +61,6 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
-public void test_checkSubclass() {
-	warnUnimpl("Test test_checkSubclass not written");
-}
-
 public void test_getBounds() {
 	warnUnimpl("Test test_getBounds not written");
 }
@@ -78,10 +71,6 @@ public void test_getControl() {
 
 public void test_getDisabledImage() {
 	warnUnimpl("Test test_getDisabledImage not written");
-}
-
-public void test_getDisplay() {
-	warnUnimpl("Test test_getDisplay not written");
 }
 
 public void test_getEnabled() {
@@ -96,12 +85,12 @@ public void test_getParent() {
 	warnUnimpl("Test test_getParent not written");
 }
 
-public void test_getSelection(){
+public void test_getSelection() {
 	// Test for method boolean org.eclipse.swt.widgets.ToolItem.getSelection()
 	warnUnimpl( "Test Test_org_eclipse_swt_widgets_ToolItem.test_5_getSelection not written");
 }
 
-public void test_getToolTipText(){
+public void test_getToolTipText() {
 	toolItem.setToolTipText("fred");
 	assertTrue(":a: ", toolItem.getToolTipText().equals("fred"));
 	toolItem.setToolTipText("fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
@@ -112,7 +101,7 @@ public void test_getWidth() {
 	warnUnimpl("Test test_getWidth not written");
 }
 
-public void test_isEnabled(){
+public void test_isEnabled() {
 	// Test for method boolean org.eclipse.swt.widgets.ToolItem.isEnabled()
 	warnUnimpl( "Test Test_org_eclipse_swt_widgets_ToolItem.test_7_isEnabled not written");
 }
@@ -125,13 +114,13 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	warnUnimpl("Test test_setControlLorg_eclipse_swt_widgets_Control not written");
 }
 
-public void test_setEnabledZ(){
-	// Test for method void org.eclipse.swt.widgets.ToolItem.setEnabled(boolean)
-	warnUnimpl( "Test Test_org_eclipse_swt_widgets_ToolItem.test_8_setEnabled not written");
-}
-
 public void test_setDisabledImageLorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setDisabledImageLorg_eclipse_swt_graphics_Image not written");
+}
+
+public void test_setEnabledZ() {
+	// Test for method void org.eclipse.swt.widgets.ToolItem.setEnabled(boolean)
+	warnUnimpl( "Test Test_org_eclipse_swt_widgets_ToolItem.test_8_setEnabled not written");
 }
 
 public void test_setHotImageLorg_eclipse_swt_graphics_Image() {
@@ -172,11 +161,9 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ToolBarI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ToolBarII");
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_checkSubclass");
 	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_getControl");
 	methodNames.addElement("test_getDisabledImage");
-	methodNames.addElement("test_getDisplay");
 	methodNames.addElement("test_getEnabled");
 	methodNames.addElement("test_getHotImage");
 	methodNames.addElement("test_getParent");
@@ -186,8 +173,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_isEnabled");
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_setControlLorg_eclipse_swt_widgets_Control");
-	methodNames.addElement("test_setEnabledZ");
 	methodNames.addElement("test_setDisabledImageLorg_eclipse_swt_graphics_Image");
+	methodNames.addElement("test_setEnabledZ");
 	methodNames.addElement("test_setHotImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setSelectionZ");
@@ -201,11 +188,9 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ToolBarI")) test_ConstructorLorg_eclipse_swt_widgets_ToolBarI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ToolBarII")) test_ConstructorLorg_eclipse_swt_widgets_ToolBarII();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_checkSubclass")) test_checkSubclass();
 	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getControl")) test_getControl();
 	else if (getName().equals("test_getDisabledImage")) test_getDisabledImage();
-	else if (getName().equals("test_getDisplay")) test_getDisplay();
 	else if (getName().equals("test_getEnabled")) test_getEnabled();
 	else if (getName().equals("test_getHotImage")) test_getHotImage();
 	else if (getName().equals("test_getParent")) test_getParent();
@@ -215,8 +200,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_isEnabled")) test_isEnabled();
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_setControlLorg_eclipse_swt_widgets_Control")) test_setControlLorg_eclipse_swt_widgets_Control();
-	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
 	else if (getName().equals("test_setDisabledImageLorg_eclipse_swt_graphics_Image")) test_setDisabledImageLorg_eclipse_swt_graphics_Image();
+	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
 	else if (getName().equals("test_setHotImageLorg_eclipse_swt_graphics_Image")) test_setHotImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setSelectionZ")) test_setSelectionZ();
@@ -225,4 +210,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setWidthI")) test_setWidthI();
 	else super.runTest();
 }
+
+/* custom */
+ToolBar toolBar;
+ToolItem toolItem;
 }

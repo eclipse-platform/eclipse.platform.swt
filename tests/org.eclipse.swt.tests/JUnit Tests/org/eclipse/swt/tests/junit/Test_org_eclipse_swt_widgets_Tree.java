@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Tree
@@ -22,8 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.Tree
  */
 public class Test_org_eclipse_swt_widgets_Tree extends Test_org_eclipse_swt_widgets_Composite {
-
-public Tree tree;
 
 public Test_org_eclipse_swt_widgets_Tree(String name) {
 	super(name);
@@ -43,20 +40,7 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-/**
- * Clean up the environment for a new test.
- * 
- * @param single true if the new tree should be a single-selection one,
- * otherwise use multi-selection.
- */
-private void makeCleanEnvironment(boolean single) {
-// this method must be private or protected so the auto-gen tool keeps it
-	tree.dispose();
-	tree = new Tree(shell, single?SWT.SINGLE:SWT.MULTI);
-	setWidget(tree);
-}
-
-public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
+public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		tree = new Tree(null, 0);
 		fail("No exception thrown for parent == null");
@@ -111,10 +95,6 @@ public void test_deselectAll() {
 	assertEquals(0, tree.getSelectionCount());
 }
 
-public void test_getItemLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
-}
-
 public void test_getItemCount() {
 	warnUnimpl("Test test_getItemCount not written");
 }
@@ -125,7 +105,11 @@ public void test_getItemHeight() {
 	assertTrue(":b: Item height is 0", tree.getItemHeight() > 0);	
 }
 
-public void test_getItems(){
+public void test_getItemLorg_eclipse_swt_graphics_Point() {
+	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
+}
+
+public void test_getItems() {
 	int[] cases = {0, 10, 100};
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
@@ -160,7 +144,7 @@ public void test_getSelection() {
 	warnUnimpl("Test test_getSelection not written");
 }
 
-public void test_getSelectionCount(){
+public void test_getSelectionCount() {
 	makeCleanEnvironment(true); // use single-selection tree.
 
 	int number = 15;
@@ -201,11 +185,7 @@ public void test_removeTreeListenerLorg_eclipse_swt_events_TreeListener() {
 	warnUnimpl("Test test_removeTreeListenerLorg_eclipse_swt_events_TreeListener not written");
 }
 
-public void test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ() {
-	warnUnimpl("Test test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ not written");
-}
-
-public void test_selectAll(){
+public void test_selectAll() {
 	int number = 5;
 	TreeItem[] items = new TreeItem[number];
 	for (int i = 0; i < number; i++)
@@ -226,11 +206,15 @@ public void test_selectAll(){
 	assertEquals(0, tree.getSelectionCount());
 }
 
+public void test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ() {
+	warnUnimpl("Test test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ not written");
+}
+
 public void test_setRedrawZ() {
 	warnUnimpl("Test test_setRedrawZ not written");
 }
 
-public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem(){
+public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	int number = 20;
 	TreeItem[] items = new TreeItem[number];
 	for (int i = 0; i < number; i++) {
@@ -430,7 +414,7 @@ public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
 	}		
 }
 
-public void test_showItemLorg_eclipse_swt_widgets_TreeItem(){
+public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
 	try {
 		tree.showItem(null);
 		fail("No exception thrown for item == null");
@@ -493,9 +477,9 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_addTreeListenerLorg_eclipse_swt_events_TreeListener");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_deselectAll");
-	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemHeight");
+	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getParentItem");
 	methodNames.addElement("test_getSelection");
@@ -504,8 +488,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_removeAll");
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener");
-	methodNames.addElement("test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ");
 	methodNames.addElement("test_selectAll");
+	methodNames.addElement("test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ");
 	methodNames.addElement("test_setRedrawZ");
 	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem");
 	methodNames.addElement("test_setTopItemLorg_eclipse_swt_widgets_TreeItem");
@@ -520,9 +504,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addTreeListenerLorg_eclipse_swt_events_TreeListener")) test_addTreeListenerLorg_eclipse_swt_events_TreeListener();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_deselectAll")) test_deselectAll();
-	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
+	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getParentItem")) test_getParentItem();
 	else if (getName().equals("test_getSelection")) test_getSelection();
@@ -531,13 +515,29 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeAll")) test_removeAll();
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener")) test_removeTreeListenerLorg_eclipse_swt_events_TreeListener();
-	else if (getName().equals("test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ")) test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ();
 	else if (getName().equals("test_selectAll")) test_selectAll();
+	else if (getName().equals("test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ")) test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ();
 	else if (getName().equals("test_setRedrawZ")) test_setRedrawZ();
 	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem")) test_setSelection$Lorg_eclipse_swt_widgets_TreeItem();
 	else if (getName().equals("test_setTopItemLorg_eclipse_swt_widgets_TreeItem")) test_setTopItemLorg_eclipse_swt_widgets_TreeItem();
 	else if (getName().equals("test_showItemLorg_eclipse_swt_widgets_TreeItem")) test_showItemLorg_eclipse_swt_widgets_TreeItem();
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else super.runTest();
+}
+
+/* custom */
+public Tree tree;
+
+/**
+ * Clean up the environment for a new test.
+ * 
+ * @param single true if the new tree should be a single-selection one,
+ * otherwise use multi-selection.
+ */
+private void makeCleanEnvironment(boolean single) {
+// this method must be private or protected so the auto-gen tool keeps it
+	tree.dispose();
+	tree = new Tree(shell, single?SWT.SINGLE:SWT.MULTI);
+	setWidget(tree);
 }
 }

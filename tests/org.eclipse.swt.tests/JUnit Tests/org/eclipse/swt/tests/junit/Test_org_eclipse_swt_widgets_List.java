@@ -11,10 +11,10 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.List
@@ -22,8 +22,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.List
  */
 public class Test_org_eclipse_swt_widgets_List extends Test_org_eclipse_swt_widgets_Scrollable {
-
-List list;
 
 public Test_org_eclipse_swt_widgets_List(String name) {
 	super(name);
@@ -42,106 +40,6 @@ protected void setUp() {
 
 protected void tearDown() {
 	super.tearDown();
-}
-
-/**
- * Test if 'deselect(u, v)' is the same as 'for (i=u; i<=v; ++i) deselect(i);'
- */
-protected void deselectII_helper(
-	String[] items,
-	int start,
-	int end,
-	int[] expectedIndices) {
-		
-	list.setItems(items);
-	list.setSelection(items);
-
-	list.deselect(start, end);
-	assertEquals(
-		":(" + start + ", " + end + "):",
-		expectedIndices, list.getSelectionIndices());
-
-	list.setSelection(items);
-	if ( 0 != (list.getStyle() & SWT.MULTI) ) {
-		assertEquals("setSelection(items):", items, list.getSelection());
-	}
-
-	for (int i = start; i <= end; ++i) {
-		list.deselect(i);
-	}
-	assertEquals(
-		":(" + start + ", " + end + "):",
-		expectedIndices, list.getSelectionIndices());
-
-	list.deselectAll();
-}
-/**
- * Dispose of the main list and create a new, single-selection one.
- */
-protected List setSingleList() {
-	list.dispose();
-	list = new List(shell, SWT.SINGLE);
-	setWidget(list);
-	return list;
-}
-/**
- * Similar to deselectII_helper, checks if select(u, v) is the same as
- * for (i=u; i<=v; ++i) select(i)
- */
-protected void selectII_helper(
-	String[] items,
-	int start,
-	int end,
-	int[] expectedIndices) {
-	list.setItems(items);
-	list.select(start, end);
-	assertEquals(
-		":(" + start + ", " + end + "):",
-		expectedIndices, list.getSelectionIndices());
-
-	list.deselectAll();
-	assertEquals("deselectAll:", list.getSelectionIndices(), new int[] {});
-
-	for (int i = start; i <= end; i++) // <= on purpose
-		list.select(i);
-
-	assertEquals(":(" + start + ", " + end + "):",
-		expectedIndices, list.getSelectionIndices());
-
-	list.deselectAll();
-}
-/**
- * Similar to deselectII_helper, checks if select(int []arr) gives the same
- * result as several individual select(int) calls. The int[] used for selection
- * will be filled all integers from start to end inclusive, in order.
- */
-protected void select$I_helper(
-	String[] items,
-	int start,
-	int end,
-	int[] expectedIndices) {
-	int[] selection = new int[end - start + 1];
-	for (int i = 0; i < selection.length; ++i) {
-		selection[i] = i + start;
-	}
-
-	list.select(selection);
-
-	assertEquals(
-		":(" + start + ", " + end + "):",
-		expectedIndices, list.getSelectionIndices());
-
-	list.deselectAll();
-	assertEquals("deselectAll:", list.getSelectionIndices(), new int[] {});
-
-	for (int i = start; i <= end; i++) // <= on purpose
-		list.select(i);
-
-	assertEquals(
-		":(" + start + ", " + end + "):",
-		expectedIndices, list.getSelectionIndices());
-
-	list.deselectAll();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
@@ -163,23 +61,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 		list = new List(shell, cases[i]);
 }
 
-/**
- * Adds the argument to the end of the receiver's list.
- *
- * @param string the new item
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_ADDED - if the operation fails because of an operating system failure</li>
- * </ul>
- *
- */
 public void test_addLjava_lang_String() {
 	try {
 		list.add(null);
@@ -204,32 +85,6 @@ public void test_addLjava_lang_String() {
 	list.add("some text");
 }
 
-/**
- * Adds the argument to the receiver's list at the given
- * zero-relative index.
- * <p>
- * Note: To add an item at the end of the list, use the
- * result of calling <code>getItemCount()</code> as the
- * index or use <code>add(String)</code>.
- * </p>
- *
- * @param string the new item
- * @param index the index for the item
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list (inclusive)</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_ADDED - if the operation fails because of an operating system failure</li>
- * </ul>
- *
- * @see #add(String)
- */
 public void test_addLjava_lang_StringI() {
 	try {
 		list.add("some text", 2);
@@ -308,6 +163,27 @@ public void test_deselect$I() {
 	assertEquals(list.getSelectionIndices(), new int[] {});
 	list.deselect(new int[] { 2, 0, 0 });
 	assertEquals(list.getSelectionIndices(), new int[] {});
+
+}
+
+public void test_deselectAll() {
+	String[] items = { "item0", "item1", "item2", "item3" };
+	String[] empty = {
+	};
+	list.setItems(items);
+	list.setSelection(items);
+	assertEquals(items, list.getSelection());
+	list.deselectAll();
+	assertEquals(empty, list.getSelection());
+
+	
+	setSingleList();
+
+	list.setItems(items);
+	list.setSelection(items);
+	assertEquals(new String[] { "item3" }, list.getSelection());
+	list.deselectAll();
+	assertEquals(empty, list.getSelection());
 
 }
 
@@ -451,73 +327,8 @@ public void test_deselectII() {
 	assertEquals(list.getSelectionIndices(), new int[] {});
 }
 
-public void test_deselectAll() {
-	String[] items = { "item0", "item1", "item2", "item3" };
-	String[] empty = {
-	};
-	list.setItems(items);
-	list.setSelection(items);
-	assertEquals(items, list.getSelection());
-	list.deselectAll();
-	assertEquals(empty, list.getSelection());
-
-	
-	setSingleList();
-
-	list.setItems(items);
-	list.setSelection(items);
-	assertEquals(new String[] { "item3" }, list.getSelection());
-	list.deselectAll();
-	assertEquals(empty, list.getSelection());
-
-}
-
 public void test_getFocusIndex() {
 	warnUnimpl("Test test_getFocusIndex not written");
-}
-
-/**
- * Returns the item at the given, zero-relative index in the
- * receiver. Throws an exception if the index is out of range.
- *
- * @param index the index of the item to return
- * @return the item at the given index
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
- * </ul>
- */
-public void test_getItemI() {
-	String[] items = { "item0", "item1", "item2", "item3" };
-	String[] empty = {
-	};
-	list.setItems(items);
-	String item = null;
-	try {
-		item = list.getItem(5);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
-	assertEquals(list.getItem(3), "item3");
-
-	
-	setSingleList();
-	list.setItems(items);
-	try {
-		item = list.getItem(5);
-		fail("No exception thrown");
-	} catch (IllegalArgumentException e) {
-	}
-	//assert(":a:", list.getItem(5)==null);
-	assertEquals("item3", list.getItem(3));
-
 }
 
 public void test_getItemCount() {
@@ -545,6 +356,32 @@ public void test_getItemCount() {
 
 public void test_getItemHeight() {
 	warnUnimpl("Test test_getItemHeight not written");
+}
+
+public void test_getItemI() {
+	String[] items = { "item0", "item1", "item2", "item3" };
+	String[] empty = {
+	};
+	list.setItems(items);
+	String item = null;
+	try {
+		item = list.getItem(5);
+		fail("No exception thrown");
+	} catch (IllegalArgumentException e) {
+	}
+	assertEquals(list.getItem(3), "item3");
+
+	
+	setSingleList();
+	list.setItems(items);
+	try {
+		item = list.getItem(5);
+		fail("No exception thrown");
+	} catch (IllegalArgumentException e) {
+	}
+	//assert(":a:", list.getItem(5)==null);
+	assertEquals("item3", list.getItem(3));
+
 }
 
 public void test_getItems() {
@@ -712,21 +549,6 @@ public void test_getTopIndex() {
 
 }
 
-/**
- * Gets the index of an item.
- * <p>
- * The list is searched starting at 0 until an
- * item is found that is equal to the search item.
- * If no item is found, -1 is returned.  Indexing
- * is zero based.
- *
- * @param string the search item
- * @return the index of the item
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>
- */
 public void test_indexOfLjava_lang_String() {
 	String[] items = { "text1", "text2", "text3" };
 
@@ -817,25 +639,6 @@ public void test_isSelectedI() {
 
 }
 
-/**
- * Removes the items from the receiver which are
- * between the given zero-relative start and end 
- * indices (inclusive).
- *
- * @param start the start of the range
- * @param end the end of the range
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_RANGE - if either the start or end are not between 0 and the number of elements in the list minus 1 (inclusive)</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
- * </ul>
- */
 public void test_remove$I() {
 	String[] items = { "text0", "text1", "text2", "text3" };
 
@@ -934,23 +737,33 @@ public void test_remove$I() {
 
 }
 
-/**
- * Removes the item from the receiver at the given
- * zero-relative index.
- *
- * @param index the index for the item
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
- * </ul>
- */
+public void test_removeAll() {
+	String[] items = { "text1", "text2", "text3", "test2" };
+
+	list.setItems(items);
+	assertEquals(list.getItemCount(), 4);
+
+	list.removeAll();
+	assertEquals(list.getItemCount(), 0);
+	list.removeAll();
+	assertEquals(list.getItemCount(), 0);
+
+	
+	setSingleList();
+	list.setItems(items);
+	assertEquals(4, list.getItemCount());
+
+	list.removeAll();
+	assertEquals(0, list.getItemCount());
+
+	
+	setSingleList();
+	assertEquals(0, list.getItemCount());
+	list.removeAll();
+	assertEquals(0, list.getItemCount());
+
+}
+
 public void test_removeI() {
 	String[] items = { "text1", "text2", "text3" };
 
@@ -1024,25 +837,6 @@ public void test_removeI() {
 
 }
 
-/**
- * Removes the items from the receiver which are
- * between the given zero-relative start and end 
- * indices (inclusive).
- *
- * @param start the start of the range
- * @param end the end of the range
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_RANGE - if either the start or end are not between 0 and the number of elements in the list minus 1 (inclusive)</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
- * </ul>
- */
 public void test_removeII() {
 	String[] items = { "text1", "text2", "text3" };
 
@@ -1136,25 +930,6 @@ public void test_removeII() {
 	assertEquals(2, list.getItemCount());
 }
 
-/**
- * Searches the receiver's list starting at the first item
- * until an item is found that is equal to the argument, 
- * and removes that item from the list.
- *
- * @param string the item to remove
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the string is not found in the list</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
- * </ul>
- */
 public void test_removeLjava_lang_String() {
 	String[] items = { "text1", "text2", "text3", "test2" };
 
@@ -1214,44 +989,10 @@ public void test_removeLjava_lang_String() {
 
 }
 
-public void test_removeAll() {
-	String[] items = { "text1", "text2", "text3", "test2" };
-
-	list.setItems(items);
-	assertEquals(list.getItemCount(), 4);
-
-	list.removeAll();
-	assertEquals(list.getItemCount(), 0);
-	list.removeAll();
-	assertEquals(list.getItemCount(), 0);
-
-	
-	setSingleList();
-	list.setItems(items);
-	assertEquals(4, list.getItemCount());
-
-	list.removeAll();
-	assertEquals(0, list.getItemCount());
-
-	
-	setSingleList();
-	assertEquals(0, list.getItemCount());
-	list.removeAll();
-	assertEquals(0, list.getItemCount());
-
-}
-
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
-/**
- * Selects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
- * is not selected, it is selected.  If the item at the index
- * was selected, it remains selected. Indices that are out
- * of range and duplicate indices are ignored.
- */
 public void test_select$I() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 	list.setItems(items);
@@ -1374,11 +1115,24 @@ public void test_select$I() {
 	assertEquals(list.getSelectionIndices(), new int[] { 1 });
 }
 
-/**
- * Selects the item at the given zero-relative index in the receiver's 
- * list.  If the item at the index was already selected, it remains
- * selected. Indices that are out of range are ignored.
- */
+public void test_selectAll() {
+	String[] items = { "text1", "text2", "text3", "test2" };
+
+	list.setItems(items);
+	assertEquals(list.getSelectionCount(), 0);
+	list.selectAll();
+	assertEquals(list.getSelectionCount(), 4);
+
+	
+	setSingleList();
+
+	list.setItems(items);
+	assertEquals(0, list.getSelectionCount());
+	list.selectAll();
+	assertEquals(0, list.getSelectionCount());
+
+}
+
 public void test_selectI() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 	list.setItems(items);
@@ -1417,12 +1171,6 @@ public void test_selectI() {
 
 }
 
-/**
- * Selects the items at the given zero-relative indices in the receiver.
- * If the item at the index was already selected, it remains
- * selected. The range of the indices is inclusive. Indices that are
- * out of range are ignored.
- */
 public void test_selectII() {
 	int number = 5;
 
@@ -1510,49 +1258,10 @@ public void test_selectII() {
 	selectII_helper(items, 0, 3, new int[]{3});
 }
 
-public void test_selectAll() {
-	String[] items = { "text1", "text2", "text3", "test2" };
-
-	list.setItems(items);
-	assertEquals(list.getSelectionCount(), 0);
-	list.selectAll();
-	assertEquals(list.getSelectionCount(), 4);
-
-	
-	setSingleList();
-
-	list.setItems(items);
-	assertEquals(0, list.getSelectionCount());
-	list.selectAll();
-	assertEquals(0, list.getSelectionCount());
-
-}
-
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
 
-/**
- * Sets the text of the item in the receiver's list at the given
- * zero-relative index to the string argument. This is equivalent
- * to <code>remove</code>'ing the old item at the index, and then
- * <code>add</code>'ing the new item at that index.
- *
- * @param index the index for the item
- * @param string the new text for the item
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the remove operation fails because of an operating system failure</li>
- *    <li>ERROR_ITEM_NOT_ADDED - if the add operation fails because of an operating system failure</li>
- * </ul>
- */
 public void test_setItemILjava_lang_String() {
 	assertEquals(list.getItemCount(), 0);
 	int[] cases = { -10, 0, 10 };
@@ -1622,19 +1331,6 @@ public void test_setItemILjava_lang_String() {
 
 }
 
-/**
- * Sets the receiver's items to be the given array of items.
- *
- * @param items the array of items
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_ADDED - if the operation fails because of an operating system failure</li>
- * </ul>
- */
 public void test_setItems$Ljava_lang_String() {
 	try {
 		list.setItems(null);
@@ -1780,17 +1476,6 @@ public void test_setSelection$I() {
 	}
 }
 
-/**
- * Sets the receiver's selection to be the given array of items.
- * The current selected is first cleared, then the new items are
- * selected.
- *
- * @param items the array of items
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- */
 public void test_setSelection$Ljava_lang_String() {
 	String[] items = { "item0", "item1", "item2", "item3" };
 	list.setItems(items);
@@ -1851,12 +1536,6 @@ public void test_setSelection$Ljava_lang_String() {
 	}
 }
 
-/**
- * Selects the item at the given zero-relative index in the receiver. 
- * If the item at the index was already selected, it remains selected.
- * The current selected is first cleared, then the new items are selected.
- * Indices that are out of range are ignored.
- */
 public void test_setSelectionI() {
 	int number = 5;
 	for (int i = 0; i < number; i++)
@@ -1904,10 +1583,6 @@ public void test_setSelectionI() {
 
 }
 
-/**
- * Selects the items at the given zero-relative indices in the receiver. 
- * The current selected if first cleared, then the new items are selected.
- */
 public void test_setSelectionII() {
 	int number = 5;
 	String[] items = new String[number];
@@ -2063,13 +1738,13 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_deselect$I");
+	methodNames.addElement("test_deselectAll");
 	methodNames.addElement("test_deselectI");
 	methodNames.addElement("test_deselectII");
-	methodNames.addElement("test_deselectAll");
 	methodNames.addElement("test_getFocusIndex");
-	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemHeight");
+	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionCount");
@@ -2080,15 +1755,15 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_indexOfLjava_lang_StringI");
 	methodNames.addElement("test_isSelectedI");
 	methodNames.addElement("test_remove$I");
+	methodNames.addElement("test_removeAll");
 	methodNames.addElement("test_removeI");
 	methodNames.addElement("test_removeII");
 	methodNames.addElement("test_removeLjava_lang_String");
-	methodNames.addElement("test_removeAll");
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_select$I");
+	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_selectI");
 	methodNames.addElement("test_selectII");
-	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
 	methodNames.addElement("test_setItemILjava_lang_String");
 	methodNames.addElement("test_setItems$Ljava_lang_String");
@@ -2108,13 +1783,13 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_deselect$I")) test_deselect$I();
+	else if (getName().equals("test_deselectAll")) test_deselectAll();
 	else if (getName().equals("test_deselectI")) test_deselectI();
 	else if (getName().equals("test_deselectII")) test_deselectII();
-	else if (getName().equals("test_deselectAll")) test_deselectAll();
 	else if (getName().equals("test_getFocusIndex")) test_getFocusIndex();
-	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
+	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
@@ -2125,15 +1800,15 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_indexOfLjava_lang_StringI")) test_indexOfLjava_lang_StringI();
 	else if (getName().equals("test_isSelectedI")) test_isSelectedI();
 	else if (getName().equals("test_remove$I")) test_remove$I();
+	else if (getName().equals("test_removeAll")) test_removeAll();
 	else if (getName().equals("test_removeI")) test_removeI();
 	else if (getName().equals("test_removeII")) test_removeII();
 	else if (getName().equals("test_removeLjava_lang_String")) test_removeLjava_lang_String();
-	else if (getName().equals("test_removeAll")) test_removeAll();
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_select$I")) test_select$I();
+	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_selectI")) test_selectI();
 	else if (getName().equals("test_selectII")) test_selectII();
-	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setItemILjava_lang_String")) test_setItemILjava_lang_String();
 	else if (getName().equals("test_setItems$Ljava_lang_String")) test_setItems$Ljava_lang_String();
@@ -2144,5 +1819,107 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setTopIndexI")) test_setTopIndexI();
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else super.runTest();
+}
+
+/* custom */
+List list;
+/**
+ * Test if 'deselect(u, v)' is the same as 'for (i=u; i<=v; ++i) deselect(i);'
+ */
+protected void deselectII_helper(
+	String[] items,
+	int start,
+	int end,
+	int[] expectedIndices) {
+		
+	list.setItems(items);
+	list.setSelection(items);
+
+	list.deselect(start, end);
+	assertEquals(
+		":(" + start + ", " + end + "):",
+		expectedIndices, list.getSelectionIndices());
+
+	list.setSelection(items);
+	if ( 0 != (list.getStyle() & SWT.MULTI) ) {
+		assertEquals("setSelection(items):", items, list.getSelection());
+	}
+
+	for (int i = start; i <= end; ++i) {
+		list.deselect(i);
+	}
+	assertEquals(
+		":(" + start + ", " + end + "):",
+		expectedIndices, list.getSelectionIndices());
+
+	list.deselectAll();
+}
+/**
+ * Dispose of the main list and create a new, single-selection one.
+ */
+protected List setSingleList() {
+	list.dispose();
+	list = new List(shell, SWT.SINGLE);
+	setWidget(list);
+	return list;
+}
+/**
+ * Similar to deselectII_helper, checks if select(u, v) is the same as
+ * for (i=u; i<=v; ++i) select(i)
+ */
+protected void selectII_helper(
+	String[] items,
+	int start,
+	int end,
+	int[] expectedIndices) {
+	list.setItems(items);
+	list.select(start, end);
+	assertEquals(
+		":(" + start + ", " + end + "):",
+		expectedIndices, list.getSelectionIndices());
+
+	list.deselectAll();
+	assertEquals("deselectAll:", list.getSelectionIndices(), new int[] {});
+
+	for (int i = start; i <= end; i++) // <= on purpose
+		list.select(i);
+
+	assertEquals(":(" + start + ", " + end + "):",
+		expectedIndices, list.getSelectionIndices());
+
+	list.deselectAll();
+}
+/**
+ * Similar to deselectII_helper, checks if select(int []arr) gives the same
+ * result as several individual select(int) calls. The int[] used for selection
+ * will be filled all integers from start to end inclusive, in order.
+ */
+protected void select$I_helper(
+	String[] items,
+	int start,
+	int end,
+	int[] expectedIndices) {
+	int[] selection = new int[end - start + 1];
+	for (int i = 0; i < selection.length; ++i) {
+		selection[i] = i + start;
+	}
+
+	list.select(selection);
+
+	assertEquals(
+		":(" + start + ", " + end + "):",
+		expectedIndices, list.getSelectionIndices());
+
+	list.deselectAll();
+	assertEquals("deselectAll:", list.getSelectionIndices(), new int[] {});
+
+	for (int i = start; i <= end; i++) // <= on purpose
+		list.select(i);
+
+	assertEquals(
+		":(" + start + ", " + end + "):",
+		expectedIndices, list.getSelectionIndices());
+
+	list.deselectAll();
 }
 }

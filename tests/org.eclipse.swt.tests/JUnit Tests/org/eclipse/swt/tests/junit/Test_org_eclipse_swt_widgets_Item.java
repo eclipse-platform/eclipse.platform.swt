@@ -10,7 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
+import junit.framework.*;
+import junit.textui.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 
@@ -21,11 +22,12 @@ import org.eclipse.swt.graphics.*;
  */
 public class Test_org_eclipse_swt_widgets_Item extends Test_org_eclipse_swt_widgets_Widget {
 
-Item item;
-protected Image[] images = new Image [3];
-
 public Test_org_eclipse_swt_widgets_Item(String name) {
 	super(name);
+}
+
+public static void main(String[] args) {
+	TestRunner.run(suite());
 }
 
 protected void setUp() {
@@ -38,34 +40,12 @@ protected void tearDown() {
 	freeImages();
 }
 
-// this method must be private or protected so the auto-gen tool keeps it
-private void loadImages() {
-	java.io.InputStream in1 = this.getClass().getResourceAsStream("folder.bmp");
-	java.io.InputStream in2 = this.getClass().getResourceAsStream("folderOpen.bmp");
-	java.io.InputStream in3 = this.getClass().getResourceAsStream("target.bmp");
-	Display display = shell.getDisplay();
-		
-	images [0] = new Image (display, in1);
-	images [1] = new Image (display, in2);
-	images [2] = new Image (display, in3);
-	
-	try {
-		in1.close();
-		in2.close();
-		in3.close();
-	} catch (java.io.IOException e) {
-	}
+public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_WidgetI not written");
 }
-protected void setWidget(Widget widget) {
-	item = (Item) widget;
-	super.setWidget(widget);
-}
-// this method must be private or protected so the auto-gen tool keeps it
-private void freeImages() {
-	for (int i=0; i<images.length; i++) {
-		if (images[i] != null)
-			images[i].dispose();
-	}
+
+public void test_ConstructorLorg_eclipse_swt_widgets_WidgetII() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_WidgetII not written");
 }
 
 public void test_getImage() {
@@ -101,8 +81,20 @@ public void test_setTextLjava_lang_String() {
 	}
 }
 
+public static Test suite() {
+	TestSuite suite = new TestSuite();
+	java.util.Vector methodNames = methodNames();
+	java.util.Enumeration e = methodNames.elements();
+	while (e.hasMoreElements()) {
+		suite.addTest(new Test_org_eclipse_swt_widgets_Item((String)e.nextElement()));
+	}
+	return suite;
+}
+
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_WidgetI");
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_WidgetII");
 	methodNames.addElement("test_getImage");
 	methodNames.addElement("test_getText");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
@@ -111,10 +103,45 @@ public static java.util.Vector methodNames() {
 	return methodNames;
 }
 protected void runTest() throws Throwable {
-	if (getName().equals("test_getImage")) test_getImage();
+	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_WidgetI")) test_ConstructorLorg_eclipse_swt_widgets_WidgetI();
+	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_WidgetII")) test_ConstructorLorg_eclipse_swt_widgets_WidgetII();
+	else if (getName().equals("test_getImage")) test_getImage();
 	else if (getName().equals("test_getText")) test_getText();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else super.runTest();
+}
+
+/* custom */
+Item item;
+protected Image[] images = new Image [3];
+
+private void loadImages() {
+	java.io.InputStream in1 = this.getClass().getResourceAsStream("folder.bmp");
+	java.io.InputStream in2 = this.getClass().getResourceAsStream("folderOpen.bmp");
+	java.io.InputStream in3 = this.getClass().getResourceAsStream("target.bmp");
+	Display display = shell.getDisplay();
+		
+	images [0] = new Image (display, in1);
+	images [1] = new Image (display, in2);
+	images [2] = new Image (display, in3);
+	
+	try {
+		in1.close();
+		in2.close();
+		in3.close();
+	} catch (java.io.IOException e) {
+	}
+}
+protected void setWidget(Widget widget) {
+	item = (Item) widget;
+	super.setWidget(widget);
+}
+
+private void freeImages() {
+	for (int i=0; i<images.length; i++) {
+		if (images[i] != null)
+			images[i].dispose();
+	}
 }
 }

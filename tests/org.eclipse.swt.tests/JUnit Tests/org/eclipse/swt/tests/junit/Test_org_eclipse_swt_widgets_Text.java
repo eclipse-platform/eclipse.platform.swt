@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
+import junit.framework.*;
+import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
-import junit.framework.*;
-import junit.textui.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Text
@@ -23,9 +22,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.Text
  */
 public class Test_org_eclipse_swt_widgets_Text extends Test_org_eclipse_swt_widgets_Scrollable {
-
-Text text;
-String delimiterString;
 
 public Test_org_eclipse_swt_widgets_Text(String name) {
 	super(name);
@@ -44,28 +40,7 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-/**
- * Clean up the environment for a new test.
- * 
- * @param single true if the new text widget should be single-line.
- */
-private void makeCleanEnvironment(boolean single) {
-// this method must be private or protected so the auto-gen tool keeps it
-	if ( text != null ) text.dispose();
-
-	if ( single == true )
-		text = new Text(shell, SWT.SINGLE);	
-	else
-		text = new Text(shell, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-	setWidget(text);
-	delimiterString = Text.DELIMITER;
-}
-protected void setWidget(Widget w) {
-	text = (Text)w;
-	super.setWidget(w);
-}
-
-public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
+public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		text = new Text(null, 0);
 		fail("No exception thrown for parent == null");
@@ -91,7 +66,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	warnUnimpl("Test test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener not written");
 }
 
-public void test_appendLjava_lang_String(){
+public void test_appendLjava_lang_String() {
 	try {
 		text.append(null);
 		fail("No exception thrown for string == null");
@@ -152,7 +127,7 @@ public void test_appendLjava_lang_String(){
 	assertEquals("01234" + delimiterString+"567", text.getText());
 }
 
-public void test_clearSelection(){
+public void test_clearSelection() {
 	text.setText("01234567890");
 	assertEquals("", text.getSelectionText());
 	text.selectAll();
@@ -182,7 +157,7 @@ public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
-public void test_copy(){
+public void test_copy() {
 	text.copy();
 
 	text.selectAll();
@@ -219,7 +194,7 @@ public void test_copy(){
 	assertEquals("00000", text.getText());
 }
 
-public void test_cut(){
+public void test_cut() {
 	text.cut();
 	text.setText("01234567890");
 	text.setSelection(2, 5);
@@ -257,7 +232,7 @@ public void test_getCaretPosition() {
 	warnUnimpl("Test test_getCaretPosition not written");
 }
 
-public void test_getCharCount(){
+public void test_getCharCount() {
 	assertEquals(0, text.getCharCount());
 	text.setText("");
 	assertEquals(0, text.getCharCount());
@@ -308,7 +283,7 @@ public void test_getCharCount(){
 	}
 }
 
-public void test_getDoubleClickEnabled(){
+public void test_getDoubleClickEnabled() {
 	text.setDoubleClickEnabled(true);
 	assertTrue(text.getDoubleClickEnabled());
 	
@@ -325,7 +300,7 @@ public void test_getDoubleClickEnabled(){
 	assertEquals(false, text.getDoubleClickEnabled());
 }
 
-public void test_getEchoChar(){
+public void test_getEchoChar() {
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
 	
@@ -337,7 +312,7 @@ public void test_getEditable() {
 	warnUnimpl("Test test_getEditable not written");
 }
 
-public void test_getLineCount(){
+public void test_getLineCount() {
 	assertEquals(1, text.getLineCount());
 	text.append("dddasd" + delimiterString);
 	assertEquals(2, text.getLineCount());
@@ -362,6 +337,10 @@ public void test_getLineHeight() {
 	warnUnimpl("Test test_getLineHeight not written");
 }
 
+public void test_getOrientation() {
+	warnUnimpl("Test test_getOrientation not written");
+}
+
 public void test_getSelection() {
 	warnUnimpl("Test test_getSelection not written");
 }
@@ -370,7 +349,7 @@ public void test_getSelectionCount() {
 	warnUnimpl("Test test_getSelectionCount not written");
 }
 
-public void test_getSelectionText(){
+public void test_getSelectionText() {
 	text.setText("01234567890");
 	assertEquals("", text.getSelectionText());
 	text.setSelection(3, 7);
@@ -384,7 +363,7 @@ public void test_getTabs() {
 	warnUnimpl("Test test_getTabs not written");
 }
 
-public void test_getText(){
+public void test_getText() {
 	assertEquals("", text.getText());
 	text.setText("01234567890");
 	assertEquals("01234567890", text.getText());
@@ -395,7 +374,7 @@ public void test_getText(){
 	assertEquals(string, text.getText());
 }
 
-public void test_getTextII(){
+public void test_getTextII() {
 	assertEquals("", text.getText());
 	text.setText("01234567890");
 	assertEquals("345", text.getText(3, 5));
@@ -414,7 +393,7 @@ public void test_getTextLimit() {
 	warnUnimpl("Test test_getTextLimit not written");
 }
 
-public void test_getTopIndex(){
+public void test_getTopIndex() {
 	assertEquals(0, text.getTopIndex());
 	text.setText("01234567890");
 	assertEquals(0, text.getTopIndex());
@@ -430,7 +409,7 @@ public void test_getTopPixel() {
 	warnUnimpl("Test test_getTopPixel not written");
 }
 
-public void test_insertLjava_lang_String(){
+public void test_insertLjava_lang_String() {
 	try {
 		text.insert(null);
 		fail("No exception thrown for string == null");
@@ -495,7 +474,7 @@ public void test_insertLjava_lang_String(){
 	}
 }
 
-public void test_paste(){
+public void test_paste() {
 	text.setText("01234567890");
 	text.setSelection(2, 4);
 	assertEquals("01234567890", text.getText());
@@ -555,7 +534,7 @@ public void test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	warnUnimpl("Test test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener not written");
 }
 
-public void test_selectAll(){
+public void test_selectAll() {
 	text.setText("01234567890");
 	assertEquals("01234567890", text.getText());
 	text.selectAll();
@@ -591,7 +570,7 @@ public void test_selectAll(){
 	}
 }
 
-public void test_setDoubleClickEnabledZ(){
+public void test_setDoubleClickEnabledZ() {
 	text.setDoubleClickEnabled(true);
 	assertTrue(text.getDoubleClickEnabled());
 	
@@ -608,7 +587,7 @@ public void test_setDoubleClickEnabledZ(){
 	assertEquals(false, text.getDoubleClickEnabled());
 }
 
-public void test_setEchoCharC(){
+public void test_setEchoCharC() {
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
 	
@@ -643,11 +622,20 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
 
+public void test_setOrientationI() {
+	warnUnimpl("Test test_setOrientationI not written");
+}
+
+public void test_setRedrawZ() {
+	text.setRedraw(false);
+	text.setRedraw(true);
+}
+
 public void test_setSelectionI() {
 	warnUnimpl("Test test_setSelectionI not written");
 }
 
-public void test_setSelectionII(){
+public void test_setSelectionII() {
 	text.setText("01234567890");
 	assertEquals(0, text.getSelectionCount());
 	text.setSelection(2, 4);
@@ -685,12 +673,7 @@ public void test_setSelectionII(){
 	}
 }
 
-public void test_setRedrawZ(){
-	text.setRedraw(false);
-	text.setRedraw(true);
-}
-
-public void test_setSelectionLorg_eclipse_swt_graphics_Point(){
+public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	text.setText("dsdsdasdslaasdas");
 	try {
 		text.setSelection((Point) null);
@@ -752,7 +735,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point(){
 	assertEquals(new Point(11, 11), text.getSelection());
 }
 
-public void test_setTabsI(){
+public void test_setTabsI() {
 	if (SwtJunit.isMotif) {
 		for (int i = 0; i < 200; i++) {
 			text.setTabs(i);
@@ -766,7 +749,11 @@ public void test_setTabsI(){
 	}
 }
 
-public void test_setTextLjava_lang_String(){
+public void test_setTextLimitI() {
+	warnUnimpl("Test test_setTextLimitI not written");
+}
+
+public void test_setTextLjava_lang_String() {
 	try {
 		text.setText(null);
 		fail("No exception thrown for string == null");
@@ -806,11 +793,7 @@ public void test_setTextLjava_lang_String(){
 	}
 }
 
-public void test_setTextLimitI() {
-	warnUnimpl("Test test_setTextLimitI not written");
-}
-
-public void test_setTopIndexI(){
+public void test_setTopIndexI() {
 	int number = 100;
 	for (int i = 0; i < number; i++) {
 		text.append("01234\n");
@@ -846,7 +829,7 @@ public void test_setTopIndexI(){
 	}
 }
 
-public void test_showSelection(){
+public void test_showSelection() {
 	text.showSelection();
 
 	text.selectAll();
@@ -905,6 +888,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getLineCount");
 	methodNames.addElement("test_getLineDelimiter");
 	methodNames.addElement("test_getLineHeight");
+	methodNames.addElement("test_getOrientation");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionCount");
 	methodNames.addElement("test_getSelectionText");
@@ -924,13 +908,14 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setEchoCharC");
 	methodNames.addElement("test_setEditableZ");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
+	methodNames.addElement("test_setOrientationI");
+	methodNames.addElement("test_setRedrawZ");
 	methodNames.addElement("test_setSelectionI");
 	methodNames.addElement("test_setSelectionII");
-	methodNames.addElement("test_setRedrawZ");
 	methodNames.addElement("test_setSelectionLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_setTabsI");
-	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setTextLimitI");
+	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setTopIndexI");
 	methodNames.addElement("test_showSelection");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Scrollable.methodNames()); // add superclass method names
@@ -956,6 +941,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getLineCount")) test_getLineCount();
 	else if (getName().equals("test_getLineDelimiter")) test_getLineDelimiter();
 	else if (getName().equals("test_getLineHeight")) test_getLineHeight();
+	else if (getName().equals("test_getOrientation")) test_getOrientation();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
 	else if (getName().equals("test_getSelectionText")) test_getSelectionText();
@@ -975,15 +961,41 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setEchoCharC")) test_setEchoCharC();
 	else if (getName().equals("test_setEditableZ")) test_setEditableZ();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
+	else if (getName().equals("test_setOrientationI")) test_setOrientationI();
+	else if (getName().equals("test_setRedrawZ")) test_setRedrawZ();
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
 	else if (getName().equals("test_setSelectionII")) test_setSelectionII();
-	else if (getName().equals("test_setRedrawZ")) test_setRedrawZ();
 	else if (getName().equals("test_setSelectionLorg_eclipse_swt_graphics_Point")) test_setSelectionLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_setTabsI")) test_setTabsI();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setTextLimitI")) test_setTextLimitI();
+	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setTopIndexI")) test_setTopIndexI();
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else super.runTest();
+}
+
+/* custom */
+Text text;
+String delimiterString;
+
+/**
+ * Clean up the environment for a new test.
+ * 
+ * @param single true if the new text widget should be single-line.
+ */
+private void makeCleanEnvironment(boolean single) {
+// this method must be private or protected so the auto-gen tool keeps it
+	if ( text != null ) text.dispose();
+
+	if ( single == true )
+		text = new Text(shell, SWT.SINGLE);	
+	else
+		text = new Text(shell, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+	setWidget(text);
+	delimiterString = Text.DELIMITER;
+}
+protected void setWidget(Widget w) {
+	text = (Text)w;
+	super.setWidget(w);
 }
 }

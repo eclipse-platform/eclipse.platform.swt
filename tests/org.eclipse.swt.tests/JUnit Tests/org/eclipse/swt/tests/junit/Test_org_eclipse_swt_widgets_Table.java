@@ -11,10 +11,10 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Table
@@ -22,8 +22,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.Table
  */
 public class Test_org_eclipse_swt_widgets_Table extends Test_org_eclipse_swt_widgets_Composite {
-
-protected Table table;
 
 public Test_org_eclipse_swt_widgets_Table(String name) {
 	super(name);
@@ -42,33 +40,7 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-/**
- * (Re)initializes table. This is called from setUp before each test
- * method is invoked, but also inside the test methods themselves to 
- * re-initialize the environment for a fresh test.
- * 
- * Basically a shim for coalescing the old test methods (several test
- * methods testing the same target method) into a single test method for
- * every target method. This way the original tests should work with little
- * modification, as long as this method is called before each test.
- * 
- * Caveat: the Widget TestCase defines the tearDown method, will assert that
- * the main widget (defined by the last call to setWidget) has been disposed.
- * So using this inside test methods means that only the widget created by
- * the last call to this method will be tested for this. 
- * 
- * @param int Value to pass as the second parameter to the Table constructor
- */
-private void makeCleanEnvironment(boolean singleMode) {
-// this method must be private or protected so the auto-gen tool keeps it
-	if ( singleMode == false )
-		table = new Table(shell, SWT.MULTI);
-	else
-		table = new Table(shell, SWT.SINGLE);
-	setWidget(table);	
-}
-
-public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
+public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	if (fCheckSwtNullExceptions) {
 		Table newTable;
 		try {
@@ -84,15 +56,11 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
-public void test_checkSubclass() {
-	warnUnimpl("Test test_checkSubclass not written");
-}
-
 public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
-public void test_deselect$I(){
+public void test_deselect$I() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -146,7 +114,28 @@ public void test_deselect$I(){
 	assertEquals(number-3, table.getSelectionCount());
 }
 
-public void test_deselectI(){
+public void test_deselectAll() {
+	int number = 15;
+	TableItem[] items = new TableItem[number];
+	for (int i = 0; i < number; i++)
+		items[i] = new TableItem(table, 0);
+	
+	assertEquals(0, table.getSelectionCount());
+	table.select(new int[] {2, 4, 5, 10});
+	
+	assertEquals(4, table.getSelectionCount());
+	
+	table.deselectAll();
+	assertEquals(0, table.getSelectionCount());
+
+	table.selectAll();
+	assertEquals(number, table.getSelectionCount());
+
+	table.deselectAll();
+	assertEquals(0, table.getSelectionCount());
+}
+
+public void test_deselectI() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++) {
@@ -176,7 +165,7 @@ public void test_deselectI(){
 	assertEquals(1, table.getSelectionCount());
 }
 
-public void test_deselectII(){
+public void test_deselectII() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -241,33 +230,12 @@ public void test_deselectII(){
 	table.selectAll();
 }
 
-public void test_deselectAll() {
-	int number = 15;
-	TableItem[] items = new TableItem[number];
-	for (int i = 0; i < number; i++)
-		items[i] = new TableItem(table, 0);
-	
-	assertEquals(0, table.getSelectionCount());
-	table.select(new int[] {2, 4, 5, 10});
-	
-	assertEquals(4, table.getSelectionCount());
-	
-	table.deselectAll();
-	assertEquals(0, table.getSelectionCount());
-
-	table.selectAll();
-	assertEquals(number, table.getSelectionCount());
-
-	table.deselectAll();
-	assertEquals(0, table.getSelectionCount());
+public void test_getColumnCount() {
+	warnUnimpl("Test test_getColumnCount not written");
 }
 
 public void test_getColumnI() {
 	warnUnimpl("Test test_getColumnI not written");
-}
-
-public void test_getColumnCount() {
-	warnUnimpl("Test test_getColumnCount not written");
 }
 
 public void test_getColumns() {
@@ -278,11 +246,42 @@ public void test_getGridLineWidth() {
 	table.getGridLineWidth();
 }
 
+public void test_getHeaderHeight() {
+	warnUnimpl("Test test_getHeaderHeight not written");
+}
+
 public void test_getHeaderVisible() {
 	warnUnimpl("Test test_getHeaderVisible not written");
 }
 
-public void test_getItemI(){
+public void test_getItemCount() {
+	int[] cases = {0, 10, 100};
+	for (int j = 0; j < cases.length; j++) {
+		for (int i = 0; i < cases[j]; i++) {
+			TableItem ti = new TableItem(table, 0);
+		}
+		assertEquals("j="+ j, cases[j], table.getItemCount());
+		table.removeAll();
+	}
+
+	// note: SWT.SINGLE
+	makeCleanEnvironment(true);	
+	for (int j = 0; j < cases.length; j++) {
+		for (int i = 0; i < cases[j]; i++) {
+			TableItem ti = new TableItem(table, 0);
+		}
+		assertEquals("j="+ j, cases[j], table.getItemCount());
+		table.removeAll();
+	}
+}
+
+public void test_getItemHeight() {
+	assertTrue(":a: Item height <= 0", table.getItemHeight() > 0);
+	new TableItem(table, 0);
+	assertTrue(":b: Item height <= 0", table.getItemHeight() > 0);
+}
+
+public void test_getItemI() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -331,34 +330,7 @@ public void test_getItemLorg_eclipse_swt_graphics_Point() {
 	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
 }
 
-public void test_getItemCount(){
-	int[] cases = {0, 10, 100};
-	for (int j = 0; j < cases.length; j++) {
-		for (int i = 0; i < cases[j]; i++) {
-			TableItem ti = new TableItem(table, 0);
-		}
-		assertEquals("j="+ j, cases[j], table.getItemCount());
-		table.removeAll();
-	}
-
-	// note: SWT.SINGLE
-	makeCleanEnvironment(true);	
-	for (int j = 0; j < cases.length; j++) {
-		for (int i = 0; i < cases[j]; i++) {
-			TableItem ti = new TableItem(table, 0);
-		}
-		assertEquals("j="+ j, cases[j], table.getItemCount());
-		table.removeAll();
-	}
-}
-
-public void test_getItemHeight() {
-	assertTrue(":a: Item height <= 0", table.getItemHeight() > 0);
-	new TableItem(table, 0);
-	assertTrue(":b: Item height <= 0", table.getItemHeight() > 0);
-}
-
-public void test_getItems(){
+public void test_getItems() {
 	int[] cases = {0, 10, 100};
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
@@ -410,7 +382,7 @@ public void test_getLinesVisible() {
 	warnUnimpl("Test test_getLinesVisible not written");
 }
 
-public void test_getSelection(){
+public void test_getSelection() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -439,7 +411,7 @@ public void test_getSelection(){
 	assertEquals(new TableItem[] {items[0]}, table.getSelection());
 }
 
-public void test_getSelectionCount(){
+public void test_getSelectionCount() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -468,7 +440,7 @@ public void test_getSelectionCount(){
 	assertEquals(1, table.getSelectionCount());
 }
 
-public void test_getSelectionIndex(){
+public void test_getSelectionIndex() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -497,7 +469,7 @@ public void test_getSelectionIndex(){
 	assertEquals(0, table.getSelectionIndex());
 }
 
-public void test_getSelectionIndices(){
+public void test_getSelectionIndices() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -536,7 +508,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TableColumn() {
 	warnUnimpl("Test test_indexOfLorg_eclipse_swt_widgets_TableColumn not written");
 }
 
-public void test_indexOfLorg_eclipse_swt_widgets_TableItem(){
+public void test_indexOfLorg_eclipse_swt_widgets_TableItem() {
 	int number = 20;
 	TableItem[] items = new TableItem[number];
 
@@ -621,7 +593,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TableItem(){
 	}
 }
 
-public void test_isSelectedI(){
+public void test_isSelectedI() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -664,7 +636,7 @@ public void test_isSelectedI(){
 	}
 }
 
-public void test_remove$I(){
+public void test_remove$I() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -718,11 +690,28 @@ public void test_remove$I(){
 	assertEquals(number-4, table.getItemCount());
 }
 
+public void test_removeAll() {
+	int number = 15;
+	TableItem[] items = new TableItem[number];
+	for (int i = 0; i < number; i++)
+		items[i] = new TableItem(table, 0);
+
+	table.removeAll();
+
+	makeCleanEnvironment(false);
+		
+	for (int i = 0; i < number; i++)
+		items[i] = new TableItem(table, 0);
+
+	table.removeAll();
+	table.removeAll();
+}
+
 public void test_removeI() {
 	warnUnimpl("Test test_removeI not written");
 }
 
-public void test_removeII(){
+public void test_removeII() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -949,28 +938,11 @@ public void test_removeII(){
 	assertEquals(number-4, table.getItemCount());
 }
 
-public void test_removeAll(){
-	int number = 15;
-	TableItem[] items = new TableItem[number];
-	for (int i = 0; i < number; i++)
-		items[i] = new TableItem(table, 0);
-
-	table.removeAll();
-
-	makeCleanEnvironment(false);
-		
-	for (int i = 0; i < number; i++)
-		items[i] = new TableItem(table, 0);
-
-	table.removeAll();
-	table.removeAll();
-}
-
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
-public void test_select$I(){
+public void test_select$I() {
 	try {
 		table.select(null);
 		fail("No exception thrown for selection == null");
@@ -997,7 +969,27 @@ public void test_select$I(){
 	}
 }
 
-public void test_selectI(){	
+public void test_selectAll() {
+	int number = 5;
+	TableItem[] items = new TableItem[number];
+	for (int i = 0; i < number; i++)
+		items[i] = new TableItem(table, 0);
+
+	assertEquals(new int[]{}, table.getSelectionIndices());
+	table.selectAll();
+	assertEquals(new int[]{0, 1, 2, 3, 4}, table.getSelectionIndices());
+	
+	// test single-selection table
+	makeCleanEnvironment(true);
+	for (int i = 0; i < number; i++)
+		items[i] = new TableItem(table, 0);
+
+	assertEquals(new int[]{}, table.getSelectionIndices());
+	table.selectAll();
+	assertEquals(new int[]{}, table.getSelectionIndices());
+}
+
+public void test_selectI() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -1033,7 +1025,7 @@ public void test_selectI(){
 	assertEquals(new int[] {0}, table.getSelectionIndices()); // for SINGLE setSelection and select are the same
 }
 
-public void test_selectII(){
+public void test_selectII() {
 	int number = 15;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -1187,31 +1179,11 @@ public void test_selectII(){
 	table.deselectAll();
 }
 
-public void test_selectAll(){
-	int number = 5;
-	TableItem[] items = new TableItem[number];
-	for (int i = 0; i < number; i++)
-		items[i] = new TableItem(table, 0);
-
-	assertEquals(new int[]{}, table.getSelectionIndices());
-	table.selectAll();
-	assertEquals(new int[]{0, 1, 2, 3, 4}, table.getSelectionIndices());
-	
-	// test single-selection table
-	makeCleanEnvironment(true);
-	for (int i = 0; i < number; i++)
-		items[i] = new TableItem(table, 0);
-
-	assertEquals(new int[]{}, table.getSelectionIndices());
-	table.selectAll();
-	assertEquals(new int[]{}, table.getSelectionIndices());
-}
-
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
 }
 
-public void test_setHeaderVisibleZ(){
+public void test_setHeaderVisibleZ() {
 	table.setHeaderVisible(true);
 	assertTrue(table.getHeaderVisible());
 
@@ -1219,7 +1191,7 @@ public void test_setHeaderVisibleZ(){
 	assertTrue(!table.getHeaderVisible());
 }
 
-public void test_setLinesVisibleZ(){
+public void test_setLinesVisibleZ() {
 	table.setLinesVisible(true);
 	assertTrue(table.getLinesVisible());
 
@@ -1231,7 +1203,7 @@ public void test_setRedrawZ() {
 	warnUnimpl("Test test_setRedrawZ not written");
 }
 
-public void test_setSelection$I(){
+public void test_setSelection$I() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -1319,7 +1291,7 @@ public void test_setSelection$I(){
 	}
 }
 
-public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem(){
+public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -1422,7 +1394,7 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem(){
 	assertEquals(new TableItem[] {items[1]}, table.getSelection());			
 }
 
-public void test_setSelectionI(){
+public void test_setSelectionI() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -1464,7 +1436,7 @@ public void test_setSelectionI(){
 	
 }
 
-public void test_setSelectionII(){
+public void test_setSelectionII() {
 	int number = 5;
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
@@ -1540,21 +1512,21 @@ public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_checkSubclass");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_deselect$I");
+	methodNames.addElement("test_deselectAll");
 	methodNames.addElement("test_deselectI");
 	methodNames.addElement("test_deselectII");
-	methodNames.addElement("test_deselectAll");
-	methodNames.addElement("test_getColumnI");
 	methodNames.addElement("test_getColumnCount");
+	methodNames.addElement("test_getColumnI");
 	methodNames.addElement("test_getColumns");
 	methodNames.addElement("test_getGridLineWidth");
+	methodNames.addElement("test_getHeaderHeight");
 	methodNames.addElement("test_getHeaderVisible");
-	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemHeight");
+	methodNames.addElement("test_getItemI");
+	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getLinesVisible");
 	methodNames.addElement("test_getSelection");
@@ -1566,14 +1538,14 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_indexOfLorg_eclipse_swt_widgets_TableItem");
 	methodNames.addElement("test_isSelectedI");
 	methodNames.addElement("test_remove$I");
+	methodNames.addElement("test_removeAll");
 	methodNames.addElement("test_removeI");
 	methodNames.addElement("test_removeII");
-	methodNames.addElement("test_removeAll");
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_select$I");
+	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_selectI");
 	methodNames.addElement("test_selectII");
-	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
 	methodNames.addElement("test_setHeaderVisibleZ");
 	methodNames.addElement("test_setLinesVisibleZ");
@@ -1591,21 +1563,21 @@ public static java.util.Vector methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_checkSubclass")) test_checkSubclass();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_deselect$I")) test_deselect$I();
+	else if (getName().equals("test_deselectAll")) test_deselectAll();
 	else if (getName().equals("test_deselectI")) test_deselectI();
 	else if (getName().equals("test_deselectII")) test_deselectII();
-	else if (getName().equals("test_deselectAll")) test_deselectAll();
-	else if (getName().equals("test_getColumnI")) test_getColumnI();
 	else if (getName().equals("test_getColumnCount")) test_getColumnCount();
+	else if (getName().equals("test_getColumnI")) test_getColumnI();
 	else if (getName().equals("test_getColumns")) test_getColumns();
 	else if (getName().equals("test_getGridLineWidth")) test_getGridLineWidth();
+	else if (getName().equals("test_getHeaderHeight")) test_getHeaderHeight();
 	else if (getName().equals("test_getHeaderVisible")) test_getHeaderVisible();
-	else if (getName().equals("test_getItemI")) test_getItemI();
-	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
+	else if (getName().equals("test_getItemI")) test_getItemI();
+	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getLinesVisible")) test_getLinesVisible();
 	else if (getName().equals("test_getSelection")) test_getSelection();
@@ -1617,14 +1589,14 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_indexOfLorg_eclipse_swt_widgets_TableItem")) test_indexOfLorg_eclipse_swt_widgets_TableItem();
 	else if (getName().equals("test_isSelectedI")) test_isSelectedI();
 	else if (getName().equals("test_remove$I")) test_remove$I();
+	else if (getName().equals("test_removeAll")) test_removeAll();
 	else if (getName().equals("test_removeI")) test_removeI();
 	else if (getName().equals("test_removeII")) test_removeII();
-	else if (getName().equals("test_removeAll")) test_removeAll();
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_select$I")) test_select$I();
+	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_selectI")) test_selectI();
 	else if (getName().equals("test_selectII")) test_selectII();
-	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setHeaderVisibleZ")) test_setHeaderVisibleZ();
 	else if (getName().equals("test_setLinesVisibleZ")) test_setLinesVisibleZ();
@@ -1637,5 +1609,17 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_showItemLorg_eclipse_swt_widgets_TableItem")) test_showItemLorg_eclipse_swt_widgets_TableItem();
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else super.runTest();
+}
+
+/* custom */
+protected Table table;
+
+private void makeCleanEnvironment(boolean singleMode) {
+// this method must be private or protected so the auto-gen tool keeps it
+	if ( singleMode == false )
+		table = new Table(shell, SWT.MULTI);
+	else
+		table = new Table(shell, SWT.SINGLE);
+	setWidget(table);	
 }
 }

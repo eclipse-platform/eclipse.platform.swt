@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.FileDialog
@@ -22,8 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.FileDialog
  */
 public class Test_org_eclipse_swt_widgets_FileDialog extends Test_org_eclipse_swt_widgets_Dialog {
-
-FileDialog fileDialog;
 
 public Test_org_eclipse_swt_widgets_FileDialog(String name) {
 	super(name);
@@ -155,4 +152,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setFilterPathLjava_lang_String")) test_setFilterPathLjava_lang_String();
 	else super.runTest();
 }
+
+/* custom */
+FileDialog fileDialog;
 }

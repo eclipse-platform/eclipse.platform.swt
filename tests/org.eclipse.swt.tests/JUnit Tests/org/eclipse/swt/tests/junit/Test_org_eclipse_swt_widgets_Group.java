@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Group
@@ -22,8 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.Group
  */
 public class Test_org_eclipse_swt_widgets_Group extends Test_org_eclipse_swt_widgets_Composite {
-
-Group group;
 
 public Test_org_eclipse_swt_widgets_Group(String name) {
 	super(name);
@@ -54,10 +51,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	int[] cases = {SWT.SHADOW_IN, SWT.SHADOW_OUT, SWT.SHADOW_ETCHED_IN, SWT.SHADOW_ETCHED_OUT};
 	for (int i = 0; i < cases.length; i++)
 		group = new Group(shell, cases[i]);
-}
-
-public void test_checkSubclass() {
-	warnUnimpl("Test test_checkSubclass not written");
 }
 
 public void test_computeSizeIIZ() {
@@ -96,7 +89,6 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_checkSubclass");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_computeTrimIIII");
 	methodNames.addElement("test_getClientArea");
@@ -107,7 +99,6 @@ public static java.util.Vector methodNames() {
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_checkSubclass")) test_checkSubclass();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
 	else if (getName().equals("test_getClientArea")) test_getClientArea();
@@ -115,4 +106,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else super.runTest();
 }
+
+/* custom */
+Group group;
 }

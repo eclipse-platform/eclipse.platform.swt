@@ -10,7 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
+import junit.framework.*;
+import junit.textui.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -19,11 +20,13 @@ import org.eclipse.swt.widgets.*;
  * @see org.eclipse.swt.widgets.Scrollable
  */
 public class Test_org_eclipse_swt_widgets_Scrollable extends Test_org_eclipse_swt_widgets_Control {
-
-	Scrollable scrollable;
 	
 public Test_org_eclipse_swt_widgets_Scrollable(String name) {
 	super(name);
+}
+
+public static void main(String[] args) {
+	TestRunner.run(suite());
 }
 
 protected void setUp() {
@@ -34,9 +37,8 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-protected void setWidget(Widget w) {
-	scrollable = (Scrollable)w;
-	super.setWidget(w);
+public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
 public void test_computeTrimIIII() {
@@ -55,8 +57,19 @@ public void test_getVerticalBar() {
 	ScrollBar vbar = scrollable.getVerticalBar();
 }
 
+public static Test suite() {
+	TestSuite suite = new TestSuite();
+	java.util.Vector methodNames = methodNames();
+	java.util.Enumeration e = methodNames.elements();
+	while (e.hasMoreElements()) {
+		suite.addTest(new Test_org_eclipse_swt_widgets_Scrollable((String)e.nextElement()));
+	}
+	return suite;
+}
+
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_computeTrimIIII");
 	methodNames.addElement("test_getClientArea");
 	methodNames.addElement("test_getHorizontalBar");
@@ -65,10 +78,19 @@ public static java.util.Vector methodNames() {
 	return methodNames;
 }
 protected void runTest() throws Throwable {
-	if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
+	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
+	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
 	else if (getName().equals("test_getClientArea")) test_getClientArea();
 	else if (getName().equals("test_getHorizontalBar")) test_getHorizontalBar();
 	else if (getName().equals("test_getVerticalBar")) test_getVerticalBar();
 	else super.runTest();
+}
+
+/* custom */
+	Scrollable scrollable;
+
+protected void setWidget(Widget w) {
+	scrollable = (Scrollable)w;
+	super.setWidget(w);
 }
 }
