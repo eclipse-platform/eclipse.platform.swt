@@ -415,6 +415,8 @@ public class OS {
 	public static final int kThemePushButtonFont = 105;
 	public static final int kThemeRadioButton = 2;
 	public static final int kThemeResizeLeftRightCursor = 17;
+	public static final int kThemeResizeLeftCursor = 15;
+	public static final int kThemeResizeRightCursor = 16;
 	public static final int kThemeRoundedBevelButton = 15;
 	public static final int kThemeSmallBevelButton = 8;
 	public static final int kThemeSmallEmphasizedSystemFont = 2;
@@ -1026,6 +1028,7 @@ public static final native void TextMode(short mode);
 public static final native void TextSize(short size);
 public static final native short TextWidth(byte[] textBuf, short firstByte, short byteCount);
 public static final native int TrackMouseLocationWithOptions(int inPort, int inOptions, double inTime, Point outPt, int [] outModifiers, short[] outResult);
+public static final native void UnionRect(int srcA, int srcB, int dst);
 public static final native void UnionRgn(int srcRgnA, int srcRgnB, int dstRgn);
 public static final native int UnlockPortBits(int portHandle);
 public static final native void UpdateControls(int wHandle, int rgnHandle);
