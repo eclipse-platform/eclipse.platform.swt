@@ -55,8 +55,7 @@ public static int registerType(String formatName){
 	// Use default display because we don't have a particular widget
 	int xDisplay = Display.getDefault().xDisplay;
 	// Use the character encoding for the default locale
-	byte[] bName = Converter.wcsToMbcs (null, formatName, true);
-	int atom = OS.XmInternAtom (xDisplay, bName, false); 
-	return atom;
+	byte[] buffer = Converter.wcsToMbcs (null, formatName, true);
+	return OS.XmInternAtom (xDisplay, buffer, false); 
 }
 }
