@@ -169,10 +169,10 @@ public String getText () {
  *'&amp' can be escaped by doubling it in the string, causing
  * a single '&amp' to be displayed.
  * </p>
- * @param text the new text
+ * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
