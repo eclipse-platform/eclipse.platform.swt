@@ -2461,7 +2461,7 @@ boolean translateTraversal (MacEvent mEvent) {
 	int state= mEvent.getStateMask();
 	boolean all = false;
 	switch (key) {
-		case 30 /* OS.GDK_Escape:
+		case 53 /* OS.GDK_Escape:
 		case OS.GDK_Cancel */: {
 			all = true;
 			detail = SWT.TRAVERSE_ESCAPE;
