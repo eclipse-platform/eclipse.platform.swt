@@ -1262,6 +1262,7 @@ void update () {
 		}
 		return;
 	}
+	if (OS.IsWinCE) return;
 	if ((style & SWT.BAR) != 0) {
 		if (this == parent.menuBar) OS.DrawMenuBar (parent.handle);
 		return;
@@ -1290,16 +1291,23 @@ void update () {
 	* text can overlap.  The fix is to use SetMenuItemInfo()
 	* to indicate that all items have a bitmap and then include
 	* the width of the widest bitmap in WM_MEASURECHILD.
+	* 
+	* NOTE:  This work around causes problems on Windows 98.
+	* Under certain circumstances that have yet to be isolated,
+	* some menus can become huge and blank.  For now, do not
+	* run the code on Windows 98.
 	*/	
-	MENUITEMINFO info = new MENUITEMINFO ();
-	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_BITMAP;
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
-		if ((style & SWT.SEPARATOR) == 0) {
-			if (item.image == null) {
-				info.hbmpItem = hasImage ? OS.HBMMENU_CALLBACK : 0;
-				OS.SetMenuItemInfo (handle, item.id, false, info);
+	if (!OS.IsWin95) {
+		MENUITEMINFO info = new MENUITEMINFO ();
+		info.cbSize = MENUITEMINFO.sizeof;
+		info.fMask = OS.MIIM_BITMAP;
+		for (int i=0; i<items.length; i++) {
+			MenuItem item = items [i];
+			if ((style & SWT.SEPARATOR) == 0) {
+				if (item.image == null) {
+					info.hbmpItem = hasImage ? OS.HBMMENU_CALLBACK : 0;
+					OS.SetMenuItemInfo (handle, item.id, false, info);
+				}
 			}
 		}
 	}
