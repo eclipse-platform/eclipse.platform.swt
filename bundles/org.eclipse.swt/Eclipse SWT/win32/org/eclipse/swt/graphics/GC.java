@@ -123,8 +123,11 @@ public void copyArea(Image image, int x, int y) {
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	int hwnd = OS.WindowFromDC(handle);
+	/*
+	* Feature in WinCE.  The function WindowFromDC is not part of the
+	* WinCE SDK.
+	*/
+	int hwnd = data.hwnd;
 	if (hwnd == 0) {
 		OS.BitBlt(handle, destX, destY, width, height, handle, srcX, srcY, OS.SRCCOPY);
 	} else {
@@ -137,7 +140,35 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		OS.DeleteObject(hrgn);
 		RECT lprcScroll = new RECT();
 		OS.SetRect(lprcScroll, srcX, srcY, srcX + width, srcY + height);
-		OS.ScrollWindowEx(hwnd, destX - srcX, destY - srcY, lprcScroll, lprcClip, 0, null, OS.SW_INVALIDATE | OS.SW_ERASE);
+		int res = OS.ScrollWindowEx(hwnd, destX - srcX, destY - srcY, lprcScroll, lprcClip, 0, null, OS.SW_INVALIDATE | OS.SW_ERASE); 
+
+		/*
+		* Feature in WinCE.  ScrollWindowEx does not accept combined
+		* vertical and horizontal scrollings.  The fix is to do a
+		* BitBlt and invalidate the appropriate source area.
+		*/
+		if (res == 0 && OS.IsWinCE) {
+			OS.BitBlt(handle, destX, destY, width, height, handle, srcX, srcY, OS.SRCCOPY);
+			int deltaX = destX - srcX, deltaY = destY - srcY;
+			boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
+			if (disjoint) {
+				OS.InvalidateRect(hwnd, lprcScroll, true);
+			} else {
+				RECT rect = new RECT();
+				if (deltaX != 0) {
+					int newX = destX - deltaX;
+					if (deltaX < 0) newX = destX + width;
+					OS.SetRect(rect, newX, srcY, newX + Math.abs(deltaX), srcY + height);
+					OS.InvalidateRect(hwnd, rect, true);
+				}
+				if (deltaY != 0) {
+					int newY = destY - deltaY;
+					if (deltaY < 0) newY = destY + height;
+					OS.SetRect(rect, srcX, newY, srcX + width, newY + Math.abs(deltaY));
+					OS.InvalidateRect(hwnd, rect, true);
+				}
+			}
+		}
 	}
 }
 
