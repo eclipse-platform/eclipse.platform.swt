@@ -58,7 +58,7 @@ public static RTFTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData){
 	transferData.result = 0;
-	if (!validate(object) || !isSupportedType(transferData)) {
+	if (!_validate(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String string = (String)object;
@@ -102,7 +102,11 @@ protected String[] getTypeNames() {
 	return new String[] {TEXT_RTF, TEXT_RTF2, APPLICATION_RTF};
 }
 
-protected boolean validate(Object object) {
+boolean _validate(Object object) {
 	return (object != null && object instanceof String && ((String)object).length() > 0);
+}
+
+protected boolean validate(Object object) {
+	return _validate(object);
 }
 }

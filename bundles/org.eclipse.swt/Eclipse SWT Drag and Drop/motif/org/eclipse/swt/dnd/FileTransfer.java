@@ -65,7 +65,7 @@ public static FileTransfer getInstance () {
  */
 public void javaToNative(Object object, TransferData transferData) {
 	transferData.result = 0;
-		if (!validate(object) || !isSupportedType(transferData)) {
+		if (!_validate(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String[] files = (String[])object;
@@ -96,7 +96,7 @@ public void javaToNative(Object object, TransferData transferData) {
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData) {
-	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
+	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
 	int size = transferData.format * transferData.length / 8;
 	if (size == 0) return null;
 	
@@ -132,12 +132,16 @@ protected String[] getTypeNames(){
 	return new String[]{URI_LIST};
 }
 
-protected boolean validate(Object object) {
+boolean _validate(Object object) {
 	if (object == null || !(object instanceof String[]) || ((String[])object).length == 0) return false;
 	String[] strings = (String[])object;
 	for (int i = 0; i < strings.length; i++) {
 		if (strings[i] == null || strings[i].length() == 0) return false;
 	}
 	return true;
+}
+
+protected boolean validate(Object object) {
+	return _validate(object);
 }
 }
