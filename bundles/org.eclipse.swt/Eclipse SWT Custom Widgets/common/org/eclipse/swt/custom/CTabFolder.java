@@ -1314,7 +1314,7 @@ private void updateCloseBar() {
 	
 	int h = (imageHeight /2 )* 2;
 	gc.drawLine( 0, 0,     h - 2, h - 2);
-	gc.drawLine( 1, 0,     h,     h - 1);
+	gc.drawLine( 1, 0,     h - 1, h - 2);
 	gc.drawLine( 0, h - 2, h - 2, 0);
 	gc.drawLine( 1, h - 2, h - 1, 0);
 	
