@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.swt.examples.browser.demos.BrowserDemo"
+   name="BrowserDemo Plug-in"
+   version="1.0.0"
+   provider-name="SWT"
+   class="org.eclipse.swt.examples.browser.demos.BrowserDemoPlugin">
+
+   <runtime>
+      <library name="BrowserDemo.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+   </requires>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Browser"
+            id="org.eclipse.swt.examples.browser.demos.BrowserDemo">
+      </category>
+      <view
+            allowMultiple="false"
+            class="org.eclipse.swt.examples.browser.demos.views.BrowserDemoView"
+            icon="icons/sample.gif"
+            category="org.eclipse.swt.examples.browser.demos.BrowserDemo"
+            name="Browser Demo"
+            id="org.eclipse.swt.examples.browser.demos.views.BrowserDemoView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               ratio="0.5"
+               relative="org.eclipse.ui.views.TaskList"
+               relationship="right"
+               id="org.eclipse.swt.examples.browser.demos.BrowserDemo.views.BrowserDemoView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+
+</plugin>
