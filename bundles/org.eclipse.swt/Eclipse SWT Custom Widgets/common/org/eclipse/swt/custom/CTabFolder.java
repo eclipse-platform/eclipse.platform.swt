@@ -664,8 +664,10 @@ private void handleEvents (Event event){
 				inactiveItem = null;
 			}
 			if (event.widget == inactiveCloseBar) {
-				Rectangle bounds = getBounds();
-				if (bounds.contains(event.x, event.y)) return;
+				if (inactiveItem != null) {
+					Rectangle itemBounds = inactiveItem.getBounds();
+					if (itemBounds.contains(event.x, event.y)) return;
+				}
 				inactiveCloseBar.setVisible(false);
 				inactiveItem = null;
 			}
