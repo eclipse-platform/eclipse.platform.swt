@@ -495,12 +495,12 @@ void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
 	int windowProc3 = display.windowProc3;
-	OS.g_signal_connect (shellHandle, OS.map_event, windowProc3, SWT.Deiconify);
-	OS.g_signal_connect (shellHandle, OS.unmap_event, windowProc3, SWT.Iconify);
-	OS.g_signal_connect (shellHandle, OS.size_allocate, windowProc3, SWT.Resize);
-	OS.g_signal_connect (shellHandle, OS.configure_event, windowProc3, SWT.Move);
-	OS.g_signal_connect (shellHandle, OS.delete_event, windowProc3, SWT.Dispose);
-	OS.g_signal_connect (shellHandle, OS.event_after, windowProc3, SWT.Activate);
+	OS.g_signal_connect (shellHandle, OS.map_event, windowProc3, MAP_EVENT);
+	OS.g_signal_connect (shellHandle, OS.unmap_event, windowProc3, UNMAP_EVENT);
+	OS.g_signal_connect (shellHandle, OS.size_allocate, windowProc3, SIZE_ALLOCATE);
+	OS.g_signal_connect (shellHandle, OS.configure_event, windowProc3, CONFIGURE_EVENT);
+	OS.g_signal_connect (shellHandle, OS.delete_event, windowProc3, DELETE_EVENT);
+	OS.g_signal_connect (shellHandle, OS.event_after, windowProc3, EVENT_AFTER);
 }
 
 public boolean isVisible () {
@@ -619,6 +619,57 @@ public Shell [] getShells () {
 	return result;
 }
 
+int gtk_configure_event (int widget, int event) {
+	int [] x = new int [1], y = new int [1];
+	OS.gtk_window_get_position (shellHandle, x, y);
+	if (oldX != x [0] || oldY != y [0]) {
+		oldX = x [0];
+		oldY = y [0];
+		sendEvent (SWT.Move);
+	}
+	return 0;
+}
+
+int gtk_delete_event (int widget, int event) {
+	closeWidget ();
+	return 1;
+}
+
+int gtk_event_after (int widget, int event) {
+	GdkEvent gdkEvent = new GdkEvent ();
+	OS.memmove (gdkEvent, event, GdkEvent.sizeof);
+	if (gdkEvent.type == OS.GDK_FOCUS_CHANGE) {
+		GdkEventFocus focusEvent = new GdkEventFocus ();
+		OS.memmove (focusEvent, event, GdkEventFocus.sizeof);
+		hasFocus = focusEvent.in != 0;
+		postEvent (hasFocus ? SWT.Activate : SWT.Deactivate);
+	}
+	return 0;
+}
+
+int gtk_map_event (int widget, int event) {
+	minimized = false;
+	sendEvent (SWT.Deiconify);
+	return 0;
+}
+
+int gtk_size_allocate (int widget, int allocation) {
+	int [] width = new int [1], height = new int [1];
+	OS.gtk_window_get_size (shellHandle, width, height);
+	if (oldWidth != width [0] || oldHeight != height [0]) {
+		oldWidth = width [0];
+		oldHeight = height [0];
+		resizeBounds (width [0], height [0], true);
+	}
+	return 0;
+}
+
+int gtk_unmap_event (int widget, int event) {
+	minimized = true;
+	sendEvent (SWT.Iconify);
+	return 0;
+}
+
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other
@@ -646,57 +697,6 @@ public void open () {
 	bringToTop (false);
 	int focusHandle = OS.gtk_window_get_focus (shellHandle);
 	if (focusHandle == 0 || focusHandle == handle) traverseGroup (true);
-}
-
-int processDeiconify (int int0, int int1, int int2) {
-	minimized = false;
-	sendEvent (SWT.Deiconify);
-	return 0;
-}
-
-int processDispose (int int0, int int1, int int2) {
-	closeWidget ();
-	return 1;
-}
-
-int processActivate (int int0, int int1, int int2) {
-	GdkEvent gdkEvent = new GdkEvent ();
-	OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
-	if (gdkEvent.type == OS.GDK_FOCUS_CHANGE) {
-		GdkEventFocus focusEvent = new GdkEventFocus ();
-		OS.memmove (focusEvent, int0, GdkEventFocus.sizeof);
-		hasFocus = focusEvent.in != 0;
-		postEvent (hasFocus ? SWT.Activate : SWT.Deactivate);
-	}
-	return 0;
-}
-
-int processIconify (int int0, int int1, int int2) {
-	minimized = true;
-	sendEvent (SWT.Iconify);
-	return 0;
-}
-
-int processMove (int int0, int int1, int int2) {
-	int [] x = new int [1], y = new int [1];
-	OS.gtk_window_get_position (shellHandle, x, y);
-	if (oldX != x [0] || oldY != y [0]) {
-		oldX = x [0];
-		oldY = y [0];
-		sendEvent (SWT.Move);
-	}
-	return 0;
-}
-
-int processResize (int int0, int int1, int int2) {
-	int [] width = new int [1], height = new int [1];
-	OS.gtk_window_get_size (shellHandle, width, height);
-	if (oldWidth != width [0] || oldHeight != height [0]) {
-		oldWidth = width [0];
-		oldHeight = height [0];
-		resizeBounds (width [0], height [0], true);
-	}
-	return 0;
 }
 
 /**

@@ -132,9 +132,8 @@ void createHandle (int index) {
 void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
-	int windowProc2 = display.windowProc2;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	OS.g_signal_connect (hAdjustment, OS.value_changed, windowProc2, SWT.Selection);
+	OS.g_signal_connect (hAdjustment, OS.value_changed, display.windowProc2, VALUE_CHANGED);
 }
 
 void register () {
@@ -147,11 +146,6 @@ void deregister () {
 	super.deregister ();
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
 	WidgetTable.remove (hAdjustment);
-	/*
-	* This code is intentionally commented.
-	*/
-//	OS.gtk_object_unref (hAdjustment);
-//	OS.gtk_object_destroy (hAdjustment);
 }
 
 /**
@@ -248,7 +242,7 @@ public int getSelection () {
 	return (int) adjustment.value;
 }
 
-int processSelection (int int0, int int1, int int2) {
+int gtk_value_changed (int adjustment) {
 	postEvent (SWT.Selection);
 	return 0;
 }
@@ -299,9 +293,9 @@ public void setIncrement (int value) {
 	OS.memmove (adjustment, hAdjustment);
 	adjustment.step_increment = (float) value;
 	OS.memmove (hAdjustment, adjustment);
-	blockSignal (hAdjustment, SWT.Selection);
+	OS.g_signal_handlers_block_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (hAdjustment);
-	unblockSignal (hAdjustment, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
 /**
@@ -324,9 +318,9 @@ public void setMaximum (int value) {
 	OS.memmove (adjustment, hAdjustment);
 	adjustment.upper = (float) value;
 	OS.memmove (hAdjustment, adjustment);
-	blockSignal (hAdjustment, SWT.Selection);
+	OS.g_signal_handlers_block_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (hAdjustment);
-	unblockSignal (hAdjustment, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
 /**
@@ -349,9 +343,9 @@ public void setMinimum (int value) {
 	OS.memmove (adjustment, hAdjustment);
 	adjustment.lower = (float) value;
 	OS.memmove (hAdjustment, adjustment);
-	blockSignal (hAdjustment, SWT.Selection);
+	OS.g_signal_handlers_block_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (hAdjustment);
-	unblockSignal (hAdjustment, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
 /**
@@ -375,9 +369,9 @@ public void setPageIncrement (int value) {
 	OS.memmove (adjustment, hAdjustment);
 	adjustment.page_increment = (float) value;
 	OS.memmove (hAdjustment, adjustment);
-	blockSignal (hAdjustment, SWT.Selection);
+	OS.g_signal_handlers_block_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (hAdjustment);
-	unblockSignal (hAdjustment, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
 /**
@@ -396,9 +390,9 @@ public void setSelection (int value) {
 	checkWidget();
 	if (value < 0) return;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	blockSignal (hAdjustment, SWT.Selection);
+	OS.g_signal_handlers_block_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_set_value (hAdjustment, value);
-	unblockSignal (hAdjustment, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
 }

@@ -391,15 +391,14 @@ boolean hasFocus () {
 }
 
 void hookEvents () {
-	// TO DO - expose, enter/exit, focus in/out
 	super.hookEvents ();
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
 	// TO DO - fix multiple selection events for one user action
-	OS.g_signal_connect (listHandle, OS.select_child, windowProc3, SWT.Selection);
-	OS.g_signal_connect_after (entryHandle, OS.changed, windowProc2, SWT.Modify);
-	OS.g_signal_connect (entryHandle, OS.activate, windowProc2, SWT.DefaultSelection);
+	OS.g_signal_connect (listHandle, OS.select_child, windowProc3, SELECT_CHILD);
+	OS.g_signal_connect_after (entryHandle, OS.changed, windowProc2, CHANGED);
+	OS.g_signal_connect (entryHandle, OS.activate, windowProc2, ACTIVATE);
 	int mask =
 		OS.GDK_POINTER_MOTION_MASK | 
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
@@ -409,16 +408,22 @@ void hookEvents () {
 	for (int i=0; i<handles.length; i++) {
 		int handle = handles [i];
 		OS.gtk_widget_add_events (handle, mask);
-		OS.g_signal_connect (handle, OS.button_press_event, windowProc3, SWT.MouseDown);
-		OS.g_signal_connect (handle, OS.button_release_event, windowProc3, SWT.MouseUp);
-		OS.g_signal_connect (handle, OS.key_press_event, windowProc3, SWT.KeyDown);
-		OS.g_signal_connect (handle, OS.key_release_event, windowProc3, SWT.KeyUp);
-		OS.g_signal_connect (handle, OS.motion_notify_event, windowProc3, SWT.MouseMove);
-		OS.g_signal_connect_after (handle, OS.button_press_event, windowProc3, -SWT.MouseDown);
-		OS.g_signal_connect_after (handle, OS.button_release_event, windowProc3, -SWT.MouseUp);
-		OS.g_signal_connect_after (handle, OS.key_press_event, windowProc3, -SWT.KeyDown);
-		OS.g_signal_connect_after (handle, OS.key_release_event, windowProc3, -SWT.KeyUp);
-		OS.g_signal_connect_after (handle, OS.motion_notify_event, windowProc3, -SWT.MouseMove);
+		OS.g_signal_connect (handle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
+		OS.g_signal_connect (handle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
+		OS.g_signal_connect (handle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
+		OS.g_signal_connect (handle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
+		OS.g_signal_connect (handle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
+	
+		/*
+		* Feature in GTK.  Events such as mouse move are propagate up
+		* the widget hierarchy and are seen by the parent.  This is the
+		* correct GTK behavior but not correct for SWT.  The fix is to
+		* hook a signal after and stop the propagation using a negative
+		* event number to distinguish this case.
+		*/
+		OS.g_signal_connect_after (handle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
+		OS.g_signal_connect_after (handle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
+		OS.g_signal_connect_after (handle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
 	}
 }
 
@@ -661,6 +666,21 @@ public int getTextLimit () {
 	return limit == 0 ? LIMIT : limit;
 }
 
+int gtk_activate (int widget) {
+	postEvent (SWT.DefaultSelection);
+	return 0;
+}
+
+int gtk_changed (int widget) {
+	sendEvent (SWT.Modify);
+	return 0;
+}
+
+int gtk_select_child (int list, int widget) {
+	postEvent (SWT.Selection);
+	return 0;
+}
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -731,21 +751,6 @@ public void paste () {
 
 int parentingHandle() {
 	return fixedHandle;
-}
-
-int processDefaultSelection (int int0, int int1, int int2) {
-	postEvent (SWT.DefaultSelection);
-	return 0;
-}
-
-int processModify (int arg0, int arg1, int int2) {
-	sendEvent (SWT.Modify);
-	return 0;
-}
-
-int processSelection (int int0, int int1, int int2) {
-	postEvent (SWT.Selection);
-	return 0;
 }
 
 void register () {
@@ -1021,11 +1026,11 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 			OS.memmove (data, buffer, buffer.length);
 			glist = OS.g_list_append (glist, data);
 		}
-		blockSignal (entryHandle, SWT.Modify);
-		blockSignal (listHandle, SWT.Selection);
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 		OS.gtk_combo_set_popdown_strings (handle, glist);
-		unblockSignal (entryHandle, SWT.Modify);
-		unblockSignal (listHandle, SWT.Selection);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 		if (glist != 0) {
 			int count = OS.g_list_length (glist);
 			for (int i=0; i<count; i++) {
@@ -1087,9 +1092,9 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	blockSignal (listHandle, SWT.Selection);
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 	OS.gtk_entry_set_text (entryHandle, buffer);
-	unblockSignal (listHandle, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 }
 
 /**

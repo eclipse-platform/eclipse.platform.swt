@@ -92,6 +92,7 @@ GdkColor defaultForeground () {
 void deregister () {
 	super.deregister ();
 	if (fixedHandle != 0) WidgetTable.remove (fixedHandle);
+	if (imHandle != 0) WidgetTable.remove (imHandle);
 }
 
 int eventHandle () {
@@ -107,6 +108,7 @@ boolean hasFocus () {
 }
 
 void hookEvents () {
+	//TO DO - get rid of enter/exit for mouse crossing border
 	int eventHandle = eventHandle ();
 	int mask =
 		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
@@ -118,21 +120,45 @@ void hookEvents () {
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
-	OS.g_signal_connect (eventHandle, OS.popup_menu, windowProc2, SWT.Show);
-	OS.g_signal_connect (eventHandle, OS.show_help, windowProc3, SWT.Help);
-	OS.g_signal_connect (eventHandle, OS.button_press_event, windowProc3, SWT.MouseDown);
-	OS.g_signal_connect (eventHandle, OS.button_release_event, windowProc3, SWT.MouseUp);
-	OS.g_signal_connect (eventHandle, OS.key_press_event, windowProc3, SWT.KeyDown);
-	OS.g_signal_connect (eventHandle, OS.key_release_event, windowProc3, SWT.KeyUp);
-	OS.g_signal_connect (eventHandle, OS.motion_notify_event, windowProc3, SWT.MouseMove);
-	OS.g_signal_connect (eventHandle, OS.focus_in_event, windowProc3, SWT.FocusIn);
-	OS.g_signal_connect (eventHandle, OS.focus_out_event, windowProc3, SWT.FocusOut);
-	OS.g_signal_connect_after (eventHandle, OS.button_press_event, windowProc3, -SWT.MouseDown);
-	OS.g_signal_connect_after (eventHandle, OS.button_release_event, windowProc3, -SWT.MouseUp);
-	OS.g_signal_connect_after (eventHandle, OS.motion_notify_event, windowProc3, -SWT.MouseMove);
-	OS.g_signal_connect_after (eventHandle, OS.enter_notify_event, windowProc3, SWT.MouseEnter);
-	OS.g_signal_connect_after (eventHandle, OS.leave_notify_event, windowProc3, SWT.MouseExit);
-	OS.g_signal_connect_after (eventHandle, OS.expose_event, windowProc3, SWT.Paint);
+	OS.g_signal_connect (eventHandle, OS.popup_menu, windowProc2, POPUP_MENU);
+	OS.g_signal_connect (eventHandle, OS.show_help, windowProc3, SHOW_HELP);
+	OS.g_signal_connect (eventHandle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
+	OS.g_signal_connect (eventHandle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
+	OS.g_signal_connect (eventHandle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
+	OS.g_signal_connect (eventHandle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
+	OS.g_signal_connect (eventHandle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
+	OS.g_signal_connect (eventHandle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
+	OS.g_signal_connect (eventHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
+	OS.g_signal_connect_after (eventHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
+	OS.g_signal_connect_after (eventHandle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
+	OS.g_signal_connect_after (eventHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
+	
+	/*
+	* Feature in GTK.  Events such as mouse move are propagate up
+	* the widget hierarchy and are seen by the parent.  This is the
+	* correct GTK behavior but not correct for SWT.  The fix is to
+	* hook a signal after and stop the propagation using a negative
+	* event number to distinguish this case.
+	*/
+	OS.g_signal_connect_after (eventHandle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
+	OS.g_signal_connect_after (eventHandle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
+	OS.g_signal_connect_after (eventHandle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
+}
+
+int hoverProc (int widget) {
+	Event event = new Event ();
+	int [] x = new int [1], y = new int [1], mask = new int [1];
+	OS.gdk_window_get_pointer (0, x, y, mask);
+	event.x = x [0];
+	event.y = y [0];
+	int eventHandle = eventHandle ();
+	int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+	OS.gdk_window_get_origin (window, x, y);
+	event.x -= x [0];
+	event.y -= y [0];
+	setInputState (event, mask [0]);
+	postEvent (SWT.MouseHover, event);
+	return 0;
 }
 
 int topHandle() {
@@ -1481,6 +1507,214 @@ public boolean getVisible () {
 	return OS.GTK_WIDGET_VISIBLE (topHandle ()); 
 }
 
+int gtk_button_press_event (int widget, int event) {
+	Shell shell = _getShell ();
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	Display display = getDisplay ();
+	display.dragStartX = (int) gdkEvent.x;
+	display.dragStartY = (int) gdkEvent.y;
+	display.dragging = false;
+	int button = gdkEvent.button;
+	int type = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
+	sendMouseEvent (type, button, event);
+	if (button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+		if (menu != null) menu.setVisible (true);
+	}
+	
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
+	}
+	return 0;
+}
+
+int gtk_button_release_event (int widget, int event) {
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	sendMouseEvent (SWT.MouseUp, gdkEvent.button, event);
+	return 0;
+}
+
+int gtk_commit (int imcontext, int text) {
+	if (text == 0) return 0;
+	int length = OS.strlen (text);
+	if (length == 0) return 0;
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, text, length);
+	char [] result = Converter.mbcsToWcs (null, buffer);
+	int index = 0;
+	while (index < result.length) {
+		if (result [index] == 0) break;
+		Event event = new Event ();
+		event.character = result [index];
+		postEvent (SWT.KeyDown, event);
+		index++;
+	}
+	return 0;
+}
+
+int gtk_enter_notify_event (int widget, int event) {
+	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
+	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
+	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL) return 0;
+	if (gdkEvent.subwindow != 0) return 0;
+	sendMouseEvent (SWT.MouseEnter, 0, event);
+	return 0;
+}
+
+int gtk_expose_event (int widget, int eventPtr) {
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
+	GdkEventExpose gdkEvent = new GdkEventExpose ();
+	OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
+	Event event = new Event ();
+	event.count = gdkEvent.count;
+	event.x = gdkEvent.area_x;
+	event.y = gdkEvent.area_y;
+	event.width = gdkEvent.area_width;
+	event.height = gdkEvent.area_height;
+	GC gc = event.gc = new GC (this);
+	Region region = Region.gtk_new (gdkEvent.region);
+	gc.setClipping (region);
+	sendEvent (SWT.Paint, event);
+	gc.dispose ();
+	event.gc = null;
+	return 0;
+}
+
+int gtk_focus_in_event (int widget, int event) {
+	sendEvent (SWT.FocusIn);
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+		int imHandle = imHandle ();
+		if (imHandle != 0) OS.gtk_im_context_focus_in (imHandle);
+	}
+
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	Shell shell = _getShell ();
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
+	}
+	return 0;
+}
+
+int gtk_focus_out_event (int widget, int event) {
+	sendEvent (SWT.FocusOut);
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+		int imHandle = imHandle ();
+		if (imHandle != 0) OS.gtk_im_context_focus_out (imHandle);
+	}
+	
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/
+	Shell shell = _getShell ();
+	if (!shell.isDisposed ()) {
+		Display display = shell.getDisplay ();
+		Control control = display.getFocusControl ();
+		if (control == null || shell != control.getShell () ) {
+			shell.setActiveControl (null);
+		}
+	}
+	return 0;
+}
+
+int gtk_key_press_event (int widget, int event) {
+	if (!hasFocus ()) return 0;
+	if (imHandle != 0) {
+		if (OS.gtk_im_context_filter_keypress (imHandle, event)) return 0;
+	}
+	GdkEventKey gdkEvent = new GdkEventKey ();
+	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
+	if (translateTraversal (gdkEvent)) return 1;
+	// widget could be disposed at this point
+	if (isDisposed ()) return 0;
+	sendKeyEvent (SWT.KeyDown, gdkEvent);
+	return 0;
+}
+
+int gtk_key_release_event (int widget, int event) {
+	if (!hasFocus ()) return 0;
+	if (imHandle != 0) {
+		if (OS.gtk_im_context_filter_keypress (imHandle, event)) return 0;
+	}
+	GdkEventKey gdkEvent = new GdkEventKey ();
+	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
+	sendKeyEvent (SWT.KeyUp, gdkEvent);
+	return 0;
+}
+
+int gtk_leave_notify_event (int widget, int event) {
+	Display display = getDisplay ();
+	display.removeMouseHoverTimeout (handle);
+	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
+	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
+	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL) return 0;
+	if (gdkEvent.subwindow != 0) return 0;
+	sendMouseEvent (SWT.MouseExit, 0, event);
+	return 0;
+}
+
+int gtk_motion_notify_event (int widget, int event) {
+	Display display = getDisplay ();
+	if (hooks (SWT.DragDetect)) {
+		if (!display.dragging) {
+			int []  state = new int [1];
+			OS.gdk_event_get_state (event, state);
+			if ((state [0] & OS.GDK_BUTTON1_MASK) != 0) {
+				double [] px = new double [1], py = new double [1];
+				OS.gdk_event_get_coords (event, px, py);
+				if (OS.gtk_drag_check_threshold (handle, display.dragStartX, display.dragStartY, (int) px [0], (int) py [0])){
+					display.dragging = true;
+					postEvent (SWT.DragDetect);
+				}
+			}
+		}
+	}
+	if (hooks (SWT.MouseHover) || filters (SWT.MouseHover)) {
+		display.addMouseHoverTimeout (handle);
+	}
+	sendMouseEvent (SWT.MouseMove, 0, event);
+	return 0;
+}
+
+int gtk_popup_menu (int widget) {
+	if (menu != null) menu.setVisible(true);
+	return 0;
+}
+
+int gtk_show_help (int widget, int helpType) {
+	sendHelpEvent (helpType);
+	return 0;
+}
+
+int imHandle () {
+ 	if (imHandle != 0)  return imHandle;
+	imHandle = OS.gtk_im_multicontext_new ();
+	if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_im_context_set_client_window (imHandle, paintWindow ());
+	WidgetTable.put (imHandle, this);
+	Display display = getDisplay ();
+	OS.g_signal_connect (imHandle, OS.commit, display.windowProc3, COMMIT);
+	return imHandle;
+}
+
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -1657,233 +1891,6 @@ Decorations menuShell () {
 	return parent.menuShell ();
 }
 
-int processHelp (int int0, int int1, int int2) {
-	sendHelpEvent (int0);
-	return 0;
-}
-
-int processFocusIn (int int0, int int1, int int2) {
-	sendEvent (SWT.FocusIn);
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	processIMEFocusIn ();
-
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-	Shell shell = _getShell ();
-	if (!shell.isDisposed ()) {
-		shell.setActiveControl (this);
-	}
-	return 0;
-}
-
-int processFocusOut (int int0, int int1, int int2) {
-	sendEvent (SWT.FocusOut);
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	processIMEFocusOut ();
-	
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/
-	Shell shell = _getShell ();
-	if (!shell.isDisposed ()) {
-		Display display = shell.getDisplay ();
-		Control control = display.getFocusControl ();
-		if (control == null || shell != control.getShell () ) {
-			shell.setActiveControl (null);
-		}
-	}
-	return 0;
-}
-
-int processIMEFocusIn () {
-	if (!(hooks (SWT.KeyDown) || hooks (SWT.KeyUp))) return 0;
- 	if (imHandle == 0) {
-		imHandle = OS.gtk_im_multicontext_new ();
-		if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_im_context_set_client_window (imHandle, paintWindow ());
-		Display display = getDisplay ();
-		int keyProc = display.keyProc;
-		OS.g_signal_connect (imHandle, OS.commit, keyProc, handle);
-	}
-	if (imHandle != 0) OS.gtk_im_context_focus_in (imHandle);
-	return 0;
-}
-
-int processIMEFocusOut () {
-	if (!(hooks (SWT.KeyDown) || hooks (SWT.KeyUp))) return 0;
-	if (imHandle != 0) OS.gtk_im_context_focus_out (imHandle);
-	return 0;
-}
-
-int processIMEKey (int str) {
-	if (str == 0) return 0;
-	int length = OS.strlen (str);
-	if (length == 0) return 0;
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, str, length);
-	char [] result = Converter.mbcsToWcs (null, buffer);
-	int index = 0;
-	while (index < result.length) {
-		if (result [index] == 0) break;
-		Event event = new Event ();
-		event.character = result [index];
-		postEvent (SWT.KeyDown, event);
-		index++;
-	}
-	return 0;
-}
-
-int processKeyDown (int callData, int arg1, int int2) {
-	if (!hasFocus ()) return 0;
-	if (imHandle != 0) {
-		if (OS.gtk_im_context_filter_keypress (imHandle, callData)) return 0;
-	}
-	GdkEventKey event = new GdkEventKey ();
-	OS.memmove (event, callData, GdkEventKey.sizeof);
-	if (translateTraversal (event)) return 1;
-	// widget could be disposed at this point
-	if (isDisposed ()) return 0;
-	sendKeyEvent (SWT.KeyDown, event);
-	return 0;
-}
-
-int processKeyUp (int callData, int arg1, int int2) {
-	if (!hasFocus ()) return 0;
-	if (imHandle != 0) {
-		if (OS.gtk_im_context_filter_keypress (imHandle, callData)) return 0;
-	}
-	GdkEventKey event = new GdkEventKey ();
-	OS.memmove (event, callData, GdkEventKey.sizeof);
-	sendKeyEvent (SWT.KeyUp, event);
-	return 0;
-}
-
-int processMouseDown (int callData, int arg1, int int2) {
-	Shell shell = _getShell ();
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
-	Display display = getDisplay ();
-	display.dragStartX = (int) gdkEvent.x;
-	display.dragStartY = (int) gdkEvent.y;
-	display.dragging = false;
-	int button = gdkEvent.button;
-	int type = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
-	sendMouseEvent (type, button, callData);
-	if (button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
-		if (menu != null) menu.setVisible (true);
-	}
-	
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-	if (!shell.isDisposed ()) {
-		shell.setActiveControl (this);
-	}
-	return 0;
-}
-
-int processMouseEnter (int callData, int arg1, int int2) {
-	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
-	OS.memmove (gdkEvent, callData, GdkEventCrossing.sizeof);
-	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL) return 0;
-	if (gdkEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseEnter, 0, callData);
-	return 0;
-}
-
-int processMouseExit (int callData, int arg1, int int2) {
-	Display display = getDisplay ();
-	display.removeMouseHoverTimeout (handle);
-	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
-	OS.memmove (gdkEvent, callData, GdkEventCrossing.sizeof);
-	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL) return 0;
-	if (gdkEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseExit, 0, callData);
-	return 0;
-}
-
-int processMouseHover (int id) {
-	Event event = new Event ();
-	int [] x = new int [1], y = new int [1], mask = new int [1];
-	OS.gdk_window_get_pointer (0, x, y, mask);
-	event.x = x [0];
-	event.y = y [0];
-	int eventHandle = eventHandle ();
-	int window = OS.GTK_WIDGET_WINDOW (eventHandle);
-	OS.gdk_window_get_origin (window, x, y);
-	event.x -= x [0];
-	event.y -= y [0];
-	setInputState (event, mask [0]);
-	postEvent (SWT.MouseHover, event);
-	return 0;
-}
-
-int processMouseUp (int callData, int arg1, int int2) {
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
-	sendMouseEvent (SWT.MouseUp, gdkEvent.button, callData);
-	return 0;
-}
-
-int processMouseMove (int callData, int arg1, int int2) {
-	Display display = getDisplay ();
-	if (hooks (SWT.DragDetect)) {
-		if (!display.dragging) {
-			int []  state = new int [1];
-			OS.gdk_event_get_state (callData, state);
-			if ((state [0] & OS.GDK_BUTTON1_MASK) != 0) {
-				double [] px = new double [1], py = new double [1];
-				OS.gdk_event_get_coords (callData, px, py);
-				if (OS.gtk_drag_check_threshold (handle, display.dragStartX, display.dragStartY, (int) px [0], (int) py [0])){
-					display.dragging = true;
-					postEvent (SWT.DragDetect);
-				}
-			}
-		}
-	}
-	if (hooks (SWT.MouseHover) || filters (SWT.MouseHover)) {
-		display.addMouseHoverTimeout (handle);
-	}
-	sendMouseEvent (SWT.MouseMove, 0, callData);
-	return 0;
-}
-
-int processPaint (int callData, int int2, int int3) {
-	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
-	GdkEventExpose gdkEvent = new GdkEventExpose ();
-	OS.memmove(gdkEvent, callData, GdkEventExpose.sizeof);
-	Event event = new Event ();
-	event.count = gdkEvent.count;
-	event.x = gdkEvent.area_x;
-	event.y = gdkEvent.area_y;
-	event.width = gdkEvent.area_width;
-	event.height = gdkEvent.area_height;
-	GC gc = event.gc = new GC (this);
-	Region region = Region.gtk_new (gdkEvent.region);
-	gc.setClipping (region);
-	sendEvent (SWT.Paint, event);
-	gc.dispose ();
-	event.gc = null;
-	return 0;
-}
-
-int processShow (int int0, int int1, int int2) {
-	if (menu != null) menu.setVisible(true);
-	return 0;
-}
-
 void register () {
 	super.register ();
 	if (fixedHandle != 0) WidgetTable.put (fixedHandle, this);
@@ -1955,9 +1962,9 @@ void releaseHandle () {
 void releaseWidget () {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeout (handle);
+	super.releaseWidget ();
 	if (imHandle != 0) OS.g_object_unref (imHandle);
 	imHandle = 0;
-	super.releaseWidget ();
 	toolTipText = null;
 	parent = null;
 	menu = null;

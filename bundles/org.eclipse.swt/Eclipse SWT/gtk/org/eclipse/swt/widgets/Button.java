@@ -326,15 +326,13 @@ public String getText () {
 	return text;
 }
 
-void hookEvents () {
-	super.hookEvents();
-	Display display = getDisplay ();
-	int windowProc2 = display.windowProc2;
-	OS.g_signal_connect (handle, OS.clicked, windowProc2, SWT.Selection);
+int gtk_clicked (int widget) {
+	postEvent (SWT.Selection);
+	return 0;
 }
 
-int processFocusIn(int int0, int int1, int int2) {
-	int result = super.processFocusIn (int0, int1, int2);
+int gtk_focus_in_event (int widget, int event) {
+	int result = super.gtk_focus_in_event (widget, event);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0 && OS.GTK_WIDGET_HAS_DEFAULT (handle)) {
@@ -344,8 +342,8 @@ int processFocusIn(int int0, int int1, int int2) {
 	return result;
 }
 
-int processFocusOut (int int0, int int1, int int2) {
-	int result = super.processFocusOut (int0, int1, int2);
+int gtk_focus_out_event (int widget, int event) {
+	int result = super.gtk_focus_out_event (widget, event);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0 && !OS.GTK_WIDGET_HAS_DEFAULT (handle)) {
@@ -357,9 +355,10 @@ int processFocusOut (int int0, int int1, int int2) {
 	return result;
 }
 
-int processSelection (int int0, int int1, int int2) {
-	postEvent(SWT.Selection);
-	return 0;
+void hookEvents () {
+	super.hookEvents();
+	Display display = getDisplay ();
+	OS.g_signal_connect (handle, OS.clicked, display.windowProc2, CLICKED);
 }
 
 void register () {
@@ -536,9 +535,9 @@ public void setImage (Image image) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-	blockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 	OS.gtk_toggle_button_set_active (handle, selected);
-	unblockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }
 
 /**

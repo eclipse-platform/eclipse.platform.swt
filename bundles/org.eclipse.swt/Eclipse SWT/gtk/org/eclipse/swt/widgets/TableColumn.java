@@ -175,6 +175,11 @@ void createWidget (int index) {
 	text = "";
 }
 
+void deregister() {
+	super.deregister ();
+	WidgetTable.remove (handle);
+}
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
@@ -248,6 +253,17 @@ public int getWidth () {
 	return OS.gtk_tree_view_column_get_width (handle);
 }
 
+int gtk_clicked (int widget) {
+	postEvent (SWT.Selection);
+	return 0;
+}
+
+void hookEvents () {
+	super.hookEvents ();
+	Display display = getDisplay ();
+	OS.g_signal_connect (handle, OS.clicked, display.windowProc2, CLICKED);
+}
+
 /**
  * Causes the receiver to be resized to its preferred size.
  * For a composite, this involves computing the preferred size
@@ -262,6 +278,11 @@ public int getWidth () {
 public void pack () {
 	checkWidget();
 	OS.gtk_tree_view_column_set_sizing (handle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+}
+
+void register () {
+	super.register ();
+	WidgetTable.put (handle, this);
 }
 
 void releaseChild () {

@@ -89,23 +89,23 @@ public Caret getCaret () {
 	return caret;
 }
 
-int processFocusIn (int int0, int int1, int int2) {
-	int result = super.processFocusIn (int0, int1, int2);
+int gtk_expose_event (int widget, int event) {
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	int result = super.gtk_expose_event (widget, event);
+	if (isFocus) caret.setFocus ();
+	return result;
+}
+
+int gtk_focus_in_event (int widget, int event) {
+	int result = super.gtk_focus_in_event (widget, event);
 	if (caret != null) caret.setFocus ();
 	return result;
 }
 
-int processFocusOut(int int0, int int1, int int2) {
-	int result = super.processFocusOut (int0, int1, int2);
+int gtk_focus_out_event (int widget, int event) {
+	int result = super.gtk_focus_out_event (widget, event);
 	if (caret != null) caret.killFocus ();
-	return result;
-}
-
-int processPaint (int callData, int int1, int int2) {
-	boolean isFocus = caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	int result = super.processPaint (callData, int1, int2);
-	if (isFocus) caret.setFocus ();
 	return result;
 }
 

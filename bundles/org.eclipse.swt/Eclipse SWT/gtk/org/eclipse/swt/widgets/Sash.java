@@ -151,27 +151,29 @@ void drawBand (int x, int y, int width, int height) {
 	OS.g_object_unref (gc);
 }
 
-int processMouseDown (int callData, int int1, int int2) {
-	super.processMouseDown (callData, int1, int2);
+int gtk_button_press_event (int widget, int eventPtr) {
+	int result = super.gtk_button_press_event (widget, eventPtr);
 	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
+	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 	int button = gdkEvent.button;
 	if (button != 1) return 0;
-	double[] px = new double [1], py = new double [1];
-	OS.gdk_event_get_coords (callData, px, py);
-	startX = (int)px [0];  startY = (int) py [0];
+	startX = (int) gdkEvent.x; 
+	startY = (int) gdkEvent.y;
 	int border = 0;
 	int x = OS.GTK_WIDGET_X (handle);
 	int y = OS.GTK_WIDGET_Y (handle);
 	int width = OS.GTK_WIDGET_WIDTH (handle);
 	int height = OS.GTK_WIDGET_HEIGHT (handle);
-	lastX = x - border;  lastY = y - border;
+	lastX = x - border; 
+	lastY = y - border;
 	/* The event must be sent because its doit flag is used. */
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
-	event.time = OS.gdk_event_get_time (callData);
-	event.x = lastX;  event.y = lastY;
-	event.width = width;  event.height = height;
+	event.time = gdkEvent.time;
+	event.x = lastX;
+	event.y = lastY;
+	event.width = width;
+	event.height = height;
 	/*
 	 * It is possible (but unlikely) that client code could have disposed
 	 * the widget in the selection event.  If this happens end the processing
@@ -184,13 +186,36 @@ int processMouseDown (int callData, int int1, int int2) {
 //		OS.XmUpdateDisplay (handle);
 		drawBand (lastX = event.x, lastY = event.y, width, height);
 	}
-	return 0;	
+	return result;	
 }
 
-int processMouseMove (int callData, int int1, int int2) {
-	super.processMouseMove (callData, int1, int2);
+int gtk_button_release_event (int widget, int eventPtr) {
+	int result = super.gtk_button_release_event (widget, eventPtr);
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
+	int button = gdkEvent.button;
+	if (button != 1) return 0;
+	if (!dragging) return 0;
+	dragging = false;
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	/* The event must be sent because its doit flag is used. */
+	Event event = new Event ();
+	event.time = gdkEvent.time;
+	event.x = lastX;
+	event.y = lastY;
+	event.width = width;
+	event.height = height;
+	drawBand (lastX, lastY, width, height);
+	sendEvent (SWT.Selection, event);
+	/* widget could be disposed here */
+	return result;
+}
+
+int gtk_motion_notify_event (int widget, int eventPtr) {
+	int result = super.gtk_motion_notify_event (widget, eventPtr);
 	int [] state = new int [1];
-	OS.gdk_event_get_state (callData, state);
+	OS.gdk_event_get_state (eventPtr, state);
 	if (!dragging || (state [0] & OS.GDK_BUTTON1_MASK) == 0) return 0;
 	int x = OS.GTK_WIDGET_X (handle);
 	int y = OS.GTK_WIDGET_Y (handle);
@@ -200,7 +225,7 @@ int processMouseMove (int callData, int int1, int int2) {
 	int parentWidth = OS.GTK_WIDGET_WIDTH (parent.handle);
 	int parentHeight = OS.GTK_WIDGET_WIDTH (parent.handle);
 	double[] px = new double [1], py = new double [1];
-	OS.gdk_event_get_coords (callData, px, py);
+	OS.gdk_event_get_coords (eventPtr, px, py);
 	int newX = lastX, newY = lastY;
 	if ((style & SWT.VERTICAL) != 0) {
 		newX = Math.min (Math.max (0, (int)px [0] + x - startX - parentBorder), parentWidth - width);
@@ -212,7 +237,7 @@ int processMouseMove (int callData, int int1, int int2) {
 	/* The event must be sent because its doit flag is used. */
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
-	event.time = OS.gdk_event_get_time (callData);
+	event.time = OS.gdk_event_get_time (eventPtr);
 	event.x = newX;  event.y = newY;
 	event.width = width;  event.height = height;
 	/*
@@ -227,28 +252,7 @@ int processMouseMove (int callData, int int1, int int2) {
 //		OS.XmUpdateDisplay (handle);
 		drawBand (lastX, lastY, width, height);
 	}
-	return 0;
-}
-
-int processMouseUp (int callData, int int1, int int2) {
-	super.processMouseUp (callData, int1, int2);
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
-	int button = gdkEvent.button;
-	if (button != 1) return 0;
-	if (!dragging) return 0;
-	dragging = false;
-	int width = OS.GTK_WIDGET_WIDTH (handle);
-	int height = OS.GTK_WIDGET_HEIGHT (handle);
-	/* The event must be sent because its doit flag is used. */
-	Event event = new Event ();
-	event.time = OS.gdk_event_get_time (callData);
-	event.x = lastX;  event.y = lastY;
-	event.width = width;  event.height = height;
-	drawBand (lastX, lastY, width, height);
-	sendEvent (SWT.Selection, event);
-	/* widget could be disposed here */
-	return 0;
+	return result;
 }
 
 void releaseWidget () {

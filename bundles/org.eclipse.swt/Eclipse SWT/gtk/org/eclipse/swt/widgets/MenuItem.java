@@ -348,53 +348,7 @@ public boolean getSelection () {
 	return OS.gtk_check_menu_item_get_active(handle);
 }
 
-void hookEvents () {
-	super.hookEvents ();
-	Display display = getDisplay ();
-	int windowProc2 = display.windowProc2;
-	int windowProc3 = display.windowProc3;
-	OS.g_signal_connect (handle, OS.activate, windowProc2, SWT.Selection);
-	OS.g_signal_connect (handle, OS.select, windowProc2, SWT.Arm);
-	OS.g_signal_connect (handle, OS.show_help, windowProc3, SWT.Help);
-}
-
-/**
- * Returns <code>true</code> if the receiver is enabled and all
- * of the receiver's ancestors are enabled, and <code>false</code>
- * otherwise. A disabled control is typically not selectable from the
- * user interface and draws with an inactive or "grayed" look.
- *
- * @return the receiver's enabled state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @see #getEnabled
- */
-public boolean isEnabled () {
-	return getEnabled ();
-}
-
-int processArm (int int0, int int1, int int2) {
-	parent.selectedItem = this;
-	postEvent (SWT.Arm);
-	return 0;
-}
-
-int processHelp (int int0, int int1, int int2) {
-	boolean hooks = hooks (SWT.Help);
-	if (hooks) {
-		postEvent (SWT.Help);
-	} else {
-		hooks = parent.sendHelpEvent (int0);
-	}
-	if (hooks) OS.gtk_menu_shell_deactivate (parent.handle);
-	return 0;
-}
-
-int processSelection (int int0, int int1, int int2) {
+int gtk_activate (int widget) {
 	if ((style & SWT.CASCADE) != 0 && menu != null) return 0;
 	Event event = new Event ();
 	int ptr = OS.gtk_get_current_event ();
@@ -422,6 +376,52 @@ int processSelection (int int0, int int1, int int2) {
 	}
 	postEvent (SWT.Selection, event);
 	return 0;
+}
+
+int gtk_select (int item) {
+	parent.selectedItem = this;
+	postEvent (SWT.Arm);
+	return 0;
+}
+
+int gtk_show_help (int widget, int helpType) {
+	boolean hooks = hooks (SWT.Help);
+	if (hooks) {
+		postEvent (SWT.Help);
+	} else {
+		hooks = parent.sendHelpEvent (helpType);
+	}
+	if (hooks) OS.gtk_menu_shell_deactivate (parent.handle);
+	return 0;
+}
+
+void hookEvents () {
+	super.hookEvents ();
+	Display display = getDisplay ();
+	int windowProc2 = display.windowProc2;
+	int windowProc3 = display.windowProc3;
+	OS.g_signal_connect (handle, OS.activate, windowProc2, ACTIVATE);
+	OS.g_signal_connect (handle, OS.select, windowProc2, SELECT);
+	OS.g_signal_connect (handle, OS.show_help, windowProc3, SHOW_HELP);
+}
+
+/**
+ * Returns <code>true</code> if the receiver is enabled and all
+ * of the receiver's ancestors are enabled, and <code>false</code>
+ * otherwise. A disabled control is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #getEnabled
+ */
+public boolean isEnabled () {
+	return getEnabled ();
 }
 
 void releaseChild () {
@@ -683,9 +683,9 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	blockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
 	OS.gtk_check_menu_item_set_active (handle, selected);
-	unblockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
 }
 
 public void setText (String string) {

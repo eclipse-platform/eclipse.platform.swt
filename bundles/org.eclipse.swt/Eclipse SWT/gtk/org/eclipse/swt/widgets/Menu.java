@@ -450,14 +450,30 @@ int GtkMenuPositionFunc (int menu, int x, int y, int push_in, int user_data) {
 	return 0;
 }
 
+int gtk_hide (int widget) {
+	sendEvent (SWT.Hide);
+	return 0;
+}
+
+int gtk_show (int widget) {
+	if ((style & SWT.POP_UP) != 0) return 0;
+	sendEvent (SWT.Show);
+	return 0;
+}
+
+int gtk_show_help (int widget, int helpType) {
+	if (sendHelpEvent (helpType)) OS.gtk_menu_shell_deactivate (handle);
+	return 0;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
-	OS.g_signal_connect (handle, OS.show, windowProc2, SWT.Show);
-	OS.g_signal_connect (handle, OS.hide, windowProc2, SWT.Hide);
-	OS.g_signal_connect (handle, OS.show_help, windowProc3, SWT.Help);
+	OS.g_signal_connect (handle, OS.show, windowProc2, SHOW);
+	OS.g_signal_connect (handle, OS.hide, windowProc2, HIDE);
+	OS.g_signal_connect (handle, OS.show_help, windowProc3, SHOW_HELP);
 }
 
 /**
@@ -524,22 +540,6 @@ public boolean isEnabled () {
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
-}
-
-int processHelp (int int0, int int1, int int2) {
-	if (sendHelpEvent (int0)) OS.gtk_menu_shell_deactivate (handle);
-	return 0;
-}
-
-int processHide (int int0, int int1, int int2) {
-	sendEvent (SWT.Hide);
-	return 0;
-}
-
-int processShow (int int0, int int1, int int2) {
-	if ((style & SWT.POP_UP) != 0) return 0;
-	sendEvent (SWT.Show);
-	return 0;
 }
 
 void releaseChild () {

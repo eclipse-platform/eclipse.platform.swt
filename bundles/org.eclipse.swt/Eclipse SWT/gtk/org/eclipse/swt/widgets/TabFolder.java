@@ -208,9 +208,9 @@ void createItem (TabItem item, int index) {
 	OS.gtk_container_add (boxHandle, labelHandle);
 	int pageHandle = OS.gtk_fixed_new ();
 	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	blockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	OS.gtk_notebook_insert_page (handle, pageHandle, boxHandle, index);
-	unblockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	OS.gtk_widget_show (boxHandle);
 	OS.gtk_widget_show (labelHandle);
 	OS.gtk_widget_show (pageHandle);
@@ -241,7 +241,7 @@ void fixPage () {
 	*/
 //	int index = OS.gtk_notebook_get_current_page (handle);
 //	if (index != -1) return;
-	blockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	int flags = OS.GTK_WIDGET_FLAGS (handle);
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_VISIBLE);
 	GtkRequisition requisition = new GtkRequisition ();
@@ -250,7 +250,7 @@ void fixPage () {
 	if ((flags & OS.GTK_VISIBLE) == 0) {
 		OS.GTK_WIDGET_UNSET_FLAGS(handle, OS.GTK_VISIBLE);	
 	}
-	unblockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 }
 
 void destroyItem (TabItem item) {
@@ -262,9 +262,9 @@ void destroyItem (TabItem item) {
 	}
 	if (index == itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	int oldIndex = OS.gtk_notebook_get_current_page (handle);
-	blockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	OS.gtk_notebook_remove_page (handle, index);
-	unblockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	item.handle = 0;
@@ -396,11 +396,29 @@ public int getSelectionIndex () {
 	return OS.gtk_notebook_get_current_page (handle);
 }
 
+int gtk_switch_page (int widget, int page, int page_num) {
+	int index = OS.gtk_notebook_get_current_page (handle);
+	if (index != -1) {
+		Control control = items [index].getControl ();
+		if (control != null && !control.isDisposed ()) {
+			control.setVisible (false);
+		}
+	}
+	Control control = items [page_num].getControl ();
+	if (control != null && !control.isDisposed ()) {
+		control.setBounds(getClientArea());
+		control.setVisible (true);
+	}
+	Event event = new Event();
+	event.item = items[page_num];
+	postEvent(SWT.Selection, event);
+	return 0;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
-	int windowProc4 = display.windowProc4;
-	OS.g_signal_connect (handle, OS.switch_page, windowProc4, SWT.Selection);
+	OS.g_signal_connect (handle, OS.switch_page, display.windowProc4, SWITCH_PAGE);
 }
 
 /**
@@ -431,25 +449,6 @@ public int indexOf (TabItem item) {
 		if (items [i] == item) return i;
 	}
 	return -1;
-}
-
-int processSelection (int int0, int int1, int int2) {
-	int index = OS.gtk_notebook_get_current_page (handle);
-	if (index != -1) {
-		Control control = items [index].getControl ();
-		if (control != null && !control.isDisposed ()) {
-			control.setVisible (false);
-		}
-	}
-	Control control = items [int1].getControl ();
-	if (control != null && !control.isDisposed ()) {
-		control.setBounds(getClientArea());
-		control.setVisible (true);
-	}
-	Event event = new Event();
-	event.item = items[int1];
-	postEvent(SWT.Selection, event);
-	return 0;
 }
 
 void releaseWidget () {
@@ -550,9 +549,9 @@ void setSelection (int index, boolean notify) {
 			control.setVisible (false);
 		}
 	}
-	blockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	OS.gtk_notebook_set_current_page (handle, index);
-	unblockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	int newIndex = OS.gtk_notebook_get_current_page (handle);
 	if (newIndex != -1) {
 		TabItem item = items [newIndex];

@@ -91,8 +91,8 @@ public class Display extends Device {
 
 	/* Events Dispatching and Callback */
 	Event [] eventQueue;
-	int windowProc2, windowProc3, windowProc4, windowProc5, keyProc;
-	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, keyCallback;
+	int windowProc2, windowProc3, windowProc4, windowProc5;
+	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
 	EventTable eventTable, filterTable;
 
 	/* Sync/Async Widget Communication */
@@ -122,8 +122,8 @@ public class Display extends Device {
 	/* GtkTreeView callbacks */
 	int[] treeSelection;
 	int treeSelectionLength;
-	int treeSelectionProc, treeColumnSelectionProc, treeToggleProc;
-	Callback treeSelectionCallback, treeColumnSelectionCallback, treeToggleCallback;
+	int treeSelectionProc;
+	Callback treeSelectionCallback;
 	
 	/* Drag Detect */
 	int dragStartX,dragStartY;
@@ -1115,10 +1115,6 @@ protected void init () {
 }
 
 void initializeCallbacks () {
-	keyCallback = new Callback (this, "keyProc", 3);
-	keyProc = keyCallback.getAddress ();
-	if (keyProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
 	windowCallback2 = new Callback (this, "windowProc", 2);
 	windowProc2 = windowCallback2.getAddress ();
 	if (windowProc2 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1135,33 +1131,25 @@ void initializeCallbacks () {
 	windowProc5 = windowCallback5.getAddress ();
 	if (windowProc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	timerCallback = new Callback (this, "timerProc", 2);
+	timerCallback = new Callback (this, "timerProc", 1);
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-	windowTimerCallback = new Callback (this, "windowTimerProc", 2);
+	windowTimerCallback = new Callback (this, "windowTimerProc", 1);
 	windowTimerProc = windowTimerCallback.getAddress ();
 	if (windowTimerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	mouseHoverCallback = new Callback (this, "mouseHoverProc", 2);
+	mouseHoverCallback = new Callback (this, "mouseHoverProc", 1);
 	mouseHoverProc = mouseHoverCallback.getAddress ();
 	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-	caretCallback = new Callback(this, "caretProc", 2);
+	caretCallback = new Callback(this, "caretProc", 1);
 	caretProc = caretCallback.getAddress();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	treeSelectionCallback = new Callback(this, "treeSelectionProc", 4);
 	treeSelectionProc = treeSelectionCallback.getAddress();
 	if (treeSelectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
-	treeColumnSelectionCallback = new Callback(this, "treeColumnSelectionProc", 2);
-	treeColumnSelectionProc = treeColumnSelectionCallback.getAddress();
-	if (treeColumnSelectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
-	treeToggleCallback = new Callback(this, "treeToggleProc", 3);
-	treeToggleProc = treeToggleCallback.getAddress();
-	if (treeToggleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 /**	 
@@ -1215,10 +1203,10 @@ boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
 
-int mouseHoverProc (int handle, int id) {
+int mouseHoverProc (int handle) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
-	return widget.processMouseHover (id);
+	return widget.hoverProc (handle);
 }
 
 void postEvent (Event event) {
@@ -1322,7 +1310,6 @@ protected void release () {
 }
 
 void releaseDisplay () {
-	keyCallback.dispose ();  keyCallback = null;
 	windowCallback2.dispose ();  windowCallback2 = null;
 	windowCallback3.dispose ();  windowCallback3 = null;
 	windowCallback4.dispose ();  windowCallback4 = null;
@@ -1331,10 +1318,6 @@ void releaseDisplay () {
 	/* Dispose GtkTreeView callbacks */
 	treeSelectionCallback.dispose (); treeSelectionCallback = null;
 	treeSelectionProc = 0;
-	treeColumnSelectionCallback.dispose (); treeColumnSelectionCallback = null;
-	treeColumnSelectionProc = 0;
-	treeToggleCallback.dispose (); treeToggleCallback = null;
-	treeToggleProc = 0;
 
 	/* Dispose the caret callback */
 	if (caretId != 0) OS.gtk_timeout_remove (caretId);
@@ -1364,7 +1347,7 @@ void releaseDisplay () {
 	mouseHoverCallback = null;
 
 	thread = null;
-	windowProc2 = windowProc3 = windowProc4 = windowProc5 = keyProc = 0;
+	windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
 	
 	/* Dispose the default font */
 	if (defaultFont != 0) OS.pango_font_description_free (defaultFont);
@@ -1706,7 +1689,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	}
 }
 
-int timerProc (int index, int id) {
+int timerProc (int index) {
 	if (timerList == null) return 0;
 	if (0 <= index && index < timerList.length) {
 		Runnable runnable = timerList [index];
@@ -1717,7 +1700,7 @@ int timerProc (int index, int id) {
 	return 0;
 }
 
-int caretProc (int clientData, int id) {
+int caretProc (int clientData) {
 	caretId = 0;
 	if (currentCaret == null) {
 		return 0;
@@ -1731,22 +1714,10 @@ int caretProc (int clientData, int id) {
 	return 0;
 }
 
-int treeColumnSelectionProc (int column, int data) {
-	Widget widget = WidgetTable.get (data);
-	if (widget == null) return 0;
-	return widget.processTreeColumnSelection (column);
-}
-
 int treeSelectionProc (int model, int path, int iter, int data) {
 	Widget widget = WidgetTable.get (data);
 	if (widget == null) return 0;
-	return widget.processTreeSelection (model, path, iter, treeSelection, treeSelectionLength++);
-}
-
-int treeToggleProc (int renderer, int arg1, int data) {
-	Widget widget = WidgetTable.get (data);
-	if (widget == null) return 0;
-	return widget.processTreeToggle (renderer, arg1);
+	return widget.treeSelectionProc (model, path, iter, treeSelection, treeSelectionLength++);
 }
 
 void sendEvent (int eventType, Event event) {
@@ -1832,40 +1803,34 @@ public void wake () {
 	if (thread == Thread.currentThread ()) return;
 }
 
-int keyProc (int handle, int int0, int user_data) {
-	Widget widget = WidgetTable.get (user_data);
-	if (widget == null) return 0;
-	return widget.processIMEKey (int0);
-}
-
 int windowProc (int handle, int user_data) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
-	return widget.processEvent (user_data, 0, 0, 0);
+	return widget.windowProc (handle, user_data);
 }
 
-int windowProc (int handle, int int0, int user_data) {
+int windowProc (int handle, int arg0, int user_data) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
-	return widget.processEvent (user_data, int0, 0, 0);
+	return widget.windowProc (handle, arg0, user_data);
 }
 
-int windowProc (int handle, int int0, int int1, int user_data) {
+int windowProc (int handle, int arg0, int arg1, int user_data) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
-	return widget.processEvent (user_data, int0, int1, 0);
+	return widget.windowProc (handle, arg0, arg1, user_data);
 }
 
-int windowProc (int handle, int int0, int int1, int int2, int user_data) {
+int windowProc (int handle, int arg0, int arg1, int arg2, int user_data) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
-	return widget.processEvent (user_data, int0, int1, int2);
+	return widget.windowProc (handle, arg0, arg1, arg2, user_data);
 }
 
-int windowTimerProc (int handle, int id) {
+int windowTimerProc (int handle) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
-	return widget.processTimer (id);
+	return widget.timerProc (handle);
 }
 
 }

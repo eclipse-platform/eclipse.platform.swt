@@ -282,6 +282,85 @@ public Control [] getTabList () {
 	return new Control [0];
 }
 
+int gtk_button_press_event (int widget, int event) {
+	int result = super.gtk_button_press_event (widget, event);
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.NO_FOCUS) == 0) {
+			int count = 0;
+			int list = OS.gtk_container_get_children (handle);
+			if (list != 0) {
+				count = OS.g_list_length (list);
+				OS.g_list_free (list);
+			}
+			if (count == 0) OS.gtk_widget_grab_focus (handle);
+		}
+	}
+	return result;
+}
+
+int gtk_expose_event (int widget, int eventPtr) {
+	if ((state & CANVAS) == 0) {
+		return super.gtk_expose_event (widget, eventPtr);
+	}
+	if ((style & SWT.NO_BACKGROUND) == 0) {
+		int window = paintWindow ();
+		int gc = OS.gdk_gc_new (window);
+		OS.gdk_gc_set_foreground (gc, getBackgroundColor ());
+		GdkEventExpose gdkEvent = new GdkEventExpose ();
+		OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
+		int x = gdkEvent.area_x, y = gdkEvent.area_y;
+		int width = gdkEvent.area_width, height = gdkEvent.area_height;
+		OS.gdk_gc_set_clip_region (gc, gdkEvent.region);
+		OS.gdk_draw_rectangle (window, gc, 1, x, y, width, height);
+		OS.g_object_unref (gc);
+	}
+	if ((style & SWT.NO_MERGE_PAINTS) == 0) {
+		return super.gtk_expose_event (widget, eventPtr);
+	}
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
+	GdkEventExpose gdkEvent = new GdkEventExpose ();
+	OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
+	int [] rectangles = new int [1];
+	int [] n_rectangles = new int [1];
+	OS.gdk_region_get_rectangles (gdkEvent.region, rectangles, n_rectangles);
+	GdkRectangle rect = new GdkRectangle ();
+	for (int i=0; i<n_rectangles[0]; i++) {
+		Event event = new Event ();
+		OS.memmove (rect, rectangles [0] + i * GdkRectangle.sizeof, GdkRectangle.sizeof);
+		event.x = rect.x;
+		event.y = rect.y;
+		event.width = rect.width;
+		event.height = rect.height;
+		GC gc = event.gc = new GC (this);
+		gc.setClipping (event.x, event.y, event.width, event.height);
+		sendEvent (SWT.Paint, event);
+		gc.dispose ();
+		event.gc = null;
+	}
+	OS.g_free (rectangles [0]);
+	return 0;
+}
+
+int gtk_focus_in_event (int widget, int event) {
+	int result = super.gtk_focus_in_event (widget, event);
+	return (state & CANVAS) != 0 ? 1 : result;
+}
+
+int gtk_focus_out_event (int widget, int event) {
+	int result = super.gtk_focus_out_event (widget, event);
+	return (state & CANVAS) != 0 ? 1 : result;
+}
+
+int gtk_key_press_event (int widget, int event) {
+	int result = super.gtk_key_press_event (widget, event);
+	return (state & CANVAS) != 0 && result != 1 && hasFocus () ? 1 : result;
+}
+
+int gtk_key_release_event (int widget, int event) {
+	int result = super.gtk_key_release_event (widget, event);
+	return (state & CANVAS) != 0 && result != 1 && hasFocus () ? 1 : result;
+}
+
 boolean hasBorder () {
 	return (style & SWT.BORDER) != 0;
 }
@@ -425,85 +504,6 @@ Point minimumSize () {
 int parentingHandle () {
 	if ((state & CANVAS) != 0) return handle;
 	return fixedHandle != 0 ? fixedHandle : handle;
-}
-
-int processFocusIn(int int0, int int1, int int2) {
-	int result = super.processFocusIn (int0, int1, int2);
-	return (state & CANVAS) != 0 ? 1 : result;
-}
-
-int processFocusOut(int int0, int int1, int int2) {
-	int result = super.processFocusOut (int0, int1, int2);
-	return (state & CANVAS) != 0 ? 1 : result;
-}
-
-int processKeyDown (int int0, int int1, int int2) {
-	int result = super.processKeyDown (int0, int1, int2);
-	return (state & CANVAS) != 0 && result != 1 && hasFocus () ? 1 : result;
-}
-
-int processKeyUp (int int0, int int1, int int2) {
-	int result = super.processKeyUp (int0, int1, int2);
-	return (state & CANVAS) != 0 && result != 1 && hasFocus () ? 1 : result;
-}
-
-int processMouseDown (int callData, int arg1, int int2) {
-	int result = super.processMouseDown (callData, arg1, int2);
-	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_FOCUS) == 0) {
-			int count = 0;
-			int list = OS.gtk_container_get_children (handle);
-			if (list != 0) {
-				count = OS.g_list_length (list);
-				OS.g_list_free (list);
-			}
-			if (count == 0) OS.gtk_widget_grab_focus (handle);
-		}
-	}
-	return result;
-}
-
-int processPaint (int callData, int int1, int int2) {
-	if ((state & CANVAS) == 0) {
-		return super.processPaint (callData, int1, int2);
-	}
-	if ((style & SWT.NO_BACKGROUND) == 0) {
-		int window = paintWindow ();
-		int gc = OS.gdk_gc_new (window);
-		OS.gdk_gc_set_foreground (gc, getBackgroundColor ());
-		GdkEventExpose gdkEvent = new GdkEventExpose ();
-		OS.memmove(gdkEvent, callData, GdkEventExpose.sizeof);
-		int x = gdkEvent.area_x, y = gdkEvent.area_y;
-		int width = gdkEvent.area_width, height = gdkEvent.area_height;
-		OS.gdk_gc_set_clip_region (gc, gdkEvent.region);
-		OS.gdk_draw_rectangle (window, gc, 1, x, y, width, height);
-		OS.g_object_unref (gc);
-	}
-	if ((style & SWT.NO_MERGE_PAINTS) == 0) {
-		return super.processPaint (callData, int1, int2);
-	}
-	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
-	GdkEventExpose gdkEvent = new GdkEventExpose ();
-	OS.memmove(gdkEvent, callData, GdkEventExpose.sizeof);
-	int [] rectangles = new int [1];
-	int [] n_rectangles = new int [1];
-	OS.gdk_region_get_rectangles (gdkEvent.region, rectangles, n_rectangles);
-	GdkRectangle rect = new GdkRectangle ();
-	for (int i=0; i<n_rectangles[0]; i++) {
-		Event event = new Event ();
-		OS.memmove (rect, rectangles [0] + i * GdkRectangle.sizeof, GdkRectangle.sizeof);
-		event.x = rect.x;
-		event.y = rect.y;
-		event.width = rect.width;
-		event.height = rect.height;
-		GC gc = event.gc = new GC (this);
-		gc.setClipping (event.x, event.y, event.width, event.height);
-		sendEvent (SWT.Paint, event);
-		gc.dispose ();
-		event.gc = null;
-	}
-	OS.g_free (rectangles [0]);
-	return 0;
 }
 
 int radioGroup() {

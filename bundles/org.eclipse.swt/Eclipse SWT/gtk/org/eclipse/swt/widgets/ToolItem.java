@@ -403,98 +403,37 @@ public int getWidth () {
 	return OS.GTK_WIDGET_WIDTH (topHandle);
 }
 
-void hookEvents () {
-	super.hookEvents ();
-	if ((style & SWT.SEPARATOR) != 0) return;
-	Display display = getDisplay ();
-	int windowProc2 = display.windowProc2;
-	int windowProc3 = display.windowProc3;
-	OS.g_signal_connect (handle, OS.clicked, windowProc2, SWT.Selection);
-	OS.g_signal_connect (handle, OS.enter_notify_event, windowProc3, SWT.MouseEnter);
-	OS.g_signal_connect (handle, OS.leave_notify_event, windowProc3, SWT.MouseExit);
-
-	/*
-	 * Feature in GTK.
-	 * Usually, GTK widgets propagate all events to their parent when they
-	 * are done their own processing.  However, in contrast to other widgets,
-	 * the buttons that make up the tool items, do not propagate the mouse
-	 * up/down events.
-	 * (It is interesting to note that they DO propagate mouse motion events.)
-	 */
-	int mask =
-		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
-		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
-		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
-		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
-		OS.GDK_FOCUS_CHANGE_MASK;
-	OS.gtk_widget_add_events (handle, mask);
-	OS.g_signal_connect (handle, OS.button_press_event, windowProc3, SWT.MouseDown);
-	OS.g_signal_connect (handle, OS.button_release_event, windowProc3, SWT.MouseUp);
-}
-
-/**
- * Returns <code>true</code> if the receiver is enabled and all
- * of the receiver's ancestors are enabled, and <code>false</code>
- * otherwise. A disabled control is typically not selectable from the
- * user interface and draws with an inactive or "grayed" look.
- *
- * @return the receiver's enabled state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @see #getEnabled
- */
-public boolean isEnabled () {
-	checkWidget();
-	return getEnabled () && parent.isEnabled ();
-}
-
-int processMouseDown (int callData, int arg1, int int2) {
-	GdkEventButton e = new GdkEventButton();
-	OS.memmove(e, callData, GdkEventButton.sizeof);
-	double x_back = e.x;   e.x += OS.GTK_WIDGET_X(handle);
-	double y_back = e.y;   e.y += OS.GTK_WIDGET_Y(handle);
-	OS.memmove(callData, e, GdkEventButton.sizeof);
-	parent.processMouseDown (callData, arg1, int2);
-	e.x = x_back; e.y = y_back;
-	OS.memmove(callData, e, GdkEventButton.sizeof);
+int gtk_button_press_event (int widget, int event) {
+	GdkEventButton gdkEvent = new GdkEventButton();
+	OS.memmove(gdkEvent, event, GdkEventButton.sizeof);
+	double x = gdkEvent.x;
+	gdkEvent.x += OS.GTK_WIDGET_X(handle);
+	double y = gdkEvent.y;
+	gdkEvent.y += OS.GTK_WIDGET_Y(handle);
+	OS.memmove(event, gdkEvent, GdkEventButton.sizeof);
+	parent.gtk_button_press_event (widget, event);
+	gdkEvent.x = x;
+	gdkEvent.y = y;
+	OS.memmove(event, gdkEvent, GdkEventButton.sizeof);
 	return 0;
 }
 
-int processMouseUp (int callData, int arg1, int int2) {
-	GdkEventButton e = new GdkEventButton();
-	OS.memmove(e, callData, GdkEventButton.sizeof);
-	double x_back = e.x;   e.x += OS.GTK_WIDGET_X(handle);
-	double y_back = e.y;   e.y += OS.GTK_WIDGET_Y(handle);
-	OS.memmove(callData, e, GdkEventButton.sizeof);
-	parent.processMouseUp (callData, arg1, int2);
-	e.x = x_back; e.y = y_back;
-	OS.memmove(callData, e, GdkEventButton.sizeof);
+int gtk_button_release_event (int widget, int event) {
+	GdkEventButton gdkEvent = new GdkEventButton();
+	OS.memmove(gdkEvent, event, GdkEventButton.sizeof);
+	double x = gdkEvent.x;
+	gdkEvent.x += OS.GTK_WIDGET_X(handle);
+	double y = gdkEvent.y;
+	gdkEvent.y += OS.GTK_WIDGET_Y(handle);
+	OS.memmove(event, gdkEvent, GdkEventButton.sizeof);
+	parent.gtk_button_release_event (widget, event);
+	gdkEvent.x = x;
+	gdkEvent.y = y;
+	OS.memmove(event, gdkEvent, GdkEventButton.sizeof);
 	return 0;
 }
 
-int processMouseEnter (int int0, int int1, int int2) {
-	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
-	if (drawHotImage && imageHandle != 0) {
-		OS.gtk_image_set_from_pixmap (imageHandle, hotImage.pixmap, hotImage.mask);
-	}
-	return 0;
-}
-
-int processMouseExit (int int0, int int1, int int2) {
-	if (drawHotImage) {
-		drawHotImage = false;
-		if (imageHandle != 0 && image != null) {
-			OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
-		}	
-	}
-	return 0;
-}
-
-int processSelection  (int int0, int int1, int int2) {
+int gtk_clicked (int widget) {
 	Event event = new Event ();
 	if ((style & SWT.DROP_DOWN) != 0) {
 		int eventPtr = OS.gtk_get_current_event ();
@@ -524,6 +463,73 @@ int processSelection  (int int0, int int1, int int2) {
 	}
 	postEvent (SWT.Selection, event);
 	return 0;
+}
+
+int gtk_enter_notify_event (int widget, int event) {
+	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
+	if (drawHotImage && imageHandle != 0) {
+		OS.gtk_image_set_from_pixmap (imageHandle, hotImage.pixmap, hotImage.mask);
+	}
+	return 0;
+}
+
+int gtk_leave_notify_event (int widget, int event) {
+	if (drawHotImage) {
+		drawHotImage = false;
+		if (imageHandle != 0 && image != null) {
+			OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
+		}	
+	}
+	return 0;
+}
+
+void hookEvents () {
+	super.hookEvents ();
+	if ((style & SWT.SEPARATOR) != 0) return;
+	Display display = getDisplay ();
+	int windowProc2 = display.windowProc2;
+	int windowProc3 = display.windowProc3;
+	OS.g_signal_connect (handle, OS.clicked, windowProc2, CLICKED);
+	OS.g_signal_connect (handle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
+	OS.g_signal_connect (handle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
+
+	/*
+	 * Feature in GTK.
+	 * Usually, GTK widgets propagate all events to their parent when they
+	 * are done their own processing.  However, in contrast to other widgets,
+	 * the buttons that make up the tool items, do not propagate the mouse
+	 * up/down events.
+	 * (It is interesting to note that they DO propagate mouse motion events.)
+	 */
+	int mask =
+		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
+		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
+		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
+		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
+		OS.GDK_FOCUS_CHANGE_MASK;
+	OS.gtk_widget_add_events (handle, mask);
+	OS.g_signal_connect (handle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
+	OS.g_signal_connect (handle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
+}
+
+/**
+ * Returns <code>true</code> if the receiver is enabled and all
+ * of the receiver's ancestors are enabled, and <code>false</code>
+ * otherwise. A disabled control is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #getEnabled
+ */
+public boolean isEnabled () {
+	checkWidget();
+	return getEnabled () && parent.isEnabled ();
 }
 
 void releaseHandle () {
@@ -740,9 +746,9 @@ public void setSelection (boolean selected) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	blockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 	OS.gtk_toggle_button_set_active (handle, selected);
-	unblockSignal (handle, SWT.Selection);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }
 
 public void setText (String string) {

@@ -134,13 +134,6 @@ public int getSelection () {
 	return value;
 }
 
-int processTimer (int id) {
-	OS.gtk_progress_bar_pulse (handle);
-	Display display = getDisplay ();
-	timerId = OS.gtk_timeout_add (DELAY, display.windowTimerProc, handle);
-	return 0;
-}
-
 void releaseWidget () {
 	super.releaseWidget ();
 	if (timerId != 0) OS.gtk_timeout_remove (timerId);
@@ -208,6 +201,11 @@ public void setSelection (int x) {
 	if (x > max) x = max;
 	value = x;
 	updateBar (value, min, max);
+}
+
+int timerProc (int widget) {
+	OS.gtk_progress_bar_pulse (handle);
+	return 1;
 }
 
 void updateBar (int selection, int minimum, int maximum) {

@@ -259,16 +259,7 @@ public String getText () {
 	return text;
 }
 
-void hookEvents () {
-	super.hookEvents();
-	if (labelHandle != 0) {
-		Display display = getDisplay ();
-		int windowProc3 = display.windowProc3;
-		OS.g_signal_connect (labelHandle, OS.mnemonic_activate, windowProc3, SWT.Activate);
-	}
-}
-
-int processActivate (int int0, int int1, int int2) {
+int gtk_mnemonic_activate (int widget, int arg1) {
 	Composite control = this.parent;
 	while (control != null) {
 		Control [] children = control._getChildren ();
@@ -284,6 +275,14 @@ int processActivate (int int0, int int1, int int2) {
 		control = control.parent;
 	}
 	return 1;
+}
+
+void hookEvents () {
+	super.hookEvents();
+	if (labelHandle != 0) {
+		Display display = getDisplay ();
+		OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
+	}
 }
 
 void register () {

@@ -64,6 +64,45 @@ public abstract class Widget {
 	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
+	
+	/* GTK signals data */
+	static final int ACTIVATE = 1;
+	static final int BUTTON_PRESS_EVENT = 2;
+	static final int BUTTON_RELEASE_EVENT = 3;
+	static final int CHANGED = 4;
+	static final int CLICKED = 5;
+	static final int COMMIT = 6;
+	static final int CONFIGURE_EVENT = 7;
+	static final int DELETE_EVENT = 8;
+	static final int DELETE_RANGE = 9;
+	static final int DELETE_TEXT = 10;
+	static final int ENTER_NOTIFY_EVENT = 11;
+	static final int EVENT = 12;
+	static final int EVENT_AFTER = 13;
+	static final int EXPOSE_EVENT = 14;
+	static final int FOCUS_IN_EVENT = 15;
+	static final int FOCUS_OUT_EVENT = 16;
+	static final int HIDE = 17;
+	static final int INSERT_TEXT = 18;
+	static final int KEY_PRESS_EVENT = 19;
+	static final int KEY_RELEASE_EVENT = 20;
+	static final int LEAVE_NOTIFY_EVENT = 21;
+	static final int MAP_EVENT = 22;
+	static final int MNEMONIC_ACTIVATE = 23;
+	static final int MOTION_NOTIFY_EVENT = 24;
+	static final int POPUP_MENU = 25;
+	static final int ROW_ACTIVATED = 26;
+	static final int ROW_COLLAPSED = 27;
+	static final int ROW_EXPANDED = 28;
+	static final int SELECT = 29;
+	static final int SELECT_CHILD = 30;
+	static final int SHOW = 31;
+	static final int SHOW_HELP = 32;
+	static final int SIZE_ALLOCATE = 33;
+	static final int SWITCH_PAGE = 34;
+	static final int TOGGLED = 35;
+	static final int UNMAP_EVENT = 38;
+	static final int VALUE_CHANGED = 39;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -129,10 +168,6 @@ public void addListener (int eventType, Listener handler) {
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, handler);
-}
-
-void blockSignal (int instance, int data) {
-	OS.g_signal_handlers_block_matched (instance, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, data);
 }
 
 /**
@@ -411,6 +446,159 @@ public int getStyle () {
 	return style;
 }
 
+
+int gtk_activate (int widget) {
+	return 0;
+}
+
+int gtk_button_press_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_button_release_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_changed (int widget) {
+	return 0;
+}
+
+int gtk_clicked (int widget) {
+	return 0;
+}
+
+int gtk_commit (int imcontext, int text) {
+	return 0;
+}
+
+int gtk_configure_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_delete_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_delete_range (int widget, int iter1, int iter2) {
+	return 0;
+}
+
+int gtk_delete_text (int widget, int start_pos, int end_pos) {
+	return 0;
+}
+
+int gtk_enter_notify_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_event_after (int widget, int event) {
+	return 0;
+}
+
+int gtk_expose_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_focus_in_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_focus_out_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_hide (int widget) {
+	return 0;
+}
+
+int gtk_insert_text (int widget, int new_text, int new_text_length, int position) {
+	return 0;
+}
+
+int gtk_key_press_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_key_release_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_leave_notify_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_map_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_mnemonic_activate (int widget, int arg1) {
+	return 0;
+}
+
+int gtk_motion_notify_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_popup_menu (int widget) {
+	return 0;
+}
+
+int gtk_row_activated (int tree, int path, int column) {
+	return 0;
+}
+
+int gtk_row_collapsed (int tree, int iter, int path) {
+	return 0;
+}
+
+int gtk_row_expanded (int tree, int iter, int path) {
+	return 0;
+}
+
+int gtk_select (int item) {
+	return 0;
+}
+
+int gtk_select_child (int list, int widget) {
+	return 0;
+}
+
+int gtk_show (int widget) {
+	return 0;
+}
+
+int gtk_show_help (int widget, int helpType) {
+	return 0;
+}
+
+int gtk_size_allocate (int widget, int allocation) {
+	return 0;
+}
+
+int gtk_switch_page (int widget, int page, int page_num) {
+	return 0;
+}
+
+int gtk_timer () {
+	return 0;
+}
+
+int gtk_toggled (int renderer, int pathStr) {
+	return 0;
+}
+
+int gtk_unmap_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_value_changed (int adjustment) {
+	return 0;
+}
+
 int fontHeight (int font, int widgetHandle) {
 	int context = OS.gtk_widget_get_pango_context (widgetHandle);
 	int lang = OS.pango_context_get_language (context);
@@ -512,6 +700,10 @@ boolean hooks (int eventType) {
 	return eventTable.hooks (eventType);
 }
 
+int hoverProc (int widget) {
+	return 0;
+}
+
 char mbcsToWcs (char ch) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
@@ -556,175 +748,7 @@ void postEvent (int eventType) {
 }
 
 void postEvent (int eventType, Event event) {
-	sendEvent (eventType, event, false);}
-
-int processEvent (int eventNumber, int int0, int int1, int int2) {
-	/*
-	* Feature in GTK.  Events such as mouse move are propagate up
-	* the widget hierarchy and are seen by the parent.  This is the
-	* correct GTK behavior but not correct for SWT.  The fix is to
-	* hook a signal after and stop the propagation using a negative
-	* event number to distinguish this case.
-	*/
-	if (eventNumber < 0) return 1;
-	switch (eventNumber) {
-		case SWT.Activate:			return processActivate         (int0, int1, int2);
-		case SWT.Arm:				return processArm           	(int0, int1, int2);
-		case SWT.Collapse:			return processCollapse      	(int0, int1, int2);
-		case SWT.Expand:			return processExpand        	(int0, int1, int2);
-		case SWT.Dispose:			return processDispose        	(int0, int1, int2);
-		case SWT.DefaultSelection:	return processDefaultSelection	(int0, int1, int2);
-		case SWT.Deiconify:		return processDeiconify		(int0, int1, int2);
-		case SWT.FocusIn:			return processFocusIn         	(int0, int1, int2);
-		case SWT.FocusOut:			return processFocusOut        	(int0, int1, int2);
-		case SWT.Help:				return processHelp            	(int0, int1, int2);
-		case SWT.Hide:				return processHide            	(int0, int1, int2);
-		case SWT.KeyDown:		return processKeyDown (int0, int1, int2);
-		case SWT.KeyUp:			return processKeyUp        	(int0, int1, int2);
-		case SWT.Iconify:			return processIconify         	(int0, int1, int2);
-		case SWT.Modify:			return processModify          	(int0, int1, int2);
-		case SWT.MouseDown:		return processMouseDown       	(int0, int1, int2);
-		case SWT.MouseEnter:		return processMouseEnter      	(int0, int1, int2);
-		case SWT.MouseExit:		return processMouseExit       	(int0, int1, int2);
-		case SWT.MouseMove:		return processMouseMove       	(int0, int1, int2);
-		case SWT.MouseUp:			return processMouseUp         	(int0, int1, int2);
-		case SWT.Move:				return processMove		       	(int0, int1, int2);
-		case SWT.Paint:			return processPaint           	(int0, int1, int2);
-		case SWT.Resize:			return processResize          	(int0, int1, int2);
-		case SWT.Show:				return processShow            	(int0, int1, int2);
-		case SWT.Selection:		return processSelection       	(int0, int1, int2);
-		case SWT.Verify:			return processVerify          	(int0, int1, int2);
-	}
-	return 0;
-}
-
-int processActivate (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processArm (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processCollapse (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processExpand (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processDispose (int arg0, int arg1, int int2) {
-	return 0;
-}
-
-int processDefaultSelection (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processDeiconify (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processFocusIn(int int0, int int1, int int2) {
-	return 0;
-}
-
-int processFocusOut(int int0, int int1, int int2) {
-	return 0;
-}
-
-int processHelp (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processHide (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processIconify (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processIMEKey (int str) {
-	return 0;
-}
-
-int processKeyDown (int arg0, int arg1, int int2) {
-	return 0;
-}
-
-int processKeyUp (int arg0, int arg1, int int2) {
-	return 0;
-}
-
-int processModify (int arg0, int arg1, int int2) {
-	return 0;
-}
-
-int processMouseDown (int arg0, int arg1, int int2) {
-	return 0;
-}
-
-int processMouseEnter (int arg0, int arg1, int int2) {
-	return 0;
-}
-
-int processMouseExit (int arg0, int arg1, int int2) {
-	return 0;
-}
-
-int processMouseHover (int id) {
-	return 0;
-}
-
-int processMouseMove (int arg0, int arg1, int int2) {
-	return 0;
-}
-
-int processMouseUp (int arg0, int arg1, int int2) {
-	return 0;
-}
-
-int processMove (int arg0, int arg1, int int2) {
-	return 0;
-}
-
-int processPaint (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processResize (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processSelection (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processShow (int int0, int int1, int int2) {
-	return 0;
-}
-
-int processTimer (int id) {
-	return 0;
-}
-
-int processTreeColumnSelection (int column) {
-	return 0;
-}
-
-int processTreeSelection (int model, int path, int iter, int[] selection, int length) {
-	return 0;
-}
-
-int processTreeToggle (int renderer, int arg1) {
-	return 0;
-}
-
-int processVerify (int int0, int int1, int int2) {
-	sendEvent (SWT.Verify);
-	return 0;
+	sendEvent (eventType, event, false);
 }
 
 void register () {
@@ -1024,12 +1048,16 @@ int topHandle () {
 	return handle;
 }
 
-boolean translateTraversal (int event) {
-	return false;
+int timerProc (int widget) {
+	return 0;
 }
 
-void unblockSignal (int instance, int data) {
-	OS.g_signal_handlers_unblock_matched (instance, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, data);
+int treeSelectionProc (int model, int path, int iter, int[] selection, int length) {
+	return 0;
+}
+
+boolean translateTraversal (int event) {
+	return false;
 }
 
 char wcsToMbcs (char ch) {
@@ -1042,5 +1070,72 @@ char wcsToMbcs (char ch) {
 	}
 	return 0;
 }
+
+int windowProc (int handle, int user_data) {
+	switch (user_data) {
+		case ACTIVATE: return gtk_activate (handle);
+		case CHANGED: return gtk_changed (handle);
+		case CLICKED: return gtk_clicked (handle);
+		case HIDE: return gtk_hide (handle);
+		case POPUP_MENU: return gtk_popup_menu (handle);
+		case SELECT: return gtk_select (handle);
+		case SHOW: return gtk_show (handle);
+		case VALUE_CHANGED: return gtk_value_changed (handle);
+		default: return 0;
+	}
+}
+
+int windowProc (int handle, int arg0, int user_data) {
+	switch (user_data) {
+		case -BUTTON_PRESS_EVENT:
+		case -BUTTON_RELEASE_EVENT:
+		case -MOTION_NOTIFY_EVENT: {
+			return 1;
+		}
+		case BUTTON_PRESS_EVENT: return gtk_button_press_event (handle, arg0);
+		case BUTTON_RELEASE_EVENT: return gtk_button_release_event (handle, arg0);
+		case COMMIT: return gtk_commit (handle, arg0);
+		case CONFIGURE_EVENT: return gtk_configure_event (handle, arg0);
+		case DELETE_EVENT: return gtk_delete_event (handle, arg0);
+		case ENTER_NOTIFY_EVENT: return gtk_enter_notify_event (handle, arg0);
+		case EVENT: return gtk_event (handle, arg0);
+		case EVENT_AFTER: return gtk_event_after (handle, arg0);
+		case EXPOSE_EVENT: return gtk_expose_event (handle, arg0);
+		case FOCUS_IN_EVENT: return gtk_focus_in_event (handle, arg0);
+		case FOCUS_OUT_EVENT: return gtk_focus_out_event (handle, arg0);
+		case KEY_PRESS_EVENT: return gtk_key_press_event (handle, arg0);
+		case KEY_RELEASE_EVENT: return gtk_key_release_event (handle, arg0);
+		case LEAVE_NOTIFY_EVENT: return gtk_leave_notify_event (handle, arg0);
+		case MAP_EVENT: return gtk_map_event (handle, arg0);
+		case MNEMONIC_ACTIVATE: return gtk_mnemonic_activate (handle, arg0);
+		case MOTION_NOTIFY_EVENT: return gtk_motion_notify_event (handle, arg0);
+		case SELECT_CHILD: return gtk_select_child (handle, arg0);
+		case SHOW_HELP: return gtk_show_help (handle, arg0);
+		case SIZE_ALLOCATE: return gtk_size_allocate (handle, arg0);
+		case TOGGLED: return gtk_toggled (handle, arg0);
+		case UNMAP_EVENT: return gtk_unmap_event (handle, arg0);
+		default: return 0;
+	}
+}
+
+int windowProc (int handle, int arg0, int arg1, int user_data) {
+	switch (user_data) {
+		case DELETE_RANGE: return gtk_delete_range (handle, arg0, arg1);
+		case DELETE_TEXT: return gtk_delete_text (handle, arg0, arg1);
+		case ROW_ACTIVATED: return gtk_row_activated (handle, arg0, arg1);
+		case ROW_COLLAPSED: return gtk_row_collapsed (handle, arg0, arg1);
+		case ROW_EXPANDED: return gtk_row_expanded(handle, arg0, arg1);
+		case SWITCH_PAGE: return gtk_switch_page (handle, arg0, arg1);
+		default: return 0;
+	}
+}
+
+int windowProc (int handle, int arg0, int arg1, int arg2, int user_data) {
+	switch (user_data) {
+		case INSERT_TEXT: return gtk_insert_text (handle, arg0, arg1, arg2);
+		default: return 0;
+	}
+}
+
 
 }
