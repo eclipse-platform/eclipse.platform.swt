@@ -3894,11 +3894,12 @@ void handleMouseMove(Event event) {
 	if (mouseDoubleClick == true || (event.stateMask & SWT.BUTTON1) == 0) {
 		return;
 	}
+	doMouseLocationChange(event.x, event.y, true);
 	doAutoScroll(event);
 	// caret location only needs to be updated if we are not autoscrolling
-	if (autoScrollDirection == SWT.NULL) {
-		doMouseLocationChange(event.x, event.y, true);
-	}
+//	if (autoScrollDirection == SWT.NULL) {
+//		doMouseLocationChange(event.x, event.y, true);
+//	}
 }
 /** 
  * Replaces the selection with the clipboard text or insert the text at 
