@@ -1141,52 +1141,12 @@ public void select (int index) {
 }
 
 boolean sendKeyEvent (int type, Event event) {
-	//NEEDS WORK - start/end and CR
 	if (!super.sendKeyEvent (type, event)) {
 		return false;
 	}
 	if (type != SWT.KeyDown) return true;
 	if (event.character == 0) return true;
 	if ((style & SWT.READ_ONLY) != 0) return false;
-	String oldText = "";
-	int charCount;
-	int [] ptr = new int [1];
-	int result = OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, null);
-	if (result == OS.noErr) {
-		charCount = OS.CFStringGetLength (ptr [0]);
-		OS.CFRelease (ptr [0]);
-	} else {
-		charCount = 0;
-	}
-	short [] s = new short [2];
-	OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s, null);
-	int start = s [0], end = s [1];
-	switch (event.character) {
-		case SWT.BS:
-			if (start == end) {
-				if (start == 0) return true;
-				start = Math.max (0, start - 1);
-			}
-			break;
-		case SWT.DEL:
-			if (start == end) {
-				if (start == charCount) return true;
-				end = Math.min (end + 1, charCount);
-			}
-			break;
-		case SWT.CR:
-			postEvent (SWT.DefaultSelection);
-			return true;
-		default:
-			if (event.character != '\t' && event.character < 0x20) return true;
-			oldText = new String (new char [] {event.character});
-	}
-	String newText = verifyText (oldText, start, end);
-	if (newText == null) return false;
-	if (charCount - (end - start) + newText.length () > LIMIT/*textLimit*/) {
-		return false;
-	}
-	if (newText != oldText) setText (newText);
 	/*
 	* Post the modify event so that the character will be inserted
 	* into the widget when the modify event is delivered.  Normally,
@@ -1194,7 +1154,7 @@ boolean sendKeyEvent (int type, Event event) {
 	* because this method is called from the event loop.
 	*/
 	postEvent (SWT.Modify);
-	return newText == oldText;
+	return true;
 }
 /**
  * Sets the text of the item in the receiver's list at the given
@@ -1360,19 +1320,4 @@ public void setTextLimit (int limit) {
 	// NEEDS WORK
 }
 
-String verifyText (String string, int start, int end) {
-	Event event = new Event ();
-	event.text = string;
-	event.start = start;
-	event.end = end;
-	/*
-	 * It is possible (but unlikely), that application
-	 * code could have disposed the widget in the verify
-	 * event.  If this happens, answer null to cancel
-	 * the operation.
-	 */
-	sendEvent (SWT.Verify, event);
-	if (!event.doit || isDisposed ()) return null;
-	return event.text;
-}
 }
