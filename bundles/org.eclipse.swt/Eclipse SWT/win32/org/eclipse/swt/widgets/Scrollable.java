@@ -277,9 +277,11 @@ LRESULT wmScroll (int msg, int wParam, int lParam) {
 		case OS.SB_ENDSCROLL:  return null;
 		case OS.SB_THUMBTRACK:
 		case OS.SB_THUMBPOSITION:
-			/* temporary note: on WinCE, the value in Thumbposition is relative to nMin
-			* Same for Thumbtrack 'except' for the very first thumbtrack message
-			* which has the actual value of nMin. This is a problem when nMin is non null.
+			/* 
+			* Note: On WinCE, the value in SB_THUMBPOSITION is relative to nMin.
+			* Same for SB_THUMBPOSITION 'except' for the very first thumb track
+			* message which has the actual value of nMin. This is a problem when
+			* nMin is not zero.
 			*/
 			info.nPos = info.nTrackPos;
 			break;
@@ -292,19 +294,17 @@ LRESULT wmScroll (int msg, int wParam, int lParam) {
 		case OS.SB_LINEDOWN:
 			info.nPos += bar.getIncrement ();
 			break;
-		case OS.SB_LINEUP: {
+		case OS.SB_LINEUP:
 			int increment = bar.getIncrement ();
 			info.nPos = Math.max (info.nMin, info.nPos - increment);
 			break;
-		}
 		case OS.SB_PAGEDOWN:
 			info.nPos += bar.getPageIncrement ();
 			break;
-		case OS.SB_PAGEUP: {
+		case OS.SB_PAGEUP:
 			int pageIncrement = bar.getPageIncrement ();
 			info.nPos = Math.max (info.nMin, info.nPos - pageIncrement);
 			break;
-		}
 	}
 	OS.SetScrollInfo (handle, type, info, true);
 	return null;
