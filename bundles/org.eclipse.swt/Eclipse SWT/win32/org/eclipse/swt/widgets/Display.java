@@ -1745,10 +1745,12 @@ boolean isValidThread () {
  * @param point to be mapped 
  * @return point with mapped coordinates 
  * 
- * @exception SWTException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li> 
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
@@ -1786,9 +1788,11 @@ public Point map (Control from, Control to, Point point) {
  * @param int y coordinates to be mapped
  * @return point with mapped coordinates
  * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
@@ -1832,10 +1836,12 @@ public Point map (Control from, Control to, int x, int y) {
  * @param rectangle to be mapped
  * @return rectangle with mapped coordinates
  * 
- * @exception SWTException <ul>
+ * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
@@ -1875,9 +1881,11 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
  * @param int heigth coordinates to be mapped
  * @return rectangle with mapped coordinates
  * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 

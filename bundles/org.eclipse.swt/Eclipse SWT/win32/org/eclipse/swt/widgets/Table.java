@@ -1616,9 +1616,9 @@ public void remove (int index) {
 	int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 	ignoreSelect = false;
 	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	if (item != null && !item.isDisposed ()) item.releaseResources ();
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
-	if (item != null && !item.isDisposed ()) item.releaseResources ();
 }
 
 /**
