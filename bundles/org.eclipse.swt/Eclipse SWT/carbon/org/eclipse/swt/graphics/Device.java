@@ -236,8 +236,7 @@ public int getDepth () {
 	OS.memcpy(ptr, gdevice, 4);
 	GDevice device = new GDevice();
 	OS.memcpy(device, ptr[0], GDevice.sizeof);
-	int depth = OS.GetPixDepth(device.gdPMap);
-	return depth;
+	return OS.GetPixDepth(device.gdPMap);
 }
 
 /**
