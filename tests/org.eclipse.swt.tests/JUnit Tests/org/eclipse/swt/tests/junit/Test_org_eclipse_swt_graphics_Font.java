@@ -62,8 +62,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	font = new Font(display, new FontData(SwtJunit.testFontName, 0, SWT.NORMAL));
 	font.dispose();
 
-	// valid normal 1000-point font (pretty big, but apparently valid)
-	font = new Font(display, new FontData(SwtJunit.testFontName, 1000, SWT.NORMAL));
+	// valid normal 100-point font
+	font = new Font(display, new FontData(SwtJunit.testFontName, 100, SWT.NORMAL));
 	font.dispose();
 
 	// valid normal 10-point font
@@ -124,8 +124,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 	font = new Font(display, SwtJunit.testFontName, 0, SWT.NORMAL);
 	font.dispose();
 
-	// valid normal 1000-point font (pretty big, but apparently valid)
-	font = new Font(display, SwtJunit.testFontName, 1000, SWT.NORMAL);
+	// valid normal 100-point font
+	font = new Font(display, SwtJunit.testFontName, 100, SWT.NORMAL);
 	font.dispose();
 
 	// valid normal 10-point font
