@@ -14,7 +14,7 @@
         <property name="destdir" value="../../../../../export" />
 		<property name="plugin" value="org.eclipse.swt" />
 		<property name="maj_ver" value="2" />
-		<property name="min_ver" value="101" />
+		<property name="min_ver" value="102" />
         <mkdir dir="${destdir}" />
 	</target>
 
