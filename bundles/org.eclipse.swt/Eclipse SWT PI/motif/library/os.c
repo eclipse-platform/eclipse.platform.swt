@@ -3178,6 +3178,18 @@ JNIEXPORT void JNICALL OS_NATIVE(XmRenditionFree)
 }
 #endif
 
+#ifndef NO_XmStringBaseline
+JNIEXPORT jint JNICALL OS_NATIVE(XmStringBaseline)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmStringBaseline\n")
+	rc = (jint)XmStringBaseline((XmRenderTable)arg0, (XmString)arg1);
+	NATIVE_EXIT(env, that, "XmStringBaseline\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_XmStringCompare
 JNIEXPORT jboolean JNICALL OS_NATIVE(XmStringCompare)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -3298,6 +3310,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(XmStringEmpty)
 	rc = (jboolean)XmStringEmpty((XmString)arg0);
 	NATIVE_EXIT(env, that, "XmStringEmpty\n")
 	return rc;
+}
+#endif
+
+#ifndef NO_XmStringExtent
+JNIEXPORT void JNICALL OS_NATIVE(XmStringExtent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	NATIVE_ENTER(env, that, "XmStringExtent\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	XmStringExtent((XmRenderTable)arg0, (XmString)arg1, (Dimension *)lparg2, (Dimension *)lparg3);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmStringExtent\n")
 }
 #endif
 

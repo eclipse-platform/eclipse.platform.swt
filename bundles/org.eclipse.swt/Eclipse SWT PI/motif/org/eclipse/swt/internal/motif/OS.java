@@ -837,6 +837,7 @@ public static final synchronized native int XmRenderTableAddRenditions(int oldTa
 public static final synchronized native void XmRenderTableFree(int renderTable);
 public static final synchronized native int XmRenditionCreate(int widget, byte[] tag, int[] argList, int argCount);
 public static final synchronized native void XmRenditionFree(int rendition);
+public static final synchronized native int XmStringBaseline(int fontList, int xmString);
 public static final synchronized native boolean XmStringCompare(int xmString1, int xmString2);
 public static final synchronized native int XmStringComponentCreate(int type, int length, byte[] value);
 public static final synchronized native int XmStringConcat(int xmString1, int xmString2);
@@ -846,6 +847,7 @@ public static final synchronized native void XmStringDraw(int display, int windo
 public static final synchronized native void XmStringDrawImage(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);
 public static final synchronized native void XmStringDrawUnderline(int display, int window, int fontlist, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip, int xmStringUnderline);
 public static final synchronized native boolean XmStringEmpty(int s1);
+public static final synchronized native void XmStringExtent(int fontList, int xmString, int[] width, int[] height);
 public static final synchronized native void XmStringFree(int xmString);
 public static final synchronized native int XmStringGenerate(byte[] text, byte[] tag, int type, byte[] rendition);
 public static final synchronized native int XmStringHeight(int fontList, int xmString);
