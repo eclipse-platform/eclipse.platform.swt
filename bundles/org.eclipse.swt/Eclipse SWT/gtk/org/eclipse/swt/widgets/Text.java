@@ -145,6 +145,20 @@ void createHandle (int index) {
 		OS.gtk_text_view_set_justification (handle, just);
 	}
 	OS.gtk_widget_show (handle);
+	/*
+	* Bug in GTK.  When the parent is realized before the GtkTextView
+	* widget is created, the GTK_TEXT_WINDOW_TEXT window does not have
+	* its event mask properly set to match gtk_widget_add_events().
+	* The fix is to detect this and set the window event mask if
+	* necessary.    
+	*/
+	if ((style & SWT.MULTI) != 0) {
+		int window = OS.gtk_text_view_get_window (handle, OS.GTK_TEXT_WINDOW_TEXT);
+		if (window != 0) {
+			int mask = OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK;
+			OS.gdk_window_set_events (window, OS.gdk_window_get_events (window) | mask);
+		}
+	}
 }
 
 void createWidget (int index) {
@@ -1080,8 +1094,8 @@ public void insert (String string) {
 }
 
 int /*long*/ paintWindow () {
+	if ((style & SWT.SINGLE) != 0) return super.paintWindow ();
 	OS.gtk_widget_realize (handle);
-	if ((style & SWT.SINGLE) != 0)  return OS.GTK_WIDGET_WINDOW (handle);
 	return OS.gtk_text_view_get_window (handle, OS.GTK_TEXT_WINDOW_TEXT);
 }
 
