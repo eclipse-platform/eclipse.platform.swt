@@ -195,39 +195,39 @@ Menu (Decorations parent, int style, int handle) {
 void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	int hwndParent = parent.handle;
-	if (!visible) {
+	if (visible) {
+		int flags = OS.TPM_LEFTBUTTON;
+		if (OS.GetKeyState (OS.VK_LBUTTON) >= 0) flags |= OS.TPM_RIGHTBUTTON;
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.TPM_RIGHTALIGN;
+		if ((parent.style & SWT.MIRRORED) != 0) {
+			flags &= ~OS.TPM_RIGHTALIGN;
+			if ((style & SWT.LEFT_TO_RIGHT) != 0) flags |= OS.TPM_RIGHTALIGN;
+		}
+		int nX = x, nY = y;
+		if (!hasLocation) {
+			int pos = OS.GetMessagePos ();
+			nX = (short) (pos & 0xFFFF);
+			nY = (short) (pos >> 16);
+		}
+		/*
+		* Feature in Windows.  It is legal use TrackPopupMenu()
+		* to display an empty menu as long as menu items are added
+		* inside of WM_INITPOPUPMENU.  If no items are added, then
+		* TrackPopupMenu() fails and does not send an indication
+		* that the menu has been closed.  This is not strictly a
+		* bug but leads to unwanted behavior when application code
+		* assumes that every WM_INITPOPUPMENU will eventually result
+		* in a WM_MENUSELECT, wParam=0xFFFF0000, lParam=0 to indicate
+		* that the menu has been closed.  The fix is to detect the
+		* case when TrackPopupMenu() fails and the number of items in
+		* the menu is zero and issue a fake WM_MENUSELECT.
+		*/
+		boolean success = OS.TrackPopupMenu (handle, flags, nX, nY, 0, hwndParent, null);
+		if (!success && GetMenuItemCount (handle) == 0) {
+			OS.SendMessage (hwndParent, OS.WM_MENUSELECT, 0xFFFF0000, 0);
+		}
+	} else {
 		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
-		return;
-	}
-	int flags = OS.TPM_LEFTBUTTON;
-	if (OS.GetKeyState (OS.VK_LBUTTON) >= 0) flags |= OS.TPM_RIGHTBUTTON;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.TPM_RIGHTALIGN;
-	if ((parent.style & SWT.MIRRORED) != 0) {
-		flags &= ~OS.TPM_RIGHTALIGN;
-		if ((style & SWT.LEFT_TO_RIGHT) != 0) flags |= OS.TPM_RIGHTALIGN;
-	}
-	int nX = x, nY = y;
-	if (!hasLocation) {
-		int pos = OS.GetMessagePos ();
-		nX = (short) (pos & 0xFFFF);
-		nY = (short) (pos >> 16);
-	}
-	/*
-	* Feature in Windows.  It is legal use TrackPopupMenu ()
-	* to display an empty menu as long as menu items are added
-	* inside of WM_INITPOPUPMENU.  If no items are added, then
-	* TrackPopupMenu () fails and does not send an indication
-	* that the menu has been closed.  This is not strictly a
-	* bug but leads to unwanted behavior when application code
-	* assumes that every WM_INITPOPUPMENU will eventually result
-	* in a WM_MENUSELECT, wParam=0xFFFF0000, lParam=0 to indicate
-	* that the menu has been closed.  The fix is to detect the
-	* case when TrackPopupMenu fails and the number of items in
-	* the menu is zero and issue a fake WM_MENUSELECT.
-	*/
-	boolean success = OS.TrackPopupMenu (handle, flags, nX, nY, 0, hwndParent, null);
-	if (!success && GetMenuItemCount (handle) == 0) {
-		OS.SendMessage (hwndParent, OS.WM_MENUSELECT, 0xFFFF0000, 0);
 	}
 }
 
@@ -588,6 +588,59 @@ void fixMenus (Decorations newParent) {
 }
 
 /**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent (or its display if its parent is null),
+ * unless the receiver is a menu or a shell. In this case, the
+ * location is relative to the display.
+ * <p>
+ * Note that the bounds of a menu or menu item are undefined when
+ * the menu is not visible.  This is because most platforms compute
+ * the bounds of a menu dynamically just before it is displayed.
+ * </p>
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+/*public*/ Rectangle getBounds () {
+	checkWidget ();
+	if (OS.IsWinCE) return new Rectangle (0, 0, 0, 0);
+	if ((style & SWT.BAR) != 0) {
+		if (parent.menuBar != this) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+		int hwndShell = parent.handle;
+		MENUBARINFO info = new MENUBARINFO ();
+		info.cbSize = MENUBARINFO.sizeof;
+		if (OS.GetMenuBarInfo (hwndShell, OS.OBJID_MENU, 0, info)) {
+			int width = info.right - info.left;
+			int height = info.bottom - info.top;
+			return new Rectangle (info.left, info.top, width, height);
+		}
+	} else {
+		int count = GetMenuItemCount (handle);
+		if (count != 0) {
+			RECT rect1 = new RECT ();
+			if (OS.GetMenuItemRect (0, handle, 0, rect1)) {
+				RECT rect2 = new RECT ();
+				if (OS.GetMenuItemRect (0, handle, count - 1, rect2)) {
+					int x = rect1.left - 2, y = rect1.top - 2;
+					int width = (rect2.right - rect2.left) + 4;
+					int height = (rect2.bottom - rect1.top) + 4;
+					return new Rectangle (x, y, width, height);
+				}
+			}
+		}
+	}
+	return new Rectangle (0, 0, 0, 0);
+}
+
+/**
  * Returns the default menu item or null if none has
  * been previously set.
  *
@@ -839,51 +892,6 @@ public Menu getParentMenu () {
 public Shell getShell () {
 	checkWidget ();
 	return parent.getShell ();
-}
-
-/**
- * Returns a point describing the receiver's size. The
- * x coordinate of the result is the width of the receiver.
- * The y coordinate of the result is the height of the
- * receiver.
- *
- * @return the receiver's size
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 3.0
- */
-/*public*/ Point getSize () {
-	checkWidget ();
-	if (OS.IsWinCE) return new Point (0, 0);
-	if ((style & SWT.BAR) != 0) {
-		MENUBARINFO info = new MENUBARINFO ();
-		info.cbSize = MENUBARINFO.sizeof;
-		int hwndParent = parent.handle;
-		if (OS.GetMenuBarInfo (hwndParent, OS.OBJID_MENU, 0, info)) {
-			int width = info.right - info.left;
-			int height = info.bottom - info.top;
-			return new Point (width, height);
-		}
-	} else {
-		int count = GetMenuItemCount (handle);
-		if (count != 0) {
-			RECT rect1 = new RECT ();
-			int hwndParent = parent.handle;
-			if (OS.GetMenuItemRect (hwndParent, handle, 0, rect1)) {
-				RECT rect2 = new RECT ();
-				if (OS.GetMenuItemRect (hwndParent, handle, count - 1, rect2)) {
-					int width = (rect2.right - rect2.left) + 4;
-					int height = (rect2.bottom - rect1.top) + 4;
-					return new Point (width, height);
-				}
-			}
-		}
-	}
-	return new Point (0, 0);
 }
 
 /**

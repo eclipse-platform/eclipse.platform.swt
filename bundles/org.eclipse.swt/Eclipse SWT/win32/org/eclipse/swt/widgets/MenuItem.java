@@ -284,6 +284,63 @@ public int getAccelerator () {
 }
 
 /**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent (or its display if its parent is null).
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+/*public*/ Rectangle getBounds () {
+	checkWidget ();
+	if (OS.IsWinCE) return new Rectangle (0, 0, 0, 0);
+	int index = parent.indexOf (this);
+	if (index == -1) return new Rectangle (0, 0, 0, 0);
+	if ((parent.style & SWT.BAR) != 0) {
+		Decorations shell = parent.parent;
+		if (shell.menuBar != parent) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+		int hwndShell = shell.handle;
+		MENUBARINFO info1 = new MENUBARINFO ();
+		info1.cbSize = MENUBARINFO.sizeof;
+		if (!OS.GetMenuBarInfo (hwndShell, OS.OBJID_MENU, 1, info1)) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+		MENUBARINFO info2 = new MENUBARINFO ();
+		info2.cbSize = MENUBARINFO.sizeof;
+		if (!OS.GetMenuBarInfo (hwndShell, OS.OBJID_MENU, index + 1, info2)) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+		int x = info2.left - info1.left;
+		int y = info2.top - info1.top;
+		int width = info1.right - info1.left;
+		int height = info1.bottom - info1.top;
+		return new Rectangle (x, y, width, height);
+	} else {
+		int hMenu = parent.handle;
+		RECT rect1 = new RECT ();
+		if (!OS.GetMenuItemRect (0, hMenu, 0, rect1)) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+		RECT rect2 = new RECT ();
+		if (!OS.GetMenuItemRect (0, hMenu, index, rect2)) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+		int x = rect2.left - rect1.left + 2;
+		int y = rect2.top - rect1.top + 2;
+		int width = rect2.right - rect2.left;
+		int height = rect2.bottom - rect2.top;
+		return new Rectangle (x, y, width, height);
+	}
+}
+
+/**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
  * not selectable from the user interface and draws with an
