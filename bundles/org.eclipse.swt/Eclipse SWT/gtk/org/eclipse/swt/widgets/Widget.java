@@ -1153,7 +1153,7 @@ int /*long*/ timerProc (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int [] selection, int /*long*/ length) {
+int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int [] selection, int length) {
 	return 0;
 }
 

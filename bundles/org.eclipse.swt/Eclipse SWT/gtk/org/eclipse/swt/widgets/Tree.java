@@ -1158,7 +1158,7 @@ public void showItem (TreeItem item) {
 	OS.gtk_tree_path_free (path);
 }
 
-int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int[] selection, int /*long*/ length) {
+int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int[] selection, int length) {
 	if (selection != null) {
 		int [] index = new int [1];
 		OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
