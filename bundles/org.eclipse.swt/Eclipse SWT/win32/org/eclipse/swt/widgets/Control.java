@@ -1655,26 +1655,7 @@ boolean sendMouseEvent (int type, int button, int msg, int wParam, int lParam) {
 	event.button = button;
 	event.x = (short) (lParam & 0xFFFF);
 	event.y = (short) (lParam >> 16);
-	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
-	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
-	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
-	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.COMMAND;
-	if ((wParam & OS.MK_LBUTTON) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((wParam & OS.MK_MBUTTON) != 0) event.stateMask |= SWT.BUTTON2;
-	if ((wParam & OS.MK_RBUTTON) != 0) event.stateMask |= SWT.BUTTON3;
-	switch (type) {
-		case SWT.MouseDown:
-		case SWT.MouseDoubleClick:
-			if (button == 1) event.stateMask &= ~SWT.BUTTON1;
-			if (button == 2) event.stateMask &= ~SWT.BUTTON2;
-			if (button == 3) event.stateMask &= ~SWT.BUTTON3;
-			break;
-		case SWT.MouseUp:
-			if (button == 1) event.stateMask |= SWT.BUTTON1;
-			if (button == 2) event.stateMask |= SWT.BUTTON2;
-			if (button == 3) event.stateMask |= SWT.BUTTON3;
-			break;
-	}
+	setInputState (event, type);
 	return sendMouseEvent (type, msg, wParam, lParam, event);
 }
 
@@ -2078,6 +2059,10 @@ public void setMenu (Menu menu) {
 
 boolean setRadioFocus () {
 	return false;
+}
+
+void setRadioSelection (boolean value) {
+	/* Do nothing */
 }
 
 /**

@@ -386,15 +386,7 @@ void selectRadio () {
 	Control [] children = parent._getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (this != child && child instanceof Button) {
-			Button button = (Button) child;
-			if ((button.style & SWT.RADIO) != 0) {
-				if (button.getSelection ()) {
-					button.setSelection (false);
-					button.postEvent (SWT.Selection);
-				}
-			}
-		}
+		if (this != child) child.setRadioSelection (false);
 	}
 	setSelection (true);
 }
@@ -503,6 +495,13 @@ public void setImage (Image image) {
 boolean setRadioFocus () {
 	if ((style & SWT.RADIO) == 0 || !getSelection ()) return false;
 	return setFocus ();
+}
+
+void setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return;
+	if (getSelection () == value) return;
+	setSelection (value);
+	postEvent (SWT.Selection);
 }
 
 boolean setSavedFocus () {
@@ -661,10 +660,10 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 				setSelection (!getSelection ());
 			} else {
 				if ((style & SWT.RADIO) != 0) {
-					if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-						selectRadio ();
-					} else {
+					if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
 						setSelection (!getSelection ());
+					} else {
+						selectRadio ();
 					}
 				}
 			}
