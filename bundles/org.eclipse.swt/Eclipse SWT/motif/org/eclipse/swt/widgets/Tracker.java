@@ -243,14 +243,17 @@ Rectangle computeBounds () {
 Rectangle [] computeProportions (Rectangle [] rects) {
 	Rectangle [] result = new Rectangle [rects.length];
 	Rectangle bounds = computeBounds ();
-	int boundsWidth = Math.max (1, bounds.width);
-	int boundsHeight = Math.max (1, bounds.height);
 	for (int i = 0; i < rects.length; i++) {
-		result[i] = new Rectangle (
-			(rects[i].x - bounds.x) * 100 / boundsWidth,
-			(rects[i].y - bounds.y) * 100 / boundsHeight,
-			rects[i].width * 100 / boundsWidth,
-			rects[i].height * 100 / boundsHeight);
+		int x = 0, y = 0, width = 0, height = 0;
+		if (bounds.width != 0) {
+			x = (rects [i].x - bounds.x) * 100 / bounds.width;
+			width = rects [i].width * 100 / bounds.width;
+		}
+		if (bounds.height != 0) {
+			y = (rects [i].y - bounds.y) * 100 / bounds.height;
+			height = rects [i].height * 100 / bounds.height;
+		}
+		result [i] = new Rectangle (x, y, width, height);			
 	}
 	return result;
 }
