@@ -1199,7 +1199,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 					end [0] = end [0] + DELIMITER.length ();
 				} else {
 					end [0] = end [0] + 1;
-					if (OS.IsDBLocale) {
+					if (!OS.IsUnicode && OS.IsDBLocale) {
 						int [] newStart = new int [1], newEnd = new int [1];
 						OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 						OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
