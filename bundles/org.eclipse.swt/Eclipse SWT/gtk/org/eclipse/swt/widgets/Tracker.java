@@ -40,8 +40,6 @@ public class Tracker extends Widget {
 	int cursor, lastCursor;
 	boolean tracking, stippled;
 	Rectangle [] rectangles, proportions;
-	int xWindow;
-	int ptrGrabResult;
 	int cursorOrientation = SWT.NONE;
 	final static int STEPSIZE_SMALL = 1;
 	final static int STEPSIZE_LARGE = 9;
@@ -81,7 +79,6 @@ public class Tracker extends Widget {
 public Tracker (Composite parent, int style) {
 	super (parent, checkStyle(style));
 	this.parent = parent;
-	xWindow = calculateWindow ();
 }
 
 /**
@@ -126,7 +123,6 @@ public Tracker (Display display, int style) {
 	}
 	this.style = checkStyle (style);
 	this.display = display;
-	xWindow = calculateWindow();
 }
 
 /**
@@ -168,21 +164,6 @@ public void addControlListener(ControlListener listener) {
 public void close () {
 	checkWidget();
 	tracking = false;
-}
-
-/*
- * Figure which GdkWindow we'll draw on.
- * That's normally the root X window, or the parent's GdkWindow if we have a parent.
- */
-int calculateWindow() {
-	int answer;
-	if (parent == null) {
-		answer = OS.GDK_ROOT_PARENT();
-	} else {
-		answer = OS.GTK_WIDGET_WINDOW(parent.paintHandle());
-	} 
-	if (answer==0) error(SWT.ERROR_UNSPECIFIED);
-	return answer;
 }
 
 static int checkStyle (int style) {
@@ -238,28 +219,25 @@ void drawRectangles () {
 		parent.getShell ().update ();
 	} else {
 		display.update ();
-	}
-	
-	int gc = OS.gdk_gc_new(xWindow);
-	if (gc==0) error(SWT.ERROR_UNSPECIFIED);
-
-	/* White foreground */
-	int colormap = OS.gdk_colormap_get_system();
-	GdkColor color = new GdkColor();
-	OS.gdk_color_white(colormap, color);
-	OS.gdk_gc_set_foreground(gc, color);
-
-	/* Draw on top of inferior widgets */
-	OS.gdk_gc_set_subwindow(gc, OS.GDK_INCLUDE_INFERIORS);
-	
-	/* XOR */
-	OS.gdk_gc_set_function(gc, OS.GDK_XOR);
-	
+	}	
+	int window = OS.GDK_ROOT_PARENT ();
+	if (parent != null) {
+		window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
+	} 
+	if (window == 0) return;
+	int gc = OS.gdk_gc_new (window);
+	if (gc == 0) return;
+	int colormap = OS.gdk_colormap_get_system ();
+	GdkColor color = new GdkColor ();
+	OS.gdk_color_white (colormap, color);
+	OS.gdk_gc_set_foreground (gc, color);
+	OS.gdk_gc_set_subwindow (gc, OS.GDK_INCLUDE_INFERIORS);
+	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
 	for (int i=0; i<rectangles.length; i++) {
 		Rectangle rect = rectangles [i];
-		OS.gdk_draw_rectangle(xWindow, gc, 0, rect.x, rect.y, rect.width, rect.height);
+		OS.gdk_draw_rectangle (window, gc, 0, rect.x, rect.y, rect.width, rect.height);
 	}
-	OS.g_object_unref(gc);
+	OS.g_object_unref (gc);
 }
 
 /**
@@ -294,17 +272,6 @@ public boolean getStippled () {
 	return stippled;
 }
 
-void grab() {
-	ptrGrabResult = OS.gdk_pointer_grab(
-		xWindow,
-		false,
-		OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK,
-		xWindow,
-		cursor,
-		OS.GDK_CURRENT_TIME);
-	lastCursor = cursor;
-}
-
 void moveRectangles (int xChange, int yChange) {
 	if (xChange < 0 && ((style & SWT.LEFT) == 0)) return;
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) return;
@@ -331,19 +298,21 @@ void moveRectangles (int xChange, int yChange) {
 public boolean open () {
 	checkWidget();
 	if (rectangles == null) return false;
-	boolean cancelled=false;
+	int window = OS.GDK_ROOT_PARENT ();
+	if (parent != null) {
+		window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
+	} 
+	if (window == 0) return false;
+	boolean cancelled = false;
 	tracking = true;
 	drawRectangles ();
+	int [] oldX = new int [1], oldY = new int [1], state = new int [1];
+	OS.gdk_window_get_pointer (window, oldX, oldY, state);
 
-	int[] newX = new int[1];
-	int[] newY = new int[1];
-	int[] oldX = new int[1];
-	int[] oldY = new int[1];
-	OS.gdk_window_get_pointer(xWindow, oldX,oldY, null);
-	grab();
-	
-	// if exactly one of UP/DOWN is specified as a style then set the cursor
-	// orientation accordingly (the same is done for LEFT/RIGHT styles below)
+	/*
+	* if exactly one of UP/DOWN is specified as a style then set the cursor
+	* orientation accordingly (the same is done for LEFT/RIGHT styles below)
+	*/
 	int vStyle = style & (SWT.UP | SWT.DOWN);
 	if (vStyle == SWT.UP || vStyle == SWT.DOWN) {
 		cursorOrientation |= vStyle;
@@ -353,34 +322,56 @@ public boolean open () {
 		cursorOrientation |= hStyle;
 	}
 
+	Point cursorPos;
+	int mask = OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK; 
+	boolean mouseDown = (state [0] & mask) != 0;
+	/*
+	 * The following is intentionally commented.  Since gtk does not currently
+	 * support pointer warping, the resize cursor cannot be adjusted.  If this
+	 * capability is added in the future then the following should be uncommented,
+	 * and the #adjustResizeCursor method can be copied from another platform.
+	 */
+//	if (!mouseDown) {
+//		if ((style & SWT.RESIZE) != 0) {
+//			cursorPos = adjustResizeCursor (xDisplay, xWindow);
+//		} else {
+//			cursorPos = adjustMoveCursor (xDisplay, xWindow);
+//		}
+//		oldX [0] = cursorPos.x;  oldY [0] = cursorPos.y;
+//	}
+	
+	GdkEvent gdkEvent = new GdkEvent();
+	GdkEventKey keyEvent = new GdkEventKey ();
+	int [] newX = new int [1], newY = new int [1];
+	int grabMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK;
+	int ptrGrabResult = OS.gdk_pointer_grab (window, false, grabMask, window, cursor, OS.GDK_CURRENT_TIME);
+	lastCursor = cursor;
+
 	/*
 	 *  Tracker behaves like a Dialog with its own OS event loop.
 	 */
 	while (tracking) {
 		if (parent != null && parent.isDisposed ()) break;
-		// wait for an event		
 		int eventPtr;
 		while (true) {
-			eventPtr = OS.gdk_event_get();
+			eventPtr = OS.gdk_event_get ();
 			if (eventPtr != 0) {
 				break;
-			} 
-			else {
+			} else {
 				try { Thread.sleep(50); } catch (Exception ex) {}
 			}
 		}
-
-		GdkEvent osEvent = new GdkEvent();
-		OS.memmove(osEvent, eventPtr, GdkEvent.sizeof);
-		int eventType = osEvent.type;
+		OS.memmove (gdkEvent, eventPtr, GdkEvent.sizeof);
+		int eventType = gdkEvent.type;
 		switch (eventType) {
-			case OS.GDK_BUTTON_RELEASE:
 			case OS.GDK_MOTION_NOTIFY:
 				if (cursor != lastCursor) {
-					ungrab();
-					grab();
+					if (ptrGrabResult == OS.GDK_GRAB_SUCCESS) OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
+					ptrGrabResult = OS.gdk_pointer_grab (window, false, grabMask, window, cursor, OS.GDK_CURRENT_TIME);
 				}
-				OS.gdk_window_get_pointer(xWindow, newX,newY, null);
+				// fall through
+			case OS.GDK_BUTTON_RELEASE:
+				OS.gdk_window_get_pointer (window, newX,newY, null);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
 					drawRectangles ();
 					Event event = new Event ();
@@ -408,20 +399,19 @@ public boolean open () {
 					 * that the move failed.
 					 */
 					if (isDisposed ()) {
-						ungrab ();
-						return false;
+						cancelled = true;
+						break;
 					}
 					drawRectangles ();
 					oldX [0] = newX [0];  oldY [0] = newY [0];
 				}
-				tracking = (eventType != OS.GDK_BUTTON_RELEASE);
+				tracking = eventType != OS.GDK_BUTTON_RELEASE;
 				break;
 			case OS.GDK_KEY_PRESS:
-				GdkEventKey gdkEvent = new GdkEventKey ();
-				OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-				int stepSize = ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
+				OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
+				int stepSize = ((keyEvent.state & OS.GDK_CONTROL_MASK) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 				int xChange = 0, yChange = 0;	
-				switch (gdkEvent.keyval) {
+				switch (keyEvent.keyval) {
 					case OS.GDK_Escape: 
 						cancelled = true;
 						// fallthrough
@@ -476,17 +466,18 @@ public boolean open () {
 					 * that the move failed.
 					 */
 					if (isDisposed ()) {
-						ungrab ();
-						return false;
+						cancelled = true;
+						break;
 					}
 					drawRectangles ();
 				}
 				break;
-			}  // switch
-			OS.gdk_event_free(eventPtr);
-		}  // while
-	drawRectangles();
-	ungrab();
+			default:
+		}
+		OS.gdk_event_free (eventPtr);
+	}
+	if (!isDisposed ()) drawRectangles ();
+	if (ptrGrabResult == OS.GDK_GRAB_SUCCESS) OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
 	return !cancelled;
 }
 
@@ -647,12 +638,6 @@ public void setRectangles (Rectangle [] rectangles) {
 public void setStippled (boolean stippled) {
 	checkWidget();
 	this.stippled = stippled;
-}
-
-void ungrab() {
-	if (ptrGrabResult == OS.GDK_GRAB_SUCCESS) {
-		OS.gdk_pointer_ungrab(OS.GDK_CURRENT_TIME);
-	}
 }
 
 }
