@@ -108,7 +108,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				wrap= true;
 				bounds[1]= (short) wHint;	// If we are wrapping text, calculate the height based on wHint.
 			}
-			int sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(text));
+			String string= MacUtil.removeMnemonics(text);
+			char [] chars= new char [string.length()];
+			string.getChars(0, chars.length, chars, 0);
+			int sHandle= OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
 			
 			GC gc= new GC(this);
 			gc.carbon_installFont();
