@@ -1811,7 +1811,11 @@ void onMouse(Event event) {
 			}
 			if (chevronRect.contains(x, y)) {
 				if (event.button != 1) return;
-				chevronImageState = SELECTED;
+				if (chevronImageState != HOT) {
+					chevronImageState = HOT;
+				} else {
+					chevronImageState = SELECTED;
+				}
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 				update();
 				return;
@@ -1915,8 +1919,6 @@ void onMouse(Event event) {
 			if (event.button != 1) return;
 			if (chevronRect.contains(x, y)) {
 				boolean selected = chevronImageState == SELECTED;
-				chevronImageState = HOT;
-				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 				if (!selected) return;
 				CTabFolderEvent e = new CTabFolderEvent(this);
 				e.widget = this;
@@ -1932,6 +1934,8 @@ void onMouse(Event event) {
 				if (e.doit && !isDisposed()) {
 					showList(chevronRect);
 				}
+				chevronImageState = HOT;
+				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 				return;
 			}
 			if (minRect.contains(x, y)) {
