@@ -13,7 +13,7 @@ APPVER=5.0
 !include <win32.mak>
 
 maj_ver=2
-min_ver=010
+min_ver=10
 bld_num=0
 
 pgm_ver_str="SWT $(maj_ver).0$(min_ver) for Windows"
@@ -24,7 +24,7 @@ copyright = "Copyright (C) IBM Corporation 1999, 2000.  All rights reserved."
 
 DLLPREFIX=swt
 OSPREFIX=win32
-DLLNAME=$(DLLPREFIX)-$(OSPREFIX)-$(maj_ver)$(min_ver).dll
+DLLNAME=$(DLLPREFIX)-$(OSPREFIX)-$(maj_ver)0$(min_ver).dll
 
 LIBNAME=swt# declaration
 
