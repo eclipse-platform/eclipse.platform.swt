@@ -1013,16 +1013,15 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 		String newText = verifyText (oldText, pos [0], pos [0]); //WRONG POSITION
 		if (newText == null) {
 			OS.g_signal_stop_emission_by_name (handle, OS.insert_text);
-			return 0;
-		}
-		if (newText != oldText) {
-			byte [] buffer3 = Converter.wcsToMbcs (null, newText, false);
-			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			OS.gtk_editable_insert_text (handle, buffer3, buffer3.length, pos);
-			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			OS.g_signal_stop_emission_by_name (handle, OS.insert_text);
-			OS.memmove (position, pos, 4);
-			return 0;
+		} else {
+			if (newText != oldText) {
+				byte [] buffer3 = Converter.wcsToMbcs (null, newText, false);
+				OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+				OS.gtk_editable_insert_text (handle, buffer3, buffer3.length, pos);
+				OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+				OS.g_signal_stop_emission_by_name (handle, OS.insert_text);
+				OS.memmove (position, pos, 4);
+			}
 		}
 	} else {
 		byte [] iter = new byte [ITER_SIZEOF];
@@ -1034,15 +1033,14 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 		String newText = verifyText (oldText, start, start);
 		if (newText == null) {
 			OS.g_signal_stop_emission_by_name (bufferHandle, OS.insert_text);
-			return 0;
-		}
-		if (newText != oldText) {
-			byte [] buffer1 = Converter.wcsToMbcs (null, newText, false);
-			OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			OS.gtk_text_buffer_insert (bufferHandle, new_text, buffer1, buffer1.length);
-			OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			OS.g_signal_stop_emission_by_name (bufferHandle, OS.insert_text);
-			return 0;
+		} else {
+			if (newText != oldText) {
+				byte [] buffer1 = Converter.wcsToMbcs (null, newText, false);
+				OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+				OS.gtk_text_buffer_insert (bufferHandle, new_text, buffer1, buffer1.length);
+				OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+				OS.g_signal_stop_emission_by_name (bufferHandle, OS.insert_text);
+			}
 		}
 	}
 	return 0;
