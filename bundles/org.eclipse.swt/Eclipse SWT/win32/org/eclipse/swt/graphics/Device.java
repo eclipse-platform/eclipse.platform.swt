@@ -51,6 +51,9 @@ public abstract class Device implements Drawable {
 		} catch (Throwable e) {}
 	}	
 
+/*
+* TEMPORARY CODE.
+*/
 static Device getDevice () {
 	if (DeviceFinder != null) DeviceFinder.run();
 	Device device = CurrentDevice;
