@@ -1,0 +1,2 @@
+build.vaj.Eclipse\ SWT\ Custom\ Widgets=Eclipse SWT Custom Widgets/common
+build.includes=plugin.xml, plugin.jars

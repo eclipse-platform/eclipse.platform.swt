@@ -1,0 +1,5 @@
+build.vaj.Eclipse\ SWT=Eclipse SWT/common,Eclipse SWT/motif
+build.vaj.Eclipse\ SWT\ Drag\ and\ Drop=Eclipse SWT Drag and Drop/common,Eclipse SWT Drag and Drop/motif
+build.vaj.Eclipse\ SWT\ Printing=Eclipse SWT Printing/common,Eclipse SWT Printing/motif
+build.vaj.Eclipse\ SWT\ Program=Eclipse SWT Program/common,Eclipse SWT Program/motif
+build.includes=ws/motif
