@@ -41,7 +41,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(fd_1set_1sizeof)
 static int RESOURCES_START;
 static int RESOURCES_END;
 
-#ifndef NO_fd_1set_1sizeof
+#ifndef NO_setResourceMem
 JNIEXPORT void JNICALL OS_NATIVE(setResourceMem)
   (JNIEnv *env, jclass that, jint start, jint end)
 {
