@@ -147,6 +147,7 @@ public class StyledText extends Canvas {
 	Image rightCaretBitmap = null;
 	int caretDirection = SWT.NULL;
 	boolean advancing = true;
+	Caret defaultCaret = null;
 
 	final static boolean IS_CARBON;
 	final static boolean DOUBLE_BUFFERED;	
@@ -1607,14 +1608,19 @@ public StyledText(Composite parent, int style) {
 	else {
 	    lineCache = new ContentWidthCache(this, content);
 	}	
-	if (isBidi) createCaretBitmaps();
-	new Caret(this, SWT.NULL);
+	defaultCaret = new Caret(this, SWT.NULL);
 	if (isBidi) {
+		createCaretBitmaps();
 		Runnable runnable = new Runnable() {
 			public void run() {
 				int direction = BidiUtil.getKeyboardLanguage() == BidiUtil.KEYBOARD_BIDI ? SWT.RIGHT : SWT.LEFT;
 				if (direction == caretDirection) return;
-				int newCaretX = direction == SWT.LEFT ? columnX + getCaretWidth() - 1 : columnX;
+				if (getCaret() != defaultCaret) return;
+				int lineIndex = getCaretLine();
+				String line = content.getLine(lineIndex);
+				int lineOffset = content.getOffsetAtLine(lineIndex);
+				int offsetInLine = caretOffset - lineOffset;
+				int newCaretX = getXAtOffset(line, lineIndex, offsetInLine);
 				setCaretLocation(newCaretX, getCaretLine(), direction);
 			}
 		};
@@ -2288,11 +2294,10 @@ void createKeyBindings() {
  */
 void createCaretBitmaps() {
 	int caretWidth = BIDI_CARET_WIDTH;
-	Display display = getDisplay();	
+	Display display = getDisplay();
 	if (leftCaretBitmap != null) {
-		Caret caret = getCaret();
-		if (caret != null && leftCaretBitmap.equals(caret.getImage())) {
-			caret.setImage(null);
+		if (defaultCaret != null && leftCaretBitmap.equals(defaultCaret.getImage())) {
+			defaultCaret.setImage(null);
 		}
 		leftCaretBitmap.dispose();
 	}
@@ -2307,9 +2312,8 @@ void createCaretBitmaps() {
 	gc.dispose();	
 	
 	if (rightCaretBitmap != null) {
-		Caret caret = getCaret();
-		if (caret != null && rightCaretBitmap.equals(caret.getImage())) {
-			caret.setImage(null);
+		if (defaultCaret != null && rightCaretBitmap.equals(defaultCaret.getImage())) {
+			defaultCaret.setImage(null);
 		}
 		rightCaretBitmap.dispose();
 	}
@@ -4857,7 +4861,11 @@ void handleDispose(Event event) {
 	if (content != null) {
 		content.removeTextChangeListener(textChangeListener);
 		content = null;
-	}	
+	}
+	if (defaultCaret != null) {
+		defaultCaret.dispose();
+		defaultCaret = null;
+	}
 	if (leftCaretBitmap != null) {
 		leftCaretBitmap.dispose();
 		leftCaretBitmap = null;
@@ -6474,33 +6482,18 @@ public void setBackground(Color color) {
 	redraw();
 }
 /**
- * Set the caret to indicate the current typing direction.
+ * Set the image of the caret
  */
 void setCaretImage(int direction) {
-	Caret caret = getCaret();
-	
-	if (caret == null || direction == caretDirection) {
-		return;
-	}
-	boolean updateImage = true;
-	Image caretImage = caret.getImage();
-	if (caretImage != null) {
-		updateImage = caretImage.equals(leftCaretBitmap) || caretImage.equals(rightCaretBitmap);
-	}
-	caretDirection = direction;
-	if (direction == SWT.DEFAULT) {
-		if (updateImage) caret.setImage(null);
-		caret.setSize(caret.getSize().x, lineHeight);
-	}
-	else
-	if (caretDirection == SWT.LEFT) {
-		if (updateImage) caret.setImage(leftCaretBitmap);
-		BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_NON_BIDI);
-	}
-	else
-	if (caretDirection == SWT.RIGHT) {
-		if (updateImage) caret.setImage(rightCaretBitmap);
-		BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_BIDI);
+	if (defaultCaret != null) {
+		if (direction == SWT.DEFAULT) {
+			defaultCaret.setImage(null);
+			defaultCaret.setSize(defaultCaret.getSize().x, lineHeight);
+		} else if (caretDirection == SWT.LEFT) {
+			defaultCaret.setImage(leftCaretBitmap);
+		} else if (caretDirection == SWT.RIGHT) {
+			defaultCaret.setImage(rightCaretBitmap);
+		}
 	}
 }
 /**
@@ -6523,16 +6516,25 @@ public void setBidiColoring(boolean mode) {
 }
 void setCaretLocation(int newCaretX, int line, int direction) {
 	Caret caret = getCaret();
-	if (direction == SWT.RIGHT) {
-		newCaretX -= (getCaretWidth() - 1);
+	if (caret != null) {
+		boolean updateImage = caret == defaultCaret;
+		if (updateImage && direction == SWT.RIGHT) {
+			newCaretX -= (caret.getSize().x - 1);
+		}
+		int newCaretY = line * lineHeight - verticalScrollOffset + topMargin;
+		caret.setLocation(newCaretX, newCaretY);
+		getAccessible().textCaretMoved(getCaretOffset());
+		if (direction != caretDirection) {
+			caretDirection = direction;
+			if (updateImage) setCaretImage(direction);
+			if (caretDirection == SWT.LEFT) {
+				BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_NON_BIDI);
+			} else if (caretDirection == SWT.RIGHT) {
+				BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_BIDI);
+			}
+		}
 	}
 	columnX = newCaretX;
-	if (caret != null) {
-		int newCaretY = line * lineHeight - verticalScrollOffset + topMargin;
-		caret.setLocation(columnX, newCaretY);
-		getAccessible().textCaretMoved(getCaretOffset());
-	}
-	setCaretImage(direction);
 }
 /**
  * Moves the Caret to the current caret offset.
