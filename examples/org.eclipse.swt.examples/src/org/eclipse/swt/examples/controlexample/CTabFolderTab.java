@@ -145,9 +145,9 @@ class CTabFolderTab extends Tab {
 		for (int i = 0; i < CTabItems1.length; i++) {
 			CTabItem item = new CTabItem(tabFolder1, SWT.NONE);
 			item.setText(CTabItems1[i]);
-			Label label = new Label(tabFolder1, SWT.NONE);
-			label.setText(ControlExample.getResourceString("CTabItem_content") + ": " + i);
-			item.setControl(label);
+			Text text = new Text(tabFolder1, SWT.NONE);
+			text.setText(ControlExample.getResourceString("CTabItem_content") + ": " + i);
+			item.setControl(text);
 		}
 		tabFolder1.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
