@@ -90,10 +90,16 @@ import org.eclipse.swt.internal.motif.*;
  */
 public class DragSource extends Widget {
 
-	private Callback convertProc;
-	private Callback dragDropFinish;
-	private Callback dropFinish;
-
+	static private Callback ConvertProc;
+	static private Callback DragDropFinish;
+	static private Callback DropFinish;
+	static {
+		ConvertProc = new Callback(DragSource.class, "ConvertProcCallback", 10);
+		DragDropFinish = new Callback(DragSource.class, "DragDropFinishCallback", 3);
+		DropFinish = new Callback(DragSource.class, "DropFinishCallback", 3);
+	}
+	static final String DRAGSOURCEID = "DragSource";
+	
 	// info for registering as a drag source
 	private Control control;
 	private Listener controlListener;
@@ -115,6 +121,8 @@ public class DragSource extends Widget {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_INIT_DRAG - unable to initiate drag source</li>
  * </ul>
  *
  * @see DragSource#dispose
@@ -126,6 +134,11 @@ public class DragSource extends Widget {
  */
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
+	if (ConvertProc == null || DragDropFinish == null || DropFinish == null)
+		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
+	if (control.getData(DRAGSOURCEID) != null)
+		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
+	control.setData(DRAGSOURCEID, this);
 	this.control = control;
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -148,6 +161,26 @@ public DragSource(Control control, int style) {
 			onDispose();
 		}
 	});
+}
+static DragSource FindDragSource(int handle) {
+	Display display = Display.findDisplay(Thread.currentThread());
+	if (display == null || display.isDisposed()) return null;
+	return (DragSource)display.getData(Integer.toString(handle));
+}
+private static int ConvertProcCallback(int widget, int pSelection, int pTarget, int pType_return, int ppValue_return, int pLength_return, int pFormat_return, int max_length, int client_data, int request_id) {
+	DragSource source = FindDragSource(widget);
+	if (source == null) return 0;
+	return source.convertProcCallback(widget, pSelection, pTarget, pType_return, ppValue_return, pLength_return, pFormat_return, max_length, client_data, request_id);
+}
+private static int DragDropFinishCallback(int widget, int client_data, int call_data) {
+	DragSource source = FindDragSource(widget);
+	if (source == null) return 0;
+	return source.dragDropFinishCallback(widget, client_data, call_data);
+}
+private static int DropFinishCallback(int widget, int client_data, int call_data) {
+	DragSource source = FindDragSource(widget);
+	if (source == null) return 0;
+	return source.dropFinishCallback(widget, client_data, call_data);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -191,15 +224,6 @@ static int checkStyle (int style) {
 	return style;
 }
 private int convertProcCallback(int widget, int pSelection, int pTarget, int pType_return, int ppValue_return, int pLength_return, int pFormat_return, int max_length, int client_data, int request_id) {
-	/*
-		pSelection - atom specifying which property is being used to transfer the selection (only support _MOTIF_DROP)
-		pTarget    -  atom specifying the type in which the requestor wants the information
-		pType_return   - [out] type atom that data has been converted to (usually the same as pTarget)
-		ppValue_return  - [out] set to a pointer to a block of memory
-		pLength_return - [out] number of elements in the array
-		pFormat_return - [out] size in bits of each element in the array
-		
-	*/
 	if (pSelection == 0 ) return 0;
 		
 	// is this a drop?
@@ -325,15 +349,11 @@ private void drag() {
 	int pExportTargets = OS.XtMalloc(dataTypes.length * 4);
 	OS.memmove(pExportTargets, dataTypes, dataTypes.length * 4);
 
-	if (convertProc == null)
-		convertProc = new Callback(this, "convertProcCallback", 10);
-	if (convertProc == null) return;
-
 	int[] args = new int[]{
 		OS.XmNexportTargets,		pExportTargets,
 		OS.XmNnumExportTargets,		dataTypes.length,
 		OS.XmNdragOperations,		opToOsOp(getStyle()),
-		OS.XmNconvertProc,			convertProc.getAddress(),
+		OS.XmNconvertProc,			ConvertProc.getAddress(),
 		OS.XmNoperationCursorIcon,	0,
 		OS.XmNsourceCursorIcon,		0,
 		OS.XmNstateCursorIcon,		0,
@@ -353,14 +373,12 @@ private void drag() {
 	if (dragContext == 0) return;
 
 	// register a call back to clean up when drop is done (optional)
-	if (dragDropFinish == null)
-		dragDropFinish = new Callback(this, "dragDropFinishCallback", 3);
-	OS.XtAddCallback(dragContext, OS.XmNdragDropFinishCallback, dragDropFinish.getAddress(), 0);
+	OS.XtAddCallback(dragContext, OS.XmNdragDropFinishCallback, DragDropFinish.getAddress(), 0);
 
 	// register a call back to tell user what happened (optional)
-	if (dropFinish == null)
-		dropFinish = new Callback(this, "dropFinishCallback", 3);
-	OS.XtAddCallback(dragContext, OS.XmNdropFinishCallback, dropFinish.getAddress(), 0);
+	OS.XtAddCallback(dragContext, OS.XmNdropFinishCallback, DropFinish.getAddress(), 0);
+	
+	display.setData(Integer.toString(dragContext), this);
 	return;
 }
 
@@ -378,19 +396,7 @@ private int dragDropFinishCallback(int widget, int client_data, int call_data) {
 	//OS.XtFree(pSourceIcon);
 
 	dragContext = 0;
-
-	if (convertProc != null)
-		convertProc.dispose();
-	convertProc = null;
-
-	if (dragDropFinish !=  null)
-		dragDropFinish.dispose();
-	dragDropFinish = null;
-
-	if (dropFinish !=  null)
-		dropFinish.dispose();
-	dropFinish = null;
-
+	getDisplay().setData(Integer.toString(dragContext), null);
 	return 0;
 }
 private int dropFinishCallback(int widget, int client_data, int call_data) {
@@ -434,7 +440,6 @@ public Control getControl () {
 	return control;
 }
 public Display getDisplay () {
-
 	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	return control.getDisplay ();
 }
@@ -447,24 +452,13 @@ public Transfer[] getTransfer(){
 	return transferAgents;
 }
 private void onDispose() {
-	if (convertProc != null)
-		convertProc.dispose();
-	convertProc = null;
-
-	if (dragDropFinish !=  null)
-		dragDropFinish.dispose();
-	dragDropFinish = null;
-
-	if (dropFinish !=  null)
-		dropFinish.dispose();
-	dropFinish = null;
-	
-	if (control != null && controlListener != null) {
+	if (controlListener != null) {
 		control.removeListener(SWT.Dispose, controlListener);
 		control.removeListener(SWT.DragDetect, controlListener);
 	}
-	control = null;
 	controlListener = null;
+	control.setData(DRAGSOURCEID, null);
+	control = null;
 	transferAgents = null;	
 }
 private byte opToOsOp(int operation){
