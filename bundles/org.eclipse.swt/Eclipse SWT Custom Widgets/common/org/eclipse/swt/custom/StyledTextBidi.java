@@ -13,13 +13,13 @@ import java.util.Vector;
 /*
  */
 class StyledTextBidi {
-	GC gc;
-	int tabWidth;
-	int[] renderPositions;
-	int[] order;
-	int[] dx;
-	byte[] classBuffer;
-	byte[] glyphBuffer;
+	private GC gc;
+	private int tabWidth;
+	private int[] renderPositions;
+	private int[] order;
+	private int[] dx;
+	private byte[] classBuffer;
+	private byte[] glyphBuffer;
 	
 	class DirectionRun {
 		int logicalStart;
@@ -90,10 +90,10 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
 		calculateRenderPositions();
 	}
 }
-public static void addLanguageListener (int hwnd, Runnable runnable) {
+static void addLanguageListener (int hwnd, Runnable runnable) {
 	BidiUtil.addLanguageListener(hwnd, runnable);
 }
-void adjustTabStops(String text) {
+private void adjustTabStops(String text) {
 	int tabIndex = text.indexOf('\t', 0);
 	int logicalIndex = 0;
 	int x = StyledText.XINSET;
@@ -108,7 +108,7 @@ void adjustTabStops(String text) {
 		tabIndex = text.indexOf('\t', tabIndex + 1);
 	}
 }
-void calculateRenderPositions() {
+private void calculateRenderPositions() {
 	renderPositions = new int[dx.length];	
 	renderPositions[0] = StyledText.XINSET;
 	for (int i = 0; i < dx.length - 1; i++) {
@@ -122,7 +122,7 @@ void calculateRenderPositions() {
  * @param xOffset x location of the line start
  * @param yOffset y location of the line start
  */
-public int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) {
+int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) {
 	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
 	int endOffset = logicalStart + length;
 	int stopX;
@@ -157,7 +157,7 @@ public int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) 
 /**
  * 
  */
-void drawGlyphs(int visualStart, int length, int x, int y) {
+private void drawGlyphs(int visualStart, int length, int x, int y) {
 	byte[] renderBuffer = new byte[length * 2];
 	int[] renderDx = new int[length];
 
@@ -207,7 +207,7 @@ public boolean equals(Object object) {
 	}
 	return true;
 }
-public void fillBackground(int logicalStart, int length, int xOffset, int yOffset, int height) {
+void fillBackground(int logicalStart, int length, int xOffset, int yOffset, int height) {
 	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
 
 	if (logicalStart + length > getTextLength()) {
@@ -221,7 +221,7 @@ public void fillBackground(int logicalStart, int length, int xOffset, int yOffse
 		gc.fillRectangle(xOffset + startX, yOffset, run.getRenderStopX() - startX, height);	
 	}				
 }
-public int[] getCaretOffsetAndDirectionAtX(int x) {
+int[] getCaretOffsetAndDirectionAtX(int x) {
 	int lineLength = getTextLength();
 	int low = -1;
 	int high = lineLength;
@@ -254,7 +254,7 @@ public int[] getCaretOffsetAndDirectionAtX(int x) {
 	if (visualIndex == 0) {
 		if (isRightToLeft(offset)) {
 			if (visualLeft) {
-				offset = getLigatureOffset(offset);
+				offset = getLigatureEndOffset(offset);
 				offset = offset + 1;
 				direction = ST.COLUMN_NEXT;
 			}
@@ -278,7 +278,7 @@ public int[] getCaretOffsetAndDirectionAtX(int x) {
 	if (visualIndex == renderPositions.length - 1) {
 		if (isRightToLeft(offset)) {
 			if (visualLeft) {
-				offset = getLigatureOffset(offset);
+				offset = getLigatureEndOffset(offset);
 				offset = offset + 1;
 				direction = ST.COLUMN_NEXT;
 			}
@@ -302,7 +302,7 @@ public int[] getCaretOffsetAndDirectionAtX(int x) {
 
 	if (isRightToLeft(offset)) {
 		if (visualLeft) {
-			offset = getLigatureOffset(offset);
+			offset = getLigatureEndOffset(offset);
 			offset = offset + 1;
 			direction = ST.COLUMN_NEXT;
 		}
@@ -323,10 +323,10 @@ public int[] getCaretOffsetAndDirectionAtX(int x) {
 	}
 	return new int[] {offset, direction};		
 }
-public int getCaretPosition(int logicalOffset) {
+int getCaretPosition(int logicalOffset) {
 	return getCaretPosition(logicalOffset, ST.COLUMN_NEXT);
 }
-public int getCaretPosition(int logicalOffset, int direction) {
+int getCaretPosition(int logicalOffset, int direction) {
 	// moving to character at logicalOffset
 	if (getTextLength() == 0) {
 		return StyledText.XINSET;
@@ -393,7 +393,7 @@ public int getCaretPosition(int logicalOffset, int direction) {
 	return caretX;
 }
 
-Vector getDirectionRuns(int logicalStart, int length) {
+private Vector getDirectionRuns(int logicalStart, int length) {
 	Vector directionRuns = new Vector();
 	int logicalEnd = logicalStart + length - 1;
 	int segmentLogicalStart = logicalStart;
@@ -420,7 +420,7 @@ Vector getDirectionRuns(int logicalStart, int length) {
 /**
  *  Answer SWT.LEFT or SWT.RIGHT.
  */
-public static int getKeyboardLanguageDirection() {
+static int getKeyboardLanguageDirection() {
 	int language = BidiUtil.getKeyboardLanguage();
 	if (language == BidiUtil.KEYBOARD_HEBREW) {
 		return SWT.RIGHT;
@@ -430,8 +430,8 @@ public static int getKeyboardLanguageDirection() {
 	}
 	return SWT.LEFT;
 }
-int getLigatureOffset(int offset) {
-	// should call BidiText to see if font has ligatures...
+int getLigatureEndOffset(int offset) {
+	if (!isLigated(gc)) return offset;
 	int newOffset = offset;
 	int i = offset + 1;
 	while (i<order.length && (order[i] == order[offset])) {
@@ -440,7 +440,17 @@ int getLigatureOffset(int offset) {
 	}
 	return newOffset;
 }
-int getLogicalOffset(int visualOffset) {
+int getLigatureStartOffset(int offset) {
+	if (!isLigated(gc)) return offset;
+	int newOffset = offset;
+	int i = offset - 1;
+	while (i>=0 && (order[i] == order[offset])) {
+		newOffset = i;
+		i--;
+	}
+	return newOffset;
+}
+private int getLogicalOffset(int visualOffset) {
 	int logicalOffset = 0;
 	
 	while (logicalOffset < order.length && order[logicalOffset] != visualOffset) {
@@ -448,7 +458,7 @@ int getLogicalOffset(int visualOffset) {
 	}
 	return logicalOffset;
 }
-public int getOffsetAtX(int x) {
+int getOffsetAtX(int x) {
 	int lineLength = getTextLength();
 	int low = -1;
 	int high = lineLength;
@@ -478,7 +488,7 @@ public int getOffsetAtX(int x) {
 	}
 	return getLogicalOffset(high);
 }
-int[] getRenderIndexesFor(int start, int length) {
+private int[] getRenderIndexesFor(int start, int length) {
 	int[] positions = new int[length];
 	int end = start + length;
 	
@@ -487,10 +497,10 @@ int[] getRenderIndexesFor(int start, int length) {
 	}		
 	return positions;
 }
-int getTextLength() {
+private int getTextLength() {
 	return order.length;
 }
-public int getTextWidth() {
+int getTextWidth() {
 	int width = 0;
 	
 	if (getTextLength() > 0) {
@@ -501,7 +511,14 @@ public int getTextWidth() {
 /**
  * 
  */
-public boolean isRightToLeft(int logicalIndex) {
+static boolean isLigated(GC gc) {
+	// should call BidiUtil
+	return true;
+}
+/**
+ * 
+ */
+boolean isRightToLeft(int logicalIndex) {
 	// for rendering, caret positioning, consider numbers as LtoR
 	boolean isRightToLeft = false;
 	
@@ -514,7 +531,7 @@ public boolean isRightToLeft(int logicalIndex) {
 /**
  * 
  */
-public boolean isRightToLeftInput(int logicalIndex) {
+boolean isRightToLeftInput(int logicalIndex) {
 	// for keyboard positioning, consider numbers as RtoL
 	boolean isRightToLeft = false;
 	
@@ -527,7 +544,7 @@ public boolean isRightToLeftInput(int logicalIndex) {
 }/**
  *
  */
-void prepareBoldText(String textline, int logicalStart, int length) {
+private void prepareBoldText(String textline, int logicalStart, int length) {
 	int byteCount = length;
 	int flags = 0;
 	String text = textline.substring(logicalStart, logicalStart + length);
@@ -565,7 +582,7 @@ void prepareBoldText(String textline, int logicalStart, int length) {
 		dx[visualIndex] = dxValue;
 	}
 }
-public void redrawRange(Control parent, int logicalStart, int length, int xOffset, int yOffset, int height) {
+void redrawRange(Control parent, int logicalStart, int length, int xOffset, int yOffset, int height) {
 	Enumeration directionRuns = getDirectionRuns(logicalStart, length).elements();
 
 	if (logicalStart + length > getTextLength()) {
@@ -580,16 +597,16 @@ public void redrawRange(Control parent, int logicalStart, int length, int xOffse
 		parent.redraw(xOffset + startX, yOffset, run.getRenderStopX() - startX, height, true);
 	}				
 }
-public static void removeLanguageListener (int hwnd) {
+static void removeLanguageListener (int hwnd) {
 	BidiUtil.removeLanguageListener(hwnd);
 }
-void setGC(GC gc) {
+private void setGC(GC gc) {
 	this.gc = gc;
 }
 /**
  * 
  */
-public void setKeyboardLanguage(int logicalIndex) {
+void setKeyboardLanguage(int logicalIndex) {
 	int language = BidiUtil.KEYBOARD_LATIN;
 	
 	if (logicalIndex >= classBuffer.length) {
@@ -607,7 +624,7 @@ public void setKeyboardLanguage(int logicalIndex) {
 	}
 	BidiUtil.setKeyboardLanguage(language);
 }
-void setTabWidth(int tabWidth) {
+private void setTabWidth(int tabWidth) {
 	this.tabWidth = tabWidth;
 }
 /**
