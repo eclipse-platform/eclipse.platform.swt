@@ -253,8 +253,8 @@ void createHandle () {
 	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) return;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		int extStyle = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
-		OS.SetWindowLong (hwndHeader, OS.GWL_EXSTYLE, extStyle | OS.WS_EX_LAYOUTRTL);
+		int exStyle = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
+		OS.SetWindowLong (hwndHeader, OS.GWL_EXSTYLE, exStyle | OS.WS_EX_LAYOUTRTL);
 	}
 }
 

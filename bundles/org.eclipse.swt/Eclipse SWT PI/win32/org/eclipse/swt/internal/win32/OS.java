@@ -1130,6 +1130,7 @@ public class OS {
 	public static final int WM_COMMAND = 0x111;
 	public static final int WM_CONTEXTMENU = 0x7b;
 	public static final int WM_COPY = 0x301;
+	public static final int WM_CREATE = 0x0001;	
 	public static final int WM_CTLCOLORBTN = 0x135;
 	public static final int WM_CTLCOLORDLG = 0x136;
 	public static final int WM_CTLCOLOREDIT = 0x133;
@@ -1182,6 +1183,7 @@ public class OS {
 	public static final int WM_NULL = 0x0;
 	public static final int WM_PAINT = 0xf;
 	public static final int WM_PALETTECHANGED = 0x311;
+	public static final int WM_PARENTNOTIFY = 0x0210;
 	public static final int WM_PASTE = 0x302;
 	public static final int WM_PRINTCLIENT = 0x0318;
 	public static final int WM_QUERYENDSESSION = 0x11;
