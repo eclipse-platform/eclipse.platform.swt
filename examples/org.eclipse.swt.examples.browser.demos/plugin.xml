@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin
-   id="org.eclipse.swt.examples.browser.demos.BrowserDemo"
+   id="org.eclipse.swt.examples.browser.demos"
    name="BrowserDemo Plug-in"
    version="1.0.0"
    provider-name="SWT"
