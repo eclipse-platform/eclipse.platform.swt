@@ -17,7 +17,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.printing.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.test.performance.PerformanceMeter;
+import org.eclipse.test.performance.*;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.GC
@@ -354,6 +354,8 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 		disposeMeter(meter);
 	
 		meter = createMeter("transparent");
+		Performance performance = Performance.getDefault();
+		performance.tagAsGlobalSummary(meter, "GC.drawImage() transparent * " + COUNT, Dimension.CPU_TIME);
 		meter.start();
 		for (int i = 0; i < COUNT; i++) {
 			gc.drawImage(imageTransparent, coords[i][0], coords[i][1]);	// transparent image
@@ -619,6 +621,8 @@ public void test_drawStringLjava_lang_StringIIZ() {
 	}
 	
 	PerformanceMeter meter = createMeter("transparent");
+	Performance performance = Performance.getDefault();
+	performance.tagAsGlobalSummary(meter, "GC.drawString () transparent * " + COUNT, Dimension.CPU_TIME);
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawString("test string", coords[i][0], coords[i][1], true);				
