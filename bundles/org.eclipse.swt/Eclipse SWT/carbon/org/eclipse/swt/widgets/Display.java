@@ -275,7 +275,8 @@ public void beep () {
 }
 
 int caretProc (int id, int clientData) {
-	if (!allowTimers) return 0;
+	//TEMPORARY CODE
+//	if (!allowTimers) return 0;
 	if (currentCaret == null) return 0;
 	if (currentCaret.blinkCaret ()) {
 		int blinkRate = currentCaret.blinkRate;
@@ -996,7 +997,21 @@ public boolean readAndDispatch () {
 		runPopups ();
 		runDeferredEvents ();
 		runGrabs ();
-		if (eventClass != WAKE_CLASS || eventKind != WAKE_KIND) return true;
+		/*
+		* Feature in the Macintosh.  When an indeterminate progress
+		* bar is running, it floods the event queue with messages in
+		* order to show the animation.  This means that async messages
+		* will never run because there are always messages from the
+		* operating system.  The fix is to run async messages when ever
+		* there is a wake message.
+		*
+		* NOTE:  This is not the correct behavior.  Operating system
+		* message are supposed to have priority over async messages.
+		*/
+		if (eventClass == WAKE_CLASS && eventKind == WAKE_KIND) {
+			runAsyncMessages ();
+		}		
+		return true;
 	}
 	return runAsyncMessages ();
 }
@@ -1427,9 +1442,7 @@ void setMenuBar (Menu menu) {
 
 public boolean sleep () {
 	checkDevice ();
-	//TEMPORARY CODE
-	return OS.ReceiveNextEvent (0, null, 50 / 1000.0, false, null) == OS.noErr;
-//	return OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
+	return OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
 }
 
 public void syncExec (Runnable runnable) {
@@ -1484,15 +1497,15 @@ public void timerExec (int milliseconds, Runnable runnable) {
 int timerProc (int id, int index) {
 	if (timerList == null) return 0;
 	if (0 <= index && index < timerList.length) {
-		if (allowTimers) {
+//		if (allowTimers) {
 			Runnable runnable = timerList [index];
 			timerList [index] = null;
 			timerIds [index] = 0;
 			if (runnable != null) runnable.run ();
-		} else {
-			timerIds [index] = -1;
-			OS.PostEventToQueue (queue, wakeEvent [0], (short) OS.kEventPriorityStandard);
-		}
+//		} else {
+//			timerIds [index] = -1;
+//			wakeUp ();
+//		}
 	}
 	return 0;
 }
@@ -1561,6 +1574,12 @@ void updateMenuBar (Shell shell) {
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
+	wakeUp ();
+}
+
+void wakeUp () {
+	int [] wakeEvent = new int [1];
+	OS.CreateEvent (0, WAKE_CLASS, WAKE_KIND, 0.0, OS.kEventAttributeUserEvent, wakeEvent);
 	OS.PostEventToQueue (queue, wakeEvent [0], (short) OS.kEventPriorityStandard);
 }
 
