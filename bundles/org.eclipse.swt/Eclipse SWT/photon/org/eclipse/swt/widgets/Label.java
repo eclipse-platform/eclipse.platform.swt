@@ -97,16 +97,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.PtGetResources (handle, args.length / 3, args);
 		/* If we are wrapping text, calculate the height based on wHint. */
 		if (args [1] == OS.Pt_Z_STRING) {
-			int length = OS.strlen (args [4]);
-			byte [] font = new byte [length + 1];
-			OS.memmove (font, args [4], length);
-			String string = text;
-			if (wHint != SWT.DEFAULT) {
-				Display display = getDisplay ();
-				string = display.wrapText (text, font, wHint);
-			}
 			int width = wHint, height = hHint;
 			if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+				int length = OS.strlen (args [4]);
+				byte [] font = new byte [length + 1];
+				OS.memmove (font, args [4], length);
+				String string = text;
+				if (wHint != SWT.DEFAULT) {
+					Display display = getDisplay ();
+					string = display.wrapText (text, font, wHint);
+				}
 				byte [] buffer = Converter.wcsToMbcs (null, string, false);
 				PhRect_t rect = new PhRect_t ();
 				OS.PgExtentMultiText (rect, null, font, buffer, buffer.length, args [7]);
