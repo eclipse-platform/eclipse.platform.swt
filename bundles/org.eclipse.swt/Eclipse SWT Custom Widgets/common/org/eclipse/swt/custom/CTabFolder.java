@@ -110,7 +110,7 @@ public class CTabFolder extends Composite {
 	boolean simple = true;
 	int fixedTabHeight = SWT.DEFAULT;
 	int tabHeight;
-	int minChars = 5;
+	int minChars = 10;
 	
 	/* item management */
 	CTabItem items[] = new CTabItem[0];
