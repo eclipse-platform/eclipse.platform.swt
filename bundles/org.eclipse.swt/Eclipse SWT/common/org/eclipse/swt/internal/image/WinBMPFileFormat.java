@@ -464,8 +464,8 @@ PaletteData paletteFromBytes(byte[] bytes, int numColors) {
  * Answer a byte array containing the BMP representation of
  * the given device independent palette.
  */
-byte[] paletteToBytes(PaletteData pal) {
-	int n = (pal.colors.length < 256) ? pal.colors.length : 256;
+static byte[] paletteToBytes(PaletteData pal) {
+	int n = pal.colors == null ? 0 : (pal.colors.length < 256 ? pal.colors.length : 256);
 	byte[] bytes = new byte[n * 4];
 	int offset = 0;
 	for (int i = 0; i < n; i++) {

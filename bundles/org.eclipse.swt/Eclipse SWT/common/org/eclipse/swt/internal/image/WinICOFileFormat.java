@@ -39,7 +39,8 @@ int iconSize(ImageData i) {
 	int shapeDataStride = (i.width * i.depth + 31) / 32 * 4;
 	int maskDataStride = (i.width + 31) / 32 * 4;
 	int dataSize = (shapeDataStride + maskDataStride) * i.height;
-	return WinBMPFileFormat.BMPHeaderFixedSize + (i.palette.colors.length * 4) + dataSize;
+	int paletteSize = i.palette.colors != null ? i.palette.colors.length * 4 : 0;
+	return WinBMPFileFormat.BMPHeaderFixedSize + paletteSize + dataSize;
 }
 boolean isFileFormat(LEDataInputStream stream) {
 	try {
@@ -52,10 +53,18 @@ boolean isFileFormat(LEDataInputStream stream) {
 	}
 }
 boolean isValidIcon(ImageData i) {
-	if (!((i.depth == 1) || (i.depth == 4) || (i.depth == 8)))
-		return false;
-	int size = i.palette.colors.length;
-	return ((size == 2) || (size == 16) || (size == 32) || (size == 256));
+	switch (i.depth) {
+		case 1:
+		case 4:
+		case 8:
+			if (i.palette.isDirect) return false;
+			int size = i.palette.colors.length;
+			return size == 2 || size == 16 || size == 32 || size == 256;
+		case 24:
+		case 32:
+			return i.palette.isDirect;
+	}
+	return false;
 }
 int loadFileHeader(LEDataInputStream byteStream) {
 	int[] fileHeader = new int[3];
@@ -185,7 +194,7 @@ byte[] loadInfoHeader(int[] iconHeader) {
 	int bitCount = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	if (height == infoHeight && bitCount == 1) height /= 2;
 	if (!((width == infoWidth) && (height * 2 == infoHeight) &&
-		((bitCount == 1) || (bitCount == 4) || (bitCount == 8))))
+		(bitCount == 1 || bitCount == 4 || bitCount == 8 || bitCount == 24 || bitCount == 32)))
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 	infoHeader[8] = (byte)(height & 0xFF);
 	infoHeader[9] = (byte)((height >> 8) & 0xFF);
@@ -209,13 +218,13 @@ void unloadIcon(ImageData icon) {
 		outputStream.writeInt(sizeImage);
 		outputStream.writeInt(0);
 		outputStream.writeInt(0);
-		outputStream.writeInt(icon.palette.colors.length);
+		outputStream.writeInt(icon.palette.colors != null ? icon.palette.colors.length : 0);
 		outputStream.writeInt(0);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
 	
-	byte[] rgbs = new WinBMPFileFormat().paletteToBytes(icon.palette);
+	byte[] rgbs = WinBMPFileFormat.paletteToBytes(icon.palette);
 	try {
 		outputStream.write(rgbs);
 	} catch (IOException e) {
@@ -234,7 +243,7 @@ void unloadIconHeader(ImageData i) {
 	try {
 		outputStream.writeByte((byte)i.width);
 		outputStream.writeByte((byte)i.height);
-		outputStream.writeShort(i.palette.colors.length);
+		outputStream.writeShort(i.palette.colors != null ? i.palette.colors.length : 0);
 		outputStream.writeShort(0);
 		outputStream.writeShort(0);
 		outputStream.writeInt(iconSize);
