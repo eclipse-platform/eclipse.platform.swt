@@ -18,10 +18,10 @@ public class CTabItem extends Item {
 	private Image disabledImage;
 	
 	// internal constants
-	static final int LEFT_MARGIN = 5;
-	static final int RIGHT_MARGIN = 5;	
-	static final int TOP_MARGIN = 4;
-	static final int BOTTOM_MARGIN = 4;
+	static final int LEFT_MARGIN = 4;
+	static final int RIGHT_MARGIN = 4;	
+	static final int TOP_MARGIN = 3;
+	static final int BOTTOM_MARGIN = 3;
 	private static final int INTERNAL_SPACING = 2;
 	
 	private static final String ellipsis = "...";
@@ -248,15 +248,15 @@ void onPaint(GC gc, boolean isSelected) {
 			int x1, y1, width1, height1;
 			if (!parent.onBottom) {
 				if (index == parent.topTabIndex) {
-					x1 = x + 2; y1 = y + 2; width1 = width - 4; height1 = height - 3;
+					x1 = x + 1; y1 = y + 1; width1 = width - 2; height1 = height - 1;
 				} else {
-					x1 = x + 3; y1 = y + 2; width1 = width - 5; height1 = height - 3;
+					x1 = x + 2; y1 = y + 1; width1 = width - 3; height1 = height - 1;
 				}
 			} else {
 				if (index == parent.topTabIndex) {
-					x1 = x + 2; y1 = y + 2; width1 = width - 4; height1 = height - 4;
+					x1 = x + 1; y1 = y + 1; width1 = width - 2; height1 = height - 2;
 				} else {
-					x1 = x + 3; y1 = y + 2; width1 = width - 5; height1 = height - 4;
+					x1 = x + 2; y1 = y + 1; width1 = width - 3; height1 = height - 2;
 				}
 			}
 			gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -311,7 +311,7 @@ void onPaint(GC gc, boolean isSelected) {
 		gc.setForeground(parent.getForeground());
 	}
 	int textY = y + (height - textHeight(gc)) / 2; 	
-	gc.drawString(text, xDraw, textY, true);
+	gc.drawText(text, xDraw, textY, SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC);
 	
 	gc.setForeground(parent.getForeground());
 }
