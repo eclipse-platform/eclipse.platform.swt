@@ -412,7 +412,7 @@ public void setChecked (boolean checked) {
 	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
 	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	OS.gtk_ctree_get_node_info (ctree, handle, null, spacing, pixmap, mask, pixmap, mask, is_leaf, expanded);
-	pixmap [0] = pixmap [0] == parent.check ? parent.uncheck : parent.check;
+	pixmap [0] = checked ? parent.check : parent.uncheck;
 	OS.gtk_ctree_set_node_info (ctree, handle, buffer, spacing [0], pixmap [0], mask [0], pixmap [0], mask [0], is_leaf [0], expanded [0]);				
 }
 
@@ -466,10 +466,6 @@ public void setImage (Image image) {
 		pixmap = image.pixmap;
 		mask = image.mask;
 	}
-	realSetImage(pixmap, mask);
-}
-
-void realSetImage (int pixmap, int mask) {
 	int ctree = parent.handle;
 	byte [] spacing = new byte [1];
 	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
