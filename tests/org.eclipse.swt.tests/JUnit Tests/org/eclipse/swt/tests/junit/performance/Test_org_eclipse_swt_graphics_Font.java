@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit.performance;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.tests.junit.performance.SwtJunit;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.test.performance.PerformanceMeter;
@@ -190,60 +191,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 	disposeMeter(meter);
 }
 
-public void test_dispose() {
-//	final int COUNT = 55000000;
-//	
-//	/*
-//	 * The typical dispose() case is covered in the constructor tests, since
-//	 * they must dispose created Fonts within their timed blocks. 
-//	 */
-//
-//	Font disposedFont = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
-//	disposedFont.dispose();
-//
-//	PerformanceMeter meter = createMeter("Font dispose - disposed");
-//	meter.start();
-//	for (int i = 0; i < COUNT; i++) {
-//		disposedFont.dispose();
-//	}
-//	meter.stop();
-//	
-//    disposeMeter(meter);
-}
-
-public void test_equalsLjava_lang_Object() {
-	final int COUNT = 57000000;
-	
-	// Fonts are only equal if their handles are the same
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
-
-	PerformanceMeter meter = createMeter("Font equals - yes");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		font.equals(font);	// same
-	}
-	meter.stop();
-
-	font.dispose();
-	
-	disposeMeter(meter);
-	
-	font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
-	Font otherFont = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
-
-	meter = createMeter("Font equals - no");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		font.equals(otherFont);	// different
-	}
-	meter.stop();
-
-	font.dispose();
-	otherFont.dispose();
-	
-	disposeMeter(meter);
-}
-
 public void test_getFontData() {
 	final int COUNT = 250000;
 	
@@ -257,49 +204,6 @@ public void test_getFontData() {
 	meter.stop();
 	
 	font.dispose();
-	
-	disposeMeter(meter);
-}
-
-public void test_hashCode() {
-	final int COUNT = 600000000;
-	
-	Font font = new Font(display, SwtJunit.testFontName, 40, SWT.BOLD | SWT.ITALIC);
-	
-	PerformanceMeter meter = createMeter("Font hashCode");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		font.hashCode();
-	}
-	meter.stop();
-	
-	font.dispose();
-	
-	disposeMeter(meter);
-}
-
-public void test_isDisposed() {
-	final int COUNT = 500000000;
-	
-	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
-	
-	PerformanceMeter meter = createMeter("Font isDisposed - no");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		font.isDisposed();	// not disposed
-	}
-	meter.stop();
-	
-	font.dispose();
-	
-	disposeMeter(meter);
-	
-	meter = createMeter("Font isDisposed - yes");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		font.isDisposed();	// disposed
-	}
-	meter.stop();
 	
 	disposeMeter(meter);
 }
@@ -318,21 +222,13 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII");
-	methodNames.addElement("test_dispose");
-	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_getFontData");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_isDisposed");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData")) test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII();
-	else if (getName().equals("test_dispose")) test_dispose();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_getFontData")) test_getFontData();
-	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_isDisposed")) test_isDisposed();
 }
 }

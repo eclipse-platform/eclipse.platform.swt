@@ -255,15 +255,15 @@ public void test_getMenu() {
 }
 
 public void test_getMonitor() {
-	final int COUNT = 1200000;
-	
-	PerformanceMeter meter = createMeter(getTypeString() + "getMonitor");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.getMonitor();
-	}
-	meter.stop();
-	disposeMeter(meter);
+//	final int COUNT = 1200000;
+//	
+//	PerformanceMeter meter = createMeter(getTypeString() + "getMonitor");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		control.getMonitor();
+//	}
+//	meter.stop();
+//	disposeMeter(meter);
 }
 
 public void test_getParent() {
@@ -585,25 +585,25 @@ public void test_setCaptureZ() {
 }
 
 public void test_setCursorLorg_eclipse_swt_graphics_Cursor() {
-	final int COUNT = 250000;
-	
-	Cursor hand = control.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
-	Cursor size = control.getDisplay().getSystemCursor(SWT.CURSOR_SIZEALL);
-	Cursor[] cursors = new Cursor[COUNT];
-	for (int i = 0; i < COUNT; i += 4) {
-		cursors[i] = hand;
-		cursors[i+1] = size;
-		cursors[i+2] = null;
-		cursors[i+3] = size;
-	}
-	
-	PerformanceMeter meter = createMeter(getTypeString() + "setCursor");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.setCursor(cursors[i]);
-	}
-	meter.stop();
-	disposeMeter(meter);
+//	final int COUNT = 250000;
+//	
+//	Cursor hand = control.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
+//	Cursor size = control.getDisplay().getSystemCursor(SWT.CURSOR_SIZEALL);
+//	Cursor[] cursors = new Cursor[COUNT];
+//	for (int i = 0; i < COUNT; i += 4) {
+//		cursors[i] = hand;
+//		cursors[i+1] = size;
+//		cursors[i+2] = null;
+//		cursors[i+3] = size;
+//	}
+//	
+//	PerformanceMeter meter = createMeter(getTypeString() + "setCursor");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		control.setCursor(cursors[i]);
+//	}
+//	meter.stop();
+//	disposeMeter(meter);
 }
 
 public void test_setEnabledZ() {
