@@ -173,7 +173,7 @@ public ScrolledComposite(Composite parent, int style) {
 }
 
 private static int checkStyle (int style) {
-	int mask = SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER;
+	int mask = SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask;
 }
 

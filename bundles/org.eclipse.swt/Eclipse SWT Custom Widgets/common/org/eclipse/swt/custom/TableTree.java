@@ -91,7 +91,7 @@ public class TableTree extends Composite {
  * @see #getStyle
  */
 public TableTree(Composite parent, int style) {
-	super(parent, SWT.NONE);
+	super(parent, checkStyle (style));
 	table = new Table(this, style);
 	Listener tableListener = new Listener() {
 		public void handleEvent(Event e) {
@@ -196,7 +196,12 @@ public void addTreeListener(TreeListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Expand, typedListener);
 	addListener (SWT.Collapse, typedListener);
-}  
+}
+private static int checkStyle (int style) {
+	int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT; 
+	style = style & mask;
+	return style;
+} 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	return table.computeSize (wHint, hHint, changed);
