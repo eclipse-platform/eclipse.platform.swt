@@ -233,6 +233,192 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLCreateFromFS
 }
 #endif /* NO_CFURLCreateFromFSRef */
 
+#ifndef NO_CGBitmapContextCreate
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGBitmapContextCreate
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	DEBUG_CALL("CGBitmapContextCreate\n")
+
+	return (jint)CGBitmapContextCreate((void *)arg0, (size_t)arg1, (size_t)arg2, (size_t)arg3, (size_t)arg4, (CGColorSpaceRef)arg5, (CGImageAlphaInfo)arg6);
+}
+#endif /* NO_CGBitmapContextCreate */
+
+#ifndef NO_CGColorSpaceCreateDeviceRGB
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGColorSpaceCreateDeviceRGB
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("CGColorSpaceCreateDeviceRGB\n")
+
+	return (jint)CGColorSpaceCreateDeviceRGB();
+}
+#endif /* NO_CGColorSpaceCreateDeviceRGB */
+
+#ifndef NO_CGColorSpaceRelease
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGColorSpaceRelease
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGColorSpaceRelease\n")
+
+	CGColorSpaceRelease((CGColorSpaceRef)arg0);
+}
+#endif /* NO_CGColorSpaceRelease */
+
+#ifndef NO_CGContextAddArc
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextAddArc
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5, jboolean arg6)
+{
+	DEBUG_CALL("CGContextAddArc\n")
+
+	CGContextAddArc((CGContextRef)arg0, (float)arg1, (float)arg2, (float)arg3, (float)arg4, (float)arg5, (Boolean)arg6);
+}
+#endif /* NO_CGContextAddArc */
+
+#ifndef NO_CGContextAddLineToPoint
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextAddLineToPoint
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
+{
+	DEBUG_CALL("CGContextAddLineToPoint\n")
+
+	CGContextAddLineToPoint((CGContextRef)arg0, arg1, arg2);
+}
+#endif /* NO_CGContextAddLineToPoint */
+
+#ifndef NO_CGContextAddLines
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextAddLines
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	CGPoint _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("CGContextAddLines\n")
+
+	if (arg1) lparg1 = getCGPointFields(env, arg1, &_arg1);
+	CGContextAddLines((CGContextRef)arg0, (const CGPoint *)lparg1, (size_t)arg2);
+	if (arg1) setCGPointFields(env, arg1, lparg1);
+}
+#endif /* NO_CGContextAddLines */
+
+#ifndef NO_CGContextBeginPath
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextBeginPath
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGContextBeginPath\n")
+
+	CGContextBeginPath((CGContextRef)arg0);
+}
+#endif /* NO_CGContextBeginPath */
+
+#ifndef NO_CGContextClip
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextClip
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGContextClip\n")
+
+	CGContextClip((CGContextRef)arg0);
+}
+#endif /* NO_CGContextClip */
+
+#ifndef NO_CGContextClosePath
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextClosePath
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGContextClosePath\n")
+
+	CGContextClosePath((CGContextRef)arg0);
+}
+#endif /* NO_CGContextClosePath */
+
+#ifndef NO_CGContextDrawImage
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextDrawImage
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	CGRect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("CGContextDrawImage\n")
+
+	if (arg1) lparg1 = getCGRectFields(env, arg1, &_arg1);
+	CGContextDrawImage((CGContextRef)arg0, (CGRect)*lparg1, (CGImageRef)arg2);
+	if (arg1) setCGRectFields(env, arg1, lparg1);
+}
+#endif /* NO_CGContextDrawImage */
+
+#ifndef NO_CGContextFillPath
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextFillPath
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGContextFillPath\n")
+
+	CGContextFillPath((CGContextRef)arg0);
+}
+#endif /* NO_CGContextFillPath */
+
+#ifndef NO_CGContextFillRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextFillRect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("CGContextFillRect\n")
+
+	if (arg1) lparg1 = getCGRectFields(env, arg1, &_arg1);
+	CGContextFillRect((CGContextRef)arg0, (CGRect)*lparg1);
+	if (arg1) setCGRectFields(env, arg1, lparg1);
+}
+#endif /* NO_CGContextFillRect */
+
+#ifndef NO_CGContextGetTextPosition
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextGetTextPosition
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGPoint _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("CGContextGetTextPosition\n")
+
+	if (arg1) lparg1 = getCGPointFields(env, arg1, &_arg1);
+	*lparg1 = CGContextGetTextPosition((CGContextRef)arg0);
+	if (arg1) setCGPointFields(env, arg1, lparg1);
+}
+#endif /* NO_CGContextGetTextPosition */
+
+#ifndef NO_CGContextMoveToPoint
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextMoveToPoint
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
+{
+	DEBUG_CALL("CGContextMoveToPoint\n")
+
+	CGContextMoveToPoint((CGContextRef)arg0, (float)arg1, (float)arg2);
+}
+#endif /* NO_CGContextMoveToPoint */
+
+#ifndef NO_CGContextRelease
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextRelease
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGContextRelease\n")
+
+	CGContextRelease((CGContextRef)arg0);
+}
+#endif /* NO_CGContextRelease */
+
+#ifndef NO_CGContextRestoreGState
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextRestoreGState
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGContextRestoreGState\n")
+
+	CGContextRestoreGState((CGContextRef)arg0);
+}
+#endif /* NO_CGContextRestoreGState */
+
+#ifndef NO_CGContextSaveGState
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSaveGState
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGContextSaveGState\n")
+
+	CGContextSaveGState((CGContextRef)arg0);
+}
+#endif /* NO_CGContextSaveGState */
+
 #ifndef NO_CGContextScaleCTM
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextScaleCTM
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
@@ -243,6 +429,208 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextScaleCTM
 }
 #endif /* NO_CGContextScaleCTM */
 
+#ifndef NO_CGContextSelectFont
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSelectFont
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jfloat arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("CGContextSelectFont\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	CGContextSelectFont((CGContextRef)arg0, (const char *)lparg1, (float)arg2, (CGTextEncoding)arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+#endif /* NO_CGContextSelectFont */
+
+#ifndef NO_CGContextSetFillColor
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetFillColor
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)
+{
+	jfloat *lparg1=NULL;
+
+	DEBUG_CALL("CGContextSetFillColor\n")
+
+	if (arg1) lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL);
+	CGContextSetFillColor((CGContextRef)arg0, (const float *)lparg1);
+	if (arg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+}
+#endif /* NO_CGContextSetFillColor */
+
+#ifndef NO_CGContextSetFillColorSpace
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetFillColorSpace
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("CGContextSetFillColorSpace\n")
+
+	CGContextSetFillColorSpace((CGContextRef)arg0, (CGColorSpaceRef)arg1);
+}
+#endif /* NO_CGContextSetFillColorSpace */
+
+#ifndef NO_CGContextSetFontSize
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetFontSize
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
+{
+	DEBUG_CALL("CGContextSetFontSize\n")
+
+	CGContextSetFontSize((CGContextRef)arg0, (float)arg1);
+}
+#endif /* NO_CGContextSetFontSize */
+
+#ifndef NO_CGContextSetLineDash
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetLineDash
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloatArray arg2, jint arg3)
+{
+	jfloat *lparg2=NULL;
+
+	DEBUG_CALL("CGContextSetLineDash\n")
+
+	if (arg2) lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL);
+	CGContextSetLineDash((CGContextRef)arg0, (float)arg1, (const float *)lparg2, (size_t)arg3);
+	if (arg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+}
+#endif /* NO_CGContextSetLineDash */
+
+#ifndef NO_CGContextSetLineWidth
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetLineWidth
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
+{
+	DEBUG_CALL("CGContextSetLineWidth\n")
+
+	CGContextSetLineWidth((CGContextRef)arg0, (float)arg1);
+}
+#endif /* NO_CGContextSetLineWidth */
+
+#ifndef NO_CGContextSetRGBFillColor
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetRGBFillColor
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4)
+{
+	DEBUG_CALL("CGContextSetRGBFillColor\n")
+
+	CGContextSetRGBFillColor((CGContextRef)arg0, (float)arg1, (float)arg2, (float)arg3, (float)arg4);
+}
+#endif /* NO_CGContextSetRGBFillColor */
+
+#ifndef NO_CGContextSetRGBStrokeColor
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetRGBStrokeColor
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4)
+{
+	DEBUG_CALL("CGContextSetRGBStrokeColor\n")
+
+	CGContextSetRGBStrokeColor((CGContextRef)arg0, (float)arg1, (float)arg2, (float)arg3, (float)arg4);
+}
+#endif /* NO_CGContextSetRGBStrokeColor */
+
+#ifndef NO_CGContextSetStrokeColor
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetStrokeColor
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)
+{
+	jfloat *lparg1=NULL;
+
+	DEBUG_CALL("CGContextSetStrokeColor\n")
+
+	if (arg1) lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL);
+	CGContextSetStrokeColor((CGContextRef)arg0, (const float *)lparg1);
+	if (arg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+}
+#endif /* NO_CGContextSetStrokeColor */
+
+#ifndef NO_CGContextSetStrokeColorSpace
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetStrokeColorSpace
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("CGContextSetStrokeColorSpace\n")
+
+	CGContextSetStrokeColorSpace((CGContextRef)arg0, (CGColorSpaceRef)arg1);
+}
+#endif /* NO_CGContextSetStrokeColorSpace */
+
+#ifndef NO_CGContextSetTextDrawingMode
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetTextDrawingMode
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("CGContextSetTextDrawingMode\n")
+
+	CGContextSetTextDrawingMode((CGContextRef)arg0, (CGTextDrawingMode)arg1);
+}
+#endif /* NO_CGContextSetTextDrawingMode */
+
+#ifndef NO_CGContextSetTextMatrix
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetTextMatrix
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)
+{
+	jfloat *lparg1=NULL;
+
+	DEBUG_CALL("CGContextSetTextMatrix\n")
+
+	if (arg1) lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL);
+	CGContextSetTextMatrix((CGContextRef)arg0, *(CGAffineTransform *)lparg1);
+	if (arg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+}
+#endif /* NO_CGContextSetTextMatrix */
+
+#ifndef NO_CGContextSetTextPosition
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetTextPosition
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
+{
+	DEBUG_CALL("CGContextSetTextPosition\n")
+
+	CGContextSetTextPosition((CGContextRef)arg0, (float)arg1, (float)arg2);
+}
+#endif /* NO_CGContextSetTextPosition */
+
+#ifndef NO_CGContextShowText
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextShowText
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("CGContextShowText\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	CGContextShowText((CGContextRef)arg0, (const char *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+#endif /* NO_CGContextShowText */
+
+#ifndef NO_CGContextShowTextAtPoint
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextShowTextAtPoint
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jbyteArray arg3, jint arg4)
+{
+	jbyte *lparg3=NULL;
+
+	DEBUG_CALL("CGContextShowTextAtPoint\n")
+
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	CGContextShowTextAtPoint((CGContextRef)arg0, (float)arg1, (float)arg2, (const char *)lparg3, (size_t)arg4);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+}
+#endif /* NO_CGContextShowTextAtPoint */
+
+#ifndef NO_CGContextStrokePath
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextStrokePath
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGContextStrokePath\n")
+
+	CGContextStrokePath((CGContextRef)arg0);
+}
+#endif /* NO_CGContextStrokePath */
+
+#ifndef NO_CGContextStrokeRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextStrokeRect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("CGContextStrokeRect\n")
+
+	if (arg1) lparg1 = getCGRectFields(env, arg1, &_arg1);
+	CGContextStrokeRect((CGContextRef)arg0, (CGRect)*lparg1);
+	if (arg1) setCGRectFields(env, arg1, lparg1);
+}
+#endif /* NO_CGContextStrokeRect */
+
 #ifndef NO_CGContextTranslateCTM
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextTranslateCTM
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
@@ -252,6 +640,122 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextTranslat
 	CGContextTranslateCTM((CGContextRef)arg0, (float)arg1, (float)arg2);
 }
 #endif /* NO_CGContextTranslateCTM */
+
+#ifndef NO_CGDataProviderCreateWithData
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGDataProviderCreateWithData
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("CGDataProviderCreateWithData\n")
+
+	return (jint)CGDataProviderCreateWithData((void *)arg0, (const void *)arg1, (size_t)arg2, (void *)arg3);
+}
+#endif /* NO_CGDataProviderCreateWithData */
+
+#ifndef NO_CGDataProviderRelease
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGDataProviderRelease
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGDataProviderRelease\n")
+
+	CGDataProviderRelease((CGDataProviderRef)arg0);
+}
+#endif /* NO_CGDataProviderRelease */
+
+#ifndef NO_CGImageCreate
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGImageCreate
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jfloatArray arg8, jboolean arg9, jint arg10)
+{
+	jfloat *lparg8=NULL;
+	jint rc;
+
+	DEBUG_CALL("CGImageCreate\n")
+
+	if (arg8) lparg8 = (*env)->GetFloatArrayElements(env, arg8, NULL);
+	rc = (jint)CGImageCreate((size_t)arg0, (size_t)arg1, (size_t)arg2, (size_t)arg3, (size_t)arg4, (CGColorSpaceRef)arg5, (CGImageAlphaInfo)arg6, (CGDataProviderRef)arg7, (const float *)lparg8, (Boolean)arg9, (CGColorRenderingIntent)arg10);
+	if (arg8) (*env)->ReleaseFloatArrayElements(env, arg8, lparg8, 0);
+	return rc;
+}
+#endif /* NO_CGImageCreate */
+
+#ifndef NO_CGImageGetAlphaInfo
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGImageGetAlphaInfo
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGImageGetAlphaInfo\n")
+
+	return (jint)CGImageGetAlphaInfo((CGImageRef)arg0);
+}
+#endif /* NO_CGImageGetAlphaInfo */
+
+#ifndef NO_CGImageGetBitsPerComponent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGImageGetBitsPerComponent
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGImageGetBitsPerComponent\n")
+
+	return (jint)CGImageGetBitsPerComponent((CGImageRef)arg0);
+}
+#endif /* NO_CGImageGetBitsPerComponent */
+
+#ifndef NO_CGImageGetBitsPerPixel
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGImageGetBitsPerPixel
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGImageGetBitsPerPixel\n")
+
+	return (jint)CGImageGetBitsPerPixel((CGImageRef)arg0);
+}
+#endif /* NO_CGImageGetBitsPerPixel */
+
+#ifndef NO_CGImageGetBytesPerRow
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGImageGetBytesPerRow
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGImageGetBytesPerRow\n")
+
+	return (jint)CGImageGetBytesPerRow((CGImageRef)arg0);
+}
+#endif /* NO_CGImageGetBytesPerRow */
+
+#ifndef NO_CGImageGetColorSpace
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGImageGetColorSpace
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGImageGetColorSpace\n")
+
+	return (jint)CGImageGetColorSpace((CGImageRef)arg0);
+}
+#endif /* NO_CGImageGetColorSpace */
+
+#ifndef NO_CGImageGetHeight
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGImageGetHeight
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGImageGetHeight\n")
+
+	return (jint)CGImageGetHeight((CGImageRef)arg0);
+}
+#endif /* NO_CGImageGetHeight */
+
+#ifndef NO_CGImageGetWidth
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGImageGetWidth
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGImageGetWidth\n")
+
+	return (jint)CGImageGetWidth((CGImageRef)arg0);
+}
+#endif /* NO_CGImageGetWidth */
+
+#ifndef NO_CGImageRelease
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGImageRelease
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGImageRelease\n")
+
+	CGImageRelease((CGImageRef)arg0);
+}
+#endif /* NO_CGImageRelease */
 
 #ifndef NO_CallNextEventHandler
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CallNextEventHandler
