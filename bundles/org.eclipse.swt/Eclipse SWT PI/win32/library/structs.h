@@ -42,6 +42,9 @@
 #include <aygshell.h>
 #endif // WIN32_PLATFORM_PSPC, WIN32_PLATFORM_WFSP
 
+/* Optional custom rules to exclude some types */
+#include "rules.h"
+
 #ifdef _WIN32_WCE
 #define NO_BROWSEINFO
 #define NO_CHOOSEFONT
@@ -247,7 +250,11 @@ void setLOGBRUSHFields(JNIEnv *env, jobject lpObject, LOGBRUSH *lpStruct);
 #define setLOGBRUSHFields(a,b,c)
 #endif /* NO_LOGBRUSH */
 
-#ifndef NO_LOGFONT
+#ifdef NO_LOGFONT
+#define NO_LOGFONTA
+#define NO_LOGFONTW
+#endif /* NO_LOGFONT */
+
 #ifndef NO_LOGFONTA
 LOGFONTA *getLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct);
 void setLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct);
@@ -263,7 +270,6 @@ void setLOGFONTWFields(JNIEnv *env, jobject lpObject, LOGFONTW *lpStruct);
 #define getLOGFONTWFields(a,b,c) NULL
 #define setLOGFONTWFields(a,b,c)
 #endif /* NO_LOGFONTW */
-#endif /* NO_LOGFONT */
 
 #ifndef NO_LOGPEN
 LOGPEN *getLOGPENFields(JNIEnv *env, jobject lpObject, LOGPEN *lpStruct);
@@ -385,7 +391,11 @@ void setNMTOOLBARFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpStruct);
 #define setNMTOOLBARFields(a,b,c)
 #endif /* NO_NMTOOLBAR */
 
-#ifndef NO_NMTTDISPINFO
+#ifdef NO_NMTTDISPINFO
+#define NO_NMTTDISPINFOA
+#define NO_NMTTDISPINFOW
+#endif /* NO_NMTTDISPINFO */
+
 #ifndef NO_NMTTDISPINFOA
 NMTTDISPINFOA *getNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOA *lpStruct);
 void setNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOA *lpStruct);
@@ -401,7 +411,6 @@ void setNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpStru
 #define getNMTTDISPINFOWFields(a,b,c) NULL
 #define setNMTTDISPINFOWFields(a,b,c)
 #endif /* NO_NMTTDISPINFOW */
-#endif /* NO_NMTTDISPINFO */
 
 #ifndef NO_NMTVCUSTOMDRAW
 NMTVCUSTOMDRAW *getNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpStruct);
@@ -411,7 +420,11 @@ void setNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpSt
 #define setNMTVCUSTOMDRAWFields(a,b,c)
 #endif /* NO_NMTVCUSTOMDRAW */
 
-#ifndef NO_NONCLIENTMETRICS
+#ifdef NO_NONCLIENTMETRICS
+#define NO_NONCLIENTMETRICSA
+#define NO_NONCLIENTMETRICSW
+#endif /* NO_NONCLIENTMETRICS */
+
 #ifndef NO_NONCLIENTMETRICSA
 NONCLIENTMETRICSA *getNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct);
 void setNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct);
@@ -427,7 +440,6 @@ void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW
 #define getNONCLIENTMETRICSWFields(a,b,c) NULL
 #define setNONCLIENTMETRICSWFields(a,b,c)
 #endif /* NO_NONCLIENTMETRICSW */
-#endif /* NO_NONCLIENTMETRICS */
 
 #ifndef NO_OPENFILENAME
 OPENFILENAME *getOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct);
@@ -437,7 +449,11 @@ void setOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct
 #define setOPENFILENAMEFields(a,b,c)
 #endif /* NO_OPENFILENAME */
 
-#ifndef NO_OSVERSIONINFO
+#ifdef NO_OSVERSIONINFO
+#define NO_OSVERSIONINFOA
+#define NO_OSVERSIONINFOW
+#endif /* NO_OSVERSIONINFO */
+
 #ifndef NO_OSVERSIONINFOA
 OSVERSIONINFOA *getOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOA *lpStruct);
 void setOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOA *lpStruct);
@@ -453,7 +469,6 @@ void setOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOW *lpSt
 #define getOSVERSIONINFOWFields(a,b,c) NULL
 #define setOSVERSIONINFOWFields(a,b,c)
 #endif /* NO_OSVERSIONINFOW */
-#endif /* NO_OS_VERSIONINFO */
 
 #ifndef NO_PAINTSTRUCT
 PAINTSTRUCT *getPAINTSTRUCTFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lpStruct);
@@ -551,7 +566,11 @@ void setTCITEMFields(JNIEnv *env, jobject lpObject, TCITEM *lpStruct);
 #define setTCITEMFields(a,b,c)
 #endif /* NO_TCITEM */
 
-#ifndef NO_TEXTMETRIC
+#ifdef NO_TEXTMETRIC
+#define NO_TEXTMETRICA
+#define NO_TEXTMETRICW
+#endif /* NO_TEXTMETRIC */
+
 #ifndef NO_TEXTMETRICA
 TEXTMETRICA *getTEXTMETRICAFields(JNIEnv *env, jobject lpObject, TEXTMETRICA *lpStruct);
 void setTEXTMETRICAFields(JNIEnv *env, jobject lpObject, TEXTMETRICA *lpStruct);
@@ -567,7 +586,6 @@ void setTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct);
 #define getTEXTMETRICWFields(a,b,c) NULL
 #define setTEXTMETRICWFields(a,b,c)
 #endif /* NO_TEXTMETRICW */
-#endif /* NO_TEXTMETRIC */
 
 #ifndef NO_TOOLINFO
 TOOLINFO *getTOOLINFOFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpStruct);
