@@ -1203,8 +1203,9 @@ public Color getBackground() {
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
+	color.pixel = values.background_pixel;
 	int colormap = OS.gdk_colormap_get_system();
-	OS.gdk_colormap_query_color(colormap, values.background_pixel, color);
+	OS.gdk_colormap_query_color(colormap, color.pixel, color);
 	return Color.gtk_new(data.device, color);	
 }
 
@@ -1342,8 +1343,9 @@ public Color getForeground() {
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
+	color.pixel = values.foreground_pixel;
 	int colormap = OS.gdk_colormap_get_system();
-	OS.gdk_colormap_query_color(colormap, values.foreground_pixel, color);
+	OS.gdk_colormap_query_color(colormap, color.pixel, color);
 	return Color.gtk_new(data.device, color);	
 }
 
