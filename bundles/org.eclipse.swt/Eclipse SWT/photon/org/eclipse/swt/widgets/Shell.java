@@ -411,7 +411,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	Display display = getDisplay ();
 	if (handle != 0) {
 		int clazz = display.PtContainer;
 		int [] args = {
