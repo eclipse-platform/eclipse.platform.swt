@@ -173,6 +173,7 @@ public class OS {
 	public static final int CB_FINDSTRINGEXACT = 0x158;
 	public static final int CB_GETCOUNT = 0x146;
 	public static final int CB_GETCURSEL = 0x147;
+	public static final int CB_GETDROPPEDCONTROLRECT = 0x152;
 	public static final int CB_GETDROPPEDSTATE = 0x157;
 	public static final int CB_GETEDITSEL = 0x140;
 	public static final int CB_GETITEMHEIGHT = 0x154;

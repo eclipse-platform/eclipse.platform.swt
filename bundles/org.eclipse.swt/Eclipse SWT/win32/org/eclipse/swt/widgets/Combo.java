@@ -984,7 +984,7 @@ void setBackgroundPixel (int pixel) {
 
 void setBounds (int x, int y, int width, int height, int flags) {
 	/*
-	* Feature in Windows. If the combo box has the CBS_DROPDOWN
+	* Feature in Windows.  If the combo box has the CBS_DROPDOWN
 	* or CBS_DROPDOWNLIST style, Windows uses the height that the
 	* programmer sets in SetWindowPos () to control height of the
 	* drop down list.  When the width is non-zero, Windows remembers
@@ -1003,7 +1003,23 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		int textHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
 		int itemHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
-		super.setBounds (x, y, width, textHeight + 6 + (itemHeight * 5) + 2, flags);
+		height = textHeight + 6 + (itemHeight * 5) + 2;
+		/*
+		* Feature in Windows.  When a drop down combo box is resized,
+		* the combo box resizes height of the text field and uses the
+		* height provided in SetWindowPos () to determine the height
+		* of the drop down list.  For some reason, the combo box redraws
+		* the whole area, not just the text field.  The fix is to clear
+		* the SWP_NOSIZE bits when the height of text field and the drop
+		* down list is the same as the requested height.
+		*/
+		RECT rect = new RECT ();
+		if (OS.SendMessage (handle, OS.CB_GETDROPPEDCONTROLRECT, 0, rect) != 0) {
+			int oldWidth = rect.right - rect.left, oldHeight = rect.bottom - rect.top;
+			if (oldWidth == width && oldHeight == height) flags |= OS.SWP_NOSIZE;
+		}
+		flags |= OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 		return;
 	}
 
@@ -1020,7 +1036,8 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	super.setBounds (x, y, width, height, flags);
-	if ((rect.right - rect.left) != width || (rect.bottom - rect.top) != height) {
+	int oldWidth = rect.right - rect.left, oldHeight = rect.bottom - rect.top;
+	if (oldWidth != width || oldHeight != height) {
 		if (OS.IsWinCE) {	
 			int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 			if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);
