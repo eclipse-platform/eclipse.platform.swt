@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
@@ -333,6 +334,13 @@ public int getAccelerator () {
 	checkWidget();
 	return accelerator;
 }
+/*public*/ Rectangle getBounds () {
+	checkWidget();
+	if (!OS.XtIsManaged (handle)) return new Rectangle (0, 0, 0, 0);
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	return new Rectangle ((short) argList [1], (short) argList [3], argList [5], argList [7]);
+}
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -456,20 +464,20 @@ public boolean isEnabled () {
 }
 String keysymName (int keysym) {
 	switch (keysym) {
-		case 8: return "BackSpace";
-		case 9: return "Tab";
+		case SWT.BS: return "BackSpace";
+		case SWT.TAB: return "Tab";
 		/*
 		* Bug in Motif. For some reason, the XmNaccelerator
 		* resource will not accept XK_Linefeed and prints Xt
 		* warnings.  The fix is to use XK_Return instead.
 		*/
-//		case 10:
+//		case SWT.LF:
 //		case OS.XK_Linefeed: return "Linefeed";
-		case 10:
+		case SWT.LF:
 		case OS.XK_Linefeed:
-		case 13: return "Return";
-		case 27: return "Escape";
-		case 127: return "Delete";
+		case SWT.CR: return "Return";
+		case SWT.ESC: return "Escape";
+		case SWT.DEL: return "Delete";
 	}
 	if (('0' <= keysym && keysym <= '9') ||
 		('a' <= keysym && keysym <= 'z') ||

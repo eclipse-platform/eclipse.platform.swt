@@ -285,6 +285,20 @@ void createWidget (int index) {
 	super.createWidget (index);
 	parent.add (this);
 }
+/*public*/ Rectangle getBounds () {
+	checkWidget();
+	if (!OS.XtIsManaged (handle)) return new Rectangle (0, 0, 0, 0);
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int x = argList [1], y = argList [3];
+	if ((style & SWT.BAR) != 0) {
+		short [] root_x = new short [1], root_y = new short [1];
+		OS.XtTranslateCoords (handle, (short) x, (short) x, root_x, root_y);
+		x = root_x [0];
+		y = root_y [0];
+	}
+	return new Rectangle (x, y, argList [5], argList [7]);
+}
 /**
  * Returns the default menu item or null if none has
  * been previously set.
@@ -493,12 +507,6 @@ public Menu getParentMenu () {
 public Shell getShell () {
 	checkWidget();
 	return parent.getShell ();
-}
-/*public*/ Point getSize () {
-	checkWidget();
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return new Point (argList [1], argList [3]);
 }
 /**
  * Returns <code>true</code> if the receiver is visible, and
