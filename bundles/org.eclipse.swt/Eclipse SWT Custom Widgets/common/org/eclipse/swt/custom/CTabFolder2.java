@@ -1582,7 +1582,8 @@ void onPaint(Event event) {
 	// Draw selected tab
 	if (selectedIndex != -1) {
 		CTabItem2 item = items[selectedIndex];
-		if (event.getBounds().intersects(item.getBounds())) {
+		Rectangle rect = item.getBounds();
+		if (event.getBounds().intersects(rect.x, rect.y, rect.width + CURVE_WIDTH, rect.height)) {
 			item.onPaint(gc, true);
 		}
 	}
