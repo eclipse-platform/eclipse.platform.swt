@@ -9,7 +9,7 @@ package org.eclipse.swt.internal.carbon;
 
 import org.eclipse.swt.internal.Library;
 
-public class OS extends OS2 {
+public class OS {
 
 	/* Load the SWT library. */
 	static {
