@@ -25,7 +25,7 @@ SWT_PREFIX  = swt
 WS_PREFIX   = win32
 SWT_VERSION = $(maj_ver)$(min_ver)
 SWT_LIB     = $(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
-SWT_LIBS    = ole32.lib comctl32.lib user32.lib gdi32.lib comdlg32.lib kernel32.lib shell32.lib oleaut32.lib advapi32.lib imm32.lib winspool.lib oleacc.lib
+SWT_LIBS    = ole32.lib comctl32.lib user32.lib gdi32.lib comdlg32.lib kernel32.lib shell32.lib oleaut32.lib advapi32.lib imm32.lib winspool.lib oleacc.lib usp10.lib
 SWT_OBJS    = os.obj os_structs.obj os_custom.obj callback.obj com_structs.obj com.obj 
 
 AWT_PREFIX = swt-awt

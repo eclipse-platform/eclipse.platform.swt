@@ -661,6 +661,56 @@ void setRECTFields(JNIEnv *env, jobject lpObject, RECT *lpStruct);
 #define RECT_sizeof() 0
 #endif
 
+#ifndef NO_SCRIPT_ANALYSIS
+SCRIPT_ANALYSIS *getSCRIPT_ANALYSISFields(JNIEnv *env, jobject lpObject, SCRIPT_ANALYSIS *lpStruct);
+void setSCRIPT_ANALYSISFields(JNIEnv *env, jobject lpObject, SCRIPT_ANALYSIS *lpStruct);
+#define SCRIPT_ANALYSIS_sizeof() sizeof(SCRIPT_ANALYSIS)
+#else
+#define getSCRIPT_ANALYSISFields(a,b,c) NULL
+#define setSCRIPT_ANALYSISFields(a,b,c)
+#define SCRIPT_ANALYSIS_sizeof() 0
+#endif
+
+#ifndef NO_SCRIPT_CONTROL
+SCRIPT_CONTROL *getSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject, SCRIPT_CONTROL *lpStruct);
+void setSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject, SCRIPT_CONTROL *lpStruct);
+#define SCRIPT_CONTROL_sizeof() sizeof(SCRIPT_CONTROL)
+#else
+#define getSCRIPT_CONTROLFields(a,b,c) NULL
+#define setSCRIPT_CONTROLFields(a,b,c)
+#define SCRIPT_CONTROL_sizeof() 0
+#endif
+
+#ifndef NO_SCRIPT_ITEM
+SCRIPT_ITEM *getSCRIPT_ITEMFields(JNIEnv *env, jobject lpObject, SCRIPT_ITEM *lpStruct);
+void setSCRIPT_ITEMFields(JNIEnv *env, jobject lpObject, SCRIPT_ITEM *lpStruct);
+#define SCRIPT_ITEM_sizeof() sizeof(SCRIPT_ITEM)
+#else
+#define getSCRIPT_ITEMFields(a,b,c) NULL
+#define setSCRIPT_ITEMFields(a,b,c)
+#define SCRIPT_ITEM_sizeof() 0
+#endif
+
+#ifndef NO_SCRIPT_LOGATTR
+SCRIPT_LOGATTR *getSCRIPT_LOGATTRFields(JNIEnv *env, jobject lpObject, SCRIPT_LOGATTR *lpStruct);
+void setSCRIPT_LOGATTRFields(JNIEnv *env, jobject lpObject, SCRIPT_LOGATTR *lpStruct);
+#define SCRIPT_LOGATTR_sizeof() sizeof(SCRIPT_LOGATTR)
+#else
+#define getSCRIPT_LOGATTRFields(a,b,c) NULL
+#define setSCRIPT_LOGATTRFields(a,b,c)
+#define SCRIPT_LOGATTR_sizeof() 0
+#endif
+
+#ifndef NO_SCRIPT_STATE
+SCRIPT_STATE *getSCRIPT_STATEFields(JNIEnv *env, jobject lpObject, SCRIPT_STATE *lpStruct);
+void setSCRIPT_STATEFields(JNIEnv *env, jobject lpObject, SCRIPT_STATE *lpStruct);
+#define SCRIPT_STATE_sizeof() sizeof(SCRIPT_STATE)
+#else
+#define getSCRIPT_STATEFields(a,b,c) NULL
+#define setSCRIPT_STATEFields(a,b,c)
+#define SCRIPT_STATE_sizeof() 0
+#endif
+
 #ifndef NO_SCROLLINFO
 SCROLLINFO *getSCROLLINFOFields(JNIEnv *env, jobject lpObject, SCROLLINFO *lpStruct);
 void setSCROLLINFOFields(JNIEnv *env, jobject lpObject, SCROLLINFO *lpStruct);

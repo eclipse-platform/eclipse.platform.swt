@@ -3648,6 +3648,269 @@ void setRECTFields(JNIEnv *env, jobject lpObject, RECT *lpStruct)
 }
 #endif
 
+#ifndef NO_SCRIPT_ANALYSIS
+typedef struct SCRIPT_ANALYSIS_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID eScript, fRTL, fLayoutRTL, fLinkBefore, fLinkAfter, fLogicalOrder, fNoGlyphIndex, s;
+} SCRIPT_ANALYSIS_FID_CACHE;
+
+SCRIPT_ANALYSIS_FID_CACHE SCRIPT_ANALYSISFc;
+
+void cacheSCRIPT_ANALYSISFields(JNIEnv *env, jobject lpObject)
+{
+	if (SCRIPT_ANALYSISFc.cached) return;
+	SCRIPT_ANALYSISFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SCRIPT_ANALYSISFc.eScript = (*env)->GetFieldID(env, SCRIPT_ANALYSISFc.clazz, "eScript", "S");
+	SCRIPT_ANALYSISFc.fRTL = (*env)->GetFieldID(env, SCRIPT_ANALYSISFc.clazz, "fRTL", "Z");
+	SCRIPT_ANALYSISFc.fLayoutRTL = (*env)->GetFieldID(env, SCRIPT_ANALYSISFc.clazz, "fLayoutRTL", "Z");
+	SCRIPT_ANALYSISFc.fLinkBefore = (*env)->GetFieldID(env, SCRIPT_ANALYSISFc.clazz, "fLinkBefore", "Z");
+	SCRIPT_ANALYSISFc.fLinkAfter = (*env)->GetFieldID(env, SCRIPT_ANALYSISFc.clazz, "fLinkAfter", "Z");
+	SCRIPT_ANALYSISFc.fLogicalOrder = (*env)->GetFieldID(env, SCRIPT_ANALYSISFc.clazz, "fLogicalOrder", "Z");
+	SCRIPT_ANALYSISFc.fNoGlyphIndex = (*env)->GetFieldID(env, SCRIPT_ANALYSISFc.clazz, "fNoGlyphIndex", "Z");
+	SCRIPT_ANALYSISFc.s = (*env)->GetFieldID(env, SCRIPT_ANALYSISFc.clazz, "s", "Lorg/eclipse/swt/internal/win32/SCRIPT_STATE;");
+	SCRIPT_ANALYSISFc.cached = 1;
+}
+
+SCRIPT_ANALYSIS *getSCRIPT_ANALYSISFields(JNIEnv *env, jobject lpObject, SCRIPT_ANALYSIS *lpStruct)
+{
+	if (!SCRIPT_ANALYSISFc.cached) cacheSCRIPT_ANALYSISFields(env, lpObject);
+	lpStruct->eScript = (*env)->GetShortField(env, lpObject, SCRIPT_ANALYSISFc.eScript);
+	lpStruct->fRTL = (*env)->GetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fRTL);
+	lpStruct->fLayoutRTL = (*env)->GetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fLayoutRTL);
+	lpStruct->fLinkBefore = (*env)->GetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fLinkBefore);
+	lpStruct->fLinkAfter = (*env)->GetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fLinkAfter);
+	lpStruct->fLogicalOrder = (*env)->GetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fLogicalOrder);
+	lpStruct->fNoGlyphIndex = (*env)->GetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fNoGlyphIndex);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SCRIPT_ANALYSISFc.s);
+	getSCRIPT_STATEFields(env, lpObject1, &lpStruct->s);
+	}
+	return lpStruct;
+}
+
+void setSCRIPT_ANALYSISFields(JNIEnv *env, jobject lpObject, SCRIPT_ANALYSIS *lpStruct)
+{
+	if (!SCRIPT_ANALYSISFc.cached) cacheSCRIPT_ANALYSISFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, SCRIPT_ANALYSISFc.eScript, (jshort)lpStruct->eScript);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fRTL, (jboolean)lpStruct->fRTL);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fLayoutRTL, (jboolean)lpStruct->fLayoutRTL);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fLinkBefore, (jboolean)lpStruct->fLinkBefore);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fLinkAfter, (jboolean)lpStruct->fLinkAfter);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fLogicalOrder, (jboolean)lpStruct->fLogicalOrder);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fNoGlyphIndex, (jboolean)lpStruct->fNoGlyphIndex);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SCRIPT_ANALYSISFc.s);
+	setSCRIPT_STATEFields(env, lpObject1, &lpStruct->s);
+	}
+}
+#endif
+
+#ifndef NO_SCRIPT_CONTROL
+typedef struct SCRIPT_CONTROL_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID uDefaultLanguage, fContextDigits, fInvertPreBoundDir, fInvertPostBoundDir, fLinkStringBefore, fLinkStringAfter, fNeutralOverride, fNumericOverride, fLegacyBidiClass, fReserved;
+} SCRIPT_CONTROL_FID_CACHE;
+
+SCRIPT_CONTROL_FID_CACHE SCRIPT_CONTROLFc;
+
+void cacheSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject)
+{
+	if (SCRIPT_CONTROLFc.cached) return;
+	SCRIPT_CONTROLFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SCRIPT_CONTROLFc.uDefaultLanguage = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "uDefaultLanguage", "I");
+	SCRIPT_CONTROLFc.fContextDigits = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fContextDigits", "Z");
+	SCRIPT_CONTROLFc.fInvertPreBoundDir = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fInvertPreBoundDir", "Z");
+	SCRIPT_CONTROLFc.fInvertPostBoundDir = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fInvertPostBoundDir", "Z");
+	SCRIPT_CONTROLFc.fLinkStringBefore = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fLinkStringBefore", "Z");
+	SCRIPT_CONTROLFc.fLinkStringAfter = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fLinkStringAfter", "Z");
+	SCRIPT_CONTROLFc.fNeutralOverride = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fNeutralOverride", "Z");
+	SCRIPT_CONTROLFc.fNumericOverride = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fNumericOverride", "Z");
+	SCRIPT_CONTROLFc.fLegacyBidiClass = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fLegacyBidiClass", "Z");
+	SCRIPT_CONTROLFc.fReserved = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fReserved", "I");
+	SCRIPT_CONTROLFc.cached = 1;
+}
+
+SCRIPT_CONTROL *getSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject, SCRIPT_CONTROL *lpStruct)
+{
+	if (!SCRIPT_CONTROLFc.cached) cacheSCRIPT_CONTROLFields(env, lpObject);
+	lpStruct->uDefaultLanguage = (*env)->GetIntField(env, lpObject, SCRIPT_CONTROLFc.uDefaultLanguage);
+	lpStruct->fContextDigits = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fContextDigits);
+	lpStruct->fInvertPreBoundDir = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fInvertPreBoundDir);
+	lpStruct->fInvertPostBoundDir = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fInvertPostBoundDir);
+	lpStruct->fLinkStringBefore = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fLinkStringBefore);
+	lpStruct->fLinkStringAfter = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fLinkStringAfter);
+	lpStruct->fNeutralOverride = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fNeutralOverride);
+	lpStruct->fNumericOverride = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fNumericOverride);
+	lpStruct->fLegacyBidiClass = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fLegacyBidiClass);
+	lpStruct->fReserved = (*env)->GetIntField(env, lpObject, SCRIPT_CONTROLFc.fReserved);
+	return lpStruct;
+}
+
+void setSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject, SCRIPT_CONTROL *lpStruct)
+{
+	if (!SCRIPT_CONTROLFc.cached) cacheSCRIPT_CONTROLFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, SCRIPT_CONTROLFc.uDefaultLanguage, (jint)lpStruct->uDefaultLanguage);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fContextDigits, (jboolean)lpStruct->fContextDigits);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fInvertPreBoundDir, (jboolean)lpStruct->fInvertPreBoundDir);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fInvertPostBoundDir, (jboolean)lpStruct->fInvertPostBoundDir);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fLinkStringBefore, (jboolean)lpStruct->fLinkStringBefore);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fLinkStringAfter, (jboolean)lpStruct->fLinkStringAfter);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fNeutralOverride, (jboolean)lpStruct->fNeutralOverride);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fNumericOverride, (jboolean)lpStruct->fNumericOverride);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fLegacyBidiClass, (jboolean)lpStruct->fLegacyBidiClass);
+	(*env)->SetIntField(env, lpObject, SCRIPT_CONTROLFc.fReserved, (jint)lpStruct->fReserved);
+}
+#endif
+
+#ifndef NO_SCRIPT_ITEM
+typedef struct SCRIPT_ITEM_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID iCharPos, a;
+} SCRIPT_ITEM_FID_CACHE;
+
+SCRIPT_ITEM_FID_CACHE SCRIPT_ITEMFc;
+
+void cacheSCRIPT_ITEMFields(JNIEnv *env, jobject lpObject)
+{
+	if (SCRIPT_ITEMFc.cached) return;
+	SCRIPT_ITEMFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SCRIPT_ITEMFc.iCharPos = (*env)->GetFieldID(env, SCRIPT_ITEMFc.clazz, "iCharPos", "I");
+	SCRIPT_ITEMFc.a = (*env)->GetFieldID(env, SCRIPT_ITEMFc.clazz, "a", "Lorg/eclipse/swt/internal/win32/SCRIPT_ANALYSIS;");
+	SCRIPT_ITEMFc.cached = 1;
+}
+
+SCRIPT_ITEM *getSCRIPT_ITEMFields(JNIEnv *env, jobject lpObject, SCRIPT_ITEM *lpStruct)
+{
+	if (!SCRIPT_ITEMFc.cached) cacheSCRIPT_ITEMFields(env, lpObject);
+	lpStruct->iCharPos = (*env)->GetIntField(env, lpObject, SCRIPT_ITEMFc.iCharPos);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SCRIPT_ITEMFc.a);
+	getSCRIPT_ANALYSISFields(env, lpObject1, &lpStruct->a);
+	}
+	return lpStruct;
+}
+
+void setSCRIPT_ITEMFields(JNIEnv *env, jobject lpObject, SCRIPT_ITEM *lpStruct)
+{
+	if (!SCRIPT_ITEMFc.cached) cacheSCRIPT_ITEMFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, SCRIPT_ITEMFc.iCharPos, (jint)lpStruct->iCharPos);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SCRIPT_ITEMFc.a);
+	setSCRIPT_ANALYSISFields(env, lpObject1, &lpStruct->a);
+	}
+}
+#endif
+
+#ifndef NO_SCRIPT_LOGATTR
+typedef struct SCRIPT_LOGATTR_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID fSoftBreak, fWhiteSpace, fCharStop, fWordStop, fInvalid, fReserved;
+} SCRIPT_LOGATTR_FID_CACHE;
+
+SCRIPT_LOGATTR_FID_CACHE SCRIPT_LOGATTRFc;
+
+void cacheSCRIPT_LOGATTRFields(JNIEnv *env, jobject lpObject)
+{
+	if (SCRIPT_LOGATTRFc.cached) return;
+	SCRIPT_LOGATTRFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SCRIPT_LOGATTRFc.fSoftBreak = (*env)->GetFieldID(env, SCRIPT_LOGATTRFc.clazz, "fSoftBreak", "Z");
+	SCRIPT_LOGATTRFc.fWhiteSpace = (*env)->GetFieldID(env, SCRIPT_LOGATTRFc.clazz, "fWhiteSpace", "Z");
+	SCRIPT_LOGATTRFc.fCharStop = (*env)->GetFieldID(env, SCRIPT_LOGATTRFc.clazz, "fCharStop", "Z");
+	SCRIPT_LOGATTRFc.fWordStop = (*env)->GetFieldID(env, SCRIPT_LOGATTRFc.clazz, "fWordStop", "Z");
+	SCRIPT_LOGATTRFc.fInvalid = (*env)->GetFieldID(env, SCRIPT_LOGATTRFc.clazz, "fInvalid", "Z");
+	SCRIPT_LOGATTRFc.fReserved = (*env)->GetFieldID(env, SCRIPT_LOGATTRFc.clazz, "fReserved", "B");
+	SCRIPT_LOGATTRFc.cached = 1;
+}
+
+SCRIPT_LOGATTR *getSCRIPT_LOGATTRFields(JNIEnv *env, jobject lpObject, SCRIPT_LOGATTR *lpStruct)
+{
+	if (!SCRIPT_LOGATTRFc.cached) cacheSCRIPT_LOGATTRFields(env, lpObject);
+	lpStruct->fSoftBreak = (*env)->GetBooleanField(env, lpObject, SCRIPT_LOGATTRFc.fSoftBreak);
+	lpStruct->fWhiteSpace = (*env)->GetBooleanField(env, lpObject, SCRIPT_LOGATTRFc.fWhiteSpace);
+	lpStruct->fCharStop = (*env)->GetBooleanField(env, lpObject, SCRIPT_LOGATTRFc.fCharStop);
+	lpStruct->fWordStop = (*env)->GetBooleanField(env, lpObject, SCRIPT_LOGATTRFc.fWordStop);
+	lpStruct->fInvalid = (*env)->GetBooleanField(env, lpObject, SCRIPT_LOGATTRFc.fInvalid);
+	lpStruct->fReserved = (*env)->GetByteField(env, lpObject, SCRIPT_LOGATTRFc.fReserved);
+	return lpStruct;
+}
+
+void setSCRIPT_LOGATTRFields(JNIEnv *env, jobject lpObject, SCRIPT_LOGATTR *lpStruct)
+{
+	if (!SCRIPT_LOGATTRFc.cached) cacheSCRIPT_LOGATTRFields(env, lpObject);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_LOGATTRFc.fSoftBreak, (jboolean)lpStruct->fSoftBreak);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_LOGATTRFc.fWhiteSpace, (jboolean)lpStruct->fWhiteSpace);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_LOGATTRFc.fCharStop, (jboolean)lpStruct->fCharStop);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_LOGATTRFc.fWordStop, (jboolean)lpStruct->fWordStop);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_LOGATTRFc.fInvalid, (jboolean)lpStruct->fInvalid);
+	(*env)->SetByteField(env, lpObject, SCRIPT_LOGATTRFc.fReserved, (jbyte)lpStruct->fReserved);
+}
+#endif
+
+#ifndef NO_SCRIPT_STATE
+typedef struct SCRIPT_STATE_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID uBidiLevel, fOverrideDirection, fInhibitSymSwap, fCharShape, fDigitSubstitute, fInhibitLigate, fDisplayZWG, fArabicNumContext, fGcpClusters, fReserved, fEngineReserved;
+} SCRIPT_STATE_FID_CACHE;
+
+SCRIPT_STATE_FID_CACHE SCRIPT_STATEFc;
+
+void cacheSCRIPT_STATEFields(JNIEnv *env, jobject lpObject)
+{
+	if (SCRIPT_STATEFc.cached) return;
+	SCRIPT_STATEFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SCRIPT_STATEFc.uBidiLevel = (*env)->GetFieldID(env, SCRIPT_STATEFc.clazz, "uBidiLevel", "S");
+	SCRIPT_STATEFc.fOverrideDirection = (*env)->GetFieldID(env, SCRIPT_STATEFc.clazz, "fOverrideDirection", "Z");
+	SCRIPT_STATEFc.fInhibitSymSwap = (*env)->GetFieldID(env, SCRIPT_STATEFc.clazz, "fInhibitSymSwap", "Z");
+	SCRIPT_STATEFc.fCharShape = (*env)->GetFieldID(env, SCRIPT_STATEFc.clazz, "fCharShape", "Z");
+	SCRIPT_STATEFc.fDigitSubstitute = (*env)->GetFieldID(env, SCRIPT_STATEFc.clazz, "fDigitSubstitute", "Z");
+	SCRIPT_STATEFc.fInhibitLigate = (*env)->GetFieldID(env, SCRIPT_STATEFc.clazz, "fInhibitLigate", "Z");
+	SCRIPT_STATEFc.fDisplayZWG = (*env)->GetFieldID(env, SCRIPT_STATEFc.clazz, "fDisplayZWG", "Z");
+	SCRIPT_STATEFc.fArabicNumContext = (*env)->GetFieldID(env, SCRIPT_STATEFc.clazz, "fArabicNumContext", "Z");
+	SCRIPT_STATEFc.fGcpClusters = (*env)->GetFieldID(env, SCRIPT_STATEFc.clazz, "fGcpClusters", "Z");
+	SCRIPT_STATEFc.fReserved = (*env)->GetFieldID(env, SCRIPT_STATEFc.clazz, "fReserved", "Z");
+	SCRIPT_STATEFc.fEngineReserved = (*env)->GetFieldID(env, SCRIPT_STATEFc.clazz, "fEngineReserved", "S");
+	SCRIPT_STATEFc.cached = 1;
+}
+
+SCRIPT_STATE *getSCRIPT_STATEFields(JNIEnv *env, jobject lpObject, SCRIPT_STATE *lpStruct)
+{
+	if (!SCRIPT_STATEFc.cached) cacheSCRIPT_STATEFields(env, lpObject);
+	lpStruct->uBidiLevel = (*env)->GetShortField(env, lpObject, SCRIPT_STATEFc.uBidiLevel);
+	lpStruct->fOverrideDirection = (*env)->GetBooleanField(env, lpObject, SCRIPT_STATEFc.fOverrideDirection);
+	lpStruct->fInhibitSymSwap = (*env)->GetBooleanField(env, lpObject, SCRIPT_STATEFc.fInhibitSymSwap);
+	lpStruct->fCharShape = (*env)->GetBooleanField(env, lpObject, SCRIPT_STATEFc.fCharShape);
+	lpStruct->fDigitSubstitute = (*env)->GetBooleanField(env, lpObject, SCRIPT_STATEFc.fDigitSubstitute);
+	lpStruct->fInhibitLigate = (*env)->GetBooleanField(env, lpObject, SCRIPT_STATEFc.fInhibitLigate);
+	lpStruct->fDisplayZWG = (*env)->GetBooleanField(env, lpObject, SCRIPT_STATEFc.fDisplayZWG);
+	lpStruct->fArabicNumContext = (*env)->GetBooleanField(env, lpObject, SCRIPT_STATEFc.fArabicNumContext);
+	lpStruct->fGcpClusters = (*env)->GetBooleanField(env, lpObject, SCRIPT_STATEFc.fGcpClusters);
+	lpStruct->fReserved = (*env)->GetBooleanField(env, lpObject, SCRIPT_STATEFc.fReserved);
+	lpStruct->fEngineReserved = (*env)->GetShortField(env, lpObject, SCRIPT_STATEFc.fEngineReserved);
+	return lpStruct;
+}
+
+void setSCRIPT_STATEFields(JNIEnv *env, jobject lpObject, SCRIPT_STATE *lpStruct)
+{
+	if (!SCRIPT_STATEFc.cached) cacheSCRIPT_STATEFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, SCRIPT_STATEFc.uBidiLevel, (jshort)lpStruct->uBidiLevel);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_STATEFc.fOverrideDirection, (jboolean)lpStruct->fOverrideDirection);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_STATEFc.fInhibitSymSwap, (jboolean)lpStruct->fInhibitSymSwap);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_STATEFc.fCharShape, (jboolean)lpStruct->fCharShape);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_STATEFc.fDigitSubstitute, (jboolean)lpStruct->fDigitSubstitute);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_STATEFc.fInhibitLigate, (jboolean)lpStruct->fInhibitLigate);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_STATEFc.fDisplayZWG, (jboolean)lpStruct->fDisplayZWG);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_STATEFc.fArabicNumContext, (jboolean)lpStruct->fArabicNumContext);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_STATEFc.fGcpClusters, (jboolean)lpStruct->fGcpClusters);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_STATEFc.fReserved, (jboolean)lpStruct->fReserved);
+	(*env)->SetShortField(env, lpObject, SCRIPT_STATEFc.fEngineReserved, (jshort)lpStruct->fEngineReserved);
+}
+#endif
+
 #ifndef NO_SCROLLINFO
 typedef struct SCROLLINFO_FID_CACHE {
 	int cached;

@@ -28,7 +28,7 @@ call k:\dev\products\msvc60\vc98\bin\vcvars32.bat
 rem ****** 
 rem MS-SDK
 rem ******
-set Mssdk=j:\teamswt\swt-builddir\mssdk
+set Mssdk=K:\dev\PRODUCTS\PLATSDK\feb2003
 call %mssdk%\setenv.bat
 
 rem *****

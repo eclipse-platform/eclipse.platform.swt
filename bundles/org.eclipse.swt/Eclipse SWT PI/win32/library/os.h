@@ -36,6 +36,7 @@
 #ifndef _WIN32_WCE
 #include <initguid.h>
 #include <oleacc.h>
+#include <usp10.h>
 #endif // _WIN32_WCE
 
 #if defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)
@@ -69,6 +70,11 @@
 #define NO_NONCLIENTMETRICSA
 #define NO_NONCLIENTMETRICSW
 #define NO_PRINTDLG
+#define NO_SCRIPT_ANALYSIS
+#define NO_SCRIPT_CONTROL
+#define NO_SCRIPT_ITEM
+#define NO_SCRIPT_LOGATTR
+#define NO_SCRIPT_STATE
 #define NO_TOOLINFO
 #define NO_TRACKMOUSEEVENT
 #define NO_TRIVERTEX
@@ -238,6 +244,8 @@
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2II
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II
 #define NO_MoveToEx
 #define NO_OleInitialize
 #define NO_OleUninitialize
@@ -304,6 +312,17 @@
 #define NO_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSW_2I
 #define NO_SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I
 #define NO_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I
+#define NO_ScriptBreak
+#define NO_ScriptCacheGetHeight
+#define NO_ScriptCPtoX
+#define NO_ScriptFreeCache
+#define NO_ScriptGetLogicalWidths
+#define NO_ScriptItemize
+#define NO_ScriptLayout
+#define NO_ScriptPlace
+#define NO_ScriptShape
+#define NO_ScriptTextOut
+#define NO_ScriptXtoCP
 #define NO_ToAscii
 #define NO_ToUnicode
 #define NO_TrackMouseEvent
