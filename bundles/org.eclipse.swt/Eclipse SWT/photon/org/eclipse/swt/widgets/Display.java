@@ -2024,7 +2024,7 @@ void releaseDisplay () {
 	if (nullImage != 0) {
 		PhImage_t phImage = new PhImage_t();
 		OS.memmove(phImage, nullImage, PhImage_t.sizeof);
-		phImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+		phImage.flags = (byte)OS.Ph_RELEASE_IMAGE_ALL;
 		OS.memmove(nullImage, phImage, PhImage_t.sizeof);
 		OS.PhReleaseImage(nullImage);
 		OS.free(nullImage);

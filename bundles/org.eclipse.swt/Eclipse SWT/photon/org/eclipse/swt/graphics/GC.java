@@ -220,7 +220,7 @@ public void copyArea(Image image, int x, int y) {
 		if (sharedMem) {
 			OS.PgShmemDestroy(memImage);
 		} else {
-			phImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+			phImage.flags = (byte)OS.Ph_RELEASE_IMAGE_ALL;
 			OS.memmove(memImage, phImage, PhImage_t.sizeof);
 			OS.PhReleaseImage(memImage);
 			OS.free(memImage);	
@@ -294,7 +294,7 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 				y = (short)0;
 				drawImage = memImage;
 				OS.memmove(phDrawImage, drawImage, PhImage_t.sizeof);
-				phDrawImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+				phDrawImage.flags = (byte)OS.Ph_RELEASE_IMAGE_ALL;
 				OS.memmove(drawImage, phDrawImage, PhImage_t.sizeof);
 			}
 			PhPoint_t pos = new PhPoint_t();
@@ -651,7 +651,7 @@ void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int
 		OS.PgSetUserClip(null);
 		unsetGC(prevContext);	
 		if (drawImage != image.handle) {
-			phDrawImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+			phDrawImage.flags = (byte)OS.Ph_RELEASE_IMAGE_ALL;
 			OS.memmove(drawImage, phDrawImage, PhImage_t.sizeof);
 			OS.PhReleaseImage(drawImage);
 			OS.free(drawImage);
@@ -845,7 +845,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 		/* Release the temporary image but not the mask data */
 		phMaskImage.mask_bm = 0;
 		phMaskImage.mask_bpl = 0;
-		phMaskImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+		phMaskImage.flags = (byte)OS.Ph_RELEASE_IMAGE_ALL;
 		OS.memmove(maskImage, phMaskImage, PhImage_t.sizeof);
 		OS.PhReleaseImage(maskImage);
 		OS.free(maskImage);
@@ -906,7 +906,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 			/* Release the temporary image but not the image data */
 			phAlphaImage.image = 0;
 			phAlphaImage.bpl = 0;
-			phAlphaImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+			phAlphaImage.flags = (byte)OS.Ph_RELEASE_IMAGE_ALL;
 			OS.memmove(alphaImage, phAlphaImage, PhImage_t.sizeof);
 			OS.PhReleaseImage(alphaImage);
 			OS.free(alphaImage);
@@ -1266,7 +1266,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 				OS.PgSetDrawMode(OS.Pg_DrawModeDSx);
 				dirtyBits |= DIRTY_XORMODE;
 				OS.PgDrawImage(phImage.image, phImage.type, point, dim, phImage.bpl, 0);
-				phImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+				phImage.flags = (byte)OS.Ph_RELEASE_IMAGE_ALL;
 				OS.memmove(image, phImage, PhImage_t.sizeof);
 				OS.PhReleaseImage(image);
 				OS.free(image);

@@ -292,13 +292,13 @@ void click (int widget) {
 	event.emitter_handle = widget;
 	event.collector_rid = rid;
 	event.collector_handle = widget;
-	event.flags = OS.Ph_EVENT_DIRECT;
-	event.processing_flags = OS.Ph_FAKE_EVENT;
+	event.flags = (short) OS.Ph_EVENT_DIRECT;
+	event.processing_flags = (short) OS.Ph_FAKE_EVENT;
 	event.type = OS.Ph_EV_BUT_PRESS;
 	event.num_rects = 1;
 	PhPointerEvent_t pe = new PhPointerEvent_t ();
 	pe.click_count = 1;
-	pe.buttons = OS.Ph_BUTTON_SELECT;
+	pe.buttons = (short) OS.Ph_BUTTON_SELECT;
 	PhRect_t rect = new PhRect_t ();
 	int ptr = OS.malloc (PhEvent_t.sizeof + PhPointerEvent_t.sizeof + PhRect_t.sizeof);
 	OS.memmove (ptr, event, PhEvent_t.sizeof);
@@ -307,7 +307,7 @@ void click (int widget) {
 	OS.PtSendEventToWidget (widget, ptr);	
 	OS.PtFlush ();
 	event.type = OS.Ph_EV_BUT_RELEASE;
-	event.subtype = OS.Ph_EV_RELEASE_REAL;
+	event.subtype = (short) OS.Ph_EV_RELEASE_REAL;
 	OS.memmove (ptr, event, PhEvent_t.sizeof);
 	OS.memmove (ptr + PhEvent_t.sizeof,  rect, PhRect_t.sizeof);
 	OS.memmove (ptr + PhEvent_t.sizeof + PhRect_t.sizeof, pe, PhPointerEvent_t.sizeof);

@@ -119,7 +119,7 @@ public RGB open () {
 	byte[] title = null;
 	if (this.title != null) title = Converter.wcsToMbcs (null, this.title, true);
 	PtColorSelectInfo_t info = new PtColorSelectInfo_t();
-	info.flags = OS.Pt_COLORSELECT_MODAL;
+	info.flags = (short) OS.Pt_COLORSELECT_MODAL;
 	if (rgb != null) info.rgb = (rgb. blue & 0xFF) | ((rgb.green & 0xFF) << 8) | ((rgb.red & 0xFF) << 16);
 	rgb = null;
 

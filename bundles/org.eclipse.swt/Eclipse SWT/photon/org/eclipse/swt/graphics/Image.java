@@ -803,7 +803,7 @@ void init(Device device, ImageData i) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	PhImage_t phImage = new PhImage_t();
 	phImage.type = type;
-	phImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+	phImage.flags = (byte)OS.Ph_RELEASE_IMAGE_ALL;
 	int size = i.data.length;
 	int ptr = OS.malloc(size);
 	if (ptr == 0) {
@@ -1010,7 +1010,7 @@ static void destroyImage(int image) {
 	if (image == 0) return;
 	PhImage_t phImage = new PhImage_t();
 	OS.memmove(phImage, image, PhImage_t.sizeof);
-	phImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
+	phImage.flags = (byte)OS.Ph_RELEASE_IMAGE_ALL;
 	OS.memmove(image, phImage, PhImage_t.sizeof);
 	OS.PhReleaseImage(image);
 	OS.free(image);
