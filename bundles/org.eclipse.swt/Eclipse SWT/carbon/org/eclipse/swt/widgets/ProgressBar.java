@@ -31,7 +31,7 @@ import org.eclipse.swt.graphics.*;
 public /*final*/ class ProgressBar extends Control {
 	
 	// AW
-	private static final int SIZE= 12;
+	private static final int SIZE= 16;
 	private int fTopMargin;
 	private int fBottomMargin;
 	// AW
