@@ -636,13 +636,16 @@ public void dispose () {
 	* top level shell when the child shell is disposed.
 	*/
 	Composite parent = this.parent;
-	int [] argList = {OS.XmNoverrideRedirect, 0};
-	OS.XtGetValues (shellHandle, argList, argList.length / 2);
-	super.dispose ();
-	if (parent != null && argList [1] != 0) {
-		Shell shell = parent.getShell ();
-		shell.bringToTop (false);
+	if (parent != null) {
+		int [] argList = {OS.XmNoverrideRedirect, 0};
+		OS.XtGetValues (shellHandle, argList, argList.length / 2);
+		Shell activeShell = display.getActiveShell ();
+		if (argList [1] != 0 || activeShell == this) {
+			Shell shell = parent.getShell ();
+			shell.bringToTop (false);
+		}
 	}
+	super.dispose ();
 	
 	/*
 	* This code intentionally commented.
