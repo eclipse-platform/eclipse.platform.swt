@@ -2194,7 +2194,8 @@ public void setItemCount (int count) {
 	setRedraw (false);
 	removeAll ();
 	if (isVirtual) {
-		OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, count, 0);
+		int flags = OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL;
+		OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, count, flags);
 		count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		/*
 		* Bug in Windows.  When LVM_SETITEMCOUNT is sent to a table
