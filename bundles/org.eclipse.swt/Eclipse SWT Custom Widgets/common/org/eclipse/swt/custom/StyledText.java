@@ -1557,6 +1557,10 @@ public class StyledText extends Canvas {
  */
 public StyledText(Composite parent, int style) {
 	super(parent, checkStyle(style | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND));
+	// set the bg/fg in the OS to ensure that these are the same as StyledText, necessary
+	// for ensuring that the bg/fg the IME box uses is the same as what StyledText uses
+	super.setForeground(getForeground());
+	super.setBackground(getBackground());
 	Display display = getDisplay();
 	isBidi = StyledTextBidi.isBidiPlatform();
 	if ((style & SWT.READ_ONLY) != 0) {
