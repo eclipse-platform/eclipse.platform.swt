@@ -229,6 +229,18 @@ void releaseHandle () {
 	super.releaseHandle ();
 	labelHandle = 0;
 }
+void setBackgroundPixel (int pixel) {
+	super.setBackgroundPixel (pixel);
+	int [] argList = {OS.XmNforeground, 0};
+	OS.XtGetValues (labelHandle, argList, argList.length / 2);
+	OS.XmChangeColor (labelHandle, pixel);
+	OS.XtSetValues (labelHandle, argList, argList.length / 2);
+}
+void setForegroundPixel (int pixel) {
+	int [] argList = {OS.XmNforeground, pixel};
+	OS.XtSetValues (labelHandle, argList, argList.length / 2);
+	super.setForegroundPixel (pixel);
+}
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,
