@@ -1819,6 +1819,339 @@ public void test_removeVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListene
 	// tested in test_addVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListener
 }
 
+public void test_replaceStyleRanges(){
+	StyleRange[] styles;
+	String textString = textString();
+
+	/* 
+		defaultStyles
+		
+			(0,48,RED,YELLOW), 
+			(58,10,BLUE,CYAN), 
+			(68,10,GREEN,PURPLE)
+	*/
+
+
+	text.setText(textString);
+	
+	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
+	text.replaceStyleRanges(0, 78, new StyleRange[] {});
+	styles = text.getStyleRanges();
+	assertTrue(":0:", styles.length == 0);
+	text.setText(textString);
+	styles = text.getStyleRanges();
+	assertTrue(":0:", styles.length == 0);
+	text.replaceStyleRanges(0, 78, new StyleRange[] {});
+	styles = text.getStyleRanges();
+	assertTrue(":0:", styles.length == 0);
+	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
+	styles = text.getStyleRanges();
+	assertTrue(":0:", styles.length == 3);
+	assertTrue(":0:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
+	assertTrue(":0:", styles[1].equals(getStyle(58,10,BLUE,CYAN)));
+	assertTrue(":0:", styles[2].equals(getStyle(68,10,GREEN,PURPLE)));
+	
+	// No overlap with existing styles
+	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
+	text.replaceStyleRanges(48, 5, new StyleRange[] {getStyle(48,5,YELLOW,RED)});
+	styles = text.getStyleRanges();
+	assertTrue(":1:", styles.length == 4);
+	assertTrue(":1:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
+	assertTrue(":1:", styles[1].equals(getStyle(48,5,YELLOW,RED)));
+	assertTrue(":1:", styles[2].equals(getStyle(58,10,BLUE,CYAN)));
+	assertTrue(":1:", styles[3].equals(getStyle(68,10,GREEN,PURPLE)));
+
+	// Overlap middle of one style - partial
+	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
+	text.replaceStyleRanges(10, 10, new StyleRange[] {getStyle(10,10,YELLOW,RED)});
+	styles = text.getStyleRanges();
+	assertTrue(":2:", styles.length == 5);
+	assertTrue(":2:", styles[0].equals(getStyle(0,10,RED,YELLOW)));
+	assertTrue(":2:", styles[1].equals(getStyle(10,10,YELLOW,RED)));
+	assertTrue(":2:", styles[2].equals(getStyle(20,28,RED,YELLOW)));
+	assertTrue(":2:", styles[3].equals(getStyle(58,10,BLUE,CYAN)));
+	assertTrue(":2:", styles[4].equals(getStyle(68,10,GREEN,PURPLE)));
+	text.replaceStyleRanges(0, text.getCharCount(), new StyleRange[] {});
+	styles = text.getStyleRanges();
+	assertTrue(":2:", styles.length == 0);
+	
+	// Overlap middle of one style - full
+	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
+	text.replaceStyleRanges(58, 10, new StyleRange[] {getStyle(58,10,YELLOW,RED)});
+	styles = text.getStyleRanges();
+	assertTrue(":3:", styles.length == 3);
+	assertTrue(":3:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
+	assertTrue(":3:", styles[1].equals(getStyle(58,10,YELLOW,RED)));
+	assertTrue(":3:", styles[2].equals(getStyle(68,10,GREEN,PURPLE)));
+	
+	// Overlap end of one style
+	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
+	text.replaceStyleRanges(38, 15, new StyleRange[] {getStyle(38,15,YELLOW,RED)});
+	styles = text.getStyleRanges();
+	assertTrue(":4:", styles.length == 4);
+	assertTrue(":4:", styles[0].equals(getStyle(0,38,RED,YELLOW)));
+	assertTrue(":4:", styles[1].equals(getStyle(38,15,YELLOW,RED)));
+	assertTrue(":4:", styles[2].equals(getStyle(58,10,BLUE,CYAN)));
+	assertTrue(":4:", styles[3].equals(getStyle(68,10,GREEN,PURPLE)));
+	
+	// Overlap beginning of one style
+	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
+	text.replaceStyleRanges(50, 10, new StyleRange[] {getStyle(50,10,YELLOW,RED)});
+	styles = text.getStyleRanges();
+	assertTrue(":5:", styles.length == 4);
+	assertTrue(":5:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
+	assertTrue(":5:", styles[1].equals(getStyle(50,10,YELLOW,RED)));
+	assertTrue(":5:", styles[2].equals(getStyle(60,8,BLUE,CYAN)));
+	assertTrue(":5:", styles[3].equals(getStyle(68,10,GREEN,PURPLE)));
+
+	// Overlap complete style
+	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
+	text.replaceStyleRanges(48, 20, new StyleRange[] {getStyle(48,20,YELLOW,RED)});
+	styles = text.getStyleRanges();
+	assertTrue(":6:", styles.length == 3);
+	assertTrue(":6:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
+	assertTrue(":6:", styles[1].equals(getStyle(48,20,YELLOW,RED)));
+	assertTrue(":6:", styles[2].equals(getStyle(68,10,GREEN,PURPLE)));
+
+	// reset the environment
+	text.dispose();
+	text = new StyledText(shell, SWT.NULL);
+	setWidget(text);
+
+	text.setText(textString);
+	StyleRange ranges[] = new StyleRange[3];
+	ranges[0] = getStyle(0,48,RED,YELLOW);
+	ranges[1] = getStyle(48,20,BLUE,CYAN);
+	ranges[2] = getStyle(68,10,GREEN,PURPLE);
+	text.replaceStyleRanges(0, 78, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":7:", styles.length == 3);
+	assertTrue(":7:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
+	assertTrue(":7:", styles[1].equals(getStyle(48,20,BLUE,CYAN)));
+	assertTrue(":7:", styles[2].equals(getStyle(68,10,GREEN,PURPLE)));
+
+	text.setText("012345678901234");
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(0,5,RED,YELLOW);
+	ranges[1] = getStyle(10,5,BLUE,CYAN);
+	text.replaceStyleRanges(0, 15, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":8:", styles.length == 2);
+	assertTrue(":8:", styles[0].equals(getStyle(0,5,RED,YELLOW)));
+	assertTrue(":8:", styles[1].equals(getStyle(10,5,BLUE,CYAN)));
+	
+	text.setText("redgreenblueyellowcyanpurple");
+	ranges = new StyleRange[4];
+	ranges[0] = getStyle(0,3,RED,null);
+	ranges[1] = getStyle(3,5,GREEN,null);
+	ranges[2] = getStyle(8,4,BLUE,null);
+	ranges[3] = getStyle(12,6,YELLOW,null);
+	text.replaceStyleRanges(0, 18, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":9:", styles.length == 4);
+	assertTrue(":9:", styles[0].equals(getStyle(0,3,RED,null)));
+	assertTrue(":9:", styles[1].equals(getStyle(3,5,GREEN,null)));
+	assertTrue(":9:", styles[2].equals(getStyle(8,4,BLUE, null)));
+	assertTrue(":9:", styles[3].equals(getStyle(12,6,YELLOW,null)));
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(18,4,CYAN,null);
+	ranges[1] = getStyle(22,6,PURPLE,null);
+	text.replaceStyleRanges(18, 10, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":9:", styles.length == 6);
+	assertTrue(":9:", styles[4].equals(getStyle(18,4,CYAN,null)));
+	assertTrue(":9:", styles[5].equals(getStyle(22,6,PURPLE,null)));
+
+	// reset the environment
+	text.dispose();
+	text = new StyledText(shell, SWT.NULL);
+	setWidget(text);
+
+	textString = textString();
+			
+	text.setText(textString);
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(0,10,RED,YELLOW);
+	ranges[1] = getStyle(25,10,GREEN,PURPLE);
+	text.replaceStyleRanges(0, 35, ranges);
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(5,15,BLUE,CYAN);
+	ranges[1] = getStyle(20,10,GREEN,PURPLE);
+	text.replaceStyleRanges(5, 25, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":10:", styles.length == 4);
+	assertTrue(":10:", styles[0].equals(getStyle(0,5,RED,YELLOW)));
+	assertTrue(":10:", styles[1].equals(getStyle(5,15,BLUE,CYAN)));
+	assertTrue(":10:", styles[2].equals(getStyle(20,10,GREEN,PURPLE)));
+	assertTrue(":10:", styles[3].equals(getStyle(30,5,GREEN,PURPLE)));
+
+	text.setText("01234567890123456789");
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(0,10,RED,YELLOW);
+	ranges[1] = getStyle(10,10,BLUE,CYAN);
+	text.replaceStyleRanges(0, 20, ranges);
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(5,3,RED,YELLOW);
+	ranges[1] = getStyle(12,5,BLUE,CYAN);
+	text.replaceStyleRanges(5, 12, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":11:", styles.length == 4);
+	assertTrue(":11:", styles[0].equals(getStyle(0,5,RED,YELLOW)));
+	assertTrue(":11:", styles[1].equals(getStyle(5,3,RED,YELLOW)));
+	assertTrue(":11:", styles[2].equals(getStyle(12,5,BLUE,CYAN)));
+	assertTrue(":11:", styles[3].equals(getStyle(17,3,BLUE,CYAN)));
+	
+	text.setText("0123456789012345");
+	ranges = new StyleRange[3];
+	ranges[0] = getStyle(0,5,RED,YELLOW);
+	ranges[1] = getStyle(5,5,BLUE,CYAN);
+	ranges[2] = getStyle(10,5,GREEN,PURPLE);
+	text.replaceStyleRanges(0, 15, ranges);
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(5,5,RED,YELLOW);
+	ranges[1] = getStyle(10,5,RED,YELLOW);
+	text.replaceStyleRanges(5, 10, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":12:", styles.length == 3);
+	assertTrue(":12:", styles[0].equals(getStyle(0,5,RED,YELLOW)));
+	assertTrue(":12:", styles[1].equals(getStyle(5,5,RED,YELLOW)));
+	assertTrue(":12:", styles[2].equals(getStyle(10,5,RED,YELLOW)));
+	
+	text.setText("0123456789012345");
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(10,5,GREEN,PURPLE);
+	text.replaceStyleRanges(0, 15, ranges);
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(0,5,RED,YELLOW);
+	ranges[1] = getStyle(5,5,BLUE,CYAN);
+	text.replaceStyleRanges(0, 10, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":13:", styles.length == 3);
+	assertTrue(":13:", styles[0].equals(getStyle(0,5,RED,YELLOW)));
+	assertTrue(":13:", styles[1].equals(getStyle(5,5,BLUE,CYAN)));
+	assertTrue(":13:", styles[2].equals(getStyle(10,5,GREEN,PURPLE)));
+
+	text.setText("012345678901234");
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(0,5,RED,YELLOW);
+	ranges[1] = getStyle(10,5,BLUE,CYAN);
+	text.replaceStyleRanges(0, 15, ranges);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(5,7,BLUE,CYAN);
+	text.replaceStyleRanges(5, 7, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":14:", styles.length == 3);
+	assertTrue(":14:", styles[0].equals(getStyle(0,5,RED,YELLOW)));
+	assertTrue(":14:", styles[1].equals(getStyle(5,7,BLUE,CYAN)));
+	assertTrue(":14:", styles[2].equals(getStyle(12,3,BLUE,CYAN)));
+
+
+	// reset the environment
+	text.dispose();
+	text = new StyledText(shell, SWT.NULL);
+	setWidget(text);
+
+	textString = textString();
+
+
+	/* 
+		defaultStyles
+		
+			(0,48,RED,YELLOW), 
+			(58,10,BLUE,CYAN), 
+			(68,10,GREEN,PURPLE)
+	*/
+
+
+	// End/Beginning overlap
+	text.setText(textString);
+	text.setStyleRanges(defaultStyles());
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(38,25,YELLOW,RED);
+	text.replaceStyleRanges(38, 25, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":1a:", styles.length == 4);
+	assertTrue(":1a:", styles[0].equals(getStyle(0,38,RED,YELLOW)));
+	assertTrue(":1a:", styles[1].equals(getStyle(38,25,YELLOW,RED)));
+	assertTrue(":1a:", styles[2].equals(getStyle(63,5,BLUE,CYAN)));
+	assertTrue(":1a:", styles[3].equals(getStyle(68,10,GREEN,PURPLE)));
+	text.setStyleRanges(defaultStyles());
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(63,10,YELLOW,RED);
+	text.replaceStyleRanges(63, 10, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":1a:", styles.length == 4);
+	assertTrue(":1a:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
+	assertTrue(":1a:", styles[1].equals(getStyle(58,5,BLUE,CYAN)));
+	assertTrue(":1a:", styles[2].equals(getStyle(63,10,YELLOW,RED)));
+	assertTrue(":1a:", styles[3].equals(getStyle(73,5,GREEN,PURPLE)));
+
+	// Complete overlap
+	text.setStyleRanges(defaultStyles());
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(0,78,YELLOW,RED);
+	text.replaceStyleRanges(0, 78, ranges);
+	styles = text.getStyleRanges();
+	styles = text.getStyleRanges();
+	assertTrue(":2a:", styles.length == 1);
+	assertTrue(":2a:", styles[0].equals(getStyle(0,78,YELLOW,RED)));
+
+	text.setStyleRanges(defaultStyles());
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(0,68,YELLOW,RED);
+	text.replaceStyleRanges(0, 68, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":2a:", styles.length == 2);
+	assertTrue(":2a:", styles[0].equals(getStyle(0,68,YELLOW,RED)));
+	assertTrue(":2a:", styles[1].equals(getStyle(68,10,GREEN,PURPLE)));
+	text.setStyleRanges(defaultStyles());
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(58,20,YELLOW,RED);
+	text.replaceStyleRanges(58, 20, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":2a:", styles.length == 2);
+	assertTrue(":2a:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
+	assertTrue(":2a:", styles[1].equals(getStyle(58,20,YELLOW,RED)));
+
+	// 1-N complete, beginning
+	text.setText("012345678901234567890123456789");
+	text.setStyleRanges( 
+		new StyleRange[] {getStyle(0,5,RED,RED), getStyle(5,5,YELLOW,YELLOW),
+			getStyle(10,5,CYAN,CYAN), getStyle(15,5,BLUE,BLUE),
+			getStyle(20,5,GREEN,GREEN), getStyle(25,5,PURPLE,PURPLE)}
+	);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(5,23,YELLOW,RED);
+	text.replaceStyleRanges(5, 23, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":3a:", styles.length == 3);
+	assertTrue(":3a:", styles[0].equals(getStyle(0,5,RED,RED)));
+	assertTrue(":3a:", styles[1].equals(getStyle(5,23,YELLOW,RED)));
+	assertTrue(":3a:", styles[2].equals(getStyle(28,2,PURPLE,PURPLE)));
+	
+	// end, 1-N complete, beginning
+	text.setStyleRanges( 
+		new StyleRange[] {getStyle(0,5,RED,RED), getStyle(5,5,YELLOW,YELLOW),
+			getStyle(10,5,CYAN,CYAN), getStyle(15,5,BLUE,BLUE),
+			getStyle(20,5,GREEN,GREEN), getStyle(25,5,PURPLE,PURPLE)}
+	);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(13,12,YELLOW,RED);
+	text.replaceStyleRanges(13, 12, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":3a:", styles.length == 5);
+	assertTrue(":3a:", styles[0].equals(getStyle(0,5,RED,RED)));
+	assertTrue(":3a:", styles[1].equals(getStyle(5,5,YELLOW,YELLOW)));
+	assertTrue(":3a:", styles[2].equals(getStyle(10,3,CYAN,CYAN)));
+	assertTrue(":3a:", styles[3].equals(getStyle(13,12,YELLOW,RED)));
+	assertTrue(":3a:", styles[4].equals(getStyle(25,5,PURPLE,PURPLE)));
+
+	// reset the environment
+	text.dispose();
+	text = new StyledText(shell, SWT.NULL);
+	setWidget(text);
+}
+
 public void test_replaceTextRangeIILjava_lang_String(){
 	String defaultText = "line0\n\rline1\n\rline2\n\r";
 	int defaultTextLength = defaultText.length();
@@ -3532,6 +3865,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener");
 	methodNames.addElement("test_removeVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListener");
+	methodNames.addElement("test_replaceStyleRanges");
 	methodNames.addElement("test_replaceTextRangeIILjava_lang_String");
 	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_setCaretLorg_eclipse_swt_widgets_Caret");
@@ -3623,6 +3957,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener")) test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener();
 	else if (getName().equals("test_removeVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListener")) test_removeVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListener();
 	else if (getName().equals("test_replaceTextRangeIILjava_lang_String")) test_replaceTextRangeIILjava_lang_String();
+	else if (getName().equals("test_replaceStyleRanges")) test_replaceStyleRanges();
 	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_setCaretLorg_eclipse_swt_widgets_Caret")) test_setCaretLorg_eclipse_swt_widgets_Caret();
 	else if (getName().equals("test_setBidiColoringZ")) test_setBidiColoringZ();
