@@ -383,16 +383,18 @@ abstract class Tab {
 	 * Hook all listeners to all controls. 
 	 */
 	void hookExampleWidgetListeners () {
-		Control[] exampleControls = getExampleWidgets();
-		Listener listener = new Listener() {
-			public void handleEvent (Event event) {
-				instance.log (event);
-			}
-		};
-		for (int i = 0; i < exampleControls.length; i++) {
-			Control control = exampleControls [i];
-			for (int j = SWT.KeyDown; j < SWT.HardKeyUp; j++) {
-				control.addListener (j, listener);
+		if (instance.isLogging()) {
+			Control[] exampleControls = getExampleWidgets();
+			Listener listener = new Listener() {
+				public void handleEvent (Event event) {
+					instance.log (event);
+				}
+			};
+			for (int i = 0; i < exampleControls.length; i++) {
+				Control control = exampleControls [i];
+				for (int j = SWT.KeyDown; j < SWT.HardKeyUp; j++) {
+					control.addListener (j, listener);
+				}
 			}
 		}
 	}

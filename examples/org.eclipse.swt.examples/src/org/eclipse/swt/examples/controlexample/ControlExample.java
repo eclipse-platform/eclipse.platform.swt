@@ -8,6 +8,7 @@ package org.eclipse.swt.examples.controlexample;
  */
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -19,19 +20,33 @@ public class ControlExample {
 	private static ResourceBundle resourceBundle =
 		ResourceBundle.getBundle("examples_control");
 	private ShellTab shellTab;
+	private SashForm form;
 	private TabFolder tabFolder;
-	private EventConsole eventConsole;
+	private Text eventConsole;
+	private boolean logging = false;
+	private boolean [] eventsFilter = new boolean [35];
 	static boolean standAlone = false;
+	Image images[];
 
-	static final int
-		ciClosedFolder = 0,
-		ciOpenFolder = 1,
-		ciTarget = 2;
+	static final int ciClosedFolder = 0, ciOpenFolder = 1, ciTarget = 2;
 	static final String[] imageLocations = {
 		"closedFolder.gif",
 		"openFolder.gif",
 		"target.gif" };
-	Image images[];
+	static final String [] EVENT_TYPES = { "",
+		"KeyDown", "KeyUp", "MouseDown", "MouseUp", "MouseMove", "MouseEnter",		
+		"MouseExit", "MouseDoubleClick", "Paint", "Move", "Resize", "Dispose",
+		"Selection", "DefaultSelection", "FocusIn", "FocusOut", "Expand", "Collapse",
+		"Iconify", "Deiconify", "Close", "Show", "Hide", "Modify",
+		"Verify", "Activate", "Deactivate", "Help", "DragDetect", "Arm",
+		"Traverse", "MouseHover", "HardKeyDown", "HardKeyUp"
+	};
+	static final int [] DEFAULT_FILTER = {
+		SWT.KeyDown, SWT.KeyUp, SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.Selection,
+		SWT.DefaultSelection, SWT.Expand, SWT.Collapse, SWT.Iconify, SWT.Deiconify, SWT.Close,
+		SWT.Show, SWT.Hide, SWT.Modify, SWT.Verify, SWT.Activate, SWT.Deactivate,
+		SWT.Help, SWT.DragDetect, SWT.Arm, SWT.Traverse, SWT.HardKeyDown, SWT.HardKeyUp
+	};
 
 	/**
 	 * Creates an instance of a ControlExample embedded inside
@@ -41,32 +56,43 @@ public class ControlExample {
 	 */
 	public ControlExample(Composite parent) {
 		initResources();
-		tabFolder = new TabFolder (parent, SWT.NULL);
+		form = new SashForm (parent,SWT.VERTICAL);
+		tabFolder = new TabFolder (form, SWT.NULL);
 		Tab [] tabs = createTabs();
 		for (int i=0; i<tabs.length; i++) {
 			TabItem item = new TabItem (tabFolder, SWT.NULL);
 		    item.setText (tabs [i].getTabText ());
 		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
+		    item.setData (tabs [i]);
 		}
 		if (standAlone) {
-			createMenus (parent.getShell ());
+			createControlExampleMenu (parent.getShell ());
+			eventConsole = new Text(form, SWT.MULTI | SWT.V_SCROLL);
+			createEventConsolePopup (eventConsole);
+			for (int i = 0; i < DEFAULT_FILTER.length; i++) {
+				eventsFilter [DEFAULT_FILTER [i]] = true;
+			}
 		}
 	}
 
 	/**
-	 * Open the event logger.
+	 * Hide the event logger.
 	 */
-	private void closeEventConsole() {
-		if (eventConsole != null) {
-			eventConsole.close ();
-			eventConsole = null;
+	void closeEventConsole() {
+		logging = false;
+		form.setWeights(new int[] {100, 0});
+		eventConsole.setEnabled (false);
+		TabItem[] currentSelection = tabFolder.getSelection();
+		for (int i = 0; i < currentSelection.length; i++) {
+			Tab tab = (Tab) currentSelection[i].getData ();
+			tab.recreateExampleWidgets ();
 		}
 	}
 
 	/**
-	 * Create this example's menus.
+	 * Create the menubar
 	 */
-	void createMenus(final Shell shell) {
+	void createControlExampleMenu(final Shell shell) {
 		Menu bar = new Menu (shell, SWT.BAR);
 		MenuItem consoleItem = new MenuItem (bar, SWT.CASCADE);
 		consoleItem.setText ("Controls");
@@ -75,8 +101,7 @@ public class ControlExample {
 		consoleItem.setMenu (dropDown);
 
 		final MenuItem showEvents = new MenuItem (dropDown, SWT.CHECK);
-		showEvents.setAccelerator(SWT.MOD1 + 'C');
-		showEvents.setText ("&Show Events");
+		showEvents.setText ("&Log Events");
 		showEvents.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event e) {
 				if (showEvents.getSelection()) {
@@ -92,6 +117,38 @@ public class ControlExample {
 		exit.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event e) {
 				shell.dispose();
+			}
+		});
+	}
+
+	/**
+	 * Create the menubar
+	 */
+	void createEventConsolePopup (final Text console) {
+		Menu popup = new Menu (console.getShell (), SWT.POP_UP);
+		console.setMenu (popup);
+
+		MenuItem copy = new MenuItem (popup, SWT.PUSH);
+		copy.setAccelerator(SWT.MOD1 + 'C');
+		copy.setText ("&Copy\tCtrl+C");
+		copy.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event event) {
+				console.copy ();
+			}
+		});
+		MenuItem selectAll = new MenuItem (popup, SWT.PUSH);
+		selectAll.setAccelerator(SWT.MOD1 + 'A');
+		selectAll.setText("Select &All");
+		selectAll.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event event) {
+				console.selectAll ();
+			}
+		});
+		MenuItem clear = new MenuItem (popup, SWT.PUSH);
+		clear.setText ("C&lear");
+		clear.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event event) {
+				console.setText ("");
 			}
 		});
 	}
@@ -209,11 +266,26 @@ public class ControlExample {
 	}
 
 	/**
+	 * Answers true if this example is currently logging all
+	 * events, and false otherwise.
+	 */
+	public boolean isLogging () {
+		return logging;
+	}
+	/**
 	 * Logs an event to the event console.
 	 */
 	void log(Event event) {
-		if (eventConsole != null) {
-			eventConsole.log(event);
+		if (logging && eventsFilter [event.type]) {
+			StringBuffer output = new StringBuffer (EVENT_TYPES[event.type]);
+			output.append (": ");
+			output.append (event.widget.toString ());
+			output.append (" X: ");
+			output.append (event.x);
+			output.append (" Y: ");
+			output.append (event.y);
+			output.append ("\n");
+			eventConsole.append (output.toString ());
 		}
 	}
 	
@@ -238,8 +310,14 @@ public class ControlExample {
 	 * Open the event logger.
 	 */
 	void openEventConsole(Shell shell) {
-		eventConsole = new EventConsole (shell);
-		eventConsole.open ();
+		logging = true;
+		form.setWeights(new int[] {80,20});
+		eventConsole.setEnabled (true);
+		TabItem[] currentSelection = tabFolder.getSelection();
+		for (int i = 0; i < currentSelection.length; i++) {
+			Tab tab = (Tab) currentSelection[i].getData ();
+			tab.recreateExampleWidgets ();
+		}
 	}
 	
 	/**
