@@ -541,9 +541,20 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
  * @see #drawRectangle
  */
 public void drawFocus (int x, int y, int width, int height) {
-	width = (width < 0 ? -width : width) - 1;
-	height = (height < 0 ? -height : height) - 1;
-	drawRectangle(x, y, width, height);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int flags = OS.PtEnter(0);
+	try {
+		int prevContext = setGC();	
+		setGCClipping();
+		if (width < 0) width -= width;
+		if (height < 0) height -= height;
+		OS.PgSetStrokeColor(0x9098F8);
+		OS.PgDrawIRect(x, y, x + width - 1, y + height - 1, OS.Pg_DRAW_STROKE);
+		OS.PgSetStrokeColor(data.foreground);
+		unsetGC(prevContext);
+	} finally {
+		if (flags >= 0) OS.PtLeave(flags);
+	}
 }
 
 /**
