@@ -367,8 +367,8 @@ public void deselectAll () {
 }
 
 /**
- * Returns the zero-relative index of the item which is currently
- * has the focus in the receiver, or -1 if no item is has focus.
+ * Returns the zero-relative index of the item which currently
+ * has the focus in the receiver, or -1 if no item has focus.
  *
  * @return the index of the selected item
  *
@@ -379,7 +379,12 @@ public void deselectAll () {
  */
 public int getFocusIndex () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+	int result = OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
+	if (result == 0) {
+		int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+		if (count == 0) return -1;
+	}
+	return result;
 }
 
 /**
