@@ -1,0 +1,17 @@
+package org.eclipse.swt.internal.win32;
+
+/*
+ * Copyright (c) 2000, 2003 IBM Corp.  All rights reserved.
+ * This file is made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ */
+public class SHRGINFO {
+	public int cbSize;
+	public int hwndClient;
+	// POINT ptDown
+	public int ptDown_x;
+	public int ptDown_y;
+	public int dwFlags;
+	public static final int sizeof = 20;
+}

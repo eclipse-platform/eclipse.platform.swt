@@ -349,6 +349,7 @@ public class OS {
 	public static final int GMDI_USEDISABLED = 0x1;
 	public static final int GMEM_FIXED = 0x0;
 	public static final int GMEM_ZEROINIT = 0x40;
+	public static final int GN_CONTEXTMENU = 1000;
 	public static final int GPTR = 0x40;
 	public static final int GRADIENT_FILL_RECT_H = 0x0;
 	public static final int GRADIENT_FILL_RECT_V = 0x1;
@@ -774,6 +775,7 @@ public class OS {
 	public static final int SHCMBM_GETSUBMENU = 0x591;
 	public static final int SHMBOF_NODEFAULT = 0x1;
 	public static final int SHMBOF_NOTIFY = 0x2;
+	public static final int SHRG_RETURNCMD = 0x1;
 	public static final int SIF_ALL = 0x17;
 	public static final int SIF_DISABLENOSCROLL = 0x8;
 	public static final int SIF_PAGE = 0x2;
@@ -2381,6 +2383,7 @@ public static final native int SHBrowseForFolderW (BROWSEINFO lpbi);
 public static final native int SHBrowseForFolderA (BROWSEINFO lpbi);
 public static final native boolean SHCreateMenuBar(SHMENUBARINFO pmb);
 public static final native boolean SHHandleWMSettingChange (int hwnd, int wParam, int lParam, SHACTIVATEINFO psai);
+public static final native int SHRecognizeGesture(SHRGINFO shrg);
 public static final native void SHSendBackToFocusWindow (int uMsg, int wp, int lp);
 public static final native boolean SHSipPreference (int hwnd, int st);
 public static final native boolean ShellExecuteExW (SHELLEXECUTEINFO lpExecInfo);
