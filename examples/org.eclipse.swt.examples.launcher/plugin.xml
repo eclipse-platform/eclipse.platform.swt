@@ -13,7 +13,6 @@
 <!-- Runtime -->
    <runtime>
       <library name="launcher.jar">
-            <packages prefixes="org.eclipse.swt.examples.launcher"/>
       </library>
    </runtime>
 <!-- Required plugins -->
