@@ -105,7 +105,7 @@ public Cursor (Device device, int style) {
 		case SWT.CURSOR_CROSS: shape = OS.XC_cross; break;
 		case SWT.CURSOR_APPSTARTING: shape = OS.XC_left_ptr; break;
 		case SWT.CURSOR_HELP: shape = OS.XC_question_arrow; break;
-		case SWT.CURSOR_SIZEALL: shape = OS.XC_diamond_cross; break;
+		case SWT.CURSOR_SIZEALL: shape = OS.XC_fleur; break;
 		case SWT.CURSOR_SIZENESW: shape = OS.XC_sizing; break;
 		case SWT.CURSOR_SIZENS: shape = OS.XC_double_arrow; break;
 		case SWT.CURSOR_SIZENWSE: shape = OS.XC_sizing; break;

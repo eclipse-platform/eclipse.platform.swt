@@ -175,8 +175,8 @@ public class OS {
 	public static final int XC_bottom_right_corner = 14;
 	public static final int XC_bottom_side = 16;
 	public static final int XC_cross = 30;
-	public static final int XC_diamond_cross = 36;
 	public static final int XC_double_arrow = 42;
+	public static final int XC_fleur = 52;
 	public static final int XC_hand2 = 60;
 	public static final int XC_left_ptr = 68;
 	public static final int XC_left_side = 70;
