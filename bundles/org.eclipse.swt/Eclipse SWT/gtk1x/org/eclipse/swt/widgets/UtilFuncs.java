@@ -25,11 +25,7 @@ static Point getLocation (int handle) {
 	return new Point (widget.alloc_x, widget.alloc_y);
 }
 
-static boolean setLocation(int parentHandle, int handle, int x, int y) {
-	GtkWidget widget = new GtkWidget ();
-	OS.memmove (widget, handle, GtkWidget.sizeof);
-	boolean sameOrigin = (widget.alloc_x == x && widget.alloc_y == y);
-
+static void setLocation(int parentHandle, int handle, int x, int y) {
 	// GtkFixed does not leave us alone.
 	// Instead, it maintains its own list of geometries for the children.
 	// Moreover, it will post a RESIZE on the queue that will cause
@@ -41,19 +37,11 @@ static boolean setLocation(int parentHandle, int handle, int x, int y) {
 	OS.gtk_fixed_move(parentHandle, handle, (short)x, (short)y );
 	OS.memmove(handle, gtkChild, GtkObject.sizeof);
 	
-
-//	OS.gtk_widget_set_uposition(handle, (short)x, (short)y);
-	/*
-	byte[] aux_info_id = org.eclipse.swt.internal.Converter.wcsToMbcs (null, "gtk-aux-info", true);
-	int aux_info_key_id = OS.g_quark_from_static_string(aux_info_id);
-	if (aux_info_key_id == 0) SWT.error(SWT.ERROR_UNSPECIFIED);
-	int aux_info = OS.gtk_object_get_data_by_id(handle, aux_info_key_id);
-	int[] xy = new int[1];
-	// ???
-	OS.memmove(aux_info, xy, 4);
-	*/
-	
 	// force allocation update NOW
+	// unfortunately, due to the shape of our PI,
+	// we can't selectively update only x and y.
+	GtkWidget widget = new GtkWidget ();
+	OS.memmove (widget, handle, GtkWidget.sizeof);
 	GtkAllocation alloc = new GtkAllocation();
 	alloc.x = (short) x;
 	alloc.y = (short) y;
@@ -61,8 +49,6 @@ static boolean setLocation(int parentHandle, int handle, int x, int y) {
 	alloc.height = (short) widget.alloc_height;
 	OS.memmove(handle, widget, GtkWidget.sizeof);
 	OS.gtk_widget_size_allocate(handle, alloc);
-
-	return (!sameOrigin);
 }
 
 static Point getSize (int handle) {
@@ -85,7 +71,6 @@ static boolean setSize(int handle, int width, int height) {
 	 */
 	if (height <= 3) height = 3;
 	if (width <= 3)  width = 3;
-
 	// first, see if we actually need to change anything
 	GtkWidget widget = new GtkWidget ();
 	OS.memmove (widget, handle, GtkWidget.sizeof);
@@ -94,7 +79,6 @@ static boolean setSize(int handle, int width, int height) {
 	if (alloc_width == width && alloc_height == height) {
 		return false;
 	}
-
 	OS.gtk_widget_set_usize (handle, width, height);
 	// force child allocation update
 	GtkAllocation alloc = new GtkAllocation();

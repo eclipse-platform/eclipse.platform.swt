@@ -31,6 +31,7 @@ import org.eclipse.swt.graphics.*;
 public class Group extends Composite {
 	int frameHandle;
 	String text="";
+	byte[] TestString = string2bytesConvertMnemonic("Test String");
 
 /**
  * Constructs a new instance of this class given its parent
@@ -163,8 +164,9 @@ public Rectangle _getClientArea () {
 	 */
 	int width, height;
 	Point size = _getSize();
-	width = size.x - _getTrim().left - _getTrim().right;
-	height = size.y - _getTrim().top - _getTrim().bottom;
+	Trim trim = _getTrim();
+	width = size.x - trim.left - trim.right;
+	height = size.y - trim.top - trim.bottom;
 	return new Rectangle(0,0, width, height);
 }
 
@@ -173,7 +175,7 @@ Trim _getTrim() {
 	
 	// set up the test widgets
 	int testWindowHandle = OS.gtk_window_new(0);
-	int testHandle = OS.gtk_frame_new(string2bytesConvertMnemonic("Test String"));
+	int testHandle = OS.gtk_frame_new(TestString);
 	OS.gtk_container_add(testWindowHandle, testHandle);
 	OS.gtk_widget_realize(testHandle);
 	

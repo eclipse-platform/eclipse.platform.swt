@@ -910,7 +910,7 @@ char wcsToMbcs (char ch) {
 	return 0;
 }
 
-byte[] string2bytesConvertMnemonic(String string) {
+static byte[] string2bytesConvertMnemonic(String string) {
 	//FIXME need to double _'s
 	char [] t = new char [string.length ()];
 	string.getChars (0, t.length, t, 0);

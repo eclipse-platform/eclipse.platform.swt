@@ -32,6 +32,8 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	String toolTipText;
 	Object layoutData;
+	static private final int aux_info_quark = OS.g_quark_from_string (Converter.wcsToMbcs (null, "gtk-aux-info", true));
+
 
 /*
  *   ===  CONSTRUCTORS  ===
@@ -172,13 +174,11 @@ int computeHandle () {
 
 Point _computeSize (int wHint, int hHint, boolean changed) {
 	int handle = computeHandle ();
-	byte [] gtk_aux_info = Converter.wcsToMbcs (null, "gtk-aux-info", true);
-	int id = OS.g_quark_from_string (gtk_aux_info);
-	int aux_info = OS.gtk_object_get_data_by_id (handle, id);
-	OS.gtk_object_set_data_by_id (handle, id, 0);
+	int aux_info = OS.gtk_object_get_data_by_id (handle, aux_info_quark);
+	OS.gtk_object_set_data_by_id (handle, aux_info_quark, 0);
 	GtkRequisition requisition = new GtkRequisition ();
 	OS.gtk_widget_size_request (handle, requisition);
-	OS.gtk_object_set_data_by_id (handle, id, aux_info);
+	OS.gtk_object_set_data_by_id (handle, aux_info_quark, aux_info);
 	int width = wHint == SWT.DEFAULT ? requisition.width : wHint;
 	int height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	return new Point (width, height);	
@@ -379,7 +379,11 @@ public void setLocation(int x, int y) {
 }
 
 boolean _setLocation(int x, int y) {
-	return UtilFuncs.setLocation(parent.parentingHandle(), topHandle(), x,y);
+	Point old_loc = _getLocation();
+	if ( (x != old_loc.x) || (y != old_loc.y) ) {
+		UtilFuncs.setLocation(parent.parentingHandle(), topHandle(), x,y);
+		return true;
+	} else return false;
 }
 
 /**
@@ -452,7 +456,11 @@ public void setSize (int width, int height) {
 	height = Math.max(height, 0);
 	if (_setSize(width, height)) sendEvent(SWT.Resize);
 }
-boolean _setSize(int width, int height) { return UtilFuncs.setSize(topHandle(), width, height); }
+boolean _setSize(int width, int height) {
+	Point old_size = _getSize();
+	if ( (width==old_size.x) && (height==old_size.y) ) return false;
+	return UtilFuncs.setSize(topHandle(), width, height);
+}
 
 /**
  * Moves the receiver above the specified control in the
