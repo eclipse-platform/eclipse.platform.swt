@@ -480,7 +480,10 @@ boolean mnemonicHit (char key) {
 			char ch = findMnemonic (item.getText ());
 			if (Character.toUpperCase (key) == Character.toUpperCase (ch)) {		
 				if (setFocus ()) {
-					setSelection (i, true);
+					int selection = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+					if (i != selection) {
+						setSelection (i, true);
+					}
 					return true;
 				}
 			}
