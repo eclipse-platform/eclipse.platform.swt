@@ -526,6 +526,7 @@ void destroyItem (TableItem item) {
 			display.releaseImageList (imageList);
 		}
 		imageList = null;
+		customDraw = false;
 		items = new TableItem [4];
 	}
 }
@@ -1031,6 +1032,7 @@ void releaseWidget () {
 //		if (!item.isDisposed ()) item.releaseWidget ();
 //	}
 
+	customDraw = false;
 	items = null;
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
@@ -1251,6 +1253,7 @@ public void removeAll () {
 		}
 	}
 	imageList = null;
+	customDraw = false;
 	items = new TableItem [4];
 }
 

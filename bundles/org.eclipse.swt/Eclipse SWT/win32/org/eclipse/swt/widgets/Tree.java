@@ -341,6 +341,7 @@ void destroyItem (TreeItem item) {
 			display.releaseImageList (imageList);
 		}
 		imageList = null;
+		customDraw = false;
 		items = new TreeItem [4];	
 	}
 }
@@ -639,6 +640,17 @@ void releaseWidget () {
 			item.releaseHandle ();
 		}
 	}
+	/*
+	* Feature in Windows.  For some reason, when
+	* TVM_GETIMAGELIST or TVM_SETIMAGELIST is sent,
+	* the tree issues NM_CUSTOMDRAW messages.  This
+	* behavior is unwanted when the tree is being
+	* disposed.  The fix is to ingore NM_CUSTOMDRAW
+	* messages by usnig the custom draw flag.
+	* 
+	* NOTE: This only happens on Windows XP.
+	*/
+	customDraw = false;
 	items = null;
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
@@ -684,6 +696,7 @@ public void removeAll () {
 		display.releaseImageList (imageList);
 	}
 	imageList = null;
+	customDraw = false;
 	items = new TreeItem [4];
 	hAnchor = 0;
 }
