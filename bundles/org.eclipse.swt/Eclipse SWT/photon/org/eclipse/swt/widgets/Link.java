@@ -538,6 +538,11 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize,
 	return result;
 }
 
+public void setFont (Font font) {
+	super.setFont (font);
+	layout.setFont (font);
+}
+
 /**
  * Sets the receiver's text.
  * <p>
