@@ -1357,6 +1357,7 @@ public class OS extends Platform {
 	public static final int VK_MBUTTON = 0x4;
 	public static final int VK_MENU = 0x12;
 	public static final int VK_MULTIPLY = 0x6A;
+	public static final int VK_N = 0x4e;
 	public static final int VK_NEXT = 0x22;
 	public static final int VK_NUMLOCK = 0x90;
 	public static final int VK_NUMPAD0 = 0x60;
@@ -2548,7 +2549,8 @@ public static final native int GetFontLanguageInfo(int hdc);
 public static final native boolean GetGUIThreadInfo(int idThread, GUITHREADINFO lpgui);
 public static final native boolean GetIconInfo (int hIcon, ICONINFO piconinfo);
 public static final native int GetKeyboardLayoutList(int nBuff, int[] lpList);
-public static final native int GetKeyboardLayout(int idThread);public static final native short GetKeyState (int nVirtKey);
+public static final native int GetKeyboardLayout(int idThread);
+public static final native short GetKeyState (int nVirtKey);
 public static final native boolean GetKeyboardState (byte [] lpKeyState);
 public static final native int GetKeyNameTextW(int lParam, char [] lpString, int nSize);
 public static final native int GetKeyNameTextA(int lParam, byte [] lpString, int nSize);
