@@ -13,10 +13,10 @@ APPVER=5.0
 !include <win32.mak>
 
 maj_ver=2
-min_ver=10
+min_ver=010
 bld_num=0
 
-pgm_ver_str="SWT $(maj_ver).0$(min_ver) for Windows"
+pgm_ver_str="SWT $(maj_ver).$(min_ver) for Windows"
 timestamp_str=__DATE__\" \"__TIME__\" (EST)\"
 copyright = "Copyright (C) IBM Corporation 1999, 2000.  All rights reserved."
 
@@ -24,16 +24,16 @@ copyright = "Copyright (C) IBM Corporation 1999, 2000.  All rights reserved."
 
 DLLPREFIX=swt
 OSPREFIX=win32
-DLLNAME=$(DLLPREFIX)-$(OSPREFIX)-$(maj_ver)0$(min_ver).dll
+DLLNAME=$(DLLPREFIX)-$(OSPREFIX)-$(maj_ver)$(min_ver).dll
 
 LIBNAME=swt# declaration
 
 LINK_LIBS = ole32.lib comctl32.lib user32.lib gdi32.lib comdlg32.lib kernel32.lib shell32.lib oleaut32.lib advapi32.lib imm32.lib winspool.lib
 
 # note: thoroughly test all examples after changing any optimization flags
-cflags =  -c -W3 -G6 -GD -O1 -DSWT_LIBRARY_MAJOR_VERSION=$(maj_ver)  -DSWT_LIBRARY_MINOR_VERSION=$(min_ver) -DSWT_LIBRARY_BUILD_NUM=$(bld_num) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -D_MT -MT -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I.
+cflags =  -c -W3 -G6 -GD -O1 -DSWT_LIBRARY_VERSION=$(maj_ver)$(min_ver) -DSWT_LIBRARY_BUILD_NUM=$(bld_num) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -D_MT -MT -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I.
 # no optimizations
-#cflags = -c -W3 -G6 -GD -Odi -DSWT_LIBRARY_MAJOR_VERSION=$(maj_ver)  -DSWT_LIBRARY_MINOR_VERSION=$(min_ver) -DSWT_LIBRARY_BUILD_NUM=$(bld_num) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -D_MT -MT -DWIN32 /I..\include /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32
+#cflags = -c -W3 -G6 -GD -Odi -DSWT_LIBRARY_VERSION=$(maj_ver)$(min_ver) -DSWT_LIBRARY_BUILD_NUM=$(bld_num) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -D_MT -MT -DWIN32 /I..\include /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32
 
 linkflags = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
 

@@ -16,8 +16,8 @@ __declspec(dllexport) HRESULT DllGetVersion(DLLVERSIONINFO *dvi);
 
 HRESULT DllGetVersion(DLLVERSIONINFO *dvi)
 {
-     dvi->dwMajorVersion = SWT_LIBRARY_MAJOR_VERSION;
-     dvi->dwMinorVersion = SWT_LIBRARY_MINOR_VERSION;
+     dvi->dwMajorVersion = SWT_LIBRARY_VERSION / 1000;
+     dvi->dwMinorVersion = SWT_LIBRARY_VERSION % 1000;
      dvi->dwBuildNumber = SWT_LIBRARY_BUILD_NUM;
      dvi->dwPlatformID = DLLVER_PLATFORM_WINDOWS;
      return 1;
