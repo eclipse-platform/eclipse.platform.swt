@@ -482,7 +482,7 @@ public class AccessibleObject {
 
 	int atkText_get_character_at_offset (int offset) {
 		String text = getText ();
-		if (text != null) return (int)text.charAt (offset); // TODO bogus!
+		if (text != null) return (int)text.charAt (offset); // TODO
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
 			int superType = OS.g_type_class_peek (parentType);
 			AtkTextIface textIface = new AtkTextIface ();
@@ -514,8 +514,9 @@ public class AccessibleObject {
 			if (end_offset == -1) {
 				end_offset = text.length ();
 			} else {
-				end_offset = Math.min (end_offset + 1, text.length ());	
+				end_offset = Math.min (end_offset, text.length ());	
 			}
+			start_offset = Math.min (start_offset, end_offset);
 			text = text.substring (start_offset, end_offset);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
 //			TODO gnopernicus bug? freeing previous string can cause gp
@@ -543,7 +544,7 @@ public class AccessibleObject {
 			int endBounds = offset;
 			switch (boundary_type) {
 				case ATK.ATK_TEXT_BOUNDARY_CHAR: {
-					if (text.length () > offset) endBounds++;
+					if (length > offset) endBounds++;
 					break;
 				}
 				case ATK.ATK_TEXT_BOUNDARY_WORD_START: {
@@ -699,70 +700,7 @@ public class AccessibleObject {
 	}
 
 	int atkText_get_text_at_offset (int offset, int boundary_type, int start_offset, int end_offset) {
-		// TODO according to new gnome doc this determined text wrong
-		String text = getText ();
-		if (text != null) {
-			int startBounds = offset;
-			String beforeText = text.substring (0, offset);
-			int endBounds = offset;
-			String afterText = text.substring (offset);
-			switch (boundary_type) {
-				case ATK.ATK_TEXT_BOUNDARY_CHAR: {
-					if (afterText.length () > 0) endBounds++;
-					break;
-				}
-				case ATK.ATK_TEXT_BOUNDARY_LINE_START:
-				case ATK.ATK_TEXT_BOUNDARY_LINE_END: {
-					startBounds = beforeText.lastIndexOf ('\n') + 1; // TODO use platform line delimiter?
-					int newlineIndex = afterText.indexOf ('\n');	//TODO use platform line delimiter?
-					if (newlineIndex == -1) newlineIndex = afterText.length ();
-					endBounds += newlineIndex;
-					break;
-				}
-				case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START:
-				case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: {
-					// TODO ask the client for eligible separators?
-					int separatorIndex = 0;
-					separatorIndex = Math.max (separatorIndex, beforeText.lastIndexOf ('.') + 1);
-					separatorIndex = Math.max (separatorIndex, beforeText.lastIndexOf ('?') + 1);
-					separatorIndex = Math.max (separatorIndex, beforeText.lastIndexOf ('!') + 1);
-					startBounds = separatorIndex;
-					separatorIndex = afterText.length ();
-					int periodIndex = afterText.indexOf ('.');
-					if (periodIndex != -1) separatorIndex = Math.min (separatorIndex, periodIndex + 1);
-					int questionIndex = afterText.indexOf ('?');
-					if (questionIndex != -1) separatorIndex = Math.min (separatorIndex, questionIndex + 1);
-					int exclaimationIndex = afterText.indexOf ('!');
-					if (exclaimationIndex != -1) separatorIndex = Math.min (separatorIndex, exclaimationIndex + 1);
-					endBounds += separatorIndex;
-					break;
-				}
-				case ATK.ATK_TEXT_BOUNDARY_WORD_START:
-				case ATK.ATK_TEXT_BOUNDARY_WORD_END: {
-					// TODO ask the client for eligible separators?
-					int separatorIndex = 0;
-					separatorIndex = Math.max (separatorIndex, beforeText.lastIndexOf (' ') + 1);
-					separatorIndex = Math.max (separatorIndex, beforeText.lastIndexOf ('\n') + 1);
-					startBounds = separatorIndex;
-					separatorIndex = afterText.length ();
-					int spaceIndex = afterText.indexOf (' ');
-					if (spaceIndex != -1) separatorIndex = Math.min (separatorIndex, spaceIndex);
-					int newlineIndex = afterText.indexOf ('\n');
-					if (newlineIndex != -1) separatorIndex = Math.min (separatorIndex, newlineIndex);
-					endBounds += separatorIndex;
-					break;
-				}
-			}
-			OS.memmove (start_offset, new int[] {startBounds}, 4);
-			OS.memmove (end_offset, new int[] {endBounds}, 4);
-			text = text.substring (startBounds, endBounds);
-			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-//			TODO gnopernicus bug? freeing previous string can cause gp
-//			if (textPtr != -1) OS.g_free (textPtr);
-			textPtr = OS.g_malloc (bytes.length);
-			OS.memmove (textPtr, bytes, bytes.length);
-			return textPtr;
-		} 
+		// TODO
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
 			int superType = OS.g_type_class_peek (parentType);
 			AtkTextIface textIface = new AtkTextIface ();
@@ -775,51 +713,7 @@ public class AccessibleObject {
 	}
 
 	int atkText_get_text_before_offset (int offset, int boundary_type, int start_offset, int end_offset) {
-		//	TODO according to new gnome doc this determined text wrong
-		String text = getText ();
-		if (text != null) {
-			int startBounds = offset;
-			String beforeText = text.substring (0, offset);
-			switch (boundary_type) {
-				case ATK.ATK_TEXT_BOUNDARY_CHAR: {
-					if (beforeText.length () > 0) startBounds--;
-					break;
-				}
-				case ATK.ATK_TEXT_BOUNDARY_LINE_START:
-				case ATK.ATK_TEXT_BOUNDARY_LINE_END: {
-					startBounds = beforeText.lastIndexOf ('\n') + 1; // TODO use platform line delimiter?
-					break;
-				}
-				case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START:
-				case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: {
-					// TODO ask the client for eligible separators?
-					int separatorIndex = 0;
-					separatorIndex = Math.max (separatorIndex, beforeText.lastIndexOf ('.') + 1);
-					separatorIndex = Math.max (separatorIndex, beforeText.lastIndexOf ('?') + 1);
-					separatorIndex = Math.max (separatorIndex, beforeText.lastIndexOf ('!') + 1);
-					startBounds = separatorIndex;
-					break;
-				}
-				case ATK.ATK_TEXT_BOUNDARY_WORD_START:
-				case ATK.ATK_TEXT_BOUNDARY_WORD_END: {
-					// TODO ask the client for eligible separators?
-					int separatorIndex = 0;
-					separatorIndex = Math.max (separatorIndex, beforeText.lastIndexOf (' ') + 1);
-					separatorIndex = Math.max (separatorIndex, beforeText.lastIndexOf ('\n') + 1);
-					startBounds = separatorIndex;
-					break;
-				}
-			}
-			OS.memmove (start_offset, new int[] {startBounds}, 4);
-			OS.memmove (end_offset, new int[] {offset}, 4);
-//			text = text.substring (start_offset, end_offset);
-			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-//			TODO gnopernicus bug? freeing previous string can cause gp
-//			if (textPtr != -1) OS.g_free (textPtr);
-			textPtr = OS.g_malloc (bytes.length);
-			OS.memmove (textPtr, bytes, bytes.length);
-			return textPtr;
-		} 
+		// TODO
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
 			int superType = OS.g_type_class_peek (parentType);
 			AtkTextIface textIface = new AtkTextIface ();
