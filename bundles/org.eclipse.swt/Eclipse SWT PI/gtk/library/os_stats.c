@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 874;
-int OS_nativeFunctionCallCount[874];
+int OS_nativeFunctionCount = 876;
+int OS_nativeFunctionCallCount[876];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -515,6 +515,8 @@ char * OS_nativeFunctionNames[] = {
 	"gtk_1progress_1bar_1set_1orientation", 
 	"gtk_1radio_1button_1get_1group", 
 	"gtk_1radio_1button_1new", 
+	"gtk_1radio_1menu_1item_1get_1group", 
+	"gtk_1radio_1menu_1item_1new", 
 	"gtk_1radio_1menu_1item_1new_1with_1label", 
 	"gtk_1range_1get_1adjustment", 
 	"gtk_1range_1set_1increments", 

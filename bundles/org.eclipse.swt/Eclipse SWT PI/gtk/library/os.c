@@ -6234,6 +6234,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1radio_1button_1new)
 }
 #endif
 
+#ifndef NO_gtk_1radio_1menu_1item_1get_1group
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1radio_1menu_1item_1get_1group)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1radio_1menu_1item_1get_1group_FUNC);
+	rc = (jint)gtk_radio_menu_item_get_group((GtkRadioMenuItem *)arg0);
+	OS_NATIVE_EXIT(env, that, gtk_1radio_1menu_1item_1get_1group_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1radio_1menu_1item_1new
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1radio_1menu_1item_1new)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1radio_1menu_1item_1new_FUNC);
+	rc = (jint)gtk_radio_menu_item_new((GSList *)arg0);
+	OS_NATIVE_EXIT(env, that, gtk_1radio_1menu_1item_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1radio_1menu_1item_1new_1with_1label
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1radio_1menu_1item_1new_1with_1label)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)

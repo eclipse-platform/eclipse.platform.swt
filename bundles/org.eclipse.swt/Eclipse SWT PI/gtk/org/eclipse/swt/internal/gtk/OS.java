@@ -751,7 +751,7 @@ public static final synchronized native int /*long*/ gtk_cell_renderer_pixbuf_ne
 public static final synchronized native int /*long*/ gtk_cell_renderer_text_new();
 public static final synchronized native int /*long*/ gtk_cell_renderer_toggle_new();
 public static final synchronized native int /*long*/ gtk_check_button_new();
-public static final synchronized native boolean gtk_check_menu_item_get_active(int /*long*/ wid);
+public static final synchronized native boolean gtk_check_menu_item_get_active(int /*long*/ check_menu_item);
 public static final synchronized native int /*long*/ gtk_check_menu_item_new_with_label(byte[] label);
 public static final synchronized native void gtk_check_menu_item_set_active(int /*long*/ wid, boolean active);
 public static final synchronized native int /*long*/ gtk_check_version(int required_major, int required_minor, int required_micro);
@@ -911,6 +911,8 @@ public static final synchronized native void gtk_progress_bar_set_fraction(int /
 public static final synchronized native void gtk_progress_bar_set_orientation(int /*long*/ pbar, int orientation);
 public static final synchronized native int /*long*/ gtk_radio_button_get_group(int /*long*/ radio_button);
 public static final synchronized native int /*long*/ gtk_radio_button_new(int /*long*/ group);
+public static final synchronized native int /*long*/ gtk_radio_menu_item_get_group(int /*long*/ radio_menu_item);
+public static final synchronized native int /*long*/ gtk_radio_menu_item_new(int /*long*/ group);
 public static final synchronized native int /*long*/ gtk_radio_menu_item_new_with_label(int /*long*/ group, byte[] label);
 public static final synchronized native int /*long*/ gtk_range_get_adjustment(int /*long*/ range);
 public static final synchronized native void gtk_range_set_increments(int /*long*/ range, double step, double page);

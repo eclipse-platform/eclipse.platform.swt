@@ -35,6 +35,7 @@ import org.eclipse.swt.events.*;
  */
 public class MenuItem extends Item {
 	Menu parent, menu;
+	int /*long*/ groupHandle;
 	int accelerator;
 	
 /**
@@ -228,15 +229,13 @@ void createHandle (int index) {
 			handle = OS.gtk_separator_menu_item_new ();
 			break;
 		case SWT.RADIO:
-			/*
-			* This code is intentionally commented.  Because GTK
-			* enforces radio behavior in a button group a radio group
-			* is not created for each set of contiguous buttons, each
-			* radio button will not draw unpressed.  The fix is to use
-			* toggle buttons instead.
-			*/
-//			handle = OS.gtk_radio_menu_item_new_with_label (0, buffer);
-//			break;
+			groupHandle = OS.gtk_radio_menu_item_new (0);
+			if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.g_object_ref (groupHandle);
+			OS.gtk_object_sink (groupHandle);
+			int /*long*/ group = OS.gtk_radio_menu_item_get_group (groupHandle);
+			handle = OS.gtk_radio_menu_item_new_with_label (group, buffer);
+			break;
 		case SWT.CHECK:
 			handle = OS.gtk_check_menu_item_new_with_label (buffer);
 			break;
@@ -464,6 +463,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 	int /*long*/ accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);
+	if (groupHandle != 0) OS.g_object_unref (groupHandle);
+	groupHandle = 0;
 	accelerator = 0;
 	parent = null;
 }
@@ -715,6 +716,7 @@ public void setSelection (boolean selected) {
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
 	OS.gtk_check_menu_item_set_active (handle, selected);
+	if ((style & SWT.RADIO) != 0) OS.gtk_check_menu_item_set_active (groupHandle, !selected);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
 }
 
