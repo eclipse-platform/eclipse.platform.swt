@@ -167,7 +167,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget();
-    return  OS.GetControl32BitMaximum (handle);
+    return OS.GetControl32BitMaximum (handle);
 }
 
 /**
@@ -214,7 +214,13 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget();
-    return OS.GetControl32BitValue (handle);
+    int value = OS.GetControl32BitValue (handle);
+	if ((style & SWT.VERTICAL) != 0) {
+		int minimum = OS.GetControl32BitMinimum (handle);
+		int maximum = OS.GetControl32BitMaximum (handle);
+		value = value - minimum + maximum;
+	}
+	return value;
 }
 
 /**
@@ -338,6 +344,11 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
+	if ((style & SWT.VERTICAL) != 0) {
+		int minimum = OS.GetControl32BitMinimum (handle);
+		int maximum = OS.GetControl32BitMaximum (handle);
+		value = Math.min (maximum, Math.max (minimum, maximum - value + minimum));
+	}
 	OS.SetControl32BitValue (handle, value);
 }
 
