@@ -21,7 +21,7 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public class TableColumn extends Item {
+public /*final*/ class TableColumn extends Item {
 	static final int FIRST = 0;							// index of the first column
 	static final int FILL = -1;							// index that identifies the column used to 
 														// fill space not used by other columns.

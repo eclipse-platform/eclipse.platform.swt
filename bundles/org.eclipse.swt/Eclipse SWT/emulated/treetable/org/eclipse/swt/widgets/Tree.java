@@ -35,7 +35,7 @@ import java.util.Vector;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public class Tree extends SelectableItemWidget {
+public /*final*/ class Tree extends SelectableItemWidget {
 	// These constants are used internally for item hit test on mouse click
 	private static final int ActionNone = 0;			// The mouse event was not handled
 	private static final int ActionExpandCollapse = 1;	// Do an expand/collapse

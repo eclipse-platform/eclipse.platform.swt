@@ -1345,7 +1345,7 @@ public void setSelection (int start, int end) {
 }
 /**
  * Selects the items at the given zero-relative indices in the receiver. 
- * The current selection is first cleared, then the new items are selected.
+ * The current selected of first cleared, then the new items are selected.
  *
  * @param indices the indices of the items to select
  *

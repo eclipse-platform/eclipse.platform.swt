@@ -370,7 +370,7 @@ public void setHeight(int height) {
  * <code>getName()</code>.
  * </p>
  *
- * @param name the name of the font data (must not be null)
+ * @param name the name of the font data
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - when the font name is null</li>
  * </ul>
