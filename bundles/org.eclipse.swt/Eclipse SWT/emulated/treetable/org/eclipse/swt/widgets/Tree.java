@@ -1589,6 +1589,7 @@ void showSelectableItem(SelectableItem item) {
  * </ul>
  */
 public TreeItem getItem(Point point) {
+	checkWidget();
 	int itemHeight;
 	int hitItemIndex;
 	TreeItem hitItem;

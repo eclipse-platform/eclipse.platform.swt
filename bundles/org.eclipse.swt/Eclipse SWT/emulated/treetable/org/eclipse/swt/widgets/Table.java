@@ -830,6 +830,7 @@ public TableItem getItem(int index) {
  * </ul>
  */
 public TableItem getItem(Point point) {
+	checkWidget();
 	int headerHeight = getHeaderHeight();
 	TableColumn column = getColumnAtX(point.x);
 	TableItem item = null;
