@@ -274,8 +274,8 @@ public boolean setFocus () {
 
 public void setFont (Font font) {
 	checkWidget();
-	super.setFont (font);
 	if (caret != null) caret.setFont (font);
+	super.setFont (font);
 }
 	
 void updateCaret () {

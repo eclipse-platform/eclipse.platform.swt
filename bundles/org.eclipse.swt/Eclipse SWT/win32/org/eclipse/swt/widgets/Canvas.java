@@ -201,8 +201,8 @@ public void setCaret (Caret caret) {
 
 public void setFont (Font font) {
 	checkWidget ();
-	super.setFont (font);
 	if (caret != null) caret.setFont (font);
+	super.setFont (font);
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {

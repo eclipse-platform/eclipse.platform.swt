@@ -219,8 +219,8 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 }
 public void setFont (Font font) {
 	checkWidget();
-	super.setFont (font);
 	if (caret != null) caret.setFont (font);
+	super.setFont (font);
 }
 int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
