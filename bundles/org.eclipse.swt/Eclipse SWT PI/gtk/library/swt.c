@@ -1754,7 +1754,8 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1screen_1get_1de
 		if (fptr != NULL) {
 			return (jint)(*fptr)();
 		}
-	}	
+	}
+	return 0;
 }
 #endif
 
