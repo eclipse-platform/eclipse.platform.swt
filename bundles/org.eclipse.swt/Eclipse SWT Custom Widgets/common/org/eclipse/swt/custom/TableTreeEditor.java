@@ -76,6 +76,8 @@ import org.eclipse.swt.events.*;
 *		}
 *	});
 * </pre></code>
+* 
+* @deprecated As of 3.1 use TreeEditor with Tree, TreeItem and TreeColumn
 */
 public class TableTreeEditor extends ControlEditor {
 

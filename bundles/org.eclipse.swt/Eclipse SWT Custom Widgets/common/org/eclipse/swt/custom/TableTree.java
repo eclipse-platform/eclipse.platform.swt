@@ -36,6 +36,8 @@ import org.eclipse.swt.widgets.*;
  * <p>
  * Note: Only one of the styles SINGLE, and MULTI may be specified.
  * </p>
+ * 
+ * @deprecated @deprecated As of 3.1 use Tree, TreeItem and TreeColumn
  */
 public class TableTree extends Composite {
 	Table table;

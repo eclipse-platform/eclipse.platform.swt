@@ -61,6 +61,8 @@ public class TableTreeItem extends Item {
  *
  * @see SWT
  * @see Widget#getStyle()
+ * 
+ * @deprecated @deprecated As of 3.1 use Tree, TreeItem and TreeColumn
  */
 public TableTreeItem(TableTree parent, int style) {
 	this (parent, style, parent.getItemCount());
