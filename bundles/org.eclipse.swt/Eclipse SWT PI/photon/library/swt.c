@@ -3996,6 +3996,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PtFrameSize
  * Method:    PtCreateAppContext
  * Signature: ()I
  */
+void *PtCreateAppContext();
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtCreateAppContext
   (JNIEnv *env, jobject that)
 {
