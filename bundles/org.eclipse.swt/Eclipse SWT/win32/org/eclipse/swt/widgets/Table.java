@@ -2240,11 +2240,11 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 		*/
 		switch (hdr.code) {
 			case OS.HDN_BEGINTRACKW:
-			case OS.HDN_BEGINTRACKA: {
+			case OS.HDN_BEGINTRACKA:
+			case OS.HDN_DIVIDERDBLCLICKW:
+			case OS.HDN_DIVIDERDBLCLICKA:{
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				HDITEM pitem = new HDITEM ();
-				OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
 				TableColumn column = columns [phdn.iItem];
 				if (column != null && !column.getResizable ()) {
 					return LRESULT.ONE;

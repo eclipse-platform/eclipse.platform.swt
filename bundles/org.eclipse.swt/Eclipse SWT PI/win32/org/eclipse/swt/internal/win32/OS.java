@@ -372,6 +372,9 @@ public class OS {
 	public static final int HDN_BEGINTRACK = IsUnicode ? 0xfffffeba : 0xfffffece;
 	public static final int HDN_BEGINTRACKW = 0xfffffeba;
 	public static final int HDN_BEGINTRACKA = 0xfffffece;
+	public static final int HDN_DIVIDERDBLCLICKA = OS.HDN_FIRST - 5;
+	public static final int HDN_DIVIDERDBLCLICKW = OS.HDN_FIRST - 25;
+	public static final int HDN_DIVIDERDBLCLICK = IsUnicode ? HDN_DIVIDERDBLCLICKW : HDN_DIVIDERDBLCLICKA;
 	public static final int HDN_FIRST = 0xfffffed4;
 	public static final int HDN_ITEMCHANGED = IsUnicode ? 0xfffffebf : 0xfffffed3;
 	public static final int HDN_ITEMCHANGEDW = 0xfffffebf;
