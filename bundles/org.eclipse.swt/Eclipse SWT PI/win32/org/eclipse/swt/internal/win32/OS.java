@@ -2528,8 +2528,7 @@ public static final native boolean MoveToEx (int hdc,int x1, int x2, int lPoint)
 public static final native int MsgWaitForMultipleObjectsEx (int nCount, int pHandles, int dwMilliseconds, int dwWakeMask, int dwFlags);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, byte [] lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, int lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
-public static final native int NOTIFYICONDATA_sizeof ();
-public static final native int NotifyWinEvent (int event, int hwnd, int idObject, int idChild);
+public static final native void NotifyWinEvent (int event, int hwnd, int idObject, int idChild);
 public static final native int OffsetRgn (int hrgn, int nXOffset, int nYOffset);
 public static final native int OleInitialize (int pvReserved);
 public static final native void OleUninitialize ();

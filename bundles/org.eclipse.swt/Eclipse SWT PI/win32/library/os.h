@@ -260,6 +260,7 @@
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II
 #define NO_MoveToEx
+#define NO_NotifyWinEvent
 #define NO_OleInitialize
 #define NO_OleUninitialize
 #define NO_PeekMessageA
