@@ -15,7 +15,6 @@ import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import java.text.MessageFormat;
 
 /**
  * WARNING 3.0 API STILL UNDER CONSTRUCTION
@@ -457,7 +456,7 @@ public void addSelectionListener(SelectionListener listener) {
 void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 	// Don't perform anti-aliasing on Mac because the platform
 	// already does it.  The simple style also does not require anti-aliasing.
-	if (simple || "carbon".equals(SWT.getPlatform())) return;
+	if (simple || "carbon".equals(SWT.getPlatform())) return; //$NON-NLS-1$
 	if (outerRGB != null) {
 		int index = 0;
 		boolean left = true;
@@ -2620,11 +2619,9 @@ boolean setItemLocation() {
 		if (selectedIndex > -1) {
 			CTabItem item = items[selectedIndex];
 			int oldX = item.x, oldY = item.y;
-			int tabWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width - chevronRect.width;
 			item.x = borderLeft;
 			item.y = y;
 			if (showClose || item.showClose) {
-				int rightEdge = Math.min(item.x + item.width, getRightItemEdge());
 				item.closeRect.x = borderLeft + CTabItem.LEFT_MARGIN;
 				item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			}
@@ -3296,7 +3293,7 @@ void showList (Rectangle rect) {
 	if (!single && firstIndex == 0 && lastIndex == items.length - 1) return;
 	if (single && items.length == 1 && selectedIndex != -1) return;
 	Menu menu = new Menu(this);
-	final String id = "CTabFolder_showList_Index";
+	final String id = "CTabFolder_showList_Index"; //$NON-NLS-1$
 	for (int i = 0; i < items.length; i++) {
 		if (single) {
 			if (i == selectedIndex) continue;
@@ -3436,7 +3433,7 @@ String _getToolTip(int x, int y) {
 	if (item == null) return null;
 	if (!item.isShowing()) return null;
 	if ((showClose || item.showClose) && item.closeRect.contains(x, y)) {
-		return MessageFormat.format(SWT.getMessage("SWT_Close"), new Object[] {item.getToolTipText()}); //$NON-NLS-1$
+		return SWT.getMessage("SWT_Close"); //$NON-NLS-1$
 	}
 	return item.getToolTipText();
 }
