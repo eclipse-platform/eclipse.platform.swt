@@ -71,14 +71,14 @@ public TableTree(Composite parent, int style) {
 			case SWT.MouseDown: onMouseDown(e); break;
 			case SWT.Selection: onSelection(e); break;
 			case SWT.DefaultSelection: onSelection(e); break;
-			case SWT.Traverse: onTraverse(e); break;
+			case SWT.KeyDown: onKeyDown(e); break;
 			}
 		}
 	};
 	int[] tableEvents = new int[]{SWT.MouseDown, 
 		                           SWT.Selection, 
 		                           SWT.DefaultSelection, 
-		                           SWT.Traverse};
+		                           SWT.KeyDown};
 	for (int i = 0; i < tableEvents.length; i++) {
 		table.addListener(tableEvents[i], tableListener);
 	}
@@ -398,30 +398,6 @@ void onDispose(Event e) {
 	plusImage = minusImage = sizeImage = null;
 }
 
-void onTraverse(Event e) {
-	if (e.detail == SWT.TRAVERSE_ARROW_PREVIOUS || e.detail == SWT.TRAVERSE_ARROW_NEXT) {
-		TableTreeItem[] selection = getSelection();
-		if (selection.length > 0) {
-			TableTreeItem item = selection[0];
-			if (item.getItemCount() == 0) return;
-			int type;
-			if (e.detail == SWT.TRAVERSE_ARROW_NEXT) {
-				if (item.getExpanded()) return;
-				item.setExpanded(true);
-				table.setTopIndex(table.indexOf(item.tableItem));
-				type = SWT.Expand;
-			} else {
-				if (!item.getExpanded()) return;
-				item.setExpanded(false);
-				type = SWT.Collapse;
-			}
-			Event event = new Event();
-			event.item = item;
-			notifyListeners(type, event);
-		}
-	}
-}
-
 void onResize(Event e) {
 	Rectangle area = getClientArea();
 	table.setBounds(0, 0, area.width, area.height);
@@ -459,6 +435,57 @@ void onFocusIn (Event e) {
 	table.setFocus();
 }
 
+void onKeyDown (Event e) {
+	TableTreeItem[] selection = getSelection();
+	if (selection.length == 0) return;
+	TableTreeItem item = selection[0];
+	int type = 0;
+	if (e.keyCode == SWT.ARROW_RIGHT || e.keyCode == SWT.ARROW_LEFT) {
+		if (e.keyCode == SWT.ARROW_RIGHT) {
+			if (item.getItemCount() == 0) return;
+			if (item.getExpanded()) {
+				TableTreeItem newSelection = item.getItems()[0];
+				table.setSelection(new TableItem[]{newSelection.tableItem});
+				showItem(newSelection);
+				type = SWT.Selection;
+			} else {
+				item.setExpanded(true);
+				type = SWT.Expand;
+			}
+		} else {
+			if (item.getExpanded()) {
+				item.setExpanded(false);
+				type = SWT.Collapse;
+			} else {
+				TableTreeItem parent = item.getParentItem();
+				if (parent != null) {
+					int index = parent.indexOf(item);
+					if (index != 0) return;
+					table.setSelection(new TableItem[]{parent.tableItem});
+					type = SWT.Selection;
+				}
+			}
+		}
+	}
+	if (e.character == '*') {
+		item.expandAll(true);
+	}
+	if (e.character == '-') {
+		if (item.getExpanded()) {
+			item.setExpanded(false);
+			type = SWT.Collapse;
+		}
+	}
+	if (e.character == '+') {
+		if (item.getItemCount() > 0 && !item.getExpanded()) {
+			item.setExpanded(true);
+			type = SWT.Expand;
+		}
+	} 
+	if (type == 0) return;
+	Event event = new Event();
+	notifyListeners(type, event);
+}
 void onMouseDown(Event event) {
 	/* If user clicked on the [+] or [-], expand or collapse the tree. */
 	TableItem[] items = table.getItems();
