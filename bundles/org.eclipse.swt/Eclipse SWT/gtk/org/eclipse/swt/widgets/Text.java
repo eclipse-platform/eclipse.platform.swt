@@ -917,6 +917,12 @@ public void removeVerifyListener (VerifyListener listener) {
  */
 public void selectAll () {
 	checkWidget ();
+	/*
+	* Bug in GTK.  When gtk_editable_select_region() is called
+	* before a multi-line text widget is realized, GTK prints warnings
+	* and sometimes segment faults.  The fix is to realize the widget.
+	*/
+	if ((style & SWT.MULTI) != 0) OS.gtk_widget_realize (handle);
 	OS.gtk_editable_select_region (handle, 0, -1);
 }
 
@@ -1051,6 +1057,12 @@ public void setSelection (int start) {
 public void setSelection (int start, int end) {
 	checkWidget ();
 	OS.gtk_editable_set_position (handle, start);
+	/*
+	* Bug in GTK.  When gtk_editable_select_region() is called
+	* before a multi-line text widget is realized, GTK prints warnings
+	* and sometimes segment faults.  The fix is to realize the widget.
+	*/
+	if ((style & SWT.MULTI) != 0) OS.gtk_widget_realize (handle);
 	OS.gtk_editable_select_region (handle, start, end);
 }
 
