@@ -9,7 +9,7 @@
 # MINOR_VER  - the minor version number 
 # BUILD_NUM  - the build number
 
-DLL_VERSION=$(MAJOR_VER)$(MINOR_VER)
+DLL_VERSION=$(MAJOR_VER)0$(MINOR_VER)
 
 
 # Define the installation directories for various products.
@@ -48,7 +48,7 @@ KDE_LIB      = -L/usr/lib  -L$(QT_HOME)/lib \
 #
 CFLAGS = -O -s \
 	-DSWT_LIBRARY_MAJOR_VERSION=$(MAJOR_VER) \
-	-DSWT_LIBRARY_MINOR_VERSION=$(MINOR_VER) \
+	-DSWT_LIBRARY_MINOR_VERSION=0$(MINOR_VER) \
 	-DLINUX -DMOTIF -DGNOME \
 	-fpic \
 	-I./ \
