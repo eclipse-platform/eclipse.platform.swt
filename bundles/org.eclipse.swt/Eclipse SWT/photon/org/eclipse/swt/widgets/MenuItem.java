@@ -624,7 +624,7 @@ public void setEnabled (boolean enabled) {
  * Note: This feature is not available on all window systems (for example, Window NT),
  * in which case, calling this method will silently do nothing.
  *
- * @param menu the image to display
+ * @param image the image to display
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

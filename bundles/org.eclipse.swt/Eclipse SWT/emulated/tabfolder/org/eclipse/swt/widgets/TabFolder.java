@@ -1005,7 +1005,7 @@ public void setFont(Font font) {
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.
- * The current selected is first cleared, then the new items are
+ * The current selection is first cleared, then the new items are
  * selected. Indices that are out of range are ignored.
  *
  * @param index the index of the item to select

@@ -28,11 +28,6 @@ import org.eclipse.swt.widgets.*;
  * it does not make sense to set a layout on it.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
- * </p><p>
- * NOTE: The API in the browser package is NOT finalized.
- * Use at your own risk, because it will most certainly change.
- * The only reason this API is being released at this time is so that 
- * other teams can try it out.
  * </p>
  * 
  * @since 3.0
@@ -519,12 +514,38 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 	return ret;
 }
 
+/**
+ * Returns <code>true</code> if the receiver can navigate to the 
+ * previous session history item, and <code>false</code> otherwise.
+ *
+ * @return the receiver's back command enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #back
+ */
 public boolean isBackEnabled() {
 	checkWidget();
 	int webView = WebKit.HIWebViewGetWebView(webViewHandle);
 	return WebKit.objc_msgSend(webView, WebKit.S_canGoBack) != 0;
 }
 
+/**
+ * Returns <code>true</code> if the receiver can navigate to the 
+ * next session history item, and <code>false</code> otherwise.
+ *
+ * @return the receiver's forward command enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #forward
+ */
 public boolean isForwardEnabled() {
 	checkWidget();
 	int webView = WebKit.HIWebViewGetWebView(webViewHandle);
@@ -873,7 +894,7 @@ public boolean setText(String html) {
  * 
  * @param url the URL to be loaded
  *
- * @return true if the operation was successfull and false otherwise.
+ * @return true if the operation was successful and false otherwise.
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>

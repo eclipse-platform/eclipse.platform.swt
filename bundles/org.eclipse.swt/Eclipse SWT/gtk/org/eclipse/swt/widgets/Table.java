@@ -249,6 +249,27 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text, icon and other attribues of the item are set to the default
+ * value.  If the table was created with the SWT.VIRTUAL style, these
+ * attributes are requested again as needed.
+ *
+ * @param index the index of the item to clear
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.0
+ */
 public void clear (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < itemCount)) {
@@ -258,6 +279,29 @@ public void clear (int index) {
 	if (item != null) item.clear();
 }
 
+/**
+ * Removes the items from the receiver which are between the given
+ * zero-relative start and end indices (inclusive).  The text, icon
+ * and other attribues of the items are set to their default values.
+ * If the table was created with the SWT.VIRTUAL style, these attributes
+ * are requested again as needed.
+ *
+ * @param start the start index of the item to clear
+ * @param end the end index of the item to clear
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if either the start or end are not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT.SetData
+ * 
+ * @since 3.0
+ */
 public void clear (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
@@ -274,6 +318,28 @@ public void clear (int start, int end) {
 	}
 }
 
+/**
+ * Clears the items at the given zero-relative indices in the receiver.
+ * The text, icon and other attribues of the items are set to their default
+ * values.  If the table was created with the SWT.VIRTUAL style, these
+ * attributes are requested again as needed.
+ *
+ * @param indices the array of indices of the items
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the indices array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT.SetData
+ * 
+ * @since 3.0
+ */
 public void clear (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -289,6 +355,22 @@ public void clear (int [] indices) {
 	}
 }
 
+/**
+ * Clears all the items in the receiver. The text, icon and other
+ * attribues of the items are set to their default values. If the
+ * table was created with the SWT.VIRTUAL style, these attributes
+ * are requested again as needed.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT.SetData
+ * 
+ * @since 3.0
+ */
 public void clearAll () {
 	checkWidget ();
 	for (int i=0; i<itemCount; i++) {
@@ -877,6 +959,8 @@ GdkColor getForegroundColor () {
 /**
  * Returns the width in pixels of a grid line.
  *
+ * @return the width of a grid line in pixels
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1684,7 +1768,7 @@ public void removeAll () {
  * </ul>
  *
  * @see SelectionListener
- * @see #addSelectionListener
+ * @see #addSelectionListener(SelectionListener)
  */
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget();
@@ -1740,11 +1824,16 @@ public void select (int index) {
 }
 
 /**
- * Selects the items at the given zero-relative indices in the receiver.
- * If the item at the index was already selected, it remains
- * selected. The range of the indices is inclusive. Indices that are
- * out of range are ignored and no items will be selected if start is
- * greater than end.
+ * Selects the items in the range specified by the given zero-relative
+ * indices in the receiver. The range of indices is inclusive.
+ * The current selection is not cleared before the new items are selected.
+ * <p>
+ * If an item in the given range is not selected, it is selected.
+ * If an item in the given range was already selected, it remains selected.
+ * Indices that are out of range are ignored and no items will be selected
+ * if start is greater than end.
+ * If the receiver is single-select and there is more than one item in the
+ * given range, then all indices are ignored.
  *
  * @param start the start of the range
  * @param end the end of the range
@@ -1753,6 +1842,8 @@ public void select (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Table#setSelection(int,int)
  */
 public void select (int start, int end) {
 	checkWidget ();
@@ -1776,10 +1867,13 @@ public void select (int start, int end) {
 
 /**
  * Selects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
- * is not selected, it is selected.  If the item at the index
- * was selected, it remains selected. Indices that are out
- * of range and duplicate indices are ignored.
+ * The current selection is not cleared before the new items are selected.
+ * <p>
+ * If the item at a given index is not selected, it is selected.
+ * If the item at a given index was already selected, it remains selected.
+ * Indices that are out of range and duplicate indices are ignored.
+ * If the receiver is single-select and multiple indices are specified,
+ * then all indices are ignored.
  *
  * @param indices the array of indices for the items to select
  *
@@ -1790,6 +1884,8 @@ public void select (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Table#setSelection(int[])
  */
 public void select (int [] indices) {
 	checkWidget ();
@@ -1814,7 +1910,9 @@ public void select (int [] indices) {
 }
 
 /**
- * Selects all the items in the receiver.
+ * Selects all of the items in the receiver.
+ * <p>
+ * If the receiver is single-select, do nothing.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1900,7 +1998,7 @@ void setForegroundColor (GdkColor color) {
  * it visible may not actually cause it to be displayed.
  * </p>
  *
- * @param visible the new visibility state
+ * @param show the new visibility state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1912,6 +2010,18 @@ public void setHeaderVisible (boolean show) {
 	OS.gtk_tree_view_set_headers_visible (handle, show);
 }
 
+/**
+ * Sets the number of items contained in the receiver.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
@@ -1947,7 +2057,7 @@ public void setItemCount (int count) {
  * it visible may not actually cause it to be displayed.
  * </p>
  *
- * @param visible the new visibility state
+ * @param show the new visibility state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2003,10 +2113,14 @@ public void setSelection (int index) {
 }
 
 /**
- * Selects the items at the given zero-relative indices in the receiver. 
- * The current selection is first cleared, then the new items are selected.
+ * Selects the items in the range specified by the given zero-relative
+ * indices in the receiver. The range of indices is inclusive.
+ * The current selection is cleared before the new items are selected.
+ * <p>
  * Indices that are out of range are ignored and no items will be selected
  * if start is greater than end.
+ * If the receiver is single-select and there is more than one item in the
+ * given range, then all indices are ignored.
  * 
  * @param start the start index of the items to select
  * @param end the end index of the items to select
@@ -2031,8 +2145,12 @@ public void setSelection (int start, int end) {
 }
 
 /**
- * Selects the items at the given zero-relative indices in the receiver. 
- * The current selected is first cleared, then the new items are selected.
+ * Selects the items at the given zero-relative indices in the receiver.
+ * The current selection is cleared before the new items are selected.
+ * <p>
+ * Indices that are out of range and duplicate indices are ignored.
+ * If the receiver is single-select and multiple indices are specified,
+ * then all indices are ignored.
  *
  * @param indices the indices of the items to select
  *
@@ -2059,14 +2177,17 @@ public void setSelection (int [] indices) {
 
 /**
  * Sets the receiver's selection to be the given array of items.
- * The current selected is first cleared, then the new items are
- * selected.
+ * The current selection is cleared before the new items are selected.
+ * <p>
+ * Items that are not in the receiver are ignored.
+ * If the receiver is single-select and multiple items are specified,
+ * then all items are ignored.
  *
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if one of the item has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the items has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2074,7 +2195,8 @@ public void setSelection (int [] indices) {
  * </ul>
  *
  * @see Table#deselectAll()
- * @see Table#select(int)
+ * @see Table#select(int[])
+ * @see Table#setSelection(int[])
  */
 public void setSelection (TableItem [] items) {
 	checkWidget ();

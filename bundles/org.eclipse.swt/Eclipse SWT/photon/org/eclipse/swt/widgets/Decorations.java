@@ -22,6 +22,11 @@ import org.eclipse.swt.graphics.*;
  * shares a significant amount of code with this class,
  * and is a subclass.
  * <p>
+ * IMPORTANT: This class was intended to be abstract and
+ * should <em>never</em> be referenced or instantiated.
+ * Instead, the class <code>Shell</code> should be used.
+ * </p>
+ * <p>
  * Instances are always displayed in one of the maximized, 
  * minimized or normal states:
  * <ul>
@@ -222,6 +227,33 @@ public Image getImage () {
 	return image;
 }
 
+/**
+ * Returns the receiver's images if they had previously been 
+ * set using <code>setImages()</code>. Images are typically
+ * displayed by the window manager when the instance is
+ * marked as iconified, and may also be displayed somewhere
+ * in the trim when the instance is in normal or maximized
+ * states. Depending where the icon is displayed, the platform
+ * chooses the icon with the "best" size. It is expected that
+ * the array will contain the same icon rendered at different
+ * resolutions.
+ * 
+ * <p>
+ * Note: This method will return an empty array if called before
+ * <code>setImages()</code> is called. It does not provide
+ * access to a window manager provided, "default" image
+ * even if one exists.
+ * </p>
+ * 
+ * @return the images
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public Image [] getImages () {
 	checkWidget();
 	return images;
@@ -379,7 +411,7 @@ void resizeBounds (int width, int height) {
  * disposed, the receiver's default button will be set to
  * null. 
  *
- * @param the new default button
+ * @param button the new default button
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the button has been disposed</li> 
@@ -438,6 +470,29 @@ public void setImage (Image image) {
 	this.image = image;
 }
 
+/**
+ * Sets the receiver's images to the argument, which may
+ * be an empty array. Images are typically displayed by the
+ * window manager when the instance is marked as iconified,
+ * and may also be displayed somewhere in the trim when the
+ * instance is in normal or maximized states. Depending where
+ * the icon is displayed, the platform chooses the icon with
+ * the "best" size. It is expected that the array will contain
+ * the same icon rendered at different resolutions.
+ * 
+ * @param images the new image array
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the images has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public void setImages (Image [] images) {
 	checkWidget();
 	if (images == null) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -461,7 +516,7 @@ public void setImages (Image [] images) {
  * always. This should be avoided if possible.
  * </p>
  *
- * @param the new maximized state
+ * @param maximized the new maximized state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -509,7 +564,7 @@ public void setMenuBar (Menu menu) {
  * always. This should be avoided if possible.
  * </p>
  *
- * @param the new maximized state
+ * @param minimized the new maximized state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

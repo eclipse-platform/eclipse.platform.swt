@@ -1205,11 +1205,7 @@ void setPaintStartX(int startX) {
 void setParentItem(TreeItem parentItem) {
 	this.parentItem = parentItem;
 }
-/**
- * This label will be displayed to the right of the bitmap, 
- * or, if the receiver doesn't have a bitmap to the right of 
- * the horizontal hierarchy connector line.
- */
+
 public void setText(String newText) {
 	checkWidget();
 	Tree parent = getParent();	
@@ -1409,7 +1405,7 @@ public void setForeground (Color color) {
  * Sets the grayed state of the receiver.
  * <p>
  *
- * @param checked the new grayed state
+ * @param grayed the new grayed state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

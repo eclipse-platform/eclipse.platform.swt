@@ -27,7 +27,7 @@ import org.eclipse.swt.accessibility.*;
  * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b>
  * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
- *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize</dd>
+ *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse</dd>
  * </dl>
  * <p>
  * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
@@ -35,8 +35,6 @@ import org.eclipse.swt.accessibility.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
- * 
- * Note: Only one of LEFT_TO_RIGHT and RIGHT_TO_LEFT may be specified.
  */
 public abstract class Control extends Widget implements Drawable {
 	int /*long*/ fixedHandle;
@@ -375,7 +373,9 @@ public Accessible getAccessible () {
 
 /**
  * Returns a rectangle describing the receiver's size and location
- * relative to its parent (or its display if its parent is null).
+ * relative to its parent (or its display if its parent is null),
+ * unless the receiver is a shell. In this case, the location is
+ * relative to the display.
  *
  * @return the receiver's bounding rectangle
  *
@@ -422,7 +422,9 @@ public void setBounds (Rectangle rect) {
  * Sets the receiver's size and location to the rectangular
  * area specified by the arguments. The <code>x</code> and 
  * <code>y</code> arguments are relative to the receiver's
- * parent (or its display if its parent is null).
+ * parent (or its display if its parent is null), unless 
+ * the receiver is a shell. In this case, the <code>x</code>
+ * and <code>y</code> arguments are relative to the display.
  * <p>
  * Note: Attempting to set the width or height of the
  * receiver to a negative number will cause that
@@ -511,7 +513,9 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 
 /**
  * Returns a point describing the receiver's location relative
- * to its parent (or its display if its parent is null).
+ * to its parent (or its display if its parent is null), unless
+ * the receiver is a shell. In this case, the point is 
+ * relative to the display. 
  *
  * @return the receiver's location
  *
@@ -530,8 +534,10 @@ public Point getLocation () {
 
 /**
  * Sets the receiver's location to the point specified by
- * the argument which is relative to the receiver's
- * parent (or its display if its parent is null).
+ * the arguments which are relative to the receiver's
+ * parent (or its display if its parent is null), unless 
+ * the receiver is a shell. In this case, the point is 
+ * relative to the display. 
  *
  * @param location the new location for the receiver
  *
@@ -549,7 +555,9 @@ public void setLocation (Point location) {
 /**
  * Sets the receiver's location to the point specified by
  * the arguments which are relative to the receiver's
- * parent (or its display if its parent is null).
+ * parent (or its display if its parent is null), unless 
+ * the receiver is a shell. In this case, the point is 
+ * relative to the display. 
  *
  * @param x the new x coordinate for the receiver
  * @param y the new y coordinate for the receiver
@@ -594,7 +602,6 @@ public Point getSize () {
  * </p>
  *
  * @param size the new size for the receiver
- * @param height the new height for the receiver
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -638,7 +645,7 @@ public void setSize (int width, int height) {
  * the top of the drawing order will not be covered by other
  * controls even if they occupy intersecting areas.
  *
- * @param the sibling control (or null)
+ * @param control the sibling control (or null)
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
@@ -647,6 +654,8 @@ public void setSize (int width, int height) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #moveBelow
  */
 public void moveAbove (Control control) {
 	checkWidget();
@@ -664,7 +673,7 @@ public void moveAbove (Control control) {
  * the bottom of the drawing order will be covered by all other
  * controls which occupy intersecting areas.
  *
- * @param the sibling control (or null)
+ * @param control the sibling control (or null)
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
@@ -673,6 +682,8 @@ public void moveAbove (Control control) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #moveAbove
  */
 public void moveBelow (Control control) {
 	checkWidget();
@@ -711,6 +722,8 @@ public void pack () {
  * manager caches can be retained. 
  * </p>
  *
+ * @param changed whether or not the receiver's contents have changed
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1491,6 +1504,13 @@ public Menu getMenu () {
 	return menu;
 }
 
+/**
+ * Returns the receiver's monitor.
+ * 
+ * @return the receiver's monitor
+ * 
+ * @since 3.0
+ */
 public Monitor getMonitor () {
 	checkWidget();
 	Monitor monitor = null;
@@ -1912,7 +1932,7 @@ int /*long*/ imHandle () {
  * application code.
  * </p>
  *
- * @param handle the platform specific GC handle
+ * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
@@ -2058,7 +2078,8 @@ void register () {
 /**
  * Causes the entire bounds of the receiver to be marked
  * as needing to be redrawn. The next time a paint request
- * is processed, the control will be completely painted.
+ * is processed, the control will be completely painted,
+ * including the background.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2066,6 +2087,11 @@ void register () {
  * </ul>
  *
  * @see #update
+ * @see PaintListener
+ * @see SWT#Paint
+ * @see SWT#NO_BACKGROUND
+ * @see SWT#NO_REDRAW_RESIZE
+ * @see SWT#NO_MERGE_PAINTS
  */
 public void redraw () {
 	checkWidget();
@@ -2078,11 +2104,12 @@ public void redraw () {
  * Causes the rectangular area of the receiver specified by
  * the arguments to be marked as needing to be redrawn. 
  * The next time a paint request is processed, that area of
- * the receiver will be painted. If the <code>all</code> flag
- * is <code>true</code>, any children of the receiver which
- * intersect with the specified area will also paint their
- * intersecting areas. If the <code>all</code> flag is 
- * <code>false</code>, the children will not be painted.
+ * the receiver will be painted, including the background.
+ * If the <code>all</code> flag is <code>true</code>, any
+ * children of the receiver which intersect with the specified
+ * area will also paint their intersecting areas. If the
+ * <code>all</code> flag is <code>false</code>, the children
+ * will not be painted.
  *
  * @param x the x coordinate of the area to draw
  * @param y the y coordinate of the area to draw
@@ -2096,6 +2123,11 @@ public void redraw () {
  * </ul>
  *
  * @see #update
+ * @see PaintListener
+ * @see SWT#Paint
+ * @see SWT#NO_BACKGROUND
+ * @see SWT#NO_REDRAW_RESIZE
+ * @see SWT#NO_MERGE_PAINTS
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget();
@@ -2411,7 +2443,8 @@ public void setEnabled (boolean enabled) {
 
 /**
  * Causes the receiver to have the <em>keyboard focus</em>, 
- * such that all keyboard events will be delivered to it.
+ * such that all keyboard events will be delivered to it.  Focus
+ * reassignment will respect applicable platform constraints.
  *
  * @return <code>true</code> if the control got focus, and <code>false</code> if it was unable to.
  *
@@ -2995,6 +3028,8 @@ boolean traverseMnemonic (char key) {
  * </ul>
  *
  * @see #redraw
+ * @see PaintListener
+ * @see SWT#Paint
  */
 public void update () {
 	checkWidget ();

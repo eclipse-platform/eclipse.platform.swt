@@ -17,12 +17,23 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * NOTE: The API in the accessibility package is NOT finalized.
- * Use at your own risk, because it will most certainly change.
- * The methods in AccessibleListener are more stable than those
- * in AccessibleControlListener, however please take nothing for
- * granted. The only reason this API is being released at this
- * time is so that other teams can try it out.
+ * Instances of this class provide a bridge between application
+ * code and assistive technology clients. Many platforms provide
+ * default accessible behavior for most widgets, and this class
+ * allows that default behavior to be overridden. Applications
+ * can get the default Accessible object for a control by sending
+ * it <code>getAccessible</code>, and then add an accessible listener
+ * to override simple items like the name and help string, or they
+ * can add an accessible control listener to override complex items.
+ * As a rule of thumb, an application would only want to use the
+ * accessible control listener to implement accessibility for a
+ * custom control.
+ * 
+ * @see Control#getAccessible
+ * @see AccessibleListener
+ * @see AccessibleEvent
+ * @see AccessibleControlListener
+ * @see AccessibleControlEvent
  * 
  * @since 2.0
  */
@@ -128,8 +139,9 @@ public class Accessible {
 	}
 	
 	/**
-	 * Gets the control for this Accessible object. 
+	 * Returns the control for this Accessible object. 
 	 *
+	 * @return the receiver's control
 	 * @since 3.0
 	 */
 	public Control getControl() {
@@ -164,7 +176,7 @@ public class Accessible {
 		return result;
 	}
 	
-	/**	 
+	/**
 	 * Invokes platform specific functionality to allocate a new accessible object.
 	 * <p>
 	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -238,7 +250,7 @@ public class Accessible {
 	 * </ul>
 	 *
 	 * @see AccessibleListener
-	 * @see #addDisposeListener
+	 * @see #addAccessibleListener
 	 */
 	public void removeAccessibleListener (AccessibleListener listener) {
 		checkWidget ();
@@ -274,7 +286,7 @@ public class Accessible {
 	}
 	
 	/**
-	 * Sends notification to accessible clients that the child selection
+	 * Sends a message to accessible clients that the child selection
 	 * within a custom container control has changed.
 	 *
 	 * @exception SWTException <ul>
@@ -292,7 +304,7 @@ public class Accessible {
 	}
 
 	/**
-	 * Sends notification to accessible clients that the focus
+	 * Sends a message to accessible clients indicating that the focus
 	 * has changed within a custom control.
 	 *
 	 * @param childID an identifier specifying a child of the control
@@ -301,7 +313,6 @@ public class Accessible {
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
-	 * 
 	 */
 	public void setFocus (int childID) {
 		checkWidget ();
@@ -311,7 +322,7 @@ public class Accessible {
 	}
 	
 	/**
-	 * Sends notification to accessible clients that the text
+	 * Sends a message to accessible clients that the text
 	 * caret has moved within a custom control.
 	 *
 	 * @param index the new caret index within the control
@@ -331,7 +342,7 @@ public class Accessible {
 	}
 
 	/**
-	 * Sends notification to accessible clients that the text
+	 * Sends a message to accessible clients that the text
 	 * within a custom control has changed.
 	 *
 	 * @param type the type of change, one of <code>ACC.NOTIFY_TEXT_INSERT</code>
@@ -344,8 +355,8 @@ public class Accessible {
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
 	 * 
-	 * @see ACC#NOTIFY_TEXT_INSERT
-	 * @see ACC#NOTIFY_TEXT_DELETE
+	 * @see ACC#TEXT_INSERT
+	 * @see ACC#TEXT_DELETE
 	 * 
 	 * @since 3.0
 	 */
@@ -357,7 +368,7 @@ public class Accessible {
 	}
 
 	/**
-	 * Sends notification to accessible clients that the text
+	 * Sends a message to accessible clients that the text
 	 * selection has changed within a custom control.
 	 *
 	 * @exception SWTException <ul>

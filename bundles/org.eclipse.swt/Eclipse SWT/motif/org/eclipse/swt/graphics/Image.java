@@ -180,6 +180,7 @@ public Image(Device device, int width, int height) {
  * @exception SWTException <ul>
  *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or
  *          is otherwise in an invalid state</li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth of the Image is not supported</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
@@ -510,6 +511,9 @@ public Image(Device device, Rectangle bounds) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth of the ImageData is not supported</li>
+ * </ul>
  */
 public Image(Device device, ImageData image) {
 	if (device == null) device = Device.getDevice();
@@ -588,6 +592,7 @@ public Image(Device device, ImageData source, ImageData mask) {
  * @exception SWTException <ul>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
  *    <li>ERROR_IO - if an IO error occurs while reading data</li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the InputStream describes an image with an unsupported depth</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
@@ -619,6 +624,7 @@ public Image(Device device, InputStream stream) {
  * @exception SWTException <ul>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
  *    <li>ERROR_IO - if an IO error occurs while reading data</li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file has an unsupported depth</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
@@ -1078,7 +1084,7 @@ public int internal_new_GC (GCData data) {
  * application code.
  * </p>
  *
- * @param handle the platform specific GC handle
+ * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int gc, GCData data) {
@@ -1285,7 +1291,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
  * these cases. For example:
  * <pre>
  *    Button b = new Button();
- *    image.setBackground(b.getBackground());>
+ *    image.setBackground(b.getBackground());
  *    b.setImage(image);
  * </pre>
  * </p><p>

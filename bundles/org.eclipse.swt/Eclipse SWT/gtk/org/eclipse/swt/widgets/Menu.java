@@ -107,7 +107,7 @@ public Menu (Decorations parent, int style) {
  * for the instance so that the instance will be a drop-down
  * menu on the given parent's parent.
  *
- * @param parent a menu which will be the parent of the new instance (cannot be null)
+ * @param parentMenu a menu which will be the parent of the new instance (cannot be null)
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
@@ -131,7 +131,7 @@ public Menu (Menu parentMenu) {
  * for the instance so that the instance will be a drop-down
  * menu on the given parent's parent menu.
  *
- * @param parent a menu item which will be the parent of the new instance (cannot be null)
+ * @param parentItem a menu item which will be the parent of the new instance (cannot be null)
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>

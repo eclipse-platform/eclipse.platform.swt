@@ -92,29 +92,7 @@ int /*long*/ clientHandle () {
 	return clientHandle;
 }
 
-/**
- * Given a desired <em>client area</em> for the receiver
- * (as described by the arguments), returns the bounding
- * rectangle which would be required to produce that client
- * area.
- * <p>
- * In other words, it returns a rectangle such that, if the
- * receiver's bounds were set to that rectangle, the area
- * of the receiver which is capable of displaying data
- * (that is, not covered by the "trimmings") would be the
- * rectangle described by the arguments (relative to the
- * receiver's parent).
- * </p>
- * 
- * @return the required bounds to produce the given client area
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see #getClientArea
- */
+
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	int clientX = OS.GTK_WIDGET_X (clientHandle);

@@ -351,8 +351,8 @@ GdkColor getBackgroundColor () {
 }
 
 /**
- * Returns the zero-relative index of the item which is currently
- * has the focus in the receiver, or -1 if no item is has focus.
+ * Returns the zero-relative index of the item which currently
+ * has the focus in the receiver, or -1 if no item has focus.
  *
  * @return the index of the selected item
  *
@@ -757,6 +757,7 @@ public int indexOf (String string) {
  * returns -1.
  *
  * @param string the search item
+ * @param start the zero-relative index at which to start the search
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
@@ -1031,11 +1032,16 @@ public void select (int index) {
 }
 
 /**
- * Selects the items at the given zero-relative indices in the receiver.
- * If the item at the index was already selected, it remains
- * selected. The range of the indices is inclusive. Indices that are
- * out of range are ignored and no items will be selected if start is
- * greater than end.
+ * Selects the items in the range specified by the given zero-relative
+ * indices in the receiver. The range of indices is inclusive.
+ * The current selection is not cleared before the new items are selected.
+ * <p>
+ * If an item in the given range is not selected, it is selected.
+ * If an item in the given range was already selected, it remains selected.
+ * Indices that are out of range are ignored and no items will be selected
+ * if start is greater than end.
+ * If the receiver is single-select and there is more than one item in the
+ * given range, then all indices are ignored.
  *
  * @param start the start of the range
  * @param end the end of the range
@@ -1044,6 +1050,8 @@ public void select (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see List#setSelection(int,int)
  */
 public void select (int start, int end) {
 	checkWidget ();
@@ -1070,20 +1078,25 @@ public void select (int start, int end) {
 
 /**
  * Selects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
- * is not selected, it is selected.  If the item at the index
- * was selected, it remains selected. Indices that are out
- * of range and duplicate indices are ignored.
+ * The current selection is not cleared before the new items are selected.
+ * <p>
+ * If the item at a given index is not selected, it is selected.
+ * If the item at a given index was already selected, it remains selected.
+ * Indices that are out of range and duplicate indices are ignored.
+ * If the receiver is single-select and multiple indices are specified,
+ * then all indices are ignored.
  *
  * @param indices the array of indices for the items to select
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the set of indices is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of indices is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see List#setSelection(int[])
  */
 public void select (int [] indices) {
 	checkWidget ();
@@ -1111,7 +1124,9 @@ public void select (int [] indices) {
 }
 
 /**
- * Selects all the items in the receiver.
+ * Selects all of the items in the receiver.
+ * <p>
+ * If the receiver is single-select, do nothing.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1267,10 +1282,14 @@ public void setSelection (int index) {
 }
 
 /**
- * Selects the items at the given zero-relative indices in the receiver. 
- * The current selection is first cleared, then the new items are selected.
+ * Selects the items in the range specified by the given zero-relative
+ * indices in the receiver. The range of indices is inclusive.
+ * The current selection is cleared before the new items are selected.
+ * <p>
  * Indices that are out of range are ignored and no items will be selected
  * if start is greater than end.
+ * If the receiver is single-select and there is more than one item in the
+ * given range, then all indices are ignored.
  *
  * @param start the start index of the items to select
  * @param end the end index of the items to select
@@ -1280,8 +1299,8 @@ public void setSelection (int index) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see Table#deselectAll()
- * @see Table#select(int,int)
+ * @see List#deselectAll()
+ * @see List#select(int,int)
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
@@ -1306,13 +1325,17 @@ public void setSelection (int start, int end) {
 }
 
 /**
- * Selects the items at the given zero-relative indices in the receiver. 
- * The current selection is first cleared, then the new items are selected.
+ * Selects the items at the given zero-relative indices in the receiver.
+ * The current selection is cleared before the new items are selected.
+ * <p>
+ * Indices that are out of range and duplicate indices are ignored.
+ * If the receiver is single-select and multiple indices are specified,
+ * then all indices are ignored.
  *
  * @param indices the indices of the items to select
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the set of indices is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of indices is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1343,13 +1366,16 @@ public void setSelection(int[] indices) {
 
 /**
  * Sets the receiver's selection to be the given array of items.
- * The current selected is first cleared, then the new items are
- * selected.
+ * The current selection is cleared before the new items are selected.
+ * <p>
+ * Items that are not in the receiver are ignored.
+ * If the receiver is single-select and multiple items are specified,
+ * then all items are ignored.
  *
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the set of items is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1357,7 +1383,8 @@ public void setSelection(int[] indices) {
  * </ul>
  *
  * @see List#deselectAll()
- * @see List#select(int)
+ * @see List#select(int[])
+ * @see List#setSelection(int[])
  */
 public void setSelection (String [] items) {
 	checkWidget ();

@@ -72,7 +72,7 @@ public final class Image implements Drawable {
 	public int type;
 	
 	/**
-	 * the OS resource of the image
+	 * the handle to the OS image resource
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;

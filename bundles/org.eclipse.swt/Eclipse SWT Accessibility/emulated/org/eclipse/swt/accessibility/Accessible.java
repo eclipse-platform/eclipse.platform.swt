@@ -201,8 +201,9 @@ public class Accessible {
 	}
 
 	/**
-	 * Gets the control for this Accessible object. 
+	 * Returns the control for this Accessible object. 
 	 *
+	 * @return the receiver's control
 	 * @since 3.0
 	 */
 	public Control getControl() {
@@ -253,8 +254,8 @@ public class Accessible {
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
 	 * 
-	 * @see ACC#NOTIFY_TEXT_INSERT
-	 * @see ACC#NOTIFY_TEXT_DELETE
+	 * @see ACC#TEXT_INSERT
+	 * @see ACC#TEXT_DELETE
 	 * 
 	 * @since 3.0
 	 */

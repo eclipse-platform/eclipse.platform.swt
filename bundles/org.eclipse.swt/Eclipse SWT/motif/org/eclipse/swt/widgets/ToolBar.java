@@ -72,8 +72,8 @@ public class ToolBar extends Composite {
  * @see SWT#HORIZONTAL
  * @see SWT#SHADOW_OUT
  * @see SWT#VERTICAL
- * @see Widget#checkSubclass
- * @see Widget#getStyle
+ * @see Widget#checkSubclass()
+ * @see Widget#getStyle()
  */
 public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -226,7 +226,7 @@ public int getItemCount () {
 	return itemCount;
 }
 /**
- * Returns an array of <code>TabItem</code>s which are the items
+ * Returns an array of <code>ToolItem</code>s which are the items
  * in the receiver. 
  * <p>
  * Note: This is not the actual structure used by the receiver

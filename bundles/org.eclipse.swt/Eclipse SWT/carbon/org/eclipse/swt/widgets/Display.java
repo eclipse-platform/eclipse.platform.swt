@@ -96,7 +96,7 @@ import org.eclipse.swt.graphics.*;
  * @see #wake
  * @see #readAndDispatch
  * @see #sleep
- * @see #dispose
+ * @see Device#dispose
  */
 public class Display extends Device {
 	
@@ -364,6 +364,29 @@ int appleEventProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notifed when an event of the given type occurs anywhere
+ * in this display. When the event does occur, the listener is
+ * notified by sending it the <code>handleEvent()</code> message.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #removeFilter
+ * @see #removeListener
+ * 
+ * @since 3.0 
+ */
 public void addFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -765,7 +788,7 @@ void clearMenuFlags () {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #dispose
+ * @see Device#dispose
  * 
  * @since 2.0
  */
@@ -962,6 +985,16 @@ public Shell getActiveShell () {
 	return null;
 }
 
+/**
+ * Returns a rectangle describing the receiver's size and location.
+ *
+ * @return the bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public Rectangle getBounds () {
 	checkDevice ();
 	int gdevice = OS.GetDeviceList();
@@ -991,6 +1024,19 @@ int getCaretBlinkTime () {
 	return OS.GetCaretTime () * 1000 / 60;
 }
 
+/**
+ * Returns a rectangle which describes the area of the
+ * receiver which is capable of displaying data.
+ * 
+ * @return the client area
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #getBounds
+ */
 public Rectangle getClientArea () {
 	checkDevice ();
 	int gdevice = OS.GetDeviceList();
@@ -1072,6 +1118,18 @@ public Point getCursorLocation () {
 	return new Point (pt.h, pt.v);
 }
 
+/**
+ * Returns an array containing the recommended cursor sizes.
+ *
+ * @return the array of cursor sizes
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public Point [] getCursorSizes () {
 	checkDevice ();
 	return new Point [] {new Point (16, 16)};
@@ -1226,6 +1284,23 @@ Control getFocusControl (int window) {
 	return null;
 }
 
+/**
+ * Returns true when the high contrast mode is enabled.
+ * Otherwise, false is returned.
+ * <p>
+ * Note: This operation is a hint and is not supported on
+ * platforms that do not have this concept.
+ * </p>
+ *
+ * @return the high contrast mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public boolean getHighContrast () {
 	checkDevice ();
 	return false;
@@ -1247,6 +1322,20 @@ public int getIconDepth () {
 	return getDepth ();
 }
 
+/**
+ * Returns an array containing the recommended icon sizes.
+ *
+ * @return the array of icon sizes
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Decorations#setImages(Image[])
+ * 
+ * @since 3.0
+ */
 public Point [] getIconSizes () {
 	checkDevice ();
 	return new Point [] { 
@@ -1473,6 +1562,48 @@ public Color getSystemColor (int id) {
 	return Color.carbon_new (this, new float[]{red, green, blue, 1});
 }
 
+/**
+ * Returns the matching standard platform cursor for the given
+ * constant, which should be one of the cursor constants
+ * specified in class <code>SWT</code>. This cursor should
+ * not be free'd because it was allocated by the system,
+ * not the application.  A value of <code>null</code> will
+ * be returned if the supplied constant is not an swt cursor
+ * constant. 
+ *
+ * @param id the swt cursor constant
+ * @return the corresponding cursor or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see SWT#CURSOR_ARROW
+ * @see SWT#CURSOR_WAIT
+ * @see SWT#CURSOR_CROSS
+ * @see SWT#CURSOR_APPSTARTING
+ * @see SWT#CURSOR_HELP
+ * @see SWT#CURSOR_SIZEALL
+ * @see SWT#CURSOR_SIZENESW
+ * @see SWT#CURSOR_SIZENS
+ * @see SWT#CURSOR_SIZENWSE
+ * @see SWT#CURSOR_SIZEWE
+ * @see SWT#CURSOR_SIZEN
+ * @see SWT#CURSOR_SIZES
+ * @see SWT#CURSOR_SIZEE
+ * @see SWT#CURSOR_SIZEW
+ * @see SWT#CURSOR_SIZENE
+ * @see SWT#CURSOR_SIZESE
+ * @see SWT#CURSOR_SIZESW
+ * @see SWT#CURSOR_SIZENW
+ * @see SWT#CURSOR_UPARROW
+ * @see SWT#CURSOR_IBEAM
+ * @see SWT#CURSOR_NO
+ * @see SWT#CURSOR_HAND
+ * 
+ * @since 3.0
+ */
 public Cursor getSystemCursor (int id) {
 	checkDevice ();
 	if (!(0 <= id && id < cursors.length)) return null;
@@ -1482,6 +1613,32 @@ public Cursor getSystemCursor (int id) {
 	return cursors [id];
 }
 
+/**
+ * Returns the matching standard platform image for the given
+ * constant, which should be one of the icon constants
+ * specified in class <code>SWT</code>. This image should
+ * not be free'd because it was allocated by the system,
+ * not the application.  A value of <code>null</code> will
+ * be returned either if the supplied constant is not an
+ * swt icon constant or if the platform does not define an
+ * image that corresponds to the constant. 
+ *
+ * @param id the swt icon constant
+ * @return the corresponding image or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see SWT#ICON_ERROR
+ * @see SWT#ICON_INFORMATION
+ * @see SWT#ICON_QUESTION
+ * @see SWT#ICON_WARNING
+ * @see SWT#ICON_WORKING
+ * 
+ * @since 3.0
+ */
 public Image getSystemImage (int id) {
 	int cgImage = 0;
 	int imageData = 0;
@@ -1526,6 +1683,17 @@ public Image getSystemImage (int id) {
 	return Image.carbon_new (this, SWT.ICON, cgImage, imageData);
 }
 
+/**
+ * Returns the single instance of the system tray.
+ *
+ * @return the receiver's user-interface thread
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
 public Tray getSystemTray () {
 	checkDevice ();
 	if (tray != null) return tray;
@@ -1773,7 +1941,7 @@ public int internal_new_GC (GCData data) {
  * application code.
  * </p>
  *
- * @param handle the platform specific GC handle
+ * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int context, GCData data) {
@@ -1837,6 +2005,54 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+/**
+ * Generate a low level system event.
+ * 
+ * <code>post</code> is used to generate low level keyboard
+ * and mouse events. The intent is to enable automated UI
+ * testing by simulating the input from the user.  Most
+ * SWT applications should never need to call this method.
+ * 
+ * <p>
+ * <b>Event Types:</b>
+ * <p>KeyDown, KeyUp
+ * <p>The following fields in the <code>Event</code> apply:
+ * <ul>
+ * <li>(in) type KeyDown or KeyUp</li>
+ * <p> Either one of:
+ * <li>(in) character a character that corresponds to a keyboard key</li>
+ * <li>(in) keyCode the key code of the key that was typed,
+ *          as defined by the key code constants in class <code>SWT</code></li>
+ * </ul>
+ * <p>MouseDown, MouseUp</p>
+ * <p>The following fields in the <code>Event</code> apply:
+ * <ul>
+ * <li>(in) type MouseDown or MouseUp
+ * <li>(in) button the button that is pressed or released
+ * </ul>
+ * <p>MouseMove</p>
+ * <p>The following fields in the <code>Event</code> apply:
+ * <ul>
+ * <li>(in) type MouseMove
+ * <li>(in) x the x coordinate to move the mouse pointer to in screen coordinates
+ * <li>(in) y the y coordinate to move the mouse pointer to in screen coordinates
+ * </ul>
+ * </dl>
+ * 
+ * @param event the event to be generated
+ * 
+ * @return true if the event was generated or false otherwise
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+ * 
+ */
 public boolean post(Event event) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1948,12 +2164,84 @@ void postEvent (Event event) {
 	eventQueue [index] = event;
 }
 
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ * 
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ * 
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param point to be mapped 
+ * @return point with mapped coordinates 
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
 public Point map (Control from, Control to, Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);	
 	return map (from, to, point.x, point.y);
 }
 
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ * 
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ * 
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param x coordinates to be mapped
+ * @param y coordinates to be mapped
+ * @return point with mapped coordinates
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
 public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -1982,12 +2270,86 @@ public Point map (Control from, Control to, int x, int y) {
 	return point;
 }
 
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ * 
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ * 
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param rectangle to be mapped
+ * @return rectangle with mapped coordinates
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);	
 	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 }
 
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ * 
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ * 
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param x coordinates to be mapped
+ * @param y coordinates to be mapped
+ * @param width coordinates to be mapped
+ * @param height coordinates to be mapped
+ * @return rectangle with mapped coordinates
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -2285,6 +2647,27 @@ void releaseDisplay () {
 
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notifed when an event of the given type occurs anywhere in
+ * this display.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should no longer be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #addFilter
+ * @see #addListener
+ * 
+ * @since 3.0
+ */
 public void removeFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);

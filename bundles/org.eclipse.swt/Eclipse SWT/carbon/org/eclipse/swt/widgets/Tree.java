@@ -554,7 +554,7 @@ public int getItemHeight () {
 }
 
 /**
- * Returns the number of items contained in the receiver
+ * Returns the items contained in the receiver
  * that are direct item children of the receiver.  These
  * are the roots of the tree.
  * <p>
@@ -563,7 +563,7 @@ public int getItemHeight () {
  * not affect the receiver. 
  * </p>
  *
- * @return the number of items
+ * @return the items
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1047,7 +1047,7 @@ void resetVisibleRegion (int control) {
  * will be inserted when dropped on the tree.
  * 
  * @param item the insert item.  Null will clear the insertion mark.
- * @param after true places the insert mark above 'item'. false places 
+ * @param before true places the insert mark above 'item'. false places 
  *	the insert mark below 'item'.
  *
  * @exception IllegalArgumentException <ul>
@@ -1066,7 +1066,9 @@ public void setInsertMark (TreeItem item, boolean before) {
 }
 
 /**
- * Selects all the items in the receiver.
+ * Selects all of the items in the receiver.
+ * <p>
+ * If the receiver is single-select, do nothing.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1143,14 +1145,17 @@ void setScrollWidth (TreeItem [] items, boolean set) {
 
 /**
  * Sets the receiver's selection to be the given array of items.
- * The current selected is first cleared, then the new items are
- * selected.
+ * The current selection is cleared before the new items are selected.
+ * <p>
+ * Items that are not in the receiver are ignored.
+ * If the receiver is single-select and multiple items are specified,
+ * then all items are ignored.
  *
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if one of the item has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the items has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

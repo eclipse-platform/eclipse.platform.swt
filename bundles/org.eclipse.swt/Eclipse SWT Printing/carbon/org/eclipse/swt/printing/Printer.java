@@ -157,11 +157,11 @@ static int unpackData(int[] handle, byte[] buffer, int offset) {
  * You must dispose the printer when it is no longer required. 
  * </p>
  *
- * @exception IllegalArgumentException <ul>
+ * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if there are no valid printers
  * </ul>
  *
- * @see #dispose
+ * @see Device#dispose
  */
 public Printer() {
 	this(null);
@@ -178,10 +178,12 @@ public Printer() {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the specified printer data does not represent a valid printer
+ * </ul>
+ * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if there are no valid printers
  * </ul>
  *
- * @see #dispose
+ * @see Device#dispose
  */
 public Printer(PrinterData data) {
 	super (checkNull(data));
@@ -204,6 +206,10 @@ public Printer(PrinterData data) {
  * is usually used by passing in the client area (the 'printable
  * area') of the printer. It can also be useful to pass in 0, 0, 0, 0.
  * 
+ * @param x the desired x coordinate of the client area
+ * @param y the desired y coordinate of the client area
+ * @param width the desired width of the client area
+ * @param height the desired height of the client area
  * @return the required bounds to produce the given client area
  *
  * @exception SWTException <ul>
@@ -222,20 +228,10 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 	return new Rectangle(x+(int)paperRect.left, y+(int)paperRect.top, width+(int)(paperRect.right-pageRect.right), height+(int)(paperRect.bottom-pageRect.bottom));
 }
 
-/**
- * Creates the device in the operating system.  If the device
- * does not have a handle, this method may do nothing depending
- * on the device.
- * <p>
- * This method is called before <code>init</code>.
- * </p><p>
- * Subclasses are supposed to reimplement this method and not
- * call the <code>super</code> implementation.
- * </p>
- *
- * @param data the DeviceData which describes the receiver
- *
- * @see #init
+/**	 
+ * Creates the printer handle.
+ * This method is called internally by the instance creation
+ * mechanism of the <code>Device</code> class.
  */
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
@@ -350,13 +346,18 @@ protected void init () {
  * application code.
  * </p>
  *
- * @param handle the platform specific GC handle
+ * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC(int context, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 
+/**	 
+ * Releases any internal state prior to destroying this printer.
+ * This method is called internally by the dispose
+ * mechanism of the <code>Device</code> class.
+ */
 protected void release () {
 	if (colorspace != 0) OS.CGColorSpaceRelease(colorspace);
 	colorspace = 0;
@@ -373,6 +374,7 @@ protected void release () {
  * will result in undefined behavior.
  * </p>
  * 
+ * @param jobName the name of the print job to start
  * @return true if the job started successfully and false otherwise.
  *
  * @exception SWTException <ul>

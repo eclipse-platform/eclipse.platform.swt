@@ -596,11 +596,12 @@ public void setEnabled (boolean enabled) {
 }
 
 /**
- * Sets the maximum value which the receiver will allow
- * to be the argument which must be greater than or
- * equal to zero.
+ * Sets the maximum. If this value is negative or less than or
+ * equal to the minimum, the value is ignored. If necessary, first
+ * the thumb and then the selection are adjusted to fit within the
+ * new range.
  *
- * @param value the new maximum (must be zero or greater)
+ * @param value the new maximum
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -621,11 +622,12 @@ public void setMaximum (int value) {
 }
 
 /**
- * Sets the minimum value which the receiver will allow
- * to be the argument which must be greater than or
- * equal to zero.
+ * Sets the minimum value. If this value is negative or greater
+ * than or equal to the maximum, the value is ignored. If necessary,
+ * first the thumb and then the selection are adjusted to fit within
+ * the new range.
  *
- * @param value the new minimum (must be zero or greater)
+ * @param value the new minimum
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -652,7 +654,7 @@ public void setMinimum (int value) {
  * are selected to the argument, which must be at least
  * one.
  *
- * @return the page increment (must be greater than zero)
+ * @param value the page increment (must be greater than zero)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -670,7 +672,7 @@ public void setPageIncrement (int value) {
  * value to the argument which must be greater than or equal
  * to zero.
  *
- * @param value the new selection (must be zero or greater)
+ * @param selection the new selection (must be zero or greater)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -684,17 +686,17 @@ public void setSelection (int value) {
 
 /**
  * Sets the size of the receiver's thumb relative to the
- * difference between its maximum and minimum values to the
- * argument which must be at least one.
+ * difference between its maximum and minimum values.  This new
+ * value will be ignored if it is less than one, and will be
+ * clamped if it exceeds the receiver's current range.
  *
- * @param value the new thumb value (must be at least one)
+ * @param value the new thumb value, which must be at least one and not
+ * larger than the size of the current range
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
- * @see ScrollBar
  */
 public void setThumb (int value) {
 	checkWidget();

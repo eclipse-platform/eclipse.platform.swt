@@ -19,12 +19,27 @@ import org.eclipse.swt.*;
  * Class <code>GC</code> is where all of the drawing capabilities that are 
  * supported by SWT are located. Instances are used to draw on either an 
  * <code>Image</code>, a <code>Control</code>, or directly on a <code>Display</code>.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
+ * </dl>
+ * 
+ * <p>
+ * The SWT drawing coordinate system is the two-dimensional space with the origin
+ * (0,0) at the top left corner of the drawing area and with (x,y) values increasing
+ * to the right and downward respectively.
+ * </p>
+ * 
  * <p>
  * Application code must explicitly invoke the <code>GC.dispose()</code> 
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required. This is <em>particularly</em>
  * important on Windows95 and Windows98 where the operating system has a limited
  * number of device contexts available.
+ * </p>
+ * 
+ * <p>
+ * Note: Only one of LEFT_TO_RIGHT and RIGHT_TO_LEFT may be specified.
  * </p>
  *
  * @see org.eclipse.swt.events.PaintEvent
@@ -65,6 +80,32 @@ GC() {
 public GC(Drawable drawable) {
 	this(drawable, 0);
 }
+/**	 
+ * Constructs a new instance of this class which has been
+ * configured to draw on the specified drawable. Sets the
+ * foreground and background color in the GC to match those
+ * in the drawable.
+ * <p>
+ * You must dispose the graphics context when it is no longer required. 
+ * </p>
+ * 
+ * @param drawable the drawable to draw on
+ * @param style the style of GC to construct
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the drawable is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if there is no current device</li>
+ *    <li>ERROR_INVALID_ARGUMENT
+ *          - if the drawable is an image that is not a bitmap or an icon
+ *          - if the drawable is an image or printer that is already selected
+ *            into another graphics context</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
+ * </ul>
+ *  
+ * @since 2.1.2
+ */
 public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
@@ -127,6 +168,7 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
  * Copies a rectangular area of the receiver at the specified
  * position into the image, which must be of type <code>SWT.BITMAP</code>.
  *
+ * @param image the image to copy into
  * @param x the x coordinate in the receiver of the area to be copied
  * @param y the y coordinate in the receiver of the area to be copied
  *
@@ -217,9 +259,6 @@ public void dispose () {
  * @param startAngle the beginning angle
  * @param arcAngle the angular extent of the arc, relative to the start angle
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if any of the width, height or endAngle is zero.</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -688,6 +727,23 @@ public void drawOval(int x, int y, int width, int height) {
 	}
 	OS.XDrawArc(data.display, data.drawable, handle, x, y, width, height, 0, 23040);
 }
+/** 
+ * Draws a pixel, using the foreground color, at the specified
+ * point (<code>x</code>, <code>y</code>).
+ * <p>
+ * Note that the receiver's line attributes do not affect this
+ * operation.
+ * </p>
+ *
+ * @param x the point's x coordinate
+ * @param y the point's y coordinate
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *  
+ * @since 3.0
+ */
 public void drawPoint (int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.XDrawPoint(data.display, data.drawable, handle, x, y);
@@ -1143,9 +1199,6 @@ public boolean equals (Object object) {
  * @param startAngle the beginning angle
  * @param arcAngle the angular extent of the arc, relative to the start angle
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if any of the width, height or endAngle is zero.</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1371,7 +1424,7 @@ public void fillRectangle (int x, int y, int width, int height) {
  * Fills the interior of the specified rectangle, using the receiver's
  * background color. 
  *
- * @param rectangle the rectangle to be filled
+ * @param rect the rectangle to be filled
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
@@ -2176,6 +2229,24 @@ public int getLineWidth() {
 	OS.XGetGCValues(data.display, handle, OS.GCLineWidth, values);
 	return values.line_width;
 }
+/**
+ * Returns the receiver's style information.
+ * <p>
+ * Note that the value which is returned by this method <em>may
+ * not match</em> the value which was provided to the constructor
+ * when the receiver was created. This can occur when the underlying
+ * operating system does not support a particular combination of
+ * requested styles. 
+ * </p>
+ *
+ * @return the style bits
+ *  
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *   
+ * @since 2.1.2
+ */
 public int getStyle () {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.style;
@@ -2387,7 +2458,7 @@ public void setClipping (Rectangle rect) {
  * by drawing operations to the region specified
  * by the argument.
  *
- * @param rect the clipping region.
+ * @param region the clipping region.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>

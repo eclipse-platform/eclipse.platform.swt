@@ -439,6 +439,7 @@ void bringToTop (boolean force) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see SWT#Close
  * @see #dispose
  */
 public void close () {
@@ -598,9 +599,10 @@ public Point getSize () {
 }
 
 /** 
- * Returns the region that defines the shape of the shell.
+ * Returns the region that defines the shape of the shell,
+ * or null if the shell has the default shape.
  *
- * @return the region that defines the shape of the shell
+ * @return the region that defines the shape of the shell (or null)
  *	
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -749,8 +751,8 @@ int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
  * the display on which it was created (so that all other
  * shells on that display, which are not the receiver's
  * children will be drawn behind it), marks it visible,
- * and sets focus to its default button (if it has one)
- * and asks the window manager to make the shell active.
+ * sets the focus and asks the window manager to make the
+ * shell active.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -996,11 +998,16 @@ public void setMinimized (boolean minimized) {
 
 /**
  * Sets the shape of the shell to the region specified
- * by the argument.  A null region will restore the default shape.
- * Shell must be created with the style SWT.NO_TRIM.
+ * by the argument.  When the argument is null, the
+ * default shape of the shell is restored.  The shell
+ * must be created with the style SWT.NO_TRIM in order
+ * to specify a region.
  *
- * @param rgn the region that defines the shape of the shell
- * 
+ * @param region the region that defines the shape of the shell (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
+ * </ul>  
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

@@ -619,7 +619,7 @@ public String [] getItems () {
 /**
  * Returns the orientation of the receiver.
  *
- * @return the orientation bit.
+ * @return the orientation style
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -839,6 +839,7 @@ public int indexOf (String string) {
  * returns -1.
  *
  * @param string the search item
+ * @param start the zero-relative index at which to begin the search
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
@@ -1119,6 +1120,7 @@ void setForegroundColor (GdkColor color) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1144,6 +1146,9 @@ public void setItem (int index, String string) {
  *
  * @param items the array of items
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1211,10 +1216,10 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 
 /**
  * Sets the orientation of the receiver, which must be one
- * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.LEFT_TO_RIGHT</code>.
+ * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  * <p>
  *
- * @param orientation new orientation bit
+ * @param orientation new orientation style
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1233,7 +1238,7 @@ public void setOrientation (int orientation) {
  * start of the selection and whose y coordinate is the end
  * of the selection. 
  *
- * @param a point representing the new selection start and end
+ * @param selection a point representing the new selection start and end
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -1261,7 +1266,7 @@ public void setSelection (Point selection) {
  * display incorrectly.
  * </p>
  *
- * @param text the new text
+ * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>

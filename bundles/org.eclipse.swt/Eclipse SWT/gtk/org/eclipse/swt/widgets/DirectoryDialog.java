@@ -18,6 +18,12 @@ import org.eclipse.swt.internal.gtk.*;
 /**
  * Instances of this class allow the user to navigate
  * the file system and select a directory.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
  * <p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
@@ -28,16 +34,7 @@ public class DirectoryDialog extends Dialog {
 	static final String SEPARATOR = System.getProperty ("file.separator");
 
 /**
- * Constructs a new instance of this class given only its
- * parent.
- * <p>
- * Note: Currently, null can be passed in for the parent.
- * This has the effect of creating the dialog on the currently active
- * display if there is one. If there is no current display, the 
- * dialog is created on a "default" display. <b>Passing in null as
- * the parent is not considered to be good coding style,
- * and may not be supported in a future release of SWT.</b>
- * </p>
+ * Constructs a new instance of this class given only its parent.
  *
  * @param parent a shell which will be the parent of the new instance
  *
@@ -64,15 +61,9 @@ public DirectoryDialog (Shell parent) {
  * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
  * </p>
- * Note: Currently, null can be passed in for the parent.
- * This has the effect of creating the dialog on the currently active
- * display if there is one. If there is no current display, the 
- * dialog is created on a "default" display. <b>Passing in null as
- * the parent is not considered to be good coding style,
- * and may not be supported in a future release of SWT.</b>
- * </p>
  *
  * @param parent a shell which will be the parent of the new instance
+ * @param style the style of dialog to construct
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>

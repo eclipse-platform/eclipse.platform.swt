@@ -113,6 +113,10 @@ void deregister () {
  * receiver's parent).
  * </p>
  * 
+ * @param x the desired x coordinate of the client area
+ * @param y the desired y coordinate of the client area
+ * @param width the desired width of the client area
+ * @param height the desired height of the client area
  * @return the required bounds to produce the given client area
  *
  * @exception SWTException <ul>

@@ -280,7 +280,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * are pressed to the argument, which must be at least 
  * one.
  *
- * @param value the new increment (must be greater than zero)
+ * @param increment the new increment (must be greater than zero)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -293,11 +293,12 @@ public void setIncrement (int value) {
 }
 
 /**
- * Sets the maximum value which the receiver will allow
- * to be the argument which must be greater than or
- * equal to zero.
+ * Sets the maximum value that the receiver will allow.  This new
+ * value will be ignored if it is not greater than the receiver's current
+ * minimum value.  If the new maximum is applied then the receiver's
+ * selection value will be adjusted if necessary to fall within its new range.
  *
- * @param value the new maximum (must be zero or greater)
+ * @param value the new maximum, which must be greater than the current minimum
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -310,11 +311,12 @@ public void setMaximum (int value) {
 }
 
 /**
- * Sets the minimum value which the receiver will allow
- * to be the argument which must be greater than or
- * equal to zero.
+ * Sets the minimum value that the receiver will allow.  This new
+ * value will be ignored if it is negative or is not less than the receiver's
+ * current maximum value.  If the new minimum is applied then the receiver's
+ * selection value will be adjusted if necessary to fall within its new range.
  *
- * @param value the new minimum (must be zero or greater)
+ * @param value the new minimum, which must be nonnegative and less than the current maximum
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -332,7 +334,7 @@ public void setMinimum (int value) {
  * are selected to the argument, which must be at least
  * one.
  *
- * @return the page increment (must be greater than zero)
+ * @param pageIncrement the page increment (must be greater than zero)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

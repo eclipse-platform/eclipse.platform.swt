@@ -492,7 +492,7 @@ public void setChecked (boolean checked) {
  * Sets the grayed state of the receiver.
  * <p>
  *
- * @param checked the new grayed state
+ * @param grayed the new grayed state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -605,11 +605,7 @@ public void setImage (Image image) {
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.PIXBUF_COLUMN, pixbuf, -1);
 }
 
-/**
- * This label will be displayed to the right of the bitmap, 
- * or, if the receiver doesn't have a bitmap to the right of 
- * the horizontal hierarchy connector line.
- */
+
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

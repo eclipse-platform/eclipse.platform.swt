@@ -119,7 +119,7 @@ abstract protected Object nativeToJava(TransferData transferData);
  *
  * @param formatName the name of a data type
  *
- * @return the unique identifier associated with htis data type
+ * @return the unique identifier associated with this data type
  */
 public static int registerType(String formatName){
 	return 0;

@@ -322,7 +322,8 @@ String getNameText () {
 
 /**
  * Returns the receiver's text, which will be an empty
- * string if it has never been set.
+ * string if it has never been set or if the receiver is
+ * an <code>ARROW</code> button.
  *
  * @return the receiver's text
  *

@@ -230,7 +230,7 @@ public Rectangle getBounds (int index) {
 /**
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
- * the <code>CHECK style, return false.
+ * the <code>CHECK</code> style, return false.
  *
  * @return the checked state of the checkbox
  *
@@ -902,7 +902,7 @@ public void setImage (Image [] images) {
 }
 
 /**
- * Sets the image indent.
+ * Sets the indent of the first column's image, expressed in terms of the image's width.
  *
  * @param indent the new indent
  *

@@ -20,6 +20,12 @@ import java.util.*;
 /**
  * Instances of this class allow the user to select a font
  * from all available fonts in the system.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
  * <p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
@@ -94,18 +100,10 @@ public class FontDialog extends Dialog {
 	}
 
 /**
- * Constructs a new instance of this class given only its
- * parent.
- * <p>
- * Note: Currently, null can be passed in for the parent.
- * This has the effect of creating the dialog on the currently active
- * display if there is one. If there is no current display, the 
- * dialog is created on a "default" display. <b>Passing in null as
- * the parent is not considered to be good coding style,
- * and may not be supported in a future release of SWT.</b>
- * </p>
+ * Constructs a new instance of this class given only its parent.
  *
  * @param parent a shell which will be the parent of the new instance
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
  * </ul>
@@ -130,15 +128,10 @@ public FontDialog (Shell parent) {
  * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
  * </p>
- * Note: Currently, null can be passed in for the parent.
- * This has the effect of creating the dialog on the currently active
- * display if there is one. If there is no current display, the 
- * dialog is created on a "default" display. <b>Passing in null as
- * the parent is not considered to be good coding style,
- * and may not be supported in a future release of SWT.</b>
- * </p>
  *
  * @param parent a shell which will be the parent of the new instance
+ * @param style the style of dialog to construct
+ *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
  * </ul>
@@ -409,7 +402,7 @@ FontData getFontData (String charsetName, String faceName, String extStyle, int 
  * Returns a FontData set describing the font that was
  * selected in the dialog, or null if none is available.
  * 
- * @return the FontData set for the selected font, or null
+ * @return the FontData for the selected font, or null
  * @since 2.1.1
  */
 public FontData [] getFontList () {
@@ -436,7 +429,9 @@ String getListSelection (List list) {
  * Returns the currently selected color in the receiver.
  *
  * @return the RGB value for the selected color, may be null
+ *
  * @see PaletteData#getRGBs
+ * 
  * @since 2.1
  */
 public RGB getRGB () {
@@ -856,6 +851,7 @@ void initStyleList () {
  *
  * @return a FontData object describing the font that was selected,
  *         or null if the dialog was cancelled or an error occurred
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
@@ -977,7 +973,7 @@ void setFontControls (FontData fontData) {
  * Sets a FontData object describing the font to be
  * selected by default in the dialog, or null to let
  * the platform choose one.
- *
+ * 
  * @param fontData the FontData to use initially, or null
  * @deprecated use #setFontList (FontData [])
  */
@@ -1030,7 +1026,9 @@ void setItemsSorted (List list, Hashtable items) {
  * @param rgb the new RGB value for the selected color, may be
  *        null to let the platform to select a default when
  *        open() is called
+ *
  * @see PaletteData#getRGBs
+ * 
  * @since 2.1
  */
 public void setRGB (RGB rgb) {

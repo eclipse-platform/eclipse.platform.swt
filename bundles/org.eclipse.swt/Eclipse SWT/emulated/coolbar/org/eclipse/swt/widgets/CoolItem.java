@@ -515,7 +515,6 @@ public void setPreferredSize (int width, int height) {
  * Sets the receiver's ideal size to the point specified by the argument.
  *
  * @param size the new ideal size for the receiver
- * @param height the new ideal height for the receiver
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -571,7 +570,6 @@ public void setSize (int width, int height) {
  * </p>
  *
  * @param size the new size for the receiver
- * @param height the new height for the receiver
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>

@@ -366,7 +366,7 @@ public void setFont (Font font) {
  * to the image specified by the argument, or to the default
  * which is a filled rectangle if the argument is null
  *
- * @param font the new font (or null)
+ * @param image the new image (or null)
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
@@ -443,7 +443,6 @@ public void setSize (int width, int height) {
  * Sets the receiver's size to the point specified by the argument.
  *
  * @param size the new extent for the receiver
- * @param height the new height for the receiver
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>

@@ -133,7 +133,7 @@ public Cursor(Device device, int style) {
 /**	 
  * Constructs a new cursor given a device, image and mask
  * data describing the desired cursor appearance, and the x
- * and y co-ordinates of the <em>hotspot</em> (that is, the point
+ * and y coordinates of the <em>hotspot</em> (that is, the point
  * within the area covered by the cursor which is considered
  * to be where the on-screen pointer is "pointing").
  * <p>
@@ -240,6 +240,33 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	if (device.tracking) device.new_Object(this);
 }
 
+/**	 
+ * Constructs a new cursor given a device, image data describing
+ * the desired cursor appearance, and the x and y coordinates of
+ * the <em>hotspot</em> (that is, the point within the area
+ * covered by the cursor which is considered to be where the
+ * on-screen pointer is "pointing").
+ * <p>
+ * You must dispose the cursor when it is no longer required. 
+ * </p>
+ *
+ * @param device the device on which to allocate the cursor
+ * @param source the image data for the cursor
+ * @param hotspotX the x coordinate of the cursor's hotspot
+ * @param hotspotY the y coordinate of the cursor's hotspot
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the hotspot is outside the bounds of the
+ * 		 image</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

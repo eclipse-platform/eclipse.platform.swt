@@ -274,7 +274,7 @@ public boolean isDisposed () {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if data is null or datatypes is null 
  *          or the length of data is not the same as the length of dataTypes</li>
- * </ul>
+ *   </ul>
  *  @exception SWTError <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

@@ -30,7 +30,7 @@ import org.eclipse.swt.*;
 public final class Font {
 
 	/**
-	 * the handle to the OS font resource (a FMFont)
+	 * the handle to the OS font resource
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;

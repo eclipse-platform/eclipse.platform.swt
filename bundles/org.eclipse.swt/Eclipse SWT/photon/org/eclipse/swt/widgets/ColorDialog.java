@@ -36,7 +36,7 @@ public class ColorDialog extends Dialog {
 /**
  * Constructs a new instance of this class given only its parent.
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a composite control which will be the parent of the new instance
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
@@ -136,7 +136,7 @@ public RGB open () {
  * Sets the receiver's selected color to be the argument.
  *
  * @param rgb the new RGB value for the selected color, may be
- *        null to let the platform to select a default when
+ *        null to let the platform select a default when
  *        open() is called
  * @see PaletteData#getRGBs
  */

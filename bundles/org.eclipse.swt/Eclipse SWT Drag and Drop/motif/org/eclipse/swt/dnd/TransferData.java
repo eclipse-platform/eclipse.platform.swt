@@ -55,12 +55,12 @@ public class TransferData {
 	public int pValue;
 
 	/**
-	 * The result field contains the result of converting a java data type
-	 * into a platform specific value.
-	 * (Warning: This field is platform dependent).
+	 * The result field contains the result of converting a
+	 * java data type into a platform specific value.
+	 * (Warning: This field is platform dependent)
 	 * 
-	 * <p>The value of result is 1 if the conversion was successfully.  The value of 
-	 * result is 0 if the conversion failed.</p>
+ 	 * <p>The value of result is 1 if the conversion was successful.
+	 * The value of result is 0 if the conversion failed.</p>
 	 */
 	public int result;
 	

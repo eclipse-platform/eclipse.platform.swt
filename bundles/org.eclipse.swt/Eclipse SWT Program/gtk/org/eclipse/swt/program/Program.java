@@ -65,7 +65,9 @@ static int getDesktop(Display display) {
 
 /**
  * Finds the program that is associated with an extension.
- * The extension may or may not begin with a '.'.
+ * The extension may or may not begin with a '.'.  Note that
+ * a <code>Display</code> must already exist to guarantee that
+ * this method returns an appropriate result.
  *
  * @param extension the program extension
  * @return the program or <code>null</code>
@@ -112,7 +114,9 @@ static Program findProgram(Display display, String extension) {
 }
 
 /**
- * Answer all program extensions in the operating system.
+ * Answer all program extensions in the operating system.  Note
+ * that a <code>Display</code> must already exist to guarantee
+ * that this method returns an appropriate result.
  *
  * @return an array of extensions
  */
@@ -152,7 +156,9 @@ static String[] getExtensions(Display display) {
 }
 
 /**
- * Answers all available programs in the operating system.
+ * Answers all available programs in the operating system.  Note
+ * that a <code>Display</code> must already exist to guarantee
+ * that this method returns an appropriate result.
  *
  * @return an array of programs
  */
@@ -313,7 +319,9 @@ static boolean isGnomeDesktop() {
 /**
  * Launches the executable associated with the file in
  * the operating system.  If the file is an executable,
- * then the executable is launched.
+ * then the executable is launched.  Note that a <code>Display</code>
+ * must already exist to guarantee that this method returns
+ * an appropriate result.
  *
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>

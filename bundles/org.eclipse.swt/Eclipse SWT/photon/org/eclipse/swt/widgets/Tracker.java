@@ -943,7 +943,7 @@ void setCursor (int cursorHandle) {
  * @param rectangles the bounds of the rectangles to be drawn
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the set of rectangles is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the set of rectangles is null or contains a null rectangle</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

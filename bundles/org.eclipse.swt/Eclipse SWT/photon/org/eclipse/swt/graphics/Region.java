@@ -49,6 +49,25 @@ public final class Region {
 public Region () {
 	this(null);
 }
+/**
+ * Constructs a new empty region.
+ * <p>
+ * You must dispose the region when it is no longer required. 
+ * </p>
+ *
+ * @param device the device on which to allocate the region
+ *
+* @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ * </ul>
+ *
+ * @see #dispose
+ * 
+ * @since 3.0
+ */
 public Region (Device device) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -266,6 +285,22 @@ public int hashCode () {
 	return handle;
 }
 
+/**
+ * Intersects the given rectangle to the collection of rectangles
+ * the receiver maintains to describe its area.
+ *
+ * @param rect the rectangle to intersect with the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the rectangle's width or height is negative</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public void intersect (Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -285,6 +320,23 @@ public void intersect (Rectangle rect) {
 	if (handle == 0) handle = EMPTY_REGION;
 }
 
+/**
+ * Intersects all of the rectangles which make up the area covered
+ * by the argument to the collection of rectangles the receiver
+ * maintains to describe its area.
+ *
+ * @param region the region to intersect
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public void intersect (Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -391,7 +443,7 @@ public static Region photon_new(Device device, int handle) {
  * Subtracts the given polygon from the collection of rectangles
  * the receiver maintains to describe its area.
  *
- * param pointArray points that describe the polygon to merge with the receiver
+ * @param pointArray points that describe the polygon to merge with the receiver
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
@@ -408,6 +460,22 @@ public void subtract (int[] pointArray) {
 	// TODO
 }
 
+/**
+ * Subtracts the given rectangle from the collection of rectangles
+ * the receiver maintains to describe its area.
+ *
+ * @param rect the rectangle to subtract from the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the rectangle's width or height is negative</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public void subtract (Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -425,6 +493,23 @@ public void subtract (Rectangle rect) {
 	if (handle == 0) handle = EMPTY_REGION;
 }
 
+/**
+ * Subtracts all of the rectangles which make up the area covered
+ * by the argument from the collection of rectangles the receiver
+ * maintains to describe its area.
+ *
+ * @param region the region to subtract
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public void subtract (Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

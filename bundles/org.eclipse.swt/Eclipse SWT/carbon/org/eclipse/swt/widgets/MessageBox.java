@@ -39,16 +39,7 @@ public  class MessageBox extends Dialog {
 	
 
 /**
- * Constructs a new instance of this class given only its
- * parent.
- * <p>
- * Note: Currently, null can be passed in for the parent.
- * This has the effect of creating the dialog on the currently active
- * display if there is one. If there is no current display, the 
- * dialog is created on a "default" display. <b>Passing in null as
- * the parent is not considered to be good coding style,
- * and may not be supported in a future release of SWT.</b>
- * </p>
+ * Constructs a new instance of this class given only its parent.
  *
  * @param parent a shell which will be the parent of the new instance
  *
@@ -75,16 +66,9 @@ public MessageBox (Shell parent) {
  * of those <code>SWT</code> style constants. The class description
  * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
- * </p>
- * Note: Currently, null can be passed in for the parent.
- * This has the effect of creating the dialog on the currently active
- * display if there is one. If there is no current display, the 
- * dialog is created on a "default" display. <b>Passing in null as
- * the parent is not considered to be good coding style,
- * and may not be supported in a future release of SWT.</b>
- * </p>
  *
  * @param parent a shell which will be the parent of the new instance
+ * @param style the style of dialog to construct
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>

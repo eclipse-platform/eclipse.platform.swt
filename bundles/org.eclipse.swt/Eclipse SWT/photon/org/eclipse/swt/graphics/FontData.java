@@ -17,7 +17,6 @@ import org.eclipse.swt.*;
 
 /**
  * Instances of this class describe operating system fonts.
- * Only the public API of this type is platform independent.
  * <p>
  * For platform-independent behaviour, use the get and set methods
  * corresponding to the following properties:

@@ -29,7 +29,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>CENTER, LEFT, MULTI, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
+ * <dd>CENTER, LEFT, MULTI, PASSWORD, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
@@ -43,7 +43,16 @@ public class Text extends Scrollable {
 	int txnObject, txnFrameID;
 	int textLimit = LIMIT;
 	char echoCharacter;
+	/**
+	* The maximum number of characters that can be entered
+	* into a text widget.
+	*/
 	public static final int LIMIT;
+	/**
+	* The delimiter used by multi-line text widgets.  When text
+	* is queried and from the widget, it will be delimited using
+	* this delimiter.
+	*/
 	public static final String DELIMITER;
 	static final char PASSWORD = '\245';
 
@@ -530,6 +539,8 @@ String getClipboardText() {
  * default action of the text widget when the user
  * double clicks.
  * </p>
+ * 
+ * @return whether or not double click is enabled
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -549,6 +560,8 @@ public boolean getDoubleClickEnabled () {
  * displayed when the user enters text or the
  * text is changed by the programmer.
  * </p>
+ * 
+ * @return the echo character
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -563,6 +576,8 @@ public char getEchoChar () {
 /**
  * Gets the editable state.
  *
+ * @return whether or not the reciever is editable
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -625,7 +640,7 @@ public int getLineHeight () {
 /**
  * Returns the orientation of the receiver.
  *
- * @return the orientation bit.
+ * @return the orientation style
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -733,7 +748,8 @@ public String getText () {
 }
 
 /**
- * Gets a range of text.
+ * Gets a range of text.  Returns an empty string if the
+ * start of the range is greater than the end.
  * <p>
  * Indexing is zero based.  The range of
  * a selection is from 0..N-1 where N is
@@ -1310,10 +1326,10 @@ void setFontStyle (Font font) {
 
 /**
  * Sets the orientation of the receiver, which must be one
- * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.LEFT_TO_RIGHT</code>.
+ * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  * <p>
  *
- * @param orientation new orientation bit
+ * @param orientation new orientation style
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1445,7 +1461,7 @@ public void setTabs (int tabs) {
  * SINGLE and the argument contains multiple lines of text, the result of this
  * operation is undefined and may vary from platform to platform.
  *
- * @param text the new text
+ * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
