@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -61,7 +62,16 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 }
 
 public void test_asyncExecLjava_lang_Runnable() {
-	warnUnimpl("Test test_asyncExecLjava_lang_Runnable not written");
+	final Display display = new Display();
+	try {
+		display.asyncExec(new Runnable() {
+			public void run() {
+				display.beep();
+			}
+		});
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_beep() {
@@ -101,7 +111,15 @@ public void test_findWidgetI() {
 }
 
 public void test_getActiveShell() {
-	warnUnimpl("Test test_getActiveShell not written");
+	Display display = new Display();
+	try {
+		Shell shell = new Shell(display);
+		shell.open();
+		assertTrue(display.getActiveShell() == shell);
+		shell.dispose();
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_getBounds() {
@@ -115,11 +133,22 @@ public void test_getBounds() {
 }
 
 public void test_getClientArea() {
-	warnUnimpl("Test test_getClientArea not written");
+	Display display = new Display();
+	try {
+		Rectangle rect = display.getClientArea();
+		assertNotNull(rect);
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_getCurrent() {
-	warnUnimpl("Test test_getCurrent not written");
+	Display display = new Display();
+	try {
+		assertTrue(display.getThread() == Thread.currentThread());
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_getCursorControl() {
@@ -132,15 +161,23 @@ public void test_getCursorControl() {
 }
 
 public void test_getCursorLocation() {
-	warnUnimpl("Test test_getCursorLocation not written");
+	Display display = new Display();
+	try {
+		Point pt = display.getCursorLocation();
+		assertNotNull(pt);
+		assertTrue(pt.x >= 0);
+		assertTrue(pt.y >= 0);
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_getData() {
-	warnUnimpl("Test test_getData not written");
+	// tested in setData(Object) method
 }
 
 public void test_getDataLjava_lang_String() {
-	warnUnimpl("Test test_getDataLjava_lang_String not written");
+	// tested in setData(String, Object) method
 }
 
 public void test_getDefault() {
@@ -164,7 +201,13 @@ public void test_getDismissalAlignment() {
 }
 
 public void test_getDoubleClickTime() {
-	warnUnimpl("Test test_getDoubleClickTime not written");
+	Display display = new Display();
+	try {
+		int time = display.getDoubleClickTime();
+		assertTrue(time > 0);
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_getFocusControl() {
@@ -198,7 +241,16 @@ public void test_getPrimaryMonitor() {
 }
 
 public void test_getShells() {
-	warnUnimpl("Test test_getShells not written");
+	Display display = new Display();
+	try {
+		Shell shell1 = new Shell(display);
+		Shell shell2 = new Shell(display);
+		assertTrue(display.getShells().length == 2);
+		shell1.dispose();
+		shell2.dispose();
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_getSyncThread() {
@@ -225,11 +277,22 @@ public void test_getSystemColorI() {
 }
 
 public void test_getSystemFont() {
-	warnUnimpl("Test test_getSystemFont not written");
+	Display display = new Display();
+	try {
+		Font font = display.getSystemFont();
+		assertNotNull(font);
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_getThread() {
-	warnUnimpl("Test test_getThread not written");
+	Display display = new Display();
+	try {
+		assertTrue(display.getThread() == Thread.currentThread());
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
@@ -301,11 +364,31 @@ public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_setDataLjava_lang_Object() {
-	warnUnimpl("Test test_setDataLjava_lang_Object not written");
+	Display display = new Display();
+	try {
+		display.setData(new Integer(10));
+		Integer i = (Integer)display.getData();
+		assertNotNull(i);
+		assertTrue(i.equals(new Integer(10)));
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_setDataLjava_lang_StringLjava_lang_Object() {
-	warnUnimpl("Test test_setDataLjava_lang_StringLjava_lang_Object not written");
+	Display display = new Display();
+	try {
+		display.setData("Integer", new Integer(10));
+		display.setData("String", "xyz");
+		Integer i = (Integer)display.getData("Integer");
+		assertNotNull(i);
+		assertTrue(i.equals(new Integer(10)));
+		String s = (String)display.getData("String");
+		assertNotNull(s);
+		assertTrue(s.equals("xyz"));
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
@@ -317,7 +400,16 @@ public void test_sleep() {
 }
 
 public void test_syncExecLjava_lang_Runnable() {
-	warnUnimpl("Test test_syncExecLjava_lang_Runnable not written");
+	final Display display = new Display();
+	try {
+		display.syncExec(new Runnable() {
+			public void run() {
+				display.beep();
+			}
+		});
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_timerExecILjava_lang_Runnable() {

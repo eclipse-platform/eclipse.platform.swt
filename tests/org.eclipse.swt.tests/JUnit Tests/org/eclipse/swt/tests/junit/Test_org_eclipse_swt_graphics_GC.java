@@ -12,8 +12,10 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
-import org.eclipse.swt.widgets.*;
+
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.GC
@@ -45,11 +47,15 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_Drawable not written");
+	GC testGC = new GC(shell);
+	testGC.dispose();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DrawableI not written");
+	GC testGC = new GC(shell, SWT.LEFT_TO_RIGHT);
+	testGC.dispose();
+	testGC = new GC(shell, SWT.RIGHT_TO_LEFT);
+	testGC.dispose();
 }
 
 public void test_copyAreaIIIIII() {
@@ -61,182 +67,213 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 }
 
 public void test_dispose() {
-	warnUnimpl("Test test_dispose not written");
+	GC testGC = new GC(shell);
+	testGC.dispose();
 }
 
 public void test_drawArcIIIIII() {
-	warnUnimpl("Test test_drawArcIIIIII not written");
+	gc.drawArc(10, 20, 50, 25, 90, 90);				
 }
 
 public void test_drawFocusIIII() {
-	warnUnimpl("Test test_drawFocusIIII not written");
+	gc.drawFocus(1, 1, 50, 25);				
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
-		Color c1 = new Color(display, 255, 0, 0);
-		Color c2 = new Color(display, 0, 0, 0);
-		Color c3 = new Color(display, 255, 255, 0);
-		
-		PaletteData paletteData = new PaletteData(new RGB[] {c1.getRGB(), c2.getRGB(), c3.getRGB()});
-		ImageData data = new ImageData(30,30, 8, paletteData);
-		for (int y = 0; y < data.height; y++) {
-			for (int x = 0; x < data.width; x++) {
-				if (x > y) data.setPixel(x, y, paletteData.getPixel(c1.getRGB()));
-				else if (x < y) data.setPixel(x, y, paletteData.getPixel(c2.getRGB()));
-				else data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
-			}
+	Color c1 = new Color(display, 255, 0, 0);
+	Color c2 = new Color(display, 0, 0, 0);
+	Color c3 = new Color(display, 255, 255, 0);
+	
+	PaletteData paletteData = new PaletteData(new RGB[] {c1.getRGB(), c2.getRGB(), c3.getRGB()});
+	ImageData data = new ImageData(30,30, 8, paletteData);
+	for (int y = 0; y < data.height; y++) {
+		for (int x = 0; x < data.width; x++) {
+			if (x > y) data.setPixel(x, y, paletteData.getPixel(c1.getRGB()));
+			else if (x < y) data.setPixel(x, y, paletteData.getPixel(c2.getRGB()));
+			else data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
 		}
-		Image image = new Image(display, data);
-		data = image.getImageData();
-		data.transparentPixel = paletteData.getPixel(c1.getRGB());
-		Image imageTransparent = new Image(display, data);
-		data.transparentPixel = -1;
-		for (int y = 0; y < data.height; y++) {
-			for (int x = 0; x < data.width; x++) {
-				data.setAlpha(x, y, 127);
-			}
-		}		
-		Image imageAlpha = new Image(display, data);
-								
-		gc.drawImage(image, 100, 100);
-		gc.drawImage(imageTransparent, 130, 100);
-		gc.drawImage(imageAlpha, 160, 100);
-		try {
-			gc.drawImage(null, 100, 100);
-			fail("No exception thrown"); //should never get here
+	}
+	Image image = new Image(display, data);
+	data = image.getImageData();
+	data.transparentPixel = paletteData.getPixel(c1.getRGB());
+	Image imageTransparent = new Image(display, data);
+	data.transparentPixel = -1;
+	for (int y = 0; y < data.height; y++) {
+		for (int x = 0; x < data.width; x++) {
+			data.setAlpha(x, y, 127);
 		}
-		catch (IllegalArgumentException e) {
-		}	
+	}		
+	Image imageAlpha = new Image(display, data);
+							
+	gc.drawImage(image, 100, 100);
+	gc.drawImage(imageTransparent, 130, 100);
+	gc.drawImage(imageAlpha, 160, 100);
+	try {
+		gc.drawImage(null, 100, 100);
+		fail("No exception thrown"); //should never get here
+	}
+	catch (IllegalArgumentException e) {
+	}	
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
-		Color c1 = new Color(display, 255, 0, 0);
-		Color c2 = new Color(display, 0, 0, 0);
-		Color c3 = new Color(display, 255, 255, 0);
-		
-		PaletteData paletteData = new PaletteData(new RGB[] {c1.getRGB(), c2.getRGB(), c3.getRGB()});
-		ImageData data = new ImageData(30,30, 8, paletteData);
-		for (int y = 0; y < data.height; y++) {
-			for (int x = 0; x < data.width; x++) {
-				if (x > y) data.setPixel(x, y, paletteData.getPixel(c1.getRGB()));
-				else if (x < y) data.setPixel(x, y, paletteData.getPixel(c2.getRGB()));
-				else data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
-			}
+	Color c1 = new Color(display, 255, 0, 0);
+	Color c2 = new Color(display, 0, 0, 0);
+	Color c3 = new Color(display, 255, 255, 0);
+	
+	PaletteData paletteData = new PaletteData(new RGB[] {c1.getRGB(), c2.getRGB(), c3.getRGB()});
+	ImageData data = new ImageData(30,30, 8, paletteData);
+	for (int y = 0; y < data.height; y++) {
+		for (int x = 0; x < data.width; x++) {
+			if (x > y) data.setPixel(x, y, paletteData.getPixel(c1.getRGB()));
+			else if (x < y) data.setPixel(x, y, paletteData.getPixel(c2.getRGB()));
+			else data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
 		}
-		Image image = new Image(display, data);
-		data = image.getImageData();
-		data.transparentPixel = paletteData.getPixel(c1.getRGB());
-		Image imageTransparent = new Image(display, data);
-		data.transparentPixel = -1;
-		for (int y = 0; y < data.height; y++) {
-			for (int x = 0; x < data.width; x++) {
-				data.setAlpha(x, y, 127);
-			}
-		}		
-		Image imageAlpha = new Image(display, data);
-								
-		gc.drawImage(image, 10, 5, 20, 15, 100, 120, 50, 60);
-		gc.drawImage(imageTransparent, 10, 5, 20, 15, 100, 120, 10, 10);
-		gc.drawImage(imageAlpha, 10, 5, 20, 15, 100, 120, 20, 15);
-		try {
-			gc.drawImage(null, 10, 5, 20, 15, 100, 120, 50, 60);
-			fail("No exception thrown"); //should never get here
+	}
+	Image image = new Image(display, data);
+	data = image.getImageData();
+	data.transparentPixel = paletteData.getPixel(c1.getRGB());
+	Image imageTransparent = new Image(display, data);
+	data.transparentPixel = -1;
+	for (int y = 0; y < data.height; y++) {
+		for (int x = 0; x < data.width; x++) {
+			data.setAlpha(x, y, 127);
 		}
-		catch (IllegalArgumentException e) {
-		}
+	}		
+	Image imageAlpha = new Image(display, data);
+							
+	gc.drawImage(image, 10, 5, 20, 15, 100, 120, 50, 60);
+	gc.drawImage(imageTransparent, 10, 5, 20, 15, 100, 120, 10, 10);
+	gc.drawImage(imageAlpha, 10, 5, 20, 15, 100, 120, 20, 15);
+	try {
+		gc.drawImage(null, 10, 5, 20, 15, 100, 120, 50, 60);
+		fail("No exception thrown"); //should never get here
+	}
+	catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_drawLineIIII() {
+	gc.drawLine(0,0,0,20);
 }
 
 public void test_drawOvalIIII() {
+	gc.drawOval(10, 0, 20, 30);				
 }
 
 public void test_drawPolygon$I() {
+	gc.drawPolygon(new int[] {0,0, 5,10, 0,20});				
+	gc.drawPolygon(new int[] {0,0});				
 }
 
 public void test_drawPolyline$I() {
-	warnUnimpl("Test test_drawPolyline$I not written");
+	gc.drawPolyline(new int[] {0,0, 5,10, 0,20});				
+	gc.drawPolyline(new int[] {0,0});				
 }
 
 public void test_drawRectangleIIII() {
-	warnUnimpl("Test test_drawRectangleIIII not written");
+	gc.drawRectangle(10, 0, 20, 30);				
+	gc.drawRectangle(0, 0, 0, 0);				
 }
 
 public void test_drawRectangleLorg_eclipse_swt_graphics_Rectangle() {
-	warnUnimpl("Test test_drawRectangleLorg_eclipse_swt_graphics_Rectangle not written");
+	gc.drawRectangle(new Rectangle(10, 0, 20, 30));				
+	gc.drawRectangle(new Rectangle(0, 0, 0, 0));				
 }
 
 public void test_drawRoundRectangleIIIIII() {
-	warnUnimpl("Test test_drawRoundRectangleIIIIII not written");
+	gc.drawRoundRectangle(10, 0, 20, 30, 3, 3);				
+	gc.drawRoundRectangle(0, 0, 0, 0, 0, 0);				
 }
 
 public void test_drawStringLjava_lang_StringII() {
-	warnUnimpl("Test test_drawStringLjava_lang_StringII not written");
+	gc.drawString("test", 5, 5);				
 }
 
 public void test_drawStringLjava_lang_StringIIZ() {
-	warnUnimpl("Test test_drawStringLjava_lang_StringIIZ not written");
+	gc.drawString("test", 5, 5, true);				
+	gc.drawString("test", 5, 5, false);				
 }
 
 public void test_drawTextLjava_lang_StringII() {
-	warnUnimpl("Test test_drawTextLjava_lang_StringII not written");
+	gc.drawText("test", 5, 5);				
+	gc.drawText("", 0, 0);				
 }
 
 public void test_drawTextLjava_lang_StringIII() {
-	warnUnimpl("Test test_drawTextLjava_lang_StringIII not written");
+	gc.drawText("abc", 5, 5, true);				
+	gc.drawText("abc", 5, 5, false);				
+	gc.drawText("", 0, 0, true);				
+	gc.drawText("", 0, 0, false);				
 }
 
 public void test_drawTextLjava_lang_StringIIZ() {
-	warnUnimpl("Test test_drawTextLjava_lang_StringIIZ not written");
+	gc.drawText("abc", 5, 5, 0);				
 }
 
 public void test_equalsLjava_lang_Object() {
-	warnUnimpl("Test test_equalsLjava_lang_Object not written");
+	GC testGC = new GC(shell);
+	assertFalse(testGC.equals(gc));
+	assertTrue(testGC.equals(testGC));
+	testGC.dispose();
 }
 
 public void test_fillArcIIIIII() {
-	warnUnimpl("Test test_fillArcIIIIII not written");
+	gc.fillArc(10, 20, 50, 25, 90, 90);				
+	gc.fillArc(10, 20, 50, 25, -10, -10);				
 }
 
 public void test_fillGradientRectangleIIIIZ() {
-	warnUnimpl("Test test_fillGradientRectangleIIIIZ not written");
+	gc.fillGradientRectangle(10, 0, 20, 30, true);				
+	gc.fillGradientRectangle(0, 0, 0, 0, true);				
+	gc.fillGradientRectangle(10, 0, 20, 30, false);				
+	gc.fillGradientRectangle(0, 0, 0, 0, false);				
 }
 
 public void test_fillOvalIIII() {
-	warnUnimpl("Test test_fillOvalIIII not written");
+	gc.fillOval(10, 0, 20, 30);				
+	gc.fillOval(-1, -1, -1, -1);				
 }
 
 public void test_fillPolygon$I() {
-	warnUnimpl("Test test_fillPolygon$I not written");
+	gc.fillPolygon(new int[] {0,0, 5,10, 0,20});				
+	gc.fillPolygon(new int[] {0,0});				
+	gc.fillPolygon(new int[] {-1, -1});				
 }
 
 public void test_fillRectangleIIII() {
-	warnUnimpl("Test test_fillRectangleIIII not written");
+	gc.fillRectangle(new Rectangle(10, 0, 20, 30));				
+	gc.fillRectangle(new Rectangle(0, 0, 0, 0));				
+	gc.fillRectangle(new Rectangle(-1, -1, -1, -1));				
 }
 
 public void test_fillRectangleLorg_eclipse_swt_graphics_Rectangle() {
-	warnUnimpl("Test test_fillRectangleLorg_eclipse_swt_graphics_Rectangle not written");
+	gc.fillRectangle(10, 0, 20, 30);				
+	gc.fillRectangle(0, 0, 0, 0);				
 }
 
 public void test_fillRoundRectangleIIIIII() {
-	warnUnimpl("Test test_fillRoundRectangleIIIIII not written");
+	gc.fillRoundRectangle(10, 0, 20, 30, 3, 3);				
+	gc.fillRoundRectangle(0, 0, 0, 0, 0, 0);				
+	gc.fillRoundRectangle(10, 0, 20, 30, -10, -10);				
 }
 
 public void test_getAdvanceWidthC() {
-	warnUnimpl("Test test_getAdvanceWidthC not written");
+	int w = gc.getAdvanceWidth('a');
+	assertTrue(w > 0);
 }
 
 public void test_getBackground() {
-	warnUnimpl("Test test_getBackground not written");
+	// tested in setBackground method
 }
 
 public void test_getCharWidthC() {
-	warnUnimpl("Test test_getCharWidthC not written");
+	int w = gc.getCharWidth('a');
+	assertTrue(w > 0);
 }
 
 public void test_getClipping() {
-	warnUnimpl("Test test_getClipping not written");
+	// tested in setClipping methods
 }
 
 public void test_getClippingLorg_eclipse_swt_graphics_Region() {
@@ -244,31 +281,43 @@ public void test_getClippingLorg_eclipse_swt_graphics_Region() {
 }
 
 public void test_getFont() {
-	warnUnimpl("Test test_getFont not written");
+	// tested in setFont method
 }
 
 public void test_getFontMetrics() {
-	warnUnimpl("Test test_getFontMetrics not written");
+	FontMetrics fm = gc.getFontMetrics();
+	assertTrue(fm.getHeight() > 0);
 }
 
 public void test_getForeground() {
-	warnUnimpl("Test test_getForeground not written");
+	// tested in setForeground method
 }
 
 public void test_getLineStyle() {
-	warnUnimpl("Test test_getLineStyle not written");
+	// tested in setLineStyle method
 }
 
 public void test_getLineWidth() {
-	warnUnimpl("Test test_getLineWidth not written");
+	// tested in setLineWidth method
 }
 
 public void test_getStyle() {
-	warnUnimpl("Test test_getStyle not written");
+	GC testGC = new GC(shell, SWT.LEFT_TO_RIGHT);
+	int style = testGC.getStyle();
+	assertTrue((style & SWT.LEFT_TO_RIGHT) != 0);
+	testGC.dispose();
+	testGC = new GC(shell);
+	style = testGC.getStyle();
+	assertTrue((style & SWT.LEFT_TO_RIGHT) != 0);
+	testGC.dispose();
+	testGC = new GC(shell, SWT.RIGHT_TO_LEFT);
+	style = testGC.getStyle();
+	assertTrue((style &  SWT.RIGHT_TO_LEFT) != 0);
+	testGC.dispose();
 }
 
 public void test_getXORMode() {
-	warnUnimpl("Test test_getXORMode not written");
+	// tested in setXORMode method
 }
 
 public void test_hashCode() {
@@ -276,23 +325,53 @@ public void test_hashCode() {
 }
 
 public void test_isClipped() {
-	warnUnimpl("Test test_isClipped not written");
+	gc.setClipping(5,10,15,20);
+	assertTrue(gc.isClipped());
+	GC testGC = new GC(shell);
+	assertFalse(testGC.isClipped());
 }
 
 public void test_isDisposed() {
-	warnUnimpl("Test test_isDisposed not written");
+	GC testGC = new GC(shell);
+	assertFalse(testGC.isDisposed());
+	testGC.dispose();
+	assertTrue(testGC.isDisposed());
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
+	Color color = new Color(shell.getDisplay(), 255, 0, 0);
+	gc.setBackground(color);
+	assertEquals(color, gc.getBackground());
+	try { 
+		gc.setBackground(null);
+		fail("No exception thrown for null color");		
+	} catch (IllegalArgumentException e) {
+	}
+	assertEquals(gc.getBackground(),gc.getBackground());
+	color.dispose();
+	try { 
+		gc.setBackground(color);
+		fail("No exception thrown for color disposed");		
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_setClippingIIII() {
-	warnUnimpl("Test test_setClippingIIII not written");
+	gc.setClipping(0,5,10,20);
+	Rectangle rect = gc.getClipping();
+	assertTrue(rect.x == 0);
+	assertTrue(rect.y == 5);
+	assertTrue(rect.width == 10);
+	assertTrue(rect.height == 20);
 }
 
 public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
-	warnUnimpl("Test test_setClippingLorg_eclipse_swt_graphics_Rectangle not written");
+	gc.setClipping(new Rectangle(0,5,10,20));
+	Rectangle rect = gc.getClipping();
+	assertTrue(rect.x == 0);
+	assertTrue(rect.y == 5);
+	assertTrue(rect.width == 10);
+	assertTrue(rect.height == 20);
 }
 
 public void test_setClippingLorg_eclipse_swt_graphics_Region() {
@@ -300,43 +379,81 @@ public void test_setClippingLorg_eclipse_swt_graphics_Region() {
 }
 
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
-	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
+	gc.setFont(shell.getDisplay().getSystemFont());
+	Font font = gc.getFont();
+	assertTrue(font.equals(shell.getDisplay().getSystemFont()));
 }
 
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
-	warnUnimpl("Test test_setForegroundLorg_eclipse_swt_graphics_Color not written");
+	Color color = new Color(shell.getDisplay(), 255, 0, 0);
+	gc.setForeground(color);
+	assertEquals(color, gc.getForeground());
+	try { 
+		gc.setForeground(null);
+		fail("No exception thrown for null color");		
+	} catch (IllegalArgumentException e) {
+	}
+	assertEquals(gc.getForeground(),gc.getForeground());
+	color.dispose();
+	try { 
+		gc.setForeground(color);
+		fail("No exception thrown for color disposed");		
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_setLineStyleI() {
-	warnUnimpl("Test test_setLineStyleI not written");
+	gc.setLineStyle(SWT.LINE_SOLID);
+	assertTrue(gc.getLineStyle() == SWT.LINE_SOLID);
+	gc.setLineStyle(SWT.LINE_DASH);
+	assertTrue(gc.getLineStyle() == SWT.LINE_DASH);
+	gc.setLineStyle(SWT.LINE_DOT);
+	assertTrue(gc.getLineStyle() == SWT.LINE_DOT);
+	gc.setLineStyle(SWT.LINE_DASHDOT);
+	assertTrue(gc.getLineStyle() == SWT.LINE_DASHDOT);
+	gc.setLineStyle(SWT.LINE_DASHDOTDOT);
+	assertTrue(gc.getLineStyle() == SWT.LINE_DASHDOTDOT);
 }
 
 public void test_setLineWidthI() {
-	warnUnimpl("Test test_setLineWidthI not written");
+	gc.setLineWidth(10);
+	assertTrue(gc.getLineWidth() == 10);
+	gc.setLineWidth(0);
+	assertTrue(gc.getLineWidth() == 0);
 }
 
 public void test_setXORModeZ() {
-	warnUnimpl("Test test_setXORModeZ not written");
+	gc.setXORMode(true);
+	assertTrue(gc.getXORMode());
+	gc.setXORMode(false);
+	assertFalse(gc.getXORMode());
 }
 
 public void test_stringExtentLjava_lang_String() {
-	warnUnimpl("Test test_stringExtentLjava_lang_String not written");
+	Point pt = gc.stringExtent("abc");
+	assertTrue(pt.x > 0);
+	assertTrue(pt.y > 0);
 }
 
 public void test_textExtentLjava_lang_String() {
-	warnUnimpl("Test test_textExtentLjava_lang_String not written");
+	Point pt = gc.textExtent("abc");
+	assertTrue(pt.x > 0);
+	assertTrue(pt.y > 0);
 }
 
 public void test_textExtentLjava_lang_StringI() {
-	warnUnimpl("Test test_textExtentLjava_lang_StringI not written");
+	Point pt = gc.textExtent("abc", 0);
+	assertTrue(pt.x > 0);
+	assertTrue(pt.y > 0);
 }
 
 public void test_toString() {
-	warnUnimpl("Test test_toString not written");
+	String s = gc.toString();
+	assertTrue(s.length() > 0);
 }
 
 public void test_win32_newILorg_eclipse_swt_graphics_GCData() {
-	warnUnimpl("Test test_win32_newILorg_eclipse_swt_graphics_GCData not written");
+	// do not test - Windows only
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData() {
