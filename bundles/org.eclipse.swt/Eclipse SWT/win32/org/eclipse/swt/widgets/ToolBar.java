@@ -73,7 +73,12 @@ public class ToolBar extends Composite {
 public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	/*
-	* ??
+	* Ensure that either of HORIZONTAL or VERTICAL is set.
+	* NOTE: HORIZONTAL and VERTICAL have the same values
+	* as H_SCROLL and V_SCROLL so it is necessary to first
+	* clear these bits to avoid scroll bars and then reset
+	* the bits using the original style supplied by the
+	* programmer.
 	*/
 	this.style = checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
