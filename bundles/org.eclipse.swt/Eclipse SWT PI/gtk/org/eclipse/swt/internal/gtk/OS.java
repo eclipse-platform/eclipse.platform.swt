@@ -535,7 +535,7 @@ public static final native void memmove(XVisibilityEvent dest, int /*long*/ src,
 public static final native int MonitorEnter(Object obj);
 public static final native int MonitorExit(Object obj);
 
-/** Native methods */
+/** Natives */
 public static final native int Call (int /*long*/ func, int /*long*/ arg0, int arg1, int arg2);
 public static final synchronized native int /*long*/ GDK_DISPLAY();
 public static final synchronized native int /*long*/ GDK_ROOT_PARENT();
