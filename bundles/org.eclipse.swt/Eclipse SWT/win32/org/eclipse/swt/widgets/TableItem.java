@@ -564,12 +564,11 @@ public void setImage (int index, Image image) {
 	if (image != null && image.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (index == 0) {
-		setImage (image);
-		return;
-	}
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
+	if (index == 0) {
+		super.setImage (image);
+	}
 	int hwnd = parent.handle;
 	LVITEM lvItem = new LVITEM ();
 	lvItem.mask = OS.LVIF_IMAGE;
@@ -577,27 +576,14 @@ public void setImage (int index, Image image) {
 	lvItem.iSubItem = index;
 	lvItem.iImage = parent.imageIndex (image);
 	if (OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem) != 0) {
+		if (index == 0) parent.setScrollWidth ();
 		parent.setCheckboxImageList (false);
 	}
 }
 
 public void setImage (Image image) {
-	checkWidget();
-	if (image != null && image.isDisposed ()) {
-		error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	super.setImage (image);
-	int hwnd = parent.handle;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_IMAGE;
-	lvItem.iItem = index;
-	lvItem.iImage = parent.imageIndex (image);
-	if (OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem) != 0) {
-		parent.setScrollWidth ();
-		parent.setCheckboxImageList (false);
-	}
+	checkWidget ();
+	setImage (0, image);
 }
 
 /**
@@ -663,12 +649,11 @@ public void setText (String [] strings) {
 public void setText (int index, String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (index == 0) {
-		setText (string);
-		return;
-	}
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
+	if (index == 0) {
+		super.setText (string);
+	}
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();	
 	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
@@ -680,30 +665,15 @@ public void setText (int index, String string) {
 	lvItem.iItem = itemIndex;
 	lvItem.pszText = pszText;
 	lvItem.iSubItem = index;
-	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
+	if (OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem) != 0) {
+		if (index == 0) parent.setScrollWidth ();
+	}
 	OS.HeapFree (hHeap, 0, pszText);
 }
 
 public void setText (String string) {
 	checkWidget();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	super.setText (string);
-	int hwnd = parent.handle;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_TEXT;
-	lvItem.iItem = index;
-	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (pszText, buffer, byteCount); 
-	lvItem.pszText = pszText;
-	if (OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem) != 0) {
-		parent.setScrollWidth ();
-	}
-	OS.HeapFree (hHeap, 0, pszText);
+	setText (0, string);
 }
 
 }
