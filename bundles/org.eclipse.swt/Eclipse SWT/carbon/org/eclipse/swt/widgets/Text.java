@@ -203,8 +203,7 @@ public void cut () {
 	if (!oldSelection.equals (newSelection)) sendEvent (SWT.Modify);
 }
 
-void draw (int control) {
-	if (control != handle) return;
+void drawWidget (int control) {
 	OS.TXNDraw (txnObject, 0);
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);

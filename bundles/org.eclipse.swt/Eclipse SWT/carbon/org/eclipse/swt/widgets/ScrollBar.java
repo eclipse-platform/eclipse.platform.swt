@@ -186,18 +186,6 @@ public boolean isVisible () {
 	return OS.HIViewIsVisible (handle);
 }
 
-int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	int clipRgn = getClipping (handle);
-	int oldRgn = OS.NewRgn ();
-	OS.GetClip (oldRgn);
-	OS.SetClip (clipRgn);
-	int result = OS.CallNextEventHandler (nextHandler, theEvent);
-	OS.SetClip (oldRgn);
-	OS.DisposeRgn (clipRgn);
-	OS.DisposeRgn (oldRgn);
-	return result;
-}
-
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int status = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (status == OS.noErr) return status;

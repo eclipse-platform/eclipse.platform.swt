@@ -86,6 +86,10 @@ void createWidget () {
 	itemCount = 0;
 }
 
+int defaultThemeFont () {	
+	return OS.kThemeToolbarFont;
+}
+
 void destroyItem (ToolItem item) {
 	int index = 0;
 	while (index < itemCount) {
@@ -97,7 +101,7 @@ void destroyItem (ToolItem item) {
 	items [itemCount] = null;
 }
 
-void draw (int control) {
+void drawWidget (int control) {
 	drawBackground (handle, background);
 }
 
@@ -147,7 +151,7 @@ public int indexOf (ToolItem item) {
 }
 
 int [] layoutHorizontal (int width, int height, boolean resize) {
-	int xSpacing = 0, ySpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2;
+	int xSpacing = 0, ySpacing = 2;
 	int marginWidth = 0, marginHeight = 0;
 	int x = marginWidth, y = marginHeight;
 	int maxHeight = 0, maxX = 0, rows = 1;
@@ -177,7 +181,7 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 }
 
 int [] layoutVertical (int width, int height, boolean resize) {
-	int xSpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2, ySpacing = 0;
+	int xSpacing = 2, ySpacing = 0;
 	int marginWidth = 0, marginHeight = 0;
 	int x = marginWidth, y = marginHeight;
 	int maxWidth = 0, maxY = 0, cols = 1;

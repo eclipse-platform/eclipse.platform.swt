@@ -142,30 +142,33 @@ void createScrolledHandle (int parentHandle) {
 	handle = outControl [0];
 }
 
-void draw (int control) {
-	if ((state & CANVAS) == 0) return;
-	if (control == scrolledHandle) {
-		drawBackground (control, background);
-		Rect rect = new Rect ();
-		OS.GetControlBounds (scrolledHandle, rect);
-		Rect inset = inset ();
-		rect.left += inset.left;
-		rect.top += inset.top;
-		rect.right -= inset.right;
-		rect.bottom -= inset.bottom;
-		boolean drawFocus = (style & SWT.NO_FOCUS) == 0 && hooksKeys ();
-		boolean drawBorder = hasBorder ();
-		int state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-		if (hasFocus ()) {
-			if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
-			if (drawFocus) OS.DrawThemeFocusRect (rect, true);
+void drawWidget (int control) {
+	if ((state & CANVAS) != 0) {
+		if (control == scrolledHandle) {
+			drawBackground (control, background);
+			Rect rect = new Rect ();
+			OS.GetControlBounds (scrolledHandle, rect);
+			Rect inset = inset ();
+			rect.left += inset.left;
+			rect.top += inset.top;
+			rect.right -= inset.right;
+			rect.bottom -= inset.bottom;
+			boolean drawFocus = (style & SWT.NO_FOCUS) == 0 && hooksKeys ();
+			boolean drawBorder = hasBorder ();
+			int state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+			if (hasFocus ()) {
+				if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
+				if (drawFocus) OS.DrawThemeFocusRect (rect, true);
+			} else {
+				if (drawFocus) OS.DrawThemeFocusRect (rect, false);
+				if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
+			}
 		} else {
-			if (drawFocus) OS.DrawThemeFocusRect (rect, false);
-			if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
+			if ((style & SWT.NO_BACKGROUND) != 0) return;
+			drawBackground (control, background);
 		}
 	} else {
-		if ((style & SWT.NO_BACKGROUND) != 0) return;
-		drawBackground (control, background);
+		super.drawWidget (control);	
 	}
 }
 
@@ -233,12 +236,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	if (((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0 && hooksKeys ())) {
-		if (scrolledHandle != 0) {
-			Rect rect = new Rect ();
-			OS.GetControlBounds (scrolledHandle, rect);
-			int window = OS.GetControlOwner (scrolledHandle);
-			OS.InvalWindowRect (window, rect);
-		}
+		if (scrolledHandle != 0) redrawWidget (scrolledHandle);
 		return OS.noErr;
 	}
 	return result;

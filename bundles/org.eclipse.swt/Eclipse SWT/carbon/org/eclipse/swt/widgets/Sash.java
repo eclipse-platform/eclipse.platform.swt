@@ -59,7 +59,7 @@ void createHandle () {
 	handle = outControl [0];
 }
 
-void draw (int control) {
+void drawWidget (int control) {
 	drawBackground (handle, background);
 }
 

@@ -114,7 +114,7 @@ int defaultThemeFont () {
 	return OS.kThemeEmphasizedSystemFont;
 }
 
-void draw (int control) {
+void drawWidget (int control) {
 	drawBackground (handle, background);
 }
 

@@ -276,6 +276,9 @@ void drawBackground (int control, float [] background) {
 	}
 }
 
+void drawWidget (int control) {
+}
+
 void error (int code) {
 	SWT.error(code);
 }
@@ -472,7 +475,19 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	int clipRgn = getClipping (theControl [0]);
+	int oldRgn = OS.NewRgn ();
+	OS.GetClip (oldRgn);
+//	OS.SectRgn(oldRgn, clipRgn, clipRgn);
+	OS.SetClip (clipRgn);
+	drawWidget (theControl [0]);
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	OS.SetClip (oldRgn);
+	OS.DisposeRgn (clipRgn);
+	OS.DisposeRgn (oldRgn);
+	return result;
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
@@ -612,6 +627,14 @@ void postEvent (int eventType) {
 
 void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
+}
+
+void redrawWidget (int control) {
+	if (!OS.IsControlVisible (control)) return;
+	Rect rect = new Rect ();
+	OS.GetControlBounds (control, rect);
+	int window = OS.GetControlOwner (control);
+	OS.InvalWindowRect (window, rect);
 }
 
 void register () {

@@ -113,7 +113,6 @@ public String getText () {
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
-//	if (result == OS.noErr) return result;
 	if (isImage) {
 		if (image != null) {
 			GCData data = new GCData ();

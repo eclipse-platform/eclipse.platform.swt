@@ -193,9 +193,6 @@ void destroyWidget () {
 	}
 }
 
-void draw (int control) {
-}
-
 Cursor findCursor () {
 	if (cursor != null) return cursor;
 	return parent.findCursor ();
@@ -543,17 +540,9 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 }
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	int clipRgn = getClipping (theControl [0]);
-	int oldRgn = OS.NewRgn ();
-	OS.GetClip (oldRgn);
-	OS.SetClip (clipRgn);
-	draw (theControl [0]);
-	int result = OS.CallNextEventHandler (nextHandler, theEvent);
-	OS.SetClip (oldRgn);
-	OS.DisposeRgn (clipRgn);
-	OS.DisposeRgn (oldRgn);
 	if (theControl [0] != handle) return result;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return result;
 
@@ -712,11 +701,7 @@ public void pack (boolean changed) {
 
 public void redraw () {
 	checkWidget();
-	if (!OS.IsControlVisible (handle)) return;
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	int window = OS.GetControlOwner (handle);
-	OS.InvalWindowRect (window, rect);
+	redrawWidget (handle);
 }
 
 public void redraw (int x, int y, int width, int height, boolean all) {
