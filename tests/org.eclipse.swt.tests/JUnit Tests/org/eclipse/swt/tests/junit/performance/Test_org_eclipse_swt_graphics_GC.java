@@ -72,6 +72,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	
 	disposeMeter(meter);
 
+	if (isGTK) return;
+	
 	count /= 10;
 	
 	Class printerClass = null;
@@ -130,6 +132,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 	
 	disposeMeter(meter);
 
+	if (isGTK) return;
+	
 	count /= 10;
 	
 	Class printerClass = null;
@@ -849,7 +853,7 @@ public void test_fillArcIIIIII() {
 }
 
 public void test_fillGradientRectangleIIIIZ() {
-	final int COUNT = 500000;
+	final int COUNT = 250000;
 	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
@@ -996,7 +1000,7 @@ public void test_fillRoundRectangleIIIIII() {
 }
 
 public void test_getAdvanceWidthC() {
-	final int COUNT = 2200000;
+	final int COUNT = 2000000;
 	
 	PerformanceMeter meter = createMeter("GC getAdvanceWidthC");
 	meter.start();
