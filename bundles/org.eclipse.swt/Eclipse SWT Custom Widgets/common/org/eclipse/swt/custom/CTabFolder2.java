@@ -1157,6 +1157,7 @@ void drawExpand(GC gc) {
 }
 void drawSelectionBackground(GC gc, int[] shape) {
 	if (backgroundImage != null) {
+		Point size = getSize();
 		// draw the background image in shape
 		Region clipping = new Region();
 		gc.getClipping(clipping);
@@ -1164,7 +1165,18 @@ void drawSelectionBackground(GC gc, int[] shape) {
 		region.add(shape);
 		gc.setClipping(region);
 		gc.setBackground(selectionBackground);
-		gc.drawImage(backgroundImage, 0, 0);
+		gc.fillRectangle(0, 0, size.x, size.y);
+		// tile image to fill space
+		Rectangle imageRect = backgroundImage.getBounds();
+		int xPos = 0;
+		while (xPos < size.x) {
+			int yPos = 0;
+			while (yPos < size.y) {
+				gc.drawImage(backgroundImage, xPos, yPos);
+				yPos += imageRect.height;
+			}
+			xPos += imageRect.width;
+		}
 		gc.setClipping(clipping);
 		clipping.dispose();
 		region.dispose();
@@ -1185,7 +1197,8 @@ void drawSelectionBackground(GC gc, int[] shape) {
 			Color background = selectionBackground;
 			Color lastColor = gradientColors[0];
 			if (lastColor == null) lastColor = background;
-			for (int i = 0, pos = 0; i < gradientPercents.length; ++i) {
+			int pos = 0;
+			for (int i = 0; i < gradientPercents.length; ++i) {
 				gc.setForeground(lastColor);
 				lastColor = gradientColors[i + 1];
 				if (lastColor == null) lastColor = background;
@@ -1199,6 +1212,14 @@ void drawSelectionBackground(GC gc, int[] shape) {
 					gc.fillGradientRectangle(pos, 0, gradientWidth, size.y, false);
 					pos += gradientWidth;
 				}
+			}
+			if (gradientVertical && pos < size.y) {
+				gc.setBackground(getBackground());
+				gc.fillRectangle(0, pos, size.x, size.y - pos);
+			}
+			if (!gradientVertical && pos < size.x) {
+				gc.setBackground(getBackground());
+				gc.fillRectangle(pos, 0, size.x - pos, size.y);
 			}
 		}
 		gc.setClipping(clipping);

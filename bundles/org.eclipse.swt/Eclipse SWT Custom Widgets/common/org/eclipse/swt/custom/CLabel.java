@@ -125,6 +125,7 @@ public CLabel(Composite parent, int style) {
  * Check the style bits to ensure that no invalid styles are applied.
  */
 private static int checkStyle (int style) {
+	if ((style & SWT.BORDER) != 0) style |= SWT.SHADOW_IN;
 	int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	style = style & mask;
 	style |= SWT.NO_FOCUS;
@@ -357,8 +358,18 @@ private void onPaint(PaintEvent event) {
 		if (backgroundImage != null) {
 			// draw a background image behind the text
 			Rectangle imageRect = backgroundImage.getBounds();
-			gc.drawImage(backgroundImage, 0, 0, imageRect.width, imageRect.height,
-				0, 0, rect.width, rect.height);
+			// tile image to fill space
+			gc.setBackground(getBackground());
+			gc.fillRectangle(rect);
+			int xPos = 0;
+			while (xPos < rect.width) {
+				int yPos = 0;
+				while (yPos < rect.height) {
+					gc.drawImage(backgroundImage, xPos, yPos);
+					yPos += imageRect.height;
+				}
+				xPos += imageRect.width;
+			}
 		} else if (gradientColors != null) {
 			// draw a gradient behind the text
 			final Color oldBackground = gc.getBackground();
@@ -369,7 +380,8 @@ private void onPaint(PaintEvent event) {
 				final Color oldForeground = gc.getForeground();
 				Color lastColor = gradientColors[0];
 				if (lastColor == null) lastColor = oldBackground;
-				for (int i = 0, pos = 0; i < gradientPercents.length; ++i) {
+				int pos = 0;
+				for (int i = 0; i < gradientPercents.length; ++i) {
 					gc.setForeground(lastColor);
 					lastColor = gradientColors[i + 1];
 					if (lastColor == null) lastColor = oldBackground;
@@ -383,6 +395,14 @@ private void onPaint(PaintEvent event) {
 						gc.fillGradientRectangle(pos, 0, gradientWidth, rect.height, false);
 						pos += gradientWidth;
 					}
+				}
+				if (gradientVertical && pos < rect.height) {
+					gc.setBackground(getBackground());
+					gc.fillRectangle(0, pos, rect.width, rect.height - pos);
+				}
+				if (!gradientVertical && pos < rect.width) {
+					gc.setBackground(getBackground());
+					gc.fillRectangle(pos, 0, rect.width - pos, rect.height);
 				}
 				gc.setForeground(oldForeground);
 			}
