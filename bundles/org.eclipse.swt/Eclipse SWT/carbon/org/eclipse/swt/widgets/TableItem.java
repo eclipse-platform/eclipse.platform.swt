@@ -164,6 +164,7 @@ void clear () {
  */
 public Color getBackground () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return background != null ? background : parent.getBackground ();
 }
 
@@ -182,6 +183,7 @@ public Color getBackground () {
  */
 public Color getBackground (int index) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count -1) return getBackground ();
 	if (cellBackground == null || cellBackground [index] == null) return getBackground ();
@@ -202,6 +204,7 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds (int index) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	parent.checkItems (true);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	Rect rect = new Rect();
@@ -238,6 +241,7 @@ public Rectangle getBounds (int index) {
  */
 public boolean getChecked () {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	return checked;
 }
@@ -256,6 +260,7 @@ public boolean getChecked () {
  */
 public Font getFont () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return font != null ? font : parent.getFont ();
 }
 
@@ -275,6 +280,7 @@ public Font getFont () {
  */
 public Font getFont (int index) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count -1) return getFont ();
 	if (cellFont == null || cellFont [index] == null) return getFont ();
@@ -296,6 +302,7 @@ public Font getFont (int index) {
  */
 public Color getForeground () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return foreground != null ? foreground : parent.getForeground ();
 }
 
@@ -315,6 +322,7 @@ public Color getForeground () {
  */
 public Color getForeground (int index) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count -1) return getForeground ();
 	if (cellForeground == null || cellForeground [index] == null) return getForeground ();
@@ -334,8 +342,15 @@ public Color getForeground (int index) {
  */
 public boolean getGrayed () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	return grayed;
+}
+
+public Image getImage () {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return super.getImage ();
 }
 
 /**
@@ -352,7 +367,8 @@ public boolean getGrayed () {
  */
 public Image getImage (int index) {
 	checkWidget();
-	if (index == 0) return super.getImage ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index == 0) return getImage ();
 	if (images != null) {
 		if (0 <= index && index < images.length) return images [index];
 	}
@@ -374,6 +390,7 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	parent.checkItems (true);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	Rect rect = new Rect();
@@ -412,6 +429,7 @@ public Rectangle getImageBounds (int index) {
  */
 public int getImageIndent () {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return 0;
 }
 
@@ -428,6 +446,12 @@ public int getImageIndent () {
 public Table getParent () {
 	checkWidget();
 	return parent;
+}
+
+public String getText () {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return super.getText ();
 }
 
 /**
@@ -447,7 +471,8 @@ public Table getParent () {
  */
 public String getText (int index) {
 	checkWidget();
-	if (index == 0) return super.getText ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index == 0) return getText ();
 	if (strings != null) {
 		if (0 <= index && index < strings.length) {
 			String string = strings [index];

@@ -108,6 +108,24 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
+boolean checkData (TableItem item) {
+	if (item.cached) return true;
+	if ((style & SWT.VIRTUAL) != 0) {
+		item.cached = true;
+		Event event = new Event ();
+		event.item = item;
+		int mask = OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
+		int signal_id = OS.g_signal_lookup (OS.row_changed, OS.gtk_tree_model_get_type ());
+		OS.g_signal_handlers_block_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
+		sendEvent (SWT.SetData, event);
+		//widget could be disposed at this point
+		if (isDisposed ()) return false;
+		OS.g_signal_handlers_unblock_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
+		if (item.isDisposed ()) return false;
+	}
+	return true;
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -1992,19 +2010,7 @@ boolean setCellData(int /*long*/ tree_model, int /*long*/ iter) {
 		if (lastDataIndex != index [0]) {
 			lastDataIndex = lastIndexOf = index [0];
 			TableItem item = _getItem (index [0]);
-			if (!item.cached) {
-				Event event = new Event ();
-				event.item = item;
-				int mask = OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
-				int signal_id = OS.g_signal_lookup (OS.row_changed, OS.gtk_tree_model_get_type ());
-				OS.g_signal_handlers_block_matched (tree_model, mask, signal_id, 0, 0, 0, handle);
-				sendEvent (SWT.SetData, event);
-				if (isDisposed()) return false;
-				//widget could be disposed at this point
-				OS.g_signal_handlers_unblock_matched (tree_model, mask, signal_id, 0, 0, 0, handle);
-				item.cached = true;
-				return true;
-			}
+			if (!item.cached) return checkData (item);
 		}
 	}
 	return false;

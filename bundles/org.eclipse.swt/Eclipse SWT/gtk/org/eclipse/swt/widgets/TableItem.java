@@ -148,6 +148,7 @@ void clear () {
  */
 public Color getBackground () {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.BACKGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getBackground ();
@@ -171,6 +172,7 @@ public Color getBackground () {
  */
 public Color getBackground (int index) {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return getBackground ();
 	int /*long*/ [] ptr = new int /*long*/ [1];
@@ -196,6 +198,7 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
@@ -243,6 +246,7 @@ public Rectangle getBounds (int index) {
  */
 public boolean getChecked () {
 	checkWidget();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.CHECKED_COLUMN, ptr, -1);
@@ -263,6 +267,7 @@ public boolean getChecked () {
  */
 public Font getFont () {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.FONT_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getFont ();
@@ -285,6 +290,7 @@ public Font getFont () {
  */
 public Font getFont (int index) {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return getFont ();
 	int /*long*/ [] ptr = new int /*long*/ [1];
@@ -309,6 +315,7 @@ public Font getFont (int index) {
  */
 public Color getForeground () {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getForeground ();
@@ -333,6 +340,7 @@ public Color getForeground () {
  */
 public Color getForeground (int index) {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return getForeground ();
 	int /*long*/ [] ptr = new int /*long*/ [1];
@@ -358,6 +366,7 @@ public Color getForeground (int index) {
  */
 public boolean getGrayed () {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.GRAYED_COLUMN, ptr, -1);
@@ -366,6 +375,7 @@ public boolean getGrayed () {
 
 public Image getImage () {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getImage (0);
 }
 
@@ -383,6 +393,7 @@ public Image getImage () {
  */
 public Image getImage (int index) {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!(0 <= index && index <= parent.columnCount )) return null;
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
@@ -412,6 +423,7 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
@@ -482,6 +494,7 @@ public Rectangle getImageBounds (int index) {
  */
 public int getImageIndent () {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	/* Image indent is not supported on GTK */
 	return 0;
 }
@@ -503,6 +516,7 @@ public Table getParent () {
 
 public String getText () {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getText (0);
 }
 
@@ -523,6 +537,7 @@ public String getText () {
  */
 public String getText (int index) {
 	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!(0 <= index && index <= parent.columnCount )) return "";
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);

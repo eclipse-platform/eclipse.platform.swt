@@ -163,6 +163,24 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 	return result;
 }
 
+boolean checkData (TableItem item, boolean redraw) {
+	if (item.cached) return true;
+	if ((style & SWT.VIRTUAL) != 0) {
+		item.cached = true;
+		Event event = new Event ();
+		event.item = item;
+		ignoreRedraw = true;
+		sendEvent (SWT.SetData, event);
+		//widget could be disposed at this point
+		ignoreRedraw = false;
+		if (isDisposed () || item.isDisposed ()) return false;
+		if (redraw) {
+			if (!setScrollWidth (item)) item.redraw (OS.kDataBrowserNoItem);
+		}
+	}
+	return true;
+}
+
 void checkItems (boolean setScrollWidth) {
 	int [] count = new int [1];
 	if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemAnyState, count) != OS.noErr) {
@@ -807,15 +825,9 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	}
 	lastIndexOf = index;
 	TableItem item = _getItem (index);
-	if (!item.cached) {
-		if ((style & SWT.VIRTUAL) != 0) {
-			Event event = new Event ();
-			event.item = item;
-			ignoreRedraw = true;
-			sendEvent (SWT.SetData, event);
-			//widget could be disposed at this point
-			if (isDisposed ()) return OS.noErr;
-			ignoreRedraw = false;
+	if ((style & SWT.VIRTUAL) != 0) {
+		if (!item.cached) {
+			if (!checkData (item, false)) return OS.noErr;
 			if (setScrollWidth (item)) {
 				Rect rect = new Rect();
 				if (OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
@@ -824,7 +836,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 				return OS.noErr;
 			}
 		}
-		item.cached = true;
 	}
 	Rect rect = new Rect ();
 	OS.memcpy (rect, theRect, Rect.sizeof);
