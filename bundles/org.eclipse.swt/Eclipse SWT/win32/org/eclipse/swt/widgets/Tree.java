@@ -1988,7 +1988,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					int hFont = item.font, clrText = item.foreground, clrTextBk = item.background;
 					if (hFont == -1 && clrText == -1 && clrTextBk == -1) break;
 					if (hFont != -1) OS.SelectObject (nmcd.hdc, hFont);
-					if ((tvItem.state & OS.TVIS_SELECTED) == 0 && (tvItem.state & OS.TVIS_DROPHILITED) == 0) {
+					if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) == 0) {
 						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 						nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 					}
