@@ -444,7 +444,7 @@ void destroyItem (TableColumn column) {
 			int item = items [i].handle;
 			int modelIndex = column.modelIndex;
 			OS.gtk_list_store_set (modelHandle, item, modelIndex, 0, -1);
-			OS.gtk_list_store_set (modelHandle, item, modelIndex + 1, (byte [])null, -1);
+			OS.gtk_list_store_set (modelHandle, item, modelIndex + 1, 0, -1);
 		}
 		if (index == 0) {
 			TableColumn checkColumn = columns [0];
