@@ -833,24 +833,30 @@ public void setText (String string) {
 		0);
 	if (xmString1 == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
-	int [] argList = {
-		OS.XmNlabelType, OS.XmSTRING,
-		OS.XmNlabelString, xmString1,
-		OS.XmNmnemonic, mnemonic,
-	};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	if (xmString1 != 0) OS.XmStringFree (xmString1);
+	int [] argList;
 	/*
 	 * Bug in Solaris 9 x86.  Setting a MenuItem's accelerator
 	 * text to an empty string causes the item's full text to
 	 * appear empty.  The fix is to only set the XmNacceleratorText
 	 * resource if it has a non-empty value. 
 	 */
-	if (xmString2 != 0) {
-		int [] argList2 = {OS.XmNacceleratorText, xmString2,};
-		OS.XtSetValues (handle, argList2, argList2.length / 2);
-		OS.XmStringFree (xmString2);
+	if (xmString2 != 0) {	
+		argList = new int [] {
+			OS.XmNlabelType, OS.XmSTRING,
+			OS.XmNlabelString, xmString1,
+			OS.XmNmnemonic, mnemonic,
+			OS.XmNacceleratorText, xmString2,
+		};
+	} else {
+		argList = new int [] {
+			OS.XmNlabelType, OS.XmSTRING,
+			OS.XmNlabelString, xmString1,
+			OS.XmNmnemonic, mnemonic,
+		};
 	}
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	if (xmString1 != 0) OS.XmStringFree (xmString1);
+	if (xmString2 != 0) OS.XmStringFree (xmString2);
 }
 boolean translateAccelerator (int accel, boolean doit) {
 	if (!getEnabled ()) return false;
