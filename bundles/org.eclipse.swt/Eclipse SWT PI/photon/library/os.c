@@ -1140,6 +1140,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(PhIntersectTilings)
 }
 #endif
 
+#ifndef NO_PhKeyToMb
+JNIEXPORT jint JNICALL OS_NATIVE(PhKeyToMb)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jobject arg1)
+{
+	jbyte *lparg0=NULL;
+	PhKeyEvent_t _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PhKeyToMb\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = getPhKeyEvent_tFields(env, arg1, &_arg1);
+	rc = (jint)PhKeyToMb((char *)lparg0, lparg1);
+	if (arg1) setPhKeyEvent_tFields(env, arg1, lparg1);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PhKeyToMb\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_PhMakeGhostBitmap
 JNIEXPORT jint JNICALL OS_NATIVE(PhMakeGhostBitmap)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -204,6 +204,7 @@ public class OS {
 	public static final int Pk_Alt_L = 0xf0e9;
 	public static final int Pk_Alt_R = 0xf0ea;
 	public static final int Pk_BackSpace = 0xf008;
+	public static final int Pk_Break = 0xF06B;
 	public static final int Pk_Cancel = 0xf069;
 	public static final int Pk_Caps_Lock = 0xf0e5;
 	public static final int Pk_Clear = 0xf00b;
@@ -226,6 +227,7 @@ public class OS {
 	public static final int Pk_F8 = 0xf0c5;
 	public static final int Pk_F9 = 0xf0c6;
 	public static final int Pk_Home = 0xf050;
+	public static final int Pk_Help = 0xF06a;
 	public static final int Pk_Hyper_L = 0xf0ed;
 	public static final int Pk_Hyper_R = 0xf0ee;
 	public static final int Pk_Insert = 0xf063;
@@ -237,6 +239,7 @@ public class OS {
 	public static final int Pk_KM_Alt = 0x4;
 	public static final int Pk_KM_Ctrl = 0x2;
 	public static final int Pk_KM_Shift = 0x1;
+	public static final int Pk_KP_Enter = 0xF08D;
 	public static final int Pk_KP_Tab = 0xf089;
 	public static final int Pk_Left = 0xf051;
 	public static final int Pk_Linefeed = 0xf00a;
@@ -586,6 +589,7 @@ public static final native int PhGetTile();
 public static final native int PhInitDrag(int rid, int flags, PhRect_t rect, PhRect_t boundary, int input_group, PhDim_t min, PhDim_t max, PhDim_t step, PhPoint_t ptrpos, short[] cursor);
 public static final native int PhInputGroup(int event);
 public static final native int PhIntersectTilings(int tile1, int tile2, short[] num_intersect_tiles);
+public static final native int PhKeyToMb(byte[] buffer,PhKeyEvent_t keyevent);
 public static final native int PhMakeGhostBitmap(int image);
 public static final native int PhMakeTransBitmap(int image, int trans_color);
 public static final native int PhMergeTiles(int tiles);
