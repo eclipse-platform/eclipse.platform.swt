@@ -13,5 +13,5 @@ public class SHACTIVATEINFO {
 	public int fSipOnDeactivation;
 	public int fActive;
 	public int fReserved;
-	public static final int sizeof = 24;
+	public static final int sizeof = 12;
 }

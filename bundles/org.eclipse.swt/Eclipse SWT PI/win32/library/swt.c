@@ -45,6 +45,7 @@
 #define NO_EndPage
 #define NO_EnumFontFamiliesA
 #define NO_EnumSystemLanguageGroupsA
+#define NO_EnumSystemLanguageGroupsW
 #define NO_EnumSystemLocalesA
 #define NO_ExpandEnvironmentStringsW
 #define NO_ExpandEnvironmentStringsA
@@ -226,6 +227,8 @@
 
 #ifndef WIN32_PLATFORM_PSPC
 #define NO_SHHandleWMSettingChange
+#define NO_SHSipPreference
+#define NO_SipGetInfo
 #endif /* WIN32_PLATFORM_PSPC */
 
 #ifndef WIN32_PLATFORM_WFSP
@@ -5563,6 +5566,16 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SHSetAppKeyWndAssoc)
 }
 #endif /* NO_SHSetAppKeyWndAssoc */
 
+#ifndef NO_SHSipPreference
+JNIEXPORT jboolean JNICALL OS_NATIVE(SHSipPreference)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SHSipPreference\n")
+
+	return (jboolean)SHSipPreference((HWND)arg0, arg1);
+}
+#endif /* NO_SHSipPreference */
+
 #ifndef NO_ScreenToClient
 JNIEXPORT jboolean JNICALL OS_NATIVE(ScreenToClient)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -6726,6 +6739,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ShowWindow)
 	return (jboolean)ShowWindow((HWND)arg0, arg1);
 }
 #endif /* NO_ShowWindow */
+
+#ifndef NO_SipGetInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(SipGetInfo)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	SIPINFO _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SipGetInfo\n")
+
+	if (arg0) lparg0 = getSIPINFOFields(env, arg0, &_arg0);
+	rc = (jboolean)SipGetInfo(lparg0);
+	if (arg0) setSIPINFOFields(env, arg0, lparg0);
+	return rc;
+}
+#endif /* NO_SipGetInfo */
 
 #ifndef NO_StartDocA
 JNIEXPORT jint JNICALL OS_NATIVE(StartDocA)

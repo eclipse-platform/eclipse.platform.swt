@@ -102,6 +102,7 @@ public class Shell extends Decorations {
 	boolean showWithParent;
 	int toolTipHandle, lpstrTip;
 	Control lastActive;
+	SHACTIVATEINFO psai;
 	static final int DialogProc;
 	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
 	static {
@@ -441,6 +442,10 @@ void createHandle () {
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 		if (OS.IsWinCE) setMaximized (true);
+		if (OS.IsPPC) {
+			psai = new SHACTIVATEINFO ();
+			psai.cbSize = psai.sizeof;
+		}
 	}
 	if (OS.IsDBLocale) {
 		hIMC = OS.ImmCreateContext ();
@@ -1107,10 +1112,10 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 				OS.SHSetAppKeyWndAssoc ((byte) bVk, hwnd);
 			}
 		}
-		if ((style & SWT.RESIZE) != 0) {
-			SHACTIVATEINFO psai = new SHACTIVATEINFO ();
-			OS.SHHandleWMSettingChange (handle, -1, 0, psai);
-		}
+		/* Restore SIP state when window is activated */
+		if ((wParam & 0xFFFF) != 0) {
+			OS.SHSipPreference(handle, psai.fSipUp == 0 ? OS.SIP_DOWN : OS.SIP_UP);
+		} 
 	}
 	/*
 	* Bug in Windows XP.  When a Shell is deactivated, the
@@ -1296,10 +1301,19 @@ LRESULT WM_SETTINGCHANGE (int wParam, int lParam) {
 	if (result != null) return result;
 	if (OS.IsPPC) {
 		if (wParam == OS.SPI_SETSIPINFO) {
+			/* 
+			* The SIP is in a new state.  Cache its new value.			* Resize the Shell if it has the style SWT.RESIZE.
+			* Note that SHHandleWMSettingChange resizes the
+			* Shell and also updates the cached state.
+			*/
 			if ((style & SWT.RESIZE) != 0) {
-				SHACTIVATEINFO psai = new SHACTIVATEINFO ();
-				OS.SHHandleWMSettingChange (handle, -1, 0, psai);
+				OS.SHHandleWMSettingChange (handle, wParam, lParam, psai);
 				return LRESULT.ZERO;
+			} else {
+				SIPINFO pSipInfo = new SIPINFO ();
+				pSipInfo.cbSize = pSipInfo.sizeof;
+				OS.SipGetInfo (pSipInfo);
+				psai.fSipUp = pSipInfo.fdwFlags & OS.SIPF_ON;					
 			}
 		}
 	}

@@ -3030,6 +3030,70 @@ void setSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStru
 }
 #endif /* NO_SHMENUBARINFO */
 
+#ifndef NO_SIPINFO
+typedef struct SIPINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, fdwFlags, rcVisibleDesktop_left, rcVisibleDesktop_top, rcVisibleDesktop_right, rcVisibleDesktop_bottom, rcSipRect_left, rcSipRect_top, rcSipRect_right, rcSipRect_bottom, dwImDataSize, pvImData;
+} SIPINFO_FID_CACHE;
+
+SIPINFO_FID_CACHE SIPINFOFc;
+
+void cacheSIPINFOFids(JNIEnv *env, jobject lpObject)
+{
+	if (SIPINFOFc.cached) return;
+	SIPINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SIPINFOFc.cbSize = (*env)->GetFieldID(env, SIPINFOFc.clazz, "cbSize", "I");
+	SIPINFOFc.fdwFlags = (*env)->GetFieldID(env, SIPINFOFc.clazz, "fdwFlags", "I");
+	SIPINFOFc.rcVisibleDesktop_left = (*env)->GetFieldID(env, SIPINFOFc.clazz, "rcVisibleDesktop_left", "I");
+	SIPINFOFc.rcVisibleDesktop_top = (*env)->GetFieldID(env, SIPINFOFc.clazz, "rcVisibleDesktop_top", "I");
+	SIPINFOFc.rcVisibleDesktop_right = (*env)->GetFieldID(env, SIPINFOFc.clazz, "rcVisibleDesktop_right", "I");
+	SIPINFOFc.rcVisibleDesktop_bottom = (*env)->GetFieldID(env, SIPINFOFc.clazz, "rcVisibleDesktop_bottom", "I");
+	SIPINFOFc.rcSipRect_left = (*env)->GetFieldID(env, SIPINFOFc.clazz, "rcSipRect_left", "I");
+	SIPINFOFc.rcSipRect_top = (*env)->GetFieldID(env, SIPINFOFc.clazz, "rcSipRect_top", "I");
+	SIPINFOFc.rcSipRect_right = (*env)->GetFieldID(env, SIPINFOFc.clazz, "rcSipRect_right", "I");
+	SIPINFOFc.rcSipRect_bottom = (*env)->GetFieldID(env, SIPINFOFc.clazz, "rcSipRect_bottom", "I");
+	SIPINFOFc.dwImDataSize = (*env)->GetFieldID(env, SIPINFOFc.clazz, "dwImDataSize", "I");
+	SIPINFOFc.pvImData = (*env)->GetFieldID(env, SIPINFOFc.clazz, "pvImData", "I");
+	SIPINFOFc.cached = 1;
+}
+
+SIPINFO *getSIPINFOFields(JNIEnv *env, jobject lpObject, SIPINFO *lpStruct)
+{
+	if (!SIPINFOFc.cached) cacheSIPINFOFids(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, SIPINFOFc.cbSize);
+	lpStruct->fdwFlags = (*env)->GetIntField(env, lpObject, SIPINFOFc.fdwFlags);
+	lpStruct->rcVisibleDesktop.left = (*env)->GetIntField(env, lpObject, SIPINFOFc.rcVisibleDesktop_left);
+	lpStruct->rcVisibleDesktop.top = (*env)->GetIntField(env, lpObject, SIPINFOFc.rcVisibleDesktop_top);
+	lpStruct->rcVisibleDesktop.right = (*env)->GetIntField(env, lpObject, SIPINFOFc.rcVisibleDesktop_right);
+	lpStruct->rcVisibleDesktop.bottom = (*env)->GetIntField(env, lpObject, SIPINFOFc.rcVisibleDesktop_bottom);
+	lpStruct->rcSipRect.left = (*env)->GetIntField(env, lpObject, SIPINFOFc.rcSipRect_left);
+	lpStruct->rcSipRect.top = (*env)->GetIntField(env, lpObject, SIPINFOFc.rcSipRect_top);
+	lpStruct->rcSipRect.right = (*env)->GetIntField(env, lpObject, SIPINFOFc.rcSipRect_right);
+	lpStruct->rcSipRect.bottom = (*env)->GetIntField(env, lpObject, SIPINFOFc.rcSipRect_bottom);
+	lpStruct->dwImDataSize = (*env)->GetIntField(env, lpObject, SIPINFOFc.dwImDataSize);
+	lpStruct->pvImData = (void*)(*env)->GetIntField(env, lpObject, SIPINFOFc.pvImData);
+	return lpStruct;
+}
+
+void setSIPINFOFields(JNIEnv *env, jobject lpObject, SIPINFO *lpStruct)
+{
+	if (!SIPINFOFc.cached) cacheSIPINFOFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.fdwFlags, (jint)lpStruct->fdwFlags);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.rcVisibleDesktop_left, (jint)lpStruct->rcVisibleDesktop.left);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.rcVisibleDesktop_top, (jint)lpStruct->rcVisibleDesktop.top);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.rcVisibleDesktop_right, (jint)lpStruct->rcVisibleDesktop.right);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.rcVisibleDesktop_bottom, (jint)lpStruct->rcVisibleDesktop.bottom);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.rcSipRect_left, (jint)lpStruct->rcSipRect.left);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.rcSipRect_top, (jint)lpStruct->rcSipRect.top);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.rcSipRect_right, (jint)lpStruct->rcSipRect.right);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.rcSipRect_bottom, (jint)lpStruct->rcSipRect.bottom);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.dwImDataSize, (jint)lpStruct->dwImDataSize);
+	(*env)->SetIntField(env, lpObject, SIPINFOFc.pvImData, (jint)lpStruct->pvImData);
+}
+#endif /* NO_SIPINFO */
+
 #ifndef NO_SIZE
 typedef struct SIZE_FID_CACHE {
 	int cached;

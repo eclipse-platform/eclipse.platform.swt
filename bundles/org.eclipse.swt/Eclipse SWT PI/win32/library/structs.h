@@ -95,6 +95,7 @@
 
 #ifndef WIN32_PLATFORM_PSPC
 #define NO_SHACTIVATEINFO
+#define NO_SIPINFO
 #endif /* WIN32_PLATFORM_PSPC */
 
 /** Structs */
@@ -549,6 +550,14 @@ void setSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStru
 #define getSHMENUBARINFOFields(a,b,c) NULL
 #define setSHMENUBARINFOFields(a,b,c)
 #endif /* NO_SHMENUBARINFO */
+
+#ifndef NO_SIPINFO
+SIPINFO *getSIPINFOFields(JNIEnv *env, jobject lpObject, SIPINFO *lpStruct);
+void setSIPINFOFields(JNIEnv *env, jobject lpObject, SIPINFO *lpStruct);
+#else
+#define getSIPINFOFields(a,b,c) NULL
+#define setSIPINFOFields(a,b,c)
+#endif /* NO_SIPINFO */
 
 #ifndef NO_SIZE
 SIZE *getSIZEFields(JNIEnv *env, jobject lpObject, SIZE *lpStruct);
