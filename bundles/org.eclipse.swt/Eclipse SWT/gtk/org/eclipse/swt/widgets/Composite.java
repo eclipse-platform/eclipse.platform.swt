@@ -430,16 +430,6 @@ int gtk_focus_out_event (int widget, int event) {
 	return (state & CANVAS) != 0 ? 1 : result;
 }
 
-int gtk_key_press_event (int widget, int event) {
-	int result = super.gtk_key_press_event (widget, event);
-	return (state & CANVAS) != 0 && result != 1 && hasFocus () ? 1 : result;
-}
-
-int gtk_key_release_event (int widget, int event) {
-	int result = super.gtk_key_release_event (widget, event);
-	return (state & CANVAS) != 0 && result != 1 && hasFocus () ? 1 : result;
-}
-
 boolean hasBorder () {
 	return (style & SWT.BORDER) != 0;
 }

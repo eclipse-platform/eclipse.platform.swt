@@ -135,38 +135,32 @@ boolean hasFocus () {
 }
 
 void hookEvents () {
-	//TODO - get rid of enter/exit for mouse crossing border
-	int eventHandle = eventHandle ();
-	int mask =
-		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
-		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
-		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
-		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
-		OS.GDK_FOCUS_CHANGE_MASK;
-	OS.gtk_widget_add_events (eventHandle, mask);
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
-	OS.g_signal_connect (eventHandle, OS.popup_menu, windowProc2, POPUP_MENU);
-	OS.g_signal_connect_after (handle, OS.realize, windowProc2, REALIZE);
-	OS.g_signal_connect (eventHandle, OS.show_help, windowProc3, SHOW_HELP);
+	
+	/* Connect the keyboard signals */
+	int focusHandle = focusHandle ();
+	int focusMask = OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK | OS.GDK_FOCUS_CHANGE_MASK;
+	OS.gtk_widget_add_events (focusHandle, focusMask);
+	OS.g_signal_connect (focusHandle, OS.popup_menu, windowProc2, POPUP_MENU);
+	OS.g_signal_connect (focusHandle, OS.show_help, windowProc3, SHOW_HELP);
+	OS.g_signal_connect (focusHandle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
+	OS.g_signal_connect (focusHandle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
+	OS.g_signal_connect (focusHandle, OS.focus, windowProc3, FOCUS);
+	OS.g_signal_connect (focusHandle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
+	OS.g_signal_connect (focusHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
+
+	/* Connect the mouse signals */
+	int eventHandle = eventHandle ();
+	int eventMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK |
+		OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_ENTER_NOTIFY_MASK |
+		OS.GDK_LEAVE_NOTIFY_MASK;
+	OS.gtk_widget_add_events (eventHandle, eventMask);
 	OS.g_signal_connect (eventHandle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
 	OS.g_signal_connect (eventHandle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
 	OS.g_signal_connect (eventHandle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
-	OS.g_signal_connect (eventHandle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
-	OS.g_signal_connect (eventHandle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
-	OS.g_signal_connect (eventHandle, OS.focus, windowProc3, FOCUS);
-	OS.g_signal_connect (eventHandle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
-	OS.g_signal_connect (eventHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
-	OS.g_signal_connect (eventHandle, OS.event_after, windowProc3, EVENT_AFTER);
 	OS.g_signal_connect (eventHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
 	OS.g_signal_connect (eventHandle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
-	OS.g_signal_connect_after (eventHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
-	int imHandle = imHandle ();
-	if (imHandle != 0) {
-		OS.g_signal_connect (handle, OS.unrealize, windowProc2, UNREALIZE);
-		OS.g_signal_connect (imHandle, OS.commit, windowProc3, COMMIT);
-		OS.g_signal_connect (imHandle, OS.preedit_changed, windowProc2, PREEDIT_CHANGED);
-	}
 	/*
 	* Feature in GTK.  Events such as mouse move are propagate up
 	* the widget hierarchy and are seen by the parent.  This is the
@@ -177,6 +171,27 @@ void hookEvents () {
 	OS.g_signal_connect_after (eventHandle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
 	OS.g_signal_connect_after (eventHandle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
 	OS.g_signal_connect_after (eventHandle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
+
+	/* Connect the event_after signal for both key and mouse */
+	OS.g_signal_connect (eventHandle, OS.event_after, windowProc3, EVENT_AFTER);
+	if (focusHandle != eventHandle) {
+		OS.g_signal_connect (focusHandle, OS.event_after, windowProc3, EVENT_AFTER);
+	}
+	
+	/* Connect the paint signal */
+	int paintHandle = paintHandle ();
+	int paintMask = OS.GDK_EXPOSURE_MASK;
+	OS.gtk_widget_add_events (paintHandle, paintMask);
+	OS.g_signal_connect_after (paintHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
+
+	/* Connect the Input Method signals */
+	OS.g_signal_connect_after (handle, OS.realize, windowProc2, REALIZE);
+	OS.g_signal_connect (handle, OS.unrealize, windowProc2, UNREALIZE);
+	int imHandle = imHandle ();
+	if (imHandle != 0) {
+		OS.g_signal_connect (imHandle, OS.commit, windowProc3, COMMIT);
+		OS.g_signal_connect (imHandle, OS.preedit_changed, windowProc2, PREEDIT_CHANGED);
+	}
 }
 
 int hoverProc (int widget) {
@@ -1804,6 +1819,7 @@ int gtk_motion_notify_event (int widget, int event) {
 }
 
 int gtk_popup_menu (int widget) {
+	if (!hasFocus()) return 0;
 	int [] x = new int [1], y = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, null);
 	showMenu (x [0], y [0]);
@@ -1826,6 +1842,7 @@ int gtk_realize (int widget) {
 }
 
 int gtk_show_help (int widget, int helpType) {
+	if (!hasFocus ()) return 0;
 	return sendHelpEvent (helpType) ? 1 : 0;
 }
 
