@@ -1214,25 +1214,38 @@ public void setVisible (boolean visible) {
 		* and fully painted, dispatch events such as
 		* GDK_MAP and GDK_CONFIGURE, until the GDK_MAP
 		* event for the shell is received.
+		* 
+		* Note that if the parent is minimized or withdrawn
+		* from the desktop, this should not be done since
+		* the shell not will be mapped until the parent is
+		* unminimized or shown on the desktop.
 		*/
 		mapped = false;
 		OS.gtk_widget_show (shellHandle);
 		display.dispatchEvents = new int [] {
 			OS.GDK_EXPOSE,
+			OS.GDK_FOCUS_CHANGE,
 			OS.GDK_CONFIGURE,
 			OS.GDK_MAP,
 			OS.GDK_UNMAP,
 			OS.GDK_NO_EXPOSE,
 		};
 		display.putGdkEvents();
-		while (!isDisposed () && !mapped) {
+		boolean iconic = false;
+		Shell shell = parent != null ? parent.getShell() : null;
+		do {
 			OS.gtk_main_iteration ();
-		}
+			if (isDisposed ()) break;
+			iconic = shell != null && shell.minimized;
+		} while (!mapped && !iconic);
 		display.dispatchEvents = null;
 		if (isDisposed ()) return;
-		update (true);
-		if (isDisposed ()) return;
-		adjustTrim ();
+		if (!iconic) {
+			update (true);
+			if (isDisposed ()) return;
+			adjustTrim ();
+		}
+		mapped = true;
 
 		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 		if ((style & mask) != 0) {

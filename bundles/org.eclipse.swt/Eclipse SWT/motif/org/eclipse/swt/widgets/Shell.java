@@ -1385,12 +1385,20 @@ public void setVisible (boolean visible) {
 		* Force the shell to be fully exposed before returning.
 		* This ensures that the shell coordinates are correct
 		* when queried directly after showing the shell.
+		* 
+		* Note that if the parent is minimized or withdrawn
+		* from the desktop, this should not be done since
+		* the shell will not be mapped until the parent is
+		* unminimized or shown on the desktop.
 		*/
+		boolean iconic = false;
+		Shell shell = parent != null ? parent.getShell() : null;
 		do {
 			display.update ();
 			if (isDisposed ()) return;
-		} while (!isVisible ());
-		adjustTrim ();
+			iconic = shell != null && shell.minimized;
+		} while (!isVisible () && !iconic);
+		if (iconic) adjustTrim ();
 		
 		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.APPLICATION_MODAL;
 		if ((style & mask) != 0) {
