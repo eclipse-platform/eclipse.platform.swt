@@ -2152,17 +2152,16 @@ public boolean setParent (Composite parent) {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget();
-	/*
-	 * AW: todo
-	 * The following is commented out intentionally.
-	 * If its uncommented certain kinds of damage events aren't processed correctly.	 */
-//	if (redraw) {
-//		if (--drawCount == 0)
-//			OS.HIViewSetDrawingEnabled(topHandle(), true);
-//	} else {
-//		if (drawCount++ == 0)
-//			OS.HIViewSetDrawingEnabled(topHandle(), false);
-//	}
+	if (redraw) {
+		if (--drawCount == 0) {
+			int topHandle= topHandle();
+			OS.HIViewSetDrawingEnabled(topHandle, true);
+			OS.HIViewSetNeedsDisplay(topHandle, true);
+		}
+	} else {
+		if (drawCount++ == 0)
+			OS.HIViewSetDrawingEnabled(topHandle(), false);
+	}
 }
 /**
  * Sets the receiver's size to the point specified by the arguments.
