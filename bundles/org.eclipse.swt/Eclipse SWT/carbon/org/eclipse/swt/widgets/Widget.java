@@ -702,7 +702,7 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	oldBounds.top -= inset.top;
 	oldBounds.right += inset.right;
 	oldBounds.bottom += inset.bottom;
-	boolean visible = (state & HIDDEN) == 0;
+	boolean visible = OS.IsControlVisible (control);
 	int window = OS.GetControlOwner (control);
 	if (visible) OS.InvalWindowRect (window, oldBounds);
 	x += inset.left;
