@@ -2397,7 +2397,7 @@ public Point toControl (int x, int y) {
  */
 public Point toControl (Point point) {
 	checkWidget();
-	if (point == null)error (SWT.ERROR_NULL_ARGUMENT);
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return toControl (point.x, point.y);
 }
 
@@ -2425,7 +2425,7 @@ public Point toDisplay (int x, int y) {
  */
 public Point toDisplay (Point point) {
 	checkWidget();
-	if (point == null)error (SWT.ERROR_NULL_ARGUMENT);
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return toDisplay (point.x, point.y);
 }
 
