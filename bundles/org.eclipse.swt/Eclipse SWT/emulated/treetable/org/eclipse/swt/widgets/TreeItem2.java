@@ -795,30 +795,32 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	
 	/* draw the text */
 	if (text.length () > 0) {
+		boolean fontChanged = false, foregroundChanged = false;
 		int fontHeight;
-		Font oldFont = null;
+		Font oldFont = gc.getFont ();
 		Font font = getFont (columnIndex);
-		if (font != parent.getFont ()) {
-			oldFont = gc.getFont ();
+		if (!font.equals (oldFont)) {
 			gc.setFont (font);
 			fontHeight = this.fontHeight;
+			fontChanged = true;
 		} else {
 			fontHeight = parent.fontHeight;
 		}
-		Color oldForeground = null;
+		Color oldForeground = gc.getForeground ();
 		if (isSelected () && columnIndex == 0) {
 			oldForeground = gc.getForeground ();
 			gc.setForeground (SelectionForegroundColor);
+			foregroundChanged = true;
 		} else {
 			Color foreground = getForeground (columnIndex);
-			if (foreground != parent.getForeground ()) {
-				oldForeground = gc.getForeground ();
+			if (!foreground.equals (oldForeground)) {
 				gc.setForeground (foreground);
+				foregroundChanged = true;
 			}
 		}
 		gc.drawString (text, getTextX (columnIndex), y + (itemHeight - fontHeight) / 2, true);
-		if (oldForeground != null) gc.setForeground (oldForeground);
-		if (oldFont != null) gc.setFont (oldFont);
+		if (foregroundChanged) gc.setForeground (oldForeground);
+		if (fontChanged) gc.setFont (oldFont);
 	}
 }
 void recomputeTextWidths (GC gc) {

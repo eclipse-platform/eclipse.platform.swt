@@ -37,7 +37,7 @@ abstract class AbstractTreeItem extends SelectableItem {
  * @param parent - widget the receiver belongs to
  * @param swtStyle - widget style. see Widget class for details
  */
-AbstractTreeItem(Tree parent, int swtStyle) {
+AbstractTreeItem(Tree2 parent, int swtStyle) {
 	super(parent, swtStyle);
 }
 /**
@@ -48,7 +48,7 @@ AbstractTreeItem(Tree parent, int swtStyle) {
  * @param index - position that 'item' will be inserted at
  *	in the receiver.
  */
-void add(TreeItem item, int index) {
+void add(TreeItem2 item, int index) {
 	Vector items = getChildren();
 	int visibleIndex = getVisibleIndex();
 	
@@ -64,7 +64,7 @@ void add(TreeItem item, int index) {
 	}
 	if (visibleIndex != -1) {
 		if (index > 0) {
-			TreeItem previousChild = (TreeItem) getChildren().elementAt(index - 1);
+			TreeItem2 previousChild = (TreeItem2) getChildren().elementAt(index - 1);
 			visibleIndex = previousChild.getVisibleIndex() + previousChild.getVisibleItemCount() + 1;
 		}
 		else {
@@ -192,7 +192,7 @@ abstract int getVisibleIndex(int childIndex);
  * visible on screen if it is within the receiver's parent's 
  * client area.
  */
-abstract TreeItem getVisibleItem(int searchIndex);
+abstract TreeItem2 getVisibleItem(int searchIndex);
 /**
  * Answer the number of expanded children, direct and indirect.
  */
@@ -236,7 +236,7 @@ void removeItem(SelectableItem child) {
 	int childIndex = children.indexOf(child);
 
 	if (childIndex != -1) {
-		if (((Tree) parent).isRemovingAll() == true) {
+		if (((Tree2) parent).isRemovingAll() == true) {
 			children.removeElementAt(childIndex);		// just remove the item from the list if the whole tree is being disposed
 			if (isExpanded == true) {
 				visibleItemCount--;
@@ -276,11 +276,11 @@ void reset() {
  */
 void resetChildIndices(int startIndex, boolean addItem) {
 	Vector children = getChildren();
-	TreeItem child;
+	TreeItem2 child;
 	int increment = addItem ? 1 : 0;
 
 	for (int i = startIndex; i < children.size(); i++) {
-		child = (TreeItem) children.elementAt(i);
+		child = (TreeItem2) children.elementAt(i);
 		child.setIndex(i + increment);								// mark child index dirty
 	}
 }
