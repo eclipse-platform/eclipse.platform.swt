@@ -4657,6 +4657,20 @@ void modifyContent(Event event, boolean updateCaret) {
 	if (event.doit) {
 		StyledTextEvent styledTextEvent = null;
 		int replacedLength = event.end - event.start;
+		boolean isBackspace = event.start < caretOffset;
+		boolean isDirectionBoundary = false;
+
+		if (isBidi() && updateCaret) {
+			GC gc = new GC(this);		
+			int line = content.getLineAtOffset(caretOffset);
+			int lineStartOffset = content.getOffsetAtLine(line);		
+			int offsetInLine = caretOffset - lineStartOffset;
+			String lineText = content.getLine(line);
+			StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, lineText, null, null, getStyleOffsets(lineText, lineStartOffset));
+			
+			isDirectionBoundary = (offsetInLine > 0 && bidi.isRightToLeft(offsetInLine) != bidi.isRightToLeft(offsetInLine - 1));
+			gc.dispose();			
+		}						
 		if (isListening(ExtendedModify)) {
 			styledTextEvent = new StyledTextEvent(content);
 			styledTextEvent.start = event.start;
@@ -4666,11 +4680,18 @@ void modifyContent(Event event, boolean updateCaret) {
 		content.replaceTextRange(event.start, replacedLength, event.text);
 		// set the caret position prior to sending the modify event.
 		// fixes 1GBB8NJ
-		if (updateCaret) {
+		if (updateCaret) {		
+			// always update the caret location. fixes 1G8FODP
 			internalSetSelection(event.start + event.text.length(), 0);
-			// always update the caret location. fixes 1G8FODP	
 			if (isBidi()) {
-				lastCaretDirection = SWT.NULL;
+				// Update the caret direction so that the caret moves to the 
+				// typed/deleted character. Fixes 1GJLQ16.
+				if (replacedLength == 1 && event.text.length() == 0) {
+					updateBidiDirection(isBackspace, isDirectionBoundary);
+				}
+				else {
+					lastCaretDirection = ST.COLUMN_NEXT;
+				}
 				showBidiCaret();
 			}
 			else {
@@ -6367,6 +6388,46 @@ int styledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, i
 	return paintX;
 }
 /**
+ * Updates the caret direction when a delete operation occured based on 
+ * the type of the delete operation (next/previous character) and the 
+ * caret location (at a direction boundary or inside a direction segment).
+ * The intent is to place the caret at the visual location where a
+ * character was deleted.
+ * <p>
+ * 
+ * @param isBackspace true=the previous character was deleted, false=the 
+ * 	character next to the caret location was deleted
+ * @param isDirectionBoundary true=the caret is between a R2L and L2R segment,
+ * 	false=the caret is within a direction segment
+ */
+void updateBidiDirection(boolean isBackspace, boolean isDirectionBoundary) {
+	if (isDirectionBoundary) {
+		int oldDirection = lastCaretDirection;						
+		if (isBackspace) {
+			// Deleted previous character (backspace) at a direction boundary
+			// Go to direction segment of deleted character
+			lastCaretDirection = ST.COLUMN_NEXT;
+		}
+		else {
+			// Deleted next character. Go to direction segment of deleted character
+			lastCaretDirection = ST.COLUMN_PREVIOUS;
+		}
+		if (lastCaretDirection != oldDirection) {
+			setBidiKeyboardLanguage();
+		}
+	}
+	else {
+		if (isBackspace) {
+			// Delete previous character inside direction segment (i.e., not at a direction boundary)
+			lastCaretDirection = ST.COLUMN_PREVIOUS;
+		}
+		else {
+			// Deleted next character.
+			lastCaretDirection = ST.COLUMN_NEXT;
+		}
+	}
+}
+/**
  * Updates the selection and caret position depending on the text change.
  * If the selection intersects with the replaced text, the selection is 
  * reset and the caret moved to the end of the new text.
@@ -6401,18 +6462,12 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 		internalSetSelection(startOffset + newLength, 0);
 		// always update the caret location. fixes 1G8FODP
 		setCaretLocation();
-		if (isBidi()) {
-			setBidiKeyboardLanguage();	
-		}
 	}
 	else {
 		// move selection to keep same text selected
 		internalSetSelection(selection.x + newLength - replacedLength, selection.y - selection.x);
 		// always update the caret location. fixes 1G8FODP
 		setCaretLocation();
-		if (isBidi()) {
-			setBidiKeyboardLanguage();	
-		}
 	}	
 }
 }
