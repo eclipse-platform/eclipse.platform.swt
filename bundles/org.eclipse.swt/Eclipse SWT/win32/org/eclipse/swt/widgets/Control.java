@@ -492,12 +492,21 @@ char findMnemonic (String string) {
 	int index = 0;
 	int length = string.length ();
 	do {
-		while ((index < length) && (string.charAt (index) != Mnemonic)) index++;
+		while (index < length && string.charAt (index) != Mnemonic) index++;
 		if (++index >= length) return '\0';
 		if (string.charAt (index) != Mnemonic) return string.charAt (index);
 		index++;
 	} while (index < length);
  	return '\0';
+}
+
+void fixFocus () {
+	Shell shell = getShell ();
+	Control control = this;
+	while ((control = control.parent) != null) {
+		if (control.setFocus () || control == shell) return;
+	}
+	OS.SetFocus (0);
 }
 
 /**
@@ -601,10 +610,11 @@ int getCodePage () {
 	LOGFONT logFont = new LOGFONT ();
 	OS.GetObject (hFont, LOGFONT.sizeof, logFont);
 	int cs = logFont.lfCharSet & 0xFF;
-//	if (cs == OS.DEFAULT_CHARSET) return OS.CP_ACP;
 	int [] lpCs = new int [8];
-	OS.TranslateCharsetInfo (cs, lpCs, OS.TCI_SRCCHARSET);
-	return lpCs [1];
+	if (OS.TranslateCharsetInfo (cs, lpCs, OS.TCI_SRCCHARSET)) {
+		return lpCs [1];
+	}
+	return OS.GetACP ();
 }
 
 /**
@@ -1009,6 +1019,15 @@ public boolean isFocusControl () {
 	return hasFocus ();
 }
 
+public boolean isFocusAncestor () {
+	Display display = getDisplay ();
+	Control control = display.getFocusControl ();
+	while (control != null && control != this) {
+		control = control.parent;
+	}
+	return control == this;
+}
+
 /**
  * Returns <code>true</code> if the underlying operating
  * system supports this reparenting, otherwise <code>false</code>
@@ -1023,6 +1042,32 @@ public boolean isFocusControl () {
 public boolean isReparentable () {
 	checkWidget ();
 	return true;
+}
+
+boolean isShowing () {
+	/*
+	* This is not complete.  Need to check if the
+	* widget is obscurred by a parent or sibling.
+	*/
+	if (!isVisible ()) return false;
+	Control control = this;
+	while (control != null) {
+		Point size = control.getSize ();
+		if (size.x == 0 || size.y == 0) {
+			return false;
+		}
+		control = control.parent;
+	}
+	return true;
+	/*
+	* Check to see if current damage is included.
+	*/
+//	if (!OS.IsWindowVisible (handle)) return false;
+//	int flags = OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS;
+//	int hDC = OS.GetDCEx (handle, 0, flags);
+//	int result = OS.GetClipBox (hDC, new RECT ());
+//	OS.ReleaseDC (handle, hDC);
+//	return result != OS.NULLREGION;
 }
 
 boolean isTabGroup () {
@@ -1731,18 +1776,6 @@ void setDefaultFont () {
 public void setEnabled (boolean enabled) {
 	checkWidget ();
 
-	/* Enable or disable the window */
-	boolean fixFocus = false;
-	if (!enabled) {
-		Display display = getDisplay ();
-		Control control = display.getFocusControl ();
-		while (control != null && control != this) {
-			control = control.parent;
-		}
-		fixFocus = control == this;
-	}
-	OS.EnableWindow (handle, enabled);
-	
 	/*
 	* Feature in Windows.  If the receiver has focus, disabling
 	* the receiver causes no window to have focus.  The fix is
@@ -1750,12 +1783,10 @@ public void setEnabled (boolean enabled) {
 	* focus.  If no window will take focus, set focus to the
 	* desktop.
 	*/
-	if (!fixFocus) return;
-	Control control = this;
-	while ((control = control.parent) != null) {
-		if (control.setFocus () || control instanceof Shell) return;
-	}
-	OS.SetFocus (0);
+	boolean fixFocus = false;
+	if (!enabled) fixFocus = isFocusAncestor ();
+	OS.EnableWindow (handle, enabled);
+	if (fixFocus) fixFocus ();
 }
 
 /**
@@ -2063,11 +2094,7 @@ boolean setTabGroupFocus () {
 }
 
 boolean setTabItemFocus () {
-	Control [] path = getPath ();
-	for (int i=0; i<path.length; i++) {
-		Point size = path [i].getSize ();
-		if (size.x == 0 || size.y == 0) return false;
-	}
+	if (!isShowing ()) return false;
 	return setFocus ();
 }
 
@@ -2117,8 +2144,27 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 	}
+	
+	/*
+	* Feature in Windows.  If the receiver has focus, hiding
+	* the receiver causes no window to have focus.  The fix is
+	* to assign focus to the first ancestor window that takes
+	* focus.  If no window will take focus, set focus to the
+	* desktop.
+	*/
+//	boolean fixFocus = false;
+//	if (!visible) fixFocus = isFocusAncestor ();
 	OS.ShowWindow (handle, visible ? OS.SW_SHOW : OS.SW_HIDE);
-	if (!visible) sendEvent (SWT.Hide);
+	if (!visible) {
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the show
+		* event.  If this happens, just return.
+		*/
+		sendEvent (SWT.Hide);
+		if (isDisposed ()) return;
+	}
+//	if (fixFocus) fixFocus ();
 }
 
 void sort (int [] items) {
@@ -2242,7 +2288,7 @@ boolean translateTraversal (MSG msg) {
 	int hwnd = msg.hwnd;
 	int detail = 0;
 	int key = msg.wParam;
-	boolean doit = true;
+	boolean doit = true, all = false;
 	boolean lastVirtual = false;
 	int lastKey = key, lastAscii = 0;
 	switch (key) {
@@ -2271,8 +2317,7 @@ boolean translateTraversal (MSG msg) {
 			if ((code & (OS.DLGC_WANTTAB | OS.DLGC_WANTALLKEYS)) != 0) {
 				if (next && OS.GetKeyState (OS.VK_CONTROL) >= 0) doit = false;
 			}
-			detail = SWT.TRAVERSE_TAB_PREVIOUS;
-			if (next) detail = SWT.TRAVERSE_TAB_NEXT;
+			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
 		case OS.VK_UP:
@@ -2281,11 +2326,19 @@ boolean translateTraversal (MSG msg) {
 		case OS.VK_RIGHT: {
 			lastVirtual = true;
 			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
-			if ((code & OS.DLGC_WANTARROWS) != 0) doit = false;
-			detail = SWT.TRAVERSE_ARROW_PREVIOUS;
-			if (key == OS.VK_DOWN || key == OS.VK_RIGHT) {	
-				detail = SWT.TRAVERSE_ARROW_NEXT;
-			}
+			if ((code & (OS.DLGC_WANTARROWS /*| OS.DLGC_WANTALLKEYS*/)) != 0) doit = false;
+			boolean next = key == OS.VK_DOWN || key == OS.VK_RIGHT;
+			detail = next ? SWT.TRAVERSE_ARROW_NEXT : SWT.TRAVERSE_ARROW_PREVIOUS;
+			break;
+		}
+		case OS.VK_PRIOR:
+		case OS.VK_NEXT: {
+			all = true;
+			lastVirtual = true;
+			if (OS.GetKeyState (OS.VK_CONTROL) >= 0) return false;
+			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
+			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
+			detail = key == OS.VK_PRIOR ? SWT.TRAVERSE_PAGE_PREVIOUS : SWT.TRAVERSE_PAGE_NEXT;
 			break;
 		}
 		default:
@@ -2302,16 +2355,22 @@ boolean translateTraversal (MSG msg) {
 		if (!setKeyState (event, SWT.Traverse)) {
 			return false;
 		}
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the traverse
-		* event.  If this happens, return true to stop further
-		* event processing.
-		*/
-		sendEvent (SWT.Traverse, event);
-		if (isDisposed ()) return true;
-		doit = event.doit;
-		detail = event.detail;
+		Shell shell = getShell ();
+		Control control = this;
+		do {
+			/*
+			* It is possible (but unlikely), that application
+			* code could have disposed the widget in the traverse
+			* event.  If this happens, return true to stop further
+			* event processing.
+			*/	
+			control.sendEvent (SWT.Traverse, event);
+			if (control.isDisposed ()) return true;
+			doit = event.doit;
+			detail = event.detail;
+			if (control == shell) break;
+			control = control.parent;
+		} while (all && !doit);
 	}
 	if (doit) return traverse (detail);
 	return false;
@@ -2342,7 +2401,9 @@ public boolean traverse (int traversal) {
 		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
 		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
 		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
-//		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (??);	
+//		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (key);	
+		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
+		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
 	}
 	return false;
 }
@@ -2398,7 +2459,7 @@ boolean traverseItem (boolean next) {
 	* not accessed.
 	*/
 	int start = index, offset = (next) ? 1 : -1;
-	while ((index = ((index + offset) + length) % length) != start) {
+	while ((index = (index + offset + length) % length) != start) {
 		Control child = children [index];
 		if (!child.isDisposed () && child.isTabItem ()) {
 			if (child.setTabItemFocus ()) return true;
@@ -2410,6 +2471,10 @@ boolean traverseItem (boolean next) {
 boolean traverseMnemonic (char key) {
 	if (!isVisible () || !isEnabled ()) return false;
 	return mnemonicHit (key);
+}
+
+boolean traversePage (boolean next) {
+	return parent.traversePage (next);
 }
 
 boolean traverseReturn () {
