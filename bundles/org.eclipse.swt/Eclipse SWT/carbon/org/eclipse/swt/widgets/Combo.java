@@ -51,21 +51,18 @@ import org.eclipse.swt.internal.carbon.*;
  */
 public /*final*/ class Combo extends Composite {
 
-	// AW
-	private static final int FOCUS_BORDER= 3;
-	private static final int MARGIN= 2;
-	
-	private static int fgCommandID= 6000;
-
-	private int fMenuHandle;
-	private int fTextLimit= LIMIT;
-	// AW
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
 	 */
 	public static int LIMIT;
+	private static int fgCommandID= 6000;
+	private static final int FOCUS_BORDER= 3;
+	private static final int MARGIN= 2;
 
+	private int menuHandle;
+	private int textLimit= LIMIT;
+	
 	/*
 	* These values can be different on different platforms.
 	* Therefore they are not initialized in the declaration
@@ -133,10 +130,10 @@ public void add (String string) {
 	int sHandle= 0;
 	try {
 		sHandle= OS.CFStringCreateWithCharacters(string);
-		if (fMenuHandle != 0) {
-			if (OS.AppendMenuItemTextWithCFString(fMenuHandle, sHandle, 0, fgCommandID++, null) != OS.kNoErr)
+		if (menuHandle != 0) {
+			if (OS.AppendMenuItemTextWithCFString(menuHandle, sHandle, 0, fgCommandID++, null) != OS.kNoErr)
 				error (SWT.ERROR_ITEM_NOT_ADDED);
-			OS.SetControl32BitMaximum(handle, OS.CountMenuItems(fMenuHandle));	
+			OS.SetControl32BitMaximum(handle, OS.CountMenuItems(menuHandle));	
 		} else {
 			if (OS.HIComboBoxAppendTextItem(handle, sHandle) != OS.kNoErr)
 				error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -180,10 +177,10 @@ public void add (String string, int index) {
 	int sHandle= 0;
 	try {
 		sHandle= OS.CFStringCreateWithCharacters(string);
-		if (fMenuHandle != 0) {
-			if (OS.InsertMenuItemTextWithCFString(fMenuHandle, sHandle, (short)index, 0, fgCommandID++) != OS.kNoErr)
+		if (menuHandle != 0) {
+			if (OS.InsertMenuItemTextWithCFString(menuHandle, sHandle, (short)index, 0, fgCommandID++) != OS.kNoErr)
 				error (SWT.ERROR_ITEM_NOT_ADDED);
-			OS.SetControl32BitMaximum(handle, OS.CountMenuItems(fMenuHandle));	
+			OS.SetControl32BitMaximum(handle, OS.CountMenuItems(menuHandle));	
 		} else {
 			OS.HIComboBoxInsertTextItemAtIndex(handle, index, sHandle);
 		}
@@ -303,7 +300,7 @@ protected void checkSubclass () {
  */
 public void clearSelection () {
 	checkWidget();
-	if (fMenuHandle == 0)
+	if (menuHandle == 0)
 		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, new short[] { 0, 0 });
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -390,9 +387,9 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		int[] menuRef= new int[1];
 		OS.CreateNewMenu(20000, 0, menuRef);
-		fMenuHandle= menuRef[0];
-		if (fMenuHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.SetControlPopupMenuHandle(handle, fMenuHandle);
+		menuHandle= menuRef[0];
+		if (menuHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.SetControlPopupMenuHandle(handle, menuHandle);
 	} else {
 	    int[] outComboBox= new int[1];
 		OS.HIComboBoxCreate(outComboBox, OS.kHIComboBoxAutoSizeListAttribute);
@@ -609,7 +606,7 @@ public String [] getItems () {
 public Point getSelection () {
 	checkWidget();
  	Point selection= new Point(0, 0);
-	if (fMenuHandle == 0) {
+	if (menuHandle == 0) {
 		short[] s= new short[2];
 		OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
 		selection.x= (short) s[0];
@@ -630,7 +627,7 @@ public Point getSelection () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	if (fMenuHandle != 0)
+	if (menuHandle != 0)
     	return OS.GetControlValue(handle)-1;
     return indexOf(getText());
 }
@@ -647,7 +644,7 @@ public int getSelectionIndex () {
  */
 public String getText () {
 	checkWidget();
-	if (fMenuHandle != 0) {
+	if (menuHandle != 0) {
 		int index= getSelectionIndex();
 		if (index >= 0)
 			return _getItem(index);
@@ -726,7 +723,7 @@ public int getTextHeight () {
  */
 public int getTextLimit () {
 	checkWidget();
-    return fTextLimit;
+    return textLimit;
 }
 void hookEvents () {
 	super.hookEvents ();
@@ -813,12 +810,11 @@ public int indexOf (String string, int start) {
  */
 public void paste () {
 	checkWidget ();
-	if (fMenuHandle == 0) {
+	if (menuHandle == 0) {
 		Clipboard clipboard= new Clipboard(getDisplay());
 		TextTransfer textTransfer= TextTransfer.getInstance();
 		String clipBoard= (String)clipboard.getContents(textTransfer);
 		clipboard.dispose();
-		
 		_replaceTextSelection(clipBoard);
 	}
 }
@@ -846,9 +842,9 @@ public void remove (int index) {
 	if (!(0 <= index && index < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-   	if (fMenuHandle != 0) {
-		OS.DeleteMenuItems(fMenuHandle, (short)(index+1), 1);
-		OS.SetControl32BitMaximum(handle, OS.CountMenuItems(fMenuHandle));
+   	if (menuHandle != 0) {
+		OS.DeleteMenuItems(menuHandle, (short)(index+1), 1);
+		OS.SetControl32BitMaximum(handle, OS.CountMenuItems(menuHandle));
    	} else {
    		OS.HIComboBoxRemoveItemAtIndex(handle, index);
    	}
@@ -880,9 +876,9 @@ public void remove (int start, int end) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int newEnd = Math.min (end, itemCount - 1);
-	if (fMenuHandle != 0) {
-		OS.DeleteMenuItems(fMenuHandle, (short)(start+1), newEnd-start+1);
-		OS.SetControl32BitMaximum(handle, OS.CountMenuItems(fMenuHandle));
+	if (menuHandle != 0) {
+		OS.DeleteMenuItems(menuHandle, (short)(start+1), newEnd-start+1);
+		OS.SetControl32BitMaximum(handle, OS.CountMenuItems(menuHandle));
 	} else {
 		for (int i= end; i >= start; i--)
   			OS.HIComboBoxRemoveItemAtIndex(handle, i);
@@ -932,9 +928,9 @@ public void removeAll () {
 	checkWidget();
 	int itemCount= _getItemCount();
 	if (itemCount > 0) {
-		if (fMenuHandle != 0) {
-			OS.DeleteMenuItems(fMenuHandle, (short)1, itemCount);
-			OS.SetControl32BitMaximum(handle, OS.CountMenuItems(fMenuHandle));
+		if (menuHandle != 0) {
+			OS.DeleteMenuItems(menuHandle, (short)1, itemCount);
+			OS.SetControl32BitMaximum(handle, OS.CountMenuItems(menuHandle));
 		} else {
 			for (int i= itemCount-1; i >= 0; i--)
   				OS.HIComboBoxRemoveItemAtIndex(handle, i);
@@ -1008,7 +1004,7 @@ public void select (int index) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	
-	if (fMenuHandle != 0)
+	if (menuHandle != 0)
 		OS.SetControl32BitValue(handle, index+1);
 	else {
 		String string= _getItem(index);
@@ -1067,8 +1063,8 @@ public void setItem (int index, String string) {
 	int sHandle= 0;
 	try {
 		sHandle= OS.CFStringCreateWithCharacters(string);
-		if (fMenuHandle != 0) {
-			if (OS.SetMenuItemTextWithCFString(fMenuHandle, (short)(index+1), sHandle) != OS.kNoErr)
+		if (menuHandle != 0) {
+			if (OS.SetMenuItemTextWithCFString(menuHandle, (short)(index+1), sHandle) != OS.kNoErr)
 				error (SWT.ERROR_ITEM_NOT_ADDED);
 		} else {
 			OS.HIComboBoxInsertTextItemAtIndex(handle, index, sHandle);
@@ -1122,7 +1118,7 @@ public void setItems (String [] items) {
 	if (index < items.length) error (SWT.ERROR_ITEM_NOT_ADDED);
     */
 	
-	if (fMenuHandle != 0) {
+	if (menuHandle != 0) {
 		for (int i= 0; i < items.length; i++) {
 			String string= items[i];
 			if (string == null)
@@ -1130,7 +1126,7 @@ public void setItems (String [] items) {
 			int sHandle= 0;
 			try {
 				sHandle= OS.CFStringCreateWithCharacters(string);
-				if (OS.AppendMenuItemTextWithCFString(fMenuHandle, sHandle, 0, fgCommandID++, null) != OS.kNoErr)
+				if (OS.AppendMenuItemTextWithCFString(menuHandle, sHandle, 0, fgCommandID++, null) != OS.kNoErr)
 					error (SWT.ERROR_ITEM_NOT_ADDED);
 			} finally {
 				if (sHandle != 0)
@@ -1174,7 +1170,7 @@ public void setItems (String [] items) {
  */
 public void setSelection (Point selection) {
 	checkWidget();
-	if (fMenuHandle == 0) {
+	if (menuHandle == 0) {
 		short[] s= new short[] { (short)selection.x, (short)selection.y };
 		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
 	}
@@ -1246,7 +1242,7 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	fTextLimit= limit;
+	textLimit= limit;
 }
 
 ////////////////////////////////////////////////////////
@@ -1268,8 +1264,8 @@ public void setTextLimit (int limit) {
 	}
 
 	private int _getItemCount () {
-		if (fMenuHandle != 0)
-			return OS.CountMenuItems(fMenuHandle);
+		if (menuHandle != 0)
+			return OS.CountMenuItems(menuHandle);
 		return OS.HIComboBoxGetItemCount(handle);
 	}
 	
@@ -1280,8 +1276,8 @@ public void setTextLimit (int limit) {
 		}
 		int[] sHandle= new int[1];
 		int rc;
-		if (fMenuHandle != 0)
-			rc= OS.CopyMenuItemTextAsCFString(fMenuHandle, (short)(index+1), sHandle);
+		if (menuHandle != 0)
+			rc= OS.CopyMenuItemTextAsCFString(menuHandle, (short)(index+1), sHandle);
 		else
 			rc= OS.HIComboBoxCopyTextItemAtIndex(handle, index, sHandle);
 		if (rc != OS.kNoErr)

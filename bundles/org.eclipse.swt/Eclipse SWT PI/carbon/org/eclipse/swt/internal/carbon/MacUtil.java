@@ -16,14 +16,17 @@ import org.eclipse.swt.internal.Callback;
 public class MacUtil {
 
 	public final static boolean DEBUG;
+	
 	public final static boolean USE_MENU_ICONS;
+	
 	/** Prevent use of standard Mac shortcuts Cmd-Q, Cmd-H */
 	public final static boolean KEEP_MAC_SHORTCUTS;
-	public final static boolean USE_FRAME= false;
+	public final static boolean FULL_KBD_NAV;
 	
-	public final static boolean FULL_KBD_NAV= true;
-	
-	public final static boolean HIVIEW= false;
+	/** use HIViews instead of ControlManager controls */
+	public final static boolean HIVIEW;
+	/** use setFrame calls instead of setBounds */
+	public final static boolean USE_FRAME;
 	
 	static final char MNEMONIC = '&';
 		
@@ -31,6 +34,9 @@ public class MacUtil {
 		DEBUG= false;
 		USE_MENU_ICONS= true;
 		KEEP_MAC_SHORTCUTS= true;
+		FULL_KBD_NAV= true;
+		HIVIEW= false;
+		USE_FRAME= false;
 	}
 	
 	//////////////////////////////////////////////////////////////////////
@@ -143,7 +149,7 @@ public class MacUtil {
 				if (add)
 					OS.HIViewAddSubview(parentControlHandle, controlHandle);
 				if (OS.HIViewSetZOrder(controlHandle, OS.kHIViewZOrderBelow, 0) != OS.kNoErr)
-					System.out.println("eroor 2");
+					System.out.println("error 2");
 				pos= n;
 			}
 		}
@@ -279,8 +285,8 @@ public class MacUtil {
 
 	public static int findControlUnderMouse(MacPoint where, int wHandle, short[] cpart) {
 		
-		if (HIVIEW)
-			return 0;
+		//if (HIVIEW)
+		//	return 0;
 			
 		int root;
 		if (true) {

@@ -82,19 +82,6 @@ boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
 	int handle = parent.handle;
-    /* AW
-	int window = OS.XtWindow (handle);
-	if (window == 0) return false;
-	int xDisplay = OS.XtDisplay (handle);
-	int gc = OS.XCreateGC (xDisplay, window, 0, null);
-	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int foreground = argList [1];
-	int background = argList [3];
-	int color = foreground ^ background;
-	OS.XSetFunction (xDisplay, gc, OS.GXxor);
-	OS.XSetForeground (xDisplay, gc, color);
-    */
 	int nWidth = width, nHeight = height;
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
@@ -103,15 +90,12 @@ boolean drawCaret () {
 	}
 	if (nWidth <= 0) nWidth = 2;
 	
-	// AW
 	int clipRgn= OS.NewRgn();
 	MacUtil.getVisibleRegion(parent.handle, clipRgn, true);
 
 	MacRect bounds= new MacRect();
 	OS.GetControlBounds(parent.handle, bounds.getData());
 	bounds= new MacRect(x+bounds.getX(), y+bounds.getY(), nWidth, nHeight);
-	
-	//System.out.println("drawCaret: " + bounds.toRectangle());
 	
 	int caretRgn= OS.NewRgn();
 	OS.RectRgn(caretRgn, bounds.getData());
@@ -126,8 +110,6 @@ boolean drawCaret () {
 	
 	OS.DisposeRgn(clipRgn);
 	OS.DisposeRgn(caretRgn);
-	
-	// AW
 
 	return true;
 }

@@ -26,12 +26,8 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public abstract class Scrollable extends Control {
- 	int scrolledHandle /* AW , formHandle */;
- 	// AW
-	int fHScrollBar;
-	int fVScrollBar;
- 	// AW
-
+ 	int scrolledHandle /* formHandle */;
+	int hScrollBar, vScrollBar;
 	ScrollBar horizontalBar, verticalBar;
 Scrollable () {
 	/* Do nothing */
@@ -358,13 +354,13 @@ int topHandle () {
 		if ((style & SWT.H_SCROLL) != 0) {
 			int hs= MacUtil.newControl(controlHandle, (short)0, (short)0, (short)100, OS.kControlScrollBarLiveProc);
 			OS.SetControlAction(hs, display.fControlActionProc);
-			fHScrollBar= hs;
+			hScrollBar= hs;
 		}
 
 		if ((style & SWT.V_SCROLL) != 0) {
 			int vs= MacUtil.newControl(controlHandle, (short)0, (short)0, (short)100, OS.kControlScrollBarLiveProc);
 			OS.SetControlAction(vs, display.fControlActionProc);
-			fVScrollBar= vs;
+			vScrollBar= vs;
 		}
 				
 		return controlHandle;
@@ -381,12 +377,12 @@ int topHandle () {
 	
 	void relayout123() {
 		if (MacUtil.HIVIEW)
-			relayout123new();
+			newRelayout();
 		else
-			relayout123old();
+			oldRelayout();
 	}
 	
-	private void relayout123new() {
+	private void newRelayout() {
 		
 		int hndl= scrolledHandle;
 		if (hndl == 0)
@@ -396,8 +392,6 @@ int topHandle () {
 		OS.GetControlBounds(hndl, bounds.getData());
 		
 		boolean visible= OS.IsControlVisible(hndl);
-		
-		System.out.println("relayout123new: " + bounds.toRectangle());
 		
 		int x= 0; // bounds.getX();
 		int y= 0; // bounds.getY();
@@ -410,7 +404,7 @@ int topHandle () {
 		int style= getStyle();
 
 		if (ww < 0 || hh < 0) {
-			System.out.println("******* Scrollable.relayout123: " + ww + " " + hh);
+			System.out.println("******* Scrollable.newRelayout: " + ww + " " + hh);
 			return;
 		}
 		
@@ -448,7 +442,7 @@ int topHandle () {
 		//	OS.InvalWindowRect(OS.GetControlOwner(handle), new MacRect(x+w-s, y+h-s, s, s).getData());
 	}
 	
-	private void relayout123old() {
+	private void oldRelayout() {
 		
 		int hndl= scrolledHandle;
 		if (hndl == 0)
@@ -470,7 +464,7 @@ int topHandle () {
 		int style= getStyle();
 
 		if (ww < 0 || hh < 0) {
-			System.out.println("******* Scrollable.relayout123: " + ww + " " + hh);
+			System.out.println("******* Scrollable.oldRelayout: " + ww + " " + hh);
 			return;
 		}
 		
@@ -497,10 +491,10 @@ int topHandle () {
 		}
 
 		if (hsb != null)
-			OS.SetControlBounds(hsb.handle, new MacRect(x, y+h-s, ww, s).getData());
+			hsb.internalSetBounds(new MacRect(x, y+h-s, ww, s));
 			
 		if (vsb != null)
-			OS.SetControlBounds(vsb.handle, new MacRect(x+w-s, y, s, hh).getData());
+			vsb.internalSetBounds(new MacRect(x+w-s, y, s, hh));
 		
 		OS.SetControlBounds(handle, new MacRect(x, y, ww, hh).getData());
 		

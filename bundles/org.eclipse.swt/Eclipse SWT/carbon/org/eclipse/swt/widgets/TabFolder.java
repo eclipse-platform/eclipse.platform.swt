@@ -36,16 +36,12 @@ import org.eclipse.swt.internal.carbon.*;
  * </p>
  */
 public class TabFolder extends Composite {
-	TabItem [] items;
-	// AW
+	
 	private static final int TAB_HEIGHT= 32;
 	private static final int MARGIN= 6;
-	private int fOldValue;
-	// AW
-	/* AW
-	ImageList imageList;
-	static final int TabFolderProc;
-	*/
+	
+	TabItem [] items;
+	private int oldValue;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -228,10 +224,6 @@ void destroyItem (TabItem item) {
 		index++;
 	}
 	if (index == count) return;	// not found
-	//System.out.println("removing tab item: " + index + " count: " + count);
-	/* AW
-	int selectionIndex = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
-	*/
 	int selectionIndex = OS.GetControl32BitValue(handle)-1;
 	
 	/* AW
@@ -603,19 +595,17 @@ boolean traversePage (boolean next) {
 
 int processSelection (Object callData) {
 	MacControlEvent macEvent= (MacControlEvent) callData;
-	//System.out.println("mouseDown: " + macEvent.isMouseDown() + " " + (macEvent.getPartCode()-1));
 	if (!macEvent.isMouseDown())
 		handleSelectionChange(macEvent.getPartCode()-1);
 	else
-		fOldValue= OS.GetControl32BitValue(handle)-1;
+		oldValue= OS.GetControl32BitValue(handle)-1;
 	return 0;
 }
 
 private void handleSelectionChange(int newValue)  {
 
 	TabItem item = null;
-	//int index= OS.GetControl32BitValue(handle)-1;
-	int index= fOldValue;
+	int index= oldValue;
 
 	if (index != -1) item = items [index];
 	if (item != null) {
@@ -641,16 +631,12 @@ private void handleSelectionChange(int newValue)  {
 }
 
 private void updateCarbon(int startIndex) {
-	//System.out.println("updateCarbon: " + startIndex);
 	int n= OS.GetControl32BitMaximum(handle);
 	for (int i= startIndex; i < n; i++) {
 		TabItem item= items[i];
-		if (item != null) {
+		if (item != null)
 			setTabText(i, item.getText());
-			//setTabImage(i, item.getImage());
-		}
 	}
-	//redraw();
 }
 
 void setTabText(int index, String string) {

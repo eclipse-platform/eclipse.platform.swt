@@ -32,10 +32,9 @@ import org.eclipse.swt.*;
  * </p>
  */
 public /*final*/ class Group extends Composite {
-	// AW
+
 	private static final int LABEL_HEIGHT= 20;
 	private static final int MARGIN= 4;
-	// AW
 
 /**
  * Constructs a new instance of this class given its parent
@@ -117,20 +116,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
-
-	/*
-	* Feature in Motif.  When a widget is managed or unmanaged,
-	* it may request and be granted, a new size in the OS.  This
-	* behavior is unwanted.  The fix is to create a parent for
-	* the list that will disallow geometry requests.
-	*/
-    /* AW
-	int border = (style & SWT.BORDER) != 0 ? 1 : 0;
-	int [] argList1 = {
-		OS.XmNancestorSensitive, 1,
-		OS.XmNborderWidth, border,
-	};
-    */
 	int parentHandle = parent.handle;
     /*
 	formHandle = OS.XmCreateForm (parentHandle, null, argList1, argList1.length / 2);

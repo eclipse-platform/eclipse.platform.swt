@@ -2142,8 +2142,8 @@ static String convertToLf(String text) {
 				Widget w= findWidget(fCurrentControl);
 				if (w instanceof Control) {
 					Control c= (Control) w;
-					if (c.fCursor != null)
-						c.fCursor.install(this);	
+					if (c.cursor != null)
+						c.cursor.install(this);	
 					else
 						setCursor(0);		
 				} else

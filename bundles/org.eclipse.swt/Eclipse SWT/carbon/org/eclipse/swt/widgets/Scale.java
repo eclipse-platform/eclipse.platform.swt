@@ -31,8 +31,10 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public /*final*/ class Scale extends Control {
-	private int fIncrement= 1;	// AW
-	private int fPageIncrement= 10;	// AW
+	
+	private int increment= 1;
+	private int pageIncrement= 10;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -125,10 +127,7 @@ void createHandle (int index) {
 	};
     */
 	int parentHandle = parent.handle;
-    /* AW
-	handle = OS.XmCreateScale (parentHandle, null, argList, argList.length / 2);
-    */
-	short procID= OS.kControlSliderProc + OS.kControlSliderLiveFeedback + OS.kControlSliderNonDirectional;
+ 	short procID= (short)(OS.kControlSliderProc + OS.kControlSliderLiveFeedback + OS.kControlSliderNonDirectional);
     handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, procID);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
@@ -147,7 +146,7 @@ void createHandle (int index) {
  */
 public int getIncrement () {
 	checkWidget();
-	return fIncrement;
+	return increment;
 }
 /**
  * Returns the maximum value which the receiver will allow.
@@ -191,7 +190,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget();
-    return fPageIncrement;
+    return pageIncrement;
 }
 /**
  * Returns the single <em>selection</em> that is the receiver's position.
@@ -284,7 +283,7 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
-	fIncrement= value;
+	increment= value;
 }
 /**
  * Sets the maximum value which the receiver will allow
@@ -340,7 +339,7 @@ public void setMinimum (int value) {
 public void setPageIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
-	fPageIncrement= value;
+	pageIncrement= value;
 }
 /**
  * Sets the single <em>selection</em> that is the receiver's
