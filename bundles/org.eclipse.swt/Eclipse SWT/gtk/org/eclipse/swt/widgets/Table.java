@@ -768,6 +768,7 @@ public int getItemHeight () {
 		OS.gtk_cell_renderer_get_size (renderer, handle, null, null, null, w, h);
 		return h [0];
 	}
+	OS.gtk_widget_realize (handle);
 	GdkRectangle rect = new GdkRectangle ();
 	int path = OS.gtk_tree_path_new_first ();
 	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
