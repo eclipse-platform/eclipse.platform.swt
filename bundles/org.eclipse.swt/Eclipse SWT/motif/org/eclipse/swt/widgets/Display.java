@@ -114,6 +114,7 @@ public class Display extends Device {
 	Color COLOR_INFO_BACKGROUND;
 	
 	/* Initial Guesses for Shell Trimmings. */
+	int titleHeight = 20;
 	int borderTrimWidth = 4, borderTrimHeight = 4;
 	int resizeTrimWidth = 6, resizeTrimHeight = 6;
 	int titleBorderTrimWidth = 5, titleBorderTrimHeight = 28;
