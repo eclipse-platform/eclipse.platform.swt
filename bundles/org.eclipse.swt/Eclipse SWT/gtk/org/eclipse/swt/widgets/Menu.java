@@ -443,8 +443,9 @@ int processHide (int int0, int int1, int int2) {
 }
 
 int processShow (int int0, int int1, int int2) {
-	if ((style & SWT.BAR) == 0) parent.createAccelGroup ();
 	sendEvent (SWT.Show);
+	if ((style & SWT.BAR) != 0) return 0;
+	parent.createAccelGroup ();
 	return 0;
 }
 
