@@ -750,14 +750,12 @@ public void drawPolyline(int[] pointArray) {
 	for (int i = pointArray.length - 1; i >= 0; i--) {
 		points[i] = (short)pointArray[i];
 	}
-	PhPoint_t pos = new PhPoint_t();
-	pos.x = 0; pos.y = 0;
 	
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
 		setGCClipping();
-		OS.PgDrawPolygon(points, pointArray.length / 2,	pos, OS.Pg_DRAW_STROKE);
+		OS.PgDrawPolygon(points, pointArray.length / 2,	new PhPoint_t(), OS.Pg_DRAW_STROKE);
 		unsetGC(prevContext);
 	} finally {
 		if (flags >= 0) OS.PtLeave(flags);
