@@ -17,12 +17,13 @@ import org.eclipse.swt.internal.carbon.*;
  * can be drawn on by sending messages to the associated GC.
  */
 public abstract class Device implements Drawable {
+	
 	/**
-	* the handle to the X Display
-	* (Warning: This field is platform dependent)
-	*/
-	public int xDisplay;
-		
+	 * the handle to the GDevice
+	 * (Warning: This field is platform dependent)
+	 */
+	public int fGDeviceHandle;	
+
 	/* Debugging */
 	public static boolean DEBUG;
 	boolean debug = DEBUG;
@@ -107,14 +108,10 @@ public Device(DeviceData data) {
 	Font font = getSystemFont ();
 	//FontData fd = font.getFontData ()[0];
 	systemFont = font.handle;
-	/* AW
-	characterSetName = fd.characterSetName;
-	characterSetRegistry = fd.characterSetRegistry;
-	*/
 }
 
 protected void checkDevice () {
-	if (xDisplay == 0) SWT.error (SWT.ERROR_DEVICE_DISPOSED);
+	if (fGDeviceHandle == 0) SWT.error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
 protected void create (DeviceData data) {
@@ -138,7 +135,7 @@ public void dispose () {
 	checkDevice ();
 	release ();
 	destroy ();
-	xDisplay = 0;
+	fGDeviceHandle= 0;
 	if (tracking) {
 		objects = null;
 		errors = null;
@@ -168,12 +165,11 @@ public Rectangle getBounds () {
 	checkDevice ();
 	
 	MacRect bounds= new MacRect();
-	int bitmapHandle= OS.NewBitMap((short)0, (short)0, (short)0);
-	int bitmap= OS.DerefHandle(bitmapHandle);
-	OS.GetQDGlobalsScreenBits(bitmap);
-	System.out.println("rowbytes: " + Integer.toHexString(OS.getRowBytes(bitmapHandle)));
-	OS.GetPixBounds(bitmapHandle, bounds.getData());
-	Image.disposeBitmapOrPixmap(bitmapHandle);
+	if (fGDeviceHandle != 0) {
+		int pm= OS.getgdPMap(fGDeviceHandle);
+		if (pm != 0)
+			OS.GetPixBounds(pm, bounds.getData());
+	}
 	return bounds.toRectangle();
 }
 
@@ -283,6 +279,12 @@ public Point getDPI () {
 	int y = (int)((height / inchesY) + 0.5);
 	return new Point (x, y);
 	*/
+	
+	if (fGDeviceHandle != 0) {
+		int pm= OS.getgdPMap(fGDeviceHandle);
+		if (pm != 0)
+			return new Point(OS.getPixHRes(pm) >> 16, OS.getPixVRes(pm) >> 16);
+	}
 	return new Point(72, 72);
 }
 
@@ -392,7 +394,7 @@ public Color getSystemColor (int id) {
 	if (xColor == null) return COLOR_BLACK;
 	return Color.motif_new (this, xColor);
 	*/
-	return Color.carbon_new(this, 0x000000);
+	return Color.carbon_new(this, 0x000000, false);
 }
 
 /**
@@ -438,43 +440,35 @@ public boolean getWarnings () {
 
 protected void init () {
 
-	// AW
-	int gdh= OS.GetMainDevice();
-	if (gdh != 0) {
-		for (int i= 32; i > 0; i--) {
-			if (OS.HasDepth(gdh, (short)i, (short)0, (short)1) == i) {
-				fScreenDepth= i;
-				//System.out.println("screendepth: " + fScreenDepth);
-				break;
-			}
-		}
+	if (fGDeviceHandle != 0) {
+		int pm= OS.getgdPMap(fGDeviceHandle);
+		if (pm != 0)
+			fScreenDepth= OS.GetPixDepth(pm);
 	}
 	if (fScreenDepth == 0)
 		fScreenDepth= 32;	// a guess
-
-	// AW
 	
 	/*
 	* The following colors are listed in the Windows
 	* Programmer's Reference as the colors in the default
 	* palette.
 	*/
-	COLOR_BLACK = 		Color.carbon_new(this, 0x000000);
-	COLOR_DARK_RED = 	Color.carbon_new(this, 0x800000);
-	COLOR_DARK_GREEN = 	Color.carbon_new(this, 0x008000);
-	COLOR_DARK_YELLOW = Color.carbon_new(this, 0x808000);
-	COLOR_DARK_BLUE = 	Color.carbon_new(this, 0x000080);
-	COLOR_DARK_MAGENTA =Color.carbon_new(this, 0x800080);
-	COLOR_DARK_CYAN = 	Color.carbon_new(this, 0x008080);
-	COLOR_GRAY = 		Color.carbon_new(this, 0xC0C0C0);
-	COLOR_DARK_GRAY = 	Color.carbon_new(this, 0x808080);
-	COLOR_RED = 		Color.carbon_new(this, 0xFF0000);
-	COLOR_GREEN = 		Color.carbon_new(this, 0x00FF00);
-	COLOR_YELLOW = 		Color.carbon_new(this, 0xFFFF00);
-	COLOR_BLUE = 		Color.carbon_new(this, 0x0000FF);
-	COLOR_MAGENTA = 	Color.carbon_new(this, 0xFF00FF);
-	COLOR_CYAN = 		Color.carbon_new(this, 0x00FFFF);
-	COLOR_WHITE = 		Color.carbon_new(this, 0xFFFFFF);
+	COLOR_BLACK = 		Color.carbon_new(this, 0x000000, true);
+	COLOR_DARK_RED = 	Color.carbon_new(this, 0x800000, true);
+	COLOR_DARK_GREEN = 	Color.carbon_new(this, 0x008000, true);
+	COLOR_DARK_YELLOW = Color.carbon_new(this, 0x808000, true);
+	COLOR_DARK_BLUE = 	Color.carbon_new(this, 0x000080, true);
+	COLOR_DARK_MAGENTA =Color.carbon_new(this, 0x800080, true);
+	COLOR_DARK_CYAN = 	Color.carbon_new(this, 0x008080, true);
+	COLOR_GRAY = 		Color.carbon_new(this, 0xC0C0C0, true);
+	COLOR_DARK_GRAY = 	Color.carbon_new(this, 0x808080, true);
+	COLOR_RED = 		Color.carbon_new(this, 0xFF0000, true);
+	COLOR_GREEN = 		Color.carbon_new(this, 0x00FF00, true);
+	COLOR_YELLOW = 		Color.carbon_new(this, 0xFFFF00, true);
+	COLOR_BLUE = 		Color.carbon_new(this, 0x0000FF, true);
+	COLOR_MAGENTA = 	Color.carbon_new(this, 0xFF00FF, true);
+	COLOR_CYAN = 		Color.carbon_new(this, 0x00FFFF, true);
+	COLOR_WHITE = 		Color.carbon_new(this, 0xFFFFFF, true);
 }
 
 /**	 
@@ -522,7 +516,7 @@ public abstract void internal_dispose_GC (int handle, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	return xDisplay == 0;
+	return fGDeviceHandle == 0;
 }
 	
 void new_Object (Object object) {
