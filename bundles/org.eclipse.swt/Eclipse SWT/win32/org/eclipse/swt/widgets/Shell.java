@@ -1283,7 +1283,6 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 					return new LRESULT (OS.MA_NOACTIVATE);
 				}
 			}
-			break;
 		}
 	}
 	if (hittest == OS.HTMENU) return null;
