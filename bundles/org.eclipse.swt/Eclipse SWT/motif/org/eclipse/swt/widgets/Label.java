@@ -391,17 +391,11 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;
 	
-	/*
-	 * Strip out mnemonic marker symbols, and remember the mnemonic.
-	 * Also check for lf's while we're at it, to help with Solaris bug
-	 * described down below.
-	 */
-	boolean hasLf = false;
+	/* Strip out mnemonic marker symbols, and remember the mnemonic. */
 	char [] unicode = new char [string.length ()];
 	string.getChars (0, unicode.length, unicode, 0);
 	int i=0, j=0, mnemonic=0;
 	while (i < unicode.length) {
-		if (unicode [i] == '\n') hasLf = true;
 		if ((unicode [j++] = unicode [i++]) == Mnemonic) {
 			if (i == unicode.length) {continue;}
 			if (unicode [i] == Mnemonic) {i++; continue;}
@@ -425,7 +419,7 @@ public void setText (String string) {
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		int width = argList [3] - argList [5] - argList [7] - argList [9] * 2 - argList [11] * 2;
 		Display display = getDisplay ();
-		if (mnemonic != 0) string = new String(unicode);
+		if (mnemonic != 0) string = new String (unicode);
 		string = display.wrapText (string, argList [1], width);
 		buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	} else {
@@ -442,20 +436,20 @@ public void setText (String string) {
 		parseTable.length,
 		0);
 	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	
+		
 	/*
-	 * Bug in Solaris.  If a mnemonic is defined to be a character
-	 * that only appears in a string in a position that follows
-	 * a newline character then Solaris GP's since it
-	 * does not find an instance of the letter to underline in
-	 * the first display line.  For example, a label with text
-	 * "Hello\nthe&re" would GP since "r" does not appear in "Hello".
-	 *
-	 * The fix is to remove mnemonics from labels that contain
-	 * newlines, which is fine since such labels generally just act
-	 * as descriptive texts anyways.
-	 */ 
-	if (mnemonic == 0 || hasLf) mnemonic = OS.XK_VoidSymbol;
+	* Bug in Solaris.  If a mnemonic is defined to be a character
+	* that appears in a string in a position that follows a '\n',
+	* Solaris segment faults.  For example, a label with text
+	* "Hello\nthe&re" would GP since "r" appears after '\n'.
+	*
+	* The fix is to remove mnemonics from labels that contain
+	* '\n', which is fine since such labels generally just act
+	* as descriptive texts anyways.
+	*/ 
+	if (mnemonic == 0 || string.indexOf ('\n') != -1) {
+		mnemonic = OS.XK_VoidSymbol;
+	}
 	int [] argList = {
 		OS.XmNlabelType, OS.XmSTRING,
 		OS.XmNlabelString, xmString,
