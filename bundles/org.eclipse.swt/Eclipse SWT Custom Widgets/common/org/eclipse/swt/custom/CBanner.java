@@ -173,7 +173,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 		w += curve_width - 2*curve_indent;
 		h +=  BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
 	}
-	h += Math.max(leftSize.y, rightSize.y); 
+	h += left != null ? leftSize.y : rightSize.y;
 	
 	if (wHint != SWT.DEFAULT) w = wHint;
 	if (hHint != SWT.DEFAULT) h = hHint;
