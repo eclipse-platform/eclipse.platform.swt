@@ -185,8 +185,8 @@ void hookEvents () {
 	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
 	OS.gtk_widget_add_events (paintHandle, paintMask);
 	OS.g_signal_connect (paintHandle, OS.expose_event, windowProc3, -EXPOSE_EVENT);
+	OS.g_signal_connect (paintHandle, OS.visibility_notify_event, windowProc3, VISIBILITY_NOTIFY_EVENT);
 	OS.g_signal_connect_after (paintHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
-	OS.g_signal_connect_after (paintHandle, OS.visibility_notify_event, windowProc3, VISIBILITY_NOTIFY_EVENT);
 
 	/* Connect the Input Method signals */
 	OS.g_signal_connect_after (handle, OS.realize, windowProc2, REALIZE);
@@ -1916,6 +1916,12 @@ int /*long*/ gtk_visibility_notify_event (int /*long*/ widget, int /*long*/ even
 	if (gdkEvent.state == OS.GDK_VISIBILITY_FULLY_OBSCURED) {
 		state |= OBSCURED;
 	} else {
+		if ((state & OBSCURED) != 0) {
+			int /*long*/ paintHandle = paintHandle ();
+			int width = OS.GTK_WIDGET_WIDTH (paintHandle);
+			int height = OS.GTK_WIDGET_HEIGHT (paintHandle);
+			redrawWidget (0, 0, width, height, false);
+		}
 		state &= ~OBSCURED;
 	}
 	return 0;
