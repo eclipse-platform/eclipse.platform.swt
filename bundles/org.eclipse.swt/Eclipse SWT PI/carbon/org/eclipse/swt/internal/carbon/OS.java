@@ -289,6 +289,8 @@ public class OS {
 	public static final int kEventParamOriginalBounds = ('o'<<24) + ('r'<<16) + ('c'<<8) + 't';
 	public static final int kEventParamRgnHandle =  ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
 	public static final int kEventParamTextInputSendText = ('t'<<24) + ('s'<<16) + ('t'<<8) + 'x';
+	public static final int kEventParamTextInputSendKeyboardEvent = ('t'<<24) + ('s'<<16) + ('k'<<8) + 'e';
+	public static final int kEventParamKeyUnicodes= ('k'<<24) + ('u'<<16) + ('n'<<8) + 'i';
 	public static final int kEventParamWindowDefPart = ('w'<<24) + ('d'<<16) + ('p'<<8) + 'c';
 	public static final int kEventParamWindowMouseLocation = ('w'<<24) + ('m'<<16) + ('o'<<8) + 'u';
 	public static final int kEventParamWindowRef = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
@@ -558,6 +560,7 @@ public class OS {
 	public static final int typeChar = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
 	public static final int typeControlPartCode = ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
 	public static final int typeControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
+	public static final int typeEventRef = ('e'<<24) + ('v'<<16) + ('r'<<8) + 'f';
 	public static final int typeFileURL= ('f'<<24) + ('u'<<16) + ('r'<<8) + 'l';	
 	public static final int typeFSRef = ('f'<<24) + ('s'<<16) + ('r'<<8) + 'f';
 	public static final int typeHICommand = ('h'<<24) + ('c'<<16) + ('m'<<8) + 'd';
