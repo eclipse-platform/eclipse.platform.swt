@@ -512,9 +512,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 	}
 	gc.dispose();
-	if (showMax) tabW += BUTTON_SIZE;
-	if (showMin) tabW += BUTTON_SIZE;
-	if (single) tabW += 3*BUTTON_SIZE/2; //chevron
+	if (showMax) tabW += BUTTON_SIZE + 3;
+	if (showMin) tabW += BUTTON_SIZE + 3;
+	if (single) tabW += 3*BUTTON_SIZE/2 + 3; //chevron
 	if (topRight != null) tabW += topRight.computeSize(SWT.DEFAULT, tabHeight).x;
 	
 	int controlW = 0;
