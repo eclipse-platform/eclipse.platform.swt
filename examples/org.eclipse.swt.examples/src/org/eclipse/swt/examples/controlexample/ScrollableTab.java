@@ -27,17 +27,17 @@ abstract class ScrollableTab extends Tab {
 	
 		/* Create the extra widgets */
 		singleButton = new Button (styleGroup, SWT.RADIO);
-		singleButton.setText (ControlExample.getResourceString("SWT_SINGLE"));
+		singleButton.setText ("SWT.SINGLE");
 		multiButton = new Button (styleGroup, SWT.RADIO);
-		multiButton.setText (ControlExample.getResourceString("SWT_MULTI"));
+		multiButton.setText ("SWT.MULTI");
 		horizontalButton = new Button (styleGroup, SWT.CHECK);
-		horizontalButton.setText (ControlExample.getResourceString("SWT_H_SCROLL"));
+		horizontalButton.setText ("SWT.H_SCROLL");
 		horizontalButton.setSelection(true);
 		verticalButton = new Button (styleGroup, SWT.CHECK);
-		verticalButton.setText (ControlExample.getResourceString("SWT_V_SCROLL"));
+		verticalButton.setText ("SWT.V_SCROLL");
 		verticalButton.setSelection(true);
 		borderButton = new Button (styleGroup, SWT.CHECK);
-		borderButton.setText (ControlExample.getResourceString("SWT_BORDER"));
+		borderButton.setText ("SWT.BORDER");
 	}
 	
 	/**

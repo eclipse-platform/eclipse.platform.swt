@@ -117,17 +117,17 @@ class ButtonTab extends AlignableTab {
 	
 		/* Create the extra widgets */
 		pushButton = new Button (styleGroup, SWT.RADIO);
-		pushButton.setText(ControlExample.getResourceString("SWT_PUSH"));
+		pushButton.setText("SWT.PUSH");
 		checkButton = new Button (styleGroup, SWT.RADIO);
-		checkButton.setText (ControlExample.getResourceString("SWT_CHECK"));
+		checkButton.setText ("SWT.CHECK");
 		radioButton = new Button (styleGroup, SWT.RADIO);
-		radioButton.setText (ControlExample.getResourceString("SWT_RADIO"));
+		radioButton.setText ("SWT.RADIO");
 		toggleButton = new Button (styleGroup, SWT.RADIO);
-		toggleButton.setText (ControlExample.getResourceString("SWT_TOGGLE"));
+		toggleButton.setText ("SWT.TOGGLE");
 		arrowButton = new Button (styleGroup, SWT.RADIO);
-		arrowButton.setText (ControlExample.getResourceString("SWT_ARROW"));
+		arrowButton.setText ("SWT.ARROW");
 		borderButton = new Button (styleGroup, SWT.CHECK);
-		borderButton.setText (ControlExample.getResourceString("SWT_BORDER"));
+		borderButton.setText ("SWT.BORDER");
 	}
 	
 	/**

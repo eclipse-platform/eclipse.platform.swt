@@ -80,7 +80,7 @@ class TextTab extends ScrollableTab {
 	
 		/* Create the extra widgets */
 		readOnlyButton = new Button (styleGroup, SWT.CHECK);
-		readOnlyButton.setText (ControlExample.getResourceString("SWT_READ_ONLY"));
+		readOnlyButton.setText ("SWT.READ_ONLY");
 	}
 	
 	/**

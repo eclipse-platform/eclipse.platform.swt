@@ -86,19 +86,19 @@ class LabelTab extends AlignableTab {
 		
 		/* Create the extra widgets */
 		separatorButton = new Button (styleGroup, SWT.CHECK);
-		separatorButton.setText (ControlExample.getResourceString("SWT_SEPARATOR"));
+		separatorButton.setText ("SWT.SEPARATOR");
 		horizontalButton = new Button (styleGroup, SWT.RADIO);
-		horizontalButton.setText (ControlExample.getResourceString("SWT_HORIZONTAL"));
+		horizontalButton.setText ("SWT.HORIZONTAL");
 		verticalButton = new Button (styleGroup, SWT.RADIO);
-		verticalButton.setText (ControlExample.getResourceString("SWT_VERTICAL"));
+		verticalButton.setText ("SWT.VERTICAL");
 		Group styleSubGroup = new Group (styleGroup, SWT.NULL);
 		styleSubGroup.setLayout (new GridLayout ());
 		shadowInButton = new Button (styleSubGroup, SWT.RADIO);
-		shadowInButton.setText (ControlExample.getResourceString("SWT_SHADOW_IN"));
+		shadowInButton.setText ("SWT.SHADOW_IN");
 		shadowOutButton = new Button (styleSubGroup, SWT.RADIO);
-		shadowOutButton.setText (ControlExample.getResourceString("SWT_SHADOW_OUT"));
+		shadowOutButton.setText ("SWT.SHADOW_OUT");
 		borderButton = new Button(styleGroup, SWT.CHECK);
-		borderButton.setText(ControlExample.getResourceString("SWT_BORDER"));
+		borderButton.setText("SWT.BORDER");
 	
 		/* Add the listeners */
 		SelectionListener selectionListener = new SelectionAdapter () {

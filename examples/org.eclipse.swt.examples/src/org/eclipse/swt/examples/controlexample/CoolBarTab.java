@@ -52,20 +52,20 @@ class CoolBarTab extends Tab {
 		ToolBar toolBar = new ToolBar (coolBar, toolBarStyle);
 		ToolItem item = new ToolItem (toolBar, SWT.PUSH);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_PUSH"));
+		item.setToolTipText ("SWT.PUSH");
 		item = new ToolItem (toolBar, SWT.PUSH);
 		item.setImage (instance.images[ControlExample.ciOpenFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_PUSH"));
+		item.setToolTipText ("SWT.PUSH");
 		item = new ToolItem (toolBar, SWT.PUSH);
 		item.setImage (instance.images[ControlExample.ciTarget]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_PUSH"));
+		item.setToolTipText ("SWT.PUSH");
 		item = new ToolItem (toolBar, SWT.SEPARATOR);
 		item = new ToolItem (toolBar, SWT.PUSH);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_PUSH"));
+		item.setToolTipText ("SWT.PUSH");
 		item = new ToolItem (toolBar, SWT.PUSH);
 		item.setImage (instance.images[ControlExample.ciOpenFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_PUSH"));		
+		item.setToolTipText ("SWT.PUSH");		
 		pushItem = new CoolItem (coolBar, SWT.NULL);
 		pushItem.setControl (toolBar);
 		Point pushSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -76,11 +76,11 @@ class CoolBarTab extends Tab {
 		toolBar = new ToolBar (coolBar, toolBarStyle);
 		item = new ToolItem (toolBar, SWT.DROP_DOWN);
 		item.setImage (instance.images[ControlExample.ciOpenFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_DROP_DOWN"));
+		item.setToolTipText ("SWT.DROP_DOWN");
 		item.addSelectionListener (new DropDownSelectionListener());
 		item = new ToolItem (toolBar, SWT.DROP_DOWN);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_DROP_DOWN"));
+		item.setToolTipText ("SWT.DROP_DOWN");
 		item.addSelectionListener (new DropDownSelectionListener());
 		dropDownItem = new CoolItem (coolBar, SWT.NULL);
 		dropDownItem.setControl (toolBar);
@@ -92,13 +92,13 @@ class CoolBarTab extends Tab {
 		toolBar = new ToolBar (coolBar, toolBarStyle);
 		item = new ToolItem (toolBar, SWT.RADIO);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_RADIO"));
+		item.setToolTipText ("SWT.RADIO");
 		item = new ToolItem (toolBar, SWT.RADIO);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_RADIO"));
+		item.setToolTipText ("SWT.RADIO");
 		item = new ToolItem (toolBar, SWT.RADIO);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_RADIO"));
+		item.setToolTipText ("SWT.RADIO");
 		radioItem = new CoolItem (coolBar, SWT.NULL);
 		radioItem.setControl (toolBar);
 		Point radioSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -109,16 +109,16 @@ class CoolBarTab extends Tab {
 		toolBar = new ToolBar (coolBar, toolBarStyle);
 		item = new ToolItem (toolBar, SWT.CHECK);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_CHECK"));
+		item.setToolTipText ("SWT.CHECK");
 		item = new ToolItem (toolBar, SWT.CHECK);
 		item.setImage (instance.images[ControlExample.ciTarget]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_CHECK"));
+		item.setToolTipText ("SWT.CHECK");
 		item = new ToolItem (toolBar, SWT.CHECK);
 		item.setImage (instance.images[ControlExample.ciOpenFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_CHECK"));
+		item.setToolTipText ("SWT.CHECK");
 		item = new ToolItem (toolBar, SWT.CHECK);
 		item.setImage (instance.images[ControlExample.ciTarget]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_CHECK"));
+		item.setToolTipText ("SWT.CHECK");
 		checkItem = new CoolItem (coolBar, SWT.NULL);
 		checkItem.setControl (toolBar);
 		Point checkSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -159,7 +159,7 @@ class CoolBarTab extends Tab {
 	
 		/* Create the extra widget */
 		borderButton = new Button (styleGroup, SWT.CHECK);
-		borderButton.setText (ControlExample.getResourceString("SWT_BORDER"));
+		borderButton.setText ("SWT.BORDER");
 	}
 	
 	/**

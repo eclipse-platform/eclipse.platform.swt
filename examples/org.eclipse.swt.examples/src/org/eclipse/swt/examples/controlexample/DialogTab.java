@@ -156,25 +156,25 @@ class DialogTab extends Tab {
 			 */
 			switch (result) {
 				case SWT.OK:
-					textWidget.append (instance.getResourceString("Result") + instance.getResourceString("SWT_OK"));
+					textWidget.append (instance.getResourceString("Result") + "SWT.OK");
 					break;
 				case SWT.YES:
-					textWidget.append (instance.getResourceString("Result") + instance.getResourceString("SWT_YES"));
+					textWidget.append (instance.getResourceString("Result") + "SWT.YES");
 					break;
 				case SWT.NO:
-					textWidget.append (instance.getResourceString("Result") + instance.getResourceString("SWT_NO"));
+					textWidget.append (instance.getResourceString("Result") + "SWT.NO");
 					break;
 				case SWT.CANCEL:
-					textWidget.append (instance.getResourceString("Result") + instance.getResourceString("SWT_CANCEL"));
+					textWidget.append (instance.getResourceString("Result") + "SWT.CANCEL");
 					break;
 				case SWT.ABORT: 
-					textWidget.append (instance.getResourceString("Result") + instance.getResourceString("SWT_ABORT"));
+					textWidget.append (instance.getResourceString("Result") + "SWT.ABORT");
 					break;
 				case SWT.RETRY:
-					textWidget.append (instance.getResourceString("Result") + instance.getResourceString("SWT_RETRY"));
+					textWidget.append (instance.getResourceString("Result") + "SWT.RETRY");
 					break;
 				case SWT.IGNORE:
-					textWidget.append (instance.getResourceString("Result") + instance.getResourceString("SWT_IGNORE"));
+					textWidget.append (instance.getResourceString("Result") + "SWT.IGNORE");
 					break;
 				default:
 					textWidget.append(instance.getResourceString("Result") + result);
@@ -243,19 +243,19 @@ class DialogTab extends Tab {
 	
 		/* Create the button style buttons */
 		okButton = new Button (buttonStyleGroup, SWT.CHECK);
-		okButton.setText (instance.getResourceString("SWT_OK"));
+		okButton.setText ("SWT.OK");
 		cancelButton = new Button (buttonStyleGroup, SWT.CHECK);
-		cancelButton.setText (instance.getResourceString("SWT_CANCEL"));
+		cancelButton.setText ("SWT.CANCEL");
 		yesButton = new Button (buttonStyleGroup, SWT.CHECK);
-		yesButton.setText (instance.getResourceString("SWT_YES"));
+		yesButton.setText ("SWT.YES");
 		noButton = new Button (buttonStyleGroup, SWT.CHECK);
-		noButton.setText (instance.getResourceString("SWT_NO"));
+		noButton.setText ("SWT.NO");
 		retryButton = new Button (buttonStyleGroup, SWT.CHECK);
-		retryButton.setText (instance.getResourceString("SWT_RETRY"));
+		retryButton.setText ("SWT.RETRY");
 		abortButton = new Button (buttonStyleGroup, SWT.CHECK);
-		abortButton.setText (instance.getResourceString("SWT_ABORT"));
+		abortButton.setText ("SWT.ABORT");
 		ignoreButton = new Button (buttonStyleGroup, SWT.CHECK);
-		ignoreButton.setText (instance.getResourceString("SWT_IGNORE"));
+		ignoreButton.setText ("SWT.IGNORE");
 	
 		/* Create a group for the icon style controls */
 		Group iconStyleGroup = new Group (controlGroup, SWT.NULL);
@@ -265,15 +265,15 @@ class DialogTab extends Tab {
 	
 		/* Create the icon style buttons */
 		iconErrorButton = new Button (iconStyleGroup, SWT.RADIO);
-		iconErrorButton.setText (instance.getResourceString("SWT_ICON_ERROR"));
+		iconErrorButton.setText ("SWT.ICON_ERROR");
 		iconInformationButton = new Button (iconStyleGroup, SWT.RADIO);
-		iconInformationButton.setText (instance.getResourceString("SWT_ICON_INFORMATION"));
+		iconInformationButton.setText ("SWT.ICON_INFORMATION");
 		iconQuestionButton = new Button (iconStyleGroup, SWT.RADIO);
-		iconQuestionButton.setText (instance.getResourceString("SWT_ICON_QUESTION"));
+		iconQuestionButton.setText ("SWT.ICON_QUESTION");
 		iconWarningButton = new Button (iconStyleGroup, SWT.RADIO);
-		iconWarningButton.setText (instance.getResourceString("SWT_ICON_WARNING"));
+		iconWarningButton.setText ("SWT.ICON_WARNING");
 		iconWorkingButton = new Button (iconStyleGroup, SWT.RADIO);
-		iconWorkingButton.setText (instance.getResourceString("SWT_ICON_WORKING"));
+		iconWorkingButton.setText ("SWT.ICON_WORKING");
 	
 		/* Create a group for the modal style controls */
 		Group modalStyleGroup = new Group (controlGroup, SWT.NULL);
@@ -283,13 +283,13 @@ class DialogTab extends Tab {
 	
 		/* Create the modal style buttons */
 		modelessButton = new Button (modalStyleGroup, SWT.RADIO);
-		modelessButton.setText (instance.getResourceString("SWT_MODELESS"));
+		modelessButton.setText ("SWT.MODELESS");
 		primaryModalButton = new Button (modalStyleGroup, SWT.RADIO);
-		primaryModalButton.setText (instance.getResourceString("SWT_PRIMARY_MODAL"));
+		primaryModalButton.setText ("SWT.PRIMARY_MODAL");
 		applicationModalButton = new Button (modalStyleGroup, SWT.RADIO);
-		applicationModalButton.setText (instance.getResourceString("SWT_APPLICATION_MODAL"));
+		applicationModalButton.setText ("SWT.APPLICATION_MODAL");
 		systemModalButton = new Button (modalStyleGroup, SWT.RADIO);
-		systemModalButton.setText (instance.getResourceString("SWT_SYSTEM_MODAL"));
+		systemModalButton.setText ("SWT.SYSTEM_MODAL");
 	
 		/* Create a group for the file dialog style controls */
 		Group fileDialogStyleGroup = new Group (controlGroup, SWT.NULL);
@@ -299,9 +299,9 @@ class DialogTab extends Tab {
 	
 		/* Create the file dialog style buttons */
 		saveButton = new Button (fileDialogStyleGroup, SWT.RADIO);
-		saveButton.setText (instance.getResourceString("SWT_SAVE"));
+		saveButton.setText ("SWT.SAVE");
 		openButton = new Button(fileDialogStyleGroup, SWT.RADIO);
-		openButton.setText(instance.getResourceString("SWT_OPEN"));
+		openButton.setText("SWT.OPEN");
 	
 		/* Add the listeners */
 		dialogCombo.addSelectionListener (new SelectionAdapter () {

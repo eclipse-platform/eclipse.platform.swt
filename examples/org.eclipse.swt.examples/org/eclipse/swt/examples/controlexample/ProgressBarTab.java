@@ -65,7 +65,7 @@ class ProgressBarTab extends RangeTab {
 	
 		/* Create the extra widgets */
 		smoothButton = new Button (styleGroup, SWT.CHECK);
-		smoothButton.setText (ControlExample.getResourceString("SWT_SMOOTH"));
+		smoothButton.setText ("SWT.SMOOTH");
 	}
 	
 	/**

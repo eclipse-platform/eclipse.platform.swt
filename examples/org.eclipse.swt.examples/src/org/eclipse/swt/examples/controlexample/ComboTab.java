@@ -78,13 +78,13 @@ class ComboTab extends Tab {
 	
 		/* Create the extra widgets */
 		dropDownButton = new Button (styleGroup, SWT.RADIO);
-		dropDownButton.setText (ControlExample.getResourceString("SWT_DROP_DOWN"));
+		dropDownButton.setText ("SWT.DROP_DOWN");
 		simpleButton = new Button (styleGroup, SWT.RADIO);
-		simpleButton.setText(ControlExample.getResourceString("SWT_SIMPLE"));
+		simpleButton.setText("SWT.SIMPLE");
 		readOnlyButton = new Button (styleGroup, SWT.CHECK);
-		readOnlyButton.setText (ControlExample.getResourceString("SWT_READ_ONLY"));
+		readOnlyButton.setText ("SWT.READ_ONLY");
 		borderButton = new Button (styleGroup, SWT.CHECK);
-		borderButton.setText (ControlExample.getResourceString("SWT_BORDER"));
+		borderButton.setText ("SWT.BORDER");
 	}
 	
 	/**

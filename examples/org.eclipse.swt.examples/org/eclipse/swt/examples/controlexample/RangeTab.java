@@ -128,11 +128,11 @@ abstract class RangeTab extends Tab {
 	
 		/* Create the extra widgets */
 		horizontalButton = new Button (styleGroup, SWT.RADIO);
-		horizontalButton.setText (ControlExample.getResourceString("SWT_HORIZONTAL"));
+		horizontalButton.setText ("SWT.HORIZONTAL");
 		verticalButton = new Button (styleGroup, SWT.RADIO);
-		verticalButton.setText (ControlExample.getResourceString("SWT_VERTICAL"));
+		verticalButton.setText ("SWT.VERTICAL");
 		borderButton = new Button (styleGroup, SWT.CHECK);
-		borderButton.setText (ControlExample.getResourceString("SWT_BORDER"));
+		borderButton.setText ("SWT.BORDER");
 	}
 	
 	/**

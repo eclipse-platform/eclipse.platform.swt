@@ -136,7 +136,7 @@ class TableTab extends ScrollableTab {
 		
 		/* Create the extra widgets */
 		fullSelectionButton = new Button (styleGroup, SWT.CHECK);
-		fullSelectionButton.setText (ControlExample.getResourceString("SWT_FULL_SELECTION"));
+		fullSelectionButton.setText ("SWT.FULL_SELECTION");
 	}
 	
 	/**

@@ -67,60 +67,60 @@ class ToolBarTab extends Tab {
 		imageToolBar = new ToolBar (imageToolBarGroup, style);
 		ToolItem item = new ToolItem (imageToolBar, SWT.PUSH);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
-		item.setToolTipText(ControlExample.getResourceString("SWT_PUSH"));
+		item.setToolTipText("SWT.PUSH");
 		item = new ToolItem (imageToolBar, SWT.PUSH);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_PUSH"));
+		item.setToolTipText ("SWT.PUSH");
 		item = new ToolItem (imageToolBar, SWT.RADIO);
 		item.setImage (instance.images[ControlExample.ciOpenFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_RADIO"));
+		item.setToolTipText ("SWT.RADIO");
 		item = new ToolItem (imageToolBar, SWT.RADIO);
 		item.setImage (instance.images[ControlExample.ciOpenFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_RADIO"));
+		item.setToolTipText ("SWT.RADIO");
 		item = new ToolItem (imageToolBar, SWT.CHECK);
 		item.setImage (instance.images[ControlExample.ciTarget]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_CHECK"));
+		item.setToolTipText ("SWT.CHECK");
 		item = new ToolItem (imageToolBar, SWT.RADIO);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_RADIO"));
+		item.setToolTipText ("SWT.RADIO");
 		item = new ToolItem (imageToolBar, SWT.RADIO);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_RADIO"));
+		item.setToolTipText ("SWT.RADIO");
 		item = new ToolItem (imageToolBar, SWT.SEPARATOR);
-		item.setToolTipText(ControlExample.getResourceString("SWT_SEPARATOR"));
+		item.setToolTipText("SWT.SEPARATOR");
 		item = new ToolItem (imageToolBar, SWT.DROP_DOWN);
 		item.setImage (instance.images[ControlExample.ciTarget]);
-		item.setToolTipText (ControlExample.getResourceString("SWT_DROP_DOWN"));
+		item.setToolTipText ("SWT.DROP_DOWN");
 		item.addSelectionListener(new DropDownSelectionListener());
 	
 		/* Create the text tool bar */
 		textToolBar = new ToolBar (textToolBarGroup, style);
 		item = new ToolItem (textToolBar, SWT.PUSH);
 		item.setText (ControlExample.getResourceString("Push"));
-		item.setToolTipText(ControlExample.getResourceString("SWT_PUSH"));
+		item.setToolTipText("SWT.PUSH");
 		item = new ToolItem (textToolBar, SWT.PUSH);
 		item.setText (ControlExample.getResourceString("Push"));
-		item.setToolTipText(ControlExample.getResourceString("SWT_PUSH"));
+		item.setToolTipText("SWT.PUSH");
 		item = new ToolItem (textToolBar, SWT.RADIO);
 		item.setText (ControlExample.getResourceString("Radio"));
-		item.setToolTipText(ControlExample.getResourceString("SWT_RADIO"));
+		item.setToolTipText("SWT.RADIO");
 		item = new ToolItem (textToolBar, SWT.RADIO);
 		item.setText (ControlExample.getResourceString("Radio"));
-		item.setToolTipText(ControlExample.getResourceString("SWT_RADIO"));
+		item.setToolTipText("SWT.RADIO");
 		item = new ToolItem (textToolBar, SWT.CHECK);
 		item.setText (ControlExample.getResourceString("Check"));
-		item.setToolTipText(ControlExample.getResourceString("SWT_CHECK"));
+		item.setToolTipText("SWT.CHECK");
 		item = new ToolItem (textToolBar, SWT.RADIO);
 		item.setText (ControlExample.getResourceString("Radio"));
-		item.setToolTipText(ControlExample.getResourceString("SWT_RADIO"));
+		item.setToolTipText("SWT.RADIO");
 		item = new ToolItem (textToolBar, SWT.RADIO);
 		item.setText (ControlExample.getResourceString("Radio"));
-		item.setToolTipText(ControlExample.getResourceString("SWT_RADIO"));
+		item.setToolTipText("SWT.RADIO");
 		item = new ToolItem (textToolBar, SWT.SEPARATOR);
-		item.setToolTipText(ControlExample.getResourceString("SWT_SEPARATOR"));
+		item.setToolTipText("SWT.SEPARATOR");
 		item = new ToolItem (textToolBar, SWT.DROP_DOWN);
 		item.setText (ControlExample.getResourceString("Drop_Down"));
-		item.setToolTipText(ControlExample.getResourceString("SWT_DROP_DOWN"));
+		item.setToolTipText("SWT.DROP_DOWN");
 		item.addSelectionListener(new DropDownSelectionListener());
 	
 		/*
@@ -139,11 +139,11 @@ class ToolBarTab extends Tab {
 	
 		/* Create the extra widgets */
 		flatButton = new Button (styleGroup, SWT.CHECK);
-		flatButton.setText (ControlExample.getResourceString("SWT_FLAT"));
+		flatButton.setText ("SWT.FLAT");
 		wrapButton = new Button (styleGroup, SWT.CHECK);
-		wrapButton.setText (ControlExample.getResourceString("SWT_WRAP"));
+		wrapButton.setText ("SWT.WRAP");
 		borderButton = new Button (styleGroup, SWT.CHECK);
-		borderButton.setText (ControlExample.getResourceString("SWT_BORDER"));
+		borderButton.setText ("SWT.BORDER");
 	}
 	
 	void disposeExampleWidgets () {

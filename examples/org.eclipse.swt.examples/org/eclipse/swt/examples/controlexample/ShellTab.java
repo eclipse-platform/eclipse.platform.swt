@@ -137,19 +137,19 @@ class ShellTab extends Tab {
 	
 		/* Create the decoration style buttons */
 		noTrimButton = new Button (decorationStyleGroup, SWT.CHECK);
-		noTrimButton.setText (ControlExample.getResourceString("SWT_NO_TRIM"));
+		noTrimButton.setText ("SWT.NO_TRIM");
 		closeButton = new Button (decorationStyleGroup, SWT.CHECK);
-		closeButton.setText (ControlExample.getResourceString("SWT_CLOSE"));
+		closeButton.setText ("SWT.CLOSE");
 		titleButton = new Button (decorationStyleGroup, SWT.CHECK);
-		titleButton.setText (ControlExample.getResourceString("SWT_TITLE"));
+		titleButton.setText ("SWT.TITLE");
 		minButton = new Button (decorationStyleGroup, SWT.CHECK);
-		minButton.setText (ControlExample.getResourceString("SWT_MIN"));
+		minButton.setText ("SWT.MIN");
 		maxButton = new Button (decorationStyleGroup, SWT.CHECK);
-		maxButton.setText (ControlExample.getResourceString("SWT_MAX"));
+		maxButton.setText ("SWT.MAX");
 		borderButton = new Button (decorationStyleGroup, SWT.CHECK);
-		borderButton.setText (ControlExample.getResourceString("SWT_BORDER"));
+		borderButton.setText ("SWT.BORDER");
 		resizeButton = new Button (decorationStyleGroup, SWT.CHECK);
-		resizeButton.setText (ControlExample.getResourceString("SWT_RESIZE"));
+		resizeButton.setText ("SWT.RESIZE");
 	
 		/* Create the "create" and "closeAll" buttons */
 		createButton = new Button (styleGroup, SWT.NULL);
