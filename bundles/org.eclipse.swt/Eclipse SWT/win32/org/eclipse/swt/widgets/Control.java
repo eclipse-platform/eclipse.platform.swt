@@ -1079,11 +1079,19 @@ public void moveAbove (Control control) {
 	checkWidget ();
 	int hwndAfter = OS.HWND_TOP;
 	if (control != null) {
-		if (control.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		int hwnd = control.handle;
-		if ((hwnd == 0) || (hwnd == handle)) return;
+		if (hwnd == 0 || hwnd == handle) return;
 		hwndAfter = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
-		if (hwndAfter == 0) hwndAfter = OS.HWND_TOP;
+		/*
+		* Bug in Windows.  For some reason, when GetWindow ()
+		* with GW_HWNDPREV is used to query the previous window
+		* in the z-order with the first child, Windows returns
+		* the first child instead of NULL.  The fix is to detect
+		* this case and return because the window is already the
+		* first child in the z-order.
+		*/
+		if (hwndAfter == 0 || hwndAfter == handle) return;
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 	OS.SetWindowPos (handle, hwndAfter, 0, 0, 0, 0, flags);
