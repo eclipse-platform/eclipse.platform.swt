@@ -820,7 +820,7 @@ public int indexOf (String item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i=0; i<itemCount; i++) {
-		if (items [i] == item) return i;
+		if (items [i].equals (item)) return i;
 	}
 	return -1;
 }
