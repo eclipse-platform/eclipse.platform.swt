@@ -133,7 +133,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int hDC = OS.GetDC (handle);
 		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		int oldFont = OS.SelectObject (hDC, newFont);
-		TCHAR buffer = new TCHAR (getCodePage (), text, false);
+		TCHAR buffer = new TCHAR (getCodePage (), parse (text), false);
 		RECT rect = new RECT ();
 		int flags = OS.DT_CALCRECT;
 		boolean wrap = wHint != SWT.DEFAULT;
