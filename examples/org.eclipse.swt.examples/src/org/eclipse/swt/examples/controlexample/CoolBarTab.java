@@ -426,7 +426,7 @@ class CoolBarTab extends Tab {
 				menu.setLocation (pt.x, pt.y);
 				menu.setVisible (true);
 				Display display = coolBar.getDisplay ();
-				while (menu != null && menu.isVisible ()) {
+				while (menu != null && !menu.isDisposed() && menu.isVisible ()) {
 					if (!display.readAndDispatch ()) display.sleep ();
 				}
 				if (menu != null) {
