@@ -1043,7 +1043,8 @@ void drawTabArea(Event event) {
 		int x1 = borderLeft - 1;
 		int x2 = size.x - borderRight;
 		int y1 = onBottom ? size.y - borderBottom - HIGHLIGHT_HEADER - 1 : borderTop +HIGHLIGHT_HEADER;
-		int y2 = onBottom ? size.y - borderBottom - 1 : borderTop;
+		int y2 = onBottom ? size.y - borderBottom : borderTop;
+		if (borderLeft > 0 && onBottom) y2 -= 1;
 		
 		shape = new int[] {x1, y1, x1,y2, x2,y2, x2,y1};
 
@@ -1075,7 +1076,7 @@ void drawTabArea(Event event) {
 		shape = new int[BOTTOM_LEFT_CORNER.length + BOTTOM_RIGHT_CORNER.length + 4];
 		int index = 0;
 		shape[index++] = x;
-		shape[index++] = y-HIGHLIGHT_HEADER-1;
+		shape[index++] = y-HIGHLIGHT_HEADER;
 		for (int i = 0; i < BOTTOM_LEFT_CORNER.length/2; i++) {
 			shape[index++] = x+BOTTOM_LEFT_CORNER[2*i];
 			shape[index++] = y+height+BOTTOM_LEFT_CORNER[2*i+1];
@@ -1087,7 +1088,7 @@ void drawTabArea(Event event) {
 			if (borderLeft == 0) shape[index-1] += 1;
 		}
 		shape[index++] = x+width;
-		shape[index++] = y-HIGHLIGHT_HEADER-1;
+		shape[index++] = y-HIGHLIGHT_HEADER;
 	} else {
 		shape = new int[TOP_LEFT_CORNER.length + TOP_RIGHT_CORNER.length + 4];
 		int index = 0;
