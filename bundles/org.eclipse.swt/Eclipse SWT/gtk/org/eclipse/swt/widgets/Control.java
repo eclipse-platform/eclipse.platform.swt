@@ -368,11 +368,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 Point computeNativeSize (int /*long*/ h, int wHint, int hHint, boolean changed) {
 	int width = wHint, height = hHint;
-	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (h, requisition);
-		width = wHint == SWT.DEFAULT ? OS.GTK_WIDGET_REQUISITION_WIDTH (h) : wHint;
-		height = hHint == SWT.DEFAULT ? OS.GTK_WIDGET_REQUISITION_HEIGHT (h) : hHint;
+		width = OS.GTK_WIDGET_REQUISITION_WIDTH (h);
+		height = OS.GTK_WIDGET_REQUISITION_HEIGHT (h);
+	} else if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+		int [] reqWidth = new int [1], reqHeight = new int [1];
+		OS.gtk_widget_get_size_request (h, reqWidth, reqHeight);
+		OS.gtk_widget_set_size_request (h, wHint, hHint);
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (h, requisition);
+		OS.gtk_widget_set_size_request (h, reqWidth [0], reqHeight [0]);
+		width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+		height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	}
 	return new Point (width, height);
 }

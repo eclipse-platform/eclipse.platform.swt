@@ -808,6 +808,7 @@ typedef enum {
 	_1gtk_1widget_1get_1modifier_1style_FUNC,
 	_1gtk_1widget_1get_1pango_1context_FUNC,
 	_1gtk_1widget_1get_1parent_FUNC,
+	_1gtk_1widget_1get_1size_1request_FUNC,
 	_1gtk_1widget_1get_1style_FUNC,
 	_1gtk_1widget_1get_1toplevel_FUNC,
 	_1gtk_1widget_1grab_1focus_FUNC,

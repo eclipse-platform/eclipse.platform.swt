@@ -144,13 +144,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	* of the button.
 	*/
 	forceResize ();
-	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int [] reqWidth = null, reqHeight = null;
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		reqWidth = new int [1];
+		reqHeight = new int [1];
+		OS.gtk_widget_get_size_request (boxHandle, reqWidth, reqHeight);
 		OS.gtk_widget_set_size_request (boxHandle, -1, -1);
 	}
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		OS.gtk_widget_set_size_request (boxHandle, width, -1);
+		OS.gtk_widget_set_size_request (boxHandle, reqWidth [0], reqHeight [0]);
 	}
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
 		if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_CAN_DEFAULT) != 0) {

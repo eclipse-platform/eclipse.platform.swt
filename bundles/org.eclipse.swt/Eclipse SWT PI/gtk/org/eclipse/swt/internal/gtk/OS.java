@@ -6947,6 +6947,15 @@ public static final int /*long*/ gtk_widget_get_style(int /*long*/ widget) {
 		lock.unlock();
 	}
 }
+public static final native void _gtk_widget_get_size_request(int /*long*/ widget, int [] width, int [] height);
+public static final void gtk_widget_get_size_request(int /*long*/ widget, int [] width, int [] height) {
+	lock.lock();
+	try {
+		_gtk_widget_get_size_request(widget, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_widget_get_toplevel (int /*long*/ widget);
 public static final int /*long*/ gtk_widget_get_toplevel (int /*long*/ widget) {
 	lock.lock();
