@@ -97,8 +97,10 @@ public Font(Device device, FontData[] fds) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	for (int i=0; i<fds.length; i++) {
+		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	FontData fd = fds[0];
-	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device,fd.getName(), fd.getHeight(), fd.getStyle(), fd.string);
 	if (device.tracking) device.new_Object(this);
 }
