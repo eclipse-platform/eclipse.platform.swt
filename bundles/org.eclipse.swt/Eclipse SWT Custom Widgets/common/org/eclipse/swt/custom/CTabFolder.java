@@ -1720,7 +1720,7 @@ void onDragDetect(Event event) {
 		}
 	}
 	if (consume) {
-		event.type = 0;
+		event.type = SWT.None;
 	}
 }
 void onFocus(Event event) {
