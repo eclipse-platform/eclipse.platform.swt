@@ -744,8 +744,11 @@ public TreeItem getParentItem () {
  * Returns the receiver's ideal width for the specified columnIndex.
  */
 int getPreferredWidth (int columnIndex) {
-	int textPaintWidth = textWidths [columnIndex] + 2 * MARGIN_TEXT;
-	int result = getTextX (columnIndex) + textPaintWidth;
+	GC gc = new GC (parent);
+	gc.setFont (getFont (columnIndex));
+	int textPaintWidth = gc.textExtent (getText (columnIndex)).x + 2 * MARGIN_TEXT;
+	gc.dispose ();
+	int result = getTextX (columnIndex) + textPaintWidth + parent.getCellPadding ();	/* right side cell pad */
 	result -= parent.columns [columnIndex].getX ();
 	return result;
 }
