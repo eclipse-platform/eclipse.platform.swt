@@ -336,6 +336,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	OS.ATSUGetFontIDs(null, 0, fontCount);
 	int[] fontIDs = new int[fontCount[0]];
 	OS.ATSUGetFontIDs(fontIDs, fontIDs.length, fontCount);
+	int count = 0;
 	FontData[] fds = new FontData[fontCount[0]];
 	for (int i=0; i<fds.length; i++) {
 		int fontID = fontIDs[i];
@@ -349,10 +350,13 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 			if ((style[0] & OS.italic) != 0) s |= SWT.ITALIC;
 			if ((style[0] & OS.bold) != 0) s |= SWT.BOLD;
 			FontData data = new FontData(name, 0, s);
-			fds[i] = data;
+			fds[count++] = data;
 		}
 	}
-	return fds;
+	if (count == fds.length) return fds;
+	FontData[] result = new FontData[count];
+	System.arraycopy(fds, 0, result, 0, count);
+	return result;
 }
 
 /**
