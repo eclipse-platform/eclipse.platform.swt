@@ -88,7 +88,7 @@ public /*final*/ class Shell extends Decorations {
 	int shellHandle;
 	boolean reparented, realized;
 	int oldX, oldY, oldWidth, oldHeight;
-	Control lastFocus;
+	Control lastActive;
 
 	static final  byte [] WM_DETELE_WINDOW = Converter.wcsToMbcs(null, "WM_DELETE_WINDOW\0");
 /**
@@ -850,7 +850,7 @@ void releaseWidget () {
 	releaseShells ();
 	super.releaseWidget ();
 	display = null;
-	lastFocus = null;
+	lastActive = null;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -889,6 +889,44 @@ void saveBounds () {
 	oldX = root_x [0] - trimWidth; oldY = root_y [0] - trimHeight;
 	oldWidth = argList [1];  oldHeight = argList [3];
 }
+
+void setActiveControl (Control control) {
+	if (control != null && control.isDisposed ()) control = null;
+	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
+	if (lastActive == control) return;
+	
+	/*
+	* Compute the list of controls to be activated and
+	* deactivated by finding the first common parent
+	* control.
+	*/
+	Control [] activate = (control == null) ? new Control[0] : control.getPath ();
+	Control [] deactivate = (lastActive == null) ? new Control[0] : lastActive.getPath ();
+	lastActive = control;
+	int index = 0, length = Math.min (activate.length, deactivate.length);
+	while (index < length) {
+		if (activate [index] != deactivate [index]) break;
+		index++;
+	}
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have destroyed some of the widgets. If
+	* this happens, keep processing those widgets that
+	* are not disposed.
+	*/
+	for (int i=deactivate.length-1; i>=index; --i) {
+		if (!deactivate [i].isDisposed ()) {
+			deactivate [i].sendEvent (SWT.Deactivate);
+		}
+	}
+	for (int i=activate.length-1; i>=index; --i) {
+		if (!activate [i].isDisposed ()) {
+			activate [i].sendEvent (SWT.Activate);
+		}
+	}
+}
+
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
 	/*

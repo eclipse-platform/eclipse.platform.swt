@@ -2033,6 +2033,11 @@ boolean setTabGroupFocus () {
 }
 
 boolean setTabItemFocus () {
+	Control [] path = getPath ();
+	for (int i=0; i<path.length; i++) {
+		Point size = path [i].getSize ();
+		if (size.x == 0 || size.y == 0) return false;
+	}
 	return setFocus ();
 }
 
@@ -2473,6 +2478,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_MOUSEHOVER:			result = WM_MOUSEHOVER (wParam, lParam); break;
 		case OS.WM_MOUSELEAVE:			result = WM_MOUSELEAVE (wParam, lParam); break;
 		case OS.WM_MOUSEMOVE:			result = WM_MOUSEMOVE (wParam, lParam); break;
+		case OS.WM_MOUSEWHEEL:			result = WM_MOUSEWHEEL (wParam, lParam); break;
 		case OS.WM_MOVE:				result = WM_MOVE (wParam, lParam); break;
 		case OS.WM_NCACTIVATE:			result = WM_NCACTIVATE (wParam, lParam); break;
 		case OS.WM_NCCALCSIZE:			result = WM_NCCALCSIZE (wParam, lParam); break;
@@ -2500,7 +2506,6 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_UNDO:				result = WM_UNDO (wParam, lParam); break;
 		case OS.WM_VSCROLL:				result = WM_VSCROLL (wParam, lParam); break;
 		case OS.WM_WINDOWPOSCHANGING:	result = WM_WINDOWPOSCHANGING (wParam, lParam); break;
-		case OS.WM_MOUSEWHEEL:			return OS.DefWindowProc(handle, msg, wParam, lParam);
 	}
 	if (result != null) return result.value;
 	return callWindowProc (msg, wParam, lParam);
@@ -3264,6 +3269,18 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 		sendMouseEvent (SWT.MouseMove, 0, OS.WM_MOUSEMOVE, wParam, lParam);
 	}
 	return null;
+}
+
+LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
+	/*
+	* Feature in Windows.  If the WM_MOUSEWHEEL is handled by
+	* the control, it may not send WM_VSCROLL and WM_HSCROLL
+	* messages.  The fix is to intercept the WM_MOUSEWHEEL message
+	* and call the DefWindowProc which will convert the message to 
+	* send the appropriate WM_HSCROLL or WM_VSCROLL message.
+	*/
+	int code = OS.DefWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
+	return new LRESULT (code);
 }
 
 LRESULT WM_MOVE (int wParam, int lParam) {

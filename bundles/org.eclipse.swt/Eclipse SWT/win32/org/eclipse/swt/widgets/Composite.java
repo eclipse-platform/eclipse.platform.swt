@@ -314,7 +314,9 @@ boolean setTabGroupFocus () {
 	if (!isVisible ()) return false;
 	if (isTabItem ()) return setTabItemFocus ();
 	Control [] children = _getChildren ();
-	if (children.length == 0) return setTabItemFocus ();	
+	if (children.length == 0) {
+		return (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) && setTabItemFocus ();
+	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		if (child.isVisible () && child.setRadioFocus ()) return true;
@@ -371,7 +373,7 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return new LRESULT (OS.DLGC_STATIC);
-		if (hooks (SWT.KeyDown)) {
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
 			int flags = OS.DLGC_WANTALLKEYS | OS.DLGC_WANTARROWS | OS.DLGC_WANTTAB;
 			return new LRESULT (flags);
 		}
