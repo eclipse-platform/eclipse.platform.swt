@@ -179,9 +179,7 @@ public void clearContents() {
 public void clearContents(int clipboards) {
 	checkWidget();
 	ClipboardProxy proxy = ClipboardProxy._getInstance(display);
-	if (proxy.activeClipboard == this) {
-		proxy.clear(clipboards);
-	}
+	proxy.clear(this, clipboards);
 }
 
 /**
@@ -446,10 +444,9 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 		}
 	}
 	ClipboardProxy proxy = ClipboardProxy._getInstance(display);
-	if (!proxy.setData(data, dataTypes, clipboards)) {
+	if (!proxy.setData(this, data, dataTypes, clipboards)) {
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	}
-	proxy.activeClipboard = this;
 }
 
 /**

@@ -31,9 +31,8 @@ class ClipboardProxy {
 	Transfer[] primaryClipboardDataTypes;
 
 	Display display;
-	boolean onPrimary = false;
-	boolean onClipboard = false;
 	Clipboard activeClipboard = null;
+	Clipboard activePrimaryClipboard = null;
 	Callback getFunc;
 	Callback clearFunc;
 	
@@ -61,23 +60,23 @@ ClipboardProxy(Display display) {
 	clearFunc = new Callback( this, "clearFunc", 2); //$NON-NLS-1$
 }
 
-void clear (int clipboards) {
-	if ((clipboards & DND.CLIPBOARD) != 0 && onClipboard) {
+void clear (Clipboard owner, int clipboards) {
+	if ((clipboards & DND.CLIPBOARD) != 0 && activeClipboard == owner) {
 		OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
 	}
-	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0 && onPrimary) {
+	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0 && activePrimaryClipboard == owner) {
 		OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
 	}
 }
 
 int /*long*/ clearFunc(int /*long*/ clipboard,int /*long*/ user_data_or_owner){
 	if (clipboard == Clipboard.GTKCLIPBOARD) {
-		onClipboard = false;
+		activeClipboard = null;
 		clipboardData = null;
 		clipboardDataTypes = null;
 	}
 	if (clipboard == Clipboard.GTKPRIMARYCLIPBOARD) {
-		onPrimary = false;
+		activePrimaryClipboard = null;
 		primaryClipboardData = null;
 		primaryClipboardDataTypes = null;
 	}
@@ -86,10 +85,8 @@ int /*long*/ clearFunc(int /*long*/ clipboard,int /*long*/ user_data_or_owner){
 
 void dispose () {
 	if (display == null) return;
-	if (onPrimary) OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
-	onPrimary = false;
-	if (onClipboard) OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
-	onClipboard = false;
+	if (activeClipboard != null) OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
+	if (activePrimaryClipboard != null) OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
 	display = null;
 	if (getFunc != null ) getFunc.dispose();
 	getFunc = null;
@@ -126,17 +123,13 @@ int /*long*/ getFunc( int /*long*/ clipboard, int /*long*/ selection_data, int /
 		return 0;
 	}
 	OS.gtk_selection_data_set(selection_data, tdata.type, tdata.format, tdata.pValue, tdata.length);	
+	OS.g_free(tdata.pValue);
 	return 1;
 }
 
-boolean setData(Object[] data, Transfer[] dataTypes) {
-	return setData(data, dataTypes, DND.CLIPBOARD);
-}
-
-boolean setData(Object[] data, Transfer[] dataTypes, int clipboards) {	
+boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipboards) {	
 	GtkTargetEntry[] entries = new  GtkTargetEntry [0];
 	int /*long*/ pTargetsList = 0;
-	boolean result = false;
 	try {
 		for (int i = 0; i < dataTypes.length; i++) {
 			Transfer transfer = dataTypes[i];
@@ -163,18 +156,28 @@ boolean setData(Object[] data, Transfer[] dataTypes, int clipboards) {
 			offset += GtkTargetEntry.sizeof;
 		}
 		if ((clipboards & DND.CLIPBOARD) != 0) {
-			if (onClipboard) OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
+			if (activeClipboard != null) OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
 			clipboardData = data;
 			clipboardDataTypes = dataTypes;
-			result = onClipboard = OS.gtk_clipboard_set_with_data(Clipboard.GTKCLIPBOARD, pTargetsList, entries.length, getFunc.getAddress(), clearFunc.getAddress(), 0);
+			int getFuncProc = getFunc.getAddress();
+			int clearFuncProc = clearFunc.getAddress();
+			if (!OS.gtk_clipboard_set_with_data(Clipboard.GTKCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, 0)) {
+				return false;
+			}
+			activeClipboard = owner;
 		}
 		if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
-			if (onPrimary) OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
+			if (activePrimaryClipboard != null) OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
 			primaryClipboardData = data;
 			primaryClipboardDataTypes = dataTypes;
-			result = onPrimary = OS.gtk_clipboard_set_with_data(Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFunc.getAddress(), clearFunc.getAddress(), 0);
+			int getFuncProc = getFunc.getAddress();
+			int clearFuncProc = clearFunc.getAddress();
+			if (!OS.gtk_clipboard_set_with_data(Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, 0)) {
+				return false;
+			}
+			activePrimaryClipboard = owner;
 		}
-		
+		return true;
 	} finally {
 		for (int i = 0; i < entries.length; i++) {
 			GtkTargetEntry entry = entries[i];
@@ -182,6 +185,5 @@ boolean setData(Object[] data, Transfer[] dataTypes, int clipboards) {
 		}
 		if (pTargetsList != 0) OS.g_free(pTargetsList);
 	}
-	return result;
 }
 }
