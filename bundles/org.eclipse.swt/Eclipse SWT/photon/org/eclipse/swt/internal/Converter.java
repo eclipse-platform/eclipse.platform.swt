@@ -1,5 +1,9 @@
 package org.eclipse.swt.internal;
-
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+ 
 /**
  * This class implements the conversions between unicode characters
  * and the <em>platform supported</em> representation for characters.
@@ -7,12 +11,6 @@ package org.eclipse.swt.internal;
  * Note that, unicode characters which can not be found in the platform
  * encoding will be converted to an arbitrary platform specific character.
  * </p>
- * 
- * @deprecated
- */
-/*
- * (c) Copyright IBM Corp. 2000, 2001.
- * All Rights Reserved
  */
  
 public final class Converter {
