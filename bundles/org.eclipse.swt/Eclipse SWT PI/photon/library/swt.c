@@ -5628,7 +5628,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFindFont
  * Method:    PfFreeFont
  * Signature: (I)I
  */
-/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFreeFont
   (JNIEnv *env, jobject that, jint ptsID)
 {
@@ -5639,14 +5638,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFreeFont
 
     return PfFreeFont((FontID *)ptsID);
 }
-*/
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PfFontDescription
  * Signature: (I)I
  */
-/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFontDescription
   (JNIEnv *env, jobject that, jint ptsID)
 {
@@ -5657,14 +5654,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFontDescription
 
     return (jint)PfFontDescription((FontID *)ptsID);
 }
-*/
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PfFontFlags
  * Signature: (I)I
  */
-/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFontFlags
   (JNIEnv *env, jobject that, jint ptsID)
 {
@@ -5675,14 +5670,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFontFlags
 
     return PfFontFlags((FontID *)ptsID);
 }
-*/
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PfFontSize
  * Signature: (I)I
  */
-/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFontSize
   (JNIEnv *env, jobject that, jint ptsID)
 {
@@ -5693,7 +5686,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfFontSize
 
     return PfFontSize((FontID *)ptsID);
 }
-*/
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
@@ -5712,6 +5704,31 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfConvertFontID
     return (jint)PfConvertFontID((FontID *)ptsID);
 }
 */
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PfDecomposeStemToID
+ * Signature: ([B)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfDecomposeStemToID
+  (JNIEnv *env, jobject that, jbyteArray pkszStem)
+{
+	char *pkszStem1=NULL;
+    
+    jint result;
+    
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PfDecomposeStemToID\n");
+#endif
+
+    if (pkszStem) pkszStem1 = (*env)->GetByteArrayElements(env, pkszStem, NULL);
+
+    result = (jint)PfDecomposeStemToID(pkszStem1);
+
+    if (pkszStem) (*env)->ReleaseByteArrayElements(env, pkszStem, pkszStem1, 0);
+      
+	return result;
+}
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
