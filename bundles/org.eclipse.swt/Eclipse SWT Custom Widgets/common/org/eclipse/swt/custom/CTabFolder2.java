@@ -224,7 +224,7 @@ public CTabFolder2(Composite parent, int style) {
 	onBottom = (getStyle() & SWT.BOTTOM) != 0;
 	single = (style & SWT.SINGLE) != 0;
 	borderLeft = (style & SWT.BORDER) != 0 ? ((style & SWT.FLAT) != 0 ? 1 : 1 + HIGHLIGHT_MARGIN) : 0;
-	borderRight = (style & SWT.BORDER) != 0 ? ((style & SWT.FLAT) != 0 ? 1 : 3 + HIGHLIGHT_MARGIN) : 0;
+	borderRight = (style & SWT.BORDER) != 0 ? ((style & SWT.FLAT) != 0 ? 1 : 1 + HIGHLIGHT_MARGIN) : 0;
 	borderTop = onBottom ? borderLeft : 0;
 	borderBottom = onBottom ? 0 : borderRight;
 	
@@ -924,9 +924,8 @@ void draw3DBorder(GC gc) {
 				gc.fillRectangle(0, size.y - borderBottom - tabHeight + 1, HIGHLIGHT_MARGIN, borderBottom + tabHeight);
 				gc.fillRectangle(size.x - borderRight + 1, size.y - borderBottom - tabHeight + 1, borderRight, borderTop + tabHeight);	
 			}
-			
 			int x1 = 0;
-			int x2 = size.x - 3;
+			int x2 = size.x - 1;
 			int y1 = 0;
 			int y2 = size.y - borderBottom - tabHeight - 1;
 			gc.setForeground(borderColor1);
@@ -935,153 +934,32 @@ void draw3DBorder(GC gc) {
 			gc.drawLine(size.x - borderRight, y2, x2, y2); // indent on right
 			gc.drawLine(x2, y1, x2, y2); // right
 			gc.drawLine(x1, y1, x2, y1); //top
-			
-			int gapStart = size.x/2;
-			int gapEnd = gapStart;
-			if (selectedIndex != -1 && selectedIndex >= topTabIndex) {
-				CTabItem2 item =  items[selectedIndex];
-				Rectangle r = item.getBounds();
-				int rightTabEdge = size.x - borderRight - chevronRect.width - expandRect.width - closeRect.width - 1;
-				if (r.x < rightTabEdge) {
-					gapStart = r.x - 1;
-					int extra = CURVE_WIDTH / 2;
-					int[] left = BOTTOM_LEFT_CORNER;
-					int[] right = curve;
-					int[] shape = new int[left.length + right.length + 8];
-					int index = 0;
-					shape[index++] = Math.max(0, borderLeft - 1);
-					shape[index++] = r.y - 1;
-					shape[index++] = r.x;
-					shape[index++] = r.y - 1;
-					for (int i = 0; i < left.length/2; i++) {
-						shape[index++] = r.x + left[2*i];
-						shape[index++] = r.y + r.height + left[2*i+1]-1;
-					}
-					for (int i = 0; i < right.length/2; i++) {
-						shape[index++] = r.x+r.width - extra + right[2*i];
-						shape[index++] = r.y + right[2*i+1] - 2;
-					}
-					for (int i = 0; i < shape.length/2; i++) {
-						if (shape[2*i] > rightTabEdge) {
-							gapEnd = rightTabEdge + 1;
-							break;
-						}
-						if (shape[2*i+1] > r.y) {
-							gapEnd = shape[2*i];
-						}
-					}
-				}
-			}
-			
 			x1 = 1;
-			x2 = size.x - 2;
-			y1 = 1;
-			y2 =  size.y - borderBottom - tabHeight;
-			gc.setForeground(borderColor2);
-			gc.drawLine(x2, y1, x2, y2); // right 1
-			gc.drawLine(x1, y2, gapStart, y2); //bottom 1 left
-			gc.drawLine(gapEnd, y2, x2, y2); //bottom 1 right
-			gc.setForeground(parentBackground);
-			if (!single) gc.drawPoint(0, y2); // bottom left
-			gc.drawPoint(x2, 0); // top right
-
-			x1 = 2;
 			x2 = size.x - 1;
-			y1 = 2;
-			y2 = size.y - borderBottom - tabHeight + 1;
-			gc.setForeground(borderColor3);
-			gc.drawLine(x2, y1, x2, y2); // right 2
-			gc.drawLine(x1, y2, gapStart, y2); //bottom 2 left
-			gc.drawLine(gapEnd, y2, x2, y2); //bottom 2 right
-			gc.setForeground(parentBackground);
-			if (!single)gc.drawLine(0, y2, 1, y2); // bottom left
-			gc.drawLine(x2, 0, x2, 1); // top right
-			
-			x1 = 1;
-			x2 = size.x - 3;
 			y1 = 1;
 			y2 = size.y - borderBottom - tabHeight - 1;
 			int[] shape = new int[] {x1,y1, x2,y1, x2,y2, x1,y2};
 			drawSelectionBackground(gc, shape);
-			
 		} else { // on top and border showing
 			if (!single) {
 				gc.setBackground(parentBackground);
 				gc.fillRectangle(0, 0, HIGHLIGHT_MARGIN, borderTop + tabHeight); //left
 				gc.fillRectangle(size.x - borderRight + 1, 0, borderRight, borderTop + tabHeight);//right
 			}
-			
 			int x1 = 0;
-			int x2 = size.x - 3;
+			int x2 = size.x - 1;
 			int y1 = borderTop + tabHeight;
-			int y2 = size.y - 3;
+			int y2 = size.y - 1;
 			gc.setForeground(borderColor1);
 			gc.drawLine(x1, y1, borderLeft-1, y1); // indent on left
 			gc.drawLine(x1, y1, x1, y2); // left
 			gc.drawLine(size.x - borderRight, y1, x2, y1); // indent on right
 			gc.drawLine(x2, y1, x2, y2); // right
-			gc.drawLine(x1, y2, x2, y2); //bottom
-			
+			gc.drawLine(x1, y2, x2, y2); //bottom			
 			x1 = 1;
-			x2 = size.x - 2;
-			y1 = borderTop + tabHeight + 1;
-			y2 =  size.y - 2;
-			gc.setForeground(borderColor2);
-			gc.drawLine(x1, y2, x2, y2); //bottom 1
-			if (single) {
-				int x = borderLeft - HIGHLIGHT_MARGIN;
-				int y = borderTop;
-				int width = size.x - borderLeft - borderRight + 1 + 2*HIGHLIGHT_MARGIN;
-				int[] shape = new int[TOP_RIGHT_OUTSIDE_CORNER.length - 2];
-				int index = 0;
-				for (int i = 2; i < TOP_RIGHT_OUTSIDE_CORNER.length/2; i++) {
-					shape[index++] = x+width+TOP_RIGHT_OUTSIDE_CORNER[2*i];
-					shape[index++] = y+TOP_RIGHT_OUTSIDE_CORNER[2*i+1];
-				}
-				shape[index++] = x2;
-				shape[index++] = y2;
-				gc.drawPolyline(shape); // right 1
-				gc.setForeground(parentBackground);
-				gc.drawPoint(0, y2); // bottom left
-			} else {
-				gc.drawLine(x2, y1, x2, y2); // right 1
-				gc.setForeground(parentBackground);
-				gc.drawPoint(0, y2); // bottom left
-				gc.drawLine(x2, 0, x2, y1-1); // top right
-			}
-			
-			x1 = 2;
 			x2 = size.x - 1;
-			y1 = borderTop + tabHeight + 2;
-			y2 = size.y - 1;
-			gc.setForeground(borderColor3);
-			gc.drawLine(x1, y2, x2, y2); //bottom 2
-			if (single) {
-				int x = borderLeft - HIGHLIGHT_MARGIN + 1;
-				int y = borderTop;
-				int width = size.x - borderLeft - borderRight + 1 + 2*HIGHLIGHT_MARGIN;
-				int[] shape = new int[TOP_RIGHT_OUTSIDE_CORNER.length - 4];
-				int index = 0;
-				for (int i = 3; i < TOP_RIGHT_OUTSIDE_CORNER.length/2; i++) {
-					shape[index++] = x+width+TOP_RIGHT_OUTSIDE_CORNER[2*i];
-					shape[index++] = y+TOP_RIGHT_OUTSIDE_CORNER[2*i+1];
-				}
-				shape[index++] = x2;
-				shape[index++] = y2;
-				gc.drawPolyline(shape); // right 2
-				gc.setForeground(parentBackground);
-				gc.drawLine(0, y2, 1, y2); // bottom left
-			} else {
-				gc.drawLine(x2, y1, x2, y2); // right 2
-				gc.setForeground(parentBackground);
-				gc.drawLine(0, y2, 1, y2); // bottom left
-				gc.drawLine(x2, 0, x2, y1-1); // top right
-			}
-			
-			x1 = 1;
-			x2 = size.x - 3;
 			y1 = borderTop + tabHeight + 1;
-			y2 = size.y - 3;
+			y2 = size.y - 1;
 			int[] shape = new int[] {x1,y1, x2,y1, x2,y2, x1,y2};
 			drawSelectionBackground(gc, shape);
 		}
