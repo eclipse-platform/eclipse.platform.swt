@@ -8,12 +8,55 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
+/**
+ * Instances of this class determine the size and position of the 
+ * children of a <code>Composite</code> by placing them either in 
+ * horizontal rows or vertical columns within the parent <code>Composite</code>. 
+ * <p>
+ * <code>RowLayout</code> aligns all controls in one row if the
+ * <code>type</code> is set to horizontal, and one column if it is
+ * set to vertical. It has the ability to wrap, and provides configurable 
+ * margins and spacing. <code>RowLayout</code> has a number of configuration 
+ * fields. In addition, the height and width of each widget in a 
+ * <code>RowLayout</code> can be specified by setting a <code>RowData</code>
+ * object into the widget using <code>setLayoutData ()</code>.
+ * </p>
+ * <p>
+ * The following example code creates a <code>RowLayout</code>, sets all 
+ * of its fields to non-default values, and then sets it into a 
+ * <code>Shell</code>. 
+ * <pre>
+ * 		RowLayout rowLayout = new RowLayout();
+ * 		rowLayout.wrap = false;
+ * 		rowLayout.pack = false;
+ * 		rowLayout.justify = true;
+ * 		rowLayout.type = SWT.VERTICAL;
+ * 		rowLayout.marginLeft = 5;
+ * 		rowLayout.marginTop = 5;
+ * 		rowLayout.marginRight = 5;
+ * 		rowLayout.marginBottom = 5;
+ * 		rowLayout.spacing = 0;
+ * 		shell.setLayout(rowLayout);
+ * </pre>
+ * If you are using the default field values, you only need one line of code:
+ * <pre>
+ * 		shell.setLayout(new RowLayout());
+ * </pre>
+ * </p>
+ * 
+ * @see RowData
+ */
 public final class RowLayout extends Layout {
 	/**
 	 * type specifies whether the layout places controls in rows or 
 	 * columns.
 	 * 
-	 * The default value is horizontal.
+	 * The default value is HORIZONTAL.
+	 * 
+	 * Possible values are:
+	 * 
+	 * HORIZONTAL: Position the controls horizontally from left to right
+	 * VERTICAL: Position the controls vertically from top to bottom
 	 * 
 	 * @since 2.0
 	 */

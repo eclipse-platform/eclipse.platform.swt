@@ -11,6 +11,34 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+/**
+ * Instances of this class lay out the widget children of a 
+ * <code>Composite</code> in a grid. 
+ * <p>
+ * <code>GridLayout</code> has a number of configuration fields, and the 
+ * widgets it lays out can have an associated layout data object, called 
+ * <code>GridData</code>. The power of <code>GridLayout</code> lies in the 
+ * ability to configure <code>GridData</code> for each widget controlled by 
+ * the layout.
+ * </p>
+ * <p>
+ * The following code creates a shell managed by a <code>GridLayout</code>
+ * with 3 columns:
+ * <pre>
+ * 		Display display = new Display();
+ * 		Shell shell = new Shell(display);
+ * 		GridLayout gridLayout = new GridLayout();
+ * 		gridLayout.numColumns = 3;
+ * 		shell.setLayout(gridLayout);
+ * </pre>
+ * The <code>numColumns</code> field is the most important field in a 
+ * <code>GridLayout</code>. Widgets are laid out in columns from left 
+ * to right, and a new row is created when <code>numColumns</code> + 1 
+ * widgets are added to the <code>Composite<code>.
+ * </p>
+ * 
+ * @see GridData
+ */
 public final class GridLayout extends Layout {
 	/**
 	 * marginWidth specifies the number of pixels of horizontal margin

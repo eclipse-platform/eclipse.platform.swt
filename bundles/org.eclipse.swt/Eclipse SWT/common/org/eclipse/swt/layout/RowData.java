@@ -7,6 +7,25 @@ package org.eclipse.swt.layout;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
+/**
+ * Each widget controlled by a <code>RowLayout</code> can have its initial 
+ * width and height specified by setting a <code>RowData</code> object 
+ * into the widget.
+ * <p>
+ * The following code uses a <code>RowData</code> object to change the initial
+ * size of a <code>Button</code> in a <code>Shell</code>:
+ * <pre>
+ * 		Display display = new Display();
+ * 		Shell shell = new Shell(display);
+ * 		shell.setLayout(new RowLayout());
+ * 		Button button1 = new Button(shell, SWT.PUSH);
+ * 		button1.setText("Button 1");
+ * 		button1.setLayoutData(new RowData(50, 40));
+ * </pre>
+ * </p>
+ * 
+ * @see RowLayout
+ */
 public final class RowData {
 	/**
 	 * width specifies the width of the cell in pixels.
