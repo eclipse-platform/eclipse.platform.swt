@@ -1377,6 +1377,17 @@ static final boolean isAlef(int ch) {
 	return false;
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "TextLayout {*DISPOSED*}";
+	return "TextLayout {" + layout + "}";
+}
+
 /*
  *  Translate a client offset to an internal offset
  */

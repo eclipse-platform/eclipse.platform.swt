@@ -1899,6 +1899,17 @@ int validadeOffset(int offset, int step) {
 	return offset;
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "TextLayout {*DISPOSED*}";
+	return "TextLayout {}";
+}
+
 int translateOffset(int offset) {
 	if (segments == null) return offset;
 	int nSegments = segments.length;

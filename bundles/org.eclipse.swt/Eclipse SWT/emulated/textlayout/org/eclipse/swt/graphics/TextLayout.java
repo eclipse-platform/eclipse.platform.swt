@@ -1486,4 +1486,15 @@ public void setWidth (int width) {
 	freeRuns();
 	this.wrapWidth = width;
 }
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "TextLayout {*DISPOSED*}";
+	return "TextLayout {}";
+}
 }
