@@ -59,6 +59,15 @@ public void test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleL
 	accessible.removeAccessibleListener(listener);
 }
 
+public void test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener() {
+	AccessibleTextListener listener = new AccessibleTextAdapter() {
+		public void getSelectionRange(AccessibleTextEvent e) {
+		}
+	};
+	accessible.addAccessibleTextListener(listener);
+	accessible.removeAccessibleTextListener(listener);
+}
+
 public void test_getControl() {
 	assertEquals(shell, accessible.getControl());
 }
@@ -83,10 +92,29 @@ public void test_removeAccessibleListenerLorg_eclipse_swt_accessibility_Accessib
 	// Tested in test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener.
 }
 
+public void test_removeAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener() {
+	// Tested in test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener.
+}
+
+public void test_selectionChanged() {
+	warnUnimpl("Test test_selectionChanged not written");
+}
+
 public void test_setFocusI() {
 	warnUnimpl("Test test_setFocusI not written");
 }
 
+public void test_textCaretMovedI() {
+	warnUnimpl("Test test_textCaretMovedI not written");
+}
+
+public void test_textChangedIII() {
+	warnUnimpl("Test test_textChangedIII not written");
+}
+
+public void test_textSelectionChanged() {
+	warnUnimpl("Test test_textSelectionChanged not written");
+}
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
@@ -102,26 +130,38 @@ public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener");
 	methodNames.addElement("test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener");
+	methodNames.addElement("test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener");
 	methodNames.addElement("test_getControl");
 	methodNames.addElement("test_internal_WM_GETOBJECTII");
 	methodNames.addElement("test_internal_dispose_Accessible");
 	methodNames.addElement("test_internal_new_AccessibleLorg_eclipse_swt_widgets_Control");
 	methodNames.addElement("test_removeAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener");
 	methodNames.addElement("test_removeAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener");
+	methodNames.addElement("test_removeAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener");
+	methodNames.addElement("test_selectionChanged");
 	methodNames.addElement("test_setFocusI");
+	methodNames.addElement("test_textCaretMovedI");
+	methodNames.addElement("test_textChangedIII");
+	methodNames.addElement("test_textSelectionChanged");
 	return methodNames;
 }
 
 protected void runTest() throws Throwable {
 	if (getName().equals("test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener")) test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener();
 	else if (getName().equals("test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener")) test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener();
+	else if (getName().equals("test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener")) test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener();
 	else if (getName().equals("test_getControl")) test_getControl();
 	else if (getName().equals("test_internal_WM_GETOBJECTII")) test_internal_WM_GETOBJECTII();
 	else if (getName().equals("test_internal_dispose_Accessible")) test_internal_dispose_Accessible();
 	else if (getName().equals("test_internal_new_AccessibleLorg_eclipse_swt_widgets_Control")) test_internal_new_AccessibleLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_removeAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener")) test_removeAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener();
 	else if (getName().equals("test_removeAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener")) test_removeAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener();
+	else if (getName().equals("test_removeAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener")) test_removeAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener();
+	else if (getName().equals("test_selectionChanged")) test_selectionChanged();
 	else if (getName().equals("test_setFocusI")) test_setFocusI();
+	else if (getName().equals("test_textCaretMovedI")) test_textCaretMovedI();
+	else if (getName().equals("test_textChangedIII")) test_textChangedIII();
+	else if (getName().equals("test_textSelectionChanged")) test_textSelectionChanged();
 }
 
 /* custom */

@@ -85,6 +85,10 @@ public void test_setDisabledImageLorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setDisabledImageLorg_eclipse_swt_graphics_Image not written");
 }
 
+public void test_setImageLorg_eclipse_swt_graphics_Image() {
+	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
+}
+
 public void test_setTextLjava_lang_String() {
 	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
@@ -102,6 +106,7 @@ public static Test suite() {
 	}
 	return suite;
 }
+
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_custom_CTabFolderI");
@@ -114,11 +119,13 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getToolTipText");
 	methodNames.addElement("test_setControlLorg_eclipse_swt_widgets_Control");
 	methodNames.addElement("test_setDisabledImageLorg_eclipse_swt_graphics_Image");
+	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setToolTipTextLjava_lang_String");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
 	return methodNames;
 }
+
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_custom_CTabFolderI")) test_ConstructorLorg_eclipse_swt_custom_CTabFolderI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_custom_CTabFolderII")) test_ConstructorLorg_eclipse_swt_custom_CTabFolderII();
@@ -130,6 +137,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getToolTipText")) test_getToolTipText();
 	else if (getName().equals("test_setControlLorg_eclipse_swt_widgets_Control")) test_setControlLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_setDisabledImageLorg_eclipse_swt_graphics_Image")) test_setDisabledImageLorg_eclipse_swt_graphics_Image();
+	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();
 	else super.runTest();

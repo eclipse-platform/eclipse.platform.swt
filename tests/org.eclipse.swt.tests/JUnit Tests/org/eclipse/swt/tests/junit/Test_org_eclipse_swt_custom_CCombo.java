@@ -77,6 +77,10 @@ public void test_getChildren() {
 	warnUnimpl("Test test_getChildren not written");
 }
 
+public void test_getEditable() {
+	warnUnimpl("Test test_getEditable not written");
+}
+
 public void test_getItemCount() {
 	warnUnimpl("Test test_getItemCount not written");
 }
@@ -101,6 +105,10 @@ public void test_getSelectionIndex() {
 	warnUnimpl("Test test_getSelectionIndex not written");
 }
 
+public void test_getStyle() {
+	warnUnimpl("Test test_getStyle not written");
+}
+
 public void test_getText() {
 	warnUnimpl("Test test_getText not written");
 }
@@ -123,6 +131,10 @@ public void test_indexOfLjava_lang_StringI() {
 
 public void test_isFocusControl() {
 	warnUnimpl("Test test_isFocusControl not written");
+}
+
+public void test_redraw() {
+	warnUnimpl("Test test_redraw not written");
 }
 
 public void test_redrawIIIIZ() {
@@ -161,6 +173,14 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
 }
 
+public void test_setEditableZ() {
+	warnUnimpl("Test test_setEditableZ not written");
+}
+
+public void test_setEnabledZ() {
+	warnUnimpl("Test test_setEnabledZ not written");
+}
+
 public void test_setFocus() {
 	warnUnimpl("Test test_setFocus not written");
 }
@@ -193,6 +213,10 @@ public void test_setTextLjava_lang_String() {
 	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
 
+public void test_setToolTipTextLjava_lang_String() {
+	warnUnimpl("Test test_setToolTipTextLjava_lang_String not written");
+}
+
 public void test_setVisibleZ() {
 	warnUnimpl("Test test_setVisibleZ not written");
 }
@@ -206,6 +230,7 @@ public static Test suite() {
 	}
 	return suite;
 }
+
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
@@ -218,18 +243,21 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_deselectAll");
 	methodNames.addElement("test_deselectI");
 	methodNames.addElement("test_getChildren");
+	methodNames.addElement("test_getEditable");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemHeight");
 	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionIndex");
+	methodNames.addElement("test_getStyle");
 	methodNames.addElement("test_getText");
 	methodNames.addElement("test_getTextHeight");
 	methodNames.addElement("test_getTextLimit");
 	methodNames.addElement("test_indexOfLjava_lang_String");
 	methodNames.addElement("test_indexOfLjava_lang_StringI");
 	methodNames.addElement("test_isFocusControl");
+	methodNames.addElement("test_redraw");
 	methodNames.addElement("test_redrawIIIIZ");
 	methodNames.addElement("test_removeAll");
 	methodNames.addElement("test_removeI");
@@ -239,6 +267,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_selectI");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
+	methodNames.addElement("test_setEditableZ");
+	methodNames.addElement("test_setEnabledZ");
 	methodNames.addElement("test_setFocus");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
 	methodNames.addElement("test_setForegroundLorg_eclipse_swt_graphics_Color");
@@ -247,10 +277,12 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setSelectionLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_setTextLimitI");
 	methodNames.addElement("test_setTextLjava_lang_String");
+	methodNames.addElement("test_setToolTipTextLjava_lang_String");
 	methodNames.addElement("test_setVisibleZ");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
+
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addLjava_lang_String")) test_addLjava_lang_String();
@@ -262,18 +294,21 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_deselectAll")) test_deselectAll();
 	else if (getName().equals("test_deselectI")) test_deselectI();
 	else if (getName().equals("test_getChildren")) test_getChildren();
+	else if (getName().equals("test_getEditable")) test_getEditable();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
 	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionIndex")) test_getSelectionIndex();
+	else if (getName().equals("test_getStyle")) test_getStyle();
 	else if (getName().equals("test_getText")) test_getText();
 	else if (getName().equals("test_getTextHeight")) test_getTextHeight();
 	else if (getName().equals("test_getTextLimit")) test_getTextLimit();
 	else if (getName().equals("test_indexOfLjava_lang_String")) test_indexOfLjava_lang_String();
 	else if (getName().equals("test_indexOfLjava_lang_StringI")) test_indexOfLjava_lang_StringI();
 	else if (getName().equals("test_isFocusControl")) test_isFocusControl();
+	else if (getName().equals("test_redraw")) test_redraw();
 	else if (getName().equals("test_redrawIIIIZ")) test_redrawIIIIZ();
 	else if (getName().equals("test_removeAll")) test_removeAll();
 	else if (getName().equals("test_removeI")) test_removeI();
@@ -283,6 +318,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_selectI")) test_selectI();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
+	else if (getName().equals("test_setEditableZ")) test_setEditableZ();
+	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
 	else if (getName().equals("test_setFocus")) test_setFocus();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setForegroundLorg_eclipse_swt_graphics_Color")) test_setForegroundLorg_eclipse_swt_graphics_Color();
@@ -291,6 +328,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setSelectionLorg_eclipse_swt_graphics_Point")) test_setSelectionLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_setTextLimitI")) test_setTextLimitI();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
+	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();
 	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
 	else super.runTest();
 }
