@@ -185,7 +185,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		e.printStackTrace();
 	}
 	ImageData imageData = new ImageLoader().load(inStream)[0];
-	ImageData imageData1 = new ImageData(imageData.width, imageData.height, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	ImageData imageData1 = new ImageData(imageData.width, imageData.height, 4, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	try {
 		inStream.close();
 	} catch (IOException e1) {
