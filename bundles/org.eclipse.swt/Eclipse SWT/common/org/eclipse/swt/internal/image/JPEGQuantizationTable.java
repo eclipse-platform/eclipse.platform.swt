@@ -130,7 +130,7 @@ public void scaleBy(int qualityFactor) {
 	int totalLength = getSegmentLength() - 2;
 	int ofs = 4;
 	while (totalLength > 64) {
-		int tq = (reference[ofs] & 0xFF) % 16;
+//		int tq = (reference[ofs] & 0xFF) % 16;
 		int pq = (reference[ofs] & 0xFF) / 16;
 		if (pq == 0) {
 			for (int i = ofs + 1; i <= ofs + 64; i++) {

@@ -120,7 +120,6 @@ void assertCompressedDataAtEnd() {
 private byte getNextCompressedByte() {
 	if (copyBytesRemaining > 0) {
 		byte value = window[copyIndex];
-		byte temp = (byte) (value & 0xFF);
 		window[windowIndex] = value;
 		copyBytesRemaining--;
 		
@@ -134,7 +133,6 @@ private byte getNextCompressedByte() {
 	
 	int value = huffmanTables.getNextLiteralValue(stream);
 	if (value < END_OF_COMPRESSED_BLOCK) {
-		byte temp = (byte) (value & 0xFF);
 		window[windowIndex] = (byte) (value & 0xFF);
 		windowIndex++;
 		if (windowIndex >= window.length) windowIndex = 0;

@@ -614,11 +614,7 @@ public void setImage (Image image) {
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_BITMAP;
 	if (image != null) info.hbmpItem = OS.HBMMENU_CALLBACK;
-	boolean success = OS.SetMenuItemInfo (hMenu, id, false, info);
-	/*
-	* This code is intentionally commented.
-	*/
-//	if (!success) error (SWT.ERROR_CANNOT_SET_TEXT);
+	OS.SetMenuItemInfo (hMenu, id, false, info);
 	parent.redraw ();
 }
 

@@ -323,7 +323,6 @@ void convertMultiRGBToYCbCr(ImageData image) {
 	byte[] dataYComp = new byte[bSize];
 	byte[] dataCbComp = new byte[bSize];
 	byte[] dataCrComp = new byte[bSize];
-	byte[] origData = image.data;
 	PaletteData palette = image.palette;
 	int[] buffer = new int[srcWidth];
 	if (palette.isDirect) {
@@ -1168,7 +1167,6 @@ static void initialize() {
 }
 static void initializeBitCountTable() {
 	int nBits = 1;
-	int count = 0;
 	int power2 = 2;
 	NBitsTable = new int[2048];
 	NBitsTable[0] = 0;

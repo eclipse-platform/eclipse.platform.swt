@@ -118,7 +118,7 @@ private void readCompressedDataHeader() {
 	int dictionary = (headerByte2 & (1 << 5));
 	if (dictionary != 0) error();
 	
-	int compressionLevel = (headerByte2 & 0xC0) >> 6;
+//	int compressionLevel = (headerByte2 & 0xC0) >> 6;
 }
 
 void checkAdler() {

@@ -350,7 +350,7 @@ final class GIFFileFormat extends FileFormat {
 		int height = (block[6] & 0xFF) | ((block[7] & 0xFF) << 8);
 		byte bitField = block[8];
 		boolean interlaced = (bitField & 0x40) != 0;
-		boolean sorted = (bitField & 0x20) != 0;
+//		boolean sorted = (bitField & 0x20) != 0;
 		if ((bitField & 0x80) != 0) {
 			// Local palette.
 			depth = (bitField & 0x7) + 1;

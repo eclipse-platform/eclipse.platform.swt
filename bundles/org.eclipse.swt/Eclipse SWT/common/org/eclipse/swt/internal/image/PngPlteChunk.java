@@ -32,8 +32,8 @@ int getPaletteSize() {
  */
 PaletteData getPaletteData() {
 	RGB[] rgbs = new RGB[getPaletteSize()];
-	int start = DATA_OFFSET;
-	int end = DATA_OFFSET + getLength();
+//	int start = DATA_OFFSET;
+//	int end = DATA_OFFSET + getLength();
 	for (int i = 0; i < rgbs.length; i++) {
 		int offset = DATA_OFFSET + (i * 3);
 		int red = reference[offset] & 0xFF;
