@@ -1752,6 +1752,8 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ imHandle = imHandle ();
 	if (imHandle != 0) {
 		if (OS.gtk_im_context_filter_keypress (imHandle, event)) return 1;
+		// widget could be disposed at this point
+		if (isDisposed ()) return 0;
 	}
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
