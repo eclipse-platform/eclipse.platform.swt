@@ -1217,6 +1217,9 @@ public class OS extends Platform {
 	public static final int TTF_RTLREADING = 0x4;
 	public static final int TTM_ADDTOOL = IsUnicode ? 0x432 : 0x404;
 	public static final int TTM_DELTOOL = IsUnicode ? 0x433 : 0x405;
+	public static final int TTM_GETTOOLINFO = 0x400 + (IsUnicode ? 53 : 8);
+	public static final int TTM_GETTOOLINFOA = 0x400 + 8;
+	public static final int TTM_GETTOOLINFOW = 0x400 + 53;
 	public static final int TTM_SETMAXTIPWIDTH = 0x418;
 	public static final int TTM_UPDATE = 0x41D;
 	public static final int TTN_FIRST = 0xfffffdf8;

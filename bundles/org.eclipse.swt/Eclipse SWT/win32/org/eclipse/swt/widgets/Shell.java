@@ -1193,13 +1193,17 @@ void setToolTipText (int hwnd, String text) {
 	lpti.cbSize = TOOLINFO.sizeof;
 	lpti.uId = hwnd;
 	lpti.hwnd = handle;
-	OS.SendMessage (toolTipHandle, OS.TTM_DELTOOL, 0, lpti);
-	if (text != null) {
-		lpti.uFlags = OS.TTF_IDISHWND | OS.TTF_SUBCLASS;
-		lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (toolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
+	if (text == null) {
+		OS.SendMessage (toolTipHandle, OS.TTM_DELTOOL, 0, lpti);
+	} else {
+		if (OS.SendMessage (toolTipHandle, OS.TTM_GETTOOLINFO, 0, lpti) != 0) {
+			OS.SendMessage (toolTipHandle, OS.TTM_UPDATE, 0, 0);
+		} else {
+			lpti.uFlags = OS.TTF_IDISHWND | OS.TTF_SUBCLASS;
+			lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
+			OS.SendMessage (toolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
+		}
 	}
-	OS.SendMessage (toolTipHandle, OS.TTM_UPDATE, 0, 0);
 }
 
 void setToolTipText (NMTTDISPINFO lpnmtdi, byte [] buffer) {
