@@ -24,7 +24,7 @@ import org.eclipse.swt.events.*;
  * <p>
  * <dl>
  * <dt><b>Styles:</b>
- * <dd>SHADOW_IN, SHADOW_OUT, SHADOW_NONE</dd>
+ * <dd>LEFT, RIGHT, CENTER, SHADOW_IN, SHADOW_OUT, SHADOW_NONE</dd>
  * <dt><b>Events:</b>
  * <dd></dd>
  * </dl>
@@ -58,7 +58,30 @@ public class CLabel extends Canvas {
 
 	
 /**
- * Create a CLabel with the given border style as a child of parent.
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see #getStyle
  */
 public CLabel(Composite parent, int style) {
 	super(parent, checkStyle(style));
@@ -119,6 +142,13 @@ private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Col
 /**
  * Returns the alignment.
  * The alignment style (LEFT, CENTER or RIGHT) is returned.
+ * 
+ * @return SWT.LEFT, SWT.RIGHT or SWT.CENTER
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getAlignment() {
 	checkWidget();
@@ -126,6 +156,13 @@ public int getAlignment() {
 }
 /**
  * Return the CLabel's image or <code>null</code>.
+ * 
+ * @return the image of the label or null
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Image getImage() {
 	checkWidget();
@@ -162,6 +199,13 @@ public void setToolTipText (String string) {
 }	
 /**
  * Return the Label's text.
+ * 
+ * @return the text of the label or null
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public String getText() {
 	checkWidget();
@@ -302,6 +346,14 @@ private void onPaint(PaintEvent event) {
 /**
  * Set the alignment of the CLabel.
  * Use the values LEFT, CENTER and RIGHT to align image and text within the available space.
+ * 
+ * @param align the alignment style of LEFT, RIGHT or CENTER
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the value of align is not one of SWT.LEFT, SWT.RIGHT or SWT.CENTER</li>
+ * </ul>
  */
 public void setAlignment(int align) {
 	checkWidget();
@@ -332,6 +384,12 @@ public void setAlignment(int align) {
  * @param percents an array of integers between 0 and 100 specifying the percent of the width 
  *                 of the widget at which the color should change.  The size of the percents array must be one 
  *                 less than the size of the colors array.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the values of colors and percents are not consistant</li>
+ * </ul>
  */
 public void setBackground(Color[] colors, int[] percents) {	
 	checkWidget();
@@ -392,11 +450,23 @@ public void setBackground(Color[] colors, int[] percents) {
 	// Refresh with the new settings
 	redraw();
 }
+/**
+ * Set the image to be drawn in the background of the label.
+ * 
+ * @param image the image to be drawn in the background
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setBackground(Image image) {
 	checkWidget();
-	if (image == backgroundImage) return;	
-	gradientColors = null;
-	gradientPercents = null;
+	if (image == backgroundImage) return;
+	if (image != null) {
+		gradientColors = null;
+		gradientPercents = null;
+	}
 	backgroundImage = image;
 	redraw();
 	
@@ -408,6 +478,13 @@ public void setFont(Font font) {
 /**
  * Set the label's Image.
  * The value <code>null</code> clears it.
+ * 
+ * @param image the image to be displayed in the label or null
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setImage(Image image) {
 	checkWidget();
@@ -419,6 +496,13 @@ public void setImage(Image image) {
 /**
  * Set the label's text.
  * The value <code>null</code> clears it.
+ * 
+ * @param text the text to be displayed in the label or null
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setText(String text) {
 	checkWidget();
