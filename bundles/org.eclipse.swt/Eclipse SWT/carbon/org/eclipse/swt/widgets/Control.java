@@ -1252,6 +1252,7 @@ boolean traverseMnemonic (Event event) {
 
 public void update () {
 	checkWidget();
+	if (!isVisible ()) return;
 	Display display = getDisplay ();
 	display.update ();
 }

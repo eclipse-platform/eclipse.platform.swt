@@ -326,7 +326,10 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowActivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	/*
-	* Bug in the Macintosh.  
+	* Bug in the Macintosh.  Despite the that a window has scope
+	* kWindowActivationScopeNone, it gets kEventWindowActivated
+	* events but does not get kEventWindowDeactivated events.  The
+	* fix is to ignore kEventWindowActivated events.
 	*/
 	int [] outScope = new int [1];
 	OS.GetWindowActivationScope (shellHandle, outScope); 

@@ -1506,7 +1506,18 @@ public void update () {
 	int [] outEvent = new int [1];
 	int [] mask = new int [] {OS.kEventClassWindow, OS.kEventWindowUpdate};
 	while (OS.ReceiveNextEvent (mask.length / 2, mask, OS.kEventDurationNoWait, true, outEvent) == OS.noErr) {
-		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
+		/*
+		* Bug in the Macintosh.  For some reason, when a hierarchy of
+		* windows is disposed from kEventWindowClose, despite the fact
+		* that DisposeWindow() has been called, the window is not
+		* disposed and there are outstandings kEventWindowUpdate events
+		* in the event queue.  Dispatching these events will cause a
+		* segment fault.  The fix is to dispatch events to visible
+		* window only.
+		*/
+		int [] theWindow = new int [1];
+		OS.GetEventParameter (outEvent [0], OS.kEventParamDirectObject, OS.typeWindowRef, null, 4, null, theWindow);
+		if (OS.IsWindowVisible (theWindow [0])) OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
 	}
 }
