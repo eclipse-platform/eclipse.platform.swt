@@ -162,8 +162,8 @@ public class CTabFolder extends Composite {
 	int borderRight = 0;
 	int borderTop = 0;
 	int borderBottom = 0;
-	int highlight_margin = 0;
-	int highlight_header = 0;
+	public int highlight_margin = 0;
+	public int highlight_header = 0;
 	int[] curve;
 	
 	// when disposing CTabFolder, don't try to layout the items or 
