@@ -11,13 +11,11 @@
 package org.eclipse.swt.internal;
 
 
+import java.util.Hashtable;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.internal.win32.GCP_RESULTS;
-import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.internal.win32.RECT;
-import org.eclipse.swt.internal.win32.TCHAR;
-import java.util.Hashtable;
+import org.eclipse.swt.internal.win32.*;
 /*
  * Wraps Win32 API used to bidi enable the StyledText widget.
  */
@@ -67,6 +65,7 @@ public class BidiUtil {
 	static final int GCPGLYPH_LINKBEFORE = 0x8000;
 	static final int GCPGLYPH_LINKAFTER = 0x4000;
 	// ExtTextOut constants
+	static final int ETO_CLIPPED = 0x4;
 	static final int ETO_GLYPH_INDEX = 0x0010;
 	// Windows primary language identifiers
 	static final int LANG_ARABIC = 0x01;
@@ -104,7 +103,7 @@ public class BidiUtil {
  * @param runnable the code that should be executed when a keyboard language change
  *  occurs
  */
-public static void addLanguageListener(int hwnd, Runnable runnable) {
+public static void addLanguageListener (int hwnd, Runnable runnable) {
 	languageMap.put(new Integer(hwnd), runnable);
 	subclass(hwnd);
 }
@@ -133,12 +132,17 @@ static int EnumSystemLanguageGroupsProc(int lpLangGrpId, int lpLangGrpIdString, 
  * @param y y position to start rendering
  */
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
-	RECT rect = null;
+	int length = renderDx.length;
+	
 	if (OS.GetLayout (gc.handle) != 0) {
 		reverse(renderDx);
+		renderDx[length-1]--;               //fixes bug 40006
 		reverse(renderBuffer);
-	}
-	OS.ExtTextOutW(gc.handle, x, y, ETO_GLYPH_INDEX, rect, renderBuffer, renderBuffer.length, renderDx);
+	}	
+	// render transparently to avoid overlapping segments. fixes bug 40006
+	int oldBkMode = OS.SetBkMode(gc.handle, OS.TRANSPARENT);
+	OS.ExtTextOutW(gc.handle, x, y, ETO_GLYPH_INDEX , null, renderBuffer, renderBuffer.length, renderDx);
+	OS.SetBkMode(gc.handle, oldBkMode);
 }
 /**
  * Return ordering and rendering information for the given text.  Wraps the GetFontLanguageInfo
@@ -478,7 +482,7 @@ public static boolean isKeyboardBidi() {
  *
  * @param hwnd the handle of the Control that is listening for keyboard language changes
  */
-public static void removeLanguageListener(int hwnd) {
+public static void removeLanguageListener (int hwnd) {
 	languageMap.remove(new Integer(hwnd));
 	unsubclass(hwnd);
 }		
@@ -630,7 +634,7 @@ static int windowProc (int hwnd, int msg, int wParam, int lParam) {
 			Runnable runnable = (Runnable) languageMap.get (key);
 			if (runnable != null) runnable.run ();
 			break;
-	}
+		}
 	Integer oldProc = (Integer)oldProcMap.get(key);
 	return OS.CallWindowProc (oldProc.intValue(), hwnd, msg, wParam, lParam);
 }
