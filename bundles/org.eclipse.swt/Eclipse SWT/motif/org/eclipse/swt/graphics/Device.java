@@ -374,22 +374,38 @@ protected void release () {
 	COLOR_DARK_BLUE = COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
 	
-	/* Restore original warning and error handlers */
+	/* Free the Xt error handler */
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	OS.XtAppSetWarningHandler (xtContext, xtWarningProc);
-	OS.XSetErrorHandler (xErrorProc);
 	OS.XtAppSetErrorHandler (xtContext, xtErrorProc);
-	OS.XSetIOErrorHandler (xIOErrorProc);
-
-	/* Release the warning and error callbacks */
-	xtWarningCallback.dispose (); xtWarningCallback = null;
-	xtWarningProc = 0;
-	xErrorCallback.dispose (); xErrorCallback = null;
-	xErrorProc = 0;
 	xtErrorCallback.dispose (); xtErrorCallback = null;
-	xtErrorProc = 0;
+	xtNullErrorProc = xtErrorProc = 0;
+	
+	/* Free the Xt Warning handler */
+	OS.XtAppSetWarningHandler (xtContext, xtWarningProc);
+	xtWarningCallback.dispose (); xtWarningCallback = null;
+	xtNullWarningProc = xtWarningProc = 0;
+	
+	/* Free the X IO error handler */
+	OS.XSetIOErrorHandler (xIOErrorProc);
 	xIOErrorCallback.dispose (); xIOErrorCallback = null;
-	xIOErrorProc = 0;
+	xNullIOErrorProc = xIOErrorProc = 0;
+	
+	/* Free the X error handler */
+	/*
+	* Bug in Motif.  For some reason, when a pixmap is
+	* set into a button or label, despite the fact that
+	* the pixmap is cleared from the widget before it
+	* is disposed, Motif still references the pixmap
+	* and attempts to dispose it in XtDestroyApplicationContext().
+	* The fix is to install the null error handler to avoid the
+	* warning.
+	*
+	* NOTE: The warning callback is leaked.
+	*/
+	OS.XSetErrorHandler (xNullErrorProc);
+//	OS.XSetErrorHandler (xErrorProc);
+//	xErrorCallback.dispose (); xErrorCallback = null;
+//	xNullErrorProc = xErrorProc = 0;
 }
 
 public void setWarnings (boolean warnings) {
