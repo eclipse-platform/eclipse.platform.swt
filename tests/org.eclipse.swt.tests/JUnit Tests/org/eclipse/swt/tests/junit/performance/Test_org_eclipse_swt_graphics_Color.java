@@ -38,7 +38,8 @@ protected void setUp() throws Exception {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
-	final int COUNT = 3000000;
+	// adding 500000 to either of these cause OOM
+	final int COUNT = isGTK ? 1500000 : 3000000;
 	
 	Color[] colors = new Color [COUNT];
 
@@ -57,7 +58,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB() {
-	final int COUNT = 3000000;	// 3500000 causes OOM
+	// adding 500000 to either of these cause OOM
+	final int COUNT = isGTK ? 1500000 : 3000000;
 	
 	Color[] colors = new Color [COUNT];
 	RGB rgb = new RGB(102, 255, 3);

@@ -511,31 +511,18 @@ public void test_setCheckedZ() {
 	t.dispose();
 }
 
-boolean compareFonts(Font font1, Font font2) {
-	if (SwtJunit.isGTK) {
-		FontData[] fontData1 = font1.getFontData();
-		FontData[] fontData2 = font2.getFontData();
-		if (fontData1.length != fontData2.length) return false;
-		for (int i = 0; i < fontData1.length; i++) {
-			if (!fontData1[i].equals(fontData2[i])) return false;
-		};
-		return true;
-	}
-	return font1.handle == font2.handle;
-}
-
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Display display = tableItem.getDisplay();
 	Font font = tableItem.getFont();
 	tableItem.setFont(font);
-	assertTrue(compareFonts(font, tableItem.getFont()));
+	assertTrue(font.equals(tableItem.getFont()));
 	
 	font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	tableItem.setFont(font);
-	assertTrue(compareFonts(font, tableItem.getFont()));
+	assertTrue(font.equals( tableItem.getFont()));
 
 	tableItem.setFont(null);
-	assertTrue(compareFonts(table.getFont(), tableItem.getFont()));
+	assertTrue(table.getFont().equals(tableItem.getFont()));
 	
 	font.dispose();
 	try {
@@ -551,14 +538,14 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	
 	// no columns
-	assertTrue(compareFonts(table.getFont(), tableItem.getFont(0)));
-	assertTrue(compareFonts(tableItem.getFont(), tableItem.getFont(0)));
+	assertTrue(table.getFont().equals(tableItem.getFont(0)));
+	assertTrue(tableItem.getFont().equals(tableItem.getFont(0)));
 	tableItem.setFont(0, font);
-	assertTrue(compareFonts(font, tableItem.getFont(0)));
+	assertTrue(font.equals(tableItem.getFont(0)));
 	
 	// index beyond range - no error
 	tableItem.setFont(10, font);
-	assertTrue(compareFonts(tableItem.getFont(), tableItem.getFont(10)));
+	assertTrue(tableItem.getFont().equals(tableItem.getFont(10)));
 	
 	// with columns
 	TableColumn column1 = new TableColumn(table, SWT.LEFT);
@@ -566,24 +553,24 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	
 	// index beyond range - no error
 	tableItem.setFont(10, font);
-	assertTrue(compareFonts(tableItem.getFont(), tableItem.getFont(10)));
+	assertTrue(tableItem.getFont().equals(tableItem.getFont(10)));
 	
 	tableItem.setFont(0, font);
-	assertTrue(compareFonts(font, tableItem.getFont(0)));
+	assertTrue(font.equals(tableItem.getFont(0)));
 	tableItem.setFont(0, null);
-	assertTrue(compareFonts(table.getFont(), tableItem.getFont(0)));
+	assertTrue(table.getFont().equals(tableItem.getFont(0)));
 	
 	Font font2 = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
 	
 	tableItem.setFont(0, font);
 	tableItem.setFont(font2);
-	assertTrue(compareFonts(font, tableItem.getFont(0)));
+	assertTrue(font.equals(tableItem.getFont(0)));
 	
 	tableItem.setFont(0, null);
-	assertTrue(compareFonts(font2, tableItem.getFont(0)));
+	assertTrue(font2.equals(tableItem.getFont(0)));
 	
 	tableItem.setFont(null);
-	assertTrue(compareFonts(table.getFont(),tableItem.getFont(0)));
+	assertTrue(table.getFont().equals(tableItem.getFont(0)));
 	
 	font.dispose();
 	font2.dispose();
