@@ -19,16 +19,16 @@
 #define PTR_sizeof() sizeof(void *)
 
 /* Libraries for dynamic loaded functions */
-#define gtk_tree_selection_get_selected_rows_LIB "libgtk-x11-2.0.so"
-#define gtk_tree_view_column_cell_get_position_LIB "libgtk-x11-2.0.so"
-#define gtk_entry_set_alignment_LIB "libgtk-x11-2.0.so"
-#define gdk_screen_get_default_LIB "libgdk-x11-2.0.so"
-#define gdk_screen_get_monitor_at_window_LIB "libgdk-x11-2.0.so"
-#define gdk_screen_get_monitor_geometry_LIB "libgdk-x11-2.0.so"
-#define gdk_screen_get_n_monitors_LIB "libgdk-x11-2.0.so"
-#define gdk_screen_get_number_LIB "libgdk-x11-2.0.so"
-#define gdk_window_set_keep_above_LIB "libgdk-x11-2.0.so"
-#define gdk_window_set_accept_focus_LIB "libgdk-x11-2.0.so"
+#define gtk_tree_selection_get_selected_rows_LIB "libgtk-x11-2.0.so.0"
+#define gtk_tree_view_column_cell_get_position_LIB "libgtk-x11-2.0.so.0"
+#define gtk_entry_set_alignment_LIB "libgtk-x11-2.0.so.0"
+#define gdk_screen_get_default_LIB "libgdk-x11-2.0.so.0"
+#define gdk_screen_get_monitor_at_window_LIB "libgdk-x11-2.0.so.0"
+#define gdk_screen_get_monitor_geometry_LIB "libgdk-x11-2.0.so.0"
+#define gdk_screen_get_n_monitors_LIB "libgdk-x11-2.0.so.0"
+#define gdk_screen_get_number_LIB "libgdk-x11-2.0.so.0"
+#define gdk_window_set_keep_above_LIB "libgdk-x11-2.0.so.0"
+#define gdk_window_set_accept_focus_LIB "libgdk-x11-2.0.so.0"
 
 /* Field accessors */
 #define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->accel_string = arg1
