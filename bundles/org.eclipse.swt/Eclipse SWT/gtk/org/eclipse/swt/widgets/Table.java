@@ -122,8 +122,39 @@ public void addSelectionListener (SelectionListener listener) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	if (wHint == SWT.DEFAULT) wHint = 200;
-	return computeNativeSize (scrolledHandle, wHint, hHint, changed);
+	
+	/* Compute the height based on the items */
+	int height;
+	GtkStyle st = new GtkStyle ();
+	OS.memmove (st, OS.gtk_widget_get_style (handle));
+	if (hHint != SWT.DEFAULT) {
+		height = hHint;
+	} else {
+		height = getHeaderHeight();
+		height += OS.GTK_CLIST_ROW_HEIGHT (handle) * getItemCount();
+		height += 2 * st.ythickness;
+		if ((style & SWT.H_SCROLL) != 0) height += 18; //WRONG, must obtain the real size
+		// FIXME - check for border
+	}
+	
+	/* Compute the width based on the items */
+	int width;
+	if (wHint != SWT.DEFAULT) {
+		width = wHint;
+	} else {
+		width = 2 * st.xthickness;
+		int count = getColumnCount();
+		for (int i = 0; i<count; i++) width += getColumn(i).getWidth();
+		if ((style & SWT.V_SCROLL) != 0) width += 18; //WRONG, must obtain the real size
+		// FIXME - check for border
+	}
+	
+	/* In no event will we request ourselves smaller than the minimum OS size */
+	Point minimum = computeNativeSize (scrolledHandle, wHint, hHint, changed);
+	width = Math.max(width, minimum.x);
+	height = Math.max(height, minimum.y);
+	
+	return new Point(width, height);
 }
 
 int createCheckPixmap(boolean checked) {
