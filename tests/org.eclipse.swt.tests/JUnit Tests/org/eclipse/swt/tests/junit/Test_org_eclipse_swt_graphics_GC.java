@@ -107,10 +107,13 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	gc.drawImage(imageAlpha, 160, 100);
 	try {
 		gc.drawImage(null, 100, 100);
-		fail("No exception thrown"); //should never get here
+		fail("No exception thrown");
 	}
 	catch (IllegalArgumentException e) {
-	}	
+	}
+	image.dispose();
+	imageTransparent.dispose();
+	imageAlpha.dispose();
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
@@ -148,6 +151,9 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
 	}
 	catch (IllegalArgumentException e) {
 	}
+	image.dispose();
+	imageAlpha.dispose();
+	imageTransparent.dispose();
 }
 
 public void test_drawLineIIII() {

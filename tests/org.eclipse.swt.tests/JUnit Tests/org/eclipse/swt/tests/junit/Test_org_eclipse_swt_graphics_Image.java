@@ -120,8 +120,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	data = new ImageData(10, 10, 1, new PaletteData(0xff0000, 0x00ff00, 0x0000ff));
 	try {
 		image = new Image(display, data);
-		fail("Unsupported color depth");
 		image.dispose();
+		fail("Unsupported color depth");
 	} catch (SWTException e) {
 	}
 
@@ -265,10 +265,8 @@ public void test_equalsLjava_lang_Object() {
 		image1 = new Image(display, imageData);
 		assertFalse(":c:", image.equals(image1));
 	} finally {
-		try {
-			image.dispose();
-			image1.dispose();
-		} catch (Exception e) {}
+		image.dispose();
+		image1.dispose();
 	}
 }
 
@@ -331,10 +329,8 @@ public void test_hashCode() {
 		boolean equals = (image1.hashCode() == image.hashCode());
 		assertFalse(":b:", equals);
 	} finally {
-		try {
-			image.dispose();
-			image1.dispose();
-		} catch (Exception e) {}
+		image.dispose();
+		image1.dispose();
 	}
 }
 
@@ -489,6 +485,7 @@ void getImageData1() {
 		ImageData data1 = loader.load(stream)[0];
 		Image image = new Image(display, data1);
 		ImageData data2 = image.getImageData();
+		image.dispose();
 		assertEquals("Image width should be the same", data1.width, data2.width);
 		assertEquals("Image height should be the same", data1.height, data2.height);
 		try {
