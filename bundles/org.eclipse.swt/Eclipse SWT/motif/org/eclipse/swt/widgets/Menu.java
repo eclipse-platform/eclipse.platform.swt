@@ -827,12 +827,12 @@ public void setVisible (boolean visible) {
 		OS.XtUnmanageChild (handle);
 	}
 }
-boolean translateAccelerator (int accel) {
+boolean translateAccelerator (int accel, boolean doit) {
 	if (!getEnabled ()) return false;
 	MenuItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		MenuItem item = items [i];
-		if (item.translateAccelerator (accel)) return true;
+		if (item.translateAccelerator (accel, doit)) return true;
 	}
 	return false;
 }

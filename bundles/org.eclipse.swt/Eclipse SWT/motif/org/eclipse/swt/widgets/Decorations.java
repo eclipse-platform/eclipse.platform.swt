@@ -624,73 +624,63 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	label = string;
 }
-boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent) {
-	/*
-	* Bug in Solaris.  When accelerators are set more
-	* than once in the same menu bar, the time it takes
-	* to set the accelerator increases exponentially.
-	* The fix is to implement our own accelerator table
-	* on Solaris.
-	*/
-	if (OS.IsSunOS) {
-		if (menuBar != null && menuBar.getEnabled ()) {
-			/* Ignore modifiers. */
-			switch (keysym) {
-				case OS.XK_Control_L:
-				case OS.XK_Control_R:
-				case OS.XK_Alt_L:
-				case OS.XK_Alt_R:
-				case OS.XK_Shift_L:
-				case OS.XK_Shift_R:
-					return false;					
-			}
-			
-			/*
-			* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
-			* translated correctly by XLookupString().  They are mapped
-			* to 0x1005FF10 and 0x1005FF11 respectively.  The fix is to
-			* look for these values explicitly and correct them.
-			*/
-			if (keysym != 0) {
-				switch (keysym) {
-					case 0x1005FF10: 
-						keysym = OS.XK_F11;
-						key = 0;
-						break;
-					case 0x1005FF11:
-						keysym = OS.XK_F12;
-						key = 0;
-						break;
-				}
-				/*
-				* Bug in MOTIF.  On Solaris only, there is garbage in the
-				* high 16-bits for Keysyms such as XK_Down.  Since Keysyms
-				* must be 16-bits to fit into a Character, mask away the
-				* high 16-bits on all platforms.
-				*/
-				keysym &= 0xFFFF;
-			}
-			
-			/*
-			* Bug in Motif.  There are some keycodes for which 
-			* XLookupString() does not translate the character.
-			* Some of examples are Shift+Tab and Ctrl+Space.
-			*/
-			switch (keysym) {
-				case OS.XK_ISO_Left_Tab: key = '\t'; break;
-				case OS.XK_space: key = ' '; break;
-			}
-				
-			int accelerator = Display.translateKey (keysym);
-			if (accelerator == 0) accelerator = key;
-			if (accelerator == 0) return false;
-			if ((xEvent.state & OS.Mod1Mask) != 0) accelerator |= SWT.ALT;
-			if ((xEvent.state & OS.ShiftMask) != 0) accelerator |= SWT.SHIFT;
-			if ((xEvent.state & OS.ControlMask) != 0) accelerator |= SWT.CONTROL;
-			return menuBar.translateAccelerator (accelerator);
-		}
+boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent, boolean doit) {
+	if (menuBar == null || !menuBar.getEnabled ()) return false;
+	
+	/* Ignore modifiers. */
+	switch (keysym) {
+		case OS.XK_Control_L:
+		case OS.XK_Control_R:
+		case OS.XK_Alt_L:
+		case OS.XK_Alt_R:
+		case OS.XK_Shift_L:
+		case OS.XK_Shift_R:
+			return false;					
 	}
-	return false;
+	
+	/*
+	* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
+	* translated correctly by XLookupString().  They are mapped
+	* to 0x1005FF10 and 0x1005FF11 respectively.  The fix is to
+	* look for these values explicitly and correct them.
+	*/
+	if (OS.IsSunOS && keysym != 0) {
+		switch (keysym) {
+			case 0x1005FF10: 
+				keysym = OS.XK_F11;
+				key = 0;
+				break;
+			case 0x1005FF11:
+				keysym = OS.XK_F12;
+				key = 0;
+				break;
+		}
+		/*
+		* Bug in MOTIF.  On Solaris only, there is garbage in the
+		* high 16-bits for Keysyms such as XK_Down.  Since Keysyms
+		* must be 16-bits to fit into a Character, mask away the
+		* high 16-bits on all platforms.
+		*/
+		keysym &= 0xFFFF;
+	}
+	
+	/*
+	* Bug in Motif.  There are some keycodes for which 
+	* XLookupString() does not translate the character.
+	* Some examples are Shift+Tab and Ctrl+Space.
+	*/
+	switch (keysym) {
+		case OS.XK_ISO_Left_Tab: key = '\t'; break;
+		case OS.XK_space: key = ' '; break;
+	}
+		
+	int accelerator = Display.translateKey (keysym);
+	if (accelerator == 0) accelerator = key;
+	if (accelerator == 0) return false;
+	if ((xEvent.state & OS.Mod1Mask) != 0) accelerator |= SWT.ALT;
+	if ((xEvent.state & OS.ShiftMask) != 0) accelerator |= SWT.SHIFT;
+	if ((xEvent.state & OS.ControlMask) != 0) accelerator |= SWT.CONTROL;
+	return menuBar.translateAccelerator (accelerator, doit);
 }
 boolean traverseItem (boolean next) {
 	return false;

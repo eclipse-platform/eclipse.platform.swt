@@ -850,9 +850,9 @@ public void setText (String string) {
 	if (xmString1 != 0) OS.XmStringFree (xmString1);
 	if (xmString2 != 0) OS.XmStringFree (xmString2);
 }
-boolean translateAccelerator (int accel) {
+boolean translateAccelerator (int accel, boolean doit) {
 	if (!getEnabled ()) return false;
-	if (menu != null) return menu.translateAccelerator (accel);
+	if (menu != null) return menu.translateAccelerator (accel, doit);
 	int accelerator = this.accelerator;
 	if ((accelerator & SWT.KEYCODE_BIT) == 0) {
 		int key = accelerator & SWT.KEY_MASK;
@@ -863,7 +863,7 @@ boolean translateAccelerator (int accel) {
 		accelerator = mods | key;
 	}
 	if (accelerator == accel) {
-		postEvent (SWT.Selection);
+		if (doit) postEvent (SWT.Selection);
 		return true;
 	}
 	return false;

@@ -2405,8 +2405,8 @@ public Point toDisplay (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return toDisplay (point.x, point.y);
 }
-boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent) {
-	return menuShell ().translateAccelerator (key, keysym, xEvent);
+boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent, boolean doit) {
+	return menuShell ().translateAccelerator (key, keysym, xEvent, doit);
 }
 boolean translateMnemonic (char key, XKeyEvent xEvent) {
 	if (!isVisible () || !isEnabled ()) return false;

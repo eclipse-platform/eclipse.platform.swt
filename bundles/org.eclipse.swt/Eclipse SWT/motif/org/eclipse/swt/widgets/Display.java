@@ -768,14 +768,24 @@ boolean filterEvent (XAnyEvent event) {
 		}
 	}
 
-	/* Check for an accelerator key */
-	if (widget.translateAccelerator (key, keysym, keyEvent)) return true;
-	
+	/*
+	* Bug in Solaris.  When accelerators are set more
+	* than once in the same menu bar, the time it takes
+	* to set the accelerator increases exponentially.
+	* The fix is to implement our own accelerator table
+	* on Solaris.
+	*/
+	if (OS.IsSunOS) {
+		if (widget.translateAccelerator (key, keysym, keyEvent, true)) {
+			return true;
+		}
+	}
+
 	/* Check for a mnemonic key */
 	if (key != 0) {
 		if (widget.translateMnemonic (key, keyEvent)) return true;
 	}
-	
+
 	/* Check for a traversal key */
 	if (keysym == 0) return false;
 	switch (keysym) {
@@ -790,6 +800,15 @@ boolean filterEvent (XAnyEvent event) {
 		case OS.XK_Right:
 		case OS.XK_Page_Up:
 		case OS.XK_Page_Down:
+			/*
+			* If a traversal key has been assigned as an accelerator,
+			* allow the accelerator to run, not the traversal key.
+			*/
+			if (!OS.IsSunOS) {
+				if (widget.translateAccelerator (key, keysym, keyEvent, true)) {
+					return true;
+				}
+			}
 			if (widget.translateTraversal (keysym, keyEvent)) return true;
 	}
 
