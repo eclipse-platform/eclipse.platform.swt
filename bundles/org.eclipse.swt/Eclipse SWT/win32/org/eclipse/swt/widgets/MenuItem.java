@@ -607,11 +607,11 @@ public void setImage (Image image) {
 	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
 		return;
 	}
-	int hMenu = parent.handle;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_BITMAP;
 	if (image != null) info.hbmpItem = OS.HBMMENU_CALLBACK;
+	int hMenu = parent.handle;
 	OS.SetMenuItemInfo (hMenu, id, false, info);
 	parent.redraw ();
 }
@@ -686,6 +686,26 @@ public void setMenu (Menu menu) {
 			index++;
 		}
 		if (info.dwItemData != id) return;
+		boolean success = false;
+		
+		/*
+		* Bug in Windows.  When GetMenuItemInfo() is used to get the text,
+		* for an item that has a bitmap set using MIIM_BITMAP, the text is
+		* not returned.  This means that when SetMenuItemInfo() is used to
+		* set the submenu and the current menu state, the text is lost.
+		* The fix is to temporarily remove the bitmap and restore it after
+		* the text and submenu have been set.
+		*/
+		if (!OS.IsWinCE) {
+			if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+				if (image != null) {
+					info.fMask = OS.MIIM_BITMAP;
+					info.hbmpItem = 0;
+					success = OS.SetMenuItemInfo (hMenu, id, false, info);
+				}
+			}
+		}
+		
 		int cch = 128;
 		int hHeap = OS.GetProcessHeap ();
 		int byteCount = cch * TCHAR.sizeof;
@@ -693,7 +713,7 @@ public void setMenu (Menu menu) {
 		info.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA;
 		info.dwTypeData = pszText;
 		info.cch = cch;
-		boolean success = OS.GetMenuItemInfo (hMenu, index, true, info);
+		success = OS.GetMenuItemInfo (hMenu, index, true, info);
 		if (menu != null) {
 			menu.cascade = this; 
 			info.fMask |= OS.MIIM_SUBMENU;
@@ -702,11 +722,11 @@ public void setMenu (Menu menu) {
 		OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
 		if (OS.IsWinCE) {
 			/*
-			* On WinCE, InsertMenuItem is not available.  SetMenuItemInfo
-			* does not set the menu item state and submenu use InsertMenu
-			* to set these fields and SetMenuItemInfo to set the menu item
-			* data.  NOTE: SetMenuItemInfo is also used to set the string
-			* that was queried from the original menu item.
+			* On WinCE, InsertMenuItem() is not available.  The fix is to
+			* use SetMenuItemInfo() but this call does not set the menu item
+			* state and submenu.  The fix is to use InsertMenu() to insert
+			* the item, SetMenuItemInfo() to set the string and EnableMenuItem()
+			* and CheckMenuItem() to set the state.
 			*/
 			int uIDNewItem = id;
 			int uFlags = OS.MF_BYPOSITION;
@@ -714,7 +734,7 @@ public void setMenu (Menu menu) {
 				uFlags |= OS.MF_POPUP;
 				uIDNewItem = menu.handle;
 			}
-			TCHAR lpNewItem = new TCHAR (0, "", true);
+			TCHAR lpNewItem = new TCHAR (0, " ", true);
 			success = OS.InsertMenu (hMenu, index, uFlags, uIDNewItem, lpNewItem);
 			if (success) {
 				info.fMask = OS.MIIM_DATA | OS.MIIM_TYPE;
@@ -728,6 +748,19 @@ public void setMenu (Menu menu) {
 			}
 		} else {
 			success = OS.InsertMenuItem (hMenu, index, true, info);
+			/*
+			* Restore the bitmap that was removed to work around a problem
+			* in GetMenuItemInfo() and menu items that have bitmaps set with
+			* MIIM_BITMAP.
+			*/
+			if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+				if (image != null) {
+					info.fMask = OS.MIIM_BITMAP;
+					info.hbmpItem = OS.HBMMENU_CALLBACK;
+					success = OS.SetMenuItemInfo (hMenu, id, false, info);
+				}
+			}
+			
 		}
 		if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 		if (!success) error (SWT.ERROR_CANNOT_SET_MENU);

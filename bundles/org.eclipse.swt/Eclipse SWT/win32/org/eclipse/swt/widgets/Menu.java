@@ -430,7 +430,7 @@ void createItem (MenuItem item, int index) {
 			if ((item.style & SWT.SEPARATOR) != 0) {
 				uFlags |= OS.MF_SEPARATOR;
 			} else {
-				lpNewItem = new TCHAR (0, "", true);
+				lpNewItem = new TCHAR (0, " ", true);
 			}
 			success = OS.InsertMenu (handle, index, uFlags, item.id, lpNewItem);
 			if (success) {
@@ -442,13 +442,22 @@ void createItem (MenuItem item, int index) {
 			}
 		} else {
 			/*
-			* Bug in Windows.  For some reason, when InsertMenuItem ()
+			* Bug in Windows.  For some reason, when InsertMenuItem()
 			* is used to insert an item without text, it is not possible
-			* to use SetMenuItemInfo () to set the text at a later time.
-			* The fix is to insert the item with an empty string.
+			* to use SetMenuItemInfo() to set the text at a later time.
+			* The fix is to insert the item with some text.
+			* 
+			* Feature in Windows.  When an empty string is used instead
+			* of a space and InsertMenuItem() is used to set a submenu
+			* before setting text to a non-empty string, the menu item
+			* becomes unexpectedly disabled.  The fix is to insert a
+			* space.
 			*/
 			int hHeap = OS.GetProcessHeap ();
-			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
+			TCHAR buffer = new TCHAR (0, " ", true);
+			int byteCount = buffer.length () * TCHAR.sizeof;
+			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			OS.MoveMemory (pszText, buffer, byteCount);	
 			MENUITEMINFO info = new MENUITEMINFO ();
 			info.cbSize = MENUITEMINFO.sizeof;
 			info.fMask = OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA;
