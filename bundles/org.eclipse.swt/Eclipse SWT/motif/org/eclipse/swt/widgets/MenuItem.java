@@ -557,6 +557,14 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setAccelerator (int accelerator) {
 	checkWidget();
 	this.accelerator = accelerator;
+	/*
+	* Bug in Solaris.  When mnemonics and accelerators are
+	* set more than once in the same menu bar, the time it
+	* takes to set the accelerator or mnemonic increases
+	* exponentially.  The only fix for now is to avoid
+	* accelerators and mnemonics on Solaris.
+	*/
+	if (OS.IsSunOS) return;
 	int ptr = 0;
 	if (accelerator != 0) {
 		String ctrl, alt, shift;
@@ -752,6 +760,19 @@ public void setText (String string) {
 		OS.XmNmnemonic, mnemonic,
 		OS.XmNacceleratorText, xmString2,
 	};
+	/*
+	* Bug in Solaris.  When mnemonics and accelerators are
+	* set more than once in the same menu bar, the time it
+	* takes to set the accelerator or mnemonic increases
+	* exponentially.  The only fix for now is to avoid
+	* accelerators and mnemonics on Solaris.
+	*/
+	if (OS.IsSunOS) {
+		argList = new int [] {
+			OS.XmNlabelType, OS.XmSTRING,
+			OS.XmNlabelString, xmString1,
+		};
+	}
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	if (xmString1 != 0) OS.XmStringFree (xmString1);
 	if (xmString2 != 0) OS.XmStringFree (xmString2);
