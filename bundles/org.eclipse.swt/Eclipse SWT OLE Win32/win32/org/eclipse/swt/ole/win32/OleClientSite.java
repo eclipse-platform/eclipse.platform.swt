@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Vector;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -1296,10 +1297,8 @@ private SIZE xFormHimetricToPixels(SIZE aSize) {
 	int xppi = OS.GetDeviceCaps(hDC, 88); // logical pixels/inch in x
 	int yppi = OS.GetDeviceCaps(hDC, 90); // logical pixels/inch in y
 	OS.ReleaseDC(0, hDC);
-	double tcx = Math.round( ((float)aSize.cx * (float)xppi) / 2540.0 ); // 2540 HIMETRIC units per inch
-	int cx = (int)tcx;
-	double tcy = Math.round( ((float)aSize.cy * (float)yppi) / 2540.0 );
-	int cy = (int)tcy;
+	int cx = Compatibility.round(aSize.cx * xppi, 2540); // 2540 HIMETRIC units per inch
+	int cy = Compatibility.round(aSize.cy * yppi, 2540);
 	SIZE size = new SIZE();
 	size.cx = cx;
 	size.cy = cy;
@@ -1313,10 +1312,8 @@ private SIZE xFormPixelsToHimetric(SIZE aSize) {
 	int xppi = OS.GetDeviceCaps(hDC, 88); // logical pixels/inch in x
 	int yppi = OS.GetDeviceCaps(hDC, 90); // logical pixels/inch in y
 	OS.ReleaseDC(0, hDC);
-	double tcx = Math.round( ((float)aSize.cx * 2540.0) / (float)xppi ); // 2540 HIMETRIC units per inch
-	int cx = (int)tcx;
-	double tcy = Math.round( ((float)aSize.cy * 2540.0) / (float)yppi );
-	int cy = (int)tcy;
+	int cx = Compatibility.round(aSize.cx * 2540, xppi); // 2540 HIMETRIC units per inch
+	int cy = Compatibility.round(aSize.cy * 2540, yppi);
 	SIZE size = new SIZE();
 	size.cx = cx;
 	size.cy = cy;

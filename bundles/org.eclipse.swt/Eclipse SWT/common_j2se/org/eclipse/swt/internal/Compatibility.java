@@ -15,10 +15,17 @@ import org.eclipse.swt.SWT;
  * </p>
  * <p>
  * IMPORTANT: some of the methods have been modified from their
- * J2SE parents. For example, exceptions thrown may differ since
- * J2ME's set of exceptions is a subset of J2SE's one. Refer to
- * the description of each method for specific changes.
+ * J2SE parents. Refer to the description of each method for 
+ * specific changes.
  * </p>
+ * <ul>
+ * <li>Exceptions thrown may differ since J2ME's set of 
+ * exceptions is a subset of J2SE's one.
+ * </li>
+ * <li>The range of the mathematic functions is subject to
+ * change.
+ * </li>		
+ * </ul>
  */
 public final class Compatibility {
 
@@ -27,61 +34,79 @@ static double toRadians = pi / 180;
 
 /**
  * Answers the length of the side adjacent to the given angle
- * of a right triangle.
+ * of a right triangle. In other words, it returns the integer
+ * conversion of length * cos (angle).
  * <p>
- * The length of the triangle's hypotenuse must be between -32767
- *  and 32767 (inclusive).
+ * IMPORTANT: the j2me version has an additional restriction on
+ * the argument. length must be between -32767 and 32767 (inclusive).
  * </p>
  * 
  * @param angle the angle in degrees
  * @param length the length of the triangle's hypotenuse
- * @return the length of the side adjacent to the given angle
- * 
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_RANGE - if length is not between -32767 and 32767 (inclusive)</li>
- * </ul>
+ * @return the integer conversion of length * cos (angle)
  */
 public static int cos(int angle, int length) {
-	if (length < -32767 || length > 32767) {
-		SWT.error(SWT.ERROR_INVALID_RANGE);
-	}
 	return (int)(Math.cos(angle * toRadians) * length);
 }
 
 /**
  * Answers the length of the side opposite to the given angle
- * of a right triangle.
+ * of a right triangle. In other words, it returns the integer
+ * conversion of length * sin (angle).
  * <p>
- * The length of the triangle's hypotenuse must be between -32767
- *  and 32767 (inclusive).
+ * IMPORTANT: the j2me version has an additional restriction on
+ * the argument. length must be between -32767 and 32767 (inclusive).
  * </p>
  * 
  * @param angle the angle in degrees
  * @param length the length of the triangle's hypotenuse
- * @return the length of the side opposite to the given angle
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_RANGE - if length is not between -32767 and 32767 (inclusive)</li>
- * </ul>
+ * @return the integer conversion of length * sin (angle)
  */
 public static int sin(int angle, int length) {
-	if (length < -32767 || length > 32767) {
-		SWT.error(SWT.ERROR_INVALID_RANGE);
-	}
 	return (int)(Math.sin(angle * toRadians) * length);
 }
 
-
 /**
  * Answers the most negative (i.e. closest to negative infinity)
- * integer value which is greater than the given rational number.
+ * integer value which is greater than the number obtained by dividing
+ * the first argument p by the second argument q.
  * 
- * @param p the numerator of the rational number
- * @param q the denominator of the rational number (must be different from zero)
- * @return the ceiling of the rational number.
+ * @param p numerator
+ * @param q denominator (must be different from zero)
+ * @return the ceiling of the rational number p / q.
  */
 public static int ceil(int p, int q) {
 	return (int)Math.ceil((float)p / q);
+}
+
+/**
+ * Answers the most positive (i.e. closest to positive infinity)
+ * integer value which is less than the number obtained by dividing
+ * the first argument p by the second argument q.
+ *
+ * @param p numerator
+ * @param q denominator (must be different from zero)
+ * @return the floor of the rational number p / q.
+ */
+public static int floor(int p, int q) {
+	return (int)Math.floor((double)p / q);
+}
+
+/**
+ * Answers the result of rounding to the closest integer the number obtained 
+ * by dividing the first argument p by the second argument q.
+ * <p>
+ * IMPORTANT: the j2me version has an additional restriction on
+ * the arguments. p must be within the range 0 - 32767 (inclusive).
+ * q must be within the range 1 - 32767 (inclusive).
+ * </p>
+ * 
+ * @param p numerator
+ * @param q denominator (must be different from zero)
+ * @return the closest integer to the rational number p / q
+ */
+public static int round(int p, int q) {
+	return (int)Math.round((float)p / q);
 }
 
 /**

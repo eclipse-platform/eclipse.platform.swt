@@ -132,8 +132,7 @@ protected void create (DeviceData data) {
 
 int computePixels(int height) {
 	int hDC = internal_new_GC (null);
-	/* Avoid using Math.round() */
-	int pixels = -(int)((height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72.0f) + 0.5f);
+	int pixels = -Compatibility.round(height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY), 72);
 	internal_dispose_GC (hDC, null);
 	return pixels;
 }
@@ -163,8 +162,7 @@ int computePoints(LOGFONT logFont) {
 	}
 	internal_dispose_GC (hDC, null);
 
-	/* Avoid using Math.round() */
-	return (int)((pixels * 72.0f / logPixelsY) + 0.5f);
+	return Compatibility.round(pixels * 72, logPixelsY);
 }
 
 /**

@@ -8,6 +8,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -153,8 +154,7 @@ public FontData open () {
 		}
 		OS.ReleaseDC(0, hDC);
 
-		/* Avoid using Math.round() */
-		int points = (int)((pixels * 72.0f / logPixelsY) + 0.5f);
+		int points = Compatibility.round(pixels * 72, logPixelsY);
 		fontData = FontData.win32_new (logFont, points);
 	}
 		
