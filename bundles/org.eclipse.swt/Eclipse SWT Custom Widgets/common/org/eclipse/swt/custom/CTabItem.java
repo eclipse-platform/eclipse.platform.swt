@@ -492,17 +492,18 @@ public String getToolTipText () {
 */
 public boolean isShowing () {
 	int index = parent.indexOf(this);
+	int rightEdge = parent.getRightItemEdge();
 	if (parent.single) {
 		if (index == parent.selectedIndex) {
-			return x <= parent.getRightItemEdge();
+			return x <= rightEdge;
 		}
 		return false;
 	}
 	if (index < parent.firstIndex) return false;
 	if (parent.firstIndex == index) {
-		return x <= parent.getRightItemEdge();
+		return x <= rightEdge;
 	}
-	return (x + width < parent.getRightItemEdge());
+	return x + width < rightEdge;
 }
 void onPaint(GC gc, boolean isSelected) {
 	if (width == 0 || height == 0) return;

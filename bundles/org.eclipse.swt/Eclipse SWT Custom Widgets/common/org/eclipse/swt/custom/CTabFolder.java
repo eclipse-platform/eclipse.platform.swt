@@ -2496,7 +2496,7 @@ boolean setButtonBounds() {
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
 			if (selectedIndex > -1) {
 				CTabItem item = items[selectedIndex];				
-				chevronRect.x = Math.min(item.x +item.width + 3, size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width);
+				chevronRect.x = Math.min(item.x + item.width + 3, getRightItemEdge());
 			} else {
 				chevronRect.x = size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width;
 			}
@@ -2508,7 +2508,9 @@ boolean setButtonBounds() {
 			chevronRect.height = BUTTON_SIZE + 2;
 			int lastIndex = getLastIndex();
 			CTabItem lastItem = items[lastIndex];
-			chevronRect.x = Math.min(lastItem.x +lastItem.width + 3, getRightItemEdge());
+			int w = lastItem.x + lastItem.width + 3;
+			if (!simple && lastIndex == selectedIndex) w -= curveIndent;
+			chevronRect.x = Math.min(w, getRightItemEdge());
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
 		}
 	}
@@ -2758,10 +2760,9 @@ boolean setItemSize() {
 	return changed;
 }
 void setLastIndex(int index) {
-	if (index < 0 || index > items.length - 1) return;
+	if (!showChevron || single || index < 0 || index > items.length - 1) return;
 	Point size = getSize();
 	if (size.x <= 0) return;
-	if (!showChevron) return;
 	int maxWidth = getRightItemEdge() - borderLeft;
 	int tabWidth = items[index].width;
 	while (index > 0) {
