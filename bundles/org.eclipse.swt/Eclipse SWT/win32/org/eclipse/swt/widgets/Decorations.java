@@ -101,7 +101,7 @@ public class Decorations extends Canvas {
 	Control savedFocus;
 	Button defaultButton, saveDefault;
 	int swFlags, hAccel, nAccel;
-	boolean moved, resized;
+	boolean moved, resized, opened;
 	int oldX = OS.CW_USEDEFAULT, oldY = OS.CW_USEDEFAULT;
 	int oldWidth = OS.CW_USEDEFAULT, oldHeight = OS.CW_USEDEFAULT;
 
@@ -230,6 +230,10 @@ static int checkStyle (int style) {
 
 void checkBorder () {
 	/* Do nothing */
+}
+
+void checkOpened () {
+	if (!opened) resized = false;
 }
 
 protected void checkSubclass () {
@@ -1296,6 +1300,7 @@ public void setVisible (boolean visible) {
 				OS.ShowWindow (handle, swFlags);
 			}
 			if (isDisposed ()) return;
+			opened = true;
 			if (!moved) {
 				moved = true;
 				Point location = getLocation ();

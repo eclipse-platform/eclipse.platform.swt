@@ -200,6 +200,9 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 	if ((style & int5) != 0) style = (style & ~mask) | int5;
 	return style;
 }
+void checkOpen () {
+	/* Do nothing */
+}
 void checkOrientation (Widget parent) {
 	style &= ~SWT.MIRRORED;
 	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
@@ -213,6 +216,7 @@ void checkOrientation (Widget parent) {
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	parent.checkWidget ();
+	parent.checkOpen ();
 }
 /**
  * Checks that this class can be subclassed.

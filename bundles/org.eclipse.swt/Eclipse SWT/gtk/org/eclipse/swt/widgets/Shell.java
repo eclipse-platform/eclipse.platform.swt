@@ -101,7 +101,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	int /*long*/ shellHandle, tooltipsHandle;
-	boolean hasFocus, mapped, moved, resized;
+	boolean hasFocus, mapped, moved, resized, opened;
 	int oldX, oldY, oldWidth, oldHeight;
 	int minWidth, minHeight;
 	Control lastActive;
@@ -433,6 +433,10 @@ void bringToTop (boolean force) {
 
 void checkBorder () {
 	/* Do nothing */
+}
+
+void checkOpen () {
+	if (!opened) resized = false;
 }
 
 /**
@@ -1287,6 +1291,7 @@ public void setVisible (boolean visible) {
 		if ((style & mask) != 0) {
 			OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
 		}
+		opened = true;
 		if (!moved) {
 			moved = true;
 			Point location = getLocation();

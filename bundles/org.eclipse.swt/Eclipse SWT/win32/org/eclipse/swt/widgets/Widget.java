@@ -213,6 +213,10 @@ void checkOrientation (Widget parent) {
 	style = checkBits (style, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, 0, 0, 0, 0);
 }
 
+void checkOpened () {
+	/* Do nothing */
+}
+
 /**
  * Throws an exception if the specified widget can not be
  * used as a parent for the receiver.
@@ -228,6 +232,7 @@ void checkOrientation (Widget parent) {
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	parent.checkWidget ();
+	parent.checkOpened ();
 }
 
 /**

@@ -101,7 +101,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, focusProxy;
-	boolean reparented, realized, moved, resized;
+	boolean reparented, realized, moved, resized, opened;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
 	Region region;
@@ -484,6 +484,9 @@ void bringToTop (boolean force) {
 		if (handle == 0) return;
 	}
 	OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
+}
+void checkOpen () {
+	if (!opened) resized = false;
 }
 /**
  * Requests that the window manager close the receiver in
@@ -1492,6 +1495,7 @@ public void setVisible (boolean visible) {
 		if ((style & mask) != 0) {
 			OS.XUngrabPointer (display.xDisplay, OS.CurrentTime);
 		}
+		opened = true;
 		if (!moved) {
 			moved = true;
 			Point location = getLocation ();
