@@ -19,6 +19,9 @@
 #include <iconv.h>
 #include <stdlib.h>
 
+static int RESOURCES_START;
+static int RESOURCES_END;
+
 JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_getSharedLibraryMajorVersionNumber
   (JNIEnv *env, jclass that)
 {
@@ -37,6 +40,15 @@ JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_getSharedLibraryMin
     return SWT_VERSION % 1000;
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_setResourceMem
+  (JNIEnv *env, jclass that, jint start, jint end)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "setResourceMem\n");
+#endif
+    RESOURCES_START = start;
+    RESOURCES_END = end;
+}
 
 /*************************************************************************
 
@@ -5862,17 +5874,17 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtGetMultiClickTim
  * Method:    XtGetValues
  * Signature: (I[II)V
  */
+#define MAX_ARGS 32
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtGetValues
   (JNIEnv *env, jclass that, jint widget, jintArray argList, jint numArgs)
 {
     jint *argList1=NULL;
 
-#ifdef LINUX
-    int values[numArgs];
-    int zeros[numArgs];
+    int valueBuff[MAX_ARGS];
+    int zeroBuff[MAX_ARGS];
+    int *values = valueBuff;
+    int *zeros = zeroBuff;
     int i;
-#endif
-
 
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "XtGetValues\n");
@@ -5881,26 +5893,37 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtGetValues
     if (argList)
         argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
  
-#ifdef LINUX
+	if (numArgs > MAX_ARGS) {
+		values = (int *) XtMalloc (numArgs * sizeof(int));
+		zeros = (int *) XtMalloc (numArgs * sizeof(int));
+	}
     for (i = 0; i < numArgs; i++) {   
-        zeros[i] = 0;
-	values[i] = 0;
+        zeros[i] = values[i] = 0;
         if (argList1[i * 2 + 1] == 0) {
-            zeros[i] = 1;
-            argList1[i * 2 + 1] = (int)&values[i];
+        	if ((RESOURCES_START <= (argList1[i*2]) && (argList1[i*2] <= RESOURCES_END)) {
+	            zeros[i] = 1;
+    	        argList1[i * 2 + 1] = (int)&values[i];
+            }
         }
     }
-#endif
 
     XtGetValues((Widget)widget, (ArgList)argList1, numArgs);
 
-#ifdef LINUX
     for (i = 0; i < numArgs; i++) {   
         if (zeros[i]) {
-           argList1[i * 2 + 1] = values[i];
+           char* charPtr = (char *)(argList1[i*2] - 1);
+           switch ((int)*charPtr) {
+              case 1: argList1[i * 2 + 1] = *(char *)(&values[i]); break;
+              case 2: argList1[i * 2 + 1] = *(short *)(&values[i]); break;
+              default:
+                 argList1[i * 2 + 1] = values[i];
+           }
         }
     }
-#endif
+	if (numArgs > MAX_ARGS) {
+		XtFree(values);
+		XtFree(zeros);
+	}
 
     if (argList)
         (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
