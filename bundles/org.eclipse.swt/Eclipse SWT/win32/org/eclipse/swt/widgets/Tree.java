@@ -788,6 +788,17 @@ void enableWidget (boolean enabled) {
 	if (hwndParent != 0) OS.EnableWindow (hwndParent, enabled);
 }
 
+Widget findItem (int id) {
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	tvItem.hItem = id;
+	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
+		int lParam = tvItem.lParam;
+		if (0 <= lParam && lParam < items.length) return items [lParam];
+	}
+	return null;
+}
+
 int getBackgroundPixel () {
 	if (!OS.IsWinCE) return _getBackgroundPixel ();
 	/*
@@ -2335,10 +2346,10 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 LRESULT WM_GETOBJECT (int wParam, int lParam) {
 	/*
 	* Ensure that there is an accessible object created for this
-	* control because support for checked item accessibility is
+	* control because support for checked item and tree column accessibility is
 	* temporarily implemented in the accessibility package.
 	*/
-	if ((style & SWT.CHECK) != 0) {
+	if ((style & SWT.CHECK) != 0 || getColumnCount () > 0) { // Not sure
 		if (accessible == null) accessible = new_Accessible (this);
 	}
 	return super.WM_GETOBJECT (wParam, lParam);

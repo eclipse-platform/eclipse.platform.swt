@@ -806,6 +806,10 @@ Control findControl (int handle) {
  * the instance of the <code>Widget</code> subclass which
  * represents it in the currently running application, if
  * such exists, or null if no matching widget can be found.
+ * <p>
+ * <b>IMPORTANT:</b> This method should not be called from
+ * application code. The arguments are platform-specific.
+ * </p>
  *
  * @param handle the handle for the widget
  * @return the SWT widget that the handle represents
@@ -818,6 +822,33 @@ Control findControl (int handle) {
 public Widget findWidget (int handle) {
 	checkDevice ();
 	return getControl (handle);
+}
+
+/**
+ * Given the operating system handle for a widget,
+ * and widget-specific id, returns the instance of
+ * the <code>Widget</code> subclass which represents
+ * the handle/id pair in the currently running application,
+ * if such exists, or null if no matching widget can be found.
+ * <p>
+ * <b>IMPORTANT:</b> This method should not be called from
+ * application code. The arguments are platform-specific.
+ * </p>
+ *
+ * @param handle the handle for the widget
+ * @param id the id for the subwidget (usually an item)
+ * @return the SWT widget that the handle/id pair represents
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public Widget findWidget (int handle, int id) {
+	Control control = getControl (handle);
+	return control != null ? control.findItem (id) : null;
 }
 
 int foregroundIdleProc (int code, int wParam, int lParam) {

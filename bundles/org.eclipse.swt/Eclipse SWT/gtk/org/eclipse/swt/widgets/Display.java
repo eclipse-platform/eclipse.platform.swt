@@ -952,6 +952,10 @@ public Widget findWidget (int /*long*/ handle) {
 	return getWidget (handle);
 }
 
+public Widget findWidget (int handle, int id) {
+	return null;
+}
+
 static int /*long*/ fixedClassInitProc (int /*long*/ g_class, int /*long*/ class_data) {
 	GtkWidgetClass klass = new GtkWidgetClass ();
 	OS.memmove (klass, g_class);

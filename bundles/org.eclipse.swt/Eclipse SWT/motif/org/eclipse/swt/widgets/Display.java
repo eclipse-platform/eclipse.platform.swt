@@ -968,6 +968,9 @@ public Widget findWidget (int handle) {
 	checkDevice ();
 	return getWidget (handle);
 }
+public Widget findWidget (int handle, int id) {
+	return null;
+}
 boolean fixKey (int[] keysym, byte[] buffer, int state) {
 	/*
 	* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not

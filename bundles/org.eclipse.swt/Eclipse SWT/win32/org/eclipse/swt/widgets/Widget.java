@@ -392,6 +392,10 @@ boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
+Widget findItem (int id) {
+	return null;
+}
+
 char [] fixMnemonic (String string) {
 	char [] buffer = new char [string.length ()];
 	string.getChars (0, string.length (), buffer, 0);

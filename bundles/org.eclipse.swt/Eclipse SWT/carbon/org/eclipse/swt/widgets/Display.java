@@ -951,6 +951,10 @@ public Widget findWidget (int handle) {
 	return getWidget (handle);
 }
 
+public Widget findWidget (int handle, int id) {
+	return null;
+}
+
 /**
  * Returns the display which the given thread is the
  * user-interface thread for, or null if the given thread

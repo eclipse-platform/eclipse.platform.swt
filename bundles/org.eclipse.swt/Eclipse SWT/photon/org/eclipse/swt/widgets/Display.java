@@ -644,6 +644,10 @@ public Widget findWidget (int handle) {
 	return WidgetTable.get (handle);
 }
 
+public Widget findWidget (int handle, int id) {
+	return null;
+}
+
 /**
  * Returns the currently active <code>Shell</code>, or null
  * if no shell belonging to the currently running application

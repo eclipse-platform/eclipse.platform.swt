@@ -642,7 +642,8 @@ public class Accessible {
 		String osDescription = null;
 		int code = iaccessible.get_accDescription(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pszDescription);
 		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
-		if (accessibleListeners.size() == 0) return code;
+		// TEMPORARY CODE - process tree even if there are no apps listening
+		if (accessibleListeners.size() == 0 && !(control instanceof Tree)) return code;
 		if (code == COM.S_OK) {
 			int[] pDescription = new int[1];
 			COM.MoveMemory(pDescription, pszDescription, 4);
@@ -657,6 +658,34 @@ public class Accessible {
 		AccessibleEvent event = new AccessibleEvent(this);
 		event.childID = osToChildID(varChild_lVal);
 		event.result = osDescription;
+		
+		// TEMPORARY CODE
+		/* Currently our tree columns are emulated using custom draw,
+		 * so we need to create the description using the tree column
+		 * header text and tree item text. */
+		if (varChild_lVal != COM.CHILDID_SELF) {
+			if (control instanceof Tree) {
+				Tree tree = (Tree) control;
+				int columnCount = tree.getColumnCount ();
+				if (columnCount > 1) {
+					int hwnd = control.handle, hItem = 0;
+					if (OS.COMCTL32_MAJOR >= 6) {
+						hItem = OS.SendMessage (hwnd, OS.TVM_MAPACCIDTOHTREEITEM, varChild_lVal, 0);
+					} else {
+						hItem = varChild_lVal;
+					}
+					Widget widget = tree.getDisplay ().findWidget (hwnd, hItem);
+					event.result = "";
+					if (widget != null && widget instanceof TreeItem) {
+						TreeItem item = (TreeItem) widget;
+						for (int i = 1; i < columnCount; i++) {
+							event.result += tree.getColumn(i).getText() + ": " + item.getText(i);
+							if (i + 1 < columnCount) event.result += ", ";
+						}
+					}
+				}
+			}
+		}
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
 			listener.getDescription(event);
@@ -949,7 +978,7 @@ public class Accessible {
 		/* Currently our checkbox table and tree are emulated using state mask
 		 * images, so we need to determine if the item state is 'checked'. */
 		if (varChild_lVal != COM.CHILDID_SELF) {
-			if (control instanceof Tree) {
+			if (control instanceof Tree && (control.getStyle() & SWT.CHECK) != 0) {
 				int hwnd = control.handle;
 				TVITEM tvItem = new TVITEM ();
 				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
@@ -962,7 +991,7 @@ public class Accessible {
 				int result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 				boolean checked = (result != 0) && (((tvItem.state >> 12) & 1) == 0);
 				if (checked) event.detail |= ACC.STATE_CHECKED;
-			} else if (control instanceof Table) {
+			} else if (control instanceof Table && (control.getStyle() & SWT.CHECK) != 0) {
 				Table table = (Table) control;
 				TableItem item = table.getItem(event.childID);
 				if (item != null) {
