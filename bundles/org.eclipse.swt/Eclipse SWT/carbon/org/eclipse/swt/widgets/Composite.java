@@ -141,8 +141,8 @@ void createScrolledHandle (int parentHandle) {
 	handle = outControl [0];
 }
 
-void drawFocus (int control) {
-	int visibleRgn = getVisibleRegion (control, false);
+void drawFocus (int control, boolean hasFocus) {
+	int visibleRgn = getVisibleRegion (control, true);
 	if (!OS.EmptyRgn (visibleRgn)) {
 		int [] currentPort = new int [1];
 		OS.GetPort (currentPort);
@@ -163,7 +163,7 @@ void drawFocus (int control) {
 		boolean drawFocus = (style & SWT.NO_FOCUS) == 0 && hooksKeys ();
 		boolean drawBorder = hasBorder ();
 		int state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-		if (hasFocus ()) {
+		if (hasFocus) {
 			if (drawBorder) OS.DrawThemeEditTextFrame (rect, state);
 			if (drawFocus) OS.DrawThemeFocusRect (rect, true);
 		} else {
@@ -179,7 +179,7 @@ void drawFocus (int control) {
 void drawWidget (int control) {
 	if ((state & CANVAS) != 0) {
 		if (control == scrolledHandle) {
-			drawFocus (control);
+			drawFocus (control, hasFocus ());
 		} else {
 			if ((style & SWT.NO_BACKGROUND) != 0) return;
 			drawBackground (control, background);
@@ -266,7 +266,11 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	if (((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0 && hooksKeys ())) {
-		if (scrolledHandle != 0) redrawWidget (scrolledHandle, false);
+		if (scrolledHandle != 0) {
+			short [] part = new short [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+			drawFocus (scrolledHandle, part [0] != 0);
+		}
 		return OS.noErr;
 	}
 	return result;
