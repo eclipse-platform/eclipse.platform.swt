@@ -2032,7 +2032,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	switch (code) {
 		case OS.NM_CUSTOMDRAW: {
 			if (!customDraw) break;
-			if (!OS.IsWindowEnabled (handle)) break;
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);		
 			switch (nmcd.dwDrawStage) {
@@ -2058,10 +2057,12 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (hFont == -1 && clrText == -1 && clrTextBk == -1) break;
 					if (hFont != -1) OS.SelectObject (nmcd.hdc, hFont);
 					if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) == 0) {
-						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-						nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
+						if (OS.IsWindowEnabled (handle)) {
+							nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
+							nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
+							OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+						}
 					}
-					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 					return new LRESULT (OS.CDRF_NEWFONT);
 			}
 			break;
