@@ -195,9 +195,14 @@ void createHandle (int index) {
 			/* create the button */
 			handle = OS.gtk_button_new();
 			if (handle==0) error(SWT.ERROR_NO_HANDLES);
+			OS.gtk_button_set_relief(handle, OS.GTK_RELIEF_NONE);
 			/* create the arrow */
 			arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
+			if (arrowHandle==0) error(SWT.ERROR_NO_HANDLES);
 			arrowButtonHandle = OS.gtk_button_new ();
+			if (arrowButtonHandle==0) error(SWT.ERROR_NO_HANDLES);
+			OS.gtk_button_set_relief(arrowButtonHandle, OS.GTK_RELIEF_NONE);
+			
 			OS.gtk_toolbar_insert_widget (
 				parent.handle,
 				boxHandle,
