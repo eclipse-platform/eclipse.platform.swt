@@ -21,8 +21,10 @@ public final class FillLayout extends Layout {
 	 * VERTICAL: Position the controls vertically from top to bottom
 	 */
 	public int type = SWT.HORIZONTAL;
+	
 public FillLayout () {
 }
+
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
 	Control [] children = composite.getChildren ();
 	int count = children.length;
@@ -38,6 +40,7 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	}
 	return new Point (maxWidth, count * maxHeight);
 }
+
 protected void layout (Composite composite, boolean flushCache) {
 	Rectangle rect = composite.getClientArea ();
 	Control [] children = composite.getChildren ();

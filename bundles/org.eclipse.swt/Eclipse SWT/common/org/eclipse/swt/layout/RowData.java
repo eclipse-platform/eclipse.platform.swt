@@ -16,12 +16,16 @@ public final class RowData {
 	 * height specifies the height of the cell in pixels.
 	 */
 	public int height;
+	
 public RowData () {
 	this (SWT.DEFAULT, SWT.DEFAULT);
 }
+
 public RowData (int width, int height) {
-	this.width = width;  this.height = height;
+	this.width = width;
+	this.height = height;
 }
+
 public RowData (Point point) {
 	this (point.x, point.y);
 }
