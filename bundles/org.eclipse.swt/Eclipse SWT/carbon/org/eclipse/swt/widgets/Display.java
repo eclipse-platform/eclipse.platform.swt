@@ -2158,7 +2158,7 @@ boolean runEnterExit () {
 			OS.SetEventLoopTimerNextFireTime (mouseHoverID, outDelay [0] / 1000.0);
 		}
 	}
-	if (theWindow [0] != 0 && theControl [0] != 0) {
+	if (!OS.StillDown () && theWindow [0] != 0 && theControl [0] != 0) {
 		Rect rect = new Rect ();
 		OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
 		where.h -= rect.left;
@@ -2166,7 +2166,7 @@ boolean runEnterExit () {
 		int modifiers = OS.GetCurrentEventKeyModifiers ();
 		boolean [] cursorWasSet = new boolean [1];
 		OS.HandleControlSetCursor (theControl [0], where, (short) modifiers, cursorWasSet);
-		if (!OS.StillDown () && !cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
+		if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
 	}
 	return eventSent;
 }
