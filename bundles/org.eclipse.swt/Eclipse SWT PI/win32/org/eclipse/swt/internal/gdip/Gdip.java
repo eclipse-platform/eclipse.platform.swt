@@ -18,6 +18,11 @@ public class Gdip extends Platform {
 	}
 	
 	/** GdiPlus constants */
+	public static final int BrushTypeSolidColor = 0;
+	public static final int BrushTypeHatchFill = 1;
+	public static final int BrushTypeTextureFill = 2;
+	public static final int BrushTypePathGradient = 3;
+	public static final int BrushTypeLinearGradient = 4;
 	public static final int CombineModeReplace = 0;
 	public static final int CombineModeIntersect = 1;
 	public static final int CombineModeUnion = 2;
@@ -68,6 +73,11 @@ public class Gdip extends Platform {
     public static final int TextRenderingHintAntiAlias = 4;
     public static final int TextRenderingHintClearTypeGridFit = 5;
     public static final int UnitPixel = 2;
+    public static final int WrapModeTile = 0;
+    public static final int WrapModeTileFlipX = 1;
+    public static final int WrapModeTileFlipY = 2;
+    public static final int WrapModeTileFlipXY = 3;
+    public static final int WrapModeClamp = 4;
 
 
 /** GdiPlus natives */
@@ -75,6 +85,8 @@ public static final native int GdiplusStartup(int[] token, GdiplusStartupInput i
 public static final native void GdiplusShutdown(int[] token);
 public static final native int Bitmap_new(int hbm, int hpal);
 public static final native void Bitmap_delete(int bitmap);
+public static final native int Brush_Clone(int brush);
+public static final native int Brush_GetType(int brush);
 public static final native int Graphics_new(int hdc);
 public static final native void Graphics_delete(int graphics);
 public static final native int Graphics_DrawArc(int graphics, int pen, int x, int y, int width, int height, float startAngle, float sweepAngle);
@@ -118,6 +130,7 @@ public static final native int FontFamily_new();
 public static final native void FontFamily_delete(int family);
 public static final native int LinearGradientBrush_new(PointF point1, PointF point2, int color1, int color2);
 public static final native void LinearGradientBrush_delete(int brush);
+public static final native int LinearGradientBrush_SetWrapMode(int brush, int wrapMode);
 public static final native int SolidBrush_new(int color);
 public static final native void SolidBrush_delete(int pen);
 public static final native int Pen_new(int color, float width);
@@ -141,6 +154,8 @@ public static final native int GraphicsPath_GetLastPoint(int path, PointF lastPo
 public static final native boolean GraphicsPath_IsOutlineVisible(int path, float x, float y, int pen, int g);
 public static final native boolean GraphicsPath_IsVisible(int path, float x, float y, int g);
 public static final native int GraphicsPath_SetFillMode(int path, int fillmode);
+public static final native int HatchBrush_new(int hatchStyle, int foreColor, int backColor);
+public static final native void HatchBrush_delete(int brush);
 public static final native int Matrix_new(float m11, float m12, float m21, float m22, float dx, float dy);
 public static final native void Matrix_delete(int matrix);
 public static final native int Matrix_GetElements(int matrix, float[] m);
@@ -154,5 +169,13 @@ public static final native int Matrix_TransformPoints(int matrix, PointF pts, in
 public static final native int Matrix_TransformPoints(int matrix, float[] pts, int count);
 public static final native int Matrix_Translate(int matrix, float offsetX, float offsetY, int order);
 public static final native int Matrix_SetElements(int matrix, float m11, float m12, float m21, float m22, float dx, float dy);
+public static final native int PathGradientBrush_new(int path);
+public static final native void PathGradientBrush_delete(int brush);
+public static final native int PathGradientBrush_SetCenterColor(int brush, int color);
+public static final native int PathGradientBrush_SetCenterPoint(int brush, PointF pt);
+public static final native int PathGradientBrush_SetSurroundColors(int brush, int[] colors, int[] count);
+public static final native int PathGradientBrush_SetGraphicsPath(int brush, int path);
+public static final native int TextureBrush_new(int image, int wrapMode, float dstX, float dstY, float dstWidth, float dstHeight);
+public static final native void TextureBrush_delete(int brush);
 
 }

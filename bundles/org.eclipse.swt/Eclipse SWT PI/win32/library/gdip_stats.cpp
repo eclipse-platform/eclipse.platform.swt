@@ -14,11 +14,13 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 83;
-int Gdip_nativeFunctionCallCount[83];
+int Gdip_nativeFunctionCount = 96;
+int Gdip_nativeFunctionCallCount[96];
 char * Gdip_nativeFunctionNames[] = {
 	"Bitmap_1delete",
 	"Bitmap_1new",
+	"Brush_1Clone",
+	"Brush_1GetType",
 	"Color_1delete",
 	"Color_1new",
 	"FontFamily_1delete",
@@ -75,6 +77,9 @@ char * Gdip_nativeFunctionNames[] = {
 	"Graphics_1SetTransform",
 	"Graphics_1delete",
 	"Graphics_1new",
+	"HatchBrush_1delete",
+	"HatchBrush_1new",
+	"LinearGradientBrush_1SetWrapMode",
 	"LinearGradientBrush_1delete",
 	"LinearGradientBrush_1new",
 	"Matrix_1GetElements",
@@ -90,6 +95,12 @@ char * Gdip_nativeFunctionNames[] = {
 	"Matrix_1Translate",
 	"Matrix_1delete",
 	"Matrix_1new",
+	"PathGradientBrush_1SetCenterColor",
+	"PathGradientBrush_1SetCenterPoint",
+	"PathGradientBrush_1SetGraphicsPath",
+	"PathGradientBrush_1SetSurroundColors",
+	"PathGradientBrush_1delete",
+	"PathGradientBrush_1new",
 	"Pen_1SetDashPattern",
 	"Pen_1SetDashStyle",
 	"Pen_1SetLineCap",
@@ -100,6 +111,8 @@ char * Gdip_nativeFunctionNames[] = {
 	"Point_1new",
 	"SolidBrush_1delete",
 	"SolidBrush_1new",
+	"TextureBrush_1delete",
+	"TextureBrush_1new",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

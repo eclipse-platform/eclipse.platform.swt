@@ -127,4 +127,33 @@ fail:
 }
 #endif
 
+#ifndef NO_PathGradientBrush_1SetSurroundColors
+JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetSurroundColors)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	Color *colors;
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, PathGradientBrush_1SetSurroundColors_FUNC);
+	if (arg1) if ((lparg1 = env->GetIntArrayElements(arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = env->GetIntArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (lparg1 && lparg2) {
+		colors = new Color[lparg2[0]];
+		for (int i=0; i<lparg2[0]; i++) {
+			colors[i] = *(Color *)lparg1[i];
+		}
+	}
+	rc = (jint)((PathGradientBrush *)arg0)->SetSurroundColors((Color *)colors, (INT *)lparg2);
+fail:
+	if (lparg1 && lparg2 && colors) {
+		delete colors;
+	}	
+	if (arg2 && lparg2) env->ReleaseIntArrayElements(arg2, lparg2, 0);
+	if (arg1 && lparg1) env->ReleaseIntArrayElements(arg1, lparg1, 0);
+	Gdip_NATIVE_EXIT(env, that, PathGradientBrush_1SetSurroundColors_FUNC);
+	return rc;
+}
+#endif
+
 }

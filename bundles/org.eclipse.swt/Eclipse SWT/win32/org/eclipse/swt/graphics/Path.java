@@ -161,6 +161,7 @@ public void quadTo(float cx, float cy, float x, float y) {
 	Gdip.GraphicsPath_AddBezier(handle, currentPoint.X, currentPoint.Y, cx, cy, cx, cy, x, y);
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
 }
+
 public String toString() {
 	if (isDisposed()) return "Path {*DISPOSED*}";
 	return "Path {" + handle + "}";
