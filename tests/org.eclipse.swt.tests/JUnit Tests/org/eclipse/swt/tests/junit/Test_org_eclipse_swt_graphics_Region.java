@@ -212,18 +212,21 @@ public void test_equalsLjava_lang_Object(){
 	reg2 = new Region();
 	reg2.add(rect1);
 	
-	if (!reg1.equals(reg2)) {
-		reg1.dispose();
-		reg2.dispose();
-		fail("two instances of Region representing the same area should be considered equal");
-	}		
+// Currently, Regions are only "equal" if they have the same handle.
+// This is so that identical objects are properly hashed.
+// We are considering adding a new method that will compare Regions for the same area.
+//	if (!reg1.equals(reg2)) {
+//		reg1.dispose();
+//		reg2.dispose();
+//		fail("two instances of Region representing the same area should be considered equal");
+//	}		
 	
 	reg2.dispose();
 	reg2 = new Region();
 	if (reg1.equals(reg2)) {
 		reg1.dispose();
 		reg2.dispose();
-		fail("Non empy region considered equal to empty one");
+		fail("Non empty region considered equal to empty one");
 	}
 	
 	reg2.add(rect2);
