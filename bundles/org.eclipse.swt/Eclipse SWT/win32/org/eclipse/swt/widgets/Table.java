@@ -265,12 +265,34 @@ void createHandle () {
 void createItem (TableColumn column, int index) {
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	int columnCount = count + 1;
 	if (count == 1 && columns [0] == null) count = 0;
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	if (count == columns.length) {
 		TableColumn [] newColumns = new TableColumn [columns.length + 4];
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
 		columns = newColumns;
+	}
+	if (customDraw && items != null) {
+		int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		for (int i = 0;  i < itemCount;  i++) {
+			if (items [i].cellBackground != null) {
+				int  [] cellBackground = items [i].cellBackground;
+				int  [] temp = new int [columnCount];
+				System.arraycopy (cellBackground, 0, temp, 0, index);
+				System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
+				temp [index] = -1;
+				items [i].cellBackground = temp;
+			}
+			if (items [i].cellForeground != null) {
+				int [] cellForeground = items [i].cellForeground;
+				int [] temp = new int [columnCount];
+				System.arraycopy (cellForeground, 0, temp, 0, index);
+				System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
+				temp [index] = -1;
+				items [i].cellForeground = temp;
+			}
+		}
 	}
 	/*
 	* Insert the column into the columns array before inserting
@@ -550,6 +572,27 @@ void destroyItem (TableColumn column) {
 	if (first) index = 0;
 	System.arraycopy (columns, index + 1, columns, index, --count - index);
 	columns [count] = null;
+
+	if (customDraw && items != null) {
+		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		for (int i = 0; i < itemCount; i++) {
+			if (items [i].cellBackground != null) {
+				int [] cellBackground = items [i].cellBackground;
+				int [] temp = new int [columnCount];
+				System.arraycopy (cellBackground, 0, temp, 0, index);
+				System.arraycopy (cellBackground, index + 1, temp, index, columnCount - index);
+				items [i].cellBackground = temp;
+			}
+			if (items [i].cellForeground != null) {
+				int [] cellForeground = items [i].cellForeground;
+				int [] temp = new int [columnCount];
+				System.arraycopy (cellForeground, 0, temp, 0, index);
+				System.arraycopy (cellForeground, index + 1, temp, index, columnCount - index);
+				items [i].cellForeground = temp;
+			}
+		}
+	}
 }
 
 void destroyItem (TableItem item) {
@@ -2481,8 +2524,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				case OS.CDDS_ITEMPREPAINT: return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW);
 				case OS.CDDS_ITEMPREPAINT | OS.CDDS_SUBITEM: {
 					TableItem item = items [nmcd.dwItemSpec];
-					int clrText = item.foreground, clrTextBk = item.background;
-					if (clrText == -1 && clrTextBk == -1) break;
+					int clrText = (item.cellForeground != null) ? item.cellForeground [nmcd.iSubItem] : -1;
+					if (clrText == -1) clrText = item.foreground;
+					int clrTextBk = (item.cellBackground != null) ? item.cellBackground [nmcd.iSubItem] : -1;
+					if (clrTextBk == -1) clrTextBk = item.background;
+					if (clrText == -1 && clrTextBk == -1 && item.cellForeground == null && item.cellBackground == null) break;
 					nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 					nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 					OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);

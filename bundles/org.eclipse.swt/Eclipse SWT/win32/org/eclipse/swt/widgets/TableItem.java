@@ -32,6 +32,7 @@ import org.eclipse.swt.graphics.*;
 public class TableItem extends Item {
 	Table parent;
 	int background, foreground;
+	int [] cellBackground, cellForeground; 
 
 /**
  * Constructs a new instance of this class given its parent
@@ -130,6 +131,32 @@ public Color getBackground () {
 }
 
 /**
+ * Returns the background color at the given column index in the receiver.
+ *
+ * @param index the column index
+ * @return the background color
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_Range - if the column index is invalid</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public Color getBackground (int index) {
+	checkWidget ();
+	if (0 > index || index >= parent.getColumnCount ()) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	int pixel = (cellBackground != null) ? cellBackground [index] : -1;
+	if (pixel == -1) return getBackground ();
+	return Color.win32_new (display, pixel);
+}
+
+/**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent at a column in the table.
  *
@@ -216,7 +243,34 @@ public boolean getChecked () {
  */
 public Color getForeground () {
 	checkWidget ();
-	int pixel = (foreground == -1) ? parent.getForegroundPixel() : foreground;
+	int pixel = (foreground == -1) ? parent.getForegroundPixel () : foreground;
+	return Color.win32_new (display, pixel);
+}
+
+/**
+ * 
+ * Returns the foreground color at the given column index in the receiver.
+ *
+ * @param index the column index
+ * @return the foreground color
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_Range - if the column index is invalid</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public Color getForeground (int index) {
+	checkWidget ();
+	if (0 > index || index >= parent.getColumnCount ()) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	int pixel = (cellForeground != null) ? cellForeground [index] : -1;
+	if (pixel == -1) return getForeground ();
 	return Color.win32_new (display, pixel);
 }
 
@@ -454,6 +508,50 @@ public void setBackground (Color color) {
 }
 
 /**
+ * Sets the background color at the given column index in the receiver 
+ * to the color specified by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param index the column index
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ * 
+ */
+public void setBackground (int index, Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (0 > index || index >= parent.getColumnCount ()) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	int pixel = -1;
+	if (color != null) {
+		parent.customDraw = true;
+		pixel = color.handle;
+	}
+	if (cellBackground == null) {
+		int hwndHeader = OS.SendMessage (parent.handle, OS.LVM_GETHEADER, 0, 0);
+		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		cellBackground = new int [count];
+		for (int i = 0; i < count; i++) {
+			cellBackground [i] = -1;
+		}
+	}
+	cellBackground [index] = pixel;
+	redraw ();
+}
+
+/**
  * Sets the checked state of the checkbox for this item.  This state change 
  * only applies if the Table was created with the SWT.CHECK style.
  *
@@ -516,6 +614,50 @@ public void setForeground (Color color){
 		pixel = color.handle;
 	}
 	foreground = pixel;
+	redraw ();
+}
+
+/**
+ * Sets the foreground color at the given column index in the receiver 
+ * to the color specified by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param index the column index
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ * 
+ */
+public void setForeground (int index, Color color){
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (0 > index || index >= parent.getColumnCount()) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	int pixel = -1;
+	if (color != null) {
+		parent.customDraw = true;
+		pixel = color.handle;
+	}
+	if (cellForeground == null) {
+		int hwndHeader = OS.SendMessage (parent.handle, OS.LVM_GETHEADER, 0, 0);
+		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		cellForeground = new int [count];
+		for (int i = 0; i < count; i++) {
+			cellForeground [i] = -1;
+		}
+	}
+	cellForeground [index] = pixel;
 	redraw ();
 }
 
