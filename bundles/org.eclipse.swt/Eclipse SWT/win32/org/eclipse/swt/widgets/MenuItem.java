@@ -960,26 +960,11 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
 	if (image != null) {
-		/*
-		* This code intentionally commented.
-		*/
-//		GC gc = GC.win32_new (struct.hDC, null);
-//		gc.drawImage (image, struct.left, struct.top);
-		int hImage = image.handle;
-		switch (image.type) {
-			case SWT.BITMAP:
-				BITMAP bm = new BITMAP ();
-				OS.GetObject (hImage, BITMAP.sizeof, bm);
-				int hDC = OS.CreateCompatibleDC (struct.hDC);
-				int oldBitmap = OS.SelectObject (hDC, hImage);
-				OS.BitBlt (struct.hDC, struct.left, struct.top + 2, bm.bmWidth, bm.bmHeight, hDC, 0, 0, OS.SRCCOPY);
-				OS.SelectObject (hDC, oldBitmap);
-				OS.DeleteDC (hDC);
-				break;
-			case SWT.ICON:
-				OS.DrawIconEx (struct.hDC, struct.left, struct.top + 2, hImage, 0, 0, 0, 0, OS.DI_NORMAL);
-				break;
-		}
+		GCData data = new GCData();
+		data.device = display;
+		GC gc = GC.win32_new (struct.hDC, data);
+		gc.drawImage (image, struct.left, struct.top + 2);
+		gc.dispose ();
 	}
 	return null;
 }
