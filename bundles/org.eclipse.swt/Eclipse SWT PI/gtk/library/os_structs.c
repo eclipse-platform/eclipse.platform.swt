@@ -2160,8 +2160,8 @@ XClientMessageEvent *getXClientMessageEventFields(JNIEnv *env, jobject lpObject,
 	lpStruct->message_type = (Atom)(*env)->GetIntField(env, lpObject, XClientMessageEventFc.message_type);
 	lpStruct->format = (*env)->GetIntField(env, lpObject, XClientMessageEventFc.format);
 	{
-	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
-	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / 4, (void *)lpStruct->data.l);
+	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / 4, (jint *)lpStruct->data.l);
 	}
 	return lpStruct;
 }
@@ -2177,8 +2177,8 @@ void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageE
 	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.message_type, (jint)lpStruct->message_type);
 	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.format, (jint)lpStruct->format);
 	{
-	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
-	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / 4, (void *)lpStruct->data.l);
+	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / 4, (jint *)lpStruct->data.l);
 	}
 }
 #endif

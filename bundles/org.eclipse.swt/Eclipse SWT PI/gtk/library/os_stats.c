@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 876;
-int OS_nativeFunctionCallCount[876];
+int OS_nativeFunctionCount = 879;
+int OS_nativeFunctionCallCount[879];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -110,8 +110,11 @@ char * OS_nativeFunctionNames[] = {
 	"XEvent_1sizeof", 
 	"XExposeEvent_1sizeof", 
 	"XFocusChangeEvent_1sizeof", 
+	"XFree", 
 	"XGetSelectionOwner", 
+	"XInternAtom", 
 	"XKeysymToKeycode", 
+	"XListProperties", 
 	"XQueryTree", 
 	"XReconfigureWMWindow", 
 	"XSendEvent", 

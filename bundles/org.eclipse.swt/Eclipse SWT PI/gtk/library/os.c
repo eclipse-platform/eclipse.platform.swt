@@ -1068,6 +1068,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(XFocusChangeEvent_1sizeof)
 }
 #endif
 
+#ifndef NO_XFree
+JNIEXPORT void JNICALL OS_NATIVE(XFree)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, XFree_FUNC);
+	XFree((void *)arg0);
+	OS_NATIVE_EXIT(env, that, XFree_FUNC);
+}
+#endif
+
 #ifndef NO_XGetSelectionOwner
 JNIEXPORT jint JNICALL OS_NATIVE(XGetSelectionOwner)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -1080,6 +1090,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(XGetSelectionOwner)
 }
 #endif
 
+#ifndef NO_XInternAtom
+JNIEXPORT jint JNICALL OS_NATIVE(XInternAtom)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jboolean arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XInternAtom_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)XInternAtom((Display *)arg0, (char *)lparg1, (Bool)arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, XInternAtom_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_XKeysymToKeycode
 JNIEXPORT jint JNICALL OS_NATIVE(XKeysymToKeycode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -1088,6 +1113,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(XKeysymToKeycode)
 	OS_NATIVE_ENTER(env, that, XKeysymToKeycode_FUNC);
 	rc = (jint)XKeysymToKeycode((Display *)arg0, (KeySym)arg1);
 	OS_NATIVE_EXIT(env, that, XKeysymToKeycode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XListProperties
+JNIEXPORT jint JNICALL OS_NATIVE(XListProperties)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XListProperties_FUNC);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XListProperties((Display *)arg0, (Window)arg1, (int *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, XListProperties_FUNC);
 	return rc;
 }
 #endif
@@ -4613,9 +4653,9 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1container_1set_1border_1width)
 
 #ifndef NO_gtk_1dialog_1add_1button
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1dialog_1add_1button)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+	(JNIEnv *env, jclass that, jint arg0, jstring arg1, jint arg2)
 {
-	const jbyte *lparg1= NULL;
+	const char *lparg1= NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1dialog_1add_1button_FUNC);
 	if (arg1) lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL);
@@ -5975,9 +6015,9 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1menu_1shell_1select_1item)
 
 #ifndef NO_gtk_1message_1dialog_1new
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1message_1dialog_1new)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jstring arg4)
 {
-	const jbyte *lparg4= NULL;
+	const char *lparg4= NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1message_1dialog_1new_FUNC);
 	if (arg4) lparg4 = (*env)->GetStringUTFChars(env, arg4, NULL);
@@ -7824,9 +7864,9 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1collapse_1row)
 
 #ifndef NO_gtk_1tree_1view_1column_1add_1attribute
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1add_1attribute)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jstring arg2, jint arg3)
 {
-	const jbyte *lparg2= NULL;
+	const char *lparg2= NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1add_1attribute_FUNC);
 	if (arg2) lparg2 = (*env)->GetStringUTFChars(env, arg2, NULL);
 	gtk_tree_view_column_add_attribute((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (const gchar *)lparg2, (gint)arg3);
