@@ -96,6 +96,7 @@ public class OS {
 	public static final int GrabModeAsync = 1;
 	public static final int GrabSuccess = 0;
 	public static final int GraphicsExpose = 13;
+	public static final int hpXK_BackTab = 0x1000FF74;
 	public static final int IconicState = 0x3;
 	public static final int IncludeInferiors = 0x1;
 	public static final int IsUnviewable = 0x1;
