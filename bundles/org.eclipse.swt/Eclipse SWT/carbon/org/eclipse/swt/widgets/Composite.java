@@ -92,7 +92,7 @@ Control [] _getChildren () {
 	while (i < count [0]) {
 		int status = OS.GetIndexedSubControl (handle, (short)(i+1), outControl);
 		if (status == OS.noErr) {
-			Widget widget = WidgetTable.get (outControl [0]);
+			Widget widget = display.getWidget (outControl [0]);
 			if (widget != null && widget != this) {
 				if (widget instanceof Control) {
 					children [j++] = (Control) widget;

@@ -11,7 +11,6 @@
 package org.eclipse.swt.widgets;
 
 
-
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGPoint;
@@ -120,6 +119,19 @@ public class Display extends Device {
 	Synchronizer synchronizer = new Synchronizer (this);
 	Thread thread;
 	
+	/* Widget Table */
+	int freeSlot;
+	int [] indexTable, property;
+	Widget [] widgetTable;
+	final static int GROW_SIZE = 1024;
+	final static int SWT0 = ('s'<<24) + ('w'<<16) + ('t'<<8) + '0';
+	
+	/* Menus */
+	Menu menuBar;
+	Menu [] menus, popups;
+	static final int ID_TEMPORARY = 1000;
+	static final int ID_START = 1001;
+	
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
@@ -149,12 +161,6 @@ public class Display extends Device {
 	int mouseHoverID;
 	org.eclipse.swt.internal.carbon.Point dragMouseStart = null;
 	boolean dragging = false;
-	
-	/* Menus */
-	Menu menuBar;
-	Menu [] menus, popups;
-	static final int ID_TEMPORARY = 1000;
-	static final int ID_START = 1001;
 	
 	/* Insets */
 	Rect buttonInset, tabFolderInset, comboInset;
@@ -285,7 +291,7 @@ static int untranslateKey (int key) {
 }
 
 int actionProc (int theControl, int partCode) {
-	Widget widget = WidgetTable.get (theControl);
+	Widget widget = getWidget (theControl);
 	if (widget != null) return widget.actionProc (theControl, partCode);
 	return OS.noErr;
 }
@@ -418,6 +424,29 @@ void addPopup (Menu menu) {
 	popups [index] = menu;
 }
 
+void addWidget (int handle, Widget widget) {
+	if (handle == 0) return;
+	if (freeSlot == -1) {
+		int length = (freeSlot = indexTable.length) + GROW_SIZE;
+		int [] newIndexTable = new int [length];
+		Widget [] newWidgetTable = new Widget [length];
+		System.arraycopy (indexTable, 0, newIndexTable, 0, freeSlot);
+		System.arraycopy (widgetTable, 0, newWidgetTable, 0, freeSlot);
+		for (int i=freeSlot; i<length-1; i++) {
+			newIndexTable [i] = i + 1;
+		}
+		newIndexTable [length - 1] = -1;
+		indexTable = newIndexTable;
+		widgetTable = newWidgetTable;
+	}
+	property [0] = freeSlot + 1;
+	OS.SetControlProperty (handle, SWT0, SWT0, 4, property);
+	int oldSlot = freeSlot;
+	freeSlot = indexTable [oldSlot];
+	indexTable [oldSlot] = -2;
+	widgetTable [oldSlot] = widget;
+}
+
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread at the next 
@@ -534,7 +563,7 @@ static synchronized void checkDisplay (Thread thread) {
 }
 
 int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor) {
-	Widget widget = WidgetTable.get (inControl);
+	Widget widget = getWidget (inControl);
 	if (widget != null) return widget.colorProc (inControl, inMessage, inDrawDepth, inDrawInColor);
 	return OS.eventNotHandledErr;
 }
@@ -551,7 +580,7 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 			}
 			if ((command.attributes & OS.kHICommandFromMenu) != 0) {
 				if (userData != 0) {
-					Widget widget = WidgetTable.get (userData);
+					Widget widget = getWidget (userData);
 					if (widget != null) return widget.commandProc (nextHandler, theEvent, userData);
 				} else {
 					int menuRef = command.menu_menuRef;
@@ -602,7 +631,7 @@ Rect computeInset (int control) {
 }
 
 int controlProc (int nextHandler, int theEvent, int userData) {
-	Widget widget = WidgetTable.get (userData);
+	Widget widget = getWidget (userData);
 	if (widget != null) return widget.controlProc (nextHandler, theEvent, userData);
 	return OS.eventNotHandledErr;
 }
@@ -754,7 +783,7 @@ void dragDetect (Control control) {
 }
 
 int drawItemProc (int browser, int item, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
-	Widget widget = WidgetTable.get (browser);
+	Widget widget = getWidget (browser);
 	if (widget != null) return widget.drawItemProc (browser, item, property, itemState, theRect, gdDepth, colorDevice);
 	return OS.noErr;
 }
@@ -796,7 +825,7 @@ Menu findMenu (int id) {
  */
 public Widget findWidget (int handle) {
 	checkDevice ();
-	return WidgetTable.get (handle);
+	return getWidget (handle);
 }
 
 /**
@@ -836,7 +865,7 @@ public Shell getActiveShell () {
 	if (!OS.IsWindowActive (theWindow)) return null;
 	int [] theControl = new int [1];
 	OS.GetRootControl (theWindow, theControl);
-	Widget widget = WidgetTable.get (theControl [0]);
+	Widget widget = getWidget (theControl [0]);
 	if (widget instanceof Shell) return (Shell) widget;
 	return null;
 }
@@ -916,7 +945,7 @@ public Control getCursorControl () {
 	}
 	if (theControl [0] != 0) {
 		do {
-			Widget widget = WidgetTable.get (theControl [0]);
+			Widget widget = getWidget (theControl [0]);
 			if (widget != null) {
 				if (widget instanceof Control) {
 					Control control = (Control) widget;
@@ -928,7 +957,7 @@ public Control getCursorControl () {
 			OS.GetSuperControl (theControl [0], theControl);
 		} while (theControl [0] != 0);
 	}
-	Widget widget = WidgetTable.get (theRoot [0]);
+	Widget widget = getWidget (theRoot [0]);
 	if (widget != null && widget instanceof Control) return (Control) widget;
 	return null;
 }
@@ -1090,7 +1119,7 @@ Control getFocusControl (int window) {
 	OS.GetKeyboardFocus (window, theControl);
 	if (theControl [0] == 0) return null;
 	do {
-		Widget widget = WidgetTable.get (theControl [0]);
+		Widget widget = getWidget (theControl [0]);
 		if (widget != null && widget instanceof Control) {
 			Control control = (Control) widget;
 			if (control.getEnabled ()) return control;
@@ -1238,30 +1267,28 @@ public Monitor getPrimaryMonitor () {
  */
 public Shell [] getShells () {
 	checkDevice ();
-	/*
-	* NOTE:  Need to check that the shells that belong
-	* to another display have not been disposed by the
-	* other display's thread as the shells list is being
-	* processed.
-	*/
-	int count = 0;
-	Shell [] shells = WidgetTable.shells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed () && this == shell.display) {
-			count++;
-		}
+	int length = 0;
+	for (int i=0; i<widgetTable.length; i++) {
+		Widget widget = widgetTable [i];
+		if (widget != null && widget instanceof Shell) length++;
 	}
-	if (count == shells.length) return shells;
 	int index = 0;
-	Shell [] result = new Shell [count];
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed () && this == shell.display) {
-			result [index++] = shell;
+	Shell [] result = new Shell [length];
+	for (int i=0; i<widgetTable.length; i++) {
+		Widget widget = widgetTable [i];
+		if (widget != null && widget instanceof Shell) {
+			int j = 0;
+			while (j < index) {
+				if (result [j] == widget) break;
+				j++;
+			}
+			if (j == index) result [index++] = (Shell) widget;
 		}
 	}
-	return result;
+	if (index == length) return result;
+	Shell [] newResult = new Shell [index];
+	System.arraycopy (result, 0, newResult, 0, index);
+	return newResult;
 }
 
 /**
@@ -1351,14 +1378,23 @@ public Thread getThread () {
 	return thread;
 }
 
+Widget getWidget (int handle) {
+	if (handle == 0) return null;
+	property [0] = 0;
+	OS.GetControlProperty (handle, SWT0, SWT0, 4, null, property);
+	int index = property [0] - 1;
+	if (0 <= index && index < widgetTable.length) return widgetTable [index];
+	return null;
+}
+
 int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
-	Widget widget = WidgetTable.get (inControl);
+	Widget widget = getWidget (inControl);
 	if (widget != null) return widget.helpProc (inControl, inGlobalMouse, inRequest, outContentProvided, ioHelpContent);
 	return OS.eventNotHandledErr;
 }
 
 int hitTestProc (int browser, int item, int property, int theRect, int mouseRect) {
-	Widget widget = WidgetTable.get (browser);
+	Widget widget = getWidget (browser);
 	if (widget != null) return widget.hitTestProc (browser, item, property, theRect, mouseRect);
 	return OS.noErr;
 }
@@ -1375,7 +1411,8 @@ int hitTestProc (int browser, int item, int property, int theRect, int mouseRect
 protected void init () {
 	super.init ();
 	initializeCallbacks ();
-	initializeInsets ();	
+	initializeInsets ();
+	initializeWidgetTable ();
 }
 	
 void initializeCallbacks () {
@@ -1498,6 +1535,14 @@ void initializeInsets () {
 	OS.DisposeControl (outControl [0]);
 }
 
+void initializeWidgetTable () {
+	property = new int [1];
+	indexTable = new int [GROW_SIZE];
+	widgetTable = new Widget [GROW_SIZE];
+	for (int i=0; i<GROW_SIZE-1; i++) indexTable [i] = i + 1;
+	indexTable [GROW_SIZE - 1] = -1;
+}
+
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -1587,25 +1632,25 @@ boolean isValidThread () {
 }
 
 int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
-	Widget widget = WidgetTable.get (browser);
+	Widget widget = getWidget (browser);
 	if (widget != null) return widget.itemCompareProc (browser, itemOne, itemTwo, sortProperty);
 	return OS.noErr;
 }
 
 int itemDataProc (int browser, int item, int property, int itemData, int setValue) {
-	Widget widget = WidgetTable.get (browser);
+	Widget widget = getWidget (browser);
 	if (widget != null) return widget.itemDataProc (browser, item, property, itemData, setValue);
 	return OS.noErr;
 }
 
 int itemNotificationProc (int browser, int item, int message) {
-	Widget widget = WidgetTable.get (browser);
+	Widget widget = getWidget (browser);
 	if (widget != null) return widget.itemNotificationProc (browser, item, message);
 	return OS.noErr;
 }
 
 int keyboardProc (int nextHandler, int theEvent, int userData) {
-	Widget widget = WidgetTable.get (userData);
+	Widget widget = getWidget (userData);
 	if (widget == null) {
 		int theWindow = OS.GetUserFocusWindow ();
 		if (theWindow == 0) return OS.eventNotHandledErr;
@@ -1614,7 +1659,7 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 		if (theControl [0] == 0) {
 			OS.GetRootControl (theWindow, theControl);
 		}
-		widget = WidgetTable.get (theControl [0]);
+		widget = getWidget (theControl [0]);
 	}
 	if (widget != null) return widget.keyboardProc (nextHandler, theEvent, userData);
 	return OS.eventNotHandledErr;
@@ -1678,7 +1723,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	
 int menuProc (int nextHandler, int theEvent, int userData) {
 	if (userData != 0) {
-		Widget widget = WidgetTable.get (userData);
+		Widget widget = getWidget (userData);
 		if (widget != null) return widget.menuProc (nextHandler, theEvent, userData);
 	} else {
 		int [] theMenu = new int [1];
@@ -1726,14 +1771,14 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			boolean forward = false;
 			if (theControl [0] == 0) theControl [0] = theRoot [0];
 			do {
-				widget = WidgetTable.get (theControl [0]);
+				widget = getWidget (theControl [0]);
 				if (widget != null) {
 					if (widget.isEnabled ()) break;
 					forward = true;
 				}
 				OS.GetSuperControl (theControl [0], theControl);
 			} while (theControl [0] != 0);
-			if (theControl [0] == 0) widget = WidgetTable.get (theRoot [0]);
+			if (theControl [0] == 0) widget = getWidget (theRoot [0]);
 			if (widget != null) {
 				int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
 				return forward ? OS.noErr : result;
@@ -1855,7 +1900,7 @@ static synchronized void register (Display display) {
  * @see #destroy
  */
 protected void release () {
-	Shell [] shells = WidgetTable.shells ();
+	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) {
@@ -1967,6 +2012,23 @@ void removePopup (Menu menu) {
 	}
 }
 
+Widget removeWidget (int handle) {
+	if (handle == 0) return null;
+	Widget widget = null;
+	property [0] = 0;
+	OS.GetControlProperty (handle, SWT0, SWT0, 4, null, property);
+	int index = property [0] - 1;
+	if (0 <= index && index < widgetTable.length) {
+		widget = widgetTable [index];
+		widgetTable [index] = null;
+		indexTable [index] = freeSlot;
+		freeSlot = index;
+		OS.RemoveControlProperty (handle, SWT0, SWT0);
+
+	}
+	return widget;
+}
+
 boolean runAsyncMessages () {
 	return synchronizer.runAsyncMessages ();
 }
@@ -1994,7 +2056,7 @@ boolean runEnterExit () {
 			}
 			if (theControl [0] != 0) {
 				do {
-					Widget widget = WidgetTable.get (theControl [0]);
+					Widget widget = getWidget (theControl [0]);
 					if (widget != null) {
 						if (widget.isTrimHandle (theControl [0])) break;
 						if (widget instanceof Control) {
@@ -2012,7 +2074,7 @@ boolean runEnterExit () {
 			}
 			if (control == null) {
 				theControl [0] = theRoot [0];
-				Widget widget = WidgetTable.get (theControl [0]);
+				Widget widget = getWidget (theControl [0]);
 				if (widget != null && widget instanceof Control) {
 					control = (Control) widget;
 					theControl[0] = control.handle;
@@ -2545,7 +2607,7 @@ public void syncExec (Runnable runnable) {
 }
 
 int textInputProc (int nextHandler, int theEvent, int userData) {
-	Widget widget = WidgetTable.get (userData);
+	Widget widget = getWidget (userData);
 	if (widget == null) {
 		int theWindow = OS.GetUserFocusWindow ();
 		if (theWindow == 0) return OS.eventNotHandledErr;
@@ -2554,7 +2616,7 @@ int textInputProc (int nextHandler, int theEvent, int userData) {
 		if (theControl [0] == 0) {
 			OS.GetRootControl (theWindow, theControl);
 		}
-		widget = WidgetTable.get (theControl [0]);
+		widget = getWidget (theControl [0]);
 	}
 	if (widget != null) return widget.textInputProc (nextHandler, theEvent, userData);
 	return OS.eventNotHandledErr;
@@ -2640,7 +2702,7 @@ int timerProc (int id, int index) {
 }
 
 int trackingProc (int browser, int itemID, int property, int theRect, int startPt, int modifiers) {
-	Widget widget = WidgetTable.get (browser);
+	Widget widget = getWidget (browser);
 	if (widget != null) return widget.trackingProc (browser, itemID, property, theRect, startPt, modifiers);
 	return OS.noErr;
 }
@@ -2709,13 +2771,13 @@ void wakeUp () {
 }
 
 int windowProc (int nextHandler, int theEvent, int userData) {
-	Widget widget = WidgetTable.get (userData);
+	Widget widget = getWidget (userData);
 	if (widget == null) {
 		int [] theWindow = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeWindowRef, null, 4, null, theWindow);
 		int [] theRoot = new int [1];
 		OS.GetRootControl (theWindow [0], theRoot);
-		widget = WidgetTable.get (theRoot [0]);
+		widget = getWidget (theRoot [0]);
 	}
 	if (widget != null) return widget.windowProc (nextHandler, theEvent, userData); 
 	return OS.eventNotHandledErr;

@@ -265,10 +265,10 @@ int defaultThemeFont () {
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (handle);
-	if (iconHandle != 0) WidgetTable.remove (iconHandle);
-	if (labelHandle != 0) WidgetTable.remove (labelHandle);
-	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
+	display.removeWidget (handle);
+	if (iconHandle != 0) display.removeWidget (iconHandle);
+	if (labelHandle != 0) display.removeWidget (labelHandle);
+	if (arrowHandle != 0) display.removeWidget (arrowHandle);
 }
 
 void destroyWidget () {
@@ -667,10 +667,10 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 
 void register () {
 	super.register ();
-	WidgetTable.put (handle, this);
-	if (iconHandle != 0) WidgetTable.put (iconHandle, this);
-	if (labelHandle != 0) WidgetTable.put (labelHandle, this);
-	if (arrowHandle != 0) WidgetTable.put (arrowHandle, this);
+	display.addWidget (handle, this);
+	if (iconHandle != 0) display.addWidget (iconHandle, this);
+	if (labelHandle != 0) display.addWidget (labelHandle, this);
+	if (arrowHandle != 0) display.addWidget (arrowHandle, this);
 }
 
 void releaseChild () {

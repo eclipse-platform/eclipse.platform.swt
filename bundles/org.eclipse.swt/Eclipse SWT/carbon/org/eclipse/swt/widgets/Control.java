@@ -498,7 +498,7 @@ int defaultThemeFont () {
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (handle);
+	display.removeWidget (handle);
 }
 
 void destroyWidget () {
@@ -1557,7 +1557,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 
 void register () {
 	super.register ();
-	WidgetTable.put (handle, this);
+	display.addWidget (handle, this);
 }
 
 void releaseHandle () {
@@ -2070,7 +2070,7 @@ public void setCursor (Cursor cursor) {
 	if (theControl [0] == 0) return;
 	theControl [0] = cursorControl;
 	do {
-		Widget widget = WidgetTable.get (theControl [0]);
+		Widget widget = display.getWidget (theControl [0]);
 		if (widget != null) {
 			if (widget instanceof Control) {
 				Control control = (Control) widget;
@@ -2081,7 +2081,7 @@ public void setCursor (Cursor cursor) {
 	} while (theControl [0] != 0);
 	if (theControl [0] == 0) {
 		theControl [0] = theRoot [0];
-		Widget widget = WidgetTable.get (theControl [0]);
+		Widget widget = display.getWidget (theControl [0]);
 		if (widget != null && widget instanceof Control) {
 			Control control = (Control) widget;
 			theControl [0] = control.handle;

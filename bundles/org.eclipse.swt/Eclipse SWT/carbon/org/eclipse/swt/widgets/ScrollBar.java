@@ -209,7 +209,7 @@ void createWidget () {
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (handle);
+	display.removeWidget (handle);
 }
 
 int getDrawCount (int control) {
@@ -500,7 +500,7 @@ public void removeSelectionListener(SelectionListener listener) {
 
 void register () {
 	super.register ();
-	WidgetTable.put (handle, this);
+	display.addWidget (handle, this);
 }
 
 void releaseChild () {

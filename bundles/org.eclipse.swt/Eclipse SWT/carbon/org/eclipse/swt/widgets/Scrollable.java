@@ -140,7 +140,7 @@ void createWidget () {
 
 void deregister () {
 	super.deregister ();
-	if (scrolledHandle != 0) WidgetTable.remove (scrolledHandle);
+	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
 }
 
 /**
@@ -321,7 +321,7 @@ void layoutControl (boolean events) {
 
 void register () {
 	super.register ();
-	if (scrolledHandle != 0) WidgetTable.put (scrolledHandle, this);
+	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
 }
 
 void releaseHandle () {

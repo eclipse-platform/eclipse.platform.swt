@@ -466,7 +466,7 @@ void deregister () {
 	super.deregister ();
 	int [] theRoot = new int [1];
 	OS.GetRootControl (shellHandle, theRoot);
-	WidgetTable.remove (theRoot [0]);
+	display.removeWidget (theRoot [0]);
 }
 
 void destroyWidget () {
@@ -820,7 +820,7 @@ void register () {
 	super.register ();
 	int [] theRoot = new int [1];
 	OS.GetRootControl (shellHandle, theRoot);
-	WidgetTable.put (theRoot [0], this);
+	display.addWidget (theRoot [0], this);
 }
 
 void releaseHandle () {
