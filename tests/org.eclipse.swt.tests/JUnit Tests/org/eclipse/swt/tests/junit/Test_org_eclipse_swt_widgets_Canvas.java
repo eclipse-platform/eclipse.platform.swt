@@ -11,10 +11,12 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import junit.framework.*;
 import junit.textui.*;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Canvas
@@ -84,7 +86,11 @@ public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 }
 
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
-	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
+	FontData fontData = canvas.getFont().getFontData()[0];
+	Font font = new Font(canvas.getDisplay(), fontData.getName(), 8, fontData.getStyle());
+	canvas.setFont(font);
+	assertTrue(":a:", canvas.getFont().equals(font));
+	font.dispose();
 }
 
 public static Test suite() {

@@ -12,9 +12,11 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Shell
@@ -96,7 +98,33 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 }
 
 public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
-	warnUnimpl("Test test_addShellListenerLorg_eclipse_swt_events_ShellListener not written");
+	listenerCalled = false;
+	boolean exceptionThrown = false;
+	ShellListener listener = new ShellAdapter() {
+		public void shellActivated(ShellEvent e) {
+			listenerCalled = true;
+		}
+	};
+	try {
+		shell.addShellListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	shell.addShellListener(listener);
+	shell.forceActive();
+	assertTrue(":a:", listenerCalled == true);
+	
+	listenerCalled = false;
+	shell.removeShellListener(listener);
+	shell.forceActive();
+	assertTrue(":b:", listenerCalled == false);
+	try {
+		shell.removeShellListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
 }
 
 public void test_close() {
@@ -116,7 +144,8 @@ public void test_dispose() {
 }
 
 public void test_forceActive() {
-	warnUnimpl("Test test_forceActive not written");
+	shell.forceActive();
+	assertTrue(":a:", shell.getDisplay().getActiveShell() == shell);
 }
 
 public void test_getBounds() {
@@ -132,11 +161,14 @@ public void test_getEnabled() {
 }
 
 public void test_getImeInputMode() {
-	warnUnimpl("Test test_getImeInputMode not written");
+	int mode = shell.getImeInputMode();
+	assertTrue(":a:", mode >= 0);
 }
 
 public void test_getLocation() {
-	warnUnimpl("Test test_getLocation not written");
+	shell.setLocation(10,15);
+	assertTrue(":a:", shell.getLocation().x == 10);
+	assertTrue(":b:", shell.getLocation().y == 15);
 }
 
 public void test_getShell() {
@@ -147,7 +179,12 @@ public void test_getShell() {
 }
 
 public void test_getShells() {
-	warnUnimpl("Test test_getShells not written");
+	int num = shell.getShells().length;
+	assertTrue(":a:", num == 1);
+	Shell shell_1 = new Shell(shell);
+	num = shell.getShells().length;
+	assertTrue(":a:", num == 2);
+	shell_1.dispose();
 }
 
 public void test_isEnabled() {
@@ -171,23 +208,28 @@ public void test_open() {
 
 
 public void test_removeShellListenerLorg_eclipse_swt_events_ShellListener() {
-	warnUnimpl("Test test_removeShellListenerLorg_eclipse_swt_events_ShellListener not written");
+	// tested in removeShellListener method
 }
 
 public void test_setActive() {
-	warnUnimpl("Test test_setActive not written");
+	shell.setActive();
+	assertTrue(":a:", shell.getDisplay().getActiveShell() == shell);
 }
 
 public void test_setEnabledZ() {
-	warnUnimpl("Test test_setEnabledZ not written");
+	// tested in getEnabled method
 }
 
 public void test_setImeInputModeI() {
-	warnUnimpl("Test test_setImeInputModeI not written");
+	shell.setImeInputMode(SWT.NONE);
+	assertTrue(":a:", shell.getImeInputMode() == SWT.NONE);
 }
 
 public void test_setVisibleZ() {
-	warnUnimpl("Test test_setVisibleZ not written");
+	shell.setVisible(false);
+	assertTrue(":a:", !shell.isVisible());
+	shell.setVisible(true);
+	assertTrue(":b:", shell.isVisible());
 }
 
 public void test_win32_newLorg_eclipse_swt_widgets_DisplayI() {

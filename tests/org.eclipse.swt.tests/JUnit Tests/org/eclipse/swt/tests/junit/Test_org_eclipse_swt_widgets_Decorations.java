@@ -42,13 +42,16 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
+	Display display = decorations.getDisplay();
+	Decorations newDecorations = new Decorations(shell, SWT.NULL);
+	assertTrue("a: ", newDecorations.getDisplay() == display);
+	newDecorations.dispose();
 }
 
 public void test_computeTrimIIII() {
-	warnUnimpl("Test test_computeTrimIIII not written");
+	decorations.computeTrim(0,0,0,0);
+	decorations.computeTrim(0,0,10,20);
 }
-
 public void test_dispose() {
 	warnUnimpl("Test test_dispose not written");
 }
@@ -58,39 +61,55 @@ public void test_getBounds() {
 }
 
 public void test_getClientArea() {
-	warnUnimpl("Test test_getClientArea not written");
+	Rectangle rect = decorations.getClientArea();
+	assertTrue(":a:", rect.height >= 0);
+	assertTrue(":b:", rect.width >= 0);
 }
 
 public void test_getDefaultButton() {
-	warnUnimpl("Test test_getDefaultButton not written");
+	Button button = new Button(decorations, SWT.PUSH);
+	decorations.setDefaultButton(button);
+	assertTrue(":a:", decorations.getDefaultButton() == button);
 }
 
 public void test_getImage() {
-	warnUnimpl("Test test_getImage not written");
+	Image[] cases = {null, new Image(null, 100, 100)};
+	for(int i=0; i<cases.length; i++){
+		decorations.setImage(cases[i]);
+	 	assertEquals(decorations.getImage(), cases[i]);
+	 	if (cases[i]!=null)
+	  		cases[i].dispose();
+	}
 }
 
 public void test_getLocation() {
-	warnUnimpl("Test test_getLocation not written");
+	decorations.setLocation(10,15);
+	assertTrue(":a:", decorations.getLocation().x == 10);
+	assertTrue(":b:", decorations.getLocation().y == 15);
 }
 
 public void test_getMaximized() {
-	warnUnimpl("Test test_getMaximized not written");
+	// tested in setMaximized method
 }
 
 public void test_getMenuBar() {
-	warnUnimpl("Test test_getMenuBar not written");
+	assertTrue(":a:", decorations.getMenuBar() == null);
+	Menu bar = new Menu (decorations, SWT.BAR);
+	decorations.setMenuBar (bar);
+	assertTrue(":b:", decorations.getMenuBar() == bar);
 }
 
 public void test_getMinimized() {
-	warnUnimpl("Test test_getMinimized not written");
+	// tested in setMinimized method
 }
 
 public void test_getSize() {
-	warnUnimpl("Test test_getSize not written");
+	// super class test sufficient
 }
 
 public void test_getText() {
-	warnUnimpl("Test test_getText not written");
+	decorations.setText("test");
+	assertTrue(":a:", decorations.getText().equals("test"));
 }
 
 public void test_isReparentable() {
@@ -167,11 +186,7 @@ public void test_setTextLjava_lang_String() {
 }
 
 public void test_setVisibleZ() {
-	decorations.setVisible(false);
-	assertTrue(!decorations.getVisible());
-	
-	decorations.setVisible(true);
-	assertTrue(decorations.getVisible());
+	// test in subclasses
 }
 
 public static Test suite() {

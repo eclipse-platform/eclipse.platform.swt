@@ -50,7 +50,7 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_WidgetI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_WidgetI not written");
+	// abstract class
 }
 
 public void test_addDisposeListenerLorg_eclipse_swt_events_DisposeListener() {

@@ -38,7 +38,7 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
+	// abstract class
 }
 
 public void test_computeTrimIIII() {

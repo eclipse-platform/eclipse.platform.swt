@@ -12,10 +12,12 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.accessibility.Accessible;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Control
@@ -41,7 +43,7 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
+	// abstract class
 }
 
 public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
@@ -225,7 +227,8 @@ public void test_forceFocus() {
 }
 
 public void test_getAccessible() {
-	warnUnimpl("Test test_getAccessible not written");
+	Accessible accessible = control.getAccessible();
+	assertTrue(":a:", accessible != null);
 }
 
 public void test_getBackground() {
