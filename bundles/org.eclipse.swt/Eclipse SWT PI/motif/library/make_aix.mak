@@ -61,5 +61,8 @@ make_cde: $(CDE_LIB)
 $(CDE_LIB): $(CDE_OBJS)
 	ld -o $@ $(CDE_OBJS) $(CDE_LIBS)
 
+install: all
+	cp *.a $(OUTPUT_DIR)
+
 clean:
-	rm -f *.o *.so *.a
+	rm -f *.o *.a *.so *.sl 

@@ -25,6 +25,7 @@ case $OS in
 		JAVA_HOME=/bluebird/teamswt/swt-builddir/aixj9
 		MOTIF_HOME=/usr
 		CDE_HOME=/usr/dt
+		OUTPUT_DIR=../../../org.eclipse.swt.motif/os/aix/ppc
 		makefile="make_aix.mak"
 		echo "Building AIX version of SWT"
 		;;
@@ -32,6 +33,7 @@ case $OS in
 		JAVA_HOME=/bluebird/teamswt/swt-builddir/IBMJava2-141
 		MOTIF_HOME=/bluebird/teamswt/swt-builddir/motif21
 		QT_HOME=$QTDIR
+		OUTPUT_DIR=../../../org.eclipse.swt.motif/os/linux/x86
 		makefile="make_linux.mak"
 		echo "Building Linux version of SWT"
 		;;
@@ -39,6 +41,7 @@ case $OS in
 		JAVA_HOME=/usr/java
 		MOTIF_HOME=/usr/dt
 		CDE_HOME=/usr/dt		
+		OUTPUT_DIR=../../../org.eclipse.swt.motif/os/solaris/sparc
 		makefile="make_solaris.mak"
 		echo "Building Solaris version of SWT"
 		;;
@@ -48,10 +51,12 @@ case $OS in
 		CDE_HOME=/usr/dt
 		case $MODEL in
 			"ia64")
+				OUTPUT_DIR=../../../org.eclipse.swt.motif/os/hpux/ia64
 				makefile="make_hpux_ia64.mak"
 				echo "Building HPUX ia64 version of SWT"
 				;;
 			*)
+				OUTPUT_DIR=../../../org.eclipse.swt.motif/os/hpux/PA_RISC
 				makefile="make_hpux_PA_RISC.mak"
 				echo "Building HPUX risc version of SWT"
 				;;
@@ -63,6 +68,6 @@ case $OS in
 		;;
 esac
 
-export JAVA_HOME MOTIF_HOME CDE_HOME QT_HOME
+export JAVA_HOME MOTIF_HOME CDE_HOME QT_HOME OUTPUT_DIR
 
 make -f $makefile $1 $2 $3 $4

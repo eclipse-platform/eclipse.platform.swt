@@ -110,6 +110,9 @@ $(GTK_LIB): $(GTK_OBJS)
 gtk.o: gtk.c
 	$(CC) $(CFLAGS) $(GTK_CFLAGS) -c -o gtk.o gtk.c
 		
+install: all
+	cp *.so $(OUTPUT_DIR)
+
 clean:
-	rm -f *.so *.o
+	rm -f *.o *.a *.so *.sl 
 
