@@ -1487,6 +1487,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1keyboard_1ungrab)
 }
 #endif
 
+#ifndef NO_gdk_1keymap_1get_1default
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1keymap_1get_1default)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1keymap_1get_1default\n")
+	rc = (jint)gdk_keymap_get_default();
+	NATIVE_EXIT(env, that, "gdk_1keymap_1get_1default\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1keymap_1translate_1keyboard_1state
 JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1keymap_1translate_1keyboard_1state)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7)

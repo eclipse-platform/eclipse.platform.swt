@@ -430,6 +430,7 @@ public static final synchronized native void gdk_gc_set_values(int gc, GdkGCValu
 public static final synchronized native int gdk_image_get(int window, int x, int y, int width, int height);
 public static final synchronized native int gdk_image_get_pixel(int image, int x, int y);
 public static final synchronized native void gdk_keyboard_ungrab(int time);
+public static final synchronized native int gdk_keymap_get_default();
 public static final synchronized native boolean gdk_keymap_translate_keyboard_state (int keymap, int hardware_keycode, int state, int group, int[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers);
 public static final synchronized native int gdk_keyval_to_unicode(int keyval);
 public static final synchronized native int gdk_pango_context_get();
