@@ -369,7 +369,7 @@ void setThumb (int sliderSize) {
 			lastForeground = -1;
 		}
 	}
-	int [] argList3 = new int [] {
+	int [] argList2 = new int [] {
 		OS.XmNsliderSize, (sliderSize == 0) ? 1 : sliderSize,
 		OS.XmNvalue, argList1 [3]
 	};
@@ -377,7 +377,7 @@ void setThumb (int sliderSize) {
 	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
-	OS.XtSetValues (handle, argList3, argList3.length / 2);
+	OS.XtSetValues (handle, argList2, argList2.length / 2);
 	display.setWarnings (warnings);
 }
 int timerProc (int id) {
