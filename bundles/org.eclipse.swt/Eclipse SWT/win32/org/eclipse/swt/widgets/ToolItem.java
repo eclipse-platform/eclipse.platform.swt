@@ -317,8 +317,9 @@ public ToolBar getParent () {
  * and false otherwise.
  * <p>
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
- * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
- * it is selected when it is pushed.
+ * it is selected when it is checked (which some platforms draw as a
+ * pushed in button). If the receiver is of any other type, this method
+ * returns false.
  * </p>
  *
  * @return the selection state
@@ -589,8 +590,8 @@ public void setImage (Image image) {
  * Sets the selection state of the receiver.
  * <p>
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
- * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
- * it is selected when it is pushed.
+ * it is selected when it is checked (which some platforms draw as a
+ * pushed in button).
  * </p>
  *
  * @param selected the new selection state
