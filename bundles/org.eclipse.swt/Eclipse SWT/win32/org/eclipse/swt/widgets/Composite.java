@@ -508,7 +508,10 @@ void setResizeChildren (boolean resize) {
 boolean setTabGroupFocus () {
 	if (isTabItem ()) return setTabItemFocus ();
 	boolean takeFocus = (style & SWT.NO_FOCUS) == 0;
-	if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
+	if ((state & CANVAS) != 0) {
+		takeFocus = hooksKeys ();
+		if ((style & SWT.EMBEDDED) != 0) takeFocus = true;
+	}
 	if (takeFocus && setTabItemFocus ()) return true;
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -543,6 +546,11 @@ boolean translateMnemonic (Event event, Control control) {
 		}
 	}
 	return false;
+}
+
+boolean translateTraversal (MSG msg) {
+	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) return false;
+	return super.translateTraversal (msg);
 }
 
 void updateFont (Font oldFont, Font newFont) {

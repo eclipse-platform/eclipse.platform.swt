@@ -761,20 +761,30 @@ public void setTabList (Control [] tabList) {
 	} 
 	this.tabList = tabList;
 }
-boolean setTabGroupFocus () {
-	if (isTabItem ()) return setTabItemFocus ();
+boolean setTabGroupFocus (boolean next) {
+	if (isTabItem ()) return setTabItemFocus (next);
 	boolean takeFocus = (style & SWT.NO_FOCUS) == 0;
 	if ((state & CANVAS) != 0) {
 		takeFocus = hooksKeys ();
 		if ((style & SWT.EMBEDDED) != 0) takeFocus = true;
 	}
-	if (takeFocus && setTabItemFocus ()) return true;
+	if (takeFocus && setTabItemFocus (next)) return true;
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.isTabItem () && child.setTabItemFocus ()) return true;
+		if (child.isTabItem () && child.setTabItemFocus (next)) return true;
 	}
 	return false;
+}
+boolean setTabItemFocus (boolean next) {
+	if (!super.setTabItemFocus (next)) return false;
+	if (handle != 0) {
+		if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
+			int detail = next ? OS.XEMBED_FOCUS_FIRST : OS.XEMBED_FOCUS_LAST;
+			sendClientEvent (0, OS.XEMBED_FOCUS_IN, detail, 0, 0);
+		}
+	}
+	return true;
 }
 int traversalCode (int key, XKeyEvent xEvent) {
 	if ((state & CANVAS) != 0) {

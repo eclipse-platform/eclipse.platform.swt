@@ -447,7 +447,7 @@ public void setRedraw (boolean redraw) {
 		drawCount++;
 	}
 }
-boolean setTabItemFocus () {
+boolean setTabItemFocus (boolean next) {
 	int index = 0;
 	while (index < items.length) {
 		ToolItem item = items [index];
@@ -457,7 +457,7 @@ boolean setTabItemFocus () {
 		index++;
 	}
 	if (index == items.length) return false;
-	return super.setTabItemFocus ();
+	return super.setTabItemFocus (next);
 }
 int traversalCode (int key, XKeyEvent xEvent) {
 	return super.traversalCode (key, xEvent) | SWT.TRAVERSE_MNEMONIC;

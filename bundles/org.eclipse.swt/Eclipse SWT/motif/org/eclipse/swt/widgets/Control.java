@@ -2296,10 +2296,10 @@ boolean setRadioSelection (boolean value) {
 public void setRedraw (boolean redraw) {
 	checkWidget();
 }
-boolean setTabGroupFocus () {
-	return setTabItemFocus ();
+boolean setTabGroupFocus (boolean next) {
+	return setTabItemFocus (next);
 }
-boolean setTabItemFocus () {
+boolean setTabItemFocus (boolean next) {
 	if (!isShowing ()) return false;
 	return forceFocus ();
 }
@@ -2715,12 +2715,12 @@ boolean traverseGroup (boolean next) {
 	int start = index, offset = (next) ? 1 : -1;
 	while ((index = ((index + offset + length) % length)) != start) {
 		Control control = list [index];
-		if (!control.isDisposed () && control.setTabGroupFocus ()) {
+		if (!control.isDisposed () && control.setTabGroupFocus (next)) {
 			if (!isDisposed () && !isFocusControl ()) return true;
 		}
 	}
 	if (group.isDisposed ()) return false;
-	return group.setTabGroupFocus ();
+	return group.setTabGroupFocus (next);
 }
 boolean traverseItem (boolean next) {
 	Control [] children = parent._getChildren ();
@@ -2740,7 +2740,7 @@ boolean traverseItem (boolean next) {
 	while ((index = (index + offset + length) % length) != start) {
 		Control child = children [index];
 		if (!child.isDisposed () && child.isTabItem ()) {
-			if (child.setTabItemFocus ()) return true;
+			if (child.setTabItemFocus (next)) return true;
 		}
 	}
 	return false;
