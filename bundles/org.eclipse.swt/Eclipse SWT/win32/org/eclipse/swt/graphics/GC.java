@@ -1154,7 +1154,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 		if (height < 0) {
 			y += height;
 			height = -height;
-		};
+		}
 		if (arcWidth < 0) arcWidth = -arcWidth;
 		if (arcHeight < 0) arcHeight = -arcHeight;
 		if (arcWidth > width) arcWidth = width;
