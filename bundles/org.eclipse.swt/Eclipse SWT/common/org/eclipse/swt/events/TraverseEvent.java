@@ -30,8 +30,8 @@ import org.eclipse.swt.widgets.*;
  * will not traverse to the next tab item and the arrow key will be
  * delivered to the text control.  If the same key is pressed in a radio
  * button, the doit field will be <code>true</code>, indicating that
- * traversal is to proceed to the next tab item, possibly another
- * radio button in the group and that the arrow key is not be delivered
+ * traversal is to proceed to the next tab item, possibly another radio
+ * button in the group and that the arrow key is not to be delivered
  * to the radio button.
  * </p><p>
  * How can the traversal event be used to implement traversal?
@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.*;
  * is so, it is important to understand that only the widget implementor
  * can decide which traversal is appropriate for the widget.  Returning
  * to the <code>TRAVERSE_TAB_NEXT</code> example, a text widget implemented
- * by a canvas, would typically want to use the tab key to insert a
+ * by a canvas would typically want to use the tab key to insert a
  * tab character into the widget.  A list widget implementation, on the
  * other hand, would like the system default traversal behavior.  Using
  * only the doit flag, both implementations are possible.  The text widget
@@ -56,8 +56,8 @@ import org.eclipse.swt.widgets.*;
  * </p><p>
  * How can the traversal event be used to override system traversal?
  * When the return key is pressed in a single line text control, the
- * detail field is be <code>TRAVERSE_RETURN</code> and the doit field
- * is <code>true</code>.  This means that the return key will processed
+ * detail field is <code>TRAVERSE_RETURN</code> and the doit field
+ * is <code>true</code>.  This means that the return key will be processed
  * by the default button, not the text widget.  If the text widget has
  * a default selection listener, it will not run because the return key
  * will be processed by the default button.  Imagine that the text control
