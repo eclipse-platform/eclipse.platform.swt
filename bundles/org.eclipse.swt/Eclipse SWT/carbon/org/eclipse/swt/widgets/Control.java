@@ -1379,8 +1379,10 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
-	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, (short) 0, theEvent);
-	display.dragDetect (this);
+	if ((state & CANVAS) == 0) {
+		if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, (short) 0, theEvent);
+		display.dragDetect (this);
+	}
 	return OS.eventNotHandledErr;
 }
 
