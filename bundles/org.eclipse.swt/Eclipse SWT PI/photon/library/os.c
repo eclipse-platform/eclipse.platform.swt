@@ -3660,6 +3660,16 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3SII)
 }
 #endif
 
+#ifndef NO_memset
+JNIEXPORT void JNICALL OS_NATIVE(memset)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "memset\n")
+	memset((void *)arg0, arg1, (size_t)arg2);
+	NATIVE_EXIT(env, that, "memset\n")
+}
+#endif
+
 #ifndef NO_strdup
 JNIEXPORT jint JNICALL OS_NATIVE(strdup)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -779,6 +779,7 @@ public static final native void memmove(int dest, PhCursorDef_t src, int size);
 public static final native void memmove(PhClipHeader dest, int src, int size);
 public static final native void memmove(byte[] dest, PhClipHeader src, int size);
 public static final native void memmove(PtWebStatusCallback_t dest, int src, int size);
+public static final native void memset(int dest, int c, int length);
 public static final native int strdup(int string);
 public static final native int strlen(int string);
 public static final native int uname(utsname udata);
