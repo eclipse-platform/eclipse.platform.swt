@@ -1474,10 +1474,11 @@ void updateMenuBar (Shell shell) {
 	if (shell == null) shell = getActiveShell ();
 	boolean modal = false;
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
-	while (shell != null) {
-		if (shell.menuBar != null) break;
-		if ((shell.style & mask) != 0) modal = true;
-		shell = (Shell) shell.parent;
+	Shell menuShell = shell;
+	while (menuShell != null) {
+		if (menuShell.menuBar != null) break;
+		if ((menuShell.style & mask) != 0) modal = true;
+		menuShell = (Shell) menuShell.parent;
 	}
 	/*
 	* Feature in the Macintosh.  For some reason, when a modal shell
@@ -1492,8 +1493,8 @@ void updateMenuBar (Shell shell) {
 			if (items [i].getEnabled ()) items [i]._setEnabled (true);
 		}
 	}
-	setMenuBar (shell != null ? shell.menuBar : null);
-	if (menuBar != null && modal) {
+	setMenuBar (menuShell != null ? menuShell.menuBar : null);
+	if (menuBar != null && (modal || menuShell != shell)) {
 		MenuItem [] items = menuBar.getItems ();
 		for (int i=0; i<items.length; i++) items [i]._setEnabled (false);
 	}
