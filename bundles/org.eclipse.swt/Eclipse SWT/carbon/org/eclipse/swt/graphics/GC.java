@@ -1408,9 +1408,8 @@ void init(Drawable drawable, GCData data, int context) {
 	this.drawable = drawable;
 	this.data = data;
 	handle = context;
-
-	Font font = data.font;
-	if (font != null) setFont(font);
+	
+	if (data.font != null) setGCFont();
 }
 
 /**
@@ -1601,6 +1600,10 @@ public void setFont(Font font) {
 	if (font == null) font = data.device.systemFont;
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.font = font;
+	setGCFont ();
+}
+void setGCFont() {
+	Font font = data.font;
 	int ptr = OS.NewPtr(16);
 	OS.memcpy(ptr, new int[]{font.handle}, 4); 
 	OS.memcpy(ptr + 4, new int[]{font.size << 16}, 4); 
