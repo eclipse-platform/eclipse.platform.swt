@@ -99,8 +99,13 @@ public class ImageAnalyzer {
 		createWidgets();
 		shell.pack();
 		
-		// Create a GC for drawing.
+		// Create a GC for drawing, and hook the listener to dispose it.
 		imageCanvasGC = new GC(imageCanvas);
+		imageCanvas.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				imageCanvasGC.dispose();
+			}
+		});
 		
 		// Open the window, and run an event loop until the window is closed.
 		shell.open();
@@ -116,7 +121,6 @@ public class ImageAnalyzer {
 		blueColor.dispose();
 		fixedWidthFont.dispose();
 		crossCursor.dispose();
-		imageCanvasGC.dispose();
 	}
 	void createWidgets() {
 		// Add the widgets to the shell in a grid layout.
@@ -714,7 +718,7 @@ public class ImageAnalyzer {
 							if (incrementalEvents.size() > 0) {
 								ImageLoaderEvent event = (ImageLoaderEvent) incrementalEvents.remove(0);
 								if (image != null) image.dispose();
-								image = new Image(null, event.imageData);
+								image = new Image(display, event.imageData);
 								imageData = event.imageData;
 								imageCanvasGC.drawImage(
 									image,
@@ -1149,7 +1153,7 @@ public class ImageAnalyzer {
 	void animateLoop() {
 		// Create an off-screen image to draw on, and a GC to draw with.
 		// Both are disposed after the animation.
-		Image offScreenImage = new Image(null, loader.logicalScreenWidth, loader.logicalScreenHeight);
+		Image offScreenImage = new Image(display, loader.logicalScreenWidth, loader.logicalScreenHeight);
 		GC offScreenImageGC = new GC(offScreenImage);
 		
 		try {
@@ -1219,7 +1223,7 @@ public class ImageAnalyzer {
 				imageDataIndex = (imageDataIndex + 1) % imageDataArray.length;
 				imageData = imageDataArray[imageDataIndex];
 				image.dispose();
-				image = new Image(null, imageData);
+				image = new Image(display, imageData);
 				
 				// Draw the new image data.
 				offScreenImageGC.drawImage(
@@ -1354,7 +1358,7 @@ public class ImageAnalyzer {
 
 		try {
 			// Cache the new image and imageData.
-			image = new Image(null, newImageData);
+			image = new Image(display, newImageData);
 			imageData = newImageData;
 
 		} catch (SWTException e) {
