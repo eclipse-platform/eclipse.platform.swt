@@ -733,6 +733,8 @@ void drawBackground(GC gc, int[] shape, boolean selected) {
 					}
 				}
 			} else { //horizontal gradient
+				y = 0;
+				height = size.y;
 				Color lastColor = colors[0];
 				if (lastColor == null) lastColor = defaultBackground;
 				int pos = 0;
@@ -785,31 +787,40 @@ void drawBody(Event event) {
 		int style = getStyle();
 		int width = size.x  - borderLeft - borderRight;
 		int height = size.y - borderTop - borderBottom - tabHeight - HIGHLIGHT_HEADER;
-		int x = xClient - marginWidth;
-		int y = yClient - marginHeight;
 		if (borderLeft > 0 && (style & SWT.FLAT) == 0) {
+			int[] shape = null;
 			width -= 2*HIGHLIGHT_MARGIN;
 			height -= HIGHLIGHT_MARGIN;
 			if (onBottom) {
 				int x1 = 1;
+				int y1 = 1;
 				int x2 = size.x - 1;
-				int y1 = size.y - borderBottom - tabHeight - HIGHLIGHT_HEADER;
-				gc.setForeground(selectedIndex == -1 ? getBackground() : selectionBackground);
-				for (int i = 0; i < HIGHLIGHT_MARGIN; i++) {
-					gc.drawPolyline(new int[] {x1+i, y1-1, x1+i, 1+i, x2-1-i, 1+i, x2-1-i, y1});
-				}
+				int y2 = size.y - borderBottom - tabHeight - HIGHLIGHT_HEADER;
+				shape = new int[] {x1,y1, x2,y1, x2,y2, x2-HIGHLIGHT_MARGIN,y2,
+						           x2-HIGHLIGHT_MARGIN, y1+HIGHLIGHT_MARGIN, x1+HIGHLIGHT_MARGIN,y1+HIGHLIGHT_MARGIN,
+								   x1+HIGHLIGHT_MARGIN,y2, x1,y2};
 			} else {	
 				int x1 = 1;
+				int y1 = borderTop + tabHeight + HIGHLIGHT_HEADER;
 				int x2 = size.x - 1;
-				int y2 = borderTop + tabHeight + HIGHLIGHT_HEADER;
-				gc.setForeground(selectedIndex == -1 ? getBackground() : selectionBackground);
-				for (int i = 0; i < HIGHLIGHT_MARGIN; i++) {
-					gc.drawPolyline(new int[] {x1+i, y2, x1+i, size.y-2-i, x2-1-i, size.y-2-i, x2-1-i, y2-1});
-				}
+				int y2 = size.y - 1;
+				shape = new int[] {x1,y1, x1+HIGHLIGHT_MARGIN,y1, x1+HIGHLIGHT_MARGIN,y2-HIGHLIGHT_MARGIN, 
+						           x2-HIGHLIGHT_MARGIN,y2-HIGHLIGHT_MARGIN, x2-HIGHLIGHT_MARGIN,y1,
+								   x2,y1, x2,y2, x1,y2};
+			}
+			// Draw highlight margin - if horizontal gradient, show gradient across the whole area
+			if (selectedIndex != -1 && selectionGradientColors != null && selectionGradientColors.length > 1 && !selectionGradientVertical) {
+				drawBackground(gc, shape, true);
+			} else if (selectedIndex == -1 && gradientColors != null && gradientColors.length > 1 && !gradientVertical) {
+				drawBackground(gc, shape, false);
+			} else {
+				gc.setBackground(selectedIndex == -1 ? getBackground() : selectionBackground);
+				gc.fillPolygon(shape);
 			}
 		}
+		//Draw client area
 		gc.setBackground(getBackground());
-		gc.fillRectangle(x, y, width, height);
+		gc.fillRectangle(xClient - marginWidth, yClient - marginHeight, width, height);
 	}
 }
 
