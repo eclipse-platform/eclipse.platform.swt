@@ -311,7 +311,9 @@ public class OS {
 	/** Properties */
 	public static final byte[] background_gdk = signal("background-gdk");
 	public static final byte[] button_relief = signal("button_relief");
+	public static final byte[] cell_background_gdk = signal("cell-background-gdk");
 	public static final byte[] focus_line_width = signal("focus_line_width");
+	public static final byte[] font_desc = signal("font-desc");
 	public static final byte[] foreground_gdk = signal("foreground-gdk");
 	public static final byte[] horizontal_separator = signal("horizontal_separator");
 	public static final byte[] interior_focus = signal("interior_focus");
@@ -377,6 +379,7 @@ public static final synchronized native int G_TYPE_INT();
 public static final synchronized native int G_TYPE_STRING();
 public static final synchronized native int GtkTreeIter_sizeof();
 public static final synchronized native int PANGO_PIXELS(int dimension);
+public static final synchronized native int PANGO_TYPE_FONT_DESCRIPTION();
 public static final synchronized native int g_filename_to_utf8(int opsysstring, int len, int[] bytes_read, int[] bytes_written, int[] error);
 public static final synchronized native int g_filename_to_uri(int filename, int hostname, int[] error);
 public static final synchronized native int g_filename_from_utf8(int opsysstring, int len,  int[] bytes_read, int[] bytes_written, int[] error);

@@ -23,6 +23,17 @@
 	<eclipse.refreshLocal resource="org.eclipse.swt.gtk" depth="infinite" />	
 </target>
 
+<target name="build_gtk_linux_swtlib" depends="init">
+	<exec dir="./bin/library" executable="sh">
+		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg line="make_swt"/>
+	</exec>
+	<copy todir="${lib_destdir}">
+		<fileset dir="${basedir}/bin/library/" includes="*.so"/>
+	</copy>
+	<eclipse.refreshLocal resource="org.eclipse.swt.gtk" depth="infinite" />	
+</target>
+
 <target name="clean"  depends="init">
 	<tstamp/>
 	<exec dir="./bin/library" executable="sh">

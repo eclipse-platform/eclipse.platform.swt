@@ -157,8 +157,10 @@ public class Display extends Device {
 	int treeSelectionLength;
 	int treeSelectionProc;
 	Callback treeSelectionCallback;
-	int cellDataProc;
-	Callback cellDataCallback;
+	int textCellDataProc;
+	Callback textCellDataCallback;
+	int pixbufCellDataProc;
+	Callback pixbufCellDataCallback;
 	
 	/* Drag Detect */
 	int dragStartX,dragStartY;
@@ -1443,9 +1445,13 @@ void initializeCallbacks () {
 	treeSelectionProc = treeSelectionCallback.getAddress();
 	if (treeSelectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	cellDataCallback = new Callback (this, "cellDataProc", 5);
-	cellDataProc = cellDataCallback.getAddress ();
-	if (cellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	textCellDataCallback = new Callback (this, "textCellDataProc", 5);
+	textCellDataProc = textCellDataCallback.getAddress ();
+	if (textCellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	pixbufCellDataCallback = new Callback (this, "pixbufCellDataProc", 5);
+	pixbufCellDataProc = pixbufCellDataCallback.getAddress ();
+	if (pixbufCellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 void initializeWidgetTable () {
@@ -1724,8 +1730,10 @@ void releaseDisplay () {
 	/* Dispose GtkTreeView callbacks */
 	treeSelectionCallback.dispose (); treeSelectionCallback = null;
 	treeSelectionProc = 0;
-	cellDataCallback.dispose (); cellDataCallback = null;
-	cellDataProc = 0;
+	textCellDataCallback.dispose (); textCellDataCallback = null;
+	textCellDataProc = 0;
+	pixbufCellDataCallback.dispose (); pixbufCellDataCallback = null;
+	pixbufCellDataProc = 0;
 
 	/* Dispose the caret callback */
 	if (caretId != 0) OS.gtk_timeout_remove (caretId);
@@ -2220,10 +2228,15 @@ int caretProc (int clientData) {
 	return 0;
 }
 
-int cellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
+int pixbufCellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
 	Widget widget = getWidget (data);
 	if (widget == null) return 0;
-	return widget.cellDataProc (tree_column, cell, tree_model, iter, data);
+	return widget.pixbufCellDataProc (tree_column, cell, tree_model, iter, data);
+}
+int textCellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
+	Widget widget = getWidget (data);
+	if (widget == null) return 0;
+	return widget.textCellDataProc (tree_column, cell, tree_model, iter, data);
 }
 
 int treeSelectionProc (int model, int path, int iter, int data) {

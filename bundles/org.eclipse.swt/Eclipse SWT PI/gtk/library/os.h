@@ -24,12 +24,13 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <pango/pango.h>
+#include <pango/pango-font.h>
 #include <string.h>
 #include <dlfcn.h>
 
 #ifndef GDK_WINDOWING_X11
 #define NO_XWindowChanges
-#defien NO_XDefaultScreen
+#define NO_XDefaultScreen
 #define NO_XReconfigureWMWindow
 #define NO_XSetInputFocus
 #define NO_gdk_1x11_1drawable_1get_1xdisplay

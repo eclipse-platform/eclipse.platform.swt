@@ -53,7 +53,8 @@ public class Table extends Composite {
 	static final int GRAYED_COLUMN = 1;
 	static final int FOREGROUND_COLUMN = 2;
 	static final int BACKGROUND_COLUMN = 3;
-	static final int FIRST_COLUMN = BACKGROUND_COLUMN + 1;
+	static final int FONT_COLUMN = 4;
+	static final int FIRST_COLUMN = FONT_COLUMN + 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -136,8 +137,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-int cellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
-	int [] ptr = new int [1];
+int textCellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
 	int modelIndex = -1;
 	if (columnCount == 0) {
 		modelIndex = Table.FIRST_COLUMN;
@@ -150,6 +150,7 @@ int cellDataProc (int tree_column, int cell, int tree_model, int iter, int data)
 		}
 	}
 	if (modelIndex == -1) return 0;
+	int [] ptr = new int [1];
 	OS.gtk_tree_model_get (tree_model, iter, modelIndex + 2, ptr, -1); //foreground-gdk
 	if (ptr [0] != 0) {
 		OS.g_object_set(cell, OS.foreground_gdk, ptr[0], 0);
@@ -158,6 +159,31 @@ int cellDataProc (int tree_column, int cell, int tree_model, int iter, int data)
 	OS.gtk_tree_model_get (tree_model, iter, modelIndex + 3, ptr, -1); //background-gdk
 	if (ptr [0] != 0) {
 		OS.g_object_set(cell, OS.background_gdk, ptr[0], 0);
+	}
+	ptr = new int [1];
+	OS.gtk_tree_model_get (tree_model, iter, modelIndex + 4, ptr, -1); //font-desc
+	if (ptr [0] != 0) {
+		OS.g_object_set(cell, OS.font_desc, ptr[0], 0);
+	}
+	return 0;
+}
+int pixbufCellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
+	int modelIndex = -1;
+	if (columnCount == 0) {
+		modelIndex = Table.FIRST_COLUMN;
+	} else {
+		for (int i = 0; i < columns.length; i++) {
+			if (columns [i] != null && columns [i].handle == tree_column) {
+				modelIndex = columns [i].modelIndex;
+				break;
+			}
+		}
+	}
+	if (modelIndex == -1) return 0;
+	int [] ptr = new int [1];
+	OS.gtk_tree_model_get (tree_model, iter, modelIndex + 3, ptr, -1); //cell-background-gdk
+	if (ptr [0] != 0) {
+		OS.g_object_set(cell, OS.cell_background_gdk, ptr[0], 0);
 	}
 	return 0;
 }
@@ -186,11 +212,13 @@ void createHandle (int index) {
 	* 1 - grayed
 	* 2 - foreground for row
 	* 3 - background for row
-	* 4 - pixbuf
-	* 5 - text
-	* 6 - foreground for cell
-	* 7 - background for cell
-	* 8 - ...
+    * 4 - font for row
+	* 5 - pixbuf for cell
+	* 6 - text for cell
+	* 7 - foreground for cell
+	* 8 - background for cell
+	* 9 - font for cell
+	* 10 - ... 
 	*/
 	int [] types = getColumnTypes (1);
 	modelHandle = OS.gtk_list_store_newv (types.length, types);
@@ -228,7 +256,7 @@ void createColumn (TableColumn column, int index) {
 		boolean [] usedColumns = new boolean [modelLength];
 		for (int i=0; i<columnCount; i++) {
 			int columnIndex = columns [i].modelIndex;
-			usedColumns [columnIndex] = usedColumns [columnIndex + 1] = usedColumns [columnIndex + 2] = usedColumns [columnIndex + 3] = true;
+			usedColumns [columnIndex] = usedColumns [columnIndex + 1] = usedColumns [columnIndex + 2] = usedColumns [columnIndex + 3] = usedColumns [columnIndex + 4] = true;
 		}
 		while (modelIndex < modelLength) {
 			if (!usedColumns [modelIndex]) break;
@@ -236,7 +264,7 @@ void createColumn (TableColumn column, int index) {
 		}
 		if (modelIndex == modelLength) {
 			int oldModel = modelHandle;
-			int[] types = getColumnTypes (columnCount + 4);
+			int[] types = getColumnTypes (columnCount + 5);
 			int newModel = OS.gtk_list_store_newv (types.length, types);
 			if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
 			int [] ptr = new int [1];
@@ -327,6 +355,7 @@ void createRenderers (int columnHandle, int modelIndex, boolean check, int colum
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", modelIndex + 1);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "font-desc", FONT_COLUMN);
 	
 	boolean customDraw = firstCustomDraw;
 	if (columnCount != 0) {
@@ -338,7 +367,8 @@ void createRenderers (int columnHandle, int modelIndex, boolean check, int colum
 		}
 	}
 	if (customDraw) {
-		OS.gtk_tree_view_column_set_cell_data_func (columnHandle, textRenderer, display.cellDataProc, handle, 0);
+		OS.gtk_tree_view_column_set_cell_data_func (columnHandle, textRenderer, display.textCellDataProc, handle, 0);
+		OS.gtk_tree_view_column_set_cell_data_func (columnHandle, pixbufRenderer, display.pixbufCellDataProc, handle, 0);
 	}
 }
 
@@ -550,6 +580,8 @@ void destroyItem (TableColumn column) {
 			OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + 2, ptr [0], -1);
 			OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + 3, ptr, -1); //background
 			OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + 3, ptr [0], -1);
+			OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + 4, ptr, -1); //font
+			OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + 4, ptr [0], -1);
 			OS.gtk_list_store_remove (oldModel, oldItem);
 			OS.g_free (oldItem);
 			item.handle = newItem;
@@ -566,6 +598,7 @@ void destroyItem (TableColumn column) {
 			OS.gtk_list_store_set (modelHandle, item, modelIndex + 1, 0, -1); //text
 			OS.gtk_list_store_set (modelHandle, item, modelIndex + 2, 0, -1); //foreground
 			OS.gtk_list_store_set (modelHandle, item, modelIndex + 3, 0, -1); //background
+			OS.gtk_list_store_set (modelHandle, item, modelIndex + 4, 0, -1); //font
 		}
 		if (index == 0) {
 			TableColumn checkColumn = columns [0];
@@ -652,16 +685,18 @@ public int getColumnCount () {
 }
 
 int[] getColumnTypes (int n) {
-	int[] types = new int [(n * 4) + FIRST_COLUMN];
+	int[] types = new int [(n * 5) + FIRST_COLUMN];
 	types [CHECKED_COLUMN] = OS.G_TYPE_BOOLEAN ();
 	types [GRAYED_COLUMN] = OS.G_TYPE_BOOLEAN ();
 	types [FOREGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
 	types [BACKGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
-	for (int i=FIRST_COLUMN; i<types.length; i+=4) {
-		types [i] = OS.GDK_TYPE_PIXBUF (); //image
+	types [FONT_COLUMN] = OS.PANGO_TYPE_FONT_DESCRIPTION ();
+	for (int i=FIRST_COLUMN; i<types.length; i+=5) {
+		types [i + 0] = OS.GDK_TYPE_PIXBUF (); //image
 		types [i + 1] = OS.G_TYPE_STRING (); //text
 		types [i + 2] = OS.GDK_TYPE_COLOR (); //foreground
 		types [i + 3] = OS.GDK_TYPE_COLOR (); //background
+		types [i + 4] = OS.PANGO_TYPE_FONT_DESCRIPTION (); //font
 	}
 	return types;
 }

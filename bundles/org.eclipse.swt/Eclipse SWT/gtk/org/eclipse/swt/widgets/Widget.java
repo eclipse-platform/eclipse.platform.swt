@@ -202,7 +202,10 @@ public void addDisposeListener (DisposeListener listener) {
 	addListener (SWT.Dispose, typedListener);
 }
 
-int cellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
+int textCellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
+	return 0;
+}
+int pixbufCellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
 	return 0;
 }
 
