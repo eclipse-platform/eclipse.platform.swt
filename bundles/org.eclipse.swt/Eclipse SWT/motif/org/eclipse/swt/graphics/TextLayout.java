@@ -783,7 +783,7 @@ Font getItemFont(StyleItem item) {
 	if (this.font != null) {
 		return this.font;
 	}
-	return device.getSystemFont();
+	return device.systemFont;
 }
 
 /**
