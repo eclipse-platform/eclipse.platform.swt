@@ -14,8 +14,9 @@
 *******************************************************************************/
 
 #ifdef NATIVE_STATS
-int GTK_nativeFunctionCallCount[];
-char* GTK_nativeFunctionNames[];
+extern int GTK_nativeFunctionCount;
+extern int GTK_nativeFunctionCallCount[];
+extern char* GTK_nativeFunctionNames[];
 #define GTK_NATIVE_ENTER(env, that, func) GTK_nativeFunctionCallCount[func]++;
 #define GTK_NATIVE_EXIT(env, that, func) 
 #else

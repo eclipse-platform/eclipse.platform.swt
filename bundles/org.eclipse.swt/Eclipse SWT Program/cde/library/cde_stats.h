@@ -10,8 +10,9 @@
 *******************************************************************************/
 
 #ifdef NATIVE_STATS
-int CDE_nativeFunctionCallCount[];
-char* CDE_nativeFunctionNames[];
+extern int CDE_nativeFunctionCount;
+extern int CDE_nativeFunctionCallCount[];
+extern char* CDE_nativeFunctionNames[];
 #define CDE_NATIVE_ENTER(env, that, func) CDE_nativeFunctionCallCount[func]++;
 #define CDE_NATIVE_EXIT(env, that, func) 
 #else

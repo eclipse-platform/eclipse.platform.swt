@@ -35,4 +35,24 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1window_1new", 
 };
 
+#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
+
+JNIEXPORT jint JNICALL STATS_NATIVE(GTK_1GetFunctionCount)
+	(JNIEnv *env, jclass that)
+{
+	return GTK_nativeFunctionCount;
+}
+
+JNIEXPORT jstring JNICALL STATS_NATIVE(GTK_1GetFunctionName)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return (*env)->NewStringUTF(env, GTK_nativeFunctionNames[index]);
+}
+
+JNIEXPORT jint JNICALL STATS_NATIVE(GTK_1GetFunctionCallCount)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return GTK_nativeFunctionCallCount[index];
+}
+
 #endif

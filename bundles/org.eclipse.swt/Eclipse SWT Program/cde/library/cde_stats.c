@@ -29,4 +29,24 @@ char * CDE_nativeFunctionNames[] = {
 	"DtDtsFreeDataTypeNames", 
 };
 
+#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
+
+JNIEXPORT jint JNICALL STATS_NATIVE(CDE_1GetFunctionCount)
+	(JNIEnv *env, jclass that)
+{
+	return CDE_nativeFunctionCount;
+}
+
+JNIEXPORT jstring JNICALL STATS_NATIVE(CDE_1GetFunctionName)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return (*env)->NewStringUTF(env, CDE_nativeFunctionNames[index]);
+}
+
+JNIEXPORT jint JNICALL STATS_NATIVE(CDE_1GetFunctionCallCount)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return CDE_nativeFunctionCallCount[index];
+}
+
 #endif
