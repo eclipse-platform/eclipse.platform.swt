@@ -2546,7 +2546,7 @@ boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 			return false;
 	}
 	Event event = new Event ();
-	event.doit = (code & detail) != 0 || (phEvent.key_mods & OS.Pk_KM_Ctrl) != 0;
+	event.doit = (code & detail) != 0;
 	event.detail = detail;
 	setKeyState (event, phEvent);
 	Shell shell = getShell ();
