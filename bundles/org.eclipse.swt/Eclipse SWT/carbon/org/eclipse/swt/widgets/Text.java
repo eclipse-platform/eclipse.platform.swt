@@ -427,6 +427,7 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlClick (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	// Check for not enabled
 	int window = OS.GetControlOwner (handle);
 	OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart);
 	EventRecord iEvent = new EventRecord ();
@@ -451,6 +452,29 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	OS.TXNFocus (txnObject, part [0] != 0);
 	redraw ();
 	return OS.noErr;
+}
+
+int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+	/*
+	* Bug in the Macintosh.  When the default handler calls TXNKeyDown()
+	* for a single line TXN Object, it does not check for the return key
+	* or the default button.  The result is that a garbage character (the
+	* CR) is entered into the TXN Object.  The fix is to temporarily take
+	* focus away from the TXN Object, call the default handler to process
+	* the return key and reset the focus.
+	*/
+	if ((style & SWT.SINGLE) != 0) {
+		int [] keyCode = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+		switch (keyCode [0]) {
+			case 36: //CR KEY
+				OS.TXNFocus (txnObject, false);
+				int result = OS.CallNextEventHandler (nextHandler, theEvent);
+				OS.TXNFocus (txnObject, true);
+				return result;
+		}
+	}
+	return super.kEventRawKeyDown (nextHandler, theEvent, userData);
 }
 
 public void paste () {
