@@ -131,6 +131,7 @@ protected void checkWidget () {
  * </ul>
  */
 public void dispose () {
+	if (isDisposed()) return;
 	if (display.getThread() != Thread.currentThread()) DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	display = null;
 }
@@ -199,6 +200,23 @@ public Object getContents(Transfer transfer) {
 	
 	return result;
 }
+/**
+ * Returns <code>true</code> if the clipboard has been disposed,
+ * and <code>false</code> otherwise.
+ * <p>
+ * This method gets the dispose state for the clipboard.
+ * When a clipboard has been disposed, it is an error to
+ * invoke any other method using the clipboard.
+ * </p>
+ *
+ * @return <code>true</code> when the widget is disposed and <code>false</code> otherwise
+ * 
+ * @since 3.0
+ */
+public boolean isDisposed () {
+	return (display == null);
+}
+
 /**
  * Place data of the specified type on the system clipboard.  More than one type of
  * data can be placed on the system clipboard at the same time.  Setting the data 

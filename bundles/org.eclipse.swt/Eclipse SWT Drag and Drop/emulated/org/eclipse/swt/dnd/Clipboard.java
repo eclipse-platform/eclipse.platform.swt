@@ -130,8 +130,8 @@ protected void checkWidget () {
  * </ul>
  */
 public void dispose () {
+	if (isDisposed()) return;
 	if (display.getThread() != Thread.currentThread()) DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (display == null) return;
 	display = null;
 }
 
@@ -171,6 +171,23 @@ public Object getContents(Transfer transfer) {
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	if (!(transfer instanceof TextTransfer)) return null;
 	return display.getData("TextTransfer"); //$NON-NLS-1$
+}
+
+/**
+ * Returns <code>true</code> if the clipboard has been disposed,
+ * and <code>false</code> otherwise.
+ * <p>
+ * This method gets the dispose state for the clipboard.
+ * When a clipboard has been disposed, it is an error to
+ * invoke any other method using the clipboard.
+ * </p>
+ *
+ * @return <code>true</code> when the widget is disposed and <code>false</code> otherwise
+ * 
+ * @since 3.0
+ */
+public boolean isDisposed () {
+	return (display == null);
 }
 
 /**
