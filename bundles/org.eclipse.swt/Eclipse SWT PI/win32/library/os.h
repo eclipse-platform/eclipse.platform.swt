@@ -136,6 +136,7 @@
 #define NO_ChooseColorA
 #define NO_ChooseFontA
 #define NO_ChooseFontW
+#define NO_CloseThemeData
 #define NO_CoCreateInstance
 #define NO_CopyImage
 #define NO_CreateAcceleratorTableA
@@ -160,6 +161,8 @@
 #define NO_DrawStateA
 #define NO_DrawStateW
 #define NO_DrawTextA
+#define NO_DrawThemeBackground
+#define NO_DrawThemeParentBackground
 #define NO_EnableScrollBar
 #define NO_EndDoc
 #define NO_EndPage
@@ -245,6 +248,7 @@
 #define NO_InsertMenuItemA
 #define NO_InsertMenuItemW
 #define NO_InvalidateRgn
+#define NO_IsAppThemed
 #define NO_IsIconic
 #define NO_IsZoomed
 #define NO_LineTo
@@ -280,6 +284,7 @@
 #define NO_NotifyWinEvent
 #define NO_OleInitialize
 #define NO_OleUninitialize
+#define NO_OpenThemeData
 #define NO_PeekMessageA
 #define NO_Pie
 #define NO_PostMessageA

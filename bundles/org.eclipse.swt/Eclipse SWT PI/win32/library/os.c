@@ -335,6 +335,34 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(CloseClipboard)
 }
 #endif
 
+#ifndef NO_CloseThemeData
+JNIEXPORT jint JNICALL OS_NATIVE(CloseThemeData)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CloseThemeData_FUNC);
+/*
+	rc = (jint)CloseThemeData((HTHEME)arg0);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(CloseThemeData_LIB))) hm = LoadLibrary(CloseThemeData_LIB);
+			if (hm) fp = GetProcAddress(hm, "CloseThemeData");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HTHEME)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CloseThemeData_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CoCreateInstance
 JNIEXPORT jint JNICALL OS_NATIVE(CoCreateInstance)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jbyteArray arg3, jintArray arg4)
@@ -1368,6 +1396,41 @@ fail:
 	}
 	if (arg3 && lparg3) setRECTFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, DrawTextW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DrawThemeBackground
+JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeBackground)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jobject arg5)
+{
+	RECT _arg4, *lparg4=NULL;
+	RECT _arg5, *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DrawThemeBackground_FUNC);
+	if (arg4) if ((lparg4 = getRECTFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = getRECTFields(env, arg5, &_arg5)) == NULL) goto fail;
+/*
+	rc = (jint)DrawThemeBackground((HTHEME)arg0, (HDC)arg1, arg2, arg3, (const RECT *)lparg4, (const RECT *)lparg5);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(DrawThemeBackground_LIB))) hm = LoadLibrary(DrawThemeBackground_LIB);
+			if (hm) fp = GetProcAddress(hm, "DrawThemeBackground");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HTHEME)arg0, (HDC)arg1, arg2, arg3, (const RECT *)lparg4, (const RECT *)lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) setRECTFields(env, arg5, lparg5);
+	if (arg4 && lparg4) setRECTFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, DrawThemeBackground_FUNC);
 	return rc;
 }
 #endif
@@ -4734,6 +4797,34 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(InvalidateRgn)
 }
 #endif
 
+#ifndef NO_IsAppThemed
+JNIEXPORT jboolean JNICALL OS_NATIVE(IsAppThemed)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, IsAppThemed_FUNC);
+/*
+	rc = (jboolean)IsAppThemed();
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(IsAppThemed_LIB))) hm = LoadLibrary(IsAppThemed_LIB);
+			if (hm) fp = GetProcAddress(hm, "IsAppThemed");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, IsAppThemed_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_IsDBCSLeadByte
 JNIEXPORT jboolean JNICALL OS_NATIVE(IsDBCSLeadByte)
 	(JNIEnv *env, jclass that, jbyte arg0)
@@ -6393,6 +6484,38 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(OpenClipboard)
 	OS_NATIVE_ENTER(env, that, OpenClipboard_FUNC);
 	rc = (jboolean)OpenClipboard((HWND)arg0);
 	OS_NATIVE_EXIT(env, that, OpenClipboard_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OpenThemeData
+JNIEXPORT jint JNICALL OS_NATIVE(OpenThemeData)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1)
+{
+	jchar *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, OpenThemeData_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)OpenThemeData((HWND)arg0, (LPCWSTR)lparg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(OpenThemeData_LIB))) hm = LoadLibrary(OpenThemeData_LIB);
+			if (hm) fp = GetProcAddress(hm, "OpenThemeData");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HWND)arg0, (LPCWSTR)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, OpenThemeData_FUNC);
 	return rc;
 }
 #endif
@@ -9344,7 +9467,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, VtblCall__II_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint))(*(int **)arg1)[arg0])(arg1);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint))(*(jint **)arg1)[arg0])(arg1);
 	OS_NATIVE_EXIT(env, that, VtblCall__II_FUNC);
 	return rc;
 }
@@ -9356,7 +9479,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__III)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, VtblCall__III_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint))(*(int **)arg1)[arg0])(arg1, arg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint))(*(jint **)arg1)[arg0])(arg1, arg2);
 	OS_NATIVE_EXIT(env, that, VtblCall__III_FUNC);
 	return rc;
 }
@@ -9370,7 +9493,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IIIII_3I)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, VtblCall__IIIII_3I_FUNC);
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint *))(*(int **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jint, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	OS_NATIVE_EXIT(env, that, VtblCall__IIIII_3I_FUNC);
@@ -9390,7 +9513,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3CII_3I_3I)
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jint, jint, jint *, jint *))(*(int **)arg1)[arg0])(arg1, lparg2, arg3, arg4, lparg5, lparg6);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jint, jint, jint *, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, arg4, lparg5, lparg6);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);

@@ -10,7 +10,9 @@
  *******************************************************************************/
 
 /* Libraries for dynamic loaded functions */
-#define GradientFill_LIB "msimg32.dll"
+#define CloseThemeData_LIB "uxtheme.dll"
+#define DrawThemeBackground_LIB "uxtheme.dll"
+#define DrawThemeParentBackground_LIB "uxtheme.dll"
 #define EnumDisplayMonitors_LIB "user32.dll"
 #define EnumSystemLanguageGroupsA_LIB "kernel32.dll"
 #define EnumSystemLanguageGroupsW_LIB "kernel32.dll"
@@ -20,8 +22,11 @@
 #define GetMenuInfo_LIB "user32.dll"
 #define GetMonitorInfoA_LIB "user32.dll"
 #define GetMonitorInfoW_LIB "user32.dll"
+#define GradientFill_LIB "msimg32.dll"
+#define IsAppThemed_LIB "uxtheme.dll"
 #define MonitorFromWindow_LIB "user32.dll"
 #define NotifyWinEvent_LIB "user32.dll"
+#define OpenThemeData_LIB "uxtheme.dll"
 #define SetLayout_LIB "gdi32.dll"
 #define SetMenuInfo_LIB "user32.dll"
 

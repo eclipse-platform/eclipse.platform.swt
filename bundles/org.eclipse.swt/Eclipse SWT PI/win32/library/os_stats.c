@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 600;
-int OS_nativeFunctionCallCount[600];
+int OS_nativeFunctionCount = 604;
+int OS_nativeFunctionCallCount[604];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -41,6 +41,7 @@ char * OS_nativeFunctionNames[] = {
 	"ChooseFontW",
 	"ClientToScreen",
 	"CloseClipboard",
+	"CloseThemeData",
 	"CoCreateInstance",
 	"CombineRgn",
 	"CommDlgExtendedError",
@@ -109,6 +110,7 @@ char * OS_nativeFunctionNames[] = {
 	"DrawStateW",
 	"DrawTextA",
 	"DrawTextW",
+	"DrawThemeBackground",
 	"Ellipse",
 	"EnableMenuItem",
 	"EnableScrollBar",
@@ -316,6 +318,7 @@ char * OS_nativeFunctionNames[] = {
 	"IntersectRect",
 	"InvalidateRect",
 	"InvalidateRgn",
+	"IsAppThemed",
 	"IsDBCSLeadByte",
 	"IsIconic",
 	"IsPPC",
@@ -420,6 +423,7 @@ char * OS_nativeFunctionNames[] = {
 	"OleInitialize",
 	"OleUninitialize",
 	"OpenClipboard",
+	"OpenThemeData",
 	"PatBlt",
 	"PeekMessageA",
 	"PeekMessageW",
