@@ -2199,6 +2199,60 @@ public void setTopIndex (int index) {
 	OS.SendMessage (handle, OS.LVM_SCROLL, 0, dy);
 }
 
+/**
+ * Shows the column.  If the column is already showing in the receiver,
+ * this method simply returns.  Otherwise, the columns are scrolled until
+ * the column is visible.
+ *
+ * @param column the column to be shown
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void showColumn (TableColumn column) {
+	checkWidget ();
+	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (column.parent != this) return;
+	int index = indexOf (column);	
+	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	if (count <= 1 || !(0 <= index && index < count)) return; 
+	RECT rect = new RECT ();
+	if (index == 0) {
+		int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, index, 0);
+		rect.top = 1;
+		rect.left = OS.LVIR_BOUNDS;
+		OS.SendMessage (handle, OS. LVM_GETSUBITEMRECT, -1, rect);
+		rect.left = rect.left - width;
+		rect.right = rect.left + width;
+	} else {
+		rect.top = index;
+		rect.left = OS.LVIR_BOUNDS;
+		OS.SendMessage (handle, OS. LVM_GETSUBITEMRECT, -1, rect);
+	}
+	RECT area = new RECT ();
+	OS.GetClientRect (handle, area);
+	if (rect.left < area.left) {
+		int dx = rect.left - area.left;
+		OS.SendMessage (handle, OS. LVM_SCROLL, dx, 0);
+	} else {
+		int width = Math.min (area.right - area.left, rect.right - rect.left);
+		if (rect.left + width > area.right) {
+			int dx = rect.left + width - area.right;
+			OS.SendMessage (handle, OS. LVM_SCROLL, dx, 0);
+		}
+	}
+}
+
 void showItem (int index) {
 	/*
 	* Bug in Windows.  For some reason, when there is insufficient space
