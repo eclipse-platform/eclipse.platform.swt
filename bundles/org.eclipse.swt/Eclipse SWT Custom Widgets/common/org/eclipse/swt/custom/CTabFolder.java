@@ -2083,7 +2083,23 @@ void onMouse(Event event) {
 						CTabFolderListener listener = tabListeners[j];
 						listener.itemClosed(e);
 					}
-					if (e.doit) item.dispose();
+					if (e.doit) {
+						item.dispose();
+						CTabItem nextItem = getItem(new Point(event.x, event.y));
+						if (nextItem != null) {
+							if (nextItem.closeRect.contains(event.x, event.y)) {
+								if (nextItem.closeImageState != SELECTED && nextItem.closeImageState != HOT) {
+									nextItem.closeImageState = HOT;
+									redraw(nextItem.closeRect.x, nextItem.closeRect.y, nextItem.closeRect.width, nextItem.closeRect.height, false);
+								}
+							} else {
+								if (nextItem.closeImageState != NORMAL) {
+									nextItem.closeImageState = NORMAL;
+									redraw(nextItem.closeRect.x, nextItem.closeRect.y, nextItem.closeRect.width, nextItem.closeRect.height, false);
+								}
+							} 
+						}
+					}
 					return;
 				}
 			}
