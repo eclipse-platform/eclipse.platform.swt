@@ -82,17 +82,7 @@
     </ant>
   </target>
 
-  <target name="swt.jar" depends="init">
-    <ant antfile="${template}" target="jar">
-      <property name="mapping" value="Eclipse SWT/win32/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT AWT/win32/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/win32/,Eclipse SWT Drag and Drop/common/,Eclipse SWT OLE Win32/win32/,Eclipse SWT Printing/win32/,Eclipse SWT Printing/common/,Eclipse SWT Program/win32/,Eclipse SWT Program/common/,Eclipse SWT PI/win32/,Eclipse SWT PI/common_j2se/"/>
-      <property name="includes" value="Eclipse SWT/win32/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT AWT/win32/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/win32/,Eclipse SWT Drag and Drop/common/,Eclipse SWT OLE Win32/win32/,Eclipse SWT Printing/win32/,Eclipse SWT Printing/common/,Eclipse SWT Program/win32/,Eclipse SWT Program/common/,Eclipse SWT PI/win32/,Eclipse SWT PI/common_j2se/"/>
-      <property name="excludes" value=""/>
-      <property name="dest" value="${basedir}/swt.jar"/>
-      <property name="compilePath" value=""/>
-    </ant>
-  </target>
-
-  <target name="jar" depends="init,ws/motif/swt.jar,ws/photon/swt.jar,ws/win32/swt.jar,swt.jar">
+  <target name="jar" depends="init,ws/motif/swt.jar,ws/photon/swt.jar,ws/win32/swt.jar">
   </target>
 
   <target name="ws/motif/swtsrc.zip" depends="init">
@@ -125,17 +115,7 @@
     </ant>
   </target>
 
-  <target name="swtsrc.zip" depends="init">
-    <property name="destroot" value="${basedir}"/>
-    <ant antfile="${template}" target="src">
-      <property name="mapping" value="Eclipse SWT/win32/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT AWT/win32/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/win32/,Eclipse SWT Drag and Drop/common/,Eclipse SWT OLE Win32/win32/,Eclipse SWT Printing/win32/,Eclipse SWT Printing/common/,Eclipse SWT Program/win32/,Eclipse SWT Program/common/,Eclipse SWT PI/win32/,Eclipse SWT PI/common_j2se/"/>
-      <property name="includes" value="Eclipse SWT/win32/**/*.java,Eclipse SWT/common/**/*.java,Eclipse SWT/common_j2se/**/*.java,Eclipse SWT AWT/win32/**/*.java,Eclipse SWT Custom Widgets/common/**/*.java,Eclipse SWT Drag and Drop/win32/**/*.java,Eclipse SWT Drag and Drop/common/**/*.java,Eclipse SWT OLE Win32/win32/**/*.java,Eclipse SWT Printing/win32/**/*.java,Eclipse SWT Printing/common/**/*.java,Eclipse SWT Program/win32/**/*.java,Eclipse SWT Program/common/**/*.java,Eclipse SWT PI/win32/**/*.java,Eclipse SWT PI/common_j2se/**/*.java"/>
-      <property name="excludes" value=""/>
-      <property name="dest" value="${destroot}/swtsrc.zip"/>
-    </ant>
-  </target>
-
-  <target name="src" depends="init,ws/motif/swtsrc.zip,ws/photon/swtsrc.zip,ws/win32/swtsrc.zip,swtsrc.zip">
+  <target name="src" depends="init,ws/motif/swtsrc.zip,ws/photon/swtsrc.zip,ws/win32/swtsrc.zip">
   </target>
 
   <target name="bin" depends="init">
@@ -156,8 +136,8 @@
 
   <target name="clean" depends="init">
     <ant antfile="${template}" target="clean">
-      <property name="jar" value="ws/motif/swt.jar,ws/photon/swt.jar,ws/win32/swt.jar,swt.jar"/>
-      <property name="srczips" value="ws/motif/swtsrc.zip,ws/photon/swtsrc.zip,ws/win32/swtsrc.zip,swtsrc.zip"/>
+      <property name="jar" value="ws/motif/swt.jar,ws/photon/swt.jar,ws/win32/swt.jar"/>
+      <property name="srczips" value="ws/motif/swtsrc.zip,ws/photon/swtsrc.zip,ws/win32/swtsrc.zip"/>
     </ant>
     <delete>
       <fileset dir="." includes="**/*.pdetemp"/>
