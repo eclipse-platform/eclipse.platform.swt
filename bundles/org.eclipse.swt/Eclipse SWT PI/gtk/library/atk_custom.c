@@ -16,7 +16,7 @@
 #include "swt.h"
 #include "os_structs.h"
 
-#define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_ATK_##func
+#define OS_NATIVE(func) Java_org_eclipse_swt_internal_accessibility_gtk_ATK_##func
 
 #ifndef NO_AtkObjectFactory_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(AtkObjectFactory_1sizeof)
@@ -42,123 +42,123 @@ JNIEXPORT jint JNICALL OS_NATIVE(AtkObjectFactoryClass_1sizeof)
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_AtkActionIface_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_AtkActionIface_2I)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkActionIface_2I\n")
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2I\n")
 	if (arg0) setAtkActionIfaceFields(env, arg0, (AtkActionIface *)arg1);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkActionIface_2I\n")
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2I\n")
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_AtkComponentIface_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_AtkComponentIface_2I)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkComponentIface_2I\n")
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I\n")
 	if (arg0) setAtkComponentIfaceFields(env, arg0, (AtkComponentIface *)arg1);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkComponentIface_2I\n")
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I\n")
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_AtkObjectClass_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_AtkObjectClass_2I)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkObjectClass_2I\n")
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2I\n")
 	if (arg0) setAtkObjectClassFields(env, arg0, (AtkObjectClass *)arg1);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkObjectClass_2I\n")
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2I\n")
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_AtkObjectFactoryClass_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_AtkObjectFactoryClass_2I)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkObjectFactoryClass_2I\n")
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I\n")
 	if (arg0) setAtkObjectFactoryClassFields(env, arg0, (AtkObjectFactoryClass *)arg1);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkObjectFactoryClass_2I\n")
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I\n")
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_AtkSelectionIface_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_AtkSelectionIface_2I)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkSelectionIface_2I\n")
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2I\n")
 	if (arg0) setAtkSelectionIfaceFields(env, arg0, (AtkSelectionIface *)arg1);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkSelectionIface_2I\n")
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2I\n")
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_AtkTextIface_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_AtkTextIface_2I)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkTextIface_2I\n")
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2I\n")
 	if (arg0) setAtkTextIfaceFields(env, arg0, (AtkTextIface *)arg1);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_AtkTextIface_2I\n")
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2I\n")
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_AtkActionIface_2
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_AtkActionIface_2)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkActionIface_2\n")
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2\n")
 	if (arg1) getAtkActionIfaceFields(env, arg1, (AtkActionIface*)arg0);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkActionIface_2\n")
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2\n")
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_AtkComponentIface_2
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_AtkComponentIface_2)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkComponentIface_2\n")
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2\n")
 	if (arg1) getAtkComponentIfaceFields(env, arg1, (AtkComponentIface *)arg0);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkComponentIface_2\n")
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2\n")
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_AtkObjectClass_2
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_AtkObjectClass_2)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkObjectClass_2\n")
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2\n")
 	if (arg1) getAtkObjectClassFields(env, arg1, (AtkObjectClass *)arg0);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkObjectClass_2\n")
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2\n")
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_AtkObjectFactoryClass_2
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_AtkObjectFactoryClass_2)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkObjectFactoryClass_2\n")
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2\n")
 	if (arg1) getAtkObjectFactoryClassFields(env, arg1, (AtkObjectFactoryClass *)arg0);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkObjectFactoryClass_2\n")
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2\n")
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_AtkSelectionIface_2
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_AtkSelectionIface_2)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkSelectionIface_2\n")
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2\n")
 	if (arg1) getAtkSelectionIfaceFields(env, arg1, (AtkSelectionIface *)arg0);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkSelectionIface_2\n")
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2\n")
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_AtkTextIface_2
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_AtkTextIface_2)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkTextIface_2\n")
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2\n")
 	if (arg1) getAtkTextIfaceFields(env, arg1, (AtkTextIface *)arg0);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_AtkTextIface_2\n")
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2\n")
 }
 #endif
 
@@ -228,42 +228,42 @@ JNIEXPORT jint JNICALL OS_NATIVE(call__IIIIIII)
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2I)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2I\n")
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2I\n")
 	if (arg0) setGObjectClassFields(env, arg0, (GObjectClass *)arg1);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2I\n")
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2I\n")
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkAccessible_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkAccessible_2I)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkAccessible_2I\n")
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I\n")
 	if (arg0) setGtkAccessibleFields(env, arg0, (GtkAccessible *)arg1);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkAccessible_2I\n")
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I\n")
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GObjectClass_2
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GObjectClass_2)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GObjectClass_2\n")
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2\n")
 	if (arg1) getGObjectClassFields(env, arg1, (GObjectClass *)arg0);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GObjectClass_2\n")
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2\n")
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkAccessible_2
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkAccessible_2)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GtkAccessible_2\n")
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2\n")
 	if (arg1) getGtkAccessibleFields(env, arg1, (GtkAccessible *)arg0);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GtkAccessible_2\n")
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2\n")
 }
 #endif

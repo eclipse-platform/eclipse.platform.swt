@@ -8,16 +8,11 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.accessibility.gtk;
 
 
-public class AtkSelectionIface {
-	public int add_selection;
-	public int clear_selection;
-	public int ref_selection;
-	public int get_selection_count;
-	public int is_child_selected;
-	public int remove_selection;
-	public int select_all_selection;
-	public int selection_changed;
+public class AtkObjectFactoryClass {
+	public int create_accessible;
+	public int invalidate;
+	public int get_accessible_type;
 }

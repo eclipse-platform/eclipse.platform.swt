@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class AtkTextIface {

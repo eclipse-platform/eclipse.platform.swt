@@ -8,11 +8,9 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.accessibility.gtk;
 
 
-public class AtkObjectFactoryClass {
-	public int create_accessible;
-	public int invalidate;
-	public int get_accessible_type;
+public class GtkAccessible {
+	public int widget;
 }

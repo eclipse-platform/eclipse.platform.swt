@@ -8,9 +8,15 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.accessibility.gtk;
 
 
-public class GtkAccessible {
-	public int widget;
+public class GObjectClass {
+	public int constructor;
+	public int set_property;
+	public int get_property;
+	public int dispose;
+	public int finalize;
+	public int dispatch_properties_changed;
+	public int notify;
 }

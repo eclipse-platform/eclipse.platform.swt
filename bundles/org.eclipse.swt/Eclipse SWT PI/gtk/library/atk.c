@@ -1,13 +1,9 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2003 IBM Corporation and others. All rights reserved.
-* The contents of this file are made available under the terms
-* of the GNU Lesser General Public License (LGPL) Version 2.1 that
-* accompanies this distribution (lgpl-v21.txt).  The LGPL is also
-* available at http://www.gnu.org/licenses/lgpl.html.  If the version
-* of the LGPL at http://www.gnu.org is different to the version of
-* the LGPL accompanying this distribution and there is any conflict
-* between the two license versions, the terms of the LGPL accompanying
-* this distribution shall govern.
+* Copyright (c) 2000, 2003 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
 * 
 * Contributors:
 *     IBM Corporation - initial API and implementation
@@ -16,7 +12,7 @@
 #include "swt.h"
 #include "atk_structs.h"
 
-#define ATK_NATIVE(func) Java_org_eclipse_swt_internal_gtk_ATK_##func
+#define ATK_NATIVE(func) Java_org_eclipse_swt_internal_accessibility_gtk_ATK_##func
 
 #ifndef NO_ATK_1ACTION_1GET_1IFACE
 JNIEXPORT jint JNICALL ATK_NATIVE(ATK_1ACTION_1GET_1IFACE)
@@ -362,40 +358,40 @@ JNIEXPORT jint JNICALL ATK_NATIVE(gtk_1widget_1get_1toplevel)
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I
-JNIEXPORT void JNICALL ATK_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GInterfaceInfo_2I
+JNIEXPORT void JNICALL ATK_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GInterfaceInfo_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
 	GInterfaceInfo _arg1, *lparg1=NULL;
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I\n")
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GInterfaceInfo_2I\n")
 	if (arg1) lparg1 = getGInterfaceInfoFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I\n")
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GInterfaceInfo_2I\n")
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I
-JNIEXPORT void JNICALL ATK_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GTypeInfo_2I
+JNIEXPORT void JNICALL ATK_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GTypeInfo_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
 	GTypeInfo _arg1, *lparg1=NULL;
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I\n")
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GTypeInfo_2I\n")
 	if (arg1) lparg1 = getGTypeInfoFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I\n")
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GTypeInfo_2I\n")
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II
-JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II)
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GTypeQuery_2II
+JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GTypeQuery_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
 	GTypeQuery _arg0, *lparg0=NULL;
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II\n")
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GTypeQuery_2II\n")
 	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGTypeQueryFields(env, arg0, lparg0);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II\n")
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GTypeQuery_2II\n")
 }
 #endif
 

@@ -13,6 +13,7 @@ package org.eclipse.swt.accessibility;
 
 import java.util.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.accessibility.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 

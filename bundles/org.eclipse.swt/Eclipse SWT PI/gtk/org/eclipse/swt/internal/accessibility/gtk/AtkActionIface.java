@@ -1,4 +1,4 @@
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.accessibility.gtk;
 
 /*
  * Copyright (c) IBM Corp. 2000, 2002.  All rights reserved.
@@ -12,11 +12,16 @@ package org.eclipse.swt.internal.gtk;
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
  */
-
-public class GTypeQuery {
-	public int type;
-	public int type_name;
-	public int class_size;
-	public int instance_size;
-	public static final int sizeof = 16;
+ 
+public class AtkActionIface {
+//	GTypeInterface parent;
+	public int do_action;
+	public int get_n_actions;
+	public int get_description;
+	public int get_name;
+	public int get_keybinding;
+	public int set_description;	
+//   AtkFunction             pad1;
+//   AtkFunction             pad2;
 }
+

@@ -1,4 +1,4 @@
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.accessibility.gtk;
 
 /*
  * Copyright (c) IBM Corp. 2000, 2002.  All rights reserved.
@@ -13,15 +13,16 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
  
-public class AtkActionIface {
-//	GTypeInterface parent;
-	public int do_action;
-	public int get_n_actions;
-	public int get_description;
-	public int get_name;
-	public int get_keybinding;
-	public int set_description;	
-//   AtkFunction             pad1;
-//   AtkFunction             pad2;
+public class GTypeInfo {
+	public short class_size;
+	public int base_init;
+	public int base_finalize;
+	public int class_init;
+	public int class_finalize;
+	public int class_data;
+	public short instance_size;
+	public short n_preallocs;
+	public int instance_init;
+	public int value_table;
+	public static final int sizeof = 36; //(34 from struct plus 2 bits caused by compiler aligment)	
 }
-

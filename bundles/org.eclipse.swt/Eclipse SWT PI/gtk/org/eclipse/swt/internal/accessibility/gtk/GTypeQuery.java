@@ -1,4 +1,4 @@
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.accessibility.gtk;
 
 /*
  * Copyright (c) IBM Corp. 2000, 2002.  All rights reserved.
@@ -12,17 +12,11 @@ package org.eclipse.swt.internal.gtk;
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
  */
- 
-public class GTypeInfo {
-	public short class_size;
-	public int base_init;
-	public int base_finalize;
-	public int class_init;
-	public int class_finalize;
-	public int class_data;
-	public short instance_size;
-	public short n_preallocs;
-	public int instance_init;
-	public int value_table;
-	public static final int sizeof = 36; //(34 from struct plus 2 bits caused by compiler aligment)	
+
+public class GTypeQuery {
+	public int type;
+	public int type_name;
+	public int class_size;
+	public int instance_size;
+	public static final int sizeof = 16;
 }

@@ -8,15 +8,21 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.accessibility.gtk;
 
 
-public class GObjectClass {
-	public int constructor;
-	public int set_property;
-	public int get_property;
-	public int dispose;
-	public int finalize;
-	public int dispatch_properties_changed;
-	public int notify;
+public class AtkComponentIface {
+	public int add_focus_handler;
+	public int contains;
+	public int ref_accessible_at_point;
+	public int get_extents;
+	public int get_position;
+	public int get_size;
+	public int grab_focus;
+	public int remove_focus_handler;
+	public int set_extents;
+	public int set_position;
+	public int set_size;
+	public int get_layer;
+	public int get_mdi_zorder;
 }

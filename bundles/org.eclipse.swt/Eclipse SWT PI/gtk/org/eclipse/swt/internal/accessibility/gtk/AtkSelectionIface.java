@@ -8,21 +8,16 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.accessibility.gtk;
 
 
-public class AtkComponentIface {
-	public int add_focus_handler;
-	public int contains;
-	public int ref_accessible_at_point;
-	public int get_extents;
-	public int get_position;
-	public int get_size;
-	public int grab_focus;
-	public int remove_focus_handler;
-	public int set_extents;
-	public int set_position;
-	public int set_size;
-	public int get_layer;
-	public int get_mdi_zorder;
+public class AtkSelectionIface {
+	public int add_selection;
+	public int clear_selection;
+	public int ref_selection;
+	public int get_selection_count;
+	public int is_child_selected;
+	public int remove_selection;
+	public int select_all_selection;
+	public int selection_changed;
 }

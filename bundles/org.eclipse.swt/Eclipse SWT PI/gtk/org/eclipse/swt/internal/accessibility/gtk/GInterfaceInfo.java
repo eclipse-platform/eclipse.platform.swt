@@ -1,4 +1,4 @@
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.accessibility.gtk;
 
 /*
  * Copyright (c) IBM Corp. 2000, 2002.  All rights reserved.
