@@ -162,7 +162,7 @@ public String getFilterPath () {
  */
 public String open () {
 	String fullPath = null;
-	fileNames = null;
+	fileNames = new String [0];
 		
 	int titlePtr = 0;
 	if (title != null) {
