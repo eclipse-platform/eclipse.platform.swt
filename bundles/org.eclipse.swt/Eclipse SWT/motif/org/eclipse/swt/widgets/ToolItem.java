@@ -29,7 +29,7 @@ public /*final*/ class ToolItem extends Item {
 	Image hotImage, disabledImage;
 	String toolTipText;
 	Control control;
-	boolean set, hasCursor;
+	boolean set;
 
 /**
 * Creates a new instance of the widget.
@@ -114,10 +114,6 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateDrawnButton (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	if ((parent.style & SWT.FLAT) != 0) {
-		argList = new int [] {OS.XmNshadowThickness, 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
 }
 
 Point computeSize () {
@@ -355,6 +351,18 @@ public int getWidth () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
 }
+boolean hasCursor () {
+	int [] unused = new int [1], buffer = new int [1];
+	int xDisplay = OS.XtDisplay (handle);
+	int xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
+	do {
+		if (OS.XQueryPointer (
+			xDisplay, xParent, unused, buffer,
+			unused, unused, unused, unused, unused) == 0) return false;
+		if ((xWindow = buffer [0]) != 0) xParent = xWindow;
+	} while (xWindow != 0);
+	return handle == OS.XtWindowToWidget (xDisplay, xParent);
+}
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -390,7 +398,6 @@ void manageChildren () {
 	OS.XtManageChild (handle);
 }
 void redraw () {
-	if (parent.drawCount > 0) return;
 	int display = OS.XtDisplay (handle);
 	if (display == 0) return;
 	int window = OS.XtWindow (handle);
@@ -408,7 +415,7 @@ void releaseWidget () {
 	parent = null;
 	control = null;
 	toolTipText = null;
-	disabledImage = hotImage = null; 
+	image = disabledImage = hotImage = null; 
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -504,7 +511,6 @@ public void setEnabled (boolean enabled) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
-	hasCursor = false;
 }
 /**
  * Sets the receiver's disabled image to the argument, which may be
@@ -546,16 +552,16 @@ public void setHotImage (Image image) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	hotImage = image;
-	if (hasCursor && (parent.style & SWT.FLAT) != 0) redraw ();
+	if ((parent.style & SWT.FLAT) != 0) redraw ();
 }
 public void setImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	Point size = computeSize();
-	setSize(size.x, size.y);
-	redraw();
+	Point size = computeSize ();
+	setSize (size.x, size.y);
+	redraw ();
 }
 
 /**
@@ -579,7 +585,7 @@ public void setSelection (boolean selected) {
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	if (selected == set) return;
 	set = selected;
-	setDrawPressed(set);
+	setDrawPressed (set);
 }
 void setSize (int width, int height) {
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
@@ -595,9 +601,9 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-	Point size = computeSize();
-	setSize(size.x, size.y);
-	redraw();
+	Point size = computeSize ();
+	setSize (size.x, size.y);
+	redraw ();
 }
 
 /**
@@ -650,7 +656,7 @@ int processMouseDown (int callData) {
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
 	if (xEvent.button == 1) {
 		if (!set && (style & SWT.RADIO) == 0) {
-			setDrawPressed(!set);
+			setDrawPressed (!set);
 		}
 	}
 	
@@ -672,42 +678,20 @@ int processMouseDown (int callData) {
 	return 0;
 }
 int processMouseEnter (int callData) {
-	hasCursor = true;
-	if ((parent.style & SWT.FLAT) != 0) {
-		Display display = getDisplay ();
-		int thickness = Math.min (2, display.buttonShadowThickness);
-		int [] argList = {OS.XmNshadowThickness, thickness};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	boolean button1Pressed = (xEvent.state & OS.Button1Mask) != 0;
-	if (button1Pressed) {
-		setDrawPressed(!set);
-	}
-	if ((parent.style & SWT.FLAT) != 0 && hotImage != null) { 
-		OS.XClearArea (xEvent.display, xEvent.window, 0, 0, 0, 0, true);
-	}
+	if ((xEvent.state & OS.Button1Mask) != 0) setDrawPressed (!set);
+	else if ((parent.style & SWT.FLAT) != 0) redraw ();
 	return 0;
 }
 int processMouseExit (int callData) {
-	hasCursor = false;
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
-	if ((parent.style & SWT.FLAT) != 0 && !set) {
-		int [] argList = {OS.XmNshadowThickness, 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	boolean button1Pressed = (xEvent.state & OS.Button1Mask) != 0;
-	if (button1Pressed) {
-		setDrawPressed(set);
-	}
-	if ((parent.style & SWT.FLAT) != 0 && hotImage != null) {
-		OS.XClearArea (xEvent.display, xEvent.window, 0, 0, 0, 0, true);
-	}
+	if ((xEvent.state & OS.Button1Mask) != 0) setDrawPressed (set);
+	else if ((parent.style & SWT.FLAT) != 0) redraw ();
 	return 0;
 }
 Point toControl (Point point) {
@@ -799,12 +783,25 @@ int processPaint (int callData) {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int width = argList [3], height = argList [5];
 	
+	Image currentImage = image;
 	boolean enabled = getEnabled();
+
 	if ((parent.style & SWT.FLAT) != 0) {
 		Display display = getDisplay ();
-		int thickness = set || hasCursor ? Math.min (2, display.buttonShadowThickness) : 0;
+		boolean hasCursor = hasCursor ();
+		
+		/* Set the shadow thickness */
+		int thickness = 0;
+		if (set || (hasCursor && enabled)) {
+			thickness = Math.min (2, display.buttonShadowThickness);
+		}
 		argList = new int [] {OS.XmNshadowThickness, thickness};
 		OS.XtSetValues (handle, argList, argList.length / 2);
+		
+		/* Determine if hot image should be used */
+		if (enabled && hasCursor && hotImage != null) {
+			currentImage = hotImage;
+		}
 	}
 
 	ToolDrawable wrapper = new ToolDrawable ();
@@ -824,18 +821,14 @@ int processPaint (int callData) {
 		gc.setClipping (rect);
 	}
 	
-	Image currentImage =  image;
-	if (hasCursor && (parent.style & SWT.FLAT) != 0 &&  hotImage != null) {
-		currentImage = hotImage;
-	}
 	if (!enabled) {
 		Display display = getDisplay ();
 		currentImage = disabledImage;
 		if (currentImage == null) {
 			currentImage = new Image (display, image, SWT.IMAGE_DISABLE);
 		}
-		Color disabledColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-		gc.setForeground(disabledColor);
+		Color disabledColor = display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
+		gc.setForeground (disabledColor);
 	} else {
 		gc.setForeground (parent.getForeground ());
 	}
