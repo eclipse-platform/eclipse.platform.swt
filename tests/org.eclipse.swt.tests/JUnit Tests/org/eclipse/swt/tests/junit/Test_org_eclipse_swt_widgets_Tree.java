@@ -222,19 +222,11 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	}
 	TreeItem[] itemsToBeSelected = {items[5], items[16], items[19]};
 	tree.setSelection(itemsToBeSelected);
-	TreeItem[] selItems = tree.getSelection();
-	int selLength = selItems.length;
-	if (fCheckMultiSelectTree) {
-		assertTrue(":len:" + String.valueOf(selLength), selLength != itemsToBeSelected.length);
-		for (int i = 0; i < selLength; i++)
-			if (selItems[i] == itemsToBeSelected[i])
-				fail();
-	}
+	assertEquals(":a:", itemsToBeSelected, tree.getSelection());
 	tree.setSelection(tree.getItems());
-	assertEquals(":b:", items, tree.getItems());
+	assertEquals(":b:", items, tree.getSelection());
 	tree.setSelection(new TreeItem[] {});
-	if (fCheckMultiSelectTree)
-		assertEquals(":c:", new TreeItem[] {}, tree.getItems());
+	assertEquals(":c:", new TreeItem[] {}, tree.getSelection());
 	try {
 		tree.setSelection((TreeItem[]) null);
 		fail("No exception thrown for items == null");
