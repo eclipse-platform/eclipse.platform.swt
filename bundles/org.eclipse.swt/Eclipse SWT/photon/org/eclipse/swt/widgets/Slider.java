@@ -464,6 +464,12 @@ public void setSelection (int value) {
  */
 public void setThumb (int value) {
 	checkWidget();
+	if (value < 1) return;
+	int [] args = {OS.Pt_ARG_MINIMUM, 0, 0, OS.Pt_ARG_MAXIMUM, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	int minimum = args [1];
+	int maximum = args [4] + 1;
+	value = Math.min (value, maximum - minimum);
 	OS.PtSetResource (handle, OS.Pt_ARG_SLIDER_SIZE, value, 0);
 }
 
@@ -493,9 +499,9 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (minimum < 0) return;
 	if (maximum < 0) return;
 	if (thumb < 1) return;
-	if (maximum - minimum - thumb < 0) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
+	thumb = Math.min (thumb, maximum - minimum);
 	int [] args = {
 		OS.Pt_ARG_MAXIMUM, maximum - 1, 0,
 		OS.Pt_ARG_MINIMUM, minimum, 0,
