@@ -3504,6 +3504,24 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1ti
 	}
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1transient_1for
+  (JNIEnv *env, jclass that, jint window, jint parent)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_window_set_transient_for");
+#endif
+	gtk_window_set_transient_for((GtkWindow*)window, (GtkWindow*)parent);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1modal
+  (JNIEnv *env, jclass that, jint window, jboolean modal)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_window_set_modal");
+#endif
+	gtk_window_set_modal((GtkWindow*)window, modal);
+}
+
 /*
  * Class:	org_eclipse_swt_internal_gtk_OS
  * Method:	gtk_window_set_policy
