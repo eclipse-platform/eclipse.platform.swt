@@ -9,17 +9,80 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-/*
+/**
  * A ScrolledComposite provides scrollbars and will scroll its content when the user
  * uses the scrollbars.
  *
- * <p>If the ScrolledComposite can be configured to stretch the content to be as big as the
- * ScrolledComposite when the composite is resized to a size larger than the minimum width 
- * or minimum height and to provide scrolls when the ScrolledComposite is smaller than the 
- * minimum width and minimum height.  Refer to the methods setExpandHorizontal,
- * setExpandVertical, setMinWidth and setMinHeight.
  *
+ * <p>There are two ways to use the ScrolledComposite:
+ * 
  * <p>
+ * 1) Set the size of the control that is being scrolled and the ScrolledComposite 
+ * will show scrollbars when the contained control can not be fully seen.
+ * 
+ * <code><pre>
+ * public static void main (String [] args) {
+ *         Display display = new Display ();
+ *         Color red = display.getSystemColor(SWT.COLOR_RED);
+ *         Shell shell = new Shell (display);
+ *         shell.setLayout(new FillLayout());
+ *         ScrolledComposite sc = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
+ *         Composite c = new Composite(sc, SWT.NONE);
+ *         c.setBackground(red);
+ *         sc.setContent(c);
+ *         GridLayout layout = new GridLayout();
+ *         layout.numColumns = 5;
+ *         c.setLayout(layout);
+ *         for (int i = 0; i < 10; i++) {
+ *                 Button b1 = new Button(c, SWT.PUSH);
+ *                 b1.setText("button "+i);
+ *         }
+ *         Point pt = c.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+ *         c.setSize(pt);
+ *         shell.open ();
+ *         while (!shell.isDisposed ()) {
+ *             if (!display.readAndDispatch ()) display.sleep ();
+ *         }
+ *         display.dispose ();
+ * }
+ * </pre></code>
+ * 
+ * 2) The second way imitates the way a browser would work.  Set the minimum size of
+ * the control and the ScrolledComposite will show scroll bars if the visible area is 
+ * less than the minimum size of the control and it will expand the size of the control 
+ * if the visible area is greater than the minimum size.  This requires invoking 
+ * both setMinWidth(), setMinHeight() and setExpandHorizontal(), setExpandVertical().
+ * 
+ * <code><pre>
+ * public static void main (String [] args) {
+ *         Display display = new Display ();
+ *         Color red = display.getSystemColor(SWT.COLOR_RED);
+ *         Shell shell = new Shell (display);
+ *         shell.setLayout(new FillLayout());
+ *         ScrolledComposite sc = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
+ *         Composite c = new Composite(sc, SWT.NONE);
+ *         c.setBackground(red);
+ *         sc.setContent(c);
+ *         GridLayout layout = new GridLayout();
+ *         layout.numColumns = 5;
+ *         c.setLayout(layout);
+ *         for (int i = 0; i < 10; i++) {
+ *                 Button b1 = new Button(c, SWT.PUSH);
+ *                 b1.setText("button "+i);
+ *         }
+ *         Point pt = c.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+ *         sc.setExpandHorizontal(true);
+ *         sc.setExpandVertical(true);
+ *         sc.setMinWidth(pt.x);
+ *         sc.setMinHeight(pt.y);
+ *         shell.open ();
+ *         while (!shell.isDisposed ()) {
+ *             if (!display.readAndDispatch ()) display.sleep ();
+ *         }
+ *         display.dispose ();
+ * }
+ * </pre></code>
+ * 
  * <dl>
  * <dt><b>Styles:</b><dd>H_SCROLL, V_SCROLL
  * </dl>
