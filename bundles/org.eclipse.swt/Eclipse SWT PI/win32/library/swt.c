@@ -142,6 +142,7 @@
 #define NO_RegQueryValueExA
 #define NO_RegisterClassA
 #define NO_RegisterClipboardFormatA
+#define NO_SetLayout
 #define NO_SHBrowseForFolderA
 #define NO_SHBrowseForFolderW
 #define NO_SHGetPathFromIDListA
@@ -6400,6 +6401,16 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetForegroundWindow)
 	return (jboolean)SetForegroundWindow((HWND)arg0);
 }
 #endif /* NO_SetForegroundWindow */
+
+#ifndef NO_SetLayout
+JNIEXPORT jint JNICALL OS_NATIVE(SetLayout)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetLayout\n")
+
+	return (jint)SetLayout((HDC)arg0, (DWORD)arg1);
+}
+#endif /* NO_SetLayout */
 
 #ifndef NO_SetMenu
 JNIEXPORT jboolean JNICALL OS_NATIVE(SetMenu)
