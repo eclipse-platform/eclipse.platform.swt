@@ -2347,7 +2347,14 @@ public void setVisible (boolean visible) {
 	boolean fixFocus = false;
 	if (!visible) fixFocus = isFocusAncestor ();	
 	OS.XtSetMappedWhenManaged (topHandle, visible);	
-	if (fixFocus) fixFocus ();	
+	if (fixFocus) fixFocus ();
+	/*
+	* It is possible (but unlikely) that application code could
+	* have disposed the widget in the FocusOut event that is
+	* triggered by invoking fixFocus() if the widget being hidden
+	* has focus.  If this happens, just return; 
+	*/
+	if (isDisposed ()) return;
 	sendEvent (visible ? SWT.Show : SWT.Hide);
 }
 void setZOrder (Control control, boolean above) {

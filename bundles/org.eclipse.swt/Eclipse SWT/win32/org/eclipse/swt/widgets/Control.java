@@ -2370,12 +2370,19 @@ public void setVisible (boolean visible) {
 	if (drawCount != 0) {
 		state = visible ? state & ~HIDDEN : state | HIDDEN;
 	} else {
+		/*
+		 * It is possible (but unlikely), that application
+		 * code could have disposed the widget in the FocusOut
+		 * event that is triggered by ShowWindow if the widget
+		 * being hidden has focus.  If this happens, just return.
+		 */
 		OS.ShowWindow (handle, visible ? OS.SW_SHOW : OS.SW_HIDE);
+		if (isDisposed ()) return;
 	}
 	if (!visible) {
 		/*
 		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the show
+		* code could have disposed the widget in the hide
 		* event.  If this happens, just return.
 		*/
 		sendEvent (SWT.Hide);
