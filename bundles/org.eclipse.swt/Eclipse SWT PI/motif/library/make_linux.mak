@@ -35,11 +35,12 @@ SWT_LIBS = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 CFLAGS = -O -s -Wall -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DLINUX -DMOTIF  -fpic -I./ \
 	-I$(JAVA_HOME)/include -I$(MOTIF_HOME)/include -I/usr/X11R6/include 
 
+# Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
 GNOME_PREFIX = swt-gnome
 GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 GNOME_CFLAGS = -O -Wall -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DLINUX -DGTK -I$(JAVA_HOME)/include `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
-GNOME_LIBS = -shared -fpic -fPIC `pkg-config --libs gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
+GNOME_LIBS = -shared -fpic -fPIC `pkg-config --libs-only-L gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0` -lgnomevfs-2 -lgnome-2 -lgnomeui-2
 
 KDE_PREFIX = swt-kde
 KDE_LIB = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -56,7 +57,7 @@ GTK_PREFIX = swt-gtk
 GTK_LIB = lib$(GTK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GTK_OBJS = swt.o gtk.o
 GTK_CFLAGS = `pkg-config --cflags gtk+-2.0`
-GTK_LIBS = -x -shared `pkg-config --libs-only-l --libs-only-L gtk+-2.0`
+GTK_LIBS = -x -shared `pkg-config --libs-only-L gtk+-2.0` -lgtk-x11-2.0
 	
 all: make_swt make_awt make_gnome make_gtk make_kde
 
