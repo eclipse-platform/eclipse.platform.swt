@@ -201,6 +201,7 @@ void createHandle () {
 		if (menuRef [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		menuHandle = menuRef[0];
 		OS.SetControlPopupMenuHandle(handle, menuHandle);
+		OS.SetControl32BitMaximum(handle, 0x7FFF);
 	} else {
 		int [] outControl = new int [1];
 		CGRect rect = new CGRect ();
