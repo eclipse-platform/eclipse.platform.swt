@@ -750,23 +750,10 @@ public String getText () {
 public String getText (int start, int end) {
 	checkWidget ();
 	if (!(0 <= start && start <= end)) error (SWT.ERROR_INVALID_RANGE);
-	int address;
-	if ((style & SWT.SINGLE) != 0) {
-		address = OS.gtk_editable_get_chars (handle, start, end + 1);
-	} else {
-		byte [] startIter =  new byte [ITER_SIZEOF];
-		byte [] endIter =  new byte [ITER_SIZEOF];
-		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
-		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, endIter, end + 1);
-		address = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
-	}
-	if (address == 0) return "";
-	int length = OS.strlen (address);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, address, length);
-	OS.g_free (address);
-	if (length <= end) error (SWT.ERROR_INVALID_RANGE); 
-	return new String (Converter.mbcsToWcs (null, buffer));
+	String text = getText ();
+	int length = text.length ();
+	if (length <= end) error (SWT.ERROR_INVALID_RANGE);
+	return text.substring (start, end);
 }
 
 /**
