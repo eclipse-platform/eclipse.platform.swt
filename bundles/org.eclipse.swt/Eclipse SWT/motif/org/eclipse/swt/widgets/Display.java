@@ -3466,6 +3466,9 @@ public void wake () {
 void wakeThread () {
 	/* Write a single byte to the wake up pipe */
 	while (OS.write (write_fd, wake_buffer, 1) != 1);
+	synchronized (OS_LOCK) {
+		OS_LOCK.notifyAll ();
+	}
 }
 int wakeProc (int closure, int source, int id) {
 	/* Read a single byte from the wake up pipe */
