@@ -31,6 +31,7 @@ public class Caret extends Widget {
 	boolean isVisible, isShowing;
 	int blinkRate = 500;
 	Image image;
+	Font font;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -139,6 +140,7 @@ public Display getDisplay () {
  */
 public Font getFont () {
 	checkWidget();
+	if (font != null) return font;
 	return parent.getFont ();
 }
 /**
@@ -340,6 +342,7 @@ public void setFont (Font font) {
 	if (font != null && font.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	this.font = font;
 }
 /**
  * Sets the image that the receiver will use to paint the caret
