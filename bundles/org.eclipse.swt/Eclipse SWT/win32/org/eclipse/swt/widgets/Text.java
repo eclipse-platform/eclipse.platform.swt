@@ -865,7 +865,6 @@ public String getText (int start, int end) {
 	if (!(start <= end && 0 <= end)) return "";
 	int length = OS.GetWindowTextLength (handle);
 	if (OS.IsDBLocale) length = mbcsToWcsPos (length);
-	if (length == 0) return "";
 	start = Math.max (0, start);
 	end = Math.min (end, length - 1);
 	/*
