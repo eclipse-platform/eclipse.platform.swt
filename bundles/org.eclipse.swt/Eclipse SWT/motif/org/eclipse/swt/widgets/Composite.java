@@ -587,6 +587,16 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	if (changed && resize && layout != null) layout.layout (this, false);
 	return changed;
 }
+public boolean setFocus () {
+	checkWidget ();
+	if ((style & SWT.NO_FOCUS) != 0) return false;
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child.setFocus ()) return true;
+	}
+	return forceFocus ();
+}
 /**
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
