@@ -115,6 +115,50 @@ public MenuItem (Menu parent, int style, int index) {
 	createWidget (index);
 }
 
+void addAccelerator () {
+	if (menu != null) {
+		menu.addAccelerators ();
+		return;
+	}
+	if (accelerator == 0) return;
+	/*
+	* Bug in Solaris.  When mnemonics and accelerators are
+	* set more than once in the same menu bar, the time it
+	* takes to set the accelerator or mnemonic increases
+	* exponentially.  The only fix for now is to avoid
+	* accelerators and mnemonics on Solaris.
+	*/
+	if (OS.IsSunOS) return;
+	String ctrl, alt, shift;
+	ctrl = alt = shift = "";
+	if ((accelerator & SWT.ALT) != 0) alt = "Meta ";
+	if ((accelerator & SWT.SHIFT) != 0) shift = "Shift ";
+	if ((accelerator & SWT.CTRL) != 0) ctrl = "Ctrl ";
+	int keysym = accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CTRL);
+	int newKey = Display.untranslateKey (keysym);
+	if (newKey != 0) {
+		keysym = newKey;
+	} else {
+		keysym = wcsToMbcs ((char) keysym);
+	}
+	/*
+	* Feature in Motif.  Motif does not activate an accelerator
+	* when the CapsLoc, NumLoc and NumLock+CapsLoc keys are pressed.
+	* In order to activate accelerators when these keys are pressed,
+	* it is necessary to look for all of these key sequences.
+	*/
+	String key = ctrl + alt + shift + "<Key>" + keysymName (keysym);
+	String allKeys = key + ",Lock " + key + ",Mod2 " + key + ",Lock Mod2 " + key;
+	/* Use the character encoding for the default locale */
+	byte [] buffer = Converter.wcsToMbcs (null, allKeys, true);		
+	int ptr = OS.XtMalloc (buffer.length);
+	if (ptr != 0) OS.memmove (ptr, buffer, buffer.length);
+
+	int [] argList = {OS.XmNaccelerator, ptr};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	if (ptr != 0) OS.XtFree (ptr);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the arm events are generated for the control, by sending
@@ -380,6 +424,14 @@ void hookEvents () {
 		OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, SWT.Selection);
 	}
 }
+boolean isAccelActive() {
+	Menu menu = parent;
+	while (menu != null && menu.cascade != null) {
+		menu = menu.cascade.parent;
+	}
+	Decorations shell = menu.parent;
+	return shell.menuBar == menu;
+}
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
@@ -473,15 +525,37 @@ void releaseChild () {
 	menu = null;
 }
 void releaseWidget () {
-	if (menu != null && !menu.isDisposed()) menu.releaseResources ();
+	if (menu != null && !menu.isDisposed ()) menu.releaseResources ();
 	menu = null;
 	super.releaseWidget ();
-	accelerator = 0;
+	if (accelerator != 0 && isAccelActive ()) {
+		removeAccelerator ();
+		accelerator = 0;
+	}
 	if (this == parent.defaultItem) {
 		parent.defaultItem = null;
 	}
 	parent = null;
 }
+
+void removeAccelerator () {
+	if (menu != null) {
+		menu.removeAccelerators ();
+		return;
+	}
+	if (accelerator == 0) return;
+	/*
+	* Bug in Solaris.  When mnemonics and accelerators are
+	* set more than once in the same menu bar, the time it
+	* takes to set the accelerator or mnemonic increases
+	* exponentially.  The only fix for now is to avoid
+	* accelerators and mnemonics on Solaris.
+	*/
+	if (OS.IsSunOS) return;
+	int [] argList = {OS.XmNaccelerator, 0};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the arm events are generated for the control.
@@ -568,44 +642,13 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setAccelerator (int accelerator) {
 	checkWidget();
 	this.accelerator = accelerator;
-	/*
-	* Bug in Solaris.  When mnemonics and accelerators are
-	* set more than once in the same menu bar, the time it
-	* takes to set the accelerator or mnemonic increases
-	* exponentially.  The only fix for now is to avoid
-	* accelerators and mnemonics on Solaris.
-	*/
-	if (OS.IsSunOS) return;
-	int ptr = 0;
-	if (accelerator != 0) {
-		String ctrl, alt, shift;
-		ctrl = alt = shift = "";
-		if ((accelerator & SWT.ALT) != 0) alt = "Meta ";
-		if ((accelerator & SWT.SHIFT) != 0) shift = "Shift ";
-		if ((accelerator & SWT.CTRL) != 0) ctrl = "Ctrl ";
-		int keysym = accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CTRL);
-		int newKey = Display.untranslateKey (keysym);
-		if (newKey != 0) {
-			keysym = newKey;
+	if (isAccelActive ()) {
+		if (accelerator == 0) {
+			removeAccelerator ();
 		} else {
-			keysym = wcsToMbcs ((char) keysym);
+			addAccelerator ();
 		}
-		/*
-		* Feature in Motif.  Motif does not activate an accelerator
-		* when the CapsLoc, NumLoc and NumLock+CapsLoc keys are pressed.
-		* In order to activate accelerators when these keys are pressed,
-		* it is necessary to look for all of these key sequences.
-		*/
-		String key = ctrl + alt + shift + "<Key>" + keysymName (keysym);
-		String allKeys = key + ",Lock " + key + ",Mod2 " + key + ",Lock Mod2 " + key;
-		/* Use the character encoding for the default locale */
-		byte [] buffer = Converter.wcsToMbcs (null, allKeys, true);		
-		ptr = OS.XtMalloc (buffer.length);
-		if (ptr != 0) OS.memmove (ptr, buffer, buffer.length);
 	}
-	int [] argList = {OS.XmNaccelerator, ptr};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	if (ptr != 0) OS.XtFree (ptr);
 }
 /**
  * Enables the receiver if the argument is <code>true</code>,
@@ -664,6 +707,8 @@ public void setMenu (Menu menu) {
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
+	boolean accelActive = isAccelActive ();
+	if (accelActive) removeAccelerator ();
 	if (oldMenu != null) oldMenu.cascade = null;
 	this.menu = menu;
 	int menuHandle = 0;
@@ -675,6 +720,7 @@ public void setMenu (Menu menu) {
 	}
 	int [] argList = {OS.XmNsubMenuId, menuHandle};
 	OS.XtSetValues (handle, argList, argList.length / 2);
+	if (accelActive) addAccelerator ();
 }
 /**
  * Sets the selection state of the receiver.

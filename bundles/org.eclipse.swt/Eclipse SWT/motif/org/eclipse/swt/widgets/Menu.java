@@ -134,6 +134,13 @@ public Menu (Menu parentMenu) {
 public Menu (MenuItem parentItem) {
 	this (checkNull(parentItem).parent);
 }
+void addAccelerators () {
+	MenuItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		MenuItem item = items[i];
+		item.addAccelerator ();
+	}
+}
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when help events are generated for the control,
@@ -627,6 +634,13 @@ void releaseWidget () {
 	if (parent != null) parent.remove (this);
 	parent = null;
 	cascade = defaultItem = null;
+}
+void removeAccelerators () {
+	MenuItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		MenuItem item = items[i];
+		item.removeAccelerator ();
+	}
 }
 /**
  * Removes the listener from the collection of listeners who will

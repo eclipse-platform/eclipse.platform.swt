@@ -527,11 +527,13 @@ public void setMenuBar (Menu menu) {
 		if (!isEnabled () && menuBar.getEnabled ()) {
 			propagateHandle (true, menuBar.handle); 
 		}
+		menuBar.removeAccelerators ();
 	}
 	if (menu != null) {
 		if (!isEnabled ()) {
 			propagateHandle (false, menu.handle); 
 		}
+		menu.addAccelerators ();
 	}
 		
 	/*
