@@ -149,7 +149,7 @@ public boolean isSupportedType(TransferData transferData){
  */
 protected void javaToNative (Object object, TransferData transferData) {
 	transferData.result = 0;
-	if (!_validate(object) || !isSupportedType(transferData)) {
+	if (!checkByteArray(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	byte[] buffer = (byte[])object;
@@ -183,7 +183,7 @@ protected Object nativeToJava(TransferData transferData) {
 	return buffer;
 }
 
-boolean _validate(Object object) {
+boolean checkByteArray(Object object) {
 	return (object != null  && object instanceof byte[] && ((byte[])object).length > 0);
 }
 }

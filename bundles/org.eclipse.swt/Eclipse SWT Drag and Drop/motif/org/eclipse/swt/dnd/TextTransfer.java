@@ -58,7 +58,7 @@ public static TextTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData) {
 	transferData.result = 0;
-	if (!_validate(object) || !isSupportedType(transferData)) {
+	if (!checkText(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String string = (String)object;
@@ -155,11 +155,11 @@ protected String[] getTypeNames() {
 	return new String[] {COMPOUND_TEXT, STRING};
 }
 
-boolean _validate(Object object) {
+boolean checkText(Object object) {
 	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
 
 protected boolean validate(Object object) {
-	return _validate(object);
+	return checkText(object);
 }
 }
