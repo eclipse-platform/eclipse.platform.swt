@@ -255,10 +255,6 @@ public boolean isDisposed() {
  * the receiver does cover some area in the plane.
  *
  * @return <code>true</code> if the receiver is empty, and <code>false</code> otherwise
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
  */
 public boolean isEmpty () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);

@@ -24,7 +24,7 @@ import java.util.Vector;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public class TreeItem extends AbstractTreeItem {
+public /*final*/ class TreeItem extends AbstractTreeItem {
 /*
  * This class caches geometric data for drawing.
  * A description of the cached data follows:

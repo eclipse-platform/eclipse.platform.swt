@@ -261,18 +261,6 @@ public Layout getLayout () {
 	return layout;
 }
 
-/**
- * Gets the last specified tabbing order for the control.
- *
- * @return tabList the ordered list of controls representing the tab order
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @see #setTabList
- */
 public Control [] getTabList () {
 	checkWidget ();
 	int count = 0;
@@ -558,7 +546,7 @@ public void setBounds (int x, int y, int width, int height) {
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
  *
- * @param layout the receiver's new layout or null
+ * @param the receiver's new layout or null
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -573,22 +561,6 @@ public void setSize (int width, int height) {
 	super.setSize (width, height);
 	if (layout != null) layout (false);
 }
-/**
- * Sets the tabbing order for the specified controls to
- * match the order that they occur in the argument list.
- *
- * @param tabList the ordered list of controls representing the tab order; must not be null
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the tabList is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li> 
- *    <li>ERROR_INVALID_PARENT - if widget in the tabList is not in the same widget tree</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
 public void setTabList (Control [] tabList) {
 	checkWidget ();
 	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);

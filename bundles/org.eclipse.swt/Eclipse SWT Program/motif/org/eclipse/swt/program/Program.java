@@ -679,7 +679,7 @@ private static boolean launch( Display display, String fileName ) {
  * programmer to ensure that the file contains valid data for 
  * this program.  
  *
- * @param fileName the file or program name
+ * @param fileName is the argument (typically a file) for the program
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
  * @exception SWTError <ul>

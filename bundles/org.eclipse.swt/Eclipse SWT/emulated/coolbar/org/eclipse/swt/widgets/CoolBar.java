@@ -31,7 +31,7 @@ import java.util.Vector;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public class CoolBar extends Composite {
+public /*final*/ class CoolBar extends Composite {
 	Vector rows;
 	Cursor hoverCursor, dragCursor;
 	static final int ROW_SPACING = 2;

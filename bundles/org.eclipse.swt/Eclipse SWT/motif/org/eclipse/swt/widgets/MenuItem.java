@@ -665,17 +665,17 @@ public void setEnabled (boolean enabled) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
- * Sets the receiver's pull down menu to the argument.
+ * Sets the receiver's cascade menu to the argument.
  * Only <code>CASCADE</code> menu items can have a
  * pull down menu. The sequence of key strokes, button presses
  * and/or button releases that are used to request a pull down
  * menu is platform specific.
  *
- * @param menu the new pull down menu
+ * @param menu the new pop up menu
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_MENU_NOT_DROP_DOWN - if the menu is not a drop down menu</li>
- *    <li>ERROR_MENUITEM_NOT_CASCADE - if the menu item is not a <code>CASCADE</code></li>
+ *    <li>ERROR_MENU_NOT_DROP_DOWN - the menu is not a drop down menu</li>
+ *    <li>ERROR_MENUITEM_NOT_CASCADE - the menu item is not a <code>CASCADE</code></li>
  *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
  * </ul>

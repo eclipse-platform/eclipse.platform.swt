@@ -894,7 +894,7 @@ private void prepareBoldText(String textline, int logicalStart, int length) {
 	}
 	int[] dxArray = new int[byteCount];
 	int[] orderArray = new int[byteCount];	
-	BidiUtil.getRenderInfo(gc, text, orderArray, classArray, dxArray, flags, new int[] {0, text.length()});
+	BidiUtil.getRenderInfo(gc, text, orderArray, classArray, dxArray, flags);
 	// update the existing dx array with the new dx values based on the bold font
 	for (int i = 0; i < dxArray.length; i++) {
 		int dxValue = dxArray[orderArray[i]];
