@@ -12,7 +12,7 @@ public class TreeItem extends Item {
 	int depth = 0;				/* cached for performance, does not change after instantiation */
 	boolean checked, grayed, expanded;
 
-	String[] texts = new String [1];
+	String[] texts;
 	int[] textWidths = new int [1];		/* cached string measurements */
 	int fontHeight;						/* cached item font height */
 	int[] fontHeights;
@@ -81,10 +81,14 @@ void addColumn (TreeColumn column) {
 	 * the automatic column that a Tree with no specified TreeColumns gets.
 	 */
 	if (columnCount > 1) {
-		String[] newTexts = new String [columnCount];
-		System.arraycopy (texts, 0, newTexts, 0, index);
-		System.arraycopy (texts, index, newTexts, index + 1, columnCount - index - 1);
-		texts = newTexts;
+		if (columnCount == 2) {
+			texts = new String [2];
+		} else {
+			String[] newTexts = new String [columnCount];
+			System.arraycopy (texts, 0, newTexts, 0, index);
+			System.arraycopy (texts, index, newTexts, index + 1, columnCount - index - 1);
+			texts = newTexts;
+		}
 	
 		Image[] newImages = new Image [columnCount];
 		System.arraycopy (images, 0, newImages, 0, index);
@@ -253,7 +257,18 @@ void computeDisplayText (int columnIndex, GC gc) {
 	if (columnCount == 0) return;
 	
 	TreeColumn column = parent.columns [columnIndex];
-	int availableWidth = column.getX () + column.width - getTextX (columnIndex) - 2 * MARGIN_TEXT;
+	int availableWidth;
+	if (columnIndex == 0) {
+		/* column 0 is always LEFT and must consider hierarchy decorations */
+		availableWidth = column.getX () + column.width - getTextX (columnIndex) - 2 * MARGIN_TEXT;
+	} else {
+		/* columns > 0 may not be LEFT so cannot use getTextX (int) */
+		availableWidth = column.width - 2 * parent.getCellPadding () - 2 * MARGIN_TEXT;
+		if (images [columnIndex] != null) {
+			availableWidth -= image.getBounds ().width;
+			availableWidth -= Tree.MARGIN_IMAGE;
+		}
+	}
 	String text = getText (columnIndex);
 	int textWidth = gc.textExtent (text).x;
 	if (textWidth <= availableWidth) {
@@ -472,7 +487,8 @@ int getContentWidth (int columnIndex) {
 }
 String getDisplayText (int columnIndex) {
 	if (parent.columns.length == 0) return getText (0);
-	return displayTexts [columnIndex];
+	String result = displayTexts [columnIndex];
+	return result != null ? result : "";
 }
 /*
  * Returns the x value where the receiver's content (ie.- its image or text) begins
@@ -717,12 +733,13 @@ int getPreferredWidth (int columnIndex) {
 }
 public String getText () {
 	checkWidget ();
-	return getText (0);
+	return super.getText ();
 }
 public String getText (int columnIndex) {
 	checkWidget ();
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return "";
+	if (columnIndex == 0) return getText ();
 	if (texts [columnIndex] == null) return "";
 	return texts [columnIndex];
 }
@@ -956,9 +973,10 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
  * Recomputes the cached text widths.
  */
 void recomputeTextWidths (GC gc) {
-	textWidths = new int [texts.length];
+	int validColumnCount = Math.max (1, parent.columns.length);
+	textWidths = new int [validColumnCount];
 	Font oldFont = gc.getFont ();
-	for (int i = 0; i < texts.length; i++) {
+	for (int i = 0; i < textWidths.length; i++) {
 		String value = getDisplayText (i);
 		if (value != null) {
 			boolean fontChanged = false;
@@ -998,10 +1016,14 @@ void removeColumn (TreeColumn column, int index) {
 		return;
 	}
 
-	String[] newTexts = new String [columnCount];
-	System.arraycopy (texts, 0, newTexts, 0, index);
-	System.arraycopy (texts, index + 1, newTexts, index, columnCount - index);
-	texts = newTexts;
+	if (columnCount < 2) {
+		texts = null;
+	} else {
+		String[] newTexts = new String [columnCount];
+		System.arraycopy (texts, 0, newTexts, 0, index);
+		System.arraycopy (texts, index + 1, newTexts, index, columnCount - index);
+		texts = newTexts;
+	}
 	
 	Image[] newImages = new Image [columnCount];
 	System.arraycopy (images, 0, newImages, 0, index);
@@ -1432,8 +1454,11 @@ public void setText (int columnIndex, String value) {
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (value.equals (getText (columnIndex))) return;
-	texts [columnIndex] = value;
-	if (columnIndex == 0) super.setText (value);	// TODO can remove this
+	if (columnIndex == 0) {
+		super.setText (value);
+	} else {
+		texts [columnIndex] = value;		
+	}
 	
 	int oldWidth = textWidths [columnIndex];
 	GC gc = new GC (parent);

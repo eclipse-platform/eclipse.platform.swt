@@ -37,11 +37,11 @@ public class Tree extends Composite {
 	static final int WIDTH_HEADER_SHADOW = 2;
 	static final int WIDTH_CELL_HIGHLIGHT = 1;
 	static final String ELLIPSIS = "...";					//$NON-NLS-1$
-	static final String ID_EXPANDED = "Tree.Expanded";		//$NON-NLS-1$
-	static final String ID_COLLAPSED = "Tree.Collapsed";	//$NON-NLS-1$
-	static final String ID_UNCHECKED = "Tree.Unchecked";	//$NON-NLS-1$
-	static final String ID_GRAYUNCHECKED = "Tree.GrayUnchecked";	//$NON-NLS-1$
-	static final String ID_CHECKMARK = "Tree.Checkmark";	//$NON-NLS-1$
+	static final String ID_EXPANDED = "EXPANDED";		//$NON-NLS-1$
+	static final String ID_COLLAPSED = "COLLAPSED";	//$NON-NLS-1$
+	static final String ID_UNCHECKED = "UNCHECKED";	//$NON-NLS-1$
+	static final String ID_GRAYUNCHECKED = "GRAYUNCHECKED";	//$NON-NLS-1$
+	static final String ID_CHECKMARK = "CHECKMARK";	//$NON-NLS-1$
 
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE));
