@@ -409,6 +409,7 @@ int callWindowProc (int msg, int wParam, int lParam) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see SWT#Close
  * @see #dispose
  */
 public void close () {
