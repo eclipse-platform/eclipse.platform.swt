@@ -47,7 +47,7 @@ public abstract class UpdateWorker implements Runnable {
 	 * 
 	 * @param data the new data argument
 	 */
-	final public void asyncUpdate(Object newData) {		if (! isUpdateRequired(newData)) return;
+	final public void asyncUpdate(Object newData) {
 		synchronized(this) {			this.newData = newData;
 			stopped = false;
 			cancelled = true;
@@ -77,7 +77,7 @@ public abstract class UpdateWorker implements Runnable {
 					cancelled = false;
 					activeData = newData;
 				}
-				if (isUpdateRequired(activeData)) execute(activeData);
+				execute(activeData);
 				synchronized(this) {
 					if (! cancelled) wait();
 				}
@@ -118,4 +118,4 @@ public abstract class UpdateWorker implements Runnable {
 	 * </p>
 	 * @param data the data argument for the current session
 	 */
-	protected abstract void execute(Object data);		/**	 * Asks an operation if it should abort itself in the face of new information.	 * <p>	 * Subclass implementors should supply a definition for this method to reduce the likelihood	 * of unnecessary updates.	 * </p><p>	 * This method must be thread safe.	 * </p>	 * @param data the data argument for the proposed session	 * @return true if an update is needed	 */	protected boolean isUpdateRequired(Object data) {		return true;	}}
+	protected abstract void execute(Object data);}

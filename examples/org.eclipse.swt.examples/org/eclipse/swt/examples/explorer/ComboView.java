@@ -19,8 +19,9 @@ public class ComboView {
 	 * 
 	 * @param theViewer the viewer to attach to
 	 * @param parent the parent control
+	 * @param layoutData the layout data
 	 */
-	public ComboView(FileViewer theViewer, Composite parent) {
+	public ComboView(FileViewer theViewer, Composite parent, Object layoutData) {
 		this.viewer = theViewer;
 
 		combo = new Combo(parent, SWT.NONE);
@@ -39,6 +40,7 @@ public class ComboView {
 				viewer.notifySelectedDirectory(new File(text));
 			}
 		});
+		combo.setLayoutData(layoutData);
 	}
 
 	/**
@@ -47,11 +49,11 @@ public class ComboView {
 	 * Sets the combo box to point to the current directory.
 	 * </p>
 	 * 
-	 * @param dir the directory that was selected, null is ignored
+	 * @param dir the directory that was selected, null is not permitted
 	 */
 	/* package */ void selectedDirectory(File dir) {
 		combo.clearSelection();
-		if (dir == null || roots == null) return;
+		if (roots == null) return;
 		
 		for (int i = 0; i < roots.length; ++i) {
 			if (dir.equals(roots[i])) {

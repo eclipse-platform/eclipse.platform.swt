@@ -3,7 +3,7 @@ package org.eclipse.swt.examples.explorer;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-import org.eclipse.swt.*;import org.eclipse.swt.dnd.*;import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.widgets.*;import java.io.*;import java.util.*;
+import org.eclipse.swt.*;import org.eclipse.swt.dnd.*;import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.layout.*;import org.eclipse.swt.widgets.*;import java.io.*;import java.util.*;
 
 class TreeView {
 	private static final String
@@ -14,7 +14,8 @@ class TreeView {
 		TREEITEMDATA_IMAGECOLLAPSED = "TreeItem.imageCollapsed";
 			// Image: shown when item is collapsed
 
-	/* package */ final Tree tree;
+	private final Tree tree;
+	private final Label scopeLabel;
 	private final Shell shell;
 	private final Display display;
 	private final FileViewer viewer;
@@ -24,13 +25,28 @@ class TreeView {
 	 * 
 	 * @param theViewer the viewer to attach to
 	 * @param parent the parent control
+	 * @param layoutData the layout data
 	 */
-	public TreeView(FileViewer theViewer, Composite parent) {
+	public TreeView(FileViewer theViewer, Composite parent, Object layoutData) {
 		this.viewer = theViewer;
 		shell = parent.getShell();
 		display = shell.getDisplay();
 
-		tree = new Tree(parent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE);
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayoutData(layoutData);
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 1;
+		gridLayout.marginHeight = gridLayout.marginWidth = 2;
+		gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 0;
+		composite.setLayout(gridLayout);
+
+		scopeLabel = new Label(composite, SWT.BORDER);
+		scopeLabel.setText(FileViewer.getResourceString("All_folders"));
+		scopeLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
+
+		tree = new Tree(composite, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE);
+		tree.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+
 		tree.addSelectionListener(new SelectionListener() {
 			public void widgetSelected(SelectionEvent event) {
 				final TreeItem[] selection = tree.getSelection();
@@ -174,7 +190,7 @@ class TreeView {
 	 * directory until it is visible.
 	 * </p>
 	 * 
-	 * @param dir the directory that was selected, null is ignored
+	 * @param dir the directory that was selected, null is not permitted
 	 */
 	/* package */ void selectedDirectory(File dir) {
 		Vector /* of File */ path = new Vector();

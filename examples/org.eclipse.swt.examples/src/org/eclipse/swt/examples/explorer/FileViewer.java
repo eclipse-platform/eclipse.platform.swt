@@ -4,7 +4,7 @@ package org.eclipse.swt.examples.explorer;
  * All Rights Reserved
  */
 
-import java.io.*;import java.text.*;import java.util.*;import org.eclipse.swt.*;import org.eclipse.swt.dnd.*;import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.program.*;import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.*;import org.eclipse.swt.custom.*;import org.eclipse.swt.dnd.*;import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.layout.*;import org.eclipse.swt.program.*;import org.eclipse.swt.widgets.*;import java.io.*;import java.text.*;import java.util.*;
 
 /**
  * File Viewer example
@@ -19,7 +19,6 @@ public class FileViewer {
  	/* package */ Display display;
 	private Shell   shell;
 	private ToolBar toolBar;
-	private Sash    sash;
 
 	private TreeView treeView;
 	private TableView tableView;
@@ -27,10 +26,11 @@ public class FileViewer {
 
 	private Label numObjectsLabel;
 	private Label diskSpaceLabel;
-	private Label allFoldersLabel;
-	private Label contentLabel;
 	
 	private File currentDirectory = null;
+
+	private static final DateFormat dateFormat = DateFormat.getDateTimeInstance(
+		DateFormat.MEDIUM, DateFormat.MEDIUM);
 
 	/* Simulate only flag */
 	// when true, disables actual filesystem manipulations and outputs results to standard out
@@ -115,38 +115,37 @@ public class FileViewer {
 		shell.setMenuBar(bar);
 		createFileMenu(bar);
 		createHelpMenu(bar);
-		
-		createToolBar(shell);
-		
-		createStatusLine(shell);
 
-		tableView = new TableView(this, shell);
-		treeView = new TreeView(this, shell);
-		createSash(shell);
-	
-		shell.addControlListener(new ControlAdapter() {
-			public void controlResized(ControlEvent e) {
-				Rectangle rect = shell.getClientArea ();
-				Point comboSize = comboView.combo.computeSize(comboView.combo.getSize().x, SWT.DEFAULT);
-				Point toolBarSize = toolBar.computeSize (rect.width, SWT.DEFAULT);
-				int toolHeight = Math.max(comboSize.y, toolBarSize.y) + 2;
-				toolBar.setBounds (0, 0, rect.width, toolHeight);		
-			
-				Rectangle sashBounds = sash.getBounds();
-				int sashX = sashBounds.x, sashWidth = sashBounds.width;
-			
-				Point size = numObjectsLabel.getSize();
-				allFoldersLabel.setBounds(0, toolHeight, sashX, size.y);
-				contentLabel.setBounds(sashX + sashWidth, toolHeight, rect.width - (sashX + sashWidth), size.y);
-			
-				sash.setBounds(sashX, toolHeight, sashWidth, rect.height - toolHeight - size.y);	
-				treeView.tree.setBounds(0, toolHeight + size.y, sashX, rect.height - toolHeight - (size.y * 2));
-				tableView.table.setBounds(sashX + sashWidth, toolHeight + size.y, rect.width - (sashX + sashWidth), rect.height - toolHeight - (size.y * 2));
-				
-				numObjectsLabel.setBounds(0, rect.height - size.y, size.x, size.y);
-				diskSpaceLabel.setBounds(size.x, rect.height - size.y, rect.width - size.x, size.y);
-			}
-		});
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 3;
+		gridLayout.marginHeight = gridLayout.marginWidth = 0;
+		shell.setLayout(gridLayout);
+
+		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		gridData.widthHint = 185;
+		comboView = new ComboView(this, shell, gridData);
+		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		gridData.horizontalSpan = 2;
+		createToolBar(shell, gridData);
+
+		SashForm sashForm = new SashForm(shell, SWT.NONE);
+		sashForm.setOrientation(SWT.HORIZONTAL);
+		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
+		gridData.horizontalSpan = 3;
+		sashForm.setLayoutData(gridData);
+		treeView = new TreeView(this, sashForm, null);
+		tableView = new TableView(this, sashForm, null);
+		sashForm.setWeights(new int[] { 2, 5 });
+
+		numObjectsLabel = new Label(shell, SWT.BORDER);
+		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
+		gridData.widthHint = 185;
+		numObjectsLabel.setLayoutData(gridData);
+		
+		diskSpaceLabel = new Label(shell, SWT.BORDER);
+		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
+		gridData.horizontalSpan = 2;
+		diskSpaceLabel.setLayoutData(gridData);
 	}
 	
 	/**
@@ -196,14 +195,12 @@ public class FileViewer {
 	 * Creates the toolbar
 	 * 
 	 * @param shell the shell on which to attach the toolbar
+	 * @param layoutData the layout data
 	 */
-	private void createToolBar(Shell shell) {
+	private void createToolBar(Shell shell, Object layoutData) {
 		toolBar = new ToolBar(shell, SWT.NULL);
+		toolBar.setLayoutData(layoutData);
 		ToolItem item = new ToolItem(toolBar, SWT.SEPARATOR);
-		comboView = new ComboView(this, toolBar);
-		item.setControl(comboView.combo);
-		item.setWidth(185);
-
 		item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(Images.UpDirectory);
@@ -251,57 +248,6 @@ public class FileViewer {
 		item = new ToolItem(toolBar, SWT.RADIO);
 		item.setImage(Images.Details);
 		item.setSelection(true);
-	}
-
-	/**
-	 * Creates the status bar.
-	 * 
-	 * @param shell the shell on which to attach the status bar
-	 */
-	private void createStatusLine(Shell shell) {
-		numObjectsLabel = new Label(shell, SWT.BORDER);
-		Point size = numObjectsLabel.computeSize(145, SWT.DEFAULT);
-		numObjectsLabel.setSize(size.x, size.y + 2);
-		diskSpaceLabel = new Label(shell, SWT.BORDER);
-		allFoldersLabel = new Label(shell, SWT.BORDER);
-		allFoldersLabel.setText(getResourceString("All_folders"));
-		contentLabel = new Label(shell, SWT.BORDER);
-	}
-
-	/**
-	 * Creates the sash.
-	 * 
-	 * @param shell the shell to 
-	 */
-	private void createSash(final Shell shell) {
-		sash = new Sash(shell, SWT.VERTICAL);
-		sash.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				if (event.detail != SWT.DRAG) {
-					sash.setBounds (event.x, event.y, event.width, event.height);
-					Rectangle rect = shell.getClientArea ();
-					
-					Rectangle toolRect = toolBar.getBounds ();
-					Point size = allFoldersLabel.getSize ();
-					allFoldersLabel.setBounds (0, toolRect.height, event.x, size.y);
-					size = contentLabel.getSize ();
-					contentLabel.setBounds (event.x + event.width, toolRect.height,
-						rect.width - (event.x + event.width), size.y);
-			
-			
-					size = treeView.tree.getSize ();
-					treeView.tree.setSize (event.x, size.y);
-					Rectangle bounds = tableView.table.getBounds ();
-					tableView.table.setBounds (event.x + event.width, bounds.y,
-						rect.width - (event.x + event.width), bounds.height);
-				} else {
-					Rectangle rect = shell.getClientArea ();
-					event.x = Math.min (Math.max (30, event.x), rect.width - 30);
-				}
-			}
-		});
-		Point size = sash.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		sash.setBounds (300, 0, size.x, 0);
 	}
 
 	/**
@@ -386,12 +332,13 @@ public class FileViewer {
 	/**
 	 * Notifies the application components that a new current directory has been selected
 	 * 
-	 * @param dir the directory that was selected, null clears the selection
+	 * @param dir the directory that was selected, null is ignored
 	 */
 	/* package */ void notifySelectedDirectory(File dir) {
 		if (dir == null) return;
 		if (currentDirectory != null && dir.equals(currentDirectory)) return;
 		currentDirectory = dir;
+		shell.setText(getResourceString("Title", new Object[] { currentDirectory.getPath() }));
 
 		// Notify the other components
 		comboView.selectedDirectory(dir);
@@ -405,8 +352,12 @@ public class FileViewer {
 	 * @param files the files that were selected, null clears the selection
 	 */
 	/* package */ void notifySelectedFiles(File[] files) {
-		if (files == null || files.length == 0) return;
-		notifySelectedDirectory(getEnclosingDirectory(files[0]));
+		if (files == null) files = new File[0];
+		if (files.length != 0) {
+			final File file = files[0];	
+			notifySelectedDirectory(file.getParentFile());
+		}
+		tableView.selectedFiles(files);
 	}
 
 	/**
@@ -432,44 +383,59 @@ public class FileViewer {
 		// only uses the 1st file (for now)
 		if (files.length == 0) return;
 		final File file = files[0];
+
 		if (file.isDirectory()) {
 			notifySelectedDirectory(file);
+		} else {
+			final String fileName = file.getAbsolutePath();
+			if (! Program.launch(fileName)) {	
+				MessageBox dialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+				dialog.setMessage(getResourceString("Failed_launch", new Object[] { fileName }));
+				dialog.setText(shell.getText ());
+				dialog.open();
+			}
 		}
-		
-		final String fileName = file.getAbsolutePath();
-		if (! Program.launch(fileName)) {	
-			MessageBox dialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			dialog.setMessage(getResourceString("Failed_launch", new Object[] { fileName }));
-			dialog.setText(shell.getText ());
-			dialog.open();
-		}
 	}
 
 	/**
-	 * Sets the diskspace label
+	 * Sets the details for a file
 	 * 
-	 * @param text the new text
+	 * @param file the file in question
 	 */
-	/* package */ void setDiskSpaceText(String text) {
-		diskSpaceLabel.setText(text);
+	/* package */ void setFileDetails(File file) {
+		diskSpaceLabel.setText(getResourceString("Filesize",
+			new Object[] { new Long(file.length()) }));
+		numObjectsLabel.setText("");
 	}
 
 	/**
-	 * Sets the number of objects label
+	 * Sets the details for a folder
 	 * 
-	 * @param text the new text
+	 * @param folder the folder in question
+	 * @param files the directory listing
 	 */
-	/* package */ void setNumberOfObjectsText(String text) {
-		numObjectsLabel.setText(text);
+	/* package */ void setFolderDetails(File folder, File[] files) {
+		diskSpaceLabel.setText("");
+		numObjectsLabel.setText(getResourceString("Objects",
+			new Object[] { new Integer(files.length) }));
 	}
 
 	/**
-	 * Sets the titlebar text
+	 * Sets the details for a selection with > 1 item
 	 * 
-	 * @param text the new text
+	 * @param file the file in question
 	 */
-	/* package */ void setTitleText(String text) {
-		shell.setText(getResourceString("Title", new Object[] { text }));
+	/* package */ void setSelectionDetails(File[] file) {
+		// not implemented
+		clearDetails();
+	}
+
+	/**
+	 * Blanks out the details
+	 */
+	/* package */ void clearDetails() {
+		diskSpaceLabel.setText("");
+		numObjectsLabel.setText("");
 	}
 
 	/**
@@ -478,7 +444,6 @@ public class FileViewer {
 	 * @param text the new text
 	 */
 	/* package */ void setContentsOfText(String text) {
-		contentLabel.setText(getResourceString("Content_of", new Object[] { text }));
 	}
 
 //	/**
@@ -659,18 +624,6 @@ public class FileViewer {
 	}
 
 	/**
-	 * Gets the enclosing directory
-	 * 
-	 * @param file the file whose enclosing directory is to be locate, null is valid
-	 * @return the original file if it was a directory, or its parent, null on failure
-	 */
-	/* package */ static File getEnclosingDirectory(File file) {
-		if (file == null) return null;
-		if (file.isDirectory()) return file;
-		return file.getParentFile();
-	}
-	
-	/**
 	 * Gets a directory listing
 	 * 
 	 * @param file the directory to be listed
@@ -681,5 +634,44 @@ public class FileViewer {
 		if (list == null) return new File[0];
 		sort(list);
 		return list;
+	}
+	
+	/**
+	 * Gets file information for display purposes
+	 * 
+	 * @param file the file to query
+	 * @return the requested information or null if not available
+	 */
+	/* package */ FileDisplayInfo getFileDisplayInfo(File file) {
+		final String nameString = file.getName();
+		final String dateString = dateFormat.format(new Date(file.lastModified()));
+		
+		if (file.isDirectory()) {
+			return new FileDisplayInfo(nameString, getResourceString("filetype.Folder"),
+				"", dateString, Images.Folder, true);
+		} else {
+			final String sizeString = 
+				getResourceString("KB", new Object[] { new Long((file.length() + 512) / 1024) });
+			final String typeString;
+			
+			int dot = nameString.lastIndexOf('.');
+			if (dot != -1) {
+				String extension = nameString.substring(dot);
+				Program program = Program.findProgram(extension);
+				if (program != null) {
+					typeString = program.getName();
+					ImageData imageData = program.getImageData();
+					if (imageData != null) {
+						Image image = new Image(null, imageData, imageData.getTransparencyMask());
+						return new FileDisplayInfo(nameString, typeString, sizeString, dateString,
+							image, false);
+					}
+				} else typeString = getResourceString("filetype.Unknown",
+					new Object[] { extension.toUpperCase() });
+			} else typeString = getResourceString("filetype.NoExtension");
+
+			return new FileDisplayInfo(nameString, typeString, sizeString, dateString,
+				Images.File, true);
+		}		
 	}
 }

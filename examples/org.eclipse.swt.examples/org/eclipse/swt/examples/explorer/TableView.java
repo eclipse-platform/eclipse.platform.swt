@@ -3,14 +3,14 @@ package org.eclipse.swt.examples.explorer;/*
  * All Rights Reserved
  */
 
-import org.eclipse.swt.*;import org.eclipse.swt.dnd.*;import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.widgets.*;import java.io.*;import java.text.*;import java.util.*;
+import org.eclipse.swt.*;import org.eclipse.swt.dnd.*;import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.layout.*;import org.eclipse.swt.program.*;import org.eclipse.swt.widgets.*;import java.io.*;import java.text.*;import java.util.*;
 
 public class TableView {
-	private static final String
-		TABLEITEMDATA_FILE       = "TableItem.file";
-			// File: File associated with table row
+	private static final String TABLEITEMDATA_FILE = "TableItem.file";
+		// File: File associated with table row
 
-	/* package */ final Table table;
+	private final Table table;
+	private final Label contentsOfLabel;
 	private final Shell shell;
 	private final Display display;
 	private final FileViewer viewer;
@@ -20,25 +20,39 @@ public class TableView {
 	/* Worker thread control */
 	private UpdateWorker tableUpdateWorker = null;
 
+	final String[] titles = new String [] {
+		FileViewer.getResourceString("Name"),
+		FileViewer.getResourceString("Size"),
+		FileViewer.getResourceString("Type"),
+		FileViewer.getResourceString("Modified")
+	};
+	final int[] widths = new int[] {150, 60, 75, 150};
+
 	/**
 	 * Creates the file details table.
 	 * 
 	 * @param theViewer the viewer to attach to
 	 * @param parent the parent control
+	 * @param layoutData the layout data
 	 */
-	public TableView(FileViewer theViewer, Composite parent) {
+	public TableView(FileViewer theViewer, Composite parent, Object layoutData) {
 		this.viewer = theViewer;
 		shell = parent.getShell();
 		display = shell.getDisplay();
 
-		table = new Table(parent, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		String[] titles = new String [] {
-			FileViewer.getResourceString("Name"),
-			FileViewer.getResourceString("Size"),
-			FileViewer.getResourceString("Type"),
-			FileViewer.getResourceString("Modified")
-		};
-		int[] widths = new int[] {150, 60, 75, 150};
+		Composite composite = new Composite(parent, SWT.NONE);
+		composite.setLayoutData(layoutData);
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 1;
+		gridLayout.marginHeight = gridLayout.marginWidth = 2;
+		gridLayout.horizontalSpacing = gridLayout.verticalSpacing = 0;
+		composite.setLayout(gridLayout);
+		contentsOfLabel = new Label(composite, SWT.BORDER);
+		contentsOfLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
+
+		table = new Table(composite, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+		table.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL));
+
 		for (int i = 0; i < titles.length; i++) {
 			TableColumn column = new TableColumn(table, SWT.NONE);
 			column.setText(titles [i]);
@@ -62,6 +76,7 @@ public class TableView {
 				return files;
 			}
 		});
+
 		createTableDragSource(table);
 		createTableDropTarget(table);
 		
@@ -87,9 +102,6 @@ public class TableView {
 		private File[] currentFiles = null;
 		private File[] currentDirList = null;
 
-		private final DateFormat dateFormat = DateFormat.getDateTimeInstance(
-			DateFormat.MEDIUM, DateFormat.MEDIUM);
-		
 		public TableUpdateWorker() {
 			super(TableView.this.display);
 		}
@@ -140,10 +152,9 @@ public class TableView {
 			// Clear existing information
 			display.syncExec(new Runnable() {
 				public void run() {
-					viewer.setContentsOfText("");
-					viewer.setTitleText("");
-					viewer.setDiskSpaceText("");
-					viewer.setNumberOfObjectsText("");
+					viewer.clearDetails();
+					contentsOfLabel.setText(FileViewer.getResourceString("Content_of",
+						new Object[] { currentDir.getPath() }));
 					table.removeAll();
 					table.setRedraw(false);
 					TableView.this.activeDir = currentDir; // synchronize this
@@ -177,27 +188,13 @@ public class TableView {
 		 * Adds a file's detail information to the directory list
 		 */
 		private void addFileDetails(final File file) {
-			final String date = dateFormat.format(new Date(file.lastModified()));
-			final Image image;
-			final String[] strings;
-			
-			if (file.isDirectory()) {
-				strings = new String[] {
-					file.getName(),
-					"",
-					FileViewer.getResourceString("File_folder"),
-					date
-				};
-				image = Images.Folder;
-			} else {
-				strings = new String[] {
-					file.getName(),
-					FileViewer.getResourceString("KB", new Object[] { new Long((file.length() + 512) / 1024) }),
-					FileViewer.getResourceString("System_file"),
-					date
-				};
-				image = Images.File;
-			}
+			final FileDisplayInfo displayInfo = viewer.getFileDisplayInfo(file);
+			final String[] strings = new String[] {
+				displayInfo.nameString,
+				displayInfo.sizeString,
+				displayInfo.typeString,
+				displayInfo.dateString };
+			final Image image = displayInfo.iconImage;
 
 			display.asyncExec(new Runnable() {
 				public void run () {
@@ -222,33 +219,33 @@ public class TableView {
 		private void updateDetails() {
 			if (currentFiles.length == 0) {
 				if (currentDir == null) return;
-				final String path = currentDir.getPath();
-				final int size = (currentDirList != null) ? currentDirList.length : 0;
-				
+				final File folder = currentDir;
+				final File[] files = currentDirList;
+
 				// show directory information
 				display.asyncExec(new Runnable() {
 					public void run() {
-						viewer.setContentsOfText(path);
-						viewer.setTitleText(path);
-						viewer.setNumberOfObjectsText(FileViewer.getResourceString("Objects", new Object[] {
-							new Integer(size) }));
+						viewer.setFolderDetails(folder, files);
 					}
 				});
 			} else if (currentFiles.length == 1) {
 				final File file = currentFiles[0];
-				final long folderSize = file.length();
-				final long diskFreeSize = 0;
 
 				// show individual file information
 				display.asyncExec(new Runnable() {
 					public void run() {
-						viewer.setContentsOfText(file.getPath());
-						viewer.setTitleText(file.getPath());
-						viewer.setDiskSpaceText(FileViewer.getResourceString("Filesize",
-							new Object[] { new Long(folderSize), new Long(diskFreeSize) }));
+						viewer.setFileDetails(file);
 					}
 				});
 			} else {
+				// show multi-selection file information
+				final File[] files = currentFiles;
+				
+				display.asyncExec(new Runnable() {
+					public void run() {
+						viewer.setSelectionDetails(files);
+					}
+				});
 			}				
 		}
 	}
@@ -322,10 +319,22 @@ public class TableView {
 	 * Displays the contents in the selected directory.
 	 * </p>
 	 * 
-	 * @param dir the directory that was selected, null is ignored
+	 * @param dir the directory that was selected, null is not permitted
 	 */
 	/* package */ void selectedDirectory(File dir) {
 		tableUpdateWorker.asyncUpdate(new Object[] { dir, null, new Boolean(false) });
+	}
+
+	/**
+	 * Listens to selectedFiles events.
+	 * <p>
+	 * Updates the details to match the specified selection.
+	 * </p>
+	 * 
+	 * @param files the array of selected files, null is not permitted
+	 */
+	/* package */ void selectedFiles(File[] files) {
+		tableUpdateWorker.asyncUpdate(new Object[] { null, files, new Boolean(false) });
 	}
 	
 	/**
