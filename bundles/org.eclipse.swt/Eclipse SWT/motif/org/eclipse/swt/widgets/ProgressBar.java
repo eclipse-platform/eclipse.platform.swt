@@ -35,7 +35,7 @@ import org.eclipse.swt.graphics.*;
 public class ProgressBar extends Control {
 	int timerId;
 	static final int DELAY = 100;
-	int lastForeground = defaultForeground ();
+	int foreground;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -122,6 +122,10 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.INDETERMINATE) != 0) createTimer ();
 }
+void createWidget (int index) {
+	super.createWidget (index);
+	foreground = defaultForeground ();
+}
 void createTimer () {
 	int xDisplay = display.xDisplay;
 	int windowTimerProc = display.windowTimerProc;
@@ -143,9 +147,7 @@ void disableButtonPress () {
 	OS.XChangeWindowAttributes (xDisplay, xWindow, OS.CWEventMask, attributes);
 }
 int getForegroundPixel () {
-	boolean invisible = lastForeground != -1;
-	if (invisible) return lastForeground;
-	return super.getForegroundPixel ();
+	return foreground == -1 ? super.getForegroundPixel () : foreground;
 }
 /**
  * Returns the maximum value which the receiver will allow.
@@ -197,9 +199,7 @@ public int getSelection () {
 	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int minimum = argList [1], sliderSize = argList [3];
-	boolean invisible = lastForeground != -1;
-	if (invisible) sliderSize = 0;
-	return minimum + sliderSize;
+	return minimum + (foreground == -1 ? 0 : sliderSize);
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
@@ -213,55 +213,17 @@ void releaseWidget () {
 	super.releaseWidget ();
 	destroyTimer ();
 }
-/**
- * Sets the receiver's background color to the color specified
- * by the argument, or to the default system color for the control
- * if the argument is null.
- *
- * @param color the new color (or null)
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setBackground (Color color) {
+void setBackgroundPixel (int pixel) {
 	checkWidget();
-	super.setBackground (color);
-	boolean invisible = lastForeground != -1;
-	if (invisible) {
-		int [] argList = {
-			OS.XmNtroughColor, 0
-		};
-		OS.XtGetValues (handle, argList, argList.length / 2);
-		setForegroundPixel (argList [1]);
-	}
+	super.setBackgroundPixel (pixel);
+	if (foreground != -1) super.setForegroundPixel (pixel);
 }
-
-/**
- * Sets the receiver's foreground color to the color specified by the argument,
- * or to the default system color for the control if the argument is null.
- *
- * @param color the new color (or null)
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setForeground (Color color) {
+void setForegroundPixel (int pixel) {
 	checkWidget();
-	boolean invisible = lastForeground != -1;
-	if (invisible) {
-		lastForeground = color.handle.pixel;
+	if (foreground == -1) {
+		super.setForegroundPixel (pixel);
 	} else {
-		super.setForeground (color);
+		foreground = pixel;
 	}
 }
 /**
@@ -356,24 +318,21 @@ void setThumb (int sliderSize) {
 	};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
 	int troughColor = argList1 [1];
-
-	boolean invisible = lastForeground != -1;
 	if (sliderSize == 0) {
-		if (!invisible) {
-			lastForeground = getForegroundPixel ();
-			setForegroundPixel (troughColor);
+		if (foreground == -1) {
+			foreground = getForegroundPixel ();
+			super.setForegroundPixel (troughColor);
 		}
 	} else {
-		if (invisible) {
-			setForegroundPixel (lastForeground);
-			lastForeground = -1;
+		if (foreground != -1) {
+			super.setForegroundPixel (foreground);
+			foreground = -1;
 		}
 	}
 	int [] argList2 = new int [] {
-		OS.XmNsliderSize, (sliderSize == 0) ? 1 : sliderSize,
+		OS.XmNsliderSize, sliderSize == 0 ? 1 : sliderSize,
 		OS.XmNvalue, argList1 [3]
 	};
-	
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList2, argList2.length / 2);
