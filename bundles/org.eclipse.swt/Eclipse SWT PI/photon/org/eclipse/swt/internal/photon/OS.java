@@ -2813,6 +2813,7 @@ public static final native void memmove (int dest, PhArea_t src, int size);
 public static final native int PtSetParentWidget (int widget);
 public static final native void PtFrameSize (int widget, int border_width, int [] left_border, int [] top_border, int [] right_border, int [] bottom_border);
 
+public static final native int PtCreateAppContext ();
 public static final native void PtAppProcessEvent (int app_context);
 public static final native int PtAppAddWorkProc (int app_context, int work_func, int data);
 public static final native void PtAppRemoveWorkProc (int app_context, int WorkProc_id);
