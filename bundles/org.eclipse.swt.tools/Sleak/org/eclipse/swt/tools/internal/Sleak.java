@@ -268,7 +268,6 @@ void refreshAll () {
 
 void layout () {
 	Rectangle rect = shell.getClientArea ();
-	String [] strings = new String [objects.length];
 	int width = 0;
 	String [] items = list.getItems ();
 	GC gc = new GC (list);
