@@ -40,6 +40,7 @@ public class Tree extends Composite {
 	
 	static int CHECK_WIDTH = 12;
 	static int CHECK_HEIGHT = 12;
+	static int CELL_SPACING = 1;
 
 	static TreeItem [] Items;
 	static int Index, Count, Sibling;
@@ -374,7 +375,7 @@ public int getItemHeight () {
 	checkWidget ();
 	GtkCList clist = new GtkCList ();
 	OS.memmove (clist, handle, GtkCList.sizeof);
-	return clist.row_height + 1;
+	return clist.row_height + CELL_SPACING;
 }
 
 /**
