@@ -37,5 +37,5 @@ public static final synchronized native void gnome_vfs_mime_extensions_list_free
 public static final synchronized native int /*long*/ gnome_vfs_mime_get_default_application(byte[] mimeType);
 public static final synchronized native int /*long*/ gnome_vfs_mime_get_extensions_list(int /*long*/ mime_type);
 public static final synchronized native void gnome_vfs_mime_registered_mime_type_list_free(int /*long*/ list);
-public static final synchronized native void memmove (GnomeVFSMimeApplication dest, int /*long*/ src, int count);
+public static final synchronized native void memmove (GnomeVFSMimeApplication dest, int /*long*/ src, int /*long*/ count);
 }

@@ -132,7 +132,7 @@ public class ATK extends OS {
 	public static final synchronized native void memmove (AtkTextIface dest, int /*long*/ src);
 	public static final synchronized native void memmove (GtkAccessible  dest, int /*long*/ src);
 	public static final synchronized native void memmove (GObjectClass  dest, int /*long*/ src);
-	public static final synchronized native void memmove (GTypeQuery dest, int /*long*/ src, int size);	
+	public static final synchronized native void memmove (GTypeQuery dest, int /*long*/ src, int /*long*/ size);	
 	public static final synchronized native void memmove (int /*long*/ dest, AtkActionIface src);
 	public static final synchronized native void memmove (int /*long*/ dest, AtkComponentIface src);
 	public static final synchronized native void memmove (int /*long*/ dest, AtkObjectClass src);
