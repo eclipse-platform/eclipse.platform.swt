@@ -44,6 +44,7 @@ static synchronized void loadLibrary () {
 }
 
 public static Frame new_Frame (final Composite parent) {
+	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int handle = parent.embeddedHandle;
 	/*
 	 * Some JREs have implemented the embedded frame constructor to take an integer
@@ -96,7 +97,9 @@ public static Frame new_Frame (final Composite parent) {
 	return frame;
 }
 
-public static Shell new_Shell (Display display, final Canvas parent) {
+public static Shell new_Shell (final Display display, final Canvas parent) {
+	if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int handle = 0;
 	try {
 		loadLibrary ();
@@ -107,10 +110,9 @@ public static Shell new_Shell (Display display, final Canvas parent) {
 	if (handle == 0) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 
 	final Shell shell = Shell.motif_new (display, handle);
-	final Display newDisplay = shell.getDisplay ();
 	parent.addComponentListener(new ComponentAdapter () {
 		public void componentResized (ComponentEvent e) {
-			newDisplay.syncExec (new Runnable () {
+			display.syncExec (new Runnable () {
 				public void run () {
 					Dimension dim = parent.getSize ();
 					shell.setSize (dim.width, dim.height);
