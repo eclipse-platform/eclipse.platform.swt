@@ -4046,23 +4046,60 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 			if ((bits & OS.WS_SYSMENU) == 0) return LRESULT.ZERO;
 			break;
 		case OS.SC_KEYMENU:
-			if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+			/*
+			* When lParam is zero, one of F10, Shift+F10, Ctrl+F10 or
+			* Ctrl+Shift+F10 was pressed.  If there is no menu bar and
+			* the focus control is interested in keystrokes, give the
+			* key to the focus control.  Normally, F10 with no menu bar
+			* moves focus to the System menu but this can be achieved
+			* using Alt+Space.  To allow the application to see F10,
+			* avoid running the default window proc.
+			* 
+			* NOTE:  When F10 is pressed, WM_SYSCOMMAND is sent to the
+			* shell, not the focus control.  This is undocumented Windows
+			* behavior.
+			*/
+			if (lParam == 0) {
 				Decorations shell = menuShell ();
 				Menu menu = shell.getMenuBar ();
-				if (menu != null) {
-					char key = mbcsToWcs (lParam);
-					if (key != 0) {
-						key = Character.toUpperCase (key);
-						MenuItem [] items = menu.getItems ();
-						for (int i=0; i<items.length; i++) {
-							MenuItem item = items [i];
-							String text = item.getText ();
-							char mnemonic = findMnemonic (text);
-							if (text.length () > 0 && mnemonic == 0) {
-								char ch = text.charAt (0);
-								if (Character.toUpperCase (ch) == key) {
-									display.mnemonicKeyHit = false;
-									return LRESULT.ZERO;
+				if (menu == null) {
+					Control control = display.getFocusControl ();
+					if (control != null) {
+						if (control.hooks (SWT.KeyDown) || control.hooks (SWT.KeyUp)) {
+							display.mnemonicKeyHit = false;
+							return LRESULT.ZERO;
+						}
+					}
+				}
+			} else {
+				/*
+				* When lParam is not zero, Alt+<key> was pressed.  If the
+				* application is interested in keystrokes and there is a
+				* menu bar, check to see whether the key that was pressed
+				* matches a mnemonic on the menu bar.  Normally, Windows
+				* matches the first character of a menu item as well as
+				* matching the mnemonic character.  To allow the application
+				* to see the keystrokes in this case, avoid running the default
+				* window proc.
+				*/
+				if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+					Decorations shell = menuShell ();
+					Menu menu = shell.getMenuBar ();
+					if (menu != null) {
+						char key = mbcsToWcs (lParam);
+						if (key != 0) {
+							key = Character.toUpperCase (key);
+							MenuItem [] items = menu.getItems ();
+							for (int i=0; i<items.length; i++) {
+								MenuItem item = items [i];
+								String text = item.getText ();
+								char mnemonic = findMnemonic (text);
+								if (text.length () > 0 && mnemonic == 0) {
+									char ch = text.charAt (0);
+									if (Character.toUpperCase (ch) == key) {
+										display.mnemonicKeyHit = false;
+										return LRESULT.ZERO;
+									}
 								}
 							}
 						}
