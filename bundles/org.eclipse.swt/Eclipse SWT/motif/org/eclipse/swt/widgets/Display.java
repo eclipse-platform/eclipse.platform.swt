@@ -535,7 +535,7 @@ void createDisplay (DeviceData data) {
 	* font.	*/
 	int ptr1 = 0, ptr2 = 0; 
 	if (OS.IsLinux && OS.IsDBLocale) {
-		String resource = "*fontList: -*-fixed-medium-r-*-*-12-*-*-*-*-*-*-*:";
+		String resource = "*fontList: -*-fixed-medium-r-*-*-*-120-*-*-*-*-*-*:";
 		byte [] buffer = Converter.wcsToMbcs (null, resource, true);
 		ptr1 = OS.XtMalloc (buffer.length);
 		if (ptr1 != 0) OS.memmove (ptr1, buffer, buffer.length);
