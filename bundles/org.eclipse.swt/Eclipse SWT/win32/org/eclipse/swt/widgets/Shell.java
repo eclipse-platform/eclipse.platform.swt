@@ -1322,7 +1322,10 @@ int widgetExtStyle () {
 	if (!OS.IsWinCE) {
 		if (parent == null) {
 			if ((style & SWT.ON_TOP) != 0) {
-				bits |= OS.WS_EX_TOOLWINDOW;
+				int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+				if ((style & SWT.NO_TRIM) != 0 || (style & trim) == 0) {
+					bits |= OS.WS_EX_TOOLWINDOW;
+				}
 			}
 		}
 	}
