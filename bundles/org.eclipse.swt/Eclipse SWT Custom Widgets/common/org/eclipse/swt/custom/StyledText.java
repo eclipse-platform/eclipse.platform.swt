@@ -89,6 +89,7 @@ public class StyledText extends Canvas {
 	StyledTextContent content;
 	TextChangeListener textChangeListener;	// listener for TextChanging, TextChanged and TextSet events from StyledTextContent
 	DefaultLineStyler defaultLineStyler;// used for setStyles API when no LineStyleListener is registered
+	ContentWidthCache contentWidth;
 	boolean userLineStyle = false;		// true=widget is using a user defined line style listener for line styles. false=widget is using the default line styler to store line styles
 	boolean userLineBackground = false;// true=widget is using a user defined line background listener for line backgrounds. false=widget is using the default line styler to store line backgrounds
 	int verticalScrollOffset = 0;		// pixel based
@@ -96,7 +97,6 @@ public class StyledText extends Canvas {
 	int topIndex = 0;					// top visible line
 	int clientAreaHeight = 0;			// the client area height. Needed to calculate content width for new 
 										// visible lines during Resize callback
-	int contentWidth = 0;				// width of widest known (already visible) line
 	int lineHeight;						// line height=font height
 	int tabLength = 4;					// number of characters in a tab
 	int tabWidth;						// width of a tab character in the current GC
@@ -579,6 +579,252 @@ public class StyledText extends Canvas {
 		write(lineDelimiter);
 	}
 	}
+
+	/**
+	 * Keeps track of line widths and the longest line in the 
+	 * StyledText document.
+	 * Line widths are calculated on demand and cached.
+	 */
+	class ContentWidthCache {
+		StyledText parent;				// parent widget, used to create a GC for line measuring
+		int[] lineWidth;				// width in pixel of each line in the document, -1 for unknown width
+		int lineCount;					// number of lines in lineWidth array
+		int maxWidth;					// maximum line width of all measured lines
+		int maxWidthLineIndex;			// index of the widest line
+				
+	/** 
+	 * Creates a new <code>ContentWidthCache</code> and allocates space 
+	 * for the given number of lines.
+	 * <p>
+	 *
+	 * @param parent the StyledText widget used to create a GC for 
+	 * 	line measuring
+	 * @param lineCount initial number of lines to allocate space for
+	 */
+	public ContentWidthCache(StyledText parent, int lineCount) {
+		this.lineCount = lineCount;
+		this.parent = parent;
+		lineWidth = new int[lineCount];
+		reset(0, lineCount);
+	}
+	/**
+	 * Calculates the width of each line in the given range if it has
+	 * not been calculated yet.
+	 * If any line in the given range is wider than the currently widest
+	 * line, the maximum line width is updated,
+	 * <p>
+	 * 
+	 * @param startLine first line to calculate the line width of
+	 * @param lineCount number of lines to calculate the line width for
+	 */
+	public void calculate(int startLine, int lineCount) {
+		GC gc = null;
+		int caretWidth = 0;
+		int stopLine = startLine + lineCount;
+				
+		for (int i = startLine; i < stopLine; i++) {
+			if (lineWidth[i] == -1) {
+				String line = content.getLine(i);
+				int lineOffset = content.getOffsetAtLine(i);
+		
+				if (gc == null) {
+					gc = new GC(parent);
+					caretWidth = getCaretWidth();
+				}		
+				lineWidth[i] = contentWidth(line, lineOffset, gc) + caretWidth;
+			}
+			if (lineWidth[i] > maxWidth) {
+				maxWidth = lineWidth[i];
+				maxWidthLineIndex = i;
+			}
+		}
+		if (gc != null) {
+			gc.dispose();	
+		}
+	}
+	/** 
+	 * Calculates the width of the visible lines in the specified 
+	 * range.
+	 * <p>
+	 *
+	 * @param startLine	the first changed line
+	 * @param newLineCount the number of inserted lines
+	 */  
+	void calculateVisible(int startLine, int newLineCount) {
+		int topIndex = parent.getTopIndex();
+		int bottomLine = Math.min(getPartialBottomIndex(), startLine + newLineCount);
+		
+		startLine = Math.max(startLine, topIndex);
+		calculate(startLine, bottomLine - startLine + 1);
+	}
+	/**
+	 * Measures the width of the given line.
+	 * <p>
+	 * 
+	 * @param line the line to measure
+	 * @param lineOffset start offset of the line to measure, relative 
+	 * 	to the start of the document
+	 * @param gc the GC to use for measuring the line
+	 * @return the width of the given line
+	 */
+	int contentWidth(String line, int lineOffset, GC gc) {
+		StyledTextEvent event = getLineStyleData(lineOffset, line);
+		StyleRange[] styles = null;
+		int lineLength = line.length();
+		int width;
+		
+		if (event != null) {
+			styles = filterLineStyles(event.styles);
+		}
+		if (isBidi()) {
+			int[] boldStyles = getBoldRanges(styles, lineOffset, lineLength);
+			StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont, getBidiSegments(line, lineOffset));
+			width = bidi.getTextWidth();
+		}
+		else {
+			width = textWidth(line, lineOffset, 0, lineLength, styles, 0, gc, null);
+		}
+		return width;
+	}
+	/**
+	 * Grows the <code>lineWidth</code> array to accomodate new line width
+	 * information.
+	 * <p>
+	 *
+	 * @param numLines the number of elements to increase the array by
+	 */
+	void expandLines(int numLines) {
+		int size = lineWidth.length;
+		if (size - lineCount >= numLines) {
+			return;
+		}
+		int[] newLines = new int[Math.max(size * 2, size + numLines)];
+		System.arraycopy(lineWidth, 0, newLines, 0, size);
+		lineWidth = newLines;
+		reset(size, lineWidth.length - size);
+	}
+	/**
+	 * Returns the width of the longest measured line.
+	 * <p>
+	 *
+	 * @return the width of the longest measured line.
+	 */
+	int getWidth() {
+		return maxWidth;
+	}
+	/**
+	 * Updates the line width array to reflect inserted or deleted lines.
+	 * <p>
+	 *
+	 * @param start	the starting line of the change that took place
+	 * @param delta	the number of lines in the change, > 0 indicates lines inserted,
+	 * 	< 0 indicates lines deleted
+	 */
+	void linesChanged(int startLine, int delta) {
+		boolean inserting = delta > 0;
+		
+		if (delta == 0) {
+			return;
+		}
+		if (inserting) {
+			// shift the lines down to make room for new lines
+			expandLines(delta);
+			for (int i = lineCount - 1; i >= startLine; i--) {
+				lineWidth[i + delta] = lineWidth[i];
+			}
+			// reset the new lines
+			for (int i = startLine + 1; i <= startLine + delta && i < lineWidth.length; i++) {
+				lineWidth[i] = -1;
+			}
+			// have new lines been inserted above the longest line?
+			if (maxWidthLineIndex >= startLine) {
+				maxWidthLineIndex += delta;
+			}
+		} 
+		else {
+			// shift up the lines
+			for (int i = startLine - delta; i < lineCount; i++) {
+				lineWidth[i+delta] = lineWidth[i];
+			}
+			// has the longest line been removed?
+			if (maxWidthLineIndex > startLine && maxWidthLineIndex <= startLine - delta) {
+				maxWidth = 0;
+				maxWidthLineIndex = -1;
+			}
+			else
+			if (maxWidthLineIndex >= startLine - delta) {
+				maxWidthLineIndex += delta;
+			}
+		}
+		lineCount += delta;
+	}
+	/**
+	 * Resets the line width of the lines in the specified range.
+	 * <p>
+	 *
+	 * @param startLine	the first line to reset
+	 * @param lineCount the number of lines to reset
+	 */
+	public void reset(int startLine, int lineCount) {
+		int endLine = startLine + lineCount;
+		
+		if (startLine < 0 || endLine > lineWidth.length) {
+			return;
+		}
+		for (int i = startLine; i < endLine; i++) {
+			lineWidth[i] = -1;
+		}		
+		// if the longest line is one of the reset lines, the maximum line 
+		// width is no longer valid
+		if (maxWidthLineIndex >= startLine && maxWidthLineIndex < endLine) {
+			maxWidth = 0;
+			maxWidthLineIndex = -1;
+		}
+	}
+	/** 
+	 * Updates the line width array to reflect a text change.
+	 * Lines affected by the text change will be reset.
+	 * <p>
+	 *
+	 * @param startLine	the first changed line
+	 * @param newLineCount the number of inserted lines
+	 * @param replaceLineCount the number of deleted lines
+	 */  
+	public void textChanged(int startLine, int newLineCount, int replaceLineCount) {
+		boolean removedMaxLine = (maxWidthLineIndex > startLine && maxWidthLineIndex <= startLine + replaceLineCount);
+
+		// entire text deleted?
+		if (startLine == 0 && replaceLineCount == lineCount) {
+			lineCount = newLineCount;
+			lineWidth = new int[lineCount];
+			reset(0, lineCount);
+			maxWidth = 0;
+		}
+		else {
+			linesChanged(startLine, -replaceLineCount);
+			linesChanged(startLine, newLineCount);
+			lineWidth[startLine] = -1;
+		}
+		// only calculate the visible lines. otherwise measurements of changed lines 
+		// outside the visible area may subsequently change again without the 
+		// lines ever being visible.
+		calculateVisible(startLine, newLineCount);
+		// maxWidthLineIndex will be -1 (i.e., unknown line width) if the widget has 
+		// not been visible yet and the changed lines have therefore not been calculated 
+		// above.
+		if (removedMaxLine || (maxWidthLineIndex != -1 && lineWidth[maxWidthLineIndex] < maxWidth)) {
+			// longest line has been removed or changed and is now shorter.
+			// need to recalculate maximum content width for all lines
+			maxWidth = 0;
+			for (int i = 0; i < lineCount; i++) {
+				if (lineWidth[i] > maxWidth) {
+					maxWidth = lineWidth[i];
+					maxWidthLineIndex = i;
+				}
+			}			
+		}
+	}
+	}
 	
 public StyledText(Composite parent, int style) {
 	// use NO_BACKGROUND style when implemented by SWT.
@@ -596,6 +842,7 @@ public StyledText(Composite parent, int style) {
 	setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
 	setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));	
 	initializeFonts();
+	contentWidth = new ContentWidthCache(this, content.getLineCount());
 	if (isBidi() == false) {
 		Caret caret = new Caret(this, SWT.NULL);
 		caret.setSize(1, caret.getSize().y);
@@ -865,42 +1112,9 @@ public void append(String string) {
  */
 void calculateContentWidth() {
 	if (lineHeight != 0) {
-		int itemCount = Compatibility.ceil(getClientArea().height, lineHeight);
-		calculateContentWidth(topIndex, Math.min(itemCount, content.getLineCount() - topIndex));
+		contentWidth = new ContentWidthCache(this, content.getLineCount());		
+		contentWidth.calculate(topIndex, getPartialBottomIndex() - topIndex + 1);
 	}
-}
-/**
- * Calculates the width of the widget text in the specified line range.
- * <p>
- *
- * @param startline the first line
- * @param lineCount number of lines to consider for the calculation
- */
-void calculateContentWidth(int startLine, int lineCount) {
-	String line;
-	GC gc = new GC(this);
-	FontData fontData = gc.getFont().getFontData()[0];
-	int stopLine;
-	boolean isBidi = isBidi();
-	
-	if (lineCount < 0) {
-		startLine += lineCount;
-		lineCount *= -1;
-	}
-	stopLine = startLine + lineCount;
-	setLineFont(gc, fontData, SWT.BOLD);	
-	for (int i = startLine; i < stopLine; i++) {
-		line = content.getLine(i);
-		if (isBidi) {
-            int lineOffset = content.getOffsetAtLine (i);
-            StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, null, null, getBidiSegments(line, lineOffset));
-			contentWidth = Math.max(bidi.getTextWidth() + getCaretWidth(), contentWidth);
-		}
-		else {
-			contentWidth = Math.max(contentWidth(line, i, gc) + getCaretWidth(), contentWidth);
-		}
-	}
-	gc.dispose();
 }
 /**
  * Calculates the line height
@@ -964,7 +1178,7 @@ void claimBottomFreeSpace() {
  * Scrolls text to the right to use new space made available by a resize.
  */
 void claimRightFreeSpace() {
-	int newHorizontalOffset = Math.max(0, contentWidth - getClientArea().width);
+	int newHorizontalOffset = Math.max(0, contentWidth.getWidth() - getClientArea().width);
 	
 	if (newHorizontalOffset < horizontalScrollOffset) {			
 		// item is no longer drawn past the right border of the client area
@@ -1029,8 +1243,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		// Do this because measuring each text line is a 
 		// time-consuming process.
 		int visibleCount = Math.min (count, getDisplay().getBounds().width / lineHeight);
-		calculateContentWidth(0, visibleCount);
-		width = contentWidth;
+		contentWidth.calculate(0, visibleCount);
+		width = contentWidth.getWidth();
 	}
 
 	// Use default values if no text is defined.
@@ -2279,7 +2493,7 @@ void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] style
 		if ((getStyle() & SWT.FULL_SELECTION) != 0) {
 			// use the greater of the client area width and the content width
 			// fixes 1G8IYRD
-			selectionBackgroundWidth = Math.max(getClientArea().width, contentWidth);
+			selectionBackgroundWidth = Math.max(getClientArea().width, contentWidth.getWidth());
 		}
 		else {
 			selectionLength = lineLength - selectionStart;
@@ -2557,18 +2771,21 @@ int[] getBoldRanges(StyleRange[] styles, int lineOffset, int lineLength) {
 		return null;
 	}
 	for (int i = 0; i < styles.length; i++) {
-		if (styles[i].fontStyle == SWT.BOLD) {
+		StyleRange style = styles[i];
+		if (style.fontStyle == SWT.BOLD && style.start - lineOffset < lineLength) {
 			boldCount++;
-		}		
+		}
 	}
 	if (boldCount > 0) {
 		boldRanges = new int[boldCount * 2];
 		boldCount = 0;
 		for (int i = 0; i < styles.length; i++) {
 			StyleRange style = styles[i];
-			if (style.fontStyle == SWT.BOLD) {
-				int styleEnd = Math.min(style.start + style.length - lineOffset, lineLength);
-				int styleStart = Math.max(0, style.start - lineOffset);			
+			int styleLineStart = style.start - lineOffset;
+						
+			if (style.fontStyle == SWT.BOLD && styleLineStart < lineLength) {
+				int styleEnd = Math.min(styleLineStart + style.length, lineLength);
+				int styleStart = Math.max(0, styleLineStart);			
 				boldRanges[boldCount] = styleStart;
 				boldRanges[boldCount + 1] = styleEnd - styleStart;
 				boldCount += 2;
@@ -2833,23 +3050,6 @@ public Color getLineBackground(int index) {
 public int getLineCount() {
 	checkWidget();
 	return getLineAtOffset(getCharCount()) + 1;
-}
-/**
- * Returns the number of lines that are at least partially displayed in the widget client area.
- * <p>
- *
- * @return number of lines that are at least partially displayed in the widget client area.
- */
-int getLineCountTruncated() {
-	int lineCount;
-	
-	if (lineHeight != 0) {
-		lineCount = Compatibility.ceil(getClientArea().height, lineHeight);
-	}
-	else {
-		lineCount = 1;
-	}
-	return lineCount;
 }
 /**
  * Returns the number of lines that are completely displayed in the widget client area.
@@ -4308,9 +4508,10 @@ void handleResize(Event event) {
 		int lineCount = content.getLineCount();
 		int oldBottomIndex = topIndex + oldHeight / lineHeight;
 		int newItemCount = Compatibility.ceil(clientAreaHeight - oldHeight, lineHeight);
+		
 		oldBottomIndex = Math.min(oldBottomIndex, lineCount);
 		newItemCount = Math.min(newItemCount, lineCount - oldBottomIndex);
-		calculateContentWidth(oldBottomIndex, newItemCount);
+		contentWidth.calculate(oldBottomIndex, newItemCount);
 	}	
 	setScrollBars();
 	claimBottomFreeSpace();
@@ -4322,19 +4523,10 @@ void handleResize(Event event) {
  * <p>
  */
 void handleTextChanged(TextChangedEvent event) {
-	int clientAreaHeight = getClientArea().height;
-	int visibleItemCount = Compatibility.ceil(clientAreaHeight, lineHeight);
-	int firstLine = content.getLineAtOffset(lastTextChangeStart);
-	int stopLine;
-			
-	// calculate width of visible changed lines
-	stopLine = firstLine + lastTextChangeNewLineCount + 1;
-	if (stopLine > topIndex && firstLine < topIndex + visibleItemCount) {
-		int startLine = Math.max(firstLine, topIndex);
-		calculateContentWidth(
-			startLine, 
-			Math.min(stopLine, topIndex + visibleItemCount) - startLine);
-	}	
+	contentWidth.textChanged(
+		content.getLineAtOffset(lastTextChangeStart), 
+		lastTextChangeNewLineCount, 
+		lastTextChangeReplaceLineCount);
 	setScrollBars();
 	// update selection/caret location after styles have been changed.
 	// otherwise any text measuring could be incorrect
@@ -4767,6 +4959,81 @@ public Runnable print(Printer printer) {
 	checkWidget();
 	return new StyledTextPrinter(this, printer);
 }
+/**
+ * Causes the entire bounds of the receiver to be marked
+ * as needing to be redrawn. The next time a paint request
+ * is processed, the control will be completely painted.
+ * <p>
+ * Recalculates the content width for all lines in the bounds.
+ * When a <code>LineStyleListener</code> is used a redraw call 
+ * is the only notification to the widget that styles have changed 
+ * and that the content width may have changed.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Control#update
+ */
+public void redraw() {
+	int itemCount;
+	
+	super.redraw();
+	itemCount = getPartialBottomIndex() - topIndex + 1;
+	contentWidth.reset(topIndex, itemCount);
+	contentWidth.calculate(topIndex, itemCount);
+	setHorizontalScrollBar();
+}
+/**
+ * Causes the rectangular area of the receiver specified by
+ * the arguments to be marked as needing to be redrawn. 
+ * The next time a paint request is processed, that area of
+ * the receiver will be painted. If the <code>all</code> flag
+ * is <code>true</code>, any children of the receiver which
+ * intersect with the specified area will also paint their
+ * intersecting areas. If the <code>all</code> flag is 
+ * <code>false</code>, the children will not be painted.
+ * <p>
+ * Marks the content width of all lines in the specified rectangle
+ * as unknown. Recalculates the content width of all visible lines.
+ * When a <code>LineStyleListener</code> is used a redraw call 
+ * is the only notification to the widget that styles have changed 
+ * and that the content width may have changed.
+ * </p>
+ *
+ * @param x the x coordinate of the area to draw
+ * @param y the y coordinate of the area to draw
+ * @param width the width of the area to draw
+ * @param height the height of the area to draw
+ * @param all <code>true</code> if children should redraw, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Control#update
+ */
+public void redraw(int x, int y, int width, int height, boolean all) {
+	super.redraw(x, y, width, height, all);
+	if (height > 0) {
+		int lineCount = content.getLineCount();
+		int startLine = (getTopPixel() + y) / lineHeight;
+		int endLine = startLine + Compatibility.ceil(height, lineHeight);
+		int itemCount;
+		
+		// reset all lines in the redraw rectangle
+		startLine = Math.min(startLine, lineCount);				
+		itemCount = Math.min(endLine, lineCount) - startLine;		
+		contentWidth.reset(startLine, itemCount);		
+		// only calculate the visible lines
+		itemCount = getPartialBottomIndex() - topIndex + 1;
+		contentWidth.calculate(topIndex, itemCount);
+		setHorizontalScrollBar();
+	}
+}
 /** 
  * Redraws a text range in the specified lines
  * <p>
@@ -4945,6 +5212,12 @@ void redrawMultiLineChange(int y, int newLineCount, int replacedLineCount) {
  */
 public void redrawRange(int start, int length, boolean clearBackground) {
 	checkWidget();
+	int firstLine = content.getLineAtOffset(start);
+	int lastLine = content.getLineAtOffset(start + length);
+	
+	// reset all affected lines but let the redraw recalculate only 
+	// those that are visible.
+	contentWidth.reset(firstLine, lastLine - firstLine);
 	internalRedrawRange(start, length, clearBackground);
 }
 /**
@@ -4961,6 +5234,7 @@ public void redrawRange(int start, int length, boolean clearBackground) {
  * </ul>
  */
 public void removeBidiSegmentListener(BidiSegmentListener listener) {
+	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	removeListener(LineGetSegments, listener);	
 }
@@ -5167,7 +5441,6 @@ void reset() {
 	topIndex = 0;
 	verticalScrollOffset = 0;
 	horizontalScrollOffset = 0;	
-	contentWidth = 0;
 	resetSelection();
 	// discard any styles that may have been set by creating a 
 	// new default line styler
@@ -5533,7 +5806,6 @@ public void setFont(Font font) {
 	}
 	initializeFonts();
 	calculateLineHeight();
-	contentWidth = 0;		
 	calculateContentWidth();
 	calculateScrollBars();
 	setTabs(getTabs());
@@ -5583,14 +5855,50 @@ public void setHorizontalIndex(int offset) {
 	// don't use isVisible since width is known even if widget 
 	// is temporarily invisible
 	if (clientAreaWidth > 0) {
+		int width = contentWidth.getWidth();
 		// prevent scrolling if the content fits in the client area.
 		// align end of longest line with right border of client area
 		// if offset is out of range.
-		if (offset > contentWidth - clientAreaWidth) {
-			offset = Math.max(0, contentWidth - clientAreaWidth);
+		if (offset > width - clientAreaWidth) {
+			offset = Math.max(0, width - clientAreaWidth);
 		}
 	}
 	scrollHorizontalBar(offset - horizontalScrollOffset);
+}
+/**
+ * Adjusts the maximum and the page size of the horizontal scroll bar 
+ * to reflect content width changes.
+ */
+void setHorizontalScrollBar() {
+	ScrollBar horizontalBar = getHorizontalBar();
+	
+	if (horizontalBar != null) {
+		final int INACTIVE = 1;
+		Rectangle clientArea = getClientArea();
+
+		// only set the real values if the scroll bar can be used 
+		// (ie. because the thumb size is less than the scroll maximum)
+		// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
+		if (clientArea.width < contentWidth.getWidth()) {
+			horizontalBar.setValues(
+				horizontalBar.getSelection(),
+				horizontalBar.getMinimum(),
+				contentWidth.getWidth(),		// maximum
+				clientArea.width,				// thumb size
+				horizontalBar.getIncrement(),
+				clientArea.width);				// page size
+		}
+		else 
+		if (horizontalBar.getThumb() != INACTIVE || horizontalBar.getMaximum() != INACTIVE) {
+			horizontalBar.setValues(
+				horizontalBar.getSelection(),
+				horizontalBar.getMinimum(),
+				INACTIVE,
+				INACTIVE,
+				horizontalBar.getIncrement(),
+				INACTIVE);
+		}		
+	}
 }
 /** 
  * Sets the background color of the specified lines.
@@ -5699,17 +6007,17 @@ Color setLineForeground(GC gc, Color currentForeground, Color newForeground) {
 	return newForeground;
 }
 /**
- * Adjusts the scroll bar maximum and page size to reflect content 
- * width/length changes.
+ * Adjusts the maximum and the page size of the scroll bars to 
+ * reflect content width/length changes.
  */
 void setScrollBars() {
 	ScrollBar verticalBar = getVerticalBar();
-	ScrollBar horizontalBar = getHorizontalBar();
-	Rectangle clientArea = getClientArea();
-	final int INACTIVE = 1;
 	
 	if (verticalBar != null) {
+		Rectangle clientArea = getClientArea();
+		final int INACTIVE = 1;
 		int maximum = content.getLineCount() * getVerticalIncrement();
+		
 		// only set the real values if the scroll bar can be used 
 		// (ie. because the thumb size is less than the scroll maximum)
 		// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
@@ -5733,30 +6041,7 @@ void setScrollBars() {
 				INACTIVE);
 		}		
 	}
-	if (horizontalBar != null) {
-		// only set the real values if the scroll bar can be used 
-		// (ie. because the thumb size is less than the scroll maximum)
-		// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
-		if (clientArea.width < contentWidth) {
-			horizontalBar.setValues(
-				horizontalBar.getSelection(),
-				horizontalBar.getMinimum(),
-				contentWidth,					// maximum
-				clientArea.width,				// thumb size
-				horizontalBar.getIncrement(),
-				clientArea.width);				// page size
-		}
-		else 
-		if (horizontalBar.getThumb() != INACTIVE || horizontalBar.getMaximum() != INACTIVE) {
-			horizontalBar.setValues(
-				horizontalBar.getSelection(),
-				horizontalBar.getMinimum(),
-				INACTIVE,
-				INACTIVE,
-				horizontalBar.getIncrement(),
-				INACTIVE);
-		}		
-	}
+	setHorizontalScrollBar();
 }
 /** 
  * Sets the selection to the given position and scrolls it into view.  Equivalent to setSelection(start,start).
@@ -5967,12 +6252,17 @@ public void setStyleRange(StyleRange range) {
 	}
 	defaultLineStyler.setStyleRange(range);
 	if (range != null) {
+		int firstLine = content.getLineAtOffset(range.start);
+		int lastLine = content.getLineAtOffset(range.start + range.length);
+	
+		// reset all lines affected by the style change but let the redraw
+		// recalculate only those that are visible.
+		contentWidth.reset(firstLine, lastLine - firstLine);
 		internalRedrawRange(range.start, range.length, true);
 		if (redrawFirstLine) {
 			// redraw starting at the style change start offset since
 			// single line text changes, followed by style changes will
 			// flash otherwise
-			int firstLine = content.getLineAtOffset(range.start);
 			int firstLineOffset = content.getOffsetAtLine(firstLine);
 			String firstLineText = content.getLine(firstLine);
 			int redrawX = getXAtOffset(firstLineText, firstLine, range.start - firstLineOffset);
@@ -5980,13 +6270,15 @@ public void setStyleRange(StyleRange range) {
 			redraw(redrawX, redrawY, getClientArea().width, lineHeight, true);
 		}
 		if (redrawLastLine) {
-			// redraw the whole line if the font style changed on the last line
-			int lastLine = content.getLineAtOffset(range.start + range.length);
+			// redraw the whole line if the font style changed on the last line	
 			int redrawY = lastLine * lineHeight - verticalScrollOffset;
 			redraw(0, redrawY, getClientArea().width, lineHeight, true);
 		}
 	}
 	else {
+		// reset all lines but let the redraw recalculate only those that 
+		// are visible.
+		contentWidth.reset(0, content.getLineCount());
 		redraw();
 	}
 	// make sure that the caret is positioned correctly.
@@ -6027,9 +6319,20 @@ public void setStyleRanges(StyleRange[] ranges) {
  	// current text 
  	if (ranges.length != 0) {
  		StyleRange last = ranges[ranges.length-1];
-		if (last.start + last.length > content.getCharCount()) {
+ 		int lastEnd = last.start + last.length;
+		int firstLine = content.getLineAtOffset(ranges[0].start);
+		int lastLine;
+
+		if (lastEnd > content.getCharCount()) {
 			SWT.error(SWT.ERROR_INVALID_RANGE);
 		} 	
+		lastLine = content.getLineAtOffset(lastEnd);
+		// reset all lines affected by the style change
+		contentWidth.reset(firstLine, lastLine - firstLine);
+ 	}
+ 	else {
+		// reset all lines
+		contentWidth.reset(0, content.getLineCount());
  	}
 	defaultLineStyler.setStyleRanges(ranges);
 	redraw(); // should only redraw affected area to avoid flashing
@@ -6210,32 +6513,13 @@ void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 		0, 0, 									// destination x, y
 		0, pixelOffset - verticalScrollOffset,	// source x, y
 		clientArea.width, clientArea.height, true);		
-	if (verticalIncrement != 0) {
-		int oldTopIndex = topIndex;
 		
+	if (verticalIncrement != 0) {
+		int oldTopIndex = topIndex;		
 		topIndex = Compatibility.ceil(pixelOffset, verticalIncrement);
 		if (topIndex != oldTopIndex) {
-			int lineCount = content.getLineCount();
-			int visibleItemCount = Compatibility.ceil(clientArea.height, verticalIncrement);
-			int oldBottomIndex = Math.min(oldTopIndex + visibleItemCount, lineCount);
-			int newItemCount = topIndex - oldTopIndex;
-
-			if (Math.abs(newItemCount) > visibleItemCount) {
-				calculateContentWidth();
-			}
-			else {
-				if (newItemCount > 0) {
-					newItemCount = Math.min(newItemCount, lineCount - oldBottomIndex);
-					calculateContentWidth(oldBottomIndex, newItemCount);
-				}
-				else 
-				if (newItemCount < 0) {
-					// make sure calculation range does not exceed number of lines
-					// fixes 1GBKCLF
-					calculateContentWidth(topIndex, Math.min(newItemCount * -1, lineCount - topIndex));
-				}
-			}
-			setScrollBars();
+			contentWidth.calculate(topIndex, getPartialBottomIndex() - topIndex + 1);
+			setHorizontalScrollBar();
 		}
 	}
 	verticalScrollOffset = pixelOffset;	
@@ -6261,7 +6545,7 @@ boolean scrollCaret() {
 	else 
 	if (xAtOffset > clientAreaWidth) {
 		// always make 1/4 of a page visible
-		xAtOffset = Math.min(contentWidth - horizontalScrollOffset, xAtOffset + horizontalIncrement);
+		xAtOffset = Math.min(contentWidth.getWidth() - horizontalScrollOffset, xAtOffset + horizontalIncrement);
 		scrollHorizontalBar(xAtOffset - clientAreaWidth);
 		scrolled = true;
 	}
@@ -6313,7 +6597,7 @@ void showOffset(int offset) {
 	else 
 	if (xAtOffset > clientAreaWidth) {
 		// always make 1/4 of a page visible
-		xAtOffset = Math.min(contentWidth - horizontalScrollOffset, xAtOffset + horizontalIncrement);
+		xAtOffset = Math.min(contentWidth.getWidth() - horizontalScrollOffset, xAtOffset + horizontalIncrement);
 		scrollHorizontalBar(xAtOffset - clientAreaWidth);
 	}
 	if (line < topIndex) {
