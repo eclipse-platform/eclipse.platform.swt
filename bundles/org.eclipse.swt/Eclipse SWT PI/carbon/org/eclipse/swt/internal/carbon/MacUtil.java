@@ -17,12 +17,15 @@ public class MacUtil {
 	public final static boolean DEBUG;
 	public final static boolean JAGUAR;
 	public final static boolean USE_MENU_ICONS;
+	/** Prevent use of standard Mac shortcuts Cmd-Q, Cmd-H */
+	public final static boolean KEEP_MAC_SHORTCUTS;
 	
 	static final char MNEMONIC = '&';
 	
 	static {
 		DEBUG= false;
 		USE_MENU_ICONS= true;
+		KEEP_MAC_SHORTCUTS= true;
 		JAGUAR= System.getProperty("os.version").startsWith("10.2");
 	}
 	
