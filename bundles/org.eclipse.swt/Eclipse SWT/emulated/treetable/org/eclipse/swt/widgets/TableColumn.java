@@ -310,7 +310,7 @@ public boolean getResizable() {
  */
 public int getWidth () {
 	checkWidget();
-	return getBounds().width;
+	return bounds.width;
 }
 /**
  * Set the colun bounds.
@@ -505,11 +505,11 @@ public void setText(String newText) {
  */
 public void setWidth(int width) {
 	checkWidget();
-	Rectangle bounds = getBounds();
 	int oldWidth = bounds.width;
 	int redrawX;
 
 	if (width != oldWidth) {
+		Rectangle bounds = getBounds();
 		redrawX = bounds.x;
 		bounds.width = width;
 		setBounds(bounds);

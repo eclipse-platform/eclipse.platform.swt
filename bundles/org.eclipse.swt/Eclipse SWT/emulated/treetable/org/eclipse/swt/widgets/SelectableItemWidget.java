@@ -129,7 +129,7 @@ void calculateItemHeight(SelectableItem item) {
 		return;
 	}
 	itemText = item.getText();
-	if (itemText != null && textHeight == -1) {
+	if (textHeight == -1 && itemText.length() > 0) {
 		gc = new GC(this);
 		gc.setFont(item.getFont());
 		itemHeight = gc.stringExtent(itemText).y;

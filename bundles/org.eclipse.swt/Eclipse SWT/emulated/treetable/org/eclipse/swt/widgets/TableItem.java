@@ -583,7 +583,7 @@ public Image getImage(int columnIndex) {
 	checkWidget();
 	Image image = null;
 	Vector images = getImages();
-	int itemIndex = getParent().indexOf(this);
+	int itemIndex = getIndex();
 	
 	if (itemIndex != -1 && columnIndex >= 0 && columnIndex < images.size()) {
 		image = (Image) images.elementAt(columnIndex);
@@ -750,7 +750,7 @@ public Table getParent() {
  */
 int getPreferredWidth(int index) {
 	int size = getImageStopX(index);
-	String text = getText(index);
+	String text = (String) getDataLabels().elementAt (index);
 	if (text != null) {
 		size += getTextWidth (index) + getTextIndent (index) * 2 + 1;
 	}
@@ -868,7 +868,7 @@ int getTextWidth (int columnIndex) {
 		int count = Math.max (1, getParent ().getColumnCount ());
 		textWidth = new int [count];
 	}
-	String text = (String) dataLabels.elementAt (columnIndex);
+	String text = (String) getDataLabels().elementAt (columnIndex);
 	if (text != null && textWidth [columnIndex] == 0 && text.length () > 0) {
 		GC gc = new GC (getParent ());
 		gc.setFont (getFont (columnIndex));
