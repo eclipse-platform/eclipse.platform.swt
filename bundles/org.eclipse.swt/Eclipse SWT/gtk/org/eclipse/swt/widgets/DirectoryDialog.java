@@ -119,7 +119,7 @@ public String getMessage () {
  */
 public String open () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
-	int handle = OS.gtk_file_selection_new (titleBytes);
+	int /*long*/ handle = OS.gtk_file_selection_new (titleBytes);
 	if (parent != null) {
 		OS.gtk_window_set_transient_for (handle, parent.topHandle ());
 	}
@@ -132,8 +132,8 @@ public String open () {
 		int length = path.length ();
 		char [] buffer = new char [length + 1];
 		path.getChars (0, length, buffer, 0);
-		int utf8Ptr = OS.g_utf16_to_utf8 (buffer, -1, null, null, null);
-		int fileNamePtr = OS.g_filename_from_utf8 (utf8Ptr, -1, null, null, null);
+		int /*long*/ utf8Ptr = OS.g_utf16_to_utf8 (buffer, -1, null, null, null);
+		int /*long*/ fileNamePtr = OS.g_filename_from_utf8 (utf8Ptr, -1, null, null, null);
 		OS.gtk_file_selection_set_filename (handle, fileNamePtr);
 		OS.g_free (utf8Ptr);
 		OS.g_free (fileNamePtr);		
@@ -141,21 +141,21 @@ public String open () {
 	GtkFileSelection selection = new GtkFileSelection ();
 	OS.memmove (selection, handle);
 	OS.gtk_file_selection_hide_fileop_buttons (handle);
-	int fileListParent = OS.gtk_widget_get_parent (selection.file_list);
+	int /*long*/ fileListParent = OS.gtk_widget_get_parent (selection.file_list);
 	OS.gtk_widget_hide (selection.file_list);
 	OS.gtk_widget_hide (fileListParent);
 	if (message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);
-		int labelHandle = OS.gtk_label_new (buffer);
+		int /*long*/ labelHandle = OS.gtk_label_new (buffer);
 		OS.gtk_container_add (selection.main_vbox, labelHandle);
 		OS.gtk_widget_show (labelHandle);
 	}
 	int response = OS.gtk_dialog_run (handle);
 	if (response == OS.GTK_RESPONSE_OK) {
-		int fileNamePtr = OS.gtk_file_selection_get_filename (handle);
-		int utf8Ptr = OS.g_filename_to_utf8 (fileNamePtr, -1, null, null, null);
+		int /*long*/ fileNamePtr = OS.gtk_file_selection_get_filename (handle);
+		int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (fileNamePtr, -1, null, null, null);
 		int [] items_written = new int [1];
-		int utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+		int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
 		int length = items_written [0];
 		char [] buffer = new char [length];
 		OS.memmove (buffer, utf16Ptr, length * 2);

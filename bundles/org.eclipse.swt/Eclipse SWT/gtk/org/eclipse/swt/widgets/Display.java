@@ -97,7 +97,7 @@ public class Display extends Device {
 	Event [] eventQueue;
 	Callback eventCallback;
 	GdkEventButton gdkEvent = new GdkEventButton ();
-	int eventProc, windowProc2, windowProc3, windowProc4, windowProc5;
+	int /*long*/ eventProc, windowProc2, windowProc3, windowProc4, windowProc5;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT";
@@ -115,7 +115,7 @@ public class Display extends Device {
 		
 	/* Input method resources */
 	Control imControl;
-	int preeditWindow, preeditLabel;
+	int /*long*/ preeditWindow, preeditLabel;
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
@@ -128,38 +128,40 @@ public class Display extends Device {
 	int [] timerIds;
 	Runnable [] timerList;
 	Callback timerCallback;
-	int timerProc;
+	int /*long*/ timerProc;
 	Callback windowTimerCallback;
-	int windowTimerProc;
+	int /*long*/ windowTimerProc;
 	
 	/* Caret */
 	Caret currentCaret;
 	Callback caretCallback;
-	int caretId, caretProc;
+	int caretId;
+	int /*long*/ caretProc;
 	
 	/* Mnemonics */
 	Control mnemonicControl;
 
 	/* Mouse hover */
-	int mouseHoverId, mouseHoverHandle, mouseHoverProc;
+	int mouseHoverId;
+	int /*long*/ mouseHoverHandle, mouseHoverProc;
 	Callback mouseHoverCallback;
 	
 	/* Menu position callback */
-	int menuPositionProc;
+	int /*long*/ menuPositionProc;
 	Callback menuPositionCallback;
 
 	/* Shell map callback */
-	int shellMapProc;
+	int /*long*/ shellMapProc;
 	Callback shellMapCallback;
 	
 	/* GtkTreeView callbacks */
 	int[] treeSelection;
 	int treeSelectionLength;
-	int treeSelectionProc;
+	int /*long*/ treeSelectionProc;
 	Callback treeSelectionCallback;
-	int textCellDataProc;
+	int /*long*/ textCellDataProc;
 	Callback textCellDataCallback;
-	int pixbufCellDataProc;
+	int /*long*/ pixbufCellDataProc;
 	Callback pixbufCellDataCallback;
 	
 	/* Drag Detect */
@@ -167,7 +169,7 @@ public class Display extends Device {
 	boolean dragging;
 	
 	/* Fonts */
-	int defaultFont;
+	int /*long*/ defaultFont;
 	
 	/* Colors */
 	GdkColor COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
@@ -410,7 +412,7 @@ public void addListener (int eventType, Listener listener) {
 	eventTable.hook (eventType, listener);
 }
 
-void addMouseHoverTimeout (int handle) {
+void addMouseHoverTimeout (int /*long*/ handle) {
 	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
 	mouseHoverId = OS.gtk_timeout_add (400, mouseHoverProc, handle);
 	mouseHoverHandle = handle;
@@ -435,7 +437,7 @@ void addPopup (Menu menu) {
 	popups [index] = menu;
 }
 
-void addWidget (int handle, Widget widget) {
+void addWidget (int /*long*/ handle, Widget widget) {
 	if (handle == 0) return;
 	if (freeSlot == -1) {
 		int length = (freeSlot = indexTable.length) + GROW_SIZE;
@@ -571,7 +573,7 @@ synchronized void createDisplay (DeviceData data) {
 //		OS.gdk_threads_init ();
 //	}
 	OS.gtk_set_locale();
-	if (!OS.gtk_init_check (new int [] {0}, null)) {
+	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES);
 	}
 	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
@@ -678,7 +680,7 @@ void error (int code) {
 	SWT.error (code);
 }
 
-int eventProc (int event, int data) {
+int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	switch (gdkEvent.type) {
 		case OS.GDK_BUTTON_PRESS:
@@ -688,11 +690,11 @@ int eventProc (int event, int data) {
 		case OS.GDK_MOTION_NOTIFY:  {
 			Control control = null;
 			boolean forward = false;
-			int [] user_data = new int [1];
-			int window = gdkEvent.window;
+			int /*long*/ [] user_data = new int /*long*/ [1];
+			int /*long*/ window = gdkEvent.window;
 			do {
 				OS.gdk_window_get_user_data (window, user_data);
-				int handle = user_data [0];
+				int /*long*/ handle = user_data [0];
 				if (handle != 0) {
 					Widget widget = getWidget (handle);
 					if (widget != null && widget instanceof Control) {
@@ -705,9 +707,9 @@ int eventProc (int event, int data) {
 			if (window != 0 && forward && control != null) {
 				GdkEventButton gdkEventButton = new GdkEventButton ();
 				OS.memmove (gdkEventButton, event, GdkEventButton.sizeof);
-				int oldWindow = gdkEventButton.window;
+				int /*long*/ oldWindow = gdkEventButton.window;
 				double oldX = gdkEventButton.x, oldY = gdkEventButton.y;
-				int eventHandle = control.eventHandle ();
+				int /*long*/ eventHandle = control.eventHandle ();
 				gdkEventButton.window = OS.GTK_WIDGET_WINDOW (eventHandle);
 				int [] origin_x = new int [1], origin_y = new int [1];
 				OS.gdk_window_get_origin (gdkEventButton.window, origin_x, origin_y);
@@ -813,11 +815,11 @@ public static synchronized Display getCurrent () {
 public Control getCursorControl () {
 	checkDevice();
 	int[] x = new int[1], y = new int[1];
-	int window = OS.gdk_window_at_pointer (x,y);
+	int /*long*/ window = OS.gdk_window_at_pointer (x,y);
 	if (window == 0) return null;
-	int [] user_data = new int [1];
+	int /*long*/ [] user_data = new int /*long*/ [1];
 	OS.gdk_window_get_user_data (window, user_data);
-	int handle = user_data [0];
+	int /*long*/ handle = user_data [0];
 	if (handle == 0) return null;
 	do {
 		Widget widget = getWidget (handle);
@@ -1018,8 +1020,8 @@ public Control getFocusControl () {
 	checkDevice ();
 	Shell shell = getActiveShell ();
 	if (shell == null) return null;
-	int shellHandle = shell.shellHandle;
-	int handle = OS.gtk_window_get_focus (shellHandle);
+	int /*long*/ shellHandle = shell.shellHandle;
+	int /*long*/ handle = OS.gtk_window_get_focus (shellHandle);
 	if (handle == 0) return null;
 	do {
 		Widget widget = getWidget (handle);
@@ -1078,7 +1080,7 @@ int getMessageCount () {
 public Monitor [] getMonitors () {
 	checkDevice ();
 	Monitor [] monitors = null;
-	int screen = OS.gdk_screen_get_default ();
+	int /*long*/ screen = OS.gdk_screen_get_default ();
 	if (screen != 0) {
 		int monitorCount = OS.gdk_screen_get_n_monitors (screen);
 		if (monitorCount > 0) {
@@ -1237,19 +1239,19 @@ public Color getSystemColor (int id) {
 }
 
 void initializeSystemResources () {
-	int shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
+	int /*long*/ shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_widget_realize (shellHandle);
 	
-	int tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
+	int /*long*/ tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 	if (tooltipShellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	byte[] gtk_tooltips = Converter.wcsToMbcs (null, "gtk-tooltips", true);
 	OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltips);
 	OS.gtk_widget_realize (tooltipShellHandle);
 
 	GdkColor gdkColor;
-	int style = OS.gtk_widget_get_style (shellHandle);	
-	int tooltipStyle = OS.gtk_widget_get_style (tooltipShellHandle);
+	int /*long*/ style = OS.gtk_widget_get_style (shellHandle);	
+	int /*long*/ tooltipStyle = OS.gtk_widget_get_style (tooltipShellHandle);
 	
 	defaultFont = OS.pango_font_description_copy (OS.gtk_style_get_font_desc (style));
 
@@ -1377,10 +1379,10 @@ public Thread getThread () {
 	return thread;
 }
 
-Widget getWidget (int handle) {
+Widget getWidget (int /*long*/ handle) {
 	if (handle == 0) return null;
-	int index = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
-	if (0 <= index && index < widgetTable.length) return widgetTable [index];
+	int /*long*/ index = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
+	if (0 <= index && index < widgetTable.length) return widgetTable [(int)/*64*/index];
 	return null;	
 }
 
@@ -1474,7 +1476,7 @@ void initializeWidgetTable () {
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (int gdkGC, GCData data) {
+public void internal_dispose_GC (int /*long*/ gdkGC, GCData data) {
 	OS.g_object_unref (gdkGC);
 }
 
@@ -1498,10 +1500,10 @@ public void internal_dispose_GC (int gdkGC, GCData data) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int internal_new_GC (GCData data) {
+public int /*long*/ internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	int root = OS.GDK_ROOT_PARENT ();
-	int gdkGC = OS.gdk_gc_new (root);
+	int /*long*/ root = OS.GDK_ROOT_PARENT ();
+	int /*long*/ gdkGC = OS.gdk_gc_new (root);
 	if (gdkGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
@@ -1531,18 +1533,18 @@ public Point map (Control from, Control to, int x, int y) {
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Point point = new Point (x, y);
 	if (from != null) {
-		int eventHandle = from.eventHandle ();
+		int /*long*/ eventHandle = from.eventHandle ();
 		OS.gtk_widget_realize (eventHandle);
-		int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle);
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
 		point.x += origin_x [0];
 		point.y += origin_y [0];
 	}
 	if (to != null) {
-		int eventHandle = to.eventHandle ();
+		int /*long*/ eventHandle = to.eventHandle ();
 		OS.gtk_widget_realize (eventHandle);
-		int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle);
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
 		point.x -= origin_x [0];
@@ -1557,7 +1559,7 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 }
 
-int menuPositionProc (int menu, int x, int y, int push_in, int user_data) {
+int /*long*/ menuPositionProc (int /*long*/ menu, int /*long*/ x, int /*long*/ y, int /*long*/ push_in, int /*long*/ user_data) {
 	Widget widget = getWidget (menu);
 	if (widget == null) return 0;
 	return widget.menuPositionProc (menu, x, y, push_in, user_data);	
@@ -1569,18 +1571,18 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = new Rectangle (x, y, width, height);
 	if (from != null) {
-		int eventHandle = from.eventHandle ();
+		int /*long*/ eventHandle = from.eventHandle ();
 		OS.gtk_widget_realize (eventHandle);
-		int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle);
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
 		rect.x += origin_x [0];
 		rect.y += origin_y [0];
 	}
 	if (to != null) {
-		int eventHandle = to.eventHandle ();
+		int /*long*/ eventHandle = to.eventHandle ();
 		OS.gtk_widget_realize (eventHandle);
-		int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle);
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
 		rect.x -= origin_x [0];
@@ -1589,7 +1591,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	return rect;
 }
 
-int mouseHoverProc (int handle) {
+int /*long*/ mouseHoverProc (int /*long*/ handle) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.hoverProc (handle);
@@ -1737,7 +1739,8 @@ void releaseDisplay () {
 
 	/* Dispose the caret callback */
 	if (caretId != 0) OS.gtk_timeout_remove (caretId);
-	caretId = caretProc = 0;
+	caretId = 0;
+	caretProc = 0;
 	caretCallback.dispose ();
 	caretCallback = null;
 	
@@ -1758,7 +1761,8 @@ void releaseDisplay () {
 	
 	/* Dispose mouse hover callback */
 	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
-	mouseHoverId = mouseHoverHandle = mouseHoverProc = 0;
+	mouseHoverId = 0;
+	mouseHoverHandle = mouseHoverProc = 0;
 	mouseHoverCallback.dispose ();
 	mouseHoverCallback = null;
 
@@ -1814,10 +1818,11 @@ public void removeListener (int eventType, Listener listener) {
 	eventTable.unhook (eventType, listener);
 }
 
-void removeMouseHoverTimeout (int handle) {
+void removeMouseHoverTimeout (int /*long*/ handle) {
 	if (handle != mouseHoverHandle) return;
 	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
-	mouseHoverId = mouseHoverHandle = 0;
+	mouseHoverId = 0;
+	mouseHoverHandle = 0;
 }
 
 void removePopup (Menu menu) {
@@ -1830,10 +1835,10 @@ void removePopup (Menu menu) {
 	}
 }
 
-Widget removeWidget (int handle) {
+Widget removeWidget (int /*long*/ handle) {
 	if (handle == 0) return null;
 	Widget widget = null;
-	int index = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
+	int index = (int)/*64*/ OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
 	if (0 <= index && index < widgetTable.length) {
 		widget = widgetTable [index];
 		widgetTable [index] = null;
@@ -2092,9 +2097,9 @@ void showIMWindow (Control control) {
 		OS.gtk_container_add (preeditWindow, preeditLabel);
 		OS.gtk_widget_show (preeditLabel);
 	}
-	int [] preeditString = new int [1];
-	int [] pangoAttrs = new int [1];
-	int imHandle = control.imHandle ();
+	int /*long*/ [] preeditString = new int /*long*/ [1];
+	int /*long*/ [] pangoAttrs = new int /*long*/ [1];
+	int /*long*/ imHandle = control.imHandle ();
 	OS.gtk_im_context_get_preedit_string (imHandle, preeditString, pangoAttrs, null);
 	if (preeditString [0] != 0 && OS.strlen (preeditString [0]) > 0) {
 		OS.gtk_widget_modify_bg (preeditWindow,  OS.GTK_STATE_NORMAL, control.getBackgroundColor ());
@@ -2203,8 +2208,9 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	}
 }
 
-int timerProc (int index) {
+int /*long*/ timerProc (int /*long*/ i) {
 	if (timerList == null) return 0;
+	int index = (int)/*64*/i;
 	if (0 <= index && index < timerList.length) {
 		Runnable runnable = timerList [index];
 		timerList [index] = null;
@@ -2214,7 +2220,7 @@ int timerProc (int index) {
 	return 0;
 }
 
-int caretProc (int clientData) {
+int /*long*/ caretProc (int /*long*/ clientData) {
 	caretId = 0;
 	if (currentCaret == null) {
 		return 0;
@@ -2228,18 +2234,18 @@ int caretProc (int clientData) {
 	return 0;
 }
 
-int pixbufCellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
+int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
 	Widget widget = getWidget (data);
 	if (widget == null) return 0;
 	return widget.pixbufCellDataProc (tree_column, cell, tree_model, iter, data);
 }
-int textCellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
+int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
 	Widget widget = getWidget (data);
 	if (widget == null) return 0;
 	return widget.textCellDataProc (tree_column, cell, tree_model, iter, data);
 }
 
-int treeSelectionProc (int model, int path, int iter, int data) {
+int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int /*long*/ data) {
 	Widget widget = getWidget (data);
 	if (widget == null) return 0;
 	return widget.treeSelectionProc (model, path, iter, treeSelection, treeSelectionLength++);
@@ -2267,7 +2273,7 @@ void setCurrentCaret (Caret caret) {
 	caretId = OS.gtk_timeout_add (blinkRate, caretProc, 0); 
 }
 
-int shellMapProc (int handle, int arg0, int user_data) {
+int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.shellMapProc (handle, arg0, user_data);
@@ -2344,31 +2350,31 @@ public void wake () {
 	if (thread == Thread.currentThread ()) return;
 }
 
-int windowProc (int handle, int user_data) {
+int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, user_data);
 }
 
-int windowProc (int handle, int arg0, int user_data) {
+int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, arg0, user_data);
 }
 
-int windowProc (int handle, int arg0, int arg1, int user_data) {
+int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, arg0, arg1, user_data);
 }
 
-int windowProc (int handle, int arg0, int arg1, int arg2, int user_data) {
+int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, arg0, arg1, arg2, user_data);
 }
 
-int windowTimerProc (int handle) {
+int /*long*/ windowTimerProc (int /*long*/ handle) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.timerProc (handle);
