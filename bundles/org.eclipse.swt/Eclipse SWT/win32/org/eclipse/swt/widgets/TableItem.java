@@ -136,9 +136,6 @@ public Color getBackground () {
  * @param index the column index
  * @return the background color
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_Range - if the column index is invalid</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -148,9 +145,8 @@ public Color getBackground () {
  */
 public Color getBackground (int index) {
 	checkWidget ();
-	if (0 > index || index >= parent.getColumnCount ()) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	int count = parent.getColumnCount ();
+	if (0 > index || index > (count == 0 ? 0 : count -1 )) return getBackground ();
 	int pixel = (cellBackground != null) ? cellBackground [index] : -1;
 	if (pixel == -1) return getBackground ();
 	return Color.win32_new (display, pixel);
@@ -254,9 +250,6 @@ public Color getForeground () {
  * @param index the column index
  * @return the foreground color
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_Range - if the column index is invalid</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -266,9 +259,8 @@ public Color getForeground () {
  */
 public Color getForeground (int index) {
 	checkWidget ();
-	if (0 > index || index >= parent.getColumnCount ()) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	int count = parent.getColumnCount ();
+	if (0 > index || index > (count == 0 ? 0 : count -1 )) return getForeground ();
 	int pixel = (cellForeground != null) ? cellForeground [index] : -1;
 	if (pixel == -1) return getForeground ();
 	return Color.win32_new (display, pixel);
@@ -531,9 +523,8 @@ public void setBackground (int index, Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (0 > index || index >= parent.getColumnCount ()) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	int count = parent.getColumnCount ();
+	if (0 > index || index > (count == 0 ? 0 : count -1 )) return;
 	int pixel = -1;
 	if (color != null) {
 		parent.customDraw = true;
@@ -541,9 +532,9 @@ public void setBackground (int index, Color color) {
 	}
 	if (cellBackground == null) {
 		int hwndHeader = OS.SendMessage (parent.handle, OS.LVM_GETHEADER, 0, 0);
-		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		cellBackground = new int [count];
-		for (int i = 0; i < count; i++) {
+		int itemCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		cellBackground = new int [itemCount];
+		for (int i = 0; i < itemCount; i++) {
 			cellBackground [i] = -1;
 		}
 	}
@@ -641,9 +632,8 @@ public void setForeground (int index, Color color){
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (0 > index || index >= parent.getColumnCount()) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	int count = parent.getColumnCount ();
+	if (0 > index || index > (count == 0 ? 0 : count -1 )) return;
 	int pixel = -1;
 	if (color != null) {
 		parent.customDraw = true;
@@ -651,9 +641,9 @@ public void setForeground (int index, Color color){
 	}
 	if (cellForeground == null) {
 		int hwndHeader = OS.SendMessage (parent.handle, OS.LVM_GETHEADER, 0, 0);
-		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		cellForeground = new int [count];
-		for (int i = 0; i < count; i++) {
+		int itemCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		cellForeground = new int [itemCount];
+		for (int i = 0; i < itemCount; i++) {
 			cellForeground [i] = -1;
 		}
 	}
