@@ -409,6 +409,7 @@ FontData getSelectionFontData () {
 	int size = DEFAULT_SIZE;
 	try {
 		size = Integer.valueOf (fontSizeCombo.getText ()).intValue ();
+		if (size < 1) size = DEFAULT_SIZE;
 	} catch (NumberFormatException e) {
 		/*
 		 * This block is purposely left empty since a default
@@ -590,7 +591,6 @@ void initExtStyleCombo () {
 	String characterSet = charSetCombo.getText ();
 	String faceName = faceNameCombo.getText ();
 	Hashtable extStyles = getExtStyles (characterSet, faceName);
-	if (extStyles == null) return;
 	setItemsSorted (extStyleCombo, extStyles);
 	
 	int selectIndex = extStyleCombo.indexOf (oldSelect);
@@ -657,35 +657,36 @@ void initSizeCombo () {
 	String faceName = faceNameCombo.getText ();
 	String extStyle = extStyleCombo.getText ();
 	Hashtable sizes = getSizes (characterSet, faceName, extStyle);
-	if (sizes == null) return;
-	if (sizes.get (SCALABLE_KEY) == null) {
-		/*
-		 * Font is not scalable so just present the provided sizes.
-		 */
-		setSizeItemsSorted (sizes.keys ());
-	} else {
-		/*
-		 * Font is scalable so present the provided sizes and scalable
-		 * sizes for selection.
-		 */
-		Vector allSizes = new Vector ();
-		/*
-		 * Add the scalable sizes.
-		 */
-		for (int i = 0; i < SCALABLE_SIZES.length; i++) {
-			allSizes.addElement (Integer.valueOf (SCALABLE_SIZES [i]));
-		}
-		/*
-		 * Add the provided sizes.
-		 */
-		Enumeration providedSizes = sizes.keys ();
-		while (providedSizes.hasMoreElements ()) {
-			Integer size = (Integer) providedSizes.nextElement ();
-			if (!size.equals (SCALABLE_KEY) && !allSizes.contains (size)) {
-				allSizes.addElement (size);
+	if (sizes != null) {
+		if (sizes.get (SCALABLE_KEY) == null) {
+			/*
+			 * Font is not scalable so just present the provided sizes.
+			 */
+			setSizeItemsSorted (sizes.keys ());
+		} else {
+			/*
+			 * Font is scalable so present the provided sizes and scalable
+			 * sizes for selection.
+			 */
+			Vector allSizes = new Vector ();
+			/*
+			 * Add the scalable sizes.
+			 */
+			for (int i = 0; i < SCALABLE_SIZES.length; i++) {
+				allSizes.addElement (Integer.valueOf (SCALABLE_SIZES [i]));
 			}
+			/*
+			 * Add the provided sizes.
+			 */
+			Enumeration providedSizes = sizes.keys ();
+			while (providedSizes.hasMoreElements ()) {
+				Integer size = (Integer) providedSizes.nextElement ();
+				if (!size.equals (SCALABLE_KEY) && !allSizes.contains (size)) {
+					allSizes.addElement (size);
+				}
+			}
+			setSizeItemsSorted (allSizes.elements ());
 		}
-		setSizeItemsSorted (allSizes.elements ());
 	}
 	
 	int selectIndex = fontSizeCombo.indexOf (oldSelect);
@@ -709,19 +710,16 @@ void initStyleCombo () {
 	String characterSet = charSetCombo.getText ();
 	String faceName = faceNameCombo.getText ();
 	String extStyle = extStyleCombo.getText ();
-	int size = DEFAULT_SIZE;
 	try {
-		size = Integer.valueOf (fontSizeCombo.getText ()).intValue ();
+		int size = Integer.valueOf (fontSizeCombo.getText ()).intValue ();
+		if (size > 0) {
+			Hashtable styles = getStyles (characterSet, faceName, extStyle, size);
+			setItemsSorted (fontStyleCombo, styles);
+		}
 	} catch (NumberFormatException e) {
-		/*
-		 * This block is purposely left empty since a default
-		 * value is already specified above.
-		 */
+		// fall through
 	}
-	Hashtable styles = getStyles (characterSet, faceName, extStyle, size);
-	if (styles == null) return;
-	setItemsSorted (fontStyleCombo, styles);
-	
+
 	int selectIndex = fontStyleCombo.indexOf (oldSelect);
 	if (selectIndex == -1) {
 		selectIndex = fontStyleCombo.indexOf (String.valueOf (DEFAULT_STYLE));
@@ -884,6 +882,7 @@ public void setRGB (RGB rgb) {
  * Keys are sorted in ascending order first and have to be Strings.
  */
 void setItemsSorted (Combo combo, Hashtable items) {
+	if (items == null) return;
 	Enumeration itemKeys = items.keys ();
 	String [] sortedItems = new String[items.size ()];
 	int index = 0;
