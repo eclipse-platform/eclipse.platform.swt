@@ -22,6 +22,8 @@ public class TableTreeItem extends Item {
 	TableTreeItem [] items = TableTree.EMPTY_ITEMS;
 	String[] texts = TableTree.EMPTY_TEXTS;
 	Image[] images = TableTree.EMPTY_IMAGES;
+	Color background;
+	Color foreground;
 	boolean expanded;
 	boolean checked;
 
@@ -213,6 +215,24 @@ void addItem(TableTreeItem item, int index) {
 }
 
 /**
+ * Returns the receiver's background color.
+ *
+ * @return the background color
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public Color getBackground () {
+	checkWidget ();
+	return (background == null) ? parent.getBackground() : background;
+}
+
+/**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
  *
@@ -269,6 +289,23 @@ public boolean getExpanded () {
 	return expanded;
 }
 
+/**
+ * Returns the foreground color that the receiver will use to draw.
+ *
+ * @return the receiver's foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public Color getForeground () {
+	checkWidget ();
+	return (foreground == null) ? parent.getForeground() : foreground;
+}
 /**
  * Gets the first image.
  * <p>
@@ -465,7 +502,9 @@ public void dispose () {
 	parent = null;
 	images = null;
 	texts = null;
-	tableItem = null;	
+	tableItem = null;
+	foreground = null;
+	background = null;
 }
 
 void removeItem(TableTreeItem item) {
@@ -479,6 +518,35 @@ void removeItem(TableTreeItem item) {
 	if (items.length == 0) {
 		if (tableItem != null) tableItem.setImage(0, null);
 	}
+}
+
+/**
+ * Sets the receiver's background color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setBackground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (tableItem != null) {
+		tableItem.setBackground(color);
+	}
+	background = color;
 }
 
 /**
@@ -520,6 +588,37 @@ public void setExpanded (boolean expanded) {
 	Image image = expanded ? parent.getMinusImage() : parent.getPlusImage();
 	tableItem.setImage(0, image);
 	parent.setRedraw(true);
+}
+
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @since 2.0
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setForeground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (tableItem != null) {
+		tableItem.setForeground(color);
+	}
+	foreground = color;
 }
 
 /**
@@ -615,6 +714,8 @@ void setVisible (boolean show) {
 		tableItem = new TableItem(table, getStyle(), index);
 		tableItem.setData(this);
 		tableItem.setImageIndent(getIndent());
+		if (background != null) tableItem.setBackground(background);
+		if (foreground != null) tableItem.setForeground(foreground);
 		addCheck();
 
 		// restore fields to item
