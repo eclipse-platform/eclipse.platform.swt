@@ -320,8 +320,8 @@ static boolean kde_init() {
 	* for those JVMs.
 	*/
 	String version = System.getProperty("java.version");
-	if (version.equals("1.4.0")) return false;	
-	if (version.equals("1.4.1_01")) return false;	
+	if ("1.4.0".equals(version)) return false;
+	if ("1.4.1_01".equals(version)) return false;
 
 	try {
 		Library.loadLibrary("swt-kde");

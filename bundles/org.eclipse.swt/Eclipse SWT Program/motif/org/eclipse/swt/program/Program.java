@@ -498,6 +498,16 @@ static String kde_convertQStringAndFree(int /*long*/ qString) {
 }
 
 static boolean kde_init() {
+	/*
+	* Bug in the JVM.  Under some versions of the JVM,
+	* C++ code that dynaminc_cast causes a segmentation
+	* fault.  The fix is to avoid running KDE C++ code
+	* for those JVMs.
+	*/
+	String version = System.getProperty("java.version");
+	if ("1.4.0".equals(version)) return false;
+	if ("1.4.1_01".equals(version)) return false;
+
 	try {
 		Library.loadLibrary("swt-kde");
 	} catch (Throwable e) {
