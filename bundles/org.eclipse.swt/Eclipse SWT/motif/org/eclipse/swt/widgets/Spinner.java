@@ -169,9 +169,22 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = hHint;
 	if (wHint == SWT.DEFAULT) {
 		width = DEFAULT_WIDTH;
-		int [] argList = {OS.XmNmaximumValue, 0};
+		int [] argList = {
+				OS.XmNmaximumValue, 0,
+				OS.XmNdecimalPoints, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		String string = String.valueOf (argList [1]);
+		if (argList [3] > 0) {
+			StringBuffer buffer = new StringBuffer ();
+			buffer.append (string);
+			buffer.append (getDecimalSeparator ());
+			int count = argList [3] - string.length ();
+			while (count >= 0) {
+				buffer.append ("0");
+				count--;
+			}
+			string = buffer.toString ();
+		}
 		byte [] buffer = Converter.wcsToMbcs (getCodePage(), string, true);
 		int xmString = OS.XmStringCreateLocalized (buffer);
 		int fontList = font.handle;
@@ -296,6 +309,19 @@ int fontHandle () {
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
+}
+public int getDigits () {
+	checkWidget ();
+	int [] argList = {OS.XmNdecimalPoints, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	return argList [1];
+}
+String getDecimalSeparator () {
+	int ptr = OS.localeconv_decimal_point ();
+	int length = OS.strlen (ptr);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, ptr, length);	
+	return new String (Converter.mbcsToWcs (null, buffer));
 }
 /**
  * Returns the amount that the receiver's value will be
@@ -526,6 +552,14 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	}
 	return super.setBounds (x, y, width, height, move, resize);
 }
+public void setDigits (int digits) {
+	checkWidget ();
+	if (digits < 0) return;
+	int [] argList1 = {OS.XmNposition, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	int [] argList2 = {OS.XmNdecimalPoints, digits, OS.XmNposition, argList1 [1]};
+	OS.XtSetValues (handle, argList2, argList2.length / 2);
+}
 void setForegroundPixel (int pixel) {
 	int [] argList1 = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
@@ -638,10 +672,12 @@ void updateText () {
 			OS.XmNtextField, 0,		/* 1 */
 			OS.XmNminimumValue, 0,	/* 3 */
 			OS.XmNmaximumValue, 0,	/* 5 */
-			OS.XmNposition, 0};		/* 7 */
+			OS.XmNposition, 0,		/* 7 */
+			OS.XmNdecimalPoints, 0	/* 9 */};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int ptr = OS.XmTextGetString (argList [1]);
 	int position = argList [7];
+	int digits = argList [9];
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
 		byte [] buffer = new byte [length];
@@ -649,7 +685,31 @@ void updateText () {
 		OS.XtFree (ptr);
 		String string = new String (Converter.mbcsToWcs (getCodePage (), buffer));
 		try {
-			int value = Integer.parseInt (string);			
+			int value;
+			if (digits > 0) {
+				String decimalSeparator = getDecimalSeparator ();
+				int index = string.indexOf (decimalSeparator);
+				if (index != -1)  {
+					String wholePart = string.substring (0, index);
+					String decimalPart = string.substring (index + 1);
+					if (decimalPart.length () > digits) {
+						decimalPart = decimalPart.substring (0, digits);
+					} else {
+						int i = digits - decimalPart.length ();
+						for (int j = 0; j < i; j++) {
+							decimalPart = decimalPart + "0";
+						}
+					}
+					int wholeValue = Integer.parseInt (wholePart);
+					int decimalValue = Integer.parseInt (decimalPart);
+					for (int i = 0; i < digits; i++) wholeValue *= 10;
+					value = wholeValue + decimalValue;
+				} else {
+					value = Integer.parseInt (string);
+				}
+			} else {
+				value = Integer.parseInt (string);
+			}
 			if (argList [3] <= value && value <= argList [5]) {
 				position = value;
 			}
@@ -658,6 +718,22 @@ void updateText () {
 	}
 	if (position == argList [7]) {
 		String string = String.valueOf (position);
+		if (digits > 0) {
+			String decimalSeparator = getDecimalSeparator ();
+			int index = string.length () - digits;
+			StringBuffer buffer = new StringBuffer ();
+			if (index > 0) {
+				buffer.append (string.substring (0, index));
+				buffer.append (decimalSeparator);
+				buffer.append (string.substring (index));
+			} else {
+				buffer.append ("0");
+				buffer.append (decimalSeparator);
+				while (index++ < 0) buffer.append ("0");
+				buffer.append (string);
+			}
+			string = buffer.toString ();
+		}
 		byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 		boolean warnings = display.getWarnings ();
 		display.setWarnings (false);
@@ -723,12 +799,23 @@ int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
 	event.start = textVerify.startPos;
 	event.end = textVerify.endPos;
 	event.text = text;
+	String string = text;
 	int index = 0;
-	while (index < text.length ()) {
-		if (!Character.isDigit (text.charAt (index))) break;
+	int [] argList = {OS.XmNdecimalPoints, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	if (argList [1] > 0) {
+		String decimalSeparator = getDecimalSeparator ();
+		index = string.indexOf (decimalSeparator);
+		if (index != -1) {
+			string = string.substring (0, index) + string.substring (index + 1);
+		}
+		index = 0;
+	}
+	while (index < string.length ()) {
+		if (!Character.isDigit (string.charAt (index))) break;
 		index++;
 	}
-	event.doit = index == text.length ();
+	event.doit = index == string.length ();
 	sendEvent (SWT.Verify, event);
 	String newText = event.text;
 	textVerify.doit = (byte) ((event.doit && newText != null) ? 1 : 0);
