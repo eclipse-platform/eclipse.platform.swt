@@ -1099,6 +1099,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreatePopupArrowC
 }
 #endif
 
+#ifndef NO_CreateProgressBarControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateProgressBarControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jint arg4, jboolean arg5, jintArray arg6)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg6=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateProgressBarControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	rc = (jint)CreateProgressBarControl((WindowRef)arg0, (const Rect *)lparg1, (SInt32)arg2, (SInt32)arg3, (SInt32) arg4, (Boolean)arg5, (ControlRef *)lparg6);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	return rc;
+}
+#endif NO_CreateProgressBarControl
+
 #ifndef NO_CreatePushButtonControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreatePushButtonControl
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)

@@ -304,7 +304,7 @@ public void internal_dispose_GC (int xGC, GCData data) {
 
 public boolean isEnabled () {
 	checkWidget();
-	return getEnabled () && parent.isEnabled ();
+	return OS.IsControlEnabled (handle);
 }
 
 public boolean isFocusControl () {

@@ -466,6 +466,7 @@ public static final native int CreateEvent(int allocator, int inClassID, int kin
 public static final native int CreateNewMenu(short menuID, int menuAttributes, int[] outMenuRef);
 public static final native int CreateNewWindow(int windowClass, int attributes, Rect bounds, int[] wHandle);
 public static final native int CreatePopupArrowControl(int window, Rect boundsRect, short orientation, short size, int[] outControl);
+public static final native int CreateProgressBarControl(int window, Rect boundsRect, int value, int minimim, int maximum, boolean indeterminate, int [] outControl);
 public static final native int CreatePushButtonControl(int window, Rect boundsRect, int title, int[] outControl);
 public static final native int CreateRadioButtonControl(int window, Rect boundsRect, int title, int initialValue, boolean autoToggle, int[] outControl);
 public static final native int CreateRootControl(int windowHandle, int[] cHandle);
