@@ -126,7 +126,7 @@ void deregister() {
 }
 
 int topHandle() { return boxHandle; }
-int parentingHandle() { return handle; } // event though we override connectChild, we still need this for getChildren
+int parentingHandle() { return tempHandle; } 
 
 /**
  * Returns whether the argument points to an OS widget that is
@@ -346,16 +346,6 @@ static int checkStyle (int style) {
 	* the SWT style.
 	*/
 	return style;   // & ~(SWT.H_SCROLL | SWT.V_SCROLL);
-}
-
-/*
- *  TEMPORARY CODE.  Hack for Eclipse.
- */
-public void setData (Object data) {
-	super.setData(data);
-	if (data == null) return;
-	if (data.getClass().getName().indexOf("org.eclipse.ui.internal.ShortcutBarPart") != -1)
-		OS.gtk_toolbar_set_orientation(handle, OS.GTK_ORIENTATION_VERTICAL);
 }
 
 }

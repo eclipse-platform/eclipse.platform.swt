@@ -26,8 +26,10 @@ public abstract class Device implements Drawable {
 	boolean disposed;
 	
 	/* Warning and Error Handlers */
-	int handler_id, logProc;
+	int logProc;
 	Callback logCallback;
+	String [] log_domains = {"Gtk", /*"Gdk", "GLib", "GdkPixbuf"*/};
+	int [] handler_ids = new int [log_domains.length];
 	boolean warnings = true;
 	
 	/*
@@ -371,8 +373,11 @@ protected void init () {
 	
 	/* Set GTK warning and error handlers */
 	if (debug) {
-		byte [] log_domain = Converter.wcsToMbcs (null, "Gtk", true);
-		handler_id = OS.g_log_set_handler (log_domain, 0xFF, logProc, 0);
+		int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
+		for (int i=0; i<log_domains.length; i++) {
+			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+			handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
+		}
 	}
 	
 	/* Create the standard colors */
@@ -489,12 +494,16 @@ protected void release () {
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
 		
 	/* Free the GTK error and warning handler */
-	if (handler_id != 0) {
-		byte [] log_domain = Converter.wcsToMbcs (null, "Gtk", true);
-		OS.g_log_remove_handler (log_domain, handler_id);
+	int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
+	for (int i=0; i<handler_ids.length; i++) {
+		if (handler_ids [i] != 0) {
+			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+			OS.g_log_remove_handler (log_domain, handler_ids [i]);
+		}
 	}
 	logCallback.dispose ();  logCallback = null;
-	handler_id = logProc = 0;
+	handler_ids = null;  log_domains = null;
+	logProc = 0;
 }
 
 /**
@@ -513,14 +522,18 @@ public void setWarnings (boolean warnings) {
 	checkDevice ();
 	this.warnings = warnings;
 	if (debug) return;
-	if (handler_id != 0) {
-		byte [] log_domain = Converter.wcsToMbcs (null, "Gtk", true);
-		OS.g_log_remove_handler (log_domain, handler_id);
+	for (int i=0; i<handler_ids.length; i++) {
+		if (handler_ids [i] != 0) {
+			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+			OS.g_log_remove_handler (log_domain, handler_ids [i]);
+		}
 	}
-	handler_id = 0;
 	if (warnings) {
-		byte [] log_domain = Converter.wcsToMbcs (null, "Gtk", true);
-		handler_id = OS.g_log_set_handler (log_domain, 0xFF, logProc, 0);
+		int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
+		for (int i=0; i<log_domains.length; i++) {
+			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+			handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
+		}
 	}
 }
 
