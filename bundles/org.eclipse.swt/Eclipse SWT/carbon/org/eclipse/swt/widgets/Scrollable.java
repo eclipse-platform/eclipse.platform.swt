@@ -178,20 +178,14 @@ void enableWidget (boolean enabled) {
  */
 public Rectangle getClientArea () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return new Rectangle (0, 0, argList [1], argList [3]);
-    */
 	Rect bounds= new Rect();
 	OS.GetControlBounds(handle, bounds);
 	Rectangle r= new Rectangle (0, 0, bounds.right-bounds.left, bounds.bottom-bounds.top);
-	/*
-	if (r.isEmpty()) {
-		System.out.println("Scrollable.getClientArea(" + this + "): " + r);
-		//new Exception().printStackTrace();
-	}
-	*/
+	// never return negative sizes
+	if (r.width < 0)
+		r.width= 0;
+	if (r.height < 0)
+		r.height= 0;
 	return r;
 }
 /**

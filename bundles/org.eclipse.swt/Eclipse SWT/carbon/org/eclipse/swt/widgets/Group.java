@@ -168,7 +168,13 @@ public Rectangle getClientArea () {
 	return new Rectangle (x, y, width, height);
     */
 	Point e= getSize();
-    return new Rectangle(MARGIN, LABEL_HEIGHT, e.x-(2*MARGIN), e.y-(LABEL_HEIGHT+MARGIN));
+	Rectangle r= new Rectangle(MARGIN, LABEL_HEIGHT, e.x-(2*MARGIN), e.y-(LABEL_HEIGHT+MARGIN));
+	// never return negative sizes
+	if (r.width < 0)
+		r.width= 0;
+	if (r.height < 0)
+		r.height= 0;
+    return r;
 }
 /**
  * Returns the receiver's text, which is the string that the
