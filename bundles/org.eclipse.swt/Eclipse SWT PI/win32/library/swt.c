@@ -224,6 +224,10 @@
 #define NO_ChooseColorW
 #endif /* WIN32_PLATFORM_WFSP */
 
+#ifndef WIN32_PLATFORM_WFSP
+#define NO_SHSendBackToFocusWindow
+#endif /* WIN32_PLATFORM_WFSP */
+
 #ifndef _WIN32_WCE
 #define NO_CommandBar_1Destroy
 #define NO_TransparentImage
@@ -5488,6 +5492,16 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SHGetPathFromIDListW)
 	return rc;
 }
 #endif /* NO_SHGetPathFromIDListW */
+
+#ifndef NO_SHSendBackToFocusWindow
+JNIEXPORT void JNICALL OS_NATIVE(SHSendBackToFocusWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("SHSendBackToFocusWindow\n")
+
+	SHSendBackToFocusWindow(arg0, arg1, arg2);
+}
+#endif /* NO_SHSendBackToFocusWindow */
 
 #ifndef NO_SHSetAppKeyWndAssoc
 JNIEXPORT jboolean JNICALL OS_NATIVE(SHSetAppKeyWndAssoc)

@@ -2696,6 +2696,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_INITMENUPOPUP:		result = WM_INITMENUPOPUP (wParam, lParam); break;
 		case OS.WM_GETFONT:			result = WM_GETFONT (wParam, lParam); break;
 		case OS.WM_GETOBJECT:			result = WM_GETOBJECT (wParam, lParam); break;
+		case OS.WM_HOTKEY:				result = WM_HOTKEY (wParam, lParam); break;		
 		case OS.WM_KEYDOWN:			result = WM_KEYDOWN (wParam, lParam); break;
 		case OS.WM_KEYUP:				result = WM_KEYUP (wParam, lParam); break;
 		case OS.WM_KILLFOCUS:			result = WM_KILLFOCUS (wParam, lParam); break;
@@ -2893,6 +2894,10 @@ LRESULT WM_GETOBJECT (int wParam, int lParam) {
 		int result = accessible.internal_WM_GETOBJECT (wParam, lParam);
 		if (result != 0) return new LRESULT (result);
 	}
+	return null;
+}
+
+LRESULT WM_HOTKEY (int wParam, int lParam) {
 	return null;
 }
 

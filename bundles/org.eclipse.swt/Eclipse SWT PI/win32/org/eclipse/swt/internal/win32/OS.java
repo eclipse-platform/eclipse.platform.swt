@@ -755,8 +755,11 @@ public class OS {
 	public static final int SC_VSCROLL = 0xf070;
 	public static final int SF_RTF = 0x2;
 	public static final int SHCMBF_HIDDEN = 0x2;
+	public static final int SHCMBM_OVERRIDEKEY = OS.WM_USER + 403;
 	public static final int SHCMBM_SETSUBMENU = 0x590;
 	public static final int SHCMBM_GETSUBMENU = 0x591;
+	public static final int SHMBOF_NODEFAULT = 0x1;
+	public static final int SHMBOF_NOTIFY = 0x2;
 	public static final int SIF_ALL = 0x17;
 	public static final int SIF_DISABLENOSCROLL = 0x8;
 	public static final int SIF_PAGE = 0x2;
@@ -1109,6 +1112,7 @@ public class OS {
 //	public static final int WM_GETICON = 0x7f;
 	public static final int WM_GETOBJECT = 0x003D;
 	public static final int WM_HELP = 0x53;
+	public static final int WM_HOTKEY = 0x0312;
 	public static final int WM_HSCROLL = 0x114;
 	public static final int WM_IME_CHAR = 0x286;
 	public static final int WM_IME_COMPOSITION = 0x10f;
@@ -2351,6 +2355,7 @@ public static final native int SetWindowsHookExA (int idHook, int lpfn,  int hMo
 public static final native int SHBrowseForFolderW (BROWSEINFO lpbi);
 public static final native int SHBrowseForFolderA (BROWSEINFO lpbi);
 public static final native boolean SHCreateMenuBar(SHMENUBARINFO pmb);
+public static final native void SHSendBackToFocusWindow (int uMsg, int wp, int lp);
 public static final native boolean ShellExecuteExW (SHELLEXECUTEINFO lpExecInfo);
 public static final native boolean ShellExecuteExA (SHELLEXECUTEINFO lpExecInfo);
 public static final native int SHGetMalloc (int [] ppMalloc);

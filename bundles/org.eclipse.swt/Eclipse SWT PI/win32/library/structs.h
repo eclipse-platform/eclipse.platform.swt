@@ -42,6 +42,10 @@
 #include <aygshell.h>
 #endif // WIN32_PLATFORM_PSPC, WIN32_PLATFORM_WFSP
 
+#ifdef WIN32_PLATFORM_WFSP
+#include <tpcshell.h>
+#endif /* WIN32_PLATFORM_WFSP */
+
 /* Optional custom rules to exclude some types */
 #include "rules.h"
 
