@@ -2284,6 +2284,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetGlobalMouse
 }
 #endif /* NO_GetGlobalMouse */
 
+#ifndef NO_GetIconRef
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetIconRef
+	(JNIEnv *env, jclass that, jshort arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetIconRef\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)GetIconRef((SInt16)arg0, (OSType)arg1, (OSType)arg2, (IconRef *)lparg3);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetHandleSize
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetHandleSize
 	(JNIEnv *env, jclass that, jint arg0)

@@ -11,6 +11,7 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.CFRange;
+import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -18,6 +19,7 @@ import org.eclipse.swt.graphics.*;
 
 public  class Button extends Control {
 	String text;
+	Image image;
 	
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -137,7 +139,7 @@ public int getAlignment () {
 
 public Image getImage () {
 	checkWidget();
-	return null;
+	return image;
 }
 String getNameText () {
 	return getText ();
@@ -208,6 +210,25 @@ public boolean setFocus () {
 public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.ARROW) != 0) return;
+	this.image = image;
+	if (text != null) {
+		char [] buffer = new char [1];
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, 1);
+		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+		OS.SetControlTitleWithCFString (handle, ptr);
+		OS.CFRelease (ptr);
+	}
+//	int kControlContentIconRef = 132;
+//	int kOnSystemDisk = -32768;
+//	int kSystemIconsCreator = ('m'<<24) + ('a'<<16) + ('c'<<8) + 's';
+//	int kHelpIcon = ('c'<<24) + ('a'<<16) + ('p'<<8) + 'l';
+//	int [] iconRef = new int [1];
+//	OS.GetIconRef ((short)kOnSystemDisk, kSystemIconsCreator, kHelpIcon, iconRef);
+//	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
+//	inContent.contentType = (short)kControlContentIconRef;
+//	inContent.iconRef = iconRef [0];
+//	OS.SetBevelButtonContentInfo (handle, inContent);
+//	OS.HIViewSetNeedsDisplay (handle, true);
 }
 
 public void setSelection (boolean selected) {
@@ -221,6 +242,11 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
 	text = string;
+	if (image != null) {
+		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
+		inContent.contentType = (short)OS.kControlContentTextOnly;
+		OS.SetBevelButtonContentInfo(handle, inContent);
+	}
 	char [] buffer = new char [text.length ()];
 	int i=0, j=0;
 	while (i < buffer.length) {

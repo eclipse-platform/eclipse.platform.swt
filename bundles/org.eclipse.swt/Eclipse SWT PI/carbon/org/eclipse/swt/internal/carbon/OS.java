@@ -64,7 +64,9 @@ public class OS {
 	public static final int kControlBoundsChangePositionChanged = 1 << 3;
 	public static final int kControlCheckBoxAutoToggleProc = 371;
 	public static final int kControlContentCIconHandle = 130;
+	public static final int kControlContentIconRef = 132;
 	public static final int kControlContentMetaPart = -2;
+	public static final int kControlContentTextOnly = 0;
 	public static final int kControlDownButtonPart = 21;
 	public static final int kControlEditTextCFStringTag = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
 	public static final int kControlEditTextSelectionTag = ('s'<<24) + ('e'<<16) + ('l'<<8) + 'e';
@@ -554,6 +556,7 @@ public static final native int GetGDevice();
 public static final native void GetGWorld(int[] portHandle, int[] gdHandle);
 public static final native void GetGlobalMouse(Point where);
 public static final native int GetHandleSize(int handle);
+public static final native int GetIconRef(short vRefNum, int creator, int iconType, int[] theIconRef);
 public static final native int GetIndMenuItemWithCommandID(int mHandle, int commandId, int index, int[] outMenu, short[] outIndex);
 public static final native int GetIndexedSubControl(int cHandle, short index, int[] outHandle);
 public static final native int GetKeyboardFocus(int wHandle, int[] cHandle);
