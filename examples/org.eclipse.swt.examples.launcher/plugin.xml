@@ -25,7 +25,6 @@
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.eclipse.core.boot"/>
       <import plugin="org.eclipse.jdt.core"/>
-      <import plugin="org.eclipse.swt.examples"/>
    </requires>
 
 
