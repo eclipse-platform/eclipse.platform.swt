@@ -193,7 +193,7 @@ public class Display extends Device {
 	static boolean TrimEnabled = false;
 
 	/* Package Name */
-	static final String PACKAGE_NAME = "org.eclipse.swt.widgets";
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets";
 	/*
 	* This code is intentionally commented.  In order
 	* to support CLDC, .class cannot be used because
@@ -203,7 +203,7 @@ public class Display extends Device {
 //	static {
 //		String name = Display.class.getName ();
 //		int index = name.lastIndexOf ('.');
-//		PACKAGE_NAME = name.substring (0, index + 1);
+//		PACKAGE_PREFIX = name.substring (0, index + 1);
 //	}
 	
 	/* Display Data */
@@ -635,7 +635,7 @@ public static synchronized Display getDefault () {
 static boolean isValidClass (Class clazz) {
 	String name = clazz.getName ();
 	int index = name.lastIndexOf ('.');
-	return name.substring (0, index + 1).equals (PACKAGE_NAME);
+	return name.substring (0, index + 1).equals (PACKAGE_PREFIX);
 }
 
 /**
