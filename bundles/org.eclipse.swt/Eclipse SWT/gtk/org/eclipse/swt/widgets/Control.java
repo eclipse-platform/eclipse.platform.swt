@@ -2456,8 +2456,13 @@ public void setVisible (boolean visible) {
 		* By observation, a widget that is not realized will
 		* not respond to a mnemonic.  The fix is to unrealize
 		* the widget hierarchy every time a widget is hidden.
+		* 
+		* Note: Controls who have an IM context associated can 
+		* not call unrealize because it will force the widget to be 
+		* remapped.
 		*/
-		OS.gtk_widget_unrealize (topHandle);
+		int imHandle = imHandle ();
+		if (imHandle == 0) OS.gtk_widget_unrealize (topHandle);
 		sendEvent (SWT.Hide);
 	}
 }
