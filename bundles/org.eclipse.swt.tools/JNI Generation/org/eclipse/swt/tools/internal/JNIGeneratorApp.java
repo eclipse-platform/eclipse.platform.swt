@@ -146,7 +146,7 @@ void generateSWT_C(Class[] classes) {
 }
 
 
-void generateAllMetaData() {
+void generateMetaData() {
 	try {
 		MetaDataGenerator gen = new MetaDataGenerator();
 		gen.setMainClass(mainClass);
@@ -201,7 +201,7 @@ public void generate(ProgressMonitor progress) {
 	if (progress != null) progress.setMessage("Generating stats.c ...");
 	generateSTATS_C(natives);
 	if (progress != null) progress.setMessage("Generating meta data ...");
-	generateAllMetaData();
+	generateMetaData();
 	if (progress != null) progress.setMessage("Done.");
 	this.progress = null;
 }
