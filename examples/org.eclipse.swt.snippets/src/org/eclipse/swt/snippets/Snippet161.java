@@ -41,7 +41,11 @@ public class Snippet161 {
 		button.setText("Execute Script");
 		button.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
-				browser.execute(text.getText());
+				boolean result = browser.execute(text.getText());
+				if (!result) {
+					/* Script may fail or may not be supported on certain platforms. */
+					System.out.println("Script was not executed.");
+				}
 			}
 		});
 		browser.setText(html);
