@@ -121,6 +121,21 @@ static MenuItem checkNull (MenuItem item) {
 void createHandle (int index) {
 	state |= HANDLE;
 	
+	/*
+	* Bug in Motif. For some reason, creating a menu after any application context
+	* and shell have been destroyed will segment fault unless a new application
+	* context and shell have been created in the current thread.  The fix is to
+	* detect this case and create and destroy a temporary application context and
+	* shell.
+	*/
+	int xDisplay = 0, shellHandle = 0;
+	if (Display.DisplayDisposed) {
+		int [] argc = new int [] {0};
+		int xtContext = OS.XtCreateApplicationContext ();
+		xDisplay = OS.XtOpenDisplay (xtContext, null, null, null, 0, 0, argc, 0);
+		shellHandle = OS.XtAppCreateShell (null, null, OS.TopLevelShellWidgetClass (), xDisplay, null, 0);
+	}
+	
 	/* BAR menu */
 	if ((style & SWT.BAR) != 0) {
 		int parentHandle = parent.scrolledHandle;
@@ -159,6 +174,15 @@ void createHandle (int index) {
 		handle = OS.XmCreatePulldownMenu (parentHandle, new byte [1], argList, argList.length / 2);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+
+	/* Workaround for bug in Motif */
+	if (Display.DisplayDisposed) {
+		if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);
+		if (xDisplay != 0) {
+			int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+			OS.XtDestroyApplicationContext (xtContext);
+		}
+	}
 }
 void createWidget (int index) {
 	super.createWidget (index);

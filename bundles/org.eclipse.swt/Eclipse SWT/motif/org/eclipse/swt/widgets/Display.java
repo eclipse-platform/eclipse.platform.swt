@@ -205,6 +205,9 @@ public class Display extends Device {
 	Caret currentCaret;
 	Callback caretCallback;
 	int caretID, caretProc;
+
+	/* Workaround for GP when disposing a display */
+	static boolean DisplayDisposed;
 			
 	/* Package name */
 	static final String PACKAGE_NAME;
@@ -438,6 +441,7 @@ void createDisplay (DeviceData data) {
 	
 	/* Create the XDisplay */
 	xDisplay = OS.XtOpenDisplay (xtContext, displayName, appName, appClass, 0, 0, argc, 0);
+	DisplayDisposed = false;
 }
 synchronized void deregister () {
 	for (int i=0; i<Displays.length; i++) {
@@ -473,6 +477,7 @@ void destroyDisplay () {
 	*/
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	OS.XtDestroyApplicationContext (xtContext);
+	DisplayDisposed = true;
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
