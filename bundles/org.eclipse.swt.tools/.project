@@ -3,7 +3,6 @@
 	<name>org.eclipse.swt.tools</name>
 	<comment></comment>
 	<projects>
-		<project>org.apache.ant</project>
 		<project>org.eclipse.swt</project>
 	</projects>
 	<buildSpec>
