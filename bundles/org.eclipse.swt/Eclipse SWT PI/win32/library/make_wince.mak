@@ -47,6 +47,9 @@ $(SWT_LIB): $(SWT_OBJS) swt.res
 swt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(SWT_LIB)\" -r -fo swt.res swt.rc
 
+install: all
+	copy *.dll $(OUTPUT_DIR)
+
 clean:
     del *.obj *.res *.dll *.lib *.exp
     
@@ -77,6 +80,9 @@ $(SWT_LIB): $(SWT_OBJS) swt.res
 swt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(SWT_LIB)\" -r -fo swt.res swt.rc
 
+install: all
+	copy *.dll $(OUTPUT_DIR)
+
 clean:
     del *.obj *.res *.dll *.lib *.exp
     
@@ -105,6 +111,9 @@ $(SWT_LIB): $(SWT_OBJS) swt.res
 	
 swt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(SWT_LIB)\" -r -fo swt.res swt.rc
+
+install: all
+	copy *.dll $(OUTPUT_DIR)
 
 clean:
     del *.obj *.res *.dll *.lib *.exp

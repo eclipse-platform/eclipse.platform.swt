@@ -36,5 +36,7 @@ rem mozilla dist folder
 rem *****
 set GECKO_SDK=W:\mozilla\1.4\win32\mozilla\dist\sdk
 
+set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32\os\win32\x86
+
 :MAKE
 nmake -f make_win32.mak %1 %2 %3 %4

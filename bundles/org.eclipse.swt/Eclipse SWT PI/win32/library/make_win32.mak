@@ -108,6 +108,8 @@ swt_awt.res:
 xpcom.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(MOZILLA_LIB)\" -r -fo xpcom.res xpcom.rc
 	
+install: all
+	copy *.dll $(OUTPUT_DIR)
 
 clean:
     del *.obj *.res *.dll *.lib *.exp
