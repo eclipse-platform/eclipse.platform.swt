@@ -2378,6 +2378,7 @@ public void setVisible (boolean visible) {
 	if ((oldFlags & OS.Pt_DELAY_REALIZE) == flags) return;
 	if (visible) {
 		sendEvent (SWT.Show);
+		if (isDisposed ()) return;
 		OS.PtRealizeWidget (topHandle);
 	} else {
 		OS.PtUnrealizeWidget (topHandle);
