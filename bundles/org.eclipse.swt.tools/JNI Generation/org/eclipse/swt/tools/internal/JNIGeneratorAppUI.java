@@ -155,15 +155,18 @@ void generateAll() {
 		Control child = children[i];
 		if (child instanceof Button) child.setEnabled(false);				
 	}
-	progressLabel.setText("");
-	progressBar.setSelection(0);
-	progressLabel.setVisible(true);
-	progressBar.setVisible(true);
+	final boolean showProgress = false;
+	if (showProgress) {
+		progressLabel.setText("");
+		progressBar.setSelection(0);
+		progressLabel.setVisible(true);
+		progressBar.setVisible(true);
+	}
 	final boolean[] done = new boolean[1];
 	new Thread() {
 		public void run() {
 			try {
-				app.generate(new ProgressMonitor() {
+				app.generate(!showProgress ? null : new ProgressMonitor() {
 					public void setTotal(final int total) {
 						display.syncExec(new Runnable() {
 							public void run() {
@@ -200,8 +203,10 @@ void generateAll() {
 		Control child = children[i];
 		if (child instanceof Button) child.setEnabled(true);				
 	}
-	progressBar.setVisible(false);
-	progressLabel.setVisible(false);
+	if (showProgress) {
+		progressBar.setVisible(false);
+		progressLabel.setVisible(false);
+	}
 	shell.setEnabled(true);
 	shell.setCursor(null);
 }
