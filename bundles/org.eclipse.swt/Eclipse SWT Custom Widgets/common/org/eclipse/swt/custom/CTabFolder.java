@@ -162,8 +162,11 @@ public class CTabFolder extends Composite {
 	int borderRight = 0;
 	int borderTop = 0;
 	int borderBottom = 0;
-	int highlight_margin = 0;
-	int highlight_header = 0;
+	
+	// TEMPORARY CODE
+	public int highlight_margin = 0;
+	public int highlight_header = 0;
+	
 	int[] curve;
 	
 	// when disposing CTabFolder, don't try to layout the items or 
@@ -250,8 +253,8 @@ public CTabFolder(Composite parent, int style) {
 	borderLeft = borderRight = (style & SWT.BORDER) != 0 ? 1 : 0;
 	borderTop = onBottom ? borderLeft : 0;
 	borderBottom = onBottom ? 0 : borderLeft;
-	highlight_header = (style & SWT.FLAT) != 0 ? 1 : 5;
-	highlight_margin = (style & SWT.FLAT) != 0 ? 0 : 3;
+	highlight_header = (style & SWT.FLAT) != 0 ? 1 : 3;
+	highlight_margin = (style & SWT.FLAT) != 0 ? 0 : 1;
 	//set up default colors
 	Display display = getDisplay();
 	selectionForeground = display.getSystemColor(SELECTION_FOREGROUND);
@@ -3329,7 +3332,7 @@ void showToolTip (int x, int y) {
 		return;
 	}
 	
-	final int [] events = new int[] {SWT.MouseExit, SWT.MouseHover, SWT.MouseMove};
+	final int [] events = new int[] {SWT.MouseExit, SWT.MouseHover, SWT.MouseMove, SWT.MouseDown, SWT.DragDetect};
 	final Listener[] listener = new Listener[1];
 	listener[0] = new Listener() {
 		public void handleEvent(Event event) {
@@ -3339,6 +3342,8 @@ void showToolTip (int x, int y) {
 					if (updateToolTip(event.x, event.y, label)) break;
 					// FALL THROUGH
 				case SWT.MouseExit:
+				case SWT.MouseDown:
+				case SWT.DragDetect:
 					for (int i = 0; i < events.length; i++) {
 						removeListener(events[i], listener[0]);
 					}
