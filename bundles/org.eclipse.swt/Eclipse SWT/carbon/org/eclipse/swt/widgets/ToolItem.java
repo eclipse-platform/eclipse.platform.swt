@@ -481,7 +481,7 @@ void setSize (int width, int height, boolean layout) {
 	Rect rect = new Rect();
 	OS.GetControlBounds (handle, rect);
 	if ((rect.right - rect.left) != width || (rect.bottom - rect.top) != height) {
-		OS.SizeControl (handle, (short) width, (short) height);
+		setBounds (handle, 0, 0, width, height, false, true);
 		if (layout) parent.relayout ();
 	}
 }
