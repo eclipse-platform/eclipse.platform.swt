@@ -136,8 +136,8 @@ public class Display extends Device {
 	Runnable [] timerList;
 	
 	/* Keyboard and Mouse State */
-	boolean lastVirtual, lastNull;
 	int lastKey, lastAscii, lastMouse;
+	boolean lastVirtual, lastNull, lastDead;
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
 	boolean lockActiveWindow;
@@ -673,7 +673,7 @@ boolean filterMessage (MSG msg) {
 		if (control != null) {
 			if (translateAccelerator (msg, control) || translateMnemonic (msg, control) || translateTraversal (msg, control)) {	
 				lastAscii = lastKey = 0;
-				lastVirtual = lastNull = false;
+				lastVirtual = lastNull = lastDead = false;
 				return true;
 			}
 		}

@@ -1853,7 +1853,7 @@ LRESULT WM_IME_CHAR (int wParam, int lParam) {
 	Display display = this.display;
 	display.lastKey = 0;
 	display.lastAscii = wParam;
-	display.lastVirtual = display.lastNull = false;
+	display.lastVirtual = display.lastNull = display.lastDead = false;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
