@@ -1109,8 +1109,22 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		screenDirect = true;
 	}
 	if (transparentPixel != null) {
-		RGB rgb = image.palette.getRGB(transparentPixel[0]);
-		transparentPixel[0] = ImageData.closestMatch(screenDepth, (byte)rgb.red, (byte)rgb.green, (byte)rgb.blue,
+		int transRed = 0, transGreen = 0, transBlue = 0;
+		if (palette.isDirect) {
+			RGB rgb = palette.getRGB(transparentPixel[0]);
+			transRed = rgb.red;
+			transGreen = rgb.green;
+			transBlue = rgb.blue;
+		} else {
+			RGB[] rgbs = palette.getRGBs();
+			if (transparentPixel[0] < rgbs.length) {
+				RGB rgb = rgbs[transparentPixel[0]];
+				transRed = rgb.red;
+				transGreen = rgb.green;
+				transBlue = rgb.blue;				
+			}
+		}
+		transparentPixel[0] = ImageData.closestMatch(screenDepth, (byte)transRed, (byte)transGreen, (byte)transBlue,
 			destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
 	}
 
