@@ -120,9 +120,25 @@ void createHandle () {
 	if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
 	if ((style & SWT.READ_ONLY) != 0) iFrameOptions |= OS.kTXNReadOnlyMask;
 	if ((style & SWT.WRAP) != 0) iFrameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
+	
+	int [] theRoot = new int [1];
+	OS.GetRootControl (window, theRoot);
+	short [] count = new short [1];
+	OS.CountSubControls (theRoot [0], count);	
+	
 	int [] oTXNObject = new int [1], oTXNFrameID = new int[1];
 	OS.TXNNewObject (0, window, null, iFrameOptions, OS.kTXNTextEditStyleFrameType, OS.kTXNUnicodeTextFile, OS.kTXNSystemDefaultEncoding, oTXNObject, oTXNFrameID, 0);
 	if (oTXNObject [0] == 0) error (SWT.ERROR_NO_HANDLES);
+	
+	short [] newCount = new short [1];
+	OS.CountSubControls (theRoot [0], newCount);
+	int [] child= new int [1];
+	for (short i= newCount [0]; i > count [0]; i--) {
+		OS.GetIndexedSubControl (theRoot [0], i, child);
+		OS.HIViewRemoveFromSuperview (child [0]);
+		OS.HIViewAddSubview (handle, child [0]);
+	}	
+	
 	txnObject = oTXNObject [0];
 	txnFrameID = oTXNFrameID [0];
 	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int[] {OS.kTXNDisableDragAndDropTag}, new int[] {1});
@@ -155,6 +171,11 @@ void destroyWidget () {
 	super.destroyWidget();
 	OS.TXNDeleteObject (txnObject);
 	txnObject = txnFrameID = 0;
+}
+
+void draw (int control) {
+	if (control != handle) return;
+	OS.TXNDraw (txnObject, 0);
 }
 
 public int getCaretLineNumber () {

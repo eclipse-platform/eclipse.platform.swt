@@ -175,6 +175,9 @@ void destroyWidget () {
 	}
 }
 
+void draw (int control) {
+}
+
 public boolean forceFocus () {
 	checkWidget();
 	int window = OS.GetControlOwner (handle);
@@ -521,6 +524,7 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	OS.GetClip (oldRgn);
 	OS.SetClip (clipRgn);
 	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	draw (theControl [0]);
 	OS.SetClip (oldRgn);
 	OS.DisposeRgn (clipRgn);
 	OS.DisposeRgn (oldRgn);
