@@ -173,38 +173,41 @@ public void copyArea(Image image, int x, int y) {
 	if (data.control != 0) {
 		int[] offscreen = new int[1];
 		OS.HIViewCreateOffscreenImage(data.control, 0, null, offscreen);
-		copyArea(image, x, y, offscreen[0]);
+		copyArea(image, x, y, offscreen[0], false);
 		if (offscreen[0] != 0) OS.CGImageRelease(offscreen[0]);
 	} else if (data.image != null) {
-		copyArea(image, x, y, data.image.handle);
+		copyArea(image, x, y, data.image.handle, false);
 	} else if (data.window != 0) {
-//		int imageHandle = image.handle;
-//		CGRect rect = new CGRect();
-//		rect.x = x;
-//		rect.y = y;
-//		rect.width = OS.CGImageGetWidth(imageHandle);
-//		rect.height = OS.CGImageGetHeight(imageHandle);
-//		int[] displays = new int[16];
-//		int[] count = new int[1];
-//		if (OS.CGGetDisplaysWithRect(rect, displays.length, displays, count) != 0) return;
-//		for (int i = 0; i < count[0]; i++) {
-//			int display = displays[i];
-//			if (OS.CGDisplayCapture(display) == 0) {
-//				int address = OS.CGDisplayAddressForPosition (display, x, y);
-//				System.out.println(address);
-//				int colorspace = data.device.colorspace;
-//				int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, 0);
-//				int srcImage = OS.CGImageCreate(width, height, 8, 32, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, false, 0);
-//				OS.CGDataProviderRelease(provider);
-//				copyArea(image, x, y, srcImage);
-//				if (srcImage != 0) OS.CGImageRelease(srcImage);
-//				OS.CGDisplayRelease(display);
-//			}
-//		}
+		int imageHandle = image.handle;
+		CGRect rect = new CGRect();
+		rect.x = x;
+		rect.y = y;
+		rect.width = OS.CGImageGetWidth(imageHandle);
+		rect.height = OS.CGImageGetHeight(imageHandle);
+		int[] displays = new int[16];
+		int[] count = new int[1];
+		if (OS.CGGetDisplaysWithRect(rect, displays.length, displays, count) != 0) return;
+		for (int i = 0; i < count[0]; i++) {
+			int display = displays[i];
+			int address = OS.CGDisplayBaseAddress(display);
+			if (address != 0) {
+				int width = OS.CGDisplayPixelsWide(display);
+				int height = OS.CGDisplayPixelsHigh(display);
+				int bpr = OS.CGDisplayBytesPerRow(display);
+				int bpp = OS.CGDisplayBitsPerPixel(display);
+				int bps = OS.CGDisplayBitsPerSample(display);
+				System.out.println(width + " " + height + " " + bpr + " " + bpp + " " + bps);
+				int provider = OS.CGDataProviderCreateWithData(0, address, bpr * height, 0);
+				int srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, data.device.colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, false, 0);
+				OS.CGDataProviderRelease(provider);
+				copyArea(image, x, y, srcImage, true);
+				if (srcImage != 0) OS.CGImageRelease(srcImage);
+			}
+		}
 	}	
 }
 
-void copyArea (Image image, int x, int y, int srcImage) {
+void copyArea (Image image, int x, int y, int srcImage, boolean screen) {
 	if (srcImage == 0) return;
 	int imageHandle = image.handle;
 	int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
@@ -213,14 +216,18 @@ void copyArea (Image image, int x, int y, int srcImage) {
 	int bpr = OS.CGImageGetBytesPerRow(imageHandle);
 	int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
 	int context = OS.CGBitmapContextCreate(image.data, width, height, bpc, bpr, data.device.colorspace, alphaInfo);
-	if (context != 0) { 
+	if (context != 0) {
 	 	CGRect rect = new CGRect();
 	 	rect.x = -x;
 	 	rect.y = -y;
 	 	rect.width = OS.CGImageGetWidth(srcImage);
 		rect.height = OS.CGImageGetHeight(srcImage);
-		OS.CGContextScaleCTM(context, 1, -1);
-		OS.CGContextTranslateCTM(context, 0, -height);
+		if (screen) {
+			OS.CGContextTranslateCTM(context, 0, -(rect.height - height));
+		} else {	
+			OS.CGContextScaleCTM(context, 1, -1);
+			OS.CGContextTranslateCTM(context, 0, -height);
+		}
 		OS.CGContextDrawImage(context, rect, srcImage);
 		OS.CGContextRelease(context);
 	}

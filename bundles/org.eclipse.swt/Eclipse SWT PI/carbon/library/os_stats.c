@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 743;
-int OS_nativeFunctionCallCount[743];
+int OS_nativeFunctionCount = 746;
+int OS_nativeFunctionCallCount[746];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems", 
 	"AEGetNthPtr", 
@@ -127,9 +127,12 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextTranslateCTM", 
 	"CGDataProviderCreateWithData", 
 	"CGDataProviderRelease", 
+	"CGDisplayBaseAddress", 
 	"CGDisplayBitsPerPixel", 
 	"CGDisplayBitsPerSample", 
 	"CGDisplayBytesPerRow", 
+	"CGDisplayPixelsHigh", 
+	"CGDisplayPixelsWide", 
 	"CGFontCreateWithPlatformFont", 
 	"CGFontRelease", 
 	"CGGetDisplaysWithRect", 
