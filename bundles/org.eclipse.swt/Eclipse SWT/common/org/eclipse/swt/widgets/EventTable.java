@@ -17,29 +17,48 @@ import org.eclipse.swt.internal.SWTEventListener;
 
 class EventTable {
 	int [] types;
-	Listener [] handlers;
+	Listener [] listeners;
+	int level;
 	
-public void hook (int eventType, Listener handler) {
+public void hook (int eventType, Listener listener) {
 	if (types == null) types = new int [4];
-	if (handlers == null) handlers = new Listener [4];
-	for (int i=0; i<types.length; i++) {
-		if (types [i] == 0) {
-			types [i] = eventType;
-			handlers [i] = handler;
-			return;
+	if (listeners == null) listeners = new Listener [4];
+	int length = types.length, index = length - 1;
+	while (index >= 0) {
+		if (types [index] != 0) break;
+		--index;
+	}
+	index++;
+	if (index == length) {
+		if (level == 0) {
+			index = 0;
+			for (int i=0; i<types.length; i++) {
+				if (types [i] != 0) {
+					types [index] = types [i];
+					listeners [index] = listeners [i];
+					index++;
+				}
+			}
+			for (int i=index; i<types.length; i++) {
+				types [i] = 0;
+				listeners [index] = null;
+			}
+		}
+		if (index == length) {
+			int [] newTypes = new int [length + 4];
+			System.arraycopy (types, 0, newTypes, 0, length);
+			types = newTypes;
+			Listener [] newListeners = new Listener [length + 4];
+			System.arraycopy (listeners, 0, newListeners, 0, length);
+			listeners = newListeners;
 		}
 	}
-	int size = types.length;
-	int [] newTypes = new int [size + 4];
-	Listener [] newHandlers = new Listener [size + 4];
-	System.arraycopy (types, 0, newTypes, 0, size);
-	System.arraycopy (handlers, 0, newHandlers, 0, size);
-	types = newTypes;  handlers = newHandlers;
-	types [size] = eventType;  handlers [size] = handler;
+	types [index] = eventType;
+	listeners [index] = listener;
 }
 
 public boolean hooks (int eventType) {
-	if (handlers == null) return false;
+	if (types == null) return false;
 	for (int i=0; i<types.length; i++) {
 		if (types [i] == eventType) return true;
 	}
@@ -47,35 +66,46 @@ public boolean hooks (int eventType) {
 }
 
 public void sendEvent (Event event) {
-	if (handlers == null) return;
+	if (types == null) return;
+	level++;
 	for (int i=0; i<types.length; i++) {
 		if (types [i] == event.type) {
-			Listener listener = handlers [i];
+			Listener listener = listeners [i];
 			if (listener != null) listener.handleEvent (event);
 		}
 	}
+	--level;
 }
 
-public void unhook (int eventType, Listener handler) {
-	if (handlers == null) return;
+void remove (int index) {
+	if (level == 0) {
+		int end = types.length - 1;
+		System.arraycopy (types, index + 1, types, index, end - index);
+		System.arraycopy (listeners, index + 1, listeners, index, end - index);
+		index = end;
+	}
+	types [index] = 0;
+	listeners [index] = null;
+}
+
+public void unhook (int eventType, Listener listener) {
+	if (types == null) return;
 	for (int i=0; i<types.length; i++) {
-		if ((types [i] == eventType) && (handlers [i] == handler)) {
-			types [i] = 0;
-			handlers [i] = null;
+		if (types [i] == eventType && listeners [i] == listener) {
+			remove (i);
 			return;
 		}
 	}
 }
 
 public void unhook (int eventType, SWTEventListener handler) {
-	if (handlers == null) return;
+	if (types == null) return;
 	for (int i=0; i<types.length; i++) {
 		if (types [i] == eventType) {
-			if (handlers [i] instanceof TypedListener) {
-				TypedListener listener = (TypedListener) handlers [i];
+			if (listeners [i] instanceof TypedListener) {
+				TypedListener listener = (TypedListener) listeners [i];
 				if (listener.getEventListener () == handler) {
-					types [i] = 0;
-					handlers [i] = null;
+					remove (i);
 					return;
 				}
 			}
