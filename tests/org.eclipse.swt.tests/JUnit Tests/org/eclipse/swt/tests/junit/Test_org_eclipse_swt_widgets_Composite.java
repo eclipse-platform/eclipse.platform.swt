@@ -67,16 +67,16 @@ public void test_getChildren() {
 	assertEquals(":c:", new Control[]{c1, c2}, composite.getChildren());
 
 	Scale c3 = new Scale(composite, 0);
-	assertEquals(":c:", new Control[]{c1, c2, c3}, composite.getChildren());
+	assertEquals(":d:", new Control[]{c1, c2, c3}, composite.getChildren());
 
 	c2.dispose();
-	assertEquals(":d:", new Control[]{c1, c3}, composite.getChildren());
+	assertEquals(":e:", new Control[]{c1, c3}, composite.getChildren());
 	
 	Control[] children = composite.getChildren();
 	for (int i = 0; i < children.length; i++)
 		children[i].dispose();
 
-	assertEquals(":e:", new Control[]{}, composite.getChildren());
+	assertEquals(":f:", new Control[]{}, composite.getChildren());
 }
 
 public void test_getLayout() {
@@ -114,15 +114,9 @@ public void test_setTabList$Lorg_eclipse_swt_widgets_Control() {
 	Button button2 = new Button(composite, SWT.PUSH);
 	Control[] tablist = new Control[] {button1, button2};
 	composite.setTabList(tablist);
+	assertEquals(tablist, composite.getTabList());
 	button1.dispose();
 	button2.dispose();
-	
-	try {
-		composite.setTabList(null);
-		fail("No exception thrown for tabList == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
 }
 
 public static Test suite() {
