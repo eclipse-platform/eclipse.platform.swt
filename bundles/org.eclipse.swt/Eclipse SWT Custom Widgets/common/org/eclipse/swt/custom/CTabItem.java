@@ -481,6 +481,9 @@ public void setDisabledImage (Image image) {
  * <p>
  * This method sets the widget label.  The label may include
  * mnemonic characters but must not contain line delimiters.
+ * The mnemonic indicator character '&amp' can be escaped by
+ * doubling it in the string, causing a single '&amp' to be
+ * displayed.
  *
  * @param string the new label for the widget
  *
