@@ -1176,6 +1176,8 @@ void handleEvents(Event event) {
 				case SWT.TRAVERSE_RETURN:
 				case SWT.TRAVERSE_TAB_NEXT:
 				case SWT.TRAVERSE_TAB_PREVIOUS:
+				case SWT.TRAVERSE_PAGE_NEXT:
+				case SWT.TRAVERSE_PAGE_PREVIOUS:
 					event.doit = true;
 					break;
 			}

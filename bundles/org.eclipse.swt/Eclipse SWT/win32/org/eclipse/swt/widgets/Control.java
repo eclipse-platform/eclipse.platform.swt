@@ -2610,16 +2610,15 @@ boolean translateTraversal (MSG msg) {
 			all = true;
 			lastVirtual = true;
 			if (OS.GetKeyState (OS.VK_CONTROL) >= 0) return false;
-			/*
-			* The fact that this code is commented causes Ctrl+PgUp
-			* and Ctrl+PgDn to always attempt traversal which is not
-			* correct.  This behavior is relied on by StyledText.
-			* 
-			* The correct behavior is to give every key to a control
-			* that answers DLGC_WANTALLKEYS.
-			*/
-//			int code = OS.SendMessage (hwnd, OS., 0, 0);
-//			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
+			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
+			if ((code & OS.DLGC_WANTALLKEYS) != 0) {
+				/*
+				* Use DLGC_HASSETSEL to determine that the control is a
+				* text widget.  If the control is a text widget, then
+				* Ctrl+PgUp and Ctrl+PgDn should traverse out of the widget.
+				*/
+				if ((code & OS.DLGC_HASSETSEL) == 0) doit = false;
+			}
 			detail = key == OS.VK_PRIOR ? SWT.TRAVERSE_PAGE_PREVIOUS : SWT.TRAVERSE_PAGE_NEXT;
 			break;
 		}
