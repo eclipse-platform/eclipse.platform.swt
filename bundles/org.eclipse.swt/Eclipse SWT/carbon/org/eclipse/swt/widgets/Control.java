@@ -595,13 +595,12 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	if (!OS.IsControlVisible (handle)) return;
 	Rect rect = new Rect ();
-	OS.SetRect (rect, (short)x, (short)y, (short)(x + width), (short)(y + height));
-	int rgn = OS.NewRgn ();
-	OS.RectRgn (rgn, rect);
 	OS.GetControlBounds (handle, rect);
+	x += rect.left;
+	y += rect.top;
+	OS.SetRect (rect, (short) x, (short) y, (short)(x + width), (short)(y + height));
 	int window = OS.GetControlOwner (handle);
-	OS.InvalWindowRgn (window, rgn);
-	OS.DisposeRgn (rgn);
+	OS.InvalWindowRect (window, rect);
 }
 
 void register () {
