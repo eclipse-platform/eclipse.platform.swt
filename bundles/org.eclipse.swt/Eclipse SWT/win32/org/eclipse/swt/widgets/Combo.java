@@ -1008,17 +1008,24 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		height = textHeight + 6 + (itemHeight * 5) + 2;
 		/*
 		* Feature in Windows.  When a drop down combo box is resized,
-		* the combo box resizes height of the text field and uses the
-		* height provided in SetWindowPos () to determine the height
-		* of the drop down list.  For some reason, the combo box redraws
-		* the whole area, not just the text field.  The fix is to clear
-		* the SWP_NOSIZE bits when the height of text field and the drop
-		* down list is the same as the requested height.
+		* the combo box resizes the height of the text field and uses the height
+		* provided in SetWindowPos () to determine the height of the drop down
+		* list.  For some reason, the combo box redraws the whole area, not just
+		* the text field.  The fix is to set the SWP_NOSIZE bits when the height
+		* of text field and the drop down list is the same as the requested
+		* height.
+		* Note.  Setting the width of a combobox to 0 with SetWindowPos does
+		* not update the width of its drop down state as returned by
+		* CB_GETDROPPEDCONTROLRECT.  Verify that the current width is not 0
+		* prior to relying on the value returned by CB_GETDROPPEDCONTROLRECT.
 		*/
 		RECT rect = new RECT ();
-		if (OS.SendMessage (handle, OS.CB_GETDROPPEDCONTROLRECT, 0, rect) != 0) {
-			int oldWidth = rect.right - rect.left, oldHeight = rect.bottom - rect.top;
-			if (oldWidth == width && oldHeight == height) flags |= OS.SWP_NOSIZE;
+		OS.GetWindowRect (handle, rect);
+		if (rect.right != rect.left) {
+			if (OS.SendMessage (handle, OS.CB_GETDROPPEDCONTROLRECT, 0, rect) != 0) {
+				int oldWidth = rect.right - rect.left, oldHeight = rect.bottom - rect.top;
+				if (oldWidth == width && oldHeight == height) flags |= OS.SWP_NOSIZE;
+			}
 		}
 		flags |= OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
 		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
