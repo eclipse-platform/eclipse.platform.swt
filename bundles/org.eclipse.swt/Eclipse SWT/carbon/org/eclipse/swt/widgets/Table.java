@@ -2000,9 +2000,7 @@ void showIndex (int index) {
 		}
 		int [] top = new int [1], left = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, top, left);
-		int id = columnCount == 0 ? column_id : columns [0].id;
-		if ((style & SWT.CHECK) != 0) id = CHECK_COLUMN_ID;
-		OS.RevealDataBrowserItem (handle, index + 1, id, (byte) OS.kDataBrowserRevealWithoutSelecting);
+		OS.RevealDataBrowserItem (handle, index + 1, OS.kDataBrowserNoItem, (byte) OS.kDataBrowserRevealWithoutSelecting);
 
 		/*
 		* Bug in the Macintosh.  For some reason, when the DataBrowser is scrolled
@@ -2011,8 +2009,8 @@ void showIndex (int index) {
 		*/
 		int [] newTop = new int [1], newLeft = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, newTop, newLeft);
-		if (horizontalBar != null && newLeft [0] != left [0]) horizontalBar.redraw ();
-		if (verticalBar != null && newTop [0] != top [0]) verticalBar.redraw ();
+		if (horizontalBar != null && newLeft [0] != left [0]) redraw ();
+		if (verticalBar != null && newTop [0] != top [0]) redraw ();
 	}
 }
 
