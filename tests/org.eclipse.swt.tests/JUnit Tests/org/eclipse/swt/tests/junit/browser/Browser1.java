@@ -162,7 +162,13 @@ public class Browser1 {
 		final boolean[] timeout = {false};
 		new Thread() {
 			public void run() {
-				try {Thread.sleep(seconds * 1000);} catch (Exception e) {}
+				try {
+					for (int i = 0; i < seconds; i++) {
+						Thread.sleep(1000);
+						if (display.isDisposed() || shell.isDisposed()) return;
+					}
+				}
+				catch (Exception e) {} 
 				timeout[0] = true;
 				/* wake up the event loop */
 				if (!display.isDisposed()) {
@@ -180,7 +186,7 @@ public class Browser1 {
 	
 	public static boolean test() {
 		int fail = 0;
-		String[] urls = {"http://www.eclipse.org", "http://www.ibm.com", "http://www.cnn.com"};
+		String[] urls = {"http://www.eclipse.org", "http://www.cnn.com", "http://www.ibm.com"};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test1(urls[i]); 
 			System.out.print(result ? "." : "E");
