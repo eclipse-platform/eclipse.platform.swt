@@ -346,11 +346,10 @@ void setBounds (int x, int y, int width, int height, int flags) {
 
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	int flags = OS.ESB_DISABLE_BOTH;
-	if (enabled) flags = OS.ESB_ENABLE_BOTH;
 	if (OS.IsWinCE) {
 		super.setEnabled (enabled);
 	} else {
+		int flags = enabled ? OS.ESB_ENABLE_BOTH : OS.ESB_DISABLE_BOTH;
 		OS.EnableScrollBar (handle, OS.SB_CTL, flags);
 	}
 	state &= ~DISABLED;

@@ -523,20 +523,18 @@ int scrollBarType () {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	int hwnd = hwndScrollBar (), type = scrollBarType ();
-	int flags = OS.ESB_DISABLE_BOTH;
-	if (enabled) flags = OS.ESB_ENABLE_BOTH;
-	if (OS.IsWinCE) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-		// error (SWT.ERROR_NOT_IMPLEMENTED);
-	} else {
+	/*
+	* This line is intentionally commented.  Currently
+	* always show scrollbar as being enabled and visible.
+	*/
+//	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
+	if (!OS.IsWinCE) {
+		int hwnd = hwndScrollBar (), type = scrollBarType ();
+		int flags = enabled ? OS.ESB_ENABLE_BOTH : OS.ESB_DISABLE_BOTH;
 		OS.EnableScrollBar (hwnd, type, flags);
+		state &= ~DISABLED;
+		if (!enabled) state |= DISABLED;
 	}
-	state &= ~DISABLED;
-	if (!enabled) state |= DISABLED;
 }
 
 /**
@@ -906,18 +904,13 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	int hwnd = hwndScrollBar (), type = scrollBarType ();
-	if (OS.IsWinCE) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-		// error (SWT.ERROR_NOT_IMPLEMENTED);
-		state &= ~HIDDEN;
-		if (!visible) state |= HIDDEN;
-		sendEvent (visible ? SWT.Show : SWT.Hide);
-		// widget could be disposed at this point
-	} else {
+	/*
+	* This line is intentionally commented.  Currently
+	* always show scrollbar as being enabled and visible.
+	*/
+//	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
+	if (!OS.IsWinCE) {
+		int hwnd = hwndScrollBar (), type = scrollBarType ();
 		if (OS.ShowScrollBar (hwnd, type, visible)) {
 			/*
 			* Bug in Windows.  For some reason, when the widget
