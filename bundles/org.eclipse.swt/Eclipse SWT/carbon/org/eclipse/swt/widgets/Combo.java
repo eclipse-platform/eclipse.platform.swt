@@ -957,6 +957,9 @@ public void remove (int index) {
 	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.DeleteMenuItems (menuHandle, (short)(index+1), 1);
+		if (index == OS.GetControlValue (handle) - 1) {
+			OS.SetControl32BitValue (handle, 0);
+		}
 	} else {
 		OS.HIComboBoxRemoveItemAtIndex (handle, index);
 	}
@@ -989,7 +992,10 @@ public void remove (int start, int end) {
 	int newEnd = Math.min (end, count - 1);
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.DeleteMenuItems (menuHandle, (short)(start+1), newEnd-start+1);
-		OS.SetControl32BitMaximum (handle, OS.CountMenuItems (menuHandle));
+		int index = OS.GetControlValue (handle) - 1;
+		if (start <= index && index <= end) {
+			OS.SetControl32BitValue (handle, 0);
+		}
 	} else {
 		// NEEDS WORK
 		for (int i=newEnd; i>=start; i--) {
@@ -1045,6 +1051,7 @@ public void removeAll () {
 	int count = getItemCount ();
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.DeleteMenuItems (menuHandle, (short)1, count);
+		OS.SetControl32BitValue (handle, 0);
 	} else {
 		// NEEDS WORK
 		if (count > 0) {
