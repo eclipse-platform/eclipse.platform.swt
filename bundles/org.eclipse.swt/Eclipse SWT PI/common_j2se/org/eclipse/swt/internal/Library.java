@@ -76,7 +76,7 @@ public static void loadLibrary (String name) {
      * Include platform name to support different windowing systems
      * on same operating system.
 	 */
-	String platform = Platform.PLATFORM;
+	String platform = getPlatform ();
 	
 	/*
 	 * Get version qualifier.
