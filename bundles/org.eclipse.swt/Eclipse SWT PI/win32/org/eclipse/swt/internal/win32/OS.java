@@ -1146,6 +1146,7 @@ public class OS {
 	public static final int TVIF_SELECTEDIMAGE = 0x20;
 	public static final int TVIF_STATE = 0x8;
 	public static final int TVIF_TEXT = 0x1;
+	public static final int TVIS_DROPHILITED = 0x8;
 	public static final int TVIS_EXPANDED = 0x20;
 	public static final int TVIS_SELECTED = 0x2;
 	public static final int TVIS_STATEIMAGEMASK = 0xf000;
