@@ -3988,7 +3988,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3SI)
 	NATIVE_ENTER(env, that, "MoveMemory__I_3SI\n")
 	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3SI\n")
 }
 #endif
@@ -4001,7 +4001,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3FI)
 	NATIVE_ENTER(env, that, "MoveMemory__I_3FI\n")
 	if (arg1) lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3FI\n")
 }
 #endif
@@ -4014,7 +4014,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3DI)
 	NATIVE_ENTER(env, that, "MoveMemory__I_3DI\n")
 	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3DI\n")
 }
 #endif
@@ -4066,7 +4066,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_DR
 	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I\n")
 	if (arg1) lparg1 = getDROPFILESFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) setDROPFILESFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I\n")
 }
 #endif
@@ -4077,7 +4076,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_MSG
 {
 	MSG _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II\n")
-	if (arg0) lparg0 = getMSGFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setMSGFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II\n")
@@ -4090,7 +4089,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_WIN
 {
 	WINDOWPOS _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_WINDOWPOS_2II\n")
-	if (arg0) lparg0 = getWINDOWPOSFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setWINDOWPOSFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_WINDOWPOS_2II\n")
@@ -4103,7 +4102,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_TVI
 {
 	TVITEM _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II\n")
-	if (arg0) lparg0 = getTVITEMFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setTVITEMFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II\n")
@@ -4116,7 +4115,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMT
 {
 	NMTTDISPINFOA _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II\n")
-	if (arg0) lparg0 = getNMTTDISPINFOAFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setNMTTDISPINFOAFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II\n")
@@ -4129,7 +4128,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMT
 {
 	NMTTDISPINFOW _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II\n")
-	if (arg0) lparg0 = getNMTTDISPINFOWFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setNMTTDISPINFOWFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II\n")
@@ -4142,7 +4141,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMT
 {
 	NMTOOLBAR _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2II\n")
-	if (arg0) lparg0 = getNMTOOLBARFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setNMTOOLBARFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2II\n")
@@ -4155,7 +4154,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMR
 {
 	NMREBARCHEVRON _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II\n")
-	if (arg0) lparg0 = getNMREBARCHEVRONFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setNMREBARCHEVRONFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II\n")
@@ -4168,7 +4167,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NML
 {
 	NMLISTVIEW _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2II\n")
-	if (arg0) lparg0 = getNMLISTVIEWFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setNMLISTVIEWFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2II\n")
@@ -4181,7 +4180,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMH
 {
 	NMHEADER _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMHEADER_2II\n")
-	if (arg0) lparg0 = getNMHEADERFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setNMHEADERFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMHEADER_2II\n")
@@ -4196,7 +4195,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_NM
 	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I\n")
 	if (arg1) lparg1 = getNMTVCUSTOMDRAWFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) setNMTVCUSTOMDRAWFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I\n")
 }
 #endif
@@ -4209,7 +4207,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_NM
 	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2I\n")
 	if (arg1) lparg1 = getNMLVCUSTOMDRAWFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) setNMLVCUSTOMDRAWFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2I\n")
 }
 #endif
@@ -4220,7 +4217,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMT
 {
 	NMTVCUSTOMDRAW _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II\n")
-	if (arg0) lparg0 = getNMTVCUSTOMDRAWFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setNMTVCUSTOMDRAWFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II\n")
@@ -4233,7 +4230,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NML
 {
 	NMLVCUSTOMDRAW _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2II\n")
-	if (arg0) lparg0 = getNMLVCUSTOMDRAWFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setNMLVCUSTOMDRAWFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2II\n")
@@ -4246,7 +4243,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMH
 {
 	NMHDR _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMHDR_2II\n")
-	if (arg0) lparg0 = getNMHDRFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setNMHDRFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMHDR_2II\n")
@@ -4259,7 +4256,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_MEA
 {
 	MEASUREITEMSTRUCT _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II\n")
-	if (arg0) lparg0 = getMEASUREITEMSTRUCTFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setMEASUREITEMSTRUCTFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II\n")
@@ -4272,7 +4269,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_LOG
 {
 	LOGFONTA _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2II\n")
-	if (arg0) lparg0 = getLOGFONTAFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setLOGFONTAFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2II\n")
@@ -4285,7 +4282,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_LOG
 {
 	LOGFONTW _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTW_2II\n")
-	if (arg0) lparg0 = getLOGFONTWFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setLOGFONTWFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTW_2II\n")
@@ -4298,7 +4295,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_HEL
 {
 	HELPINFO _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II\n")
-	if (arg0) lparg0 = getHELPINFOFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setHELPINFOFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II\n")
@@ -4311,7 +4308,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_HDI
 {
 	HDITEM _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II\n")
-	if (arg0) lparg0 = getHDITEMFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setHDITEMFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II\n")
@@ -4324,7 +4321,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_DRA
 {
 	DRAWITEMSTRUCT _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II\n")
-	if (arg0) lparg0 = getDRAWITEMSTRUCTFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setDRAWITEMSTRUCTFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II\n")
@@ -4338,7 +4335,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_BIT
 	BITMAPINFOHEADER _arg0, *lparg0=NULL;
 	jbyte *lparg1=NULL;
 	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI\n")
-	if (arg0) lparg0 = getBITMAPINFOHEADERFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
 	if (arg0) setBITMAPINFOHEADERFields(env, arg0, lparg0);
@@ -4368,7 +4365,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_TR
 	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I\n")
 	if (arg1) lparg1 = getTRIVERTEXFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) setTRIVERTEXFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I\n")
 }
 #endif
@@ -4381,7 +4377,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_RE
 	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I\n")
 	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) setRECTFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I\n")
 }
 #endif
@@ -4394,7 +4389,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_NM
 	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I\n")
 	if (arg1) lparg1 = getNMTTDISPINFOAFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) setNMTTDISPINFOAFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I\n")
 }
 #endif
@@ -4407,7 +4401,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_NM
 	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I\n")
 	if (arg1) lparg1 = getNMTTDISPINFOWFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) setNMTTDISPINFOWFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I\n")
 }
 #endif
@@ -4420,7 +4413,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_ME
 	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I\n")
 	if (arg1) lparg1 = getMEASUREITEMSTRUCTFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) setMEASUREITEMSTRUCTFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I\n")
 }
 #endif
@@ -4433,7 +4425,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_LO
 	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I\n")
 	if (arg1) lparg1 = getLOGFONTAFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) setLOGFONTAFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I\n")
 }
 #endif
@@ -4446,7 +4437,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_LO
 	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTW_2I\n")
 	if (arg1) lparg1 = getLOGFONTWFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) setLOGFONTWFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTW_2I\n")
 }
 #endif
@@ -4459,7 +4449,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_GR
 	NATIVE_ENTER(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I\n")
 	if (arg1) lparg1 = getGRADIENT_RECTFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) setGRADIENT_RECTFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I\n")
 }
 #endif
@@ -4472,7 +4461,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3II)
 	NATIVE_ENTER(env, that, "MoveMemory__I_3II\n")
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3II\n")
 }
 #endif
@@ -4485,7 +4474,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3CI)
 	NATIVE_ENTER(env, that, "MoveMemory__I_3CI\n")
 	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3CI\n")
 }
 #endif
@@ -4498,7 +4487,7 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3BI)
 	NATIVE_ENTER(env, that, "MoveMemory__I_3BI\n")
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MoveMemory__I_3BI\n")
 }
 #endif
@@ -4527,7 +4516,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3BLorg_eclipse_swt_internal_win32_
 	if (arg1) lparg1 = getBITMAPINFOHEADERFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	if (arg1) setBITMAPINFOHEADERFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory___3BLorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2I\n")
 }
 #endif
@@ -4543,7 +4531,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3BLorg_eclipse_swt_internal_win32_
 	if (arg1) lparg1 = getACCELFields(env, arg1, &_arg1);
 	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	if (arg1) setACCELFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "MoveMemory___3BLorg_eclipse_swt_internal_win32_ACCEL_2I\n")
 }
 #endif
