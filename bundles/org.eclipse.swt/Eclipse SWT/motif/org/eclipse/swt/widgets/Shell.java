@@ -943,7 +943,7 @@ public void open () {
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
-	propagateHandle (enabled, shellHandle);
+	propagateHandle (enabled, shellHandle, OS.None);
 }
 void realizeWidget () {
 	if (realized) return;

@@ -379,7 +379,7 @@ void manageChildren () {
 	OS.XtManageChild (handle);
 }
 void propagateWidget (boolean enabled) {
-	propagateHandle (enabled, handle);
+	propagateHandle (enabled, handle, OS.None);
 }
 void releaseChild () {
 	super.releaseChild ();

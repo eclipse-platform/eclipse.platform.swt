@@ -234,7 +234,7 @@ boolean mnemonicMatch (char key) {
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
-	propagateHandle (enabled, labelHandle);
+	propagateHandle (enabled, labelHandle, OS.None);
 }
 void redrawWidget (int x, int y, int width, int height, boolean all) {
 	super.redrawWidget (x, y, width, height, all);

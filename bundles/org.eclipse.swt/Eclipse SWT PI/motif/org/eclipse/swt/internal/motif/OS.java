@@ -136,7 +136,7 @@ public class OS {
 //	public static final int CWBorderPixmap = 0x4;
 //	public static final int CWBorderWidth = 0x10;
 //	public static final int CWColormap = 0x2000;
-//	public static final int CWCursor = 0x4000;
+	public static final int CWCursor = 0x4000;
 	public static final int CWDontPropagate = 0x1000;
 	public static final int CWEventMask = 0x800;
 	public static final int CWHeight = 0x8;

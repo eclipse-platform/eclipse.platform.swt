@@ -843,7 +843,7 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return parent.translateTraversal (key, xEvent);
 }
 void propagateWidget (boolean enabled) {
-	propagateHandle (enabled, handle);
+	propagateHandle (enabled, handle, OS.None);
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
 	Display display = getDisplay ();

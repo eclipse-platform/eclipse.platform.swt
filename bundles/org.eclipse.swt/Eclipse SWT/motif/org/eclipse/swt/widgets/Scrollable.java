@@ -237,9 +237,9 @@ void manageChildren () {
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
-	if (formHandle != 0) propagateHandle (enabled, formHandle);
+	if (formHandle != 0) propagateHandle (enabled, formHandle, OS.None);
 	if (scrolledHandle != 0) {
-		propagateHandle (enabled, scrolledHandle);
+		propagateHandle (enabled, scrolledHandle, OS.None);
 		if (horizontalBar != null) horizontalBar.propagateWidget (enabled);
 		if (verticalBar != null) verticalBar.propagateWidget (enabled);
 	}

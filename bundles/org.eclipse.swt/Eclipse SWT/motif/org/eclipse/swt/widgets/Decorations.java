@@ -325,7 +325,7 @@ void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
 	int [] argList = {OS.XmNmenuBar, 0};
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
-	if (argList [1] != 0) propagateHandle (enabled, argList [1]);
+	if (argList [1] != 0) propagateHandle (enabled, argList [1], OS.None);
 }
 void releaseHandle () {
 	super.releaseHandle ();
@@ -510,13 +510,13 @@ public void setMenuBar (Menu menu) {
 	/* Ensure the new menu bar is correctly enabled */
 	if (menuBar != null) {
 		if (!isEnabled () && menuBar.getEnabled ()) {
-			propagateHandle (true, menuBar.handle); 
+			propagateHandle (true, menuBar.handle, OS.None); 
 		}
 		menuBar.removeAccelerators ();
 	}
 	if (menu != null) {
 		if (!isEnabled ()) {
-			propagateHandle (false, menu.handle); 
+			propagateHandle (false, menu.handle, OS.None); 
 		}
 		menu.addAccelerators ();
 	}

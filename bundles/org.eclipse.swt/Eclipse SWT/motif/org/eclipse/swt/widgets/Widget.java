@@ -547,7 +547,7 @@ void postEvent (int eventType) {
 void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
 }
-void propagateHandle (boolean enabled, int widgetHandle) {
+void propagateHandle (boolean enabled, int widgetHandle, int cursor) {
 	int xDisplay = OS.XtDisplay (widgetHandle);
 	if (xDisplay == 0) return;
 	int xWindow = OS.XtWindow (widgetHandle);
@@ -571,10 +571,12 @@ void propagateHandle (boolean enabled, int widgetHandle) {
 		event_mask &= ~(do_not_propagate_mask | OS.EnterWindowMask | OS.LeaveWindowMask);
 		do_not_propagate_mask = 0;
 	}
+	int mask = OS.CWDontPropagate | OS.CWEventMask | OS.CWCursor;
 	XSetWindowAttributes attributes = new XSetWindowAttributes ();
 	attributes.event_mask = event_mask;
 	attributes.do_not_propagate_mask = do_not_propagate_mask;
-	OS.XChangeWindowAttributes (xDisplay, xWindow, OS.CWDontPropagate | OS.CWEventMask, attributes);
+	attributes.cursor = cursor;
+	OS.XChangeWindowAttributes (xDisplay, xWindow, mask, attributes);
 }
 void redrawHandle (int x, int y, int width, int height, int widgetHandle) {
 	int display = OS.XtDisplay (widgetHandle);

@@ -37,8 +37,6 @@ public class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
 	int cursor;
-	
-	// constants
 	private final static int INCREMENT = 1;
 	private final static int PAGE_INCREMENT = 9;
 
@@ -159,16 +157,18 @@ void drawBand (int x, int y, int width, int height) {
 }
 void realizeChildren () {
 	super.realizeChildren ();
-	int window = OS.XtWindow (handle);
-	if (window == 0) return;
-	int display = OS.XtDisplay (handle);
-	if (display == 0) return;
+	int xWindow = OS.XtWindow (handle);
+	if (xWindow == 0) return;
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return;
 	if ((style & SWT.HORIZONTAL) != 0) {
-		cursor = OS.XCreateFontCursor (display, OS.XC_sb_v_double_arrow);
+		cursor = OS.XCreateFontCursor (xDisplay, OS.XC_sb_v_double_arrow);
 	} else {
-		cursor = OS.XCreateFontCursor (display, OS.XC_sb_h_double_arrow);
+		cursor = OS.XCreateFontCursor (xDisplay, OS.XC_sb_h_double_arrow);
 	}
-	OS.XDefineCursor (display, window, cursor);
+	if (super.cursor != null) return;
+	if (!isEnabled ()) return;
+	OS.XDefineCursor (xDisplay, xWindow, cursor);
 }
 void releaseWidget () {
 	super.releaseWidget ();
@@ -201,6 +201,18 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);	
+}
+public void setCursor (Cursor cursor) {
+	checkWidget();
+	super.setCursor (cursor);
+	if (cursor == null && this.cursor != 0) {
+		int xWindow = OS.XtWindow (handle);
+		if (xWindow == 0) return;
+		int xDisplay = OS.XtDisplay (handle);
+		if (xDisplay == 0) return;
+		OS.XDefineCursor (xDisplay, xWindow, this.cursor);
+		OS.XFlush (xDisplay);
+	}
 }
 public boolean setFocus () {
 	checkWidget();

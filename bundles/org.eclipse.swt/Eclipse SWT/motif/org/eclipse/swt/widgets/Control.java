@@ -13,8 +13,8 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.accessibility.*;
 
@@ -40,6 +40,7 @@ import org.eclipse.swt.accessibility.*;
  */
 public abstract class Control extends Widget implements Drawable {
 	Composite parent;
+	Cursor cursor;
 	Font font;
 	Menu menu;
 	String toolTipText;
@@ -1321,10 +1322,20 @@ void propagateChildren (boolean enabled) {
 	propagateWidget (enabled);
 }
 void propagateWidget (boolean enabled) {
-	propagateHandle (enabled, handle);
+	int xCursor = enabled && cursor != null ? cursor.handle : OS.None;
+	propagateHandle (enabled, handle, xCursor);
 }
 void realizeChildren () {
-	if (!isEnabled ()) propagateWidget (false);
+	if (isEnabled ()) {
+		if (cursor == null) return;
+		int xWindow = OS.XtWindow (handle);
+		if (xWindow == 0) return;
+		int xDisplay = OS.XtDisplay (handle);
+		if (xDisplay == 0) return;
+		OS.XDefineCursor (xDisplay, xWindow, cursor.handle);
+	} else {
+		propagateWidget (false);
+	}
 }
 /**
  * Causes the entire bounds of the receiver to be marked
@@ -1882,21 +1893,18 @@ public void setCapture (boolean capture) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget();
-	int display = OS.XtDisplay (handle);
-	if (display == 0) return;
-	int window = OS.XtWindow (handle);
-	if (window == 0) {
-		if (!OS.XtIsRealized (handle)) getShell ().realizeWidget ();
-		window = OS.XtWindow (handle);
-		if (window == 0) return;
-	}
+	this.cursor = cursor;
+	if (!isEnabled ()) return;
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (handle);
+	if (xWindow == 0) return;
 	if (cursor == null) {
-		OS.XUndefineCursor (display, window);
+		OS.XUndefineCursor (xDisplay, xWindow);
 	} else {
 		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		int xCursor = cursor.handle;
-		OS.XDefineCursor (display, window, xCursor);
-		OS.XFlush (display);
+		OS.XDefineCursor (xDisplay, xWindow, cursor.handle);
+		OS.XFlush (xDisplay);
 	}
 }
 /**
