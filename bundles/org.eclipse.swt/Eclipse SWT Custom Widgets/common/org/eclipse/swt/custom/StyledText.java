@@ -2618,8 +2618,8 @@ void doLineUp() {
 		else {
 			caretOffset = getOffsetAtMouseLocation(caretX, line);
 		}		
-		showCaret();
 	}
+	showCaret();
 }
 /**
  * Moves the caret to the specified location.
@@ -2683,8 +2683,11 @@ void doPageDown(boolean select) {
 	int line = content.getLineAtOffset(caretOffset);
 	int lineCount = content.getLineCount();
 	
-	// do nothing if in single line mode. fixes 5673	
-	if (line < lineCount - 1 && isSingleLine() == false) {
+	// do nothing if in single line mode. fixes 5673
+	if (isSingleLine()) {
+		return;
+	}
+	if (line < lineCount - 1) {
 		int offsetInLine = caretOffset - content.getOffsetAtLine(line);
 		int verticalMaximum = content.getLineCount() * getVerticalIncrement();
 		int pageSize = getClientArea().height;
@@ -2714,10 +2717,8 @@ void doPageDown(boolean select) {
 		if (scrollOffset > verticalScrollOffset) {
 			setVerticalScrollOffset(scrollOffset, true);
 		}
-		else {
-			showCaret();
-		}
 	}
+	showCaret();
 }
 /**
  * Moves the cursor to the end of the last fully visible line.
@@ -2760,6 +2761,7 @@ void doPageStart() {
  */
 void doPageUp() {
 	int line = content.getLineAtOffset(caretOffset);
+
 	if (line > 0) {	
 		int offsetInLine = caretOffset - content.getOffsetAtLine(line);
 		int scrollLines = Math.max(1, Math.min(line, getLineCountWhole()));
@@ -2779,10 +2781,8 @@ void doPageUp() {
 		if (scrollOffset < verticalScrollOffset) {		
 			setVerticalScrollOffset(scrollOffset, true);
 		}
-		else {
-			showCaret();
-		}
 	}
+	showCaret();
 }
 /**
  * Updates the selection to extend to the current caret position.
