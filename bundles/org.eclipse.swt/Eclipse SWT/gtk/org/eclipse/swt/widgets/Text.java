@@ -809,7 +809,7 @@ void hookEvents () {
 public void insert (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string);
+	byte [] buffer = Converter.wcsToMbcs (null, string, false);
 	if ((style & SWT.SINGLE) != 0) {
 		int [] start = new int [1];
 		int [] end = new int [1];
@@ -924,7 +924,7 @@ int processVerify (int int0, int int1, int int2) {
 			return 0;
 		}
 		if (newText != oldText) {
-			byte [] buffer3 = Converter.wcsToMbcs (null, newText);
+			byte [] buffer3 = Converter.wcsToMbcs (null, newText, false);
 			blockSignal (bufferHandle, SWT.Verify);
 			OS.gtk_editable_insert_text (handle, buffer3, buffer3.length, position);
 			unblockSignal (bufferHandle, SWT.Verify);
@@ -944,7 +944,7 @@ int processVerify (int int0, int int1, int int2) {
 			return 0;
 		}
 		if (newText != oldText) {
-			byte [] buffer1 = Converter.wcsToMbcs (null, newText);
+			byte [] buffer1 = Converter.wcsToMbcs (null, newText, false);
 			blockSignal (bufferHandle, SWT.Verify);
 			OS.gtk_text_buffer_insert (bufferHandle, iter, buffer1, buffer1.length);
 			unblockSignal (bufferHandle, SWT.Verify);
@@ -1297,7 +1297,7 @@ void setTabStops (int tabs) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string);
+	byte [] buffer = Converter.wcsToMbcs (null, string, false);
 	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_editable_delete_text (handle, 0, -1);
 		int [] position = new int [1];

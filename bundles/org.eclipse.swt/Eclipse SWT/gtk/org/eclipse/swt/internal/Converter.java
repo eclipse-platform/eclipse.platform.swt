@@ -43,19 +43,11 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 	return chars;
 }
 
-public static byte [] wcsToMbcs (String codePage, String string) {
-	return wcsToMbcs (codePage, string, false);
-}
-
 public static byte [] wcsToMbcs (String codePage, String string, boolean terminate) {
 	int length = string.length ();
 	char [] buffer = new char [length];
 	string.getChars (0, length, buffer, 0);
 	return wcsToMbcs (codePage, buffer, terminate);
-}
-
-public static byte [] wcsToMbcs (String codePage, char [] buffer) {
-	return wcsToMbcs (codePage, buffer, false);
 }
 
 public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean terminate) {

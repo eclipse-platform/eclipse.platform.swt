@@ -684,7 +684,7 @@ public void setText (String string) {
 		string = string.substring (0, index);
 	}
 	char [] chars = fixMnemonic (string);
-	byte [] buffer = Converter.wcsToMbcs (null, chars);
+	byte [] buffer = Converter.wcsToMbcs (null, chars, false);
 	int label = OS.gtk_bin_get_child (handle);
 	OS.gtk_label_set_text_with_mnemonic (label, buffer);
 	buffer = Converter.wcsToMbcs (null, accelString, true);
