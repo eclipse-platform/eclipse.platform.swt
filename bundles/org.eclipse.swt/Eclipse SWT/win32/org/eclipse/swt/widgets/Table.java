@@ -149,6 +149,26 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
+boolean checkData (TableItem item, boolean redraw) {
+	if (item.cached) return true;
+	if ((style & SWT.VIRTUAL) != 0) {
+		item.cached = true;
+		Event event = new Event ();
+		event.item = item;
+		ignoreRedraw = true;
+		sendEvent (SWT.SetData, event);
+		//widget could be disposed at this point
+		ignoreRedraw = false;
+		if (isDisposed () || item.isDisposed ()) return false;
+		if (redraw) {
+			if (!setScrollWidth (item, false)) {
+				item.redraw (-1, true, true);
+			}
+		}
+	}
+	return true;
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -517,9 +537,9 @@ void createHandle () {
 	OS.HeapFree (hHeap, 0, pszText);
 
 	/* Set the extended style bits */
-	int bits = OS.LVS_EX_SUBITEMIMAGES | OS.LVS_EX_LABELTIP;
-	if ((style & SWT.FULL_SELECTION) != 0) bits |= OS.LVS_EX_FULLROWSELECT;
-	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+	int bits1 = OS.LVS_EX_SUBITEMIMAGES | OS.LVS_EX_LABELTIP;
+	if ((style & SWT.FULL_SELECTION) != 0) bits1 |= OS.LVS_EX_FULLROWSELECT;
+	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits1, bits1);
 	
 	/*
 	* Feature in Windows.  Windows does not explicitly set the orientation of
@@ -534,8 +554,8 @@ void createHandle () {
 	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		int exStyle = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
-		OS.SetWindowLong (hwndHeader, OS.GWL_EXSTYLE, exStyle | OS.WS_EX_LAYOUTRTL);
+		int bits2 = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
+		OS.SetWindowLong (hwndHeader, OS.GWL_EXSTYLE, bits2 | OS.WS_EX_LAYOUTRTL);
 	}
 }
 
@@ -3202,15 +3222,14 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
 			lastIndexOf = plvfi.iItem;
 			TableItem item = _getItem (plvfi.iItem);
+			/*
+			* The cached flag is used by both virtual and non-virtual
+			* tables to indicate that Windows has asked at least once
+			* for a table item.
+			*/
 			if (!item.cached) {
 				if ((style & SWT.VIRTUAL) != 0) {
-					Event event = new Event ();
-					event.item = item;
-					ignoreRedraw = true;
-					sendEvent (SWT.SetData, event);
-					//widget could be disposed at this point
-					if (isDisposed ()) break;
-					ignoreRedraw = false;
+					if (!checkData (item, false)) break;
 					TableItem newItem = fixScrollWidth ? null : item;
 					if (setScrollWidth (newItem, true)) redraw ();
 				}

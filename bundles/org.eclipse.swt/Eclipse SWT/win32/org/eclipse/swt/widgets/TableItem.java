@@ -148,6 +148,7 @@ void clear () {
  */
 public Color getBackground () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int pixel = (background == -1) ? parent.getBackgroundPixel() : background;
 	return Color.win32_new (display, pixel);
 }
@@ -167,6 +168,7 @@ public Color getBackground () {
  */
 public Color getBackground (int index) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return getBackground ();
 	int pixel = cellBackground != null ? cellBackground [index] : -1;
@@ -187,6 +189,7 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	int hwnd = parent.handle;	
@@ -239,6 +242,7 @@ public Rectangle getBounds (int index) {
  */
 public boolean getChecked () {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	return checked;
 }
@@ -257,6 +261,7 @@ public boolean getChecked () {
  */
 public Font getFont () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return font == -1 ? parent.getFont () : Font.win32_new (display, font);
 }
 
@@ -276,6 +281,7 @@ public Font getFont () {
  */
 public Font getFont (int index) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getFont ();
 	int hFont = (cellFont != null) ? cellFont [index] : font;
@@ -297,6 +303,7 @@ public Font getFont (int index) {
  */
 public Color getForeground () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int pixel = (foreground == -1) ? parent.getForegroundPixel () : foreground;
 	return Color.win32_new (display, pixel);
 }
@@ -317,6 +324,7 @@ public Color getForeground () {
  */
 public Color getForeground (int index) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getForeground ();
 	int pixel = cellForeground != null ? cellForeground [index] : -1;
@@ -337,8 +345,15 @@ public Color getForeground (int index) {
  */
 public boolean getGrayed () {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	return grayed;
+}
+
+public Image getImage () {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return super.getImage ();
 }
 
 /**
@@ -355,7 +370,8 @@ public boolean getGrayed () {
  */
 public Image getImage (int index) {
 	checkWidget();
-	if (index == 0) return super.getImage ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index == 0) return getImage ();
 	if (images != null) {
 		if (0 <= index && index < images.length) return images [index];
 	}
@@ -377,6 +393,7 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	int hwnd = parent.handle;	
@@ -439,6 +456,7 @@ public Rectangle getImageBounds (int index) {
  */
 public int getImageIndent () {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return imageIndent;
 }
 
@@ -457,6 +475,12 @@ public Table getParent () {
 	return parent;
 }
 
+public String getText () {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return super.getText ();
+}
+
 /**
  * Returns the text stored at the given column index in the receiver,
  * or empty string if the text has not been set.
@@ -471,7 +495,8 @@ public Table getParent () {
  */
 public String getText (int index) {
 	checkWidget();
-	if (index == 0) return super.getText ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index == 0) return getText ();
 	if (strings != null) {
 		if (0 <= index && index < strings.length) {
 			String string = strings [index];
