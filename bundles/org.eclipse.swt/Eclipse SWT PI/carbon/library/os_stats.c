@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 758;
-int OS_nativeFunctionCallCount[758];
+int OS_nativeFunctionCount = 759;
+int OS_nativeFunctionCallCount[759];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems", 
 	"AEGetNthPtr", 
@@ -181,6 +181,7 @@ char * OS_nativeFunctionNames[] = {
 	"CreateEvent", 
 	"CreateGroupBoxControl", 
 	"CreateIconControl", 
+	"CreateLittleArrowsControl", 
 	"CreateNewMenu", 
 	"CreateNewWindow", 
 	"CreatePopupArrowControl", 

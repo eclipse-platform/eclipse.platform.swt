@@ -2299,6 +2299,25 @@ failTag:
 }
 #endif
 
+#ifndef NO_CreateLittleArrowsControl
+JNIEXPORT jint JNICALL OS_NATIVE(CreateLittleArrowsControl)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jint arg4, jint arg5, jintArray arg6)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg6=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CreateLittleArrowsControl_FUNC);
+	if (arg1) if ((lparg1 = getRectFields(env, arg1, &_arg1)) == NULL) goto failTag;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto failTag;
+	rc = (jint)CreateLittleArrowsControl((WindowRef)arg0, (const Rect *)lparg1, arg2, arg3, arg4, arg5, (ControlRef *)lparg6);
+failTag:
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CreateLittleArrowsControl_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateNewMenu
 JNIEXPORT jint JNICALL OS_NATIVE(CreateNewMenu)
 	(JNIEnv *env, jclass that, jshort arg0, jint arg1, jintArray arg2)

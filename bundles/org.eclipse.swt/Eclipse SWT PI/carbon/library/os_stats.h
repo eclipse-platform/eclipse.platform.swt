@@ -185,6 +185,7 @@ typedef enum {
 	CreateEvent_FUNC,
 	CreateGroupBoxControl_FUNC,
 	CreateIconControl_FUNC,
+	CreateLittleArrowsControl_FUNC,
 	CreateNewMenu_FUNC,
 	CreateNewWindow_FUNC,
 	CreatePopupArrowControl_FUNC,

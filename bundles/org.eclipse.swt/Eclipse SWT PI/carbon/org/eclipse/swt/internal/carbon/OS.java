@@ -124,6 +124,7 @@ public class OS {
 	public static final int kControlDataBrowserIncludesFrameAndFocusTag = ('b'<<24) + ('r'<<16) + ('d'<<8) + 'r';
 	public static final int kControlDownButtonPart = 21;
 	public static final int kControlEditTextCFStringTag = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
+	public static final int kControlEditTextLockedTag = ('l'<<24) + ('o'<<16) + ('c'<<8) + 'k';
 	public static final int kControlEditTextSingleLineTag = ('s'<<24) + ('g'<<16) + ('l'<<8) + 'c';
 	public static final int kControlEditTextSelectionTag = ('s'<<24) + ('e'<<16) + ('l'<<8) + 'e';
 	public static final int kControlEditTextTextTag = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
@@ -560,6 +561,8 @@ public class OS {
 	public static final int kThemeMetricEditTextWhitespace = 4;
 	public static final int kThemeMetricFocusRectOutset = 7;
 	public static final int kThemeMetricHSliderHeight = 41;
+	public static final int kThemeMetricLittleArrowsHeight = 27;
+	public static final int kThemeMetricLittleArrowsWidth = 28;
 	public static final int kThemeMetricMenuTextTrailingEdgeMargin = 67;
 	public static final int kThemeMetricMenuIconTrailingEdgeMargin = 69;
 	public static final int kThemeMetricNormalProgressBarThickness = 58;
@@ -837,6 +840,7 @@ public static final native int CreateDataBrowserControl(int window, Rect boundsR
 public static final native int CreateEvent(int allocator, int inClassID, int kind, double when, int flags, int[] outEventRef);
 public static final native int CreateGroupBoxControl(int window, Rect boundsRect, int title, boolean primary, int[] outControl);
 public static final native int CreateIconControl(int window, Rect boundsRect, ControlButtonContentInfo icon, boolean dontTrack, int[] outControl);
+public static final native int CreateLittleArrowsControl(int window, Rect boundsRect, int value, int minimum, int maximum, int increment, int[] outControl);
 public static final native int CreateNewMenu(short menuID, int menuAttributes, int[] outMenuRef);
 public static final native int CreateNewWindow(int windowClass, int attributes, Rect bounds, int[] wHandle);
 public static final native int CreatePopupArrowControl(int window, Rect boundsRect, short orientation, short size, int[] outControl);
