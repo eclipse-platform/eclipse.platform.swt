@@ -205,9 +205,6 @@ public class Display extends Device {
 	Caret currentCaret;
 	Callback caretCallback;
 	int caretID, caretProc;
-
-	/* Workaround for GP when disposing a display */
-	static boolean DisplayDisposed;
 			
 	/* Package name */
 	static final String PACKAGE_NAME;
@@ -441,7 +438,6 @@ void createDisplay (DeviceData data) {
 	
 	/* Create the XDisplay */
 	xDisplay = OS.XtOpenDisplay (xtContext, displayName, appName, appClass, 0, 0, argc, 0);
-	DisplayDisposed = false;
 }
 synchronized void deregister () {
 	for (int i=0; i<Displays.length; i++) {
@@ -454,12 +450,27 @@ protected void destroy () {
 	destroyDisplay ();
 }
 void destroyDisplay () {
+	/* 
+	* Bug in Motif. For some reason, XtAppCreateShell will GPF if called
+	* after a display has been closed. The fix is to destroy the XmDisplay
+	* associated with it.
+	* 
+	* int xContext = OS.XtCreateApplicationContext();
+	* int xDisplay = OS.XtOpenDisplay(xContext, null, null, null,  null, 0,  new int[1], null);
+	* OS.XtAppCreateShell(null, null, OS.topLevelShellWidgetClass(), xDisplay, null, 0);   
+	* OS.XtDestroyApplicationContext(xContext);
+	* xContext = OS.XtCreateApplicationContext();
+	* xDisplay = OS.XtOpenDisplay(xContext, null, null, null,  null, 0,  new int[1], null);
+	* OS.XtAppCreateShell(null, null, OS.topLevelShellWidgetClass(), xDisplay, null, 0);   
+	* OS.XtDestroyApplicationContext(xContext);
+	*/
+	OS.XtDestroyWidget (OS.XmGetXmDisplay (xDisplay));
+
 	/*
 	* Destroy AppContext (this destroys the display)
 	*/
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	OS.XtDestroyApplicationContext (xtContext);
-	DisplayDisposed = true;
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
