@@ -381,6 +381,8 @@ void createItem (CTabItem item, int index) {
 	}
 
 	layoutItems();
+	ensureVisible();
+	
 	if (items.length == 1) {
 		redraw();
 	} else {
@@ -435,6 +437,7 @@ void destroyItem (CTabItem item) {
 	}
 	
 	layoutItems();
+	ensureVisible();
 	redrawTabArea(-1);
 }
 /**
@@ -1256,7 +1259,8 @@ public void setSelection(int index) {
 	redrawTabArea(-1);
 }
 private void ensureVisible() {
-	// make sure item is visible
+	if (selectedIndex == -1) return;
+	// make sure selected item is visible
 	Rectangle area = super.getClientArea();
 	if (area.width == 0) return;
 	int areaWidth = area.x + area.width - BORDER_RIGHT;
