@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 633;
-int OS_nativeFunctionCallCount[633];
+int OS_nativeFunctionCount = 635;
+int OS_nativeFunctionCallCount[635];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -235,6 +235,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetPaletteEntries",
 	"GetParent",
 	"GetPixel",
+	"GetPolyFillMode",
 	"GetProcAddress",
 	"GetProcessHeap",
 	"GetProfileStringA",
@@ -580,6 +581,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetPaletteEntries",
 	"SetParent",
 	"SetPixel",
+	"SetPolyFillMode",
 	"SetPropA",
 	"SetPropW",
 	"SetROP2",

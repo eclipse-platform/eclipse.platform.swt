@@ -285,6 +285,42 @@ fail:
 }
 #endif
 
+#ifndef NO_GraphicsPath_1IsOutlineVisible
+JNIEXPORT jboolean JNICALL Gdip_NATIVE(GraphicsPath_1IsOutlineVisible)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3, jint arg4)
+{
+	jboolean rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1IsOutlineVisible_FUNC);
+	rc = (jboolean)((GraphicsPath *)arg0)->IsOutlineVisible(arg1, arg2, (const Pen *)arg3, (const Graphics *)arg4);
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1IsOutlineVisible_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GraphicsPath_1IsVisible
+JNIEXPORT jboolean JNICALL Gdip_NATIVE(GraphicsPath_1IsVisible)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
+{
+	jboolean rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1IsVisible_FUNC);
+	rc = (jboolean)((GraphicsPath *)arg0)->IsVisible(arg1, arg2, (const Graphics *)arg3);
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1IsVisible_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GraphicsPath_1SetFillMode
+JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1SetFillMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1SetFillMode_FUNC);
+	rc = (jint)((GraphicsPath *)arg0)->SetFillMode((FillMode)arg1);
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1SetFillMode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GraphicsPath_1delete
 JNIEXPORT void JNICALL Gdip_NATIVE(GraphicsPath_1delete)
 	(JNIEnv *env, jclass that, jint arg0)

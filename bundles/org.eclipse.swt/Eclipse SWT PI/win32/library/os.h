@@ -223,6 +223,7 @@
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_DIBSECTION_2
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2
 #define NO_GetOpenFileNameA
+#define NO_GetPolyFillMode
 #define NO_GetProfileStringA
 #define NO_GetProfileStringW
 #define NO_GetPropA
@@ -348,6 +349,7 @@
 #define NO_SetMenuInfo
 #define NO_SetMenuItemInfoA
 #define NO_SetMetaRgn
+#define NO_SetPolyFillMode
 #define NO_SetPropA
 #define NO_SetPropW
 #define NO_SetStretchBltMode

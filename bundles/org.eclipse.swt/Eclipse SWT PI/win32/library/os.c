@@ -3557,6 +3557,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetPixel)
 }
 #endif
 
+#ifndef NO_GetPolyFillMode
+JNIEXPORT jint JNICALL OS_NATIVE(GetPolyFillMode)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetPolyFillMode_FUNC);
+	rc = (jint)GetPolyFillMode((HDC)arg0);
+	OS_NATIVE_EXIT(env, that, GetPolyFillMode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetProcAddress
 JNIEXPORT jint JNICALL OS_NATIVE(GetProcAddress)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
@@ -9037,6 +9049,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetPixel)
 	OS_NATIVE_ENTER(env, that, SetPixel_FUNC);
 	rc = (jint)SetPixel((HDC)arg0, arg1, arg2, arg3);
 	OS_NATIVE_EXIT(env, that, SetPixel_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetPolyFillMode
+JNIEXPORT jint JNICALL OS_NATIVE(SetPolyFillMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetPolyFillMode_FUNC);
+	rc = (jint)SetPolyFillMode((HDC)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, SetPolyFillMode_FUNC);
 	return rc;
 }
 #endif

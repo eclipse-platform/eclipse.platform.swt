@@ -1395,6 +1395,7 @@ public class OS extends Platform {
 	public static final String WC_LISTVIEW = "SysListView32"; //$NON-NLS-1$
 	public static final String WC_TABCONTROL = "SysTabControl32"; //$NON-NLS-1$
 	public static final String WC_TREEVIEW = "SysTreeView32"; //$NON-NLS-1$
+	public static final int WINDING = 2;
 	public static final int WH_GETMESSAGE = 0x3;
 	public static final int WH_MSGFILTER = 0xFFFFFFFF;
 	public static final int WH_FOREGROUNDIDLE = 11;
@@ -2595,6 +2596,7 @@ public static final native boolean GetOpenFileNameA (OPENFILENAME lpofn);
 public static final native int GetPaletteEntries (int hPalette, int iStartIndex, int nEntries, byte[] logPalette);
 public static final native int GetParent (int hWnd);
 public static final native int GetPixel (int hdc, int x, int y);
+public static final native int GetPolyFillMode(int hdc);
 public static final native int GetProcAddress (int hModule, byte [] lpProcName);
 public static final native int GetProcessHeap ();
 public static final native int GetProfileStringW (char [] lpAppName, char [] lpKeyName, char [] lpDefault, char [] lpReturnedString, int nSize);
@@ -2927,6 +2929,7 @@ public static final native int SetMetaRgn (int hdc);
 public static final native int SetPaletteEntries (int hPal, int iStart, int cEntries, byte[] lppe);
 public static final native int SetParent (int hWndChild, int hWndNewParent);
 public static final native int SetPixel (int hdc, int X, int Y, int crColor);
+public static final native int SetPolyFillMode(int hdc, int iPolyFillMode);
 public static final native boolean SetRect(RECT lprc, int xLeft, int yTop, int xRight, int yBottom);
 public static final native boolean SetRectRgn (int hrgn, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 public static final native int SetROP2 (int hdc, int fnDrawMode);
