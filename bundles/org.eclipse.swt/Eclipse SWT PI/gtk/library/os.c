@@ -1866,6 +1866,21 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1region_1point_1in)
 }
 #endif
 
+#ifndef NO_gdk_1region_1polygon
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1region_1polygon)
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1region_1polygon\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)gdk_region_polygon((GdkPoint *)lparg0, arg1, (GdkFillRule)arg2);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "gdk_1region_1polygon\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1region_1rect_1in
 JNIEXPORT jint JNICALL OS_NATIVE(gdk_1region_1rect_1in)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -6428,6 +6443,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1set_1state)
 	NATIVE_ENTER(env, that, "gtk_1widget_1set_1state\n")
 	gtk_widget_set_state((GtkWidget *)arg0, (GtkStateType)arg1);
 	NATIVE_EXIT(env, that, "gtk_1widget_1set_1state\n")
+}
+#endif
+
+#ifndef NO_gtk_1widget_1shape_1combine_1mask
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1shape_1combine_1mask)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "gtk_1widget_1shape_1combine_1mask\n")
+	gtk_widget_shape_combine_mask((GtkWidget *)arg0, (GdkBitmap *)arg1, (gint)arg2, (gint)arg3);
+	NATIVE_EXIT(env, that, "gtk_1widget_1shape_1combine_1mask\n")
 }
 #endif
 
