@@ -22,7 +22,6 @@ class Header extends Canvas {
 	private static final int DEFAULT_WIDTH = 64;		// used in computeSize if width could not be calculated
 	private static final int DEFAULT_HEIGHT = 64;		// used in computeSize if height could not be calculated	
 	private static final int VERTICAL_MARGIN = 6;		// space added to the height of the header label		
-	private static final int DEFAULT_ITEM_WIDTH = 9;	// default width of a header item
 	private static final int HORIZONTAL_MARGIN = 6;		// space in front and behind header text
 	
 	Table parent;
