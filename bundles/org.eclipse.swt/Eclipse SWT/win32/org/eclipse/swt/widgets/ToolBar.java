@@ -167,9 +167,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.GetWindowRect (handle, oldRect);
 	int oldWidth = oldRect.right - oldRect.left;
 	int oldHeight = oldRect.bottom - oldRect.top;
-	int newWidth = wHint, newHeight = hHint;
-	if (newWidth == SWT.DEFAULT) newWidth = 0x3FFF;
-	if (newHeight == SWT.DEFAULT) newHeight = 0x3FFF;
+	int border = getBorderWidth ();
+	int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + (border * 2);
+	int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + (border * 2);
 	ignoreResize = true;
 	OS.UpdateWindow (handle);
 	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
@@ -200,10 +200,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	Rectangle trim = super. computeTrim (x, y, width, height);
+	Rectangle trim = super.computeTrim (x, y, width, height);
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.CCS_NODIVIDER) == 0) trim.height += 2;
 	return trim;
