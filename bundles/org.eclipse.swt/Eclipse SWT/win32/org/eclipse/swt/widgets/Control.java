@@ -9,9 +9,7 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
-/* Start ACCESSIBILITY */
 import org.eclipse.swt.accessibility.*;
-/* End ACCESSIBILITY */
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -42,11 +40,7 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	String toolTipText;
 	Object layoutData;
-
-/* Start ACCESSIBILITY */
-	Accessible accessible;
-/* End ACCESSIBILITY */
-	
+	Accessible accessible;	
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -575,7 +569,6 @@ public boolean forceFocus () {
 	return true;
 }
 
-/* Start ACCESSIBILITY */
 /**
  * NOTE: The API in the accessibility package is NOT finalized.
  * Use at your own risk, because it will most certainly change.
@@ -583,8 +576,7 @@ public boolean forceFocus () {
  * in AccessibleControlListener, however please take nothing for
  * granted. The only reason this API is being released at this
  * time is so that other teams can try it out.
- */
-/**
+ *
  * Returns the accessible object for the receiver.
  * If this is the first time this object is requested,
  * then the object is created and returned.
@@ -598,6 +590,8 @@ public boolean forceFocus () {
  * 
  * @see addAccessibleListener
  * @see addAccessibleControlListener
+ * 
+ * @since 2.0
  */
 public Accessible getAccessible () {
 	checkWidget ();
@@ -606,7 +600,6 @@ public Accessible getAccessible () {
 	}
 	return accessible;
 }
-/* End ACCESSIBILITY */
 
 /**
  * Returns the receiver's background color.
@@ -2675,9 +2668,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_IME_COMPOSITION:	result = WM_IME_COMPOSITION (wParam, lParam); break;
 		case OS.WM_INITMENUPOPUP:		result = WM_INITMENUPOPUP (wParam, lParam); break;
 		case OS.WM_GETFONT:			result = WM_GETFONT (wParam, lParam); break;
-/* Start ACCESSIBILITY */
 		case OS.WM_GETOBJECT:			result = WM_GETOBJECT (wParam, lParam); break;
-/* End ACCESSIBILITY */
 		case OS.WM_KEYDOWN:			result = WM_KEYDOWN (wParam, lParam); break;
 		case OS.WM_KEYUP:				result = WM_KEYUP (wParam, lParam); break;
 		case OS.WM_KILLFOCUS:			result = WM_KILLFOCUS (wParam, lParam); break;
@@ -2859,7 +2850,6 @@ LRESULT WM_GETFONT (int wParam, int lParam) {
 	return null;
 }
 
-/* Start ACCESSIBILITY */
 LRESULT WM_GETOBJECT (int wParam, int lParam) {
 	if (accessible != null) {
 		int result = accessible.internal_WM_GETOBJECT (wParam, lParam);
@@ -2869,7 +2859,6 @@ LRESULT WM_GETOBJECT (int wParam, int lParam) {
 	}
 	return null;
 }
-/* End ACCESSIBILITY */
 
 LRESULT WM_HELP (int wParam, int lParam) {
 	if (OS.IsWinCE) return null;
