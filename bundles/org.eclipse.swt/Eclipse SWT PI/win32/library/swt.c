@@ -6827,6 +6827,19 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TranslateMessa
 	return rc;
 }
 
+#ifdef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TransparentImage
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4,
+	jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10)
+{
+	DEBUG_CALL("TransparentImage\n")
+
+	return (jboolean)TransparentImage((HDC) arg0, (LONG) arg1, (LONG) arg2, 
+		(LONG) arg3, (LONG) arg4, (HANDLE) arg5, (LONG) arg6, (LONG) arg7, 
+		(LONG) arg8, (LONG) arg9, (COLORREF) arg10);
+}
+#endif // _WIN32_WCE
+
 #ifndef _WIN32_WCE
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_UnhookWindowsHookEx
 	(JNIEnv *env, jclass that, jint arg0)

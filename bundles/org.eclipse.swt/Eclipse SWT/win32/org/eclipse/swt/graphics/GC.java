@@ -818,32 +818,43 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 		}
 	}
 
-	/* Create the mask for the source image */
-	int maskHdc = OS.CreateCompatibleDC(hDC);
-	int maskBitmap = OS.CreateBitmap(imgWidth, imgHeight, 1, 1, null);
-	int oldMaskBitmap = OS.SelectObject(maskHdc, maskBitmap);
-	OS.SetBkColor(srcHdc, (transBlue << 16) | (transGreen << 8) | transRed);
-	OS.BitBlt(maskHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
-	if (originalColors != null) OS.SetDIBColorTable(srcHdc, 0, 1 << bm.bmBitsPixel, originalColors);
-
-	/* Draw the source bitmap transparently using invert/and mask/invert */
-	int tempHdc = OS.CreateCompatibleDC(hDC);
-	int tempBitmap = OS.CreateCompatibleBitmap(hDC, destWidth, destHeight);	
-	int oldTempBitmap = OS.SelectObject(tempHdc, tempBitmap);
-	OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
-	if (!OS.IsWinCE) OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
-	OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
-	OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
-	OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
-	OS.BitBlt(handle, destX, destY, destWidth, destHeight, tempHdc, 0, 0, OS.SRCCOPY);
-
-	/* Release resources */
-	OS.SelectObject(tempHdc, oldTempBitmap);
-	OS.DeleteDC(tempHdc);
-	OS.DeleteObject(tempBitmap);
-	OS.SelectObject(maskHdc, oldMaskBitmap);
-	OS.DeleteDC(maskHdc);
-	OS.DeleteObject(maskBitmap);
+	if (OS.IsWinCE) {
+		/*
+		* Note in WinCE. TransparentImage uses the first entry of a palette
+		* based image when there are multiple entries that have the same
+		* transparent color.
+		*/
+		int transparentColor = transBlue << 16 | transGreen << 8 | transRed;
+		OS.TransparentImage(handle, destX, destY, destWidth, destHeight,
+			srcHdc, srcX, srcY, srcWidth, srcHeight, transparentColor);
+	} else {
+		/* Create the mask for the source image */
+		int maskHdc = OS.CreateCompatibleDC(hDC);
+		int maskBitmap = OS.CreateBitmap(imgWidth, imgHeight, 1, 1, null);
+		int oldMaskBitmap = OS.SelectObject(maskHdc, maskBitmap);
+		OS.SetBkColor(srcHdc, (transBlue << 16) | (transGreen << 8) | transRed);
+		OS.BitBlt(maskHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
+		if (originalColors != null) OS.SetDIBColorTable(srcHdc, 0, 1 << bm.bmBitsPixel, originalColors);
+	
+		/* Draw the source bitmap transparently using invert/and mask/invert */
+		int tempHdc = OS.CreateCompatibleDC(hDC);
+		int tempBitmap = OS.CreateCompatibleBitmap(hDC, destWidth, destHeight);	
+		int oldTempBitmap = OS.SelectObject(tempHdc, tempBitmap);
+		OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
+		if (!OS.IsWinCE) OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
+		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
+		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
+		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
+		OS.BitBlt(handle, destX, destY, destWidth, destHeight, tempHdc, 0, 0, OS.SRCCOPY);
+	
+		/* Release resources */
+		OS.SelectObject(tempHdc, oldTempBitmap);
+		OS.DeleteDC(tempHdc);
+		OS.DeleteObject(tempBitmap);
+		OS.SelectObject(maskHdc, oldMaskBitmap);
+		OS.DeleteDC(maskHdc);
+		OS.DeleteObject(maskBitmap);
+	}
 	OS.SelectObject(srcHdc, oldSrcBitmap);
 	if (hBitmap != srcImage.handle) OS.DeleteObject(hBitmap);
 	OS.DeleteDC(srcHdc);
