@@ -290,7 +290,7 @@ public void layout (boolean changed) {
 	checkWidget ();
 	if (layout == null) return;
 	setResizeChildren (false);
-	layout.layout (this, changed);
+	if (lpwp != null) layout.layout (this, changed);
 	setResizeChildren (true);
 }
 
@@ -746,7 +746,9 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* WM_SIZE message.
 	*/
 	if (isDisposed ()) return result;
-	if (layout != null) layout.layout (this, false);
+	if (layout != null) {
+		if (lpwp != null) layout.layout (this, false);
+	}
 
 	/* End deferred window positioning */
 	setResizeChildren (true);
