@@ -37,7 +37,8 @@
 	PtTreeItem_t_FID_CACHE PtTreeItem_tFc; \
 	PgMap_t_FID_CACHE PgMap_tFc; \
 	PtColorSelectInfo_t_FID_CACHE PtColorSelectInfo_tFc; \
-	PhRegion_t_FID_CACHE PhRegion_tFc;
+	PhRegion_t_FID_CACHE PhRegion_tFc; \
+	PtContainerCallback_t_FID_CACHE PtContainerCallback_tFc;
 
 /* PhPoint_t struct */
 typedef struct PhPoint_t_FID_CACHE {
@@ -299,5 +300,17 @@ typedef PhRegion_t_FID_CACHE *PPhRegion_t_FID_CACHE;
 void cachePhRegion_tFids(JNIEnv *env, jobject lpObject, PPhRegion_t_FID_CACHE lpCache);
 void getPhRegion_tFields(JNIEnv *env, jobject lpObject, PhRegion_t *lpStruct, PPhRegion_t_FID_CACHE lpCache);
 void setPhRegion_tFields(JNIEnv *env, jobject lpObject, PhRegion_t *lpStruct, PPhRegion_t_FID_CACHE lpCache);
+
+/* PtContainerCallback_t struct */
+typedef struct PtContainerCallback_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID new_size_ul_x, new_size_ul_y, new_size_lr_x, new_size_lr_y, old_size_ul_x, old_size_ul_y, old_size_lr_x, old_size_lr_y, new_dim_w, new_dim_h, old_dim_w, old_dim_h;
+} PtContainerCallback_t_FID_CACHE;
+typedef PtContainerCallback_t_FID_CACHE *PPtContainerCallback_t_FID_CACHE;
+
+void cachePtContainerCallback_tFids(JNIEnv *env, jobject lpObject, PPtContainerCallback_t_FID_CACHE lpCache);
+void getPtContainerCallback_tFields(JNIEnv *env, jobject lpObject, PtContainerCallback_t *lpStruct, PPtContainerCallback_t_FID_CACHE lpCache);
+void setPtContainerCallback_tFields(JNIEnv *env, jobject lpObject, PtContainerCallback_t *lpStruct, PPtContainerCallback_t_FID_CACHE lpCache);
 
 #endif // INC_structs_H

@@ -1879,7 +1879,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtFlush
 	return (jint)PtFlush();
 }
 
-
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PtContainerGiveFocus
@@ -1901,6 +1900,174 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtContainerGiveFo
         getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
     }
     result = (jint) PtContainerGiveFocus((PtWidget_t *)widget, lpObject);
+    if (event) {
+        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    
+    return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtContainerFocusNext
+ * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtContainerFocusNext
+  (JNIEnv *env, jobject that, jint widget, jobject event)
+{
+	DECL_GLOB(pGlob)
+	jint result;
+	PhEvent_t object, *lpObject=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PtContainerFocusNext\n");
+#endif
+
+    if (event) {
+        lpObject = &object;
+        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
+        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    result = (jint) PtContainerFocusNext((PtWidget_t *)widget, lpObject);
+    if (event) {
+        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    
+    return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtContainerFocusPrev
+ * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtContainerFocusPrev
+  (JNIEnv *env, jobject that, jint widget, jobject event)
+{
+	DECL_GLOB(pGlob)
+	jint result;
+	PhEvent_t object, *lpObject=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PtContainerFocusPrev\n");
+#endif
+
+    if (event) {
+        lpObject = &object;
+        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
+        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    result = (jint) PtContainerFocusPrev((PtWidget_t *)widget, lpObject);
+    if (event) {
+        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    
+    return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtGlobalFocusNext
+ * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGlobalFocusNext
+  (JNIEnv *env, jobject that, jint widget, jobject event)
+{
+	DECL_GLOB(pGlob)
+	jint result;
+	PhEvent_t object, *lpObject=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PtGlobalFocusNext\n");
+#endif
+
+    if (event) {
+        lpObject = &object;
+        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
+        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    result = (jint) PtGlobalFocusNext((PtWidget_t *)widget, lpObject);
+    if (event) {
+        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    
+    return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtGlobalFocusPrev
+ * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGlobalFocusPrev
+  (JNIEnv *env, jobject that, jint widget, jobject event)
+{
+	DECL_GLOB(pGlob)
+	jint result;
+	PhEvent_t object, *lpObject=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PtGlobalFocusPrev\n");
+#endif
+
+    if (event) {
+        lpObject = &object;
+        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
+        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    result = (jint) PtGlobalFocusPrev((PtWidget_t *)widget, lpObject);
+    if (event) {
+        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    
+    return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtGlobalFocusNextContainer
+ * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGlobalFocusNextContainer
+  (JNIEnv *env, jobject that, jint widget, jobject event)
+{
+	DECL_GLOB(pGlob)
+	jint result;
+	PhEvent_t object, *lpObject=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PtGlobalFocusNextContainer\n");
+#endif
+
+    if (event) {
+        lpObject = &object;
+        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
+        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    result = (jint) PtGlobalFocusNextContainer((PtWidget_t *)widget, lpObject);
+    if (event) {
+        setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    
+    return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtGlobalFocusPrevContainer
+ * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGlobalFocusPrevContainer
+  (JNIEnv *env, jobject that, jint widget, jobject event)
+{
+	DECL_GLOB(pGlob)
+	jint result;
+	PhEvent_t object, *lpObject=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PtGlobalFocusPrevContainer\n");
+#endif
+
+    if (event) {
+        lpObject = &object;
+        cachePhEvent_tFids(env, event, &PGLOB(PhEvent_tFc));
+        getPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
+    }
+    result = (jint) PtGlobalFocusPrevContainer((PtWidget_t *)widget, lpObject);
     if (event) {
         setPhEvent_tFields(env, event, lpObject, &PGLOB(PhEvent_tFc));
     }
@@ -3185,7 +3352,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetClass
  * Method:    memmove
  * Signature: (ILorg/eclipse/swt/internal/photon/PhPointerEvent_t;I)V
  */
-/*
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhPointerEvent_1t_2I
   (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
 {
@@ -3203,7 +3369,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_ec
     }
     memmove((void *)dest, (void *)src1, count);
 }
-*/
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
@@ -3279,6 +3444,29 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_ecl
         setPhEvent_tFields(env, dest, dest1, &PGLOB(PhEvent_tFc));
     }
 
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PhEvent_1t_2I
+  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+	
+    PhEvent_t object, *src1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PhEvent_1t_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePhEvent_tFids(env, src, &PGLOB(PhEvent_tFc));
+        getPhEvent_tFields(env, src, src1, &PGLOB(PhEvent_tFc));
+    }
+    memmove((void *)dest, (void *)src1, count);
 }
 
 /*
@@ -5899,3 +6087,65 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PiGetPixelRGB
 	return result;
 }
 */
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (ILorg/eclipse/swt/internal/photon/PtContainerCallback_t;I)V
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PtContainerCallback_1t_2I
+  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+	
+    PtContainerCallback_t object, *src1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PtContainerCallback_1t_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePtContainerCallback_tFids(env, src, &PGLOB(PtContainerCallback_tFc));
+        getPtContainerCallback_tFields(env, src, src1, &PGLOB(PtContainerCallback_tFc));
+    }
+    memmove((void *)dest, (void *)src1, count);
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (Lorg/eclipse/swt/internal/photon/PtContainerCallback_t;II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PtContainerCallback_1t_2II
+  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
+{
+	DECL_GLOB(pGlob)
+	PtContainerCallback_t object, *dest1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PtContainerCallback_1t_2II\n");
+#endif
+
+    memmove((void *)&object, (void *)src, count);
+    if (dest) {
+        dest1=&object;
+        cachePtContainerCallback_tFids(env, dest, &PGLOB(PtContainerCallback_tFc));
+        setPtContainerCallback_tFields(env, dest, dest1, &PGLOB(PtContainerCallback_tFc));
+    }
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtSendEventToWidget
+ * Signature: (ILorg/eclipse/swt/internal/photon/PhEvent_t;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSendEventToWidget
+  (JNIEnv *env, jobject that, jint widget, jint event)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PtSendEventToWidget\n");
+#endif
+
+    return (jint) PtSendEventToWidget((PtWidget_t *)widget, event);
+}

@@ -165,11 +165,15 @@ public class OS {
 	
 	public static final int Pt_PROCESS                                     = 0;
 //	public static final int Pt_IGNORE                                      = 1;
-//	public static final int Pt_CONSUME                                     = 2;
+	public static final int Pt_CONSUME                                     = 2;
 	public static final int Pt_CB_FILTER                                          = ( 1 * 1000 + 26 );
 	
 	public static final int Pt_ALL_BUTTONS                                          = 0x00800000;
 	public static final int Pt_MENUABLE                                          	= 0x08000000;
+
+	public static final int Ph_CONSUMED                                          	= 0x0004;
+	
+	public static final int Pt_ARG_MODIFIER_KEYS                                    = ( 7 * 1000 + 4 );
 
 /*** END MANUALLY ADDED/FIXED ***/
 
@@ -773,7 +777,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Ph_EV_RELEASE_ENDCLICK                                = 2;
 //public static final int Ph_EV_RELEASE_OUTBOUND                                = 3;
 	public static final int Ph_EV_RELEASE_PHANTOM                                 = 1;
-//public static final int Ph_EV_RELEASE_REAL                                    = 0;
+	public static final int Ph_EV_RELEASE_REAL                                    = 0;
 //public static final int Ph_EV_REMOTE_WM                                       = 1;
 //public static final int Ph_EV_SERVICE                                         = 0x00040000;
 //public static final int Ph_EV_SYSTEM                                          = 0x00001000;
@@ -800,7 +804,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Ph_EV_ICON_OPAQUE                                     = ( Ph_EV_WM | Ph_EV_EXPOSE | Ph_EV_DRAW );
 //public static final int Ph_EV_ICON_SENSE                                      = ( Ph_EV_WM | Ph_EV_EXPOSE );
 //public static final int Ph_EVENT_ABSOLUTE                                     = 0x0004;
-//public static final int Ph_EVENT_DIRECT                                       = 0x0010;
+	public static final int Ph_EVENT_DIRECT                                       = 0x0010;
 //public static final int Ph_EVENT_INCLUSIVE                                    = 0x0008;
 	public static final int Ph_EVENT_MSG                                          = 1;
 //public static final int Ph_EVENT_NO_RECT                                      = 0x0002;
@@ -808,7 +812,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Ph_EVENT_RSRV1                                        = 0x8000;
 //public static final int Ph_EXPOSE_FAMILY                                      = 0x00002000;
 //public static final int Ph_EXPOSE_REGION                                      = 0x00004000;
-//public static final int Ph_FAKE_EVENT                                         = 0x0001;
+	public static final int Ph_FAKE_EVENT                                         = 0x0001;
 //public static final int Ph_FEP_ACTIVATE                                       = 0x00000003;
 //public static final int Ph_FEP_BROADCAST                                      = 0x00000000;
 //public static final int Ph_FEP_CHINESE                                        = 0x00000002;
@@ -905,7 +909,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Ph_NO_PROXY                                           = 0x00000004;
 //public static final int Ph_NORMAL_DRAW                                        = 0x0000;
 //public static final int Ph_NORMAL_EXPOSE                                      = 0;
-//public static final int Ph_NOT_CUAKEY                                         = 0x10;
+	public static final int Ph_NOT_CUAKEY                                         = 0x10;
 //public static final int Ph_NOT_HOTKEY                                         = 0x20;
 //public static final int Ph_PRINT_REGION                                       = 0x00000020;
 //public static final int Ph_PRINTER_EXPOSE                                     = 1;
@@ -1195,7 +1199,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pk_Num_Lock            = 0xF07F;
 //
 //public static final int Pk_KP_Space            = 0xF080;  /* space */
-//public static final int Pk_KP_Tab              = 0xF089;
+	public static final int Pk_KP_Tab              = 0xF089;
 //public static final int Pk_KP_Enter            = 0xF08D;  /* enter */
 //public static final int Pk_KP_F1               = 0xF091;  /* PF1, KP_A, ... */
 //public static final int Pk_KP_F2               = 0xF092;
@@ -1991,8 +1995,8 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_EMT_READ_ONLY_FLAGS                                = Pt_EMT_DISABLE_PURGE | Pt_EMT_FOCUSED;
 //public static final int Pt_EMT_SCROLL_TO_CURSOR                               = 0x80000000;
 	public static final int Pt_EMT_WORD                                           = 0x01;
-//public static final int Pt_ENABLE_CUA                                         = 0x00000010;
-//public static final int Pt_ENABLE_CUA_ARROWS                                  = 0x00000020;
+	public static final int Pt_ENABLE_CUA                                         = 0x00000010;
+	public static final int Pt_ENABLE_CUA_ARROWS                                  = 0x00000020;
 	public static final int Pt_END                                                = 2;
 //public static final int Pt_ESC_DISABLE                                        = 0x8;
 //public static final int Pt_ETCH_HIGHLIGHT                                     = 0x00000200;
@@ -2659,6 +2663,12 @@ public static final native int PtSyncWidget (int widget);
 public static final native int PtFlush ();
 
 public static final native int PtContainerGiveFocus (int widget, PhEvent_t event);
+public static final native int PtContainerFocusNext (int widget, PhEvent_t event);
+public static final native int PtContainerFocusPrev (int widget, PhEvent_t event);
+public static final native int PtGlobalFocusNext (int widget, PhEvent_t event);
+public static final native int PtGlobalFocusPrev (int widget, PhEvent_t event);
+public static final native int PtGlobalFocusNextContainer (int widget, PhEvent_t event);
+public static final native int PtGlobalFocusPrevContainer (int widget, PhEvent_t event);
 
 public static final native int PtWidgetToBack (int widget);
 public static final native int PtWidgetToFront (int widget);
@@ -2722,7 +2732,7 @@ public static final native void memmove (PhImage_t image, int address, int size)
 //public static final native void memmove (int address, FontDetails details, int size);
 public static final native void memmove (FontDetails details, int address, int size);
 
-//public static final native void memmove (int address, PhImage_t image, int size);
+public static final native void memmove (int address, PhPointerEvent_t image, int size);
 public static final native void memmove (PhPointerEvent_t dest, int src, int size);
 
 public static final native int PhGetData (int event);
@@ -2730,6 +2740,7 @@ public static final native int PhGetRects (int event);
 
 //public static final native void memmove (int address, PhWindowEvent_t event, int size);
 public static final native void memmove (PhEvent_t event, int address, int size);
+public static final native void memmove (int address, PhEvent_t event, int size);
 
 public static final native int PtExtentWidget (int widget);
 public static final native int PtExtentWidgetFamily (int widget);
@@ -2894,5 +2905,10 @@ public static final native int PgShmemDestroy (int addr);
 //public static final native void PgShmemCleanup ();
 public static final native int PhRegionQuery (int rid, PhRegion_t region, PhRect_t rect, int data, int data_len);
 //public static final native int PiGetPixelRGB (int image, short x, short y, int[] value);
+
+public static final native void memmove (PtContainerCallback_t dest, int src, int size);
+//public static final native void memmove (int dest, PtContainerCallback_t src, int size);
+
+public static final native void PtSendEventToWidget (int widget, int event);
 
 }

@@ -1093,4 +1093,54 @@ void setPhRegion_tFields(JNIEnv *env, jobject lpObject, PhRegion_t *lpStruct, PP
 	(*env)->SetShortField(env, lpObject, lpCache->cursor_type, lpStruct->cursor_type);
 }
 
+void cachePtContainerCallback_tFids(JNIEnv *env, jobject lpObject, PPtContainerCallback_t_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->new_size_ul_x = (*env)->GetFieldID(env, lpCache->clazz, "new_size_ul_x", "S");
+	lpCache->new_size_ul_y = (*env)->GetFieldID(env, lpCache->clazz, "new_size_ul_y", "S");
+	lpCache->new_size_lr_x = (*env)->GetFieldID(env, lpCache->clazz, "new_size_lr_x", "S");
+	lpCache->new_size_lr_y = (*env)->GetFieldID(env, lpCache->clazz, "new_size_lr_y", "S");
+	lpCache->old_size_ul_x = (*env)->GetFieldID(env, lpCache->clazz, "old_size_ul_x", "S");
+	lpCache->old_size_ul_y = (*env)->GetFieldID(env, lpCache->clazz, "old_size_ul_y", "S");
+	lpCache->old_size_lr_x = (*env)->GetFieldID(env, lpCache->clazz, "old_size_lr_x", "S");
+	lpCache->old_size_lr_y = (*env)->GetFieldID(env, lpCache->clazz, "old_size_lr_y", "S");
+	lpCache->new_dim_w = (*env)->GetFieldID(env, lpCache->clazz, "new_dim_w", "S");
+	lpCache->new_dim_h = (*env)->GetFieldID(env, lpCache->clazz, "new_dim_h", "S");
+	lpCache->old_dim_w = (*env)->GetFieldID(env, lpCache->clazz, "old_dim_w", "S");
+	lpCache->old_dim_h = (*env)->GetFieldID(env, lpCache->clazz, "old_dim_h", "S");
+	lpCache->cached = 1;
+}
+
+void getPtContainerCallback_tFields(JNIEnv *env, jobject lpObject, PtContainerCallback_t *lpStruct, PPtContainerCallback_t_FID_CACHE lpCache)
+{
+	lpStruct->new_size.ul.x = (*env)->GetShortField(env, lpObject, lpCache->new_size_ul_x);
+	lpStruct->new_size.ul.y = (*env)->GetShortField(env, lpObject, lpCache->new_size_ul_y);
+	lpStruct->new_size.lr.x = (*env)->GetShortField(env, lpObject, lpCache->new_size_lr_x);
+	lpStruct->new_size.lr.y = (*env)->GetShortField(env, lpObject, lpCache->new_size_lr_y);
+	lpStruct->old_size.ul.x = (*env)->GetShortField(env, lpObject, lpCache->old_size_ul_x);
+	lpStruct->old_size.ul.y = (*env)->GetShortField(env, lpObject, lpCache->old_size_ul_y);
+	lpStruct->old_size.lr.x = (*env)->GetShortField(env, lpObject, lpCache->old_size_lr_x);
+	lpStruct->old_size.lr.y = (*env)->GetShortField(env, lpObject, lpCache->old_size_lr_y);
+	lpStruct->new_dim.w = (*env)->GetShortField(env, lpObject, lpCache->new_dim_w);
+	lpStruct->new_dim.h = (*env)->GetShortField(env, lpObject, lpCache->new_dim_h);
+	lpStruct->old_dim.w = (*env)->GetShortField(env, lpObject, lpCache->old_dim_w);
+	lpStruct->old_dim.h = (*env)->GetShortField(env, lpObject, lpCache->old_dim_h);
+}
+
+void setPtContainerCallback_tFields(JNIEnv *env, jobject lpObject, PtContainerCallback_t *lpStruct, PPtContainerCallback_t_FID_CACHE lpCache)
+{
+	(*env)->SetShortField(env, lpObject, lpCache->new_size_ul_x, lpStruct->new_size.ul.x);
+	(*env)->SetShortField(env, lpObject, lpCache->new_size_ul_y, lpStruct->new_size.ul.y);
+	(*env)->SetShortField(env, lpObject, lpCache->new_size_lr_x, lpStruct->new_size.lr.x);
+	(*env)->SetShortField(env, lpObject, lpCache->new_size_lr_y, lpStruct->new_size.lr.y);
+	(*env)->SetShortField(env, lpObject, lpCache->old_size_ul_x, lpStruct->old_size.ul.x);
+	(*env)->SetShortField(env, lpObject, lpCache->old_size_ul_y, lpStruct->old_size.ul.y);
+	(*env)->SetShortField(env, lpObject, lpCache->old_size_lr_x, lpStruct->old_size.lr.x);
+	(*env)->SetShortField(env, lpObject, lpCache->old_size_lr_y, lpStruct->old_size.lr.y);
+	(*env)->SetShortField(env, lpObject, lpCache->new_dim_w, lpStruct->new_dim.w);
+	(*env)->SetShortField(env, lpObject, lpCache->new_dim_h, lpStruct->new_dim.h);
+	(*env)->SetShortField(env, lpObject, lpCache->old_dim_w, lpStruct->old_dim.w);
+	(*env)->SetShortField(env, lpObject, lpCache->old_dim_h, lpStruct->old_dim.h);
+}
 
