@@ -230,55 +230,32 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = wHint;
 	int height = hHint;
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
-		
 		int size= OS.TXNDataSize(fTX);
 		if (size == 0) {
 			if (hHint == SWT.DEFAULT) {
 				if ((style & SWT.SINGLE) != 0) {
-					height = getLineHeight ();
-				} else {
-					height = DEFAULT_HEIGHT;
-				}
+					int[] textBounds= new int[4];
+					OS.TXNGetRectBounds(fTX, null, null, textBounds);
+					height= textBounds[2]-textBounds[0];
+				} else
+					height= DEFAULT_HEIGHT;
 			}
-			if (wHint == SWT.DEFAULT) {
-				width = DEFAULT_WIDTH;
-			}
+			if (wHint == SWT.DEFAULT)
+				width= DEFAULT_WIDTH;
 		} else {
-			int[] textBounds= null;
-			if (hHint == SWT.DEFAULT) {
-				if ((style & SWT.SINGLE) != 0) {
-					height = getLineHeight ();
-				} else {
-					// calc height of all lines
-					textBounds= new int[4];
-					OS.TXNGetRectBounds(fTX, null, null, textBounds);
-					height= textBounds[2]-textBounds[0];					
-				}
-			}
-			if (wHint == SWT.DEFAULT) {
-				if (textBounds == null) {
-					textBounds= new int[4];
-					OS.TXNGetRectBounds(fTX, null, null, textBounds);
-				}	
+			int[] textBounds= new int[4];
+			OS.TXNGetRectBounds(fTX, null, null, textBounds);
+			if (hHint == SWT.DEFAULT)
+				height= textBounds[2]-textBounds[0];					
+			if (wHint == SWT.DEFAULT)
 				width= textBounds[3]-textBounds[1];
-			}
 		}
 	}
 	if (horizontalBar != null) {
-        /* AW
-		int [] argList1 = {OS.XmNheight, 0};
-		OS.XtGetValues (horizontalBar.handle, argList1, argList1.length / 2);
-		height += argList1 [1] + 4;
-        */
 		height += 15;
 	}
 	if (verticalBar != null) {
-        /* AW
-		int [] argList1 = {OS.XmNwidth, 0};
-		OS.XtGetValues (verticalBar.handle, argList1, argList1.length / 2);
-		width += argList1 [1] + 4;
-        */
-		width += 15;
+ 		width += 15;
 	}
     /* AW
 	XRectangle rect = new XRectangle ();
@@ -287,6 +264,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if ((style & (SWT.MULTI | SWT.BORDER)) != 0) height++;
     */
 	// AW
+	width += 2*MARGIN;
+	height += 2*MARGIN;
 	if ((style & SWT.BORDER) != 0) {
 		width += 2*FOCUS_BORDER;
 		height += 2*FOCUS_BORDER;
@@ -347,8 +326,7 @@ void createHandle (int index) {
 		OS.XmNancestorSensitive, 1,
 	};
     */
-	int parentHandle = parent.handle;
-	int frameOptions= OS.kTXNDontDrawCaretWhenInactiveMask;
+	int frameOptions= OS.kTXNDontDrawCaretWhenInactiveMask | OS.kTXNMonostyledTextMask;
 	if ((style & SWT.H_SCROLL) != 0)
 		frameOptions |= OS.kTXNWantHScrollBarMask;
 	if ((style & SWT.V_SCROLL) != 0)
@@ -360,6 +338,7 @@ void createHandle (int index) {
 	if ((style & SWT.WRAP) != 0)
 		frameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
 	
+	int parentHandle = parent.handle;
 	handle= MacUtil.createDrawingArea(parentHandle, 0, 0, 0);		
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
@@ -942,9 +921,8 @@ int processFocusIn () {
 	if (handle == 0) return 0;
 	if ((style & SWT.READ_ONLY) != 0) return 0;
 	
-	OS.TXNFocus(fTX, true);
-	//fgTextInFocus= this;
 	drawFrame(null);
+	OS.TXNFocus(fTX, true);
 	
 	if ((style & SWT.MULTI) != 0) return 0;
     /* AW
@@ -1281,6 +1259,8 @@ public void setText (String string) {
 		if (string == null) return;
 	}
 	replaceTXNText(OS.kTXNStartOffset, OS.kTXNEndOffset, string);
+	
+	showBeginning();
 }
 /**
  * Sets the maximum number of characters that the receiver
