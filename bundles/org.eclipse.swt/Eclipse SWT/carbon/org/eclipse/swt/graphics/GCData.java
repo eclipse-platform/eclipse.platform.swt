@@ -8,6 +8,7 @@ package org.eclipse.swt.graphics;
  */
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of this class are descriptions of GCs in terms
@@ -24,23 +25,13 @@ import org.eclipse.swt.*;
 public final class GCData {
 	public Device device;
 	public Image image;
-	public int foreground = -1;
-	public int background = -1;
+	public float[] foreground;
+	public float[] background;
 	public int clipRgn;
+	public int lineWidth = 1;
 	public int lineStyle = SWT.LINE_SOLID;
+	public boolean xorMode;
 	
-	// AW
-	public int controlHandle;
-	public boolean clipAgainstChildren= true;
-	public int[] savePort= new int[1];
-	public int[] saveGWorld= new int[1];
-	public int saveClip;
-	public boolean isFocused= false;
-	public int lineWidth= 1;
-	public boolean xorMode= false;
-	public int damageRgn;
-	public boolean pendingClip;
-	public int[] context= new int[1];
-	public boolean isCGContextCreated;
-	// AW
+	public int paintEvent;
+	public Rect portRect;
 }

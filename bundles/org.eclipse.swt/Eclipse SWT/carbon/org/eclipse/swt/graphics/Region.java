@@ -6,10 +6,10 @@ package org.eclipse.swt.graphics;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
- 
+
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
- 
+
 /**
  * Instances of this class represent areas of an x-y coordinate
  * system that are aggregates of the areas covered by a number
@@ -26,6 +26,7 @@ public final class Region {
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
+
 /**
  * Constructs a new empty region.
  * 
@@ -33,12 +34,14 @@ public final class Region {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
  * </ul>
  */
-public Region () {
-	handle= OS.NewRgn();
+public Region() {
+	handle = OS.NewRgn();
 }
-Region (int handle) {
+
+Region(int handle) {
 	this.handle = handle;
 }
+
 /**
  * Adds the given rectangle to the collection of rectangles
  * the receiver maintains to describe its area.
@@ -53,17 +56,18 @@ Region (int handle) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void add (Rectangle rect) {
+public void add(Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int rectRgn= OS.NewRgn();
+	int rectRgn = OS.NewRgn();
 	Rect r = new Rect();
-	OS.SetRect(r, (short)rect.x, (short)rect.y, (short)(rect.x+rect.width),(short)(rect.y+rect.height));
+	OS.SetRect(r, (short)rect.x, (short)rect.y, (short)(rect.x + rect.width),(short)(rect.y + rect.height));
 	OS.RectRgn(rectRgn, r);
 	OS.UnionRgn(rectRgn, handle, handle);
 	OS.DisposeRgn(rectRgn);
 }
+
 /**
  * Adds all of the rectangles which make up the area covered
  * by the argument to the collection of rectangles the receiver
@@ -79,12 +83,13 @@ public void add (Rectangle rect) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void add (Region region) {
+public void add(Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.UnionRgn(handle, region.handle, handle);
+	OS.UnionRgn(region.handle, handle, handle);
 }
+
 /**
  * Returns <code>true</code> if the point specified by the
  * arguments is inside the area specified by the receiver,
@@ -98,12 +103,13 @@ public void add (Region region) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public boolean contains (int x, int y) {
+public boolean contains(int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	org.eclipse.swt.internal.carbon.Point p= new org.eclipse.swt.internal.carbon.Point();
-	OS.SetPt(p, (short)x, (short)y);
-	return OS.PtInRgn(p, handle);
+	org.eclipse.swt.internal.carbon.Point point = new org.eclipse.swt.internal.carbon.Point();
+	OS.SetPt(point, (short)x, (short)y);
+	return OS.PtInRgn(point, handle);
 }
+
 /**
  * Returns <code>true</code> if the given point is inside the
  * area specified by the receiver, and <code>false</code>
@@ -119,7 +125,7 @@ public boolean contains (int x, int y) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public boolean contains (Point pt) {
+public boolean contains(Point pt) {
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return contains(pt.x, pt.y);
 }
@@ -128,10 +134,11 @@ public boolean contains (Point pt) {
  * the region. Applications must dispose of all regions which
  * they allocate.
  */
-public void dispose () {
+public void dispose() {
 	if (handle != 0) OS.DisposeRgn(handle);
 	handle = 0;
 }
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -142,12 +149,13 @@ public void dispose () {
  *
  * @see #hashCode
  */
-public boolean equals (Object object) {
+public boolean equals(Object object) {
 	if (this == object) return true;
 	if (!(object instanceof Region)) return false;
 	Region region = (Region)object;
 	return handle == region.handle;
 }
+
 /**
  * Returns a rectangle which represents the rectangular
  * union of the collection of rectangles the receiver
@@ -163,12 +171,17 @@ public boolean equals (Object object) {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rect bounds= new Rect();
+	Rect bounds = new Rect();
 	OS.GetRegionBounds(handle, bounds);
 	int width = bounds.right - bounds.left;
 	int height = bounds.bottom - bounds.top;
 	return new Rectangle(bounds.left, bounds.top, width, height);
 }
+
+public static Region carbon_new(int handle) {
+	return new Region(handle);
+}
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
@@ -179,9 +192,10 @@ public Rectangle getBounds() {
  *
  * @see #equals
  */
-public int hashCode () {
+public int hashCode() {
 	return handle;
 }
+
 /**
  * Returns <code>true</code> if the rectangle described by the
  * arguments intersects with any of the rectangles the receiver
@@ -202,9 +216,10 @@ public int hashCode () {
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Rect rect = new Rect();
-	OS.SetRect(rect, (short)x, (short)y, (short)(x+width),(short)(y+height));
+	OS.SetRect(rect, (short)x, (short)y, (short)(x + width),(short)(y + height));
 	return OS.RectInRgn(rect, handle);
 }
+
 /**
  * Returns <code>true</code> if the given rectangle intersects
  * with any of the rectangles the receiver mainains to describe
@@ -222,10 +237,11 @@ public boolean intersects (int x, int y, int width, int height) {
  *
  * @see Rectangle#intersects
  */
-public boolean intersects (Rectangle rect) {
+public boolean intersects(Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return intersects(rect.x, rect.y, rect.width, rect.height);
 }
+
 /**
  * Returns <code>true</code> if the region has been disposed,
  * and <code>false</code> otherwise.
@@ -239,6 +255,7 @@ public boolean intersects (Rectangle rect) {
 public boolean isDisposed() {
 	return handle == 0;
 }
+
 /**
  * Returns <code>true</code> if the receiver does not cover any
  * area in the (x, y) coordinate plane, and <code>false</code> if
@@ -250,15 +267,11 @@ public boolean isDisposed() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public boolean isEmpty () {
+public boolean isEmpty() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.EmptyRgn(handle);
 }
-/* AW
-public static Region carbon_new(int rgnHandle) {
-	return new Region(rgnHandle);
-}
-*/
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
