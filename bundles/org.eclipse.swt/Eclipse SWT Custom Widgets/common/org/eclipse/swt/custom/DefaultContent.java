@@ -751,6 +751,13 @@ public void removeTextChangeListener(TextChangeListener listener){
  * @param start	start offset of text to replace
  * @param replaceLength start offset of text to replace
  * @param newText start offset of text to replace
+ * 
+ * @exception SWTException <ul>
+ *   <li>ERROR_INVALID_ARGUMENT when the text change results in a multi byte
+ *      line delimiter being split or partially deleted.  Splitting a line 
+ *      delimiter by inserting text between the CR and LF characters of the 
+ *      \r\n delimiter or deleting part of this line delimiter is not supported</li>
+ * </ul>
  */
 public void replaceTextRange(int start, int replaceLength, String newText){
 	// check for invalid replace operations
