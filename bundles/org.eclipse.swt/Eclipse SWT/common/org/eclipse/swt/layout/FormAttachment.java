@@ -274,8 +274,8 @@ int solveY (int value) {
 }
 	
 public String toString () {
- 	String string = control != null ? control.toString () : numerator + "/" + denominator;
-	return "y = (" + string + (offset >= 0 ? ")x + " + offset: ")x - " + (-offset));
+ 	String string = control != null ? control.toString () : numerator + "/" + denominator; //$NON-NLS-1$
+	return "y = (" + string + (offset >= 0 ? ")x + " + offset: ")x - " + (-offset)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 }
 
 }
