@@ -88,6 +88,10 @@ int computeTrim(Control c) {
 	return c.getBorderWidth () * 2;
 }
 
+protected boolean flushCache(Control control) {
+	return true;
+}
+
 protected void layout(Composite composite, boolean flushCache) {
 	ViewForm form = (ViewForm)composite;
 	Control left = form.topLeft;

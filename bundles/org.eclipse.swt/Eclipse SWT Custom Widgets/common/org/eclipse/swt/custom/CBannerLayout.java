@@ -91,6 +91,9 @@ int computeTrim(Control c) {
 	}
 	return c.getBorderWidth () * 2;
 }
+protected boolean flushCache(Control control) {
+	return true;
+}
 protected void layout(Composite composite, boolean flushCache) {
 	CBanner banner = (CBanner)composite;
 	Control left = banner.left;

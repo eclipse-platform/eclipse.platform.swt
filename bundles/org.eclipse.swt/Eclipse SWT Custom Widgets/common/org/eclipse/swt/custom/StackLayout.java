@@ -102,6 +102,10 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	return new Point(width + 2 * marginWidth, height + 2 * marginHeight);
 }
 
+protected boolean flushCache(Control control) {
+	return true;
+}
+
 protected void layout(Composite composite, boolean flushCache) {
 	Control children[] = composite.getChildren();
 	Rectangle rect = composite.getClientArea();
@@ -115,12 +119,14 @@ protected void layout(Composite composite, boolean flushCache) {
 			
 	}
 }
+
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf ('.');
 	if (index == -1) return string;
 	return string.substring (index + 1, string.length ());
 }
+
 public String toString () {
  	String string = getName ()+" {";
  	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";

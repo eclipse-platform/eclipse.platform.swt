@@ -33,6 +33,11 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	}
 	return size;
 }
+
+protected boolean flushCache(Control control) {
+	return true;
+}
+
 protected void layout(Composite composite, boolean flushCache) {
 	if (inLayout) return;
 	ScrolledComposite sc = (ScrolledComposite)composite;

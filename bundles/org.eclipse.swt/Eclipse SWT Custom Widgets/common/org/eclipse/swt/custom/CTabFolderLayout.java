@@ -66,6 +66,9 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	
 	return new Point (minWidth, minHeight);
 }
+protected boolean flushCache(Control control) {
+	return true;
+}
 protected void layout(Composite composite, boolean flushCache) {
 	CTabFolder folder = (CTabFolder)composite;
 	// resize content

@@ -75,6 +75,11 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point(width, height);
 }
+
+protected boolean flushCache(Control control) {
+	return true;
+}
+
 protected void layout(Composite composite, boolean flushCache) {
 	SashForm sashForm = (SashForm)composite;
 	Rectangle area = sashForm.getClientArea();
