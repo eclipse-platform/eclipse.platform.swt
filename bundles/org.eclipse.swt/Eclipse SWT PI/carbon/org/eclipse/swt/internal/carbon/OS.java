@@ -91,6 +91,7 @@ public class OS {
 	public static final int kControlGetsFocusOnClick = 1 << 8;
 	public static final int kControlGroupBoxTextTitleProc = 160;
 	public static final int kControlHandlesTracking = 1 << 5;
+	public static final int kControlIconTransformTag = ('t'<<24) + ('r'<<16) + ('f'<<8) + 'm';
 	public static final int kControlIndicatorPart = 129;
 	public static final int kControlPageDownPart = 23;
 	public static final int kControlPageUpPart = 22;
@@ -373,6 +374,7 @@ public class OS {
 	public static final int kTXNDoFontSubstitution = ('f'<<24) + ('s'<<16) + ('u'<<8) + 'b';
 	public static final int kTXNDontDrawCaretWhenInactiveMask = 1 << 12;
 	public static final int kTXNEndOffset = 2147483647;
+	public static final int kTXNMarginsTag = ('m'<<24) + ('a'<<16) + ('r'<<8) + 'g';
 	public static final int kTXNMonostyledTextMask = 1 << 17;
 	public static final int kTXNReadOnlyMask = 1 << 5;
 	public static final int kTXNSingleLineOnlyMask = 1 << 14;
@@ -438,7 +440,7 @@ public class OS {
 	public static final int kThemeToolbarFont = 108;
 	public static final int kThemeViewsFont = 3;
 	public static final int kThemeWatchCursor = 7;
-	public static final int kTXNMarginsTag = ('m'<<24) + ('a'<<16) + ('r'<<8) + 'g';
+	public static final int kTransformSelected = 0x4000;
 	public static final int kUtilityWindowClass = 8;
     public static final int kWindowActivationScopeNone = 0;
     public static final int kWindowActivationScopeIndependent = 1;
@@ -604,6 +606,7 @@ public static final native int CreateCGContextForPort(int inPort, int[] outConte
 public static final native int CreateDataBrowserControl(int window, Rect boundsRect, int style,int[] outControl);
 public static final native int CreateEvent(int allocator, int inClassID, int kind, double when, int flags, int[] outEventRef);
 public static final native int CreateGroupBoxControl(int window, Rect boundsRect, int title, boolean primary, int[] outControl);
+public static final native int CreateIconControl(int window, Rect boundsRect, ControlButtonContentInfo icon, boolean dontTrack, int[] outControl);
 public static final native int CreateNewMenu(short menuID, int menuAttributes, int[] outMenuRef);
 public static final native int CreateNewWindow(int windowClass, int attributes, Rect bounds, int[] wHandle);
 public static final native int CreatePopupArrowControl(int window, Rect boundsRect, short orientation, short size, int[] outControl);

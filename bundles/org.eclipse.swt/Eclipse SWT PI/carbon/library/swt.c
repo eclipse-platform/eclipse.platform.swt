@@ -1340,6 +1340,28 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateGroupBoxCon
 }
 #endif
 
+#ifndef NO_CreateIconControl
+JNIEXPORT jint JNICALL OS_NATIVE(CreateIconControl)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2, jboolean arg3, jintArray arg4)
+{
+	Rect _arg1, *lparg1=NULL;
+	ControlButtonContentInfo _arg2, *lparg2=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateIconControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getControlButtonContentInfoFields(env, arg2, &_arg2);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)CreateIconControl((WindowRef)arg0, lparg1, lparg2, arg3, (ControlRef *)lparg4);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg2) setControlButtonContentInfoFields(env, arg2, lparg2);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateNewMenu
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateNewMenu
 	(JNIEnv *env, jclass that, jshort arg0, jint arg1, jintArray arg2)
