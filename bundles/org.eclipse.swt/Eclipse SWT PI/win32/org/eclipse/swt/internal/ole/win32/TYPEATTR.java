@@ -40,8 +40,6 @@ public final class TYPEATTR
 	// public TYPEDESC tdescAlias
 	public int    tdescAlias_unionField;
 	public short  tdescAlias_vt;
-	// this filler field is required for proper byte alignment
-	public short  filler;
 	
 	// public IDLDESC  idldesctype
 	public int    idldescType_dwReserved;

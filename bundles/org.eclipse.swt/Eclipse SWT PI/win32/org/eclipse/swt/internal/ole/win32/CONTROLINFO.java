@@ -11,7 +11,6 @@ public final class CONTROLINFO
 	public int   cb;
 	public int   hAccel;
 	public short cAccel;
-	public short filler;
 	public int   dwFlags;
 	
 	public static final int sizeof = 16;
