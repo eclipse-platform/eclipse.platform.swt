@@ -75,11 +75,11 @@ public class ATK extends OS {
 	public static final int ATK_XY_WINDOW = 1;
 	
 	/** Signals */
-	public static final byte[] selection_changed = OS.signal ("selection_changed");
-	public static final byte[] text_changed_insert = OS.signal ("text_changed::insert");
-	public static final byte[] text_changed_delete = OS.signal ("text_changed::delete");
-	public static final byte[] text_caret_moved = OS.signal ("text_caret_moved");
-	public static final byte[] text_selection_changed = OS.signal ("text_selection_changed");
+	public static final byte[] selection_changed = OS.ascii ("selection_changed");
+	public static final byte[] text_changed_insert = OS.ascii ("text_changed::insert");
+	public static final byte[] text_changed_delete = OS.ascii ("text_changed::delete");
+	public static final byte[] text_caret_moved = OS.ascii ("text_caret_moved");
+	public static final byte[] text_selection_changed = OS.ascii ("text_selection_changed");
 	
 	/** 64 bit */
 	public static final synchronized native int AtkObjectFactory_sizeof ();

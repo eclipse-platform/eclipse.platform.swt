@@ -5086,15 +5086,15 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1container_1set_1border_1width)
 
 #ifndef NO_gtk_1dialog_1add_1button
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1dialog_1add_1button)
-	(JNIEnv *env, jclass that, jint arg0, jstring arg1, jint arg2)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
 {
-	const char *lparg1= NULL;
+	jbyte *lparg1=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gtk_1dialog_1add_1button_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL)) == NULL) goto failTag;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto failTag;
 	rc = (jint)gtk_dialog_add_button((GtkDialog *)arg0, (const gchar *)lparg1, (gint)arg2);
 failTag:
-	if (arg1 && lparg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1dialog_1add_1button_FUNC);
 	return rc;
 }
@@ -6860,15 +6860,15 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1menu_1shell_1select_1item)
 
 #ifndef NO_gtk_1message_1dialog_1new
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1message_1dialog_1new)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jstring arg4)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4)
 {
-	const char *lparg4= NULL;
+	jbyte *lparg4=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gtk_1message_1dialog_1new_FUNC);
-	if (arg4) if ((lparg4 = (*env)->GetStringUTFChars(env, arg4, NULL)) == NULL) goto failTag;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto failTag;
 	rc = (jint)gtk_message_dialog_new((GtkWindow *)arg0, (GtkDialogFlags)arg1, (GtkMessageType)arg2, (GtkButtonsType)arg3, (const gchar *)lparg4);
 failTag:
-	if (arg4 && lparg4) (*env)->ReleaseStringUTFChars(env, arg4, lparg4);
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1message_1dialog_1new_FUNC);
 	return rc;
 }
@@ -8830,14 +8830,14 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1collapse_1row)
 
 #ifndef NO_gtk_1tree_1view_1column_1add_1attribute
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1add_1attribute)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jstring arg2, jint arg3)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3)
 {
-	const char *lparg2= NULL;
+	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1add_1attribute_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetStringUTFChars(env, arg2, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto failTag;
 	gtk_tree_view_column_add_attribute((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (const gchar *)lparg2, (gint)arg3);
 failTag:
-	if (arg2 && lparg2) (*env)->ReleaseStringUTFChars(env, arg2, lparg2);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1add_1attribute_FUNC);
 }
 #endif

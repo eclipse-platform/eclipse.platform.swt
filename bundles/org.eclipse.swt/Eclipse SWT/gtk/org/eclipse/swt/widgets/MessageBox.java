@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -133,7 +134,8 @@ public int open () {
 	if ((style & (SWT.ICON_QUESTION)) != 0) messageType = OS.GTK_MESSAGE_QUESTION;
 	if ((style & (SWT.ICON_ERROR)) != 0)    messageType = OS.GTK_MESSAGE_ERROR;
 	
-	handle = OS.gtk_message_dialog_new(parentHandle, dialogFlags, messageType, 0, message);
+	byte [] buffer = Converter.wcsToMbcs (null, message, true);
+	handle = OS.gtk_message_dialog_new(parentHandle, dialogFlags, messageType, 0, buffer);
 	if (handle==0) SWT.error(SWT.ERROR_NO_HANDLES);
 	createButtons();
 	int result = OS.gtk_dialog_run(handle);
@@ -141,17 +143,16 @@ public int open () {
 	return result;
 }
 
-private void createButtons() {	
-	if ((style & SWT.OK) != 0) OS.gtk_dialog_add_button(handle, "gtk-ok", SWT.OK);
-	if ((style & SWT.CANCEL) != 0) OS.gtk_dialog_add_button(handle, "gtk-cancel", SWT.CANCEL);
-
-	if ((style & SWT.YES) != 0) OS.gtk_dialog_add_button(handle, "gtk-yes", SWT.YES);
-	if ((style & SWT.NO) != 0) OS.gtk_dialog_add_button(handle, "gtk-no", SWT.NO);
-
-	if ((style & SWT.ABORT) != 0) OS.gtk_dialog_add_button(handle, SWT.getMessage("SWT_Abort"), SWT.ABORT);
-	if ((style & SWT.RETRY) != 0) OS.gtk_dialog_add_button(handle, SWT.getMessage("SWT_Retry"), SWT.RETRY);
-	if ((style & SWT.IGNORE) != 0) OS.gtk_dialog_add_button(handle, SWT.getMessage("SWT_Ignore"), SWT.IGNORE);
+private void createButtons() {
+	if ((style & SWT.OK) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, "gtk-ok", true), SWT.OK);
+	if ((style & SWT.CANCEL) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, "gtk-cancel", true), SWT.CANCEL);
+	if ((style & SWT.YES) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, "gtk-yes", true), SWT.YES);
+	if ((style & SWT.NO) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, "gtk-no", true), SWT.NO);
+	if ((style & SWT.ABORT) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, SWT.getMessage("SWT_Abort"), true), SWT.ABORT);
+	if ((style & SWT.RETRY) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, SWT.getMessage("SWT_Retry"), true), SWT.RETRY);
+	if ((style & SWT.IGNORE) != 0) OS.gtk_dialog_add_button(handle, Converter.wcsToMbcs (null, SWT.getMessage("SWT_Ignore"), true), SWT.IGNORE);
 }
+
 private static int checkStyle (int style) {
 	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
 	int bits = style & mask;
