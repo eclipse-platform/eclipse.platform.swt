@@ -600,16 +600,17 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex) {
  * @return index of last wrapped line
  */
 private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int width) {
-    GC gc = renderer.getGC();
-    FontData fontData = gc.getFont().getFontData()[0];
-	int numChars = Math.max(1, width / gc.getFontMetrics().getAverageCharWidth());
-
 	// if there are no wrapped lines and the width is 0 the widget has
 	// not been made visible/sized yet. don't wrap until the widget size 
 	// is known.
 	if (visualLineCount == 0 && width == 0) {
 		return visualLineIndex;
 	}
+
+    GC gc = renderer.getGC();
+    FontData fontData = gc.getFont().getFontData()[0];
+	int numChars = Math.max(1, width / gc.getFontMetrics().getAverageCharWidth());
+
 	for (int i = startLine; i < endLine; i++) {
 	    String line = logicalContent.getLine(i);
    	    int lineOffset = logicalContent.getOffsetAtLine(i);
