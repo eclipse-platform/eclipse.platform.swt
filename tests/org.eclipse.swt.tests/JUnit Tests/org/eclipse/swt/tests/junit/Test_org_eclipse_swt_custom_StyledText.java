@@ -1116,7 +1116,7 @@ public void test_getSelectionRange() {
 			text.setSelectionRange(start, length);
 		}
 		catch (IllegalArgumentException e) {
-			fail("should not thrown exception for out of range");
+			fail("should not throw exception for out of range");
 		}
 	}	
 	
@@ -1146,7 +1146,7 @@ public void test_getSelectionRange() {
 			text.setSelectionRange(start, length);
 		}
 		catch (IllegalArgumentException e) {
-			fail("should not thrown exception for out of range");
+			fail("should not throw exception for out of range");
 		}
 	}
 }
@@ -2931,7 +2931,7 @@ public void test_setSelectionI() {
 		try {
 			text.setSelection(invalid[i]);
 		} catch (IllegalArgumentException e) {
-			fail("should not thrown exception for out of range");
+			fail("should not throw exception for out of range");
 		}
 	}	
 	text.setText("01234567890");
@@ -2946,7 +2946,7 @@ public void test_setSelectionI() {
 			text.setSelection(invalid[i]);
 		}
 		catch (IllegalArgumentException e) {
-			fail("should not thrown exception for out of range");
+			fail("should not throw exception for out of range");
 		}
 	}	
 }
@@ -2960,7 +2960,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 			text.setSelection(invalidRanges[i]);
 		}
 		catch (IllegalArgumentException e) {
-			fail("should not thrown exception for out of range");
+			fail("should not throw exception for out of range");
 		}
 	}	
 	text.setText("01234567890");
@@ -2973,7 +2973,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 			text.setSelection(invalidRanges[i]);
 		}
 		catch (IllegalArgumentException e) {
-			fail("should not thrown exception for out of range");
+			fail("should not throw exception for out of range");
 		}
 	}	
 }
@@ -2989,7 +2989,7 @@ public void test_setSelectionII(){
 			text.setSelection(start, end);
 		}
 		catch (IllegalArgumentException e) {
-			fail("should not thrown exception for out of range");
+			fail("should not throw exception for out of range");
 		}
 	}	
 	text.setText("01234567890");
@@ -3008,7 +3008,7 @@ public void test_setSelectionII(){
 			text.setSelection(start, end);
 		}
 		catch (IllegalArgumentException e) {
-			fail("should not thrown exception for out of range");
+			fail("should not throw exception for out of range");
 		}
 	}	
 }
