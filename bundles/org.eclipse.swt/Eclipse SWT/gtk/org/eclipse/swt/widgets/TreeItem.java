@@ -851,10 +851,8 @@ public void removeAll () {
 		OS.gtk_tree_model_get (parent.modelHandle, iter, Tree.ID_COLUMN, index, -1);
 		valid = OS.gtk_tree_model_iter_next (parent.modelHandle, iter);
 		TreeItem item = parent.items [index [0]];
-		if (item != null) {
-			item.releaseChild ();
-			item.releaseWidget ();
-			item.destroyWidget ();
+		if (item != null && !item.isDisposed ()) {
+			item.dispose ();
 		}
 	}
 	OS.g_free (iter);
