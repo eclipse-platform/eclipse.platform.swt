@@ -27,6 +27,7 @@ import org.eclipse.swt.graphics.*;
  * within the SWT implementation.
  * </p>
  */
+
 public class Label extends Control {
 	Image image;
 	int font;
@@ -220,7 +221,7 @@ public String getText () {
 	if (length == 0) return "";
 	byte [] buffer1 = new byte [length + 1];
 	OS.GetWindowText (handle, buffer1, buffer1.length);
-	char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
+	char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
 	return new String (buffer2, 0, buffer2.length - 1);
 }
 
@@ -306,7 +307,6 @@ public void setAlignment (int alignment) {
 }
 
 public boolean setFocus () {
-	checkWidget();
 	return false;
 }
 
@@ -316,9 +316,6 @@ public boolean setFocus () {
  *
  * @param image the image to display on the receiver (may be null)
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -329,7 +326,6 @@ public void setImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int hImage = 0, imageBits = 0, fImageType = 0;
 	if (image != null) {
-		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		hImage = image.handle;
 		switch (image.type) {
 			case SWT.BITMAP:
@@ -410,7 +406,7 @@ public void setText (String string) {
 		if (hFont != 0) OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 	}
 	string = Display.withCrLf (string);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	byte [] buffer = Converter.wcsToMbcs (0, string, true);
 	OS.SetWindowText (handle, buffer);
 }
 

@@ -152,8 +152,8 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
     isStatic = (*env)->GetBooleanField(env,lpCallback,PGLOB(isStaticID));
     argCount = (*env)->GetIntField(env,lpCallback,PGLOB(argCountID));
     isArrayBased = (*env)->GetBooleanField(env,lpCallback,PGLOB(isArrayBasedID));
-    methodString = (const char *) (*env)->GetStringUTFChars(env, javaMethod, NULL);
-    sigString = (const char *) (*env)->GetStringUTFChars(env, javaSignature, NULL);
+    methodString = (*env)->GetStringUTFChars(env, javaMethod, NULL);
+    sigString = (*env)->GetStringUTFChars(env, javaSignature, NULL);
     if (isStatic) {
         mid = (*env)->GetStaticMethodID(env, javaObject, methodString, sigString);
     } else {

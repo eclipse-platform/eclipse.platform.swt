@@ -10,7 +10,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 class ImageList {
-	int handle, refCount;
+	int handle, background;
 	Image [] images;
 	static final int CREATE_FLAGS;
 	static {
@@ -45,6 +45,7 @@ class ImageList {
 public ImageList () {
 	handle = OS.ImageList_Create (32, 32, CREATE_FLAGS, 16, 16);
 	images = new Image [4];
+	background = 0x00FFFFFF;
 }
 
 public int add (Image image) {
@@ -69,13 +70,10 @@ public int add (Image image) {
 				OS.ImageList_SetIconSize (handle, cx [0], cy [0]);
 			}
 			int hBitmap = copyBitmap (hImage, cx [0], cy [0]);
-			int background = -1;
-			Color color = image.getBackground ();
-			if (color != null) background = color.handle;
 			if (index == count) {
 				OS.ImageList_AddMasked (handle, hBitmap, background);
 			} else {
-				int hMask = createMask (hBitmap, cx [0], cy [0], background);
+				int hMask = createMask (hBitmap, cx [0], cy [0]);
 				OS.ImageList_Replace (handle, index, hBitmap, hMask);
 				OS.DeleteObject (hMask);
 			}
@@ -111,10 +109,6 @@ public int add (Image image) {
 	return index;
 }
 
-int addRef() {
-	return ++refCount;
-}
-
 int copyBitmap (int hImage, int width, int height) {
 	BITMAP bm = new BITMAP ();
 	OS.GetObject (hImage, BITMAP.sizeof, bm);
@@ -137,20 +131,18 @@ int copyIcon (int hImage, int width, int height) {
 	return hIcon;
 }
 
-int createMask (int hBitmap, int width, int height, int background) {
+int createMask (int hBitmap, int width, int height) {
+	int hDC = OS.GetDC (0);
+	int hdc1 = OS.CreateCompatibleDC (hDC);
+	OS.SelectObject (hdc1, hBitmap);
+	int hdc2 = OS.CreateCompatibleDC (hDC);
 	int hMask = OS.CreateBitmap (width, height, 1, 1, null);
-	if (background != -1) {
-		int hDC = OS.GetDC (0);
-		int hdc1 = OS.CreateCompatibleDC (hDC);
-		OS.SelectObject (hdc1, hBitmap);
-		int hdc2 = OS.CreateCompatibleDC (hDC);
-		OS.SelectObject (hdc2, hMask);
-		OS.SetBkColor (hdc1, background);
-		OS.BitBlt (hdc2, 0, 0, width, height, hdc1, 0, 0, OS.SRCCOPY);
-		OS.ReleaseDC (0, hDC);
-		OS.DeleteDC (hdc1);
-		OS.DeleteDC (hdc2);
-	}
+	OS.SelectObject (hdc2, hMask);
+	OS.SetBkColor (hdc1, background);
+	OS.BitBlt (hdc2, 0, 0, width, height, hdc1, 0, 0, OS.SRCCOPY);
+	OS.ReleaseDC (0, hDC);
+	OS.DeleteDC (hdc1);
+	OS.DeleteDC (hdc2);
 	return hMask;
 }
 
@@ -164,14 +156,12 @@ public Image get (int index) {
 	return images [index];
 }
 
-public int getHandle () {
-	return handle;
+public int getBackground () {
+	return background;
 }
 
-public Point getImageSize() {
-	int [] cx = new int [1], cy = new int [1];
-	OS.ImageList_GetIconSize (handle, cx, cy);
-	return new Point (cx [0], cy [0]);
+public int getHandle () {
+	return handle;
 }
 
 public int indexOf (Image image) {
@@ -194,11 +184,8 @@ public void put (int index, Image image) {
 		int hImage = image.handle;
 		switch (image.type) {
 			case SWT.BITMAP:
-				int background = -1;
-				Color color = image.getBackground ();
-				if (color != null) background = color.handle;
 				int hBitmap = copyBitmap (hImage, cx [0], cy [0]);
-				int hMask = createMask (hBitmap, cx [0], cy [0], background);
+				int hMask = createMask (hBitmap, cx [0], cy [0]);
 				OS.ImageList_Replace (handle, index, hBitmap, hMask);
 				OS.DeleteObject (hBitmap);
 				OS.DeleteObject (hMask);
@@ -221,8 +208,51 @@ public void remove (int index) {
 	images [index] = null;
 }
 
-int removeRef() {
-	return --refCount;
+public void setBackground (int color) {
+	if (background == color) return;
+	background = color;
+	/*
+	* This code is intentionally commented.  When the background
+	* color of the control changes, it is necessary to recompute
+	* the masks for all bitmaps in the image list.  This can look
+	* really bad when the application program assumes the original
+	* color of the control and makes bitmaps accordingly.  Typically
+	* this happens when the colors are change using the control panel.
+	* Therefore, this code remains commented even though it is correct.
+	*/
+//	int length = OS.ImageList_GetImageCount (handle);
+//	if (length == 0) return;
+//	int [] cx = new int [1], cy = new int [1];
+//	OS.ImageList_GetIconSize (handle, cx, cy);
+//	int width = cx [0], height = cy [0];
+//	OS.ImageList_Destroy (handle);
+//	handle = OS.ImageList_Create (width, height, CREATE_FLAGS, length, 16);
+//	for (int i=0; i<length; i++) {
+//		Image image = images [i];
+//		if (image == null || image.isDisposed ()) {
+//			images [i] = null;
+//			int hBitmap = OS.CreateBitmap (width, height, 1, 1, null);
+//			OS.ImageList_AddMasked (handle, hBitmap, background);
+//			OS.DeleteObject (hBitmap);
+//		} else {
+//			int hImage = image.handle;
+//			switch (image.type) {
+//				case SWT.BITMAP:
+//					int hBitmap = copyBitmap (hImage, width, height);
+//					OS.ImageList_AddMasked (handle, hBitmap, background);
+//					OS.DeleteObject (hBitmap);
+//					break;
+//				case SWT.ICON:
+//					int hIcon = copyIcon (hImage, width, height);
+//					OS.ImageList_ReplaceIcon (handle, -1, hIcon);
+//					OS.DestroyIcon (hIcon);
+//					break;
+//				default:
+//					SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+//					break;
+//			}
+//		}
+//	}
 }
 
 public int size () {

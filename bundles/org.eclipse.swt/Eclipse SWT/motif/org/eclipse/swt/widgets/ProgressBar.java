@@ -26,37 +26,11 @@ import org.eclipse.swt.graphics.*;
  */
 
 public /*final*/ class ProgressBar extends Control {
-
 /**
- * Constructs a new instance of this class given its parent
- * and a style value describing its behavior and appearance.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
+* Creates a new instance of the widget.
+*/
 public ProgressBar (Composite parent, int style) {
-	/*
+	/**
 	 * Feature in Motif. If you set the progress bar's value to 0,
 	 * the thumb does not disappear. In order to make this happen,
 	 * we hide the widget when the value is set to zero by changing
@@ -71,7 +45,8 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
 	Display display = getDisplay ();
@@ -133,7 +108,8 @@ void disableTraversal () {
  * </ul>
  */
 public int getMaximum () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNmaximum, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -149,7 +125,8 @@ public int getMaximum () {
  * </ul>
  */
 public int getMinimum () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNminimum, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -165,7 +142,8 @@ public int getMinimum () {
  * </ul>
  */
 public int getSelection () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {
 		OS.XmNminimum, 0,
 		OS.XmNsliderSize, 0,
@@ -180,7 +158,7 @@ void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
 	/*
 	* ProgressBars never participate in focus traversal when
-	* either enabled or disabled.
+	* either enabled or disabled.  Also, when enabled
 	*/
 	if (enabled) {
 		disableTraversal ();
@@ -204,7 +182,8 @@ void realizeChildren () {
  * </ul>
  */
 public void setMaximum (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (value < 0) return;
 	int [] argList = {OS.XmNmaximum, value, OS.XmNvalue, 0};
 	Display display = getDisplay ();
@@ -226,7 +205,8 @@ public void setMaximum (int value) {
  * </ul>
  */
 public void setMinimum (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (value < 0) return;
 	int [] argList = {
 		OS.XmNminimum, 0,
@@ -264,7 +244,8 @@ public void setMinimum (int value) {
  * </ul>
  */
 public void setSelection (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (value < 0) return;
 	int [] argList = {
 		OS.XmNminimum, 0,
@@ -282,9 +263,7 @@ public void setSelection (int value) {
 void setThumb (int sliderSize) {
 	Display display = getDisplay ();
 	int backgroundPixel = defaultBackground ();
-	int [] argList1 = new int [] {
-		OS.XmNbackground, 0,
-		OS.XmNminimum, 0};
+	int [] argList1 = new int [] {OS.XmNbackground, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
 	if (sliderSize == 0) {
 		if (argList1 [1] != backgroundPixel) {
@@ -300,7 +279,6 @@ void setThumb (int sliderSize) {
 		OS.XmNtroughColor, backgroundPixel,
 		OS.XmNtopShadowColor, backgroundPixel,
 		OS.XmNbottomShadowColor, backgroundPixel,
-		OS.XmNvalue, argList1[3]
 	};
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);

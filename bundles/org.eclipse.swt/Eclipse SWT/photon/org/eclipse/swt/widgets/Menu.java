@@ -54,14 +54,16 @@ static int checkStyle (int style) {
 }
 
 public void addHelpListener (HelpListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Help, typedListener);
 }
 
 public void addMenuListener (MenuListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Hide,typedListener);
@@ -89,7 +91,8 @@ void createWidget (int index) {
 }
 
 public MenuItem getDefaultItem () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return defaultItem;
 }
 
@@ -100,14 +103,16 @@ public Display getDisplay () {
 }
 
 public boolean getEnabled () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return (args [1] & OS.Pt_BLOCKED) == 0;
 }
 
 public int getItemCount () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = 0;
 	int child = OS.PtWidgetChildBack (handle);
 	if (child != 0 && (style & SWT.BAR) != 0) child = OS.PtWidgetChildBack (child);
@@ -119,7 +124,8 @@ public int getItemCount () {
 }
 
 public MenuItem getItem (int index) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);	
 	int i = 0;
 	int child = OS.PtWidgetChildBack (handle);
@@ -136,7 +142,8 @@ public MenuItem getItem (int index) {
 }
 
 public MenuItem [] getItems () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = 0;
 	int child = OS.PtWidgetChildBack (handle);
 	if (child != 0  && (style & SWT.BAR) != 0) child = OS.PtWidgetChildBack (child);
@@ -176,28 +183,31 @@ String getNameText () {
 }
 
 public Decorations getParent () {
-	checkWidget();
 	return parent;
 }
 
 public MenuItem getParentItem () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return cascade;
 }
 
 public Menu getParentMenu () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (cascade != null) return cascade.parent;
 	return null;
 }
 
 public Shell getShell () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getShell ();
 }
 
 public boolean getVisible () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return true;
 }
 
@@ -207,7 +217,8 @@ void hookEvents () {
 }
 
 public int indexOf (MenuItem item) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int i = 0;
 	int child = OS.PtWidgetChildBack (handle);
@@ -222,14 +233,16 @@ public int indexOf (MenuItem item) {
 }
 
 public boolean isEnabled () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	Menu parentMenu = getParentMenu ();
 	if (parentMenu == null) return getEnabled ();
 	return getEnabled () && parentMenu.isEnabled ();
 }
 
 public boolean isVisible () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getVisible ();
 }
 
@@ -268,14 +281,16 @@ void releaseWidget () {
 }
 
 public void removeHelpListener (HelpListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
 }
 
 public void removeMenuListener (MenuListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Hide, listener);
@@ -283,13 +298,14 @@ public void removeMenuListener (MenuListener listener) {
 }
 
 public void setDefaultItem (MenuItem item) {
-	checkWidget();
-	if (item != null && item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	defaultItem = item;
 }
 
 public void setEnabled (boolean enabled) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {
 		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_BLOCKED, OS.Pt_BLOCKED,
 		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_GHOST, OS.Pt_GHOST,
@@ -298,15 +314,16 @@ public void setEnabled (boolean enabled) {
 }
 
 public void setLocation (int x, int y) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	this.x = x;  this.y = y;
 	hasLocation = true;
 }
 
 public void setVisible (boolean visible) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.POP_UP) == 0) return;
-	if (visible == OS.PtWidgetIsRealized (handle)) return;
 	if (visible) {
 		PhPoint_t pt = new PhPoint_t ();
 		pt.x = (short) x;

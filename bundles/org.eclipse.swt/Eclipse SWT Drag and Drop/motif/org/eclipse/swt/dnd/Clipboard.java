@@ -95,7 +95,6 @@ public Object getContents(Transfer transfer) {
 	// Pass data to transfer agent for conversion to a Java Object
 	// Memory is allocated here to emulate the way Drag and Drop transfers data.
 	TransferData transferData = new TransferData();
-	/* Use the character encoding for the default locale */
 	byte[] bName = Converter.wcsToMbcs (null, type, false);
 	transferData.type = OS.XmInternAtom (xDisplay, bName, false);
 	transferData.pValue = OS.XtMalloc(data.length);
@@ -146,7 +145,6 @@ public void setContents(Object[] data, Transfer[] transferAgents){
 		for (int j = 0; j < names.length; j++) {
 		
 			TransferData transferData = new TransferData();
-			/* Use the character encoding for the default locale */
 			byte[] bName = Converter.wcsToMbcs (null, names[j], false);
 			transferData.type    = OS.XmInternAtom (xDisplay, bName, false);
 			transferAgents[i].javaToNative(data[i], transferData);

@@ -32,7 +32,8 @@ static int checkStyle (int style) {
 }
 
 public void addSelectionListener (SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener (SWT.Selection,typedListener);
@@ -77,68 +78,78 @@ public Display getDisplay () {
 }
 
 public boolean getEnabled () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return (args [1] & OS.Pt_BLOCKED) == 0;
 }
 
 public int getIncrement () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_INCREMENT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
 
 public int getMinimum () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_MINIMUM, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
 
 public int getMaximum () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_MAXIMUM, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
 
 public int getPageIncrement () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_PAGE_INCREMENT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
 
 public Scrollable getParent () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
 
 public int getSelection () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_SCROLL_POSITION, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
 
 public Point getSize () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return new Point (args [1], args [4]);
 }
 
 public int getThumb () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_SLIDER_SIZE, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
 
 public boolean getVisible () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int topHandle = topHandle ();
 	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
 	OS.PtGetResources (topHandle, args.length / 3, args);
@@ -151,12 +162,14 @@ void hookEvents () {
 }
 
 public boolean isEnabled () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getEnabled () && parent.isEnabled ();
 }
 
 public boolean isVisible () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return OS.PtWidgetIsRealized (handle);
 }
 
@@ -196,7 +209,8 @@ int processSelection (int info) {
 }
 
 public void removeSelectionListener (SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -217,7 +231,8 @@ void setBounds (int x, int y, int width, int height) {
 }
 
 public void setEnabled (boolean enabled) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {
 		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_BLOCKED, OS.Pt_BLOCKED,
 		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_GHOST, OS.Pt_GHOST,
@@ -225,43 +240,50 @@ public void setEnabled (boolean enabled) {
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 public void setIncrement (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_INCREMENT, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 public void setMaximum (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_MAXIMUM, value - 1, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 public void setMinimum (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_MINIMUM, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 public void setPageIncrement (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_PAGE_INCREMENT, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 public void setSelection (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_SCROLL_POSITION, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 public void setThumb (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_SLIDER_SIZE, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 public void setValues (int selection, int minimum, int maximum, int thumb, int increment, int pageIncrement) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (selection < 0) return;
 	if (minimum < 0) return;
 	if (maximum < 0) return;
@@ -281,7 +303,8 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 }
 
 public void setVisible (boolean visible) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (visible == OS.PtWidgetIsRealized (handle)) return;
 	int [] args = {
 		OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,

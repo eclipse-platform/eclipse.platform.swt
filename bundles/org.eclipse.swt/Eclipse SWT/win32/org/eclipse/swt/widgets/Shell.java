@@ -90,7 +90,6 @@ public class Shell extends Decorations {
 	int [] brushes;
 	boolean showWithParent;
 	int toolTipHandle, lpstrTip;
-	Control lastActive;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -575,7 +574,6 @@ void releaseWidget () {
 	if (IsDBLocale) {
 		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
 	}
-	lastActive = null;
 }
 
 void remove (Menu menu) {
@@ -623,43 +621,6 @@ LRESULT selectPalette (int hPalette) {
 	}
 	OS.ReleaseDC (handle, hDC);
 	return (result > 0) ? LRESULT.ONE : LRESULT.ZERO;
-}
-
-void setActiveControl (Control control) {
-	if (control != null && control.isDisposed ()) control = null;
-	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
-	if (lastActive == control) return;
-	
-	/*
-	* Compute the list of controls to be activated and
-	* deactivated by finding the first common parent
-	* control.
-	*/
-	Control [] activate = (control == null) ? new Control[0] : control.getPath ();
-	Control [] deactivate = (lastActive == null) ? new Control[0] : lastActive.getPath ();
-	lastActive = control;
-	int index = 0, length = Math.min (activate.length, deactivate.length);
-	while (index < length) {
-		if (activate [index] != deactivate [index]) break;
-		index++;
-	}
-	
-	/*
-	* It is possible (but unlikely), that application
-	* code could have destroyed some of the widgets. If
-	* this happens, keep processing those widgets that
-	* are not disposed.
-	*/
-	for (int i=deactivate.length-1; i>=index; --i) {
-		if (!deactivate [i].isDisposed ()) {
-			deactivate [i].sendEvent (SWT.Deactivate);
-		}
-	}
-	for (int i=activate.length-1; i>=index; --i) {
-		if (!activate [i].isDisposed ()) {
-			activate [i].sendEvent (SWT.Activate);
-		}
-	}
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
@@ -750,7 +711,7 @@ void setParent () {
 void setToolTipText (int hwnd, String text) {
 	if (toolTipHandle == 0) {
 		toolTipHandle = OS.CreateWindowEx (
-			OS.WS_EX_TOPMOST,
+			0,
 			OS.TOOLTIPS_CLASS,
 			null,
 			OS.TTS_ALWAYSTIP,
@@ -760,14 +721,6 @@ void setToolTipText (int hwnd, String text) {
 			OS.GetModuleHandle (null),
 			null);
 		if (toolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		/*
-		* Feature in Windows.  Despite the fact that the
-		* tool tip text contains \r\n, the tooltip will
-		* not honour the new line unless TTM_SETMAXTIPWIDTH
-		* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
-		* a large value.
-		*/
-		OS.SendMessage (toolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
 	}
 	TOOLINFO lpti = new TOOLINFO ();
 	lpti.cbSize = TOOLINFO.sizeof;
@@ -834,12 +787,6 @@ void updateModal () {
 	setItemEnabled (OS.SC_CLOSE, isActive ());
 }
 
-int widgetExtStyle () {
-	int bits = super.widgetExtStyle ();
-	if ((style & SWT.ON_TOP) != 0) bits |= OS.WS_EX_TOPMOST;
-	return bits;
-}
-
 int widgetStyle () {
 	int bits = super.widgetStyle () & ~OS.WS_POPUP;
 	if (handle != 0) return bits | OS.WS_CHILD;
@@ -875,31 +822,14 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	if (result != null) return result;
 	int hittest = lParam & 0xFFFF;
 	if (hittest == OS.HTMENU) return null;
-	/*
-	* Get the current location of the cursor,
-	* not the location of the cursor when the
-	* WM_MOUSEACTIVATE was generated.  This is
-	* strictly incorrect but is necessary in
-	* order to support Activate and Deactivate
-	* events for embedded widgets that have
-	* their own event loop.  In that case, the
-	* cursor location reported by GetMessagePos
-	* is the one for our event loop, not the
-	* embedded widget's event loop.
-	*/
 	POINT pt = new POINT ();
-	if (!OS.GetCursorPos (pt)) {
-		int pos = OS.GetMessagePos ();
-		pt.x = (short) (pos & 0xFFFF);
-		pt.y = (short) (pos >> 16);
-	}
+	int pos = OS.GetMessagePos ();
+	pt.x = (short) (pos & 0xFFFF);
+	pt.y = (short) (pos >> 16);
 	int hwnd = OS.WindowFromPoint (pt);
 	if (hwnd == 0) return null;
-	Control control = display.findControl (hwnd);
-	setActiveControl (control);
-	// widget could be disposed at this point
-	if (isDisposed ()) return null;
-	if (control == null || control.isDisposed ()) return null;	
+	Control control = WidgetTable.get (hwnd);
+	if (control == null) return null;
 	Button button = null;
 	boolean setDefault = false;
 	if (OS.GetActiveWindow () == handle && this == control.getShell ()) {
@@ -928,7 +858,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 //			return new LRESULT (OS.MA_NOACTIVATE);
 //		}
 //	}
-	return null;
+	return result;
 }
 
 LRESULT WM_NCHITTEST (int wParam, int lParam) {

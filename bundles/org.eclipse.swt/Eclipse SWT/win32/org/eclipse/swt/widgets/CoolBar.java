@@ -281,8 +281,7 @@ public CoolItem [] getItems () {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the item is disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -292,7 +291,6 @@ public CoolItem [] getItems () {
 public int indexOf (CoolItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	return OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
 }
 

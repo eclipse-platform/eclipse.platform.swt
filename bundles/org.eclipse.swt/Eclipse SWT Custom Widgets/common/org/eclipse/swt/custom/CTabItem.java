@@ -134,39 +134,17 @@ void onPaint(GC gc, boolean isSelected) {
 	int index = parent.indexOf(this);
 	
 	if (isSelected) {
-		final Rectangle bounds;
-		if (index == parent.topTabIndex) {
-			bounds = new Rectangle(x + 1, y, width - 2, height);
-		} else {
-			bounds = new Rectangle(x + 2, y, width - 3, height);
-		}
+		// draw a background image behind the text
 		if (parent.backgroundImage != null) {
-			// draw a background image behind the text
-			Rectangle imageRect = parent.backgroundImage.getBounds();
-			gc.drawImage(parent.backgroundImage, 0, 0, imageRect.width, imageRect.height,
-				bounds.x, bounds.y, bounds.width, bounds.height);
-		} else if (parent.gradientColors != null) {
-			// draw a gradient behind the text
-			final Color oldBackground = gc.getBackground();
-			if (parent.gradientColors.length == 1) {
-				if (parent.gradientColors[0] != null) gc.setBackground(parent.gradientColors[0]);
-				gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+			if (index == parent.topTabIndex){
+				Rectangle imageRect = parent.backgroundImage.getBounds();
+				gc.drawImage(parent.backgroundImage, 0, 0, imageRect.width, imageRect.height, 
+				                                   x + 1, y, width - 3, height);
 			} else {
-				final Color oldForeground = gc.getForeground();
-				Color lastColor = parent.gradientColors[0];
-				if (lastColor == null) lastColor = oldBackground;
-				for (int i = 0, pos = 0; i < parent.gradientPercents.length; ++i) {
-					gc.setForeground(lastColor);
-					lastColor = parent.gradientColors[i + 1];
-					if (lastColor == null) lastColor = oldBackground;
-					gc.setBackground(lastColor);
-					final int gradientWidth = (parent.gradientPercents[i] * bounds.width / 100) - pos;
-					gc.fillGradientRectangle(bounds.x + pos, bounds.y, gradientWidth, bounds.height, false);
-					pos += gradientWidth;
-				}
-				gc.setForeground(oldForeground);
+				Rectangle imageRect = parent.backgroundImage.getBounds();
+				gc.drawImage(parent.backgroundImage, 0, 0, imageRect.width, imageRect.height, 
+				                                   x + 2, y, width - 4, height);
 			}
-			gc.setBackground(oldBackground);
 		}
 
 		// draw tab lines
@@ -177,9 +155,9 @@ void onPaint(GC gc, boolean isSelected) {
 				gc.drawLine(x,     y + 1,          x,     y + height - 2);
 				gc.drawLine(x,     y + height - 1, x,     y + height - 1);
 			}
-			gc.drawLine(x + width - 1, y,              x + width - 1, y);
-			gc.drawLine(x + width,     y + 1,          x + width,     y + height - 2);
-			gc.drawLine(x + width,     y + height - 1, x + width,     y + height - 1);
+			gc.drawLine(x + width - 2, y,              x + width - 2, y);
+			gc.drawLine(x + width - 1, y + 1,          x + width - 1, y + height - 2);
+			gc.drawLine(x + width - 1, y + height - 1, x + width - 1, y + height - 1);
 	
 			gc.setForeground(highlightShadow);
 			if (index != parent.topTabIndex) {
@@ -190,15 +168,15 @@ void onPaint(GC gc, boolean isSelected) {
 				gc.drawLine(x, y, x, y + height - 1);
 			}
 			
-			gc.drawLine(x + width - 2, y,              x + width - 2, y);
-			gc.drawLine(x + width - 1, y + 1,          x + width - 1, y + height - 2);
-			gc.drawLine(x + width - 1, y + height - 1, x + width - 1, y + height - 1);
+			gc.drawLine(x + width - 3, y,              x + width - 3, y);
+			gc.drawLine(x + width - 2, y + 1,          x + width - 2, y + height - 2);
+			gc.drawLine(x + width - 2, y + height - 1, x + width - 2, y + height - 1);
 	
 			// light line across top
 			if (index != parent.topTabIndex) {
-				gc.drawLine(x + 3, y, x + width - 3, y);
+				gc.drawLine(x + 3, y, x + width - 4, y);
 			} else {
-				gc.drawLine(x + 1, y, x + width - 3, y);
+				gc.drawLine(x + 1, y, x + width - 4, y);
 			}
 		} else {
 			gc.setForeground(normalShadow);
@@ -207,9 +185,9 @@ void onPaint(GC gc, boolean isSelected) {
 				gc.drawLine(x,     y + 1,          x,     y + height - 2);
 				gc.drawLine(x + 1, y + height - 1, x + 1, y + height - 1);
 			}
-			gc.drawLine(x + width,     y,              x + width,     y);
-			gc.drawLine(x + width,     y + 1,          x + width,     y + height - 2);
-			gc.drawLine(x + width - 1, y + height - 1, x + width - 1, y + height - 1);
+			gc.drawLine(x + width - 1, y,              x + width - 1, y);
+			gc.drawLine(x + width - 1, y + 1,          x + width - 1, y + height - 2);
+			gc.drawLine(x + width - 2, y + height - 1, x + width - 2, y + height - 1);
 	
 			gc.setForeground(highlightShadow);
 			if (index != parent.topTabIndex) {
@@ -220,32 +198,19 @@ void onPaint(GC gc, boolean isSelected) {
 				gc.drawLine(x, y, x, y + height - 1);
 			}
 			
-			gc.drawLine(x + width - 1, y,              x + width - 1, y);
-			gc.drawLine(x + width - 1, y + 1,          x + width - 1, y + height - 2);
-			gc.drawLine(x + width - 2, y + height - 1, x + width - 2, y + height - 1);
+			gc.drawLine(x + width - 2, y,              x + width - 2, y);
+			gc.drawLine(x + width - 2, y + 1,          x + width - 2, y + height - 2);
+			gc.drawLine(x + width - 3, y + height - 1, x + width - 3, y + height - 1);
 	
 			// light line across top and bottom
 			if (index != parent.topTabIndex) {
 				gc.drawLine(x + 1, y, x + width - 2, y);
-				gc.drawLine(x + 2, y + height - 1, x + width - 3, y + height - 1);
+				gc.drawLine(x + 2, y + height - 1, x + width - 4, y + height - 1);
 			} else {
 				gc.drawLine(x + 1, y, x + width - 2, y);
-				gc.drawLine(x + 1, y + height - 1, x + width - 3, y + height - 1);
+				gc.drawLine(x + 1, y + height - 1, x + width - 4, y + height - 1);
 			}			
 		}
-	} else {
-		// draw tab lines for unselected items
-		gc.setForeground(normalShadow);
-		if (!parent.onBottom) {
-			if (index != parent.topTabIndex && index != parent.getSelectionIndex() + 1) {
-				gc.drawLine(x, y, x, y + (height / 2));
-			}
-		} else {
-			if (index != parent.topTabIndex && index != parent.getSelectionIndex() + 1) {
-				gc.drawLine(x, y + (height / 2), x, y + height - 1);
-			}
-		}
-		
 	}
 
 	// draw Image

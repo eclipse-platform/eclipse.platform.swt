@@ -2,7 +2,6 @@
 <classpath>
     <classpathentry kind="var" path="JRE_LIB"/>
     <classpathentry kind="src" path="Eclipse SWT/motif"/>
-    <classpathentry kind="src" path="Eclipse SWT/emulated"/>
     <classpathentry kind="src" path="Eclipse SWT/common"/>
     <classpathentry kind="src" path="Eclipse SWT Printing/motif"/>
     <classpathentry kind="src" path="Eclipse SWT Printing/common"/>

@@ -168,6 +168,7 @@ Rectangle computeBounds (){
  * composite and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
+
 	if (!parent.isDisposed()) {
 		parent.removeListener (SWT.Resize, internalListener);
 		ScrollBar hBar = parent.getHorizontalBar ();

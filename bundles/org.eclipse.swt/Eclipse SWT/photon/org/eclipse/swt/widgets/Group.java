@@ -28,7 +28,8 @@ static int checkStyle (int style) {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	Point titleSize = getTitleSize();
 	Point size;
 	if (layout != null) {
@@ -64,7 +65,8 @@ void createHandle (int index) {
 }
 
 public String getText () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_TITLE, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	if (args [1] == 0) return "";
@@ -103,7 +105,8 @@ int processPaint (int damage) {
 }
 
 public void setText (String string) {	
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int flags = OS.Pt_SHOW_TITLE | OS.Pt_ETCH_TITLE_AREA | OS.Pt_GRADIENT_TITLE_AREA;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);

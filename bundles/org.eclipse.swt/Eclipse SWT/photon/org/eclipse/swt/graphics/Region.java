@@ -29,7 +29,6 @@ Region(int handle) {
 public void add (Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (handle == 0) return;
 	int tile_ptr = OS.PhGetTile();
 	PhTile_t tile = new PhTile_t();
@@ -45,9 +44,8 @@ public void add (Rectangle rect) {
 public void add (Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (handle == 0) return;
-	if (region.handle == EMPTY_REGION) return;
+	if (region.handle == 0 || region.handle == EMPTY_REGION) return;
 	int copy = OS.PhCopyTiles(region.handle);
 	if (handle == EMPTY_REGION) handle = copy;
 	else handle = OS.PhAddMergeTiles (handle, copy, null);

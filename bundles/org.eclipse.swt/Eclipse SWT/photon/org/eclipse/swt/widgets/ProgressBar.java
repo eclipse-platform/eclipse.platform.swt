@@ -23,7 +23,8 @@ static int checkStyle (int style) {
 * Not done - check Windows
 */
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int width = wHint, height = hHint;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		if (width == SWT.DEFAULT) {
@@ -68,28 +69,32 @@ int processPaint (int damage) {
 }
 
 public int getMaximum () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_MAXIMUM, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
 
 public int getMinimum () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_MINIMUM, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
 
 public int getSelection () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_GAUGE_VALUE, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
 
 public void setMaximum (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int minimum = getMinimum();
 	if (0 <= minimum && minimum < value) {
 		int [] args = {OS.Pt_ARG_MAXIMUM, value, 0};
@@ -98,7 +103,8 @@ public void setMaximum (int value) {
 }
 
 public void setMinimum (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int maximum = getMaximum();
 	if (0 <= value && value < maximum) {
 		int [] args = {OS.Pt_ARG_MINIMUM, value, 0};
@@ -107,7 +113,8 @@ public void setMinimum (int value) {
 }
 
 public void setSelection (int value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (value < 0) return;
 	int [] args = {OS.Pt_ARG_GAUGE_VALUE, value, 0};
 	OS.PtSetResources (handle, args.length / 3, args);

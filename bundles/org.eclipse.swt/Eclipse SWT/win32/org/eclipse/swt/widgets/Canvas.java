@@ -164,11 +164,8 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
  * the programmer must hide and show the caret when
  * drawing in the window any other time.
  * </p>
- * @param caret the new caret for the receiver, may be null
+ * @param caret the new caret for the receiver
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the caret has been disposed</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -181,10 +178,7 @@ public void setCaret (Caret caret) {
 	this.caret = newCaret;
 	if (isFocusControl ()) {
 		if (oldCaret != null) oldCaret.killFocus ();
-		if (newCaret != null) {
-			if (newCaret.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-			newCaret.setFocus ();
-		}
+		if (newCaret != null) newCaret.setFocus ();
 	}
 }
 

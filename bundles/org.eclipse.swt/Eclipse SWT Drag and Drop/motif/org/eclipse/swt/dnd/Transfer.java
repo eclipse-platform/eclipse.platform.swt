@@ -54,7 +54,6 @@ abstract protected Object nativeToJava(TransferData transferData);
 public static int registerType(String formatName){
 
 	int xDisplay = Display.getDefault().xDisplay; // using default because we don't have a particular widget
-	/* Use the character encoding for the default locale */
 	byte[] bName = Converter.wcsToMbcs (null, formatName, false);
 	int atom = OS.XmInternAtom (xDisplay, bName, false); 
 	return atom;

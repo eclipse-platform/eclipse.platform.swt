@@ -67,11 +67,27 @@ public abstract class Widget {
 	
 	/* Global widget variables */
 	static final char Mnemonic = '&';
-
-	/* DBCS flags */
-	static final boolean IsDBLocale;
+	static final boolean IsAIX, IsSunOS, IsLinux;
 	static {
-		IsDBLocale = OS.MB_CUR_MAX () != 1;
+		
+		/* Initialize the X/MOTIF flags */
+		String osName = System.getProperty ("os.name");
+		if (osName.equals("Linux")) {
+			IsLinux = true;
+			IsAIX = IsSunOS = false;
+		} else {
+			if (osName.equals("AIX")) {
+				IsAIX = true;
+				IsLinux = IsSunOS = false;
+			} else {
+				if (osName.equals("Solaris")) {
+					IsSunOS = true;
+					IsLinux = IsAIX = false;
+				} else {
+					IsLinux = IsSunOS = IsAIX = false;
+				}
+			}
+		}
 	}
 Widget () {
 	/* Do nothing */
@@ -130,7 +146,8 @@ public Widget (Widget parent, int style) {
  * @see #removeListener
  */
 public void addListener (int eventType, Listener handler) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, handler);
@@ -155,7 +172,8 @@ public void addListener (int eventType, Listener handler) {
  * @see #removeDisposeListener
  */
 public void addDisposeListener (DisposeListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Dispose, typedListener);
@@ -174,7 +192,6 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 }
 /**
  * Checks that this class can be subclassed.
@@ -221,7 +238,7 @@ protected void checkSubclass () {
 */
 protected void checkWidget () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 void createHandle (int index) {
 	/* Do nothing */
@@ -271,15 +288,11 @@ public void dispose () {
 	* Note:  It is valid to attempt to dispose a widget
 	* more than once.  If this happens, fail silently.
 	*/
-	if (isDisposed()) return;
+	if (!isValidWidget ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	releaseChild ();
 	releaseWidget ();
 	destroyWidget ();
-}
-void enableHandle (boolean enabled, int widgetHandle) {
-	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
-	OS.XtSetValues (widgetHandle, argList, argList.length / 2);
 }
 void error (int code) {
 	SWT.error(code);
@@ -307,7 +320,8 @@ void error (int code) {
  * @see #setData
  */
 public Object getData () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return data;
 }
 
@@ -336,7 +350,8 @@ public Object getData () {
  * @see #setData
  */
 public Object getData (String key) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
@@ -392,7 +407,8 @@ String getNameText () {
  * </ul>
  */
 public int getStyle () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return style;
 }
 void hookEvents () {
@@ -434,7 +450,8 @@ public boolean isDisposed () {
  *	</ul>
  */
 protected boolean isListening (int eventType) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return hooks (eventType);
 }
 boolean isValidSubclass () {
@@ -443,13 +460,15 @@ boolean isValidSubclass () {
 boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
+boolean isValidWidget () {
+	if (handle != 0) return true;
+	if ((state & HANDLE) != 0) return false;
+	return (state & DISPOSED) == 0;
+}
 void manageChildren () {
 	/* Do nothing */
 }
 char mbcsToWcs (char ch) {
-	return mbcsToWcs (ch, null);
-}
-char mbcsToWcs (char ch, String codePage) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
 	byte [] buffer;
@@ -461,7 +480,7 @@ char mbcsToWcs (char ch, String codePage) {
 		buffer [0] = (byte) ((key >> 8) & 0xFF);
 		buffer [1] = (byte) (key & 0xFF);
 	}
-	char [] result = Converter.mbcsToWcs (codePage, buffer);
+	char [] result = Converter.mbcsToWcs (null, buffer);
 	if (result.length == 0) return 0;
 	return result [0];
 }
@@ -482,7 +501,8 @@ char mbcsToWcs (char ch, String codePage) {
  * </ul>
  */
 public void notifyListeners (int eventType, Event event) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	event.type = eventType;
@@ -592,50 +612,6 @@ int processShow (int callData) {
 int processVerify (int callData) {
 	return 0;
 }
-void propagateHandle (boolean enabled, int widgetHandle) {
-	int xDisplay = OS.XtDisplay (widgetHandle);
-	if (xDisplay == 0) return;
-	int xWindow = OS.XtWindow (widgetHandle);
-	if (xWindow == 0) return;
-	/*
-	* Get the event mask from the widget.  The event mask
-	* returned by XtBuildEventMask () includes the masks
-	* associated with all callbacks and event handlers
-	* that have been hooked on the widget.
-	*/
-	int event_mask = OS.XtBuildEventMask (widgetHandle);
-	int do_not_propagate_mask = 
-		OS.KeyPressMask | OS.KeyReleaseMask | OS.ButtonPressMask | 
-		OS.ButtonReleaseMask | OS.PointerMotionMask;
-	if (!enabled) {
-		/*
-		* Attempting to propogate EnterWindowMask and LeaveWindowMask
-		* causes an X error so these must be specially cleared out from
-		* the event mask, not included in the propogate mask.
-		*/
-		event_mask &= ~(do_not_propagate_mask | OS.EnterWindowMask | OS.LeaveWindowMask);
-		do_not_propagate_mask = 0;
-	}
-	XSetWindowAttributes attributes = new XSetWindowAttributes ();
-	attributes.event_mask = event_mask;
-	attributes.do_not_propagate_mask = do_not_propagate_mask;
-	OS.XChangeWindowAttributes (xDisplay, xWindow, OS.CWDontPropagate | OS.CWEventMask, attributes);
-	int [] argList = {OS.XmNtraversalOn, enabled ? 1 : 0};
-	OS.XtSetValues (widgetHandle, argList, argList.length / 2);
-}
-void redrawHandle (int x, int y, int width, int height, int widgetHandle) {
-	int display = OS.XtDisplay (widgetHandle);
-	if (display == 0) return;
-	int window = OS.XtWindow (widgetHandle);
-	if (window == 0) return;
-	int [] argList = {OS.XmNborderWidth, 0, OS.XmNborderColor, 0};
-	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
-	if (argList [1] != 0) {
-		/* Force the border to repaint by setting the color */
-		OS.XtSetValues (widgetHandle, argList, argList.length / 2);
-	}
-	OS.XClearArea (display, window, x, y, width, height, true);
-}
 void register () {
 	if (handle == 0) return;
 	WidgetTable.put (handle, this);
@@ -674,7 +650,8 @@ void releaseWidget () {
  * @see #addListener
  */
 public void removeListener (int eventType, Listener handler) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
@@ -683,7 +660,8 @@ public void removeListener (int eventType, Listener handler) {
 * Warning: API under construction.
 */
 protected void removeListener (int eventType, EventListener handler) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
@@ -706,7 +684,8 @@ protected void removeListener (int eventType, EventListener handler) {
  * @see #removeDisposeListener
  */
 public void removeDisposeListener (DisposeListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
@@ -746,7 +725,8 @@ void sendEvent (int eventType, Event event) {
  * </ul>
  */
 public void setData (Object data) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	this.data = data;
 }
 
@@ -775,7 +755,8 @@ public void setData (Object data) {
  * @see #getData
  */
 public void setData (String key, Object value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	
 	/* Remove the key/value pair */
@@ -840,12 +821,9 @@ int topHandle () {
 	return handle;
 }
 char wcsToMbcs (char ch) {
-	return wcsToMbcs (ch, null);
-}
-char wcsToMbcs (char ch, String codePage) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
-	byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
+	byte [] buffer = Converter.wcsToMbcs (null, new char [] {ch}, false);
 	if (buffer.length == 1) return (char) buffer [0];
 	if (buffer.length == 2) {
 		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));

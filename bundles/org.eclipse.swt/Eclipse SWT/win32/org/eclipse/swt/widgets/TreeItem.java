@@ -29,82 +29,21 @@ public class TreeItem extends Item {
 	public int handle;
 	Tree parent;
 	
-/**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Tree</code> or a <code>TreeItem</code>)
- * and a style value describing its behavior and appearance.
- * The item is added to the end of the items maintained by its parent.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
 public TreeItem (Tree parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, 0, OS.TVI_LAST);
 }
 
-/**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Tree</code> or a <code>TreeItem</code>),
- * a style value describing its behavior and appearance, and the index
- * at which to place it in the items maintained by its parent.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
-public TreeItem (Tree parent, int style, int index) {
+public TreeItem (Tree parent, int style, int position) {
 	super (parent, style);
-	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	if (position < 0) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
 	int hItem = OS.TVI_FIRST;
-	if (index != 0) {
+	if (position != 0) {
 		int count = 1, hwnd = parent.handle;
 		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		while (hItem != 0 && count < index) {
+		while (hItem != 0 && count < position) {
 			hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 			count++;
 		}
@@ -113,36 +52,6 @@ public TreeItem (Tree parent, int style, int index) {
 	parent.createItem (this, 0, hItem);
 }
 
-/**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Tree</code> or a <code>TreeItem</code>)
- * and a style value describing its behavior and appearance.
- * The item is added to the end of the items maintained by its parent.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
 public TreeItem (TreeItem parentItem, int style) {
 	super (checkNull (parentItem).parent, style);
 	parent = parentItem.parent;
@@ -150,47 +59,16 @@ public TreeItem (TreeItem parentItem, int style) {
 	parent.createItem (this, hItem, OS.TVI_LAST);
 }
 
-/**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Tree</code> or a <code>TreeItem</code>),
- * a style value describing its behavior and appearance, and the index
- * at which to place it in the items maintained by its parent.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
-public TreeItem (TreeItem parentItem, int style, int index) {
+public TreeItem (TreeItem parentItem, int style, int position) {
 	super (checkNull (parentItem).parent, style);
-	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	if (position < 0) error (SWT.ERROR_INVALID_RANGE);
 	parent = parentItem.parent;
 	int hItem = OS.TVI_FIRST;
 	int hParent = parentItem.handle;
-	if (index != 0) {
+	if (position != 0) {
 		int count = 1, hwnd = parent.handle;
 		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
-		while (hItem != 0 && count < index) {
+		while (hItem != 0 && count < position) {
 			hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 			count++;
 		}
@@ -553,7 +431,7 @@ public void setText (String string) {
 	super.setText (string);
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
-	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), string, false);
+	byte [] buffer = Converter.wcsToMbcs (0, string, false);
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length + 1);
 	OS.MoveMemory (pszText, buffer, buffer.length); 
 	TVITEM tvItem = new TVITEM ();

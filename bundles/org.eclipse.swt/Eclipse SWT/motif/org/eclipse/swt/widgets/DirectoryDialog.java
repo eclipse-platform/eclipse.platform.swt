@@ -86,7 +86,7 @@ int activate (int widget, int client, int call) {
 	return 0;
 }
 /**
- * Returns the path which the dialog will use to filter
+ * Returns the path which the receiver will use to filter
  * the directories it shows.
  *
  * @return the filter path
@@ -95,9 +95,9 @@ public String getFilterPath () {
 	return filterPath;
 }
 /**
- * Returns the dialog's message, which is a description of
+ * Returns the receiver's message, which is a description of
  * the purpose for which it was opened. This message will be
- * visible on the dialog while it is open.
+ * visible on the receiver while it is open.
  *
  * @return the message
  */
@@ -105,15 +105,14 @@ public String getMessage () {
 	return message;
 }
 /**
- * Makes the dialog visible and brings it to the front
+ * Makes the receiver visible and brings it to the front
  * of the display.
  *
- * @return a string describing the absolute path of the selected directory,
- *         or null if the dialog was cancelled or an error occurred
+ * @return a string describing the absolute path of the selected directory
  *
  * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public String open () {
@@ -126,7 +125,6 @@ public String open () {
 	int parentHandle = appContext.shellHandle;
 	if ((parent != null) && (parent.getDisplay () == appContext))
 		parentHandle = parent.shellHandle;
-
 	/* Compute the dialog title */	
 	/*
 	* Feature in Motif.  It is not possible to set a shell
@@ -135,8 +133,6 @@ public String open () {
 	*/
 	String string = title;
 	if (string.length () == 0) string = " ";
-
-	/* Use the character encoding for the default locale */
 	byte [] buffer1 = Converter.wcsToMbcs (null, string, true);
 	int xmStringPtr1 = OS.XmStringParseText (
 		buffer1,
@@ -146,9 +142,7 @@ public String open () {
 		null,
 		0,
 		0);
-
 	/* Compute the filter */
-	/* Use the character encoding for the default locale */
 	byte [] buffer2 = Converter.wcsToMbcs (null, "*", true);
 	int xmStringPtr2 = OS.XmStringParseText (
 		buffer2,
@@ -161,7 +155,6 @@ public String open () {
 
 	/* Compute the filter path */
 	if (filterPath == null) filterPath = "";
-	/* Use the character encoding for the default locale */
 	byte [] buffer3 = Converter.wcsToMbcs (null, filterPath, true);
 	int xmStringPtr3 = OS.XmStringParseText (
 		buffer3,
@@ -172,7 +165,6 @@ public String open () {
 		0,
 		0);
 
-	/* Use the character encoding for the default locale */
 	byte [] buffer7 = Converter.wcsToMbcs (null, "Selection", true);
 	int xmStringPtr4 = OS.XmStringParseText (
 		buffer7,
@@ -182,7 +174,6 @@ public String open () {
 		null,
 		0,
 		0);
-
 	/* Create the dialog */
 	int [] argList1 = {
 		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
@@ -193,7 +184,6 @@ public String open () {
 		OS.XmNdirectory, xmStringPtr3,
 		OS.XmNfilterLabelString, xmStringPtr4
 	};
-
 	/*
 	* Feature in Linux.  For some reason, the XmCreateFileSelectionDialog()
 	* will not accept NULL for the widget name.  This works fine on the other
@@ -221,7 +211,6 @@ public String open () {
 	OS.XmStringFree (xmStringPtr4);
 
 	// Add label widget for message text.
-	/* Use the character encoding for the default locale */
 	byte [] buffer4 = Converter.wcsToMbcs (null, message, true);
 	int [] parseTable = Display.getDefault ().parseTable;
 	int xmString1 = OS.XmStringParseText (
@@ -272,7 +261,6 @@ public String open () {
 			byte [] buffer = new byte [length];
 			OS.memmove (buffer, ptr, length);
 			OS.XtFree (ptr);
-			/* Use the character encoding for the default locale */
 			directoryPath = new String (Converter.mbcsToWcs (null, buffer));
 		}
 		OS.XmStringFree (xmString3);
@@ -301,7 +289,7 @@ public String open () {
 	return directoryPath;
 }
 /**
- * Sets the path which the dialog will use to filter
+ * Sets the path which the receiver will use to filter
  * the directories it shows to the argument, which may be
  * null.
  *
@@ -311,9 +299,9 @@ public void setFilterPath (String string) {
 	filterPath = string;
 }
 /**
- * Sets the dialog's message, which is a description of
+ * Sets the receiver's message, which is a description of
  * the purpose for which it was opened. This message will be
- * visible on the dialog while it is open.
+ * visible on the receiver while it is open.
  *
  * @param string the message
  */

@@ -27,81 +27,23 @@ import org.eclipse.swt.events.*;
 public /*final*/ class MenuItem extends Item {
 	int accelerator;
 	Menu parent, menu;
-
 /**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Menu</code>) and a style value
- * describing its behavior and appearance. The item is added
- * to the end of the items maintained by its parent.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
+* Creates a new instance of the widget.
+*/
 public MenuItem (Menu parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	createWidget (OS.XmLAST_POSITION);
 }
-
 /**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Menu</code>), a style value
- * describing its behavior and appearance, and the index
- * at which to place it in the items maintained by its parent.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
+* Creates a new instance of the widget.
+*/
 public MenuItem (Menu parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	if (index == OS.XmLAST_POSITION) error (SWT.ERROR_INVALID_RANGE);
 	createWidget (index);
 }
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the arm events are generated for the control, by sending
@@ -122,7 +64,8 @@ public MenuItem (Menu parent, int style, int index) {
  * @see #removeArmListener
  */
 public void addArmListener (ArmListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Arm, typedListener);
@@ -147,7 +90,8 @@ public void addArmListener (ArmListener listener) {
  * @see #removeHelpListener
  */
 public void addHelpListener (HelpListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Help, typedListener);
@@ -177,7 +121,8 @@ public void addHelpListener (HelpListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener(SWT.Selection,typedListener);
@@ -263,7 +208,8 @@ void destroyWidget () {
  * </ul>
  */
 public int getAccelerator () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return accelerator;
 }
 public Display getDisplay () {
@@ -285,7 +231,8 @@ public Display getDisplay () {
  * </ul>
  */
 public boolean getEnabled () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNsensitive, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1] != 0;
@@ -305,7 +252,8 @@ public boolean getEnabled () {
  * </ul>
  */
 public Menu getMenu () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return menu;
 }
 String getNameText () {
@@ -323,7 +271,8 @@ String getNameText () {
  * </ul>
  */
 public Menu getParent () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
 /**
@@ -341,7 +290,8 @@ public Menu getParent () {
  * </ul>
  */
 public boolean getSelection () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
 	int [] argList = {OS.XmNset, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -353,7 +303,8 @@ public boolean getSelection () {
 * delimiters.
 */
 String getText2 () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.ARROW) != 0) return "";
 	int [] argList = {OS.XmNlabelString, 0, OS.XmNmnemonic, 0, OS.XmNacceleratorText, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -375,7 +326,6 @@ String getText2 () {
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, address, length);
 		OS.XtFree (address);
-		/* Use the character encoding for the default locale */
 		result = Converter.mbcsToWcs (null, buffer);
 	}
 	String accelText = "";
@@ -394,7 +344,6 @@ String getText2 () {
 			byte [] buffer = new byte [length];
 			OS.memmove (buffer, address, length);
 			OS.XtFree (address);
-			/* Use the character encoding for the default locale */
 			accelText = '\t' + new String (Converter.mbcsToWcs (null, buffer));
 		}
 	}
@@ -468,7 +417,6 @@ String keysymName (int keysym) {
 	int length = OS.strlen (ptr);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, ptr, buffer.length);
-	/* Use the character encoding for the default locale */
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 void manageChildren () {
@@ -546,7 +494,8 @@ void releaseWidget () {
  * @see #addArmListener
  */
 public void removeArmListener (ArmListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Arm, listener);
@@ -569,7 +518,8 @@ public void removeArmListener (ArmListener listener) {
  * @see #addHelpListener
  */
 public void removeHelpListener (HelpListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
@@ -592,7 +542,8 @@ public void removeHelpListener (HelpListener listener) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
@@ -612,7 +563,8 @@ public void removeSelectionListener(SelectionListener listener) {
  * </ul>
  */
 public void setAccelerator (int accelerator) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	this.accelerator = accelerator;
 	int ptr = 0;
 	if (accelerator != 0) {
@@ -629,8 +581,7 @@ public void setAccelerator (int accelerator) {
 			keysym = wcsToMbcs ((char) keysym);
 		}
 		String key = "<Key>" + keysymName (keysym);
-		/* Use the character encoding for the default locale */
-		byte [] buffer = Converter.wcsToMbcs (null, ctrl + alt + shift + key, true);		
+		byte [] buffer = Converter.wcsToMbcs (null, ctrl + alt + shift + key, true);
 		ptr = OS.XtMalloc (buffer.length);
 		if (ptr != 0) OS.memmove (ptr, buffer, buffer.length);
 	}
@@ -652,7 +603,8 @@ public void setAccelerator (int accelerator) {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
@@ -667,8 +619,7 @@ public void setEnabled (boolean enabled) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_MENU_NOT_DROP_DOWN - the menu is not a drop down menu</li>
- *    <li>ERROR_MENUITEM_NOT_CASCADE - the menu item is not a <code>CASCADE</code></li>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li>
+ *	<li>ERROR_MENUITEM_NOT_CASCADE - the menu item is not a <code>CASCADE</code></li>
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -677,13 +628,14 @@ public void setEnabled (boolean enabled) {
  * </ul>
  */
 public void setMenu (Menu menu) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+
 	/* Check to make sure the new menu is valid */
 	if ((style & SWT.CASCADE) == 0) {
 		error (SWT.ERROR_MENUITEM_NOT_CASCADE);
 	}
 	if (menu != null) {
-		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.DROP_DOWN) == 0) {
 			error (SWT.ERROR_MENU_NOT_DROP_DOWN);
 		}
@@ -721,7 +673,8 @@ public void setMenu (Menu menu) {
  * </ul>
  */
 public void setSelection (boolean selected) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	int [] argList = {OS.XmNset, selected ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -739,7 +692,8 @@ public void setSelection (boolean selected) {
 *	when string is null
 */
 public void setText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	if ((style & (SWT.ARROW | SWT.SEPARATOR)) != 0) return;
@@ -760,7 +714,6 @@ public void setText (String string) {
 	if (accel && ++i < text.length) {
 		char [] accelText = new char [text.length - i];
 		System.arraycopy (text, i, accelText, 0, accelText.length);
-		/* Use the character encoding for the default locale */
 		buffer2 = Converter.wcsToMbcs (null, accelText, true);
 	} else {
 		buffer2 = new byte [1];
@@ -775,7 +728,6 @@ public void setText (String string) {
 		0);
 	if (xmString2 == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	while (j < text.length) text [j++] = 0;
-	/* Use the character encoding for the default locale */
 	byte [] buffer1 = Converter.wcsToMbcs (null, text, true);
 	int xmString1 = OS.XmStringParseText (
 		buffer1,

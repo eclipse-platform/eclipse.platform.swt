@@ -10,8 +10,9 @@ public class PhKeyEvent_t {
 	public int key_flags;
 	public int key_cap;
 	public int key_sym;
-	public short key_scan;
-	public short key_zero;
+	public byte key_scan;
+	public byte key_zero1;
+	public short key_zero2;
 //	PhPoint_t pos;
 	public short pos_x;
 	public short pos_y;

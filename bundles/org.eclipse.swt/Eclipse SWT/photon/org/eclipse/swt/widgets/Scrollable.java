@@ -47,7 +47,8 @@ void deregister () {
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	PhRect_t rect = new PhRect_t ();
 	PhArea_t area = new PhArea_t ();
 	rect.ul_x = (short) x;
@@ -67,7 +68,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 public Rectangle getClientArea () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	PhRect_t rect = new PhRect_t ();
 	int vParent = OS.PtValidParent (handle, OS.PtContainer ());
 	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
@@ -78,12 +80,14 @@ public Rectangle getClientArea () {
 }
 
 public ScrollBar getHorizontalBar () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return horizontalBar;
 }
 
 public ScrollBar getVerticalBar () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return verticalBar;
 }
 

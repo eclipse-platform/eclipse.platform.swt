@@ -180,32 +180,6 @@ void createHandle () {
 	state &= ~CANVAS;
 
 	/*
-	* Feature in Windows.  Despite the fact that the
-	* tool tip text contains \r\n, the tooltip will
-	* not honour the new line unless TTM_SETMAXTIPWIDTH
-	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
-	* a large value.
-	*/
-	int hwndToolTip = OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);	
-	/*
-	* This line is intentionally commented.  The tool
-	* bar currently sets this value to 300 so it is
-	* not necessary to set TTM_SETMAXTIPWIDTH.
-	*/
-//	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
-
-	/*
-	* Feature in Windows.  When the tool tip control is
-	* created, the parent of the tool tip is the shell.
-	* If SetParent () is used to reparent the tool bar
-	* into a new shell, the tool tip is not reparented
-	* and pops up underneath the new shell.  The fix is
-	* to make sure the tool tip is a topmost window.
-	*/
-	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
-	OS.SetWindowPos (hwndToolTip, OS.HWND_TOPMOST, 0, 0, 0, 0, flags);
-
-	/*
 	* Feature in Windows.  When the control is created,
 	* it does not use the default system font.  A new HFONT
 	* is created and destroyed when the control is destroyed.
@@ -266,7 +240,6 @@ void createItem (ToolItem item, int index) {
 	if ((style & SWT.VERTICAL) != 0) {
 		OS.SendMessage (handle, OS.TB_SETROWS, count+1, 0);
 	}
-	layoutItems ();
 }
 
 void createWidget () {
@@ -299,18 +272,17 @@ void destroyItem (ToolItem item) {
 	item.id = -1;
 	int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 	if (count == 0) {
-		Display display = getDisplay ();
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
-			display.releaseToolImageList (imageList);
+			imageList.dispose ();
 		}
 		if (hotImageList != null) {
 			OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, 0);
-			display.releaseToolHotImageList (hotImageList);
+			hotImageList.dispose ();
 		}
 		if (disabledImageList != null) {
 			OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, 0);
-			display.releaseToolDisabledImageList (disabledImageList);
+			disabledImageList.dispose ();
 		}
 		imageList = hotImageList = disabledImageList = null;
 		items = new ToolItem [4];
@@ -318,7 +290,6 @@ void destroyItem (ToolItem item) {
 	if ((style & SWT.VERTICAL) != 0) {
 		OS.SendMessage (handle, OS.TB_SETROWS, count-1, 0);
 	}
-	layoutItems ();
 }
 
 ImageList getDisabledImageList () {
@@ -456,8 +427,7 @@ public int getRowCount () {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the tool item is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the tool item has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -467,47 +437,31 @@ public int getRowCount () {
 public int indexOf (ToolItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	return OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, item.id, 0);
-}
-
-void layoutItems () {
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
-		if (item != null) {
-			Control control = item.control;
-			if (control != null && !control.isDisposed ()) {
-				Rectangle rect = item.getBounds ();
-				control.setLocation (rect.x, rect.y);
-			}
-		}
-	}
 }
 
 void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
-			item.releaseImages ();
 			item.releaseWidget ();
 		}
 	}
 	items = null;
-	Display display = getDisplay ();
+	super.releaseWidget ();
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
-		display.releaseToolImageList (imageList);
+		imageList.dispose ();
 	}
 	if (hotImageList != null) {
 		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, 0);
-		display.releaseToolHotImageList (hotImageList);
+		hotImageList.dispose ();
 	}
 	if (disabledImageList != null) {
 		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, 0);
-		display.releaseToolDisabledImageList (disabledImageList);
+		disabledImageList.dispose ();
 	}
 	imageList = hotImageList = disabledImageList = null;
-	super.releaseWidget ();
 }
 
 void setDefaultFont () {
@@ -521,6 +475,7 @@ void setDisabledImageList (ImageList imageList) {
 	int hImageList = 0;
 	if ((disabledImageList = imageList) != null) {
 		hImageList = disabledImageList.getHandle ();
+		disabledImageList.setBackground (getBackgroundPixel ());
 	}
 	OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, hImageList);
 }
@@ -535,6 +490,7 @@ void setHotImageList (ImageList imageList) {
 	int hImageList = 0;
 	if ((hotImageList = imageList) != null) {
 		hImageList = hotImageList.getHandle ();
+		hotImageList.setBackground (getBackgroundPixel ());
 	}
 	OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, hImageList);
 }
@@ -544,6 +500,7 @@ void setImageList (ImageList imageList) {
 	int hImageList = 0;
 	if ((this.imageList = imageList) != null) {
 		hImageList = imageList.getHandle ();
+		imageList.setBackground (getBackgroundPixel ());
 	}
 	OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
 }
@@ -628,7 +585,6 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				if (item != null) string = item.toolTipText;
 			}
 			if (string != null && string.length () != 0) {
-				string = Display.withCrLf (string);
 				int length = string.length ();
 				char [] buffer = new char [length + 1];
 				string.getChars (0, length, buffer, 0);
@@ -651,7 +607,37 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* WM_SIZE message.
 	*/
 	if (isDisposed ()) return result;
-	layoutItems ();
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null) {
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				Rectangle rect = item.getBounds ();
+				control.setLocation (rect.x, rect.y);
+			}
+		}
+	}
+	return result;
+}
+
+LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
+	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
+	if (result != null) return result;
+	if (imageList != null && background == -1) {
+		imageList.setBackground (defaultBackground ());
+		int hImageList = imageList.getHandle ();
+		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
+	}
+	if (hotImageList != null && background == -1) {
+		hotImageList.setBackground (defaultBackground ());
+		int hImageList = hotImageList.getHandle ();
+		OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, hImageList);
+	}
+	if (disabledImageList != null && background == -1) {
+		disabledImageList.setBackground (defaultBackground ());
+		int hImageList = disabledImageList.getHandle ();
+		OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, hImageList);
+	}
 	return result;
 }
 

@@ -88,16 +88,11 @@ void createWidget (int index) {
  * </ul>
  */
 public Caret getCaret () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return caret;
 }
 
-short [] getIMECaretPos () {
-	if (caret == null) return super.getIMECaretPos ();
-	int width = caret.width;
-	if (width <= 0) width = 2;
-	return new short[]{(short) (caret.x + width), (short) (caret.y + caret.height)};
-}
 int processFocusIn () {
 	int result = super.processFocusIn ();
 	if (caret != null) caret.setFocus ();
@@ -156,7 +151,8 @@ void releaseWidget () {
  * </ul>
  */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
@@ -201,7 +197,8 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isFocus) caret.setFocus ();
 }
 public void setBounds (int x, int y, int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	super.setBounds (x, y, width, height);
@@ -217,52 +214,39 @@ public void setBounds (int x, int y, int width, int height) {
  * the programmer must hide and show the caret when
  * drawing in the window any other time.
  * </p>
- * @param caret the new caret for the receiver, may be null
+ * @param caret the new caret for the receiver
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the caret has been disposed</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public void setCaret (Caret caret) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	Caret newCaret = caret;
 	Caret oldCaret = this.caret;
 	this.caret = newCaret;
 	if (hasFocus ()) {
 		if (oldCaret != null) oldCaret.killFocus ();
-		if (newCaret != null) {
-			if (newCaret.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-			newCaret.setFocus ();
-		}
+		if (newCaret != null) newCaret.setFocus ();
 	}
 }
 
 public void setLocation (int x, int y) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	super.setLocation (x, y);
 	if (isFocus) caret.setFocus ();
 }
 public void setSize (int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	super.setSize (width, height);
 	if (isFocus) caret.setFocus ();
-}
-void updateCaret () {
-	if (caret == null) return;
-	if (!IsDBLocale) return;
-	short [] point = getIMECaretPos ();
-	int ptr = OS.XtMalloc (4);
-	OS.memmove (ptr, point, 4);
-	int[] argList = {OS.XmNspotLocation, ptr};
-	OS.XmImSetValues (handle, argList, argList.length / 2);
-	if (ptr != 0) OS.XtFree (ptr);
 }
 }

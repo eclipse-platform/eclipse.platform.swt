@@ -15,6 +15,8 @@ import org.eclipse.swt.widgets.*;
  */
 public class BusyIndicator {
 
+	static Display[] displays = new Display[0];
+	static Cursor[] cursors = new Cursor[0];
 	static int nextBusyId = 1;
 	static final String BUSYID_NAME = "SWT BusyIndicator";
 
@@ -39,15 +41,40 @@ public static void showWhile(Display display, Runnable runnable) {
 		}
 	}
 	
+	int index = 0;
+	while (index < displays.length) {
+		if (displays[index] == display) break;
+		index++;
+	}
+	if (index == displays.length) {
+		Display[] newDisplays = new Display[displays.length + 1];
+		System.arraycopy(displays, 0, newDisplays, 0, displays.length);
+		displays = newDisplays;
+		displays[index] = display;
+		final Display d = display;
+		display.disposeExec( new Runnable() {
+			public void run() {
+				clear (d);
+			}
+		});
+		
+		Cursor[] newCursors = new Cursor[cursors.length + 1];
+		System.arraycopy(cursors, 0, newCursors, 0, cursors.length);
+		cursors = newCursors;
+	}
+	
+	if (cursors[index] == null) {
+		cursors[index] = new Cursor(display, SWT.CURSOR_WAIT);
+	}
+	
 	Integer busyId = new Integer(nextBusyId);
-	nextBusyId++;
-	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
+	nextBusyId = (++nextBusyId) % 65536;
 	
 	Shell[] shells = display.getShells();
 	for (int i = 0; i < shells.length; i++) {
 		Integer id = (Integer)shells[i].getData(BUSYID_NAME);
 		if (id == null) {
-			shells[i].setCursor(cursor);
+			shells[i].setCursor(cursors[index]);
 			shells[i].setData(BUSYID_NAME, busyId);
 		}
 	}
@@ -63,9 +90,22 @@ public static void showWhile(Display display, Runnable runnable) {
 				shells[i].setData(BUSYID_NAME, null);
 			}
 		}
-		if (cursor != null && !cursor.isDisposed()) {
-			cursor.dispose();
-		}
 	}
+}
+
+static void clear(Display display) {
+	int index = 0;
+	while (index < displays.length) {
+		if (displays[index] == display) break;
+		index++;
+	}
+	
+	if (index == displays.length) return;
+	
+	if (cursors[index] != null) {
+		cursors[index].dispose();
+	}
+	cursors[index] = null;
+	displays[index] = null;
 }
 }

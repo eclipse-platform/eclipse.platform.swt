@@ -31,7 +31,8 @@ static int checkStyle (int style) {
 }
 
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener(SWT.Selection,typedListener);
@@ -43,7 +44,8 @@ protected void checkSubclass () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	PhDim_t dim = new PhDim_t();
 	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidget (handle);
 	OS.PtWidgetPreferredSize(handle, dim);
@@ -66,7 +68,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	PhDim_t dim = new PhDim_t();
 	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidget (handle);
 	OS.PtWidgetPreferredSize(handle, dim);
@@ -182,7 +185,8 @@ void destroyItem (TabItem item) {
 }
 
 public TabItem getItem (int index) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	if (!(0 <= index && index < args [2])) error (SWT.ERROR_INVALID_RANGE);
@@ -190,7 +194,8 @@ public TabItem getItem (int index) {
 }
 
 public TabItem [] getItems () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	TabItem [] result = new TabItem [args [2]];
@@ -199,21 +204,24 @@ public TabItem [] getItems () {
 }
 
 public int getItemCount () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [2];
 }
 
 public TabItem [] getSelection () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int index = getSelectionIndex ();
 	if (index == -1) return new TabItem [0];
 	return new TabItem [] {items [index]};
 }
 
 public int getSelectionIndex () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1] == OS.Pt_PG_INVALID ? -1 : args [1];
@@ -226,7 +234,8 @@ void hookEvents () {
 }
 
 public int indexOf (TabItem item) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = getItemCount ();
 	for (int i=0; i<count; i++) {
@@ -302,7 +311,8 @@ void releaseWidget () {
 }
 
 public void removeSelectionListener (SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -310,7 +320,8 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 public void setSelection (int index) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int oldIndex = args [1];
@@ -337,7 +348,8 @@ public void setSelection (int index) {
 }
 
 public void setSelection (TabItem [] items) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (items.length == 0) {
 		setSelection (-1);

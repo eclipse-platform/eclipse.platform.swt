@@ -41,7 +41,7 @@ public /*final*/ class CoolItem extends Item {
 		
 /**
  * Constructs a new instance of this class given its parent
- * (which must be a <code>CoolBar</code>) and a style value
+ * (which must be a <code>CoolBar</code> and a style value
  * describing its behavior and appearance. The item is added
  * to the end of the items maintained by its parent.
  * <p>
@@ -76,7 +76,7 @@ public CoolItem (CoolBar parent, int style) {
 }
 /**
  * Constructs a new instance of this class given its parent
- * (which must be a <code>CoolBar</code>), a style value
+ * (which must be a <code>CoolBar</code>, a style value
  * describing its behavior and appearance, and the index
  * at which to place it in the items maintained by its parent.
  * <p>
@@ -136,7 +136,8 @@ protected void checkSubclass () {
  * @see Layout
  */
 public Point computeSize (int wHint, int hHint) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (preferredWidth > -1) return new Point(preferredWidth, preferredHeight);
 	int width = MINIMUM_WIDTH;
 	int height = DEFAULT_HEIGHT;
@@ -158,7 +159,7 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 public void dispose () {
-	if (isDisposed()) return;
+	if (!isValidWidget ()) return;
 	CoolBar parent = this.parent;
 	super.dispose ();
 	parent.relayout ();
@@ -175,7 +176,8 @@ public void dispose () {
  * </ul>
  */
 public Rectangle getBounds () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return new Rectangle ((short) argList [1], (short) argList [3], argList [5], argList [7]);
@@ -191,7 +193,8 @@ public Rectangle getBounds () {
  * </ul>
  */
 public Control getControl () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return control;
 }
 public Display getDisplay () {
@@ -215,7 +218,8 @@ Rectangle getGrabberArea () {
  * </ul>
  */
 public CoolBar getParent () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
 Point getSize () {
@@ -322,36 +326,22 @@ int processPaint (int callData) {
 	OS.XFreeGC(xDisplay, xGC);
 	return 0;
 }
-void propagateWidget (boolean enabled) {
-	propagateHandle (enabled, handle);
-	/*
-	* CoolItems never participate in focus traversal when
-	* either enabled or disabled.
-	*/
-	if (enabled) {
-		int [] argList = {OS.XmNtraversalOn, 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-}
 /**
  * Sets the control which is associated with the receiver
  * to the argument.
  *
  * @param control the new control
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public void setControl (Control control) {
-	checkWidget();
-	if (control != null) {
-		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (control != null && control.parent != parent) {
+		error (SWT.ERROR_INVALID_PARENT);
 	}
 	Control oldControl = this.control;
 	if (oldControl != null) oldControl.setVisible(false);
@@ -377,7 +367,8 @@ public void setControl (Control control) {
 	}
 }
 public void setSize (int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	width = Math.max (width, MINIMUM_WIDTH);
 	height = Math.max (height, DEFAULT_HEIGHT);
 	OS.XtResizeWidget (handle, width, height, 0);			
@@ -434,11 +425,13 @@ void setBounds (int x, int y, int width, int height) {
 	}
 }
 public Point getPreferredSize () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return new Point(preferredWidth, preferredHeight);
 }
 public void setPreferredSize (int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	preferredWidth = Math.max (width, MINIMUM_WIDTH);
 	preferredHeight = Math.max (height, DEFAULT_HEIGHT);
 	OS.XtResizeWidget (handle, preferredWidth, preferredHeight, 0);
@@ -449,7 +442,6 @@ public void setPreferredSize (int width, int height) {
 	}
 }
 public void setPreferredSize (Point size) {
-	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
 	setPreferredSize(size.x, size.y);
 }
 	

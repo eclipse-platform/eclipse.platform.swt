@@ -15,7 +15,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.printing.*;
 
-class StyledTextPrinter implements Runnable {
+class StyledTextPrinter {
 	class RTFState {
 		int fontStyle;
 		int foreground;
@@ -23,20 +23,17 @@ class StyledTextPrinter implements Runnable {
 	}
 	Vector savedState = new Vector();
 	
+	StyledText styledText;
 	Printer printer;
 	GC gc;
+	
 	String rtf;
-	StringBuffer wordBuffer;
 	int index, end;
-	String tabs = "";
-	int tabWidth = 0;
-	int lineHeight = 0;
-	int leftMargin, rightMargin, topMargin, bottomMargin;
-	int x, y;
+	StringBuffer wordBuffer;
 
 	/* We can optimize for fonts because we know styledText only has one font.
 	 * As soon as we know the font name and point size, we will create and store
-	 * fonts for the following styles: normal, bold, italic, and bold italic.
+	 * Fonts for the following styles: normal, bold, italic, and bold italic.
 	 */
 	Font fontTable[][] = new Font[1][4];
 	boolean creatingFontTable = false;
@@ -52,27 +49,19 @@ class StyledTextPrinter implements Runnable {
 	int currentForeground = -1;
 	int currentBackground = -1;
 	
-	static void print(StyledText styledText) {
-		Printer printer = new Printer();
-		new StyledTextPrinter(styledText, printer).run();
-		printer.dispose();
+	String tabs = "";
+	int lineHeight = 0;
+	int tabWidth = 0;
+	int leftMargin, rightMargin, topMargin, bottomMargin;
+	int x, y;
+
+	public StyledTextPrinter(StyledText styledText) {
+		this.styledText = styledText;
 	}
 	
-	StyledTextPrinter(StyledText styledText, Printer printer) {
-		this.printer = printer;
-
-		/* Create a buffer for computing tab width. */
-		int tabSize = styledText.getTabs();
-		StringBuffer tabBuffer = new StringBuffer(tabSize);
-		for (int i = 0; i < tabSize; i++) tabBuffer.append(' ');
-		tabs = tabBuffer.toString();
-
-		/* Get RTF from the StyledText.*/
-		rtf = styledText.getRtf();
-	}
-	
-	public void run() {
-		if (printer.startJob("Printing")) {
+	public void print() {
+		printer = new Printer();
+		if (printer.startJob("StyledText")) {
 			Rectangle clientArea = printer.getClientArea();
 			Rectangle trim = printer.computeTrim(0, 0, 0, 0);
 			Point dpi = printer.getDPI();
@@ -81,41 +70,17 @@ class StyledTextPrinter implements Runnable {
 			topMargin = dpi.y + trim.y; // one inch from top edge of paper
 			bottomMargin = clientArea.height - dpi.y + trim.y + trim.height; // one inch from bottom edge of paper
 			
-			/* Create a printer GC and print the RTF to it. */
+			/* Create a buffer for computing tab width. */
+			int tabSize = styledText.getTabs();
+			StringBuffer tabBuffer = new StringBuffer(tabSize);
+			for (int i = 0; i < tabSize; i++) tabBuffer.append(' ');
+			tabs = tabBuffer.toString();
+
+			/* Get RTF from the StyledText, determine what fonts and colors we need, and print. */
 			gc = new GC(printer);
 			x = leftMargin;
 			y = topMargin;
-			printer.startPage();
-			end = rtf.length();
-			index = 0;
-			wordBuffer = new StringBuffer();
-			while (index < end) {
-				char c = rtf.charAt(index);
-				index++;
-				switch (c) {
-					case '\\':
-						printWordBuffer();
-						parseControlWord();
-						break;
-					case '{':
-						printWordBuffer();
-						saveState();
-						break;
-					case '}':
-						printWordBuffer();
-						restoreState();
-						break;
-					case 0x0a:
-					case 0x0d:
-						printWordBuffer();
-						break;
-					default:
-						parseChar(c);
-				}
-			}
-			if (y + lineHeight <= bottomMargin) {
-				printer.endPage();
-			}
+			printStyledTextRTF();
 			printer.endJob();
 
 			/* Cleanup */
@@ -125,6 +90,38 @@ class StyledTextPrinter implements Runnable {
 			}
 			for (int i = 0; i < colorTable.size(); i++) {
 				((Color)colorTable.elementAt(i)).dispose();
+			}
+		}
+		printer.dispose();
+	}
+	
+	void printStyledTextRTF() {
+		rtf = styledText.getRtf();
+		end = rtf.length();
+		index = 0;
+		wordBuffer = new StringBuffer();
+		while (index < end) {
+			char c = rtf.charAt(index);
+			index++;
+			switch (c) {
+				case '\\':
+					printWordBuffer();
+					parseControlWord();
+					break;
+				case '{':
+					printWordBuffer();
+					saveState();
+					break;
+				case '}':
+					printWordBuffer();
+					restoreState();
+					break;
+				case 0x0a:
+				case 0x0d:
+					printWordBuffer();
+					break;
+				default:
+					parseChar(c);
 			}
 		}
 	}
@@ -217,12 +214,12 @@ class StyledTextPrinter implements Runnable {
 	}
 	
 	void handleControlSymbol(char c) {
-		switch (c) {
-			case '\\':
-			case '{':
-			case '}':
-				parseChar(c);
-		}
+			switch (c) {
+				case '\\':
+				case '{':
+				case '}':
+					parseChar(c);
+			}
 	}
 	
 	void handleControlWord(String controlWord) {

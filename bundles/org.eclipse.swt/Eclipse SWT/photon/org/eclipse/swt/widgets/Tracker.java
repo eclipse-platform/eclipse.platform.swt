@@ -32,13 +32,15 @@ public Tracker (Composite parent, int style) {
 	this.display = parent.getDisplay ();
 }
 public void addControlListener(ControlListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Move,typedListener);
 }
 public void close () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	tracking = false;
 }
 
@@ -84,15 +86,18 @@ public Display getDisplay () {
 }
 
 public Rectangle [] getRectangles () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return rectangles;
 }
 public boolean getStippled () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return stippled;
 }
 public boolean open () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int sense = OS.Ph_EV_DRAG | OS.Ph_EV_KEY | OS.Ph_EV_BUT_PRESS |
 		OS.Ph_EV_BUT_RELEASE | OS.Ph_EV_PTR_MOTION;
 	int [] args = {
@@ -154,8 +159,6 @@ public boolean open () {
 						* event.  If this happens, return false to indicate
 						* that the tracking has failed.
 						*/
-						ev.x = newX;
-						ev.y = newY;
 						sendEvent (SWT.Move, ev);
 						if (isDisposed ()) return false;
 						drawRectangles ();
@@ -194,18 +197,21 @@ void releaseWidget () {
 	rectangles = null;
 }
 public void removeControlListener (ControlListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
 }
 public void setRectangles (Rectangle [] rectangles) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.rectangles = rectangles;
 }
 public void setStippled (boolean stippled) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	this.stippled = stippled;
 }
 

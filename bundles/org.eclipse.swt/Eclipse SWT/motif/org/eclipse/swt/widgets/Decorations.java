@@ -162,7 +162,8 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	Rectangle trim = super.computeTrim (x, y, width, height);
 	if (menuBar != null) {
 		XtWidgetGeometry request = new XtWidgetGeometry ();
@@ -200,7 +201,8 @@ int dialogHandle () {
  * @see #setDefaultButton
  */
 public Button getDefaultButton () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return defaultButton;
 }
 /**
@@ -225,7 +227,8 @@ public Button getDefaultButton () {
  * </ul>
  */
 public Image getImage () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return image;
 }
 /**
@@ -243,7 +246,8 @@ public Image getImage () {
  * @see #setMaximized
  */
 public boolean getMaximized () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return maximized;
 }
 /**
@@ -258,7 +262,8 @@ public boolean getMaximized () {
  * </ul>
  */
 public Menu getMenuBar () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return menuBar;
 }
 /**
@@ -276,7 +281,8 @@ public Menu getMenuBar () {
  * @see #setMinimized
  */
 public boolean getMinimized () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return minimized;
 }
 String getNameText () {
@@ -296,7 +302,8 @@ String getNameText () {
  * </ul>
  */
 public String getText () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return label;
 }
 Decorations menuShell () {
@@ -349,23 +356,20 @@ void remove (Menu menu) {
  *
  * @param the new default button
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the button has been disposed</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public void setDefaultButton (Button button) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	setDefaultButton (button, true);
 }
 void setDefaultButton (Button button, boolean save) {
 	if (button == null) {
 		if (defaultButton == saveDefault) return;
 	} else {
-		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((button.style & SWT.PUSH) == 0) return;
 		if (button == defaultButton) return;
 	}
@@ -388,19 +392,16 @@ void setDefaultButton (Button button, boolean save) {
  * 
  * @param image the new image (or null)
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public void setImage (Image image) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int pixmap = 0, mask = 0;
 	if (image != null) {
-		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		switch (image.type) {
 			case SWT.BITMAP:
 				pixmap = image.pixmap;
@@ -445,7 +446,8 @@ public void setImage (Image image) {
  * @see #setMinimized
  */
 public void setMaximized (boolean maximized) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	this.maximized = maximized;
 }
 /**
@@ -454,19 +456,16 @@ public void setMaximized (boolean maximized) {
  *
  * @param menu the new menu bar
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public void setMenuBar (Menu menu) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (menuBar == menu) return;
 	if (menu != null) {
-		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}
@@ -543,7 +542,8 @@ public void setMenuBar (Menu menu) {
  * @see #setMaximized
  */
 public void setMinimized (boolean minimized) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	this.minimized = minimized;
 }
 void setSavedFocus (Control control) {
@@ -566,7 +566,8 @@ void setSavedFocus (Control control) {
  * </ul>
  */
 public void setText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	label = string;
 }

@@ -55,7 +55,6 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 }
 
 protected void checkSubclass () {
@@ -64,7 +63,7 @@ protected void checkSubclass () {
 
 protected void checkWidget () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
 int copyPhImage(int image) {
@@ -86,14 +85,16 @@ int copyPhImage(int image) {
 }
 
 public void addListener (int eventType, Listener handler) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, handler);
 }
 
 public void addDisposeListener (DisposeListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Dispose, typedListener);
@@ -173,7 +174,7 @@ public void dispose () {
 	* Note:  It is valid to attempt to dispose a widget
 	* more than once.  If this happens, fail silently.
 	*/
-	if (isDisposed()) return;
+	if (!isValidWidget ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	releaseChild ();
 	releaseWidget ();
@@ -185,12 +186,14 @@ static void error (int code) {
 }
 
 public Object getData () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return data;
 }
 
 public Object getData (String key) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
@@ -213,7 +216,8 @@ String getNameText () {
 }
 
 public int getStyle () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return style;
 }
 
@@ -237,7 +241,8 @@ boolean isValidSubclass () {
 }
 
 protected boolean isListening (int eventType) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return hooks (eventType);
 }
 
@@ -245,8 +250,15 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
+boolean isValidWidget () {
+	if (handle != 0) return true;
+	if ((state & HANDLE) != 0) return false;
+	return (state & DISPOSED) == 0;
+}
+
 public void notifyListeners (int eventType, Event event) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	event.type = eventType;
@@ -389,27 +401,30 @@ void releaseWidget () {
 }
 
 public void removeListener (int eventType, Listener handler) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
 }
 
 protected void removeListener (int eventType, EventListener handler) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
 }
 
 public void removeDisposeListener (DisposeListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
-void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
+void replaceMnemonic (int mnemonic, int mods) {
 	Display display = getDisplay ();
 	int [] args = {OS.Pt_ARG_ACCEL_KEY, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
@@ -421,23 +436,13 @@ void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
 			char [] accelText = Converter.mbcsToWcs (null, buffer);
 			if (accelText.length > 0) {
 				char key = Character.toLowerCase (accelText [0]);
-				if (normal) {
-					OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
-				}
-				if (alt) {
-					OS.PtRemoveHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
-				}
+				OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
 			}
 		}
 	}
 	if (mnemonic == 0) return;
 	char key = Character.toLowerCase ((char)mnemonic);
-	if (normal) {
-		OS.PtAddHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
-	}
-	if (alt) {
-		OS.PtAddHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
-	}
+	OS.PtAddHotkeyHandler (handle, key, mods, (short)0, SWT.Activate, display.windowProc);
 }
 
 void sendEvent (int eventType) {
@@ -456,12 +461,14 @@ void sendEvent (int eventType, Event event) {
 }
 
 public void setData (Object data) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	this.data = data;
 }
 
 public void setData (String key, Object value) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 	
 	/* Remove the key/value pair */

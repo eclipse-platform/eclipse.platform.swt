@@ -188,7 +188,7 @@ public String getText () {
 /**
  * Sets the receiver's text, which is the string that the
  * window manager will typically display as the receiver's
- * <em>title</em>, to the argument, which must not be null. 
+ * <em>title</em>, to the argument, which may not be null. 
  *
  * @param text the new text
  *
@@ -201,7 +201,6 @@ public String getText () {
  * </ul>
  */
 public void setText (String string) {
-	if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 	title = string;
 }
 

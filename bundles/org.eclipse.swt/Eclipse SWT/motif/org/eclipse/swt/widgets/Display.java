@@ -419,7 +419,6 @@ void createDisplay (DeviceData data) {
 		if (data.application_name != null) application_name = data.application_name;
 		if (data.application_class != null) application_class = data.application_class;
 	}
-	/* Use the character encoding for the default locale */
 	if (display_name != null) displayName = Converter.wcsToMbcs (null, display_name, true);
 	if (application_name != null) appName = Converter.wcsToMbcs (null, application_name, true);
 	if (application_class != null) appClass = Converter.wcsToMbcs (null, application_class, true);
@@ -474,7 +473,7 @@ boolean filterEvent (XAnyEvent event) {
 
 	/* Check the event and find the widget */
 	if (event.type != OS.KeyPress) return false;
-	if (!OS.IsLinux && OS.XFilterEvent(event, OS.None)) return true;
+	if (OS.XFilterEvent(event, OS.None)) return true;
 	XKeyEvent keyEvent = new XKeyEvent ();
 	
 	/* Move the any event into the key event */
@@ -1285,7 +1284,6 @@ void initializeTranslations () {
  * @private
  */
 public int internal_new_GC (GCData data) {
-	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	int xDrawable = OS.XDefaultRootWindow (xDisplay);
 	int xGC = OS.XCreateGC (xDisplay, xDrawable, 0, null);
 	if (xGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
@@ -1381,15 +1379,15 @@ public boolean readAndDispatch () {
 	if (status != 0) {
 		if ((status & OS.XtIMTimer) != 0) {
 			OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
-			status = OS.XtAppPending (xtContext);
 		}
 		if ((status & OS.XtIMAlternateInput) != 0) {
 			OS.XtAppProcessEvent (xtContext, OS.XtIMAlternateInput);
-			status = OS.XtAppPending (xtContext);
+//			runAsyncMessages ();
 		}
 		if ((status & OS.XtIMXEvent) != 0) {
 			OS.XtAppNextEvent (xtContext, xEvent);
-			if (!filterEvent (xEvent)) OS.XtDispatchEvent (xEvent);
+			if (filterEvent (xEvent)) return false;
+			OS.XtDispatchEvent (xEvent);
 		}
 		runDeferredEvents ();
 		return true;
@@ -1695,27 +1693,38 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	this.synchronizer = synchronizer;
 }
 void showToolTip (int handle, String toolTipText) {
-	if (toolTipText == null || toolTipText.length () == 0 || toolTipHandle != 0) {
+	if (toolTipText == null || toolTipText.length() == 0 || toolTipHandle != 0) {
 		 return;
 	}
 	
-	/* Create the shell and tool tip widget */
+	/* Create the tooltip widgets */	
 	int widgetClass = OS.OverrideShellWidgetClass ();
 	int [] argList1 = {OS.XmNmwmDecorations, 0, OS.XmNborderWidth, 1};
 	int shellHandle = OS.XtCreatePopupShell (null, widgetClass, handle, argList1, argList1.length / 2);
-	Color infoForeground = getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-	Color infoBackground = getSystemColor (SWT.COLOR_INFO_BACKGROUND);
-	int foregroundPixel = infoForeground.handle.pixel;
-	int backgroundPixel = infoBackground.handle.pixel;
-	/* Use the character encoding for the default locale */
+	toolTipHandle = OS.XmCreateLabel(shellHandle, null, null, 0);
+	
+	/* Set the tooltip foreground and background */
+	Color infoForeground = getSystemColor(SWT.COLOR_INFO_FOREGROUND);
+	Color infoBackground = getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+	int foregroundPixel = (infoForeground == null) ? defaultForeground : infoForeground.handle.pixel;
+	int backgroundPixel = (infoBackground == null) ? defaultBackground : infoBackground.handle.pixel;
+	int [] argList2 = {OS.XmNforeground, foregroundPixel, OS.XmNbackground, backgroundPixel};
+	OS.XtSetValues (toolTipHandle, argList2, argList2.length / 2);
+	OS.XtManageChild (toolTipHandle);		
+	
+	/* Set the tooltip label string */
 	byte [] buffer = Converter.wcsToMbcs (null, toolTipText, true);
-	int [] argList2 = {
-		OS.XmNforeground, foregroundPixel, 
-		OS.XmNbackground, backgroundPixel,
-		OS.XmNalignment, OS.XmALIGNMENT_BEGINNING,
-	};
-	toolTipHandle = OS.XmCreateLabel (shellHandle, buffer, argList2, argList2.length / 2);
-	OS.XtManageChild (toolTipHandle);	
+	int xmString = OS.XmStringParseText (
+		buffer,
+		0,
+		OS.XmFONTLIST_DEFAULT_TAG, 
+		OS.XmCHARSET_TEXT, 
+		null,
+		0,
+		0);
+	int [] argList3 = {OS.XmNlabelString, xmString};
+	OS.XtSetValues (toolTipHandle, argList3, argList3.length / 2);
+	if (xmString != 0) OS.XmStringFree (xmString);	
 		
 	/*
 	* Feature in X.  There is no way to query the size of a cursor.
@@ -1727,7 +1736,7 @@ void showToolTip (int handle, String toolTipText) {
 	int x = rootX [0] + 16, y = rootY [0] + 16;
 	
 	/*
-	* Ensure that the tool tip is on the screen.
+	* Ensure that the tooltip is on the screen.
 	*/
 	int screen = OS.XDefaultScreen (xDisplay);
 	int width = OS.XDisplayWidth (xDisplay, screen);
@@ -1773,8 +1782,7 @@ public void syncExec (Runnable runnable) {
 }
 int textWidth (String string, int fontList) {
 	if (string.length () == 0) return 0;
-	String codePage = Converter.getCodePage (xDisplay, fontList);
-	byte [] textBuffer = Converter.wcsToMbcs (codePage, string, true);
+	byte [] textBuffer = Converter.wcsToMbcs (null, string, true);
 	int xmString = OS.XmStringGenerate (textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
 	int width = OS.XmStringWidth (fontList, xmString);
 	OS.XmStringFree (xmString);
@@ -1902,10 +1910,9 @@ String wrapText (String text, int fontList, int width) {
 			}
 			if (lineWidth > width) {
 				if (lastStart == wordStart) {
-					while (wordStart < wordEnd) {
-						line = text.substring (lineStart, wordStart + 1);
-						lineWidth = textWidth (line, fontList);
-						if (lineWidth >= width) break;
+					line = text.substring (lineStart, wordStart + 1);
+					lineWidth = textWidth (line, fontList);
+					while (wordStart < wordEnd && lineWidth < width) {
 						wordStart++;
 					}
 					if (wordStart == lastStart) wordStart++;

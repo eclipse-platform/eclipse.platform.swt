@@ -8,7 +8,6 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
-import java.util.Locale;
 
 /**
  * Instances of this class manage operating system resources that
@@ -175,7 +174,6 @@ public FontData[] getFontData() {
 					int length = OS.strlen(ptr);
 					byte[] nameBuf = new byte[length];
 					OS.memmove(nameBuf, ptr, length);
-					/* Use the character encoding for the default locale */
 					String xlfd = new String(Converter.mbcsToWcs(null, nameBuf)).toLowerCase();
 					/* Add the xlfd to the array */
 					String[] newXlfds = new String[xlfds.length + 1];
@@ -253,35 +251,26 @@ public int hashCode () {
 	return handle;
 }
 int loadFont(int xDisplay, FontData fd) {
-	/* Use the character encoding for the default locale */
 	byte[] buffer = Converter.wcsToMbcs(null, fd.getXlfd(), true);
 	return OS.XLoadQueryFont(xDisplay, buffer);
 }
-int loadFontSet(int xDisplay, FontData fd) {
-	/* Use the character encoding for the default locale */
-	byte[] buffer = Converter.wcsToMbcs(null, fd.getXlfd(), true);
-	int [] missing_charset = new int [1];
-	int [] missing_charset_count = new int [1];
-	int [] def_string = new int [1];
-	return OS.XCreateFontSet(xDisplay, buffer, missing_charset, missing_charset_count, def_string);
-}
-int matchFont(int xDisplay, FontData fd, boolean fontSet) {	
-	int font = fontSet ? loadFontSet(xDisplay, fd) : loadFont(xDisplay, fd);
-	if (font != 0) return font;
+int matchFont(int xDisplay, FontData fd) {	
+	int fontStruct = loadFont(xDisplay, fd);
+	if (fontStruct != 0) return fontStruct;
 	if (fd.slant != null) {
 		fd.slant = null;
-		font = fontSet ? loadFontSet(xDisplay, fd) : loadFont(xDisplay, fd);
-		if (font != 0) return font;
+		fontStruct = loadFont(xDisplay, fd);
+		if (fontStruct != 0) return fontStruct;
 	}
 	if (fd.weight != null) {
 		fd.weight = null;
-		font = fontSet ? loadFontSet(xDisplay, fd) : loadFont(xDisplay, fd);
-		if (font != 0) return font;
+		fontStruct = loadFont(xDisplay, fd);
+		if (fontStruct != 0) return fontStruct;
 	}
 	if (fd.points != 0) {
 		fd.points = 0;
-		font = fontSet ? loadFontSet(xDisplay, fd) : loadFont(xDisplay, fd);
-		if (font != 0) return font;
+		fontStruct = loadFont(xDisplay, fd);
+		if (fontStruct != 0) return fontStruct;
 	}
 	return 0;
 }
@@ -290,53 +279,8 @@ void init (Device device, FontData fd) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	int xDisplay = device.xDisplay;
-	int fontListEntry;
-//	int fontStruct = loadFont(xDisplay, fd);
-//	if (fontStruct == 0) {
-//		/*
-//		* If the desired font can not be loaded, the XLFD fields are wildcard
-//		* in order to preserve the font style and height. If there is no
-//		* font with the desired style and height, the slant, weight and points
-//		* are wildcard in that order, until a font can be loaded.
-//		*/
-//		FontData newFD = new FontData();
-//		newFD.slant = fd.slant;
-//		newFD.weight = fd.weight;
-//		newFD.points = fd.points;
-//		newFD.characterSetName = fd.characterSetName;
-//		if (newFD.characterSetName == null) {
-//			newFD.characterSetName = device.characterSetName;
-//		}
-//		newFD.characterSetRegistry = fd.characterSetRegistry;
-//		if (newFD.characterSetRegistry == null) {
-//			newFD.characterSetRegistry = device.characterSetRegistry;
-//		}
-//		fontStruct = matchFont(xDisplay, newFD, false);
-//
-//		/* Failed to load any font. Use the system font. */
-//		if (fontStruct == 0) {
-//			handle = device.systemFont;
-//			if (handle != 0) return;
-//		}
-//	}
-//	fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONT, fontStruct);
-	Locale locale = fd.locale;
-	if (locale != null) {
-		String lang = locale.getLanguage();
-		String country = locale.getCountry();
-		String variant = locale.getVariant();
-		String osLocale =  lang;
-		if (country != null && country.length() > 0) osLocale += "_" + country;
-		if (variant != null && variant.length() > 0) osLocale += "." + variant;
-		int length = osLocale.length();
-		byte [] buffer = new byte[length + 1];
-		for (int i=0; i<length; i++) {
-			buffer[i] = (byte)osLocale.charAt(i);
-		}
-		OS.setlocale (OS.LC_CTYPE, buffer);
-	}		
-	int fontSet = loadFontSet(xDisplay, fd);
-	if (fontSet == 0) {
+	int fontStruct = loadFont(xDisplay, fd);
+	if (fontStruct == 0) {
 		/*
 		* If the desired font can not be loaded, the XLFD fields are wildcard
 		* in order to preserve the font style and height. If there is no
@@ -355,16 +299,16 @@ void init (Device device, FontData fd) {
 		if (newFD.characterSetRegistry == null) {
 			newFD.characterSetRegistry = device.characterSetRegistry;
 		}
-		fontSet = matchFont(xDisplay, newFD, true);
+		fontStruct = matchFont(xDisplay, newFD);
+
+		/* Failed to load any font. Use the system font. */
+		if (fontStruct == 0) {
+			handle = device.systemFont;
+			if (handle != 0) return;
+		}
 	}
-	if (locale != null) OS.setlocale (OS.LC_CTYPE, new byte [0]);
-	
-	/* Failed to load any font. Use the system font. */
-	if (fontSet == 0) {
-		handle = device.systemFont;
-		if (handle != 0) return;
-	}
-	fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONTSET, fontSet);
+	if (fontStruct == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONT, fontStruct);
 	if (fontListEntry == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	handle = OS.XmFontListAppendEntry(0, fontListEntry);
 	OS.XmFontListEntryFree(new int[]{fontListEntry});

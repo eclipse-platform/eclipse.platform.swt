@@ -30,7 +30,8 @@ public ToolItem (ToolBar parent, int style, int index) {
 }
 
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
@@ -146,19 +147,22 @@ void deregister () {
 }
 
 public Rectangle getBounds () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (handle, area);
 	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
 }
 
 public Control getControl () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return control;
 }
 
 public Image getDisabledImage () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return disabledImage;
 }
 
@@ -169,24 +173,28 @@ public Display getDisplay () {
 }
 
 public boolean getEnabled () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return (args [1] & OS.Pt_BLOCKED) == 0;
 }
 
 public Image getHotImage () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return hotImage;
 }
 
 public ToolBar getParent () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
 
 public boolean getSelection () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
 	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
@@ -194,12 +202,14 @@ public boolean getSelection () {
 }
 
 public String getToolTipText () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return toolTipText;
 }
 
 public int getWidth () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_WIDTH, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
@@ -217,7 +227,8 @@ void hookEvents () {
 }
 
 public boolean isEnabled () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getEnabled () && parent.isEnabled ();
 }
 
@@ -304,7 +315,8 @@ void releaseWidget () {
 }
 
 public void removeSelectionListener(SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -312,10 +324,10 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 public void setControl (Control control) {
-	checkWidget();
-	if (control != null) {
-		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (control != null && control.parent != parent) {
+		error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
 	Control oldControl = this.control;
@@ -330,14 +342,15 @@ public void setControl (Control control) {
 }
 
 public void setDisabledImage (Image image) {
-	checkWidget();
-	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	disabledImage = image;
 }
 
 public void setEnabled (boolean enabled) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {
 		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_BLOCKED, OS.Pt_BLOCKED,
 		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_GHOST, OS.Pt_GHOST,
@@ -346,25 +359,16 @@ public void setEnabled (boolean enabled) {
 }
 
 public void setHotImage (Image image) {
-	checkWidget();
-	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
-
-	/* TEMPORARY CODE: remove when when FLAT tool bars are implemented */
-	if ((parent.style & SWT.FLAT) != 0) setImage (image);
-
 	hotImage = image;
 }
 
 public void setImage (Image image) {
-	checkWidget();
-	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	if ((style & SWT.SEPARATOR) != 0) return;	
-	super.setImage (image);
-
-	/* TEMPORARY CODE: remove when when FLAT tool bars are implemented */
-	if ((parent.style & SWT.FLAT) != 0 && hotImage != null) return;
-
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if ((style & SWT.SEPARATOR) != 0) return;
 	int imageHandle = 0;
 	int type = OS.Pt_Z_STRING;
 	if (image != null) {
@@ -395,14 +399,16 @@ public void setImage (Image image) {
 }
 
 public void setSelection (boolean selected) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	int [] args = {OS.Pt_ARG_FLAGS, selected ? OS.Pt_SET : 0, OS.Pt_SET};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 public void setText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
 	int ptr = 0;
@@ -437,12 +443,14 @@ public void setText (String string) {
 }
 
 public void setToolTipText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	toolTipText = string;
 }
 
 public void setWidth (int width) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
 	int [] args = {OS.Pt_ARG_WIDTH, width, 0};

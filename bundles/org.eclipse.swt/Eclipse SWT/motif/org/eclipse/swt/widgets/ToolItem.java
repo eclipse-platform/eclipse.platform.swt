@@ -32,80 +32,23 @@ public /*final*/ class ToolItem extends Item {
 	boolean set;
 
 /**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>ToolBar</code>) and a style value
- * describing its behavior and appearance. The item is added
- * to the end of the items maintained by its parent.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
+* Creates a new instance of the widget.
+*/
 public ToolItem (ToolBar parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
 	parent.relayout ();
 }
-
 /**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>ToolBar</code>), a style value
- * describing its behavior and appearance, and the index
- * at which to place it in the items maintained by its parent.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
+* Creates a new instance of the widget.
+*/
 public ToolItem (ToolBar parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, index);
 	parent.relayout ();
 }
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is selected, by sending
@@ -132,7 +75,8 @@ public ToolItem (ToolBar parent, int style, int index) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener(SWT.Selection,typedListener);
@@ -198,11 +142,10 @@ Point computeSize () {
 		Display display = getDisplay ();
 		shadowThickness = Math.min (2, display.buttonShadowThickness);
 	}
-	final String plainText = stripMnemonicCodes(this.text);
 	int textWidth = 0, textHeight = 0;
-	if (plainText.length () != 0) {
+	if (text.length () != 0) {
 		GC gc = new GC (parent);
-		Point textExtent = gc.textExtent (plainText);
+		Point textExtent = gc.textExtent (text);
 		textWidth = textExtent.x;
 		textHeight = textExtent.y;
 		gc.dispose ();
@@ -244,7 +187,7 @@ void createWidget (int index) {
 	parent.relayout ();
 }
 public void dispose () {
-	if (isDisposed()) return;
+	if (!isValidWidget ()) return;
 	ToolBar parent = this.parent;
 	super.dispose ();
 	parent.relayout ();
@@ -261,7 +204,8 @@ public void dispose () {
  * </ul>
  */
 public Rectangle getBounds () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return new Rectangle ((short) argList [1], (short) argList [3], argList [5], argList [7]);
@@ -278,7 +222,8 @@ public Rectangle getBounds () {
  * </ul>
  */
 public Control getControl () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return control;
 }
 /**
@@ -292,7 +237,8 @@ public Control getControl () {
 *	when the widget has been disposed
 */
 public Image getDisabledmage () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return disabledImage;
 }
 /**
@@ -311,7 +257,8 @@ public Image getDisabledmage () {
  * </ul>
  */
 public boolean getEnabled () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNsensitive, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1] != 0;
@@ -336,7 +283,8 @@ public Display getDisplay () {
  * </ul>
  */
 public Image getHotImage () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return hotImage;
 }
 /**
@@ -350,7 +298,8 @@ public Image getHotImage () {
  * </ul>
  */
 public ToolBar getParent () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
 /**
@@ -370,7 +319,8 @@ public ToolBar getParent () {
  * </ul>
  */
 public boolean getSelection () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
 	return set;
 }
@@ -385,7 +335,8 @@ public boolean getSelection () {
  * </ul>
  */
 public String getToolTipText () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return toolTipText;
 }
 /**
@@ -399,7 +350,8 @@ public String getToolTipText () {
  * </ul>
  */
 public int getWidth () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNwidth, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -443,7 +395,8 @@ void hookEvents () {
  * </ul>
  */
 public boolean isEnabled () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getEnabled () && parent.isEnabled ();
 }
 void manageChildren () {
@@ -487,7 +440,8 @@ void releaseWidget () {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
@@ -524,19 +478,16 @@ void setBounds (int x, int y, int width, int height) {
  *
  * @param control the new control
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public void setControl (Control control) {
-	checkWidget();
-	if (control != null) {
-		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (control != null && control.parent != parent) {
+		error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
 	this.control = control;
@@ -561,7 +512,8 @@ public void setControl (Control control) {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
@@ -572,19 +524,16 @@ public void setEnabled (boolean enabled) {
  * The disbled image is displayed when the receiver is disabled.
  * </p>
  *
- * @param image the disabled image to display on the receiver (may be null)
+ * @param image the hot image to display on the receiver (may be null)
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public void setDisabledImage (Image image) {
-	checkWidget();
-	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	disabledImage = image;
 	if (!getEnabled ()) redraw ();
@@ -598,24 +547,21 @@ public void setDisabledImage (Image image) {
  *
  * @param image the hot image to display on the receiver (may be null)
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public void setHotImage (Image image) {
-	checkWidget();
-	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	hotImage = image;
 	if ((parent.style & SWT.FLAT) != 0) redraw ();
 }
 public void setImage (Image image) {
-	checkWidget();
-	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
 	Point size = computeSize ();
@@ -639,7 +585,8 @@ public void setImage (Image image) {
  * </ul>
  */
 public void setSelection (boolean selected) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	if (selected == set) return;
 	set = selected;
@@ -654,7 +601,8 @@ void setSize (int width, int height) {
 	}
 }
 public void setText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
@@ -675,7 +623,8 @@ public void setText (String string) {
  * </ul>
  */
 public void setToolTipText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	toolTipText = string;
 }
 /**
@@ -689,7 +638,8 @@ public void setToolTipText (String string) {
  * </ul>
  */
 public void setWidth (int width) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
 	int [] argList = {OS.XmNheight, 0};
@@ -896,10 +846,9 @@ int processPaint (int callData) {
 	}
 	gc.setBackground (parent.getBackground ());
 		
-	final String plainText = stripMnemonicCodes(this.text);
 	int textX = 0, textY = 0, textWidth = 0, textHeight = 0;
-	if (plainText.length () != 0) {
-		Point textExtent = gc.textExtent (plainText);
+	if (text.length () != 0) {
+		Point textExtent = gc.textExtent (text);
 		textWidth = textExtent.x;
 		textHeight = textExtent.y;
 	}	
@@ -927,10 +876,7 @@ int processPaint (int callData) {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		textX -= 6;  imageX -=6;
 	}
-	if (textWidth > 0) {
-		/* To display the mnemonic underscore we'll want to use XmStringDrawUnderline here */
-		gc.drawText(plainText, textX, textY, false);
-	}
+	if (textWidth > 0) gc.drawText(text, textX, textY, false);
 	if (imageWidth > 0) gc.drawImage(currentImage, imageX, imageY);
 	if ((style & SWT.DROP_DOWN) != 0) {
 		int startX = width - 12, startY = (height - 2) / 2;
@@ -945,34 +891,5 @@ int processPaint (int callData) {
 		if (currentImage != null) currentImage.dispose ();
 	}
 	return 0;
-}
-void propagateWidget (boolean enabled) {
-	propagateHandle (enabled, handle);
-	/*
-	* ToolItems never participate in focus traversal when
-	* either enabled or disabled.
-	*/
-	if (enabled) {
-		int [] argList = {OS.XmNtraversalOn, 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-}
-/**
- * Returns the provided string without mnemonic indicators.
- * 
- * @param string the string to demangle
- */
-static String stripMnemonicCodes(String string) {
-	char [] text = new char[string.length ()];
-	string.getChars(0, text.length, text, 0);
-	int j = 0;
-	for (int i = 0; i < text.length;) {
-		if ((text[j++] = text[i++]) == Mnemonic) {
-			if (i != text.length) {
-				if (text[i] == Mnemonic) i++; else j--;
-			}
-		}
-	}
-	return new String(text, 0, j);
 }
 }

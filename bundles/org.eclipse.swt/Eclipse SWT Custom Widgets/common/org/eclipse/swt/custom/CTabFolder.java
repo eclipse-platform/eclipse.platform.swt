@@ -88,8 +88,9 @@ public class CTabFolder extends Composite {
 	
 	/* Color appearance */
 	Image backgroundImage;
-	Color[] gradientColors;
-	int[] gradientPercents;
+	private Image gradientImage;
+	private Color[] gradientColors;
+	private int[] gradientPercents;
 	Color selectionForeground;
 
 	// internal constants
@@ -458,6 +459,10 @@ private void onDispose() {
 		tip = null;
 	}
 	
+	if (gradientImage != null){
+		gradientImage.dispose();
+		gradientImage = null;
+	}
 	gradientColors = null;
 	gradientPercents = null;
 	backgroundImage = null;
@@ -659,10 +664,8 @@ private void handleEvents (Event event){
 				inactiveItem = null;
 			}
 			if (event.widget == inactiveCloseBar) {
-				if (inactiveItem != null) {
-					Rectangle itemBounds = inactiveItem.getBounds();
-					if (itemBounds.contains(event.x, event.y)) return;
-				}
+				Rectangle bounds = getBounds();
+				if (bounds.contains(event.x, event.y)) return;
 				inactiveCloseBar.setVisible(false);
 				inactiveItem = null;
 			}
@@ -952,7 +955,7 @@ private void redrawTabArea(int index) {
 		y = item.y;
 		Rectangle area = super.getClientArea();
 		width = area.x + area.width - x;
-		height = item.height;
+		height = area.y + area.height - y;
 	}
 	redraw(x, y, width, height, false);
 }
@@ -1102,11 +1105,6 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 		if (percents == null || percents.length != colors.length - 1) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
-		if (getDisplay().getDepth() < 15) {
-			// Don't use gradients on low color displays
-			colors = new Color[] { colors[0] };
-			percents = new int[] { };
-		}
 		for (int i = 0; i < percents.length; i++) {
 			if (percents[i] < 0 || percents[i] > 100) {
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1118,49 +1116,105 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 	}
 	
 	// Are these settings the same as before?
-	final Color background = getBackground();
-	if (backgroundImage == null) {
-		if ((gradientColors != null) && (colors != null) && 
-			(gradientColors.length == colors.length)) {
-			boolean same = false;
-			for (int i = 0; i < gradientColors.length; i++) {
-				same = (gradientColors[i] == colors[i]) ||
-					((gradientColors[i] == null) && (colors[i] == background)) ||
-					((gradientColors[i] == background) && (colors[i] == null));
+	if (gradientImage == null && gradientColors == null && colors == null) {
+		if (backgroundImage != null) {
+			backgroundImage = null;
+			redrawTabArea(selectedIndex);
+		}
+		return;
+	}
+	if (gradientColors != null && colors != null 
+	    && gradientColors.length == colors.length) {
+		boolean same = false;
+		for (int i = 0; i < gradientColors.length; i++) {
+			same = (gradientColors[i] == colors[i]);
+			if (!same) break;
+		}
+		if (same) {
+			for (int i = 0; i < gradientPercents.length; i++) {
+				same = gradientPercents[i] == percents[i];
 				if (!same) break;
 			}
-			if (same) {
-				for (int i = 0; i < gradientPercents.length; i++) {
-					same = gradientPercents[i] == percents[i];
-					if (!same) break;
-				}
-			}
-			if (same) return;
 		}
-	} else {
-		backgroundImage = null;
+		if (same) return;
 	}
-	// Store the new settings
-	if (colors == null) {
-		gradientColors = null;
-		gradientPercents = null;
-		closeBar.setBackground(background);
-	} else {
-		gradientColors = new Color[colors.length];
-		for (int i = 0; i < colors.length; ++i)
-			gradientColors[i] = (colors[i] != null) ? colors[i] : background;
-		gradientPercents = new int[percents.length];
-		for (int i = 0; i < percents.length; ++i)
-			gradientPercents[i] = percents[i];
-		if (getDisplay().getDepth() < 15) closeBar.setBackground(background);
-		else closeBar.setBackground(gradientColors[gradientColors.length - 1]);
+	
+	// Cleanup
+	if (gradientImage != null) {
+		gradientImage.dispose();
+		gradientImage = null;
 	}
-
-	// Refresh with the new settings
+	gradientColors = null;
+	gradientPercents = null;
+	backgroundImage = null;
+	
+	// Draw gradient onto an image
+	if (colors != null) {
+		Color[] colorsCopy = null;
+		Display display = getDisplay();
+		if (display.getDepth() < 15) {
+			colorsCopy = new Color[]{colors[0]};
+		} else {
+			colorsCopy = colors;
+		}
+		
+		int x = 0; int y = 0;
+		int width = 100; int height = 10;
+		Image temp = new Image(display, width, height);
+		GC gc = new GC(temp);
+		int start = 0;
+		int end = 0;
+		Color background = getBackground();
+		if (colorsCopy.length == 1) {
+			gc.setBackground(colorsCopy[0]);
+			gc.fillRectangle(temp.getBounds());
+		}
+		for (int j = 0; j < colorsCopy.length - 1; j++) {
+			Color startColor = colorsCopy[j];
+			if (startColor == null) startColor = getBackground();
+			RGB rgb1 = startColor.getRGB();
+			Color endColor = colorsCopy[j+1];
+			if (endColor == null) endColor = getBackground();
+			RGB rgb2   = endColor.getRGB();
+			start = end;
+			end = (width) * percents[j] / 100;
+			int range = Math.max(1, end - start);
+			for (int k = 0; k < (end - start); k++) {
+				int r = rgb1.red + k*(rgb2.red - rgb1.red)/range;
+				r = (rgb2.red > rgb1.red) ? Math.min(r, rgb2.red) : Math.max(r, rgb2.red);
+				int g = rgb1.green + k*(rgb2.green - rgb1.green)/range;
+				g = (rgb2.green > rgb1.green) ? Math.min(g, rgb2.green) : Math.max(g, rgb2.green);
+				int b = rgb1.blue + k*(rgb2.blue - rgb1.blue)/range;
+				b = (rgb2.blue > rgb1.blue) ? Math.min(b, rgb2.blue) : Math.max(b, rgb2.blue);
+				Color color = new Color(display, r, g, b); 
+				gc.setBackground(color);					
+				gc.fillRectangle(start + k,y,1,height);
+				gc.setBackground(background);
+				color.dispose();
+			}
+		}
+		gc.dispose();
+		gradientImage = temp;
+		gradientColors = colorsCopy;
+		gradientPercents = percents;
+		backgroundImage = temp;
+		
+		Color closeBackground = colorsCopy[colorsCopy.length - 1];
+		if (closeBackground == null || display.getDepth() < 15){
+			closeBackground = background;
+		}
+		closeBar.setBackground(closeBackground);
+	} else {
+		closeBar.setBackground(getBackground());
+	}
 	if (selectedIndex > -1) redrawTabArea(selectedIndex);
 }
 public void setSelectionBackground(Image image) {
 	if (image == backgroundImage) return;
+	if (gradientImage != null) {
+		gradientImage.dispose();
+		gradientImage = null;
+	}
 	gradientColors = null;
 	gradientPercents = null;
 	backgroundImage = image;

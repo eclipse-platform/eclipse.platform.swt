@@ -31,12 +31,12 @@ public class Callback {
 	/**
 	 * SWT Major version number (must be >= 0)
 	 */
-	public static int MAJOR_VERSION = 2;
+	public static int MAJOR_VERSION = 0;
 	
 	/**
 	 * SWT Minor version number (must be in the range 0..999)
 	 */
-	public static int MINOR_VERSION = 2;
+	public static int MINOR_VERSION = 125;
 	
 	/**
 	 * SWT revision number (must be >= 0)
@@ -158,18 +158,6 @@ public static int getVersion () {
 public static native String getPlatform ();
 
 /**
- * Returns the OS name.
- *
- * @return the os name of the currently running SWT
- */
-static String getOS () {
-	String name = System.getProperty("os.name");
-	if (name.regionMatches(true, 0, "win", 0, 3)) return "win32";
-	if (name.regionMatches(true, 0, "sun", 0, 3)) return "solaris";
-	return name.toLowerCase();
-}
-
-/**
  * Returns the SWT revision number as an integer. Revision changes
  * occur as a result of non-API breaking bug fixes.
  *
@@ -239,10 +227,7 @@ public static void loadLibrary () {
  * @param name the name of the library to load
  */
 public static void loadLibrary (String name) {
-	/* Include os name to support same window system on 
-	 * different operating systems 
-	 */
-	String newName = name + "-" + getOS () + "-" + MAJOR_VERSION;
+	String newName = name + MAJOR_VERSION;
 
 	/* Force 3 digits in minor version number */
 	if (MINOR_VERSION < 10) {

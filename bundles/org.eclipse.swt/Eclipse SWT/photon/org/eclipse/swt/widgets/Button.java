@@ -33,7 +33,8 @@ static int checkStyle (int style) {
 }
 
 public void addSelectionListener (SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
@@ -72,7 +73,8 @@ void click () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.ARROW) != 0) {
@@ -137,7 +139,6 @@ void createHandle (int index) {
 		int [] args = {
 			OS.Pt_ARG_HORIZONTAL_ALIGNMENT, alignment, 0,
 			OS.Pt_ARG_INDICATOR_TYPE, (style & SWT.CHECK) != 0 ? OS.Pt_N_OF_MANY : OS.Pt_ONE_OF_MANY, 0,
-			OS.Pt_ARG_FILL_COLOR, display.WIDGET_BACKGROUND, 0,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};	
 
@@ -157,7 +158,8 @@ void createHandle (int index) {
 }
 
 public int getAlignment () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.ARROW) != 0) {
 		if ((style & SWT.UP) != 0) return SWT.UP;
 		if ((style & SWT.DOWN) != 0) return SWT.DOWN;
@@ -171,20 +173,15 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
-boolean getDefault () {
-	if ((style & SWT.PUSH) == 0) return false;
-	int [] args = {OS.Pt_ARG_BEVEL_CONTRAST, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	return args [1] == 100;
-}
-
 public Image getImage () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return image;
 }
 
 public boolean getSelection () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
 	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
@@ -196,7 +193,8 @@ String getNameText () {
 }
 
 public String getText () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.ARROW) != 0) return "";
 	int [] args = {
 		OS.Pt_ARG_TEXT_STRING, 0, 0,
@@ -249,26 +247,6 @@ int processActivate (int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processFocusIn (int info) {
-	int result = super.processFocusIn (info);
-	// widget could be disposed at this point
-	if (handle == 0) return result;
-	if ((style & SWT.PUSH) == 0) return result;
-	getShell ().setDefaultButton (this, false);
-	return result;
-}
-
-int processFocusOut (int info) {
-	int result = super.processFocusOut (info);
-	// widget could be disposed at this point
-	if (handle == 0) return result;
-	if ((style & SWT.PUSH) == 0) return result;
-	if (getDefault ()) {
-		getShell ().setDefaultButton (null, false);
-	}
-	return result;
-}
-
 int processPaint (int damage) {
 	if ((style & SWT.ARROW) != 0) {
 		OS.PtSuperClassDraw (OS.PtButton (), handle, damage);
@@ -302,7 +280,8 @@ void releaseWidget () {
 }
 
 public void removeSelectionListener (SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -327,7 +306,8 @@ void selectRadio () {
 }
 
 public void setAlignment (int alignment) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.ARROW) != 0) {
 		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
@@ -344,29 +324,21 @@ public void setAlignment (int alignment) {
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
-void setDefault (boolean value) {
-	if ((style & SWT.PUSH) == 0) return;
-	if (getShell ().parent == null) return;
-	int [] args = {OS.Pt_ARG_BEVEL_CONTRAST, value ? 100 : 20, 0};
-	OS.PtSetResources (handle, args.length / 3, args);
-}
-
 public void setSelection (boolean selected) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	int [] args = {OS.Pt_ARG_FLAGS, selected ? OS.Pt_SET : 0, OS.Pt_SET};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 public void setImage (Image image) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.ARROW) != 0) return;
 	this.image = image;
 	int imageHandle = 0;
-	if (image != null) {
-		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		imageHandle = copyPhImage (image.handle);
-	}
+	if (image != null) imageHandle = copyPhImage (image.handle);
 	int [] args = {
 		OS.Pt_ARG_LABEL_IMAGE, imageHandle, 0,
 		OS.Pt_ARG_LABEL_TYPE, OS.Pt_IMAGE, 0
@@ -376,7 +348,8 @@ public void setImage (Image image) {
 }
 
 public void setText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
 	char [] text = new char [string.length ()];
@@ -401,7 +374,7 @@ public void setText (String string) {
 		ptr2 = OS.malloc (buffer2.length);
 		OS.memmove (ptr2, buffer2, buffer2.length);
 	}
-	replaceMnemonic (mnemonic, true, true);
+	replaceMnemonic (mnemonic, 0);
 	int [] args = {
 		OS.Pt_ARG_TEXT_STRING, ptr, 0,
 		OS.Pt_ARG_LABEL_TYPE, OS.Pt_Z_STRING, 0,

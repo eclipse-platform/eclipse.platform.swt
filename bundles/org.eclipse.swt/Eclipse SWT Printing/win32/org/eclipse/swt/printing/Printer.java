@@ -186,7 +186,6 @@ public Printer(PrinterData data) {
  */
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
-	/* Use the character encoding for the default locale */
 	byte[] driver = Converter.wcsToMbcs(0, data.driver, true);
 	byte[] device = Converter.wcsToMbcs(0, data.name, true);
 	int lpInitData = 0;
@@ -273,7 +272,6 @@ public boolean startJob(String jobName) {
 	int hHeap = OS.GetProcessHeap();
 	int lpszDocName = 0;
 	if (jobName != null && jobName.length() != 0) {
-		/* Use the character encoding for the default locale */
 		byte [] buffer = Converter.wcsToMbcs(0, jobName, true);
 		lpszDocName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
 		OS.MoveMemory(lpszDocName, buffer, buffer.length);
@@ -281,7 +279,6 @@ public boolean startJob(String jobName) {
 	}
 	int lpszOutput = 0;
 	if (data.printToFile && data.fileName != null) {
-		/* Use the character encoding for the default locale */
 		byte [] buffer = Converter.wcsToMbcs(0, data.fileName, true);
 		lpszOutput = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
 		OS.MoveMemory(lpszOutput, buffer, buffer.length);
@@ -462,10 +459,12 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 }
 
 /**
- * Returns a <code>PrinterData</code> object representing the
- * target printer for this print job.
- * 
- * @return a PrinterData object describing the receiver
+ * Returns an array of <code>FontData</code>s representing the receiver.
+ * On Windows, only one FontData will be returned per font. On X however, 
+ * a <code>Font</code> object <em>may</em> be composed of multiple X 
+ * fonts. To support this case, we return an array of font data objects.
+ *
+ * @return an array of font data objects describing the receiver
  */
 public PrinterData getPrinterData() {
 	return data;

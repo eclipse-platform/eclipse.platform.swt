@@ -31,35 +31,9 @@ import org.eclipse.swt.*;
 
 public /*final*/ class Group extends Composite {
 	int labelHandle;
-
 /**
- * Constructs a new instance of this class given its parent
- * and a style value describing its behavior and appearance.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
+* Creates a new instance of the widget.
+*/
 public Group (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -77,7 +51,8 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int trimX, trimY, trimWidth, trimHeight;	
 	int [] argList = {
 		OS.XmNwidth, 0, 
@@ -152,7 +127,8 @@ int fontHandle () {
 	return labelHandle;
 }
 public Rectangle getClientArea () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {
 		OS.XmNwidth, 0, 
 		OS.XmNheight, 0, 
@@ -189,7 +165,8 @@ public Rectangle getClientArea () {
  * </ul>
  */
 public String getText () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNlabelString, 0};
 	OS.XtGetValues (labelHandle, argList, 1);
 	int xmString = argList [1];
@@ -207,7 +184,7 @@ public String getText () {
 	OS.memmove (buffer, address, length);
 	OS.XtFree (address);
 	OS.XmStringFree (xmString);
-	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
+	return new String (Converter.mbcsToWcs (null, buffer));
 }
 boolean mnemonicHit () {
 	return setFocus ();
@@ -249,9 +226,10 @@ void releaseHandle () {
  * </ul>
  */
 public void setText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	int xmString = OS.XmStringParseText (
 		buffer,
 		0,

@@ -240,7 +240,6 @@ void createItem (TreeItem item, int hParent, int hInsertAfter) {
 	if (hItem == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	item.handle = hItem;
 	items [id] = item;
-	
 	/*
 	* This code is intentionally commented.
 	*/
@@ -251,7 +250,7 @@ void createItem (TreeItem item, int hParent, int hInsertAfter) {
 //	}
 
 	/*
-	* Bug in Windows.  When a child item is added to a parent item
+	* Bug in Windows.  When a child item ss added to a parent item
 	* that has no children outside of WM_NOTIFY with control code
 	* TVN_ITEMEXPANDED, the tree widget does not redraw the +/-
 	* indicator.  The fix is to detect this case and force a redraw.
@@ -338,8 +337,7 @@ void destroyItem (TreeItem item) {
 	if (count == 0) {
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
-			Display display = getDisplay ();
-			display.releaseImageList (imageList);
+			imageList.dispose ();
 		}
 		imageList = null;
 		items = new TreeItem [4];	
@@ -588,13 +586,12 @@ int imageIndex (Image image) {
 	if (imageList == null) {
 		int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
 		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
-		Rectangle bounds = image.getBounds ();
-		imageList = getDisplay ().getImageList (new Point (bounds.width, bounds.height));
-		int index = imageList.indexOf (image);
-		if (index == -1) index = imageList.add (image);
+		imageList = new ImageList ();
+		imageList.setBackground (getBackgroundPixel ());
+		imageList.add (image);
 		int hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
-		return index;
+		return 0;
 	}
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
@@ -629,10 +626,10 @@ void releaseWidget () {
 		}
 	}
 	items = null;
+	super.releaseWidget ();
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
-		Display display = getDisplay ();
-		display.releaseImageList (imageList);
+		imageList.dispose ();
 	} else {
 		int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
@@ -642,7 +639,6 @@ void releaseWidget () {
 	int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, 0);
 	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
-	super.releaseWidget ();
 }
 
 
@@ -669,8 +665,7 @@ public void removeAll () {
 	}
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
-		Display display = getDisplay ();
-		display.releaseImageList (imageList);
+		imageList.dispose ();
 	}
 	imageList = null;
 	items = new TreeItem [4];
@@ -735,9 +730,6 @@ public void removeTreeListener(TreeListener listener) {
  * @param after true places the insert mark above 'item'. false places 
  *	the insert mark below 'item'.
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -746,10 +738,7 @@ public void removeTreeListener(TreeListener listener) {
 public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
 	int hItem = 0;
-	if (item != null) {
-		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		hItem = item.handle;
-	}
+	if (item != null) hItem = item.handle;
 	OS.SendMessage (handle, OS.TVM_SETINSERTMARK, (before) ? 0 : 1, hItem);
 }
 
@@ -804,6 +793,12 @@ void setBackgroundPixel (int pixel) {
 	int oldPixel = OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
 	if (oldPixel != -1) OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
 	OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, pixel);
+	if (pixel == -1) pixel = getBackgroundPixel ();
+	if (imageList != null) {
+		imageList.setBackground (pixel);
+		int hImageList = imageList.getHandle ();
+		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+	}
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
 }
 
@@ -852,35 +847,6 @@ void setForegroundPixel (int pixel) {
 	OS.SendMessage (handle, OS.TVM_SETTEXTCOLOR, 0, pixel);
 }
 
-public void setRedraw (boolean redraw) {
-	checkWidget ();
-	/*
-	* Bug in Windows.  For some reason, when WM_SETREDRAW
-	* is used to turn redraw on for a tree and the tree
-	* contains no items, the last item in the tree does
-	* not redraw properly.  If the tree has only one item,
-	* that item is not drawn.  If another window is dragged
-	* on top of the item, parts of the item are redrawn
-	* and erased at random.  The fix is to ensure that this
-	* case doesn't happen by inserting and deleting an item
-	* when redraw is turned on and there are no items in
-	* the tree.
-	*/
-	int hItem = 0;
-	if (redraw) {
-		int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
-		if (count == 0) {
-			TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();
-			tvInsert.hInsertAfter = OS.TVI_FIRST;
-			hItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
-		}
-	}
-	super.setRedraw (redraw);
-	if (hItem != 0) {
-		OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
-	}
-}
-
 /**
  * Sets the receiver's selection to be the given array of items.
  * The current selected is first cleared, then the new items are
@@ -889,8 +855,7 @@ public void setRedraw (boolean redraw) {
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if one of the item has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -916,10 +881,7 @@ public void setSelection (TreeItem [] items) {
 	} else {
 		int hNewItem = 0;
 		TreeItem item = items [0];
-		if (item != null) {
-			if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-			hNewItem = item.handle;
-		}
+		if (item != null) hNewItem = item.handle;
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
 		ignoreSelect = false;
@@ -950,7 +912,6 @@ public void setSelection (TreeItem [] items) {
 	for (int i=0; i<this.items.length; i++) {
 		TreeItem item = this.items [i];
 		if (item != null) {
-			if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 			int index = 0;
 			while (index < items.length) {
 				if (items [index] == item) break;
@@ -982,8 +943,7 @@ public void setSelection (TreeItem [] items) {
  * @param item the item to be shown
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -995,7 +955,6 @@ public void setSelection (TreeItem [] items) {
 public void showItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, item.handle);
 }
 
@@ -1371,6 +1330,11 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
+	if (imageList != null && background == -1) {
+		imageList.setBackground (defaultBackground ());
+		int hImageList = imageList.getHandle ();
+		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+	}
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
 	return result;
 }

@@ -109,7 +109,8 @@ boolean drawCaret () {
  * </ul>
  */
 public Rectangle getBounds () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return new Rectangle (x, y, width, height);
 }
 /**
@@ -131,7 +132,8 @@ public Display getDisplay () {
  * </ul>
  */
 public Font getFont () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getFont ();
 }
 /**
@@ -146,7 +148,8 @@ public Font getFont () {
  * </ul>
  */
 public Point getLocation () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return new Point (x, y);
 }
 /**
@@ -160,7 +163,8 @@ public Point getLocation () {
  * </ul>
  */
 public Canvas getParent () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
 /**
@@ -174,7 +178,8 @@ public Canvas getParent () {
  * </ul>
  */
 public Point getSize () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return new Point (width, height);
 }
 /**
@@ -195,7 +200,8 @@ public Point getSize () {
  * </ul>
  */
 public boolean getVisible () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return isVisible;
 }
 boolean hideCaret () {
@@ -223,7 +229,8 @@ boolean hideCaret () {
  * </ul>
  */
 public boolean isVisible () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return isVisible && parent.isVisible () && parent.hasFocus ();
 }
 boolean isFocusCaret () {
@@ -266,7 +273,8 @@ void releaseWidget () {
  * </ul>
  */
 public void setBounds (int x, int y, int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	boolean samePosition, sameExtent, showing;
 	samePosition = (this.x == x) && (this.y == y);
 	sameExtent = (this.width == width) && (this.height == height);
@@ -278,13 +286,15 @@ public void setBounds (int x, int y, int width, int height) {
 			moved = true;
 			if (isVisible ()) {
 				moved = false;
-				parent.updateCaret ();
+				//IsDBLocale ifTrue: [
+				//widget == nil ifFalse: [widget updateCaret]].
 			}
 	} else {
 			resized = true;
 			if (isVisible ()) {
 				moved = false;
-				parent.updateCaret ();
+				//IsDBLocale ifTrue: [
+				//widget == nil ifFalse: [widget updateCaret]].
 				resized = false;
 			}
 	}
@@ -304,7 +314,8 @@ public void setBounds (int x, int y, int width, int height) {
  * </ul>
  */
 public void setBounds (Rectangle rect) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (rect.x, rect.y, rect.width, rect.height);
 }
@@ -327,7 +338,8 @@ void setFocus () {
  * </ul>
  */
 public void setFont (Font font) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 /**
  * Sets the receiver's location to the point specified by
@@ -343,7 +355,8 @@ public void setFont (Font font) {
  * </ul>
  */
 public void setLocation (int x, int y) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	setBounds (x, y, width, height);
 }
 /**
@@ -359,7 +372,8 @@ public void setLocation (int x, int y) {
  * </ul>
  */
 public void setLocation (Point location) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
 }
@@ -375,7 +389,8 @@ public void setLocation (Point location) {
  * </ul>
  */
 public void setSize (int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	setBounds (x, y, width, height);
 }
 /**
@@ -393,7 +408,8 @@ public void setSize (int width, int height) {
  * </ul>
  */
 public void setSize (Point size) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
 }
@@ -414,7 +430,8 @@ public void setSize (Point size) {
  * </ul>
  */
 public void setVisible (boolean visible) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);	
 	if (visible == isVisible) return;
 	if (isVisible = visible) {
 		showCaret ();

@@ -477,7 +477,6 @@ public Image(Device device, Image srcImage, int flag) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the bounds rectangle is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if either the rectangle's width or height is negative</li>
  * </ul>
  */
 public Image(Device device, Rectangle bounds) {
@@ -1269,9 +1268,8 @@ void init(Device device, ImageData i) {
 	if ((i.depth == 1 && i.getTransparencyType() != SWT.TRANSPARENCY_MASK) || i.depth == 2) {
 		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
 		ImageData.blit(ImageData.BLIT_SRC, 
-			i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
-			ImageData.ALPHA_OPAQUE, null, 0,
-			img.data, img.depth, img.bytesPerLine, i.getByteOrder(), 0, 0, img.width, img.height, null, null, null, 
+			i.data, i.depth, i.bytesPerLine, ImageData.MSB_FIRST, 0, 0, i.width, i.height, null, null, null, -1, null, 0,
+			img.data, img.depth, img.bytesPerLine, ImageData.MSB_FIRST, 0, 0, img.width, img.height, null, null, null, 
 			false, false);
 		img.transparentPixel = i.transparentPixel;
 		img.maskPad = i.maskPad;
@@ -1287,22 +1285,15 @@ void init(Device device, ImageData i) {
 	 * Windows-supported.
 	 */
 	if (i.palette.isDirect) {
-		final PaletteData palette = i.palette;
-		final int redMask = palette.redMask;
-		final int greenMask = palette.greenMask;
-		final int blueMask = palette.blueMask;
-		int newDepth = i.depth;
-		int newOrder = ImageData.MSB_FIRST;
 		PaletteData newPalette = null;
-
+		PaletteData palette = i.palette;
+		int redMask = palette.redMask;
+		int greenMask = palette.greenMask;
+		int blueMask = palette.blueMask;
+		int order = ImageData.MSB_FIRST;
 		switch (i.depth) {
-			case 8:
-				newDepth = 16;
-				newOrder = ImageData.LSB_FIRST;
-				newPalette = new PaletteData(0x7C00, 0x3E0, 0x1F);
-				break;
 			case 16:
-				newOrder = ImageData.LSB_FIRST;
+				order = ImageData.LSB_FIRST;
 				if (!(redMask == 0x7C00 && greenMask == 0x3E0 && blueMask == 0x1F)) {
 					newPalette = new PaletteData(0x7C00, 0x3E0, 0x1F);
 				}
@@ -1321,11 +1312,10 @@ void init(Device device, ImageData i) {
 				SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 		}
 		if (newPalette != null) {
-			ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
+			ImageData img = new ImageData(i.width, i.height, i.depth, newPalette);
 			ImageData.blit(ImageData.BLIT_SRC, 
-					i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, redMask, greenMask, blueMask,
-					ImageData.ALPHA_OPAQUE, null, 0,
-					img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
+					i.data, i.depth, i.bytesPerLine, order, 0, 0, i.width, i.height, redMask, greenMask, blueMask, -1, null, 0,
+					img.data, img.depth, img.bytesPerLine, order, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
 					false, false);
 			if (i.transparentPixel != -1) {
 				img.transparentPixel = newPalette.getPixel(palette.getRGB(i.transparentPixel));
@@ -1489,7 +1479,6 @@ void init(Device device, ImageData i) {
  * @private
  */
 public int internal_new_GC (GCData data) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/*
 	* Create a new GC that can draw into the image.
 	* Only supported for bitmaps.
@@ -1560,15 +1549,8 @@ public boolean isDisposed() {
  *    image.setBackground(b.getBackground());>
  *    b.setImage(image);
  * </pre>
- * </p><p>
- * The image may be modified by this operation (in effect, the
- * transparent regions may be filled with the supplied color).  Hence
- * this operation is not reversible and it is not legal to call
- * this function twice or with a null argument.
- * </p><p>
  * This method has no effect if the receiver does not have a transparent
  * pixel value.
- * </p>
  *
  * @param color the color to use when a transparent pixel is specified
  *

@@ -94,7 +94,8 @@ Control [] _getChildren () {
 * Computes the preferred size.
 */
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	Point size;
 	if (layout != null) {
 		if ((wHint == SWT.DEFAULT) || (hHint == SWT.DEFAULT)) {
@@ -185,7 +186,8 @@ int defaultForeground () {
 	return getDisplay ().compositeForeground;
 }
 public boolean forceFocus () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	Control [] children = _getChildren ();
 	int [] traversals = new int [children.length];
 	int [] argList = new int [] {OS.XmNtraversalOn, 0};
@@ -218,7 +220,8 @@ public boolean forceFocus () {
  * </ul>
  */
 public Control [] getChildren () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return _getChildren ();
 }
 int getChildrenCount () {
@@ -239,7 +242,8 @@ int getChildrenCount () {
  * </ul>
  */
 public Layout getLayout () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return layout;
 }
 
@@ -265,7 +269,8 @@ void hookEvents () {
  * </ul>
  */
 public void layout () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	layout (true);
 }
 /**
@@ -286,7 +291,8 @@ public void layout () {
  * </ul>
  */
 public void layout (boolean changed) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (layout == null) return;
 	int count = getChildrenCount ();
 	if (count == 0) return;
@@ -502,7 +508,8 @@ public void setBounds (int x, int y, int width, int height) {
  * </ul>
  */
 public void setLayout (Layout layout) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	this.layout = layout;
 }
 public void setSize (int width, int height) {

@@ -110,10 +110,11 @@ public Combo (Composite parent, int style) {
  * @see #add(String,int)
  */
 public void add (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
+	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.XmComboBoxAddItem(handle, xmString, -1, false);
@@ -146,7 +147,8 @@ public void add (String string) {
  * @see #add(String)
  */
 public void add (String string, int index) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
 	
@@ -161,7 +163,7 @@ public void add (String string, int index) {
 	if (!(0 <= index && index <= argList [1])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
+	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.XmComboBoxAddItem(handle, xmString, index + 1, false);
@@ -187,7 +189,8 @@ public void add (String string, int index) {
  * @see #removeModifyListener
  */
 public void addModifyListener (ModifyListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Modify, typedListener);
@@ -217,7 +220,8 @@ public void addModifyListener (ModifyListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
@@ -271,7 +275,8 @@ protected void checkSubclass () {
  * @see #deselectAll
  */
 public void clearSelection () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return;
 	int [] argList = {OS.XmNtextField, 0};
@@ -280,7 +285,8 @@ public void clearSelection () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {
 		OS.XmNlist, 0, 
 		OS.XmNtextField, 0,
@@ -359,7 +365,8 @@ void createHandle (int index) {
  * </ul>
  */
 public void deselect (int index) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == -1) return;
 	int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -389,7 +396,8 @@ public void deselect (int index) {
  * @see #clearSelection
  */
 public void deselectAll () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	Display display = getDisplay ();
@@ -422,7 +430,8 @@ public void deselectAll () {
  * </ul>
  */
 public String getItem (int index) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNitemCount, 0, OS.XmNitems, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	if (!(0 <= index && index < argList [1])) {
@@ -446,7 +455,7 @@ public String getItem (int index) {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, address, length);
 	OS.XtFree (address);
-	return decodeString(new String (Converter.mbcsToWcs (getCodePage (), buffer)));
+	return decodeString(new String (Converter.mbcsToWcs (null, buffer)));
 }
 /**
  * Returns the number of items contained in the receiver's list.
@@ -462,7 +471,8 @@ public String getItem (int index) {
  * </ul>
  */
 public int getItemCount () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -482,7 +492,8 @@ public int getItemCount () {
  * </ul>
  */
 public int getItemHeight () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] listHandleArgs = {OS.XmNlist, 0};
 	OS.XtGetValues (handle, listHandleArgs, listHandleArgs.length / 2);
 	int [] argList = {OS.XmNlistSpacing, 0, OS.XmNhighlightThickness, 0};
@@ -511,13 +522,13 @@ public int getItemHeight () {
  * </ul>
  */
 public String [] getItems () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNitems, 0, OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int items = argList [1], itemCount = argList [3];
 	int [] buffer1 = new int [1];
 	String [] result = new String [itemCount];
-	String codePage = getCodePage ();
 	for (int i = 0; i < itemCount; i++) {
 		OS.memmove (buffer1, items, 4);
 		int ptr = buffer1 [0];
@@ -534,7 +545,7 @@ public String [] getItems () {
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, address, length);
 		OS.XtFree (address);
-		result[i] = decodeString(new String (Converter.mbcsToWcs (codePage, buffer)));
+		result[i] = decodeString(new String (Converter.mbcsToWcs (null, buffer)));
 		items += 4;
 	}
 	return result;
@@ -554,7 +565,8 @@ public String [] getItems () {
  * </ul>
  */
 public Point getSelection () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] start = new int [1], end = new int [1];
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -576,7 +588,9 @@ public Point getSelection () {
  * </ul>
  */
 public int getSelectionIndex () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	
 	int [] argList = {OS.XmNlist, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	
@@ -603,7 +617,9 @@ public int getSelectionIndex () {
  * </ul>
  */
 public String getText () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	
@@ -613,7 +629,7 @@ public String getText () {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, ptr, length);
 	OS.XtFree (ptr);
-	return decodeString(new String (Converter.mbcsToWcs (getCodePage (), buffer)));
+	return decodeString(new String (Converter.mbcsToWcs (null, buffer)));
 }
 /**
  * Returns the height of the receivers's text field.
@@ -629,7 +645,9 @@ public String getText () {
  * </ul>
  */
 public int getTextHeight () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	
 	if ((style & SWT.DROP_DOWN) != 0) {
 		/*
 		* Bug in MOTIF.  For some reason, XtQueryGeometry ()
@@ -675,7 +693,9 @@ public int getTextHeight () {
  * </ul>
  */
 public int getTextLimit () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return OS.XmTextGetMaxLength (argList[1]);
@@ -707,10 +727,11 @@ void hookEvents () {
  * </ul>
  */
 public int indexOf (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
+	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) return -1;
 	
@@ -740,13 +761,14 @@ public int indexOf (String string) {
  * </ul>
  */
 public int indexOf (String string, int start) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int [] argList = {OS.XmNitems, 0, OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int items = argList [1], itemCount = argList [3];
 	if (!((0 <= start) && (start < itemCount))) return -1;
-	byte [] buffer1 = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
+	byte [] buffer1 = Converter.wcsToMbcs (null, encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer1);
 	if (xmString == 0) return -1;
 	int index = start;
@@ -760,19 +782,6 @@ public int indexOf (String string, int start) {
 	OS.XmStringFree (xmString);
 	if (index == itemCount) return -1;
 	return index;
-}
-int processSelection (int callData) {
-	/*
-	* Bug in MOTIF.  If items have been added and removed from a
-	* combo then users are able to select an empty drop-down item
-	* in the combo once and force a resulting callback.  In such
-	* cases we want to eat this callback so that listeners are not
-	* notified.
-	*/
-	if (getSelectionIndex() == -1)
-		return 0;
-		
-	return super.processSelection(callData);
 }
 /**
  * Removes the item from the receiver's list at the given
@@ -792,7 +801,8 @@ int processSelection (int callData) {
  * </ul>
  */
 public void remove (int index) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
 	/*
 	* Feature in Motif.  An index out of range handled
@@ -827,7 +837,8 @@ public void remove (int index) {
  * </ul>
  */
 public void remove (int start, int end) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (start > end) return;
 	/*
 	* Feature in Motif.  An index out of range handled
@@ -872,10 +883,11 @@ void register () {
  * </ul>
  */
 public void remove (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
+	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	
@@ -896,7 +908,8 @@ public void remove (String string) {
  * </ul>
  */
 public void removeAll () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0, OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	
@@ -930,7 +943,8 @@ public void removeAll () {
  * @see #addModifyListener
  */
 public void removeModifyListener (ModifyListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Modify, listener);	
@@ -953,7 +967,8 @@ public void removeModifyListener (ModifyListener listener) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener (SelectionListener listener) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -972,7 +987,8 @@ public void removeSelectionListener (SelectionListener listener) {
  * </ul>
  */
 public void select (int index) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == -1) {
 		int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
@@ -997,7 +1013,8 @@ public void select (int index) {
 * Sets the widget bounds.
 */
 public void setBounds (int x, int y, int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int newHeight = ((style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
 	super.setBounds (x, y, width, newHeight);
 }
@@ -1023,7 +1040,8 @@ public void setBounds (int x, int y, int width, int height) {
  * </ul>
  */
 public void setItem (int index, String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
 	int [] argList = {OS.XmNlist, 0, OS.XmNitemCount, 0};
@@ -1031,7 +1049,7 @@ public void setItem (int index, String string) {
 	if (!(0 <= index && index < argList [3])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
+	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	boolean isSelected = OS.XmListPosSelected (argList[1], index + 1);
@@ -1053,7 +1071,8 @@ public void setItem (int index, String string) {
  * </ul>
  */
 public void setItems (String [] items) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 
 	if (items.length == 0) {
@@ -1063,11 +1082,10 @@ public void setItems (String [] items) {
 	
 	int index = 0;
 	int [] table = new int [items.length];
-	String codePage = getCodePage ();
 	while (index < items.length) {
 		String string = items [index];
 		if (string == null) break; 
-		byte [] buffer = Converter.wcsToMbcs (codePage, encodeString(string), true);
+		byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
 		int xmString = OS.XmStringCreateLocalized (buffer);
 		if (xmString == 0) break;
 		table [index++] = xmString;
@@ -1097,7 +1115,8 @@ public void setItems (String [] items) {
  * </ul>
  */
 public void setSelection (Point selection) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -1133,7 +1152,8 @@ public void setSelection (Point selection) {
 * Sets the widget size.
 */
 public void setSize (int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int newHeight = ((style & SWT.DROP_DOWN) != 0) ? getTextHeight () : height;
 	super.setSize (width, newHeight);
 }
@@ -1159,11 +1179,12 @@ public void setSize (int width, int height) {
  * </ul>
  */
 public void setText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
 	if ((style & SWT.READ_ONLY) == 0) {
-		byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+		byte [] buffer = Converter.wcsToMbcs (null, string, true);
 		int xmString = OS.XmStringCreateLocalized (buffer);
 		if (xmString == 0) return;
 		int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0};
@@ -1187,7 +1208,7 @@ public void setText (String string) {
 		* it does not send a Modify to notify the application
 		* that the text has changed.  The fix is to send the event.
 		*/
-		if (OS.IsLinux && (style & SWT.MULTI) != 0) sendEvent (SWT.Modify);
+		if (IsLinux && (style & SWT.MULTI) != 0) sendEvent (SWT.Modify);
 	}
 }
 /**
@@ -1205,7 +1226,8 @@ public void setText (String string) {
  * </ul>
  */
 public void setTextLimit (int limit) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -1218,16 +1240,7 @@ void deregister () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	WidgetTable.remove (argList[1]);
 }
-void enableWidget (boolean enabled) {
-	super.enableWidget (enabled);
-	int [] argList = {
-		OS.XmNlist, 0, 
-		OS.XmNtextField, 0,
-	};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	enableHandle (enabled, argList [1]);
-	enableHandle (enabled, argList [3]);
-}
+
 /**
  * Bug in Motif.
  * Empty strings in the combo will cause GPFs if a) they

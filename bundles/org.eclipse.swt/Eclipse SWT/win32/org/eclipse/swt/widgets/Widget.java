@@ -240,7 +240,6 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -249,7 +248,6 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /**
@@ -309,7 +307,7 @@ protected void checkSubclass () {
  */
 protected void checkWidget () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
 /**
@@ -361,7 +359,7 @@ public void dispose () {
 	* Note:  It is valid to attempt to dispose a widget
 	* more than once.  If this happens, fail silently.
 	*/
-	if (isDisposed ()) return;
+	if (!isValidWidget ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	releaseChild ();
 	releaseWidget ();
@@ -583,28 +581,30 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
+/**
+ * Returns <code>true</code> if the widget is not disposed,
+ * and <code>false</code> otherwise.
+ * <p>
+ * Note: This method is no longer required and will be deprecated.
+ * </p>
+ *
+ * @return <code>true</code> when the widget is not disposed and <code>false</code> otherwise
+ *
+ * @see #isDisposed
+ */
+boolean isValidWidget () {
+	return (state & DISPOSED) == 0;
+}
+
 /*
- * Returns a single character, converted from the default
- * multi-byte character set (MBCS) used by the operating
- * system widgets to a wide character set (WCS) used by Java.
+ * Returns a single character, converted from the multi-byte
+ * character set (MBCS) used by the operating system widgets
+ * to a wide character set (WCS) used by Java.
  *
  * @param ch the MBCS character
  * @return the WCS character
  */
 char mbcsToWcs (char ch) {
-	return mbcsToWcs (ch, 0);
-}
-
-/*
- * Returns a single character, converted from the specified
- * multi-byte character set (MBCS) used by the operating
- * system widgets to a wide character set (WCS) used by Java.
- *
- * @param ch the MBCS character
- * @param codePage the code page used to convert the character
- * @return the WCS character
- */
-char mbcsToWcs (char ch, int codePage) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
 	byte [] buffer;
@@ -616,7 +616,7 @@ char mbcsToWcs (char ch, int codePage) {
 		buffer [0] = (byte) ((key >> 8) & 0xFF);
 		buffer [1] = (byte) (key & 0xFF);
 	}
-	char [] result = Converter.mbcsToWcs (codePage, buffer);
+	char [] result = Converter.mbcsToWcs (0, buffer);
 	if (result.length == 0) return 0;
 	return result [0];
 }
@@ -954,31 +954,16 @@ public String toString () {
 }
 /*
  * Returns a single character, converted from the wide
- * character set (WCS) used by Java to the default
- * multi-byte character set used by the operating system
- * widgets.
+ * character set (WCS) used by Java to the multi-byte
+ * character set used by the operating system widgets.
  *
  * @param ch the WCS character
  * @return the MBCS character
  */
 char wcsToMbcs (char ch) {
-	return wcsToMbcs (ch, 0);
-}
-
-/*
- * Returns a single character, converted from the wide
- * character set (WCS) used by Java to the specified
- * multi-byte character set used by the operating system
- * widgets.
- *
- * @param ch the WCS character
- * @param codePage the code page used to convert the character
- * @return the MBCS character
- */
-char wcsToMbcs (char ch, int codePage) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
-	byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
+	byte [] buffer = Converter.wcsToMbcs (0, new char [] {ch}, false);
 	if (buffer.length == 1) return (char) buffer [0];
 	if (buffer.length == 2) {
 		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));

@@ -14,7 +14,6 @@ public class Decorations extends Canvas {
 	Menu [] menus;
 	String text = "";
 	Image image;
-	Button defaultButton, saveDefault;
 
 Decorations () {
 	/* Do nothing */
@@ -53,27 +52,32 @@ protected void checkSubclass () {
 }
 
 public Button getDefaultButton () {
-	checkWidget();
-	return defaultButton;
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	return null;
 }
 
 public Image getImage () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return image;
 }
 
 public boolean getMaximized () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return false;
 }
 
 public boolean getMinimized () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return false;
 }
 
 public Menu getMenuBar () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return menuBar;
 }
 
@@ -82,7 +86,8 @@ String getNameText () {
 }
 
 public String getText () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return text;
 }
 
@@ -107,9 +112,8 @@ void releaseWidget () {
 	menuBar = null;
 	menus = null;
 	image = null;
-	super.releaseWidget ();
-	defaultButton = saveDefault = null;
 	text = null;
+	super.releaseWidget ();
 }
 
 void remove (Menu menu) {
@@ -149,50 +153,36 @@ void resizeBounds (int width, int height) {
 }
 
 public void setDefaultButton (Button button) {
-	checkWidget();
-	setDefaultButton (button, true);
-}
-void setDefaultButton (Button button, boolean save) {
-	if (button == null) {
-		if (defaultButton == saveDefault) return;
-	} else {
-		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		if ((button.style & SWT.PUSH) == 0) return;
-		if (button == defaultButton) return;
-	}
-	if (defaultButton != null) {
-		if (!defaultButton.isDisposed ()) defaultButton.setDefault (false);
-	}
-	if ((defaultButton = button) == null) defaultButton = saveDefault;
-	if (defaultButton != null) {
-		if (!defaultButton.isDisposed ()) defaultButton.setDefault (true);
-	}
-	if (save || saveDefault == null) saveDefault = defaultButton;
-	if (saveDefault != null && saveDefault.isDisposed ()) saveDefault = null;
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	//NOT DONE
 }
 
 public void setImage (Image image) {
-	checkWidget();
-	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	this.image = image;
 }
 
 public void setMaximized (boolean maximized) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
  
 public void setMenuBar (Menu menu) {
-	checkWidget();
-	if (menu != null && menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	//NOT DONE
 }
 
 public void setMinimized (boolean minimized) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
 public void setText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
 }

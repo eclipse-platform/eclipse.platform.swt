@@ -73,7 +73,8 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT) width = 0x7FFFFFFF;
 	if (hHint == SWT.DEFAULT) height = 0x7FFFFFFF;
@@ -101,7 +102,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  * </ul>
  */
 public CoolItem getItem (int index) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	for (int i = 0; i < rows.size(); i++) {
 		Vector row = (Vector) rows.elementAt(i);
@@ -128,7 +130,8 @@ public CoolItem getItem (int index) {
  * </ul>
  */
 public int getItemCount () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemCount = 0;
 	for (int i = 0; i < rows.size(); i++) {
 		Vector row = (Vector) rows.elementAt(i);
@@ -156,7 +159,8 @@ public int getItemCount () {
  * </ul>
  */
 public CoolItem [] getItems () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	CoolItem [] result = new CoolItem [getItemCount()];
 	int index = 0;
 	for (int i = 0; i < rows.size(); i++) {
@@ -212,8 +216,7 @@ void hookEvents () {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the item is disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -221,9 +224,9 @@ void hookEvents () {
  * </ul>
  */
 public int indexOf (CoolItem item) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int answer = 0;
 	for (int i = 0; i < rows.size(); i++) {
 		Vector row = (Vector) rows.elementAt(i);
@@ -451,13 +454,6 @@ int processPaint (int callData) {
 	gc.dispose();
 	return 0;
 }
-void propagateWidget (boolean enabled) {
-	super.propagateWidget (enabled);
-	CoolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		items [i].propagateWidget (enabled);
-	}
-}
 /**
  * Remove the item from the row. Adjust the x and width values
  * appropriately.
@@ -595,7 +591,8 @@ CoolItem getChild (int id) {
  * </ul>
  */
 public int[] getItemOrder () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	CoolItem[] items = getItems();
 	int[] ids = new int[items.length];
 	for (int i = 0; i < items.length; i++) {
@@ -629,7 +626,8 @@ void setItemOrder (int[] itemOrder) {
  * </ul>
  */
 public Point[] getItemSizes () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	CoolItem[] items = getItems();
 	Point[] sizes = new Point[items.length];
 	for (int i = 0; i < items.length; i++) {
@@ -659,7 +657,8 @@ void setItemSizes (Point[] sizes) {
  * </ul>
  */
 public int[] getWrapIndices () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int[] data = new int[rows.size() - 1];
 	int itemIndex = 0;
 	for (int i = 0; i < rows.size() - 1; i++) {
@@ -683,7 +682,8 @@ public int[] getWrapIndices () {
  * </ul>
  */
 public void setWrapIndices (int[] data) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (data == null) error(SWT.ERROR_NULL_ARGUMENT);
 	CoolItem[] items = getItems();
 	rows = new Vector(5);
@@ -720,7 +720,8 @@ public void setWrapIndices (int[] data) {
  * </ul>
  */
 public void setItemLayout (int[] itemOrder, int[] wrapIndices, Point[] sizes) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	setItemOrder(itemOrder);
 	setWrapIndices(wrapIndices);
 	setItemSizes(sizes);	

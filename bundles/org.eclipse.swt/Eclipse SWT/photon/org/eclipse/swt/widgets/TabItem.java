@@ -30,7 +30,8 @@ protected void checkSubclass () {
 }
 
 public Control getControl () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return control;
 }
 
@@ -41,12 +42,14 @@ public Display getDisplay () {
 }
 
 public TabFolder getParent () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
 
 public String getToolTipText () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return toolTipText;
 }
 
@@ -63,10 +66,10 @@ void releaseWidget () {
 }
 
 public void setControl (Control control) {
-	checkWidget();
-	if (control != null) {
-		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (control != null && control.parent != parent) {
+		error (SWT.ERROR_INVALID_PARENT);
 	}
 	Control oldControl = this.control, newControl = control;
 	this.control = control;
@@ -80,12 +83,14 @@ public void setControl (Control control) {
 }
 
 public void setImage (Image image) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	//NOT SUPPORTED
 }
 
 public void setText (String text) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	super.setText (text);
 	int index = parent.indexOf (this);
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
@@ -119,7 +124,8 @@ public void setText (String text) {
 }
 
 public void setToolTipText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	toolTipText = string;
 }
 }

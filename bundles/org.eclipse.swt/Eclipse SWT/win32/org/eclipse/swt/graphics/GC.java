@@ -587,8 +587,8 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	/* Create resources */
 	int srcHdc = OS.CreateCompatibleDC(handle);
 	int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
+	int memDib = createDIB(destWidth, destHeight, 32);
 	int memHdc = OS.CreateCompatibleDC(handle);
-	int memDib = createDIB(Math.max(srcWidth, destWidth), Math.max(srcWidth, destHeight), 32);
 	int oldMemBitmap = OS.SelectObject(memHdc, memDib);
 
 	BITMAP dibBM = new BITMAP();
@@ -601,46 +601,23 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	OS.MoveMemory(destData, dibBM.bmBits, sizeInBytes);
 
  	/* Get the foreground pixels */
- 	OS.BitBlt(memHdc, 0, 0, srcWidth, srcHeight, srcHdc, srcX, srcY, OS.SRCCOPY);
- 	byte[] srcData = new byte[sizeInBytes];
-	OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
-	
-	/* Merge the alpha channel in place */
-	int alpha = srcImage.alpha;
-	final boolean hasAlphaChannel = (srcImage.alpha == -1);
-	if (hasAlphaChannel) {
-		final int apinc = imgWidth - srcWidth;
-		final int spinc = dibBM.bmWidthBytes - srcWidth * 4;
-		int ap = 0, sp = 3;
-		byte[] alphaData = srcImage.alphaData;
-		for (int y = 0; y < srcHeight; ++y) {
-			for (int x = 0; x < srcWidth; ++x) {
-				srcData[sp] = alphaData[ap++];
-				sp += 4;
-			}
-			ap += apinc;
-			sp += spinc;
-		}
-	}
-	
-	/* Scale the foreground pixels with alpha */
 	OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
-	OS.MoveMemory(dibBM.bmBits, srcData, sizeInBytes);
-	OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+	OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCCOPY);
+	byte[] srcData = new byte[sizeInBytes];
 	OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
-	
+
 	/* Compose the pixels */
-	final int dpinc = dibBM.bmWidthBytes - destWidth * 4;
-	int dp = 0;
-	for (int y = 0; y < destHeight; ++y) {
-		for (int x = 0; x < destWidth; ++x) {
-			if (hasAlphaChannel) alpha = srcData[dp + 3] & 0xff;
-			destData[dp] += ((srcData[dp] & 0xff) - (destData[dp] & 0xff)) * alpha / 255;
-			destData[dp + 1] += ((srcData[dp + 1] & 0xff) - (destData[dp + 1] & 0xff)) * alpha / 255;
-			destData[dp + 2] += ((srcData[dp + 2] & 0xff) - (destData[dp + 2] & 0xff)) * alpha / 255;
-			dp += 4;
-		}
-		dp += dpinc;
+	int alpha = srcImage.alpha;
+	byte[] alphaData = null;
+	if (alpha == -1) {
+		alphaData = new byte[destWidth * destHeight];
+		ImageData.stretch8(srcImage.alphaData, imgWidth, srcX, srcY, srcWidth, srcHeight, alphaData, destWidth, 0, 0, destWidth, destHeight, null, false, false);
+	}
+	for (int i = 0; i < sizeInBytes; i += 4) {
+		if (alphaData != null) alpha = alphaData[i / 4] & 0xff;
+		destData[i] += ((srcData[i] & 0xFF) - (destData[i] & 0xFF)) * alpha / 255;
+		destData[i+1] += ((srcData[i+1] & 0xFF) - (destData[i+1] & 0xFF)) * alpha / 255;
+		destData[i+2] += ((srcData[i+2] & 0xFF) - (destData[i+2] & 0xFF)) * alpha / 255;
 	}
 
 	/* Draw the composed pixels */
@@ -722,10 +699,10 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 
 	/* Create the mask for the source image */
 	int maskHdc = OS.CreateCompatibleDC(hDC);
-	int maskBitmap = OS.CreateBitmap(imgWidth, imgHeight, 1, 1, null);
+	int maskBitmap = OS.CreateBitmap(srcWidth, srcHeight, 1, 1, null);
 	int oldMaskBitmap = OS.SelectObject(maskHdc, maskBitmap);
 	OS.SetBkColor(srcHdc, (transBlue << 16) | (transGreen << 8) | transRed);
-	OS.BitBlt(maskHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
+	OS.BitBlt(maskHdc, 0, 0, srcWidth, srcHeight, srcHdc, 0, 0, OS.SRCCOPY);
 	if (originalColors != null) OS.SetDIBColorTable(srcHdc, 0, 1 << bm.bmBitsPixel, originalColors);
 
 	/* Draw the source bitmap transparently using invert/and mask/invert */
@@ -813,7 +790,7 @@ public void drawOval (int x, int y, int width, int height) {
 	// set the background color, we may not have to do this work?
 	int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
 	int oldBrush = OS.SelectObject(handle, nullBrush);
-	OS.Ellipse(handle, x,y,x+width+1,y+height+1);
+	OS.Ellipse(handle, x,y,x+width,y+height);
 	OS.SelectObject(handle,oldBrush);
 }
 
@@ -956,7 +933,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
  */
 public void drawString (String string, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage(), string, false);
+	byte [] buffer = Converter.wcsToMbcs (0, string, false);
 	OS.TextOut (handle, x, y, buffer, buffer.length);
 }
 
@@ -982,7 +959,7 @@ public void drawString (String string, int x, int y) {
  */
 public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage(), string, false);
+	byte [] buffer = Converter.wcsToMbcs (0, string, false);
 	if (isTransparent) {
 		int oldBkMode = OS.SetBkMode(handle, OS.TRANSPARENT);
 		OS.TextOut (handle, x, y, buffer, buffer.length);
@@ -1014,7 +991,7 @@ public void drawText (String string, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
-	byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
+	byte [] buffer = Converter.wcsToMbcs(0, string, false);
 	OS.DrawText(handle, buffer, buffer.length, rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
 }
 
@@ -1042,7 +1019,7 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
-	byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
+	byte [] buffer = Converter.wcsToMbcs(0, string, false);
 	if (isTransparent) {
 		int oldBkMode = OS.SetBkMode(handle, OS.TRANSPARENT);
 		OS.DrawText(handle, buffer, buffer.length, rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
@@ -1149,98 +1126,6 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 	
 }
 
-/**
- * Fills the interior of the specified rectangle with a gradient
- * sweeping from left to right or top to bottom progressing
- * from the receiver's foreground color to its background color.
- *
- * @param x the x coordinate of the rectangle to be filled
- * @param y the y coordinate of the rectangle to be filled
- * @param width the width of the rectangle to be filled, may be negative
- *        (inverts direction of gradient if horizontal)
- * @param height the height of the rectangle to be filled, may be negative
- *        (inverts direction of gradient if vertical)
- * @param vertical if true sweeps from top to bottom, else 
- *        sweeps from left to right
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- *
- * @see #drawRectangle
- */
-public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (width == 0 || height == 0) return;
-	int fromColor = OS.GetTextColor(handle);
-	if (fromColor == OS.CLR_INVALID) {
-		fromColor = OS.GetSysColor(OS.COLOR_WINDOWTEXT);
-	}
-	int toColor = OS.GetBkColor(handle);
-	if (toColor == OS.CLR_INVALID) {
-		toColor = OS.GetSysColor(OS.COLOR_WINDOW);
-	}
-	boolean swapColors = false;
-	if (width < 0) {
-		x += width; width = -width;
-		if (! vertical) swapColors = true;
-	}
-	if (height < 0) {
-		y += height; height = -height;
-		if (vertical) swapColors = true;
-	}
-	if (swapColors) {
-		final int t = fromColor;
-		fromColor = toColor;
-		toColor = t;
-	}
-	final RGB fromRGB = new RGB(fromColor & 0xff, (fromColor >>> 8) & 0xff, (fromColor >>> 16) & 0xff);
-	final RGB toRGB = new RGB(toColor & 0xff, (toColor >>> 8) & 0xff, (toColor >>> 16) & 0xff);	
-	if ((fromRGB.red == toRGB.red) && (fromRGB.green == toRGB.green) && (fromRGB.blue == toRGB.blue)) {
-		OS.PatBlt(handle, x, y, width, height, OS.PATCOPY);
-		return;
-	}
-
-	/* Use GradientFill if supported, only on Windows 98, 2000 and newer */
-	final int hHeap = OS.GetProcessHeap();
-	final int pMesh = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY,
-		GRADIENT_RECT.sizeof + TRIVERTEX.sizeof * 2);
-	final int pVertex = pMesh + GRADIENT_RECT.sizeof;
-
-	GRADIENT_RECT gradientRect = new GRADIENT_RECT();
-	gradientRect.UpperLeft = 0;
-	gradientRect.LowerRight = 1;
-	OS.MoveMemory(pMesh, gradientRect, gradientRect.sizeof);
-
-	TRIVERTEX trivertex = new TRIVERTEX();
-	trivertex.x = x;
-	trivertex.y = y;
-	trivertex.Red = (short)((fromRGB.red << 8) | fromRGB.red);
-	trivertex.Green = (short)((fromRGB.green << 8) | fromRGB.green);
-	trivertex.Blue = (short)((fromRGB.blue << 8) | fromRGB.blue);
-	trivertex.Alpha = -1;
-	OS.MoveMemory(pVertex, trivertex, TRIVERTEX.sizeof);
-	
-	trivertex.x = x + width;
-	trivertex.y = y + height;
-	trivertex.Red = (short)((toRGB.red << 8) | toRGB.red);
-	trivertex.Green = (short)((toRGB.green << 8) | toRGB.green);
-	trivertex.Blue = (short)((toRGB.blue << 8) | toRGB.blue);
-	trivertex.Alpha = -1;
-	OS.MoveMemory(pVertex + TRIVERTEX.sizeof, trivertex, TRIVERTEX.sizeof);
-
-	boolean success = OS.GradientFill(handle, pVertex, 2, pMesh, 1,
-		vertical ? OS.GRADIENT_FILL_RECT_V : OS.GRADIENT_FILL_RECT_H);
-	OS.HeapFree(hHeap, 0, pMesh);
-	if (success) return;
-	
-	final int depth = OS.GetDeviceCaps(handle, OS.BITSPIXEL);
-	final int bitResolution = (depth >= 24) ? 8 : (depth >= 15) ? 5 : 0;
-	ImageData.fillGradientRectangle(this, data.device,
-		x, y, width, height, vertical, fromRGB, toRGB,
-		bitResolution, bitResolution, bitResolution);
-}
-
 /** 
  * Fills the interior of an oval, within the specified
  * rectangular area, with the receiver's background
@@ -1263,7 +1148,7 @@ public void fillOval (int x, int y, int width, int height) {
 	/* Assumes that user sets the background color. */
 	int nullPen = OS.GetStockObject(OS.NULL_PEN);
 	int oldPen = OS.SelectObject(handle, nullPen);
-	OS.Ellipse(handle, x,y,x+width+1,y+height+1);
+	OS.Ellipse(handle, x,y,x+width,y+height);
 	OS.SelectObject(handle,oldPen);
 }
 
@@ -1379,7 +1264,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
  */
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte[] buffer = Converter.wcsToMbcs(getCodePage(), new char[] { ch });
+	byte[] buffer = Converter.wcsToMbcs(0, new char[] { ch });
 	int val = 0;
 	for (int i = 0; i < buffer.length; i++) {
 		val |= (buffer[i] & 0xFF) << (i * 8);
@@ -1425,7 +1310,7 @@ public Color getBackground() {
  */
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte[] buffer = Converter.wcsToMbcs(getCodePage(), new char[] { ch });
+	byte[] buffer = Converter.wcsToMbcs(0, new char[] { ch });
 	int val = 0;
 	for (int i = 0; i < buffer.length; i++) {
 		val |= (buffer[i] & 0xFF) << (i * 8);
@@ -1483,13 +1368,6 @@ public void getClipping (Region region) {
 	RECT rect = new RECT();
 	OS.GetClipBox(handle, rect);
 	OS.SetRectRgn(region.handle, rect.left, rect.top, rect.right, rect.bottom);
-}
-
-int getCodePage () {
-	int[] lpCs = new int[8];
-	int cs = OS.GetTextCharset(handle);
-	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
-	return lpCs[1];
 }
 
 /** 
@@ -1939,7 +1817,7 @@ public Point stringExtent(String string) {
 		OS.GetTextExtentPoint32(handle, SPACE, 1, size);
 		return new Point(0, size.cy);
 	} else {
-		byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
+		byte [] buffer = Converter.wcsToMbcs(0, string, false);
 		OS.GetTextExtentPoint32(handle, buffer, buffer.length, size);
 		return new Point(size.cx, size.cy);
 	}
@@ -1973,7 +1851,7 @@ public Point textExtent(String string) {
 		return new Point(0, size.cy);
 	} else {
 		RECT rect = new RECT();
-		byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
+		byte [] buffer = Converter.wcsToMbcs(0, string, false);
 		OS.DrawText(handle, buffer, buffer.length, rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX | OS.DT_CALCRECT);
 		return new Point(rect.right, rect.bottom);
 	}

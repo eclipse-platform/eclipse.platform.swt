@@ -79,12 +79,6 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 	return new Rectangle(0,0,0,0);
 }
 
-/**
- * Returns a <code>PrinterData</code> object representing the
- * target printer for this print job.
- * 
- * @return a PrinterData object describing the receiver
- */
 public PrinterData getPrinterData() {
 	return data;
 }

@@ -84,7 +84,8 @@ public Scrollable (Composite parent, int style) {
  * @see #getClientArea
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int border = getBorderWidth ();
 	int trimX = x - border, trimY = y - border;
 	int trimWidth = width + (border * 2), trimHeight = height + (border * 2);
@@ -168,7 +169,8 @@ void enableWidget (boolean enabled) {
  * @see #computeTrim
  */
 public Rectangle getClientArea () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return new Rectangle (0, 0, argList [1], argList [3]);
@@ -185,7 +187,8 @@ public Rectangle getClientArea () {
  * </ul>
  */
 public ScrollBar getHorizontalBar () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return horizontalBar;
 }
 /**
@@ -200,7 +203,8 @@ public ScrollBar getHorizontalBar () {
  * </ul>
  */
 public ScrollBar getVerticalBar () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return verticalBar;
 }
 void manageChildren () {

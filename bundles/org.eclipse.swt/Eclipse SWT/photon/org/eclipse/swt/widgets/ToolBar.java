@@ -47,7 +47,8 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 //	if (layout != null) return super.computeSize (wHint, hHint, changed);
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	PhDim_t dim = new PhDim_t();
 	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
 	OS.PtWidgetPreferredSize(handle, dim);
@@ -108,26 +109,30 @@ void destroyItem (ToolItem item) {
 }
 
 public int getItemCount () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return itemCount;
 }
 
 public ToolItem [] getItems () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	ToolItem [] result = new ToolItem [itemCount];
 	System.arraycopy (items, 0, result, 0, itemCount);
 	return result;
 }
 
 public ToolItem getItem (int index) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = itemCount;
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);	
 	return items [index];
 }
 
 public ToolItem getItem (Point pt) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		Rectangle rect = items [i].getBounds ();
@@ -137,14 +142,15 @@ public ToolItem getItem (Point pt) {
 }
 
 public int getRowCount () {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return 1;
 }
 
 public int indexOf (ToolItem item) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int count = itemCount;
 	for (int i=0; i<count; i++) {
 		if (items [i] == item) return i;
@@ -162,17 +168,6 @@ void releaseWidget () {
 	}
 	items = null;
 	super.releaseWidget ();
-}
-
-/* TEMPORARY CODE.  Hack for eclipse. */
-public void setData(Object data) {
-	super.setData(data);
-	if (data != null && data.getClass().getName().indexOf("org.eclipse.ui.internal.ShortcutBarPart") != -1) {
-		int [] args = {
-			OS.Pt_ARG_ORIENTATION, OS.Pt_VERTICAL, 0,
-		};
-		OS.PtSetResources(handle, args.length / 3, args);
-	}
 }
 
 }
