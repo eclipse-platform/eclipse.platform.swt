@@ -53,9 +53,10 @@ public static RTFTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) return;
+		if (!_validate(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
 	String string = (String)object;
-	if (string.length() == 0) return;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	super.javaToNative(buffer, transferData);
 }
@@ -87,5 +88,11 @@ protected String[] getTypeNames(){
 }
 protected int[] getTypeIds(){
 	return new int[]{TYPEID};
+}
+boolean _validate(Object object) {
+	return (object != null  && object instanceof String && ((String)object).length() > 0);
+}
+protected boolean validate(Object object) {
+	return _validate(object);
 }
 }

@@ -59,7 +59,9 @@ public static FileTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative(Object object, TransferData transferData) {
-	if (object == null || !(object instanceof String[])) return;
+	if (!_validate(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
 	// build a byte array from data
 	String[] files = (String[])object;
 	
@@ -115,5 +117,16 @@ protected String[] getTypeNames(){
 }
 protected int[] getTypeIds(){
 	return new int[]{TYPEID};
+}
+boolean _validate(Object object) {
+	if (object == null || !(object instanceof String[]) || ((String[])object).length == 0) return false;
+	String[] strings = (String[])object;
+	for (int i = 0; i < strings.length; i++) {
+		if (strings[i] == null || strings[i].length() == 0) return false;
+	}
+	return true;
+}
+protected boolean validate(Object object) {
+	return _validate(object);
 }
 }
