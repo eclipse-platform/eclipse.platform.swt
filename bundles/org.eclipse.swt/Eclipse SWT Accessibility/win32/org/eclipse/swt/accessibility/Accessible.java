@@ -29,10 +29,8 @@ public class Accessible {
 	IAccessible iaccessible;
 	Vector accessibleListeners = new Vector(), accessibleControlListeners = new Vector();
 	Object[] variants;
-	Control control;
 
 	Accessible(Control control) {
-		this.control = control;
 		int[] ppvObject = new int[1];
 		int result = COM.CreateStdAccessibleObject(control.handle, COM.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
 		if (result == COM.E_NOTIMPL) return;
@@ -108,14 +106,6 @@ public class Accessible {
 		accessibleControlListeners.removeElement(listener);
 	}
 	
-	public void setFocus(int childID) {
-		if (childID == ACC.CHILDID_SELF) {
-			COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_WINDOW, COM.CHILDID_SELF);
-		} else {
-			COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, (childID + 1));
-		}
-	}
-
 	public void internal_dispose_Accessible() {
 		if (iaccessible != null)
 			iaccessible.Release();
