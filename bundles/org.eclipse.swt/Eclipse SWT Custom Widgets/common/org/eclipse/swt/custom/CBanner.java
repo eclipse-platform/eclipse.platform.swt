@@ -266,7 +266,7 @@ void onDispose() {
 void onMouseDown (int x, int y) {
 	if (curveRegion.contains(x, y)) {
 		dragging = true;
-		rightDragDisplacement = right.getLocation().x - x;
+		rightDragDisplacement = curveStart + CURVE_WIDTH - INDENT_RIGHT - x;
 	}
 }
 void onMouseExit() {
