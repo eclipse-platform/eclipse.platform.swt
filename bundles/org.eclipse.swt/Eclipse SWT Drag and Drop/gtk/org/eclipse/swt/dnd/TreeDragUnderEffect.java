@@ -91,7 +91,7 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 		if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
 			setDropSelection(null);
 		}
-		setInsertMark(item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
+		tree.setInsertMark(item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
 		return;
 	}
 	if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
@@ -112,19 +112,6 @@ private void setDropSelection (TreeItem item) {
 	if (!OS.gtk_tree_view_get_path_at_pos(tree.handle, rect.x, rect.y, path, null, null, null)) return;
 	if (path [0] == 0) return;
 	OS.gtk_tree_view_set_drag_dest_row(tree.handle, path[0], OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
-	OS.gtk_tree_path_free (path [0]);
-}
-private void setInsertMark(TreeItem item, boolean before) {
-	if (item == null) {
-		OS.gtk_tree_view_unset_rows_drag_dest(tree.handle);
-		return;
-	}
-	Rectangle rect = item.getBounds();
-	int [] path = new int [1];
-	if (!OS.gtk_tree_view_get_path_at_pos(tree.handle, rect.x, rect.y, path, null, null, null)) return;
-	if (path [0] == 0) return;
-	int position = before ? OS.GTK_TREE_VIEW_DROP_BEFORE : OS.GTK_TREE_VIEW_DROP_AFTER;
-	OS.gtk_tree_view_set_drag_dest_row(tree.handle, path[0], position);
 	OS.gtk_tree_path_free (path [0]);
 }
 private void scrollHover (int effect, TreeItem item, int x, int y) {

@@ -846,7 +846,7 @@ public void removeTreeListener(TreeListener listener) {
  * will be inserted when dropped on the tree.
  * 
  * @param item the insert item.  Null will clear the insertion mark.
- * @param after true places the insert mark above 'item'. false places 
+ * @param before true places the insert mark above 'item'. false places 
  *	the insert mark below 'item'.
  *
  * @exception IllegalArgumentException <ul>
@@ -857,9 +857,19 @@ public void removeTreeListener(TreeListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setInsertMark (TreeItem item, boolean set) {
+public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
-	//NOT IMPLEMENTED
+	if (item == null) {
+		OS.gtk_tree_view_unset_rows_drag_dest(handle);
+		return;
+	}
+	Rectangle rect = item.getBounds();
+	int [] path = new int [1];
+	if (!OS.gtk_tree_view_get_path_at_pos(handle, rect.x, rect.y, path, null, null, null)) return;
+	if (path [0] == 0) return;
+	int position = before ? OS.GTK_TREE_VIEW_DROP_BEFORE : OS.GTK_TREE_VIEW_DROP_AFTER;
+	OS.gtk_tree_view_set_drag_dest_row(handle, path[0], position);
+	OS.gtk_tree_path_free (path [0]);
 }
 
 /**
