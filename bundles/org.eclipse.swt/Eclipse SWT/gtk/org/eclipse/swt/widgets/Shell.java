@@ -478,7 +478,7 @@ void createHandle (int index) {
 	*/
 	OS.gtk_widget_set_size_request (shellHandle, 0, 0);
 	OS.gtk_window_set_resizable (shellHandle, true);
-	createScrolledHandle (shellHandle);
+	createHandle (index, shellHandle, true);
 	OS.gtk_widget_realize (shellHandle);
 	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	int decorations = 0;

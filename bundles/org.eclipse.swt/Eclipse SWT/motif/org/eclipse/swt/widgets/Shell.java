@@ -457,6 +457,9 @@ void adjustTrim () {
 		return;
 	}
 }
+int borderHandle () {
+	return handle;
+}
 void bringToTop (boolean force) {
 	/*
 	* Feature in X.  Calling XSetInputFocus() when the
@@ -646,7 +649,7 @@ void createHandle (int index) {
 	}
 	
 	/* Create scrolled handle */
-	createScrolledHandle (shellHandle);
+	createHandle (index, shellHandle, true);
 
 	/*
 	* Feature in Motif.  There is no way to get the single pixel
@@ -661,7 +664,7 @@ void createHandle (int index) {
 	}
 	
 	/*
-	* Feature in Motif. There is no Motif API to negociate for the
+	* Feature in Motif. There is no Motif API to negotiate for the
 	* status line. The fix is to force the status line to appear
 	* by creating a hidden text widget.  This is much safer than
 	* using X API because this may conflict with Motif.
@@ -906,6 +909,9 @@ public boolean getVisible () {
 	int [] argList = {OS.XmNmappedWhenManaged, 0};
 	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	return minimized && attributes.map_state == OS.IsUnviewable && argList [1] != 0;
+}
+boolean hasBorder () {
+	return false;
 }
 void hookEvents () {
 	super.hookEvents ();

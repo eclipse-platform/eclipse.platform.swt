@@ -189,7 +189,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	createScrolledHandle (parent.handle);
+	createHandle (index, parent.handle, true);
 }
 void createWidget (int index) {
 	super.createWidget (index);

@@ -172,14 +172,12 @@ Control [] computeTabList () {
 
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	createScrolledHandle (parent.parentingHandle ());
+	boolean scrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER)) != 0;
+	createHandle (index, parent.parentingHandle (), scrolled);
 }
 
-void createScrolledHandle (int parentHandle) {
-	//TEMPORARY CODE
-//	boolean isScrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
-	boolean isScrolled = true;
-	if (isScrolled) {
+void createHandle (int index, int parentHandle, boolean scrolled) {
+	if (scrolled) {
 		fixedHandle = OS.gtk_fixed_new ();
 		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_fixed_set_has_window (fixedHandle, true);
@@ -198,7 +196,7 @@ void createScrolledHandle (int parentHandle) {
 		imHandle = OS.gtk_im_multicontext_new ();
 		if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	if (isScrolled) {
+	if (scrolled) {
 		OS.gtk_container_add (parentHandle, fixedHandle);
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
 		/*
@@ -237,7 +235,6 @@ void createScrolledHandle (int parentHandle) {
 			OS.gtk_im_context_set_client_window (imHandle, window);
 		}
 	}
-	
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
 	}

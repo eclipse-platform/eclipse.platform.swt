@@ -315,6 +315,9 @@ public void addTraverseListener (TraverseListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Traverse,typedListener);
 }
+int borderHandle () {
+	return topHandle ();
+}
 /**
  * Returns the preferred size of the receiver.
  * <p>
@@ -612,9 +615,9 @@ int getBackgroundPixel () {
  */
 public int getBorderWidth () {
 	checkWidget();
-	int topHandle = topHandle ();
+	int borderHandle = borderHandle ();
 	int [] argList = {OS.XmNborderWidth, 0};
-	OS.XtGetValues (topHandle, argList, argList.length / 2);
+	OS.XtGetValues (borderHandle, argList, argList.length / 2);
 	return argList [1];
 }
 /**

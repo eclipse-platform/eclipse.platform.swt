@@ -171,8 +171,8 @@ void createHandle (int index) {
 	boolean scroll = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
 	createHandle (index, parent.handle, scroll);
 }
-void createHandle (int index, int parentHandle, boolean scroll) {
-	if (scroll) {
+void createHandle (int index, int parentHandle, boolean scrolled) {
+	if (scrolled) {
 		int [] argList = {OS.XmNancestorSensitive, 1};
 		scrolledHandle = OS.XmCreateMainWindow (parentHandle, null, argList, argList.length / 2);
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
