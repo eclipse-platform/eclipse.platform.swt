@@ -176,13 +176,13 @@ void hookEvents () {
 void register () {
 	super.register ();
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	WidgetTable.put (hAdjustment, this);
+	display.addWidget (hAdjustment, this);
 }
 
 void deregister () {
 	super.deregister ();
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	WidgetTable.remove (hAdjustment);
+	display.removeWidget (hAdjustment);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {

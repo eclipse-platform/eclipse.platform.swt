@@ -100,9 +100,9 @@ GdkColor defaultForeground () {
 
 void deregister () {
 	super.deregister ();
-	if (fixedHandle != 0) WidgetTable.remove (fixedHandle);
+	if (fixedHandle != 0) display.removeWidget (fixedHandle);
 	int imHandle = imHandle ();
-	if (imHandle != 0) WidgetTable.remove (imHandle);
+	if (imHandle != 0) display.removeWidget (imHandle);
 }
 
 void enableWidget (boolean enabled) {
@@ -1997,9 +1997,9 @@ Decorations menuShell () {
 
 void register () {
 	super.register ();
-	if (fixedHandle != 0) WidgetTable.put (fixedHandle, this);
+	if (fixedHandle != 0) display.addWidget (fixedHandle, this);
 	int imHandle = imHandle ();
-	if (imHandle != 0) WidgetTable.put (imHandle, this);
+	if (imHandle != 0) display.addWidget (imHandle, this);
 }
 
 

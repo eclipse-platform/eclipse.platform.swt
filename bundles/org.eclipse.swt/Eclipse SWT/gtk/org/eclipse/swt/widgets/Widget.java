@@ -325,7 +325,7 @@ void createWidget (int index) {
 
 void deregister () {
 	if (handle == 0) return;
-	if ((state & HANDLE) != 0) WidgetTable.remove (handle);
+	if ((state & HANDLE) != 0) display.removeWidget (handle);
 }
 
 void destroyWidget () {
@@ -832,7 +832,7 @@ void postEvent (int eventType, Event event) {
 
 void register () {
 	if (handle == 0) return;
-	if ((state & HANDLE) != 0) WidgetTable.put (handle, this);
+	if ((state & HANDLE) != 0) display.addWidget (handle, this);
 }
 
 void releaseChild () {

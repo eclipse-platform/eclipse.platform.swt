@@ -92,7 +92,7 @@ Control [] _getChildren () {
 	while (i < count) {
 		int handle = OS.g_list_nth_data (list, i);
 		if (handle != 0) {
-			Widget widget = WidgetTable.get (handle);
+			Widget widget = display.getWidget (handle);
 			if (widget != null && widget != this) {
 				if (widget instanceof Control) {
 					children [j++] = (Control) widget;

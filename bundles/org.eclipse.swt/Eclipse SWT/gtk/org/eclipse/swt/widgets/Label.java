@@ -196,9 +196,9 @@ void createWidget (int index) {
 
 void deregister () {
 	super.deregister ();
-	if (frameHandle != 0) WidgetTable.remove (frameHandle);
-	if (labelHandle != 0) WidgetTable.remove (labelHandle);
-	if (imageHandle != 0) WidgetTable.remove (imageHandle);
+	if (frameHandle != 0) display.removeWidget (frameHandle);
+	if (labelHandle != 0) display.removeWidget (labelHandle);
+	if (imageHandle != 0) display.removeWidget (imageHandle);
 }
 
 int eventHandle () {
@@ -293,9 +293,9 @@ void hookEvents () {
 
 void register () {
 	super.register ();
-	if (frameHandle != 0) WidgetTable.put (frameHandle, this);
-	if (labelHandle != 0) WidgetTable.put (labelHandle, this);
-	if (imageHandle != 0) WidgetTable.put (imageHandle, this);
+	if (frameHandle != 0) display.addWidget (frameHandle, this);
+	if (labelHandle != 0) display.addWidget (labelHandle, this);
+	if (imageHandle != 0) display.addWidget (imageHandle, this);
 }
 
 void releaseHandle () {

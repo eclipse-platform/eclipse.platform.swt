@@ -143,7 +143,7 @@ void createWidget (int index) {
 
 void deregister () {
 	super.deregister ();
-	if (scrolledHandle != 0) WidgetTable.remove (scrolledHandle);
+	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
 }
 
 /**
@@ -221,7 +221,7 @@ boolean isTabGroup() {
 
 void register () {
 	super.register ();
-	if (scrolledHandle != 0) WidgetTable.put (scrolledHandle, this);
+	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
 }
 
 void releaseHandle () {

@@ -528,7 +528,7 @@ public boolean isVisible () {
 
 void register () {
 	super.register ();
-	WidgetTable.put (shellHandle, this);
+	display.addWidget (shellHandle, this);
 }
 
 int topHandle () {
@@ -998,7 +998,7 @@ int trimWidth () {
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (shellHandle);
+	display.removeWidget (shellHandle);
 }
 
 public void dispose () {

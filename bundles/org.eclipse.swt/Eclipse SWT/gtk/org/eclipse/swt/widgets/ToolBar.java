@@ -235,7 +235,7 @@ public ToolItem [] getItems () {
 	ToolItem [] result = new ToolItem [count];
 	for (int i=0; i<count; i++) {
 		int data = OS.g_list_nth_data (list, i);
-		Widget widget = WidgetTable.get (data);
+		Widget widget = display.getWidget (data);
 		result [i] = (ToolItem) widget;
 	}
 	OS.g_list_free (list);

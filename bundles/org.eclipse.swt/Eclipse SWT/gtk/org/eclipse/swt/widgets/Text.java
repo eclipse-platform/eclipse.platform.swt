@@ -374,9 +374,9 @@ GdkColor defaultForeground () {
 
 void deregister () {
 	super.deregister ();
-	if (bufferHandle != 0) WidgetTable.remove (bufferHandle);
+	if (bufferHandle != 0) display.removeWidget (bufferHandle);
 	int imContext = imContext ();
-	if (imContext != 0) WidgetTable.remove (imContext);
+	if (imContext != 0) display.removeWidget (imContext);
 }
 
 GdkColor getBackgroundColor () {
@@ -1030,9 +1030,9 @@ public void paste () {
 
 void register () {
 	super.register ();
-	if (bufferHandle != 0) WidgetTable.put (bufferHandle, this);
+	if (bufferHandle != 0) display.addWidget (bufferHandle, this);
 	int imContext = imContext ();
-	if (imContext != 0) WidgetTable.put (imContext, this);
+	if (imContext != 0) display.addWidget (imContext, this);
 }
 
 /**

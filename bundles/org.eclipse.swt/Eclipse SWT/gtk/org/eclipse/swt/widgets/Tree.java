@@ -286,8 +286,8 @@ GdkColor defaultForeground () {
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (OS.gtk_tree_view_get_selection (handle));
-	if (checkRenderer != 0) WidgetTable.remove (checkRenderer);
+	display.removeWidget (OS.gtk_tree_view_get_selection (handle));
+	if (checkRenderer != 0) display.removeWidget (checkRenderer);
 }
 
 /**
@@ -725,8 +725,8 @@ int paintWindow () {
 
 void register () {
 	super.register ();
-	WidgetTable.put (OS.gtk_tree_view_get_selection (handle), this);
-	if (checkRenderer != 0) WidgetTable.put (checkRenderer, this);
+	display.addWidget (OS.gtk_tree_view_get_selection (handle), this);
+	if (checkRenderer != 0) display.addWidget (checkRenderer, this);
 }
 
 boolean releaseItem (TreeItem item, int [] index) {

@@ -185,7 +185,7 @@ void createWidget (int index) {
 
 void deregister() {
 	super.deregister ();
-	WidgetTable.remove (handle);
+	display.removeWidget (handle);
 }
 
 /**
@@ -315,7 +315,7 @@ public void pack () {
 
 void register () {
 	super.register ();
-	WidgetTable.put (handle, this);
+	display.addWidget (handle, this);
 }
 
 void releaseChild () {

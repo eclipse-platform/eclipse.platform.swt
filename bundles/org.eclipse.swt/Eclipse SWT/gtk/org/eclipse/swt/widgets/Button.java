@@ -236,10 +236,10 @@ void createWidget (int index) {
 
 void deregister () {
 	super.deregister ();
-	if (boxHandle != 0) WidgetTable.remove (boxHandle);
-	if (labelHandle != 0) WidgetTable.remove (labelHandle);
-	if (imageHandle != 0) WidgetTable.remove (imageHandle);
-	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
+	if (boxHandle != 0) display.removeWidget (boxHandle);
+	if (labelHandle != 0) display.removeWidget (labelHandle);
+	if (imageHandle != 0) display.removeWidget (imageHandle);
+	if (arrowHandle != 0) display.removeWidget (arrowHandle);
 }
 
 int fontHandle () {
@@ -401,10 +401,10 @@ void hookEvents () {
 
 void register () {
 	super.register ();
-	if (boxHandle != 0) WidgetTable.put (boxHandle, this);
-	if (labelHandle != 0) WidgetTable.put (labelHandle, this);
-	if (imageHandle != 0) WidgetTable.put (imageHandle, this);
-	if (arrowHandle != 0) WidgetTable.put (arrowHandle, this);
+	if (boxHandle != 0) display.addWidget (boxHandle, this);
+	if (labelHandle != 0) display.addWidget (labelHandle, this);
+	if (imageHandle != 0) display.addWidget (imageHandle, this);
+	if (arrowHandle != 0) display.addWidget (arrowHandle, this);
 }
 
 void releaseHandle () {

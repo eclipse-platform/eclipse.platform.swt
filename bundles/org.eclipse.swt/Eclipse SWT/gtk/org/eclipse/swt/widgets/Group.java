@@ -179,8 +179,8 @@ void createHandle(int index) {
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (clientHandle);
-	WidgetTable.remove (labelHandle);
+	display.removeWidget (clientHandle);
+	display.removeWidget (labelHandle);
 }
 
 void enableWidget (boolean enabled) {
@@ -239,8 +239,8 @@ int parentingHandle() {
 
 void register () {
 	super.register ();
-	WidgetTable.put (clientHandle, this);
-	WidgetTable.put (labelHandle, this);
+	display.addWidget (clientHandle, this);
+	display.addWidget (labelHandle, this);
 }
 
 void releaseHandle () {

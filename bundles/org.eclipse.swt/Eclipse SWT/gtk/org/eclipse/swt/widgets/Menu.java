@@ -347,7 +347,7 @@ public MenuItem getItem (int index) {
 	int data = OS.g_list_nth_data (list, index);
 	OS.g_list_free (list);
 	if (data == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
-	return (MenuItem) WidgetTable.get (data);
+	return (MenuItem) display.getWidget (data);
 }
 
 /**
@@ -397,7 +397,7 @@ public MenuItem [] getItems () {
 	MenuItem [] items = new MenuItem [count];
 	for (int i=0; i<count; i++) {
 		int data = OS.g_list_nth_data (list, i);
-		items [i] = (MenuItem) WidgetTable.get (data);
+		items [i] = (MenuItem) display.getWidget (data);
 	}
 	OS.g_list_free (list);
 	return items;

@@ -102,6 +102,17 @@ public class Display extends Device {
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT";
 
+	/* Widget Table */
+	int freeSlot;
+	int [] indexTable;
+	Widget [] widgetTable;
+	final static int GROW_SIZE = 1024;
+	static final int SWT_OBJECT_INDEX;
+	static {
+		byte [] buffer = Converter.wcsToMbcs (null, "SWT_OBJECT_INDEX", true);
+		SWT_OBJECT_INDEX = OS.g_quark_from_string (buffer);
+	}
+		
 	/* Input method resources */
 	Control imControl;
 	int preeditWindow, preeditLabel;
@@ -368,6 +379,29 @@ void addPopup (Menu menu) {
 	popups [index] = menu;
 }
 
+void addWidget (int handle, Widget widget) {
+	if (handle == 0) return;
+	if (freeSlot == -1) {
+		int length = (freeSlot = indexTable.length) + GROW_SIZE;
+		int[] newIndexTable = new int[length];
+		Widget[] newWidgetTable = new Widget [length];
+		System.arraycopy (indexTable, 0, newIndexTable, 0, freeSlot);
+		System.arraycopy (widgetTable, 0, newWidgetTable, 0, freeSlot);
+		for (int i = freeSlot; i < length - 1; i++) {
+			newIndexTable[i] = i + 1;
+		}
+		newIndexTable[length - 1] = -1;
+		indexTable = newIndexTable;
+		widgetTable = newWidgetTable;
+	}
+	int index = freeSlot + 1;
+	OS.g_object_set_qdata (handle, SWT_OBJECT_INDEX, index);
+	int oldSlot = freeSlot;
+	freeSlot = indexTable[oldSlot];
+	indexTable [oldSlot] = -2;
+	widgetTable [oldSlot] = widget;
+}
+
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread at the next 
@@ -604,7 +638,7 @@ int eventProc (int event, int data) {
 				OS.gdk_window_get_user_data (window, user_data);
 				int handle = user_data [0];
 				if (handle != 0) {
-					Widget widget = WidgetTable.get (handle);
+					Widget widget = getWidget (handle);
 					if (widget != null && widget instanceof Control) {
 						control = (Control) widget;
 						if (control.isEnabled ()) break;
@@ -653,7 +687,7 @@ int eventProc (int event, int data) {
  */
 public Widget findWidget (int handle) {
 	checkDevice ();
-	return WidgetTable.get (handle);
+	return getWidget (handle);
 }
  
 /**
@@ -730,7 +764,7 @@ public Control getCursorControl () {
 	int handle = user_data [0];
 	if (handle == 0) return null;
 	do {
-		Widget widget = WidgetTable.get (handle);
+		Widget widget = getWidget (handle);
 		if (widget != null && widget instanceof Control) {
 			Control control = (Control) widget;
 			if (control.getEnabled ()) return control;
@@ -927,7 +961,7 @@ public Control getFocusControl () {
 	int handle = OS.gtk_window_get_focus (shellHandle);
 	if (handle == 0) return null;
 	do {
-		Widget widget = WidgetTable.get (handle);
+		Widget widget = getWidget (handle);
 		if (widget != null && widget instanceof Control) {
 			Control window = (Control) widget;
 			if (window.getEnabled ()) return window;
@@ -1043,23 +1077,28 @@ public Monitor getPrimaryMonitor () {
  */
 public Shell [] getShells () {
 	checkDevice ();
-	int count = 0;
-	Shell [] shells = WidgetTable.shells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed () && (this == shell.display)) {
-			count++;
-		}
+	int length = 0;
+	for (int i=0; i<widgetTable.length; i++) {
+		Widget widget = widgetTable [i];
+		if (widget != null && widget instanceof Shell) length++;
 	}
 	int index = 0;
-	Shell [] result = new Shell [count];
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed () && (this == shell.display)) {
-			result [index++] = shell;
+	Shell [] result = new Shell [length];
+	for (int i=0; i<widgetTable.length; i++) {
+		Widget widget = widgetTable [i];
+		if (widget != null && widget instanceof Shell) {
+			int j = 0;
+			while (j < index) {
+				if (result [j] == widget) break;
+				j++;
+			}
+			if (j == index)	result [index++] = (Shell) widget;
 		}
 	}
-	return result;
+	if (index == length) return result;
+	Shell [] newResult = new Shell [index];
+	System.arraycopy (result, 0, newResult, 0, index);
+	return newResult;
 }
 
 /**
@@ -1334,6 +1373,13 @@ public Thread getThread () {
 	return thread;
 }
 
+Widget getWidget (int handle) {
+	if (handle == 0) return null;
+	int index = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
+	if (0 <= index && index < widgetTable.length) return widgetTable [index];
+	return null;	
+}
+
 /**
  * Initializes any internal resources needed by the
  * device.
@@ -1347,6 +1393,7 @@ protected void init () {
 	super.init ();
 	initializeCallbacks ();
 	initializeSystemResources ();
+	initializeWidgetTable ();
 }
 
 void initializeCallbacks () {
@@ -1385,6 +1432,13 @@ void initializeCallbacks () {
 	treeSelectionCallback = new Callback(this, "treeSelectionProc", 4);
 	treeSelectionProc = treeSelectionCallback.getAddress();
 	if (treeSelectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+}
+
+void initializeWidgetTable () {
+	indexTable = new int [GROW_SIZE];
+	widgetTable = new Widget [GROW_SIZE];
+	for (int i=0; i<GROW_SIZE-1; i++) indexTable [i] = i + 1;
+	indexTable [GROW_SIZE - 1] = -1;
 }
 
 /**	 
@@ -1510,7 +1564,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 }
 
 int mouseHoverProc (int handle) {
-	Widget widget = WidgetTable.get (handle);
+	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.hoverProc (handle);
 }
@@ -1611,12 +1665,10 @@ synchronized void register () {
  */
 protected void release () {
 	sendEvent (SWT.Dispose, new Event ());
-	Shell [] shells = WidgetTable.shells ();
+	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed ()) {
-			if (this == shell.display) shell.dispose ();
-		}
+		if (!shell.isDisposed ())  shell.dispose ();
 	}
 	while (readAndDispatch ()) {};
 	if (disposeList != null) {
@@ -1738,6 +1790,20 @@ void removePopup (Menu menu) {
 			return;
 		}
 	}
+}
+
+Widget removeWidget (int handle) {
+	if (handle == 0) return null;
+	Widget widget = null;
+	int index = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
+	if (0 <= index && index < widgetTable.length) {
+		widget = widgetTable [index];
+		widgetTable [index] = null;
+		indexTable [index] = freeSlot;
+		freeSlot = index;
+		OS.g_object_set_qdata (handle, SWT_OBJECT_INDEX, 0);
+	}
+	return widget;	
 }
 
 boolean runAsyncMessages () {
@@ -2123,7 +2189,7 @@ int caretProc (int clientData) {
 }
 
 int treeSelectionProc (int model, int path, int iter, int data) {
-	Widget widget = WidgetTable.get (data);
+	Widget widget = getWidget (data);
 	if (widget == null) return 0;
 	return widget.treeSelectionProc (model, path, iter, treeSelection, treeSelectionLength++);
 }
@@ -2222,31 +2288,31 @@ public void wake () {
 }
 
 int windowProc (int handle, int user_data) {
-	Widget widget = WidgetTable.get (handle);
+	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, user_data);
 }
 
 int windowProc (int handle, int arg0, int user_data) {
-	Widget widget = WidgetTable.get (handle);
+	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, arg0, user_data);
 }
 
 int windowProc (int handle, int arg0, int arg1, int user_data) {
-	Widget widget = WidgetTable.get (handle);
+	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, arg0, arg1, user_data);
 }
 
 int windowProc (int handle, int arg0, int arg1, int arg2, int user_data) {
-	Widget widget = WidgetTable.get (handle);
+	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.windowProc (handle, arg0, arg1, arg2, user_data);
 }
 
 int windowTimerProc (int handle) {
-	Widget widget = WidgetTable.get (handle);
+	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.timerProc (handle);
 }

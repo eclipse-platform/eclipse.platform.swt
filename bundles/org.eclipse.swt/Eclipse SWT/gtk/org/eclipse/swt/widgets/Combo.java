@@ -407,11 +407,11 @@ GdkColor defaultForeground () {
 
 void deregister () {
 	super.deregister ();
-	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
-	WidgetTable.remove (entryHandle);
-	WidgetTable.remove (listHandle);
+	if (arrowHandle != 0) display.removeWidget (arrowHandle);
+	display.removeWidget (entryHandle);
+	display.removeWidget (listHandle);
 	int imContext = imContext ();
-	if (imContext != 0) WidgetTable.remove (imContext);
+	if (imContext != 0) display.removeWidget (imContext);
 }
 
 int fontHandle () {
@@ -872,11 +872,11 @@ int parentingHandle() {
 
 void register () {
 	super.register ();
-	if (arrowHandle != 0) WidgetTable.put (arrowHandle, this);
-	WidgetTable.put (entryHandle, this);
-	WidgetTable.put (listHandle, this);
+	if (arrowHandle != 0) display.addWidget (arrowHandle, this);
+	display.addWidget (entryHandle, this);
+	display.addWidget (listHandle, this);
 	int imContext = imContext ();
-	if (imContext != 0) WidgetTable.put (imContext, this);
+	if (imContext != 0) display.addWidget (imContext, this);
 }
 
 void releaseHandle () {
