@@ -718,7 +718,7 @@ void itemChanged(TabItem item) {
  */
 void keyDown(Event event) {
 	int count = items.length;
-	if (count < 2) return;
+	if (count <= 1) return;
 	if (event.keyCode == SWT.ARROW_RIGHT) {
 		if (selectedIndex < items.length - 1) {
 			setSelection(selectedIndex + 1, true);
