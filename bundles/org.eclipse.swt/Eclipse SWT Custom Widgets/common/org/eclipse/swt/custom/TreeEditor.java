@@ -12,9 +12,9 @@ package org.eclipse.swt.custom;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
 
 /**
 *
@@ -52,7 +52,7 @@ import org.eclipse.swt.events.*;
 *			TreeItem item = (TreeItem)e.item;
 *			if (item == null) return;
 *	
-*			// The control that will be the editor must be a child of the Table
+*			// The control that will be the editor must be a child of the Tree
 *			Text newEditor = new Text(tree, SWT.NONE);
 *			newEditor.setText(item.getText());
 *			newEditor.addModifyListener(new ModifyListener() {
@@ -71,7 +71,10 @@ import org.eclipse.swt.events.*;
 public class TreeEditor extends ControlEditor {	
 	Tree tree;
 	TreeItem item;
+	int column = 0;
+	ControlListener columnListener;
 	TreeListener treeListener;
+	
 /**
 * Creates a TreeEditor for the specified Tree.
 *
@@ -82,6 +85,14 @@ public TreeEditor (Tree tree) {
 	super(tree);
 	this.tree = tree;
 
+	columnListener = new ControlListener() {
+		public void controlMoved(ControlEvent e){
+			resize();
+		}
+		public void controlResized(ControlEvent e){
+			resize();
+		}
+	};
 	treeListener = new TreeListener () {
 		final Runnable runnable = new Runnable() {
 			public void run() {
@@ -109,9 +120,13 @@ public TreeEditor (Tree tree) {
 	// To be consistent with older versions of SWT, grabVertical defaults to true
 	grabVertical = true;
 }
+
 Rectangle computeBounds () {
-	if (item == null || item.isDisposed()) return new Rectangle(0, 0, 0, 0);
-	Rectangle cell = item.getBounds();
+	if (item == null || column == -1 || item.isDisposed()) return new Rectangle(0, 0, 0, 0);
+	Rectangle cell = item.getBounds(column);
+	Rectangle rect = item.getImageBounds(column);
+	cell.x = rect.x + rect.width;
+	cell.width -= rect.width;
 	Rectangle area = tree.getClientArea();
 	if (cell.x < area.x + area.width) {
 		if (cell.x + cell.width > area.x + area.width) {
@@ -121,9 +136,11 @@ Rectangle computeBounds () {
 	Rectangle editorRect = new Rectangle(cell.x, cell.y, minimumWidth, minimumHeight);
 
 	if (grabHorizontal) {
-		// Bounds of tree item only include the text area - stretch out to include 
-		// entire client area
-		cell.width = area.x + area.width - cell.x;
+		if (tree.getColumnCount() == 0) {
+			// Bounds of tree item only include the text area - stretch out to include 
+			// entire client area
+			cell.width = area.x + area.width - cell.x;
+		}
 		editorRect.width = Math.max(cell.width, minimumWidth);
 	}
 	
@@ -150,18 +167,37 @@ Rectangle computeBounds () {
 	}
 	return editorRect;
 }
+
 /**
  * Removes all associations between the TreeEditor and the row in the tree.  The
  * tree and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
+	if (this.column > -1 && this.column < tree.getColumnCount()){
+		TreeColumn treeColumn = tree.getColumn(this.column);
+		treeColumn.removeControlListener(columnListener);
+	}
+	columnListener = null;
 	if (treeListener != null) 
 		tree.removeTreeListener(treeListener);
 	treeListener = null;
 	tree = null;
 	item = null;
+	column = 0;
 	super.dispose();
 }
+
+/**
+* Returns the zero based index of the column of the cell being tracked by this editor.
+*
+* @return the zero based index of the column of the cell being tracked by this editor
+*
+* @since 3.1
+*/
+public int getColumn () {
+	return column;
+}
+
 /**
 * Returns the TreeItem for the row of the cell being tracked by this editor.
 *
@@ -170,6 +206,37 @@ public void dispose () {
 public TreeItem getItem () {
 	return item;
 }
+
+/**
+* Sets the zero based index of the column of the cell being tracked by this editor.
+* 
+* @param column the zero based index of the column of the cell being tracked by this editor
+*
+* @since 3.1
+*/
+public void setColumn(int column) {
+	int columnCount = tree.getColumnCount();
+	// Separately handle the case where the tree has no TreeColumns.
+	// In this situation, there is a single default column.
+	if (columnCount == 0) {
+		this.column = (column == 0) ? 0 : -1;
+		resize();
+		return;
+	}
+	if (this.column > -1 && this.column < columnCount){
+		TreeColumn treeColumn = tree.getColumn(this.column);
+		treeColumn.removeControlListener(columnListener);
+		this.column = -1;
+	}
+
+	if (column < 0  || column >= tree.getColumnCount()) return;	
+		
+	this.column = column;
+	TreeColumn treeColumn = tree.getColumn(this.column);
+	treeColumn.addControlListener(columnListener);
+	resize();
+}
+
 public void setItem (TreeItem item) {
 	this.item = item;
 	resize();
@@ -183,14 +250,35 @@ public void setItem (TreeItem item) {
 * 
 * @param editor the Control that is displayed above the cell being edited
 * @param item the TreeItem for the row of the cell being tracked by this editor
+* @param column the zero based index of the column of the cell being tracked by this editor
+*
+* @since 3.1
+*/
+public void setEditor (Control editor, TreeItem item, int column) {
+	setItem(item);
+	setColumn(column);
+	setEditor(editor);
+}
+/**
+* Specify the Control that is to be displayed and the cell in the tree that it is to be positioned above.
+*
+* <p>Note: The Control provided as the editor <b>must</b> be created with its parent being the Tree control
+* specified in the TreeEditor constructor.
+* 
+* @param editor the Control that is displayed above the cell being edited
+* @param item the TreeItem for the row of the cell being tracked by this editor
 */
 public void setEditor (Control editor, TreeItem item) {
 	setItem(item);
 	setEditor(editor);
 }
+
 void resize () {
 	if (tree.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;	
+	int columnCount = tree.getColumnCount();
+	if (columnCount == 0 && column != 0) return;
+	if (columnCount > 0 && (column < 0 || column >= columnCount)) return;
 	super.resize();
 }
 }
