@@ -44,10 +44,21 @@ public class AccessibleEvent extends SWTEventObject {
 	 */
 	public String result;
 	
+/**
+ * Constructs a new instance of this class.
+ *
+ * @param source the object that fired the event
+ */
 public AccessibleEvent(Object source) {
 	super(source);
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
 public String toString () {
 	return "AccessibleEvent {childID=" + childID + " result=" + result + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 }	
