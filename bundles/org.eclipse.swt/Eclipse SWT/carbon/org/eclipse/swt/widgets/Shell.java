@@ -1300,7 +1300,7 @@ void setWindowVisible (boolean visible) {
 		int [] scope = new int [1];
 		if ((style & SWT.ON_TOP) != 0) {
 			OS.GetWindowActivationScope (shellHandle, scope);
-	    	OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
+			OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
 		}
 		int shellHandle = this.shellHandle;
 		OS.RetainWindow (shellHandle);
@@ -1315,7 +1315,7 @@ void setWindowVisible (boolean visible) {
 			}
 		}
 	} else {
-    	OS.HideWindow (shellHandle);
+		OS.HideWindow (shellHandle);
 		int topHandle = topHandle ();
 		OS.SetControlVisibility (topHandle, false, false);
 		invalidateVisibleRegion (topHandle);
