@@ -589,7 +589,8 @@ void createHandle (int index) {
 	* reparented by the Window Manager despite the fact that this
 	* has not really happened.
 	*/
-	if (style == SWT.NONE || (style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0) {
+	int orientations = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+	if ((style & ~orientations) == SWT.NONE || (style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0) {
 		reparented = true;
 	} 
 	
