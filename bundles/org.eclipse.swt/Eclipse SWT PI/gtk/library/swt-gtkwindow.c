@@ -361,3 +361,11 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1de
 {
     gtk_window_set_default((GtkWindow*)window, (GtkWidget*)widget);
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1get_1default
+  (JNIEnv *env, jclass that, jint window)
+{
+    return (jint)(((GtkWindow*)window)->default_widget);
+}
+
+
