@@ -8,6 +8,48 @@
 </head>
 <body>
 
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
+SWT Build 2.0 009 - Thursday October 25, 2001
+
+<h2>
+<a NAME="Behaviour change"></a>Behaviour change</h2>
+<p>
+1) The Drag Under effect of scrolling and expanding items as you drag over the <code>Tree</code> or <code>Table</code> has been added.  To enable this drag under effect, in the <code>DragOver</code> event set the <code>event.feedback</code> to have a bitwise combination of <code>DND.FEEDBACK_SCROLL, DND.FEEDBACK_EXPAND</code> and (<code>DND.FEEDBACK_SELECT, DND.FEEDBACK_INSERT_BEFORE, DND.FEEDBACK_INSERT_AFTER</code>) - where the last three items are mutually exclusive.
+<blockquote><code><pre>
+target.addDropListener (new DropTargetAdapter() {
+	public void dragOver(DropTargetEvent event){
+		event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
+	}
+}
+</pre></code></blockquote></p>
+<p>
+2) On some operating systems it is preferred to move files in a drag and drop operation rather than for the drop target to make a copy of the file and the drag source to delete the original file.  The operation of moving the file is preformed by the drop target.  For these cases, the new drop type <code>DND.DROP_TARGET_MOVE</code> has been added.  The Eclipse <code>DropTarget</code> does not support this behaviour but the Eclipse <code>DragSource</code> can recognize this scenario.  If another application has chosen to move the file rather than copy/delete, the <code>DragFinished</code> event on the <code>DragSource</code> will have an <code>event.detail</code> value of <code>DND.DROP_TARGET_MOVE</code>.
+<blockquote><code><pre>
+source.addDragListener (new DragSourceAdapter () {
+	public void dragFinished(DragSourceEvent event) {
+		if (event.detail == DND.DROP_TARGET_MOVE) {
+			// clean up presentation but do not delete underlying file
+		}
+	}
+}
+</pre></code></blockquote></p>
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>
+1767: Display ASCII for values greater than 127 fails (1GLE8I5)  
+<br>4725: FontData spec should disallow null name (1GL34H3)  
+<br>4844: Tab appears narrower than space (1GL2WTY)  
+<br>4852: German: Cannot start Eclipse in Linux 7.2 (1GKYY99)  
+<br>4865: TableTreeEditor.getItem returns an item after setting it to null (1GLE0IQ)
+<br>4932: StyledTextBidi has equals but no hashCode method  
+<br>4957: StyledText - implement StyledTextBidi.isLigated  
+<br>5132: StyledText - remove hardcoded margin  
+<br>5178: Change BidiUtil calls to handle true Unicode/Windows CE changes
+</blockquote>
 
 <h1>
 Eclipse Platform Build Notes<br>
