@@ -8,9 +8,9 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
+import org.eclipse.swt.internal.carbon.CFRange;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -65,11 +65,34 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = bounds.width;
 		height = bounds.height;
 	} else {
-		GC gc = new GC (this);
-		Point extent = gc.textExtent(text, SWT.DRAW_DELIMITER | SWT.DRAW_MNEMONIC);
-		gc.dispose ();
-		width = extent.x;
-		height = extent.y;
+		int [] ptr = new int [1];
+		OS.CopyControlTitleAsCFString(handle, ptr);
+		if (ptr [0] != 0) {
+			if (font == null) {
+				org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
+				short [] baseLine = new short [1];
+				OS.GetThemeTextDimensions(ptr [0], (short)OS.kThemePushButtonFont, OS.kThemeStateActive, false, ioBounds, baseLine);
+				width = ioBounds.h;
+				height = ioBounds.v;
+			} else {
+				// NEEDS WORK - alternatively we could use GetThemeTextDimensions with OS.kThemeCurrentPortFont
+				int length = OS.CFStringGetLength (ptr [0]);
+				char [] buffer = new char [length];
+				CFRange range = new CFRange ();
+				range.length = length;
+				OS.CFStringGetCharacters (ptr [0], range, buffer);
+				String string = new String (buffer);
+				GC gc = new GC (this);
+				Point extent = gc.stringExtent (string);
+				gc.dispose ();
+				width = extent.x;
+				height = extent.y;
+			}
+			OS.CFRelease (ptr [0]);
+		} else {
+			width = DEFAULT_WIDTH;
+			height = DEFAULT_HEIGHT;
+		}
 	}
 
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {

@@ -734,7 +734,7 @@ public static final native int GetSuperControl(int cHandle, int[] parentHandle);
 public static final native int GetThemeDrawingState(int[] state);
 public static final native int GetThemeFont(short themeFontId, short scriptCode, byte[] fontName, short[] fontSize, byte[] style);
 public static final native int GetThemeMetric(int inMetric, int [] outMetric);
-public static final native int GetThemeTextDimensions(int sHandle, short fontID, int state, boolean wrapToWidth, short[] ioBounds, short[] baseLine);
+public static final native int GetThemeTextDimensions(int sHandle, short fontID, int state, boolean wrapToWidth, Point ioBounds, short[] baseLine);
 public static final native int GetUserFocusEventTarget();
 public static final native int GetWRefCon(int wHandle);
 public static final native void GetWindowBounds(int wHandle, short windowRegion, Rect bounds);

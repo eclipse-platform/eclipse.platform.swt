@@ -3664,22 +3664,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeMetric
 
 #ifndef NO_GetThemeTextDimensions
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeTextDimensions
-	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jboolean arg3, jshortArray arg4, jshortArray arg5)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jboolean arg3, jobject arg4, jshortArray arg5)
 {
-	jshort *lparg4=NULL;
+	Point _arg4, *lparg4=NULL;
 	jshort *lparg5=NULL;
 	jint rc;
 
 	DEBUG_CALL("GetThemeTextDimensions\n")
 
-	if (arg4) lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL);
+	if (arg4) lparg4 = getPointFields(env, arg4, &_arg4);
 	if (arg5) lparg5 = (*env)->GetShortArrayElements(env, arg5, NULL);
 	rc = (jint)GetThemeTextDimensions((CFStringRef)arg0, (ThemeFontID)arg1, (ThemeDrawState)arg2, (Boolean)arg3, (Point *)lparg4, (SInt16 *)lparg5);
-	if (arg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
+	if (arg4) setPointFields(env, arg4, lparg4);
 	if (arg5) (*env)->ReleaseShortArrayElements(env, arg5, lparg5, 0);
 	return rc;
 }
-#endif /* NO_GetThemeTextDimensions */
+#endif
 
 #ifndef NO_GetUserFocusEventTarget
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetUserFocusEventTarget
