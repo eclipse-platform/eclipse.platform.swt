@@ -594,6 +594,7 @@ public Rectangle getBounds() {
  */
 public ImageData getImageData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (memGC != null) memGC.flushImage();
 	PhImage_t phImage = new PhImage_t();
 	OS.memmove(phImage, handle, PhImage_t.sizeof);
 	int depth = 0;
