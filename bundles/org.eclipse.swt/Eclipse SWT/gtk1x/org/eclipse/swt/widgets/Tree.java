@@ -37,7 +37,6 @@ public class Tree extends Composite {
 	TreeItem [] items;
 	boolean selected, doubleSelected;
 	int check, uncheck;
-	int check_width, check_height;
 	static int CELL_SPACING = 1;
 
 	/*
@@ -196,8 +195,8 @@ int createCheckPixmap(boolean checked) {
 		 */
 		GtkCList clist = new GtkCList ();
 		OS.memmove (clist, handle, GtkCList.sizeof);
-		check_height = clist.row_height-1;
-		check_width = check_height;
+		int check_height = clist.row_height-1;
+		int check_width = check_height;
 
 		GdkVisual visual = new GdkVisual();
 		OS.memmove(visual, OS.gdk_visual_get_system(), GdkVisual.sizeof);
@@ -628,8 +627,10 @@ int processMouseDown (int callData, int arg1, int int2) {
 				OS.memmove (ctree, handle, GtkCTree.sizeof);
 				int nX = ctree.hoffset + ctree.tree_indent * row_data.level - 2;
 				int nY = ctree.voffset + (ctree.row_height + 1) * row [0] + 2;
-				if (nX <= x && x <= nX + check_width) {
-					if (nY <= y && y <= nY + check_height) {
+				int [] unused = new int [1], check_width = new int [1], check_height = new int [1];
+ 				OS.gdk_window_get_geometry (check, unused, unused, check_width, check_height, unused);
+				if (nX <= x && x <= nX + check_width [0]) {
+					if (nY <= y && y <= nY + check_height [0]) {
 						byte [] spacing = new byte [1];
 						boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
 						int [] pixmap = new int [1], mask = new int [1];
