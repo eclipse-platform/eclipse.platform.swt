@@ -136,6 +136,8 @@ public class PaintView extends ViewPart {
 		toolbarManager.appendToGroup("group.options", new SelectFillTypeAction("fill.None"));
 		toolbarManager.appendToGroup("group.options", new SelectFillTypeAction("fill.Outline"));
 		toolbarManager.appendToGroup("group.options", new SelectFillTypeAction("fill.Solid"));
+		toolbarManager.add(new Separator());
+		toolbarManager.appendToGroup("group.options", new SelectFontAction("options.Font"));
 		actionBars.updateActionBars();
 
 		/*** Build GUI ***/
@@ -431,5 +433,26 @@ public class PaintView extends ViewPart {
 		public SelectFillTypeAction(String id) { super(id); }
 		public int getStyle() { return IAction.AS_CHECK_BOX; }
 		public void run() { setFillTypeByID(getId()); }
+	}
+	class SelectFontAction extends PaintAction {
+		public SelectFontAction(String id) { super(id); }
+		public int getStyle() { return IAction.AS_PUSH_BUTTON; }
+		public void run() {
+			FontDialog fontDialog = new FontDialog(paintSurface.getShell(), SWT.PRIMARY_MODAL);
+			FontData[] fontDatum = toolSettings.commonFont.getFontData();
+			if (fontDatum != null && fontDatum.length > 0) {
+				fontDialog.setFontData(fontDatum[0]);
+			}
+			fontDialog.setText(PaintPlugin.getResourceString("options.Font.dialog.title"));
+			FontData fontData = fontDialog.open();
+			if (fontData != null) {
+				try {
+					Font font = new Font(workbenchDisplay, fontData);
+					toolSettings.commonFont = font;
+					updateToolSettings();
+				} catch (SWTException e) {
+				}
+			}
+		}
 	}
 }
