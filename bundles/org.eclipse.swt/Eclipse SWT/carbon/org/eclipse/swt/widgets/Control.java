@@ -28,6 +28,7 @@ public abstract class Control extends Widget implements Drawable {
 	int drawCount;
 	Menu menu;
 	float [] foreground, background;
+	Cursor cursor;
 
 Control () {
 	/* Do nothing */
@@ -899,6 +900,24 @@ public void setCapture (boolean capture) {
 
 public void setCursor (Cursor cursor) {
 	checkWidget();
+	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	this.cursor = cursor;
+}
+
+void setCursor (int cursor) {
+	switch (cursor) {
+		case OS.kThemePointingHandCursor:
+		case OS.kThemeArrowCursor:
+		case OS.kThemeSpinningCursor:
+		case OS.kThemeCrossCursor:
+		case OS.kThemeWatchCursor:
+		case OS.kThemeIBeamCursor:
+		case OS.kThemeNotAllowedCursor:
+			OS.SetThemeCursor (cursor);
+			break;
+		default:
+			OS.SetCursor (cursor);
+	}
 }
 
 public void setEnabled (boolean enabled) {
