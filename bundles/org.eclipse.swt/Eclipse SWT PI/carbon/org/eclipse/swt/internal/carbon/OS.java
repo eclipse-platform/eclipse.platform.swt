@@ -407,6 +407,7 @@ public class OS {
 	public static final int kThemeBrushListViewBackground = 10; 
 	public static final int kThemeButtonOff = 0;
 	public static final int kThemeButtonOn = 1;
+	public static final int kThemeButtonMixed = 2;
 	public static final int kThemeCheckBox = 1;
 	public static final int kThemeCrossCursor = 5;
 	public static final int kThemeCurrentPortFont = 200;
