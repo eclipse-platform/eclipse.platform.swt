@@ -126,37 +126,55 @@ public void test_createWidgets() {
 }
 
 public void test_layout() {
-	PerformanceMeter meter = createMeter("layout 1155 widgets");
+	PerformanceMeter meter = createMeter("layout 50 composites 20 times");
 	int samples;
-	
+
 	for(samples = 0; samples < 10; samples++) {
 		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
-		for (int i = 0; i < 5; i++) {
-			Composite c = new Composite(shell, SWT.NONE);
-			c.setLayout(new RowLayout());
-			for (int j = 0; j < 5; j++) {
-				Composite c2 = new Composite(c, SWT.NONE);
-				c2.setLayout(new GridLayout(5, false));
-				for (int k = 0; k < 5; k++) {
-					Composite c3 = new Composite(c2, SWT.NONE);
-					c3.setLayout(new GridLayout(4, true));
-					Button b = new Button(c3, SWT.PUSH);
-					Label label = new Label(c3, SWT.NONE);
-					b = new Button(c3, SWT.PUSH);
-					label = new Label(c3, SWT.NONE);
-					b = new Button(c3, SWT.PUSH);
-					label = new Label(c3, SWT.NONE);
-					b = new Button(c3, SWT.PUSH);
-					label = new Label(c3, SWT.NONE);
-				}
-			}
+		shell.setLayout(new GridLayout());
+		String curText = "";
+		Label changedLabel;
+		Composite parent = shell;
+		GridData data;
+		
+		for(int i = 0; i < 10; i++) {
+			Composite c = new Composite(parent, SWT.BORDER);
+			data = new GridData(SWT.FILL, SWT.FILL, false, false);
+			c.setLayoutData(data);
+			c.setLayout(new GridLayout(2, false));
+			
+			Composite c1 = new Composite(c, SWT.BORDER);
+			data = new GridData(SWT.FILL, SWT.FILL, false, false);
+			data.widthHint = data.heightHint = 2;
+			c1.setLayoutData(data);
+			
+			Composite c2 = new Composite(c, SWT.BORDER);
+			data = new GridData(SWT.FILL, SWT.FILL, false, false);
+			data.widthHint = data.heightHint = 2;
+			c2.setLayoutData(data);
+			
+			Composite c3 = new Composite(c, SWT.BORDER);
+			data = new GridData(SWT.FILL, SWT.FILL, false, false);
+			data.widthHint = data.heightHint = 2;
+			c3.setLayoutData(data);
+			
+			Composite c4 = new Composite(c, SWT.BORDER);
+			data = new GridData(SWT.FILL, SWT.FILL, false, false);
+			c4.setLayoutData(data);
+			c4.setLayout(new GridLayout());
+			parent = c4;
 		}
+		changedLabel = new Label(parent, SWT.NONE);
+		changedLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
 		shell.open();
 		while(display.readAndDispatch());
 		meter.start();
-		for(int numlayouts = 0; numlayouts < 100; numlayouts++) {
-			shell.layout(true, true);
+		for(int numlayouts = 0; numlayouts < 20; numlayouts++) {
+			shell.layout(true);
+			curText = "!!!" + curText + "!!!\n!";
+			changedLabel.setText(curText);
+			//while(display.readAndDispatch());
 		}
 		meter.stop();
 		shell.dispose();
