@@ -1315,7 +1315,7 @@ void initializeImages () {
 int inputProc (int data, int rcvid, int message, int size) {
 	if (embedded) {
 		runDeferredEvents ();
-		runAsyncMessages ();
+		if (runAsyncMessages ()) wakeThread ();
 	}
 	return OS.Pt_CONTINUE;
 }
@@ -1521,7 +1521,7 @@ void postEvent (Event event) {
 		eventQueue = newQueue;
 	}
 	eventQueue [index] = event;
-	if (embedded) wake ();
+	if (embedded) wakeThread ();
 }
 
 /**
@@ -2110,7 +2110,11 @@ public void update() {
  */
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	if (!embedded && thread == Thread.currentThread ()) return;
+	if (thread == Thread.currentThread ()) return;
+	wakeThread ();
+}
+
+void wakeThread () {
 //	int flags = OS.PtEnter (0);	
 	OS.PtAppPulseTrigger (app_context, pulse);
 //	if (flags >= 0) OS.PtLeave (flags);
