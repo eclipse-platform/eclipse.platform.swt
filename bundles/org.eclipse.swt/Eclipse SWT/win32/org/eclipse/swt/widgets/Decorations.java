@@ -399,6 +399,7 @@ void fixDecorations (Decorations newDecorations, Control control, Menu [] menus)
 		}
 		menu.fixMenus (newDecorations);
 		destroyAccelerators ();
+		newDecorations.destroyAccelerators ();
 	}
 }
 
