@@ -179,22 +179,6 @@ void createScrollBars () {
 	}
 }
 
-public boolean forceFocus () {
-	checkWidget();
-	if ((state & CANVAS) == 0) return super.forceFocus ();
-	/*
-	* Bug in Photon. PtContainerGiveFocus() is supposed to give
-	* focus to the widget even if the widget's Pt_GET_FOCUS flag
-	* is not set. This does not happen when the widget is a
-	* PtContainer. The fix is to set the flag before calling it.
-	*/
-	int flags = OS.PtWidgetFlags (handle);
-	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS);
-	boolean result = super.forceFocus ();
-	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, flags, OS.Pt_GETS_FOCUS);
-	return result;
-}
-
 void createScrolledHandle (int parentHandle) {
 	int etches = OS.Pt_ALL_ETCHES | OS.Pt_ALL_OUTLINES;
 	int [] args = new int [] {
@@ -226,6 +210,22 @@ void createScrolledHandle (int parentHandle) {
 	handle = OS.PtCreateWidget (clazz, scrolledHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	createScrollBars ();
+}
+
+public boolean forceFocus () {
+	checkWidget();
+	if ((state & CANVAS) == 0) return super.forceFocus ();
+	/*
+	* Bug in Photon. PtContainerGiveFocus() is supposed to give
+	* focus to the widget even if the widget's Pt_GET_FOCUS flag
+	* is not set. This does not happen when the widget is a
+	* PtContainer. The fix is to set the flag before calling it.
+	*/
+	int flags = OS.PtWidgetFlags (handle);
+	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS);
+	boolean result = super.forceFocus ();
+	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, flags, OS.Pt_GETS_FOCUS);
+	return result;
 }
 
 public Rectangle getClientArea () {
