@@ -125,7 +125,6 @@ public Cursor(Device device, int style) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
 /**	 
