@@ -48,9 +48,9 @@ public class DNDExample {
 	private static final int CANVAS = 3;
 	private static final int LABEL = 4;
 	private static final int LIST = 5;
-	private static final int TEXT = 6;
-	private static final int TABLE = 7;
-	private static final int TREE = 8;
+	private static final int TABLE = 6;
+	private static final int TREE = 7;
+	private static final int TEXT = 8;
 	
 public static void main(String[] args) {
 	DNDExample example = new DNDExample();
@@ -206,10 +206,10 @@ private void open() {
 private void createDragWidget(Composite parent) {
 	parent.setLayout(new FormLayout());
 	Combo combo = new Combo(parent, SWT.READ_ONLY);
-	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Text", "Table", "Tree"});
+	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree"});
 	combo.select(LABEL);
 	dragControlType = combo.getSelectionIndex();
-	dragControl = createWidget(dragControlType, parent);
+	dragControl = createWidget(dragControlType, parent, "Drag Source");
 	
 	combo.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
@@ -218,7 +218,7 @@ private void createDragWidget(Composite parent) {
 			dragControl.dispose();
 			Combo c = (Combo)e.widget; 
 			dragControlType = c.getSelectionIndex();
-			dragControl = createWidget(dragControlType, parent);
+			dragControl = createWidget(dragControlType, parent, "Drag Source");
 			dragControl.setLayoutData(data);
 			if (dragEnabled) createDragSource();
 			parent.layout();
@@ -263,10 +263,10 @@ private void createDragWidget(Composite parent) {
 private void createDropWidget(Composite parent) {
 	parent.setLayout(new FormLayout());
 	Combo combo = new Combo(parent, SWT.READ_ONLY);
-	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Text", "Table", "Tree"});
+	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree", "Text"});
 	combo.select(LABEL);
 	dropControlType = combo.getSelectionIndex();
-	dropControl = createWidget(dropControlType, parent);
+	dropControl = createWidget(dropControlType, parent, "Drop Target");
 	combo.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			Object data = dropControl.getLayoutData();
@@ -274,7 +274,7 @@ private void createDropWidget(Composite parent) {
 			dropControl.dispose();
 			Combo c = (Combo)e.widget;
 			dropControlType = c.getSelectionIndex(); 
-			dropControl = createWidget(dropControlType, parent);
+			dropControl = createWidget(dropControlType, parent, "Drop Target");
 			dropControl.setLayoutData(data);
 			if (dropEnabled) createDropTarget();
 			parent.layout();
@@ -671,21 +671,21 @@ private void removeDragTransfer(Transfer transfer){
 	}
 }
 
-private Control createWidget(int type, Composite parent){
+private Control createWidget(int type, Composite parent, String prefix){
 	switch (type) {
 		case BUTTON_CHECK: {
 			Button button = new Button(parent, SWT.CHECK);
-			button.setText("Check box");
+			button.setText(prefix+" Check box");
 			return button;
 		}
 		case BUTTON_TOGGLE: {
 			Button button = new Button(parent, SWT.TOGGLE);
-			button.setText("Toggle button");
+			button.setText(prefix+" Toggle button");
 			return button;
 		}
 		case BUTTON_RADIO: {
 			Button button = new Button(parent, SWT.RADIO);
-			button.setText("Radio button");
+			button.setText(prefix+" Radio button");
 			return button;
 		}
 		case TABLE: {
@@ -694,8 +694,8 @@ private Control createWidget(int type, Composite parent){
 			TableColumn column2 = new TableColumn(table, SWT.NONE);
 			for (int i = 0; i < 10; i++) {
 				TableItem item = new TableItem(table, SWT.NONE);
-				item.setText(0, "name " + i);
-				item.setText(1, "value " + i);
+				item.setText(0, prefix+" name " + i);
+				item.setText(1, prefix+" value " + i);
 			}
 			column1.pack();
 			column2.pack();
@@ -703,19 +703,20 @@ private Control createWidget(int type, Composite parent){
 		}
 		case TEXT: {
 			Text text = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+			text.setText(prefix+" Text");
 			return text;
 		}
 		case TREE: {
 			Tree tree = new Tree(parent, SWT.BORDER);
 			for (int i = 0; i < 3; i++) {
 				TreeItem item = new TreeItem(tree, SWT.NONE);
-				item.setText("item " + i);
+				item.setText(prefix+" item " + i);
 				for (int j = 0; j < 3; j++) {
 					TreeItem subItem = new TreeItem(item, SWT.NONE);
-					subItem.setText("item " + j);
+					subItem.setText(prefix+" item " + j);
 					for (int k = 0; k < 3; k++) {
 						TreeItem subsubItem = new TreeItem(subItem, SWT.NONE);
-						subsubItem.setText("item " + k);
+						subsubItem.setText(prefix+" item " + k);
 					}
 				}
 			}
@@ -723,7 +724,7 @@ private Control createWidget(int type, Composite parent){
 		}
 		case CANVAS: {
 			Canvas canvas = new Canvas(parent, SWT.BORDER);
-			canvas.setData("STRINGS", new String[] {"Canvas widget"});
+			canvas.setData("STRINGS", new String[] {prefix+" Canvas widget"});
 			canvas.addPaintListener(new PaintListener() {
 				public void paintControl(PaintEvent e) {
 					Canvas c = (Canvas)e.widget;
@@ -748,12 +749,12 @@ private Control createWidget(int type, Composite parent){
 		}
 		case LABEL: {
 			Label label = new Label(parent, SWT.BORDER);
-			label.setText("Label");
+			label.setText(prefix+" Label");
 			return label;
 		}
 		case LIST: {
 			List list = new List(parent, SWT.BORDER);
-			list.setItems(new String[] {"Item a", "Item b", "Item c", "Item d"});
+			list.setItems(new String[] {prefix+" Item a", prefix+" Item b",  prefix+" Item c",  prefix+" Item d"});
 			return list;
 		}
 		default:
