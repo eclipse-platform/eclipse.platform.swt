@@ -43,6 +43,7 @@ import org.eclipse.swt.events.*;
 
 public class Table extends Composite {
 	TableItem [] items;
+	int lastIndexOf;
 	TableColumn [] columns;
 	ImageList imageList;
 	boolean ignoreSelect, dragStarted, ignoreResize, mouseDown, customDraw;
@@ -335,7 +336,9 @@ void createItem (TableItem item, int index) {
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	if (count == items.length) {
-		TableItem [] newItems = new TableItem [items.length + 4];
+		/* Grow the array faster when redraw is off */
+		int newLength = drawCount == 0 ? items.length + 4 : items.length * 3 / 2;
+		TableItem [] newItems = new TableItem [newLength];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
@@ -1054,8 +1057,14 @@ public int indexOf (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<count; i++) {
-		if (items [i] == item) return i;
+	if (lastIndexOf < count / 2) {
+		for (int i=0; i<count; i++) {
+			if (items [i] == item) return lastIndexOf = i;
+		}
+	} else {
+		for (int i=count - 1; i>=0; --i) {
+			if (items [i] == item) return lastIndexOf = i;
+		}
 	}
 	return -1;
 }
@@ -1751,6 +1760,14 @@ public void setRedraw (boolean redraw) {
 	checkWidget ();
 	if (redraw) {
 		if (--drawCount == 0) {
+			/* Resize the item array to match the item count */
+			int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+			if (items.length > 4 && items.length - count > 3) {
+				TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
+				System.arraycopy (items, 0, newItems, 0, count);
+				items = newItems;
+			}
+			
 			setScrollWidth ();
 			/*
 			* This code is intentionally commented.  When many items
