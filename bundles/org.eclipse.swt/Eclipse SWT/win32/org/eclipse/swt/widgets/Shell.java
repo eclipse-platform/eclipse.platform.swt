@@ -357,11 +357,21 @@ void createHandle () {
 	
 	if (!embedded) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		bits &= ~OS.WS_OVERLAPPED;
-		bits |= OS.WS_POPUP;
-		if ((style & (SWT.TITLE | SWT.CLOSE)) == 0) bits &= ~OS.WS_CAPTION;
-		if ((style & SWT.NO_TRIM) == 0) {
-			if ((style & (SWT.BORDER | SWT.RESIZE)) == 0) bits |= OS.WS_BORDER;
+		/*
+		* Note on WinCE Pocket PC. Remove the WS_CAPTION style to avoid 
+		* getting an additional title bar. Title is already displayed
+		* in the top navigation bar when using a virtual machine built
+		* for Pocket PC WinCE 3.0.
+		*/
+		if (OS.IsWinCE) {
+			bits &= ~OS.WS_CAPTION;
+		} else {
+			bits &= ~OS.WS_OVERLAPPED;
+			bits |= OS.WS_POPUP;
+			if ((style & (SWT.TITLE | SWT.CLOSE)) == 0) bits &= ~OS.WS_CAPTION;
+			if ((style & SWT.NO_TRIM) == 0) {
+				if ((style & (SWT.BORDER | SWT.RESIZE)) == 0) bits |= OS.WS_BORDER;
+			}
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	}
