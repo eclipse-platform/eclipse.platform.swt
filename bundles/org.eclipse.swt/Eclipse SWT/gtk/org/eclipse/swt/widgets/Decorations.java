@@ -342,6 +342,11 @@ public String getText () {
 	return text;
 }
 
+public boolean isReparentable () {
+	checkWidget ();
+	return false;
+}
+
 boolean isTabGroup () {
 	return true;
 }

@@ -2489,6 +2489,7 @@ public boolean setParent (Composite parent) {
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
+	if (!isReparentable ()) return false;
 	releaseChild ();
 	Shell newShell = parent.getShell (), oldShell = getShell ();
 	Decorations newDecorations = parent.menuShell (), oldDecorations = menuShell ();
