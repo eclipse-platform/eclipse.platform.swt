@@ -186,16 +186,24 @@ static String getTypeSignature3(Class clazz) {
 	return clazz.getName();
 }
 
+static Hashtable uniqueCache = new Hashtable();
 static boolean isNativeUnique(Method method) {
+	Object unique = uniqueCache.get(method);
+	if (unique != null) return ((Boolean)unique).booleanValue();
+	boolean result = true;
 	Class clazz = method.getDeclaringClass();
 	Method[] methods = clazz.getDeclaredMethods();
 	for (int i = 0; i < methods.length; i++) {
 		Method mth = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) ==  0) continue;
 		if (method == mth || method.equals(mth)) continue;
-		if (method.getName().equals(mth.getName())) return false;
+		if (method.getName().equals(mth.getName())) {
+			result = false;
+			break;
+		}
 	}
-	return true;
+	uniqueCache.put(method, new Boolean(result));
+	return result;
 }
 
 static void sort(Method[] methods) {
