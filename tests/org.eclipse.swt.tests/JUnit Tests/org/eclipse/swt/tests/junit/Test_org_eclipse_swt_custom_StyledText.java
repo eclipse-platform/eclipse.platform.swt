@@ -14,6 +14,7 @@ import org.eclipse.swt.custom.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.printing.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -660,7 +661,7 @@ public void test_cut() {
 }
 
 public void test_getBidiColoring() {
-	/// deprecated, will be removed.
+	/// getBidiColoring is deprecated and will be removed.
 	warnUnimpl("Test test_getBidiColoring not written");
 }
 
@@ -1053,22 +1054,48 @@ public void test_getSelection(){
 
 public void test_getSelectionRange() {
 	String testText = "Line1\r\nLine2";
-// test with incorrect values as soon as we have a story for handling out of range values
-//	int selectionRanges [][] = {{0, 1}, {0, 0}, {-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {2, 5}, {5, 2}};
-	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 5}};
+	int invalidRanges [][] = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {12, 1}, {11, 2}};
+	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 3}, {12, 0}};
 	int textLength;
+	boolean exceptionThrown;
 	
-	assertTrue(":a:", text.getSelectionRange().x == 0 && text.getSelectionRange().y == 0);
-	text.setText(testText);
+	for (int i = 0; i < invalidRanges.length; i++) {
+		int start = invalidRanges[i][0];
+		int length = invalidRanges[i][1];
+	
+		exceptionThrown = false;
+		try {
+			text.setSelectionRange(start, length);
+		}
+		catch (IllegalArgumentException e) {
+			exceptionThrown = true;
+		}
+		assertTrue(":a:", exceptionThrown);
+	}	
+	
+	text.setSelectionRange(0, 0);
 	assertTrue(":b:", text.getSelectionRange().x == 0 && text.getSelectionRange().y == 0);
-
-
+	text.setText(testText);
 	textLength = text.getCharCount();
 	for (int i = 0; i < selectionRanges.length; i++) {
 		int start = selectionRanges[i][0];
-		int end = selectionRanges[i][1];
-		text.setSelectionRange(start, end - start);
-		assertTrue(":c:" + i, text.getSelectionRange().x == start && text.getSelectionRange().y == end - start);
+		int length = selectionRanges[i][1];
+		text.setSelectionRange(start, length);
+		assertTrue(":c:" + i, text.getSelectionRange().x == start && text.getSelectionRange().y == length);
+	}
+
+	for (int i = 0; i < invalidRanges.length; i++) {
+		int start = invalidRanges[i][0];
+		int length = invalidRanges[i][1];
+	
+		exceptionThrown = false;
+		try {
+			text.setSelectionRange(start, length);
+		}
+		catch (IllegalArgumentException e) {
+			exceptionThrown = true;
+		}
+		assertTrue(":a:", exceptionThrown);
 	}
 }
 
@@ -1089,22 +1116,18 @@ public void test_getSelectionCount(){
 
 public void test_getSelectionText() {
 	String testText = "Line1\r\nLine2";
-// test with incorrect values as soon as we have a story for handling out of range values
-//	int selectionRanges [][] = {{0, 1}, {0, 0}, {-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {2, 5}, {5, 2}};
-	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 5}};
+	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 3}, {12, 0}};
 	int textLength;
 	
-	assertTrue(":a:", text.getSelectionText().length() == 0);
+	text.setSelectionRange(0, 0);
+	assertEquals(":b:", "", text.getSelectionText());
 	text.setText(testText);
-	assertTrue(":b:", text.getSelectionText().length() == 0);
-
-
 	textLength = text.getCharCount();
 	for (int i = 0; i < selectionRanges.length; i++) {
 		int start = selectionRanges[i][0];
-		int end = selectionRanges[i][1];
-		text.setSelectionRange(start, end - start);
-		assertTrue(":c:" + i, text.getSelectionText().equals(testText.substring(start, end)));
+		int length = selectionRanges[i][1];
+		text.setSelectionRange(start, length);
+		assertEquals(":c:" + i, testText.substring(start, start + length), text.getSelectionText());
 	}
 }
 
@@ -1599,11 +1622,35 @@ public void test_paste(){
 }
 
 public void test_print() {
-	warnUnimpl("Test test_print not written");
+	Printer printer = new Printer();
+	
+	text.print();
+	printer.cancelJob();
+	text.setText("Line1");
+	text.print();
+	printer.cancelJob();
+	printer.dispose();
 }
 
 public void test_printLorg_eclipse_swt_printing_Printer() {
-	warnUnimpl("Test test_printLorg_eclipse_swt_printing_Printer not written");
+	Printer printer = new Printer();
+	boolean exceptionThrown = false;
+	
+	try {
+		text.print(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}	
+	assertTrue(exceptionThrown);
+	
+	text.print(printer);
+	printer.cancelJob();
+	text.setText("Line1");
+	text.print(printer);
+	printer.cancelJob();
+	
+	printer.dispose();
 }
 
 public void test_redraw() {
@@ -1762,7 +1809,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue(":g:", exceptionThrown == true);
+	assertTrue(":g:", exceptionThrown);
 	exceptionThrown = false;
 	try {
 		text.replaceTextRange(text.getCharCount() + 1, 0, newText);
@@ -1770,7 +1817,17 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue(":h:", exceptionThrown == true);
+
+	exceptionThrown = false;
+	try {
+		text.replaceTextRange(0, 0, null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}	
+	assertTrue(exceptionThrown);
+
+	assertTrue(":h:", exceptionThrown);
 	assertTrue(":i:", text.getSelectionRange().x == selectionStart && text.getSelectionRange().y == selectionLength);
 	exceptionThrown = false;
 		
@@ -1832,7 +1889,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue(":v:", exceptionThrown == true);
+	assertTrue(":v:", exceptionThrown);
 	exceptionThrown = false;
 	try {
 		text.replaceTextRange(text.getCharCount() + 1, replaceLength, newText);
@@ -1840,20 +1897,52 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue(":w:", exceptionThrown == true);
+	assertTrue(":w:", exceptionThrown);
 	assertTrue(":x:", text.getSelectionRange().x == selectionStart && text.getSelectionRange().y == selectionLength);
-	exceptionThrown = false;
 }
 
 public void test_selectAll() {
-	warnUnimpl("Test test_selectAll not written");
+	String line = "Line1\rLine2";
+	
+	text.selectAll();
+	assertEquals("", text.getSelectionText());
+	
+	text.setText(line);
+	text.selectAll();
+	assertEquals(line, text.getSelectionText());
+	
+	text.setText("");
+	text.selectAll();
+	assertEquals("", text.getSelectionText());
 }
 
 public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
-	warnUnimpl("Test test_setCaretLorg_eclipse_swt_widgets_Caret not written");
+	Caret caret = new Caret(text, SWT.NONE);
+	final int XINSET;
+	
+	if (isBidi()) {
+		XINSET = 3;
+	}
+	else {
+		XINSET = 0;
+	}
+
+	text.setCaret(caret);
+	assertEquals(XINSET, text.getCaret().getLocation().x);
+	assertEquals(0, text.getCaret().getLocation().y);
+
+	text.setCaret(null);		
+	text.setText("\rLine2");
+	text.setSelection(2);
+
+	text.setTopIndex(0);
+	text.setCaret(caret);
+	assertTrue(text.getCaret().getLocation().x > 0);
+	assertEquals(text.getLineHeight(), text.getCaret().getLocation().y);
 }
 
 public void test_setBidiColoringZ() {
+	/// setBidiColoring is deprecated and will be removed.
 	warnUnimpl("Test test_setBidiColoringZ not written");
 }
 
@@ -2164,15 +2253,72 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 }
 
 public void test_setSelectionI() {
-	warnUnimpl("Test test_setSelectionI not written");
+	int[] invalid = {-1, 100, 12};
+	boolean exceptionThrown;
+
+	for (int i = 0; i < invalid.length; i++) {
+		exceptionThrown = false;
+		try {
+			text.setSelection(invalid[i]);
+		}
+		catch (IllegalArgumentException e) {
+			exceptionThrown = true;
+		}
+		assertTrue(exceptionThrown);
+	}	
+	text.setText("01234567890");
+	assertEquals(0, text.getCaretOffset());
+	text.setSelection(1);
+	assertEquals(1, text.getCaretOffset());
+	text.setSelection(11);
+	assertEquals(11, text.getCaretOffset());
+
+	for (int i = 0; i < invalid.length; i++) {
+		exceptionThrown = false;
+		try {
+			text.setSelection(invalid[i]);
+		}
+		catch (IllegalArgumentException e) {
+			exceptionThrown = true;
+		}
+		assertTrue(exceptionThrown);
+	}	
 }
 
 public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_setSelectionLorg_eclipse_swt_graphics_Point not written");
+	Point[] invalidRanges = {new Point(-1, 0), new Point(-1, -1), new Point(100, 1), 
+		new Point(100, -1), new Point(11, 12), new Point(10, 12)};
+	boolean exceptionThrown;
+
+	for (int i = 0; i < invalidRanges.length; i++) {
+		exceptionThrown = false;
+		try {
+			text.setSelection(invalidRanges[i]);
+		}
+		catch (IllegalArgumentException e) {
+			exceptionThrown = true;
+		}
+		assertTrue(exceptionThrown);
+	}	
+	text.setText("01234567890");
+	assertEquals("", text.getSelectionText());
+	text.setSelection(3, 7);
+	assertEquals("3456", text.getSelectionText());
+
+	for (int i = 0; i < invalidRanges.length; i++) {
+		exceptionThrown = false;
+		try {
+			text.setSelection(invalidRanges[i]);
+		}
+		catch (IllegalArgumentException e) {
+			exceptionThrown = true;
+		}
+		assertTrue(exceptionThrown);
+	}	
 }
 
 public void test_setSelectionII(){
-	int invalidRanges [][] = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {11, 12}, {10, 12}};
+	int[][] invalidRanges = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {11, 12}, {10, 12}};
 	boolean exceptionThrown;
 
 	for (int i = 0; i < invalidRanges.length; i++) {
@@ -2186,12 +2332,12 @@ public void test_setSelectionII(){
 		catch (IllegalArgumentException e) {
 			exceptionThrown = true;
 		}
-		assertTrue(":a:", exceptionThrown);
+		assertTrue(exceptionThrown);
 	}	
 	text.setText("01234567890");
-	assertTrue(":a:", text.getSelectionText().equals(""));
+	assertEquals("", text.getSelectionText());
 	text.setSelection(3, 7);
-	assertTrue(":b:", text.getSelectionText().equals("3456"));
+	assertEquals("3456", text.getSelectionText());
 
 	for (int i = 0; i < invalidRanges.length; i++) {
 		int start = invalidRanges[i][0];
@@ -2204,55 +2350,12 @@ public void test_setSelectionII(){
 		catch (IllegalArgumentException e) {
 			exceptionThrown = true;
 		}
-		assertTrue(":c:", exceptionThrown);
+		assertTrue(exceptionThrown);
 	}	
 }
 
 public void test_setSelectionRangeII(){
-	String testText = "Line1\r\nLine2";
-	int invalidRanges [][] = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {12, 1}, {11, 2}};
-	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 3}, {12, 0}};
-	int textLength;
-	boolean exceptionThrown;
-	
-	for (int i = 0; i < invalidRanges.length; i++) {
-		int start = invalidRanges[i][0];
-		int length = invalidRanges[i][1];
-	
-		exceptionThrown = false;
-		try {
-			text.setSelectionRange(start, length);
-		}
-		catch (IllegalArgumentException e) {
-			exceptionThrown = true;
-		}
-		assertTrue(":a:", exceptionThrown);
-	}	
-	
-	text.setSelectionRange(0, 0);
-	assertTrue(":b:", text.getSelectionRange().x == 0 && text.getSelectionRange().y == 0);
-	text.setText(testText);
-	textLength = text.getCharCount();
-	for (int i = 0; i < selectionRanges.length; i++) {
-		int start = selectionRanges[i][0];
-		int length = selectionRanges[i][1];
-		text.setSelectionRange(start, length);
-		assertTrue(":c:" + i, text.getSelectionRange().x == start && text.getSelectionRange().y == length);
-	}
-
-	for (int i = 0; i < invalidRanges.length; i++) {
-		int start = invalidRanges[i][0];
-		int length = invalidRanges[i][1];
-	
-		exceptionThrown = false;
-		try {
-			text.setSelectionRange(start, length);
-		}
-		catch (IllegalArgumentException e) {
-			exceptionThrown = true;
-		}
-		assertTrue(":a:", exceptionThrown);
-	}
+	// setSelectionRange already tested in test_getSelectionRange
 }
 
 public void test_setStyleRangeLorg_eclipse_swt_custom_StyleRange(){
@@ -3151,18 +3254,24 @@ public void test_setTabsI(){
 }
 
 public void test_setTextLjava_lang_String(){
-	assertTrue(":a:", text.getText().equals(""));
+	boolean exceptionThrown = false;
+	
+	text.setText("");
+	assertEquals("", text.getText());
 	text.setText("01234567890");
-	assertTrue(":b:", text.getText(3, 5).equals("345"));
-	// these tests should not cause a null pointer exception, checks not implemented yet	
-	if (fCheckOutOfRangeBehaviour) {
-		text.setText("");
-		assertTrue(":c:", text.getText(3, 5).equals(""));
-		text.setText("01234567890");
-		assertTrue(":d:", text.getText(3, 100).equals("34567890"));
-		text.setText("01234567890");
-		assertTrue(":e:", text.getText(5, 3).equals("34"));
+	assertEquals("01234567890", text.getText());
+	
+	try {
+		text.setText(null);
 	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}	
+	assertTrue(exceptionThrown);
+
+	assertEquals("01234567890", text.getText());
+	text.setText("");
+	assertEquals("", text.getText());
 }
 
 public void test_setTextLimitI(){
