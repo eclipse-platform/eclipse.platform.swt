@@ -1274,7 +1274,12 @@ int timerProc (int id, int index) {
 
 public void update () {
 	checkDevice ();
-	//NOT DONE
+	int [] outEvent = new int [1];
+	int [] mask = new int [] {OS.kEventClassWindow, OS.kEventWindowUpdate};
+	while (OS.ReceiveNextEvent (mask.length / 2, mask, OS.kEventDurationNoWait, true, outEvent) == OS.noErr) {
+		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
+		OS.ReleaseEvent (outEvent [0]);
+	}
 }
 
 public void wake () {

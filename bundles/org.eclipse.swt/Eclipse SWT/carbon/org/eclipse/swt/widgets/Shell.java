@@ -177,16 +177,22 @@ void createHandle () {
 	OS.GetRootControl (shellHandle, theRoot);
 	if (theRoot [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-		scrolledHandle = theRoot [0];
-		createHandle (scrolledHandle);
+		createScrolledHandle (theRoot [0]);
 	} else {
-		handle = theRoot [0];
+		createHandle (theRoot [0]);
 	}
 }
 
 void createWidget () {
 	super.createWidget ();
 	layoutControl ();
+}
+
+void deregister () {
+	super.deregister ();
+	int [] theRoot = new int [1];
+	OS.GetRootControl (shellHandle, theRoot);
+	WidgetTable.remove (theRoot [0]);
 }
 
 public void dispose () {
@@ -389,11 +395,25 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
+void layoutControl () {
+	Rect rect = new Rect ();
+	OS.GetWindowBounds (shellHandle, (short)  OS.kWindowContentRgn, rect);
+	setBounds (handle, 0, 0, rect.right - rect.left, rect.bottom - rect.top, false, true);
+	super.layoutControl();
+}
+
 public void open () {
 	checkWidget();
 	setVisible (true);
 	OS.BringToFront (shellHandle);
 	if (!restoreFocus ()) traverseGroup (true);
+}
+
+void register () {
+	super.register ();
+	int [] theRoot = new int [1];
+	OS.GetRootControl (shellHandle, theRoot);
+	WidgetTable.put (theRoot [0], this);
 }
 
 void releaseHandle () {

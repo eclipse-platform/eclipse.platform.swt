@@ -108,15 +108,8 @@ void layoutControl () {
 			Point size = verticalBar.computeSize (SWT.DEFAULT, SWT.DEFAULT, false);
 			vWidth = size.x;
 		}
-		int window = OS.GetControlOwner (scrolledHandle);
-		int [] theRoot = new int [1];
-		OS.GetRootControl (window, theRoot);
 		Rect rect = new Rect ();
-		if (scrolledHandle == theRoot [0]) {
-			OS.GetWindowBounds (window, (short)  OS.kWindowContentRgn, rect);
-		} else {
-			OS.GetControlBounds (scrolledHandle, rect);
-		}
+		OS.GetControlBounds (scrolledHandle, rect);
 		int width = Math.max (0, rect.right - rect.left - vWidth);
 		int height = Math.max (0, rect.bottom - rect.top - hHeight);
 		if (horizontalBar != null) {
