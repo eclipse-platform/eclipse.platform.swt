@@ -18,6 +18,8 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * WARNING 3.0 API STILL UNDER CONSTRUCTION
+ * 
+ * 
  * Instances of this class implement the notebook user interface
  * metaphor.  It allows the user to select a notebook page from
  * set of pages.
@@ -102,6 +104,7 @@ public class CTabFolder extends Composite {
 	int xClient, yClient;
 	boolean onBottom = false;
 	boolean single = false;
+	boolean simple = false;
 	boolean fixedTabHeight;
 	int tabHeight;
 	
@@ -183,6 +186,7 @@ public class CTabFolder extends Composite {
 	static final int CURVE_WIDTH = 50;
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
+	static final int CURVE_INDENT = 8;
 	static final int BUTTON_SIZE = 16;
 // Linda's curve
 //	static final int[] TOP_LEFT_CORNER = new int[] {0,9, 1,8, 1,7, 2,6, 2,5, 3,4, 4,3, 5,2, 6,2, 7,1, 8,1, 9,0};
@@ -362,6 +366,7 @@ static void fillRegion(GC gc, Region region) {
 	clipping.dispose();
 }
 /**
+ * 
  * Adds the listener to the collection of listeners who will
  * be notified when a tab item is closed.
  *
@@ -379,6 +384,7 @@ static void fillRegion(GC gc, Region region) {
  * @see CTabFolderCloseListener
  * @see #removeCTabFolderCloseListener(CTabFolderCloseListener)
  * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void addCTabFolder2Listener(CTabFolder2Listener listener) {
@@ -1064,34 +1070,38 @@ void drawTabArea(Event event) {
 	
 	// Draw Tab Header
 	if (onBottom) {
-		shape = new int[BOTTOM_LEFT_CORNER.length + BOTTOM_RIGHT_CORNER.length + 4];
+		int[] left = simple ? new int[] {0,0} : BOTTOM_LEFT_CORNER;
+		int[] right = simple ? new int[] {0,0} : BOTTOM_RIGHT_CORNER;
+		shape = new int[left.length + right.length + 4];
 		int index = 0;
 		shape[index++] = x;
 		shape[index++] = y-HIGHLIGHT_HEADER;
-		for (int i = 0; i < BOTTOM_LEFT_CORNER.length/2; i++) {
-			shape[index++] = x+BOTTOM_LEFT_CORNER[2*i];
-			shape[index++] = y+height+BOTTOM_LEFT_CORNER[2*i+1];
+		for (int i = 0; i < left.length/2; i++) {
+			shape[index++] = x+left[2*i];
+			shape[index++] = y+height+left[2*i+1];
 			if (borderLeft == 0) shape[index-1] += 1;
 		}
-		for (int i = 0; i < BOTTOM_RIGHT_CORNER.length/2; i++) {
-			shape[index++] = x+width+BOTTOM_RIGHT_CORNER[2*i];
-			shape[index++] = y+height+BOTTOM_RIGHT_CORNER[2*i+1];
+		for (int i = 0; i < right.length/2; i++) {
+			shape[index++] = x+width+right[2*i];
+			shape[index++] = y+height+right[2*i+1];
 			if (borderLeft == 0) shape[index-1] += 1;
 		}
 		shape[index++] = x+width;
 		shape[index++] = y-HIGHLIGHT_HEADER;
 	} else {
-		shape = new int[TOP_LEFT_CORNER.length + TOP_RIGHT_CORNER.length + 4];
+		int[] left = simple ? new int[] {0,0} : TOP_LEFT_CORNER;
+		int[] right = simple ? new int[] {0,0} : TOP_RIGHT_CORNER;
+		shape = new int[left.length + right.length + 4];
 		int index = 0;
 		shape[index++] = x;
 		shape[index++] = y+height+HIGHLIGHT_HEADER+1;
-		for (int i = 0; i < TOP_LEFT_CORNER.length/2; i++) {
-			shape[index++] = x+TOP_LEFT_CORNER[2*i];
-			shape[index++] = y+TOP_LEFT_CORNER[2*i+1];
+		for (int i = 0; i < left.length/2; i++) {
+			shape[index++] = x+left[2*i];
+			shape[index++] = y+left[2*i+1];
 		}
-		for (int i = 0; i < TOP_RIGHT_CORNER.length/2; i++) {
-			shape[index++] = x+width+TOP_RIGHT_CORNER[2*i];
-			shape[index++] = y+TOP_RIGHT_CORNER[2*i+1];
+		for (int i = 0; i < right.length/2; i++) {
+			shape[index++] = x+width+right[2*i];
+			shape[index++] = y+right[2*i+1];
 		}
 		shape[index++] = x+width;
 		shape[index++] = y+height+HIGHLIGHT_HEADER+1;
@@ -1165,6 +1175,7 @@ void drawTabArea(Event event) {
 }
 /**
  * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public boolean getBorderVisible() {
@@ -1295,6 +1306,7 @@ char getMnemonic (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public boolean getMinimized() {
@@ -1302,6 +1314,7 @@ public boolean getMinimized() {
 	return minimized;
 }
 /**
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public boolean getMinimizeVisible() {
@@ -1320,6 +1333,7 @@ public boolean getMinimizeVisible() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public boolean getMaximized() {
@@ -1327,6 +1341,7 @@ public boolean getMaximized() {
 	return maximized;
 }
 /**
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public boolean getMaximizeVisible() {
@@ -1353,6 +1368,7 @@ public CTabItem getSelection() {
 	return items[selectedIndex];
 }
 /**
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public Color getSelectionBackground() {
@@ -1360,6 +1376,7 @@ public Color getSelectionBackground() {
 	return selectionBackground;
 }
 /**
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public Color getSelectionForeground() {
@@ -1381,6 +1398,23 @@ public int getSelectionIndex() {
 	//checkWidget();
 	return selectedIndex;
 }
+/**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public boolean getSimpleTab() {
+	checkWidget();
+	return simple;
+}
+/**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public boolean getSingleTab() {
+	checkWidget();
+	return single;
+}
+
 public int getStyle() {
 	int style = super.getStyle();
 	style &= ~(SWT.TOP | SWT.BOTTOM);
@@ -1422,6 +1456,7 @@ public Control getTopRight() {
 	return topRight;
 }
 /**
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public boolean getUnselectedCloseVisible() {
@@ -1429,6 +1464,7 @@ public boolean getUnselectedCloseVisible() {
 	return showUnselectedClose;
 }
 /**
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public boolean getUnselectedImageVisible() {
@@ -2124,6 +2160,7 @@ void onTraverse (Event event) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void removeCTabFolder2Listener(CTabFolder2Listener listener) {
@@ -2236,6 +2273,7 @@ public void setBackground (Color color) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setBackground(Color[] colors, int[] percents) {
@@ -2268,7 +2306,8 @@ public void setBackground(Color[] colors, int[] percents) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
- *@since 3.0
+ * UNDER CONSTRUCTION
+ * @since 3.0
  */
 public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	checkWidget();
@@ -2349,6 +2388,7 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setBackground(Image image) {
@@ -2571,7 +2611,8 @@ boolean setItemLocation() {
 			item.x = borderLeft + indent; 
 			item.y = y;
 			if (showClose || item.showClose) {
-				item.closeRect.x = item.x + item.width - BUTTON_SIZE - CTabItem.RIGHT_MARGIN - 8;
+				item.closeRect.x = item.x + item.width - BUTTON_SIZE - CTabItem.RIGHT_MARGIN;
+				if (!simple) item.closeRect.x -= CURVE_INDENT;
 				item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			}
 			if (item.x != oldX || item.y != oldY) changed = true;
@@ -2587,7 +2628,7 @@ boolean setItemLocation() {
 			item.x = x;
 			item.y = y;
 			item.closeRect.x = item.x + item.width - BUTTON_SIZE - CTabItem.RIGHT_MARGIN;
-			if (i == selectedIndex) item.closeRect.x -= 8;
+			if (!simple && i == selectedIndex) item.closeRect.x -= CURVE_INDENT;
 			item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 		}
 		
@@ -2598,7 +2639,7 @@ boolean setItemLocation() {
 			item.x = x;
 			item.y = y;
 			item.closeRect.x = item.x + item.width - BUTTON_SIZE - CTabItem.RIGHT_MARGIN;
-			if (i == selectedIndex) item.closeRect.x -= 8;
+			if (!simple && i == selectedIndex) item.closeRect.x -= CURVE_INDENT;
 			item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			x = x + item.width;
 		}
@@ -2721,7 +2762,7 @@ void setLastIndex(int index) {
 	redraw();
 }
 /**
- * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setMaximizeVisible(boolean visible) {
@@ -2733,7 +2774,7 @@ public void setMaximizeVisible(boolean visible) {
 	redraw();
 }
 /**
- * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setMaximized(boolean maximize) {
@@ -2744,7 +2785,7 @@ public void setMaximized(boolean maximize) {
 	redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 }
 /**
- * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setMinimizeVisible(boolean visible) {
@@ -2756,7 +2797,7 @@ public void setMinimizeVisible(boolean visible) {
 	redraw();
 }
 /**
- * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setMinimized(boolean minimize) {
@@ -2836,7 +2877,7 @@ void setSelection(int index, boolean notify) {
 	}
 }
 /**
- * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setSelectionBackground (Color color) {
@@ -2901,6 +2942,7 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setSelectionBackground(Color[] colors, int[] percents, boolean vertical) {
@@ -3016,6 +3058,30 @@ public void setSelectionForeground (Color color) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public void setSimpleTab(boolean simple) {
+	checkWidget();
+	if (this.simple != simple) {
+		this.simple = simple;
+		Rectangle rectBefore = getClientArea();
+		updateItems();
+		Rectangle rectAfter = getClientArea();
+		if (!rectBefore.equals(rectAfter)) {
+			notifyListeners(SWT.Resize, new Event());
+		}
+		redraw();
+	}
+}
+/**
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setSingleTab(boolean single) {
@@ -3068,6 +3134,7 @@ public void setTabHeight(int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setTabPosition(int position) {
@@ -3120,6 +3187,7 @@ public void setTopRight(Control control) {
 	if (updateItems()) redraw();
 }
 /**
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setUnselectedCloseVisible(boolean visible) {
@@ -3131,6 +3199,7 @@ public void setUnselectedCloseVisible(boolean visible) {
 	redraw();
 }
 /**
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setUnselectedImageVisible(boolean visible) {
@@ -3301,45 +3370,34 @@ boolean updateTabHeight(int oldHeight, boolean force){
 	if (!force && tabHeight == oldHeight) return false;
 	
 	oldSize = null;
-	if (onBottom) {
-		curve = bezier(0, tabHeight + 2,
-		               CURVE_LEFT, tabHeight + 2,
-				       CURVE_WIDTH - CURVE_RIGHT, 1,
-		               CURVE_WIDTH, 1,
-		               CURVE_WIDTH);
-		// workaround to get rid of blip at end of bezier
-		int index = -1;
-		for (int i = 0; i < curve.length/2; i++) {
-			if (curve[2*i+1] > tabHeight) {
-				index = i;
-			} else {
-				break;
+	if (!simple) {
+		if (onBottom) {
+			curve = bezier(0, tabHeight + 2,
+			               CURVE_LEFT, tabHeight + 2,
+					       CURVE_WIDTH - CURVE_RIGHT, 1,
+			               CURVE_WIDTH, 1,
+			               CURVE_WIDTH);
+			// workaround to get rid of blip at end of bezier
+			int index = -1;
+			for (int i = 0; i < curve.length/2; i++) {
+				if (curve[2*i+1] > tabHeight) {
+					index = i;
+				} else {
+					break;
+				}
 			}
+			if (index > 0) {
+				int[] newCurve = new int[curve.length - 2*(index-1)];
+				System.arraycopy(curve, 2*(index-1), newCurve, 0, newCurve.length);
+				curve = newCurve;
+			}	
+		} else {
+			curve = bezier(0, 0,
+			               CURVE_LEFT, 0, 
+			               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 1,
+			               CURVE_WIDTH, tabHeight + 1,
+			               CURVE_WIDTH);
 		}
-		if (index > 0) {
-			int[] newCurve = new int[curve.length - 2*(index-1)];
-			System.arraycopy(curve, 2*(index-1), newCurve, 0, newCurve.length);
-			curve = newCurve;
-		}	
-	} else {
-		curve = bezier(0, 0,
-		               CURVE_LEFT, 0, 
-		               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 1,
-		               CURVE_WIDTH, tabHeight + 1,
-		               CURVE_WIDTH);
-		// workaround to get rid of blip at end of bezier
-//		int index = -1;
-//		for (int i = 0; i < curve.length/2; i++) {
-//			if (curve[2*i+1] > tabHeight+1) {
-//				index = i;
-//				break;
-//			}
-//		}
-//		if (index > 0) {
-//			int[] newCurve = new int[2*(index-1)];
-//			System.arraycopy(curve, 0, newCurve, 0, newCurve.length);
-//			curve = newCurve;
-//		}
 	}
 	notifyListeners(SWT.Resize, new Event());
 	return true;

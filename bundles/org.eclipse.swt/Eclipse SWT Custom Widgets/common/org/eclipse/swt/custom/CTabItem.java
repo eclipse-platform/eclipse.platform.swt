@@ -237,11 +237,13 @@ void drawSelected(GC gc ) {
 	}
 	
 	// draw selected tab background and outline
-	int extra = CTabFolder.CURVE_WIDTH/2 + 4; // +4 to avoid overlapping with text in next tab
+	int extra = parent.simple ? 0 : CTabFolder.CURVE_WIDTH/2 + 4; // +4 to avoid overlapping with text in next tab
 	shape = null;
 	if (this.parent.onBottom) {
-		int[] left = CTabFolder.BOTTOM_LEFT_CORNER;
-		int[] right = parent.curve;
+		int[] left = parent.simple ? new int[] {0, 0} :CTabFolder.BOTTOM_LEFT_CORNER;
+		int[] right = parent.simple ? new int[] {0, 0} : parent.curve;
+		//int[] left = CTabFolder.BOTTOM_LEFT_CORNER;
+		//int[] right = parent.simple ? CTabFolder.BOTTOM_RIGHT_CORNER : parent.curve;
 		shape = new int[left.length+right.length+8];
 		int index = 0;
 		shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
@@ -254,8 +256,12 @@ void drawSelected(GC gc ) {
 		}
 		for (int i = 0; i < right.length/2; i++) {
 			shape[index++] = x + width - extra + right[2*i];
-			shape[index++] = y + right[2*i+1] - 2;
+			shape[index++] = parent.simple ? y + height + right[2*i+1] - 1 : y + right[2*i+1] - 2;
 		}
+		shape[index++] = x + width + extra;
+		shape[index++] = y - 1;
+		shape[index++] = rightTabEdge;
+		shape[index++] = y - 1;
 		int temp = 0;
 		for (int i = 0; i < shape.length/2; i++) {
 			if (shape[2*i] > rightTabEdge) {
@@ -268,13 +274,11 @@ void drawSelected(GC gc ) {
 				shape[2*i+1] = temp;
 			}
 		}
-		shape[index++] = rightTabEdge;
-		shape[index++] = y - 1;
-		shape[index++] = x + width + extra;
-		shape[index++] = y - 1;
 	} else {
-		int[] left = CTabFolder.TOP_LEFT_CORNER;
-		int[] right = parent.curve;
+		int[] left = parent.simple ? new int[] {0, 0} : CTabFolder.TOP_LEFT_CORNER;
+		int[] right = parent.simple ? new int[] {0, 0} : parent.curve;
+		//int[] left = CTabFolder.TOP_LEFT_CORNER;
+		//int[] right = parent.simple ? CTabFolder.TOP_RIGHT_CORNER : parent.curve;
 		shape = new int[left.length+right.length+8];
 		int index = 0;
 		shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
@@ -289,6 +293,10 @@ void drawSelected(GC gc ) {
 			shape[index++] = x + width - extra + right[2*i];
 			shape[index++] = y + right[2*i+1];
 		}
+		shape[index++] = x + width + extra;
+		shape[index++] = y + height + 1;
+		shape[index++] = rightTabEdge;
+		shape[index++] = y + height + 1;
 		int temp = 0;
 		for (int i = 0; i < shape.length/2; i++) {
 			if (shape[2*i] > rightTabEdge) {
@@ -301,10 +309,6 @@ void drawSelected(GC gc ) {
 				shape[2*i+1] = temp;
 			}
 		}
-		shape[index++] = rightTabEdge;
-		shape[index++] = y + height + 1;
-		shape[index++] = x + width + extra;
-		shape[index++] = y + height + 1;
 	}
 	parent.drawBackground(gc, shape, true);
 	
@@ -398,7 +402,7 @@ void drawUnselected(GC gc) {
 		int x1 = x, y1 = parent.onBottom ? y : y+1;
 		int x2 = x + width, y2 = parent.onBottom ? y+height-1 : y+height;
 		int index = parent.indexOf(this);
-		if (!parent.single && parent.selectedIndex != -1) {
+		if (!parent.simple && !parent.single && parent.selectedIndex != -1) {
 			if (parent.selectedIndex + 1 == index) {
 				x1 -= CTabFolder.CURVE_WIDTH/2;
 			}
@@ -470,6 +474,7 @@ void drawUnselected(GC gc) {
 	if (parent.showUnselectedClose && (parent.showClose || showClose)) drawClose(gc);
 }
 /**
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public Color getBackground() {
@@ -523,6 +528,7 @@ public Image getDisabledImage(){
 	return null;
 }
 /**
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public Font getFont() {
@@ -531,6 +537,7 @@ public Font getFont() {
 	return parent.getFont();
 }
 /**
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public Color getForeground() {
@@ -594,6 +601,17 @@ int preferredHeight(GC gc) {
 	return h + TOP_MARGIN + BOTTOM_MARGIN;
 }
 int preferredWidth(GC gc, boolean isSelected) {
+	CTabFolderEvent e = new CTabFolderEvent(this);
+	e.widget = this;
+	e.time = (int)System.currentTimeMillis();
+	e.doit = true;
+	e.x = e.y = e.width = e.height = 0;
+	e.item = this;
+	for (int j = 0; j < parent.folderListeners.length; j++) {
+			parent.folderListeners[j].getTabSize(e);
+	}
+	if (e.doit = false) return e.width;
+	if (isDisposed()) return 0;
 	int w = 0;
 	Image image = getImage();
 	if (image != null && (isSelected || parent.showUnselectedImage)) w += image.getBounds().width;
@@ -615,7 +633,7 @@ int preferredWidth(GC gc, boolean isSelected) {
 			w += CTabFolder.BUTTON_SIZE;
 		}
 	}
-	if (isSelected) w += 8; // why 8?
+	if (!parent.simple && isSelected) w += CTabFolder.CURVE_INDENT;
 	return w + LEFT_MARGIN + RIGHT_MARGIN;
 }
 /**
@@ -634,6 +652,7 @@ int preferredWidth(GC gc, boolean isSelected) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  * 
  */
@@ -675,7 +694,8 @@ public void setBackground(Color color){
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
- *@since 3.0
+ * UNDER CONSTRUCTION
+ * @since 3.0
  */
 public void setBackground(Color[] colors, int[] percents) {
 	setBackground(colors, percents, false);
@@ -707,7 +727,8 @@ public void setBackground(Color[] colors, int[] percents) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
- *@since 3.0
+ * UNDER CONSTRUCTION
+ * @since 3.0
  */
 public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	checkWidget();
@@ -792,6 +813,7 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setBackground(Image image) {
@@ -874,6 +896,7 @@ public void setDisabledImage (Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setFont (Font font){
@@ -900,6 +923,7 @@ public void setFont (Font font){
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
+ * UNDER CONSTRUCTION
  * @since 3.0
  * 
  */
