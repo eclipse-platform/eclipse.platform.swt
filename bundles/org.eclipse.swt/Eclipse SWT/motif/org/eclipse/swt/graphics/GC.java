@@ -2181,7 +2181,7 @@ public void setClipping (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
-		clipRgn = OS.XCreateRegion ();
+		data.clipRgn = clipRgn = OS.XCreateRegion ();
 	} else {
 		OS.XSubtractRegion (clipRgn, clipRgn, clipRgn);
 	}
@@ -2206,6 +2206,11 @@ public void setClipping (Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
 		OS.XSetClipMask (data.display, handle, OS.None);
+		int clipRgn = data.clipRgn;
+		if (clipRgn != 0) {
+			OS.XDestroyRegion (clipRgn);
+			data.clipRgn = 0;
+		}
 		return;
 	}
 	setClipping (rect.x, rect.y, rect.width, rect.height);
@@ -2228,11 +2233,11 @@ public void setClipping (Region region) {
 		OS.XSetClipMask (data.display, handle, OS.None);
 		if (clipRgn != 0) {
 			OS.XDestroyRegion (clipRgn);
-			clipRgn = 0;
+			data.clipRgn = 0;
 		}
 	} else {
 		if (clipRgn == 0) {
-			clipRgn = OS.XCreateRegion ();
+			data.clipRgn = clipRgn = OS.XCreateRegion ();
 		} else {
 			OS.XSubtractRegion (clipRgn, clipRgn, clipRgn);
 		}
