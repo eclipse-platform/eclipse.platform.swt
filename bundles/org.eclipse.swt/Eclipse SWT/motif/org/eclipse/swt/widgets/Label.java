@@ -125,9 +125,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				OS.XmNmarginHeight, 0,  /* 7 */
 			};
 			OS.XtGetValues (handle, argList4, argList4.length / 2);
-			int fontList = argList4 [1];
-			if (fontList == 0) fontList = defaultFont();
-			String string = getDisplay ().wrapText (text, fontList, wHint);
+			Display display = getDisplay ();
+			String string = display.wrapText (text, argList4 [1], wHint);
 			GC gc = new GC(this);
 			Point extent = gc.textExtent(string);
 			gc.dispose();
@@ -402,20 +401,21 @@ public void setText (String string) {
 	text = string;
 	
 	/* Strip out mnemonic marker symbols, and remember the mnemonic. */
-	char [] textBuf = new char [string.length ()];
-	string.getChars (0, textBuf.length, textBuf, 0);
+	char [] unicode = new char [string.length ()];
+	string.getChars (0, unicode.length, unicode, 0);
 	int i=0, j=0, mnemonic=0;
-	while (i < textBuf.length) {
-		if ((textBuf [j++] = textBuf [i++]) == Mnemonic) {
-			if (i == textBuf.length) {continue;}
-			if (textBuf [i] == Mnemonic) {i++; continue;}
-			if (mnemonic == 0) mnemonic = textBuf [i];
+	while (i < unicode.length) {
+		if ((unicode [j++] = unicode [i++]) == Mnemonic) {
+			if (i == unicode.length) {continue;}
+			if (unicode [i] == Mnemonic) {i++; continue;}
+			if (mnemonic == 0) mnemonic = unicode [i];
 			j--;
 		}
 	}
-	while (j < textBuf.length) textBuf [j++] = 0;
-
-	/* Wrap the text if necessary. */
+	while (j < unicode.length) unicode [j++] = 0;
+	
+	/* Wrap the text if necessary, and convert to mbcs. */
+	byte [] buffer;
 	if ((style & SWT.WRAP) != 0) {
 		int [] argList = {
 			OS.XmNfontList, 0,     /* 1 */
@@ -423,17 +423,18 @@ public void setText (String string) {
 			OS.XmNmarginLeft, 0,   /* 5 */
 			OS.XmNmarginRight, 0,  /* 7 */
 			OS.XmNborderWidth, 0,  /* 9 */
-			OS.XmNmarginWidth, 0}; /* 11 */
+			OS.XmNmarginWidth, 0,  /* 11 */
+		};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		int fontList = argList [1];
-		if (fontList == 0) fontList = defaultFont();
 		int width = argList [3] - argList [5] - argList [7] - argList [9] * 2 - argList [11] * 2;
-		string = getDisplay ().wrapText (new String(textBuf), fontList, width);
-		textBuf = new char [string.length ()];
-		string.getChars (0, textBuf.length, textBuf, 0);
+		Display display = getDisplay ();
+		if (mnemonic != 0) string = new String(unicode);
+		string = display.wrapText (string, argList [1], width);
+		buffer = Converter.wcsToMbcs (null, string, true);
+	} else {
+		buffer = Converter.wcsToMbcs (null, unicode, true);
 	}
 	
-	byte [] buffer = Converter.wcsToMbcs (null, textBuf, true);
 	int [] parseTable = getDisplay ().parseTable;
 	int xmString = OS.XmStringParseText (
 		buffer,
