@@ -117,14 +117,14 @@ public CLabel(Composite parent, int style) {
 	});
 		
 	getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
-		public void accHitTest(AccessibleControlEvent e) {
+		public void hitTest(AccessibleControlEvent e) {
 			Point testPoint = toControl(new Point(e.x, e.y));
 			if (getBounds().contains(testPoint)) {
 				e.childID = ACC.CHILDID_SELF;
 			}
 		}
 		
-		public void accLocation(AccessibleControlEvent e) {
+		public void getLocation(AccessibleControlEvent e) {
 			Rectangle location = getBounds();
 			Point pt = toDisplay(new Point(location.x, location.y));
 			e.x = pt.x;

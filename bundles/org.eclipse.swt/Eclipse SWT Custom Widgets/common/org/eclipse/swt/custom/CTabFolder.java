@@ -263,7 +263,7 @@ public CTabFolder(Composite parent, int style) {
 	});
 		
 	getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
-		public void accHitTest(AccessibleControlEvent e) {
+		public void hitTest(AccessibleControlEvent e) {
 			Point testPoint = toControl(new Point(e.x, e.y));
 			int childID = ACC.CHILDID_SELF;
 			for (int i = 0; i < items.length; i++) {
@@ -279,7 +279,7 @@ public CTabFolder(Composite parent, int style) {
 			e.childID = childID;
 		}
 		
-		public void accLocation(AccessibleControlEvent e) {
+		public void getLocation(AccessibleControlEvent e) {
 			int childID = e.childID;
 			if (childID > items.length) return;
 			Rectangle location;
@@ -296,7 +296,7 @@ public CTabFolder(Composite parent, int style) {
 			e.height = location.height;
 		}
 		
-		public void accNavigate(AccessibleControlEvent e) {
+		public void navigate(AccessibleControlEvent e) {
 			int childID = ACC.CHILDID_NONE;
 			switch (e.code) {
 				case ACC.NAVDIR_UP:
