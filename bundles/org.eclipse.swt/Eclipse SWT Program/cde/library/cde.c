@@ -26,13 +26,13 @@ JNIEXPORT jint JNICALL CDE_NATIVE(DtActionInvoke)
 	jbyte *lparg6=NULL;
 	jint rc = 0;
 	CDE_NATIVE_ENTER(env, that, DtActionInvoke_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto failTag;
-	if (arg2) if ((lparg2 = getDtActionArgFields(env, arg2, &_arg2)) == NULL) goto failTag;
-	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto failTag;
-	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto failTag;
-	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto failTag;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getDtActionArgFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	rc = (jint)DtActionInvoke((Widget)arg0, (char *)lparg1, lparg2, arg3, (char *)lparg4, (char *)lparg5, (char *)lparg6, arg7, (DtActionCallbackProc)arg8, (XtPointer)arg9);
-failTag:
+fail:
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
@@ -51,10 +51,10 @@ JNIEXPORT jboolean JNICALL CDE_NATIVE(DtAppInitialize)
 	jbyte *lparg4=NULL;
 	jboolean rc = 0;
 	CDE_NATIVE_ENTER(env, that, DtAppInitialize_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto failTag;
-	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jboolean)DtAppInitialize((XtAppContext)arg0, (Display *)arg1, (Widget)arg2, (char *)lparg3, (char *)lparg4);
-failTag:
+fail:
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	CDE_NATIVE_EXIT(env, that, DtAppInitialize_FUNC);
@@ -79,9 +79,9 @@ JNIEXPORT jboolean JNICALL CDE_NATIVE(DtDtsDataTypeIsAction)
 	jbyte *lparg0=NULL;
 	jboolean rc = 0;
 	CDE_NATIVE_ENTER(env, that, DtDtsDataTypeIsAction_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jboolean)DtDtsDataTypeIsAction((char *)lparg0);
-failTag:
+fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	CDE_NATIVE_EXIT(env, that, DtDtsDataTypeIsAction_FUNC);
 	return rc;
@@ -109,11 +109,11 @@ JNIEXPORT jint JNICALL CDE_NATIVE(DtDtsDataTypeToAttributeValue)
 	jbyte *lparg2=NULL;
 	jint rc = 0;
 	CDE_NATIVE_ENTER(env, that, DtDtsDataTypeToAttributeValue_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto failTag;
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto failTag;
-	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)DtDtsDataTypeToAttributeValue((char *)lparg0, (char *)lparg1, (char *)lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
@@ -129,9 +129,9 @@ JNIEXPORT jint JNICALL CDE_NATIVE(DtDtsFileToDataType)
 	jbyte *lparg0=NULL;
 	jint rc = 0;
 	CDE_NATIVE_ENTER(env, that, DtDtsFileToDataType_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jint)DtDtsFileToDataType((char *)lparg0);
-failTag:
+fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	CDE_NATIVE_EXIT(env, that, DtDtsFileToDataType_FUNC);
 	return rc;

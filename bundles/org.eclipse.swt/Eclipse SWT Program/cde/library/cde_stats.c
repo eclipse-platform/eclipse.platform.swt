@@ -17,16 +17,16 @@
 int CDE_nativeFunctionCount = 10;
 int CDE_nativeFunctionCallCount[10];
 char * CDE_nativeFunctionNames[] = {
-	"DtActionInvoke", 
-	"DtAppInitialize", 
-	"DtDbLoad", 
-	"DtDtsDataTypeIsAction", 
-	"DtDtsDataTypeNames", 
-	"DtDtsDataTypeToAttributeValue", 
-	"DtDtsFileToDataType", 
-	"DtDtsFreeAttributeValue", 
-	"DtDtsFreeDataType", 
-	"DtDtsFreeDataTypeNames", 
+	"DtActionInvoke",
+	"DtAppInitialize",
+	"DtDbLoad",
+	"DtDtsDataTypeIsAction",
+	"DtDtsDataTypeNames",
+	"DtDtsDataTypeToAttributeValue",
+	"DtDtsFileToDataType",
+	"DtDtsFreeAttributeValue",
+	"DtDtsFreeDataType",
+	"DtDtsFreeDataTypeNames",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

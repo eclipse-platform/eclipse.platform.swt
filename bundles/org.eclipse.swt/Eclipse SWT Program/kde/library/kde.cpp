@@ -336,9 +336,9 @@ JNIEXPORT jint JNICALL KDE_NATIVE(QCString_1new)
 	jbyte *lparg0=NULL;
 	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, QCString_1new_FUNC);
-	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto fail;
 	rc = (jint)new QCString((char *)lparg0);
-failTag:
+fail:
 	if (arg0 && lparg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
 	KDE_NATIVE_EXIT(env, that, QCString_1new_FUNC);
 	return rc;
@@ -467,9 +467,9 @@ JNIEXPORT jint JNICALL KDE_NATIVE(QString_1new)
 	jbyte *lparg0=NULL;
 	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, QString_1new_FUNC);
-	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto fail;
 	rc = (jint)new QString((char *)lparg0);
-failTag:
+fail:
 	if (arg0 && lparg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
 	KDE_NATIVE_EXIT(env, that, QString_1new_FUNC);
 	return rc;
@@ -512,9 +512,9 @@ JNIEXPORT jint JNICALL KDE_NATIVE(XpmReadFileToPixmap)
 	jint *lparg4=NULL;
 	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, XpmReadFileToPixmap_FUNC);
-	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = env->GetIntArrayElements(arg3, NULL)) == NULL) goto failTag;
-	if (arg4) if ((lparg4 = env->GetIntArrayElements(arg4, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = env->GetIntArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetIntArrayElements(arg4, NULL)) == NULL) goto fail;
 /*
 	rc = (jint)XpmReadFileToPixmap((Display *)arg0, (Window)arg1, (char *)lparg2, (Pixmap *)lparg3, (Pixmap *)lparg4, (XpmAttributes *)arg5);
 */
@@ -533,7 +533,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(XpmReadFileToPixmap)
 			rc = (jint)(*fptr)((Display *)arg0, (Window)arg1, (char *)lparg2, (Pixmap *)lparg3, (Pixmap *)lparg4, (XpmAttributes *)arg5);
 		}
 	}
-failTag:
+fail:
 	if (arg4 && lparg4) env->ReleaseIntArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) env->ReleaseIntArrayElements(arg3, lparg3, 0);
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
@@ -572,10 +572,10 @@ JNIEXPORT jint JNICALL KDE_NATIVE(sigaction)
 	jbyte *lparg2=NULL;
 	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, sigaction_FUNC);
-	if (arg1) if ((lparg1 = env->GetByteArrayElements(arg1, NULL)) == NULL) goto failTag;
-	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto failTag;
+	if (arg1) if ((lparg1 = env->GetByteArrayElements(arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
 	rc = (jint)sigaction(arg0, (struct sigaction *)lparg1, (struct sigaction *)lparg2);
-failTag:
+fail:
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
 	if (arg1 && lparg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
 	KDE_NATIVE_EXIT(env, that, sigaction_FUNC);

@@ -21,21 +21,21 @@
 int GNOME_nativeFunctionCount = 15;
 int GNOME_nativeFunctionCallCount[15];
 char * GNOME_nativeFunctionNames[] = {
-	"GnomeVFSMimeApplication_1sizeof", 
-	"g_1free", 
-	"g_1list_1next", 
-	"g_1object_1unref", 
-	"gnome_1icon_1lookup", 
-	"gnome_1icon_1theme_1lookup_1icon", 
-	"gnome_1icon_1theme_1new", 
-	"gnome_1vfs_1get_1registered_1mime_1types", 
-	"gnome_1vfs_1init", 
-	"gnome_1vfs_1mime_1application_1free", 
-	"gnome_1vfs_1mime_1extensions_1list_1free", 
-	"gnome_1vfs_1mime_1get_1default_1application", 
-	"gnome_1vfs_1mime_1get_1extensions_1list", 
-	"gnome_1vfs_1mime_1registered_1mime_1type_1list_1free", 
-	"memmove", 
+	"GnomeVFSMimeApplication_1sizeof",
+	"g_1free",
+	"g_1list_1next",
+	"g_1object_1unref",
+	"gnome_1icon_1lookup",
+	"gnome_1icon_1theme_1lookup_1icon",
+	"gnome_1icon_1theme_1new",
+	"gnome_1vfs_1get_1registered_1mime_1types",
+	"gnome_1vfs_1init",
+	"gnome_1vfs_1mime_1application_1free",
+	"gnome_1vfs_1mime_1extensions_1list_1free",
+	"gnome_1vfs_1mime_1get_1default_1application",
+	"gnome_1vfs_1mime_1get_1extensions_1list",
+	"gnome_1vfs_1mime_1registered_1mime_1type_1list_1free",
+	"memmove",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

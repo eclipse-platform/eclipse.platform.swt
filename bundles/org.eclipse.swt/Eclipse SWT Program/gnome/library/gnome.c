@@ -73,12 +73,12 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(gnome_1icon_1lookup)
 	jint *lparg7=NULL;
 	jint rc = 0;
 	GNOME_NATIVE_ENTER(env, that, gnome_1icon_1lookup_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto failTag;
-	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto failTag;
-	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto failTag;
-	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
 	rc = (jint)gnome_icon_lookup((GnomeIconTheme *)arg0, (GnomeThumbnailFactory *)arg1, (const char *)lparg2, (const char *)lparg3, (GnomeVFSFileInfo *)arg4, (const char *)lparg5, (GnomeIconLookupFlags)arg6, (GnomeIconLookupResultFlags *)lparg7);
-failTag:
+fail:
 	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
@@ -96,10 +96,10 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(gnome_1icon_1theme_1lookup_1icon)
 	jint *lparg4=NULL;
 	jint rc = 0;
 	GNOME_NATIVE_ENTER(env, that, gnome_1icon_1theme_1lookup_1icon_FUNC);
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto failTag;
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)gnome_icon_theme_lookup_icon((GnomeIconTheme *)arg0, (const char *)arg1, arg2, (const GnomeIconData **)lparg3, lparg4);
-failTag:
+fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	GNOME_NATIVE_EXIT(env, that, gnome_1icon_1theme_1lookup_1icon_FUNC);
@@ -170,9 +170,9 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(gnome_1vfs_1mime_1get_1default_1application)
 	jbyte *lparg0=NULL;
 	jint rc = 0;
 	GNOME_NATIVE_ENTER(env, that, gnome_1vfs_1mime_1get_1default_1application_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jint)gnome_vfs_mime_get_default_application(lparg0);
-failTag:
+fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	GNOME_NATIVE_EXIT(env, that, gnome_1vfs_1mime_1get_1default_1application_FUNC);
 	return rc;
@@ -207,9 +207,9 @@ JNIEXPORT void JNICALL GNOME_NATIVE(memmove)
 {
 	GnomeVFSMimeApplication _arg0, *lparg0=NULL;
 	GNOME_NATIVE_ENTER(env, that, memmove_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto failTag;
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-failTag:
+fail:
 	if (arg0 && lparg0) setGnomeVFSMimeApplicationFields(env, arg0, lparg0);
 	GNOME_NATIVE_EXIT(env, that, memmove_FUNC);
 }
