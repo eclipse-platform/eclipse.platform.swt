@@ -155,32 +155,34 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		} else {
 			width += 3; height += DEFAULT_HEIGHT;
 		}
-		if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
-		if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
+		if (wHint != SWT.DEFAULT) width = wHint + border * 2;
+		if (hHint != SWT.DEFAULT) height = hHint + border * 2;
 		return new Point (width, height);
 	}
-	int [] argList = {OS.XmNlabelType, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int labelType = argList [1];
+	int [] argList1 = {OS.XmNlabelType, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	int labelType = argList1 [1];
 	if (labelType == OS.XmSTRING && (style & SWT.WRAP) != 0) {
 		/* If we are wrapping text, calculate the height based on wHint. */
-		int [] argList4 = {
+		int [] argList2 = {
 			OS.XmNmarginTop, 0,     /* 1 */
 			OS.XmNmarginBottom, 0,  /* 3 */
 			OS.XmNmarginHeight, 0,  /* 5 */
 			OS.XmNmarginWidth, 0,   /* 7 */
+			OS.XmNmarginLeft, 0,    /* 9 */
+			OS.XmNmarginRight, 0,   /* 11 */
 		};
-		OS.XtGetValues (handle, argList4, argList4.length / 2);
+		OS.XtGetValues (handle, argList2, argList2.length / 2);
 		String string = text;
 		if (wHint != SWT.DEFAULT) {
-			string = display.wrapText (string, font, wHint - argList4 [7] * 2);
+			string = display.wrapText (string, font, wHint - (argList2 [7] * 2) - argList2 [9] - argList2 [11]);
 		}
-		GC gc = new GC(this);
-		Point extent = gc.textExtent(string);
-		gc.dispose();
-		height = extent.y + argList4 [1] + argList4 [3] + argList4 [5] * 2 + border * 2;
+		GC gc = new GC (this);
+		Point extent = gc.textExtent (string);
+		gc.dispose ();
+		height = extent.y + argList2 [1] + argList2 [3] + (argList2 [5] * 2) + (border * 2);
 		if (wHint == SWT.DEFAULT) {
-			width += extent.x + 2 * argList4 [7];
+			width += extent.x + (argList2 [7] * 2) + argList2 [9] + argList2 [11];
 		}
 	} else {
 		/* If we are not wrapping, ask the widget for its geometry. */
@@ -204,8 +206,24 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (labelType == OS.XmSTRING && text.length () == 0) {
 		width = 0;
 	}
-	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
-	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
+	if (wHint != SWT.DEFAULT) {
+		int [] argList3 = {
+			OS.XmNmarginWidth, 0,  /* 1 */
+			OS.XmNmarginLeft, 0,   /* 3 */
+			OS.XmNmarginRight, 0,  /* 5 */
+		};
+		OS.XtGetValues (handle, argList3, argList3.length / 2);
+		width = wHint + (border * 2) + (argList3 [1] * 2) + argList3 [3] + argList3 [5];
+	}
+	if (hHint != SWT.DEFAULT) {
+		int [] argList4 = {
+			OS.XmNmarginHeight, 0,  /* 1 */
+			OS.XmNmarginTop, 0,     /* 3 */
+			OS.XmNmarginBottom, 0,  /* 5 */
+		};
+		OS.XtGetValues (handle, argList4, argList4.length / 2);
+		height = hHint + (border * 2) + (argList4 [1] * 2) + argList4 [3] + argList4 [5];
+	}
 	return new Point (width, height);
 }
 void createHandle (int index) {
