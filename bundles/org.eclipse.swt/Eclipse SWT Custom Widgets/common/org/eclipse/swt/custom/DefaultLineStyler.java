@@ -228,9 +228,7 @@ StyleRange [] getStyleRanges() {
  */
 public void lineGetBackground(LineBackgroundEvent event) {
 	int lineIndex = content.getLineAtOffset(event.lineOffset);
-	// 1GDX9PN
-	if (lineIndex > (lineBackgrounds.length - 1)) event.lineBackground = null;
-	else event.lineBackground = lineBackgrounds[lineIndex];
+	event.lineBackground = lineBackgrounds[lineIndex];
 }
 /**
  * Handles the get line style information callback.
