@@ -12,9 +12,9 @@ package org.eclipse.swt.browser;
 
 /**
  * This adapter class provides default implementations for the
- * methods described by the <code>LocationListener</code> interface.
+ * methods described by the {@link LocationListener} interface.
  * <p>
- * Classes that wish to deal with <code>LocationEvent</code>s can
+ * Classes that wish to deal with {@link LocationEvent}'s can
  * extend this class and override only the methods which they are
  * interested in.
  * </p><p>
@@ -24,35 +24,13 @@ package org.eclipse.swt.browser;
  * other teams can try it out.
  * </p>
  * 
- * @see LocationListener
- * @see LocationEvent
+ * @since 3.0
  */
 public abstract class LocationAdapter implements LocationListener {
 
-/**
- * This method is called when the current location is about to be changed.
- * <p>
- *
- * @param event.location the location to be loaded 
- * @param event.cancel can be set to true to prevent the location from being loaded 
- *
- * @see LocationEvent
- * 
- * @since 3.0
- */ 
 public void changing(LocationEvent event) {
 }
 
-/**
- * This method is called when the current location is changed.
- * <p>
- *
- * @param event.location the current location 
- *
- * @see LocationEvent
- * 
- * @since 3.0
- */ 
 public void changed(LocationEvent event) {
 }
 }

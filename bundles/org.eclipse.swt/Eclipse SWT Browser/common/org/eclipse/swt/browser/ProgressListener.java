@@ -14,7 +14,9 @@ import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * This listener interface may be implemented in order to receive
- * ProgressEvents.
+ * a {@link ProgressEvent} notification when a {@link Browser}
+ * makes a progress in loading the current URL or when the
+ * current URL has been loaded.
  * 
  * <p>
  * NOTE: The API in the browser package is NOT finalized.
@@ -23,20 +25,28 @@ import org.eclipse.swt.internal.SWTEventListener;
  * other teams can try it out.
  * </p>
  * 
- * @see ProgressEvent
+ * @see Browser#addProgressListener(ProgressListener)
+ * @see Browser#removeProgressListener(ProgressListener)
+ * @see Browser#getUrl()
  * 
  * @since 3.0
  */
 public interface ProgressListener extends SWTEventListener {
 	
 /**
- * This method is called when a progress is made during the loading of the current location.
+ * This method is called when a progress is made during the loading of the 
+ * current location.
  * <p>
  *
- * @param event.current the progress for the location currently being loaded
- * @param event.total the maximum progress for the location currently being loaded
- *
- * @see ProgressEvent
+ * <p>The following fields in the <code>ProgressEvent</code> apply:
+ * <ul>
+ * <li>(in) current the progress for the location currently being loaded
+ * <li>(in) total the maximum progress for the location currently being loaded
+ * <li>(in) widget the <code>Browser</code> whose current URL is being loaded
+ * </ul>
+ * 
+ * @param event the <code>ProgressEvent</code> related to the loading of the
+ * current location of a <code>Browser</code>
  * 
  * @since 3.0
  */   
@@ -46,7 +56,13 @@ public void changed(ProgressEvent event);
  * This method is called when the current location has been completely loaded.
  * <p>
  *
- * @see ProgressEvent
+ * <p>The following fields in the <code>ProgressEvent</code> apply:
+ * <ul>
+ * <li>(in) widget the <code>Browser</code> whose current URL has been loaded
+ * </ul>
+ * 
+ * @param event the <code>ProgressEvent</code> related to the <code>Browser</code>
+ * that has loaded its current URL.
  * 
  * @since 3.0
  */

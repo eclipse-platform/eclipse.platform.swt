@@ -12,9 +12,9 @@ package org.eclipse.swt.browser;
 
 /**
  * This adapter class provides default implementations for the
- * methods described by the <code>ProgressListener</code> interface.
+ * methods described by the {@link ProgressListener} interface.
  * <p>
- * Classes that wish to deal with <code>ProgressEvent</code>s can
+ * Classes that wish to deal with {@link ProgressEvent}'s can
  * extend this class and override only the methods which they are
  * interested in.
  * </p><p>
@@ -24,33 +24,13 @@ package org.eclipse.swt.browser;
  * other teams can try it out.
  * </p>
  * 
- * @see ProgressListener
- * @see ProgressEvent
+ * @since 3.0
  */
 public abstract class ProgressAdapter implements ProgressListener {
-
-/**
- * This method is called when a progress is made during the loading of the current location.
- * <p>
- *
- * @param event.current the progress for the location currently being loaded
- * @param event.total the maximum progress for the location currently being loaded
- *
- * @see ProgressEvent
- * 
- * @since 3.0
- */   
+ 
 public void changed(ProgressEvent event) {
 }
-	
-/**
- * This method is called when the current location has been completely loaded.
- * <p>
- *
- * @see ProgressEvent
- * 
- * @since 3.0
- */
+
 public void completed(ProgressEvent event) {
 }
 }

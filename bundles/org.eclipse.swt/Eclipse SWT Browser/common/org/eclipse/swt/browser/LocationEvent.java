@@ -14,9 +14,13 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 
 /**
- * This event is sent to LocationListeners when the location
- * is changed.
- * 
+ * A <code>LocationEvent</code> is sent by a {@link Browser} to
+ * {@link LocationListener}'s when the <code>Browser</code>
+ * navigates to a different URL. This notification typically 
+ * occurs when the application navigates to a new location with 
+ * {@link Browser#setUrl(String)} or when the user activates a
+ * hyperlink.
+ *
  * <p>
  * NOTE: The API in the browser package is NOT finalized.
  * Use at your own risk, because it will most certainly change.

@@ -96,7 +96,7 @@ import org.eclipse.swt.graphics.*;
 public class WindowEvent extends TypedEvent {
 	
 	/** 
-	 * <code>Browser</code> provided by the application. Default is <code>null<code>
+	 * <code>Browser</code> provided by the application. Default is <code>null</code>
 	 * and <code>null</code> will cancel the associated navigation request.
 	 */
 	public Browser browser;

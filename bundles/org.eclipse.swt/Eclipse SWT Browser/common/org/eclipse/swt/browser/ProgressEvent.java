@@ -14,9 +14,10 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 
 /**
- * This event is sent to ProgressListeners when a progress is made
- * during the loading of the current URI or when the loading of the
- * current URI has been completed.
+ * A <code>ProgressEvent</code> is sent by a {@link Browser} to
+ * {@link ProgressListener}'s when a progress is made during the
+ * loading of the current URL or when the loading of the current
+ * URL has been completed.
  * 
  * <p>
  * NOTE: The API in the browser package is NOT finalized.

@@ -14,9 +14,10 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 
 /**
- * This event is sent to StatusTextListeners when the status text
- * is changed.  The status text is typically displayed in the status
- * bar of a browser.
+ * A <code>StatusTextEvent</code> is sent by a {@link Browser} to
+ * {@link StatusTextListener}'s when the status text is changed.
+ * The status text is typically displayed in the status bar of
+ * a browser application.
  * 
  * <p>
  * NOTE: The API in the browser package is NOT finalized.

@@ -12,9 +12,9 @@ package org.eclipse.swt.browser;
 
 /**
  * This adapter class provides default implementations for the
- * methods described by the <code>VisibilityWindowListener</code> interface.
+ * methods described by the {@link VisibilityWindowListener} interface.
  * <p>
- * Classes that wish to deal with <code>WindowEvent</code>s can
+ * Classes that wish to deal with {@link WindowEvent}'s can
  * extend this class and override only the methods which they are
  * interested in.
  * </p><p>
@@ -24,36 +24,13 @@ package org.eclipse.swt.browser;
  * other teams can try it out.
  * </p>
  * 
- * @see VisibilityWindowListener
- * @see WindowEvent
+ * @since 3.0
  */
 public abstract class VisibilityWindowAdapter implements VisibilityWindowListener {
 
-/**
- * This method is called when the Browser is requested to be hidden.
- * <p>
- *
- * @param event.widget the browser to hide
- *
- * @see WindowEvent
- * 
- * @since 3.0
- */ 
 public void hide(WindowEvent event) {
 }
-
-/**
- * This method is called when the Browser is requested to be displayed.
- * <p>
- *
- * @param event.widget the browser to display
- * @param event.location if not null, the requested location for the Shell hosting the browser
- * @param event.size if not null, the requested size for the Shell hosting the browser
- *
- * @see WindowEvent
- * 
- * @since 3.0
- */ 
+ 
 public void show(WindowEvent event) {
 }
 }
