@@ -181,3 +181,4 @@ char[] fixPercent (String string) {
 	}
 	return result;    
 }
+}
