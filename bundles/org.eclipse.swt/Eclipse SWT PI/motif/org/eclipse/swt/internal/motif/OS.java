@@ -107,7 +107,6 @@ public class OS {
 	public static final int LSBFirst = 0;
 	public static final int LeaveNotify = 8;
 	public static final int LeaveWindowMask = 1 << 5;
-	public static final int LineDoubleDash = 0x2;
 	public static final int LineOnOffDash = 0x1;
 	public static final int LineSolid = 0x0;
 	public static final int MSBFirst = 1;

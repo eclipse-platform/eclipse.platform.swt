@@ -2473,31 +2473,30 @@ public void setForeground (Color color) {
 public void setLineStyle(int lineStyle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
-	XGCValues values = new XGCValues ();
-	OS.XGetGCValues (xDisplay, handle, OS.GCLineWidth, values);
+	int line_style = OS.LineOnOffDash;
 	switch (lineStyle) {
 		case SWT.LINE_SOLID:
-			data.lineStyle = lineStyle;
-			OS.XSetLineAttributes(xDisplay, handle, values.line_width, OS.LineSolid, OS.CapButt, OS.JoinMiter);
-			return;
+			line_style = OS.LineSolid;
+			break;
 		case SWT.LINE_DASH:
-			OS.XSetDashes(xDisplay,handle,0, new byte[] {6, 2},2);
+			OS.XSetDashes(xDisplay, handle, 0, new byte[]{6, 2}, 2);
 			break;
 		case SWT.LINE_DOT:
-			OS.XSetDashes(xDisplay,handle,0, new byte[] {3, 1},2);
+			OS.XSetDashes(xDisplay, handle, 0, new byte[]{3, 1}, 2);
 			break;
 		case SWT.LINE_DASHDOT:
-			OS.XSetDashes(xDisplay,handle,0, new byte[] {6, 2, 3, 1},4);
+			OS.XSetDashes(xDisplay, handle, 0, new byte[]{6, 2, 3, 1}, 4);
 			break;
 		case SWT.LINE_DASHDOTDOT:
-			OS.XSetDashes(xDisplay,handle,0, new byte[] {6, 2, 3, 1, 3, 1},6);
+			OS.XSetDashes(xDisplay, handle, 0, new byte[]{6, 2, 3, 1, 3, 1}, 6);
 			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.lineStyle = lineStyle;
-	OS.XSetLineAttributes(xDisplay, handle, values.line_width, OS.LineOnOffDash, OS.CapButt, OS.JoinMiter);
-	
+	XGCValues values = new XGCValues();
+	OS.XGetGCValues(xDisplay, handle, OS.GCLineWidth, values);
+	OS.XSetLineAttributes(xDisplay, handle, values.line_width, line_style, OS.CapButt, OS.JoinMiter);
 }
 /** 
  * Sets the width that will be used when drawing lines
@@ -2513,11 +2512,8 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int width) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (data.lineStyle == SWT.LINE_SOLID) {
-		OS.XSetLineAttributes(data.display, handle, width, OS.LineSolid, OS.CapButt, OS.JoinMiter);
-	} else {
-		OS.XSetLineAttributes(data.display, handle, width, OS.LineDoubleDash, OS.CapButt, OS.JoinMiter);
-	}
+	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.LineSolid : OS.LineOnOffDash;
+	OS.XSetLineAttributes(data.display, handle, width, line_style, OS.CapButt, OS.JoinMiter);	
 }
 /** 
  * If the argument is <code>true</code>, puts the receiver
