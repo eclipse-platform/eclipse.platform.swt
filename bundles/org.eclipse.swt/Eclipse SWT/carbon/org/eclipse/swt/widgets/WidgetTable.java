@@ -9,7 +9,7 @@ import org.eclipse.swt.internal.carbon.*;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-public class WidgetTable {
+class WidgetTable {
 	static int FreeSlot = 0;
 	static int GrowSize = 1024;
 	static int [] IndexTable = new int [GrowSize];
