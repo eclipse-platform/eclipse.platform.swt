@@ -1996,7 +1996,7 @@ public void showSelection () {
 }
 
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.WS_TABSTOP | OS.LVS_SHAREIMAGELISTS | OS.WS_CLIPCHILDREN;
+	int bits = super.widgetStyle () | OS.LVS_SHAREIMAGELISTS | OS.WS_CLIPCHILDREN;
 	if ((style & SWT.HIDE_SELECTION) == 0) bits |= OS.LVS_SHOWSELALWAYS;
 	if ((style & SWT.SINGLE) != 0) bits |= OS.LVS_SINGLESEL;
 	/*

@@ -1487,7 +1487,7 @@ int wcsToMbcsPos (int wcsPos) {
 }
 
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.WS_TABSTOP;
+	int bits = super.widgetStyle ();
 	if ((style & SWT.READ_ONLY) != 0) bits |= OS.ES_READONLY;
 	if ((style & SWT.SINGLE) != 0) return bits | OS.ES_AUTOHSCROLL;
 	bits |= OS.ES_MULTILINE | OS.ES_AUTOHSCROLL | OS.ES_NOHIDESEL;	

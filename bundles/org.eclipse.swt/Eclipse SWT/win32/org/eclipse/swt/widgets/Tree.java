@@ -1029,7 +1029,7 @@ public void showSelection () {
 }
 
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.WS_TABSTOP | OS.TVS_SHOWSELALWAYS;
+	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS;
 	bits |= OS.TVS_LINESATROOT | OS.TVS_HASLINES | OS.TVS_HASBUTTONS;
 	/*
 	* This code is intentionally commented.  In future,

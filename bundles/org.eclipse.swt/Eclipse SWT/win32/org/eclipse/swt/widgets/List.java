@@ -1476,7 +1476,7 @@ public void showSelection () {
 }
 
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.WS_TABSTOP | OS.LBS_NOTIFY | OS.LBS_NOINTEGRALHEIGHT;
+	int bits = super.widgetStyle () | OS.LBS_NOTIFY | OS.LBS_NOINTEGRALHEIGHT;
 	if ((style & SWT.SINGLE) != 0) return bits;
 	if ((style & SWT.MULTI) != 0) {
 		if ((style & SWT.SIMPLE) != 0) return bits | OS.LBS_MULTIPLESEL;
