@@ -2019,9 +2019,9 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			if (wParam != 0) {
 				dispose ();
 				/*
-				* When the session is ending, no Java program can continue
-				* to run.  In order to avoid running code after the event
-				* loop has exited, exit from Java.
+				* When the session is ending, no SWT program can continue
+				* to run.  In order to avoid running code after the display
+				* has been disposed, exit from Java.
 				*/
 				System.exit (0);
 			}
