@@ -20,8 +20,6 @@ class PngChunk extends Object {
 	static final int LENGTH_FIELD_LENGTH = 4;
 	static final int MIN_LENGTH = 12;
 
-	static int[] crcTable;
-	
 	static final int CHUNK_UNKNOWN = -1;
 	// Critical chunks.
 	static final int CHUNK_IHDR = 0;
@@ -36,6 +34,21 @@ class PngChunk extends Object {
 	static final byte[] TYPE_IDAT = {(byte) 'I', (byte) 'D', (byte) 'A', (byte) 'T'};
 	static final byte[] TYPE_IEND = {(byte) 'I', (byte) 'E', (byte) 'N', (byte) 'D'};
 	static final byte[] TYPE_tRNS = {(byte) 't', (byte) 'R', (byte) 'N', (byte) 'S'};
+	
+	static final int[] CRC_TABLE;
+	static {
+		CRC_TABLE = new int[256];
+		for (int i = 0; i < 256; i++) {
+			CRC_TABLE[i] = i;
+			for (int j = 0; j < 8; j++) {
+				if ((CRC_TABLE[i] & 0x1) == 0) {
+					CRC_TABLE[i] = (CRC_TABLE[i] >> 1) & 0x7FFFFFFF;
+				} else {
+					CRC_TABLE[i] = 0xEDB88320 ^ ((CRC_TABLE[i] >> 1) & 0x7FFFFFFF);
+				}
+			}
+		}	
+	}
 	
 /**
  * Construct a PngChunk using the reference bytes
@@ -200,25 +213,12 @@ boolean checkCRC() {
  * Answer the CRC value of chunk's data.
  */
 int computeCRC() {
-	if (crcTable == null) {
-		crcTable = new int[256];
-		for (int i = 0; i < 256; i++) {
-			crcTable[i] = i;
-			for (int j = 0; j < 8; j++) {
-				if ((crcTable[i] & 0x1) == 0) {
-					crcTable[i] = (crcTable[i] >> 1) & 0x7FFFFFFF;
-				} else {
-					crcTable[i] = 0xEDB88320 ^ ((crcTable[i] >> 1) & 0x7FFFFFFF);
-				}
-			}
-		}	
-	}
 	int crc = 0xFFFFFFFF;
 	int start = TYPE_OFFSET;
 	int stop = DATA_OFFSET + getLength();
 	for (int i = start; i < stop; i++) {
 		int index = (crc ^ reference[i]) & 0xFF;
-		crc =  crcTable[index] ^ ((crc >> 8) & 0x00FFFFFF);
+		crc =  CRC_TABLE[index] ^ ((crc >> 8) & 0x00FFFFFF);
 	}
 	return ~crc;
 }
