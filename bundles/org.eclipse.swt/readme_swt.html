@@ -30,54 +30,69 @@ If the correct driver is installed for the wheel mouse, the extended messages ar
 cursor operations that are supported.
 
 <h4>
-99.1.2 Resource usage on Windows 98</h4>
+99.1.2 Available Colors on 8-bit Linux</h4>
 
-Although SWT is not inherently a heavy consumer of Windows GDI resources, applications that make
-extensive use of images may potentially cause the system to become resource limited  on Windows 98
-and Windows Me.  Efforts were made to minimize the impact of this in Eclipse, however, opening
-several perspectives can still cause it to happen.  Further work in this area is ongoing.
-
-<h4>
-99.1.3 Available Colors on 8-bit Linux</h4>
-
-Typically, in Gnome Linux installs running with 8 bit plain visuals (i.e. 256 color mode), before the 
+Typically, in Gnome Linux installs running with 8 bitplain visuals (i.e. 256 color mode), before the 
 Eclipse application is started, you already do not have any free colors.  This may mean that Eclipse
 is unable to allocate the default widget background color causing it to display a white background. 
 The functionality,  however, is not affected.
 
 <h4>
-99.1.4 Motif Accelerators</h4>
+99.1.3 Motif Accelerators</h4>
 
 Keyboard accelerators on motif are sensitive to the state of all modifier keys such as the Caps Lock, 
 Num Lock and Scroll Lock keys.  For example, Ctrl 'S' is not the same as Ctrl 'S' with the Num Lock key on.  
 If keyboard accelerators appear to not be working, please check the state of all other modifier keys.
 
 <h4>
-99.1.5 Printing Support</h4>
+99.1.4 XInitThreads and Linux</h4>
 
-Although printing is not used by Eclipse, SWT provides printing support on Win32 platforms.  
-See org.eclipse.swt.printing for more information.
+SWT makes use of the XInitThreads system function to allow graphics routines to
+be invoked from non-user-interface threads. However, the implementation of XInitThreads
+on Linux has several issues, which cause the following SWT problems:
+
+<dl>
+<dt><b>Printing Support</b></dt>
+<dd>The X printing extension implementation on Linux currently does not work for applications
+    which are XInitThreads enabled. This makes it impossible for us to provide printing
+    support on Linux. Until this is rectified, <code>Printer.getPrinterList()</code> will
+    always return an empty array on the Linux platform.</dd>
+<dt><b>Drag and Drop</b></dt>
+<dd>On Motif, SWT only supports dragging between windows running on the same system process.
+    In particular, dragging a file between Eclipse and another application will cause the
+    drop target application to hang. This is a result of a bug in the Motif libraries for
+    applications that are running XInitThreads.</dd>
+<dt><b>IME Support</b></dt>
+<dd>The Japanese IME support provided by Linux is currently incompatible with applications
+    which are XInitThreads enabled, and will cause them to hang.</dd>
+</dl>
 
 <h4>
-99.1.6 Drag and Drop on Motif</h4>
-
-On Motif, SWT only supports dragging between windows running on the same system process.  In particular, 
-dragging a file between Eclipse and another application will cause the drop target application to hang.  This is a result of 
-a bug in the Motif libraries for applications that are running multi-threaded (i.e. XInitThreads), which we have not yet been
-able to workaround.
-
-<h4>
-99.1.7  Disposing in a Focus Event</h4>
+99.1.5 Disposing in a Focus Event</h4>
 
 Applications should not dispose widgets in focus changing events.  Doing so  on Motif may cause Eclipse to terminate,
 since Motif accesses the disposed widget within their internal focus change event handler.
 Similar but less serious issues exist on Windows such that occasionally an SWT exception can be thrown.
 
 <h4>
-99.1.7  List and ComboBox on Windows NT</h4>
+99.1.6 List and ComboBox on Windows NT</h4>
 
 On Windows NT only, you should avoid creating items in a List or ComboBox with strings longer than 1000 characters.
 Doing so may result in a General Protection Fault.  This has been fixed in more recent versions of Windows.
+
+<h4>
+99.1.7 BiDi Support</h4>
+
+The StyledText widget now provides bidirectional language support for Hebrew and Arabic locales.
+Currently, this support is available only on win32, and has several known problems. It should be
+considered to be a preliminary implementation only.
+
+<h4>
+99.1.8 Location of .c and .h files</h4>
+
+In previous releases, the .c and .h files which were used to create the SWT DLL (or .so) were
+included in the SWT.JAR file. This was counter-intuitive, and gratuitously increased the size
+of the JAR. These files have been moved to the SWTSRC.ZIP file where they belong.
 
 <p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
