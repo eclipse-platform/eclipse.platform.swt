@@ -2879,26 +2879,6 @@ public static final native void PtCalcBorder (int widget, PhRect_t rect);
 
 public static final native int PtPane ();
 
-public static final native int PtTree ();
-public static final native int PtTreeAllocItem (int tree, byte[] str, short set_img, short unset_img);
-public static final native int PtTreeModifyItem (int tree, int item, byte[] str, short set_img, short unset_img);
-public static final native int PtTreeModifyItemString (int tree, int item, byte[] string);
-public static final native int PtTreeFreeItems (int items);
-public static final native int PtTreeAddFirst (int tree, int item, int parent);
-public static final native int PtTreeAddAfter (int tree, int item, int brother);
-public static final native int PtTreeExpand (int tree, int item, int event);
-public static final native int PtTreeCollapse (int tree, int item, int event);
-public static final native void PtTreeRemoveItem (int tree, int item);
-public static final native void PtTreeFreeAllItems (int tree);
-public static final native int PtTreeRootItem (int tree);
-public static final native void PtTreeClearSelection (int tree);
-public static final native void PtTreeSelect (int tree, int item);
-public static final native int PtTreeSetSelIndexes (int widget, int []buffer, int count );
-public static final native int PtTreeSelectedItems (int widget, int buffer);
-
-public static final native void memmove (PtTreeItem_t dest, int src, int size);
-public static final native void memmove (int dest, PtTreeItem_t src, int size);
-
 public static final native void memmove (PgMap_t dest, int src, int size);
 public static final native void memmove (int dest, PgMap_t src, int size);
 
@@ -2988,9 +2968,6 @@ public static final native void PhClipboardPasteFinish (int cbdata);
 public static final native int PtHold ();
 public static final native int PtRelease ();
 
-//public static final native void memmove (int dest, PtTreeCallback_t src, int size);
-public static final native void memmove (PtTreeCallback_t dest, int src, int size);
-public static final native int PtTreeShow(int widget, int item );
 public static final native void PhMoveCursorAbs (int input_group, int x, int y );
 public static final native int getenv(byte[] name);
 public static final native int PhDCSetCurrent(int draw_context);

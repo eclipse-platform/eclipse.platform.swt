@@ -31,7 +31,6 @@ PhArea_t_FID_CACHE PhArea_tFc;
 PtFileSelectionInfo_t_FID_CACHE PtFileSelectionInfo_tFc;
 PgAlpha_t_FID_CACHE PgAlpha_tFc;
 PtTextCallback_t_FID_CACHE PtTextCallback_tFc;
-PtTreeItem_t_FID_CACHE PtTreeItem_tFc;
 PgMap_t_FID_CACHE PgMap_tFc;
 PtColorSelectInfo_t_FID_CACHE PtColorSelectInfo_tFc;
 PhRegion_t_FID_CACHE PhRegion_tFc;
@@ -40,7 +39,6 @@ PhCursorDef_t_FID_CACHE PhCursorDef_tFc;
 PgDisplaySettings_t_FID_CACHE PgDisplaySettings_tFc;
 PgVideoModeInfo_t_FID_CACHE PgVideoModeInfo_tFc;
 PhClipHeader_FID_CACHE PhClipHeaderFc;
-PtTreeCallback_t_FID_CACHE PtTreeCallback_tFc;
 
 void cachePhPoint_tFids(JNIEnv *env, jobject lpObject, PPhPoint_t_FID_CACHE lpCache)
 {
@@ -909,59 +907,6 @@ void setPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *
 	(*env)->SetIntField(env, lpObject, lpCache->text, (jint)lpStruct->text);
 	(*env)->SetIntField(env, lpObject, lpCache->doit, lpStruct->doit);
 }
-void cachePtTreeItem_tFids(JNIEnv *env, jobject lpObject, PPtTreeItem_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->list_flags = (*env)->GetFieldID(env, lpCache->clazz, "list_flags", "I");
-	lpCache->list_size_w = (*env)->GetFieldID(env, lpCache->clazz, "list_size_w", "S");
-	lpCache->list_size_h = (*env)->GetFieldID(env, lpCache->clazz, "list_size_h", "S");
-	lpCache->list_next = (*env)->GetFieldID(env, lpCache->clazz, "list_next", "I");
-	lpCache->list_prev = (*env)->GetFieldID(env, lpCache->clazz, "list_prev", "I");
-	lpCache->father = (*env)->GetFieldID(env, lpCache->clazz, "father", "I");
-	lpCache->son = (*env)->GetFieldID(env, lpCache->clazz, "son", "I");
-	lpCache->brother = (*env)->GetFieldID(env, lpCache->clazz, "brother", "I");
-	lpCache->dim_w = (*env)->GetFieldID(env, lpCache->clazz, "dim_w", "S");
-	lpCache->dim_h = (*env)->GetFieldID(env, lpCache->clazz, "dim_h", "S");
-	lpCache->img_set = (*env)->GetFieldID(env, lpCache->clazz, "img_set", "S");
-	lpCache->img_unset = (*env)->GetFieldID(env, lpCache->clazz, "img_unset", "S");
-	lpCache->data = (*env)->GetFieldID(env, lpCache->clazz, "data", "I");
-	lpCache->cached = 1;
-}
-
-void getPtTreeItem_tFields(JNIEnv *env, jobject lpObject, PtTreeItem_t *lpStruct, PPtTreeItem_t_FID_CACHE lpCache)
-{
-	lpStruct->gen.list.flags = (*env)->GetIntField(env, lpObject, lpCache->list_flags);
-	lpStruct->gen.list.size.w = (*env)->GetShortField(env, lpObject, lpCache->list_size_w);
-	lpStruct->gen.list.size.h = (*env)->GetShortField(env, lpObject, lpCache->list_size_h);
-	lpStruct->gen.list.next = (void *) (*env)->GetIntField(env, lpObject, lpCache->list_next);
-	lpStruct->gen.list.prev = (void *) (*env)->GetIntField(env, lpObject, lpCache->list_prev);
-	lpStruct->gen.father = (void *) (*env)->GetIntField(env, lpObject, lpCache->father);
-	lpStruct->gen.son = (void *) (*env)->GetIntField(env, lpObject, lpCache->son);
-	lpStruct->gen.brother = (void *) (*env)->GetIntField(env, lpObject, lpCache->brother);
-	lpStruct->gen.dim.w = (*env)->GetShortField(env, lpObject, lpCache->dim_w);
-	lpStruct->gen.dim.h = (*env)->GetShortField(env, lpObject, lpCache->dim_h);
-	lpStruct->attr.img.set = (*env)->GetShortField(env, lpObject, lpCache->img_set);
-	lpStruct->attr.img.unset = (*env)->GetShortField(env, lpObject, lpCache->img_unset);
-	lpStruct->data = (void *)(*env)->GetIntField(env, lpObject, lpCache->data);
-}
-
-void setPtTreeItem_tFields(JNIEnv *env, jobject lpObject, PtTreeItem_t *lpStruct, PPtTreeItem_t_FID_CACHE lpCache)
-{
-	(*env)->SetIntField(env, lpObject, lpCache->list_flags, lpStruct->gen.list.flags);
-	(*env)->SetShortField(env, lpObject, lpCache->list_size_w, lpStruct->gen.list.size.w);
-	(*env)->SetShortField(env, lpObject, lpCache->list_size_h, lpStruct->gen.list.size.h);
-	(*env)->SetIntField(env, lpObject, lpCache->list_next, (int) lpStruct->gen.list.next);
-	(*env)->SetIntField(env, lpObject, lpCache->list_prev, (int) lpStruct->gen.list.prev);
-	(*env)->SetIntField(env, lpObject, lpCache->father, (int) lpStruct->gen.father);
-	(*env)->SetIntField(env, lpObject, lpCache->son, (int) lpStruct->gen.son);
-	(*env)->SetIntField(env, lpObject, lpCache->brother, (int) lpStruct->gen.brother);
-	(*env)->SetShortField(env, lpObject, lpCache->dim_w, lpStruct->gen.dim.w);
-	(*env)->SetShortField(env, lpObject, lpCache->dim_h, lpStruct->gen.dim.h);
-	(*env)->SetShortField(env, lpObject, lpCache->img_set, lpStruct->attr.img.set);
-	(*env)->SetShortField(env, lpObject, lpCache->img_unset, lpStruct->attr.img.unset);
-	(*env)->SetIntField(env, lpObject, lpCache->data, (int) lpStruct->data);
-}
 	
 void cachePgMap_tFids(JNIEnv *env, jobject lpObject, PPgMap_t_FID_CACHE lpCache)
 {
@@ -1382,47 +1327,3 @@ void setPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct
 	(*env)->SetByteField(env, lpObject, lpCache->type_0, lpStruct->type[0]);
 }
 
-void cachePtTreeCallback_tFids(JNIEnv *env, jobject lpObject, PPtTreeCallback_t_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->sel_mode = (*env)->GetFieldID(env, lpCache->clazz, "sel_mode", "I");
-	lpCache->item = (*env)->GetFieldID(env, lpCache->clazz, "item", "I");
-	lpCache->nitems = (*env)->GetFieldID(env, lpCache->clazz, "nitems", "I");
-	lpCache->expand = (*env)->GetFieldID(env, lpCache->clazz, "expand", "I");
-	lpCache->click_count = (*env)->GetFieldID(env, lpCache->clazz, "click_count", "I");
-	lpCache->old_iflags = (*env)->GetFieldID(env, lpCache->clazz, "old_iflags", "I");
-	lpCache->new_iflags = (*env)->GetFieldID(env, lpCache->clazz, "new_iflags", "I");
-	lpCache->column = (*env)->GetFieldID(env, lpCache->clazz, "column", "I");
-	lpCache->cattr = (*env)->GetFieldID(env, lpCache->clazz, "cattr", "I");
-	lpCache->cached = 1;
-}
-
-PtTreeCallback_t* getPtTreeCallback_tFields(JNIEnv *env, jobject lpObject, PtTreeCallback_t *lpStruct, PPtTreeCallback_t_FID_CACHE lpCache)
-{
-	if (!lpCache->cached) cachePtTreeCallback_tFids(env, lpObject, lpCache);
-	lpStruct->sel_mode = (*env)->GetIntField(env, lpObject, lpCache->sel_mode);
-	lpStruct->item = (PtTreeItem_t *)(*env)->GetIntField(env, lpObject, lpCache->item);
-	lpStruct->nitems = (*env)->GetIntField(env, lpObject, lpCache->nitems);
-	lpStruct->expand = (*env)->GetIntField(env, lpObject, lpCache->expand);
-	lpStruct->click_count = (*env)->GetIntField(env, lpObject, lpCache->click_count);
-	lpStruct->old_iflags = (*env)->GetIntField(env, lpObject, lpCache->old_iflags);
-	lpStruct->new_iflags = (*env)->GetIntField(env, lpObject, lpCache->new_iflags);
-	lpStruct->column = (*env)->GetIntField(env, lpObject, lpCache->column);
-	lpStruct->cattr = (PtTreeColumnAttributes_t const *)(*env)->GetIntField(env, lpObject, lpCache->cattr);
-	return lpStruct;
-}
-
-void setPtTreeCallback_tFields(JNIEnv *env, jobject lpObject, PtTreeCallback_t *lpStruct, PPtTreeCallback_t_FID_CACHE lpCache)
-{
-	if (!lpCache->cached) cachePtTreeCallback_tFids(env, lpObject, lpCache);
-	(*env)->SetIntField(env, lpObject, lpCache->sel_mode, lpStruct->sel_mode);
-	(*env)->SetIntField(env, lpObject, lpCache->item, (jint)lpStruct->item);
-	(*env)->SetIntField(env, lpObject, lpCache->nitems, lpStruct->nitems);
-	(*env)->SetIntField(env, lpObject, lpCache->expand, lpStruct->expand);
-	(*env)->SetIntField(env, lpObject, lpCache->click_count, lpStruct->click_count);
-	(*env)->SetIntField(env, lpObject, lpCache->old_iflags, lpStruct->old_iflags);
-	(*env)->SetIntField(env, lpObject, lpCache->new_iflags, lpStruct->new_iflags);
-	(*env)->SetIntField(env, lpObject, lpCache->column, lpStruct->column);
-	(*env)->SetIntField(env, lpObject, lpCache->cattr, (jint)lpStruct->cattr);
-}

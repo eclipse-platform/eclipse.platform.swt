@@ -229,18 +229,6 @@ void cachePtTextCallback_tFids(JNIEnv *env, jobject lpObject, PPtTextCallback_t_
 void getPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *lpStruct, PPtTextCallback_t_FID_CACHE lpCache);
 void setPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *lpStruct, PPtTextCallback_t_FID_CACHE lpCache);
 
-/* PtTreeItem_t struct */
-typedef struct PtTreeItem_t_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID list_flags, list_size_w, list_size_h, list_next, list_prev, father, son, brother, dim_w, dim_h, img_set, img_unset, data;
-} PtTreeItem_t_FID_CACHE;
-typedef PtTreeItem_t_FID_CACHE *PPtTreeItem_t_FID_CACHE;
-
-void cachePtTreeItem_tFids(JNIEnv *env, jobject lpObject, PPtTreeItem_t_FID_CACHE lpCache);
-void getPtTreeItem_tFields(JNIEnv *env, jobject lpObject, PtTreeItem_t *lpStruct, PPtTreeItem_t_FID_CACHE lpCache);
-void setPtTreeItem_tFields(JNIEnv *env, jobject lpObject, PtTreeItem_t *lpStruct, PPtTreeItem_t_FID_CACHE lpCache);
-
 /* PgMap_t struct */
 typedef struct PgMap_t_FID_CACHE {
 	int cached;
@@ -336,18 +324,6 @@ void cachePhClipHeaderFids(JNIEnv *env, jobject lpObject, PPhClipHeader_FID_CACH
 void getPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache);
 void setPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache);
 
-/* PtTreeCallback_t struct */
-typedef struct PtTreeCallback_t_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID sel_mode, item, nitems, expand, click_count, old_iflags, new_iflags, column, cattr;
-} PtTreeCallback_t_FID_CACHE;
-typedef PtTreeCallback_t_FID_CACHE *PPtTreeCallback_t_FID_CACHE;
-
-void cachePtTreeCallback_tFids(JNIEnv *env, jobject lpObject, PPtTreeCallback_t_FID_CACHE lpCache);
-PtTreeCallback_t* getPtTreeCallback_tFields(JNIEnv *env, jobject lpObject, PtTreeCallback_t *lpStruct, PPtTreeCallback_t_FID_CACHE lpCache);
-void setPtTreeCallback_tFields(JNIEnv *env, jobject lpObject, PtTreeCallback_t *lpStruct, PPtTreeCallback_t_FID_CACHE lpCache);
-
 extern PhPoint_t_FID_CACHE PhPoint_tFc;
 extern PhRect_t_FID_CACHE PhRect_tFc;
 extern PhTile_t_FID_CACHE PhTile_tFc;
@@ -366,7 +342,6 @@ extern PhArea_t_FID_CACHE PhArea_tFc;
 extern PtFileSelectionInfo_t_FID_CACHE PtFileSelectionInfo_tFc;
 extern PgAlpha_t_FID_CACHE PgAlpha_tFc;
 extern PtTextCallback_t_FID_CACHE PtTextCallback_tFc;
-extern PtTreeItem_t_FID_CACHE PtTreeItem_tFc;
 extern PgMap_t_FID_CACHE PgMap_tFc;
 extern PtColorSelectInfo_t_FID_CACHE PtColorSelectInfo_tFc;
 extern PhRegion_t_FID_CACHE PhRegion_tFc;
@@ -375,6 +350,5 @@ extern PhCursorDef_t_FID_CACHE PhCursorDef_tFc;
 extern PgDisplaySettings_t_FID_CACHE PgDisplaySettings_tFc;
 extern PgVideoModeInfo_t_FID_CACHE PgVideoModeInfo_tFc;
 extern PhClipHeader_FID_CACHE PhClipHeaderFc;
-extern PtTreeCallback_t_FID_CACHE PtTreeCallback_tFc;
 
 #endif // INC_structs_H

@@ -218,7 +218,6 @@ public class Display extends Device {
 	static int PtProgress;
 	static int PtPanelGroup;
 	static int PtPane;
-	static int PtTree;
 	static int PtSlider;
 	static int PtSeparator;
 	static int PtToolbar;
@@ -996,7 +995,6 @@ void initializeWidgetClasses () {
 		OS.PtCreateWidgetClass (OS.PtProgress (), 0, args.length / 3, args), 0, 0,
 		OS.PtCreateWidgetClass (OS.PtPanelGroup (), 0, args.length / 3, args), 0, 0,
 		OS.PtCreateWidgetClass (OS.PtPane (), 0, args.length / 3, args), 0, 0,
-		OS.PtCreateWidgetClass (OS.PtTree (), 0, args.length / 3, args), 0, 0,
 		OS.PtCreateWidgetClass (OS.PtSlider (), 0, args.length / 3, args), 0, 0,
 		OS.PtCreateWidgetClass (OS.PtSeparator (), 0, args.length / 3, args), 0, 0,
 		OS.PtCreateWidgetClass (OS.PtToolbar (), 0, args.length / 3, args), 0, 0,
@@ -1018,10 +1016,9 @@ void initializeWidgetClasses () {
 	PtProgress = ClassesPtr + 144;
 	PtPanelGroup = ClassesPtr + 156;
 	PtPane = ClassesPtr + 168;
-	PtTree = ClassesPtr + 180;
-	PtSlider = ClassesPtr + 192;
-	PtSeparator = ClassesPtr + 204;
-	PtToolbar = ClassesPtr + 216;
+	PtSlider = ClassesPtr + 180;
+	PtSeparator = ClassesPtr + 192;
+	PtToolbar = ClassesPtr + 204;
 }
 
 void initializeWidgetColors () {
