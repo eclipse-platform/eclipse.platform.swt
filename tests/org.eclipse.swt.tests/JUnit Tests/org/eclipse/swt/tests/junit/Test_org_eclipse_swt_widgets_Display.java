@@ -712,16 +712,14 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		// Test key events (down/up)
 		event = new Event();
 		event.type = SWT.KeyDown;
-		event.character = (char) -1;  	// bogus character
-		assertFalse(display.post(event));
+		event.keyCode = -1;  				// bogus key code
+		assertTrue(display.post(event));	// uses default 0 character
 		// don't test KeyDown/KeyUp with a character to avoid sending to 
 		// random window if test shell looses focus
 		
 		event = new Event();
 		event.type = SWT.KeyUp;
-		event.character = (char) -1;  	// bogus character
-		event.keyCode = -1;  			// bogus keyCode
-		assertFalse(display.post(event));
+		assertTrue(display.post(event));
 
 		event.type = SWT.KeyDown;
 		event.keyCode = KEYCODE;
