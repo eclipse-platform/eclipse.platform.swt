@@ -188,7 +188,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		} else {
 			extra = Math.max (8, lptm.tmAveCharWidth);
 			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
-			OS.GetWindowText (handle, buffer, buffer.length ());
+			OS.GetWindowText (handle, buffer, length + 1);
 			RECT rect = new RECT ();
 			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
 			OS.DrawText (hDC, buffer, length, rect, flags);

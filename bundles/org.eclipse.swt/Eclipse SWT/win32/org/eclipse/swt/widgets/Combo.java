@@ -318,7 +318,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int length = OS.GetWindowTextLength (handle);
 	int cp = getCodePage ();
 	TCHAR buffer = new TCHAR (cp, length + 1);
-	OS.GetWindowText (handle, buffer, length);
+	OS.GetWindowText (handle, buffer, length + 1);
 	OS.DrawText (hDC, buffer, length, rect, flags);
 	width = Math.max (width, rect.right - rect.left);
 	for (int i=0; i<count; i++) {
