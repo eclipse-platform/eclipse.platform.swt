@@ -22,8 +22,8 @@ public class CDE extends Platform {
 	public static final String DtDTS_DA_NAME_TEMPLATE = "NAME_TEMPLATE";
 
 /** Natives */
-public static final native boolean _DtAppInitialize(int appContext, int display, int topWiget, byte[] appName, byte[] appClass);
-public static final boolean DtAppInitialize(int appContext, int display, int topWiget, byte[] appName, byte[] appClass) {
+public static final native boolean _DtAppInitialize(int /*long*/ appContext, int /*long*/ display, int /*long*/ topWiget, byte[] appName, byte[] appClass);
+public static final boolean DtAppInitialize(int /*long*/ appContext, int /*long*/ display, int /*long*/ topWiget, byte[] appName, byte[] appClass) {
 	lock.lock();
 	try {
 		return _DtAppInitialize(appContext, display, topWiget, appName, appClass);
@@ -76,8 +76,8 @@ public static final int DtDtsDataTypeToAttributeValue(byte[] dataType, byte[] at
 		lock.unlock();
 	}
 }
-public static final native void _DtDtsFreeDataType(int dataType);
-public static final void DtDtsFreeDataType(int dataType) {
+public static final native void _DtDtsFreeDataType(int /*long*/ dataType);
+public static final void DtDtsFreeDataType(int /*long*/ dataType) {
 	lock.lock();
 	try {
 		_DtDtsFreeDataType(dataType);
@@ -85,8 +85,8 @@ public static final void DtDtsFreeDataType(int dataType) {
 		lock.unlock();
 	}
 }
-public static final native void _DtDtsFreeDataTypeNames(int dataTypeList);
-public static final void DtDtsFreeDataTypeNames(int dataTypeList) {
+public static final native void _DtDtsFreeDataTypeNames(int /*long*/ dataTypeList);
+public static final void DtDtsFreeDataTypeNames(int /*long*/ dataTypeList) {
 	lock.lock();
 	try {
 		_DtDtsFreeDataTypeNames(dataTypeList);
@@ -94,8 +94,8 @@ public static final void DtDtsFreeDataTypeNames(int dataTypeList) {
 		lock.unlock();
 	}
 }
-public static final native void _DtDtsFreeAttributeValue(int attrValue);
-public static final void DtDtsFreeAttributeValue(int attrValue) {
+public static final native void _DtDtsFreeAttributeValue(int /*long*/ attrValue);
+public static final void DtDtsFreeAttributeValue(int /*long*/ attrValue) {
 	lock.lock();
 	try {
 		_DtDtsFreeAttributeValue(attrValue);
@@ -103,8 +103,8 @@ public static final void DtDtsFreeAttributeValue(int attrValue) {
 		lock.unlock();
 	}
 }
-public static final native int _DtActionInvoke(int topWidget, byte[] action, DtActionArg args, int argCount, byte[] termOpts, byte[] execHost, byte[] contextDir, int useIndicator, int callback, int clientData);
-public static final int DtActionInvoke(int topWidget, byte[] action, DtActionArg args, int argCount, byte[] termOpts, byte[] execHost, byte[] contextDir, int useIndicator, int callback, int clientData) {
+public static final native int _DtActionInvoke(int /*long*/ topWidget, byte[] action, DtActionArg args, int argCount, byte[] termOpts, byte[] execHost, byte[] contextDir, int useIndicator, int /*long*/ callback, int /*long*/ clientData);
+public static final int DtActionInvoke(int /*long*/ topWidget, byte[] action, DtActionArg args, int argCount, byte[] termOpts, byte[] execHost, byte[] contextDir, int useIndicator, int /*long*/ callback, int /*long*/ clientData) {
 	lock.lock();
 	try {
 		return _DtActionInvoke(topWidget, action, args, argCount, termOpts, execHost, contextDir, useIndicator, callback, clientData);
@@ -121,8 +121,8 @@ public static final int topLevelShellWidgetClass() {
 		lock.unlock();
 	}
 }
-public static final native int _XtAppCreateShell(byte[] appName, byte[] appClass, int widgetClass, int display, int[] argList, int argCount);
-public static final int XtAppCreateShell(byte[] appName, byte[] appClass, int widgetClass, int display, int[] argList, int argCount) {
+public static final native int _XtAppCreateShell(byte[] appName, byte[] appClass, int /*long*/ widgetClass, int /*long*/ display, int /*long*/ [] argList, int argCount);
+public static final int XtAppCreateShell(byte[] appName, byte[] appClass, int /*long*/ widgetClass, int /*long*/ display, int /*long*/ [] argList, int argCount) {
 	lock.lock();
 	try {
 		return _XtAppCreateShell(appName, appClass, widgetClass, display, argList, argCount);
@@ -139,8 +139,8 @@ public static final int XtCreateApplicationContext() {
 		lock.unlock();
 	}
 }
-public static final native void _XtDisplayInitialize(int app_context, int display, byte[] appName, byte[] appClass, int options, int num_options, int[] argc, int argv);
-public static final void XtDisplayInitialize(int appContext, int display, byte[] appName, byte[] appClass, int options, int num_options, int[] argc, int argv) {
+public static final native void _XtDisplayInitialize(int /*long*/ app_context, int /*long*/ display, byte[] appName, byte[] appClass, int /*long*/ options, int num_options, int /*long*/ [] argc, int argv);
+public static final void XtDisplayInitialize(int /*long*/ appContext, int /*long*/ display, byte[] appName, byte[] appClass, int /*long*/ options, int num_options, int /*long*/ [] argc, int argv) {
 	lock.lock();
 	try {
 		_XtDisplayInitialize(appContext, display, appName, appClass, options, num_options, argc, argv);
@@ -148,8 +148,8 @@ public static final void XtDisplayInitialize(int appContext, int display, byte[]
 		lock.unlock();
 	}
 }
-public static final native void _XtRealizeWidget(int widget);
-public static final void XtRealizeWidget(int widget) {
+public static final native void _XtRealizeWidget(int /*long*/ widget);
+public static final void XtRealizeWidget(int /*long*/ widget) {
 	lock.lock();
 	try {
 		_XtRealizeWidget(widget);
@@ -157,8 +157,8 @@ public static final void XtRealizeWidget(int widget) {
 		lock.unlock();
 	}
 }
-public static final native void _XtResizeWidget(int widget, int width, int height, int borderWidth);
-public static final void XtResizeWidget(int widget, int width, int height, int borderWidth) {
+public static final native void _XtResizeWidget(int /*long*/ widget, int width, int height, int borderWidth);
+public static final void XtResizeWidget(int /*long*/ widget, int width, int height, int borderWidth) {
 	lock.lock();
 	try {
 		_XtResizeWidget(widget, width, height, borderWidth);
@@ -166,8 +166,8 @@ public static final void XtResizeWidget(int widget, int width, int height, int b
 		lock.unlock();
 	}
 }
-public static final native void _XtSetMappedWhenManaged(int widget, boolean flag);
-public static final void XtSetMappedWhenManaged(int widget, boolean flag) {
+public static final native void _XtSetMappedWhenManaged(int /*long*/ widget, boolean flag);
+public static final void XtSetMappedWhenManaged(int /*long*/ widget, boolean flag) {
 	lock.lock();
 	try {
 		_XtSetMappedWhenManaged(widget, flag);
