@@ -269,6 +269,34 @@ public String getText () {
 	return text;
 }
 
+void hookEvents () {
+	//TO DO - get rid of enter/exit for mouse crossing border
+	super.hookEvents();
+	if (labelHandle != 0) {
+		Display display = getDisplay ();
+		int windowProc3 = display.windowProc3;
+		OS.gtk_signal_connect (labelHandle, OS.mnemonic_activate, windowProc3, SWT.Activate);
+	}
+}
+
+int processActivate (int int0, int int1, int int2) {
+	Composite control = this.parent;
+	while (control != null) {
+		Control [] children = control._getChildren ();
+		int index = 0;
+		while (index < children.length) {
+			if (children [index] == this) break;
+			index++;
+		}
+		index++;
+		if (index < children.length) {
+			if (children [index].setFocus ()) return 1;
+		}
+		control = control.parent;
+	}
+	return 1;
+}
+
 void register () {
 	super.register ();
 	if (frameHandle != 0) WidgetTable.put (frameHandle, this);

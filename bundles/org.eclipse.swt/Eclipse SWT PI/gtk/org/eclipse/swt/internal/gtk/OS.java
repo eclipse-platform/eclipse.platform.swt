@@ -225,6 +225,7 @@ public class OS {
 	public static final byte[] key_release_event = signal("key_release_event");
 	public static final byte[] leave_notify_event = signal("leave_notify_event");
 	public static final byte[] map_event = signal("map_event");
+	public static final byte[] mnemonic_activate = signal("mnemonic_activate");
 	public static final byte[] motion_notify_event = signal("motion_notify_event");
 	public static final byte[] popup_menu = signal("popup_menu");
 	public static final byte[] select = signal("select");
