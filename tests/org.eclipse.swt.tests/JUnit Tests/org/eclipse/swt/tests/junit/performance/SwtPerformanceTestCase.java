@@ -44,7 +44,7 @@ protected PerformanceMeter createMeter(String id) {
 	String scenarioId = performance.getDefaultScenarioId(this);
 	if (id != null) scenarioId += ": " + id;
 	PerformanceMeter meter = performance.createPerformanceMeter(scenarioId);
-	performance.tagAsSummary(meter, id, Dimension.CPU_TIME);
+	performance.tagAsSummary(meter, scenarioId, Dimension.CPU_TIME);
 	return meter;
 }
 
