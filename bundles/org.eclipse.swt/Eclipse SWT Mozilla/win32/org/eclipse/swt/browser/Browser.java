@@ -687,6 +687,11 @@ void disposeCOMInterfaces() {
 	}
 }
 
+static Browser findBrowser(int /*long*/ handle) {
+	Display display = Display.getCurrent();
+	return (Browser)display.findWidget(handle); 
+}
+
 /**
  * Navigate to the next session history item.
  *
