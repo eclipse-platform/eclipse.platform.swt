@@ -621,7 +621,24 @@ void createHandle (int index) {
 	}
 	OS.XtFree (ptr);
 	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
+	if (handle != 0) {
+		OS.XtSetMappedWhenManaged (shellHandle, false);
+		OS.XtRealizeWidget (shellHandle);
+		OS.XtSetMappedWhenManaged (shellHandle, true);
+		int xDisplay = display.xDisplay;
+		int xWindow = OS.XtWindow (shellHandle);
+		if (xWindow == 0) error (SWT.ERROR_NO_HANDLES);
+		/*
+		* NOTE:  The embedded parent handle must be realized
+		* before embedding and cannot be realized here because
+		* the handle belongs to another thread.
+		*/
+		int xParent = OS.XtWindow (handle);
+		if (xParent == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.XReparentWindow (xDisplay, xWindow, xParent, 0, 0);
+		handle = 0;
+	}
+	
 	/* Create scrolled handle */
 	createScrolledHandle (shellHandle);
 
@@ -1333,7 +1350,9 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
 	OS.memmove (xEvent, call_data, XFocusChangeEvent.sizeof);
 	int handle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
-	if (handle != shellHandle) return super.XFocusChange (w, client_data, call_data, continue_to_dispatch);
+	if (handle != shellHandle) {
+		return super.XFocusChange (w, client_data, call_data, continue_to_dispatch);
+	}
 	if (xEvent.mode != OS.NotifyNormal) return 0;
 	switch (xEvent.detail) {
 		case OS.NotifyNonlinear:

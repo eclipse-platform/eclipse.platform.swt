@@ -9097,3 +9097,11 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeStringList
 
     XFreeStringList((char **)list);
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XReparentWindow
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("XReparentWindow\n")
+
+	return (jint)XReparentWindow((Display *)arg0, (Window)arg1, (Window)arg2, arg3, arg4);
+}

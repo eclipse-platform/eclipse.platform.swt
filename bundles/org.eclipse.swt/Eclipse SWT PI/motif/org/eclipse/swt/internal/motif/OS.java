@@ -1034,6 +1034,7 @@ public static final synchronized native int XQueryTree (int display, int window,
 public static final synchronized native int XRaiseWindow (int display, int window);
 public static final synchronized native int XReconfigureWMWindow (int display, int window, int screen, int valueMask, XWindowChanges values);
 public static final synchronized native int XRectInRegion (int region, int x, int y, int width, int height);
+public static final synchronized native int XReparentWindow (int display, int win, int parent, int x, int y);
 public static final synchronized native void XSetBackground (int display, int gc, int background);
 public static final synchronized native void XSetClipMask (int display, int gc, int pixmap);
 public static final synchronized native void XSetClipRectangles (int display, int gc, int clip_x_origin, int clip_y_origin, XRectangle rectangles, int n, int ordering);
