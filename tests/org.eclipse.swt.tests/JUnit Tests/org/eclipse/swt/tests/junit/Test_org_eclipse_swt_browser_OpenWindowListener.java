@@ -37,12 +37,12 @@ protected void setUp() {
 protected void tearDown() {
 }
 
-public void test_openWindowLorg_eclipse_swt_browser_OpenWindowEvent() {
+public void test_openWindowLorg_eclipse_swt_browser_WindowEvent() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
 	browser.addOpenWindowListener(new OpenWindowListener() {
-		public void open(OpenWindowEvent event) {
+		public void open(WindowEvent event) {
 		}
 	});
 	shell.close();
@@ -61,11 +61,11 @@ public static Test suite() {
 
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("test_openWindowLorg_eclipse_swt_browser_OpenWindowEvent");
+	methodNames.addElement("test_openWindowLorg_eclipse_swt_browser_WindowEvent");
 	return methodNames;
 }
 
 protected void runTest() throws Throwable {
-	if (getName().equals("test_openWindowLorg_eclipse_swt_browser_OpenWindowEvent")) test_openWindowLorg_eclipse_swt_browser_OpenWindowEvent();
+	if (getName().equals("test_openWindowLorg_eclipse_swt_browser_WindowEvent")) test_openWindowLorg_eclipse_swt_browser_WindowEvent();
 }
 }

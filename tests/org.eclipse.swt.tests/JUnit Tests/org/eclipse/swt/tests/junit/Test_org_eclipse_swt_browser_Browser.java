@@ -65,7 +65,7 @@ public void test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListe
 	}
 	
 	CloseWindowListener listener = new CloseWindowListener() {
-		public void close(CloseWindowEvent event) {
+		public void close(WindowEvent event) {
 		}
 	};
 	for (int i = 0; i < 100; i++) browser.addCloseWindowListener(listener);
@@ -101,7 +101,7 @@ public void test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListene
 	}
 	
 	OpenWindowListener listener = new OpenWindowListener() {
-		public void open(OpenWindowEvent event) {
+		public void open(WindowEvent event) {
 		}
 	};
 	for (int i = 0; i < 100; i++) browser.addOpenWindowListener(listener);
@@ -154,9 +154,9 @@ public void test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityW
 	}
 	
 	VisibilityWindowListener listener = new VisibilityWindowListener() {
-		public void hide(VisibilityWindowEvent event) {
+		public void hide(WindowEvent event) {
 		}
-		public void show(VisibilityWindowEvent event) {
+		public void show(WindowEvent event) {
 		}
 	};
 	for (int i = 0; i < 100; i++) browser.addVisibilityWindowListener(listener);

@@ -32,7 +32,7 @@ public class Browser3 {
 		shell2.setLayout(new FillLayout());
 		final Browser browser2 = new Browser(shell2, SWT.NONE);
 		browser1.addOpenWindowListener(new OpenWindowListener() {
-			public void open(OpenWindowEvent event) {
+			public void open(WindowEvent event) {
 				openWindow = true;
 				Browser src = (Browser)event.widget;
 				if (src != browser1) {
@@ -71,12 +71,12 @@ public class Browser3 {
 			}
 		});
 		browser2.addVisibilityWindowListener(new VisibilityWindowListener() {
-			public void hide(VisibilityWindowEvent event) {
+			public void hide(WindowEvent event) {
 				System.out.println("Failure - did not expect VisibilityEvent.hide");
 				passed = false;
 				shell.close();
 			}
-			public void show(VisibilityWindowEvent event) {
+			public void show(WindowEvent event) {
 				if (!openWindow) {
 					System.out.println("Failure - VisibilityEvent.show received at wrong time");
 					passed = false;

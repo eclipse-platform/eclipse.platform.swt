@@ -36,16 +36,16 @@ public class Browser5 {
 		shell.setLayout(new FillLayout());
 		final Browser browser = new Browser(shell, SWT.NONE);
 		browser.addOpenWindowListener(new OpenWindowListener() {
-			public void open(OpenWindowEvent event) {
+			public void open(WindowEvent event) {
 				System.out.println("OpenWindow "+index);
 				Shell newShell = new Shell(display);
 				newShell.setLayout(new FillLayout());
 				Browser browser = new Browser(newShell, SWT.NONE);
 				browser.setData("index", new Integer(index));
 				browser.addVisibilityWindowListener(new VisibilityWindowListener() {
-					public void hide(VisibilityWindowEvent event) {
+					public void hide(WindowEvent event) {
 					}
-					public void show(VisibilityWindowEvent event) {
+					public void show(WindowEvent event) {
 						Browser browser = (Browser)event.widget;
 						Shell parent = browser.getShell();
 						if (event.location != null) parent.setLocation(event.location);
@@ -81,7 +81,7 @@ public class Browser5 {
 					}
 				});
 				browser.addCloseWindowListener(new CloseWindowListener() {
-					public void close(CloseWindowEvent event) {
+					public void close(WindowEvent event) {
 						cntClosed++;
 						System.out.println("Close");
 						Browser browser = (Browser)event.widget;
