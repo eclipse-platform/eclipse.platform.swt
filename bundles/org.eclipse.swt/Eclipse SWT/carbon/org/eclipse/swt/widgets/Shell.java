@@ -161,6 +161,7 @@ void createHandle () {
 	if (outWindow [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	shellHandle = outWindow [0];
 
+	OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
 	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
 
 	int inputMode = OS.kWindowModalityNone;

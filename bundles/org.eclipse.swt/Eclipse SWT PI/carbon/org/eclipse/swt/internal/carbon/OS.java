@@ -430,6 +430,7 @@ public class OS {
 	public static final int kWindowAlertPositionParentWindowScreen = 0x700A;
     public static final int kWindowBoundsChangeOriginChanged = 1<<3;
     public static final int kWindowBoundsChangeSizeChanged = 1<<2;
+    public static final int kWindowCascadeOnMainScreen = 4;
 	public static final int kWindowCloseBoxAttribute = (1 << 0);
 	public static final int kWindowCollapseBoxAttribute = (1 << 3);
 	public static final int kWindowCompositingAttribute = (1 << 19);
@@ -881,6 +882,7 @@ public static final native int RemoveDataBrowserItems(int cHandle, int container
 public static final native int RemoveDataBrowserTableViewColumn(int browser, int column);
 public static final native int RemoveEventHandler(int inHandlerRef);
 public static final native int RemoveEventLoopTimer(int inTimer);
+public static final native int RepositionWindow(int window, int parentWindow, int method);
 public static final native int RetainMenu(int mHandle);
 public static final native int RevealDataBrowserItem(int browser, int item, int property, byte options);
 public static final native int RunStandardAlert(int dialogHandle, int modalFilterUPP, short[] itemHit);

@@ -5355,6 +5355,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveEventLoopTi
 }
 #endif /* NO_RemoveEventLoopTimer */
 
+#ifndef NO_RepositionWindow
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RepositionWindow
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("RepositionWindow\n")
+
+	return (jint)RepositionWindow((WindowRef)arg0, (WindowRef)arg1, arg2);
+}
+#endif
+
 #ifndef NO_RetainMenu
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RetainMenu
 	(JNIEnv *env, jclass that, jint arg0)
