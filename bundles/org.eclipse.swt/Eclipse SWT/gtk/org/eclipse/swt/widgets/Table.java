@@ -1382,6 +1382,29 @@ int processMouseDown (int callData, int arg1, int int2) {
 	eventType = SWT.MouseDown;
 	sendMouseEvent (eventType, gdkEvent.button, gdkEvent.state, gdkEvent.time, where.x, where.y);
 	if (gdkEvent.button == 3 && menu != null) menu.setVisible (true);
+
+
+	if ((style&SWT.CHECK) != 0) {
+		GtkCList clist = new GtkCList ();
+		OS.memmove(clist, handle, GtkCList.sizeof);
+		int clientX = where.x;
+		int clientY = where.y - clist.column_title_area_height;
+		if (clientY <= 0) return 1;
+		int[] row = new int[1], column = new int[1];
+		row[0] = -1;
+		OS.gtk_clist_get_selection_info(handle, clientX, clientY, row, column);
+		if (row[0] == -1) return -1;
+		int leftmost = 2;
+		if (clientX < leftmost) return 1;
+		if (clientX > leftmost+check_width) return 1;
+		
+		TableItem item = items [row[0]];
+		item._setChecked(!item._getChecked());
+		Event event = new Event ();
+		event.detail = SWT.CHECK;
+		event.item = item;
+		postEvent (SWT.Selection, event);
+	}
 	return 1;
 }
 

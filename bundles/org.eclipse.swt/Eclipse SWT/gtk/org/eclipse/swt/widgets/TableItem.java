@@ -158,16 +158,23 @@ boolean isCheckable() {
 public boolean getChecked () {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int index = parent.indexOf (this);
-	if (index == -1) return false;
-	GtkCList gtkclist = new GtkCList();
-	OS.memmove(gtkclist, parent.handle, GtkCList.sizeof);
-	int chandle=gtkclist.row_list;
-	int data = OS.g_list_nth_data(chandle, index);
-	GtkCListRow gtkrow = new GtkCListRow();
-	OS.memmove(gtkrow, data, GtkCListRow.sizeof);
-	return (gtkrow.state == OS.GTK_STATE_SELECTED) ? true : false;
+	return _getChecked();
 }
+
+boolean _getChecked () {
+	int row = parent.indexOf (this);
+	if (row == -1) return false;
+	int clist = parent.handle;
+	
+	int[] text = new int[1];
+	int[] spacing = new int[1];
+	int[] pixmap = new int[1];
+	int[] mask = new int[1];
+	OS.gtk_clist_get_pixtext(clist, row, 0, text, spacing, pixmap, mask);
+	
+	return pixmap[0]==parent.check;
+}
+
 public Display getDisplay () {
 	Table parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);

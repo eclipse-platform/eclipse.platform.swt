@@ -364,6 +364,7 @@ public static final native void gtk_clist_column_title_passive(int clist, int co
 public static final native void gtk_clist_column_titles_show(int clist);
 public static final native void gtk_clist_column_titles_hide(int clist);
 public static final native void gtk_clist_freeze(int clist);
+public static final native void gtk_clist_get_pixtext(int clist, int row, int column, int[] text, int[] spacing, int[] pixmap, int[] mask);
 public static final native void gtk_check_menu_item_set_show_toggle(int menu_item, boolean always);
 public static final native void gtk_clist_column_titles_passive(int clist);
 public static final native void gtk_check_menu_item_set_active(int check_menu_item, boolean is_active);
