@@ -183,7 +183,7 @@ void createHandle (int index) {
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
 		int [] args = {
 			OS.Pt_ARG_FLAGS, OS.Pt_HIGHLIGHTED, OS.Pt_HIGHLIGHTED,
-			OS.Pt_ARG_BASIC_FLAGS, OS.Pt_ALL_OUTLINES, OS.Pt_ALL_OUTLINES,
+			OS.Pt_ARG_BASIC_FLAGS, OS.Pt_ALL_OUTLINES, ~0,
 		};
 		OS.PtSetResources (scrolledHandle, args.length / 3, args);
 	}

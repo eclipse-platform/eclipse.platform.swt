@@ -293,7 +293,7 @@ int processPaint (int damage) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
 			
 			/* Get the clipping tiles for children and siblings */
-			int clip_tile = getClipping (handle, topHandle (), true, true);
+			int clip_tile = getClipping (handle, scrolledHandle, true, true);
 
 			/* Translate the clipping to the current GC coordinates */
 			short [] abs_x = new short [1], abs_y = new short [1];
