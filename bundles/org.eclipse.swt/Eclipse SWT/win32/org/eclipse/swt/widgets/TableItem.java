@@ -211,8 +211,8 @@ public Rectangle getBounds (int index) {
 		OS.SendMessage (hwnd, OS.LVM_GETSUBITEMRECT, itemIndex, iconRect);	
 		rect.left = iconRect.left - gridWidth;
 	}
-	int width = Math.max (0, rect.right - rect.left - gridWidth * 2);
-	int height = Math.max (0, rect.bottom - rect.top - gridWidth * 2);
+	int width = Math.max (0, rect.right - rect.left - gridWidth);
+	int height = Math.max (0, rect.bottom - rect.top - gridWidth);
 	/*
 	* Bug in Windows.  In version 5.80 of COMCTL32.DLL, the top
 	* of the rectangle returned by LVM_GETSUBITEMRECT is off by
@@ -397,8 +397,8 @@ public Rectangle getImageBounds (int index) {
 	if (index == 0) {
 		rect.left -= gridWidth;
 	}
-	int width = Math.max (0, rect.right - rect.left - gridWidth * 2);
-	int height = Math.max (0, rect.bottom - rect.top - gridWidth * 2);
+	int width = Math.max (0, rect.right - rect.left - gridWidth);
+	int height = Math.max (0, rect.bottom - rect.top - gridWidth);
 	if (index != 0) {
 		LVITEM lvItem = new LVITEM ();
 		lvItem.mask = OS.LVIF_IMAGE;
@@ -477,13 +477,37 @@ public String getText (int index) {
 	return "";
 }
 
-void redraw () {
+void redraw (int column, boolean drawText, boolean drawImage) {
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (parent.ignoreRedraw || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
 	if (OS.IsWindowVisible (hwnd)) {
+		RECT rect = new RECT ();
 		int index = parent.indexOf (this);
-		OS.SendMessage (hwnd, OS.LVM_REDRAWITEMS, index, index);
+		if (column == -1) {
+			OS.SendMessage (hwnd, OS.LVM_REDRAWITEMS, index, index);
+		} else {
+			if (drawText) rect.left |= OS.LVIR_LABEL;
+			if (drawImage) rect.left |= OS.LVIR_ICON;
+			if (column == 0) {
+				if (OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, index, rect) != 0) {	
+					OS.InvalidateRect (hwnd, rect, true);
+				}
+			} else {
+				rect.top = column;
+				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, index, rect) != 0) {
+					if (drawText && !drawImage) {
+						RECT iconRect = new RECT ();
+						iconRect.left = OS.LVIR_ICON;
+						iconRect.top = column;
+						if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, index, iconRect) != 0) {
+							rect.left = iconRect.right;
+						}
+					}
+					OS.InvalidateRect (hwnd, rect, true);
+				}
+			}
+		}
 	}
 }
 
@@ -530,7 +554,7 @@ public void setBackground (Color color) {
 	}
 	if (background == pixel) return;
 	background = pixel;
-	redraw ();
+	redraw (-1, true, true);
 }
 
 /**
@@ -572,7 +596,7 @@ public void setBackground (int index, Color color) {
 	}
 	if (cellBackground [index] == pixel) return;
 	cellBackground [index] = pixel;
-	redraw ();
+	redraw (index, true, true);
 }
 
 /**
@@ -601,7 +625,7 @@ void setChecked (boolean checked, boolean notify) {
 		event.detail = SWT.CHECK;
 		parent.postEvent (SWT.Selection, event);
 	}
-	redraw ();
+	redraw (-1, true, true);
 }
 
 /**
@@ -657,7 +681,7 @@ public void setFont (Font font){
 		}
 	}
 	parent.setScrollWidth (this, false);
-	redraw ();
+	redraw (-1, true, true);
 }
 
 /**
@@ -725,7 +749,7 @@ public void setFont (int index, Font font) {
 		}
 		parent.setScrollWidth (this, false);
 	}	
-	redraw ();
+	redraw (index, true, true);
 }
 /**
  * Sets the receiver's foreground color to the color specified
@@ -757,7 +781,7 @@ public void setForeground (Color color){
 	}
 	if (foreground == pixel) return;
 	foreground = pixel;
-	redraw ();
+	redraw (-1, true, true);
 }
 
 /**
@@ -799,7 +823,7 @@ public void setForeground (int index, Color color){
 	}
 	if (cellForeground [index] == pixel) return;
 	cellForeground [index] = pixel;
-	redraw ();
+	redraw (index, true, true);
 }
 
 /**
@@ -818,7 +842,7 @@ public void setGrayed (boolean grayed) {
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
-	redraw ();
+	redraw (-1, true, true);
 }
 
 /**
@@ -881,7 +905,7 @@ public void setImage (int index, Image image) {
 	parent.imageIndex (image);
 	
 	if (index == 0) parent.setScrollWidth (this, false);
-	redraw ();
+	redraw (index, false, true);
 }
 
 public void setImage (Image image) {
@@ -917,7 +941,7 @@ public void setImageIndent (int indent) {
 		}
 	}
 	parent.setScrollWidth (this, false);
-	redraw ();
+	redraw (-1, true, true);
 }
 
 /**
@@ -995,7 +1019,7 @@ public void setText (int index, String string) {
 		}
 		parent.setScrollWidth (this, false);
 	}
-	redraw ();
+	redraw (index, true, false);
 }
 
 public void setText (String string) {
