@@ -24,7 +24,7 @@ DEBUG =
 CFLAGS = -c -shared -O2 -DSWT_VERSION=$(SWT_VERSION) -w8 $(DEBUG) -DPHOTON -I$(IVE_HOME)/include
 LFLAGS = -shared -lph -lphrender -lPtWeb
 
-SWT_OBJS = os.o os_structs.o os_custom.o os_stats.o callback.o
+SWT_OBJS = swt.o os.o os_structs.o os_custom.o os_stats.o callback.o
 
 all: $(SWT_LIB)
 
