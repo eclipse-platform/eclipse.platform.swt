@@ -12,10 +12,12 @@
 #include "gnome.h"
 
 #ifndef NO_GnomeVFSMimeApplication
+void cacheGnomeVFSMimeApplicationFields(JNIEnv *env, jobject lpObject);
 GnomeVFSMimeApplication *getGnomeVFSMimeApplicationFields(JNIEnv *env, jobject lpObject, GnomeVFSMimeApplication *lpStruct);
 void setGnomeVFSMimeApplicationFields(JNIEnv *env, jobject lpObject, GnomeVFSMimeApplication *lpStruct);
 #define GnomeVFSMimeApplication_sizeof() sizeof(GnomeVFSMimeApplication)
 #else
+#define cacheGnomeVFSMimeApplicationFields(a,b)
 #define getGnomeVFSMimeApplicationFields(a,b,c) NULL
 #define setGnomeVFSMimeApplicationFields(a,b,c)
 #define GnomeVFSMimeApplication_sizeof() 0
