@@ -1649,9 +1649,7 @@ public boolean isFocusControl () {
  */
 public boolean isVisible () {
 	checkWidget();
-	boolean result = getVisible ();
-	if (parent != null) result = result && parent.isVisible();
-	return result;
+	return getVisible () && parent.isVisible ();
 }
 
 Decorations menuShell () {

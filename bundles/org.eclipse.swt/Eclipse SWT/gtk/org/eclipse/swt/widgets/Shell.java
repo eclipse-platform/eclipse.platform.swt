@@ -496,6 +496,11 @@ void hookEvents () {
 	OS.gtk_signal_connect (shellHandle, OS.event, windowProc3, 0);
 }
 
+public boolean isVisible () {
+	checkWidget();
+	return getVisible ();
+}
+
 void register () {
 	super.register ();
 	WidgetTable.put (shellHandle, this);
