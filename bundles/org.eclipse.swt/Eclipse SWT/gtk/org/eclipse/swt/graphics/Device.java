@@ -28,9 +28,10 @@ public abstract class Device implements Drawable {
 	/* Warning and Error Handlers */
 	int logProc;
 	Callback logCallback;
-	String [] log_domains = {"Gtk", /*"Gdk", "GLib", "GdkPixbuf"*/};
+	//NOT DONE - get list of valid names
+	String [] log_domains = {"GLib-GObject", "GLib", "GObject", "Pango", "ATK", "GdkPixbuf", "Gdk", "Gtk"};
 	int [] handler_ids = new int [log_domains.length];
-	boolean warnings = true;
+	int warningLevel;
 	
 	/*
 	* The following colors are listed in the Windows
@@ -379,7 +380,7 @@ public Font getSystemFont () {
  */
 public boolean getWarnings () {
 	checkDevice ();
-	return this.warnings;
+	return warningLevel != 0;
 }
 
 protected void init () {
@@ -466,7 +467,7 @@ public boolean isDisposed () {
 }
 
 int logProc (int log_domain, int log_level, int message, int user_data) {
-	if (DEBUG || (debug && warnings)) {
+	if (DEBUG || (debug && warningLevel != 0)) {
 		new Error ().printStackTrace ();
 		OS.g_log_default_handler (log_domain, log_level, message, 0);
 	}
@@ -517,6 +518,7 @@ protected void release () {
 		if (handler_ids [i] != 0) {
 			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
 			OS.g_log_remove_handler (log_domain, handler_ids [i]);
+			handler_ids [i] = 0;
 		}
 	}
 	logCallback.dispose ();  logCallback = null;
@@ -538,19 +540,24 @@ protected void release () {
  */
 public void setWarnings (boolean warnings) {
 	checkDevice ();
-	this.warnings = warnings;
-	if (debug) return;
-	for (int i=0; i<handler_ids.length; i++) {
-		if (handler_ids [i] != 0) {
-			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
-			OS.g_log_remove_handler (log_domain, handler_ids [i]);
-		}
-	}
 	if (warnings) {
-		int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
-		for (int i=0; i<log_domains.length; i++) {
-			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
-			handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
+		if (--warningLevel == 0) {
+			if (debug) return;
+			for (int i=0; i<handler_ids.length; i++) {
+				if (handler_ids [i] != 0) {
+					byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+					OS.g_log_remove_handler (log_domain, handler_ids [i]);
+					handler_ids [i] = 0;
+				}
+			}
+		}
+	} else {
+		if (warningLevel++ == 0) {
+			int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
+			for (int i=0; i<log_domains.length; i++) {
+				byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+				handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
+			}
 		}
 	}
 }
