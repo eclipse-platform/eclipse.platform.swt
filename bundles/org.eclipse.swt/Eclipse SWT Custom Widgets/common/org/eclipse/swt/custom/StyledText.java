@@ -2100,7 +2100,9 @@ void drawStyledLine(String line, int lineOffset, int renderOffset, StyleRange[] 
 	for (int i = 0; i < styles.length && paintX < renderStopX; i++) {
 		int styleLineLength;
 		int styleLineStart;
+		int styleLineEnd;
 		style = styles[i];
+		styleLineEnd = style.start + style.length - lineOffset;
 		styleLineStart = Math.max(style.start - lineOffset, 0);
 		// render unstyled text between the start of the current 
 		// style range and the end of the previously rendered 
@@ -2113,17 +2115,18 @@ void drawStyledLine(String line, int lineOffset, int renderOffset, StyleRange[] 
 			paintX = drawText(line, lineOffset, renderOffset, styleLineStart - renderOffset, filteredStyles, paintX, paintY, gc);
 			renderOffset = styleLineStart;
 		}
-		styleLineLength = Math.min(style.start - lineOffset + style.length, lineLength) - renderOffset;
-		if (styleLineLength == 0) {
+		else
+		if (styleLineEnd <= renderOffset) {
+			// style ends before render start offset
+			// skip to the next style
+			continue;
+		}
+		if (styleLineStart >= lineLength) {
 			// there are line styles but no text for those styles
 			// possible when called with partial line text
 			break;
-		}
-		else 
-		if (styleLineLength < 0) {
-			// style ends before render start offset
-			continue;
-		}
+		}		
+		styleLineLength = Math.min(styleLineEnd, lineLength) - renderOffset;
 		// set style background color if specified
 		if (style.background != null) {
 			background = setLineBackground(gc, background, style.background);
@@ -3982,17 +3985,17 @@ void redrawMultiLineChange(int x, int y, int newLineCount, int replacedLineCount
 	int destinationY;
 		
 	if (lineCount > 0) {
-		sourceY = y + lineHeight;
-		destinationY = y + lineCount * lineHeight + lineHeight;
-	}
+		sourceY = Math.max(0, y + lineHeight);
+		destinationY = sourceY + lineCount * lineHeight;
+	} 
 	else {
-		sourceY = y - lineCount * lineHeight + lineHeight;
-		destinationY = y + lineHeight;
-	}
+		destinationY = Math.max(0, y + lineHeight);
+		sourceY = destinationY - lineCount * lineHeight;
+	}	
 	scroll(
 		0, destinationY,			// destination x, y
 		0, sourceY,					// source x, y
-	clientArea.width, clientArea.height, true);
+		clientArea.width, clientArea.height, true);
 	// Always redrawing causes the bottom line to flash when a line is
 	// deleted. This is because SWT merges the paint area of the scroll
 	// with the paint area of the redraw call below.
@@ -4005,9 +4008,18 @@ void redrawMultiLineChange(int x, int y, int newLineCount, int replacedLineCount
 	// (the flash is only on the bottom line and minor).
 	// Specifying the NO_MERGE_PAINTS style bit prevents the merged 
 	// redraw but could cause flash/slowness elsewhere.
-	redraw(x, y, clientArea.width, lineHeight, true);
+	if (y + lineHeight > 0 && y <= clientArea.height) {
+		// redraw first changed line in case a line was split/joined
+		redraw(x, y, clientArea.width, lineHeight, true);
+	}
 	if (newLineCount > 0) {
-		redraw(0, y + lineHeight, clientArea.width, newLineCount * lineHeight, true);
+		int redrawStartY = y + lineHeight;
+		int redrawHeight = newLineCount * lineHeight;
+		
+		if (redrawStartY + redrawHeight > 0 && redrawStartY <= clientArea.height) {
+			// display new text
+			redraw(0, redrawStartY, clientArea.width, redrawHeight, true);
+		}
 	}
 }
 /**
@@ -5442,15 +5454,17 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 		// clear selection fragment before text change
 		redrawRange(selection.x, startOffset - selection.x, true);
 	}
-	if (selection.y > startOffset + replacedLength) {
-		// clear selection fragment after text change
+	if (selection.y > startOffset + replacedLength && selection.x < startOffset + replacedLength) {
+		// clear selection fragment after text change.
+		// do this only when the selection is actually affected by the 
+		// change. Selection is only affected if it intersects the change (1GDY217).
 		int netNewLength = newLength - replacedLength;
 		int redrawStart = startOffset + newLength;
 		redrawRange(redrawStart, selection.y + netNewLength - redrawStart, true);
 	}
 	if (selection.y > startOffset && selection.x < startOffset + replacedLength) {
 		// selection intersects replaced text. set caret behind text change
-		caretOffset = selection.x = selection.y = startOffset + newLength;
+		internalSetSelection(startOffset + newLength, 0);
 		// always update the caret location. fixes 1G8FODP
 		setCaretLocation();
 	}
