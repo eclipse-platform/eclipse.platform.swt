@@ -233,7 +233,7 @@ public PrinterData open() {
 	Shell [] shells = display.getShells();
 	if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		for (int i=0; i<shells.length; i++) {
-			if (shells[i].isEnabled()) {
+			if (shells[i].isEnabled() && shells[i] != parent) {
 				shells[i].setEnabled(false);
 			} else {
 				shells[i] = null;
@@ -245,7 +245,7 @@ public PrinterData open() {
 	if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		for (int i=0; i<shells.length; i++) {
 			if (shells[i] != null && !shells[i].isDisposed ()) {
-				shells[i].setEnabled (true);
+				shells[i].setEnabled(true);
 			}
 		}
 	}
