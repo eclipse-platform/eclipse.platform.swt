@@ -587,10 +587,7 @@ void createItem (CTabItem item, int index) {
 	} else {
 		updateItems();
 		// redraw tabs if new item visible
-		if (index == firstIndex ||  
-		    (index > firstIndex && item.x + item.width < getRightItemEdge())){
-			redraw();
-		}
+		if (item.isShowing()) redraw();
 	}
 }
 void destroyItem (CTabItem item) {
@@ -1278,12 +1275,10 @@ public CTabItem [] getItems() {
 int getLastIndex() {
 	if (single) return selectedIndex;
 	if (items.length == 0) return -1;
-	int edge = getRightItemEdge();
 	for (int i = firstIndex; i < items.length; i++) {
 		CTabItem item = items[i];
-		if (item.x + item.width > edge) {
-			return i == firstIndex ? firstIndex : i - 1;
-		}
+		if (item.isShowing()) continue;
+		return i == firstIndex ? firstIndex : i - 1;
 	}
 	return items.length - 1;
 }
@@ -1856,9 +1851,10 @@ void onMouse(Event event) {
 					if (event.button == 1 && i == selectedIndex && items.length > 1) {
 						showList = true;
 					}
-					if (!single && i != firstIndex && bounds.x + bounds.width >= getRightItemEdge())return;
-					setSelection(i, true);
-					setFocus();
+					if (item.isShowing()){
+						setSelection(i, true);
+						setFocus();
+					}
 					return;
 				}
 			}
@@ -2671,15 +2667,11 @@ boolean setItemLocation() {
 			x = x + item.width;
 		}
 
-		int rightEdge = getRightItemEdge();
-		if (rightEdge > 0) {
-			CTabItem item = items[items.length - 1];
-			if (item.x + item.width < rightEdge) {
-				setLastIndex(items.length - 1);
-				changed = true;
-			}
+		CTabItem item = items[items.length - 1];
+		if (item.isShowing()) {
+			setLastIndex(items.length - 1);
+			changed = true;
 		}
-
 	}
 	return changed;
 }
@@ -3262,16 +3254,14 @@ public void showItem (CTabItem item) {
 	checkWidget();
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	
+	if (item.isShowing()) return;
 	Point size = getSize();
 	int index = indexOf(item);
 	if (size.x <= borderLeft + borderRight || index < firstIndex) {
 		setFirstItem(index);
-		return;
+	} else {
+		setLastIndex(index);
 	}
-	int rightEdge = getRightItemEdge();
-	if (item.x + item.width < rightEdge) return;
-	setLastIndex(index);
 }
 void showList (Rectangle rect, int alignment) {
 	if (items.length == 0) return;

@@ -224,10 +224,9 @@ void drawSelected(GC gc ) {
 	int[] shape = new int[] {xx,yy, xx+ww,yy, xx+ww,yy+hh, xx,yy+hh};
 	parent.drawBackground(gc, shape, true);
 
-	int rightTabEdge = parent.getRightItemEdge();
 	// if selected tab scrolled out of view or partially out of view
 	// just draw bottom line
-	if (!parent.single && parent.selectedIndex != parent.firstIndex && x + width > rightTabEdge){
+	if (!isShowing()){
 		int x1 = Math.max(0, parent.borderLeft - 1);
 		int y1 = (parent.onBottom) ? y - 1 : y + height;
 		int x2 = size.x - parent.borderRight;
@@ -238,6 +237,7 @@ void drawSelected(GC gc ) {
 	
 	// draw selected tab background and outline
 	int extra = parent.simple ? 0 : CTabFolder.CURVE_WIDTH/2 + 4; // +4 to avoid overlapping with text in next tab
+	int rightTabEdge = parent.getRightItemEdge();
 	shape = null;
 	if (this.parent.onBottom) {
 		int[] left = parent.simple ? new int[] {0, 0} :CTabFolder.BOTTOM_LEFT_CORNER;
@@ -389,11 +389,8 @@ void drawSelected(GC gc ) {
 	gc.drawPolyline(shape);
 }
 void drawUnselected(GC gc) {
-	int rightTabEdge = parent.getRightItemEdge();
 	// Do not draw partial items
-	if (parent.items[parent.firstIndex] != this && x + width > rightTabEdge){
-		return;
-	}
+	if (!isShowing()) return;
 	if (background != null || bgImage != null || gradientColors != null) {
 		int x1 = x, y1 = parent.onBottom ? y : y+1;
 		int x2 = x + width, y2 = parent.onBottom ? y+height-1 : y+height;
@@ -583,6 +580,13 @@ public String getToolTipText () {
 	}
 	return toolTipText;
 }
+boolean isShowing () {
+	int index = parent.indexOf(this);
+	if (parent.single) return index == parent.selectedIndex;
+	if (index < parent.firstIndex) return false;
+	if (parent.firstIndex == index) return true;
+	return (x + width < parent.getRightItemEdge());
+}
 void onPaint(GC gc, boolean isSelected) {
 	if (width == 0 || height == 0) return;
 	if (isSelected) {
@@ -667,9 +671,8 @@ public void setBackground(Color color){
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	background = color;
-	int edge = parent.getRightItemEdge();
 	int index = parent.indexOf(this);
-	if (x + width < edge && parent.selectedIndex != index) {
+	if (isShowing() && parent.selectedIndex != index) {
 		parent.redraw();
 	}
 }
@@ -800,9 +803,8 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	}
 
 	// Refresh with the new settings
-	int edge = parent.getRightItemEdge();
 	int index = parent.indexOf(this);
-	if (x + width < edge && parent.selectedIndex != index) {
+	if (isShowing() && parent.selectedIndex != index) {
 		parent.redraw();
 	}
 }
@@ -829,9 +831,8 @@ public void setBackground(Image image) {
 		gradientPercents = null;
 	}
 	bgImage = image;
-	int edge = parent.getRightItemEdge();
 	int index = parent.indexOf(this);
-	if (x + width < edge && parent.selectedIndex != index) {
+	if (isShowing() && parent.selectedIndex != index) {
 		parent.redraw();
 	}
 }
@@ -938,9 +939,8 @@ public void setForeground (Color color){
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	foreground = color;
-	int edge = parent.getRightItemEdge();
 	int index = parent.indexOf(this);
-	if (x + width < edge && parent.selectedIndex != index) {
+	if (isShowing() && parent.selectedIndex != index) {
 		parent.redraw(x, y, width, height, false);
 	}
 }
