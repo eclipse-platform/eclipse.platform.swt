@@ -1653,11 +1653,7 @@ void sendEvent (int eventType, Event event) {
 	if (event == null) event = new Event ();
 	event.display = this;
 	event.type = eventType;
-	if (event.time == 0) {
-		int gdkEvent = OS.gdk_event_get ();
-		event.time = OS.gdk_event_get_time (gdkEvent);
-		OS.gdk_event_free (gdkEvent);
-	}
+	if (event.time == 0) event.time = OS.gtk_get_current_event_time ();
 	eventTable.sendEvent (event);
 }
 

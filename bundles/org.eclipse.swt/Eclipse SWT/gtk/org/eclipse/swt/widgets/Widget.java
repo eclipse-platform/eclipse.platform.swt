@@ -542,13 +542,7 @@ void postEvent (int eventType, Event event) {
 	event.type = eventType;
 	event.widget = this;
 	event.display = display;
-/*
-	if (event.time == 0) {
-		int gdkEvent = OS.gdk_event_get ();
-		event.time = OS.gdk_event_get_time (gdkEvent);
-		OS.gdk_event_free (gdkEvent);
-	}
-*/
+	if (event.time == 0) event.time = OS.gtk_get_current_event_time ();
 	display.postEvent (event);
 }
 
@@ -801,12 +795,7 @@ void sendEvent (int eventType, Event event) {
 	event.type = eventType;
 	event.display = display;
 	event.widget = this;
-/*	if (event.time == 0) {
-		int gdkEvent = OS.gdk_event_get ();
-		event.time = OS.gdk_event_get_time (gdkEvent);
-		OS.gdk_event_free (gdkEvent);
-	}
-*/
+	if (event.time == 0) event.time = OS.gtk_get_current_event_time ();
 	eventTable.sendEvent (event);
 }
 
