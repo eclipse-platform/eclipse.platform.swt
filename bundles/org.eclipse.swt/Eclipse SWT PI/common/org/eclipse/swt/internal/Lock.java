@@ -17,6 +17,13 @@ public class Lock {
 	int count;
 	Thread owner;
 
+/**
+ * Locks the monitor and returns the lock count. If
+ * the lock is owned by another thread, wait until
+ * the lock is released.
+ * 
+ * @return the lock count
+ */
 public int lock() {
 	synchronized (this) {
 		Thread current = Thread.currentThread();
@@ -25,7 +32,7 @@ public int lock() {
 				try {
 					wait();
 				} catch (InterruptedException e) {
-					//
+					/* Wait forever, just like synchronized blocks */
 				}
 			}
 			owner = current;
@@ -34,7 +41,11 @@ public int lock() {
 	}
 }
 
-public int unlock() {
+/**
+ * Unlocks the monitor. If the current thread is not
+ * the monitor owner, do nothing.
+ */
+public void unlock() {
 	synchronized (this) {
 		Thread current = Thread.currentThread();
 		if (owner == current) {
@@ -43,7 +54,6 @@ public int unlock() {
 				notifyAll();
 			}
 		}
-		return count;
 	}
 }
 }

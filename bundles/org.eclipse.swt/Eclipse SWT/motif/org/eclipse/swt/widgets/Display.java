@@ -3296,13 +3296,13 @@ public boolean sleep () {
 		timeout [1] = 50000;
 		/* Exit the OS lock to allow other threads to enter Motif */
 		Lock lock = OS.lock;
-		int count = lock.unlock();
-		for (int i = 0; i < count; i++) lock.unlock();
+		int count = lock.lock ();
+		for (int i = 0; i < count; i++) lock.unlock ();
 		try {
 			result = OS.select (max_fd + 1, fd_set, null, null, timeout);
 		} finally {
-			for (int i = 0; i < count; i++) lock.lock();
-			lock.lock();
+			for (int i = 0; i < count; i++) lock.lock ();
+			lock.unlock ();
 		}
 		/*
 		* Force Xt work procs that were added by native
