@@ -1213,7 +1213,8 @@ public Point [] getIconSizes () {
 	checkDevice ();
 	return new Point [] {
 		new Point (OS.GetSystemMetrics (OS.SM_CXSMICON), OS.GetSystemMetrics (OS.SM_CYSMICON)),
-		new Point (OS.GetSystemMetrics (OS.SM_CXICON), OS.GetSystemMetrics (OS.SM_CYICON))};	
+		new Point (OS.GetSystemMetrics (OS.SM_CXICON), OS.GetSystemMetrics (OS.SM_CYICON)),
+	};	
 }
 
 ImageList getImageList (Point size) {
