@@ -18,7 +18,7 @@ public class DRAWITEMSTRUCT {
 	public int itemState;
 	public int hwndItem;
 	public int hDC;
-// 	public RECT rcItem;
+// 	RECT rcItem;
 	public int left, top, bottom, right;
 	public int itemData;
 	public static final int sizeof = 48;

@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-public final class EXCEPINFO
-{
+public final class EXCEPINFO {
 	public short wCode;   
 	public short wReserved;
 	public int bstrSource; 
@@ -21,6 +20,5 @@ public final class EXCEPINFO
 	public int pvReserved;
 	public int pfnDeferredFillIn;
 	public int scode;
-
 	public static final int sizeof = 32;
 }

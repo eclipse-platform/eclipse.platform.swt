@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-public final class TYPEATTR
-{
-	//public GUID guid 
+public final class TYPEATTR {
+//	GUID guid 
 	public int    guid_data1;
 	public short  guid_data2;
 	public short  guid_data3;
@@ -24,7 +23,6 @@ public final class TYPEATTR
 	public byte   guid_b5;
 	public byte   guid_b6;
 	public byte   guid_b7;
-	
 	public int    lcid;
 	public int    dwReserved;
 	public int    memidConstructor;
@@ -40,14 +38,11 @@ public final class TYPEATTR
 	public short  wTypeFlags;
 	public short  wMajorVerNum;
 	public short  wMinorVerNum;
-
-	// public TYPEDESC tdescAlias
+//	TYPEDESC tdescAlias
 	public int    tdescAlias_unionField;
 	public short  tdescAlias_vt;
-	
-	// public IDLDESC  idldesctype
+//	IDLDESC  idldesctype
 	public int    idldescType_dwReserved;
 	public short  idldescType_wIDLFlags;
-	
 	public static final int sizeof = 74;
 }

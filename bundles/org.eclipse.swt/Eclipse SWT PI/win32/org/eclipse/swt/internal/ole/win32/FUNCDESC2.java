@@ -22,15 +22,13 @@ public class FUNCDESC2 {
 	public short cParamsOpt;
 	public short oVft;
 	public short cScodes;
-	//ELEMDESC elemdescFunc;
-	//TYPEDESC elemdescFunc.tdesc
+//	ELEMDESC elemdescFunc;
+//	TYPEDESC elemdescFunc.tdesc
 	public int elemdescFunc_tdesc_union;
 	public short elemdescFunc_tdesc_vt;
-	//IDLDESC elemdescFunc.idldesc
+//	IDLDESC elemdescFunc.idldesc
 	public int elemdescFunc_idldesc_dwReserved;
 	public short elemdescFunc_idldesc_wIDLFlags;
 	public short wFuncFlags;
-	
 	public static final int sizeof = 50;
-
 }

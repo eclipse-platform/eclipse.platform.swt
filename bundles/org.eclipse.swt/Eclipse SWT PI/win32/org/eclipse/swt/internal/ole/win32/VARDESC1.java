@@ -10,20 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-
 public class VARDESC1 {
 	public int memid;
 	public int lpstrSchema;
 	public int unionField;
-	//ELEMDESC elemdescVar
-	//TYPEDESC elemdescVar.tdesc
+//	ELEMDESC elemdescVar
+//	TYPEDESC elemdescVar.tdesc
 	public int elemdescVar_tdesc_union;
 	public short elemdescVar_tdesc_vt;
-	//PARAMDESC elemdescFunc.paramdesc
+//	PARAMDESC elemdescFunc.paramdesc
 	public int elemdescVar_paramdesc_pparamdescex;
 	public short elemdescVar_paramdesc_wParamFlags;
 	public short wVarFlags;
 	public int varkind;
-	
 	public static final int sizeof = 36;
 }

@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
- 
 public abstract class NONCLIENTMETRICS {
 	public int cbSize; 
 	public int iBorderWidth; 

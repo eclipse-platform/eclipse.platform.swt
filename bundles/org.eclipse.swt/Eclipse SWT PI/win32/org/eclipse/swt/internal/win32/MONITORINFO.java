@@ -12,12 +12,12 @@ package org.eclipse.swt.internal.win32;
 
 public class MONITORINFO {
 	public int cbSize;
-	//public RECT rcMonitor;
+//	RECT rcMonitor;
 	public int rcMonitor_left;
 	public int rcMonitor_top;
 	public int rcMonitor_right;
 	public int rcMonitor_bottom;
-	//public RECT rcWork;
+//	RECT rcWork;
 	public int rcWork_left;
 	public int rcWork_top;
 	public int rcWork_right;

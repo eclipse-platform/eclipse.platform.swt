@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.win32;
 
 public class NMRGINFO extends NMHDR {
-	// POINT ptAction;
+//	POINT ptAction;
 	public int x;
 	public int y;
 	public int dwItemSpec;

@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
- 
 public class NONCLIENTMETRICSW extends NONCLIENTMETRICS {
 	public LOGFONTW lfCaptionFont = new LOGFONTW ();
 	public LOGFONTW lfSmCaptionFont = new LOGFONTW (); 

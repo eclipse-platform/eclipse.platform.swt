@@ -16,7 +16,7 @@ public class MSG {
 	public int wParam; 
 	public int lParam; 
 	public int time; 
-//	public POINT pt;
+//	POINT pt;
 	public int x, y;
 	public static final int sizeof = 28;
 }

@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
- 
 public class NMCUSTOMDRAW extends NMHDR {
 	 public int dwDrawStage; 
 	 public int hdc;      
-	// public RECT rc;
+//	RECT rc;
 	 public int left, top, right, bottom;
 	 public int dwItemSpec;
 	 public int uItemState;

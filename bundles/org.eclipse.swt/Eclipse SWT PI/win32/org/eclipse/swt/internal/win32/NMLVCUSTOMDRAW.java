@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
- 
 public class NMLVCUSTOMDRAW extends NMCUSTOMDRAW {
 	public int clrText;
 	public int clrTextBk;

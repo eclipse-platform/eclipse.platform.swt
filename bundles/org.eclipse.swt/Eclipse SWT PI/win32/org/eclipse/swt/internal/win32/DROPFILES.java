@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.win32;
 
 public class DROPFILES {
 	public int pFiles; // Offset of the file list from the beginning of this structure, in bytes.
-	//public POINT pt; // Drop point. The coordinates depend on fNC.
+//	POINT pt; // Drop point. The coordinates depend on fNC.
 	public int pt_x;
 	public int pt_y;
 	public int fNC;   // Nonclient area flag. If this member is TRUE, pt specifies the screen 
@@ -21,6 +21,5 @@ public class DROPFILES {
 	public int fWide; // Value that indicates whether the file contains ANSI or Unicode 
 					  // characters. If it is zero, it contains ANSI characters. Otherwise, it 
 				      // contains Unicode characters.
-
 	public static final int sizeof = 20;
 }

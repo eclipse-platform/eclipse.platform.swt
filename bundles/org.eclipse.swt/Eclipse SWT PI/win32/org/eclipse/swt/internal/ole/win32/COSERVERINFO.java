@@ -15,6 +15,5 @@ public class COSERVERINFO {
 	public int pwszName;    
 	public int pAuthInfo;
 	public int dwReserved2;
-
 	public static final int sizeof = 16; 
 }

@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-public final class GUID
-{
+public final class GUID {
 	public int    data1;
 	public short  data2;
 	public short  data3;
@@ -23,6 +22,5 @@ public final class GUID
 	public byte   b5;
 	public byte   b6;
 	public byte   b7;
-	
 	public static final int sizeof = 16;
 }

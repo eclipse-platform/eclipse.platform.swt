@@ -15,15 +15,13 @@ public class VARDESC2 {
 	public int memid;
 	public int lpstrSchema;
 	public int unionField;
-	//ELEMDESC elemdescVar
-	//TYPEDESC elemdescVar.tdesc
+//	ELEMDESC elemdescVar
+//	TYPEDESC elemdescVar.tdesc
 	public int elemdescVar_tdesc_union;
-	public short elemdescVar_tdesc_vt;
-	//IDLDESC elemdescFunc.idldesc
+//	IDLDESC elemdescFunc.idldesc
 	public int elemdescFunc_idldesc_dwReserved;
 	public short elemdescFunc_idldesc_wIDLFlags;
 	public short wVarFlags;
 	public int varkind;
-	
 	public static final int sizeof = 36;
 }

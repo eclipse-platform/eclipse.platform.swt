@@ -11,7 +11,6 @@
 package org.eclipse.swt.internal.win32;
 
 public class SHELLEXECUTEINFO {
-	
 	public int cbSize;
 	public int fMask; 
 	public int hwnd;
@@ -21,7 +20,6 @@ public class SHELLEXECUTEINFO {
 	public int lpDirectory;
 	public int nShow; 
 	public int hInstApp;
-	
 	// Optional members
 	public int lpIDList; 
 	public int lpClass;
@@ -33,7 +31,6 @@ public class SHELLEXECUTEINFO {
 //	};
 	public int hIcon;
 	public int hProcess; 
-	
 	public static final int sizeof = 60;
 }
 

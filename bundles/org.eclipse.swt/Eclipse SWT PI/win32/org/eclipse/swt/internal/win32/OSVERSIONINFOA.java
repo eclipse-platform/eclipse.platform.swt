@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-
 public class OSVERSIONINFOA extends OSVERSIONINFO {
 	public byte[] szCSDVersion = new byte[128];
 	public static final int sizeof = 148;

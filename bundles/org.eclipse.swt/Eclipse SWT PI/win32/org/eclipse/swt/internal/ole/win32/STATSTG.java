@@ -14,18 +14,18 @@ public class STATSTG {
 	public int   pwcsName;
 	public int   type; 
 	public long  cbSize;
-	//FILETIME mtime;
+//	FILETIME mtime;
 	public int   mtime_dwLowDateTime;
 	public int   mtime_dwHighDateTime; 
-	//FILETIME ctime;
+//	FILETIME ctime;
 	public int   ctime_dwLowDateTime;
 	public int   ctime_dwHighDateTime; 
-	//FILETIME atime;
+//	FILETIME atime;
 	public int   atime_dwLowDateTime;
 	public int   atime_dwHighDateTime; 
 	public int   grfMode;
 	public int   grfLocksSupported; 
-	//GUID clsid;
+//	GUID clsid;
 	public int   clsid_data1;
 	public short clsid_data2;
 	public short clsid_data3;
@@ -39,6 +39,5 @@ public class STATSTG {
 	public byte  clsid_b7;
 	public int   grfStateBits; 
 	public int   reserved;
-
 	public static final int sizeof = 72;
 }

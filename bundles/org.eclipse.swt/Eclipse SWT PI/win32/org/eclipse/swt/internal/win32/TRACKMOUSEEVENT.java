@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-
 public class TRACKMOUSEEVENT {
 	public int cbSize;
 	public int dwFlags;

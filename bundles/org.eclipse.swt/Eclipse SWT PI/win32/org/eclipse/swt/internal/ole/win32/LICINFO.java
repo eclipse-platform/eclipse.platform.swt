@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-public final class LICINFO
-{
+public final class LICINFO {
 	public int cbLicInfo;
 	public int fRuntimeKeyAvail;
 	public int fLicVerified;
-	
 	public static final int sizeof = 12;
 }
