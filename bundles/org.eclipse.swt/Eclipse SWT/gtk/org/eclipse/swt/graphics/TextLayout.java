@@ -781,6 +781,31 @@ public int getOffset(int x, int y, int[] trailing) {
 	checkLayout();
 	computeRuns();
 	if (trailing != null && trailing.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	
+	/*
+	* Feature in GTK.  pango_layout_xy_to_index() returns the 
+	* logical end/start offset of a line when the coordinates are outside 
+	* the line bounds. In SWT the correct behavior is to return the closest 
+	* visual offset. The fix is to clamp the coordinates inside the  
+	* line bounds.
+	*/
+	int /*long*/ iter = OS.pango_layout_get_iter(layout);
+	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	PangoRectangle rect = new PangoRectangle();
+	do {
+		OS.pango_layout_iter_get_line_extents(iter, null, rect);
+		rect.y = OS.PANGO_PIXELS(rect.y);
+		rect.height = OS.PANGO_PIXELS(rect.height);
+		if (rect.y <= y && y < rect.y + rect.height) {
+			rect.x = OS.PANGO_PIXELS(rect.x);
+			rect.width = OS.PANGO_PIXELS(rect.width);
+			if (x >= rect.x + rect.width) x = rect.x + rect.width - 1;
+			if (x < rect.x) x = rect.x;
+			break;
+		}
+	} while (OS.pango_layout_iter_next_line(iter));
+	OS.pango_layout_iter_free(iter);
+	
 	int[] index = new int[1];
 	int[] piTrailing = new int[1];
 	OS.pango_layout_xy_to_index(layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, piTrailing);
