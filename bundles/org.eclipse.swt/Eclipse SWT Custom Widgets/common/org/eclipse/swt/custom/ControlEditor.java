@@ -230,5 +230,6 @@ public void setEditor (Control editor) {
 	
 	this.editor = editor;
 	resize();
+	editor.setVisible(true);
 }
 }
