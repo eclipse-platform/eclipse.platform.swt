@@ -191,14 +191,26 @@ int processMouseMove (int callData, int arg1, int int2) {
 	OS.gdk_event_get_coords(callData, px, py);
 	int x = (int)(px[0]);
 	int y = (int)(py[0]);
+	
+	int width = OS.GTK_WIDGET_WIDTH(handle);
+	int height = OS.GTK_WIDGET_HEIGHT(handle);
 
 	if ((style & SWT.VERTICAL) != 0) {
 		/* Erase the old one */
 		int oldDrawX = originX + lastX;
-		drawBand(oldDrawX, originY,
-		         OS.GTK_WIDGET_WIDTH(handle), OS.GTK_WIDGET_HEIGHT(handle));
-		
+		drawBand(oldDrawX, originY, width, height);
+		/* Draw the new */
+		int drawX = originX + x;
+		drawBand(drawX, originY, width, height);
+		lastX = x;
 	} else {
+		/* Erase the old one */
+		int oldDrawY = originY + lastY;
+		drawBand(originX, oldDrawY, width, height);
+		/* Draw the new */
+		int drawY = originY + y;
+		drawBand(originX, drawY, width, height);
+		lastY = y;
 	}
 	return 0;
 }
@@ -208,43 +220,18 @@ int processMouseUp (int callData, int arg1, int int2) {
 	int button = OS.gdk_event_button_get_button(callData);
 	if (button != 1) return 0;
 	if (!dragging) return 0;
-//	drawBand(lastX, lastY, width, height);
-
-/*	int width = OS.GTK_WIDGET_WIDTH (handle);
-	int height = OS.GTK_WIDGET_HEIGHT (handle);
-	int x = OS.GTK_WIDGET_X(handle);
-	int y = OS.GTK_WIDGET_Y(handle);
-	Rectangle rect = parent.getClientArea();
-	int parentWidth = rect.width - 2;
-	int parentHeight = rect.height - 2;
-	double[] px = new double[1];
-	double[] py = new double[1];
-	OS.gdk_event_get_coords(callData, px, py);
-	last_root_x=(int)(px[0]); last_root_y=(int)(py[0]);
-System.out.println("Event coords: "+last_root_x+"x"+last_root_y);
-System.out.println("Widget coords: "+x+"x"+y);
-	int newX = lastX, newY = lastY;
-	if ((style & SWT.VERTICAL) != 0) {
-		if (last_root_x<=start_root_x)
-			newX = Math.min (Math.max (0, x - (start_root_x-last_root_x) - startX ), parentWidth - width);
-		else 	
-			newX = Math.min (Math.max (0, x + (last_root_x-start_root_x) - startX ), parentWidth - width);
-	} else {
-		if (last_root_y<=start_root_y)
-			newY = Math.min (Math.max (0, y - (start_root_y-last_root_y)  - startY ), parentHeight - height);
-		else
-			newY = Math.min (Math.max (0, y + (last_root_y-start_root_y)  - startY ), parentHeight - height);
-	}
-	if ((newX == lastX) && (newY == lastY)) return 0;
+	int width = OS.GTK_WIDGET_WIDTH(handle);
+	int height = OS.GTK_WIDGET_HEIGHT(handle);
+	int x = lastX + originX;
+	int y = lastY + originY;
+	drawBand(x, y, width, height);
+	dragging = false;
 
 	Event event = new Event ();
 	event.time = OS.gdk_event_get_time(callData);
-//	event.x = newX;  event.y = newY;
-	event.x = 20;  event.y = 0;
+	event.x = x;  event.y = y;
 	event.width = width;  event.height = height;
-	dragging = false;
-	drawing = false;
-	sendEvent (SWT.Selection, event);*/
+	sendEvent (SWT.Selection, event);
 	return 0;
 }
 
@@ -288,10 +275,8 @@ void drawBand (int x, int y, int width, int height) {
 	byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
 	int stipplePixmap = OS.gdk_bitmap_create_from_data (window, bits, 8, 8);
 	int gc = OS.gdk_gc_new(window);
-	Color color = new Color(display, 0xFF, 0, 0);
-	OS.gdk_gc_set_background(gc, color.handle);
-	Color color1 = new Color(display, 0, 0xFF, 0);
-	OS.gdk_gc_set_foreground(gc, color1.handle);	
+	Color color = getDisplay().getSystemColor(SWT.COLOR_WHITE);
+	OS.gdk_gc_set_foreground(gc, color.handle);	
 	OS.gdk_gc_set_stipple(gc, stipplePixmap);
 	OS.gdk_gc_set_subwindow(gc, OS.GDK_INCLUDE_INFERIORS);
 	OS.gdk_gc_set_fill(gc, OS.GDK_STIPPLED);
@@ -299,8 +284,6 @@ void drawBand (int x, int y, int width, int height) {
 	OS.gdk_draw_rectangle(window, gc, 1, x, y, width, height);	
 	OS.g_object_unref(stipplePixmap);
 	OS.g_object_unref(gc);
-	color.dispose();
-	color1.dispose();
 }
 static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
