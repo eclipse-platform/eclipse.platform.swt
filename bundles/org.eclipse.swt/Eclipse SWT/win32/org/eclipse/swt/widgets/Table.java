@@ -1982,11 +1982,9 @@ void setRowHeight () {
 }
 
 void setScrollWidth (boolean force) {
-	if (!force) {
-		if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
-			fixScrollWidth = true;
-			return;
-		}
+	if (!force && (drawCount != 0 || !OS.IsWindowVisible (handle))) {
+		fixScrollWidth = true;
+		return;
 	}
 	fixScrollWidth = false;
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
