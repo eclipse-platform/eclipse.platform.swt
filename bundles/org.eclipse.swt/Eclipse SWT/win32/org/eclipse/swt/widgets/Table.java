@@ -1856,14 +1856,16 @@ public void setRedraw (boolean redraw) {
 	if (redraw) {
 		if (--drawCount == 0) {
 			/*
-			* This code is intentionally commented.  When many items
-			* are added to a table, it is slightly faster to temporarily
-			* unsubclass the window proc so that messages are dispatched
-			* directly to the table.  This is optimization is dangerous
-			* because any operation can occur when redraw is turned off,
-			* even operations where the table must be subclassed in order
-			* to have the correct behavior or work around a Windows bug.
-			* For now, don't attempt it.
+			* When many items are added to a table, it is faster to
+			* temporarily unsubclass the window proc so that messages
+			* are dispatched directly to the table.
+			*
+			* NOTE: This is optimization somewhat dangerous because any
+			* operation can occur when redraw is turned off, even operations
+			* where the table must be subclassed in order to have the correct
+			* behavior or work around a Windows bug.
+			* 
+			* This code is intentionally commented. 
 			*/
 //			subclass ();
 			
@@ -1936,14 +1938,16 @@ public void setRedraw (boolean redraw) {
 			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 0, 0);
 			
 			/*
-			* This code is intentionally commented.  When many items
-			* are added to a table, it is slightly faster to temporarily
-			* unsubclass the window proc so that messages are dispatched
-			* directly to the table.  This is optimization is dangerous
-			* because any operation can occur when redraw is turned off,
-			* even operations where the table must be subclassed in order
-			* to have the correct behavior or work around a Windows bug.
-			* For now, don't attempt it.
+			* When many items are added to a table, it is faster to
+			* temporarily unsubclass the window proc so that messages
+			* are dispatched directly to the table.
+			*
+			* NOTE: This is optimization somewhat dangerous because any
+			* operation can occur when redraw is turned off, even operations
+			* where the table must be subclassed in order to have the correct
+			* behavior or work around a Windows bug.
+			*
+			* This code is intentionally commented. 
 			*/
 //			unsubclass ();
 		}
