@@ -31,14 +31,14 @@ public void addTextChangeListener(TextChangeListener listener);
 public int getCharCount();
 
 /**
- * Return the line at the given character offset without delimiters.
+ * Return the line at the given line index without delimiters.
  * <p>
  *
- * @param offset offset of the line to return. Does not include delimiters
- *	of preceeding lines. Offset 0 is the first character of the document.
+ * @param lineIndex index of the line to return. Does not include delimiters
+ *	of preceeding lines. Index 0 is the first line of the content.
  * @return the line text without delimiters
  */
-public String getLine(int offset);
+public String getLine(int lineIndex);
 
 /**
  * Return the line index at the given character offset.
@@ -96,7 +96,7 @@ public String getLineDelimiter();
  * is a valid call that should return 0.
  * </p>
  *
- * @param lineIndex	index of the line. The first line is at index 0.
+ * @param lineIndex index of the line. The first line is at index 0.
  * @return offset offset of the first character of the line. The first character 
  *	of the document is at offset 0.  The return value should include
  *	line delimiters.  For example, if text = "\r\ntest\r\n" and delimiter = "\r\n", 
