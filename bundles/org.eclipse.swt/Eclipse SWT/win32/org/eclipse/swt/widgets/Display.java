@@ -160,8 +160,11 @@ public class Display extends Device {
 	int hwndMessage, messageProc;
 	int [] systemFonts;
 	
-	/* System Images */
+	/* System Images Cache */
 	int errorImage, infoImage, questionImage, warningImage;
+
+	/* System Cursors Cache*/
+	Cursor[] cursors = new Cursor [22];
 
 	/* ImageList Cache */	
 	ImageList[] imageList, toolImageList, toolHotImageList, toolDisabledImageList;
@@ -1523,6 +1526,35 @@ public Color getSystemColor (int id) {
 }
 
 /**
+ * Returns the matching standard platform cursor for the given
+ * constant, which should be one of the cursor constants
+ * specified in class <code>SWT</code>. This cursor should
+ * not be free'd because it was allocated by the system,
+ * not the application.  A value of <code>null</code> will
+ * be returned if the supplied constant is not an swt cursor
+ * constant. 
+ *
+ * @param id the swt cursor constant
+ * @return the corresponding cursor or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see SWT
+ * @since 3.0
+ */
+public Cursor getSystemCursor (int id) {
+	checkDevice ();
+	if (!(0 <= id && id < cursors.length)) return null;
+	if (cursors [id] == null) {
+		cursors [id] = new Cursor (this, id);
+	}
+	return cursors [id];
+}
+
+/**
  * Returns a reasonable font for applications to use.
  * On some platforms, this will match the "default font"
  * or "system font" if such can be found.  This font
@@ -2453,6 +2485,13 @@ void releaseDisplay () {
 	if (infoImage != 0) OS.DestroyIcon (infoImage);
 	if (questionImage != 0) OS.DestroyIcon (questionImage);
 	if (warningImage != 0) OS.DestroyIcon (warningImage);
+	errorImage = infoImage = questionImage = warningImage = 0;
+	
+	/* Release the System Cursors */
+	for (int i = 0; i < cursors.length; i++) {
+		if (cursors [i] != null) cursors [i].dispose ();
+	}
+	cursors = null;
 
 	/* Release Custom Colors for ChooseColor */
 	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
