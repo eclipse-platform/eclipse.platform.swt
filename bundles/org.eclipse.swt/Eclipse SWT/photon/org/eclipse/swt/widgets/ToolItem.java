@@ -76,7 +76,9 @@ public class ToolItem extends Item {
  * @see Widget#getStyle
  */
 public ToolItem (ToolBar parent, int style) {
-	this(parent, style, parent.getItemCount ());
+	super (parent, checkStyle (style));
+	this.parent = parent;
+	parent.createItem (this, parent.getItemCount ());
 }
 
 /**

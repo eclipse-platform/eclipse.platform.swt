@@ -165,7 +165,7 @@ public int open () {
 	byte [] title = null;
 	if (this.title != null) title = Converter.wcsToMbcs (null, this.title, true);
 	byte [] message = null;
-	if (this.message != null) message = Converter.wcsToMbcs (null, this.message, true);
+	message = Converter.wcsToMbcs (null, this.message, true);
 
 	int[] buttonsPtr = new int [buttons.length];
 	for (int i=0; i<buttons.length; i++) {
