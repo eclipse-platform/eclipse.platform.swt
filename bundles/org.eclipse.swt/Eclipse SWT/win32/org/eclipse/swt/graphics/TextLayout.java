@@ -297,6 +297,7 @@ void computeRuns (GC gc) {
 				run.length = start;
 				OS.SelectObject(srcHdc, getItemFont(run));
 				shape (srcHdc, run);
+				OS.SelectObject(srcHdc, getItemFont(newRun));
 				shape (srcHdc, newRun);
 				StyleItem[] newAllRuns = new StyleItem[allRuns.length + 1];
 				System.arraycopy(allRuns, 0, newAllRuns, 0, i + 1);
@@ -1864,7 +1865,6 @@ void shape (final int hdc, final StyleItem run) {
 				int hFont = OS.SelectObject(hdc, hNewFont[0]);
 				if (shape(hdc, run, chars, buffer, maxGlyphs)) {
 					run.fallbackFont = hNewFont[0];
-					OS.SelectObject(hdc, hFont);
 				} else {
 					/* ReleaseFont() */
 					OS.VtblCall(8, mLangFontLink2, hNewFont[0]);
