@@ -2195,8 +2195,7 @@ void updateScrollBar () {
 }
 
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS;
-	bits |= OS.TVS_LINESATROOT | OS.TVS_HASBUTTONS;
+	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS | OS.TVS_LINESATROOT | OS.TVS_HASBUTTONS;
 	if ((style & SWT.FULL_SELECTION) != 0) {
 		bits |= OS.TVS_FULLROWSELECT;
 	} else {
