@@ -947,47 +947,43 @@ void setKeyboardLanguage(int logicalIndex) {
  */
 public String toString() {
 	StringBuffer buf = new StringBuffer();
-	buf.append("\n");
-	buf.append("Render Positions: ");
-	buf.append("\n");
-	for (int i=0; i<renderPositions.length; i++) {
-		buf.append(renderPositions[i]);
-		buf.append(" ");
-	}
-	buf.append("\n");
-	buf.append("Order: ");
-	buf.append("\n");
-	for (int i=0; i<order.length; i++) {
+	
+	buf.append("StyledTextBidi {{");
+	// order
+	for (int i = 0; i < order.length; i++) {
+		if (i != 0) {
+			buf.append(",");
+		}
 		buf.append(order[i]);
-		buf.append(" ");
 	}
-	buf.append("\n");
-	buf.append("DX: ");
-	buf.append("\n");
-	for (int i=0; i<dx.length; i++) {
+	buf.append("}, {");
+	// render positions
+	for (int i = 0; i < renderPositions.length; i++) {
+		if (i != 0) {
+			buf.append(",");
+		}
+		buf.append(renderPositions[i]);
+	}
+	buf.append("}, {");
+	// dx
+	for (int i = 0; i < dx.length; i++) {
+		if (i != 0) {
+			buf.append(",");
+		}
 		buf.append(dx[i]);
-		buf.append(" ");
 	}
-	buf.append("\n");
-	buf.append("Class: ");
-	buf.append("\n");
-	for (int i=0; i<classBuffer.length; i++) {
+	buf.append("}, {");
+	// character class
+	for (int i = 0; i < classBuffer.length; i++) {
+		if (i != 0) {
+			buf.append(",");
+		}
 		buf.append(classBuffer[i]);
-		buf.append(" ");
 	}
-	buf.append("\n");
-	buf.append("Glyph Buffer: ");
-	buf.append("\n");
-	for (int i=0; i<glyphBuffer.length; i++) {
-		buf.append(glyphBuffer[i]);
-		buf.append(" ");
-	}
-/*	buf.append("\n");
-	buf.append("Glyphs: ");
-	buf.append("\n");
-	buf.append(getGlyphs());
-	buf.append("\n");
-*/
+	buf.append("}, {");
+	// glyphs
+	buf.append(glyphBuffer);
+	buf.append("}}");
 	return buf.toString();
 }
 }
