@@ -175,6 +175,7 @@ public void setImage (Image image) {
  */
 public void setText (String string) {
 	checkWidget ();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
 }
 
