@@ -3614,28 +3614,18 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 }
 
 LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
-	int pos = OS.GetMessagePos ();
-	Event event = new Event ();
-	POINT pt = new POINT ();
-	pt.x = (short) (pos & 0xFFFF);
-	pt.y = (short) (pos >> 16); 
-	OS.ScreenToClient (handle, pt);
-	event.x = pt.x;
-	event.y = pt.y;
-	postEvent (SWT.MouseHover, event);
+	sendMouseEvent (SWT.MouseHover, 0, OS.WM_MOUSEHOVER, wParam, lParam);
 	return null;
 }
 
 LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
 	int pos = OS.GetMessagePos ();
-	Event event = new Event ();
 	POINT pt = new POINT ();
 	pt.x = (short) (pos & 0xFFFF);
 	pt.y = (short) (pos >> 16); 
 	OS.ScreenToClient (handle, pt);
-	event.x = pt.x;
-	event.y = pt.y;
-	postEvent (SWT.MouseExit, event);
+	lParam = pt.x | (pt.y << 16);
+	sendMouseEvent (SWT.MouseExit, 0, OS.WM_MOUSELEAVE, wParam, lParam);
 	return null;
 }
 
@@ -3656,10 +3646,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 				lpEventTrack.hwndTrack = handle;
 				OS.TrackMouseEvent (lpEventTrack);
 				if (mouseEnter) {
-					Event event = new Event ();
-					event.x = (short) (lParam & 0xFFFF);
-					event.y = (short) (lParam >> 16);
-					postEvent (SWT.MouseEnter, event);
+					sendMouseEvent (SWT.MouseEnter, 0, OS.WM_MOUSEMOVE, wParam, lParam);
 				}
 			} else {
 				lpEventTrack.dwFlags = OS.TME_HOVER;

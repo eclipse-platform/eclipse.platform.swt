@@ -1816,8 +1816,8 @@ int processMouseExit (int callData, int arg1, int int2) {
 
 int processMouseHover (int id) {
 	Event event = new Event ();
-	int [] x = new int [1], y = new int [1];
-	OS.gdk_window_get_pointer (0, x, y, null);
+	int [] x = new int [1], y = new int [1], mask = new int [1];
+	OS.gdk_window_get_pointer (0, x, y, mask);
 	event.x = x [0];
 	event.y = y [0];
 	int eventHandle = eventHandle ();
@@ -1825,6 +1825,7 @@ int processMouseHover (int id) {
 	OS.gdk_window_get_origin (window, x, y);
 	event.x -= x [0];
 	event.y -= y [0];
+	setInputState (event, mask [0]);
 	postEvent (SWT.MouseHover, event);
 	return 0;
 }
