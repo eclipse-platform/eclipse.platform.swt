@@ -101,26 +101,6 @@ public CTabFolder getParent () {
 public String getToolTipText () {
 	return toolTipText;
 }
-private int imageHeight() {
-	int imageHeight = 0;
-	if (parent.getImageHeight() != -1) {
-		imageHeight = parent.getImageHeight();
-	} else {
-		Image image = getImage();
-		if (image != null) {
-			imageHeight = image.getBounds().height;
-		}
-	}
-	return imageHeight;
-}
-private int imageWidth() {
-	int imageWidth = 0;
-	Image image = getImage();
-	if (image != null) {
-		imageWidth = image.getBounds().width;
-	}
-	return imageWidth;
-}
 /**
  * Paint the receiver.
  */
@@ -290,12 +270,14 @@ void onPaint(GC gc, boolean isSelected) {
 	}
 	if (image != null) {
 		Rectangle imageBounds = image.getBounds();
-		int imageHeight = imageHeight();
-		int imageY = y + (height - parent.getImageHeight()) / 2;
+		int imageX = xDraw;
+		int imageHeight = Math.min(height - BOTTOM_MARGIN - TOP_MARGIN, imageBounds.height);
+		int imageY = y + (height - imageHeight) / 2;
+		int imageWidth = imageBounds.width * imageHeight / imageBounds.height;
 		gc.drawImage(image, 
-			       imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height,
-			       xDraw, imageY, imageBounds.width, imageHeight);
-		xDraw += imageBounds.width + INTERNAL_SPACING;
+			         imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height,
+			         imageX, imageY, imageWidth, imageHeight);
+		xDraw += imageWidth + INTERNAL_SPACING;
 	}
 	
 	// draw Text
@@ -310,20 +292,20 @@ void onPaint(GC gc, boolean isSelected) {
 	} else {
 		gc.setForeground(parent.getForeground());
 	}
-	int textY = y + (height - textHeight(gc)) / 2; 	
+	int textY = y + (height - gc.textExtent(text, SWT.DRAW_MNEMONIC).y) / 2; 	
 	gc.drawText(text, xDraw, textY, SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC);
 	
 	gc.setForeground(parent.getForeground());
 }
-private String shortenText(GC gc, String text, int width) {
-	if (gc.textExtent(text).x <= width) return text;
+private static String shortenText(GC gc, String text, int width) {
+	if (gc.textExtent(text, SWT.DRAW_MNEMONIC).x <= width) return text;
 	
-	int ellipseWidth = gc.textExtent(ellipsis).x;
+	int ellipseWidth = gc.textExtent(ellipsis, SWT.DRAW_MNEMONIC).x;
 	int length = text.length();
 	int end = length - 1;
 	while (end > 0) {
 		text = text.substring(0, end);
-		int l1 = gc.textExtent(text).x;
+		int l1 = gc.textExtent(text, SWT.DRAW_MNEMONIC).x;
 		if (l1 + ellipseWidth <= width) {
 			return text + ellipsis;
 		}
@@ -335,18 +317,27 @@ private String shortenText(GC gc, String text, int width) {
  * Answer the preferred height of the receiver for the GC.
  */
 int preferredHeight(GC gc) {
-	return  Math.max(textHeight(gc), imageHeight()) + TOP_MARGIN + BOTTOM_MARGIN; 
+	Image image = getImage();
+	int height = 0;
+	if (image != null) height = image.getBounds().height;
+	String text = getText();
+	height = Math.max(height, gc.textExtent(text, SWT.DRAW_MNEMONIC).y);
+	return height + TOP_MARGIN + BOTTOM_MARGIN;
 }
 /**
  * Answer the preferred width of the receiver for the GC.
  */
 int preferredWidth(GC gc) {
-	int tabWidth = LEFT_MARGIN + RIGHT_MARGIN;
+	int width = 0;
 	Image image = getImage();
-	if (image != null) tabWidth += imageWidth() + INTERNAL_SPACING;
-	tabWidth += textWidth(gc);
-	if (parent.showClose) tabWidth += parent.closeBar.getSize().x;
-	return tabWidth;
+	if (image != null) width += image.getBounds().width;
+	String text = getText();
+	if (text != null) {
+		if (image != null) width += INTERNAL_SPACING;
+		width += gc.textExtent(text, SWT.DRAW_MNEMONIC).x;
+	}
+	if (parent.showClose) width += INTERNAL_SPACING + preferredHeight(gc); // closebar will be square and will fill preferred height
+	return width + LEFT_MARGIN + RIGHT_MARGIN;
 }
 /**
  * Sets the control.
@@ -435,32 +426,6 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	toolTipText = string;
 }
-/**
- * Answer the text height.
- */
-private int textHeight(GC gc) {
-	int textHeight = 0;
-	
-	if (isDisposed()) return textHeight;
-	
-	String text = getText();
-	if (text != null) {
-		textHeight = gc.stringExtent(text).y;
-	}
-	return textHeight;
-}
-/**
- * Answer the text width.
- */
-private int textWidth(GC gc) {	
-	int textWidth = 0;
-	
-	if (isDisposed()) return 0;
-	
-	String text = getText();
-	if (text != null) {
-		textWidth = gc.stringExtent(text).x;
-	}
-	return textWidth;
-}
+
+
 }

@@ -75,8 +75,7 @@ public class CTabFolder extends Composite {
 	/* sizing, positioning */
 	int xClient, yClient;
 	boolean onBottom = false;
-	int fixedTabHeight = -1;
-	int imageHeight = -1;
+	int fixedTabHeight = 0;
 	
 	/* item management */
 	private CTabItem items[] = new CTabItem[0];
@@ -97,21 +96,15 @@ public class CTabFolder extends Composite {
 	private static final int DEFAULT_HEIGHT = 64;
 	
 	// scrolling arrows
-	private ToolBar scrollBar;
-	private ToolItem scrollLeft;
-	private ToolItem scrollRight;
+	private ToolBar arrowBar;
 	private Image arrowLeftImage;
 	private Image arrowRightImage;
-	private Image arrowLeftDisabledImage;
-	private Image arrowRightDisabledImage;
 	
 	// close button
 	boolean showClose = false;
 	private Image closeImage;
 	ToolBar closeBar;
-	private ToolItem closeItem;
 	private ToolBar inactiveCloseBar;
-	private ToolItem inactiveCloseItem;
 	private CTabItem inactiveItem;	
 
 	private boolean shortenedTabs = false;
@@ -155,26 +148,6 @@ public CTabFolder(Composite parent, int style) {
 	borderColor2 = new Color(getDisplay(), borderMiddleRGB);
 	borderColor3 = new Color(getDisplay(), borderOutsideRGB);
 	Color background = getBackground();
-	
-	// create scrolling arrow buttons
-	scrollBar = new ToolBar(this, SWT.FLAT);
-	scrollBar.setVisible(false);
-	scrollBar.setBackground(background);
-	scrollLeft = new ToolItem(scrollBar, SWT.PUSH);
-	scrollLeft.setEnabled(false);
-	scrollRight = new ToolItem(scrollBar, SWT.PUSH);
-	scrollRight.setEnabled(false);
-	
-	// create close buttons
-	closeBar = new ToolBar(this, SWT.FLAT);
-	closeBar.setVisible(false);
-	closeBar.setBackground(background);
-	closeItem = new ToolItem(closeBar, SWT.PUSH);
-	
-	inactiveCloseBar = new ToolBar(this, SWT.FLAT);
-	inactiveCloseBar.setVisible(false);
-	inactiveCloseBar.setBackground(background);
-	inactiveCloseItem = new ToolItem(inactiveCloseBar, SWT.PUSH);
 
 	// tool tip support
 	Display display = getDisplay();
@@ -184,7 +157,6 @@ public CTabFolder(Composite parent, int style) {
 	tip.setLayout(layout);
 	Label label = new Label (tip, SWT.NONE);
 	label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	
 	label.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
 	label.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
 	tip.setBackground(label.getBackground());
@@ -193,19 +165,18 @@ public CTabFolder(Composite parent, int style) {
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Dispose:			onDispose(); break;
-				case SWT.Paint:			onPaint(event);	break;
-				case SWT.Resize:			onResize();	break;
-				case SWT.MouseDoubleClick:	onMouseDoubleClick(event);	break;
-				case SWT.MouseDown:		onMouseDown(event);	break;
-				case SWT.MouseExit:		onMouseExit(event);	break;
+				case SWT.Dispose:           onDispose(); break;
+				case SWT.Paint:             onPaint(event);	break;
+				case SWT.Resize:            onResize();	break;
+				case SWT.MouseDoubleClick:  onMouseDoubleClick(event);	break;
+				case SWT.MouseDown:         onMouseDown(event);	break;
+				case SWT.MouseExit:         onMouseExit(event);	break;
 				case SWT.MouseHover:		onMouseHover(event);	break;
-				case SWT.MouseMove:		onMouseMove(event);	break;
-				case SWT.Selection:		onSelection(event);	break;
-				case SWT.FocusIn:			onFocus(event);	break;
-				case SWT.FocusOut:			onFocus(event);	break;
-				case SWT.KeyDown:			onKeyDown(event); break;
-				case SWT.Traverse:			onTraverse(event); break;
+				case SWT.MouseMove:         onMouseMove(event);	break;
+				case SWT.FocusIn:           onFocus(event);	break;
+				case SWT.FocusOut:          onFocus(event);	break;
+				case SWT.KeyDown:           onKeyDown(event); break;
+				case SWT.Traverse:          onTraverse(event); break;
 			}
 		}
 	};
@@ -227,11 +198,9 @@ public CTabFolder(Composite parent, int style) {
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
 	}
-	scrollLeft.addListener(SWT.Selection, listener);
-	scrollRight.addListener(SWT.Selection, listener);
-	closeItem.addListener(SWT.Selection, listener);
-	inactiveCloseItem.addListener(SWT.Selection, listener);
-	inactiveCloseBar.addListener (SWT.MouseExit, listener);
+	
+	createArrowBar();
+	createCloseBar();
 	
 	setBorderVisible((style & SWT.BORDER) != 0);
 }
@@ -287,7 +256,7 @@ public void addCTabFolderListener(CTabFolderListener listener) {
 	tabListeners = newTabListeners;
 	tabListeners[tabListeners.length - 1] = listener;
 	showClose = true;
-	initCloseButtonImages();
+	layoutItems();
 }
 private void closeNotify(CTabItem item, int time) {
 	if (item == null) return;
@@ -377,6 +346,65 @@ void createItem (CTabItem item, int index) {
 		redrawTabArea(-1);
 	}
 }
+
+private void createArrowBar() {
+	// create arrow buttons for scrolling 
+	arrowBar = new ToolBar(this, SWT.FLAT);
+	arrowBar.setVisible(false);
+	arrowBar.setBackground(getBackground());
+	ToolItem scrollLeft = new ToolItem(arrowBar, SWT.PUSH);
+	scrollLeft.setEnabled(false);
+	ToolItem scrollRight = new ToolItem(arrowBar, SWT.PUSH);
+	scrollRight.setEnabled(false);
+	
+	scrollLeft.addListener(SWT.Selection, new Listener() {
+		public void handleEvent(Event event) {
+			scroll_scrollLeft();
+		}
+	});
+	scrollRight.addListener(SWT.Selection, new Listener() {
+		public void handleEvent(Event event) {
+			scroll_scrollRight();
+		}
+	});
+	
+}
+private void createCloseBar() {
+	Color background = getBackground();
+	closeBar = new ToolBar(this, SWT.FLAT);
+	closeBar.setVisible(false);
+	closeBar.setBackground(background);
+	ToolItem closeItem = new ToolItem(closeBar, SWT.PUSH);
+	
+	inactiveCloseBar = new ToolBar(this, SWT.FLAT);
+	inactiveCloseBar.setVisible(false);
+	inactiveCloseBar.setBackground(background);
+	ToolItem inactiveCloseItem = new ToolItem(inactiveCloseBar, SWT.PUSH);
+
+	closeItem.addListener(SWT.Selection, new Listener() {
+		public void handleEvent(Event event) {
+			closeNotify(getSelection(), event.time);
+		}
+	});
+	inactiveCloseItem.addListener(SWT.Selection, new Listener() {
+		public void handleEvent(Event event) {
+			closeNotify(inactiveItem, event.time);
+			inactiveCloseBar.setVisible(false);
+			inactiveItem = null;
+		}
+	});
+	inactiveCloseBar.addListener (SWT.MouseExit, new Listener() {
+		public void handleEvent(Event event) {
+			if (inactiveItem != null) {
+				Rectangle itemBounds = inactiveItem.getBounds();
+				if (itemBounds.contains(event.x, event.y)) return;
+			}
+			inactiveCloseBar.setVisible(false);
+			inactiveItem = null;
+		}
+	});
+	
+}
 /**
  * Destroy the specified item.
  */
@@ -461,49 +489,25 @@ private void onDispose() {
 		tip = null;
 	}
 	
+	if (arrowLeftImage != null) arrowLeftImage.dispose();
+	arrowLeftImage = null;
+	if (arrowRightImage != null) arrowRightImage.dispose();
+	arrowRightImage = null;
+	if (closeImage != null) closeImage.dispose();
+	closeImage = null;
+	
 	gradientColors = null;
 	gradientPercents = null;
 	backgroundImage = null;
 
-	if (arrowLeftImage != null){
-		arrowLeftImage.dispose();
-		arrowLeftImage = null;
-	}
+	if (borderColor1 != null) borderColor1.dispose();
+	borderColor1 = null;
 	
-	if (arrowRightImage != null){
-		arrowRightImage.dispose();
-		arrowRightImage = null;
-	}
+	if (borderColor2 != null) borderColor2.dispose();
+	borderColor2 = null;
 	
-	if (arrowLeftDisabledImage != null) {
-		arrowLeftDisabledImage.dispose();
-		arrowLeftDisabledImage = null;
-	}
-	
-	if (arrowRightDisabledImage != null) {
-		arrowRightDisabledImage.dispose();
-		arrowRightDisabledImage = null;
-	}
-	
-	if (closeImage != null) {
-		closeImage.dispose();
-		closeImage = null;
-	}
-	
-	if (borderColor1 != null) {
-		borderColor1.dispose();
-		borderColor1 = null;
-	}
-	
-	if (borderColor2 != null) {
-		borderColor2.dispose();
-		borderColor2 = null;
-	}
-	
-	if (borderColor3 != null) {
-		borderColor3.dispose();
-		borderColor3 = null;
-	}
+	if (borderColor3 != null) borderColor3.dispose();
+	borderColor3 = null;
 }
 public void onFocus(Event e) {
 	if (selectedIndex >= 0) {
@@ -569,23 +573,13 @@ public Rectangle getClientArea() {
 	clientArea.height -= 2*marginHeight + borderTop + borderBottom + getTabHeight() + 1;
 	return clientArea;
 }
-/**
- * Return the height of item images. All images are scaled to 
- * the height of the first image.
- */
-int getImageHeight() {
-	return imageHeight;
-}
 public int getTabHeight(){
 	if (fixedTabHeight > 0) return fixedTabHeight;
-	
-	if (isDisposed()) return 0;
-	
+
 	int tempHeight = 0;
 	GC gc = new GC(this);
 	for (int i=0; i < items.length; i++) { 
-		int height = items[i].preferredHeight(gc);
-		tempHeight = Math.max(tempHeight, height);
+		tempHeight = Math.max(tempHeight, items[i].preferredHeight(gc));
 	}
 	gc.dispose();
 	return tempHeight;
@@ -662,65 +656,51 @@ public int indexOf(CTabItem item) {
 	return -1;
 }
 /**
- * 'item' has changed. Store the image size if this is the 
- * first item with an image.
+ * 'item' has changed.
  */
-void itemChanged(CTabItem item) {
-	Image itemImage = item.getImage();
-	if (imageHeight == -1 && itemImage != null) {
-		imageHeight = itemImage.getBounds().height;
-	}
-
-	int height = getTabHeight();
-	Point size = scrollBar.computeSize(SWT.DEFAULT, height);
-	scrollBar.setSize(size);
-	height = (onBottom) ? height - 2 : height - 1;
-	size = closeBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	closeBar.setSize(size);
-	inactiveCloseBar.setSize(size);
-								
+void itemChanged(CTabItem item) {								
 	layoutItems();
 	redrawTabArea(-1);
 }
 private void layoutButtons() {
 	
+	updateArrowBar();
+	updateCloseBar();
+	
+	int tabHeight = getTabHeight();
+	Rectangle area = super.getClientArea();
+	
 	boolean leftVisible = scroll_leftVisible();
 	boolean rightVisible = scroll_rightVisible();
-
 	if (leftVisible || rightVisible) {
-		initScrollBarImages();
-		Point size = scrollBar.getSize();
-		Rectangle area = super.getClientArea();
-		int x = area.x + area.width - size.x - borderRight;
-		int y = 0;
-		if (!onBottom) {
-			y = area.y + borderTop;
-		} else {
-			y = area.y + area.height - borderBottom - size.y;
-		}
-		scrollBar.setLocation(x, y);
-		scrollLeft.setEnabled(leftVisible);
-		scrollRight.setEnabled(rightVisible);
-		scrollBar.setVisible(true);
+		Point size = arrowBar.computeSize(SWT.DEFAULT, tabHeight);
+		int x = area.x + area.width - borderRight - size.x;
+		int y = (onBottom) ? area.y + area.height - borderBottom - size.y : area.y + borderTop;
+		
+		arrowBar.setBounds(x, y, size.x, size.y);
+		ToolItem[] items = arrowBar.getItems();
+		items[0].setEnabled(leftVisible);
+		items[1].setEnabled(rightVisible);
+		arrowBar.setVisible(true);
 	} else {
-		scrollBar.setVisible(false);
+		arrowBar.setVisible(false);
 	}
 	
 	// When the close button is right at the edge of the Tab folder, hide it because
 	// otherwise it may block off a part of the border on the right
 	if (showClose) {
-		Point size = closeBar.getSize();
 		CTabItem item = getSelection();
 		if (item == null) {
 			closeBar.setVisible(false);
 		} else {
-			int x = item.x + item.width - CTabItem.RIGHT_MARGIN - size.x + 2;
-			int y = item.y + CTabItem.TOP_MARGIN - 1;
-			closeBar.setLocation(x, y);
-			if (scrollBar.isVisible()) {
-				Rectangle scrollRect = scrollBar.getBounds();
-				scrollRect.width += borderRight;
-				closeBar.setVisible(!scrollRect.contains(x, y));
+			int toolbarHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN + 2; // +2 to ignore gab between focus rectangle
+			int x = item.x + item.width - toolbarHeight - 1;
+			int y = item.y + Math.max(0, (item.height - toolbarHeight)/2);		
+				closeBar.setBounds(x, y, toolbarHeight, toolbarHeight);
+			if (arrowBar.isVisible()) {
+				Rectangle arrowRect = arrowBar.getBounds();
+				arrowRect.width += borderRight;
+				closeBar.setVisible(!arrowRect.contains(x, y));
 			} else {
 				closeBar.setVisible(true);
 			}
@@ -823,12 +803,12 @@ boolean onMnemonic (Event event) {
 			if (mnemonic != '\0') {
 				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
 					setSelection(i, true);
-					return false;
+					return true;
 				}
 			}
 		}
 	}
-	return true;
+	return false;
 }
 /** 
  * Paint the receiver.
@@ -850,10 +830,11 @@ private void onPaint(Event event) {
 			gc.fillRectangle(rect.x, rect.y, rect.width, borderBottom);
 
 		}
-		if (fixedTabHeight > 0) {
-			int y = rect.y + borderBottom + fixedTabHeight;
+		int tabHeight = getTabHeight();
+		if (tabHeight > 0) {
+			int y = rect.y + borderBottom + tabHeight;
 			if (onBottom) {
-				y = rect.y + rect.height - fixedTabHeight - 1;
+				y = rect.y + rect.height - tabHeight - 1;
 			}
 			gc.setForeground(borderColor1);
 			gc.drawLine(rect.x + borderRight, y, rect.x + rect.width, y);
@@ -1033,22 +1014,7 @@ private void onResize() {
 		}
 	}
 }
-private void onSelection(Event event) {
-	if (event.widget == scrollLeft) {
-		scroll_scrollLeft();
-	}
-	if (event.widget == scrollRight) {
-		scroll_scrollRight();
-	}
-	if (event.widget == closeItem) {
-		closeNotify(getSelection(), event.time);
-	}
-	if (event.widget == inactiveCloseItem) {
-		closeNotify(inactiveItem, event.time);
-		inactiveCloseBar.setVisible(false);
-		inactiveItem = null;
-	}
-}
+
 public void setBackground (Color color) {
 	super.setBackground(color);
 	color = getBackground();
@@ -1057,7 +1023,7 @@ public void setBackground (Color color) {
 	inactiveCloseBar.setBackground(color);
 	
 	// init scroll buttons
-	scrollBar.setBackground(color);
+	arrowBar.setBackground(color);
 	
 	// init close button
 	if (gradientColors == null) {
@@ -1254,7 +1220,7 @@ private void ensureVisible() {
 	}
 	layoutItems();
 	
-	int scrollWidth = scrollBar.getSize().x;
+	int scrollWidth = arrowBar.getSize().x;
 	int width = areaWidth;
 	if (scroll_leftVisible() || scroll_rightVisible()) {
 		width -=  scrollWidth;
@@ -1302,87 +1268,103 @@ private void setSelection(int index, boolean notify) {
 	}
 }
 
-private void initCloseButtonImages() {
-	if (closeImage != null) return;
-
-	try {
-		Display display = getDisplay();
-		Image image = new Image(display, CTabFolder.class.getResourceAsStream("close.gif"));
-		ImageData source = image.getImageData();
-		ImageData mask = source.getTransparencyMask();
-		image.dispose();
-		closeImage = new Image(display, source, mask);
-	} catch (Error e) {
-		closeImage = null;
-		return;
-	}
+private void updateCloseBar() {
+	int imageHeight = getTabHeight() - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN - 6;
+	if (imageHeight < 4) return;
 	
-	closeItem.setDisabledImage(closeImage);
+	if (closeImage != null && closeImage.getBounds().height == imageHeight) return;
+	
+	if (closeBar != null) closeBar.dispose();
+	closeBar = null;
+	if (inactiveCloseBar != null) inactiveCloseBar.dispose();
+	inactiveCloseBar = null;
+	createCloseBar();
+	
+	ToolItem closeItem = closeBar.getItems()[0];
+	ToolItem inactiveCloseItem = inactiveCloseBar.getItems()[0];
+		
+	if (closeImage != null) closeImage.dispose();
+	
+	Display display = getDisplay();
+	Color foreground = getForeground();
+	Color black = display.getSystemColor(SWT.COLOR_BLACK);
+	Color background = getBackground();
+	
+	PaletteData palette = new PaletteData(new RGB[]{foreground.getRGB(), background.getRGB(), black.getRGB()});
+	ImageData imageData = new ImageData(imageHeight, imageHeight, 4, palette);
+	imageData.transparentPixel = 1;
+	closeImage = new Image(display, imageData);
+	GC gc = new GC(closeImage);
+	gc.setBackground(background);
+	gc.fillRectangle(0, 0, imageHeight, imageHeight);
+	gc.setForeground(black);
+	
+	int h = (imageHeight /2 )* 2;
+	gc.drawLine( 0, 0,     h - 2, h - 2);
+	gc.drawLine( 1, 0,     h,     h - 1);
+	gc.drawLine( 0, h - 2, h - 2, 0);
+	gc.drawLine( 1, h - 2, h - 1, 0);
+	
+	gc.dispose();
+	
 	closeItem.setImage(closeImage);
-	inactiveCloseItem.setDisabledImage(closeImage);
 	inactiveCloseItem.setImage(closeImage);
-	
-	Point size = closeBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	closeBar.setSize(size);
-	inactiveCloseBar.setSize(size);
 }
-private void initScrollBarImages() {
-	if (arrowLeftImage != null) return;
-
-	try {
-		Display display = getDisplay();
-		Image image = new Image(display, CTabFolder.class.getResourceAsStream("leftDisabled.gif"));
-		ImageData source = image.getImageData();
-		ImageData mask = source.getTransparencyMask();
-		image.dispose();
-		arrowLeftDisabledImage = new Image(display, source, mask);
+private void updateArrowBar() {
 	
-		image = new Image(display, CTabFolder.class.getResourceAsStream("left.gif"));
-		source = image.getImageData();
-		mask = source.getTransparencyMask();
-		image.dispose();
-		arrowLeftImage = new Image(display, source, mask);
+	int imageHeight = getTabHeight() - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN - 6;
+	if (imageHeight < 4) return;
 	
-		image = new Image(display, CTabFolder.class.getResourceAsStream("rightDisabled.gif"));
-		source = image.getImageData();
-		mask = source.getTransparencyMask();
-		image.dispose();
-		arrowRightDisabledImage = new Image(display, source, mask);
+	if (arrowLeftImage != null && arrowLeftImage.getBounds().height == imageHeight) return;	
 	
-		image = new Image(display, CTabFolder.class.getResourceAsStream("right.gif"));
-		source = image.getImageData();
-		mask = source.getTransparencyMask();
-		image.dispose();
-		arrowRightImage = new Image(display, source, mask);
-	} catch (Error e) {
-		if (arrowLeftDisabledImage != null){
-			arrowLeftDisabledImage.dispose();
-			arrowLeftDisabledImage = null;
-		}
-		if (arrowLeftImage != null){
-			arrowLeftImage.dispose();
-			arrowLeftImage = null;
-		}
-		if (arrowRightDisabledImage != null){
-			arrowRightDisabledImage.dispose();
-			arrowRightDisabledImage = null;
-		}
-		if (arrowRightImage != null){
-			arrowRightImage.dispose();
-			arrowRightImage = null;
-		}
-		return;
-	}
+	if (arrowBar != null) arrowBar.dispose();
+	arrowBar = null;
+	if (arrowLeftImage != null) arrowLeftImage.dispose();
+	if (arrowRightImage != null) arrowRightImage.dispose();
 	
-	scrollLeft.setDisabledImage(arrowLeftDisabledImage);
-	scrollLeft.setImage(arrowLeftImage);
+	createArrowBar();
+	ToolItem[] items = arrowBar.getItems();
+	ToolItem left  = items[0];
+	ToolItem right = items[1];
 	
-	scrollRight.setDisabledImage(arrowRightDisabledImage);
-	scrollRight.setImage(arrowRightImage);
+	Display display = getDisplay();
+	Color foreground = getForeground();
+	Color black = display.getSystemColor(SWT.COLOR_BLACK);
+	Color background = getBackground();
 	
-	int height = getTabHeight();
-	Point size = scrollBar.computeSize(SWT.DEFAULT, height);
-	scrollBar.setSize(size);
+	PaletteData palette = new PaletteData(new RGB[]{foreground.getRGB(), background.getRGB(), black.getRGB()});
+	ImageData imageData = new ImageData(imageHeight, imageHeight, 4, palette);
+	imageData.transparentPixel = 1;
+	arrowLeftImage = new Image(display, imageData);
+	GC gc = new GC(arrowLeftImage);
+	gc.setBackground(background);
+	gc.fillRectangle(0, 0, imageHeight, imageHeight);
+	gc.setBackground(black);
+	int indent = 0;
+	int midpoint = (imageHeight - 2*indent)/2;
+	int height = 2 * midpoint;
+	int[] pointArr = new int[] {indent, indent + midpoint, 
+		                        indent + height, indent, 
+		                        indent + height,  indent + height};
+	gc.fillPolygon(pointArr);
+	gc.dispose();
+	
+	palette = new PaletteData(new RGB[]{foreground.getRGB(), background.getRGB(), black.getRGB()});
+	imageData = new ImageData(imageHeight, imageHeight, 4, palette);
+	imageData.transparentPixel = 1;
+	arrowRightImage = new Image(display, imageData);
+	gc = new GC(arrowRightImage);
+	gc.setBackground(background);
+	gc.fillRectangle(0, 0, imageHeight, imageHeight);
+	gc.setBackground(black);
+	pointArr = new int[] {indent, indent, 
+		                  indent, indent + height,
+		                  indent + height, indent + midpoint};
+	gc.fillPolygon(pointArr);
+	gc.dispose();
+	
+	left.setImage(arrowLeftImage);
+	right.setImage(arrowRightImage);
 }
 
 private void onMouseDoubleClick(Event event) { 
@@ -1406,22 +1388,12 @@ private void onMouseDown(Event event) {
 }
 
 private void onMouseExit(Event event) {
-	if (event.widget == this) {
-		Rectangle inactiveBounds = inactiveCloseBar.getBounds();
-		if (inactiveBounds.contains(event.x, event.y)) return;
-		inactiveCloseBar.setVisible(false);
-		inactiveItem = null;
+	Rectangle inactiveBounds = inactiveCloseBar.getBounds();
+	if (inactiveBounds.contains(event.x, event.y)) return;
+	inactiveCloseBar.setVisible(false);
+	inactiveItem = null;
 		
-		if (!tip.isDisposed() && tip.isVisible()) tip.setVisible(false);
-	}
-	if (event.widget == inactiveCloseBar) {
-		if (inactiveItem != null) {
-			Rectangle itemBounds = inactiveItem.getBounds();
-			if (itemBounds.contains(event.x, event.y)) return;
-		}
-		inactiveCloseBar.setVisible(false);
-		inactiveItem = null;
-	}
+	if (!tip.isDisposed() && tip.isVisible()) tip.setVisible(false);
 }
 
 private void onMouseHover(Event event) {
@@ -1458,10 +1430,9 @@ private void onMouseMove(Event event) {
 	if (!showClose) return;
 	
 	CTabItem item = null;
-	Rectangle itemRect = null;
 	for (int i=0; i<items.length; i++) {
-		itemRect = items[i].getBounds();
-		if (itemRect.contains(new Point(event.x, event.y))) {
+		Rectangle rect = items[i].getBounds();
+		if (rect.contains(new Point(event.x, event.y))) {
 			item = items[i];
 			break;
 		}
@@ -1473,17 +1444,17 @@ private void onMouseMove(Event event) {
 		
 	if (item == null || item == getSelection()) return;
 
-	Point closeRect = inactiveCloseBar.getSize();
-	int x = itemRect.x + itemRect.width - CTabItem.RIGHT_MARGIN - closeRect.x + 2;
-	int y = itemRect.y + CTabItem.TOP_MARGIN - 1;
+	int toolbarHeight = getTabHeight() - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN + 2; // +2 to ignore gab between focus rectangle
+	int x = item.x + item.width - toolbarHeight;
+	int y = item.y + Math.max(0, (item.height - toolbarHeight)/2);		
 			
-	if (scrollBar.isVisible()) {
-		Rectangle scrollArea = scrollBar.getBounds();
+	if (arrowBar.isVisible()) {
+		Rectangle scrollArea = arrowBar.getBounds();
 		scrollArea.width += borderRight;
 		if (scrollArea.contains(x, y)) return;
 	}
 	
-	inactiveCloseBar.setLocation(x, y);
+	inactiveCloseBar.setBounds(x, y, toolbarHeight,toolbarHeight);
 	inactiveCloseBar.setVisible(true);
 	inactiveItem = item;
 }
@@ -1507,7 +1478,7 @@ private void onTraverse (Event event) {
 
 private boolean onPageTraversal(Event event) {
 	int count = getItemCount ();
-	if (count == 0) return true;
+	if (count == 0) return false;
 	int index = getSelectionIndex ();
 	if (index == -1) {
 		index = 0;
@@ -1516,14 +1487,14 @@ private boolean onPageTraversal(Event event) {
 		index = (index + offset + count) % count;
 	}
 	setSelection (index, true);
-	return false;
+	return true;
 }
 /** 
  * Answer the area where the left scroll button is drawn.
  */
 private Rectangle scroll_getBounds() {
-	if (scrollBar != null)
-		return scrollBar.getBounds();
+	if (arrowBar != null)
+		return arrowBar.getBounds();
 	return new Rectangle(0, 0, 0, 0);
 }
 
@@ -1578,7 +1549,9 @@ public void setTabHeight(int height) {
 	if (height < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	fixedTabHeight = height + CTabItem.TOP_MARGIN + CTabItem.BOTTOM_MARGIN;
+	if (fixedTabHeight == height) return;
+	fixedTabHeight = height;
 	layoutItems();
+	redrawTabArea(-1);
 }
 }
