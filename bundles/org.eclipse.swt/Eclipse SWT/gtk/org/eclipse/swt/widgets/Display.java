@@ -2972,8 +2972,8 @@ public void setData (Object data) {
 	this.data = data;
 }
 
-int setDirectionProc (int widget, int direction) {
-	OS.gtk_widget_set_direction (widget, direction);
+int setDirectionProc (int /*long*/ widget, int /*long*/ direction) {
+	OS.gtk_widget_set_direction (widget, (int)/*64*/ direction);
 	if (OS.GTK_IS_CONTAINER (widget)) {
 		OS.gtk_container_forall (widget, setDirectionProc, direction);
 	}
