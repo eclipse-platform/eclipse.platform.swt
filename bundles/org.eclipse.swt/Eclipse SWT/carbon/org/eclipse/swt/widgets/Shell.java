@@ -600,7 +600,6 @@ public void setVisible (boolean visible) {
 		if ((state & HIDDEN) != 0) return;
 		state |= HIDDEN;
 	}
-	if (parent != null && !parent.isVisible ()) return;
 	setWindowVisible (visible);
 }
 
