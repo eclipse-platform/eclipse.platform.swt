@@ -496,7 +496,7 @@ static boolean kde_init() {
 	/*
 	* Feature in KDE.  When a KDE application is initialized, it installs
 	* its own SIGSEGV,SIGFPE,SIGILL,SIGABRT signal handlers so that it can
-	* pop up a dialo box and display an error message should SIGSEGV occur.
+	* pop up a dialog box and display an error message should SIGSEGV occur.
 	* After the dialogue box is closed, it terminates the program. Some Java VMs
 	* happen to catch SIGSEGV signals so that it can throw a null pointer exception.
 	* Thus when KDE is initialized, the Java try ... catch mechanism for null pointers
