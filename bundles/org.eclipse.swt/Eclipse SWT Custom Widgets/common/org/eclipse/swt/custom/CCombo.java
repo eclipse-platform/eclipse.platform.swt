@@ -298,17 +298,24 @@ void comboEvent (Event event) {
 	}
 }
 
-public Point computeSize (int wHint, int hHint, boolean changed) {
+public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
-	Point textSize = text.computeSize (wHint, SWT.DEFAULT, changed);
+	String[] items = list.getItems();
+	int textWidth = 0;
+	GC gc = new GC(text);
+	int spacer = gc.stringExtent(" ").x; //$NON-NLS-1$
+	for (int i = 0; i < items.length; i++) {
+		textWidth = Math.max(gc.stringExtent(items[i]).x, textWidth);
+	}
+	gc.dispose();
+	Point textSize = text.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
 	Point arrowSize = arrow.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
-	Point listSize = list.computeSize (wHint, SWT.DEFAULT, changed);
 	int borderWidth = getBorderWidth();
 	
-	height = Math.max (hHint, Math.max(textSize.y, arrowSize.y)  + 2*borderWidth);
-	width = Math.max (wHint, Math.max(textSize.x + arrowSize.x + 2*borderWidth, listSize.x + 2)  );
-	return new Point (width, height);
+	height = Math.max(hHint, Math.max(textSize.y, arrowSize.y) + 2*borderWidth);
+	width = Math.max(wHint, textWidth + 2*spacer + arrowSize.x + 2*borderWidth);
+	return new Point(width, height);
 }
 void createPopup(String[] items, int selectionIndex) {		
 		// create shell and list
