@@ -232,12 +232,20 @@ void createHandle (int index) {
 		};
 		handle = OS.XmCreateArrowButton (parentHandle, null, argList, argList.length / 2);
         */
-        int proc = OS.kControlPopupArrowEastProc;
-        if ((style & SWT.LEFT) != 0) proc = OS.kControlPopupArrowWestProc;
-        if ((style & SWT.UP) != 0) proc = OS.kControlPopupArrowNorthProc;
-        if ((style & SWT.DOWN) != 0) proc = OS.kControlPopupArrowSouthProc;
-        handle= MacUtil.newControl(parentHandle, (short)proc);
+        handle= MacUtil.newControl(parentHandle, (short)OS.kControlBevelButtonNormalBevelProc);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		int kThemeDisclosureRight = 0;
+  		int kThemeDisclosureDown = 1;
+  		int kThemeDisclosureLeft = 2;
+  		int kThemeDisclosureButton = 6;
+  		int kControlBevelButtonKindTag = ('b'<<24) + ('e'<<16) + ('b'<<8) + 'k';
+		int orientation = kThemeDisclosureRight;
+		if ((style & SWT.UP) != 0) orientation = kThemeDisclosureRight; // NEEDS WORK
+		if ((style & SWT.DOWN) != 0) orientation = kThemeDisclosureDown;
+		if ((style & SWT.LEFT) != 0) orientation = kThemeDisclosureLeft;
+		OS.SetControlData (handle, OS.kControlEntireControl, kControlBevelButtonKindTag, new short [] {(short)(kThemeDisclosureButton)});
+		OS.SetControl32BitMaximum (handle, 2);
+		OS.SetControl32BitValue (handle, orientation);
         /* AW
 		if ((style & SWT.FLAT) != 0) {
 			int [] argList1 = {OS.XmNshadowThickness, 1};
