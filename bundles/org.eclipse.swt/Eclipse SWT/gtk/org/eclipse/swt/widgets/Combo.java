@@ -1382,6 +1382,7 @@ public void setItems (String [] items) {
 	OS.gtk_list_clear_items (listHandle, 0, -1);
 	int /*long*/ font = getFontDescription ();
 	GdkColor color = getForegroundColor ();
+	int direction = OS.gtk_widget_get_direction (handle);
 	int i = 0;
 	while (i < items.length) {
 		String string = items [i];
@@ -1390,7 +1391,7 @@ public void setItems (String [] items) {
 		int /*long*/ label = OS.gtk_bin_get_child (item); 
 		OS.gtk_widget_modify_fg (label, OS.GTK_STATE_NORMAL, color);
 		OS.gtk_widget_modify_font (label, font);
-		OS.gtk_widget_set_direction (label, OS.gtk_widget_get_direction (handle));
+		OS.gtk_widget_set_direction (label, direction);
 		OS.gtk_container_add (listHandle, item);
 		OS.gtk_widget_show (item);
 		i++;
