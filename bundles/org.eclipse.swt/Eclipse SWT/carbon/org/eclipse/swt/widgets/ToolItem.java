@@ -40,7 +40,6 @@ public class ToolItem extends Item {
 	
 	// AW
 	private boolean fPressed;
-	private ThemeButtonDrawInfo fPrevInfo;
 	private int fBackground;
 	// AW
 	
@@ -1039,9 +1038,8 @@ int processPaint (Object callData) {
 			if (newInfo != null) {
 				Rect b= new Rect();
 				OS.SetRect(b, (short)1, (short)1, (short)(width-1), (short)(height-1));
-				OS.DrawThemeButton(b, (short)OS.kThemeSmallBevelButton, newInfo, fPrevInfo, 0, 0, 0);
+				OS.DrawThemeButton(b, (short)OS.kThemeSmallBevelButton, newInfo, null, 0, 0, 0);
 			}
-			fPrevInfo= newInfo;
 				
 			if (enabled) {
 				gc.setForeground (parent.getForeground());
