@@ -33,7 +33,7 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class Label extends Control {
-	int frameHandle;
+	int frameHandle, labelHandle, pixmapHandle;
 	Image image;
 	String text;
 
@@ -83,12 +83,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			if (hHint == SWT.DEFAULT) hHint = DEFAULT_HEIGHT;
 		}
 	}
-	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
-	int labelWidth = OS.GTK_WIDGET_WIDTH (handle);
-	int labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	int labelWidth = 0, labelHeight = 0;
+	if (labelHandle != 0) {
+		labelWidth = OS.GTK_WIDGET_WIDTH (labelHandle);
+		labelHeight = OS.GTK_WIDGET_HEIGHT (labelHandle);
+		OS.gtk_widget_set_size_request (labelHandle, -1, -1);
+	}
 	GtkRequisition requisition = new GtkRequisition ();
 	if (frameHandle != 0) {
+		int frameWidth = OS.GTK_WIDGET_WIDTH (frameHandle);
+		int frameHeight = OS.GTK_WIDGET_HEIGHT (frameHandle);
 		OS.gtk_widget_set_size_request (frameHandle, -1, -1);
 		/*
 		 * Temporary code.
@@ -100,12 +106,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		 */
 		OS.gtk_widget_set_size_request (handle, wHint, hHint);
 		OS.gtk_widget_size_request (frameHandle, requisition);
-		OS.gtk_widget_set_size_request (frameHandle, width, height);
+		OS.gtk_widget_set_size_request (frameHandle, frameWidth, frameHeight);
 	} else {
 		OS.gtk_widget_set_size_request (handle, wHint, hHint);
 		OS.gtk_widget_size_request (handle, requisition);
 	}
-	OS.gtk_widget_set_size_request (handle, labelWidth, labelHeight);
+	if (labelHandle != 0) {
+		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
+	}
+	OS.gtk_widget_set_size_request (handle, width, height);
 	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
 	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	return new Point (width, height);	
@@ -122,12 +131,21 @@ void createHandle (int index) {
 		} else {
 			handle = OS.gtk_vseparator_new ();
 		}
+		OS.gtk_widget_show (handle);
 	} else {
-		handle = OS.gtk_label_new (null);
+		handle = OS.gtk_hbox_new (false, 0);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		labelHandle = OS.gtk_label_new_with_mnemonic (null);
+		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		Display display = getDisplay ();
+		pixmapHandle = OS.gtk_pixmap_new (display.nullPixmap, 0);
+		if (pixmapHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (handle, labelHandle);
+		OS.gtk_container_add (handle, pixmapHandle);
+		OS.gtk_widget_show (handle);
+		OS.gtk_widget_show (labelHandle);		
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
 	if ((style & SWT.BORDER) != 0) {
 		frameHandle = OS.gtk_frame_new (null);
 		if (frameHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -139,23 +157,27 @@ void createHandle (int index) {
 	} else {
 		OS.gtk_container_add (fixedHandle, handle);
 	}
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (handle);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	if ((style & SWT.WRAP) != 0) OS.gtk_label_set_line_wrap (handle, true);
+	if ((style & SWT.WRAP) != 0) OS.gtk_label_set_line_wrap (labelHandle, true);
 	if ((style & SWT.LEFT) != 0) {
-		OS.gtk_misc_set_alignment (handle, 0.0f, 0.0f);
-		OS.gtk_label_set_justify (handle, OS.GTK_JUSTIFY_LEFT);
+		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
+		OS.gtk_misc_set_alignment (pixmapHandle, 0.0f, 0.5f);
 		return;
 	}
 	if ((style & SWT.CENTER) != 0) {
-		OS.gtk_misc_set_alignment (handle, 0.5f, 0.0f);
-		OS.gtk_label_set_justify (handle, OS.GTK_JUSTIFY_CENTER);
+		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
+		OS.gtk_misc_set_alignment (pixmapHandle, 0.5f, 0.5f);
 		return;
 	}
 	if ((style & SWT.RIGHT) != 0) {
-		OS.gtk_misc_set_alignment (handle, 1.0f, 0.0f);
-		OS.gtk_label_set_justify (handle, OS.GTK_JUSTIFY_RIGHT);
+		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
+		OS.gtk_misc_set_alignment (pixmapHandle, 1.0f, 0.5f);
 		return;
 	}
 }
@@ -168,6 +190,8 @@ void createWidget (int index) {
 void deregister () {
 	super.deregister ();
 	if (frameHandle != 0) WidgetTable.remove (frameHandle);
+	if (labelHandle != 0) WidgetTable.remove (labelHandle);
+	if (pixmapHandle != 0) WidgetTable.remove (pixmapHandle);
 }
 
 int eventHandle () {
@@ -238,11 +262,13 @@ public String getText () {
 void register () {
 	super.register ();
 	if (frameHandle != 0) WidgetTable.put (frameHandle, this);
+	if (labelHandle != 0) WidgetTable.put (labelHandle, this);
+	if (pixmapHandle != 0) WidgetTable.put (pixmapHandle, this);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
-	frameHandle = 0;
+	frameHandle = pixmapHandle = labelHandle = 0;
 }
 
 void releaseWidget () {
@@ -254,7 +280,7 @@ void releaseWidget () {
 void resizeHandle (int width, int height) {
 	/*
 	* Bug in GTK.  For some reason, when the label is
-	* wrappable and the frame is resized, it does not
+	* wrappable and its container is resized, it does not
 	* cause the label to be wrapped.  The fix is to
 	* determine the size that will wrap the label
 	* and expilictly set that size to force the label
@@ -264,14 +290,14 @@ void resizeHandle (int width, int height) {
 	* resized to the preferred size but it still
 	* won't draw properly.
 	*/
-	if (frameHandle != 0) {
-		OS.gtk_widget_set_size_request (frameHandle, width, height);
-		OS.gtk_widget_set_size_request (handle, -1, -1);
-	}
+	if (labelHandle != 0) OS.gtk_widget_set_size_request (labelHandle, -1, -1);
+
+	if (frameHandle != 0) OS.gtk_widget_set_size_request (frameHandle, width, height);
 	super.resizeHandle (width, height);
+	
 	/*
 	* Bug in GTK.  For some reason, when the label is
-	* wrappable and the frame is resized, it does not
+	* wrappable and its container is resized, it does not
 	* cause the label to be wrapped.  The fix is to
 	* determine the size that will wrap the label
 	* and expilictly set that size to force the label
@@ -280,10 +306,10 @@ void resizeHandle (int width, int height) {
 	* This part of the fix forces the label to be
 	* resized so that it will draw wrapped.
 	*/
-	if (frameHandle != 0) {
-		int labelWidth = OS.GTK_WIDGET_WIDTH (handle);
-		int labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
-		OS.gtk_widget_set_size_request (handle, labelWidth, labelHeight);
+	if (labelHandle != 0) {
+		int labelWidth = OS.GTK_WIDGET_WIDTH (labelHandle);
+		int labelHeight = OS.GTK_WIDGET_HEIGHT (labelHandle);
+		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
 	}
 }
 
@@ -306,20 +332,22 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	boolean isText = OS.GTK_WIDGET_TYPE (handle) == OS.gtk_label_get_type ();
 	if ((style & SWT.LEFT) != 0) {
-		OS.gtk_misc_set_alignment (handle, 0.0f, 0.0f);
-		if (isText) OS.gtk_label_set_justify (handle, OS.GTK_JUSTIFY_LEFT);
+		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
+		OS.gtk_misc_set_alignment (pixmapHandle, 0.0f, 0.5f);
 		return;
 	}
 	if ((style & SWT.CENTER) != 0) {
-		OS.gtk_misc_set_alignment (handle, 0.5f, 0.0f);
-		if (isText) OS.gtk_label_set_justify (handle, OS.GTK_JUSTIFY_CENTER);
+		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
+		OS.gtk_misc_set_alignment (pixmapHandle, 0.5f, 0.5f);
 		return;
 	}
 	if ((style & SWT.RIGHT) != 0) {
-		OS.gtk_misc_set_alignment (handle, 1.0f, 0.0f);
-		if (isText) OS.gtk_label_set_justify (handle, OS.GTK_JUSTIFY_RIGHT);
+		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
+		OS.gtk_misc_set_alignment (pixmapHandle, 1.0f, 0.5f);
 		return;
 	}
 }
@@ -327,11 +355,21 @@ public void setAlignment (int alignment) {
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	OS.gtk_widget_modify_bg (fixedHandle, 0, color);
+	if (labelHandle != 0) OS.gtk_widget_modify_bg (labelHandle, 0, color);
+	if (pixmapHandle != 0) OS.gtk_widget_modify_bg (pixmapHandle, 0, color);
+}
+
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
+	if (pixmapHandle != 0) OS.gtk_widget_modify_font (pixmapHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	OS.gtk_widget_modify_fg (fixedHandle, 0, color);
+	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle, 0, color);
+	if (pixmapHandle != 0) OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
 }
 
 /**
@@ -352,30 +390,15 @@ public void setImage (Image image) {
 	checkWidget ();
 	this.image = image;
 	if ((style & SWT.SEPARATOR) != 0) return;
-	//NOT IMPLEMENTED - events and state of handle lost
-	WidgetTable.remove (handle);
-	OS.gtk_widget_destroy (handle);
-	if (image == null) {
-		handle = OS.gtk_label_new (null);
+	OS.gtk_widget_hide (labelHandle);
+	if (image != null) {
+		OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
+		OS.gtk_widget_show (pixmapHandle);
 	} else {
-		handle = OS.gtk_pixmap_new (image.pixmap, image.mask);
+		Display display = getDisplay ();
+		OS.gtk_pixmap_set (pixmapHandle, display.nullPixmap, 0);
+		OS.gtk_widget_hide (pixmapHandle);
 	}
-	if ((style & SWT.BORDER) != 0) {
-		OS.gtk_container_add (frameHandle, handle);
-	} else {
-		OS.gtk_container_add (fixedHandle, handle);
-	}
-	WidgetTable.put (handle, this);
-	int alignment = style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	switch (alignment) {
-		case SWT.LEFT: OS.gtk_misc_set_alignment (handle, 0.0f, 0.0f); break;
-		case SWT.CENTER: OS.gtk_misc_set_alignment (handle, 0.5f, 0.0f); break;
-		case SWT.RIGHT: OS.gtk_misc_set_alignment (handle, 1.0f, 0.0f); break;
-	}
-	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
-	resizeHandle (width, height); 
-	OS.gtk_widget_show (handle);
 }
 
 /**
@@ -398,43 +421,17 @@ public void setImage (Image image) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;
-	boolean isText = OS.GTK_WIDGET_TYPE (handle) == OS.gtk_label_get_type ();
-	if (!isText) {
-		//NOT IMPLEMENTED - events and state of handle lost
-		WidgetTable.remove (handle);
-		OS.gtk_widget_destroy (handle);
-		handle = OS.gtk_label_new (null);
-		if ((style & SWT.BORDER) != 0) {
-			OS.gtk_container_add (frameHandle, handle);
-		} else {
-			OS.gtk_container_add (fixedHandle, handle);
-		}
-		WidgetTable.put (handle, this);
-		int alignment = style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-		switch (alignment) {
-		case SWT.LEFT:
-			OS.gtk_misc_set_alignment (handle, 0.0f, 0.0f);
-			OS.gtk_label_set_justify (handle, OS.GTK_JUSTIFY_LEFT);
-			break;
-		case SWT.CENTER:
-			OS.gtk_misc_set_alignment (handle, 0.5f, 0.0f);
-			OS.gtk_label_set_justify (handle, OS.GTK_JUSTIFY_CENTER);
-			break;
-		case SWT.RIGHT:
-			OS.gtk_misc_set_alignment (handle, 1.0f, 0.0f);
-			OS.gtk_label_set_justify (handle, OS.GTK_JUSTIFY_RIGHT);
-			break;
-		}
-		int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
-		int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
-		resizeHandle (width, height); 
-		OS.gtk_widget_show (handle);
-	}
+	if ((style & SWT.SEPARATOR) != 0) return;
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (null, chars);
-	OS.gtk_label_set_text_with_mnemonic (handle, buffer);
+	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	OS.gtk_widget_hide (pixmapHandle);
+	if (string.length () != 0) {
+		OS.gtk_widget_show (labelHandle);
+	} else {
+		OS.gtk_widget_hide (labelHandle);
+	}
 }
 
 }
