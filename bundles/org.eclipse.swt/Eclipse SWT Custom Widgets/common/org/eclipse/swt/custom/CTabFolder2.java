@@ -183,6 +183,7 @@ public class CTabFolder2 extends Composite {
 	static final int FOREGROUND = SWT.COLOR_TITLE_INACTIVE_FOREGROUND;
 	static final int BACKGROUND = SWT.COLOR_TITLE_INACTIVE_BACKGROUND;
 	
+	static final int NONE = 0;
 	static final int NORMAL = 1;
 	static final int HOT = 2;
 	static final int SELECTED = 3;
@@ -1709,8 +1710,8 @@ void onMouse(Event event) {
 			if (showClose && !single) {
 				for (int i=0; i<items.length; i++) {
 					CTabItem2 item = items[i];
-					if (item.closeImageState != NORMAL) {
-						item.closeImageState = NORMAL;
+					if (item.closeImageState != NONE) {
+						item.closeImageState = NONE;
 						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
 					}
 				}
@@ -1799,13 +1800,20 @@ void onMouse(Event event) {
 					close = false;
 					if (item.getBounds().contains(x, y)) {
 						close = true;
-						if (item.closeImageState != HOT) {
-							item.closeImageState = HOT;
-							redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+						if (item.closeRect.contains(x, y)) {
+							if (item.closeImageState != HOT) {
+								item.closeImageState = HOT;
+								redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+							}
+						} else {
+							if (item.closeImageState != NORMAL) {
+								item.closeImageState = NORMAL;
+								redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+							}
 						}
 					} 
-					if (item.closeImageState == HOT && !close) {
-						item.closeImageState = NORMAL;
+					if (item.closeImageState != NONE && !close) {
+						item.closeImageState = NONE;
 						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
 					}
 				}

@@ -32,7 +32,7 @@ public class CTabItem2 extends Item {
 	String shortenedText;
 	int shortenedTextWidth;
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
-	int closeImageState = CTabFolder2.NORMAL;
+	int closeImageState = CTabFolder2.NONE;
 	
 	// internal constants
 	static final int LEFT_MARGIN = 6;
@@ -150,15 +150,10 @@ void drawClose(GC gc) {
 					                 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
 			                         x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
 			                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
-			if (parent.selectedIndex == parent.indexOf(this)) {
-				gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-				gc.fillPolygon(shape);
-				gc.setForeground(CTabFolder2.borderColor1);
-				gc.drawPolygon(shape);
-			} else {
-				gc.setBackground(parent.getBackground());
-				gc.fillPolygon(shape);
-			}
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.fillPolygon(shape);
+			gc.setForeground(CTabFolder2.borderColor1);
+			gc.drawPolygon(shape);
 			break;
 		}
 		case CTabFolder2.HOT: {
@@ -174,7 +169,7 @@ void drawClose(GC gc) {
 			border.dispose();
 			break;
 		}
-		case CTabFolder2.SELECTED:
+		case CTabFolder2.SELECTED: {
 			int[] shape = new int[] {x+1,y+1, x+3,y+1, x+5,y+3, x+6,y+3, x+8,y+1, x+10,y+1, 
 					                 x+10,y+3, x+8,y+5, x+8,y+6, x+10,y+8, x+10,y+10,
 			                         x+8,y+10, x+6,y+8, x+5,y+8, x+3,y+10, x+1,y+10,
@@ -188,6 +183,12 @@ void drawClose(GC gc) {
 			gc.drawPolygon(shape);
 			border.dispose();
 			break;
+		}
+		case CTabFolder2.NONE: {
+			gc.setBackground(parent.getBackground());
+			gc.fillRectangle(x, y, 10, 10);
+			break;
+		}
 	}
 }
 void drawSelected(GC gc ) {
