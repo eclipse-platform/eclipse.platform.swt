@@ -25,22 +25,6 @@ class ProgressBarTab extends RangeTab {
 	ProgressBarTab(ControlExample instance) {
 		super(instance);
 	}
-	
-	/**
-	 * Creates the "Colors" group.
-	 */
-	void createColorGroup () {
-		/* Get default system colors for the control */
-		progressBar1 = new ProgressBar (progressBarGroup, SWT.NONE);
-		defaultBackgroundColor = progressBar1.getBackground ();
-		defaultForegroundColor = progressBar1.getForeground ();
-		progressBar1.dispose ();
-		
-		super.createColorGroup ();
-		
-		/* Set the state of the controls */
-		fontButton.setEnabled (false);
-	}
 
 	/**
 	 * Creates the "Example" group.
@@ -71,9 +55,6 @@ class ProgressBarTab extends RangeTab {
 		progressBar1 = new ProgressBar (progressBarGroup, style);
 		progressBar1.setMaximum (100);
 		progressBar1.setSelection (50);
-
-		/* Set the colors */
-		setColors ();
 	}
 	
 	/**
@@ -85,14 +66,6 @@ class ProgressBarTab extends RangeTab {
 		/* Create the extra widgets */
 		smoothButton = new Button (styleGroup, SWT.CHECK);
 		smoothButton.setText ("SWT.SMOOTH");
-	}
-	
-	/**
-	 * Sets the background and foreground colors of the "Example" widgets.
-	 */
-	void setColors () {
-		progressBar1.setBackground (backgroundColor);
-		progressBar1.setForeground (foregroundColor);
 	}
 	
 	/**

@@ -25,22 +25,6 @@ class CoolBarTab extends Tab {
 	}
 	
 	/**
-	 * Creates the "Colors" group.
-	 */
-	void createColorGroup () {
-		/* Get default system colors for the control */
-		coolBar = new CoolBar (coolBarGroup, SWT.NONE);
-		defaultBackgroundColor = coolBar.getBackground ();
-		defaultForegroundColor = coolBar.getForeground ();
-		coolBar.dispose ();
-		
-		super.createColorGroup();
-		
-		/* Set the state of the controls */
-		fontButton.setEnabled (false);
-	}
-	
-	/**
 	 * Creates the "Display" group.
 	 */
 	void createDisplayGroup () {
@@ -85,9 +69,6 @@ class CoolBarTab extends Tab {
 		*/
 		coolBar = new CoolBar (coolBarGroup, style);
 		
-		/* Set the colors */
-		setColors ();
-
 		/* create the push button toolbar */
 		ToolBar toolBar = new ToolBar (coolBar, toolBarStyle);
 		ToolItem item = new ToolItem (toolBar, SWT.PUSH);
@@ -233,15 +214,7 @@ class CoolBarTab extends Tab {
 		}
 		super.disposeExampleWidgets();	
 	}
-	
-	/**
-	 * Sets the background and foreground colors of the "Example" widgets.
-	 */
-	void setColors () {
-		coolBar.setBackground (backgroundColor);
-		coolBar.setForeground (foregroundColor);
-	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */

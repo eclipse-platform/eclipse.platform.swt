@@ -29,28 +29,6 @@ class SliderTab extends RangeTab {
 	SliderTab(ControlExample instance) {
 		super(instance);
 	}
-	
-	/**
-	 * Creates the "Colors" group.
-	 */
-	void createColorGroup () {
-		/* Get default system colors for the control */
-		scale1 = new Scale (scaleGroup, SWT.NONE);
-		defaultBackgroundColor = scale1.getBackground ();
-		defaultForegroundColor = scale1.getForeground ();
-		scale1.dispose ();
-		
-		super.createColorGroup ();
-		backgroundButton.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent e) {
-				defaultColor = false;
-				setColors ();
-			}
-		});
-		
-		/* Set the state of the controls */
-		fontButton.setEnabled (false);
-	}
 
 	/**
 	 * Creates the "Control" widget children.
@@ -105,9 +83,6 @@ class SliderTab extends RangeTab {
 		slider1.setIncrement(5);
 		slider1.setPageIncrement (10);
 		slider1.setThumb (10);
-		
-		/* Set the colors */
-		setColors ();
 	}
 	
 	/**
@@ -200,16 +175,6 @@ class SliderTab extends RangeTab {
 	 */
 	String getTabText () {
 		return ControlExample.getResourceString("Slider_and_Scale");
-	}
-	
-	/**
-	 * Sets the background and foreground colors of the "Example" widgets.
-	 */
-	void setColors () {
-		if (!defaultColor) slider1.setBackground (backgroundColor);
-		slider1.setForeground (foregroundColor);
-		scale1.setBackground (backgroundColor);
-		scale1.setForeground (foregroundColor);
 	}
 	
 	/**

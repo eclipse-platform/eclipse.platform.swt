@@ -35,19 +35,6 @@ class ButtonTab extends AlignableTab {
 	}
 	
 	/**
-	 * Creates the "Colors" group.
-	 */
-	void createColorGroup() {
-		/* Get default system colors for the control */
-		button1 = new Button (textButtonGroup, SWT.PUSH);
-		defaultBackgroundColor = button1.getBackground();
-		defaultForegroundColor = button1.getForeground();
-		button1.dispose();
-		
-		super.createColorGroup();
-	}
-
-	/**
 	 * Creates the "Control" group. 
 	 */
 	void createControlGroup () {
@@ -111,22 +98,16 @@ class ButtonTab extends AlignableTab {
 		/* Create the example widgets */
 		button1 = new Button(textButtonGroup, style);
 		button1.setText(ControlExample.getResourceString("One"));
-		button1.setFont(font);
 		button2 = new Button(textButtonGroup, style);
 		button2.setText(ControlExample.getResourceString("Two"));
-		button2.setFont(font);
 		button3 = new Button(textButtonGroup, style);
 		button3.setText(ControlExample.getResourceString("Three"));
-		button3.setFont(font);
 		button4 = new Button(imageButtonGroup, style);
 		button4.setImage(instance.images[ControlExample.ciClosedFolder]);
 		button5 = new Button(imageButtonGroup, style);
 		button5.setImage(instance.images[ControlExample.ciOpenFolder]);
 		button6 = new Button(imageButtonGroup, style);
 		button6.setImage(instance.images[ControlExample.ciTarget]);
-		
-		/* Set the colors */
-		setColors ();
 	}
 	
 	/**
@@ -164,21 +145,6 @@ class ButtonTab extends AlignableTab {
 	 */
 	String getTabText () {
 		return "Button";
-	}
-	
-	/**
-	 * Sets the background and foreground colors of the "Example" widgets.
-	 */
-	void setColors () {
-		button1.setBackground (backgroundColor);
-		button1.setForeground (foregroundColor);
-		button2.setBackground (backgroundColor);
-		button2.setForeground (foregroundColor);
-		button3.setBackground (backgroundColor);
-		button3.setForeground (foregroundColor);
-		button4.setBackground (backgroundColor);
-		button5.setBackground (backgroundColor);
-		button6.setBackground (backgroundColor);
 	}
 	
 	/**

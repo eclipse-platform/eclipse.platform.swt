@@ -38,19 +38,6 @@ class ComboTab extends Tab {
 	}
 	
 	/**
-	 * Creates the "Colors" group.
-	 */
-	void createColorGroup() {
-		/* Get default system colors for the control */
-		combo1 = new Combo (comboGroup, SWT.NONE);
-		defaultBackgroundColor = combo1.getBackground();
-		defaultForegroundColor = combo1.getForeground();
-		combo1.dispose();
-		
-		super.createColorGroup();
-	}
-	
-	/**
 	 * Creates the "Example" group.
 	 */
 	void createExampleGroup () {
@@ -81,10 +68,6 @@ class ComboTab extends Tab {
 		if (ListData.length >= 3) {
 			combo1.setText(ListData [2]);
 		}
-		combo1.setFont (font);
-		
-		/* Set the colors */
-		setColors ();
 	}
 	
 	/**
@@ -116,14 +99,6 @@ class ComboTab extends Tab {
 	 */
 	String getTabText () {
 		return "Combo";
-	}
-	
-	/**
-	 * Sets the background and foreground colors of the "Example" widgets.
-	 */
-	void setColors () {
-		combo1.setBackground (backgroundColor);
-		combo1.setForeground (foregroundColor);
 	}
 	
 	/**

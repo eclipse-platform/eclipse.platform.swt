@@ -27,19 +27,6 @@ class LabelTab extends AlignableTab {
 	}
 	
 	/**
-	 * Creates the "Colors" group.
-	 */
-	void createColorGroup() {
-		/* Get default system colors for the control */
-		label1 = new Label (textLabelGroup, SWT.NONE);
-		defaultBackgroundColor = label1.getBackground();
-		defaultForegroundColor = label1.getForeground();
-		label1.dispose();
-		
-		super.createColorGroup();
-	}
-	
-	/**
 	 * Creates the "Example" group.
 	 */
 	void createExampleGroup () {
@@ -80,26 +67,20 @@ class LabelTab extends AlignableTab {
 		/* Create the example widgets */
 		label1 = new Label (textLabelGroup, style);
 		label1.setText(ControlExample.getResourceString("One"));
-		label1.setFont(font);
 		label2 = new Label (textLabelGroup, style);
 		label2.setText(ControlExample.getResourceString("Two"));
-		label2.setFont (font);
 		label3 = new Label (textLabelGroup, style);
 		if (wrapButton.getSelection ()) {
 			label3.setText (ControlExample.getResourceString("Wrap_Text"));
 		} else {
 			label3.setText (ControlExample.getResourceString("Three"));
 		}
-		label3.setFont (font);
 		label4 = new Label (imageLabelGroup, style);
 		label4.setImage (instance.images[ControlExample.ciClosedFolder]);
 		label5 = new Label (imageLabelGroup, style);
 		label5.setImage (instance.images[ControlExample.ciOpenFolder]);
 		label6 = new Label(imageLabelGroup, style);
 		label6.setImage (instance.images[ControlExample.ciTarget]);
-		
-		/* Set the colors */
-		setColors ();
 	}
 	
 	/**
@@ -154,21 +135,6 @@ class LabelTab extends AlignableTab {
 	}
 	
 	/**
-	 * Sets the background and foreground colors of the "Example" widgets.
-	 */
-	void setColors () {
-		label1.setBackground (backgroundColor);
-		label1.setForeground (foregroundColor);
-		label2.setBackground (backgroundColor);
-		label2.setForeground (foregroundColor);
-		label3.setBackground (backgroundColor);
-		label3.setForeground (foregroundColor);
-		label4.setBackground (backgroundColor);
-		label5.setBackground (backgroundColor);
-		label6.setBackground (backgroundColor);
-	}
-	
-	/**
 	 * Sets the alignment of the "Example" widgets.
 	 */
 	void setExampleWidgetAlignment () {
@@ -204,6 +170,5 @@ class LabelTab extends AlignableTab {
 		shadowOutButton.setEnabled (isSeparator);
 		horizontalButton.setEnabled (isSeparator);
 		verticalButton.setEnabled (isSeparator);
-		fontButton.setEnabled (!isSeparator);
 	}
 }

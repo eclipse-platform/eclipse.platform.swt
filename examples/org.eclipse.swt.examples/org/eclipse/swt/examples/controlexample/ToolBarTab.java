@@ -25,19 +25,6 @@ class ToolBarTab extends Tab {
 	ToolBarTab(ControlExample instance) {
 		super(instance);
 	}
-	
-	/**
-	 * Creates the "Colors" group.
-	 */
-	void createColorGroup () {
-		/* Get default system colors for the control */
-		imageToolBar = new ToolBar (imageToolBarGroup, SWT.NONE);
-		defaultBackgroundColor = imageToolBar.getBackground ();
-		defaultForegroundColor = imageToolBar.getForeground ();
-		imageToolBar.dispose ();
-		
-		super.createColorGroup ();
-	}
 
 	/**
 	 * Creates the "Example" group.
@@ -108,9 +95,6 @@ class ToolBarTab extends Tab {
 	
 		/* Create the text tool bar */
 		textToolBar = new ToolBar (textToolBarGroup, style);
-		textToolBar.setBackground (backgroundColor);
-		textToolBar.setForeground (foregroundColor);
-		textToolBar.setFont (font);
 		item = new ToolItem (textToolBar, SWT.PUSH);
 		item.setText (ControlExample.getResourceString("Push"));
 		item.setToolTipText("SWT.PUSH");
@@ -145,9 +129,6 @@ class ToolBarTab extends Tab {
 		* widget does nothing special when the drop down area
 		* is selected.
 		*/
-		
-		/* Set the colors */
-		setColors ();
 	}
 	
 	/**
@@ -181,16 +162,6 @@ class ToolBarTab extends Tab {
 	 */
 	String getTabText () {
 		return "ToolBar";
-	}
-	
-	/**
-	 * Sets the background and foreground colors of the "Example" widgets.
-	 */
-	void setColors () {
-		textToolBar.setBackground (backgroundColor);
-		textToolBar.setForeground (foregroundColor);
-		imageToolBar.setBackground (backgroundColor);
-		imageToolBar.setForeground (foregroundColor);
 	}
 	
 	/**

@@ -42,19 +42,13 @@ class TextTab extends ScrollableTab {
 	}
 	
 	/**
-	 * Creates the "Colors" group.
+	 * Creates the "Control" widget children.
 	 */
-	void createColorGroup () {
-		/* Get default system colors for the control */
-		text = new Text (textGroup, SWT.NONE);
-		defaultBackgroundColor = text.getBackground();
-		defaultForegroundColor = text.getForeground();
-		text.dispose ();
-		
-		super.createColorGroup();
+	void createControlWidgets () {
+		super.createControlWidgets ();
 		
 		/* Add a group for modifying the StyledText widget */
-		createStyledTextStyleGroup();
+		createStyledTextStyleGroup ();
 	}
 
 	/**
@@ -93,18 +87,13 @@ class TextTab extends ScrollableTab {
 	
 		/* Create the example widgets */
 		text = new Text (textGroup, style);
-		text.setFont (font);
 		text.setText (ControlExample.getResourceString("Example_string"));
 		text.append (text.DELIMITER);
 		text.append (ControlExample.getResourceString("One_Two_Three"));
 		styledText = new StyledText (styledTextGroup, style);
-		styledText.setFont (font);
 		styledText.setText (ControlExample.getResourceString("Example_string"));
 		styledText.append ("\n");
 		styledText.append (ControlExample.getResourceString("One_Two_Three"));
-		
-		/* Set the colors */
-		setColors ();
 	}
 	
 	/**
@@ -217,16 +206,6 @@ class TextTab extends ScrollableTab {
 	 */
 	String getTabText () {
 		return "Text";
-	}
-	
-	/**
-	 * Sets the background and foreground colors of the "Example" widgets.
-	 */
-	void setColors () {
-		text.setBackground (backgroundColor);
-		text.setForeground (foregroundColor);
-		styledText.setBackground (backgroundColor);
-		styledText.setForeground (foregroundColor);
 	}
 	
 	/**

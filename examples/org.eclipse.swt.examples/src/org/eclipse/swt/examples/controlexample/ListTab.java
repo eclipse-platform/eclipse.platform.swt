@@ -35,17 +35,6 @@ class ListTab extends ScrollableTab {
 	}
 	
 	/**
-	 * Creates the "Colors" group.
-	 */
-	void createColorGroup () {
-		/* Get default system colors for the control */
-		defaultBackgroundColor = listGroup.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
-		defaultForegroundColor = listGroup.getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
-		
-		super.createColorGroup();
-	}
-
-	/**
 	 * Creates the "Example" group.
 	 */
 	void createExampleGroup () {
@@ -74,18 +63,6 @@ class ListTab extends ScrollableTab {
 		/* Create the example widgets */
 		list1 = new List (listGroup, style);
 		list1.setItems (ListData1);
-		list1.setFont (font);
-		
-		/* Set the colors */
-		setColors ();
-	}
-	
-	/**
-	 * Sets the background and foreground colors of the "Example" widgets.
-	 */
-	void setColors () {
-		list1.setBackground (backgroundColor);
-		list1.setForeground (foregroundColor);
 	}
 	
 	/**

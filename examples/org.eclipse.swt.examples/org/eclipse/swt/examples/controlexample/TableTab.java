@@ -24,10 +24,7 @@ class TableTab extends ScrollableTab {
 	
 	/* Color widgets added to the "Color" group */
 	Button itemBackgroundButton, itemForegroundButton;
-	Color defaultItemBackgroundColor, defaultItemForegroundColor, itemBackgroundColor, itemForegroundColor;
-	Image itemBackgroundImage, itemForegroundImage;
-	RGB chosenItemBackgroundColor, chosenItemForegroundColor;
-	boolean itemSet = false;
+	Color itemBackgroundColor, itemForegroundColor;
 	
 	static String [] columnTitles	= {ControlExample.getResourceString("TableTitle_0"),
 									   ControlExample.getResourceString("TableTitle_1"),
@@ -60,11 +57,6 @@ class TableTab extends ScrollableTab {
 	 * Creates the "Colors" group.
 	 */
 	void createColorGroup () {
-		/* Get default system colors for the control */
-		table1 = new Table (tableGroup, SWT.NONE);
-		defaultBackgroundColor = table1.getBackground ();
-		defaultForegroundColor = table1.getForeground ();
-		
 		super.createColorGroup();
 		
 		tableItemGroup = new Group (colorGroup, SWT.NONE);
@@ -73,81 +65,41 @@ class TableTab extends ScrollableTab {
 		data.horizontalSpan = 2;
 		tableItemGroup.setLayoutData (data);
 		tableItemGroup.setLayout (new GridLayout (2, false));
-		new Label (tableItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Item_Background_Color"));
-		itemBackgroundButton = new Button (tableItemGroup, SWT.PUSH);
 		new Label (tableItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Item_Foreground_Color"));
 		itemForegroundButton = new Button (tableItemGroup, SWT.PUSH);
+		new Label (tableItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Item_Background_Color"));
+		itemBackgroundButton = new Button (tableItemGroup, SWT.PUSH);
 		
-		/* Get default system colors for the control */
-		TableItem item = new TableItem (table1, SWT.NONE);
-		defaultItemBackgroundColor = item.getBackground();
-		defaultItemForegroundColor = item.getForeground();
-		table1.dispose ();
-		
-		/* Create images to display current colors */
-		chosenItemBackgroundColor = defaultItemBackgroundColor.getRGB();
-		chosenItemForegroundColor = defaultItemForegroundColor.getRGB();
-		GC gc = new GC (fontButton.getShell());
-		final int fontHeight = gc.getFontMetrics().getHeight();
-		gc.dispose ();
-		itemBackgroundImage = new Image(colorGroup.getDisplay(),fontHeight*2,fontHeight);
-		gc = new GC(itemBackgroundImage);
-		gc.setBackground(defaultItemBackgroundColor);
-		gc.fillRectangle(0,0,fontHeight*2-1,fontHeight-1);
-		gc.drawRectangle(0,0,fontHeight*2-1,fontHeight-1);
-		gc.dispose();
-		itemForegroundImage = new Image(colorGroup.getDisplay(),fontHeight*2,fontHeight);
-		gc = new GC(itemForegroundImage);
-		gc.setBackground(defaultItemForegroundColor);
-		gc.fillRectangle(0,0,fontHeight*2-1,fontHeight-1);
-		gc.drawRectangle(0,0,fontHeight*2-1,fontHeight-1);
-		gc.dispose();
-		
+		Shell shell = itemBackgroundButton.getShell ();
+		final ColorDialog backgroundDialog = new ColorDialog (shell);
+		final ColorDialog foregroundDialog = new ColorDialog (shell);
+
+		int imageSize = 12;
+		Display display = shell.getDisplay ();
+		final Image itemBackgroundImage = new Image(display, imageSize, imageSize);
+		final Image itemForegroundImage = new Image(display, imageSize, imageSize);
+
 		/* Add listeners to set the colors and font */
 		itemBackgroundButton.setImage(itemBackgroundImage);
 		itemBackgroundButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				itemSet = true;
-				ColorDialog colorDialog= new ColorDialog(itemBackgroundButton.getShell());
-				colorDialog.setRGB(chosenItemBackgroundColor);
-				RGB newColor = colorDialog.open();
-				if (newColor != null) {
-					Color oldColor = null;
-					if (itemBackgroundColor != null) oldColor = itemBackgroundColor;
-					itemBackgroundColor = new Color (itemBackgroundButton.getDisplay(), newColor);
-					GC gc = new GC(itemBackgroundImage);
-					gc.setBackground(itemBackgroundColor);
-					gc.fillRectangle(0,0,fontHeight*2-1,fontHeight-1);
-					gc.drawRectangle(0,0,fontHeight*2-1,fontHeight-1);
-					gc.dispose();
-					itemBackgroundButton.setImage(itemBackgroundImage);
-					chosenItemBackgroundColor = newColor;
-					setItemColors ();
-					if (oldColor != null) oldColor.dispose ();
-				}
+				RGB rgb = backgroundDialog.open();
+				if (rgb == null) return;
+				Color oldColor = itemBackgroundColor;
+				itemBackgroundColor = new Color (itemBackgroundButton.getDisplay(), rgb);
+				setItemsBackground ();
+				if (oldColor != null) oldColor.dispose ();
 			}
 		});
 		itemForegroundButton.setImage(itemForegroundImage);
 		itemForegroundButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				itemSet = true;
-				ColorDialog colorDialog= new ColorDialog(itemForegroundButton.getShell());
-				colorDialog.setRGB(chosenItemForegroundColor);
-				RGB newColor = colorDialog.open();
-				if (newColor != null) {
-					Color oldColor = null;
-					if (itemForegroundColor != null) oldColor = itemForegroundColor;
-					itemForegroundColor = new Color (itemForegroundButton.getDisplay(), newColor);
-					GC gc= new GC(itemForegroundImage);
-					gc.setBackground(itemForegroundColor);
-					gc.fillRectangle(0,0,fontHeight*2-1,fontHeight-1);
-					gc.drawRectangle(0,0,fontHeight*2-1,fontHeight-1);
-					gc.dispose();
-					itemForegroundButton.setImage(itemForegroundImage);
-					chosenItemForegroundColor = newColor;
-					setItemColors ();
-					if (oldColor != null) oldColor.dispose ();
-				}
+				RGB rgb = foregroundDialog.open();
+				if (rgb == null) return;
+				Color oldColor = itemForegroundColor;
+				itemForegroundColor = new Color (itemForegroundButton.getDisplay(), rgb);
+				setItemsForeground ();
+				if (oldColor != null) oldColor.dispose ();
 			}
 		});
 		itemBackgroundButton.addDisposeListener(new DisposeListener() {
@@ -156,8 +108,6 @@ class TableTab extends ScrollableTab {
 				if (itemForegroundImage != null) itemForegroundImage.dispose();
 				if (itemBackgroundColor != null) itemBackgroundColor.dispose();
 				if (itemForegroundColor != null) itemForegroundColor.dispose();
-				itemBackgroundImage = null;
-				itemForegroundImage = null;
 				itemBackgroundColor = null;
 				itemForegroundColor = null;			
 			}
@@ -218,7 +168,6 @@ class TableTab extends ScrollableTab {
 	
 		/* Create the table widget */
 		table1 = new Table (tableGroup, style);
-		table1.setFont (font);
 	
 		/* Fill the table with data */
 		for (int i = 0; i < columnTitles.length; i++) {
@@ -247,10 +196,6 @@ class TableTab extends ScrollableTab {
 			TableColumn tableColumn = table1.getColumn(i);
 			tableColumn.pack();
 		}
-		
-		/* Set the colors */
-		setColors ();
-		setItemColors ();
 	}
 	
 	/**
@@ -281,22 +226,36 @@ class TableTab extends ScrollableTab {
 	}
 	
 	/**
-	 * Sets the background and foreground colors of the "Example" widgets.
+	 * Sets the background color of the TableItems.
 	 */
-	void setColors () {
-		table1.setBackground (backgroundColor);
-		table1.setForeground (foregroundColor);
+	void setItemsBackground () {
+		if (itemBackgroundButton == null) return;
+		Color color = itemBackgroundColor;
+		if (color == null) color = itemBackgroundButton.getBackground ();
+		Image image = itemBackgroundButton.getImage ();
+		drawImage (image, color);
+		itemBackgroundButton.setImage (image);
+		if (itemBackgroundColor == null) return;
+		TableItem [] items = table1.getSelection ();
+		for (int i = 0; i < items.length; i++) {
+			items [i].setBackground (itemBackgroundColor);
+		}
 	}
 	
 	/**
-	 * Sets the background and foreground colors of the TableItems.
+	 * Sets the foreground color of the TableItems.
 	 */
-	void setItemColors () {
-		if (!itemSet) return;
-		for (int i = 0; i < table1.getItemCount(); i++) {
-			TableItem item = table1.getItem (i);
-			item.setBackground (itemBackgroundColor);
-			item.setForeground (itemForegroundColor);
+	void setItemsForeground () {
+		if (itemForegroundButton == null) return;
+		Color color = itemForegroundColor;
+		if (color == null) color = itemForegroundButton.getForeground ();
+		Image image = itemForegroundButton.getImage ();
+		drawImage (image, color);
+		itemForegroundButton.setImage (image);
+		if (itemForegroundColor == null) return;
+		TableItem [] items = table1.getSelection ();
+		for (int i = 0; i < items.length; i++) {
+			items [i].setForeground (itemForegroundColor);
 		}
 	}
 	
@@ -305,6 +264,8 @@ class TableTab extends ScrollableTab {
 	 */
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
+		setItemsBackground ();
+		setItemsForeground ();
 		setWidgetHeaderVisible ();
 		setWidgetLinesVisible ();
 		checkButton.setSelection ((table1.getStyle () & SWT.CHECK) != 0);
