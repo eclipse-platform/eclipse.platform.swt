@@ -51,7 +51,10 @@ public static TextTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) return;
+	if (object == null || !(object instanceof String)) {
+		transferData.result = 0;
+		return;
+	} 
 	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
 	if  (transferData.type ==  TYPEID1) { // COMPOUND_TEXT
 		int[] encoding = new int[1];
@@ -83,8 +86,9 @@ public void javaToNative (Object object, TransferData transferData){
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
+	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
 	byte[] buffer = null;
-	if (transferData.type == TYPEID1) { // COMPOUND_TEXT
+	if (transferData.type == TYPEID1) { // COMPOUND_TEXT	
 		int[] list = new int[1];
 		int count = OS.gdk_text_property_to_utf8_list(transferData.type, transferData.format, transferData.pValue, transferData.length, list);
 		if (count == 0) {
@@ -92,7 +96,7 @@ public Object nativeToJava(TransferData transferData){
 		} else {
 			int[] ptr = new int[1];
 			OS.memmove(ptr, list[0], 4);
-			int length = OS.g_utf8_strlen(ptr[0], -1) * 8;
+			int length = OS.strlen(ptr[0]);
 			buffer = new byte[length];
 			OS.memmove(buffer, ptr[0], length);
 			OS.g_strfreev(list[0]);

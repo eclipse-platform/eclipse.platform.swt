@@ -340,7 +340,6 @@ public static final native void g_strfreev(int string_array);
 public static final native void g_thread_init(int vtable);
 public static final native boolean g_thread_supported();
 public static final native int g_utf16_to_utf8(char[] str, int len, int[] items_read, int[] items_written, int[] error);
-public static final native int g_utf8_strlen(int p, int max);
 public static final native int g_utf8_to_utf16(byte[] str, int len, int[] items_read, int[] items_written, int[] error);
 public static final native int g_utf8_to_utf16(int str, int len, int[] items_read, int[] items_written, int[] error);
 public static final native int gdk_atom_intern(byte[] atom_name, boolean only_if_exists);

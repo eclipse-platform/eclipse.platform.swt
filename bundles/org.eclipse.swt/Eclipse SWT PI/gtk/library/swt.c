@@ -751,15 +751,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf16_1to_1utf8
 }
 #endif
 
-#ifndef NO_g_1utf8_1strlen
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf8_1strlen
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	DEBUG_CALL("g_1utf8_1strlen\n")
-	return  (jint)g_utf8_strlen((const gchar *)arg0, (gssize)arg1);
-}
-#endif
-
 #ifndef NO_g_1utf8_1to_1utf16__II_3I_3I_3I
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf8_1to_1utf16__II_3I_3I_3I
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
