@@ -506,6 +506,7 @@ public static final native void gdk_gc_set_fill(int gc, int fill);
 public static final native int gdk_atom_intern(byte[] atom_name, int only_if_exists);
 public static final native int gdk_event_get();
 public static final native void gdk_region_get_clipbox(int region, GdkRectangle rectangle);
+public static final native void gdk_region_get_rectangles(int region, int[] rectangles, int[] n_rectangles);
 public static final native int gdk_region_new();
 public static final native void gdk_region_union_with_rect(int region, GdkRectangle rect);
 public static final native void gdk_region_subtract(int source1, int source2);
@@ -898,6 +899,7 @@ public static final native void memmove(byte[] dest, int src, int size);
 public static final native void memmove(int[] dest, byte[] src, int size);
 public static final native void memmove(int dest, byte[] src, int size);
 public static final native void memmove(int dest, int[] src, int size);
+public static final native void memmove(GdkRectangle dest, int src, int size);
 
 
 /* Read memmoves */

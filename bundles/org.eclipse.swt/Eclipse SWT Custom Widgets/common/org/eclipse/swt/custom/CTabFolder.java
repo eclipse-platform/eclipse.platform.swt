@@ -1107,7 +1107,8 @@ private void onPaint(Event event) {
 	rect.y += borderTop;
 	rect.width -= borderLeft + borderRight;
 	rect.height -= borderTop + borderBottom;
-	gc.setClipping(rect);
+	Rectangle clip = gc.getClipping ();
+	gc.setClipping(clip.intersection(rect));
 	
 	// Draw the unselected tabs first.
 	for (int i=0; i < items.length; i++) {
