@@ -2058,7 +2058,7 @@ void init(Drawable drawable, GCData data, int hDC) {
 	}
 	int layout = data.layout;
 	if (layout != -1) {
-		if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10))  {
+		if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
 			int flags = OS.GetLayout(hDC);
 			if ((flags & OS.LAYOUT_RTL) != (layout & OS.LAYOUT_RTL)) {
 				flags &= ~OS.LAYOUT_RTL;
