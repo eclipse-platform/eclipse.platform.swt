@@ -134,7 +134,7 @@ public class CTabFolder2 extends Composite {
 	Rectangle topRightRect = new Rectangle(0, 0, 0, 0);
 	
 	boolean tipShowing;
-	int upTime = 0;
+	boolean ignoreUp;
 	
 	// borders and shapes
 	boolean showHighlight =  false;
@@ -252,16 +252,17 @@ public CTabFolder2(Composite parent, int style) {
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose:          onDispose(); break;
-				case SWT.Paint:            onPaint(event);	break;
-				case SWT.Resize:           onResize();	break;
+				case SWT.FocusIn:          onFocus(event);	break;
+				case SWT.FocusOut:         onFocus(event);	break;
+				case SWT.MenuDetect:       onMenu(event); break;
 				case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
 				case SWT.MouseDown:        onMouse(event);	break;
 				case SWT.MouseExit:        onMouse(event);	break;
 				case SWT.MouseHover:       onMouseHover(event); break;
 				case SWT.MouseMove:        onMouse(event); break;
 				case SWT.MouseUp:          onMouse(event); break;
-				case SWT.FocusIn:          onFocus(event);	break;
-				case SWT.FocusOut:         onFocus(event);	break;
+				case SWT.Paint:            onPaint(event);	break;
+				case SWT.Resize:           onResize();	break;
 				case SWT.Traverse:         onTraverse(event); break;
 			}
 		}
@@ -269,17 +270,18 @@ public CTabFolder2(Composite parent, int style) {
 
 	int[] folderEvents = new int[]{
 		SWT.Dispose,
-		SWT.Paint,
-		SWT.Resize,  
+		SWT.FocusIn, 
+		SWT.FocusOut, 
+		SWT.KeyDown,
+		SWT.MenuDetect,
 		SWT.MouseDoubleClick, 
 		SWT.MouseDown,
 		SWT.MouseExit,
 		SWT.MouseHover, 
 		SWT.MouseMove,
 		SWT.MouseUp,
-		SWT.FocusIn, 
-		SWT.FocusOut, 
-		SWT.KeyDown,
+		SWT.Paint,
+		SWT.Resize,  
 		SWT.Traverse,
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
@@ -1667,6 +1669,23 @@ void onFocus(Event event) {
 		setSelection(0, true);
 	}
 }
+void onMenu(Event event) {
+	if (single && selectedIndex != -1) {
+		final CTabFolderEvent e = new CTabFolderEvent(CTabFolder2.this);
+		e.widget = this;
+		e.time = event.time;
+		Rectangle rect = items[selectedIndex].getBounds();
+		rect.y += onBottom ? -HIGHLIGHT_HEADER : HIGHLIGHT_HEADER;
+		e.rect = rect;
+		if (listListeners.length == 0) {
+			showList(e.rect, SWT.LEFT);
+		} else {
+			for (int j = 0; j < listListeners.length; j++) {
+				listListeners[j].showList(e);
+			}
+		}
+	}
+}
 boolean onMnemonic (Event event) {
 	char key = event.character;
 	for (int i = 0; i < items.length; i++) {
@@ -1758,6 +1777,7 @@ void onMouse(Event event) {
 					if (!single && i != topTabIndex && bounds.x + bounds.width >= getRightItemEdge())return;
 					setSelection(i, true);
 					setFocus();
+					ignoreUp = true;
 					return;
 				}
 			}
@@ -1829,11 +1849,12 @@ void onMouse(Event event) {
 			break;
 		}
 		case SWT.MouseUp: {
+			if (ignoreUp) {
+				ignoreUp = false;
+				return;
+			}
 			if (event.button != 1) return;
 			Display display = getDisplay();
-			boolean doubleClick = (event.time - upTime) <= display.getDoubleClickTime();
-			upTime = event.time;
-			if (doubleClick) return;
 			if (closeRect.contains(x, y)) {
 				closeImageState = HOT;
 				redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
@@ -1890,30 +1911,6 @@ void onMouse(Event event) {
 				}
 				redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
 				return;
-			}
-			if (single && selectedIndex != -1) {
-				Rectangle bounds = items[selectedIndex].getBounds();
-				if (bounds.contains(x, y)) {
-					final CTabFolderEvent e = new CTabFolderEvent(CTabFolder2.this);
-					e.widget = this;
-					e.time = event.time;
-					int time = 3 * display.getDoubleClickTime() / 2;
-					display.timerExec (time, new Runnable() {
-						public void run () {
-							if (isDisposed() || selectedIndex == -1 || e.time < upTime) return;
-							Rectangle rect = items[selectedIndex].getBounds();
-							rect.y += onBottom ? -HIGHLIGHT_HEADER :HIGHLIGHT_HEADER;
-							e.rect = rect;
-							if (listListeners.length == 0) {
-								showList(e.rect, SWT.LEFT);
-							} else {
-								for (int j = 0; j < listListeners.length; j++) {
-									listListeners[j].showList(e);
-								}
-							}
-						}
-					});
-				}
 			}
 			for (int i=0; i<items.length; i++) {
 				CTabItem2 item = items[i];
