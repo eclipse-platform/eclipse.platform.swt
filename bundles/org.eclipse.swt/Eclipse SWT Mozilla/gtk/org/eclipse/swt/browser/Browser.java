@@ -133,8 +133,7 @@ public Browser(Composite parent, int style) {
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Mozilla GTK2 required (GTK1.2 detected)]"); //$NON-NLS-1$							
 		}
-		String tempDir = System.getProperty("java.io.tmpdir"); //$NON-NLS-1$
-		if (tempDir == null) {
+		if (System.getProperty("java.io.tmpdir") == null) { //$NON-NLS-1$
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Missing system property java.io.tmpdir is required to create Mozilla profile]"); //$NON-NLS-1$
 		}
@@ -186,38 +185,8 @@ public Browser(Composite parent, int style) {
 		
 		nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
 		result[0] = 0;		
-		/* Create a temporary profile */
-		byte[] buffer = XPCOM.NS_PROFILE_CONTRACTID.getBytes();
+		byte[] buffer = XPCOM.NS_WINDOWWATCHER_CONTRACTID.getBytes();
 		byte[] aContractID = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
-		rc = serviceManager.GetServiceByContractID(aContractID, nsIProfile.NS_IPROFILE_IID, result);
-		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
-		
-		nsIProfile profile = new nsIProfile(result[0]);
-		result[0] = 0;
-		String randomName = "org.eclipse.swt.browser.Browser_" + Long.toHexString(System.currentTimeMillis()); //$NON-NLS-1$
-		char[] profileName = new char[randomName.length() + 1];
-		randomName.getChars(0, randomName.length(), profileName, 0);
-		profileFolder = new File(tempDir, randomName).getAbsolutePath();
-		char[] nativeProfileDir = new char[profileFolder.length() + 1];
-		profileFolder.getChars(0, profileFolder.length(), nativeProfileDir, 0);
-		rc = profile.CreateNewProfile(profileName, nativeProfileDir, null, false);
-		if (rc != XPCOM.NS_OK) error(rc);
-		rc = profile.SetCurrentProfile(profileName);
-		if (rc != XPCOM.NS_OK) error(rc);
-		/*
-		* Feature in Mozilla.  The guest profile created with CreateNewProfile can be seen in a
-		* standalone Mozilla inside the "User Profile Dialog". That behaviour is unwanted.  The
-		* workaround is to remove the profile from the profile list immediately after it has been
-		* created. The temporary folder storing the profile must be deleted when the display is disposed.
-		*/
-		rc = profile.DeleteProfile(profileName, false);
-		if (rc != XPCOM.NS_OK) error(rc);
-		profile.Release();
-
-		buffer = XPCOM.NS_WINDOWWATCHER_CONTRACTID.getBytes();
-		aContractID = new byte[buffer.length + 1];
 		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
 		rc = serviceManager.GetServiceByContractID(aContractID, nsIWindowWatcher.NS_IWINDOWWATCHER_IID, result);
 		if (rc != XPCOM.NS_OK) error(rc);
@@ -278,6 +247,80 @@ public Browser(Composite parent, int style) {
 		componentRegistrar.Release();
 		componentManager.Release();
 		mozilla = true;
+	}
+	if (profileFolder == null) {
+		int rc = XPCOM.NS_GetServiceManager(result);
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+		
+		nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+		result[0] = 0;		
+		/* Create a temporary profile */
+		byte[] buffer = XPCOM.NS_PROFILE_CONTRACTID.getBytes();
+		byte[] aContractID = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		rc = serviceManager.GetServiceByContractID(aContractID, nsIProfile.NS_IPROFILE_IID, result);
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
+		serviceManager.Release();
+
+		nsIProfile profile = new nsIProfile(result[0]);
+		result[0] = 0;
+		String randomName = "org.eclipse.swt.browser.Browser_" + Long.toHexString(System.currentTimeMillis()); //$NON-NLS-1$
+		char[] profileName = new char[randomName.length() + 1];
+		randomName.getChars(0, randomName.length(), profileName, 0);
+		String folder = new File(System.getProperty("java.io.tmpdir"), randomName).getAbsolutePath();
+		char[] nativeProfileDir = new char[folder.length() + 1];
+		folder.getChars(0, folder.length(), nativeProfileDir, 0);
+		rc = profile.CreateNewProfile(profileName, nativeProfileDir, null, false);
+		if (rc != XPCOM.NS_OK) error(rc);
+		rc = profile.SetCurrentProfile(profileName);
+		if (rc != XPCOM.NS_OK) error(rc);
+		/*
+		* Feature in Mozilla.  The guest profile created with CreateNewProfile can be seen in a
+		* standalone Mozilla inside the "User Profile Dialog". That behaviour is unwanted.  The
+		* workaround is to remove the profile from the profile list immediately after it has been
+		* created. The temporary folder storing the profile must be deleted when the display is disposed.
+		*/
+		rc = profile.DeleteProfile(profileName, false);
+		if (rc != XPCOM.NS_OK) error(rc);
+		profile.Release();
+		
+		profileFolder = folder;
+		
+		getDisplay().addListener(SWT.Dispose, new Listener() {
+			public void handleEvent(Event e) {
+				/* Delete the temporary profile */
+				int /*long*/[] result = new int /*long*/[1];
+				int rc = XPCOM.NS_GetServiceManager(result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+							
+				nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+				result[0] = 0;
+				byte[] buffer = XPCOM.NS_PROFILE_CONTRACTID.getBytes();
+				byte[] aContractID = new byte[buffer.length + 1];
+				System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+				rc = serviceManager.GetServiceByContractID(aContractID, nsIProfile.NS_IPROFILE_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
+				serviceManager.Release();
+				
+				nsIProfile profile = new nsIProfile(result[0]);
+				result[0] = 0;
+				rc = profile.ShutDownCurrentProfile(nsIProfile.SHUTDOWN_CLEANSE);
+				if (rc != XPCOM.NS_OK) error(rc);
+				profile.Release();			
+
+				deleteFile(new File(profileFolder));
+				
+				/*
+				* Note.  It is possible a new Display and a new Browser be created
+				* next.  In that case, a new profile must be created. 
+				*/
+				profileFolder = null;
+			}
+		});
 	}
 	BrowserCount++;
 	int rc = XPCOM.NS_GetComponentManager(result);
@@ -384,33 +427,6 @@ public Browser(Composite parent, int style) {
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
 	}
-	getDisplay().addListener(SWT.Dispose, new Listener() {
-		public void handleEvent(Event e) {
-			/* Delete the temporary profile */
-			int /*long*/[] result = new int /*long*/[1];
-			int rc = XPCOM.NS_GetServiceManager(result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-						
-			nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
-			result[0] = 0;
-			byte[] buffer = XPCOM.NS_PROFILE_CONTRACTID.getBytes();
-			byte[] aContractID = new byte[buffer.length + 1];
-			System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
-			rc = serviceManager.GetServiceByContractID(aContractID, nsIProfile.NS_IPROFILE_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
-			serviceManager.Release();
-			
-			nsIProfile profile = new nsIProfile(result[0]);
-			result[0] = 0;
-			rc = profile.ShutDownCurrentProfile(nsIProfile.SHUTDOWN_CLEANSE);
-			if (rc != XPCOM.NS_OK) error(rc);
-			profile.Release();			
-
-			deleteFile(new File(profileFolder));
-		}
-	});
 }
 
 static void deleteFile(File file) {
