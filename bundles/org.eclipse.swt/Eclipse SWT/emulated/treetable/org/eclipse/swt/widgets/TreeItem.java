@@ -2056,7 +2056,7 @@ public void setImage (int columnIndex, Image value) {
 			}
 			gc.dispose ();
 			parent.redraw (
-				0, 0,
+				columns [0].getX (), 0,
 				columns [0].width,
 				parent.getClientArea ().height,
 				true);

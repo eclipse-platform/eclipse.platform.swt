@@ -2799,8 +2799,7 @@ public void showColumn (TreeColumn column) {
 	int x = column.getX ();
 	int rightX = x + column.width;
 	Rectangle bounds = getClientArea ();
-	int boundsRight = bounds.x + bounds.width;
-	if (bounds.x <= x && rightX <= boundsRight) return;	 /* column is fully visible */
+	if (0 <= x && rightX <= bounds.width) return;	 /* column is fully visible */
 
 	int absX = 0;	/* the X of the column irrespective of the horizontal scroll */
 	for (int i = 0; i < column.getIndex (); i++) {
@@ -2809,10 +2808,11 @@ public void showColumn (TreeColumn column) {
 	if (x < bounds.x) { 	/* column is to left of viewport */
 		horizontalOffset = absX;
 	} else {
-		horizontalOffset = boundsRight - absX;
+		horizontalOffset = absX + column.width - bounds.width;
 	}
 	getHorizontalBar ().setSelection (horizontalOffset);
 	redraw ();
+	if (header.isVisible ()) header.redraw ();
 }
 /**
  * Shows the item.  If the item is already showing in the receiver,

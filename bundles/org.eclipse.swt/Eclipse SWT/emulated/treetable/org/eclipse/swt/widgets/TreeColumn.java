@@ -401,11 +401,11 @@ public void pack () {
 	TreeItem[] availableItems = parent.availableItems;
 	if (availableItems.length == 0) return;
 	int index = getIndex ();
-	int width = getPreferredWidth ();
+	int newWidth = getPreferredWidth ();
 	for (int i = 0; i < availableItems.length; i++) {
-		width = Math.max (width, availableItems [i].getPreferredWidth (index));
+		newWidth = Math.max (newWidth, availableItems [i].getPreferredWidth (index));
 	}
-	parent.updateColumnWidth (this, width);
+	if (newWidth != width) parent.updateColumnWidth (this, newWidth);
 }
 /**
  * Removes the listener from the collection of listeners who will
