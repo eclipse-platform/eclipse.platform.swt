@@ -2156,6 +2156,50 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter
 }
 #endif /* NO_GetEventParameter__III_3II_3I_3S */
 
+#ifndef NO_GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGPoint_2
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGPoint_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jobject arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	CGPoint _arg6, *lparg6=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGPoint_2\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = getCGPointFields(env, arg6, &_arg6);
+	rc = (jint)GetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (EventParamType *)lparg3, (UInt32)arg4, (UInt32 *)lparg5, (void *)lparg6);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) setCGPointFields(env, arg6, lparg6);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_Point_2
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_Point_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jobject arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	Point _arg6, *lparg6=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_Point_2\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = getPointFields(env, arg6, &_arg6);
+	rc = (jint)GetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (EventParamType *)lparg3, (UInt32)arg4, (UInt32 *)lparg5, (void *)lparg6);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) setPointFields(env, arg6, lparg6);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetEventTime
 JNIEXPORT jdouble JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventTime
 	(JNIEnv *env, jclass that, jint arg0)
