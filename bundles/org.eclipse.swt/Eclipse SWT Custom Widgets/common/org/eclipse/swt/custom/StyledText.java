@@ -5053,11 +5053,17 @@ void handleResize(Event event) {
 	Rectangle clientArea = getClientArea();
 	clientAreaHeight = clientArea.height;
 	clientAreaWidth = clientArea.width;
-	/* Redraw the old or new right margin if needed */
+	/* Redraw the old or new right/bottom margin if needed */
     if (oldWidth != clientAreaWidth) {	
 		if (rightMargin > 0) {
 			int x = (oldWidth < clientAreaWidth ? oldWidth : clientAreaWidth)- rightMargin; 
 			redraw(x, 0, rightMargin, oldHeight, false);
+		}
+    }
+    if (oldHeight != clientAreaHeight) {	
+		if (bottomMargin > 0) {
+			int y = (oldHeight < clientAreaHeight ? oldHeight : clientAreaHeight)- bottomMargin; 
+			redraw(0, y, oldWidth, bottomMargin, false);
 		}
     }
 	if (wordWrap) {
