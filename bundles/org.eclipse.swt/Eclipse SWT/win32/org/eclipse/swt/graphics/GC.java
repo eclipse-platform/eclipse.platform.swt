@@ -1215,10 +1215,45 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 //	TCHAR buffer = new TCHAR (getCodePage(), string, false);
 	int length = string.length();
+	if (length == 0) return;
 	char[] buffer = new char [length];
 	string.getChars(0, length, buffer, 0);
+	int rop2 = 0;
+	if (OS.IsWinCE) {
+		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);
+		OS.SetROP2(handle, rop2);
+	} else {
+		rop2 = OS.GetROP2(handle);
+	}
 	int oldBkMode = OS.SetBkMode(handle, isTransparent ? OS.TRANSPARENT : OS.OPAQUE);
-	OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
+	if (rop2 != OS.R2_XORPEN) {
+		OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
+	} else {
+		int foreground = OS.GetTextColor(handle);
+		if (isTransparent) {
+			SIZE size = new SIZE();
+			OS.GetTextExtentPoint32W(handle, buffer, length, size);
+			int width = size.cx, height = size.cy;
+			int hBitmap = OS.CreateCompatibleBitmap(handle, width, height);
+			if (hBitmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			int memDC = OS.CreateCompatibleDC(handle);
+			int hOldBitmap = OS.SelectObject(memDC, hBitmap);
+			OS.PatBlt(memDC, 0, 0, width, height, OS.BLACKNESS);
+			OS.SetBkMode(memDC, OS.TRANSPARENT);
+			OS.SetTextColor(memDC, foreground);
+			OS.SelectObject(memDC, OS.GetCurrentObject(handle, OS.OBJ_FONT));
+			OS.ExtTextOutW(memDC, 0, 0, 0, null, buffer, length, null);
+			OS.BitBlt(handle, x, y, width, height, memDC, 0, 0, OS.SRCINVERT);
+			OS.SelectObject(memDC, hOldBitmap);
+			OS.DeleteDC(memDC);
+			OS.DeleteObject(hBitmap);
+		} else {
+			int background = OS.GetBkColor(handle);
+			OS.SetTextColor(handle, foreground ^ background);
+			OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
+			OS.SetTextColor(handle, foreground);
+		}
+	}
 	OS.SetBkMode(handle, oldBkMode);
 }
 
@@ -1316,9 +1351,44 @@ public void drawText (String string, int x, int y, int flags) {
 	int uFormat = OS.DT_LEFT;
 	if ((flags & SWT.DRAW_DELIMITER) == 0) uFormat |= OS.DT_SINGLELINE;
 	if ((flags & SWT.DRAW_TAB) != 0) uFormat |= OS.DT_EXPANDTABS;
-	if ((flags & SWT.DRAW_MNEMONIC) == 0) uFormat |= OS.DT_NOPREFIX;	
+	if ((flags & SWT.DRAW_MNEMONIC) == 0) uFormat |= OS.DT_NOPREFIX;
+	int rop2 = 0;
+	if (OS.IsWinCE) {
+		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);
+		OS.SetROP2(handle, rop2);
+	} else {
+		rop2 = OS.GetROP2(handle);
+	}
 	int oldBkMode = OS.SetBkMode(handle, (flags & SWT.DRAW_TRANSPARENT) != 0 ? OS.TRANSPARENT : OS.OPAQUE);
-	OS.DrawText(handle, buffer, length, rect, uFormat);
+	if (rop2 != OS.R2_XORPEN) {
+		OS.DrawText(handle, buffer, length, rect, uFormat);
+	} else {
+		int foreground = OS.GetTextColor(handle);
+		if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
+			OS.DrawText(handle, buffer, buffer.length(), rect, uFormat | OS.DT_CALCRECT);
+			int width = rect.right - rect.left;
+			int height = rect.bottom - rect.top;
+			int hBitmap = OS.CreateCompatibleBitmap(handle, width, height);
+			if (hBitmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			int memDC = OS.CreateCompatibleDC(handle);
+			int hOldBitmap = OS.SelectObject(memDC, hBitmap);
+			OS.PatBlt(memDC, 0, 0, width, height, OS.BLACKNESS);
+			OS.SetBkMode(memDC, OS.TRANSPARENT);
+			OS.SetTextColor(memDC, foreground);
+			OS.SelectObject(memDC, OS.GetCurrentObject(handle, OS.OBJ_FONT));
+			OS.SetRect(rect, 0, 0, 0x7FFF, 0x7FFF);
+			OS.DrawText(memDC, buffer, length, rect, uFormat);
+			OS.BitBlt(handle, x, y, width, height, memDC, 0, 0, OS.SRCINVERT);
+			OS.SelectObject(memDC, hOldBitmap);
+			OS.DeleteDC(memDC);
+			OS.DeleteObject(hBitmap);
+		} else {
+			int background = OS.GetBkColor(handle);
+			OS.SetTextColor(handle, foreground ^ background);
+			OS.DrawText(handle, buffer, length, rect, uFormat);
+			OS.SetTextColor(handle, foreground);
+		}
+	}
 	OS.SetBkMode(handle, oldBkMode);
 }
 
@@ -2266,11 +2336,7 @@ public void setLineWidth(int lineWidth) {
  */
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (xor) {
-		OS.SetROP2(handle, OS.R2_XORPEN);
-	} else {
-		OS.SetROP2(handle, OS.R2_COPYPEN);
-	}
+	OS.SetROP2(handle, xor ? OS.R2_XORPEN : OS.R2_COPYPEN);
 }
 
 /**
