@@ -806,11 +806,10 @@ void updateImages () {
 	}
 
 	/*
-	* Bug in Windows. If the width of an item has already been
-	* calculated the ToolBar control will not recalculate it to 
-	* include the space for the image. The fix is to set cx to 
-	* zero, what causes the ToolBar control to recalculate the 
-	* width for the item.
+	* Bug in Windows.  If the width of an item has already been
+	* calculated, the tool bar control will not recalculate it to 
+	* include the space for the image.  The fix is to set the width
+	* to zero, forcing the control recalculate the width for the item.
 	*/
 	info.dwMask |= OS.TBIF_SIZE;
 	info.cx = 0;	
