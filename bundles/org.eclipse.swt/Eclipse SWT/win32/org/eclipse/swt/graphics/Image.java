@@ -1327,9 +1327,9 @@ public ImageData getImageData() {
 			}
 			/* Calculate the palette */
 			PaletteData palette = null;
-			if (isDib) {
-				if (depth <= 8) {
-					RGB[] rgbs = new RGB[numColors];
+			if (depth <= 8) {
+				RGB[] rgbs = new RGB[numColors];
+				if (isDib) {
 					if (OS.IsWinCE) {
 						/* 
 						* Feature on WinCE.  GetDIBColorTable is not supported.
@@ -1362,34 +1362,22 @@ public ImageData getImageData() {
 							colorIndex += 4;
 						}
 					}
-					palette = new PaletteData(rgbs);
-				} else if (depth == 16) {
-					palette = new PaletteData(0x7C00, 0x3E0, 0x1F);
-				} else if (depth == 24) {
-					palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-				} else if (depth == 32) {
-					palette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 				} else {
-					SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
-				}
-			} else {
-				if (depth <= 8) {
-					RGB[] rgbs = new RGB[numColors];
 					int srcIndex = BITMAPINFOHEADER.sizeof;
 					for (int i = 0; i < numColors; i++) {
 						rgbs[i] = new RGB(bmi[srcIndex + 2] & 0xFF, bmi[srcIndex + 1] & 0xFF, bmi[srcIndex] & 0xFF);
 						srcIndex += 4;
 					}
-					palette = new PaletteData(rgbs);
-				} else if (depth == 16) {
-					palette = new PaletteData(0x7C00, 0x3E0, 0x1F);
-				} else if (depth == 24) {
-					palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-				} else if (depth == 32) {
-					palette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
-				} else {
-					SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 				}
+				palette = new PaletteData(rgbs);
+			} else if (depth == 16) {
+				palette = new PaletteData(0x7C00, 0x3E0, 0x1F);
+			} else if (depth == 24) {
+				palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+			} else if (depth == 32) {
+				palette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
+			} else {
+				SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 			}
 			/* Clean up */
 			OS.SelectObject(hBitmapDC, hOldBitmap);
