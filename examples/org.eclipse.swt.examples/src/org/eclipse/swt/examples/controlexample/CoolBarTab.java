@@ -228,6 +228,15 @@ class CoolBarTab extends Tab {
 	}
 
 	/**
+	 * Gets the "Example" widget children's items, if any.
+	 *
+	 * @return an array containing the example widget children's items
+	 */
+	Item [] getExampleWidgetItems () {
+		return coolBar.getItems();
+	}
+	
+	/**
 	 * Gets the "Example" widget children.
 	 */
 	Control [] getExampleWidgets () {

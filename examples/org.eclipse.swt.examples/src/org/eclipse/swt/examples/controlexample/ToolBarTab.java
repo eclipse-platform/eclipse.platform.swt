@@ -169,6 +169,20 @@ class ToolBarTab extends Tab {
 	}
 	
 	/**
+	 * Gets the "Example" widget children's items, if any.
+	 *
+	 * @return an array containing the example widget children's items
+	 */
+	Item [] getExampleWidgetItems () {
+		Item [] imageToolBarItems = imageToolBar.getItems();
+		Item [] textToolBarItems = textToolBar.getItems();
+		Item [] allItems = new Item [imageToolBarItems.length + textToolBarItems.length];
+		System.arraycopy(imageToolBarItems, 0, allItems, 0, imageToolBarItems.length);
+		System.arraycopy(textToolBarItems, 0, allItems, imageToolBarItems.length, textToolBarItems.length);
+		return allItems;
+	}
+	
+	/**
 	 * Gets the "Example" widget children.
 	 */
 	Control [] getExampleWidgets () {

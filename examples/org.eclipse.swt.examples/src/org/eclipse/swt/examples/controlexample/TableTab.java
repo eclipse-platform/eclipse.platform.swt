@@ -221,6 +221,20 @@ class TableTab extends ScrollableTab {
 	}
 	
 	/**
+	 * Gets the "Example" widget children's items, if any.
+	 *
+	 * @return an array containing the example widget children's items
+	 */
+	Item [] getExampleWidgetItems () {
+		Item [] columns = table1.getColumns();
+		Item [] items = table1.getItems();
+		Item [] allItems = new Item [columns.length + items.length];
+		System.arraycopy(columns, 0, allItems, 0, columns.length);
+		System.arraycopy(items, 0, allItems, columns.length, items.length);
+		return allItems;
+	}
+	
+	/**
 	 * Gets the "Example" widget children.
 	 */
 	Control [] getExampleWidgets () {

@@ -599,10 +599,19 @@ abstract class Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 *
-	 * @return an array of example widget children
+	 * @return an array containing the example widget children
 	 */
 	Control [] getExampleWidgets () {
 		return new Control [0];
+	}
+	
+	/**
+	 * Gets the "Example" widget children's items, if any.
+	 *
+	 * @return an array containing the example widget children's items
+	 */
+	Item [] getExampleWidgetItems () {
+		return new Item [0];
 	}
 	
 	/**
@@ -615,29 +624,34 @@ abstract class Tab {
 	}
 	
 	/**
-	 * Hooks all listeners to all example controls.
+	 * Hooks all listeners to all example controls
+	 * and example control items.
 	 */
 	void hookExampleWidgetListeners () {
 		if (logging) {
-			Control[] exampleControls = getExampleWidgets();
+			Control[] exampleControls = getExampleWidgets ();
 			for (int i = 0; i < exampleControls.length; i++) {
 				hookListeners (exampleControls [i]);
+			}
+			Item[] exampleItems = getExampleWidgetItems ();
+			for (int i = 0; i < exampleItems.length; i++) {
+				hookListeners (exampleItems [i]);
 			}
 		}
 	}
 	
 	/**
-	 * Hooks all listeners to the specified control.
+	 * Hooks all listeners to the specified widget.
 	 */
-	void hookListeners (Control control) {
+	void hookListeners (Widget widget) {
 		if (logging) {
 			Listener listener = new Listener() {
 				public void handleEvent (Event event) {
 					log (event);
 				}
 			};
-			for (int j = 1; j < EVENT_NAMES.length; j++) {
-				control.addListener (j, listener);
+			for (int i = 1; i < EVENT_NAMES.length; i++) {
+				if (eventsFilter [i]) widget.addListener (i, listener);
 			}
 		}
 	}
@@ -646,49 +660,47 @@ abstract class Tab {
 	 * Logs an event to the event console.
 	 */
 	void log(Event event) {
-		if (logging && eventsFilter [event.type]) {
-			String toString = EVENT_NAMES[event.type] + ": ";
-			switch (event.type) {
-				case SWT.KeyDown:
-				case SWT.KeyUp: toString += new KeyEvent (event).toString (); break;
-				case SWT.MouseDown:
-				case SWT.MouseUp:
-				case SWT.MouseMove:
-				case SWT.MouseEnter:
-				case SWT.MouseExit:
-				case SWT.MouseDoubleClick:
-				case SWT.MouseHover: toString += new MouseEvent (event).toString (); break;
-				case SWT.Paint: toString += new PaintEvent (event).toString (); break;
-				case SWT.Move:
-				case SWT.Resize: toString += new ControlEvent (event).toString (); break;
-				case SWT.Dispose: toString += new DisposeEvent (event).toString (); break;
-				case SWT.Selection:
-				case SWT.DefaultSelection: toString += new SelectionEvent (event).toString (); break;
-				case SWT.FocusIn:
-				case SWT.FocusOut: toString += new FocusEvent (event).toString (); break;
-				case SWT.Expand:
-				case SWT.Collapse: toString += new TreeEvent (event).toString (); break;
-				case SWT.Iconify:
-				case SWT.Deiconify:
-				case SWT.Close:
-				case SWT.Activate:
-				case SWT.Deactivate: toString += new ShellEvent (event).toString (); break;
-				case SWT.Show:
-				case SWT.Hide: toString += new MenuEvent (event).toString (); break;
-				case SWT.Modify: toString += new ModifyEvent (event).toString (); break;
-				case SWT.Verify: toString += new VerifyEvent (event).toString (); break;
-				case SWT.Help: toString += new HelpEvent (event).toString (); break;
-				case SWT.Arm: toString += new ArmEvent (event).toString (); break;
-				case SWT.Traverse: toString += new TraverseEvent (event).toString (); break;
-				case SWT.HardKeyDown:
-				case SWT.HardKeyUp:
-				case SWT.DragDetect:
-				case SWT.MenuDetect:
-				default: toString += event.toString ();
-			}
-			eventConsole.append (toString);
-			eventConsole.append ("\n");
+		String toString = EVENT_NAMES[event.type] + ": ";
+		switch (event.type) {
+			case SWT.KeyDown:
+			case SWT.KeyUp: toString += new KeyEvent (event).toString (); break;
+			case SWT.MouseDown:
+			case SWT.MouseUp:
+			case SWT.MouseMove:
+			case SWT.MouseEnter:
+			case SWT.MouseExit:
+			case SWT.MouseDoubleClick:
+			case SWT.MouseHover: toString += new MouseEvent (event).toString (); break;
+			case SWT.Paint: toString += new PaintEvent (event).toString (); break;
+			case SWT.Move:
+			case SWT.Resize: toString += new ControlEvent (event).toString (); break;
+			case SWT.Dispose: toString += new DisposeEvent (event).toString (); break;
+			case SWT.Selection:
+			case SWT.DefaultSelection: toString += new SelectionEvent (event).toString (); break;
+			case SWT.FocusIn:
+			case SWT.FocusOut: toString += new FocusEvent (event).toString (); break;
+			case SWT.Expand:
+			case SWT.Collapse: toString += new TreeEvent (event).toString (); break;
+			case SWT.Iconify:
+			case SWT.Deiconify:
+			case SWT.Close:
+			case SWT.Activate:
+			case SWT.Deactivate: toString += new ShellEvent (event).toString (); break;
+			case SWT.Show:
+			case SWT.Hide: toString += new MenuEvent (event).toString (); break;
+			case SWT.Modify: toString += new ModifyEvent (event).toString (); break;
+			case SWT.Verify: toString += new VerifyEvent (event).toString (); break;
+			case SWT.Help: toString += new HelpEvent (event).toString (); break;
+			case SWT.Arm: toString += new ArmEvent (event).toString (); break;
+			case SWT.Traverse: toString += new TraverseEvent (event).toString (); break;
+			case SWT.HardKeyDown:
+			case SWT.HardKeyUp:
+			case SWT.DragDetect:
+			case SWT.MenuDetect:
+			default: toString += event.toString ();
 		}
+		eventConsole.append (toString);
+		eventConsole.append ("\n");
 	}
 
 	/**
