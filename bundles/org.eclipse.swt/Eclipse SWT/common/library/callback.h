@@ -40,8 +40,13 @@
 #define MAX_ARGS 12
 
 typedef struct CALLBACK_DATA {
-    jobject callin;
+    jobject callback;
     jmethodID methodID;
+  	jobject object;
+	jboolean isStatic;
+	jboolean isArrayBased; 
+	jint argCount;
+	SWT_PTR errorResult;
 } CALLBACK_DATA;
 
 #endif /* ifndef INC_callback_H */
