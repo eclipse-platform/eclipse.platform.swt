@@ -180,6 +180,21 @@ void createHandle () {
 	state &= ~CANVAS;
 
 	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	/*
+	* This line is intentionally commented.  The tool
+	* bar currently sets this value to 300 so it is
+	* not necessary to set TTM_SETMAXTIPWIDTH.
+	*/
+//	int hwndToolTip = OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);
+//	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	
+	/*
 	* Feature in Windows.  When the control is created,
 	* it does not use the default system font.  A new HFONT
 	* is created and destroyed when the control is destroyed.
@@ -600,6 +615,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				if (item != null) string = item.toolTipText;
 			}
 			if (string != null && string.length () != 0) {
+				string = Display.withCrLf (string);
 				int length = string.length ();
 				char [] buffer = new char [length + 1];
 				string.getChars (0, length, buffer, 0);

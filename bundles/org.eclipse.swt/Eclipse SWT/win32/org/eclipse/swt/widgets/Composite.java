@@ -412,6 +412,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
 			String string = toolTipText (lpnmtdi);
 			if (string != null && string.length () != 0) {
+				string = Display.withCrLf (string);
 				/* Use the character encoding for the default locale */
 				byte [] buffer = Converter.wcsToMbcs (0, string, true);
 				getShell ().setToolTipText (lpnmtdi, buffer);

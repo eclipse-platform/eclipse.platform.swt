@@ -3279,7 +3279,7 @@ public class OS {
 //	public static final int TTM_RELAYEVENT = (WM_USER + 7);
 //	public static final int TTM_SETDELAYTIME = (WM_USER + 3);
 //	public static final int TTM_SETMARGIN = (WM_USER + 26);
-//	public static final int TTM_SETMAXTIPWIDTH = (WM_USER + 24);
+	public static final int TTM_SETMAXTIPWIDTH = (WM_USER + 24);
 //	public static final int TTM_SETTIPBKCOLOR = (WM_USER + 19);
 //	public static final int TTM_SETTIPTEXTCOLOR = (WM_USER + 20);
 //	public static final int TTM_SETTOOLINFO = (WM_USER + 9);
