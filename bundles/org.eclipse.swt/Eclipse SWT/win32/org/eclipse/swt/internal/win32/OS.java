@@ -156,6 +156,7 @@ public class OS {
 	public static final int WM_MOUSELEAVE = 0x02A3;
 //	public static final int WM_NCMOUSEHOVER = 0x02A0;
 //	public static final int WM_NCMOUSELEAVE = 0x02A2;
+	public static final int WM_MOUSEWHEEL = 0x020A;
 /*** END TrackMouseEvent ***/
 
 /*** BEGIN ICC ***/
