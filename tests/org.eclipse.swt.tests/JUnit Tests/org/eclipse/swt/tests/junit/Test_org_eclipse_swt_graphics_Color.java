@@ -173,9 +173,9 @@ public void test_equalsLjava_lang_Object() {
 
 public void test_getBlue() {
 	// Test Color.getBlue()
-	Color color = new Color(display, 1, 2, 4);
+	Color color = new Color(display, 0, 0, 255);
 	try {
-		assertEquals("color.getBlue() == 4", color.getBlue(), 4);
+		assertEquals("color.getBlue()", color.getBlue(), 255);
 	} finally {
 		color.dispose();
 	}
@@ -184,25 +184,25 @@ public void test_getBlue() {
 
 public void test_getGreen() {
 	// Test Color.getGreen()
-	Color color = new Color(display, 1, 2, 4);
+	Color color = new Color(display, 0, 255, 0);
 	try {
-		assertEquals("color.getGreen() == 2", color.getGreen(), 2);
+		assertEquals("color.getGreen()", color.getGreen(), 255);
 	} finally {
 		color.dispose();
 	}
 }
 
 public void test_getRGB() {
-	Color color = new Color(display, 12, 34, 56);
+	Color color = new Color(display, 255, 255, 255);
 	assertNotNull(color.getRGB());
-	assertEquals(new RGB(12, 34, 56), color.getRGB());
+	assertEquals(new RGB(255, 255, 255), color.getRGB());
 }
 
 public void test_getRed() {
 	// Test Color.getRed()
-	Color color = new Color(display, 1, 2, 4);
+	Color color = new Color(display, 255, 0, 0);
 	try {
-		assertEquals("color.getRed() == 1", color.getRed(), 1);
+		assertEquals("color.getRed()", color.getRed(), 255);
 	} finally {
 		color.dispose();
 	}
@@ -229,10 +229,10 @@ public void test_isDisposed() {
 }
 
 public void test_toString() {
-	Color color = new Color(display, 12, 34, 56);
+	Color color = new Color(display, 0, 0, 255);
 	assertNotNull(color.toString());
 	assertTrue(color.toString().length() > 0);
-	assertEquals("Color {12, 34, 56}", color.toString());
+	assertEquals("Color {0, 0, 255}", color.toString());
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
