@@ -785,14 +785,13 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	switch (wParam) {
-		case OS.VK_RETURN:
 		case OS.VK_SPACE:
 			int index = OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
 			if (index != -1) {
 				TBBUTTON lpButton = new TBBUTTON ();
 				int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
 				if (code != 0) {
-					items [lpButton.idCommand].click (wParam == OS.VK_RETURN);
+					items [lpButton.idCommand].click (false);
 					return LRESULT.ZERO;
 				}
 			}
@@ -990,7 +989,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				event.x = rect.left;
 				event.y = rect.bottom;
 				child.postEvent (SWT.Selection, event);
-				return null;
+				break;
 			}
 			break;
 		case OS.NM_CUSTOMDRAW: 
@@ -1000,7 +999,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREERASE:
 					return new LRESULT (OS.CDRF_NOTIFYPOSTERASE);
-				case OS.CDDS_POSTERASE :
+				case OS.CDDS_POSTERASE:
 					drawBackground(nmcd.hdc);
 					return null;
 			}
