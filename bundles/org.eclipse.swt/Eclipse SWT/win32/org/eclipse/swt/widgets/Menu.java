@@ -851,7 +851,7 @@ public Shell getShell () {
  */
 public Point getSize () {
 	checkWidget ();
-	if (OS.IsWinCE) return null;
+	if (OS.IsWinCE) return new Point (0, 0);
 	if ((style & SWT.BAR) != 0) {
 		MENUBARINFO info = new MENUBARINFO ();
 		info.cbSize = MENUBARINFO.sizeof;
