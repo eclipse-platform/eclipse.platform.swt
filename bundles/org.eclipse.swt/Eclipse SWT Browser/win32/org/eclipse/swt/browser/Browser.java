@@ -237,27 +237,30 @@ public Browser(Composite parent, int style) {
 								}
 							}
 						} else {
-							varResult = event.arguments[1];
-							String url = varResult.getString();
-							LocationEvent locationEvent = new LocationEvent(Browser.this);
-							locationEvent.location = url;
-							for (int i = 0; i < locationListeners.length; i++)
-								locationListeners[i].changed(locationEvent);
+							Variant variant = new Variant(auto);
+							IDispatch top = variant.getDispatch();
+							if (top.getAddress() == dispatch.getAddress()) {
+								varResult = event.arguments[1];
+								String url = varResult.getString();
+								LocationEvent locationEvent = new LocationEvent(Browser.this);
+								locationEvent.location = url;
+								for (int i = 0; i < locationListeners.length; i++)
+									locationListeners[i].changed(locationEvent);
+							}
+							/*
+							 * This code is intentionally commented.  A Variant constructed from an
+							 * OleAutomation object does not increase its reference count.  The IDispatch
+							 * obtained from this Variant did not increase the reference count for the
+							 * OleAutomation instance either. 
+							 */
+							//top.Release();
+							//variant.dispose();
 							ProgressEvent progressEvent = new ProgressEvent(Browser.this);
 							for (int i = 0; i < progressListeners.length; i++)
 								progressListeners[i].completed(progressEvent);
 						}
 					}
-					
-					/*
-					* This code is intentionally commented.  A Variant constructed from an
-					* OleAutomation object does not increase its reference count.  The IDispatch
-					* obtained from this Variant did not increase the reference count for the
-					* OleAutomation instance either. 
-					*/
-					//top.Release();
-					//variant.dispose();
-						
+											
 					/*
 					* This code is intentionally commented.  This IDispatch was received
 					* as an argument from the OleEvent and it will be disposed along with
