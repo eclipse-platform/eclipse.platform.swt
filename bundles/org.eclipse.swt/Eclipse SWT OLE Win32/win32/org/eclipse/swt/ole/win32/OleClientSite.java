@@ -824,11 +824,10 @@ private void onPaint(Event e) {
 }
 private void onResize(Event e) {
 	Rectangle area = frame.getClientArea();
-	int INDENT = 100;
-	setBounds(borderWidths.left + INDENT, 
-		      borderWidths.top + INDENT, 
-			  area.width - borderWidths.left - borderWidths.right - 2 * INDENT, 
-			  area.height - borderWidths.top - borderWidths.bottom - 2 * INDENT);
+	setBounds(borderWidths.left, 
+		      borderWidths.top, 
+			  area.width - borderWidths.left - borderWidths.right, 
+			  area.height - borderWidths.top - borderWidths.bottom);
 
 	setObjectRects();
 }
