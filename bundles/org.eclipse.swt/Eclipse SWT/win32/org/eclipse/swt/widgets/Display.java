@@ -104,6 +104,11 @@ public class Display extends Device {
 	static int WindowClassCount = 0;
 	static final String WindowName = "SWT_Window";
 	EventTable eventTable;
+
+	/* Windows Message Filter */
+	Callback msgFilterCallback;
+	int msgFilterProc, hHook;
+	MSG hookMsg = new MSG ();
 	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
@@ -156,7 +161,7 @@ public class Display extends Device {
 //		{OS.VK_MBUTTON, SWT.BUTTON3},
 //		{OS.VK_RBUTTON, SWT.BUTTON2},
 		
-		/* Non-Numeric Keypad Constants */
+		/* Non-Numeric Keypad Keys */
 		{OS.VK_UP,		SWT.ARROW_UP},
 		{OS.VK_DOWN,	SWT.ARROW_DOWN},
 		{OS.VK_LEFT,	SWT.ARROW_LEFT},
@@ -167,8 +172,13 @@ public class Display extends Device {
 		{OS.VK_END,		SWT.END},
 		{OS.VK_INSERT,	SWT.INSERT},
 
-		/* NOT CURRENTLY USED */
-//		{OS.VK_DELETE,	SWT.DELETE},
+		/* Virtual and Ascii Keys */
+//		{OS.VK_BACK,	SWT.BS},
+//		{OS.VK_RETURN,	SWT.CR},
+//		{OS.VK_DELETE,	SWT.DEL},
+//		{OS.VK_ESCAPE,	SWT.ESC},
+////	{OS.VK_LINEFEED,SWT.LF},
+//		{OS.VK_TAB,		SWT.TAB},
 	
 		/* Functions Keys */
 		{OS.VK_F1,	SWT.F1},
@@ -184,7 +194,7 @@ public class Display extends Device {
 		{OS.VK_F11,	SWT.F11},
 		{OS.VK_F12,	SWT.F12},
 		
-		/* Numeric Keypad Constants */
+		/* Numeric Keypad Keys */
 		/* NOT CURRENTLY USED */
 //		{OS.VK_ADD,		SWT.KP_PLUS},
 //		{OS.VK_SUBTRACT,	SWT.KP_MINUS},
@@ -1198,6 +1208,14 @@ protected void init () {
 	messageProc = messageCallback.getAddress ();
 	if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.SetWindowLong (hwndMessage, OS.GWL_WNDPROC, messageProc);
+
+	/* Create the message filter hook */
+	if (!OS.IsWinCE) {
+		msgFilterCallback = new Callback (this, "msgFilterProc", 3);
+		msgFilterProc = msgFilterCallback.getAddress ();
+		if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		hHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, msgFilterProc, 0, threadId);
+	}
 }
 
 /**	 
@@ -1263,6 +1281,14 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			break;
 	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+}
+
+int msgFilterProc (int code, int wParam, int lParam) {
+	if (code >= 0) {
+		OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
+		if (hookMsg.message == OS.WM_NULL) runAsyncMessages ();
+	}
+	return OS.CallNextHookEx (hHook, code, wParam, lParam);
 }
 
 void postEvent (Event event) {
@@ -1385,12 +1411,22 @@ protected void release () {
 }
 
 void releaseDisplay () {
-	
+
+	/* Unhook the message hook */
+	if (!OS.IsWinCE) {
+		if (hHook != 0) OS.UnhookWindowsHookEx (hHook);
+		hHook = 0;
+		msgFilterCallback.dispose ();
+		msgFilterCallback = null;
+		msgFilterProc = 0;
+	}
+
 	/* Destroy the message only HWND */
 	if (hwndMessage != 0) OS.DestroyWindow (hwndMessage);
 	hwndMessage = 0;
 	messageCallback.dispose ();
 	messageCallback = null;
+	messageProc = 0;
 	
 	/* Unregister the SWT Window class */
 	int hHeap = OS.GetProcessHeap ();
@@ -1402,6 +1438,7 @@ void releaseDisplay () {
 	windowClass = null;
 	windowCallback.dispose ();
 	windowCallback = null;
+	windowProc = 0;
 	
 	/* Release the system fonts */
 	if (systemFonts != null) {
@@ -2039,11 +2076,11 @@ void updateFont () {
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
-	OS.PostMessage (hwndMessage, OS.WM_NULL, 0, 0);
-	/*
-	* This code is intentionally commented.
-	*/
-//	OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
+	if (OS.IsWinCE) {
+		OS.PostMessage (hwndMessage, OS.WM_NULL, 0, 0);
+	} else {
+		OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
+	}
 }
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
