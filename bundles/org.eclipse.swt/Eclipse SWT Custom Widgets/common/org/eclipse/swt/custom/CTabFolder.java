@@ -1825,7 +1825,7 @@ private void showToolTip (int x, int y) {
 			Label label = (Label) (tip.getChildren() [0]);
 			label.setText(tooltip);
 			tip.pack();
-			Point pt = new Point(item.x + item.width / 4, item.y + item.height - 2);
+			Point pt = new Point(item.x + item.width / 4, item.y + item.height + 2);
 			pt = toDisplay(pt);
 			/*
 			* Ensure that the tooltip is on the screen.
