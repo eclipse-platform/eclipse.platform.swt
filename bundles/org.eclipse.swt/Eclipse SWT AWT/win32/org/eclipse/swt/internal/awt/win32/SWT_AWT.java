@@ -44,12 +44,9 @@ public class SWT_AWT {
 public static Panel new_Panel (final Composite parent) {
 	int handle = parent.handle;
 	/*
-	 * Some JREs have implemented the WEmbeddedFrame constructor to take an integer
-	 * value for the HWND parameter and other JREs take a long for the HWND parameter.
-	 * To handle this binary incompatability, we use reflection to perform the equivalent of
-	 * the following line of code:
-	 * 
-	 * final WEmbeddedFrame frame = new WEmbeddedFrame(handle);
+	 * Some JREs have implemented the embedded frame constructor to take an integer
+	 * and other JREs take a long.  To handle this binary incompatability, use
+	 * reflection to create the embedded frame.
 	 */
 	Class clazz = null;
 	try {
@@ -123,6 +120,18 @@ public static Panel new_Panel (final Composite parent) {
 		public void handleEvent (Event event) {
 			parent.setVisible(false);
 			frame.dispose ();
+		}
+	});
+	parent.getDisplay().asyncExec(new Runnable() {
+		public void run () {
+			if (parent.isDisposed()) return;
+			final Rectangle rect = parent.getClientArea ();
+			EventQueue.invokeLater(new Runnable () {
+				public void run () {
+					frame.setSize (rect.width, rect.height);
+					frame.validate ();
+				}
+			});
 		}
 	});
 	return panel;
