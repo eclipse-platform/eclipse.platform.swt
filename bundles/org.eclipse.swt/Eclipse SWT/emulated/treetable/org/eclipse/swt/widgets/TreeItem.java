@@ -1293,6 +1293,7 @@ public void setBackground (Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ())
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if (background != null) background.dispose();
 	background = new Color(getDisplay(), color.getRGB());	
 	redraw();
 }
@@ -1338,6 +1339,7 @@ public void setForeground (Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ())
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if (foreground != null) foreground.dispose();
 	foreground = new Color(getDisplay(), color.getRGB());
 	redraw(); 
 }
