@@ -363,7 +363,7 @@ public Point getDPI () {
  * <code>faceName</code> is null, all fonts will be returned.
  *
  * @param faceName the name of the font to look for, or null
- * @param scalable true if scalable fonts should be returned.
+ * @param scalable if true only scalable fonts are returned, otherwise only non-scalable fonts are returned.
  * @return the matching font data
  *
  * @exception SWTException <ul>
