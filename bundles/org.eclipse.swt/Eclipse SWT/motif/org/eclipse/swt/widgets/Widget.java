@@ -974,7 +974,7 @@ int wcsToMbcs (char ch, String codePage) {
 int hoverProc (int widget) {
 	return 0;
 }
-int processTimer (int id) {
+int timerProc (int id) {
 	return 0;
 }
 int windowProc (int w, int client_data, int call_data, int continue_to_dispatch) {

@@ -2253,7 +2253,7 @@ int wakeProc (int closure, int source, int id) {
 int windowTimerProc (int handle, int id) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
-	return widget.processTimer (id);
+	return widget.timerProc (id);
 }
 int windowProc (int w, int client_data, int call_data, int continue_to_dispatch) {
 	Widget widget = WidgetTable.get (w);

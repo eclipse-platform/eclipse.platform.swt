@@ -199,14 +199,6 @@ public int getSelection () {
 	if (invisible) sliderSize = 0;
 	return minimum + sliderSize;
 }
-int processTimer (int id) {
-	int minimum = getMinimum ();
-	int range = getMaximum () - minimum + 1;
-	int value = getSelection () - minimum + 1;
-	setSelection (minimum + (value % range));	
-	createTimer ();
-	return 0;
-}
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
 	if (enabled) disableButtonPress ();
@@ -388,5 +380,13 @@ void setThumb (int sliderSize) {
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList3, argList3.length / 2);
 	display.setWarnings (warnings);
+}
+int timerProc (int id) {
+	int minimum = getMinimum ();
+	int range = getMaximum () - minimum + 1;
+	int value = getSelection () - minimum + 1;
+	setSelection (minimum + (value % range));	
+	createTimer ();
+	return 0;
 }
 }
