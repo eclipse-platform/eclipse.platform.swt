@@ -19,50 +19,54 @@
 JNIEXPORT void JNICALL GLU_NATIVE(gluBeginCurve)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluBeginCurve\n")
-
+	NATIVE_ENTER(env, that, "gluBeginCurve\n")
 	gluBeginCurve((GLUnurbsObj *)arg0);
+	NATIVE_EXIT(env, that, "gluBeginCurve\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluBeginPolygon)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluBeginPolygon\n")
-
+	NATIVE_ENTER(env, that, "gluBeginPolygon\n")
 	gluBeginPolygon((GLUtesselator *)arg0);
+	NATIVE_EXIT(env, that, "gluBeginPolygon\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluBeginSurface)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluBeginSurface\n")
-
+	NATIVE_ENTER(env, that, "gluBeginSurface\n")
 	gluBeginSurface((GLUnurbs *)arg0);
+	NATIVE_EXIT(env, that, "gluBeginSurface\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluBeginTrim)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluBeginTrim\n")
-
+	NATIVE_ENTER(env, that, "gluBeginTrim\n")
 	gluBeginTrim((GLUnurbs *)arg0);
+	NATIVE_EXIT(env, that, "gluBeginTrim\n")
 }
 
 JNIEXPORT jint JNICALL GLU_NATIVE(gluBuild1DMipmaps)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
-	DEBUG_CALL("gluBuild1DMipmaps\n")
-
-	return (jint)gluBuild1DMipmaps(arg0, arg1, arg2, arg3, arg4, (const void *)arg5);
+    jint rc;
+	NATIVE_ENTER(env, that, "gluBuild1DMipmaps\n")
+	rc = (jint)gluBuild1DMipmaps(arg0, arg1, arg2, arg3, arg4, (const void *)arg5);
+	NATIVE_EXIT(env, that, "gluBuild1DMipmaps\n")
+	return rc;
 }
 
 /*
 JNIEXPORT jint JNICALL GLU_NATIVE(gluBuild2DMipmaps)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
 {
-	DEBUG_CALL("gluBuild2DMipmaps\n")
-	
-	return (jint)gluBuild2DMipmaps(arg0, arg1, arg2, arg3, arg4, arg5, (const void *)arg6);
+    jint rc;
+	NATIVE_ENTER(env, that, "gluBuild2DMipmaps\n")
+	rc = (jint)gluBuild2DMipmaps(arg0, arg1, arg2, arg3, arg4, arg5, (const void *)arg6);
+	NATIVE_EXIT(env, that, "gluBuild2DMipmaps\n")
+	return rc;
 }
 */
 
@@ -72,91 +76,94 @@ JNIEXPORT jint JNICALL GLU_NATIVE(gluBuild2DMipmaps)
 	jbyte *lparg6=NULL;
 	jint rc;
 	
-	DEBUG_CALL("gluBuild2DMipmaps\n")
+	NATIVE_ENTER(env, that, "gluBuild2DMipmaps\n")
 	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
 	rc = (jint)gluBuild2DMipmaps(arg0, arg1, arg2, arg3, arg4, arg5, (const void *)lparg6);
 	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);	
+	NATIVE_EXIT(env, that, "gluBuild2DMipmaps\n")
 	return rc;
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluCylinder)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2, jdouble arg3, jint arg4, jint arg5)
 {
-	DEBUG_CALL("gluCylinder\n")
-
+	NATIVE_ENTER(env, that, "gluCylinder\n")
 	gluCylinder((GLUquadric *)arg0, arg1, arg2, arg3, arg4, arg5);
+	NATIVE_EXIT(env, that, "gluCylinder\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluDeleteNurbsRenderer)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluDeleteNurbsRenderer\n")
-
+	NATIVE_ENTER(env, that, "gluDeleteNurbsRenderer\n")
 	gluDeleteNurbsRenderer((GLUnurbs *)arg0);
+	NATIVE_EXIT(env, that, "gluDeleteNurbsRenderer\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluDeleteQuadric)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluDeleteQuadric\n")
-
+	NATIVE_ENTER(env, that, "gluDeleteQuadric\n")
 	gluDeleteQuadric((GLUquadric *)arg0);
+	NATIVE_EXIT(env, that, "gluDeleteQuadric\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluDeleteTess)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluDeleteTess\n")
-
+	NATIVE_ENTER(env, that, "gluDeleteTess\n")
 	gluDeleteTess((GLUtesselator *)arg0);
+	NATIVE_EXIT(env, that, "gluDeleteTess\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluDisk)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2, jint arg3, jint arg4)
 {
-	DEBUG_CALL("gluDisk\n")
-
+	NATIVE_ENTER(env, that, "gluDisk\n")
 	gluDisk((GLUquadric *)arg0, arg1, arg2, arg3, arg4);
+	NATIVE_EXIT(env, that, "gluDisk\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluEndCurve)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluEndCurve\n")
-
+	NATIVE_ENTER(env, that, "gluEndCurve\n")
 	gluEndCurve((GLUnurbsObj *)arg0);
+	NATIVE_EXIT(env, that, "gluEndCurve\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluEndPolygon)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluEndPolygon\n")
-
+	NATIVE_ENTER(env, that, "gluEndPolygon\n")
 	gluEndPolygon((GLUtesselator *)arg0);
+	NATIVE_EXIT(env, that, "gluEndPolygon\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluEndSurface)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluEndSurface\n")
-
+	NATIVE_ENTER(env, that, "gluEndSurface\n")
 	gluEndSurface((GLUnurbs *)arg0);
+	NATIVE_EXIT(env, that, "gluEndSurface\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluEndTrim)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluEndTrim\n")
-
+	NATIVE_ENTER(env, that, "gluEndTrim\n")
 	gluEndTrim((GLUnurbs *)arg0);
+	NATIVE_EXIT(env, that, "gluEndTrim\n")
 }
 
 JNIEXPORT jint JNICALL GLU_NATIVE(gluErrorString)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluErrorString\n")
-
-	return (jint)gluErrorString(arg0);
+    jint rc;
+	NATIVE_ENTER(env, that, "gluErrorString\n")
+	rc = (jint)gluErrorString(arg0);
+	NATIVE_EXIT(env, that, "gluErrorString\n")
+	return rc;
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluGetNurbsProperty)
@@ -164,19 +171,21 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluGetNurbsProperty)
 {
 	jfloat *lparg2=NULL;
 
-	DEBUG_CALL("gluGetNurbsProperty\n")
-
+	NATIVE_ENTER(env, that, "gluGetNurbsProperty\n")
 	if (arg2) lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL);
 	gluGetNurbsProperty((GLUnurbs *)arg0, arg1, lparg2);
 	if (arg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "gluGetNurbsProperty\n")
 }
 
 JNIEXPORT jint JNICALL GLU_NATIVE(gluGetString)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluGetString\n")
-
-	return (jint)gluGetString(arg0);
+    jint rc;
+	NATIVE_ENTER(env, that, "gluGetString\n")
+	rc = (jint)gluGetString(arg0);
+	NATIVE_EXIT(env, that, "gluGetString\n")
+	return rc;
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluGetTessProperty)
@@ -184,11 +193,11 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluGetTessProperty)
 {
 	jdouble *lparg2=NULL;
 
-	DEBUG_CALL("gluGetTessProperty\n")
-
+	NATIVE_ENTER(env, that, "gluGetTessProperty\n")
 	if (arg2) lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL);
 	gluGetTessProperty((GLUtesselator *)arg0, arg1, lparg2);
 	if (arg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "gluGetTessProperty\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluLoadSamplingMatrices)
@@ -198,8 +207,7 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluLoadSamplingMatrices)
 	jfloat *lparg2=NULL;
 	jint *lparg3=NULL;
 
-	DEBUG_CALL("gluLoadSamplingMatrices\n")
-
+	NATIVE_ENTER(env, that, "gluLoadSamplingMatrices\n")
 	if (arg1) lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
@@ -207,54 +215,61 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluLoadSamplingMatrices)
 	if (arg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "gluLoadSamplingMatrices\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluLookAt)
 	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5, jdouble arg6, jdouble arg7, jdouble arg8)
 {
-	DEBUG_CALL("gluLookAt\n")
-
+	NATIVE_ENTER(env, that, "gluLookAt\n")
 	gluLookAt(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	NATIVE_EXIT(env, that, "gluLookAt\n")
 }
 
 JNIEXPORT jint JNICALL GLU_NATIVE(gluNewNurbsRenderer)
 	(JNIEnv *env, jclass that)
 {
-	DEBUG_CALL("gluNewNurbsRenderer\n")
-
-	return (jint)gluNewNurbsRenderer();
+    jint rc;
+	NATIVE_ENTER(env, that, "gluNewNurbsRenderer\n")
+	rc = (jint)gluNewNurbsRenderer();
+	NATIVE_EXIT(env, that, "gluNewNurbsRenderer\n")
+	return rc;
 }
 
 JNIEXPORT jint JNICALL GLU_NATIVE(gluNewQuadric)
 	(JNIEnv *env, jclass that)
 {
-	DEBUG_CALL("gluNewQuadric\n")
-
-	return (jint)gluNewQuadric();
+    jint rc;
+	NATIVE_ENTER(env, that, "gluNewQuadric\n")
+	rc = (jint)gluNewQuadric();
+	NATIVE_EXIT(env, that, "gluNewQuadric\n")
+	return rc;
 }
 
 JNIEXPORT jint JNICALL GLU_NATIVE(gluNewTess)
 	(JNIEnv *env, jclass that)
 {
-	DEBUG_CALL("gluNewTess\n")
-
-	return (jint)gluNewTess();
+    jint rc;
+	NATIVE_ENTER(env, that, "gluNewTess\n")
+	rc = (jint)gluNewTess();
+	NATIVE_EXIT(env, that, "gluNewTess\n")
+	return rc;
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluNextContour)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	DEBUG_CALL("gluNextContour\n")
-
+	NATIVE_ENTER(env, that, "gluNextContour\n")
 	gluNextContour((GLUtesselator *)arg0, arg1);
+	NATIVE_EXIT(env, that, "gluNextContour\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluNurbsCallback)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	DEBUG_CALL("gluNurbsCallback\n")
-
+	NATIVE_ENTER(env, that, "gluNurbsCallback\n")
 	gluNurbsCallback((GLUnurbs *)arg0, arg1, (GLvoid(*))arg2);
+	NATIVE_EXIT(env, that, "gluNurbsCallback\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluNurbsCurve)
@@ -263,21 +278,21 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluNurbsCurve)
 	jfloat *lparg2=NULL;
 	jfloat *lparg4=NULL;
 
-	DEBUG_CALL("gluNurbsCurve\n")
-
+	NATIVE_ENTER(env, that, "gluNurbsCurve\n")
 	if (arg2) lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL);
 	if (arg4) lparg4 = (*env)->GetFloatArrayElements(env, arg4, NULL);
 	gluNurbsCurve((GLUnurbs *)arg0, arg1, lparg2, arg3, lparg4, arg5, arg6);
 	if (arg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
 	if (arg4) (*env)->ReleaseFloatArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "gluNurbsCurve\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluNurbsProperty)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloat arg2)
 {
-	DEBUG_CALL("gluNurbsProperty\n")
-
+	NATIVE_ENTER(env, that, "gluNurbsProperty\n")
 	gluNurbsProperty((GLUnurbs *)arg0, arg1, arg2);
+	NATIVE_EXIT(env, that, "gluNurbsProperty\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluNurbsSurface)
@@ -287,8 +302,7 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluNurbsSurface)
 	jfloat *lparg4=NULL;
 	jfloat *lparg7=NULL;
 
-	DEBUG_CALL("gluNurbsSurface\n")
-
+	NATIVE_ENTER(env, that, "gluNurbsSurface\n")
 	if (arg2) lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL);
 	if (arg4) lparg4 = (*env)->GetFloatArrayElements(env, arg4, NULL);
 	if (arg7) lparg7 = (*env)->GetFloatArrayElements(env, arg7, NULL);
@@ -296,30 +310,31 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluNurbsSurface)
 	if (arg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
 	if (arg4) (*env)->ReleaseFloatArrayElements(env, arg4, lparg4, 0);
 	if (arg7) (*env)->ReleaseFloatArrayElements(env, arg7, lparg7, 0);
+	NATIVE_EXIT(env, that, "gluNurbsSurface\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluOrtho2D)
 	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdouble arg3)
 {
-	DEBUG_CALL("gluOrtho2D\n")
-
+	NATIVE_ENTER(env, that, "gluOrtho2D\n")
 	gluOrtho2D(arg0, arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "gluOrtho2D\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluPartialDisk)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2, jint arg3, jint arg4, jdouble arg5, jdouble arg6)
 {
-	DEBUG_CALL("gluPartialDisk\n")
-
+	NATIVE_ENTER(env, that, "gluPartialDisk\n")
 	gluPartialDisk((GLUquadric *)arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+	NATIVE_EXIT(env, that, "gluPartialDisk\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluPerspective)
 	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdouble arg3)
 {
-	DEBUG_CALL("gluPerspective\n")
-
+	NATIVE_ENTER(env, that, "gluPerspective\n")
 	gluPerspective(arg0, arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "gluPerspective\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluPickMatrix)
@@ -327,11 +342,11 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluPickMatrix)
 {
 	jint *lparg4=NULL;
 
-	DEBUG_CALL("gluPickMatrix\n")
-
+	NATIVE_ENTER(env, that, "gluPickMatrix\n")
 	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
 	gluPickMatrix(arg0, arg1, arg2, arg3, (GLint *)lparg4);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "gluPickMatrix\n")
 }
 
 JNIEXPORT jint JNICALL GLU_NATIVE(gluProject)
@@ -345,8 +360,7 @@ JNIEXPORT jint JNICALL GLU_NATIVE(gluProject)
 	jdouble *lparg8=NULL;
 	jint rc;
 
-	DEBUG_CALL("gluProject\n")
-
+	NATIVE_ENTER(env, that, "gluProject\n")
 	if (arg3) lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL);
 	if (arg4) lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL);
 	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
@@ -360,6 +374,7 @@ JNIEXPORT jint JNICALL GLU_NATIVE(gluProject)
 	if (arg6) (*env)->ReleaseDoubleArrayElements(env, arg6, lparg6, 0);
 	if (arg7) (*env)->ReleaseDoubleArrayElements(env, arg7, lparg7, 0);
 	if (arg8) (*env)->ReleaseDoubleArrayElements(env, arg8, lparg8, 0);
+	NATIVE_EXIT(env, that, "gluProject\n")
 	return rc;
 }
 
@@ -368,123 +383,125 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluPwlCurve)
 {
 	jfloat *lparg2=NULL;
 
-	DEBUG_CALL("gluPwlCurve\n")
-
+	NATIVE_ENTER(env, that, "gluPwlCurve\n")
 	if (arg2) lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL);
 	gluPwlCurve((GLUnurbs *)arg0, arg1, lparg2, arg3, arg4);
 	if (arg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "gluPwlCurve\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluQuadricCallback)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	DEBUG_CALL("gluQuadricCallback\n")
-
+	NATIVE_ENTER(env, that, "gluQuadricCallback\n")
 	gluQuadricCallback((GLUquadric *)arg0, arg1, (GLvoid(*))arg2);
+	NATIVE_EXIT(env, that, "gluQuadricCallback\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluQuadricDrawStyle)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	DEBUG_CALL("gluQuadricDrawStyle\n")
-
+	NATIVE_ENTER(env, that, "gluQuadricDrawStyle\n")
 	gluQuadricDrawStyle((GLUquadric *)arg0, arg1);
+	NATIVE_EXIT(env, that, "gluQuadricDrawStyle\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluQuadricNormals)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	DEBUG_CALL("gluQuadricNormals\n")
-
+	NATIVE_ENTER(env, that, "gluQuadricNormals\n")
 	gluQuadricNormals((GLUquadric *)arg0, arg1);
+	NATIVE_EXIT(env, that, "gluQuadricNormals\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluQuadricOrientation)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	DEBUG_CALL("gluQuadricOrientation\n")
-
+	NATIVE_ENTER(env, that, "gluQuadricOrientation\n")
 	gluQuadricOrientation((GLUquadric *)arg0, arg1);
+	NATIVE_EXIT(env, that, "gluQuadricOrientation\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluQuadricTexture)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	DEBUG_CALL("gluQuadricTexture\n")
-
+	NATIVE_ENTER(env, that, "gluQuadricTexture\n")
 	gluQuadricTexture((GLUquadric *)arg0, arg1);
+	NATIVE_EXIT(env, that, "gluQuadricTexture\n")
 }
 
 JNIEXPORT jint JNICALL GLU_NATIVE(gluScaleImage)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
 {
-	DEBUG_CALL("gluScaleImage\n")
-
-	return (jint)gluScaleImage(arg0, arg1, arg2, arg3, (const void *)arg4, arg5, arg6, arg7, (void *)arg8);
+    jint rc;
+	NATIVE_ENTER(env, that, "gluScaleImage\n")
+	rc = (jint)gluScaleImage(arg0, arg1, arg2, arg3, (const void *)arg4, arg5, arg6, arg7, (void *)arg8);
+	NATIVE_EXIT(env, that, "gluScaleImage\n")
+	return rc;
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluSphere)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jint arg2, jint arg3)
 {
-	DEBUG_CALL("gluSphere\n")
-
+	NATIVE_ENTER(env, that, "gluSphere\n")
 	gluSphere((GLUquadric *)arg0, arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "gluSphere\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluTessBeginContour)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluTessBeginContour\n")
-
+	NATIVE_ENTER(env, that, "gluTessBeginContour\n")
 	gluTessBeginContour((GLUtesselator *)arg0);
+	NATIVE_EXIT(env, that, "gluTessBeginContour\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluTessBeginPolygon)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	DEBUG_CALL("gluTessBeginPolygon\n")
-
+	NATIVE_ENTER(env, that, "gluTessBeginPolygon\n")
 	gluTessBeginPolygon((GLUtesselator *)arg0, (void *)arg1);
+	NATIVE_EXIT(env, that, "gluTessBeginPolygon\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluTessCallback)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	DEBUG_CALL("gluTessCallback\n")
-
+	NATIVE_ENTER(env, that, "gluTessCallback\n")
 	gluTessCallback((GLUtesselator *)arg0, arg1, (GLvoid(*))arg2);
+	NATIVE_EXIT(env, that, "gluTessCallback\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluTessEndContour)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluTessEndContour\n")
-
+	NATIVE_ENTER(env, that, "gluTessEndContour\n")
 	gluTessEndContour((GLUtesselator *)arg0);
+	NATIVE_EXIT(env, that, "gluTessEndContour\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluTessEndPolygon)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gluTessEndPolygon\n")
-
+	NATIVE_ENTER(env, that, "gluTessEndPolygon\n")
 	gluTessEndPolygon((GLUtesselator *)arg0);
+	NATIVE_EXIT(env, that, "gluTessEndPolygon\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluTessNormal)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2, jdouble arg3)
 {
-	DEBUG_CALL("gluTessNormal\n")
-
+	NATIVE_ENTER(env, that, "gluTessNormal\n")
 	gluTessNormal((GLUtesselator *)arg0, arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "gluTessNormal\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluTessProperty)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloat arg2)
 {
-	DEBUG_CALL("gluTessProperty\n")
-
+	NATIVE_ENTER(env, that, "gluTessProperty\n")
 	gluTessProperty((GLUtesselator *)arg0, arg1, arg2);
+	NATIVE_EXIT(env, that, "gluTessProperty\n")
 }
 
 JNIEXPORT void JNICALL GLU_NATIVE(gluTessVertex)
@@ -492,11 +509,11 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluTessVertex)
 {
 	jdouble *lparg1=NULL;
 
-	DEBUG_CALL("gluTessVertex\n")
-
+	NATIVE_ENTER(env, that, "gluTessVertex\n")
 	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
 	gluTessVertex((GLUtesselator *)arg0, lparg1, (void *)arg2);
 	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "gluTessVertex\n")
 }
 
 JNIEXPORT jint JNICALL GLU_NATIVE(gluUnProject)
@@ -510,8 +527,7 @@ JNIEXPORT jint JNICALL GLU_NATIVE(gluUnProject)
 	jdouble *lparg8=NULL;
 	jint rc;
 
-	DEBUG_CALL("gluUnProject\n")
-
+	NATIVE_ENTER(env, that, "gluUnProject\n")
 	if (arg3) lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL);
 	if (arg4) lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL);
 	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
@@ -525,5 +541,6 @@ JNIEXPORT jint JNICALL GLU_NATIVE(gluUnProject)
 	if (arg6) (*env)->ReleaseDoubleArrayElements(env, arg6, lparg6, 0);
 	if (arg7) (*env)->ReleaseDoubleArrayElements(env, arg7, lparg7, 0);
 	if (arg8) (*env)->ReleaseDoubleArrayElements(env, arg8, lparg8, 0);
+	NATIVE_EXIT(env, that, "gluUnProject\n")
 	return rc;
 }

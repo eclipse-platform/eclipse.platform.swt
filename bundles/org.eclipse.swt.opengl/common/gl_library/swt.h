@@ -44,4 +44,7 @@
 #define DECL_GLOB(pSym)
 #define PGLOB(x) x
 
+#define NATIVE_ENTER(env,clazz,func)
+#define NATIVE_EXIT(env,clazz,func)
+
 #endif /* ifndef INC_swt_H */
