@@ -1702,8 +1702,8 @@ public boolean post(Event event) {
 	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int type = event.type;
 	switch (type) {
-		case SWT.KeyDown :
-		case SWT.KeyUp : {
+		case SWT.KeyDown:
+		case SWT.KeyUp: {
 			int vKey = Display.untranslateKey (event.keyCode);
 			if (vKey != 0) {
 				return OS.CGPostKeyboardEvent (0, vKey, type == SWT.KeyDown) == 0;
@@ -1747,9 +1747,9 @@ public boolean post(Event event) {
 				return OS.CGPostKeyboardEvent (key, vKey, type == SWT.KeyDown) == 0;
 			}
 		}
-		case SWT.MouseDown :
-		case SWT.MouseMove : 
-		case SWT.MouseUp : {
+		case SWT.MouseDown:
+		case SWT.MouseMove: 
+		case SWT.MouseUp: {
 			CGPoint mouseCursorPosition = new CGPoint ();
 			if (type == SWT.MouseMove) {
 				mouseCursorPosition.x = event.x;
