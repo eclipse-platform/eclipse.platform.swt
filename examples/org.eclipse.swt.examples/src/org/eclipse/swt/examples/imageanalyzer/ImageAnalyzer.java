@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.printing.*;
 import java.util.*;
 import java.text.MessageFormat;
 
@@ -550,6 +551,18 @@ public class ImageAnalyzer {
 		});
 		
 		new MenuItem(fileMenu, SWT.SEPARATOR);
+		
+		// File -> Print
+		item = new MenuItem(fileMenu, SWT.NULL);
+		item.setText(bundle.getString("Print"));
+		item.setAccelerator(SWT.CTRL + 'P');
+		item.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				menuPrint();
+			}
+		});
+		
+		new MenuItem(fileMenu, SWT.SEPARATOR);
 		// File -> Exit
 		item = new MenuItem(fileMenu, SWT.NULL);
 		item.setText(bundle.getString("Exit"));
@@ -872,6 +885,35 @@ public class ImageAnalyzer {
 			imageCanvas.setCursor(crossCursor);
 			waitCursor.dispose();
 		}
+	}
+
+	void menuPrint() {
+		if (image == null) return;
+
+		// Ask the user to specify the printer.
+		PrintDialog dialog = new PrintDialog(shell, SWT.NULL);
+		PrinterData printerData = dialog.open();
+		if (printerData == null) return;
+		
+		Printer printer = new Printer(printerData);
+		if (printer.startJob(fileName)) {
+			GC gc = new GC(printer);
+			if (printer.startPage()) {
+				gc.drawImage(
+					image,
+					0,
+					0,
+					imageData.width,
+					imageData.height,
+					0,
+					0,
+					imageData.width,
+					imageData.height);
+				printer.endPage();
+			}
+			printer.endJob();
+		}
+		printer.dispose();
 	}
 
 	void menuReopen() {
