@@ -956,14 +956,15 @@ protected int QueryInterface(int riid, int ppvObject) {
 		AddRef();
 		return COM.S_OK;
 	}
-	if (COM.IsEqualGUID(guid, COM.IIDIOleDocumentSite )) {
-		String progID = getProgramID();
-		if (!progID.startsWith("PowerPoint")) { //$NON-NLS-1$
-			COM.MoveMemory(ppvObject, new int[] {iOleDocumentSite.getAddress()}, 4);
-			AddRef();
-			return COM.S_OK;
-		}
-	}
+// TEMPORARY CODE - see bug 35493
+//	if (COM.IsEqualGUID(guid, COM.IIDIOleDocumentSite )) {
+//		String progID = getProgramID();
+//		if (!progID.startsWith("PowerPoint")) { //$NON-NLS-1$
+//			COM.MoveMemory(ppvObject, new int[] {iOleDocumentSite.getAddress()}, 4);
+//			AddRef();
+//			return COM.S_OK;
+//		}
+//	}
 	COM.MoveMemory(ppvObject, new int[] {0}, 4);
 	return COM.E_NOINTERFACE;
 }
