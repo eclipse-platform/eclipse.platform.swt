@@ -416,15 +416,15 @@ void releaseWidget () {
 		menu.destroyWidget ();
 	} else {
 		if ((parent.style & SWT.BAR) != 0) {
-//			short [] outIndex = new short [1];
-//			if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) == OS.noErr) {
-//				int [] outMenuRef = new int [1];
-//				OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef);
-//				if (outMenuRef [0] != 0) {
-//					OS.DeleteMenu (OS.GetMenuID (outMenuRef [0]));
-//					OS.DisposeMenu (outMenuRef [0]);
-//				}
-//			}
+			int index = parent.indexOf (this);
+			if (index != -1) {
+				short menuIndex = (short) (index + 1);
+				int [] outMenuRef = new int [1];
+				OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef);
+				if (outMenuRef [0] != 0) {
+					OS.DisposeMenu (outMenuRef [0]);
+				}
+			}
 		}
 	}
 	menu = null;
@@ -661,31 +661,28 @@ public void setMenu (Menu menu) {
 	int outMenuRef [] = new int [1];
 	if (menu == null) {
 		if ((parent.style & SWT.BAR) != 0) {
-//			Display display = getDisplay ();
-//			short menuID = display.nextMenuId ();
-//			if (OS.CreateNewMenu (menuID, 0, outMenuRef) != OS.noErr) {
-//				error (SWT.ERROR_NO_HANDLES);
-//			}
+			if (OS.CreateNewMenu ((short) 0, 0, outMenuRef) != OS.noErr) {
+				error (SWT.ERROR_NO_HANDLES);
+			}
 		}
 	} else {
 		menu.cascade = this;
 		if ((parent.style & SWT.BAR) != 0) {
 			if (oldMenu == null) {
-//				OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef);
-//				if (outMenuRef [0] != 0) {
-//					OS.DeleteMenu (OS.GetMenuID (outMenuRef [0]));
-//					OS.DisposeMenu (outMenuRef [0]);
-//				}
+				OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef);
+				if (outMenuRef [0] != 0) {
+					OS.DisposeMenu (outMenuRef [0]);
+				}
 			}
 		}
 		outMenuRef [0] = menu.handle;
-		int [] outString = new int [1];
-		if (OS.CopyMenuItemTextAsCFString (parent.handle, menuIndex, outString) != OS.noErr) {
-			error (SWT.ERROR_CANNOT_SET_MENU);
-		}
-		OS.SetMenuTitleWithCFString (outMenuRef [0], outString [0]);
-		OS.CFRelease (outString [0]);
 	}
+	int [] outString = new int [1];
+	if (OS.CopyMenuItemTextAsCFString (parent.handle, menuIndex, outString) != OS.noErr) {
+		error (SWT.ERROR_CANNOT_SET_MENU);
+	}
+	OS.SetMenuTitleWithCFString (outMenuRef [0], outString [0]);
+	OS.CFRelease (outString [0]);
 	if (OS.SetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef [0]) != OS.noErr) {
 		error (SWT.ERROR_CANNOT_SET_MENU);
 	}
