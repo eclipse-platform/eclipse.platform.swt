@@ -281,6 +281,7 @@ public CTabFolder(Composite parent, int style) {
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose:          onDispose(); break;
+				case SWT.DragDetect:		onDragDetect(event); break;
 				case SWT.FocusIn:          onFocus(event);	break;
 				case SWT.FocusOut:         onFocus(event);	break;
 				case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
@@ -298,6 +299,7 @@ public CTabFolder(Composite parent, int style) {
 
 	int[] folderEvents = new int[]{
 		SWT.Dispose,
+		SWT.DragDetect,
 		SWT.FocusIn, 
 		SWT.FocusOut, 
 		SWT.KeyDown,
@@ -1702,6 +1704,24 @@ void onDispose() {
 
 	selectionBackground = null;
 	selectionForeground = null;
+}
+void onDragDetect(Event event) {
+	boolean consume = false;
+	if (chevronRect.contains(event.x, event.y) ||
+	    minRect.contains(event.x, event.y) ||
+		maxRect.contains(event.x, event.y)){
+		consume = true;
+	} else {
+		for (int i = 0; i < items.length; i++) {
+			if (items[i].closeRect.contains(event.x, event.y)) {
+					consume = true;
+					break;
+			}
+		}
+	}
+	if (consume) {
+		event.type = 0;
+	}
 }
 void onFocus(Event event) {
 	checkWidget();
