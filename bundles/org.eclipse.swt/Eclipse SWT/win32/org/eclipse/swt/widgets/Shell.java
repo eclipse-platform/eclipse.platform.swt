@@ -106,6 +106,7 @@ public class Shell extends Decorations {
 	int toolTipHandle, lpstrTip;
 	Control lastActive;
 	SHACTIVATEINFO psai;
+	Region region;
 	static final int DialogProc;
 	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
 	static {
@@ -565,34 +566,6 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
-/** 
- * Sets the region managed by the argument to the current
- * shape of the shell.
- *
- * @param region the region to fill with the clipping region
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
- * </ul>	
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.0
- *
- */
-public void getClipping (Region region) {
-	checkWidget ();
-	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int hRegion = region.handle;
-	if (OS.GetWindowRgn (handle, hRegion) == OS.RGN_ERROR) {
-		RECT rect = new RECT ();
-		OS.GetWindowRect (handle, rect);
-		OS.SetRectRgn (hRegion, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
-	}
-}
-
 public boolean getEnabled () {
 	checkWidget ();
 	return (state & DISABLED) == 0;
@@ -642,6 +615,24 @@ public Point getLocation () {
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	return new Point (rect.left, rect.top);
+}
+
+/** 
+ * Returns the region that defines the shape of the shell.
+ *
+ * @return the region that defines the shape of the shell
+ *	
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public Region getRegion () {
+	checkWidget ();
+	return region;
 }
 
 public Shell getShell () {
@@ -930,27 +921,6 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 }
 
-/**
- * Sets the shape of the shell to the region specified
- * by the argument.  A null region will restore the default shape.
- * Shell must be created with the style SWT.NO_TRIM.
- *
- * @param rect the clipping region.
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.0
- *
- */
-public void setClipping(Region region) {
-	checkWidget ();
-	if ((style & SWT.NO_TRIM) == 0) return;
-	OS.SetWindowRgn (handle, region == null ? 0 : region.handle, true);
-}
-
 public void setEnabled (boolean enabled) {
 	checkWidget ();
 	state &= ~DISABLED;
@@ -1025,6 +995,34 @@ void setItemEnabled (int cmd, boolean enabled) {
 
 void setParent () {
 	/* Do nothing.  Not necessary for Shells */
+}
+
+/**
+ * Sets the shape of the shell to the region specified
+ * by the argument.  A null region will restore the default shape.
+ * Shell must be created with the style SWT.NO_TRIM.
+ *
+ * @param rgn the region that defines the shape of the shell
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public void setRegion(Region rgn) {
+	checkWidget ();
+	if ((style & SWT.NO_TRIM) == 0) return;
+	if (rgn == null) {
+		OS.SetWindowRgn (handle, 0, true);
+	} else {
+		int hRegion = OS.CreateRectRgn (0, 0, 0, 0);
+		OS.CombineRgn (hRegion, rgn.handle, hRegion, OS.RGN_OR);
+		OS.SetWindowRgn (handle, hRegion, true);
+	}
+	region = rgn;
 }
 
 void setToolTipText (int hwnd, String text) {
