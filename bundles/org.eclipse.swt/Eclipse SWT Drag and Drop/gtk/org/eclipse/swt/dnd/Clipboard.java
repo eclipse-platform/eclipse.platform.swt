@@ -381,9 +381,10 @@ private  int[] _getAvailableTypes() {
 }
 
 int /*long*/ gtk_clipboard_wait_for_contents(int /*long*/ clipboard, int /*long*/ target) {
-	display.dispatchEvents = new int[]{OS.GDK_PROPERTY_NOTIFY, OS.GDK_SELECTION_CLEAR, OS.GDK_SELECTION_REQUEST, OS.GDK_SELECTION_NOTIFY};
+	String key = "org.eclipse.swt.internal.gtk.dispatchEvent";
+	display.setData(key, new int[]{OS.GDK_PROPERTY_NOTIFY, OS.GDK_SELECTION_CLEAR, OS.GDK_SELECTION_REQUEST, OS.GDK_SELECTION_NOTIFY});
 	int /*long*/ selection_data = OS.gtk_clipboard_wait_for_contents(clipboard, target);
-	display.dispatchEvents = null;
+	display.setData(key, null);
 	return selection_data;
 }
 }

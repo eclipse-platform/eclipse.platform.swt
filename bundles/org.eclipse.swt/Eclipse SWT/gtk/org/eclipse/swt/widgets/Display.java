@@ -93,15 +93,11 @@ import org.eclipse.swt.graphics.*;
  */
 public class Display extends Device {
 
-	/**
-	 * (Warning: This field is only present on GTK)
-	 */
-	public int [] dispatchEvents;
-
 	/* Events Dispatching and Callback */
 	boolean wake;
 	int gdkEventCount;
 	int /*long*/ [] gdkEvents;
+	int [] dispatchEvents;
 	Widget [] gdkEventWidgets;
 	Event [] eventQueue;
 	Callback eventCallback;
@@ -110,6 +106,7 @@ public class Display extends Device {
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT";
+	static final String DISPATCH_EVENT_KEY = "org.eclipse.swt.internal.gtk.dispatchEvent";
 
 	/* Widget Table */
 	int freeSlot;
@@ -1018,6 +1015,9 @@ public Point [] getCursorSizes () {
 public Object getData (String key) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (key.equals (DISPATCH_EVENT_KEY)) {
+		return dispatchEvents;
+	}
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
 		if (keys [i].equals (key)) return values [i];
@@ -2627,7 +2627,15 @@ public void setCursorLocation (Point point) {
 public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-	
+
+	if (key.equals (DISPATCH_EVENT_KEY)) {
+		if (value instanceof int []) {
+			dispatchEvents = (int []) value;
+			if (value == null) putGdkEvents ();
+			return;
+		}
+	}
+
 	/* Remove the key/value pair */
 	if (value == null) {
 		if (keys == null) return;
