@@ -1220,6 +1220,7 @@ public FontMetrics getFontMetrics() {
 	FontMetrics fm = new FontMetrics();
 	fm.ascent = info.ascent;
 	fm.descent = info.descent;
+	fm.leading = info.leading;
 	fm.averageCharWidth = info.widMax / 2;
 	fm.height = fm.ascent + fm.descent;
 	return fm;
