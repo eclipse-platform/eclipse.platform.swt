@@ -649,6 +649,7 @@ public class OS {
 	public static final int XmNdropSiteActivity = malloc ("dropSiteActivity", 1);
 	public static final int XmNdropSiteOperations = malloc ("dropSiteOperations", 1);
 	public static final int XmNdropSiteType = malloc ("dropSiteType", 1);
+
 	public static final int XmNeditable = malloc ("editable", 1);
 	public static final int XmNenableThinThickness = malloc ("enableThinThickness", 1);
 	public static final int XmNframeChildType = malloc ("frameChildType", 1);
@@ -724,6 +725,7 @@ public class OS {
 	public static final int XmNdecrementCallback = malloc ("decrementCallback", 4);
 	public static final int XmNdefaultActionCallback = malloc ("defaultActionCallback", 4);
 	public static final int XmNdefaultButtonShadowThickness = malloc ("defaultButtonShadowThickness", 4);
+
 	public static final int XmNdialogTitle = malloc ("dialogTitle", 4);
 	public static final int XmNdirectory = malloc ("directory", 4);
 	public static final int XmNdirMask = malloc ("dirMask", 4);
@@ -1206,6 +1208,8 @@ public static final synchronized native int XtAppCreateShell (
 	int display,
 	int [] argList,
 	int argCount);
+public static final synchronized native int XtAppGetSelectionTimeout (int appContext);
+public static final synchronized native void XtAppSetSelectionTimeout (int appContext, int timeout);
 public static final synchronized native void XtAppNextEvent (int appContext, XAnyEvent event);
 public static final synchronized native boolean XtAppPeekEvent (int appContext, XAnyEvent event);
 public static final synchronized native int XtAppPending (int appContext);

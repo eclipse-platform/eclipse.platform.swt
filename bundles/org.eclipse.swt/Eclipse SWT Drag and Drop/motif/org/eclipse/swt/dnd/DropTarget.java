@@ -89,7 +89,7 @@ public class DropTarget extends Widget {
 	private DNDEvent dragOverEvent;
 	
 	int lastOperation;
-
+	int selectionTimeout;
 	
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
@@ -132,7 +132,9 @@ public DropTarget(Control control, int style) {
 					}
 					break;
 				case SWT.Show:
-					registerDropTarget();
+					if (DropTarget.this.control.isVisible()) {
+						registerDropTarget();
+					}
 					break;
 				case SWT.Hide:
 					unregisterDropTarget();
@@ -141,8 +143,12 @@ public DropTarget(Control control, int style) {
 		}
 	};
 	control.addListener (SWT.Dispose, controlListener);
-	control.addListener (SWT.Show, controlListener);
-	control.addListener (SWT.Hide, controlListener);
+	Control c = control;
+	while (c != null) {
+		c.addListener (SWT.Show, controlListener);
+		c.addListener (SWT.Hide, controlListener);
+		c = c.getParent();
+	}
 	
 	this.addListener (SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
@@ -469,7 +475,11 @@ private int dropProcCallback(int widget, int client_data, int call_data) {
 	if (transferProc == null)
 		transferProc = new Callback(this, "transferProcCallback", 7);
 
-	if (transferProc != null){
+	if (transferProc != null){		
+		int xtContext = OS.XtDisplayToApplicationContext(getDisplay().xDisplay);
+		selectionTimeout = OS.XtAppGetSelectionTimeout(xtContext);
+		OS.XtAppSetSelectionTimeout(xtContext, 0x7fffffff);
+		
 		int[] args = new int[] {OS.XmNdropTransfers, pTransferEntries,
 					OS.XmNnumDropTransfers, transferEntries.length / 2,
 					OS.XmNtransferProc, transferProc.getAddress()};
@@ -738,13 +748,16 @@ private int transferProcCallback(int widget, int client_data, int pSelection, in
 		event.dataType = transferData;
 		event.detail = lastOperation;
 		event.data       = data;
-
+	
 		try {
 			notifyListeners(DND.Drop,event);
 		} catch (Throwable err) {
 			event.detail = DND.DROP_NONE;
 		}
 
+		int xtContext = OS.XtDisplayToApplicationContext (getDisplay().xDisplay);
+		OS.XtAppSetSelectionTimeout (xtContext, selectionTimeout);
+		
 		if ((event.detail & DND.DROP_MOVE) == DND.DROP_MOVE) {
 			OS.XmDropTransferAdd(dropTransferObject, new int[]{0, Transfer.registerType("DELETE\0")}, 1);
 		}
