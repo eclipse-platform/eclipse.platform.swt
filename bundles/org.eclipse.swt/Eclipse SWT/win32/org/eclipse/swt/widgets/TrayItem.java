@@ -26,38 +26,56 @@ import org.eclipse.swt.internal.win32.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ * 
+ * @since 3.0
  */
-public class TrayIcon extends Widget {
+public class TrayItem extends Item {
+	Tray parent;
 	int id;
-	Image image, image2;
+	Image image2;
 	String toolTipText;
-	boolean visible;
-
+	boolean visible = true;
+	
 /**
- * Constructs a new instance of this class given its Display.
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>ToolBar</code>) and a style value
+ * describing its behavior and appearance. The item is added
+ * to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
+ * </p>
  *
- * @param display the parent display
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the display is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
+ *
+ * @see SWT#PUSH
+ * @see SWT#CHECK
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
+ * @see SWT#DROP_DOWN
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
  */
-public TrayIcon (Display display) {
-	checkSubclass ();
-	if (display == null) display = Display.getCurrent ();
-	if (display == null) display = Display.getDefault ();
-	if (!display.isValidThread ()) {
-		error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	}
-	this.display = display;
-	display.addTrayIcon (this);
-	createWidget ();
+public TrayItem (Tray parent, int style) {
+	super (parent, style);
+	this.parent = parent;
+	parent.createItem (this, parent.getItemCount ());
 }
-	
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver is selected, by sending
@@ -90,18 +108,6 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-void createWidget () {
-	visible = true;
-	if (OS.IsWinCE) return;
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-	iconData.cbSize = NOTIFYICONDATA.sizeof;
-	iconData.uID = id;
-	iconData.hWnd = display.hwndMessage;
-	iconData.uFlags = OS.NIF_MESSAGE;
-	iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-	OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
-}
-
 void destroyWidget () {
 	if (OS.IsWinCE) {
 		super.destroyWidget ();
@@ -113,21 +119,6 @@ void destroyWidget () {
 	iconData.hWnd = display.hwndMessage;
 	OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
 	releaseHandle ();
-}
-
-/**
- * Returns the receiver's image, or null if the image has not been set.
- *
- * @return the receiver's image
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Image getImage () {
-	checkWidget ();
-	return image;
 }
 
 /**
@@ -182,13 +173,16 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 	return 0;
 }
 
+void releaseChild () {
+	super.releaseChild ();
+	parent.destroyItem (this);
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	if (image2 != null) image2.dispose ();
 	image2 = null;
-	image = null;
 	toolTipText = null;
-	display.removeTrayIcon (this);
 }
 	
 /**
@@ -232,7 +226,7 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	this.image = image;
+	super.setImage (image);
 	if (OS.IsWinCE) return;
 	if (image2 != null) image2.dispose ();
 	image2 = null;
