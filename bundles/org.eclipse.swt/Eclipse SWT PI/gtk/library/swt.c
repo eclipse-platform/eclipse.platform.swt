@@ -1780,3 +1780,17 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1set_1
 
 	gtk_notebook_set_scrollable((GtkNotebook*)notebook, (gboolean) scrollable);
 }
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1style_1set_1xthickness
+  (JNIEnv *env, jclass that, jint style, jboolean xthickness)
+{
+  ((GtkStyle*)style)->xthickness = xthickness;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1style_1set_1ythickness
+  (JNIEnv *env, jclass that, jint style, jboolean ythickness)
+{
+  ((GtkStyle*)style)->ythickness = ythickness;
+}
+
+

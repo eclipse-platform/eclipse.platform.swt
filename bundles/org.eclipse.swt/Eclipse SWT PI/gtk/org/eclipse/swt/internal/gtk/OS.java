@@ -957,4 +957,7 @@ public static final native void gdk_window_invalidate_rect(int window, GdkRectan
 public static final native void gdk_window_invalidate_region(int window, int region, boolean invalidate_children);
 public static final native void  gtk_notebook_set_scrollable(int notebook, boolean scrollable);
 public static final native void  gtk_button_set_relief(int button, int newstyle);
+/* Temporary code */
+public static final native void  gtk_style_set_xthickness(int style, int xthickness);
+public static final native void  gtk_style_set_ythickness(int style, int ythickness);
 }
