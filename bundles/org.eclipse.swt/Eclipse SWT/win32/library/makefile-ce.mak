@@ -35,12 +35,12 @@ BUILDLIB: $(LIBPATH)$(LIBNAME)
 
 $(LIBPATH)$(LIBNAME):\
 	$(BUILDFILES1) $(VIRTFILES1)
-	lib -subsystem:windowsce -out:$(LIBPATH)$(LIBNAME).lib /NODEFAULTLIB:libc.lib /nodefaultlib:oldnames.lib -machine:$(CPU) \
+	lib -subsystem:windowsce,3.00 -out:$(LIBPATH)$(LIBNAME).lib /NODEFAULTLIB:libc.lib /nodefaultlib:oldnames.lib -machine:$(CPU) \
 	$(BUILDFILES1) $(VIRTFILES1) 
 
 $(DLLNAME): $(LIBPATH)$(LIBNAME) \
 	$(BUILDFILES1) $(VIRTFILES1)
 	link $(dlllflags) -machine:$(CPU) \
-	-subsystem:windowsce -out:$(DLLNAME) -map:$(LIBNAME).map \
+	-subsystem:windowsce,3.00 -out:$(DLLNAME) -map:$(LIBNAME).map \
 	$(BUILDFILES1) $(VIRTFILES1) \
 	/dll  /entry:"_DllMainCRTStartup" /NODEFAULTLIB:libc.lib /nodefaultlib:oldnames.lib aygshell.lib corelibc.lib coredll.lib commdlg.lib commctrl.lib ceshell.lib
