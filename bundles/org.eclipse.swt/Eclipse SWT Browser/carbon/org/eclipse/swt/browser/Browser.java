@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.util.Hashtable;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
