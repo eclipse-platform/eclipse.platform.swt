@@ -17,6 +17,7 @@
 #include <X11/Intrinsic.h>
 #include <X11/Shell.h>
 #include <X11/keysym.h>
+#include <X11/extensions/Print.h>
 
 #include <Xm/XmAll.h>
 #include <Mrm/MrmPublic.h>
