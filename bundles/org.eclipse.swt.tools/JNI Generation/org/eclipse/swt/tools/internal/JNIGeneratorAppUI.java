@@ -260,8 +260,8 @@ void createMainClassPanel(Composite panel, Listener updateListener) {
 	if (mainClasses != null) {
 		String[] list = ItemData.split(mainClasses, ",");
 		for (int i = 0; i < list.length - 1; i += 2) {
-			mainClassCb.add(list[i]);
-			outputDirCb.add(list[i + 1]);
+			mainClassCb.add(list[i].trim());
+			outputDirCb.add(list[i + 1].trim());
 		}
 	}
 }
@@ -1069,8 +1069,8 @@ void updateMainClass() {
 		if (mainClasses != null) {
 			String[] list = ItemData.split(mainClasses, ",");
 			for (int i = 0; i < list.length - 1; i += 2) {
-				if (mainClassStr.equals(list[i])) {
-					int index = outputDirCb.indexOf(list[i + 1]);
+				if (mainClassStr.equals(list[i].trim())) {
+					int index = outputDirCb.indexOf(list[i + 1].trim());
 					if (index != -1) outputDirCb.select(index);
 				}
 			}
