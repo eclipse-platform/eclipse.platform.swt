@@ -754,8 +754,16 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	// FIXME - use font height when there is no item
-	if (itemCount == 0) return 15;
+	if (itemCount == 0) {
+		int column = OS.gtk_tree_view_get_column (handle, 0);
+		int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+		int length = OS.g_list_length (list);
+		int renderer = OS.g_list_nth_data (list, length - 1);
+		OS.g_list_free (list);
+		int [] w = new int [1], h = new int [1];
+		OS.gtk_cell_renderer_get_size (renderer, handle, null, null, null, w, h);
+		return h [0];
+	}
 	GdkRectangle rect = new GdkRectangle ();
 	int path = OS.gtk_tree_path_new_first ();
 	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
