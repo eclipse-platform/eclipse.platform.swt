@@ -199,6 +199,7 @@ void createHandle (int index) {
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", 0);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", 2);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", 3);
+	OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, 0);
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);

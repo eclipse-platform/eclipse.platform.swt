@@ -261,12 +261,20 @@ public int getWidth () {
  */
 public void pack () {
 	checkWidget();
-	if (getResizable()) {
-		// Feature in GTK: AUTOSIZE and RESIZABLE are mutually exclusive
-		OS.gtk_tree_view_column_set_sizing(handle, OS.GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-	} else {
-		OS.gtk_tree_view_column_set_sizing(handle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+	int parentHandle = parent.handle;
+	int list = OS.gtk_tree_view_column_get_cell_renderers (handle);
+	if (list == 0) return;
+	int width = 0;
+	int count = OS.g_list_length (list);
+	int [] w = new int[1], h = new int[1];
+	int spacing = OS.gtk_tree_view_column_get_spacing (handle);
+	for (int i = 0; i < count; i++) {
+		int renderer = OS.g_list_nth_data (list, i);
+		OS.gtk_cell_renderer_get_size (renderer, parentHandle, null, null, null, w, h);
+		width += w [0] + spacing + 1;
 	}
+	OS.g_list_free (list);
+	OS.gtk_tree_view_column_set_fixed_width (handle, width);
 }
 
 void releaseChild () {
@@ -384,7 +392,6 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget();
-	OS.gtk_tree_view_column_set_sizing (handle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
 	OS.gtk_tree_view_column_set_fixed_width (handle, width);
 }
 

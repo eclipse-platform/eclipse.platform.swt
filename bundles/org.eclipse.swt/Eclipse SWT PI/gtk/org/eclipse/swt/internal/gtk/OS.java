@@ -691,6 +691,7 @@ public static final native void gtk_tree_view_column_add_attribute(int treeColum
 public static final native void gtk_tree_view_column_clear(int tree_column);
 public static final native int gtk_tree_view_column_get_cell_renderers(int tree_column);
 public static final native boolean gtk_tree_view_column_get_resizable(int column);
+public static final native int gtk_tree_view_column_get_spacing(int tree_column);
 public static final native int gtk_tree_view_column_get_width(int column);
 public static final native int gtk_tree_view_column_new();
 public static final native void gtk_tree_view_column_pack_start(int tree_column, int cell_renderer, boolean expand);

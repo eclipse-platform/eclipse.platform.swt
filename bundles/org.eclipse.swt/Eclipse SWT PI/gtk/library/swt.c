@@ -4748,6 +4748,16 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1column_1get_1spacing
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1get_1spacing
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1get_1spacing\n")
+
+	return (jint)gtk_tree_view_column_get_spacing((GtkTreeViewColumn *)arg0);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1column_1get_1width
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1get_1width
 	(JNIEnv *env, jclass that, jint arg0)
