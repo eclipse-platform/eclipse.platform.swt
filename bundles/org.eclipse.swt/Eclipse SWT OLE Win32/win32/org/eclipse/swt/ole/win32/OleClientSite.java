@@ -7,11 +7,8 @@ package org.eclipse.swt.ole.win32;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Vector;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.ole.win32.*;

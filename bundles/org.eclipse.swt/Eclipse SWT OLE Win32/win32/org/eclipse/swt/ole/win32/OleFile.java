@@ -7,7 +7,6 @@ package org.eclipse.swt.ole.win32;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 import java.io.*;
-import org.eclipse.swt.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.ole.win32.*;
 

@@ -9,7 +9,6 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.internal.win32.TVITEM;
 import org.eclipse.swt.SWT;
 
 class TreeDragUnderEffect extends DragUnderEffect {

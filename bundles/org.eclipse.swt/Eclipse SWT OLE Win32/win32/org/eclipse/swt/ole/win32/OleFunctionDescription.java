@@ -7,8 +7,6 @@ package org.eclipse.swt.ole.win32;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.ole.win32.COM;
-
 public class OleFunctionDescription {
 
 	public int id;

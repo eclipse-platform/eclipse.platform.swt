@@ -8,7 +8,6 @@ package org.eclipse.swt.ole.win32;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 final class OleEventSink
 {
