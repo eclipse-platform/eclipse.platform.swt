@@ -18,6 +18,7 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -25,7 +26,7 @@ public class Snippet91 {
 
 public static void main (String [] args) {
 	
-	Display display = Display.getDefault ();
+	final Display display = Display.getDefault ();
 	final Shell shell = new Shell (display);
 	shell.setLayout(new FillLayout());
 	final Tree tree = new Tree(shell, SWT.BORDER);
@@ -72,7 +73,19 @@ public static void main (String [] args) {
 	target.setTransfer(types);
 	target.addDropListener (new DropTargetAdapter() {
 		public void dragOver(DropTargetEvent event) {
-			event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL | DND.FEEDBACK_SELECT;
+			event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL;
+			if (event.item != null) {
+				TreeItem item = (TreeItem)event.item;
+				Point pt = display.map(null, tree, event.x, event.y);
+				Rectangle bounds = item.getBounds();
+				if (pt.y < bounds.y + bounds.height/3) {
+					event.feedback |= DND.FEEDBACK_INSERT_BEFORE;
+				} else if (pt.y > bounds.y + 2*bounds.height/3) {
+					event.feedback |= DND.FEEDBACK_INSERT_AFTER;
+				} else {
+					event.feedback |= DND.FEEDBACK_SELECT;
+				}
+			}
 		}
 		public void drop(DropTargetEvent event) {
 			if (event.data == null) {
@@ -84,9 +97,52 @@ public static void main (String [] args) {
 				TreeItem item = new TreeItem(tree, SWT.NONE);
 				item.setText(text);
 			} else {
-				TreeItem parent = (TreeItem)event.item;
-				TreeItem item = new TreeItem(parent, SWT.NONE);
-				item.setText(text);
+				TreeItem item = (TreeItem)event.item;
+				Point pt = display.map(null, tree, event.x, event.y);
+				Rectangle bounds = item.getBounds();
+				TreeItem parent = item.getParentItem();
+				if (parent != null) {
+					TreeItem[] items = parent.getItems();
+					int index = 0;
+					for (int i = 0; i < items.length; i++) {
+						if (items[i] == item) {
+							index = i;
+							break;
+						}
+					}
+					if (pt.y < bounds.y + bounds.height/3) {
+						TreeItem newItem = new TreeItem(parent, SWT.NONE, index);
+						newItem.setText(text);
+					} else if (pt.y > bounds.y + 2*bounds.height/3) {
+						TreeItem newItem = new TreeItem(parent, SWT.NONE, index+1);
+						newItem.setText(text);
+					} else {
+						TreeItem newItem = new TreeItem(item, SWT.NONE);
+						newItem.setText(text);
+					}
+					
+				} else {
+					TreeItem[] items = tree.getItems();
+					int index = 0;
+					for (int i = 0; i < items.length; i++) {
+						if (items[i] == item) {
+							index = i;
+							break;
+						}
+					}
+					if (pt.y < bounds.y + bounds.height/3) {
+						TreeItem newItem = new TreeItem(tree, SWT.NONE, index);
+						newItem.setText(text);
+					} else if (pt.y > bounds.y + 2*bounds.height/3) {
+						TreeItem newItem = new TreeItem(tree, SWT.NONE, index+1);
+						newItem.setText(text);
+					} else {
+						TreeItem newItem = new TreeItem(item, SWT.NONE);
+						newItem.setText(text);
+					}
+				}
+				
+				
 			}
 		}
 	});
