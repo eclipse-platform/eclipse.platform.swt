@@ -161,6 +161,17 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
     GC gc = new GC (this);
     gc.copyArea (x, y, width, height, destX, destY);
     gc.dispose ();
+    if (all) {
+		Control [] children = _getChildren ();
+		for (int i=0; i<children.length; i++) {
+			Control child = children [i];
+			Rectangle rect = child.getBounds ();
+			if (Math.min(x + width, rect.x + rect.width) > Math.max (x, rect.x) && 
+				Math.min(y + height, rect.y + rect.height) > Math.max (y, rect.y)) {
+					child.setLocation (rect.x + deltaX, rect.y + deltaY);
+			}
+		}
+	}
 	if (isFocus) caret.setFocus ();
 }
 
