@@ -1,14 +1,14 @@
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import java.util.*;
-
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
- 
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import java.util.*;
+
 /** 
  * This class stores and manages child items of a tree item.
  * It provides protocol to query the index of an item relative 
@@ -109,25 +109,20 @@ void deselectAll() {
 		treeItem.deselectAll();
 	}
 }
-/** 
- * Destroy all children of the receiver	
- */
-void disposeItem() {
+public void dispose() {
+	if (!isValidWidget ()) return;
 	Vector children = getChildren();
 	AbstractTreeItem child;
 	while (children.size() > 0) {		// TreeItem objects are removed from vector during dispose
 		child = (AbstractTreeItem) children.firstElement();
 		child.dispose();
 	}
-	doDispose();
-	super.disposeItem();
+	super.dispose();
 }
-/**
- * Subclasses should free resources here
- */
 void doDispose() {
 	setChildren(null);
 	visibleItemCount = 0;
+	super.doDispose();
 }
 /**
  * Answer the Vector containing the child items of the receiver.

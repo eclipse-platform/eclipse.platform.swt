@@ -1,18 +1,36 @@
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.*;
-import java.util.*;
-
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
  
-/**
- * This class display rows of items arranged in one or more 
- * columns. Items can be selected, columns can be resized.
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.*;
+import java.util.*;
+ 
+/** 
+ * Instances of this class implement a selectable user interface
+ * object that displays a list of images and strings and issue
+ * notificiation when selected.
+ * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>TableItem</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection, DefaultSelection</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 public /*final*/ class Table extends SelectableItemWidget {
 	private static final int COLUMN_RESIZE_OFFSET = 7;	// offset from the start and end of each 
@@ -41,9 +59,32 @@ public /*final*/ class Table extends SelectableItemWidget {
 														// Fix for 1FUSJY5
 	private int dotsWidth = -1;							// width of the static String dots (see above)
 /**
- * Create a new instance of Table.
- * @param parent - the parent window of the new instance
- * @param style - window style for the new instance
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
  */
 public Table(Composite parent, int style) {
 	// use NO_MERGE_PAINTS to avoid flashing during column and widget resize redraw
@@ -193,6 +234,7 @@ void columnMouseDoubleClick(Event event) {
 	TableItem hitItem;
 	TableColumn hitColumn = getColumnAtX(event.x);
 	Event columnDblClickEvent;
+	boolean isFullSelection = (getStyle() & SWT.FULL_SELECTION) != 0;
 
 	if (isFocusControl() == false) {
 		setFocus();									// focus proxy gets focus here because it's the first child of the receiver
@@ -201,7 +243,7 @@ void columnMouseDoubleClick(Event event) {
 		itemIndex = (event.y - getHeaderHeight()) / itemHeight + getTopIndex();
 		hitItem = (TableItem) getVisibleItem(itemIndex);
 		if (hitItem != null && 
-			hitColumn.getIndex() == TableColumn.FIRST) {
+			(hitColumn.getIndex() == TableColumn.FIRST || isFullSelection)) {
 			if (hitItem.isSelectionHit(event.x) == true) {
 				columnDblClickEvent = new Event();
 				columnDblClickEvent.item = hitItem;
@@ -255,10 +297,6 @@ void columnMouseMove(Event event) {
 		setColumnResizeCursor(false);
 	}
 }
-/**
- * Answer the size of the receiver needed to display all or 
- * the first 50 items whichever is less.
- */
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -302,10 +340,21 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	return size;
 }
 /**
- * Deselect the items identified by the indices stored 
- * in 'indices'.
- * A SWT.Selection event will not be sent.
- * @param indices - indices of the items to deselect
+ * Deselects the items at the given zero-relative indices in the receiver.
+ * If the item at the given zero-relative index in the receiver 
+ * is selected, it is deselected.  If the item at the index
+ * was not selected, it remains deselected. Indices that are out
+ * of range and duplicate indices are ignored.
+ *
+ * @param indices the array of indices for the items to deselect
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void deselect(int indices[]) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -326,9 +375,16 @@ public void deselect(int indices[]) {
 	}
 }
 /**
- * Deselect the item identified by 'index'.
- * A SWT.Selection event will not be sent.
- * @param index - index of the item to deselect
+ * Deselects the item at the given zero-relative index in the receiver.
+ * If the item at the index was already deselected, it remains
+ * deselected. Indices that are out of range are ignored.
+ *
+ * @param index the index of the item to deselect
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void deselect(int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -341,11 +397,19 @@ public void deselect(int index) {
 	}
 }
 /**
- * Deselect a range of items starting at index 'start' 
- * and stopping at index 'end'. Indices that are out of 
- * range are ignored. Indexing is zero based.
- * @param start - the start of the range
- * @param end - the end of the range
+ * Deselects the items at the given zero-relative indices in the receiver.
+ * If the item at the given zero-relative index in the receiver 
+ * is selected, it is deselected.  If the item at the index
+ * was not selected, it remains deselected.  The range of the
+ * indices is inclusive. Indices that are out of range are ignored.
+ *
+ * @param start the start index of the items to deselect
+ * @param end the end index of the items to deselect
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void deselect(int start, int end) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -363,7 +427,12 @@ public void deselect(int start, int end) {
 	}	
 }
 /**
- * Deselect all items of the receiver.
+ * Deselects all selected items in the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void deselectAll() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -540,7 +609,24 @@ void focusOut(Event event) {
 	notifyListeners(event.type, event);						// make sure that listeners of the table get the focus event, too
 }
 /**
- * Answer the TableColumn at 'index'.
+ * Returns the column at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ * If no <code>TableColumn</code>s were created by the programmer,
+ * this method will throw <code>ERROR_INVALID_RANGE</code> despite
+ * the fact that a single column of data may be visible in the table.
+ * This occurs when the programmer uses the table like a list, adding
+ * items but never creating a column.
+ *
+ * @param index the index of the column to return
+ * @return the column at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TableColumn getColumn(int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -584,7 +670,21 @@ TableColumn getColumnAtX(int xPosition) {
 	return hitColumn;
 }
 /**
- * Answer the number of columns in the receiver.
+ * Returns the number of columns contained in the receiver.
+ * If no <code>TableColumn</code>s were created by the programmer,
+ * this value is zero, despite the fact that visually, one column
+ * of items is may be visible. This occurs when the programmer uses
+ * the table like a list, adding items but never creating a column.
+ *
+ * @return the number of columns
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure</li>
+ * </ul>
  */
 public int getColumnCount() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -617,8 +717,24 @@ int getColumnResizeX() {
 	return columnResizeX;
 }
 /**
- * Answer an Array containing all columns of receiver except 
- * the fill column to the right of all content columns.
+ * Returns an array of <code>TableColumn</code>s which are the
+ * columns in the receiver. If no <code>TableColumn</code>s were
+ * created by the programmer, the array is empty, despite the fact
+ * that visually, one column of items may be visible. This occurs
+ * when the programmer uses the table like a list, adding items but
+ * never creating a column.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the items in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TableColumn [] getColumns() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -672,15 +788,13 @@ Control getFocusWindow() {
 	return focusProxy;
 }
 /**
-* Gets the width of a grid line.
-* <p>
-* @return the width of a grid line
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the width in pixels of a grid line.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getGridLineWidth () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -706,9 +820,21 @@ int getHeaderHeight() {
 	return height;
 }
 /**
- * Answer whether the header is visible.
- * @return 
- *	true = header is visible. false = header is not visible
+ * Returns <code>true</code> if the receiver's header is visible,
+ * and <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's header's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public boolean getHeaderVisible() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -746,8 +872,19 @@ int getIndex(SelectableItem item) {
 	return index;
 }
 /**
- * Answer the TableItem located at 'index' in the receiver.
- * @param index - location of the TableItem object to return
+ * Returns the item at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ *
+ * @param index the index of the item to return
+ * @return the item at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TableItem getItem(int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -760,8 +897,20 @@ public TableItem getItem(int index) {
 }
 
 /**
- * Return the item at the specified position in the widget
- * Return null if the position is outside the widget or in the header widget.
+ * Returns the item at the given point in the receiver
+ * or null if no such item exists. The point is in the
+ * coordinate system of the receiver.
+ *
+ * @param point the point used to locate the item
+ * @return the item at the given point
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TableItem getItem(Point point) {
 	int headerHeight = getHeaderHeight();
@@ -781,7 +930,14 @@ public TableItem getItem(Point point) {
 	return item;
 }
 /**
- * Answer the number of items in the receiver.
+ * Returns the number of items contained in the receiver.
+ *
+ * @return the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getItemCount() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -799,12 +955,15 @@ int getItemCountWhole() {
 	return clientAreaHeight / getItemHeight();
 }
 /**
- * Answer the height of an item in the receiver.
- * The item height is the greater of the item icon height and 
- * text height of the first item that has text or an image 
- * respectively.
- * Calculate a default item height based on the font height if
- * no item height has been calculated yet.
+ * Returns the height of the area which would be used to
+ * display <em>one</em> of the items in the receiver's.
+ *
+ * @return the height of one item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getItemHeight() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -819,7 +978,20 @@ int getItemPadding() {
 	return getGridLineWidth() + getDisplay().textHighlightThickness + 1;
 }
 /**
- * Answer all items of the receiver as an Array.
+ * Returns an array of <code>TableItem</code>s which are the items
+ * in the receiver. 
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the items in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TableItem [] getItems() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -837,10 +1009,21 @@ Vector getItemVector() {
 	return items;
 }
 /**
- * Answer whether the receiver is drawing grid lines.
- * @return
- *	true = receiver draws grid lines
- *	false = receiver does not draw grid lines
+ * Returns <code>true</code> if the receiver's lines are visible,
+ * and <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the visibility state of the lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public boolean getLinesVisible() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -940,9 +1123,20 @@ int [] getResizeRedrawX(int columnIndex, int columnWidth) {
 	return resizeRedrawX;
 }
 /**
- * Answer the selected items of the receiver.
- * @return an Array of TableItems containing the selected items.
- *	An empty Array if no items are selected.
+ * Returns an array of <code>TableItem</code>s that are currently
+ * selected in the receiver. An empty array indicates that no
+ * items are selected.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its selection, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ * @return an array representing the selection
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TableItem [] getSelection() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -956,7 +1150,14 @@ public TableItem [] getSelection() {
 }
 
 /**
- * Answer the number of selected items in the receiver.
+ * Returns the number of selected items contained in the receiver.
+ *
+ * @return the number of selected items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getSelectionCount() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -986,7 +1187,15 @@ Point getFullSelectionExtent(TableItem item) {
 	return selectionExtent;
 }
 /**
- * Answer the index of the first selected item of the receiver.
+ * Returns the zero-relative index of the item which is currently
+ * selected in the receiver, or -1 if no item is selected.
+ *
+ * @return the index of the selected item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getSelectionIndex() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -999,9 +1208,19 @@ public int getSelectionIndex() {
 	return index;
 }
 /**
- * Answer the indices of the selected items of the receiver.
- * @return an Array containing the indices of the selected items.
- *	An empty Array if no items are selected.
+ * Returns the zero-relative indices of the items which are currently
+ * selected in the receiver.  The array is empty if no items are selected.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its selection, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ * @return the array of indices of the selected items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int [] getSelectionIndices() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1015,10 +1234,16 @@ public int [] getSelectionIndices() {
 	return indices;
 }
 /**
- * Answer the index of the first visible item in the receiver's 
- * client area.
- * @return 0-based index of the first visible item in the  
- * 	receiver's client area.
+ * Returns the zero-relative index of the item which is currently
+ * at the top of the receiver. This index can change when items are
+ * scrolled or new items are added or removed.
+ *
+ * @return the index of the top item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getTopIndex() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1117,9 +1342,6 @@ void handleEvents(Event event) {
 boolean hasFirstColumnImage() {
 	return firstColumnImage;
 }
-/**
- * Answer whether the receiver has the input focus.
- */
 public boolean isFocusControl() {
 	return hasColumnFocus;
 }
@@ -1159,8 +1381,21 @@ void headerMouseMove(Event event) {
 	}
 }
 /**
- * Answer the index of 'column' in the receiver or -1 if 'column' 
- * does not exist in the receiver.
+ * Searches the receiver's list starting at the first column
+ * (index 0) until a column is found that is equal to the 
+ * argument, and returns the index of that column. If no column
+ * is found, returns -1.
+ *
+ * @param column the search column
+ * @return the index of the column
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int indexOf(TableColumn column) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1172,8 +1407,21 @@ public int indexOf(TableColumn column) {
 	return internalGetColumnVector().indexOf(column);
 }
 /**
- * Answer the index of 'item' in the receiver or -1 if 'item' 
- * does not exist in the receiver.
+ * Searches the receiver's list starting at the first item
+ * (index 0) until an item is found that is equal to the 
+ * argument, and returns the index of that item. If no item
+ * is found, returns -1.
+ *
+ * @param item the search item
+ * @return the index of the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int indexOf(TableItem item) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1191,7 +1439,7 @@ void initialize() {
 	columns = new Vector();
 	setItemVector(new Vector());
 	focusProxy = new Button(this, SWT.NULL);
-	focusProxy.setBounds(-100, -100, 0, 0);				// make the focus proxy invisible
+	focusProxy.setBounds(0, 0, 0, 0);				// make the focus proxy invisible
 	tableHeader = new Header(this);
 	tableHeader.setVisible(false);					// SWT table header is invisible by default, too
 	fillColumn = TableColumn.createFillColumn(this);
@@ -1353,10 +1601,17 @@ boolean isColumnResizeStarted() {
 	return (getResizeColumn() != null);
 }
 /**
- * Answer whether the item identified by 'index' is selected.
- * @return 
- *	true=item identified by 'index' is selected
- *	false=item identified by 'index' is not selected.
+ * Returns <code>true</code> if the item is selected,
+ * and <code>false</code> otherwise.  Indices out of
+ * range are ignored.
+ *
+ * @param index the index of the item
+ * @return the visibility state of the item at the index
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public boolean isSelected(int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1567,9 +1822,21 @@ void reindexColumns(int startIndex) {
 	}
 }
 /**
- * Remove the items identified by the indices stored in 
- * 'indices' from the receiver.
- * @param indices - indices of the items to dispose
+ * Removes the items from the receiver's list at the given
+ * zero-relative indices.
+ *
+ * @param indices the array of indices of the items
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
+ * </ul>
  */
 public void remove(int indices[]) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1598,8 +1865,21 @@ public void remove(int indices[]) {
 	}
 }
 /**
- * Remove the item identified by 'index'.
- * @param index - index of the item to dispose
+ * Removes the item from the receiver at the given
+ * zero-relative index.
+ *
+ * @param index the index for the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
+ * </ul>
  */
 public void remove(int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1614,12 +1894,23 @@ public void remove(int index) {
 	}
 }
 /**
- * Remove a range of items starting at index 'start' and 
- * stopping at index 'end'. 
- * This operation will fail when the index is out of range 
- * Indexing is zero based.
- * @param start - the start of the range
- * @param end - the end of the range
+ * Removes the items from the receiver which are
+ * between the given zero-relative start and end 
+ * indices (inclusive).
+ *
+ * @param start the start of the range
+ * @param end the end of the range
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if either the start or end are not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
+ * </ul>
  */
 public void remove(int start, int end) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1637,7 +1928,12 @@ public void remove(int start, int end) {
 	}
 }
 /**
- * Remove all items of the receiver.
+ * Removes all of the items from the receiver.
+ * <p>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void removeAll() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1739,13 +2035,23 @@ void removeItem(TableItem item) {
 		}			
 	}
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver's selection changes.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
 public void removeSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1908,10 +2214,21 @@ void scrollVerticalRemovedItem(int index) {
 		clientArea.width, clientArea.height, true);
 }
 /**
- * Select the items identified by the indices stored in 
- * 'indices'.
- * A SWT.Selection event will not be sent.
- * @param indices - indices of the items to select
+ * Selects the items at the given zero-relative indices in the receiver.
+ * If the item at the given zero-relative index in the receiver 
+ * is not selected, it is selected.  If the item at the index
+ * was selected, it remains selected. Indices that are out
+ * of range and duplicate indices are ignored.
+ *
+ * @param indices the array of indices for the items to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void select(int indices[]) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1938,9 +2255,16 @@ public void select(int indices[]) {
 	}
 }
 /**
- * Select the item identified by 'index'.
- * A SWT.Selection event will not be sent.
- * @param index - index of the item to select
+ * Selects the item at the given zero-relative index in the receiver. 
+ * If the item at the index was already selected, it remains
+ * selected. Indices that are out of range are ignored.
+ *
+ * @param index the index of the item to select
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void select(int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1956,11 +2280,18 @@ public void select(int index) {
 	}
 }
 /**
- * Select a range of items starting at index 'start' and 
- * stopping at index 'end'. Indices that are out of range 
- * are ignored. Indexing is zero based.
- * @param start - the start of the range
- * @param end - the end of the range
+ * Selects the items at the given zero-relative indices in the receiver.
+ * If the item at the index was already selected, it remains
+ * selected. The range of the indices is inclusive. Indices that are
+ * out of range are ignored.
+ *
+ * @param start the start of the range
+ * @param end the end of the range
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void select(int start, int end) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1989,10 +2320,12 @@ public void select(int start, int end) {
 	}
 }
 /**
- * Select all items of the receiver if it is in multiple 
- * selection mode.
- * A SWT.Selection event will not be sent.
- * Do nothing if the receiver is in single selection mode.
+ * Selects all the items in the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void selectAll() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -2081,10 +2414,6 @@ void setFirstColumnWidth(TableItem item) {
 		}
 	}
 }
-/**
- * The font is changing. Trigger a recalculation of the item 
- * height using all items of the receiver.
- */
 public void setFont(Font font) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -2104,9 +2433,20 @@ public void setFont(Font font) {
 	getHeader().setFont(font);
 }
 /**
- * Set whether or not the header is visible.
- * @param headerVisible - 
- *	true = header is visible. false = header is not visible
+ * Marks the receiver's header as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise. 
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setHeaderVisible(boolean headerVisible) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -2132,11 +2472,20 @@ void setItemVector(Vector newVector) {
 	items = newVector;
 }
 /**
- * Set whether the receiver is drawing grid lines to 
- * 'drawGridLines'.
- * @param drawGridLines - 
- *	true = receiver draws grid lines
- *	false = receiver does not draw grid lines
+ * Marks the receiver's lines as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise. 
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setLinesVisible(boolean drawGridLines) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -2147,13 +2496,6 @@ public void setLinesVisible(boolean drawGridLines) {
 		redraw();
 	}
 }
-/**
- * Set whether the receiver and its children should be
- * drawn or not.
- * @param redraw -
- *	true = redraw the receiver and its children
- *	false = do not draw the receiver or its children
- */
 public void setRedraw(boolean redraw) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -2171,21 +2513,22 @@ void setResizeColumn(TableColumn column) {
 	resizeColumn = column;
 }
 /**
-* Sets the selection.
-* <p>
-* The previous selection is cleared
-* before new items are selected.
-*
-* @see Table#deselectAll()
-* @see Table#select(int [])
-*
-* @param indices the indices of the items
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Selects the items at the given zero-relative indices in the receiver. 
+ * The current selected is first cleared, then the new items are selected.
+ *
+ * @param indices the indices of the items to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Table#deselectAll()
+ * @see Table#select(int[])
+ */
 public void setSelection(int [] indices) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -2205,10 +2548,22 @@ public void setSelection(int [] indices) {
 	select(indices);
 }
 /**
- * Select the items stored in 'items'. 
- * A SWT.Selection event is not going to be sent.
- * @param selectionItems - Array containing the items that should 
- *	be selected
+ * Sets the receiver's selection to be the given array of items.
+ * The current selected is first cleared, then the new items are
+ * selected.
+ *
+ * @param items the array of items
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Table#deselectAll()
+ * @see Table#select(int)
  */
 public void setSelection(TableItem selectionItems[]) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -2220,9 +2575,18 @@ public void setSelection(TableItem selectionItems[]) {
 	setSelectableSelection(selectionItems);
 }
 /**
- * Set the selection to the item identified by 'index'.
- * SWT.Selection events are not going to be sent.
- * @param index - index of the item that should be selected
+ * Selects the item at the given zero-relative index in the receiver. 
+ * The current selected is first cleared, then the new item is selected.
+ *
+ * @param index the index of the item to select
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Table#deselectAll()
+ * @see Table#select(int)
  */
 public void setSelection(int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -2232,11 +2596,19 @@ public void setSelection(int index) {
 	select(index);
 }
 /**
- * Set the selection to a range of items starting at index 
- * 'start' and stopping at index 'end'. Indices that are out 
- * of range are ignored. Indexing is zero based.
- * @param start - the start of the range
- * @param end - the end of the range
+ * Selects the items at the given zero-relative indices in the receiver. 
+ * The current selected if first cleared, then the new items are selected.
+ *
+ * @param start the start index of the items to select
+ * @param end the end index of the items to select
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Table#deselectAll()
+ * @see Table#select(int,int)
  */
 public void setSelection(int start, int end) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -2253,13 +2625,16 @@ public void setSelection(int start, int end) {
 	select(start, end);
 }
 /**
- * Scroll the item at position 'index' to the top of the receiver.
- * If the scroll operation would result in empty space being 
- * displayed below the last item of the receiver, the last item is 
- * scrolled into view. This results in the specified item not being 
- * displayed at the top of the receiver but after the top item.
- * @param index - 0-based index of the item that should be 
- *	displayed at the top of the receiver's client area.
+ * Sets the zero-relative index of the item which is currently
+ * at the top of the receiver. This index can change when items
+ * are scrolled or new items are added and removed.
+ *
+ * @param index the index of the top item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setTopIndex(int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -2289,10 +2664,21 @@ void setTopIndexNoScroll(int index, boolean adjustScrollbar) {
 	moveColumnsVertical();
 }
 /**
- * Make 'item' visible by scrolling it into the receiver's 
- * client area if necessary.
- * @param item - the item that should be made visible to the
- *	user.
+ * Shows the item.  If the item is already showing in the receiver,
+ * this method simply returns.  Otherwise, the items are scrolled until
+ * the item is visible.
+ *
+ * @param item the item to be shown
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Table#showSelection()
  */
 public void showItem(TableItem item) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -2304,10 +2690,19 @@ public void showItem(TableItem item) {
 	showSelectableItem(item);
 }
 /**
- * Show the selection. If there is no selection or the 
- * selection is already visible, this method does nothing. 
- * If the selection is not visible, the top index of the 
- * widget is changed such that the selection becomes visible.
+ * Shows the selection.  If the selection is already showing in the receiver,
+ * this method simply returns.  Otherwise, the items are scrolled until
+ * the selection is visible.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Table#showItem(TableItem)
  */
 public void showSelection() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);

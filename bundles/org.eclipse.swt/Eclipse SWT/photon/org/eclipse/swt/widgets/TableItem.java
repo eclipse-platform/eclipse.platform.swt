@@ -1,18 +1,26 @@
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import java.util.*;
-
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
  
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import java.util.*;
+
 /**
- * A table item is a selectable user interface object
+ * Instances of this class represent a selectable user interface object
  * that represents an item in a table.
- * Table items can consist of multiple columns called sub items.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 public /*final*/ class TableItem extends SelectableItem {
 	private static final int FIRST_COLUMN_IMAGE_INDENT = 2;	// Space in front of image - first column only
@@ -87,17 +95,20 @@ static Table checkNull(Table table) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
-/**
- * The receiver is destroyed. Remove it from its parent widget.
- */
-void disposeItem() {
-	getParent().removeItem(this);
+public void dispose() {
+	if (!isValidWidget ()) return;
+	Table parent = getParent();
+	parent.removeItem(this);
+	super.dispose();
+}
+void doDispose() {
 	dataLabels = null;
 	trimmedLabels = null;
 	images = null;
 	selectionExtent = null;
-	super.disposeItem();
+	super.doDispose();
 }
+
 /**
  * Draw the image of the receiver for column 'index' at
  * 'destinationPosition' using 'gc'.
@@ -170,15 +181,17 @@ void drawText(String label, GC gc, Point position, int index) {
 }
 
 /**
-* Gets the item bounds at an index
-* <p>
-* @return the item bounds
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent at a column in the table.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding column rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Rectangle getBounds(int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -216,9 +229,16 @@ public Rectangle getBounds(int index) {
 	return itemBounds;
 }
 /**
- * Return whether or not the receiver is checked.
- * Always return false if the parent of the receiver does not
- * have the CHECK style.
+ * Returns <code>true</code> if the receiver is checked,
+ * and false otherwise.  When the parent does not have
+ * the <code>CHECK style, return false.
+ *
+ * @return the checked state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public boolean getChecked() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -242,9 +262,6 @@ int getCheckboxXPosition() {
 Vector getDataLabels() {
 	return dataLabels;
 }
-/**
- * Answer the display of the receiver's parent widget.
- */
 public Display getDisplay() {
 	return super.getDisplay();
 }
@@ -279,14 +296,16 @@ int getDotStartX(int columnIndex, int columnWidth) {
 	return dotStartX;
 }
 /**
- * Gets the grayed state.
- * <p>
- * @return the item grayed state.
+ * Returns <code>true</code> if the receiver is grayed,
+ * and false otherwise. When the parent does not have
+ * the <code>CHECK style, return false.
  *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
+ * @return the grayed state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public boolean getGrayed() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -294,9 +313,6 @@ public boolean getGrayed() {
 	
 	return super.getGrayed();
 }
-/**
- * Answer the item image of the first column.
- */
 public Image getImage() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -304,9 +320,11 @@ public Image getImage() {
 	return getImage(0);
 }
 /**
- * Answer the item image of the column identified by 'columnIndex' or 
+ * Returns the item image of the column identified by 'columnIndex' or 
  * null if no image has been set for that column.
- * @param columnIndex - the column whose image should be answered
+ * 
+ * @param columnIndex - the column whose image should be returned
+ * @return the item image
  */
 public Image getImage(int columnIndex) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -321,15 +339,18 @@ public Image getImage(int columnIndex) {
 	return image;
 }
 /**
-* Gets the image bounds at an index
-* <p>
-* @return the item icon's bounds
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns a rectangle describing the size and location
+ * relative to its parent of an image at a column in the
+ * table.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding image rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Rectangle getImageBounds(int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -353,15 +374,15 @@ public Rectangle getImageBounds(int index) {
 	return imageBounds;
 }
 /**
-* Gets the image indent.
-* <p>
-* @return the indent
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Gets the image indent.
+ *
+ * @return the indent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getImageIndent() {
 	if (isValidThread() == false) error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (isValidWidget() == false) error(SWT.ERROR_WIDGET_DISPOSED);
@@ -462,7 +483,14 @@ int getMaxTextWidth(int columnIndex, int columnWidth) {
 	return columnWidth - itemWidth;
 }
 /**
- * Answer the parent widget of the receiver.
+ * Returns the receiver's parent, which must be a <code>Table</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Table getParent() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -510,9 +538,6 @@ Point getSelectionExtent() {
 int getSelectionX() {
 	return getImageStopX(TableColumn.FIRST) + getParent().getHorizontalOffset();
 }
-/**
- * Answer the item text of the first column.
- */
 public String getText() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -520,10 +545,11 @@ public String getText() {
 	return getText(0);
 }
 /**
- * Answer the item tezt of the column identified by 'columnIndex'. 
- * Answer null if no text has been set for that column.
- * @param columnIndex - the column whose text should be answered.
- *	null if no text has been set for that column.
+ * Returns the item tezt of the column identified by 'columnIndex',
+ * or null if no text has been set for that column.
+ * 
+ * @param columnIndex - the column whose text should be returned
+ *	@return the item text or null if no text has been set for that column.
  */
 public String getText(int columnIndex) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -653,7 +679,7 @@ void insertColumn(TableColumn column) {
 }
 /**
  * Sets the image at an index.
- * <p>
+ *
  * @param image the new image (or null)
  *
  * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
@@ -681,7 +707,6 @@ void internalSetImage(int columnIndex, Image image) {
 }
 /**
 * Sets the widget text.
-* <p>
 *
 * The widget text for an item is the label of the
 * item or the label of the text specified by a column
@@ -846,8 +871,18 @@ void reset(int index) {
 	}
 }
 /**
-* Warning: API under construction.
-*/
+ * Sets the image for multiple columns in the Table. 
+ * 
+ * @param strings the array of new images
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setImage(Image [] images) {
 	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget()) error(SWT.ERROR_WIDGET_DISPOSED);
@@ -863,14 +898,18 @@ public void setImage(Image [] images) {
 	}
 }
 /**
- * Sets the image at an index.
- * <p>
- * @param image the new image (or null)
+ * Sets the receiver's image at a column.
  *
- * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
- *	when called from the wrong thread
- * @exception SWTError(ERROR_WIDGET_DISPOSED)
- *	when the widget has been disposed
+ * @param index the column index
+ * @param string the new image
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setImage(int columnIndex, Image image) {
 	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -880,11 +919,6 @@ public void setImage(int columnIndex, Image image) {
 		internalSetImage(columnIndex, image);
 	}
 }
-/**
- * Set the item image of the first column to 'image'.
- * @param image - the item image of the first column. Image 
- *	will be removed if this is null.
- */
 public void setImage(Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -892,15 +926,16 @@ public void setImage(Image image) {
 	setImage(0, image);
 }
 /**
-* Sets the image indent.
-* <p>
-* @param indent the new indent
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the image indent.
+ *
+ * @param indent the new indent
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setImageIndent(int indent) {
 	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget()) error(SWT.ERROR_WIDGET_DISPOSED);
@@ -917,7 +952,17 @@ public void setImageIndent(int indent) {
 	}
 }
 /**
- * Warning: API under construction.
+ * Sets the text for multiple columns in the table. 
+ * 
+ * @param strings the array of new strings
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setText(String [] strings) {
 	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -937,23 +982,19 @@ public void setText(String [] strings) {
 	}
 }
 /**
-* Sets the widget text.
-* <p>
-*
-* The widget text for an item is the label of the
-* item or the label of the text specified by a column
-* number.
-*
-* @param index the column number
-* @param text the new text
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when string is null
-*/
+ * Sets the receiver's text at a column
+ *
+ * @param index the column index
+ * @param string the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setText (int columnIndex, String string) {
 	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget()) error(SWT.ERROR_WIDGET_DISPOSED);
@@ -965,11 +1006,6 @@ public void setText (int columnIndex, String string) {
 		internalSetText(columnIndex, string);
 	}
 }
-/**
- * Set the item text of the first column to 'text'.
- * @param text - the item text of the first column. May be null if the 
- *	text label should be removed.
- */
 public void setText(String text) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -997,8 +1033,14 @@ void setTrimmedText(String label, int columnIndex) {
 	}
 }
 /**
- * Set the checked state to 'checked' if the parent of the 
- * receiver has the CHECK style.
+ * Sets the checked state of the receiver.
+ *
+ * @param checked the new checked state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setChecked(boolean checked) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1007,14 +1049,14 @@ public void setChecked(boolean checked) {
 	super.setChecked(checked);
 }
 /**
- * Sets the grayed state.
- * <p>
- * @param grayed the new grayed state.
+ * Sets the grayed state of the receiver.
  *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
+ * @param checked the new grayed state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setGrayed (boolean grayed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);

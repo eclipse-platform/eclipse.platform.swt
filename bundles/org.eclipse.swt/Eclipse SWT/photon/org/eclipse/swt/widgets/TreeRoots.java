@@ -1,12 +1,12 @@
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.graphics.*;
-import java.util.*;
-
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
+ 
+import org.eclipse.swt.graphics.*;
+import java.util.*;
  
 /** 
  * This class is used to store tree root items.
@@ -41,16 +41,15 @@ void calculateVisibleItemCount() {
  * of this item.
  */
 void calculateVisibleItemCountParent() {}
-/** 
- * Destroy all children of the receiver	
- */
-void disposeItem() {
+
+public void dispose() {
+	if (!isValidWidget ()) return;
 	Tree parent = (Tree) getSelectableParent();
 	
 	// all tree items are removed so we don't need to do
 	// time consuming screen updates for each removed item
 	parent.setRemovingAll(true);
-	super.disposeItem();
+	super.dispose();
 	parent.setRemovingAll(false);
 }
 /**
