@@ -101,6 +101,10 @@ public void addSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 }
 
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
 /**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
