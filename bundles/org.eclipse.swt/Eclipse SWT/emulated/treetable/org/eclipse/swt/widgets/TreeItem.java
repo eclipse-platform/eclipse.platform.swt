@@ -279,7 +279,8 @@ public Rectangle getBounds () {
 	checkWidget ();
 	if (!isAvailable()) return new Rectangle (0, 0, 0, 0);
 	
-	int columnCount = parent.columns.length;
+	TreeColumn[] columns = parent.columns;
+	int columnCount = columns.length;
 	int focusX = getFocusX ();
 	
 	/*
@@ -297,7 +298,7 @@ public Rectangle getBounds () {
 	 * If there are columns then this runs from the beginning of the column 0
 	 * text to the end of the last column.
 	 */
-	TreeColumn lastColumn = parent.columns [columnCount - 1];
+	TreeColumn lastColumn = columns [columnCount - 1];
 	return new Rectangle (
 		focusX,
 		parent.getItemY (this),
@@ -308,8 +309,9 @@ public Rectangle getBounds (int columnIndex) {
 	checkWidget ();
 	if (!isAvailable()) return new Rectangle (0, 0, 0, 0);
 
-	int columnCount = parent.columns.length;
-	int validColumnCount = Math.max (1, parent.columns.length);
+	TreeColumn[] columns = parent.columns;
+	int columnCount = columns.length;
+	int validColumnCount = Math.max (1, columnCount);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) {
 		return new Rectangle (0, 0, 0, 0);
 	}
@@ -323,7 +325,7 @@ public Rectangle getBounds (int columnIndex) {
 		int width = getFocusX () + getTextPaintWidth (0) - x;
 		return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight);
 	}
-	TreeColumn column = parent.columns [columnIndex];
+	TreeColumn column = columns [columnIndex];
 	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.itemHeight);
 }
 Rectangle getCheckboxBounds () {
@@ -408,10 +410,11 @@ Rectangle getExpanderBounds () {
 Rectangle getFocusBounds () {
 	int x = getFocusX ();
 	int width;
-	if (parent.columns.length == 0) {
+	TreeColumn[] columns = parent.columns;
+	if (columns.length == 0) {
 		width = getTextPaintWidth (0) - 1;
 	} else {
-		width = parent.columns [0].width - parent.horizontalOffset - x - 2;
+		width = columns [0].width - parent.horizontalOffset - x - 2;
 	}
 	return new Rectangle (x, parent.getItemY (this) + 1, width, parent.itemHeight - 1);
 }
@@ -488,10 +491,11 @@ Point[] getHconnectorEndpoints () {
 Rectangle getHitBounds () {
 	int contentX = getContentX (0);
 	int width = 0;
-	if (parent.columns.length == 0) {
+	TreeColumn[] columns = parent.columns;
+	if (columns.length == 0) {
 		width = getFocusX () + getTextPaintWidth (0) - contentX; 
 	} else {
-		width = parent.columns [0].width - parent.horizontalOffset - contentX;
+		width = columns [0].width - parent.horizontalOffset - contentX;
 	}
 	return new Rectangle (contentX, parent.getItemY (this), width, parent.itemHeight);
 }
@@ -1074,7 +1078,8 @@ public void setImage (int columnIndex, Image value) {
 	if (value != null && value.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int validColumnCount = Math.max (1, parent.columns.length);
+	TreeColumn[] columns = parent.columns;
+	int validColumnCount = Math.max (1, columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (value == images [columnIndex]) return;
 	if (value != null && value.equals (images [columnIndex])) return;
@@ -1107,12 +1112,12 @@ public void setImage (int columnIndex, Image value) {
 	if (columnIndex == 0 && parent.col0ImageWidth == 0) {
 		parent.col0ImageWidth = value.getBounds ().width;
 		/* redraw the column */
-		if (parent.columns.length == 0) {
+		if (columns.length == 0) {
 			parent.redraw ();
 		} else {
 			parent.redraw (
 				0, 0,
-				parent.columns [0].width,
+				columns [0].width,
 				parent.getClientArea ().height,
 				true);
 		}

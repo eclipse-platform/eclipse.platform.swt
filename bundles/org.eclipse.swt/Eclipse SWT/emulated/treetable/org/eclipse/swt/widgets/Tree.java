@@ -283,6 +283,11 @@ void destroyItem (TreeColumn column) {
 			redraw ();
 		}
 	}
+	for (int i = index; i < columns.length; i++) {
+		Event event = new Event ();
+		event.widget = columns [i];
+		columns [i].sendEvent (SWT.Move, event);
+	}
 }
 /*
  * Allows the Tree to update internal structures it has that may contain the
@@ -1515,9 +1520,6 @@ void headerDoMouseUp (Event event) {
 	if (newWidth != resizeColumn.width) {
 		setCursor (null);
 		updateColumnWidth (resizeColumn, newWidth);
-		Event newEvent = new Event ();
-		event.widget = resizeColumn;
-		sendEvent (SWT.Resize, newEvent);
 	} else {
 		/* remove the resize line */
 		GC gc = new GC (this);
@@ -2079,6 +2081,14 @@ void updateColumnWidth (TreeColumn column, int width) {
 	redraw (x, 0, bounds.width - x, bounds.height, false);
 	if (getHeaderVisible ()) {
 		header.redraw (x, 0, bounds.width - x, getHeaderHeight (), false);
+	}
+	Event event = new Event ();
+	event.widget = column;
+	column.sendEvent (SWT.Resize, event);
+	for (int i = column.getIndex () + 1; i < columns.length; i++) {
+		event = new Event ();
+		event.widget = columns [i];
+		columns [i].sendEvent (SWT.Move, event);
 	}
 }
 /*
