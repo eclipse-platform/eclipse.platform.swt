@@ -13,7 +13,6 @@ package org.eclipse.swt.tools.internal;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
