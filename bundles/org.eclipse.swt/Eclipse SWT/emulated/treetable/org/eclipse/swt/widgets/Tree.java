@@ -615,6 +615,7 @@ void doMouseDoubleClick (Event event) {
 	sendEvent (SWT.DefaultSelection, newEvent);
 }
 void doMouseDown (Event event) {
+	if (!isFocusControl ()) setFocus ();
 	int index = (event.y - getHeaderHeight ()) / itemHeight + topIndex;
 	if (!(0 <= index && index < availableItems.length)) return;	/* not on an available item */
 	TreeItem selectedItem = availableItems[index];
