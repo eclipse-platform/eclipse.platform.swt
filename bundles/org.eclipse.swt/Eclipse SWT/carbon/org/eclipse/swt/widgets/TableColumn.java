@@ -438,7 +438,6 @@ public void setImage (Image image) {
  */
 public void setMoveable (boolean moveable) {
 	checkWidget ();
-	if (true) return;
 	int [] flags = new int [1];
 	OS.GetDataBrowserPropertyFlags (parent.handle, id, flags);
 	if (moveable) {
