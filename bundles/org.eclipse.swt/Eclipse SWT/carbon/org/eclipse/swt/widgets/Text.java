@@ -869,14 +869,16 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	return OS.noErr;
 }
 
-int kEventRawKey (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventRawKey (nextHandler, theEvent, userData);
+int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	int [] keyboardEvent = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
 	int [] modifiers = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
 	if (modifiers [0] == OS.cmdKey) {
 		int [] keyCode = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+		OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 		switch (keyCode [0]) {
 			case 7: /* X */
 				cut ();
@@ -891,7 +893,7 @@ int kEventRawKey (int nextHandler, int theEvent, int userData) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		int [] keyCode = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+		OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 		switch (keyCode [0]) {
 			/*
 			* Feature in the Macintosh.  Tab and Return characters are inserted into a

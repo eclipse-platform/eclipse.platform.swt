@@ -920,6 +920,10 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -1443,9 +1447,17 @@ void setKeyState (Event event, int theEvent) {
 		case SWT.DEL:
 		case SWT.ESC:
 		case SWT.TAB: {
-			byte [] charCode = new byte [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamKeyMacCharCodes, OS.typeChar, null, charCode.length, null, charCode);
-			event.character = (char) charCode [0];
+			int [] length = new int [1];
+			int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
+			if (status == OS.noErr && length [0] > 0) {
+				char [] chars = new char [1];
+				OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 2, null, chars);
+				event.character = chars [0];
+			} else {
+				byte [] charCode = new byte [1];
+				OS.GetEventParameter (theEvent, OS.kEventParamKeyMacCharCodes, OS.typeChar, null, charCode.length, null, charCode);
+				event.character = (char) charCode [0];
+			}
 			break;
 		}
 		case SWT.LF:
@@ -1488,6 +1500,14 @@ void setZOrder (int control, int otheControl, boolean above) {
 		OS.DisposeRgn (oldRgn);
 		OS.DisposeRgn (newRgn);
 	}
+}
+
+int textInputProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventKind) {
+		case OS.kEventTextInputUnicodeForKeyEvent: return kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
 }
 
 RGBColor toRGBColor (float [] color) {

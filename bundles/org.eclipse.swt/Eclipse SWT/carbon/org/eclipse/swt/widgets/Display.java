@@ -108,11 +108,11 @@ public class Display extends Device {
 	Callback actionCallback, appleEventCallback, commandCallback, controlCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback;
 	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback;
-	Callback mouseCallback, trackingCallback, windowCallback, colorCallback;
+	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback;
 	int actionProc, appleEventProc, commandProc, controlProc;
 	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc;
-	int mouseProc, trackingProc, windowProc, colorProc;
+	int mouseProc, trackingProc, windowProc, colorProc, textInputProc;
 	EventTable eventTable, filterTable;
 	int queue, lastModifiers;
 	
@@ -1433,7 +1433,10 @@ void initializeCallbacks () {
 	colorCallback = new Callback (this, "colorProc", 4);
 	colorProc = colorCallback.getAddress ();
 	if (colorProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		
+	textInputCallback = new Callback (this, "textInputProc", 3);
+	textInputProc = textInputCallback.getAddress ();
+	if (textInputProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
 	/* Install Event Handlers */
 	int[] mask1 = new int[] {
 		OS.kEventClassCommand, OS.kEventProcessCommand,
@@ -1455,13 +1458,17 @@ void initializeCallbacks () {
 	};
 	OS.InstallEventHandler (appTarget, appleEventProc, mask3.length / 2, mask3, 0, null);
 	int [] mask4 = new int[] {
-		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
+//		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
 		OS.kEventClassKeyboard, OS.kEventRawKeyModifiersChanged,
-		OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
+//		OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
 		OS.kEventClassKeyboard, OS.kEventRawKeyUp,
 	};
 	int focusTarget = OS.GetUserFocusEventTarget ();
 	OS.InstallEventHandler (focusTarget, keyboardProc, mask4.length / 2, mask4, 0, null);
+	int [] mask5 = new int[] {
+		OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent,
+	};
+	OS.InstallEventHandler (focusTarget, textInputProc, mask5.length / 2, mask5, 0, null);
 }
 
 void initializeInsets () {
@@ -1883,14 +1890,17 @@ void releaseDisplay () {
 	trackingCallback.dispose ();
 	windowCallback.dispose ();
 	colorCallback.dispose ();
+	textInputCallback.dispose ();
 	actionCallback = appleEventCallback = caretCallback = commandCallback = null;
 	controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
 	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = null;
 	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = null;
+	textInputCallback = null;
 	actionProc = appleEventProc = caretProc = commandProc = 0;
 	controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
+	textInputProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
 	timerProc = 0;
@@ -2527,6 +2537,22 @@ public boolean sleep () {
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.syncExec (runnable);
+}
+
+int textInputProc (int nextHandler, int theEvent, int userData) {
+	Widget widget = WidgetTable.get (userData);
+	if (widget == null) {
+		int theWindow = OS.GetUserFocusWindow ();
+		if (theWindow == 0) return OS.eventNotHandledErr;
+		int [] theControl = new int [1];
+		OS.GetKeyboardFocus (theWindow, theControl);
+		if (theControl [0] == 0) {
+			OS.GetRootControl (theWindow, theControl);
+		}
+		widget = WidgetTable.get (theControl [0]);
+	}
+	if (widget != null) return widget.textInputProc (nextHandler, theEvent, userData);
+	return OS.eventNotHandledErr;
 }
 
 /**

@@ -1367,20 +1367,6 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventRawKey (int nextHandler, int theEvent, int userData) {
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	if (translateTraversal (keyCode [0], theEvent)) return OS.noErr;	
-	if (keyCode [0] == 114) { /* Help */
-		Control control = this;
-		while (control != null) {
-			if (control.hooks (SWT.Help)) {
-				control.postEvent (SWT.Help);
-				break;
-			}
-			control = control.parent;
-		}
-	}
-	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
 	return OS.eventNotHandledErr;
 }
 
@@ -1408,6 +1394,26 @@ int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
 
 int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
 	if (!sendKeyEvent (SWT.KeyUp, theEvent)) return OS.noErr;
+	return OS.eventNotHandledErr;
+}
+
+int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
+	int [] keyboardEvent = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	if (translateTraversal (keyCode [0], keyboardEvent [0])) return OS.noErr;	
+	if (keyCode [0] == 114) { /* Help */
+		Control control = this;
+		while (control != null) {
+			if (control.hooks (SWT.Help)) {
+				control.postEvent (SWT.Help);
+				break;
+			}
+			control = control.parent;
+		}
+	}
+	if (!sendKeyEvent (SWT.KeyDown, keyboardEvent [0])) return OS.noErr;
 	return OS.eventNotHandledErr;
 }
 
@@ -1840,10 +1846,25 @@ void sendFocusEvent (boolean focusIn, boolean post) {
 }
 
 boolean sendKeyEvent (int type, int theEvent) {
-	Event event = new Event ();
-	event.type = type;
-	setKeyState (event, theEvent);
-	return sendKeyEvent (type, event);
+	int [] length = new int [1];
+	int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
+	if (status == OS.noErr && length [0] > 2) {
+		char [] chars = new char [length [0] / 2];
+		OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, chars.length * 2, null, chars);
+		for (int i = 0; i < chars.length; i++) {
+			Event event = new Event ();
+			event.type = type;
+			event.character = chars [i];
+			setInputState(event, theEvent);
+			sendKeyEvent (type, event);
+		}
+		return true;
+	} else {
+		Event event = new Event ();
+		event.type = type;
+		setKeyState (event, theEvent);
+		return sendKeyEvent (type, event);
+	}
 }
 
 boolean sendKeyEvent (int type, Event event) {

@@ -1230,11 +1230,13 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-int kEventRawKey (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventRawKey (nextHandler, theEvent, userData);
+int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	int [] keyboardEvent = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
 	int [] keyCode = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	switch (keyCode [0]) {
 		case 36: { /* Return */
 			postEvent (SWT.DefaultSelection);
