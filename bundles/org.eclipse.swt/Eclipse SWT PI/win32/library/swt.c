@@ -4013,6 +4013,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	if (arg0) setNMLISTVIEWFields(env, arg0, lparg0, &PGLOB(NMLISTVIEWFc));
 }
 
+#ifndef _WIN32_WCE
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -4027,6 +4028,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 
 	if (arg0) setNMREBARCHEVRONFields(env, arg0, lparg0, &PGLOB(NMREBARCHEVRONFc));
 }
+#endif // _WIN32_WCE
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMHEADER_2II
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
