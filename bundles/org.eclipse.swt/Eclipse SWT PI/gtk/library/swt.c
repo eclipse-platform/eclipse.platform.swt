@@ -382,6 +382,52 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1strfreev
 	g_strfreev((gchar **)arg0);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf16_1to_1utf8
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jchar *lparg0=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("g_1utf16_1to_1utf8\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)g_utf16_to_utf8((const gunichar2 *)lparg0, (glong)arg1, (glong *)lparg2, (glong *)lparg3, (GError **)lparg4);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf8_1to_1utf16
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jbyte *lparg0=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("g_1utf8_1to_1utf16\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)g_utf8_to_utf16((const gchar *)lparg0, (glong)arg1, (glong *)lparg2, (glong *)lparg3, (GError **)lparg4);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1atom_1intern
 	(JNIEnv *env, jclass that, jbyteArray arg0, jboolean arg1)
 {
@@ -3953,6 +3999,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I\n")
 
 	if (arg0) setGdkImageFields(env, arg0, (GdkImage *)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove___3CII
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
+{
+	jchar *lparg0=NULL;
+
+	DEBUG_CALL("memmove___3CII\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__I_3II
