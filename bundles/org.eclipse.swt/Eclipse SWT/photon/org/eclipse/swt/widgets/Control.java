@@ -1263,7 +1263,6 @@ int processKey (int info) {
 		if (event.character == 0) event.character = (char) display.lastAscii;
 	}
 	postEvent (type, event);
-
 	return OS.Pt_PROCESS;
 }
 
@@ -1277,6 +1276,10 @@ int processMouse (int info) {
 	if ((ev.processing_flags & OS.Ph_FAKE_EVENT) != 0) {
 		return OS.Pt_CONTINUE;
 	}
+	if (ev.type != OS.Ph_EV_DRAG) {
+		ev.processing_flags |= OS.Ph_CONSUMED;
+		OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
+	}
 	Event event = new Event ();
 	switch (ev.type) {
 		case OS.Ph_EV_BUT_PRESS:
@@ -1284,7 +1287,10 @@ int processMouse (int info) {
 			break;
 		case OS.Ph_EV_BUT_RELEASE:
 			if (ev.subtype != OS.Ph_EV_RELEASE_PHANTOM) {
-				return OS.Pt_END;
+				return OS.Pt_CONTINUE;
+			}
+			if ((state & CANVAS) != 0) {
+				return OS.Pt_CONTINUE;
 			}
 			event.type = SWT.MouseUp;
 			break;
@@ -1293,11 +1299,19 @@ int processMouse (int info) {
 			event.type = SWT.MouseMove;
 			break;
 		case OS.Ph_EV_DRAG:
-			if (ev.subtype != OS.Ph_EV_DRAG_MOTION_EVENT) {
-				return OS.Pt_END;
+			switch (ev.subtype) {
+				case OS.Ph_EV_DRAG_MOTION_EVENT:
+					event.type = SWT.MouseMove;
+					break;
+				case OS.Ph_EV_DRAG_COMPLETE:
+					event.type = SWT.MouseUp;
+					break;
+				default:
+					return OS.Pt_CONTINUE;
 			}
-			event.type = SWT.MouseMove;
 			break;
+		default:
+			return OS.Pt_CONTINUE;
 	}
 	event.time = ev.timestamp;
 	int data = OS.PhGetData (cbinfo.event);
@@ -1306,7 +1320,7 @@ int processMouse (int info) {
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	event.x = pe.pos_x + ev.translation_x;
 	event.y = pe.pos_y + ev.translation_y;
-	if (ev.type == OS.Ph_EV_BUT_PRESS || ev.type == OS.Ph_EV_BUT_RELEASE) {
+	if (event.type == SWT.MouseDown || event.type == SWT.MouseUp) {
 		switch (pe.buttons) {
 			case OS.Ph_BUTTON_SELECT:	event.button = 1; break;
 			case OS.Ph_BUTTON_ADJUST:	event.button = 2; break;
@@ -1324,8 +1338,6 @@ int processMouse (int info) {
 		clickEvent.stateMask = event.stateMask;
 		postEvent (SWT.MouseDoubleClick, clickEvent);
 	}
-	ev.processing_flags |= OS.Ph_CONSUMED;
-	OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
 	return OS.Pt_CONTINUE;
 }
 
