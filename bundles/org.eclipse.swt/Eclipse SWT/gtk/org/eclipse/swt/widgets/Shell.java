@@ -1125,7 +1125,7 @@ public void setImeInputMode (int mode) {
 	checkWidget();
 }
 
-void setInitialSize () {
+void setInitialBounds () {
 	Monitor monitor = getMonitor ();
 	Rectangle rect = monitor.getClientArea ();
 	int width = rect.width * 5 / 8;

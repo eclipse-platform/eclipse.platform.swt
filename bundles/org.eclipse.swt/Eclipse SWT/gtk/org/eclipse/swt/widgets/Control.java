@@ -311,7 +311,7 @@ void createWidget (int index) {
 	checkOrientation (parent);
 	super.createWidget (index);
 	showWidget ();
-	setInitialSize ();
+	setInitialBounds ();
 	setZOrder (null, false);
 	checkBorder ();
 }
@@ -2700,9 +2700,7 @@ void setForegroundColor (GdkColor color) {
 	OS.gtk_widget_modify_fg (handle, OS.GTK_STATE_NORMAL, color);
 }
 
-void setInitialSize () {
-	// Comment this line to disable zero-sized widgets
-	state |= ZERO_SIZED;
+void setInitialBounds () {
 	if ((state & ZERO_SIZED) != 0) {
 		/*
 		* Feature in GTK.  On creation, each widget's allocation is
@@ -3032,6 +3030,8 @@ boolean showMenu (int x, int y) {
 }
 
 void showWidget () {
+	// Comment this line to disable zero-sized widgets
+	state |= ZERO_SIZED;
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, topHandle);
