@@ -320,8 +320,9 @@ int getAlignmentOffset(int columnIndex, int columnWidth, GC gc) {
  */
 public Color getBackground(){
 	checkWidget ();
-	if (background != null) return background;
 	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (background != null) return background;
 	return parent.getBackground ();
 }
 /**
@@ -340,6 +341,7 @@ public Color getBackground(){
 public Color getBackground (int index) {
 	checkWidget ();
 	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return getBackground ();
 	if (cellBackground == null || cellBackground [index] == null) return getBackground ();
@@ -359,10 +361,11 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds(int index) {
 	checkWidget();
+	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	Rectangle itemBounds;
 	Rectangle columnBounds;
 	Rectangle checkboxBounds;
-	Table parent = getParent();
 	TableColumn column;
 	int itemIndex = parent.indexOf(this);
 	int itemHeight = parent.getItemHeight();
@@ -409,6 +412,8 @@ public Rectangle getBounds(int index) {
  */
 public boolean getChecked() {
 	checkWidget();
+	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return super.getChecked();
 }
 /**
@@ -478,8 +483,9 @@ int getDotStartX(int columnIndex, int columnWidth) {
  */
 public Font getFont () {
 	checkWidget ();
-	if (font != null) return font;
 	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (font != null) return font;
 	return parent.getFont ();
 }
 
@@ -500,6 +506,7 @@ public Font getFont () {
 public Font getFont (int index) {
 	checkWidget ();
 	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return getFont ();
 	if (cellFont == null || cellFont [index] == null) return getFont ();
@@ -521,8 +528,9 @@ public Font getFont (int index) {
  */
 public Color getForeground(){
 	checkWidget ();
-	if (foreground != null) return foreground;
 	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (foreground != null) return foreground;
 	return parent.getForeground ();
 }
 /**
@@ -542,6 +550,7 @@ public Color getForeground(){
 public Color getForeground (int index) {
 	checkWidget ();
 	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return getForeground ();
 	if (cellForeground == null || cellForeground [index] == null) return getForeground ();
@@ -561,10 +570,14 @@ public Color getForeground (int index) {
  */
 public boolean getGrayed() {
 	checkWidget();
+	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return super.getGrayed();
 }
 public Image getImage() {
 	checkWidget();
+	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getImage(0);
 }
 /**
@@ -581,6 +594,8 @@ public Image getImage() {
  */
 public Image getImage(int columnIndex) {
 	checkWidget();
+	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	Image image = null;
 	Vector images = getImages();
 	int itemIndex = getIndex();
@@ -606,6 +621,7 @@ public Image getImage(int columnIndex) {
 public Rectangle getImageBounds(int index) {
 	checkWidget();
 	Table parent = getParent();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	int imageWidth = 0;
 	Point imageExtent = parent.getImageExtent();
@@ -635,11 +651,10 @@ public Rectangle getImageBounds(int index) {
  */
 public int getImageIndent() {
 	checkWidget();
-	int index = getParent().indexOf(this);
-	
-	if (index == -1) {
-		return 0;
-	}
+	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int index = parent.indexOf(this);
+	if (index == -1) return 0;
 	return imageIndent;
 }
 /**
@@ -786,6 +801,8 @@ int getSelectionX() {
 }
 public String getText() {
 	checkWidget();
+	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getText(0);
 }
 /**
@@ -805,7 +822,9 @@ public String getText() {
  */
 public String getText(int columnIndex) {
 	checkWidget();
-	int itemIndex = getParent().indexOf(this);
+	Table parent = getParent ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int itemIndex = parent.indexOf(this);
 	Vector labels = getDataLabels();
 	String label = null;
 	

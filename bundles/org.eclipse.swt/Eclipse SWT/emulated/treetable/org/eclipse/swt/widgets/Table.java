@@ -102,6 +102,9 @@ public Table(Composite parent, int style) {
 	super(parent, checkStyle(style| SWT.NO_REDRAW_RESIZE));
 }
 
+static int checkStyle (int style) {
+	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
+}
 /**
  * Add 'column' to the receiver.
  * @param column - new table column that should be added to 
@@ -222,8 +225,21 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener(SWT.Selection,typedListener);
 	addListener(SWT.DefaultSelection,typedListener);
 }
-static int checkStyle (int style) {
-	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
+boolean checkData (TableItem item, boolean redraw) {
+	if (item.cached) return true;
+	if ((getStyle() & SWT.VIRTUAL) != 0) {
+		item.cached = true;
+		Event event = new Event();
+		event.item = item;
+		ignoreRedraw = true;
+		sendEvent(SWT.SetData, event);
+		//widget could be disposed at this point
+		ignoreRedraw = false;
+		if (isDisposed() || item.isDisposed()) return false;
+		calculateItemHeight(item);
+		if (redraw) item.redraw ();
+	}
+	return true;
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
@@ -1875,20 +1891,9 @@ TableItem paintItems(Event event, int topPaintIndex, int bottomPaintIndex, Vecto
 	topPaintIndex += getTopIndex();
 	bottomPaintIndex += getTopIndex();
 
-	if ((getStyle () & SWT.VIRTUAL) != 0) {
+	if ((getStyle() & SWT.VIRTUAL) != 0) {
 		for (int i = topPaintIndex; i <= bottomPaintIndex; i++) {
-			paintItem = (TableItem) getVisibleItem(i);
-			if (!paintItem.cached) {
-				Event dataEvent = new Event();
-				dataEvent.item = paintItem;
-				ignoreRedraw = true;
-				sendEvent(SWT.SetData, dataEvent);
-				if (isDisposed()) return null;
-				//widget could be disposed at this point
-				ignoreRedraw = false;
-				calculateItemHeight(paintItem);
-				paintItem.cached = true;
-			}
+			if (!checkData((TableItem) getVisibleItem(i), false)) return null;
 		}
 	}
 	
