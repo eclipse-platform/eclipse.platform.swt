@@ -251,6 +251,14 @@ public int getRightWidth() {
 	if (rightWidth == SWT.DEFAULT) return right.computeSize(SWT.DEFAULT, getSize().y).x;
 	return rightWidth;
 }
+/**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public boolean getSimple() {
+	checkWidget();
+	return simple;
+}
 public void layout (boolean changed) {
 	checkWidget();
 	Point size = getSize();
