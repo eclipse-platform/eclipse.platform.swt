@@ -493,6 +493,8 @@ public static final native void gdk_region_get_clipbox(int region, GdkRectangle 
 public static final native int gdk_region_new();
 public static final native void gdk_region_union_with_rect(int region, GdkRectangle rect);
 public static final native void gdk_region_subtract(int source1, int source2);
+public static final native void gdk_region_intersect(int source1, int source2);
+public static final native void gdk_region_offset(int region, int dx, int dy);
 public static final native void gdk_region_union(int source1, int source2);
 public static final native void gdk_region_destroy(int region);
 public static final native int gdk_pixmap_new(int window, int width, int height, int depth);
@@ -949,6 +951,8 @@ public static final native void gdk_window_set_override_redirect(int window, boo
 public static final native int gtk_widget_send_expose(int widget, int event); 
 public static final native void gdk_window_scroll(int window, int dx, int dy);
 public static final native void gtk_container_set_border_width(int container, int border_width);
+public static final native int gdk_drawable_get_visible_region (int drawable);
 
 public static final native void gdk_window_invalidate_rect(int window, GdkRectangle rectangle, boolean invalidate_children);
+public static final native void gdk_window_invalidate_region(int window, int region, boolean invalidate_children);
 }

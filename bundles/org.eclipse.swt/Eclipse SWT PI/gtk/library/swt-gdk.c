@@ -152,6 +152,17 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1subtrac
 	gdk_region_subtract((GdkRegion*)source1, (GdkRegion*)source2);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1intersect
+  (JNIEnv *env, jclass that, jint source1, jint source2)
+{
+	gdk_region_intersect((GdkRegion*)source1, (GdkRegion*)source2);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1offset
+  (JNIEnv *env, jclass that, jint region, jint dx, jint dy)
+{
+	gdk_region_offset((GdkRegion*)region, dx, dy);
+}
 
 /*  ***** Graphics Contexts *****  */
 
@@ -1254,3 +1265,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1invalid
 		setGdkRectangleFields(env, rectangle, rectangle1, &PGLOB(GdkRectangleFc));
 	}
 }
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1invalidate_1region
+  (JNIEnv *env, jclass that, jint window, jint region, jboolean invalidate_children)
+{
+	gdk_window_invalidate_region((GdkWindow*)window, (GdkRegion*)region, (gboolean) invalidate_children);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1drawable_1get_1visible_1region
+  (JNIEnv *env, jclass that, jint drawable)
+{
+	return (jint)gdk_drawable_get_visible_region((GdkDrawable*)drawable);
+}
+

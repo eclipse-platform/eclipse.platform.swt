@@ -112,43 +112,73 @@ public Caret getCaret () {
  */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget();
-
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
 	if (!isVisible ()) return;
-	
-	/* Hide the caret */
 	boolean isVisible = caret != null && caret.isVisible ();
 	if (isVisible) caret.hideCaret ();
 	
-//	/* Emit a NoExpose Event */
-//	int window = paintWindow ();
-//	int gc = OS.gdk_gc_new (window);
-//	OS.gdk_gc_set_exposures(gc, true);
-//	OS.gdk_draw_drawable(window, gc, window, x, y, x, y, width, height);
-//	OS.g_object_unref (gc);
-//
-//	/* Flush outstanding Exposes */
-//	int gdkEvent = 0;
-//	while ((gdkEvent = OS.gdk_event_get_graphics_expose(window)) != 0) {
-//		OS.gtk_widget_send_expose (handle, gdkEvent);
-//		GdkEventExpose event = new GdkEventExpose(gdkEvent);
-//		OS.gdk_event_free (gdkEvent);
-//		if (event.count == 0) break;
-//	}
-
-	update ();
-	int window = paintWindow ();
-//	OS.gdk_window_process_updates (window, all);
-	OS.gdk_window_scroll (window, deltaX, deltaY);
-
 //	update ();
 //	GC gc = new GC (this);
 //	gc.copyArea (x, y, width, height, destX, destY);
 //	gc.dispose ();
+
+	update ();
 	
-	/* Show the caret */
+	int window = paintWindow ();
+	int visibleRegion = OS.gdk_drawable_get_visible_region (window);
+	GdkRectangle srcRect = new GdkRectangle ();
+	srcRect.x = x;
+	srcRect.y = y;
+	srcRect.width = width;
+	srcRect.height = height;
+	int copyRegion = OS.gdk_region_new ();
+	OS.gdk_region_union_with_rect (copyRegion, srcRect);
+	OS.gdk_region_intersect(copyRegion, visibleRegion);
+	int invalidateRegion = OS.gdk_region_new ();
+	OS.gdk_region_union_with_rect (invalidateRegion, srcRect);	
+	OS.gdk_region_subtract (invalidateRegion, visibleRegion);
+	OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
+	GdkRectangle copyRect = new GdkRectangle();
+	OS.gdk_region_get_clipbox (copyRegion, copyRect);
+	int gdkGC = OS.gdk_gc_new (window);
+	OS.gdk_gc_set_exposures (gdkGC, true);
+	OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
+	OS.g_object_unref (gdkGC);
+	boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
+	GdkRectangle rect = new GdkRectangle ();
+	if (disjoint) {
+		rect.x = x;
+		rect.y = y;
+		rect.width = width;
+		rect.height = height;
+		OS.gdk_region_union_with_rect (invalidateRegion, rect);
+	} else {
+		if (deltaX != 0) {
+			int newX = destX - deltaX;
+			if (deltaX < 0) newX = destX + width;
+			rect.x = newX;
+			rect.y = y;
+			rect.width = Math.abs(deltaX);
+			rect.height = height;
+			OS.gdk_region_union_with_rect (invalidateRegion, rect);
+		}
+		if (deltaY != 0) {
+			int newY = destY - deltaY;
+			if (deltaY < 0) newY = destY + height;
+			rect.x = x;
+			rect.y = newY;
+			rect.width = width;
+			rect.height = Math.abs(deltaY);
+			OS.gdk_region_union_with_rect (invalidateRegion, rect);
+		}
+	}	
+	OS.gdk_window_invalidate_region(window, invalidateRegion, all);
+	OS.gdk_region_destroy (visibleRegion);
+	OS.gdk_region_destroy (copyRegion);
+	OS.gdk_region_destroy (invalidateRegion);
+	
 	if (isVisible) caret.showCaret ();
 }
 
