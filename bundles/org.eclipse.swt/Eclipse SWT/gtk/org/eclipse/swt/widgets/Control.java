@@ -734,6 +734,7 @@ public void setLayoutData (Object layoutData) {
 public Point toControl (int x, int y) {
 	checkWidget ();
 	int eventHandle = eventHandle ();
+	OS.gtk_widget_realize (eventHandle);
 	int window = OS.GTK_WIDGET_WINDOW (eventHandle);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
@@ -781,6 +782,7 @@ public Point toControl (Point point) {
 public Point toDisplay (int x, int y) {
 	checkWidget();
 	int eventHandle = eventHandle ();
+	OS.gtk_widget_realize (eventHandle);
 	int window = OS.GTK_WIDGET_WINDOW (eventHandle);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
