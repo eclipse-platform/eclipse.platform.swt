@@ -631,7 +631,7 @@ public class SWT {
 	public static final int SYSTEM_MODAL = 1 << 17;
 
 	/**
-	 * Style constant for selection hiding behavior. (value is 1&lt;&lt;15).
+	 * Style constant for selection hiding behavior when the widget loses focus (value is 1&lt;&lt;15).
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Table</code></li>
