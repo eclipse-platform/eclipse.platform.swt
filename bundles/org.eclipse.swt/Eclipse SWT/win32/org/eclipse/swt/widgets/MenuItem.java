@@ -115,6 +115,15 @@ public MenuItem (Menu parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
+MenuItem (Menu parent, Menu menu, int style, int index) {
+	super (parent, checkStyle (style));
+	this.parent = parent;
+	this.menu = menu;	
+	if (menu != null) menu.cascade = this;
+	Decorations shell = parent.parent;
+	shell.add (this);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the arm events are generated for the control, by sending
@@ -291,10 +300,13 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	if (OS.IsPPC && parent.hwndCB != 0) {
+	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
 		int hwndCB = parent.hwndCB;
-		int fsState = OS.SendMessage (hwndCB, OS.TB_GETSTATE, id, 0);
-		return (fsState & OS.TBSTATE_ENABLED) != 0;
+		TBBUTTONINFO info = new TBBUTTONINFO ();
+		info.cbSize = info.sizeof;
+		info.dwMask = OS.TBIF_STATE;
+		OS.SendMessage (hwndCB, OS.TB_GETBUTTONINFO, id, info);
+		return (info.fsState & OS.TBSTATE_ENABLED) != 0;
 	}
 	int hMenu = parent.handle;
 	MENUITEMINFO info = new MENUITEMINFO ();
@@ -368,7 +380,7 @@ public Menu getParent () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	if (OS.IsPPC && parent.hwndCB != 0) return false;
+	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) return false;
 	int hMenu = parent.handle;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
@@ -402,6 +414,11 @@ void releaseChild () {
 	if (menu != null) menu.dispose ();
 	menu = null;
 	parent.destroyItem (this);
+}
+
+void releaseMenu () {
+	if (!OS.IsSP) setMenu (null);
+	menu = null;
 }
 
 void releaseWidget () {
@@ -522,12 +539,15 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	if (OS.IsPPC && parent.hwndCB != 0) {
+	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
 		int hwndCB = parent.hwndCB;
-		int fsState = OS.SendMessage (hwndCB, OS.TB_GETSTATE, id, 0);
-		fsState &= ~OS.TBSTATE_ENABLED;
-		if (enabled) fsState |= OS.TBSTATE_ENABLED;
-		OS.SendMessage (hwndCB, OS.TB_SETSTATE, id, fsState);
+		TBBUTTONINFO info = new TBBUTTONINFO ();
+		info.cbSize = TBBUTTONINFO.sizeof;
+		info.dwMask = OS.TBIF_STATE;
+		OS.SendMessage (hwndCB, OS.TB_GETBUTTONINFO, id, info);
+		info.fsState &= ~OS.TBSTATE_ENABLED;
+		if (enabled) info.fsState |= OS.TBSTATE_ENABLED;
+		OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, id, info);		
 	} else {
 		int hMenu = parent.handle;
 		if (OS.IsWinCE) {
@@ -635,10 +655,13 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 
 	/* Assign the new menu in the OS */		
-	if (OS.IsPPC && parent.hwndCB != 0) {
-		int hwndCB = parent.hwndCB;
-		int hMenu = menu == null ? 0 : menu.handle;
-		OS.SendMessage (hwndCB, OS.SHCMBM_SETSUBMENU, id, hMenu);
+	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
+		if (OS.IsPPC) {
+			int hwndCB = parent.hwndCB;
+			int hMenu = menu == null ? 0 : menu.handle;
+			OS.SendMessage (hwndCB, OS.SHCMBM_SETSUBMENU, id, hMenu);
+		}
+		if (OS.IsSP) error (SWT.ERROR_CANNOT_SET_MENU);
 	} else {
 		/*
 		* Feature in Windows.  When SetMenuItemInfo () is used to
@@ -723,7 +746,7 @@ public void setMenu (Menu menu) {
 public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	if (OS.IsPPC && parent.hwndCB != 0) return;
+	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) return;
 	int hMenu = parent.handle;
 	if (OS.IsWinCE) {
 		int index = parent.indexOf (this);

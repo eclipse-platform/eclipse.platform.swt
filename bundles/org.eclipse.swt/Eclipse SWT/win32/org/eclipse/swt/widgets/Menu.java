@@ -28,12 +28,20 @@ import org.eclipse.swt.events.*;
  */
 
 public class Menu extends Widget {
-	public int handle, hwndCB;
+	public int handle, hwndCB, id0, id1;
 	int x, y;
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
-	static final int ID_PPCBAR = 100;
+	static final int ID_PPC = 100;
+	
+	/* SmartPhone SoftKeyBar resource ids */
+	static final int ID_SPMM = 102;
+	static final int ID_SPBM = 103;
+	static final int ID_SPMB = 104;
+	static final int ID_SPBB = 105;
+	static final int ID_SPSOFTKEY0 = 106; 
+	static final int ID_SPSOFTKEY1 = 107;
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -90,9 +98,7 @@ public Menu (Control parent) {
  * @see Widget#getStyle
  */
 public Menu (Decorations parent, int style) {
-	super (parent, checkStyle (style));
-	this.parent = parent;
-	createWidget ();
+	this (parent, checkStyle (style), 0);
 }
 
 /**
@@ -141,6 +147,13 @@ public Menu (Menu parentMenu) {
  */
 public Menu (MenuItem parentItem) {
 	this (checkNull (parentItem).parent);
+}
+
+Menu (Decorations parent, int style, int handle) {
+	super (parent, checkStyle (style));
+	this.parent = parent;
+	this.handle = handle;
+	createWidget ();
 }
 
 public void _setVisible (boolean visible) {
@@ -249,6 +262,7 @@ static int checkStyle (int style) {
 }
 
 void createHandle () {
+	if (handle != 0) return;
 	if ((style & SWT.BAR) != 0) {
 		if (OS.IsPPC) {
 			int hwndShell = parent.handle;
@@ -256,13 +270,80 @@ void createHandle () {
 			mbi.cbSize = mbi.sizeof;
 			mbi.hwndParent = hwndShell;
 			mbi.dwFlags = OS.SHCMBF_HIDDEN;
-			mbi.nToolBarId = ID_PPCBAR;
+			mbi.nToolBarId = ID_PPC;
 			mbi.hInstRes = OS.GetLibraryHandle ();
 			boolean success = OS.SHCreateMenuBar (mbi);
 			hwndCB = mbi.hwndMB;
 			if (!success) error (SWT.ERROR_NO_HANDLES);
 			/* Remove the item from the resource file */
 			OS.SendMessage (hwndCB, OS.TB_DELETEBUTTON, 0, 0);
+			return;
+		}
+		/*
+		* Note in WinCE SmartPhone.  The SoftBar contains only 2 items.
+		* An item can either be a menu or a button. 
+		* SWT.BAR: creates a SoftBar with 2 menus
+		* SWT.BAR | SWT.BUTTON1: creates a SoftBar with 1 button
+		*    for button1, and a menu for button2
+		* SWT.BAR | SWT.BUTTON1 | SWT.BUTTON2: creates a SoftBar with
+		*    2 buttons
+		*/
+		if (OS.IsSP) {
+			/* Determine type of menubar */
+			int nToolBarId;
+			if ((style & SWT.BUTTON1) != 0) {
+				nToolBarId = ((style & SWT.BUTTON2) != 0) ? ID_SPBB : ID_SPBM;
+			} else {
+				nToolBarId = ((style & SWT.BUTTON2) != 0) ? ID_SPMB : ID_SPMM;
+			}
+			
+			/* Create SHMENUBAR */
+			SHMENUBARINFO mbi = new SHMENUBARINFO ();
+			mbi.cbSize = mbi.sizeof;
+			mbi.hwndParent = parent.handle;
+			mbi.dwFlags = OS.SHCMBF_HIDDEN;
+			mbi.nToolBarId = nToolBarId; /* as defined in .rc file */
+			mbi.hInstRes = OS.GetLibraryHandle ();
+			if (!OS.SHCreateMenuBar (mbi)) error (SWT.ERROR_NO_HANDLES);
+			hwndCB = mbi.hwndMB;
+			
+			/*
+			* Feature on WinCE SmartPhone.  The SHCMBF_HIDDEN flag causes the
+			* SHMENUBAR to not be drawn. However the keyboard events still go
+			* through it.  The workaround is to also hide the SHMENUBAR with
+			* ShowWindow ().
+			*/
+			OS.ShowWindow (hwndCB, OS.SW_HIDE);
+			
+			TBBUTTONINFO info = new TBBUTTONINFO ();
+			info.cbSize = TBBUTTONINFO.sizeof;
+			info.dwMask = OS.TBIF_COMMAND;
+			MenuItem item;
+			
+			/* Set first item */
+			if (nToolBarId == ID_SPMM || nToolBarId == ID_SPMB) {
+				int hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY0);
+				/* Remove the item from the resource file */
+				OS.RemoveMenu (hMenu, 0, OS.MF_BYPOSITION);
+				Menu menu = new Menu (parent, SWT.DROP_DOWN, hMenu);
+				item = new MenuItem (this, menu, SWT.CASCADE, 0);
+			} else {
+				item = new MenuItem (this, null, SWT.PUSH, 0);
+			}
+			info.idCommand = id0 = item.id;
+			OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, ID_SPSOFTKEY0, info);	
+
+			/* Set second item */
+			if (nToolBarId == ID_SPMM || nToolBarId == ID_SPBM) {
+				int hMenu = OS.SendMessage (hwndCB, OS.SHCMBM_GETSUBMENU, 0, ID_SPSOFTKEY1);
+				OS.RemoveMenu (hMenu, 0, OS.MF_BYPOSITION);
+				Menu menu = new Menu (parent, SWT.DROP_DOWN, hMenu);
+				item = new MenuItem (this, menu, SWT.CASCADE, 1);
+			} else {
+				item = new MenuItem (this, null, SWT.PUSH, 1);
+			}
+			info.idCommand = id1 = item.id;
+			OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, ID_SPSOFTKEY1, info);
 			return;
 		}
 		handle = OS.CreateMenu ();
@@ -292,7 +373,8 @@ void createItem (MenuItem item, int index) {
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	parent.add (item);
 	boolean success = false;
-	if (OS.IsPPC && hwndCB != 0) {
+	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
+		if (OS.IsSP) return;
 		TBBUTTON lpButton = new TBBUTTON ();
 		lpButton.idCommand = item.id;
 		lpButton.fsStyle = (byte) (OS.TBSTYLE_DROPDOWN | OS.TBSTYLE_AUTOSIZE | 0x80);
@@ -368,7 +450,11 @@ void destroyAcceleratorTable () {
 
 void destroyItem (MenuItem item) {
 	if (OS.IsWinCE) {
-		if (OS.IsPPC && hwndCB != 0) {
+		if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
+			if (OS.IsSP) {
+				redraw();
+				return;
+			}
 			int index = OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
 			if (OS.SendMessage (hwndCB, OS.TB_DELETEBUTTON, index, 0) == 0) {
 				error (SWT.ERROR_ITEM_NOT_REMOVED);
@@ -477,11 +563,17 @@ public boolean getEnabled () {
 public MenuItem getItem (int index) {
 	checkWidget ();
 	int id = 0;
-	if (OS.IsPPC && hwndCB != 0) {
-		TBBUTTON lpButton = new TBBUTTON ();
-		int result = OS.SendMessage (hwndCB, OS.TB_GETBUTTON, index, lpButton);
-		if (result == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
-		id = lpButton.idCommand;
+	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
+		if (OS.IsPPC) {
+			TBBUTTON lpButton = new TBBUTTON ();
+			int result = OS.SendMessage (hwndCB, OS.TB_GETBUTTON, index, lpButton);
+			if (result == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
+			id = lpButton.idCommand;
+		}
+		if (OS.IsSP) {
+			if (!(0 <= index && index <= 1)) error (SWT.ERROR_CANNOT_GET_ITEM);
+			id = index == 0 ? id0 : id1;
+		}
 	} else {
 		MENUITEMINFO info = new MENUITEMINFO ();
 		info.cbSize = MENUITEMINFO.sizeof;
@@ -527,7 +619,13 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget ();
-	if (OS.IsPPC && hwndCB != 0) {
+	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
+		if (OS.IsSP) {
+			MenuItem [] result = new MenuItem [2];
+			result[0] = parent.findMenuItem (id0);
+			result[1] = parent.findMenuItem (id1);		
+			return result;
+		}
 		int count = OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
 		TBBUTTON lpButton = new TBBUTTON ();
 		MenuItem [] result = new MenuItem [count];
@@ -560,8 +658,8 @@ public MenuItem [] getItems () {
 int GetMenuItemCount (int handle) {
 	checkWidget ();
 	if (OS.IsWinCE) {
-		if (OS.IsPPC && hwndCB != 0) {
-			return OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
+		if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
+			return OS.IsSP ? 2 : OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
 		}
 		int count = 0;
 		MENUITEMINFO info = new MENUITEMINFO ();
@@ -708,8 +806,16 @@ public int indexOf (MenuItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	if (OS.IsPPC && hwndCB != 0) {
-		return OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
+	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
+		if (OS.IsPPC) {
+			return OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
+		}
+		if (OS.IsSP) {
+			int index = -1;
+			if (item.id == id0) index = id0;
+			else if (item.id == id1) index = id1;
+			return index;
+		}
 	}
 	int index = 0;
 	MENUITEMINFO info = new MENUITEMINFO ();
@@ -764,7 +870,7 @@ public boolean isVisible () {
 }
 
 void redraw () {
-	if (OS.IsPPC) return;
+	if (OS.IsPPC || OS.IsSP) return;
 	if (OS.IsHPC) {
 		/*
 		* Each time a menu has been modified, the command menu bar
@@ -816,7 +922,7 @@ void redraw () {
 
 void releaseChild () {
 	super.releaseChild ();
-	if (cascade != null) cascade.setMenu (null);
+	if (cascade != null) cascade.releaseMenu ();
 	if ((style & SWT.BAR) != 0) {
 		if (this == parent.menuBar) {
 			parent.setMenuBar (null);
@@ -839,11 +945,8 @@ void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
 		if (!item.isDisposed ()) {
-			if (OS.IsPPC && hwndCB != 0) {
-				item.dispose ();
-			} else {
-				item.releaseResources ();
-			}
+			if (OS.IsPPC && hwndCB != 0) item.dispose ();
+			else item.releaseResources ();
 		}
 	}
 	super.releaseWidget ();
