@@ -565,7 +565,7 @@ public static synchronized Display getCurrent () {
 public Control getCursorControl () {
 	checkDevice ();
 	POINT pt = new POINT ();
-	OS.GetCursorPos (pt);
+	if (!OS.GetCursorPos (pt)) return null;
 	return findControl (OS.WindowFromPoint (pt));
 }
 
