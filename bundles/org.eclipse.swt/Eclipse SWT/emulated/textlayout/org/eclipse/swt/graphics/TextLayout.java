@@ -32,7 +32,7 @@ public class TextLayout {
 	StyleItem[][] runs;
 	int[] lineOffset, lineY, lineWidth;
 	
-	class StyleItem {
+	static class StyleItem {
 		TextStyle style;
 		int start, length, width, height;
 		boolean lineBreak, softBreak, tab;
