@@ -157,15 +157,6 @@ Control computeTabRoot () {
 	return parent.computeTabRoot ();
 }
 
-int [] controlEvents () {
-	 return new int [] {
-		OS.kEventClassControl, OS.kEventControlBoundsChanged,
-		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
-		OS.kEventClassControl, OS.kEventControlDraw,
-		OS.kEventClassControl, OS.kEventControlHit,
-	};
-}
-
 void createHandle () {
 }
 
@@ -191,7 +182,7 @@ void destroyWidget () {
 public boolean forceFocus () {
 	checkWidget();
 	int window = OS.GetControlOwner (handle);
-	OS.SetKeyboardFocus (window, handle, (short)-1 /*???OS.kControlFocusNoPart*/);
+	OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart);
 	return isFocusControl ();
 }
 
@@ -302,9 +293,18 @@ boolean hasFocus () {
 
 void hookEvents () {
 	Display display = getDisplay ();
-	int [] mask = controlEvents ();
+	int [] mask = new int [] {
+		OS.kEventClassControl, OS.kEventControlClick,
+		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
+		OS.kEventClassControl, OS.kEventControlDraw,
+		OS.kEventClassControl, OS.kEventControlHit,
+		OS.kEventClassControl, OS.kEventControlSetFocusPart,
+		OS.kEventClassControl, OS.kEventControlBoundsChanged,
+	};
+	//TEMPORARY CODE - hooking kEventControlBoundsChanged on the root control draws garbage
+	int length = mask.length - (this instanceof Shell ? 1 : 0);
 	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, display.windowProc, mask.length / 2, mask, handle, null);
+	OS.InstallEventHandler (controlTarget, display.windowProc, length / 2, mask, handle, null);
 }
 
 public int internal_new_GC (GCData data) {
@@ -393,6 +393,10 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventControlClick (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
 	if (menu != null && !menu.isDisposed ()) {
 		CGPoint pt = new CGPoint ();
@@ -440,7 +444,17 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
+//	int kEventParamControlPart = ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
+//	int typeControlPartCode = kEventParamControlPart;
+//	short [] controlPart = new short [1];
+//	OS.GetEventParameter (theEvent, kEventParamControlPart, OS.typeControlPartCode, null, 2, null, controlPart);
+	return OS.eventNotHandledErr;
+}
+
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+//	int window = OS.GetControlOwner (handle);
+//	OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart);
 	if ((state & GRAB) != 0) {
 		int [] clickCount = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
@@ -685,7 +699,6 @@ boolean sendMouseEvent (int type, int theEvent) {
 boolean sendMouseEvent (int type, short button, int theEvent) {
 	Event event = new Event ();
 	event.type = type;
-	event.button = button;
 	CGPoint pt = new CGPoint ();
 	if (OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, pt.sizeof, null, pt) != OS.noErr) {
 		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, pt.sizeof, null, pt);
@@ -703,13 +716,12 @@ boolean sendMouseEvent (int type, short button, int theEvent) {
 	return true;
 }
 
-boolean sendMouseEvent (int type, short button, short x, short y, int modifiers) {
+boolean sendMouseEvent (int type, short button, int chord, short x, short y, int modifiers) {
 	Event event = new Event ();
 	event.type = type;
-	event.button = button;
 	event.x = x;
 	event.y = y;
-	setInputState (event, button, modifiers);
+	setInputState (event, button, chord, modifiers);
 	sendEvent (type, event);
 	return true;
 }

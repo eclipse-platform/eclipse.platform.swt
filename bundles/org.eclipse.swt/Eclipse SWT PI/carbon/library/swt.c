@@ -2210,6 +2210,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlViewSiz
 }
 #endif /* NO_GetControlViewSize */
 
+#ifndef NO_GetCurrentEventButtonState
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentEventButtonState
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetCurrentEventButtonState\n")
+
+	return (jint)GetCurrentEventButtonState();
+}
+#endif /* NO_GetCurrentEventButtonState */
+
 #ifndef NO_GetCurrentEventLoop
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentEventLoop
 	(JNIEnv *env, jclass that)

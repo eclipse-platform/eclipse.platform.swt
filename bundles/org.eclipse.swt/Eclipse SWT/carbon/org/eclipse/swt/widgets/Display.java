@@ -470,25 +470,25 @@ public Color getSystemColor (int id) {
 	checkDevice ();
 	//NOT DONE
 	switch (id) {
-//		case SWT.COLOR_INFO_FOREGROUND: 		return COLOR_INFO_FOREGROUND;
-//		case SWT.COLOR_INFO_BACKGROUND: 		return COLOR_INFO_BACKGROUND;	
-//		case SWT.COLOR_TITLE_FOREGROUND:		return super.getSystemColor (SWT.COLOR_WHITE);
-//		case SWT.COLOR_TITLE_BACKGROUND:		return super.getSystemColor (SWT.COLOR_DARK_BLUE);
-//		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:	return super.getSystemColor (SWT.COLOR_BLUE);
-//		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:	return super.getSystemColor (SWT.COLOR_BLACK);
-//		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:	return super.getSystemColor (SWT.COLOR_DARK_GRAY);
-//		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	return super.getSystemColor (SWT.COLOR_GRAY);
-//		case SWT.COLOR_WIDGET_DARK_SHADOW:	xColor = COLOR_WIDGET_DARK_SHADOW; break;
-//		case SWT.COLOR_WIDGET_NORMAL_SHADOW:	xColor = COLOR_WIDGET_NORMAL_SHADOW; break;
-//		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 	xColor = COLOR_WIDGET_LIGHT_SHADOW; break;
-//		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:	xColor = COLOR_WIDGET_HIGHLIGHT_SHADOW; break;
-//		case SWT.COLOR_WIDGET_BACKGROUND: 	xColor = COLOR_WIDGET_BACKGROUND; break;
-//		case SWT.COLOR_WIDGET_FOREGROUND:
-//		case SWT.COLOR_WIDGET_BORDER: 		xColor = COLOR_WIDGET_BORDER; break;
-//		case SWT.COLOR_LIST_FOREGROUND: 	xColor = COLOR_LIST_FOREGROUND; break;
-//		case SWT.COLOR_LIST_BACKGROUND: 	xColor = COLOR_LIST_BACKGROUND; break;
-//		case SWT.COLOR_LIST_SELECTION: 		xColor = COLOR_LIST_SELECTION; break;
-//		case SWT.COLOR_LIST_SELECTION_TEXT: 	xColor = COLOR_LIST_SELECTION_TEXT; break;
+		case SWT.COLOR_INFO_FOREGROUND: 					return Color.carbon_new (this, new float [] {0, 0, 0});
+		case SWT.COLOR_INFO_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF, 0xFF, 0xE1});
+		case SWT.COLOR_TITLE_FOREGROUND:					return super.getSystemColor (SWT.COLOR_WHITE);
+		case SWT.COLOR_TITLE_BACKGROUND:					return super.getSystemColor (SWT.COLOR_DARK_BLUE);
+		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			return super.getSystemColor (SWT.COLOR_BLUE);
+		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:			return super.getSystemColor (SWT.COLOR_DARK_GRAY);
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	return super.getSystemColor (SWT.COLOR_GRAY);
+		case SWT.COLOR_WIDGET_DARK_SHADOW:					return Color.carbon_new (this, new float [] {0x33, 0x33, 0x33});
+		case SWT.COLOR_WIDGET_NORMAL_SHADOW:				return Color.carbon_new (this, new float [] {0x66, 0x66, 0x66});
+		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				return Color.carbon_new (this, new float [] {0x99, 0x99, 0x99});
+		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:			return Color.carbon_new (this, new float [] {0xCC, 0xCC, 0xCC});
+		case SWT.COLOR_WIDGET_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF, 0xFF, 0xFF});
+		case SWT.COLOR_WIDGET_FOREGROUND:
+		case SWT.COLOR_WIDGET_BORDER: 						return Color.carbon_new (this, new float [] {0x00, 0x00, 0x00});
+		case SWT.COLOR_LIST_FOREGROUND: 					return Color.carbon_new (this, new float [] {0x00, 0x00, 0x00});
+		case SWT.COLOR_LIST_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF, 0xFF, 0xFF});
+		case SWT.COLOR_LIST_SELECTION: 					return Color.carbon_new (this, new float [] {0x66, 0x66, 0xCC});
+		case SWT.COLOR_LIST_SELECTION_TEXT: 				return Color.carbon_new (this, new float [] {0xFF, 0xFF, 0xFF});
 		default:
 			return super.getSystemColor (id);	
 	}
@@ -749,18 +749,31 @@ void runGrabs () {
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
 	try {
 		while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
+			lastModifiers = OS.GetCurrentEventKeyModifiers ();
+			int oldState = OS.GetCurrentEventButtonState ();
 			OS.TrackMouseLocationWithOptions (0, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
-			int type = 0;
+			int type = 0, button = 0;
 			switch (outResult [0]) {
-				case OS.kMouseTrackingMouseDown:					type = SWT.MouseDown; break;
-				case OS.kMouseTrackingMouseUp:						type = SWT.MouseUp; break;
+				case OS.kMouseTrackingMouseDown: {
+					type = SWT.MouseDown;
+					int newState = OS.GetCurrentEventButtonState ();
+					if ((oldState & 0x1) == 0 && (newState & 0x1) != 0) button = 1;
+					if ((oldState & 0x2) == 0 && (newState & 0x2) != 0) button = 2;
+					if ((oldState & 0x4) == 0 && (newState & 0x4) != 0) button = 3;
+					break;
+				}
+				case OS.kMouseTrackingMouseUp: {
+					type = SWT.MouseUp;
+					int newState = OS.GetCurrentEventButtonState ();
+					if ((oldState & 0x1) != 0 && (newState & 0x1) == 0) button = 1;
+					if ((oldState & 0x2) != 0 && (newState & 0x2) == 0) button = 2;
+					if ((oldState & 0x4) != 0 && (newState & 0x4) == 0) button = 3;
+					break;
+				}
 				case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
 				case OS.kMouseTrackingMouseEntered: 				type = SWT.MouseEnter; break;
 				case OS.kMouseTrackingMouseDragged: 				type = SWT.MouseMove; break;
-				case OS.kMouseTrackingMouseKeyModifiersChanged: {
-					lastModifiers = outModifiers [0];
-					break;
-				}
+				case OS.kMouseTrackingMouseKeyModifiersChanged:	break;
 				case OS.kMouseTrackingUserCancelled:				break;
 				case OS.kMouseTrackingTimedOut: 					break;
 				case OS.kMouseTrackingMouseMoved: 					type = SWT.MouseMove; break;
@@ -771,8 +784,9 @@ void runGrabs () {
 				OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
 				ioPoint.x = outPt.h - rect.left;
 				ioPoint.y = outPt.v - rect.top;
-				OS.HIViewConvertPoint (ioPoint, 0, handle); 
-				grabControl.sendMouseEvent (type, (short)0, (short)ioPoint.x, (short)ioPoint.y, outModifiers [0]);
+				OS.HIViewConvertPoint (ioPoint, 0, handle);
+				int chord = OS.GetCurrentEventButtonState ();
+				grabControl.sendMouseEvent (type, (short)button, chord, (short)ioPoint.x, (short)ioPoint.y, outModifiers [0]);
 			}
 		}
 	} finally {
@@ -1023,9 +1037,11 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			if (control != null) {
 				switch (eventKind) {
 					case OS.kEventControlBoundsChanged:		return control.kEventControlBoundsChanged (nextHandler, theEvent, userData);
+					case OS.kEventControlClick:				return control.kEventControlClick (nextHandler, theEvent, userData);
 					case OS.kEventControlContextualMenuClick:	return control.kEventControlContextualMenuClick (nextHandler, theEvent, userData);
 					case OS.kEventControlDraw:					return control.kEventControlDraw (nextHandler, theEvent, userData);
 					case OS.kEventControlHit:					return control.kEventControlHit (nextHandler, theEvent, userData);
+					case OS.kEventControlSetFocusPart:			return control.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 				}
 			}
 			break;
@@ -1099,7 +1115,10 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			Control control = WidgetTable.get (theControl [0]);
 			if (control != null && control.handle == theControl [0]) {
 				switch (eventKind) {
-					case OS.kEventMouseDown:  			return control.kEventMouseDown (nextHandler, theEvent, userData);
+					case OS.kEventMouseDown: {
+						int result = control.kEventMouseDown (nextHandler, theEvent, userData);
+						return userData == 0 ? result : OS.noErr;
+					}
 					case OS.kEventMouseUp: 			return control.kEventMouseUp (nextHandler, theEvent, userData);
 					case OS.kEventMouseDragged:		return control.kEventMouseDragged (nextHandler, theEvent, userData);
 //					case OS.kEventMouseEntered:			return control.kEventMouseEntered (nextHandler, theEvent, userData);

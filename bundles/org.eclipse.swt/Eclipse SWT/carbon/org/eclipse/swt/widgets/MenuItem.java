@@ -114,7 +114,7 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
 	Event event = new Event ();
-	setInputState (event, (short) 0, modifiers [0]);
+	setInputState (event, (short) 0, OS.GetCurrentEventButtonState (), modifiers [0]);
 	postEvent (SWT.Selection, event);
 	return OS.noErr;
 }

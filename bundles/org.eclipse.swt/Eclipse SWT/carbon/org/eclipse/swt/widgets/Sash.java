@@ -51,7 +51,6 @@ void createHandle () {
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateUserPaneControl (window, null, features, outControl);
-//	OS.CreateProgressBarControl (window, null, 0, 0, 100, true, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
 	OS.HIViewAddSubview (parent.handle, handle);

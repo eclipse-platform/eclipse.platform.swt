@@ -108,15 +108,6 @@ void createWidget () {
 	layoutControl ();
 }
 
-int [] controlEvents () {
-	 return new int [] {
-//		OS.kEventClassControl, OS.kEventControlBoundsChanged,
-		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
-		OS.kEventClassControl, OS.kEventControlDraw,
-		OS.kEventClassControl, OS.kEventControlHit,
-	};
-}
-
 void createHandle () {
 	state |= CANVAS | GRAB;
 	int attributes = OS.kWindowCompositingAttribute | OS.kWindowStandardHandlerAttribute;
