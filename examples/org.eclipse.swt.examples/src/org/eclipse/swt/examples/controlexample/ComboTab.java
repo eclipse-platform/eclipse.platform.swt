@@ -60,7 +60,7 @@ class ComboTab extends Tab {
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
-		int style = SWT.NONE;
+		int style = getDefaultStyle();
 		if (dropDownButton.getSelection ()) style |= SWT.DROP_DOWN;
 		if (readOnlyButton.getSelection ()) style |= SWT.READ_ONLY;
 		if (simpleButton.getSelection ()) style |= SWT.SIMPLE;

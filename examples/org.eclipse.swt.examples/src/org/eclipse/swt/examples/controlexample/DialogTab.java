@@ -90,7 +90,7 @@ class DialogTab extends Tab {
 	void createButtonSelected(SelectionEvent event) {
 	
 		/* Compute the appropriate dialog style */
-		int style = SWT.NONE;
+		int style = getDefaultStyle();
 		if (okButton.getEnabled () && okButton.getSelection ()) style |= SWT.OK;
 		if (cancelButton.getEnabled () && cancelButton.getSelection ()) style |= SWT.CANCEL;
 		if (yesButton.getEnabled () && yesButton.getSelection ()) style |= SWT.YES;
@@ -323,6 +323,11 @@ class DialogTab extends Tab {
 		openButton = new Button(fileDialogStyleGroup, SWT.RADIO);
 		openButton.setText("SWT.OPEN");
 	
+		/* Create the orientation group */
+		if (RTL_SUPPORT_ENABLE) {
+			createOrientationGroup();
+		}
+		
 		/* Add the listeners */
 		dialogCombo.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {

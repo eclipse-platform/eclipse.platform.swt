@@ -53,7 +53,7 @@ class CLabelTab extends AlignableTab {
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
-		int style = SWT.NONE;
+		int style = getDefaultStyle();
 		if (shadowInButton.getSelection ()) style |= SWT.SHADOW_IN;
 		if (shadowNoneButton.getSelection ()) style |= SWT.SHADOW_NONE;
 		if (shadowOutButton.getSelection ()) style |= SWT.SHADOW_OUT;

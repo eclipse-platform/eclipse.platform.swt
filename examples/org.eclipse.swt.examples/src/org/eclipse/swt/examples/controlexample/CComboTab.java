@@ -61,7 +61,7 @@ class CComboTab extends Tab {
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
-		int style = SWT.NONE;
+		int style = getDefaultStyle();
 		if (flatButton.getSelection ()) style |= SWT.FLAT;
 		if (readOnlyButton.getSelection ()) style |= SWT.READ_ONLY;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;

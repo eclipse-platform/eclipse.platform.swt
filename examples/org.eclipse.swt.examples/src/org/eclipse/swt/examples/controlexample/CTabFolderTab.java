@@ -57,7 +57,7 @@ class CTabFolderTab extends Tab {
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
-		int style = SWT.NONE;
+		int style = getDefaultStyle();
 		if (topButton.getSelection ()) style |= SWT.TOP;
 		if (bottomButton.getSelection ()) style |= SWT.BOTTOM;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;

@@ -60,7 +60,7 @@ class LabelTab extends AlignableTab {
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
-		int style = SWT.NONE;
+		int style = getDefaultStyle();
 		if (wrapButton.getSelection ()) style |= SWT.WRAP;
 		if (separatorButton.getSelection ()) style |= SWT.SEPARATOR;
 		if (horizontalButton.getSelection ()) style |= SWT.HORIZONTAL;

@@ -59,7 +59,7 @@ class TextTab extends ScrollableTab {
 	void createExampleWidgets () {
 		
 		/* Compute the widget style */
-		int style = SWT.NONE;
+		int style = getDefaultStyle();
 		if (singleButton.getSelection ()) style |= SWT.SINGLE;
 		if (multiButton.getSelection ()) style |= SWT.MULTI;
 		if (horizontalButton.getSelection ()) style |= SWT.H_SCROLL;

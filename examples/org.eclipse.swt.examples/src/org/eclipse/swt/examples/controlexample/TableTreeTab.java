@@ -78,7 +78,7 @@ class TableTreeTab extends ScrollableTab {
 	 */
 	void createExampleWidgets () {
 		/* Compute the widget style */
-		int style = SWT.NONE;
+		int style = getDefaultStyle();
 		if (singleButton.getSelection()) style |= SWT.SINGLE;
 		if (multiButton.getSelection()) style |= SWT.MULTI;
 		if (checkButton.getSelection()) style |= SWT.CHECK;

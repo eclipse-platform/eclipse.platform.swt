@@ -91,7 +91,7 @@ class ButtonTab extends AlignableTab {
 	void createExampleWidgets () {
 	
 		/* Compute the widget style */
-		int style = SWT.NONE;
+		int style = getDefaultStyle();
 		if (pushButton.getSelection()) style |= SWT.PUSH;
 		if (checkButton.getSelection()) style |= SWT.CHECK;
 		if (radioButton.getSelection()) style |= SWT.RADIO;

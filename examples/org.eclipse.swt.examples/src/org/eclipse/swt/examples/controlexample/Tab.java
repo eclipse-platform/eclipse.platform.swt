@@ -51,6 +51,11 @@ abstract class Tab {
 	static final int TOO_SMALL_SIZE	= 10;
 	static final int SMALL_SIZE		= 50;
 	static final int LARGE_SIZE		= 100;
+	
+	/* Experimental right-to-left support */
+	static final boolean RTL_SUPPORT_ENABLE = false;
+	Group orientationGroup;
+	Button rtlButton, ltrButton, defaultOrietationButton;
 
 	/* Common controls for the "Colors" group */
 	Button backgroundButton, foregroundButton, fontButton;
@@ -88,6 +93,9 @@ abstract class Tab {
 		createDisplayGroup ();
 		createSizeGroup ();
 		createColorGroup ();
+		if (RTL_SUPPORT_ENABLE) {
+			createOrientationGroup ();
+		}
 	
 		/*
 		 * For each Button child in the style group, add a selection
@@ -114,6 +122,11 @@ abstract class Tab {
 				Button button = (Button) children [i];
 				button.addSelectionListener (selectionListener);
 			}
+		}
+		if (RTL_SUPPORT_ENABLE) {
+			rtlButton.addSelectionListener (selectionListener); 
+			ltrButton.addSelectionListener (selectionListener);		
+			defaultOrietationButton.addSelectionListener (selectionListener);
 		}
 	}
 	
@@ -257,6 +270,21 @@ abstract class Tab {
 		/* Do nothing */
 	}
 	
+	void createOrientationGroup () {
+		/* Create Orientation group*/
+		orientationGroup = new Group (controlGroup, SWT.NONE);
+		orientationGroup.setLayout (new GridLayout());
+		orientationGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		orientationGroup.setText (ControlExample.getResourceString("Orientation"));
+		defaultOrietationButton = new Button (orientationGroup, SWT.RADIO);
+		defaultOrietationButton.setText (ControlExample.getResourceString("Default"));
+		defaultOrietationButton.setSelection (true);
+		ltrButton = new Button (orientationGroup, SWT.RADIO);
+		ltrButton.setText ("SWT.LEFT_TO_RIGHT");
+		rtlButton = new Button (orientationGroup, SWT.RADIO);
+		rtlButton.setText ("SWT.RIGHT_TO_LEFT");
+	}
+	
 	/**
 	 * Creates the "Size" group.  The "Size" group contains
 	 * controls that allow the user to change the size of
@@ -363,6 +391,21 @@ abstract class Tab {
 		gc.fillRectangle(0, 0, bounds.width, bounds.height);
 		gc.drawRectangle(0, 0, bounds.width - 1, bounds.height - 1);
 		gc.dispose();
+	}
+	
+	/**
+	 * Gets the default style for a widget
+	 *
+	 * @return the default style bit
+	 */
+	int getDefaultStyle () {
+		if (ltrButton != null && ltrButton.getSelection()) {
+			return SWT.LEFT_TO_RIGHT;
+		}
+		if (rtlButton != null && rtlButton.getSelection()) {
+			return SWT.RIGHT_TO_LEFT;
+		}
+		return SWT.NONE;
 	}
 	
 	/**

@@ -69,7 +69,7 @@ class CoolBarTab extends Tab {
 	 * Creates the "Example" widgets.
 	 */
 	void createExampleWidgets () {
-		int style = 0, itemStyle = 0;
+		int style = getDefaultStyle(), itemStyle = 0;
 
 		/* Compute the widget style */
 		int toolBarStyle = SWT.FLAT;

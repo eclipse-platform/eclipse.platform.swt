@@ -50,7 +50,7 @@ class ProgressBarTab extends RangeTab {
 	void createExampleWidgets () {
 
 		/* Compute the widget style */
-		int style = SWT.NONE;
+		int style = getDefaultStyle();
 		if (horizontalButton.getSelection ()) style |= SWT.HORIZONTAL;
 		if (verticalButton.getSelection ()) style |= SWT.VERTICAL;
 		if (smoothButton.getSelection ()) style |= SWT.SMOOTH;

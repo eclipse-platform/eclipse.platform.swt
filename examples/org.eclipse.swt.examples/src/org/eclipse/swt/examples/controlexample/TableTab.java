@@ -163,7 +163,7 @@ class TableTab extends ScrollableTab {
 	 */
 	void createExampleWidgets () {	
 		/* Compute the widget style */
-		int style = SWT.NONE;
+		int style = getDefaultStyle();
 		if (singleButton.getSelection ()) style |= SWT.SINGLE;
 		if (multiButton.getSelection ()) style |= SWT.MULTI;
 		if (verticalButton.getSelection ()) style |= SWT.V_SCROLL;
