@@ -158,19 +158,14 @@ int /*long*/ eventHandle () {
 	return fixedHandle;
 }
 
-public boolean forceFocus () {
-	checkWidget();
-	Shell shell = getShell ();
-	shell.setSavedFocus (this);
-	if (!isEnabled () || !isVisible ()) return false;
-	shell.bringToTop (false);
+boolean forceFocus (int /*long*/ focusHandle) {
 	if (lastFocus != null && lastFocus.setFocus ()) return true;
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		ToolItem item = items [i];
 		if (item.setFocus ()) return true;
 	}
-	return super.forceFocus ();
+	return super.forceFocus (focusHandle);
 }
 
 /**

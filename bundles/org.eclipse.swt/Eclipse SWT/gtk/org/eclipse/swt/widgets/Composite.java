@@ -312,6 +312,13 @@ int /*long*/ focusHandle () {
 	return super.focusHandle ();
 }
 
+boolean forceFocus (int /*long*/ focusHandle) {
+	if (socketHandle != 0) OS.GTK_WIDGET_SET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
+	boolean result = super.forceFocus (focusHandle);
+	if (socketHandle != 0) OS.GTK_WIDGET_UNSET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
+	return result;
+}
+
 /**
  * Returns an array containing the receiver's children.
  * <p>
@@ -457,6 +464,12 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	}
 	return result;
 }
+
+int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
+	if (widget == socketHandle) return 0;
+	return super.gtk_focus (widget, directionType);
+}
+
 int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ result = super.gtk_focus_in_event (widget, event);
 	return (state & CANVAS) != 0 ? 1 : result;
@@ -505,6 +518,13 @@ void hookEvents () {
 			OS.g_signal_connect (handle, OS.style_set, display.windowProc3, STYLE_SET);
 		}
 	}
+}
+
+boolean hasFocus () {
+	if (socketHandle != 0) {
+		return this == display.getFocusControl ();
+	}
+	return super.hasFocus();
 }
 
 boolean hooksKeys () {
@@ -716,18 +736,29 @@ public void setLayout (Layout layout) {
 	this.layout = layout;
 }
 
-boolean setTabGroupFocus () {
-	if (isTabItem ()) return setTabItemFocus ();
+boolean setTabGroupFocus (boolean next) {
+	if (isTabItem ()) return setTabItemFocus (next);
 	boolean takeFocus = (style & SWT.NO_FOCUS) == 0;
 	if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
 	if (socketHandle != 0) takeFocus = true;
-	if (takeFocus  && setTabItemFocus ()) return true;
+	if (takeFocus  && setTabItemFocus (next)) return true;
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.isTabItem () && child.setTabItemFocus ()) return true;
+		if (child.isTabItem () && child.setTabItemFocus (next)) return true;
 	}
 	return false;
+}
+
+boolean setTabItemFocus (boolean next) {
+	if (!super.setTabItemFocus (next)) return false;
+	if (socketHandle != 0) {
+		int direction = next ? OS.GTK_DIR_TAB_FORWARD : OS.GTK_DIR_TAB_BACKWARD;
+		OS.GTK_WIDGET_UNSET_FLAGS (socketHandle, OS.GTK_HAS_FOCUS);
+		boolean result = OS.gtk_widget_child_focus (socketHandle, direction);
+		OS.GTK_WIDGET_SET_FLAGS (socketHandle, OS.GTK_HAS_FOCUS);
+	}
+	return true;
 }
 
 /**
@@ -779,6 +810,11 @@ int traversalCode(int key, GdkEventKey event) {
 		if (hooksKeys ()) return 0;
 	}
 	return super.traversalCode (key, event);
+}
+
+boolean translateTraversal (GdkEventKey keyEvent) {
+	if (socketHandle != 0) return false;
+	return super.translateTraversal (keyEvent);
 }
 
 }

@@ -7870,6 +7870,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1add_1events)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1child_1focus
+JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1widget_1child_1focus)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	OS_NATIVE_ENTER(env, that, gtk_1widget_1child_1focus_FUNC);
+	rc = (jboolean)gtk_widget_child_focus((GtkWidget *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, gtk_1widget_1child_1focus_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1widget_1create_1pango_1layout__II
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1create_1pango_1layout__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

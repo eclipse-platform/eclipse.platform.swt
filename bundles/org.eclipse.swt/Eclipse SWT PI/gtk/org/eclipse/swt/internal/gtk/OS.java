@@ -203,6 +203,9 @@ public class OS {
 	public static final int GTK_CORNER_TOP_RIGHT = 0x2;
 	public static final int GTK_DIALOG_DESTROY_WITH_PARENT = 1 << 1;
 	public static final int GTK_DIALOG_MODAL = 1 << 0;
+	public static final int GTK_DIR_TAB_FORWARD = 0;
+	public static final int GTK_DIR_TAB_BACKWARD = 1;
+	public static final int GTK_HAS_FOCUS = 1 << 12;
 	public static final int GTK_JUSTIFY_CENTER = 0x2;
 	public static final int GTK_JUSTIFY_LEFT = 0x0;
 	public static final int GTK_JUSTIFY_RIGHT = 0x1;
@@ -1013,6 +1016,7 @@ public static final synchronized native int /*long*/ gtk_vscrollbar_new(int /*lo
 public static final synchronized native int /*long*/ gtk_vseparator_new();
 public static final synchronized native void gtk_widget_add_accelerator(int /*long*/ widget, byte[] accel_signal, int /*long*/ accel_group, int accel_key, int accel_mods, int accel_flags);
 public static final synchronized native void gtk_widget_add_events(int /*long*/ widget, int events);
+public static final synchronized native boolean gtk_widget_child_focus(int /*long*/ widget, int direction);
 public static final synchronized native int /*long*/ gtk_widget_create_pango_layout(int /*long*/ widget, byte[] text);
 public static final synchronized native int /*long*/ gtk_widget_create_pango_layout(int /*long*/ widget, int /*long*/ text);
 public static final synchronized native void gtk_widget_destroy(int /*long*/ widget);

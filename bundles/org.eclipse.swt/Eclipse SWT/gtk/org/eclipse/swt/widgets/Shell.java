@@ -715,6 +715,23 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
+int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
+	switch ((int)/*64*/directionType) {
+		case OS.GTK_DIR_TAB_FORWARD:
+		case OS.GTK_DIR_TAB_BACKWARD:
+			Control control = display.getFocusControl ();
+			if (control != null) {
+				if ((control.state & CANVAS) != 0 && (control.style & SWT.EMBEDDED) != 0) {
+					int traversal = directionType == OS.GTK_DIR_TAB_FORWARD ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
+					control.traverse (traversal);
+					return 1;
+				}
+			}
+			break;
+	}
+	return super.gtk_focus (widget, directionType);
+}
+
 int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 	minimized = false;
 	sendEvent (SWT.Deiconify);
