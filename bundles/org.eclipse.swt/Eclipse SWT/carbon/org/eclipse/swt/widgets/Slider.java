@@ -207,6 +207,10 @@ void createHandle () {
 	handle = outControl [0];
 }
 
+void drawBackground (int control) {
+	drawBackground (control, background);
+}
+
 /**
  * Returns the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
