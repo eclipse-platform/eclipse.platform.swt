@@ -229,12 +229,14 @@ public void addVerifyListener (VerifyListener listener) {
 public void append (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);	
+	byte [] buffer;
 	if ((style & SWT.SINGLE) != 0) {
+		buffer = Converter.wcsToMbcs (null, string, true);
 		OS.gtk_entry_append_text (handle, buffer);
 	} else {
 		int length = OS.gtk_text_get_length (handle);
 		int [] position = new int [] {length};
+		buffer = Converter.wcsToMbcs (null, string, false);
 		OS.gtk_editable_insert_text (handle, buffer, buffer.length, position);
 		OS.gtk_editable_set_position (handle, position [0]);
 	}
