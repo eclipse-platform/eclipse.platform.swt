@@ -1191,14 +1191,18 @@ void initializeList () {
 	* the value of the selection color to use, which is between the
 	* background and bottom shadow colors.
 	*/
-	if (argList [7] == OS.XmREVERSED_GROUND_COLORS) {
-		listSelect = listForeground;
-	} else {
-		if (argList [7] == OS.XmHIGHLIGHT_COLOR) {
+	switch (argList [7]) {
+		case OS.XmDEFAULT_SELECT_COLOR:
+			listSelect = listForeground;
+			break;
+		case OS.XmREVERSED_GROUND_COLORS:
+			listSelect = listForeground;
+			break;
+		case OS.XmHIGHLIGHT_COLOR:
 			listSelect = argList [9];
-		} else {
-			listSelect = argList[7];	// the middle color to use
-		}
+			break;
+		default:
+			listSelect = argList [7];	// the middle color to use
 	}
 	OS.XtDestroyWidget (shellHandle);
 }
