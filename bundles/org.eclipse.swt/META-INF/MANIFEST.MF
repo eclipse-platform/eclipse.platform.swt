@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.swt; singleton=true
-Bundle-Version: 3.0.1
+Bundle-Version: 3.0.2
 Bundle-ClassPath: $ws$/swt.jar
 Bundle-Localization: plugin
 Provide-Package: 
