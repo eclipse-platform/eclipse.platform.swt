@@ -190,13 +190,13 @@ public Object getContents(Transfer transfer) {
 		// try the primary selection first
 		selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, typeIds[i]);
 		if( selection_data != 0) break;
-	};
+	}
 	if (selection_data == 0) {
 		// try the clipboard selection second
 		for (int i = 0; i < typeIds.length; i++) {
 			selection_data = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, typeIds[i]);
 			if( selection_data != 0) break;
-		};
+		}
 	}
 	if (selection_data == 0) {
 		return null; // No data available for this transfer
