@@ -46,12 +46,16 @@ GNOMELIBS = `pkg-config --libs gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 KDE_LIBS = -L/usr/lib  -L$(QT_HOME)/lib -shared  -lkdecore -lqt -lkparts
 KDE_CFLAGS = -fno-rtti -c -O -I/usr/include/kde -I$(QT_HOME)/include -I$(JAVA_HOME)/include
 
+# Uncomment for Native Stats tool
+#NATIVE_STATS = -DNATIVE_STATS
+
 MOZILLACFLAGS = -O \
 	-DXPCOM_GLUE=1 \
 	-DMOZILLA_STRICT_API=1 \
 	-fno-rtti \
 	-fno-exceptions \
 	-Wall \
+	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) \
 	-Wno-non-virtual-dtor \
 	-fPIC \
 	-I./ \
@@ -78,6 +82,7 @@ MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
  
 CFLAGS = -O -Wall \
 		-DSWT_VERSION=$(SWT_VERSION) \
+		$(NATIVE_STATS) \
 		-DLINUX -DGTK \
 		-I$(JAVA_HOME)/include \
 		-fpic \

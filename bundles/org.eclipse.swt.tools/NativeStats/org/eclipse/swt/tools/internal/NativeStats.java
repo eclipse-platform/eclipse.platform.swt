@@ -12,6 +12,8 @@ package org.eclipse.swt.tools.internal;
 
 import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -106,6 +108,11 @@ public void dump(Hashtable snapshot, PrintStream ps) {
 	
 void dump(String className, NativeFunction[] funcs, PrintStream ps) {
 	if (funcs == null) return;
+	Arrays.sort(funcs, new Comparator() {
+		public int compare(Object a, Object b) {
+			return ((NativeFunction)b).getCallCount() - ((NativeFunction)a).getCallCount();
+		}
+	});
 	ps.println(className);
 	for (int i = 0; i < funcs.length; i++) {
 		NativeFunction func = funcs[i];
