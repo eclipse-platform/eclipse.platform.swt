@@ -489,6 +489,9 @@ public Rectangle getImageBounds(int index) {
 		}
 	}
 	imageBounds.width = imageWidth;
+	if (imageBounds.height > 0 && !parent.getLinesVisible()) {
+		imageBounds.height -= parent.getGridLineWidth();
+	}
 	return imageBounds;
 }
 /**
