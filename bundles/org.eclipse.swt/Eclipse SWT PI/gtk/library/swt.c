@@ -3566,6 +3566,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1modify_
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1queue_1draw
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1widget_1queue_1draw\n")
+
+	gtk_widget_queue_draw((GtkWidget *)arg0);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1realize
 	(JNIEnv *env, jclass that, jint arg0)
 {

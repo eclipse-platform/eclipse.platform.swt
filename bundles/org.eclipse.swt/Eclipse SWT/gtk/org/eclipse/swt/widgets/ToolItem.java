@@ -682,6 +682,7 @@ public void setHotImage (Image image) {
 public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
+	Image oldImage = this.image;
 	super.setImage (image);
 	if (pixmapHandle == 0) return;
 	if (image != null) {
@@ -692,6 +693,7 @@ public void setImage (Image image) {
 		OS.gtk_pixmap_set (pixmapHandle, display.nullPixmap, 0);
 		OS.gtk_widget_hide (pixmapHandle);
 	}
+	if (oldImage == image) OS.gtk_widget_queue_draw (pixmapHandle);
 }
 
 /**

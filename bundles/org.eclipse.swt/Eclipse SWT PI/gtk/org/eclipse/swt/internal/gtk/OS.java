@@ -631,6 +631,7 @@ public static final native void gtk_widget_modify_bg(int widget, int state, GdkC
 public static final native void gtk_widget_modify_fg(int widget, int state, GdkColor color);
 public static final native void gtk_widget_modify_font(int widget, int pango_font_descr);
 public static final native void gtk_widget_modify_text(int widget, int state, GdkColor color);
+public static final native void gtk_widget_queue_draw(int widget);
 public static final native void gtk_widget_realize(int widget);
 public static final native void gtk_widget_remove_accelerator(int widget, int accel_group, int accel_key, int accel_mods);
 public static final native void gtk_widget_reparent(int widget, int new_parent);

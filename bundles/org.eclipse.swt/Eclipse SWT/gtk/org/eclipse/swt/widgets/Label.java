@@ -388,6 +388,7 @@ void setForegroundColor (GdkColor color) {
  */
 public void setImage (Image image) {
 	checkWidget ();
+	Image oldImage = this.image;
 	this.image = image;
 	if ((style & SWT.SEPARATOR) != 0) return;
 	OS.gtk_widget_hide (labelHandle);
@@ -399,6 +400,7 @@ public void setImage (Image image) {
 		OS.gtk_pixmap_set (pixmapHandle, display.nullPixmap, 0);
 		OS.gtk_widget_hide (pixmapHandle);
 	}
+	if (oldImage == image) OS.gtk_widget_queue_draw (pixmapHandle);
 }
 
 /**
