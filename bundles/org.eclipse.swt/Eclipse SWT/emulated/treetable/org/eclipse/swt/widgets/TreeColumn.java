@@ -83,7 +83,7 @@ int getContentWidth (GC gc) {
 	return contentWidth;
 }
 int getIndex () {
-	TreeColumn[] columns = parent.getColumns ();
+	TreeColumn[] columns = parent.columns;
 	for (int i = 0; i < columns.length; i++) {
 		if (columns [i] == this) return i;
 	}

@@ -208,9 +208,9 @@ public void dispose () {
 		if (isLastChild () && index > 0) {
 			/* vertical connector lines no longer needed for this item */
 			if (parentItem != null) {
-				startIndex = parentItem.getItems () [index - 1].availableIndex;
+				startIndex = parentItem.items [index - 1].availableIndex;
 			} else {
-				startIndex = parent.getItems () [index - 1].availableIndex;
+				startIndex = parent.items [index - 1].availableIndex;
 			}
 		} else {
 			startIndex = availableIndex;
@@ -357,12 +357,23 @@ int getContentX (int columnIndex) {
 		}
 		return contentX;
 	}
+
 	/* column 0 */
 	if ((parent.style & SWT.CHECK) != 0) {
 		Rectangle checkBounds = getCheckboxBounds ();
 		return checkBounds.x + checkBounds.width + Tree.MARGIN_IMAGE;
 	}
-	return getHconnectorEndpoints () [1].x + Tree.MARGIN_IMAGE;
+	
+	int x = parent.getCellPadding () - parent.horizontalOffset;
+	if (!isRoot ()) {
+		int expanderWidth = parent.expanderBounds.width + INDENT_HIERARCHY;
+		x += expanderWidth * getDepth ();
+	}
+	x += parent.expanderBounds.width;
+	if (items.length == 0) {
+		x += Compatibility.floor (parent.expanderBounds.width, 2);
+	}
+	return x + Tree.MARGIN_IMAGE + INDENT_HIERARCHY;
 }
 int getDepth () {
 	if (parentItem == null) return 0;
@@ -527,9 +538,9 @@ public Rectangle getImageBounds (int columnIndex) {
 int getIndex () {
 	TreeItem[] items;
 	if (parentItem != null) {
-		items = parentItem.getItems ();
+		items = parentItem.items;
 	} else {
-		items = parent.getItems ();
+		items = parent.items;
 	}
 	for (int i = 0; i < items.length; i++) {
 		if (items [i] == this) return i;
@@ -694,9 +705,8 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 
 		/* Draw vertical line above expander */
 		int lineX = expanderBounds.x + expanderBounds.width / 2;
-		int itemCount = getItemCount ();
 		int y2 = expanderBounds.y;
-		if (itemCount == 0) {
+		if (items.length == 0) {
 			y2 += expanderBounds.height / 2;
 		}
 		
@@ -707,7 +717,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 
 		/* Draw vertical line below expander if the receiver has lower siblings */
 		if (!isLastChild ()) {
-			if (itemCount != 0) y2 += expanderBounds.height;
+			if (items.length != 0) y2 += expanderBounds.height;
 			gc.drawLine (lineX, y2, lineX, y + itemHeight);
 		}
 
