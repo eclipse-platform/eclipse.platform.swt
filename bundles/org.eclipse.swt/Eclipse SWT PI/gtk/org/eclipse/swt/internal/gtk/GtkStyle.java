@@ -101,5 +101,5 @@ public class GtkStyle {
 	public int base_gc0, base_gc1, base_gc2, base_gc3, base_gc4;
 	public int black_gc;
 	public int white_gc;
-	public int bg_pixmap0, bg_pixmap1, bg_pixmap2, bg_pixmap3, bg_pixmap4, bg_pixmap5;
+	public int bg_pixmap0, bg_pixmap1, bg_pixmap2, bg_pixmap3, bg_pixmap4;
 }
