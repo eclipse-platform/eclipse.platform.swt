@@ -620,7 +620,6 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	* events.
 	*/	
 	if (!shell.isDisposed ()) {
-		System.out.println("here");
 		shell.setActiveControl (this);
 	}
 //	if ((state & CANVAS) != 0 && userData != 0) return OS.noErr;
