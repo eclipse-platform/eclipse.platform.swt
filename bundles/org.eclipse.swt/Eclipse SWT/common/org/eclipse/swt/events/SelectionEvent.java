@@ -79,6 +79,7 @@ public class SelectionEvent extends TypedEvent {
 
 	/**
 	 * A flag indicating whether the operation should be allowed.
+	 * Setting this field to <code>false</code> will cancel the operation.
 	 */
 	public boolean doit;
 	
@@ -100,5 +101,24 @@ public SelectionEvent(Event e) {
 	this.doit = e.doit;
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
+public String toString() {
+	String string = super.toString ();
+	return string.substring (0, string.length() - 1) // remove trailing '}'
+		+ " item=" + item
+		+ " detail=" + detail
+		+ " x=" + x
+		+ " y=" + y
+		+ " width=" + width
+		+ " height=" + height
+		+ " stateMask=" + stateMask
+		+ " doit=" + doit
+		+ "}";
+}
 }
 

@@ -42,6 +42,7 @@ public class OS {
 	public static final int GDK_BUTTON_RELEASE = 0x7;
 	public static final int GDK_BUTTON_RELEASE_MASK = 0x200;
 	public static final int GDK_CAP_BUTT = 0x1;
+	public static final int GDK_CAP_ROUND = 0x2;
 	public static final int GDK_COLORSPACE_RGB = 0;
 	public static final int GDK_CONTROL_MASK = 0x4;
 	public static final int GDK_COPY = 0x0;
@@ -252,8 +253,11 @@ public class OS {
 	public static final int PANGO_STYLE_OBLIQUE = 0x1;
 	public static final int PANGO_TAB_LEFT = 0;
 	public static final int PANGO_UNDERLINE_LOW = 3;
+	public static final int PANGO_UNDERLINE_SINGLE = 1;
 	public static final int PANGO_WEIGHT_BOLD = 0x2bc;
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
+	public static final int PANGO_WRAP_WORD = 0;
+	public static final int PANGO_WRAP_WORD_CHAR = 2;
 	public static final int XA_CARDINAL = 0x6;
 	
 	/** Signals */
@@ -286,6 +290,7 @@ public class OS {
 	public static final byte[] preedit_changed = signal("preedit_changed");
 	public static final byte[] realize = signal("realize");
 	public static final byte[] row_activated = signal("row_activated");
+	public static final byte[] scroll_child = signal("scroll_child");
 	public static final byte[] select = signal("select");
 	public static final byte[] show = signal("show");
 	public static final byte[] show_help = signal("show_help");
@@ -334,8 +339,14 @@ public static final synchronized native int GTK_ENTRY_IM_CONTEXT(int widget);
 public static final synchronized native int GTK_TEXTVIEW_IM_CONTEXT(int widget);
 
 /** X11 Native methods and constants */
+public static final int Above = 0;
+public static final int Below = 1;
+public static final int CWSibling = 0x20;
+public static final int CWStackMode = 0x40;
 public static final int RevertToParent = 2;
 public static final native boolean GDK_WINDOWING_X11();
+public static final synchronized native int XDefaultScreen(int display);
+public static final synchronized native int XReconfigureWMWindow(int display, int window, int screen, int valueMask, XWindowChanges values);
 public static final synchronized native int XSetInputFocus(int display, int window, int revert, int time);
 public static final synchronized native int gdk_x11_drawable_get_xdisplay(int drawable);
 public static final synchronized native int gdk_x11_drawable_get_xid(int drawable);
@@ -407,6 +418,9 @@ public static final synchronized native void g_strfreev(int string_array);
 public static final synchronized native void g_thread_init(int vtable);
 public static final synchronized native boolean g_thread_supported();
 public static final synchronized native int g_utf16_to_utf8(char[] str, int len, int[] items_read, int[] items_written, int[] error);
+public static final synchronized native int g_utf8_offset_to_pointer(int str, long offset);
+public static final synchronized native long g_utf8_pointer_to_offset(int str,int pos);
+public static final synchronized native int g_utf8_strlen(int str, int max);
 public static final synchronized native int g_utf8_to_utf16(byte[] str, int len, int[] items_read, int[] items_written, int[] error);
 public static final synchronized native int g_utf8_to_utf16(int str, int len, int[] items_read, int[] items_written, int[] error);
 public static final synchronized native int gdk_atom_intern(byte[] atom_name, boolean only_if_exists);
@@ -428,6 +442,7 @@ public static final synchronized native void gdk_draw_layout(int drawable, int g
 public static final synchronized native void gdk_draw_layout_with_colors(int drawable, int gc, int x, int y, int layout, GdkColor foreground, GdkColor background);
 public static final synchronized native void gdk_draw_line(int drawable, int gc, int x1, int y1, int x2, int y2);
 public static final synchronized native void gdk_draw_lines(int drawable, int gc, int[] points, int npoints);
+public static final synchronized native void gdk_draw_point(int drawable, int gc, int x, int y);
 public static final synchronized native void gdk_draw_polygon(int drawable, int gc, int filled, int[] points, int npoints);
 public static final synchronized native void gdk_draw_rectangle(int drawable, int gc, int filled, int x, int y, int width, int height);
 public static final synchronized native int gdk_drawable_get_image(int drawable, int x, int y, int width, int height);
@@ -964,10 +979,15 @@ public static final native void memmove(byte[] dest, int src, int size);
 public static final native void memmove(char[] dest, int src, int size);
 public static final native void memmove(int[] dest, int src, int size);
 public static final native void memset(int buffer, char c, int num);
+public static final synchronized native int pango_attr_background_new (short red, short green, short blue);
+public static final synchronized native int pango_attr_font_desc_new(int desc);
+public static final synchronized native int pango_attr_foreground_new (short red, short green, short blue);
 public static final synchronized native void pango_attr_list_insert(int list, int attr);
 public static final synchronized native int pango_attr_list_new();
 public static final synchronized native void pango_attr_list_unref(int list);
+public static final synchronized native int pango_attr_strikethrough_new(boolean strikethrough);
 public static final synchronized native int pango_attr_underline_new(int underline);
+public static final synchronized native int pango_attr_weight_new(int weight);
 public static final synchronized native int pango_context_get_language(int context);
 public static final synchronized native int pango_context_get_metrics(int context, int desc, int language);
 public static final synchronized native void pango_context_list_families(int context, int[] families, int[] n_families);
@@ -993,7 +1013,12 @@ public static final synchronized native int pango_font_metrics_get_ascent(int me
 public static final synchronized native int pango_font_metrics_get_descent(int metrics);
 public static final synchronized native void pango_font_metrics_unref(int metrics);
 public static final synchronized native int pango_language_from_string(byte[] language);
+public static final synchronized native void pango_layout_context_changed (int layout);
+public static final synchronized native int pango_layout_get_attributes(int layout);
+public static final synchronized native void pango_layout_get_cursor_pos(int layout, int index, PangoRectangle strong_pos, PangoRectangle weak_pos);
 public static final synchronized native void pango_layout_get_size(int layout, int[] width, int[] height);
+public static final synchronized native int pango_layout_get_text(int layout);
+public static final synchronized native int pango_layout_get_width(int layout);
 public static final synchronized native int pango_layout_new(int context);
 public static final synchronized native void pango_layout_set_attributes(int layout, int attrs);
 public static final synchronized native void pango_layout_set_font_description(int context, int descr);
@@ -1001,6 +1026,8 @@ public static final synchronized native void pango_layout_set_single_paragraph_m
 public static final synchronized native void pango_layout_set_tabs(int layout, int tabs);
 public static final synchronized native void pango_layout_set_text(int layout, byte[] text, int length);
 public static final synchronized native void pango_layout_set_width(int layout, int width);
+public static final synchronized native void pango_layout_set_wrap (int layout, int wrap);
+public static final synchronized native boolean pango_layout_xy_to_index(int layout, int x, int y, int[] index, int[] trailing);
 public static final synchronized native void pango_tab_array_free(int tab_array);
 public static final synchronized native int pango_tab_array_new(int initial_size, boolean positions_in_pixels);
 public static final synchronized native void pango_tab_array_set_tab(int tab_array, int tab_index, int alignment, int location);

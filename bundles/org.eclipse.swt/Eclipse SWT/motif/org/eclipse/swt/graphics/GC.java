@@ -688,6 +688,10 @@ public void drawOval(int x, int y, int width, int height) {
 	}
 	OS.XDrawArc(data.display, data.drawable, handle, x, y, width, height, 0, 23040);
 }
+public void drawPoint (int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	OS.XDrawPoint(data.display, data.drawable, handle, x, y);
+}
 /** 
  * Draws the closed polygon which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 
@@ -2495,7 +2499,7 @@ public void setLineStyle(int lineStyle) {
 	data.lineStyle = lineStyle;
 	XGCValues values = new XGCValues();
 	OS.XGetGCValues(xDisplay, handle, OS.GCLineWidth, values);
-	OS.XSetLineAttributes(xDisplay, handle, values.line_width, line_style, OS.CapButt, OS.JoinMiter);
+	OS.XSetLineAttributes(xDisplay, handle, values.line_width, line_style, OS.CapRound, OS.JoinMiter);
 }
 /** 
  * Sets the width that will be used when drawing lines
@@ -2512,7 +2516,7 @@ public void setLineStyle(int lineStyle) {
 public void setLineWidth(int width) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.LineSolid : OS.LineOnOffDash;
-	OS.XSetLineAttributes(data.display, handle, width, line_style, OS.CapButt, OS.JoinMiter);	
+	OS.XSetLineAttributes(data.display, handle, width, line_style, OS.CapRound, OS.JoinMiter);	
 }
 void setString(String string) {
 	if (string == data.string) return;

@@ -107,6 +107,9 @@ public class Shell extends Decorations {
 	Region region;
 
 	static final  byte [] WM_DELETE_WINDOW = Converter.wcsToMbcs(null, "WM_DELETE_WINDOW\0");
+	static final  byte [] _NET_WM_STATE = Converter.wcsToMbcs(null, "_NET_WM_STATE\0");
+	static final  byte [] _NET_WM_STATE_MAXIMIZED_VERT = Converter.wcsToMbcs(null, "_NET_WM_STATE_MAXIMIZED_VERT\0");
+	static final  byte [] _NET_WM_STATE_MAXIMIZED_HORZ = Converter.wcsToMbcs(null, "_NET_WM_STATE_MAXIMIZED_HORZ\0");
 /**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
@@ -830,6 +833,32 @@ public Point getLocation () {
 	}
 	return new Point (root_x [0], root_y [0]);
 }
+public boolean getMaximized () {
+	checkWidget();
+	int xDisplay = OS.XtDisplay (shellHandle);
+	int xWindow = OS.XtWindow (shellHandle);
+	if (xWindow != 0) {
+		int property = OS.XInternAtom (xDisplay, _NET_WM_STATE, true);
+		int[] type = new int[1], format = new int[1], nitems = new int[1], bytes_after = new int[1], atoms = new int[1];
+		OS.XGetWindowProperty (xDisplay, xWindow, property, 0, Integer.MAX_VALUE, false, OS.XA_ATOM, type, format, nitems, bytes_after, atoms);
+		boolean result = false;
+		if (type [0] != OS.None) {
+			int maximizedHorz = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_HORZ, true);
+			int maximizedVert = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_VERT, true);
+			int[] atom = new int[1];
+			for (int i=0; i<nitems [0]; i++) {
+				OS.memmove(atom, atoms [0] + i * 4, 4);
+				if (atom [0] == maximizedHorz || atom [0] == maximizedVert) {
+					result = true;
+					break;
+				}
+			}
+		}
+		if (atoms [0] != 0) OS.XFree (atoms [0]);
+		return result;
+	}
+	return super.getMaximized ();
+}
 /** 
  * Returns the region that defines the shape of the shell.
  *
@@ -1168,6 +1197,20 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	if (isFocus) caret.setFocus ();
 	return move || resize;
 }
+public void setMaximized (boolean maximized) {
+	checkWidget();
+	super.setMaximized (maximized);
+	if (!OS.XtIsRealized (handle)) realizeWidget();
+	int xDisplay = OS.XtDisplay (shellHandle);
+	int xWindow = OS.XtWindow (shellHandle);
+	if (xWindow != 0) {
+		int property = OS.XInternAtom (xDisplay, _NET_WM_STATE, true);
+		int maximizedHorz = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_HORZ, true);
+		int maximizedVert = OS.XInternAtom (xDisplay, _NET_WM_STATE_MAXIMIZED_VERT, true);
+		int[] atoms = new int[]{maximizedHorz, maximizedVert};
+		OS.XChangeProperty (xDisplay, xWindow, property, OS.XA_ATOM, 32, OS.PropModeReplace, atoms, atoms.length);
+	}
+}
 public void setMinimized (boolean minimized) {
 	checkWidget();
 	if (minimized == this.minimized) return;
@@ -1310,6 +1353,11 @@ public void setVisible (boolean visible) {
 		adjustTrim ();
 		
 		sendEvent (SWT.Show);
+		
+		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.APPLICATION_MODAL;
+		if ((style & mask) != 0) {
+			OS.XUngrabPointer (display.xDisplay, OS.CurrentTime);
+		}
 	} else {
 	
 		/* Hide the shell */

@@ -743,7 +743,8 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget ();
-	if (start < 0 || start > end) return "";
+	int length = OS.TXNDataSize (txnObject) / 2;
+	if (!(0 <= start && start <= end && end < length)) error (SWT.ERROR_INVALID_RANGE);
 	return getTXNText (start, end + 1);
 }
 
@@ -1458,6 +1459,9 @@ public void setText (String string) {
 }
 
 void setTXNBounds () {
+	Rect viewRect = new Rect ();
+	OS.TXNGetViewRect (txnObject, viewRect);
+
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	Rect inset = inset ();
@@ -1481,19 +1485,17 @@ void setTXNBounds () {
 	* of the text and then restore the selection.  This
 	* will cause the widget text widget to recompute the
 	* left scroll position.
-	* 
-	* NOTE: Currently, this work around is only applied
-	* to text widgets that are not visible.  If the widget
-	* is resized when it is visible, this is fine because
-	* the user has already seen that the text is scrolled.
 	*/
-	if (OS.IsControlVisible (handle)) return;
-	int [] oStartOffset = new int [1], oEndOffset = new int [1];
-	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-	OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
-	OS.TXNShowSelection (txnObject, false);
-	OS.TXNSetSelection (txnObject, oStartOffset [0], oEndOffset [0]);
-	OS.TXNShowSelection (txnObject, false);
+	int width = viewRect.left - viewRect.right;
+	int height = viewRect.bottom - viewRect.top;
+	if (width <= (inset.left + inset.right) && height <= (inset.top + inset.bottom)) {
+		int [] oStartOffset = new int [1], oEndOffset = new int [1];
+		OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
+		OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
+		OS.TXNShowSelection (txnObject, false);
+		OS.TXNSetSelection (txnObject, oStartOffset [0], oEndOffset [0]);
+		OS.TXNShowSelection (txnObject, false);
+	}
 }
 
 void setTXNText (int iStartOffset, int iEndOffset, String string) {

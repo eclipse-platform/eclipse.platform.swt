@@ -626,6 +626,19 @@ void setBackgroundPixel (int pixel) {
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.RB_SETBKCOLOR, 0, pixel);
 	setItemColors (OS.SendMessage (handle, OS.RB_GETTEXTCOLOR, 0, 0), pixel);
+	/*
+	* Feature in Windows.  For some reason, Windows
+	* does not fully erase the coolbar area and coolbar
+	* items when you set the background.  The work around
+	* is to invalidate the coolbar area.
+	*/
+	if (!OS.IsWindowVisible (handle)) return;
+	if (OS.IsWinCE) {
+		OS.InvalidateRect (handle, null, true);
+	} else {
+		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (handle, null, 0, flags);
+	}
 }
 
 void setForegroundPixel (int pixel) {
@@ -899,27 +912,6 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
-	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	if (result != null) return result;
-		
-	/*
-	* Feature in Windows.  For some reason, Windows
-	* does not fully erase the area that the cool bar
-	* occupies when the size of the cool bar is larger
-	* than the space occupied by the cool bar items.
-	* The fix is to erase the cool bar background.
-	*/
-	drawBackground (wParam);
-	
-	/*
-	* NOTE: The cool bar draws separators in WM_ERASEBKGND
-	* so it is essential to run the cool bar window proc
-	* after the background has been erased.
-	*/
-	return null;
-}
-
 LRESULT WM_NOTIFY (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When the cool bar window
@@ -1007,6 +999,31 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				event.x = lpnm.left;
 				event.y = lpnm.bottom;
 				child.postEvent (SWT.Selection, event);
+			}
+			break;
+		case OS.NM_CUSTOMDRAW:
+			/*
+			* Feature in Windows.  For some reason, Windows
+			* does not fully erase the area that the cool bar
+			* occupies when the size of the cool bar is larger
+			* than the space occupied by the cool bar items.
+			* The fix is to erase the cool bar background in
+			* all cases.
+			*
+			* NOTE:  This work around is unnecessary on XP
+			* and interferes with the drawing of the theme.
+			*/
+			if (COMCTL32_MAJOR >= 6) {
+				if (background == -1) break;
+			}
+			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
+			OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
+			switch (nmcd.dwDrawStage) {
+				case OS.CDDS_PREERASE:
+					return new LRESULT (OS.CDRF_NOTIFYPOSTERASE);
+				case OS.CDDS_POSTERASE :
+					drawBackground(nmcd.hdc);
+					break;
 			}
 			break;
 	}

@@ -40,6 +40,7 @@ public class Tracker extends Widget {
 	int cursor, lastCursor;
 	boolean tracking, stippled;
 	Rectangle [] rectangles, proportions;
+	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
 	final static int STEPSIZE_SMALL = 1;
 	final static int STEPSIZE_LARGE = 9;
@@ -193,7 +194,7 @@ Rectangle computeBounds () {
 
 Rectangle [] computeProportions (Rectangle [] rects) {
 	Rectangle [] result = new Rectangle [rects.length];
-	Rectangle bounds = computeBounds ();
+	bounds = computeBounds ();
 	for (int i = 0; i < rects.length; i++) {
 		int x = 0, y = 0, width = 0, height = 0;
 		if (bounds.width != 0) {
@@ -322,15 +323,15 @@ public boolean open () {
 		cursorOrientation |= hStyle;
 	}
 
-	Point cursorPos;
-	int mask = OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK; 
-	boolean mouseDown = (state [0] & mask) != 0;
 	/*
 	 * The following is intentionally commented.  Since gtk does not currently
 	 * support pointer warping, the resize cursor cannot be adjusted.  If this
 	 * capability is added in the future then the following should be uncommented,
 	 * and the #adjustResizeCursor method can be copied from another platform.
 	 */
+//	Point cursorPos;
+//	int mask = OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK; 
+//	boolean mouseDown = (state [0] & mask) != 0;
 //	if (!mouseDown) {
 //		if ((style & SWT.RESIZE) != 0) {
 //			cursorPos = adjustResizeCursor (xDisplay, xWindow);
@@ -521,10 +522,12 @@ void resizeRectangles (int xChange, int yChange) {
 		cursorOrientation |= SWT.DOWN;
 	}
 	
-	Rectangle bounds = computeBounds ();
-	// if the bounds will flip about the x or y axis then apply the adjustment
-	// up to the axis (ie.- where bounds width/height becomes 0) and change the
-	// cursor's orientation accordingly
+	/*
+	 * If the bounds will flip about the x or y axis then apply the adjustment
+	 * up to the axis (ie.- where bounds width/height becomes 0), change the
+	 * cursor's orientation accordingly, and flip each Rectangle's origin (only
+	 * necessary for > 1 Rectangles) 
+	 */
 	if ((cursorOrientation & SWT.LEFT) != 0) {
 		if (xChange > bounds.width) {
 			if ((style & SWT.RIGHT) == 0) return;
@@ -533,6 +536,12 @@ void resizeRectangles (int xChange, int yChange) {
 			bounds.x += bounds.width;
 			xChange -= bounds.width;
 			bounds.width = 0;
+			if (proportions.length > 1) {
+				for (int i = 0; i < proportions.length; i++) {
+					Rectangle proportion = proportions [i];
+					proportion.x = 100 - proportion.x - proportion.width;
+				}
+			}
 		}
 	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
 		if (bounds.width < -xChange) {
@@ -541,6 +550,12 @@ void resizeRectangles (int xChange, int yChange) {
 			cursorOrientation &= ~SWT.RIGHT;
 			xChange += bounds.width;
 			bounds.width = 0;
+			if (proportions.length > 1) {
+				for (int i = 0; i < proportions.length; i++) {
+					Rectangle proportion = proportions [i];
+					proportion.x = 100 - proportion.x - proportion.width;
+				}
+			}
 		}
 	}
 	if ((cursorOrientation & SWT.UP) != 0) {
@@ -551,6 +566,12 @@ void resizeRectangles (int xChange, int yChange) {
 			bounds.y += bounds.height;
 			yChange -= bounds.height;
 			bounds.height = 0;
+			if (proportions.length > 1) {
+				for (int i = 0; i < proportions.length; i++) {
+					Rectangle proportion = proportions [i];
+					proportion.y = 100 - proportion.y - proportion.height;
+				}
+			}
 		}
 	} else if ((cursorOrientation & SWT.DOWN) != 0) {
 		if (bounds.height < -yChange) {
@@ -559,6 +580,12 @@ void resizeRectangles (int xChange, int yChange) {
 			cursorOrientation &= ~SWT.DOWN;
 			yChange += bounds.height;
 			bounds.height = 0;
+			if (proportions.length > 1) {
+				for (int i = 0; i < proportions.length; i++) {
+					Rectangle proportion = proportions [i];
+					proportion.y = 100 - proportion.y - proportion.height;
+				}
+			}
 		}
 	}
 	

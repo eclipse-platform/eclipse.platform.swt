@@ -203,6 +203,8 @@ public class OS {
 	public static final int CC_ANYCOLOR = 0x100;
 	public static final int CC_ENABLEHOOK = 0x10;
 	public static final int CC_RGBINIT = 0x1;
+	public static final int CDDS_POSTERASE = 0x00000004;
+	public static final int CDDS_PREERASE = 0x00000003;
 	public static final int CDDS_PREPAINT = 0x00000001;
 	public static final int CDDS_ITEM = 0x00010000;
 	public static final int CDDS_ITEMPREPAINT = CDDS_ITEM | CDDS_PREPAINT;
@@ -210,6 +212,7 @@ public class OS {
 	public static final int CDRF_DODEFAULT = 0x00000000;
 	public static final int CDRF_NEWFONT = 0x00000002;
 	public static final int CDRF_NOTIFYITEMDRAW = 0x00000020;
+	public static final int CDRF_NOTIFYPOSTERASE = 0x00000040;
 	public static final int CDRF_NOTIFYSUBITEMDRAW = 0x00000020;
 	public static final int CFE_AUTOCOLOR = 0x40000000;
 	public static final int CFE_ITALIC = 0x2;
@@ -517,6 +520,7 @@ public class OS {
 	public static final int LVCFMT_RIGHT = 0x1;
 	public static final int LVCF_FMT = 0x1;
 	public static final int LVCF_IMAGE = 0x10;
+	public static final int LVCFMT_JUSTIFYMASK = 0x3;
 	public static final int LVCF_TEXT = 0x4;
 	public static final int LVCF_WIDTH = 0x2;
 	public static final int LVHT_ONITEM = 0xe;
@@ -910,6 +914,7 @@ public class OS {
 	public static final int TBN_DROPDOWN = 0xfffffd3a;
 	public static final int TBN_FIRST = 0xfffffd44;
 	public static final int TBSTATE_CHECKED = 0x1;
+	public static final int TBSTYLE_CUSTOMERASE = 0x2000;
 	public static final int TBSTYLE_DROPDOWN = 0x8;
 	public static final int TBSTATE_ENABLED = 0x4;
 	public static final int TBSTYLE_AUTOSIZE = 0x10;
@@ -1172,6 +1177,7 @@ public class OS {
 	public static final int WM_DESTROY = 0x2;
 	public static final int WM_DRAWITEM = 0x2b;
 	public static final int WM_ENDSESSION = 0x16;
+	public static final int WM_ENTERIDLE = 0x121;
 	public static final int WM_ERASEBKGND = 0x14;
 	public static final int WM_GETDLGCODE = 0x87;
 	public static final int WM_GETFONT = 0x31;
@@ -2041,6 +2047,7 @@ public static final native int CreatePolygonRgn(int[] lppt, int cPoints, int fnP
 public static final native int CreatePopupMenu ();
 public static final native int CreateRectRgn (int left, int top, int right, int bottom);
 public static final native int CreateSolidBrush (int colorRef);
+public static final native int CreateStreamOnHGlobal(int hGlobal, boolean fDeleteOnRelease, int[] ppstm);
 public static final native int CreateWindowExW (int dwExStyle, char [] lpClassName, char [] lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, int hWndParent, int hMenu, int hInstance, CREATESTRUCT lpParam);
 public static final native int CreateWindowExA (int dwExStyle, byte [] lpClassName, byte [] lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, int hWndParent, int hMenu, int hInstance, CREATESTRUCT lpParam);
 public static final native int DeferWindowPos (int hWinPosInfo, int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
@@ -2316,6 +2323,7 @@ public static final native void MoveMemory (LOGFONTA Destination, int Source, in
 public static final native void MoveMemory (MEASUREITEMSTRUCT Destination, int Source, int Length);
 public static final native void MoveMemory (NMHDR Destination, int Source, int Length);
 public static final native void MoveMemory (NMRGINFO Destination, int Source, int Length);
+public static final native void MoveMemory (NMCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (int Destination, NMLVCUSTOMDRAW Source, int Length);

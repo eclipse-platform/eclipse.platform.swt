@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
  
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.MenuTrackingData;
+import org.eclipse.swt.internal.carbon.Rect;
  
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -255,7 +256,7 @@ void createItem (MenuItem item, int index) {
 	checkWidget ();
 	int count = OS.CountMenuItems (handle);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-	int attributes = 0;
+	int attributes = OS.kMenuItemAttrAutoRepeat | OS.kMenuItemAttrCustomDraw;
 	if ((item.style & SWT.SEPARATOR) != 0) attributes = OS.kMenuItemAttrSeparator;
 	int result = OS.InsertMenuItemTextWithCFString (handle, 0, (short) index, attributes, 0);
 	if (result != OS.noErr) {
@@ -539,6 +540,8 @@ void hookEvents () {
 		OS.kEventClassMenu, OS.kEventMenuClosed,
 		OS.kEventClassMenu, OS.kEventMenuOpening,
 		OS.kEventClassMenu, OS.kEventMenuTargetItem,
+		OS.kEventClassMenu, OS.kEventMenuMeasureItemWidth,
+		OS.kEventClassMenu, OS.kEventMenuDrawItemContent,
 	};
 	int menuTarget = OS.GetMenuEventTarget (handle);
 	OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, 0, null);
@@ -549,6 +552,58 @@ int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	closed = true;
 	sendEvent (SWT.Hide);
+	return OS.eventNotHandledErr;
+}
+
+int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
+	short [] index = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
+	MenuItem item = items [index [0] - 1];
+	if (item.accelerator == 0) {
+		int accelIndex = item.text.indexOf ('\t');
+		if (accelIndex != -1) {
+			String accelText = item.text.substring (accelIndex);
+			int result = OS.CallNextEventHandler (nextHandler, theEvent);
+			Rect rect = new Rect ();
+			OS.GetEventParameter (theEvent, OS.kEventParamMenuItemBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rect);
+			int [] context = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+			char [] buffer = new char [accelText.length ()];
+			accelText.getChars (0, buffer.length, buffer, 0);
+			int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			short [] extraHeight = new short [1], extraWidth = new short [1];
+			OS.GetThemeMenuItemExtra ((short) OS.kThemeMenuItemHierarchical, extraHeight, extraWidth);
+			rect.right -= extraWidth [0] / 2;
+			OS.DrawThemeTextBox (str, (short) OS.kThemeMenuItemCmdKeyFont, OS.kThemeStateActive, false, rect, (short) OS.teFlushRight, context [0]);
+			OS.CFRelease (str);
+			return result;
+		}			
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
+	short [] index = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
+	MenuItem item = items [index [0] - 1];
+	if (item.accelerator == 0) {
+		int accelIndex = item.text.indexOf ('\t');
+		if (accelIndex != -1) {
+			String accelText = item.text.substring (accelIndex);
+			int result = OS.CallNextEventHandler (nextHandler, theEvent);
+			char [] buffer = new char [accelText.length ()];
+			accelText.getChars (0, buffer.length, buffer, 0);
+			int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			org.eclipse.swt.internal.carbon.Point size = new org.eclipse.swt.internal.carbon.Point ();
+			OS.GetThemeTextDimensions (str, (short) OS.kThemeMenuItemCmdKeyFont, 0, false, size, null);
+			OS.CFRelease (str);
+			short [] width = new short [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamMenuItemWidth, OS.typeSInt16, null, 2, null, width);
+			width [0] += 5 + size.h;
+			OS.SetEventParameter (theEvent, OS.kEventParamMenuItemWidth, OS.typeSInt16, 2, width);
+			return result;
+		}			
+	}
 	return OS.eventNotHandledErr;
 }
 

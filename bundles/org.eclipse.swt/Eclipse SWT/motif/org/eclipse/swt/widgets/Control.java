@@ -2525,7 +2525,8 @@ boolean translateMnemonic (char key, int keysym, XKeyEvent xEvent) {
 		int code = traversalCode (key, xEvent);
 		if ((code & SWT.TRAVERSE_MNEMONIC) == 0) return false;
 	} else {
-		if (xEvent.state != OS.Mod1Mask) return false;
+		int mask = OS.ControlMask | OS.ShiftMask | OS.Mod1Mask;
+		if ((xEvent.state & mask) != OS.Mod1Mask) return false;
 	}
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {
@@ -2795,7 +2796,10 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
 	sendMouseEvent (SWT.MouseDown, xEvent);
 	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
-		postEvent (SWT.DragDetect);
+		Event event = new Event ();
+		event.x = xEvent.x;
+		event.y = xEvent.y;
+		postEvent (SWT.DragDetect, event);
 	}
 	if (xEvent.button == 3) {
 		setFocus ();

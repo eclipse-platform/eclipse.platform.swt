@@ -883,8 +883,9 @@ boolean fixKey (int[] keysym, byte[] buffer, int state) {
 	/*
 	* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
 	* translated correctly by XLookupString().  They are mapped
-	* to 0x1005FF10 and 0x1005FF11 respectively.  The fix is to
-	* look for these values explicitly and correct them.
+	* to SunXK_F36 and SunXK_F37 respectively.  The fix is to
+	* look for these values (and others) and explicitly correct
+	* them.
 	*/
 	if (OS.IsSunOS && keysym [0] != 0) {
 		switch (keysym [0]) {
@@ -919,7 +920,8 @@ boolean fixKey (int[] keysym, byte[] buffer, int state) {
 	/*
 	* Bug in Motif.  On HP-UX only, Shift+F9, Shift+F10, Shift+F11
 	* and Shift+F12 are not translated correctly by XLookupString().
-	* The fix is to look for these values explicitly and correct them.
+	* The fix is to look for these values (and others) explicitly
+	* and correct them.
 	*/
 	if (OS.IsHPUX && keysym [0] != 0) {
 		switch (keysym [0]) {
@@ -927,6 +929,7 @@ boolean fixKey (int[] keysym, byte[] buffer, int state) {
 			case OS.XK_KP_F2: keysym [0] = OS.XK_F10; break;
 			case OS.XK_KP_F3: keysym [0] = OS.XK_F11; break;
 			case OS.XK_KP_F4: keysym [0] = OS.XK_F12; break;
+			case OS.hpXK_BackTab: keysym [0] = OS.XK_ISO_Left_Tab; break;
 		}
 	}
 	

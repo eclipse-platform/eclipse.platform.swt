@@ -738,6 +738,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateSolidBrush)
 }
 #endif
 
+#ifndef NO_CreateStreamOnHGlobal
+JNIEXPORT jint JNICALL OS_NATIVE(CreateStreamOnHGlobal)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "CreateStreamOnHGlobal\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)CreateStreamOnHGlobal((HGLOBAL)arg0, (BOOL)arg1, (LPSTREAM *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "CreateStreamOnHGlobal\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateWindowExA
 JNIEXPORT jint JNICALL OS_NATIVE(CreateWindowExA)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jobject arg11)
@@ -4325,6 +4340,19 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_MSG
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setMSGFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II\n")
+}
+#endif
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NMCUSTOMDRAW _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2II\n")
+	if (arg0) lparg0 = &_arg0;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+	if (arg0) setNMCUSTOMDRAWFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2II\n")
 }
 #endif
 

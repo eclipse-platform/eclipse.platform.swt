@@ -34,7 +34,7 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String filterPath = "";
 	String fileName = "";
-	String[] fileNames;
+	String[] fileNames = new String [0];
 	String fullPath = "";
 	int handle;
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
@@ -109,8 +109,7 @@ public String getFileName () {
 }
 /**
  * Returns the paths of all files that were selected
- * in the dialog relative to the filter path, or null
- * if none are available.
+ * in the dialog relative to the filter path.
  * 
  * @return the relative paths of the files
  */
@@ -267,6 +266,7 @@ void preset() {
 		OS.gtk_file_selection_complete (handle, extBytes);
 	}	
 	fullPath = null;
+	fileNames = new String [0];
 }
 String interpretOsAnswer(String osAnswer) {
 	if (osAnswer==null) return null;

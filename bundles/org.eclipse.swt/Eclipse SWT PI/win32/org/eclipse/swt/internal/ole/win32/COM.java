@@ -49,6 +49,7 @@ public class COM extends OS {
 	//public static final GUID IIDIDataAdviseHolder = IIDFromString("{00000110-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID IIDIDataObject = IIDFromString("{0000010E-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID IIDIDispatch = IIDFromString("{00020400-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+	public static final GUID IIDIDocHostUIHandler = IIDFromString("{BD3F23C0-D43E-11CF-893B-00AA00BDCE1A}"); //$NON-NLS-1$	
 	public static final GUID IIDIDropSource = IIDFromString("{00000121-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID IIDIDropTarget = IIDFromString("{00000122-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	//public static final GUID IIDIEnumConnectionPoints = IIDFromString("{B196B285-BAB4-101A-B69C-00AA00341D07}"); //$NON-NLS-1$
@@ -100,7 +101,7 @@ public class COM extends OS {
 	//public static final GUID IIDIPersistPropertyBag = IIDFromString("{37D84F60-42CB-11CE-8135-00AA004BB851}"); //$NON-NLS-1$
 	public static final GUID IIDIPersistStorage = IIDFromString("{0000010A-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID IIDIPersistStream = IIDFromString("{00000109-0000-0000-C000-000000000046}"); //$NON-NLS-1$
-	//public static final GUID IIDIPersistStreamInit = IIDFromString("{7FD52380-4E07-101B-AE2D-08002B2EC713}"); //$NON-NLS-1$
+	public static final GUID IIDIPersistStreamInit = IIDFromString("{7FD52380-4E07-101B-AE2D-08002B2EC713}"); //$NON-NLS-1$
 	//public static final GUID IIDIPicture = IIDFromString("{7BF80980-BF32-101A-8BBB-00AA00300CAB}"); //$NON-NLS-1$
 	//public static final GUID IIDIPictureDisp = IIDFromString("{7BF80981-BF32-101A-8BBB-00AA00300CAB}"); //$NON-NLS-1$
 	//public static final GUID IIDIPropertyBag = IIDFromString("{55272A00-42CB-11CE-8135-00AA004BB851}"); //$NON-NLS-1$

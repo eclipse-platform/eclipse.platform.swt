@@ -598,13 +598,11 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-	int count;
 	if ((style & SWT.READ_ONLY) != 0) {
-		count = OS.CountMenuItems (menuHandle);
+		return OS.CountMenuItems (menuHandle);
 	} else {
-		count = OS.HIComboBoxGetItemCount (handle);
+		return OS.HIComboBoxGetItemCount (handle);
 	}
-	return count;
 }
 
 /**
@@ -899,7 +897,8 @@ int kEventRawKey (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	if (keyCode [0] == 36 /* Return */) {
 		if (translateTraversal (keyCode [0], theEvent)) return OS.noErr;
-		if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;	
+		if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+		postEvent(SWT.DefaultSelection);
 	}
 	return OS.eventNotHandledErr;
 }
@@ -1021,7 +1020,9 @@ public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
 	int count = getItemCount ();
-	if (0 > start || start >= count) error (SWT.ERROR_INVALID_RANGE);
+	if (!(0 <= start && start <= end && end < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	int newEnd = Math.min (end, count - 1);
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.DeleteMenuItems (menuHandle, (short)(start+1), newEnd-start+1);

@@ -8,8 +8,7 @@ public class nsIWidget extends nsISupports {
 	}
 	
 	public int Create(nsIWidget aParent, int aRect, int aHandleEventFunction, int aContext, int aAppShell, int aToolkit, int aInitData) {
-		nsISupports nsISupports = (nsISupports) aParent;
-		int aParentAddress = aParent != null ? ((nsISupports)aParent).getAddress() : 0;
+		int aParentAddress = aParent != null ? aParent.getAddress() : 0;
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aParentAddress, aRect, aHandleEventFunction, aContext, aAppShell, aToolkit, aInitData);
 	}
 	

@@ -33,10 +33,21 @@ public class AccessibleTextEvent extends SWTEventObject {
 	public int childID;				// IN
 	public int offset, length;		// OUT
 	
+/**
+ * Constructs a new instance of this class.
+ *
+ * @param source the object that fired the event
+ */
 public AccessibleTextEvent (Object source) {
 	super (source);
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
 public String toString () {
 	return "AccessibleTextEvent {childID=" + childID +  //$NON-NLS-1$
 		" offset=" + offset +  //$NON-NLS-1$

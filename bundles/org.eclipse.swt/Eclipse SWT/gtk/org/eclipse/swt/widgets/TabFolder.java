@@ -210,7 +210,7 @@ void createItem (TabItem item, int index) {
 		itemCount = OS.g_list_length (list);
 		OS.g_list_free (list);
 	}
-	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_ITEM_NOT_ADDED);
+	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (itemCount == items.length) {
 		TabItem [] newItems = new TabItem [items.length + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);

@@ -912,22 +912,14 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
-	/*
-	* Feature in Motif.  An index out of range handled
-	* correctly by the list widget but causes an unwanted
-	* Xm Warning.  The fix is to check the range before
-	* deleting an item.
-	*/
 	int [] argList = {OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (!(0 <= start && start < argList [1])) {
+	if (!(0 <= start && start <= end && end < argList [1])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	int newEnd = Math.min (end, argList [1] - 1);
-	for (int i = start; i <= newEnd; i++) {
+	for (int i = start; i <= end; i++) {
 		OS.XmComboBoxDeletePos (handle, start + 1);	
 	}
-	if (end >= argList [1]) error (SWT.ERROR_INVALID_RANGE);
 }
 void register () {
 	super.register ();

@@ -120,6 +120,9 @@ public class Display extends Device {
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
+	/* Drag origin */
+	int dragStartX, dragStartY;
+
 	/* Timers */
 	int [] timerIds;
 	Runnable [] timerList;
@@ -162,7 +165,6 @@ public class Display extends Device {
 		{OS.Pk_Return,		SWT.CR},
 		{OS.Pk_Delete,		SWT.DEL},
 		{OS.Pk_Escape,		SWT.ESC},
-		{OS.Pk_Cancel,		SWT.ESC},
 		{OS.Pk_Linefeed,	SWT.LF},
 		{OS.Pk_Tab,			SWT.TAB},
 		{OS.Pk_KP_Tab,		SWT.TAB},

@@ -27,6 +27,8 @@ public class DirectoryDialog extends Dialog {
 	String filterPath = "";
 	boolean cancel = true;
 	String message = "";
+	static final String SEPARATOR = System.getProperty ("file.separator");
+	
 /**
  * Constructs a new instance of this class given only its
  * parent.
@@ -229,7 +231,7 @@ public String open () {
 	OS.XmStringFree (xmStringPtr3);
 	OS.XmStringFree (xmStringPtr4);
 
-	// Add label widget for message text.
+	/* Add label widget for message text. */
 	/* Use the character encoding for the default locale */
 	byte [] buffer4 = Converter.wcsToMbcs (null, message, true);
 	int xmString1 = OS.XmStringGenerate(buffer4, null, OS.XmCHARSET_TEXT, null);
@@ -251,7 +253,7 @@ public String open () {
 	cancel = true;
 	OS.XtManageChild (dialog);
 
-	// Should be a pure OS message loop (no SWT AppContext)
+	/* Should be a pure OS message loop (no SWT AppContext) */
 	while (OS.XtIsRealized (dialog) && OS.XtIsManaged (dialog))
 		if (!appContext.readAndDispatch ()) appContext.sleep ();
 
@@ -279,14 +281,12 @@ public String open () {
 		}
 		OS.XmStringFree (xmString3);
 		int length = directoryPath.length ();
-		if (length != 0) {
-			if (directoryPath.charAt (length -1) == '/') {
-				directoryPath = directoryPath.substring (0, length - 1);
-			} else {
-				if (length > 1 && directoryPath.charAt (length - 2) == '/' && directoryPath.charAt (length - 1) == '*') {
-					directoryPath = directoryPath.substring (0, length - 2);
-				}
-			}
+		if (directoryPath.charAt (length - 1) == '*') {
+			directoryPath = directoryPath.substring (0, length - 1);
+			length--;
+		}
+		if (directoryPath.endsWith (SEPARATOR) && !directoryPath.equals (SEPARATOR)) {
+			directoryPath = directoryPath.substring (0, length - 1);
 		}
 		filterPath = directoryPath;
 	}
@@ -315,8 +315,13 @@ public void setFilterPath (String string) {
  * visible on the dialog while it is open.
  *
  * @param string the message
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
  */
 public void setMessage (String string) {
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	message = string;
 }
 }

@@ -373,14 +373,16 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	int hwnd = parent.handle;
+	LVCOLUMN lvColumn = new LVCOLUMN ();
+	lvColumn.mask = OS.LVCF_FMT | OS.LVCF_IMAGE;
+	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
+	lvColumn.fmt &= ~OS.LVCFMT_JUSTIFYMASK;
 	int fmt = 0;
 	if ((style & SWT.LEFT) == SWT.LEFT) fmt = OS.LVCFMT_LEFT;
 	if ((style & SWT.CENTER) == SWT.CENTER) fmt = OS.LVCFMT_CENTER;
 	if ((style & SWT.RIGHT) == SWT.RIGHT) fmt = OS.LVCFMT_RIGHT;
-	int hwnd = parent.handle;
-	LVCOLUMN lvColumn = new LVCOLUMN ();
-	lvColumn.mask = OS.LVCF_FMT;
-	lvColumn.fmt = fmt;
+	lvColumn.fmt |= fmt;
 	OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
 }
 
@@ -395,16 +397,14 @@ public void setImage (Image image) {
 	int hwnd = parent.handle;
 	LVCOLUMN lvColumn = new LVCOLUMN ();
 	lvColumn.mask = OS.LVCF_FMT | OS.LVCF_IMAGE;
-	lvColumn.fmt = OS.LVCFMT_IMAGE;
-	lvColumn.iImage = parent.imageIndex (image);
-	OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
-	if (image == null) {
-		lvColumn.mask = OS.LVCF_FMT;
-		if ((style & SWT.LEFT) == SWT.LEFT) lvColumn.fmt = OS.LVCFMT_LEFT;
-		if ((style & SWT.CENTER) == SWT.CENTER) lvColumn.fmt = OS.LVCFMT_CENTER;
-		if ((style & SWT.RIGHT) == SWT.RIGHT) lvColumn.fmt = OS.LVCFMT_RIGHT;
-		OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
+	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
+	if (image != null) {
+		lvColumn.fmt |= OS.LVCFMT_IMAGE;
+		lvColumn.iImage = parent.imageIndex (image);
+	} else {
+		lvColumn.fmt &= ~OS.LVCFMT_IMAGE;
 	}
+	OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
 }
 
 /**

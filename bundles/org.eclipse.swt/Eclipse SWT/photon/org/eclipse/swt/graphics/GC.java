@@ -946,6 +946,19 @@ public void drawOval (int x, int y, int width, int height) {
 	}
 }
 
+public void drawPoint (int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int flags = OS.PtEnter(0);
+	try {
+		int prevContext = setGC();
+		setGCClipping();
+		OS.PgDrawIPixel(x, y);
+		unsetGC(prevContext);
+	} finally {
+		if (flags >= 0) OS.PtLeave(flags);
+	}
+}
+
 /** 
  * Draws the closed polygon which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 
@@ -2300,6 +2313,9 @@ int setGC() {
 		}
 		if ((dirtyBits & DIRTY_CLIPPING) != 0) {
 			OS.PgSetMultiClip(data.clipRectsCount, data.clipRects);
+		}
+		if ((dirtyBits & (DIRTY_LINESTYLE | DIRTY_LINEWIDTH)) != 0) {
+			OS.PgSetStrokeCap(OS.Pg_ROUND_CAP);
 		}
 		if ((dirtyBits & DIRTY_LINESTYLE) != 0) {
 			byte[] dashList = null;

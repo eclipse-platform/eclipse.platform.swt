@@ -36,6 +36,7 @@ import org.eclipse.swt.internal.mozilla.*;
  * @since 3.0
  */
 public class Browser extends Composite {
+	
 	nsIWebBrowser webBrowser;
 	int gtkHandle;
 
@@ -43,7 +44,7 @@ public class Browser extends Composite {
 	XPCOMObject supports;
 	XPCOMObject weakReference;
 	XPCOMObject webProgressListener;
-	XPCOMObject webBrowserChrome;
+	XPCOMObject	webBrowserChrome;
 	XPCOMObject webBrowserChromeFocus;
 	XPCOMObject embeddingSiteWindow;
 	XPCOMObject interfaceRequestor;
@@ -52,17 +53,23 @@ public class Browser extends Composite {
 	XPCOMObject uriContentListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int refCount = 0;
+	int request;
+	String html;
 
 	/* External Listener management */
 	LocationListener[] locationListeners = new LocationListener[0];
+	NewWindowListener[] newWindowListeners = new NewWindowListener[0];
 	ProgressListener[] progressListeners = new ProgressListener[0];
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
+	VisibilityListener[] visibilityListeners = new VisibilityListener[0];
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocProvider; 
+	static WindowCreator WindowCreator;
 	static int BrowserCount;
+	static boolean mozilla;
 	static boolean IsLinux;
-	
+
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	
@@ -100,9 +107,9 @@ static {
  * @see #getStyle
  * 
  * @since 3.0
- */	
-public Browser(Composite parent, int style) {
-	super(parent, style | SWT.EMBEDDED);
+ */
+public Browser(Composite parent, int style) { 
+	super(parent,style | SWT.EMBEDDED);
 	
 	if (!IsLinux) {
 		dispose();
@@ -110,7 +117,7 @@ public Browser(Composite parent, int style) {
 	}
 
 	int[] result = new int[1];
-	if (BrowserCount == 0) {
+	if (!mozilla) {
 		try {
 			Library.loadLibrary("swt-gtk"); //$NON-NLS-1$
 			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
@@ -124,15 +131,17 @@ public Browser(Composite parent, int style) {
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES);
 		}
-		
+
 		LocProvider = new AppFileLocProvider();
 		LocProvider.AddRef();
 
 		int[] retVal = new int[1];
-		int rc = XPCOM.NS_NewLocalFile(mozillaPath, true, retVal);
+		nsString path = new nsString(mozillaPath);
+		int rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, retVal);
+		path.dispose();
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (retVal[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
-	
+			
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
 		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), LocProvider.getAddress());
 		localFile.Release();
@@ -146,19 +155,44 @@ public Browser(Composite parent, int style) {
 		rc = XPCOM.NS_GetComponentManager(result);
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-
+		
 		nsIComponentManager componentManager = new nsIComponentManager(result[0]);
 		result[0] = 0;
 		rc = componentManager.CreateInstance(XPCOM.NS_APPSHELL_CID, 0, nsIAppShell.NS_IAPPSHELL_IID, result);
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
 		componentManager.Release();
-
-		AppShell = new nsIAppShell(result[0]); 
+		
+		AppShell = new nsIAppShell(result[0]);
 		rc = AppShell.Create(null, null);
 		if (rc != XPCOM.NS_OK) error(rc);
 		rc = AppShell.Spinup();
 		if (rc != XPCOM.NS_OK) error(rc);
+		
+		WindowCreator = new WindowCreator();
+		WindowCreator.AddRef();
+		
+		rc = XPCOM.NS_GetServiceManager(result);
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+		
+		nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+		result[0] = 0;
+		byte[] buffer = XPCOM.NS_WINDOWWATCHER_CONTRACTID.getBytes();
+		byte[] aContractID = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		rc = serviceManager.GetServiceByContractID(aContractID, nsIWindowWatcher.NS_IWINDOWWATCHER_IID, result);
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
+		serviceManager.Release();
+		
+		nsIWindowWatcher windowWatcher = new nsIWindowWatcher(result[0]);
+		result[0] = 0;
+		rc = windowWatcher.SetWindowCreator(WindowCreator.getAddress());
+		if (rc != XPCOM.NS_OK) error(rc);
+		windowWatcher.Release();
+		
+		mozilla = true;
 	}
 	BrowserCount++;
 	if (BrowserCount == 1) {
@@ -166,10 +200,10 @@ public Browser(Composite parent, int style) {
 		final Display display = getDisplay();
 		display.asyncExec(new Runnable() {
 			public void run() {
+				if (BrowserCount == 0) return;
 				while (GTK.gtk_events_pending() != 0) {
 					GTK.gtk_main_iteration();
 				}
-				if (BrowserCount == 0) return;
 				display.timerExec(25, this);		
 			}
 		});
@@ -180,7 +214,7 @@ public Browser(Composite parent, int style) {
 	int rc = XPCOM.NS_GetComponentManager(result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-
+	
 	nsIComponentManager componentManager = new nsIComponentManager(result[0]);
 	result[0] = 0;
 	nsID NS_IWEBBROWSER_CID = new nsID("F1EAC761-87E9-11d3-AF80-00A024FFC08C"); //$NON-NLS-1$
@@ -188,7 +222,7 @@ public Browser(Composite parent, int style) {
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);	
 	componentManager.Release();
-
+	
 	webBrowser = new nsIWebBrowser(result[0]); 
 
 	createCOMInterfaces();
@@ -196,12 +230,12 @@ public Browser(Composite parent, int style) {
 
 	rc = webBrowser.SetContainerWindow(webBrowserChrome.getAddress());
 	if (rc != XPCOM.NS_OK) error(rc);
-	
+			
 	rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-
-	final nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);	
+	
+	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);	
 	rc = baseWindow.InitWindow(gtkHandle, 0, 0, 0, 2, 2);
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
 	rc = baseWindow.Create();
@@ -239,6 +273,22 @@ public Browser(Composite parent, int style) {
 	GTK.gtk_widget_show(gtkHandle);
 }
 
+static Browser findBrowser(Control control, int gtkHandle) {
+	if (control instanceof Browser) {
+		Browser browser = (Browser)control;
+		if (browser.gtkHandle == gtkHandle) return browser;
+	}
+	if (control instanceof Composite) {
+		Composite composite = (Composite)control;
+		Control[] children = composite.getChildren();
+		for (int i = 0; i < children.length; i++) {
+			Browser browser = findBrowser(children[i], gtkHandle);
+			if (browser != null) return browser;
+		}
+	}
+	return null;
+}
+
 /**	 
  * Adds the listener to receive events.
  * <p>
@@ -263,6 +313,32 @@ public void addLocationListener(LocationListener listener) {
 	System.arraycopy(locationListeners, 0, newLocationListeners, 0, locationListeners.length);
 	locationListeners = newLocationListeners;
 	locationListeners[locationListeners.length - 1] = listener;
+}
+
+/**	 
+ * Adds the listener to receive events.
+ * <p>
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void addNewWindowListener(NewWindowListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	NewWindowListener[] newNewWindowListeners = new NewWindowListener[newWindowListeners.length + 1];
+	System.arraycopy(newWindowListeners, 0, newNewWindowListeners, 0, newWindowListeners.length);
+	newWindowListeners = newNewWindowListeners;
+	newWindowListeners[newWindowListeners.length - 1] = listener;
 }
 
 /**	 
@@ -317,6 +393,32 @@ public void addStatusTextListener(StatusTextListener listener) {
 	statusTextListeners[statusTextListeners.length - 1] = listener;
 }
 
+/**	 
+ * Adds the listener to receive events.
+ * <p>
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void addVisibilityListener(VisibilityListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	VisibilityListener[] newVisibilityListeners = new VisibilityListener[visibilityListeners.length + 1];
+	System.arraycopy(visibilityListeners, 0, newVisibilityListeners, 0, visibilityListeners.length);
+	visibilityListeners = newVisibilityListeners;
+	visibilityListeners[visibilityListeners.length - 1] = listener;
+}
+
 /**
  * Navigate to the previous session history item.
  *
@@ -340,8 +442,9 @@ public boolean back() {
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);		 	
-	rc = webNavigation.GoBack();
+	rc = webNavigation.GoBack();	
 	webNavigation.Release();
+	
 	return rc == XPCOM.NS_OK;
 }
 
@@ -521,7 +624,7 @@ public boolean forward() {
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
 	rc = webNavigation.GoForward();
 	webNavigation.Release();
-			
+
 	return rc == XPCOM.NS_OK;
 }
 
@@ -553,7 +656,7 @@ public String getUrl() {
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	domWindow.Release();
-        
+         
 	nsIDOMWindowInternal domWindowInternal = new nsIDOMWindowInternal(result[0]);
 	int[] aLocation = new int[1];  
 	rc = domWindowInternal.GetLocation(aLocation);
@@ -562,13 +665,13 @@ public String getUrl() {
 	domWindowInternal.Release();
 
 	nsIDOMLocation domLocation = new nsIDOMLocation(aLocation[0]); 
-	nsString _retval = new nsString();
+    nsString _retval = new nsString();
 	rc = domLocation.ToString(_retval.getAddress());
 	if (rc != XPCOM.NS_OK) error(rc);
 	domLocation.Release();          
-
 	String url = _retval.toString();
 	_retval.dispose();
+                
 	return url;
 }
 
@@ -581,25 +684,25 @@ void onDispose() {
 	int rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-		
+	
 	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);
 	rc = baseWindow.Destroy();
 	if (rc != XPCOM.NS_OK) error(rc);
 	baseWindow.Release();
-		
+	
 	Release();
 	webBrowser.Release();
 	
 	GTK.gtk_widget_destroy(gtkHandle);
 	gtkHandle = 0;
 	
+	BrowserCount--;
 	/*
 	* This code is intentionally commented.  It is not possible to reinitialize
 	* Mozilla once it has been terminated.  NS_InitEmbedding always fails after
 	* NS_TermEmbedding has been called.  The workaround is to call NS_InitEmbedding
 	* once and never call NS_TermEmbedding.
 	*/
-//	BrowserCount--;
 //	if (BrowserCount == 0) {
 //		if (AppShell != null) {
 //			// Shutdown the appshell service.
@@ -610,7 +713,10 @@ void onDispose() {
 //		}
 //		LocProvider.Release();
 //		LocProvider = null;
+//		WindowCreator.Release();
+//		WindowCreator = null;
 //		XPCOM.NS_TermEmbedding();
+//		mozilla = false;
 //	}
 }
 
@@ -639,7 +745,7 @@ void onFocusLost(Event e) {
 }
 
 void onResize() {
-	final Rectangle rect = getClientArea();
+	Rectangle rect = getClientArea();
 	int width = Math.max(2, rect.width);
 	int height = Math.max(2, rect.height);
 
@@ -648,10 +754,10 @@ void onResize() {
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	
-	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);	
+	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);
 	rc = baseWindow.SetPositionAndSize(0, 0, width,  height, true);
 	if (rc != XPCOM.NS_OK) error(rc);
-	baseWindow.Release();			
+	baseWindow.Release();
 }
 
 /**
@@ -737,6 +843,44 @@ public void removeLocationListener(LocationListener listener) {
  * 
  * @since 3.0
  */
+public void removeNewWindowListener(NewWindowListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (newWindowListeners.length == 0) return;
+	int index = -1;
+	for (int i = 0; i < newWindowListeners.length; i++) {
+		if (listener == newWindowListeners[i]){
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return;
+	if (newWindowListeners.length == 1) {
+		newWindowListeners = new NewWindowListener[0];
+		return;
+	}
+	NewWindowListener[] newNewWindowListeners = new NewWindowListener[newWindowListeners.length - 1];
+	System.arraycopy(newWindowListeners, 0, newNewWindowListeners, 0, index);
+	System.arraycopy(newWindowListeners, index + 1, newNewWindowListeners, index, newWindowListeners.length - index - 1);
+	newWindowListeners = newNewWindowListeners;
+}
+
+/**	 
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public void removeProgressListener(ProgressListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -797,12 +941,101 @@ public void removeStatusTextListener(StatusTextListener listener) {
 	statusTextListeners = newStatusTextListeners;
 }
 
+/**	 
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void removeVisibilityListener(VisibilityListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (visibilityListeners.length == 0) return;
+	int index = -1;
+	for (int i = 0; i < visibilityListeners.length; i++) {
+		if (listener == visibilityListeners[i]){
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return;
+	if (visibilityListeners.length == 1) {
+		visibilityListeners = new VisibilityListener[0];
+		return;
+	}
+	VisibilityListener[] newVisibilityListeners = new VisibilityListener[visibilityListeners.length - 1];
+	System.arraycopy(visibilityListeners, 0, newVisibilityListeners, 0, index);
+	System.arraycopy(visibilityListeners, index + 1, newVisibilityListeners, index, visibilityListeners.length - index - 1);
+	visibilityListeners = newVisibilityListeners;
+}
+
+/**
+ * Renders HTML.
+ * 
+ * @param html the HTML content to be rendered
+ *
+ * @return true if the operation was successful and false otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *  
+ * @see #setUrl
+ * 
+ * @since 3.0
+ */
+public boolean setText(String html) {
+	checkWidget();
+	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (!IsLinux) return false;
+	int[] result = new int[1];
+	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+
+	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
+	/*
+	* Note.  Stop any pending request that uses the html content.  This is required
+	* to avoid displaying a blank page as a result of consecutive calls to
+	* setText.  The previous request would otherwise render the new html content
+	* and reset the html field before the browser actually navigates to the blank
+	* page as requested below.
+	*/
+	if (this.html != null) {
+		rc = webNavigation.Stop(nsIWebNavigation.STOP_ALL);
+		if (rc != XPCOM.NS_OK) error(rc);
+	}
+	this.html = html;
+	char[] arg = "about:blank".toCharArray(); //$NON-NLS-1$
+	char[] c = new char[arg.length+1];
+	System.arraycopy(arg,0,c,0,arg.length);
+	rc = webNavigation.LoadURI(c, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
+	onFocusGained(null); // Fixes the keyboard input Tag issues
+	webNavigation.Release();
+	return rc == XPCOM.NS_OK;
+}
+
 /**
  * Loads a URL.
  * 
  * @param url the URL to be loaded
  *
- * @return true if the operation was successfull and false otherwise.
+ * @return true if the operation was successful and false otherwise.
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
@@ -827,15 +1060,13 @@ public boolean setUrl(String url) {
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
-	char[] arg = url.toCharArray(); 
-	char[] c = new char[arg.length+1];
-	System.arraycopy(arg,0,c,0,arg.length);
+    char[] arg = url.toCharArray(); 
+    char[] c = new char[arg.length+1];
+    System.arraycopy(arg,0,c,0,arg.length);
 	rc = webNavigation.LoadURI(c, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
-	if (rc != XPCOM.NS_OK) error(rc);
-	onFocusGained(null); // Fixes the keyboard INput Tag issues
+	onFocusGained(null); // Fixes the keyboard input Tag issues
 	webNavigation.Release();
-			
-	return true;
+	return rc == XPCOM.NS_OK;
 }
 
 /**
@@ -919,7 +1150,7 @@ int QueryInterface(int riid, int ppvObject) {
 		XPCOM.memmove(ppvObject, new int[] {uriContentListener.getAddress()}, 4);
 		AddRef();
 		return XPCOM.NS_OK;
-	}			
+	}
 	XPCOM.memmove(ppvObject, new int[] {0}, 4);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
@@ -944,6 +1175,17 @@ int QueryReferent(int riid, int ppvObject) {
 /* nsIInterfaceRequestor */
 
 int GetInterface(int riid,int ppvObject) {
+	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
+	nsID guid = new nsID();
+	XPCOM.memmove(guid, riid, nsID.sizeof);
+	if (guid.Equals(nsIDOMWindow.NS_IDOMWINDOW_IID)) {
+		int[] aContentDOMWindow = new int[1];
+		int rc = webBrowser.GetContentDOMWindow(aContentDOMWindow);
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (aContentDOMWindow[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+		XPCOM.memmove(ppvObject, aContentDOMWindow, 4);
+		return rc;
+	}
 	return QueryInterface(riid,ppvObject);
 }
 
@@ -956,17 +1198,199 @@ int GetWeakReference(int ppvObject) {
 /* nsIWebProgressListener */
 
 int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) {
-	if (((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) && ((aStateFlags & nsIWebProgressListener.STATE_IS_DOCUMENT) != 0)) {
-		/* navigation completed */
-		ProgressEvent event = new ProgressEvent(this);
-		for (int i = 0; i < progressListeners.length; i++)
-			progressListeners[i].completed(event);
-		StatusTextEvent event2 = new StatusTextEvent(this);
-		event2.text = ""; //$NON-NLS-1$
-		for (int i = 0; i < statusTextListeners.length; i++)
-			statusTextListeners[i].changed(event2);	
-				
-	}	
+	if ((aStateFlags & nsIWebProgressListener.STATE_IS_DOCUMENT) == 0) return XPCOM.NS_OK;
+	if ((aStateFlags & nsIWebProgressListener.STATE_START) != 0) {
+		if (request == 0) request = aRequest;
+	} else if ((aStateFlags & nsIWebProgressListener.STATE_REDIRECTING) != 0) {
+		if (request == aRequest) request = 0;
+	} else if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
+		if (html != null) {
+			byte[] data = html.getBytes();
+			html = null;
+
+			/* render HTML in memory */
+			String contentType = "text/html"; //$NON-NLS-1$
+			
+			InputStream inputStream = new InputStream(data);
+			inputStream.AddRef();
+
+			int[] result = new int[1];
+			int rc = webBrowser.QueryInterface(nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	
+			nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor(result[0]);
+			result[0] = 0;
+			rc = interfaceRequestor.GetInterface(nsIContentViewerContainer.NS_ICONTENTVIEWERCONTAINER_IID, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+			interfaceRequestor.Release();
+	
+			nsIContentViewerContainer contentViewerContainer = new nsIContentViewerContainer(result[0]);
+			result[0] = 0;
+	
+			rc = XPCOM.NS_GetServiceManager(result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+		
+			nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+			result[0] = 0;
+			rc = serviceManager.GetService(XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
+	
+			nsIIOService ioService = new nsIIOService(result[0]);
+			result[0] = 0;
+			byte[] aString = "about:blank".getBytes(); //$NON-NLS-1$
+			int aSpec = XPCOM.nsCString_new(aString, aString.length);
+			rc = ioService.NewURI(aSpec, null, 0, result);
+			XPCOM.nsCString_delete(aSpec);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			ioService.Release();
+	
+			nsIURI uri = new nsIURI(result[0]);
+			result[0] = 0;
+			rc = XPCOM.NS_GetComponentManager(result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+	
+			nsIComponentManager componentManager = new nsIComponentManager(result[0]);
+			result[0] = 0;
+			rc = componentManager.CreateInstance(XPCOM.NS_LOADGROUP_CID, 0, nsILoadGroup.NS_ILOADGROUP_IID, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			nsILoadGroup loadGroup = new nsILoadGroup(result[0]);
+			result[0] = 0;
+			rc = componentManager.CreateInstance(XPCOM.NS_INPUTSTREAMCHANNEL_CID, 0, nsIInputStreamChannel.NS_IINPUTSTREAMCHANNEL_IID, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);	
+			nsIInputStreamChannel inputStreamChannel = new nsIInputStreamChannel(result[0]);
+			result[0] = 0;
+			componentManager.Release();	
+			
+			rc = inputStreamChannel.SetURI(uri.getAddress());
+			if (rc != XPCOM.NS_OK) error(rc);
+			rc = inputStreamChannel.SetContentStream(inputStream.getAddress());
+			if (rc != XPCOM.NS_OK) error(rc);
+			byte[] buffer = contentType.getBytes();
+			byte[] contentTypeBuffer = new byte[buffer.length + 1];
+			System.arraycopy(buffer, 0, contentTypeBuffer, 0, buffer.length);
+			int aContentType = XPCOM.nsCString_new(contentTypeBuffer, contentTypeBuffer.length);
+			rc = inputStreamChannel.SetContentType(aContentType);
+			XPCOM.nsCString_delete(aContentType);
+			if (rc != XPCOM.NS_OK) error(rc);
+			byte[] contentCharsetBuffer = new byte[1];
+			int aContentCharset = XPCOM.nsCString_new(contentCharsetBuffer, contentCharsetBuffer.length);
+			rc = inputStreamChannel.SetContentCharset(aContentCharset);
+			XPCOM.nsCString_delete(aContentCharset);
+			if (rc != XPCOM.NS_OK) error(rc);
+			rc = inputStreamChannel.SetLoadGroup(loadGroup.getAddress());
+			if (rc != XPCOM.NS_OK) error(rc);
+	
+			buffer = XPCOM.NS_CATEGORYMANAGER_CONTRACTID.getBytes();
+			byte[] aContractID = new byte[buffer.length + 1];
+			System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+			rc = serviceManager.GetServiceByContractID(aContractID, nsICategoryManager.NS_ICATEGORYMANAGER_IID, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
+	
+			nsICategoryManager categoryManager = new nsICategoryManager(result[0]);
+			result[0] = 0;
+			buffer = "Gecko-Content-Viewers".getBytes(); //$NON-NLS-1$
+			byte[] aCategory = new byte[buffer.length + 1];
+			System.arraycopy(buffer, 0, aCategory, 0, buffer.length);
+			rc = categoryManager.GetCategoryEntry(aCategory, contentTypeBuffer, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			categoryManager.Release();
+	
+			int length = XPCOM.strlen(result[0]);
+			aContractID = new byte[length + 1];
+			XPCOM.memmove(aContractID, result[0], length);
+			rc = serviceManager.GetServiceByContractID(aContractID, nsIDocumentLoaderFactory.NS_IDOCUMENTLOADERFACTORY_IID, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);	
+	
+			nsIDocumentLoaderFactory documentLoaderFactory = new nsIDocumentLoaderFactory(result[0]);
+			result[0] = 0;
+			buffer = "view".getBytes(); //$NON-NLS-1$
+			byte[] aCommand = new byte[buffer.length + 1];
+			System.arraycopy(buffer, 0, aCommand, 0, buffer.length);
+			int[] aDocListenerResult = new int[1];
+			rc = documentLoaderFactory.CreateInstance(aCommand, inputStreamChannel.getAddress(), loadGroup.getAddress(),
+					contentTypeBuffer, contentViewerContainer.getAddress(), 0, aDocListenerResult, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (aDocListenerResult[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			documentLoaderFactory.Release();
+	
+			nsIContentViewer contentViewer = new nsIContentViewer(result[0]);
+			nsIStreamListener streamListener = new nsIStreamListener(aDocListenerResult[0]);
+			result[0] = 0;
+			rc = contentViewer.SetContainer(contentViewerContainer.getAddress());
+			if (rc != XPCOM.NS_OK) error(rc);
+			rc = contentViewerContainer.Embed(contentViewer.getAddress(), aCommand, 0);
+			if (rc != XPCOM.NS_OK) error(rc);
+			contentViewer.Release();
+	
+			rc = inputStreamChannel.QueryInterface(nsIRequest.NS_IREQUEST_IID, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+	
+			nsIRequest request = new nsIRequest(result[0]);
+			result[0] = 0;
+			rc = streamListener.OnStartRequest(request.getAddress(), 0);
+			if (rc != XPCOM.NS_OK) error(rc);
+	
+			/* append */
+			rc = streamListener.OnDataAvailable(request.getAddress(), 0, inputStream.getAddress(), 0, data.length);
+			
+			/*
+			* Note.   Mozilla returns a NS_ERROR_HTMLPARSER_UNRESOLVEDDTD if the given content
+			* cannot be rendered as HTML.  Silently ignore this error. 
+			*/
+			if (rc != XPCOM.NS_ERROR_HTMLPARSER_UNRESOLVEDDTD && rc != XPCOM.NS_OK) error(rc);
+	
+			/* close */
+			rc = streamListener.OnStopRequest(request.getAddress(), 0, XPCOM.NS_OK);
+			if (rc != XPCOM.NS_ERROR_HTMLPARSER_UNRESOLVEDDTD && rc != XPCOM.NS_OK) error(rc);
+	
+			request.Release();
+			streamListener.Release();
+			serviceManager.Release();
+			inputStreamChannel.Release();
+			loadGroup.Release();
+			uri.Release();
+			contentViewerContainer.Release();
+			inputStream.Release();
+		}
+
+		/*
+		* Feature on Mozilla.  When a request is redirected (STATE_REDIRECTING),
+		* it never reaches the state STATE_STOP and it is replaced with a new request.
+		* The new request is received when it is in the state STATE_STOP.
+		* To handle this case,  the variable request is set to 0 when the corresponding
+		* request is redirected. The following request received with the state STATE_STOP
+		* - the new request resulting from the redirection - is used to send
+		* the ProgressListener.completed event.
+		*/
+		if (request == aRequest || request == 0) {
+			request = 0;
+			StatusTextEvent event = new StatusTextEvent(this);
+			event.display = getDisplay();
+			event.widget = this;
+			event.text = ""; //$NON-NLS-1$
+			for (int i = 0; i < statusTextListeners.length; i++)
+				statusTextListeners[i].changed(event);
+			
+			ProgressEvent event2 = new ProgressEvent(this);
+			event2.display = getDisplay();
+			event2.widget = this;
+			for (int i = 0; i < progressListeners.length; i++)
+				progressListeners[i].completed(event2);
+		}
+	}
 	return XPCOM.NS_OK;
 }	
 
@@ -976,9 +1400,10 @@ int OnProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int a
 	int total = aMaxTotalProgress;
 	if (total <= 0) total = Integer.MAX_VALUE;
 	ProgressEvent event = new ProgressEvent(this);
+	event.display = getDisplay();
+	event.widget = this;
 	event.current = aCurTotalProgress;
 	event.total = aMaxTotalProgress;
-	
 	for (int i = 0; i < progressListeners.length; i++)
 		progressListeners[i].changed(event);			
 	return XPCOM.NS_OK;
@@ -986,21 +1411,59 @@ int OnProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int a
 
 int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	if (locationListeners.length == 0) return XPCOM.NS_OK;
-	
+	/*
+	* Bug in Mozilla.  The argument aRequest is always null.  The fix is
+	* to compare the URI aLocation with the current URI.
+	*/
 	nsIURI location = new nsIURI(aLocation);
 	int aSpec = XPCOM.nsCString_new();
 	location.GetSpec(aSpec);
 	int length = XPCOM.nsCString_Length(aSpec);
 	int buffer = XPCOM.nsCString_get(aSpec);
 	buffer = XPCOM.nsCString_get(aSpec);
-	byte[] dest = new byte[length];
+	byte[] dest = new byte[length + 1];
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsCString_delete(aSpec);
+
+	int[] aContentDOMWindow = new int[1];
+	int rc = webBrowser.GetContentDOMWindow(aContentDOMWindow);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (aContentDOMWindow[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+
+	nsIDOMWindow domWindow = new nsIDOMWindow(aContentDOMWindow[0]);
+	int[] result = new int[1];
+	rc = domWindow.QueryInterface(nsIDOMWindowInternal.NS_IDOMWINDOWINTERNAL_IID, result);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	domWindow.Release();
+         
+	nsIDOMWindowInternal domWindowInternal = new nsIDOMWindowInternal(result[0]);
+	int[] aCurrentLocation = new int[1];  
+	rc = domWindowInternal.GetLocation(aCurrentLocation);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (aCurrentLocation[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	domWindowInternal.Release();
+
+	nsIDOMLocation domLocation = new nsIDOMLocation(aCurrentLocation[0]); 
+	nsString _retval = new nsString();
+	rc = domLocation.ToString(_retval.getAddress());
+	if (rc != XPCOM.NS_OK) error(rc);
+	domLocation.Release();  
 	
-	LocationEvent event = new LocationEvent(this);
-	event.location = new String(dest);
-	for (int i = 0; i < locationListeners.length; i++)
-		locationListeners[i].changed(event);
+	int nsString = XPCOM.nsString_new();
+	XPCOM.nsString_AssignWithConversion(nsString, dest);
+	boolean send = XPCOM.nsString_Equals(_retval.getAddress(), nsString);
+	XPCOM.nsString_delete(nsString);
+	_retval.dispose();
+		
+	if (send) {
+		LocationEvent event = new LocationEvent(this);
+		event.display = getDisplay();
+		event.widget = this;
+		event.location = new String(dest);
+		for (int i = 0; i < locationListeners.length; i++)
+			locationListeners[i].changed(event);
+	}
 	return XPCOM.NS_OK;
 }
   
@@ -1008,6 +1471,8 @@ int OnStatusChange(int aWebProgress, int aRequest, int aStatus, int aMessage) {
 	if (statusTextListeners.length == 0) return XPCOM.NS_OK;
 	
 	StatusTextEvent event = new StatusTextEvent(this);
+	event.display = getDisplay();
+	event.widget = this;
 	int length = XPCOM.nsCRT_strlen_PRUnichar(aMessage);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aMessage, length * 2);
@@ -1026,6 +1491,8 @@ int OnSecurityChange(int aWebProgress, int aRequest, int state) {
 
 int SetStatus(int statusType, int status) {
 	StatusTextEvent event = new StatusTextEvent(this);
+	event.display = getDisplay();
+	event.widget = this;
 	int length = XPCOM.nsCRT_strlen_PRUnichar(status);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, status, length * 2);
@@ -1106,6 +1573,16 @@ int GetVisibility(int value) {
 }
    
 int SetVisibility(int value) {
+	VisibilityEvent event = new VisibilityEvent(this);
+	event.display = getDisplay();
+	event.widget = this;
+	if (value == 1) {
+		for (int i = 0; i < visibilityListeners.length; i++)
+			visibilityListeners[i].show(event);
+	} else {
+		for (int i = 0; i < visibilityListeners.length; i++)
+			visibilityListeners[i].hide(event);
+	}
 	return XPCOM.NS_OK;     	
 }
 
@@ -1150,16 +1627,19 @@ int OnStartURIOpen(int aURI, int retval) {
 	int length = XPCOM.nsCString_Length(aSpec);
 	int buffer = XPCOM.nsCString_get(aSpec);
 	buffer = XPCOM.nsCString_get(aSpec);
-	byte[] dest = new byte[length];
+	byte[] dest = new byte[length + 1];
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsCString_delete(aSpec);
 	
-	LocationEvent event = new LocationEvent(this);
-	event.location = new String(dest);
-	for (int i = 0; i < locationListeners.length; i++)
-		locationListeners[i].changing(event);
-		
-	XPCOM.memmove(retval, new int[] {event.cancel ? 1 : 0}, 4);
+	boolean cancel = false;
+	if (request == 0) {
+		LocationEvent event = new LocationEvent(this);
+		event.location = new String(dest);
+		for (int i = 0; i < locationListeners.length; i++)
+			locationListeners[i].changing(event);
+		cancel = event.cancel;
+	}
+	XPCOM.memmove(retval, new int[] {cancel ? 1 : 0}, 4);
 	return XPCOM.NS_OK;
 }
 
@@ -1192,4 +1672,3 @@ int SetParentContentListener(int aParentContentListener) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 }
-	

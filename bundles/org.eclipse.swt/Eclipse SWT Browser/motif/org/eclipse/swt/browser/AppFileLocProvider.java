@@ -119,11 +119,12 @@ int getFiles(int str, int nsISimpleEnumerator) {
 	if (XPCOM.NS_APP_PLUGINS_DIR_LIST.equals(prop)) {
 		if (mozillaPath == null) return XPCOM.NS_ERROR_FAILURE;
 		if (mozillaPath.length() <= 0) return XPCOM.NS_ERROR_FAILURE;
-		String path = new String(mozillaPath);
-		int[] retVal = new int[1];
-		rc = XPCOM.NS_NewLocalFile(path, true, retVal);
-		if (rc == XPCOM.NS_OK && retVal[0] == 0) rc = XPCOM.NS_ERROR_NULL_POINTER;
-		if (rc == XPCOM.NS_OK) localFile = new nsILocalFile(retVal[0]);
+		int[] result = new int[1];
+		nsString path = new nsString(mozillaPath);
+		rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, result);
+		path.dispose();
+		if (rc == XPCOM.NS_OK && result[0] == 0) rc = XPCOM.NS_ERROR_NULL_POINTER;
+		if (rc == XPCOM.NS_OK) localFile = new nsILocalFile(result[0]);
         nsString node = new nsString(XPCOM.PLUGINS_DIR_NAME);  
 		rc = localFile.Append(node.getAddress());
         node.dispose();
@@ -151,11 +152,13 @@ int getFile(int str, int persistent, int nsFile) {
 	nsILocalFile localFile = null;		
 	if (XPCOM.NS_GRE_DIR.equals(prop) || XPCOM.NS_GRE_COMPONENT_DIR.equals(prop)) {
 		if (grePath == null || grePath.length() == 0) return XPCOM.NS_ERROR_FAILURE;
-		int[] retVal = new int[1];
-		rc = XPCOM.NS_NewLocalFile(grePath,true,retVal);
-		if (rc == XPCOM.NS_OK && retVal[0] == 0) rc = XPCOM.NS_ERROR_NULL_POINTER;                          
+		int[] result = new int[1];
+		nsString path = new nsString(grePath);
+		rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, result);
+		path.dispose();
+		if (rc == XPCOM.NS_OK && result[0] == 0) rc = XPCOM.NS_ERROR_NULL_POINTER;                          
 		if (rc == XPCOM.NS_OK) {
-			localFile = new nsILocalFile(retVal[0]);
+			localFile = new nsILocalFile(result[0]);
 			if (XPCOM.NS_GRE_COMPONENT_DIR.equals(prop)) {
                 nsString node = new nsString(XPCOM.COMPONENTS_DIR_NAME);
                 rc = localFile.Append(node.getAddress());
@@ -167,11 +170,13 @@ int getFile(int str, int persistent, int nsFile) {
 		XPCOM.NS_OS_CURRENT_PROCESS_DIR.equals(prop) ||
 		XPCOM.NS_XPCOM_COMPONENT_DIR.equals(prop)) {
 		if (mozillaPath == null || mozillaPath.length() == 0) return XPCOM.NS_ERROR_FAILURE;
-		int[] retVal = new int[1];
-		rc = XPCOM.NS_NewLocalFile(mozillaPath,true,retVal);
-		if (rc == XPCOM.NS_OK && retVal[0] == 0) rc = XPCOM.NS_ERROR_NULL_POINTER;
+		int[] result = new int[1];
+		nsString path = new nsString(mozillaPath);
+		rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, result);
+		path.dispose();
+		if (rc == XPCOM.NS_OK && result[0] == 0) rc = XPCOM.NS_ERROR_NULL_POINTER;
 		if (rc == XPCOM.NS_OK) {
-			localFile = new nsILocalFile(retVal[0]);
+			localFile = new nsILocalFile(result[0]);
 			if (XPCOM.NS_XPCOM_COMPONENT_DIR.equals(prop)) {
                 nsString node = new nsString(XPCOM.COMPONENTS_DIR_NAME);
                 rc = localFile.Append(node.getAddress());

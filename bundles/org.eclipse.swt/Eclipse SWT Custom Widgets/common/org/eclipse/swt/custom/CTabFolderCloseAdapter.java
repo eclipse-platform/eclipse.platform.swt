@@ -10,7 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-
+/**
+* DO NOT USE - UNDER CONSTRUCTION
+*
+* @ since 3.0
+*/
 public class CTabFolderCloseAdapter implements CTabFolderCloseListener {
 	public void itemClosed(CTabFolderEvent event){/* empty implementation*/}
 }

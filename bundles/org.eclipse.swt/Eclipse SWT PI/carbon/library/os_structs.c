@@ -1494,6 +1494,80 @@ void setNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpSt
 }
 #endif
 
+#ifndef NO_PMRect
+typedef struct PMRect_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID top, left, bottom, right;
+} PMRect_FID_CACHE;
+
+PMRect_FID_CACHE PMRectFc;
+
+void cachePMRectFields(JNIEnv *env, jobject lpObject)
+{
+	if (PMRectFc.cached) return;
+	PMRectFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PMRectFc.top = (*env)->GetFieldID(env, PMRectFc.clazz, "top", "D");
+	PMRectFc.left = (*env)->GetFieldID(env, PMRectFc.clazz, "left", "D");
+	PMRectFc.bottom = (*env)->GetFieldID(env, PMRectFc.clazz, "bottom", "D");
+	PMRectFc.right = (*env)->GetFieldID(env, PMRectFc.clazz, "right", "D");
+	PMRectFc.cached = 1;
+}
+
+PMRect *getPMRectFields(JNIEnv *env, jobject lpObject, PMRect *lpStruct)
+{
+	if (!PMRectFc.cached) cachePMRectFields(env, lpObject);
+	lpStruct->top = (double)(*env)->GetDoubleField(env, lpObject, PMRectFc.top);
+	lpStruct->left = (double)(*env)->GetDoubleField(env, lpObject, PMRectFc.left);
+	lpStruct->bottom = (double)(*env)->GetDoubleField(env, lpObject, PMRectFc.bottom);
+	lpStruct->right = (double)(*env)->GetDoubleField(env, lpObject, PMRectFc.right);
+	return lpStruct;
+}
+
+void setPMRectFields(JNIEnv *env, jobject lpObject, PMRect *lpStruct)
+{
+	if (!PMRectFc.cached) cachePMRectFields(env, lpObject);
+	(*env)->SetDoubleField(env, lpObject, PMRectFc.top, (jdouble)lpStruct->top);
+	(*env)->SetDoubleField(env, lpObject, PMRectFc.left, (jdouble)lpStruct->left);
+	(*env)->SetDoubleField(env, lpObject, PMRectFc.bottom, (jdouble)lpStruct->bottom);
+	(*env)->SetDoubleField(env, lpObject, PMRectFc.right, (jdouble)lpStruct->right);
+}
+#endif
+
+#ifndef NO_PMResolution
+typedef struct PMResolution_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hRes, vRes;
+} PMResolution_FID_CACHE;
+
+PMResolution_FID_CACHE PMResolutionFc;
+
+void cachePMResolutionFields(JNIEnv *env, jobject lpObject)
+{
+	if (PMResolutionFc.cached) return;
+	PMResolutionFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PMResolutionFc.hRes = (*env)->GetFieldID(env, PMResolutionFc.clazz, "hRes", "D");
+	PMResolutionFc.vRes = (*env)->GetFieldID(env, PMResolutionFc.clazz, "vRes", "D");
+	PMResolutionFc.cached = 1;
+}
+
+PMResolution *getPMResolutionFields(JNIEnv *env, jobject lpObject, PMResolution *lpStruct)
+{
+	if (!PMResolutionFc.cached) cachePMResolutionFields(env, lpObject);
+	lpStruct->hRes = (*env)->GetDoubleField(env, lpObject, PMResolutionFc.hRes);
+	lpStruct->vRes = (*env)->GetDoubleField(env, lpObject, PMResolutionFc.vRes);
+	return lpStruct;
+}
+
+void setPMResolutionFields(JNIEnv *env, jobject lpObject, PMResolution *lpStruct)
+{
+	if (!PMResolutionFc.cached) cachePMResolutionFields(env, lpObject);
+	(*env)->SetDoubleField(env, lpObject, PMResolutionFc.hRes, (jdouble)lpStruct->hRes);
+	(*env)->SetDoubleField(env, lpObject, PMResolutionFc.vRes, (jdouble)lpStruct->vRes);
+}
+#endif
+
 #ifndef NO_PixMap
 typedef struct PixMap_FID_CACHE {
 	int cached;

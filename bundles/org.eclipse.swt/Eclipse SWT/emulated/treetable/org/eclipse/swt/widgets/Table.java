@@ -1827,33 +1827,27 @@ void reindexColumns(int startIndex) {
  */
 public void remove(int indices[]) {
 	checkWidget();
-	SelectableItem item;
-	int [] sortedIndices;
-	int last = -1;
-	int sortedIndex;
-	
-	if (indices == null) {
-		error(SWT.ERROR_NULL_ARGUMENT);
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length == 0) return;
+	int [] newIndices = new int [indices.length];
+	System.arraycopy (indices, 0, newIndices, 0, indices.length);
+	sort (newIndices);
+	int start = newIndices [newIndices.length - 1], end = newIndices [0];
+	int count = getItemCount();
+	if (!(0 <= start && start <= end && end < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
 	}
-	sortedIndices = new int[indices.length];	
-	System.arraycopy (indices, 0, sortedIndices, 0, indices.length);
-	sort(sortedIndices);								// sort indices in descending order
-	for (int i = 0; i < sortedIndices.length; i++) {
-		sortedIndex = sortedIndices[i];
-		if (sortedIndex != last) {
-			item = getVisibleItem(sortedIndex);
+	int last = -1;
+	for (int i = 0; i < newIndices.length; i++) {
+		int index = newIndices[i];
+		if (index != last) {
+			SelectableItem item = getVisibleItem(index);
 			if (item != null) {
 				item.dispose();
+			} else {
+				error(SWT.ERROR_ITEM_NOT_REMOVED);				          
 			}
-			else {
-				if (0 <= sortedIndex && sortedIndex < getItemVector().size()) {
-					error(SWT.ERROR_ITEM_NOT_REMOVED);
-				} 
-				else {
-					error(SWT.ERROR_INVALID_RANGE);
-				}          
-			}
-			last = sortedIndex;
+			last = index;
 		}
 	}
 }
@@ -1911,14 +1905,15 @@ public void remove(int index) {
  */
 public void remove(int start, int end) {
 	checkWidget();
-	SelectableItem item;
-	
+	if (start > end) return;
+	if (!(0 <= start && start <= end && end < getItemCount())) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	for (int i = end; i >= start; i--) {
-		item = getVisibleItem(i);
+		SelectableItem item = getVisibleItem(i);
 		if (item != null) {
 			item.dispose();
-		}
-		else {
+		} else {
 			error(SWT.ERROR_ITEM_NOT_REMOVED);
 		}
 	}

@@ -526,6 +526,52 @@ JNIEXPORT void JNICALL OS_NATIVE(BringToFront)
 }
 #endif
 
+#ifndef NO_CFArrayAppendValue
+JNIEXPORT void JNICALL OS_NATIVE(CFArrayAppendValue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "CFArrayAppendValue\n")
+	CFArrayAppendValue((CFMutableArrayRef)arg0, (const void *)arg1);
+	NATIVE_EXIT(env, that, "CFArrayAppendValue\n")
+}
+#endif
+
+#ifndef NO_CFArrayCreateMutable
+JNIEXPORT jint JNICALL OS_NATIVE(CFArrayCreateMutable)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "CFArrayCreateMutable\n")
+	rc = (jint)CFArrayCreateMutable((CFAllocatorRef)arg0, (CFIndex)arg1, (const CFArrayCallBacks *)arg2);
+	NATIVE_EXIT(env, that, "CFArrayCreateMutable\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_CFArrayGetCount
+JNIEXPORT jint JNICALL OS_NATIVE(CFArrayGetCount)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "CFArrayGetCount\n")
+	rc = (jint)CFArrayGetCount((CFArrayRef)arg0);
+	NATIVE_EXIT(env, that, "CFArrayGetCount\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_CFArrayGetValueAtIndex
+JNIEXPORT jint JNICALL OS_NATIVE(CFArrayGetValueAtIndex)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "CFArrayGetValueAtIndex\n")
+	rc = (jint)CFArrayGetValueAtIndex((CFArrayRef)arg0, arg1);
+	NATIVE_EXIT(env, that, "CFArrayGetValueAtIndex\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_CFRelease
 JNIEXPORT void JNICALL OS_NATIVE(CFRelease)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -996,6 +1042,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetFontSize)
 	NATIVE_ENTER(env, that, "CGContextSetFontSize\n")
 	CGContextSetFontSize((CGContextRef)arg0, (float)arg1);
 	NATIVE_EXIT(env, that, "CGContextSetFontSize\n")
+}
+#endif
+
+#ifndef NO_CGContextSetLineCap
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineCap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "CGContextSetLineCap\n")
+	CGContextSetLineCap((CGContextRef)arg0, arg1);
+	NATIVE_EXIT(env, that, "CGContextSetLineCap\n")
 }
 #endif
 
@@ -1486,6 +1542,27 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ConvertEventRefToEventRecord)
 	rc = (jboolean)ConvertEventRefToEventRecord((EventRef)arg0, (EventRecord *)lparg1);
 	if (arg1) setEventRecordFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "ConvertEventRefToEventRecord\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ConvertFromPStringToUnicode
+JNIEXPORT jint JNICALL OS_NATIVE(ConvertFromPStringToUnicode)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3, jcharArray arg4)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ConvertFromPStringToUnicode\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
+	rc = (jint)ConvertFromPStringToUnicode((TextToUnicodeInfo)arg0, (ConstStr255Param)lparg1, arg2, lparg3, lparg4);
+	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "ConvertFromPStringToUnicode\n")
 	return rc;
 }
 #endif
@@ -2036,6 +2113,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateTabsControl)
 }
 #endif
 
+#ifndef NO_CreateTextToUnicodeInfoByEncoding
+JNIEXPORT jint JNICALL OS_NATIVE(CreateTextToUnicodeInfoByEncoding)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "CreateTextToUnicodeInfoByEncoding\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)CreateTextToUnicodeInfoByEncoding((TextEncoding)arg0, (TextToUnicodeInfo *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "CreateTextToUnicodeInfoByEncoding\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateUserPaneControl
 JNIEXPORT jint JNICALL OS_NATIVE(CreateUserPaneControl)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)
@@ -2239,6 +2331,21 @@ JNIEXPORT void JNICALL OS_NATIVE(DisposeRgn)
 }
 #endif
 
+#ifndef NO_DisposeTextToUnicodeInfo
+JNIEXPORT jint JNICALL OS_NATIVE(DisposeTextToUnicodeInfo)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "DisposeTextToUnicodeInfo\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)DisposeTextToUnicodeInfo((TextToUnicodeInfo *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "DisposeTextToUnicodeInfo\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_DisposeWindow
 JNIEXPORT void JNICALL OS_NATIVE(DisposeWindow)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -2329,6 +2436,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeFocusRect)
 	rc = (jint)DrawThemeFocusRect((const Rect *)lparg0, (Boolean)arg1);
 	if (arg0) setRectFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "DrawThemeFocusRect\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_DrawThemePopupArrow
+JNIEXPORT jint JNICALL OS_NATIVE(DrawThemePopupArrow)
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2, jint arg3, jint arg4, jint arg5)
+{
+	Rect _arg0, *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "DrawThemePopupArrow\n")
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	rc = (jint)DrawThemePopupArrow(lparg0, (ThemeArrowOrientation)arg1, (ThemePopupArrowSize)arg2, (ThemeDrawState)arg3, (ThemeEraseUPP)arg4, (UInt32)arg5);
+	if (arg0) setRectFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "DrawThemePopupArrow\n")
 	return rc;
 }
 #endif
@@ -3429,7 +3551,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserSelectionFlags)
 	jint rc;
 	NATIVE_ENTER(env, that, "GetDataBrowserSelectionFlags\n")
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	rc = (jint)GetDataBrowserSelectionFlags((ControlRef)arg0, (DataBrowserSelectionFlags *)lparg1);
+	rc = (jint)GetDataBrowserSelectionFlags((ControlRef)arg0, lparg1);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "GetDataBrowserSelectionFlags\n")
 	return rc;
@@ -4513,6 +4635,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeFont)
 	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "GetThemeFont\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GetThemeMenuItemExtra
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeMenuItemExtra)
+	(JNIEnv *env, jclass that, jshort arg0, jshortArray arg1, jshortArray arg2)
+{
+	jshort *lparg1=NULL;
+	jshort *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "GetThemeMenuItemExtra\n")
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	rc = (jint)GetThemeMenuItemExtra(arg0, lparg1, lparg2);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "GetThemeMenuItemExtra\n")
 	return rc;
 }
 #endif
@@ -6045,6 +6185,594 @@ JNIEXPORT void JNICALL OS_NATIVE(OpenRgn)
 	NATIVE_ENTER(env, that, "OpenRgn\n")
 	OpenRgn();
 	NATIVE_EXIT(env, that, "OpenRgn\n")
+}
+#endif
+
+#ifndef NO_PMCreatePageFormat
+JNIEXPORT jint JNICALL OS_NATIVE(PMCreatePageFormat)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMCreatePageFormat\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)PMCreatePageFormat((PMPageFormat *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PMCreatePageFormat\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMCreatePrintSettings
+JNIEXPORT jint JNICALL OS_NATIVE(PMCreatePrintSettings)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMCreatePrintSettings\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)PMCreatePrintSettings((PMPrintSettings *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PMCreatePrintSettings\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMCreateSession
+JNIEXPORT jint JNICALL OS_NATIVE(PMCreateSession)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMCreateSession\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)PMCreateSession((PMPrintSession *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PMCreateSession\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMFlattenPageFormat
+JNIEXPORT jint JNICALL OS_NATIVE(PMFlattenPageFormat)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMFlattenPageFormat\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMFlattenPageFormat((PMPageFormat)arg0, (Handle *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMFlattenPageFormat\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMFlattenPrintSettings
+JNIEXPORT jint JNICALL OS_NATIVE(PMFlattenPrintSettings)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMFlattenPrintSettings\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMFlattenPrintSettings((PMPrintSettings)arg0, (Handle *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMFlattenPrintSettings\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetAdjustedPageRect
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetAdjustedPageRect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PMRect _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetAdjustedPageRect\n")
+	if (arg1) lparg1 = getPMRectFields(env, arg1, &_arg1);
+	rc = (jint)PMGetAdjustedPageRect((PMPageFormat)arg0, (PMRect *)lparg1);
+	if (arg1) setPMRectFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PMGetAdjustedPageRect\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetAdjustedPaperRect
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetAdjustedPaperRect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PMRect _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetAdjustedPaperRect\n")
+	if (arg1) lparg1 = getPMRectFields(env, arg1, &_arg1);
+	rc = (jint)PMGetAdjustedPaperRect((PMPageFormat)arg0, (PMRect *)lparg1);
+	if (arg1) setPMRectFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PMGetAdjustedPaperRect\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetCollate
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetCollate)
+	(JNIEnv *env, jclass that, jint arg0, jbooleanArray arg1)
+{
+	jboolean *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetCollate\n")
+	if (arg1) lparg1 = (*env)->GetBooleanArrayElements(env, arg1, NULL);
+	rc = (jint)PMGetCollate((PMPrintSettings)arg0, lparg1);
+	if (arg1) (*env)->ReleaseBooleanArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMGetCollate\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetCopies
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetCopies)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetCopies\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMGetCopies((PMPrintSettings)arg0, (UInt32 *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMGetCopies\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetFirstPage
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetFirstPage)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetFirstPage\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMGetFirstPage((PMPrintSettings)arg0, (UInt32 *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMGetFirstPage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetJobNameCFString
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetJobNameCFString)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetJobNameCFString\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMGetJobNameCFString((PMPrintSettings)arg0, (CFStringRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMGetJobNameCFString\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetLastPage
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetLastPage)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetLastPage\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMGetLastPage((PMPrintSettings)arg0, (UInt32 *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMGetLastPage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetPageRange
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetPageRange)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetPageRange\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)PMGetPageRange((PMPrintSettings)arg0, (UInt32 *)lparg1, (UInt32 *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMGetPageRange\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetResolution
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetResolution)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PMResolution _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetResolution\n")
+	if (arg1) lparg1 = getPMResolutionFields(env, arg1, &_arg1);
+	rc = (jint)PMGetResolution((PMPageFormat)arg0, (PMResolution *)lparg1);
+	if (arg1) setPMResolutionFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PMGetResolution\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMRelease
+JNIEXPORT jint JNICALL OS_NATIVE(PMRelease)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMRelease\n")
+	rc = (jint)PMRelease((PMObject)arg0);
+	NATIVE_EXIT(env, that, "PMRelease\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionBeginDocumentNoDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionBeginDocumentNoDialog)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionBeginDocumentNoDialog\n")
+	rc = (jint)PMSessionBeginDocumentNoDialog((PMPrintSession)arg0, (PMPrintSettings)arg1, (PMPageFormat)arg2);
+	NATIVE_EXIT(env, that, "PMSessionBeginDocumentNoDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionBeginPageNoDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionBeginPageNoDialog)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	PMRect _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionBeginPageNoDialog\n")
+	if (arg2) lparg2 = getPMRectFields(env, arg2, &_arg2);
+	rc = (jint)PMSessionBeginPageNoDialog((PMPrintSession)arg0, (PMPageFormat)arg1, (const PMRect *)lparg2);
+	if (arg2) setPMRectFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PMSessionBeginPageNoDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionCopyDestinationLocation
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionCopyDestinationLocation)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionCopyDestinationLocation\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)PMSessionCopyDestinationLocation((PMPrintSession)arg0, (PMPrintSettings)arg1, (CFURLRef *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PMSessionCopyDestinationLocation\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionCreatePrinterList
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionCreatePrinterList)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionCreatePrinterList\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)PMSessionCreatePrinterList((PMPrintSession)arg0, (CFArrayRef *)lparg1, (CFIndex *)lparg2, (PMPrinter *)lparg3);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMSessionCreatePrinterList\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionDefaultPageFormat
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionDefaultPageFormat)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionDefaultPageFormat\n")
+	rc = (jint)PMSessionDefaultPageFormat((PMPrintSession)arg0, (PMPageFormat)arg1);
+	NATIVE_EXIT(env, that, "PMSessionDefaultPageFormat\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionDefaultPrintSettings
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionDefaultPrintSettings)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionDefaultPrintSettings\n")
+	rc = (jint)PMSessionDefaultPrintSettings((PMPrintSession)arg0, (PMPrintSettings)arg1);
+	NATIVE_EXIT(env, that, "PMSessionDefaultPrintSettings\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionEndDocumentNoDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionEndDocumentNoDialog)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionEndDocumentNoDialog\n")
+	rc = (jint)PMSessionEndDocumentNoDialog((PMPrintSession)arg0);
+	NATIVE_EXIT(env, that, "PMSessionEndDocumentNoDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionEndPageNoDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionEndPageNoDialog)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionEndPageNoDialog\n")
+	rc = (jint)PMSessionEndPageNoDialog((PMPrintSession)arg0);
+	NATIVE_EXIT(env, that, "PMSessionEndPageNoDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionError
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionError)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionError\n")
+	rc = (jint)PMSessionError((PMPrintSession)arg0);
+	NATIVE_EXIT(env, that, "PMSessionError\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionGetDestinationType
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionGetDestinationType)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2)
+{
+	jshort *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionGetDestinationType\n")
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	rc = (jint)PMSessionGetDestinationType((PMPrintSession)arg0, (PMPrintSettings)arg1, (PMDestinationType *)lparg2);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PMSessionGetDestinationType\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionGetGraphicsContext
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionGetGraphicsContext)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionGetGraphicsContext\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)PMSessionGetGraphicsContext((PMPrintSession)arg0, (CFStringRef)arg1, (void **)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PMSessionGetGraphicsContext\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionPageSetupDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionPageSetupDialog)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbooleanArray arg2)
+{
+	jboolean *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionPageSetupDialog\n")
+	if (arg2) lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL);
+	rc = (jint)PMSessionPageSetupDialog((PMPrintSession)arg0, (PMPageFormat)arg1, (Boolean *)lparg2);
+	if (arg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PMSessionPageSetupDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionPrintDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionPrintDialog)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbooleanArray arg3)
+{
+	jboolean *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionPrintDialog\n")
+	if (arg3) lparg3 = (*env)->GetBooleanArrayElements(env, arg3, NULL);
+	rc = (jint)PMSessionPrintDialog((PMPrintSession)arg0, (PMPrintSettings)arg1, (PMPageFormat)arg2, (Boolean *)lparg3);
+	if (arg3) (*env)->ReleaseBooleanArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "PMSessionPrintDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionSetCurrentPrinter
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionSetCurrentPrinter)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionSetCurrentPrinter\n")
+	rc = (jint)PMSessionSetCurrentPrinter((PMPrintSession)arg0, (CFStringRef)arg1);
+	NATIVE_EXIT(env, that, "PMSessionSetCurrentPrinter\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionSetDestination
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionSetDestination)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshort arg2, jint arg3, jint arg4)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionSetDestination\n")
+	rc = (jint)PMSessionSetDestination((PMPrintSession)arg0, (PMPrintSettings)arg1, (PMDestinationType)arg2, (CFStringRef)arg3, (CFURLRef)arg4);
+	NATIVE_EXIT(env, that, "PMSessionSetDestination\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionSetDocumentFormatGeneration
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionSetDocumentFormatGeneration)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionSetDocumentFormatGeneration\n")
+	rc = (jint)PMSessionSetDocumentFormatGeneration((PMPrintSession)arg0, (CFStringRef)arg1, (CFArrayRef)arg2, (CFTypeRef)arg3);
+	NATIVE_EXIT(env, that, "PMSessionSetDocumentFormatGeneration\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionSetError
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionSetError)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionSetError\n")
+	rc = (jint)PMSessionSetError((PMPrintSession)arg0, arg1);
+	NATIVE_EXIT(env, that, "PMSessionSetError\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionUseSheets
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionUseSheets)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionUseSheets\n")
+	rc = (jint)PMSessionUseSheets((PMPrintSession)arg0, (WindowRef)arg1, (PMSheetDoneUPP)arg2);
+	NATIVE_EXIT(env, that, "PMSessionUseSheets\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionValidatePageFormat
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionValidatePageFormat)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbooleanArray arg2)
+{
+	jboolean *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionValidatePageFormat\n")
+	if (arg2) lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL);
+	rc = (jint)PMSessionValidatePageFormat((PMPrintSession)arg0, (PMPageFormat)arg1, (Boolean *)lparg2);
+	if (arg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PMSessionValidatePageFormat\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionValidatePrintSettings
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionValidatePrintSettings)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbooleanArray arg2)
+{
+	jboolean *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionValidatePrintSettings\n")
+	if (arg2) lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL);
+	rc = (jint)PMSessionValidatePrintSettings((PMPrintSession)arg0, (PMPrintSettings)arg1, (Boolean *)lparg2);
+	if (arg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PMSessionValidatePrintSettings\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSetCollate
+JNIEXPORT jint JNICALL OS_NATIVE(PMSetCollate)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSetCollate\n")
+	rc = (jint)PMSetCollate((PMPrintSettings)arg0, arg1);
+	NATIVE_EXIT(env, that, "PMSetCollate\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSetFirstPage
+JNIEXPORT jint JNICALL OS_NATIVE(PMSetFirstPage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSetFirstPage\n")
+	rc = (jint)PMSetFirstPage((PMPrintSettings)arg0, (UInt32)arg1, (Boolean)arg2);
+	NATIVE_EXIT(env, that, "PMSetFirstPage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSetJobNameCFString
+JNIEXPORT jint JNICALL OS_NATIVE(PMSetJobNameCFString)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSetJobNameCFString\n")
+	rc = (jint)PMSetJobNameCFString((PMPrintSettings)arg0, (CFStringRef)arg1);
+	NATIVE_EXIT(env, that, "PMSetJobNameCFString\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSetLastPage
+JNIEXPORT jint JNICALL OS_NATIVE(PMSetLastPage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSetLastPage\n")
+	rc = (jint)PMSetLastPage((PMPrintSettings)arg0, (UInt32)arg1, (Boolean)arg2);
+	NATIVE_EXIT(env, that, "PMSetLastPage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSetPageRange
+JNIEXPORT jint JNICALL OS_NATIVE(PMSetPageRange)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSetPageRange\n")
+	rc = (jint)PMSetPageRange((PMPrintSettings)arg0, (UInt32)arg1, (UInt32)arg2);
+	NATIVE_EXIT(env, that, "PMSetPageRange\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMUnflattenPageFormat
+JNIEXPORT jint JNICALL OS_NATIVE(PMUnflattenPageFormat)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMUnflattenPageFormat\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMUnflattenPageFormat((Handle)arg0, (PMPageFormat *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMUnflattenPageFormat\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMUnflattenPrintSettings
+JNIEXPORT jint JNICALL OS_NATIVE(PMUnflattenPrintSettings)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMUnflattenPrintSettings\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMUnflattenPrintSettings((Handle)arg0, (PMPrintSettings *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMUnflattenPrintSettings\n")
+	return rc;
 }
 #endif
 
@@ -8403,6 +9131,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(UpdateDataBrowserItems)
 }
 #endif
 
+#ifndef NO_UpgradeScriptInfoToTextEncoding
+JNIEXPORT jint JNICALL OS_NATIVE(UpgradeScriptInfoToTextEncoding)
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jshort arg2, jbyteArray arg3, jintArray arg4)
+{
+	jbyte *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "UpgradeScriptInfoToTextEncoding\n")
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)UpgradeScriptInfoToTextEncoding(arg0, arg1, arg2, lparg3, lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "UpgradeScriptInfoToTextEncoding\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_WaitMouseMoved
 JNIEXPORT jboolean JNICALL OS_NATIVE(WaitMouseMoved)
 	(JNIEnv *env, jclass that, jobject arg0)
@@ -8453,6 +9199,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(kHIViewWindowContentID)
 	NATIVE_ENTER(env, that, "kHIViewWindowContentID\n")
 	rc = (jint)&kHIViewWindowContentID;
 	NATIVE_EXIT(env, that, "kHIViewWindowContentID\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_kPMDocumentFormatPDF
+JNIEXPORT jint JNICALL OS_NATIVE(kPMDocumentFormatPDF)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "kPMDocumentFormatPDF\n")
+	rc = (jint)kPMDocumentFormatPDF;
+	NATIVE_EXIT(env, that, "kPMDocumentFormatPDF\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_kPMGraphicsContextCoreGraphics
+JNIEXPORT jint JNICALL OS_NATIVE(kPMGraphicsContextCoreGraphics)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "kPMGraphicsContextCoreGraphics\n")
+	rc = (jint)kPMGraphicsContextCoreGraphics;
+	NATIVE_EXIT(env, that, "kPMGraphicsContextCoreGraphics\n")
 	return rc;
 }
 #endif
@@ -8747,6 +9517,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3C_3BI)
 	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "memcpy___3C_3BI\n")
+}
+#endif
+
+#ifndef NO_memcpy___3FII
+JNIEXPORT void JNICALL OS_NATIVE(memcpy___3FII)
+	(JNIEnv *env, jclass that, jfloatArray arg0, jint arg1, jint arg2)
+{
+	jfloat *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memcpy___3FII\n")
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "memcpy___3FII\n")
 }
 #endif
 

@@ -168,9 +168,6 @@ public class Display extends Device {
 	/* Focus */
 	boolean ignoreFocus;
 	
-	int [] disposeWindows;
-	int [] disposeControls;
-	
 	/* Keyboard */
 	int kchrPtr;
 	int [] kchrState = new int [1];
@@ -344,55 +341,6 @@ int appleEventProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-void addDisposeControl (int control) {
-	//TEMPORARY CODE
-//	if (Callback.getEntryCount () == 0) {
-		OS.DisposeControl (control);
-//		return;
-//	}
-//	OS.SetControlVisibility (control, false, false);
-//	if (disposeControls == null) disposeControls = new int [4];
-//	int length = disposeControls.length;
-//	for (int i=0; i<length; i++) {
-//		if (disposeControls [i] == control) return;
-//	}
-//	int index = 0;
-//	while (index < length) {
-//		if (disposeControls [index] == 0) break;
-//		index++;
-//	}
-//	if (index == length) {
-//		int [] newControls = new int [length + 4];
-//		System.arraycopy (disposeControls, 0, newControls, 0, length);
-//		disposeControls = newControls;
-//	}
-//	disposeControls [index] = control;
-}
-
-void addDisposeWindow (int window) {
-	//TEMPORARY CODE
-//	if (Callback.getEntryCount () == 0) {
-		OS.DisposeWindow (window);
-//		return;
-//	}
-//	if (disposeWindows == null) disposeWindows = new int [4];
-//	int length = disposeWindows.length;
-//	for (int i=0; i<length; i++) {
-//		if (disposeWindows [i] == window) return;
-//	}
-//	int index = 0;
-//	while (index < length) {
-//		if (disposeWindows [index] == 0) break;
-//		index++;
-//	}
-//	if (index == length) {
-//		int [] newWindows = new int [length + 4];
-//		System.arraycopy (disposeWindows, 0, newWindows, 0, length);
-//		disposeWindows = newWindows;
-//	}
-//	disposeWindows [index] = window;
-}
-
 public void addFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -522,7 +470,7 @@ public void beep () {
 }
 
 int caretProc (int id, int clientData) {
-	if (currentCaret == null) return 0;
+	if (currentCaret == null || currentCaret.isDisposed()) return 0;
 	if (currentCaret.blinkCaret ()) {
 		int blinkRate = currentCaret.blinkRate;
 		OS.SetEventLoopTimerNextFireTime (id, blinkRate / 1000.0);
@@ -816,8 +764,19 @@ void dragDetect (Control control) {
 	if (!dragging && control.hooks (SWT.DragDetect)) {
 		if (OS.WaitMouseMoved (dragMouseStart)) {
 			dragging = true;
-			//control.postEvent (SWT.DragDetect);
-			control.sendEvent (SWT.DragDetect);
+			Rect rect = new Rect ();
+			int window = OS.GetControlOwner (control.handle);
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+			int x = dragMouseStart.h - rect.left;
+			int y = dragMouseStart.v - rect.top;
+			OS.GetControlBounds (control.handle, rect);
+			x -= rect.left;
+			y -= rect.top;
+			Event event = new Event ();
+			event.x = x;
+			event.y = y;
+			//control.postEvent (SWT.DragDetect, event);
+			control.sendEvent (SWT.DragDetect, event);
 		}
 	}
 }
@@ -1916,20 +1875,18 @@ int mouseHoverProc (int id, int handle) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	runTimers ();
-	runEnterExit ();
-	runPopups ();
+	boolean events = runTimers ();
+	events |= runEnterExit ();
+	events |= runPopups ();
+	events |= runGrabs ();
 	int [] outEvent  = new int [1];
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
 	if (status == OS.noErr) {
+		events = true;
 		int eventClass = OS.GetEventClass (outEvent [0]);
 		int eventKind = OS.GetEventKind (outEvent [0]);
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
-		runDisposeWidgets ();
-		runPopups ();
-		runDeferredEvents ();
-		runGrabs ();
 		/*
 		* Feature in the Macintosh.  When an indeterminate progress
 		* bar is running, it floods the event queue with messages in
@@ -1943,7 +1900,10 @@ public boolean readAndDispatch () {
 		*/
 		if (eventClass == WAKE_CLASS && eventKind == WAKE_KIND) {
 			runAsyncMessages ();
-		}		
+		}
+	}
+	if (events) {
+		runDeferredEvents ();
 		return true;
 	}
 	return runAsyncMessages ();
@@ -2198,7 +2158,7 @@ boolean runEnterExit () {
 			OS.SetEventLoopTimerNextFireTime (mouseHoverID, outDelay [0] / 1000.0);
 		}
 	}
-	if (theWindow [0] != 0 && theControl [0] != 0) {
+	if (!OS.StillDown () && theWindow [0] != 0 && theControl [0] != 0) {
 		Rect rect = new Rect ();
 		OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
 		where.h -= rect.left;
@@ -2206,7 +2166,7 @@ boolean runEnterExit () {
 		int modifiers = OS.GetCurrentEventKeyModifiers ();
 		boolean [] cursorWasSet = new boolean [1];
 		OS.HandleControlSetCursor (theControl [0], where, (short) modifiers, cursorWasSet);
-		if (!OS.StillDown () && !cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
+		if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
 	}
 	return eventSent;
 }
@@ -2247,59 +2207,6 @@ boolean runDeferredEvents () {
 	return true;
 }
 
-boolean runDisposeWidgets () {
-	if (disposeWindows == null && disposeControls == null) return false;
-	if (disposeControls != null) {
-		for (int i=0; i<disposeControls.length; i++) {
-			int control = disposeControls [i];
-			if (control != 0) {
-				if (disposeWindows != null) {
-					int owner = OS.GetControlOwner (control);
-					for (int j=0; j<disposeWindows.length; j++) {
-						int window = disposeWindows [j];
-						if (window == owner) {
-							disposeControls [i] = 0;
-							break;
-						}
-					}
-				}
-				if (disposeControls [i] != 0) {
-					for (int j=0; j<disposeControls.length; j++) {
-						int otherControl = disposeControls [j];
-						if (otherControl != 0) {
-							int [] theControl = new int [] {control};
-							do {
-								OS.GetSuperControl(theControl [0], theControl);
-							} while (theControl [0] != 0 && theControl [0] != otherControl);
-							if (theControl [0] == otherControl) {
-								disposeControls [i] = 0;
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-		for (int i=0; i<disposeControls.length; i++) {
-			int control = disposeControls [i];
-			if (control != 0) {
-				OS.DisposeControl (control);
-			}
-		}
-		disposeControls = null;
-	}
-	if (disposeWindows != null) {
-		for (int i=0; i<disposeWindows.length; i++) {
-			int window = disposeWindows [i];
-			if (window != 0) {
-				OS.DisposeWindow (window);
-			}
-		}
-		disposeWindows = null;		
-	}
-	return true;
-}
-
 boolean runEventLoopTimers () {
 	allowTimers = false;
 	boolean result = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, false, null) == OS.noErr;
@@ -2307,8 +2214,8 @@ boolean runEventLoopTimers () {
 	return result;
 }
 
-void runGrabs () {
-	if (grabControl == null || grabbing) return;
+boolean runGrabs () {
+	if (grabControl == null || grabbing) return false;
 	Rect rect = new Rect ();
 	int [] outModifiers = new int [1];
 	short [] outResult = new short [1];
@@ -2377,6 +2284,7 @@ void runGrabs () {
 		grabbing = false;
 		grabControl = null;
 	}
+	return true;
 }
 
 boolean runPopups () {

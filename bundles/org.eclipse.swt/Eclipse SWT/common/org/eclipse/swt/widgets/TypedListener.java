@@ -117,11 +117,15 @@ public void handleEvent (Event e) {
 			break;
 		}
 		case SWT.KeyDown: {
-			((KeyListener) eventListener).keyPressed(new KeyEvent(e));
+			KeyEvent event = new KeyEvent(e);
+			((KeyListener) eventListener).keyPressed(event);
+			e.doit = event.doit;
 			break;
 		}
 		case SWT.KeyUp: {
-			((KeyListener) eventListener).keyReleased(new KeyEvent(e));
+			KeyEvent event = new KeyEvent(e);
+			((KeyListener) eventListener).keyReleased(event);
+			e.doit = event.doit;
 			break;
 		}
 		case SWT.MouseDown: {

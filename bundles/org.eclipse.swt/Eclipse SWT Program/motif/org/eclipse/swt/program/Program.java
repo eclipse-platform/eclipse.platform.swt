@@ -69,7 +69,7 @@ static int getDesktop(Display display) {
 	int desktop = DESKTOP_UNKNOWN;
 
 	if (isGnomeDesktop(display)) {
-		if (gnome_init()) desktop = DESKTOP_GNOME;
+		desktop = DESKTOP_GNOME;
 		// Save the desktop type on the display itself.
 		display.setData( desktopData, new Integer(desktop) );
 		return desktop;
@@ -116,7 +116,7 @@ static int getDesktop(Display display) {
  * The extension may or may not begin with a '.'.
  *
  * @param extension the program extension
- * @return the program or nil
+ * @return the program or <code>null</code>
  *
  * @exception SWTError <ul>
  *		<li>ERROR_NULL_ARGUMENT when extension is null</li>
@@ -284,7 +284,7 @@ private static boolean isGnomeDesktop(Display display) {
 	int xDisplay = display.xDisplay;
 	byte[] name = Converter.wcsToMbcs(null, "_WIN_SUPPORTING_WM_CHECK", true);
 	int atom_set = OS.XInternAtom(xDisplay, name, true);
-	return atom_set != OS.None;
+	return atom_set != OS.None ? gnome_init() : false;
 }
 /*
  * Obtain the registered mime type information and

@@ -581,6 +581,11 @@ public void drawOval(int x, int y, int width, int height) {
 	OS.gdk_draw_arc(data.drawable, handle, 0, x, y, width, height, 0, 23040);
 }
 
+public void drawPoint (int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	OS.gdk_draw_point(data.drawable, handle, x, y);
+}
+
 /** 
  * Draws the closed polygon which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 
@@ -1773,7 +1778,7 @@ public void setLineStyle(int lineStyle) {
 	data.lineStyle = lineStyle;
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
-	OS.gdk_gc_set_line_attributes(handle, values.line_width, line_style, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+	OS.gdk_gc_set_line_attributes(handle, values.line_width, line_style, OS.GDK_CAP_ROUND, OS.GDK_JOIN_MITER);
 }
 
 /** 
@@ -1791,7 +1796,7 @@ public void setLineStyle(int lineStyle) {
 public void setLineWidth(int width) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.GDK_LINE_SOLID : OS.GDK_LINE_ON_OFF_DASH;
-	OS.gdk_gc_set_line_attributes(handle, width, line_style, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+	OS.gdk_gc_set_line_attributes(handle, width, line_style, OS.GDK_CAP_ROUND, OS.GDK_JOIN_MITER);
 }
 
 void setString(String string, int flags) {

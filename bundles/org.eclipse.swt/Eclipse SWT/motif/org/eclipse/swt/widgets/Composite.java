@@ -196,14 +196,14 @@ void createHandle (int index, int parentHandle, boolean scrolled) {
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
+			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
-		int border = hasBorder () ? 1 : 0;
 		int [] argList = {
 			OS.XmNancestorSensitive, 1,
-			OS.XmNborderWidth, border,
+			OS.XmNborderWidth, hasBorder () ? 1 : 0,
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
@@ -291,6 +291,19 @@ boolean fowardKeyEvent (int event) {
 public Control [] getChildren () {
 	checkWidget();
 	return _getChildren ();
+}
+public Rectangle getClientArea () {
+	checkWidget();
+	/*
+	* Bug in Motif. For some reason, if a form has not been realized,
+	* calling XtResizeWidget () on the form does not lay out properly.
+	* The fix is to force the widget to be realized by forcing the shell
+	* to be realized. 
+	*/
+	if (formHandle != 0) {
+		if (!OS.XtIsRealized (handle)) getShell ().realizeWidget ();
+	}
+	return super.getClientArea ();
 }
 int getChildrenCount () {
 	/*

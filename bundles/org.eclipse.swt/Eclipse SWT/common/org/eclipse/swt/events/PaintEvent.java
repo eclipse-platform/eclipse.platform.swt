@@ -78,5 +78,22 @@ public PaintEvent(Event e) {
 	this.count = e.count;
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
+public String toString() {
+	String string = super.toString ();
+	return string.substring (0, string.length() - 1) // remove trailing '}'
+		+ " gc=" + gc
+		+ " x=" + x
+		+ " y=" + y
+		+ " width=" + width
+		+ " height=" + height
+		+ " count=" + count
+		+ "}";
+}
 }
 

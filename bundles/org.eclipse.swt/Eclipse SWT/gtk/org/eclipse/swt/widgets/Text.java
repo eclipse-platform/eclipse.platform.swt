@@ -749,22 +749,16 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget ();
-	int address;
-	if ((style & SWT.SINGLE) != 0) {
-		address = OS.gtk_editable_get_chars (handle, start, end + 1);
-	} else {
-		byte [] startIter =  new byte [ITER_SIZEOF];
-		byte [] endIter =  new byte [ITER_SIZEOF];
-		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
-		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, endIter, end + 1);
-		address = OS.gtk_text_buffer_get_text (bufferHandle, startIter, endIter, true);
-	}
-	if (address == 0) return "";
-	int length = OS.strlen (address);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, address, length);
-	OS.g_free (address);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	if (!(0 <= start && start <= end)) error (SWT.ERROR_INVALID_RANGE);
+	String text = getText ();
+	int length = text.length ();
+	if (length <= end) error (SWT.ERROR_INVALID_RANGE);
+	/*
+	* NOTE: The current implementation uses substring ()
+	* which can reference a potentially large character
+	* array.
+	*/
+	return text.substring (start, end + 1);
 }
 
 /**
@@ -1584,10 +1578,22 @@ int traversalCode (int key, GdkEventKey event) {
 }
 
 String verifyText (String string, int start, int end) {
+	if (string.length () == 0 && start == end) return null;
 	Event event = new Event ();
 	event.text = string;
 	event.start = start;
 	event.end = end;
+	int eventPtr = OS.gtk_get_current_event ();
+	if (eventPtr != 0) {
+		GdkEventKey gdkEvent = new GdkEventKey ();
+		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+		switch (gdkEvent.type) {
+			case OS.GDK_KEY_PRESS:
+				setKeyState (event, gdkEvent);
+				break;
+		}
+		OS.gdk_event_free (eventPtr);
+	}
 	/*
 	 * It is possible (but unlikely), that application
 	 * code could have disposed the widget in the verify

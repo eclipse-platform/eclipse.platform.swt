@@ -181,7 +181,7 @@ void destroyWidget () {
 	int theControl = handle;
 	releaseHandle ();
 	if (theControl != 0) {
-		display.addDisposeControl (theControl);
+		OS.DisposeControl (theControl);
 	}
 }
 

@@ -261,7 +261,7 @@ public void setItems (String[] strings) {
 */
 public void setMinimumWidth (int width) {
 	if (width < 0)
-		throw new SWTError(SWT.ERROR_INVALID_ARGUMENT);
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		
 	minimumWidth = width;
 }

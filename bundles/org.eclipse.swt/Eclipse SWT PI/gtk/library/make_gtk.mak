@@ -24,7 +24,7 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 JAVA_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
 
 #  mozilla source distribution folder
-MOZILLA_HOME = /mozilla/mozilla/1.4/linux_gtk2/mozilla/dist
+MOZILLA_HOME = /mozilla/mozilla/1.5/linux_gtk2/mozilla/dist
 
 # Define the various shared libraries to be build.
 WS_PREFIX    		= gtk
@@ -62,7 +62,7 @@ MOZILLACFLAGS = -O \
 	-I$(MOZILLA_HOME)/include/gfx
 MOZILLALIBS = -L$(MOZILLA_HOME)/lib -lembed_base_s -lxpcom
 # Specify the default location of supported Mozilla versions
-MOZILLALDFLAGS = -s -Xlinker -rpath -Xlinker /usr/lib/mozilla-1.4
+MOZILLALDFLAGS = -s -Xlinker -rpath -Xlinker /usr/lib/mozilla-1.5
 
 SWT_OBJECTS		= callback.o
 SWTPI_OBJECTS	= os.o os_structs.o os_custom.o

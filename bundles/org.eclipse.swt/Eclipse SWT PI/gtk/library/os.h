@@ -28,6 +28,9 @@
 #include <dlfcn.h>
 
 #ifndef GDK_WINDOWING_X11
+#define NO_XWindowChanges
+#defien NO_XDefaultScreen
+#define NO_XReconfigureWMWindow
 #define NO_XSetInputFocus
 #define NO_gdk_1x11_1drawable_1get_1xdisplay
 #define NO_gdk_1x11_1drawable_1get_1xid

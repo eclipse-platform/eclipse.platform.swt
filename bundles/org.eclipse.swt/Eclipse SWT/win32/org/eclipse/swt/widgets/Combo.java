@@ -910,14 +910,14 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
+	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	if (!(0 <= start && start <= end && end < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	int length = OS.GetWindowTextLength (handle);
 	for (int i=start; i<=end; i++) {
 		int result = OS.SendMessage (handle, OS.CB_DELETESTRING, start, 0);
-		if (result == OS.CB_ERR) {
-			int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-			if (0 <= i && i < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
-			error (SWT.ERROR_INVALID_RANGE);
-		}
+		if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	if (length != OS.GetWindowTextLength (handle)) {
 		/*
@@ -936,7 +936,7 @@ public void remove (int start, int end) {
 	* force a redraw.
 	*/
 	if ((style & SWT.READ_ONLY) != 0) {		
-		int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+		count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 		if (count == 0) OS.InvalidateRect (handle, null, false);
 	}
 }

@@ -549,6 +549,8 @@ void destroyItem (CTabItem item) {
 	
 	// move the selection if this item is selected
 	if (selectedIndex == index) {
+		selectedIndex = -1;
+		setSelection(Math.max(0, index - 1), true);
 		Control control = item.getControl();
 		selectedIndex = -1;
 		setSelection(Math.max(0, index - 1), true);

@@ -31,7 +31,7 @@ public class XPCOM {
 	
 	/* Mozilla version */
 	static final int MAJOR = 1;
-	static final int MINOR = 4;
+	static final int MINOR = 5;
 	static final String SUPPORTED_VERSION = MAJOR + "." + MINOR; //$NON-NLS-1$
 
 	/* nsDirectoryServiceDefs constants */
@@ -44,9 +44,15 @@ public class XPCOM {
 	public static final String NS_XPCOM_COMPONENT_DIR = "ComsD"; //$NON-NLS-1$
 	public static final String NS_OS_CURRENT_PROCESS_DIR = "CurProcD"; //$NON-NLS-1$
 
-	/* NsWidgetCID constants */
+	/* CID constants */
 	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$
-
+	public static final nsID NS_IOSERVICE_CID =	new nsID("9ac9e770-18bc-11d3-9337-00104ba0fd40"); //$NON-NLS-1$
+	public static final nsID NS_INPUTSTREAMCHANNEL_CID = new nsID("6ddb050c-0d04-11d4-986e-00c04fa0cf4a"); //$NON-NLS-1$
+	public static final nsID NS_LOADGROUP_CID = new nsID("e1c61582-2a84-11d3-8cce-0060b0fc14a3"); //$NON-NLS-1$
+	
+	public static final String NS_CATEGORYMANAGER_CONTRACTID = "@mozilla.org/categorymanager;1"; //$NON-NLS-1$
+	public static final String NS_WINDOWWATCHER_CONTRACTID = "@mozilla.org/embedcomp/window-watcher;1"; //$NON-NLS-1$
+	
 	/* XPCOM constants */
 	public static final int NS_OK =  0;
 	public static final int NS_COMFALSE = 1;
@@ -71,6 +77,7 @@ public class XPCOM {
 	public static final int NS_ERROR_FACTORY_NOT_LOADED = 0x800401f8;
 	public static final int NS_ERROR_FACTORY_NO_SIGNATURE_SUPPORT = NS_ERROR_BASE + 0x101;
 	public static final int NS_ERROR_FACTORY_EXISTS = NS_ERROR_BASE + 0x100;
+	public static final int NS_ERROR_HTMLPARSER_UNRESOLVEDDTD = 0x804e03f3;
 
 public static final native void memmove(nsID dest, int src, int nbytes);
 public static final native void memmove(int dest, nsID src, int nbytes);
@@ -78,14 +85,16 @@ public static final native void memmove(int dest, int[] src, int nbytes);
 public static final native void memmove(int[] dest, int src, int nbytes);
 public static final native void memmove(byte[] dest, int src, int nbytes);
 public static final native void memmove(char[] dest, int src, int nbytes);
+public static final native void memmove(int dest, byte[] src, int nbytes);
 public static final native int NS_GetComponentManager(int[] result);
 public static final native int NS_GetServiceManager(int[] result);
 public static final native int NS_InitEmbedding(int aMozBinDirectory, int aAppFileLocProvider);
-public static final native int NS_NewLocalFile(String path, boolean followLinks, int[] nsILocalFile);
+public static final native int NS_NewLocalFile(int path, boolean followLinks, int[] result);
 public static final native int NS_NewSingletonEnumerator(int localFile,int[] enum);
 public static final native int NS_TermEmbedding();
 public static final native int nsCRT_strlen_PRUnichar(int s);
-public static final native int nsCString_new();	
+public static final native int nsCString_new();
+public static final native int nsCString_new(byte[] aString, int length);
 public static final native void nsCString_delete(int ptr);
 public static final native int nsCString_Length(int ptr);
 public static final native int nsCString_get(int ptr);
@@ -100,10 +109,14 @@ public static final native int nsString_new(char[] aString);
 public static final native void nsString_delete(int ptr);
 public static final native int nsString_Length(int ptr);
 public static final native int nsString_get(int ptr);
+public static final native boolean nsString_Equals(int ptr, int other);
+public static final native void nsString_AssignWithConversion(int ptr, byte[] aString);
 public static final native void PR_Free(int ptr);
 public static final native String PR_GetEnv(String name); 
 public static final native int PR_Malloc(int Length);
 public static final native int strlen(int s);
+
+public static final native int nsWriteSegmentFun(int ptr, int aInStream, int aClosure, byte[] aFromSegment, int aToOffset, int aCount, int[] aWriteCount);
 
 static final native int VtblCall(int fnNumber, int ppVtbl, nsID arg0, int[] arg1);
 static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, nsID arg1, int[] arg2);
@@ -228,7 +241,9 @@ static final native int VtblCall(int fnNumber, int ppVtbl, boolean arg0, int[] a
 static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, short arg1, short arg2, short arg3, boolean[] arg4);
 static final native int VtblCall(int fnNumber, int ppVtbl, boolean arg0, short arg1, short arg2, short arg3, boolean[] arg4);
 static final native int VtblCall(int fnNumber, int ppVtbl, boolean arg0, int arg1, boolean[] arg2);
-
+static final native int VtblCall(int fnNumber, int ppVtbl, byte[] arg0, byte[] arg1, int[] arg2);
+static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, byte[] arg1, int arg2);
+static final native int VtblCall(int fnNumber, int ppVtbl, byte[] arg0, int arg1, int arg2, byte[] arg3, int arg4, int arg5, int[] arg6, int[] arg7);
+static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int arg1, byte[] arg2, int[] arg3);
+static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, byte[] arg1, int arg2, int[] arg3);
 }
-
-

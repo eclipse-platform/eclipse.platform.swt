@@ -77,7 +77,7 @@ static int getDesktop(Display display) {
  * The extension may or may not begin with a '.'.
  *
  * @param extension the program extension
- * @return the program or nil
+ * @return the program or <code>null</code>
  *
  * @exception SWTError <ul>
  *		<li>ERROR_NULL_ARGUMENT when extension is null</li>

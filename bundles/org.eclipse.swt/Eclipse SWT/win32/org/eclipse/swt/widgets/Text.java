@@ -854,6 +854,9 @@ public String getText () {
  * @param end the end of the range
  * @return the range of text
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of characters minus 1 (inclusive), or if start is greater than end</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -861,6 +864,11 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget ();
+	int length = OS.GetWindowTextLength (handle);
+	if (OS.IsDBLocale) length = mbcsToWcsPos (length);
+	if (!(0 <= start && start <= end && end < length)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	/*
 	* NOTE: The current implementation uses substring ()
 	* which can reference a potentially large character

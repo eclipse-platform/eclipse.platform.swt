@@ -314,7 +314,7 @@ protected void addObjectReferences() {
  *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  */
 public void addPropertyListener(int propertyID, OleListener listener) {
-	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	olePropertyChangeSink.addListener(propertyID, listener);	
 }
 
@@ -621,7 +621,7 @@ protected void releaseObjectInterfaces() {
  */
 public void removeEventListener(int eventID, OleListener listener) {
 	checkWidget();
-	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	
 	GUID riid = getDefaultEventSinkGUID(objIUnknown);
 	if (riid != null) {
@@ -647,7 +647,7 @@ public void removeEventListener(int eventID, OleListener listener) {
  */
 public void removeEventListener(OleAutomation automation, GUID guid, int eventID, OleListener listener) {
 	checkWidget();
-	if (automation == null || listener == null || guid == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	if (automation == null || listener == null || guid == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	removeEventListener(automation.getAddress(), guid, eventID, listener);
 }
 /**	 
@@ -666,7 +666,7 @@ public void removeEventListener(OleAutomation automation, GUID guid, int eventID
  */
 public void removeEventListener(OleAutomation automation, int eventID, OleListener listener) {
 	checkWidget();
-	if (automation == null || listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	if (automation == null || listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int address = automation.getAddress();
 	IUnknown unknown = new IUnknown(address);
 	GUID riid = getDefaultEventSinkGUID(unknown);
@@ -675,7 +675,7 @@ public void removeEventListener(OleAutomation automation, int eventID, OleListen
 	}
 }
 void removeEventListener(int iunknown, GUID guid, int eventID, OleListener listener) {
-	if (listener == null || guid == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null || guid == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i = 0; i < oleEventSink.length; i++) {
 		if (COM.IsEqualGUID(oleEventSinkGUID[i], guid)) {
 			if (iunknown == oleEventSinkIUnknown[i]) {
@@ -720,7 +720,7 @@ void removeEventListener(int iunknown, GUID guid, int eventID, OleListener liste
  *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  */
 public void removePropertyListener(int propertyID, OleListener listener) {
-	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	olePropertyChangeSink.removeListener(propertyID, listener);
 }
 public void setBackground (Color color) {

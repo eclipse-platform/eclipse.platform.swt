@@ -1002,6 +1002,28 @@ public void drawOval (int x, int y, int width, int height) {
 }
 
 /** 
+ * Draws a pixel, using the foreground color, at the specified
+ * point (<code>x</code>, <code>y</code>).
+ * <p>
+ * Note that the receiver's line attributes do not affect this
+ * operation.
+ * </p>
+ *
+ * @param x the point's x coordinate
+ * @param y the point's y coordinate
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *  
+ * @since 3.0
+ */
+public void drawPoint (int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	OS.SetPixel (handle, x, y, OS.GetTextColor (handle));
+}
+
+/** 
  * Draws the closed polygon which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 
  * contains alternating x and y values which are considered to represent

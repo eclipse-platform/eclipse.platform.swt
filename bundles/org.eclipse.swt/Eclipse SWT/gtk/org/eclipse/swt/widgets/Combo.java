@@ -435,32 +435,26 @@ boolean hasFocus () {
 }
 
 void hookEvents () {
+	//TODO - fix multiple enter/exit
 	super.hookEvents ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
 	OS.g_signal_connect_after (entryHandle, OS.changed, windowProc2, CHANGED);
 	OS.g_signal_connect (entryHandle, OS.activate, windowProc2, ACTIVATE);
-	int mask =
-		OS.GDK_POINTER_MOTION_MASK | 
-		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
-		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK;
+	int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK |
+		OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_ENTER_NOTIFY_MASK |
+		OS.GDK_LEAVE_NOTIFY_MASK;
 	int [] handles = new int [] {arrowHandle, entryHandle, listHandle};
 	for (int i=0; i<handles.length; i++) {
 		int eventHandle = handles [i];
 		if (eventHandle != 0) {
-			OS.gtk_widget_add_events (eventHandle, mask);
-			OS.g_signal_connect (eventHandle, OS.popup_menu, windowProc2, POPUP_MENU);
+			/* Connect the mouse signals */
+			OS.gtk_widget_add_events (eventHandle, eventMask);
 			OS.g_signal_connect (eventHandle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
 			OS.g_signal_connect (eventHandle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
 			OS.g_signal_connect (eventHandle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
-			OS.g_signal_connect (eventHandle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
-			OS.g_signal_connect (eventHandle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
-			OS.g_signal_connect (eventHandle, OS.show_help, windowProc3, SHOW_HELP);
-			OS.g_signal_connect (eventHandle, OS.focus, windowProc3, FOCUS);
-			OS.g_signal_connect (eventHandle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
-			OS.g_signal_connect (eventHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
-			OS.g_signal_connect (eventHandle, OS.event_after, windowProc3, EVENT_AFTER);
-		
+			OS.g_signal_connect (eventHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
+			OS.g_signal_connect (eventHandle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
 			/*
 			* Feature in GTK.  Events such as mouse move are propagated up
 			* the widget hierarchy and are seen by the parent.  This is the
@@ -471,6 +465,11 @@ void hookEvents () {
 			OS.g_signal_connect_after (eventHandle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
 			OS.g_signal_connect_after (eventHandle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
 			OS.g_signal_connect_after (eventHandle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
+
+			/* Connect the event_after signal for both key and mouse */
+			if (eventHandle != entryHandle) {
+				OS.g_signal_connect (eventHandle, OS.event_after, windowProc3, EVENT_AFTER);
+			}
 		}
 	}
 	int imContext = imContext ();
@@ -1084,13 +1083,35 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 void setFontDescription (int font) {
 	super.setFontDescription (font);
 	if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
-	if (listHandle != 0) OS.gtk_widget_modify_font (listHandle, font);
+	if (listHandle != 0) {
+		OS.gtk_widget_modify_font (listHandle, font);
+		int itemsList = OS.gtk_container_get_children (listHandle);
+		if (itemsList != 0) {
+			int count = OS.g_list_length (itemsList);
+			for (int i=count - 1; i>=0; i--) {
+				int widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
+				OS.gtk_widget_modify_font (widget, font);
+			}
+			OS.g_list_free (itemsList);
+		}
+	}
 }
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	if (entryHandle != 0) OS.gtk_widget_modify_text (entryHandle, 0, color);
-	if (listHandle != 0) OS.gtk_widget_modify_text (listHandle, 0, color);
+	if (listHandle != 0) {
+		OS.gtk_widget_modify_text (listHandle, 0, color);
+		int itemsList = OS.gtk_container_get_children (listHandle);
+		if (itemsList != 0) {
+			int count = OS.g_list_length (itemsList);
+			for (int i=count - 1; i>=0; i--) {
+				int widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
+				OS.gtk_widget_modify_fg (widget, 0, color);
+			}
+			OS.g_list_free (itemsList);
+		}
+	}
 }
 
 /**
@@ -1176,6 +1197,18 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 				if (data != 0) OS.g_free (data);
 			}
 			OS.g_list_free (glist);
+		}
+		int itemsList = OS.gtk_container_get_children (listHandle);
+		if (itemsList != 0) {
+			int font = getFontDescription ();
+			GdkColor color = getForegroundColor ();
+			int count = OS.g_list_length (itemsList);
+			for (int i=count - 1; i>=0; i--) {
+				int widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
+				OS.gtk_widget_modify_fg (widget, 0, color);
+				OS.gtk_widget_modify_font (widget, font);
+			}
+			OS.g_list_free (itemsList);
 		}
 	}
 	OS.gtk_entry_set_text (entryHandle, Converter.wcsToMbcs (null, selectedIndex != -1 ? items [selectedIndex] : text, true));

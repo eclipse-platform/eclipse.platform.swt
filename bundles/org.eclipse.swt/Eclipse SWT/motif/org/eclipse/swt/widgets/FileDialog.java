@@ -34,12 +34,13 @@ public class FileDialog extends Dialog {
 	int dialog;
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
-	String [] fileNames;
+	String [] fileNames = new String [0];
 	String fileName = "";
 	String filterPath = "";
 	String fullPath;
 	boolean cancel = false;
 	static final String FILTER = "*";
+	static final String SEPARATOR = System.getProperty ("file.separator");
 
 /**
  * Constructs a new instance of this class given only its
@@ -119,8 +120,7 @@ public String getFileName () {
 
 /**
  * Returns the paths of all files that were selected
- * in the dialog relative to the filter path, or null
- * if none are available.
+ * in the dialog relative to the filter path.
  * 
  * @return the relative paths of the files
  */
@@ -255,7 +255,7 @@ int okPressed (int widget, int client, int call) {
 				OS.XtFree (address);
 				/* Use the character encoding for the default locale */
 				String fullFilename = new String (Converter.mbcsToWcs (null, buffer));
-				int index = fullFilename.lastIndexOf ('/');
+				int index = fullFilename.lastIndexOf (SEPARATOR);
 				fileNames [i] = fullFilename.substring (index + 1, fullFilename.length ());
 				if (fullFilename.equals (fullPath)) match = true;
 			}
@@ -267,12 +267,12 @@ int okPressed (int widget, int client, int call) {
 			/* The user has modified the text field such that it doesn't match any
 			 * of the selected files, so use this value instead
 			 */
-			int index = fullPath.lastIndexOf ('/');
+			int index = fullPath.lastIndexOf (SEPARATOR);
 			fileName = fullPath.substring (index + 1, fullPath.length ());
 			fileNames = new String [] {fileName};
 		}
 	} else {
-		int index = fullPath.lastIndexOf ('/');
+		int index = fullPath.lastIndexOf (SEPARATOR);
 		fileName = fullPath.substring (index + 1, fullPath.length ());
 		fileNames = new String [] {fileName};
 	}
@@ -306,8 +306,8 @@ int okPressed (int widget, int client, int call) {
 		filterPath = new String (Converter.mbcsToWcs (null, buffer));
 	}
 	OS.XmStringFree (xmString2);
-	if (filterPath.endsWith("/")) {
-		filterPath = filterPath.substring (0, filterPath.length() - 1);
+	if (filterPath.endsWith (SEPARATOR)) {
+		filterPath = filterPath.substring (0, filterPath.length () - 1);
 	}
 
 	this.fullPath = fullPath;
@@ -362,7 +362,7 @@ public String open () {
 		0);
 
 	fullPath = null;
-	fileNames = null;
+	fileNames = new String [0];
 	
 	/* Compute the filter */
 	String mask = FILTER;
@@ -390,9 +390,9 @@ public String open () {
 
 	/* Compute the filter path */
 	if (filterPath == null) filterPath = "";
-	if (!filterPath.endsWith ("/")) {
+	if (!filterPath.endsWith (SEPARATOR)) {
 		File dir = new File (filterPath);
-		if (dir.exists () && dir.isDirectory ()) filterPath += '/';
+		if (dir.exists () && dir.isDirectory ()) filterPath += SEPARATOR;
 	}
 	/* Use the character encoding for the default locale */
 	byte [] buffer3 = Converter.wcsToMbcs (null, filterPath, true);
@@ -428,6 +428,32 @@ public String open () {
 	OS.XmStringFree (xmStringPtr1);
 	OS.XmStringFree (xmStringPtr2);
 	OS.XmStringFree (xmStringPtr3);
+	
+	/*
+	 * Can override the selection text field if necessary now that
+	 * its initial value has been computed by the platform dialog.
+	 */
+	if (fileName != null && fileName.length() > 0) {
+		/* Use the character encoding for the default locale */
+		byte [] buffer4 = Converter.wcsToMbcs (null, fileName, true);
+		int xmStringPtr4 = OS.XmStringParseText (
+				buffer4,
+				0,
+				OS.XmFONTLIST_DEFAULT_TAG, 
+				OS.XmCHARSET_TEXT, 
+				null,
+				0,
+				0);
+		int [] argList2 = {OS.XmNdirSpec, 0};
+		OS.XtGetValues (dialog, argList2, argList2.length / 2);
+		int oldDirSpec = argList2 [1];
+		int newDirSpec = OS.XmStringConcat (oldDirSpec, xmStringPtr4);
+		argList2 [1] = newDirSpec;
+		OS.XtSetValues (dialog, argList2, argList2.length / 2);
+		OS.XmStringFree (xmStringPtr4);
+		OS.XmStringFree (oldDirSpec);
+		OS.XmStringFree (newDirSpec);
+	}
 
 	/* Hook the callbacks. */
 	Callback cancelCallback = new Callback (this, "cancelPressed", 3);
@@ -440,8 +466,8 @@ public String open () {
 	if ((style & SWT.MULTI) != 0) {
 		child = OS.XmFileSelectionBoxGetChild (dialog, OS.XmDIALOG_LIST);
 		if (child != 0) {
-			int [] argList2 = {OS.XmNselectionPolicy, OS.XmEXTENDED_SELECT};
-			OS.XtSetValues(child, argList2, argList2.length / 2);
+			int [] argList3 = {OS.XmNselectionPolicy, OS.XmEXTENDED_SELECT};
+			OS.XtSetValues(child, argList3, argList3.length / 2);
 			selectCallback = new Callback (this, "itemSelected", 3);
 			int selectAddress = selectCallback.getAddress ();
 			if (selectAddress == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);

@@ -35,6 +35,7 @@
 #include "prenv.h"
 #include "nsString.h"
 #include "nsEnumeratorUtils.h"
+#include "nsIInputStream.h"
 #include "nsRect.h"
 #include "jni.h"
 
@@ -58,12 +59,12 @@ typedef NS_CALLBACK_(jint, P_OLE_FN_4) (jint, jint, jint, jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_3) (jint, jint, jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_3S)(jint, jshort,jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_3SF) (jint, jshort, jfloat);
+typedef NS_CALLBACK_(void, P_OLE_FNNORET_3)(jint, jint, jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_2L)(jint, jlong);
 typedef NS_CALLBACK_(jint, P_OLE_FN_2F)(jint, jfloat);
 typedef NS_CALLBACK_(jint, P_OLE_FN_2D)(jint, jdouble);
 typedef NS_CALLBACK_(jint, P_OLE_FN_2) (jint, jint);
 typedef NS_CALLBACK_(void, P_OLE_FNNORET_2)(jint, jint);
-typedef NS_CALLBACK_(void, P_OLE_FNNORET_3)(jint, jint, jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_1) (jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_0) (void);
 
@@ -184,10 +185,21 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCString_1Length)
 	return (jint)lparg0->Length();
 }
 
-JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCString_1new)
+JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCString_1new__)
 	(JNIEnv *env, jclass)
 {
 	return (jint)new nsCString();
+}
+
+JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCString_1new___3BI)
+	(JNIEnv *env, jclass, jbyteArray arg0, jint length)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+	if (arg0) lparg0 = env->GetByteArrayElements(arg0, NULL);
+	rc = (jint)new nsCString((const char *)lparg0, length);
+	if (arg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
+	return rc;
 }
 
 JNIEXPORT void JNICALL XPCOM_NATIVE(nsRect_1delete)
@@ -243,6 +255,29 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(nsString_1new___3C)
 	return rc;
 }
 
+JNIEXPORT jboolean JNICALL XPCOM_NATIVE(nsString_1Equals)
+	(JNIEnv *env, jclass, jint arg0, jint arg1)
+{
+	nsString *lparg0 = NULL;
+	nsString *lparg1 = NULL;
+	if (arg0 != 0)
+		lparg0 = (nsString*)arg0;
+	if (arg1 != 0)
+		lparg1 = (nsString*)arg1;
+	return lparg0->Equals(*lparg1);
+}
+
+JNIEXPORT void JNICALL XPCOM_NATIVE(nsString_1AssignWithConversion)
+	(JNIEnv *env, jclass, jint arg0, jbyteArray arg1)
+{
+	nsString *lparg0 = NULL;
+	jbyte *lparg1 = NULL;
+	if (arg0) lparg0 = (nsString*)arg0;
+	if (arg1) lparg1 = env->GetByteArrayElements(arg1, NULL);
+	lparg0->AssignWithConversion((const char *)lparg1);
+	if (arg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
+}
+
 JNIEXPORT jstring JNICALL XPCOM_NATIVE(PR_1GetEnv)
 	(JNIEnv *env, jclass, jstring arg0)
 {
@@ -256,27 +291,13 @@ JNIEXPORT jstring JNICALL XPCOM_NATIVE(PR_1GetEnv)
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1NewLocalFile)
- 	(JNIEnv *env, jclass, jstring arg0, jboolean arg1, jintArray arg2)
+ 	(JNIEnv *env, jclass, jint arg0, jboolean arg1, jintArray arg2)
 {
-	const char* path = (const char *)env->GetStringUTFChars(arg0,NULL);
-
-	NS_ConvertASCIItoUCS2 str(path);
-  	nsILocalFile *pLocalFile = NULL;
-    nsresult rc = NS_NewLocalFile(str,arg1,&pLocalFile);
-
-	env->ReleaseStringUTFChars(arg0, path);
-
-	if (NS_SUCCEEDED(rc)) {
-		jint *arg21 = NULL; 
-		if (arg2)
-			arg21 = env->GetIntArrayElements(arg2, NULL);
-
-		arg21[0] = (jint)pLocalFile; 
-
-		if (arg2)
-			env->ReleaseIntArrayElements(arg2, arg21, 0);
-	}
-
+	jint *lparg2=NULL;
+	jint rc;
+	if (arg2) lparg2 = env->GetIntArrayElements(arg2, NULL);
+    rc = NS_NewLocalFile((nsAString &)(*(nsAString *)arg0), arg1, (nsILocalFile**)lparg2);
+	if (arg2) env->ReleaseIntArrayElements(arg2, lparg2, 0);
 	return rc;
 }
 
@@ -376,6 +397,15 @@ JNIEXPORT void JNICALL XPCOM_NATIVE(memmove___3CII)
 	if (arg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
 }
 
+JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__I_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	if (arg1) lparg1 = env->GetByteArrayElements(arg1, NULL);
+	memmove((void*)arg0, lparg1, arg2);
+	if (arg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
+}
+
 JNIEXPORT jint JNICALL XPCOM_NATIVE(PR_1Malloc)
 	(JNIEnv *, jclass, jint Length)
 {
@@ -386,6 +416,24 @@ JNIEXPORT void JNICALL XPCOM_NATIVE(PR_1Free)
 	(JNIEnv *, jclass, jint ptr)
 {
 	PR_Free((void *)ptr);
+}
+
+JNIEXPORT jint JNICALL XPCOM_NATIVE(nsWriteSegmentFun)
+	(JNIEnv *env, jclass that, jint ptr, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jint arg4, jintArray arg5)
+{
+	jbyte *lparg2=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+	if (arg2) lparg2 = env->GetByteArrayElements(arg2, NULL);
+	if (arg5) lparg5 = env->GetIntArrayElements(arg5, NULL);
+
+	/* custom */	
+	nsWriteSegmentFun aWriter = (nsWriteSegmentFun)ptr;
+	rc = aWriter((nsIInputStream *)arg0, (void *)arg1, (const char *)lparg2, arg3, arg4, (PRUint32 *)lparg5);
+	
+	if (arg5) env->ReleaseIntArrayElements(arg5, lparg5, 0);
+	if (arg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	return rc;
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2_3I)
@@ -2780,6 +2828,87 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIZI_3Z)
 	if (arg2) env->ReleaseBooleanArrayElements(arg2, lparg2, 0);
 
     return rc;
+}
+
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIII_3B_3I)
+	(JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jint arg0, jint arg1, jbyteArray arg2, jintArray arg3)
+{
+	P_OLE_FN_5 fn = (P_OLE_FN_5)(*(int **)ppVtbl)[fnNumber];
+	jbyte *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+	if (arg2) lparg2 = env->GetByteArrayElements(arg2, NULL);
+	if (arg3) lparg3 = env->GetIntArrayElements(arg3, NULL);
+	rc = fn(ppVtbl, arg0, arg1, (jint)lparg2, (jint)lparg3);
+	if (arg3) env->ReleaseIntArrayElements(arg3, lparg3, 0);
+	if (arg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	return rc;
+}
+
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3BI)
+	(JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jint arg0, jbyteArray arg1, jint arg2)
+{
+	P_OLE_FN_4 fn = (P_OLE_FN_4)(*(int **)ppVtbl)[fnNumber];
+	jbyte *lparg1=NULL;
+	jint rc;
+	if (arg1) lparg1 = env->GetByteArrayElements(arg1, NULL);
+	rc = fn(ppVtbl, arg0, (jint)lparg1, arg2);
+	if (arg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
+	return rc;
+}
+
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3BI_3I)
+	(JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3)
+{
+	P_OLE_FN_5 fn = (P_OLE_FN_5)(*(int **)ppVtbl)[fnNumber];
+	jbyte *lparg1=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+	if (arg1) lparg1 = env->GetByteArrayElements(arg1, NULL);
+	if (arg3) lparg3 = env->GetIntArrayElements(arg3, NULL);
+	rc = fn(ppVtbl, arg0, (jint)lparg1, arg2, (jint)lparg3);
+	if (arg3) env->ReleaseIntArrayElements(arg3, lparg3, 0);
+	if (arg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
+	return rc;
+}
+
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BII_3BII_3I_3I)
+	(JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jbyteArray arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6, jintArray arg7)
+{
+	P_OLE_FN_9 fn = (P_OLE_FN_9)(*(int **)ppVtbl)[fnNumber];
+	jbyte *lparg0=NULL;
+	jbyte *lparg3=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint rc;
+	if (arg0) lparg0 = env->GetByteArrayElements(arg0, NULL);
+	if (arg3) lparg3 = env->GetByteArrayElements(arg3, NULL);
+	if (arg6) lparg6 = env->GetIntArrayElements(arg6, NULL);
+	if (arg7) lparg7 = env->GetIntArrayElements(arg7, NULL);
+	rc = fn(ppVtbl, (jint)lparg0, arg1, arg2, (jint)lparg3, arg4, arg5, (jint)lparg6, (jint)lparg7);
+	if (arg7) env->ReleaseIntArrayElements(arg7, lparg7, 0);
+	if (arg6) env->ReleaseIntArrayElements(arg6, lparg6, 0);
+	if (arg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	if (arg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
+	return rc;
+}
+
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3B_3I)
+	(JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jbyteArray arg0, jbyteArray arg1, jintArray arg2)
+{
+	P_OLE_FN_4 fn = (P_OLE_FN_4)(*(int **)ppVtbl)[fnNumber];
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	if (arg0) lparg0 = env->GetByteArrayElements(arg0, NULL);
+	if (arg1) lparg1 = env->GetByteArrayElements(arg1, NULL);
+	if (arg2) lparg2 = env->GetIntArrayElements(arg2, NULL);
+	rc = fn(ppVtbl, (jint)lparg0, (jint)lparg1, (jint)lparg2);
+	if (arg2) env->ReleaseIntArrayElements(arg2, lparg2, 0);
+	if (arg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
+	if (arg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
+	return rc;
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCRT_1strlen_1PRUnichar)

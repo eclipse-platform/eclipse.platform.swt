@@ -1209,26 +1209,23 @@ void releaseWidget () {
 public void remove (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length == 0) return;
 	int [] newIndices = new int [indices.length];
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
 	sort (newIndices);
-	int last = -1;
+	int start = newIndices [newIndices.length - 1], end = newIndices [0];
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (!(0 <= start && start <= end && end < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	int last = -1;
 	for (int i=0; i<newIndices.length; i++) {
 		int index = newIndices [i];
-		if (index != last || i == 0) {
+		if (index != last) {
 			ignoreSelect = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = false;
-			if (code == 0) {
-				if (0 <= index && index < count) {
-					error (SWT.ERROR_ITEM_NOT_REMOVED);
-				} else {
-					error (SWT.ERROR_INVALID_RANGE);
-				}
-			}
-			
-			// BUG - disposed callback could remove an item
+			if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 			items [index].releaseResources ();
 			System.arraycopy (items, index + 1, items, index, --count - index);
 			items [count] = null;
@@ -1296,6 +1293,9 @@ public void remove (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (!(0 <= start && start <= end && end < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	if (start == 0 && end == count - 1) {
 		removeAll ();
 		return;
@@ -1306,20 +1306,12 @@ public void remove (int start, int end) {
 		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
 		ignoreSelect = false;
 		if (code == 0) break;
-		
-		// BUG - disposed callback could remove an item
 		items [index].releaseResources ();
 		index++;
 	}
 	System.arraycopy (items, index, items, start, count - index);
 	for (int i=count-(index-start); i<count; i++) items [i] = null;
-	if (index <= end) {
-		if (0 <= index && index < count) {
-			error (SWT.ERROR_ITEM_NOT_REMOVED);
-		} else {
-			error (SWT.ERROR_INVALID_RANGE);
-		}
-	}
+	if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 
 /**
@@ -2569,7 +2561,15 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		case OS.LVN_BEGINRDRAG: {
 			dragStarted = true;
 			if (hdr.code == OS.LVN_BEGINDRAG) {
-				postEvent (SWT.DragDetect);
+				int pos = OS.GetMessagePos ();
+				POINT pt = new POINT ();
+				pt.x = (short) (pos & 0xFFFF);
+				pt.y = (short) (pos >> 16); 
+				OS.ScreenToClient (handle, pt);
+				Event event = new Event ();
+				event.x = pt.x;
+				event.y = pt.y;
+				postEvent (SWT.DragDetect, event);
 			}
 			break;
 		}
@@ -2662,14 +2662,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				if (hasMenu || hooks (SWT.MenuDetect)) {
 					NMRGINFO nmrg = new NMRGINFO ();
 					OS.MoveMemory (nmrg, lParam, NMRGINFO.sizeof);
-					/*
-					* Feature on Pocket PC.  The popup menu is expected to become
-					* visible when the stylus is still down.  On a tree and a
-					* table, activating the menu from within the event loop causes
-					* the menu to be visible only when the stylus is released.
-					* The fix is to force the menu to be visible immediately.
-					*/
-					showMenu (nmrg.x, nmrg.y, true);
+					showMenu (nmrg.x, nmrg.y);
+					return LRESULT.ONE;
 				}
 			}
 			break;

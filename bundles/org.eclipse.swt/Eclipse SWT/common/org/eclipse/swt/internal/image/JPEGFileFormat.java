@@ -1741,10 +1741,10 @@ static void skipSegmentFrom(LEDataInputStream byteStream) {
 		JPEGSegment jpegSegment = new JPEGSegment(byteArray);
 	
 		if (byteStream.read(byteArray) != byteArray.length) {
-			throw new SWTError(SWT.ERROR_INVALID_IMAGE);
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
 		}
 		if (!(byteArray[0] == -1 && byteArray[1] != 0 && byteArray[1] != -1)) {
-			throw new SWTError(SWT.ERROR_INVALID_IMAGE);
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
 		}
 		int delta = jpegSegment.getSegmentLength() - 2;
 		byteStream.skip(delta);

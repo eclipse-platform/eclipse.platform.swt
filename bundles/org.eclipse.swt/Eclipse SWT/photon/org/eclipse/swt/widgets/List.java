@@ -823,17 +823,25 @@ public void remove (String string) {
 public void remove (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length == 0) return;
 	int [] newIndices = new int [indices.length];
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
 	sort (newIndices);
+	int start = newIndices [newIndices.length - 1], end = newIndices [0];
 	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int count = args [1];
+	if (!(0 <= start && start <= end && end < count)) {
+		 error (SWT.ERROR_INVALID_RANGE);
+	}
+	int last = -1;
 	for (int i=0; i<newIndices.length; i++ ) {
 		int index = newIndices [i];
-		if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-		int result = OS.PtListDeleteItemPos (handle, 1, index + 1);
-		if (result != 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		if (last != index) {
+			int result = OS.PtListDeleteItemPos (handle, 1, index + 1);
+			if (result != 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
+			last = index;
+		}
 	}
 }
 
@@ -858,6 +866,7 @@ public void remove (int [] indices) {
  */
 public void remove (int start, int end) {
 	checkWidget();
+	if (start > end) return;
 	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	if (!(0 <= start && start <= end && end < args [1])) {

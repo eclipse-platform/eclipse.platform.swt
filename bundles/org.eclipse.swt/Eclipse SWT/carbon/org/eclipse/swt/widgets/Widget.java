@@ -892,6 +892,14 @@ int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -995,6 +1003,8 @@ int menuProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
 		case OS.kEventMenuClosed:		return kEventMenuClosed (nextHandler, theEvent, userData);
+		case OS.kEventMenuDrawItemContent: 	return kEventMenuDrawItemContent (nextHandler, theEvent, userData);
+		case OS.kEventMenuMeasureItemWidth: return kEventMenuMeasureItemWidth (nextHandler, theEvent, userData);
 		case OS.kEventMenuOpening:		return kEventMenuOpening (nextHandler, theEvent, userData);
 		case OS.kEventMenuTargetItem:	return kEventMenuTargetItem (nextHandler, theEvent, userData);
 	}
@@ -1504,7 +1514,30 @@ boolean setKeyState (Event event, int type, int theEvent) {
 					display.kchrState [0] = 0;
 				}
 				int result = OS.KeyTranslate (display.kchrPtr, (short)keyCode [0], display.kchrState);
-				event.keyCode = result & 0x7f;
+				if (result <= 0x7f) {
+					event.keyCode = result & 0x7f;
+				} else {
+					int [] encoding = new int [1];
+					short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
+					short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
+					if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
+						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
+							encoding [0] = OS.kTextEncodingMacRoman;
+						}
+					}
+					int [] encodingInfo = new int [1];
+					OS.CreateTextToUnicodeInfoByEncoding (encoding [0], encodingInfo);
+					if (encodingInfo [0] != 0) {
+						char [] chars = new char [1];
+						int [] nchars = new int [1];
+						byte [] buffer = new byte [2];
+						buffer [0] = 1;
+						buffer [1] = (byte) (result & 0xFF);
+						OS.ConvertFromPStringToUnicode (encodingInfo [0], buffer, chars.length * 2, nchars, chars);
+						OS.DisposeTextToUnicodeInfo (encodingInfo);
+						event.keyCode = chars [0];
+					}
+				}
 			}
 			break;
 		}

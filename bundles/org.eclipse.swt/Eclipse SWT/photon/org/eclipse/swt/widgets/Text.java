@@ -723,14 +723,18 @@ int getTabWidth (int tabs) {
  * </ul>
  */
 public String getText (int start, int end) {
-	checkWidget();
+	checkWidget ();
+	if (!(0 <= start && start <= end)) error (SWT.ERROR_INVALID_RANGE);
+	String text = getText ();
+	int length = text.length ();
+	if (length <= end) error (SWT.ERROR_INVALID_RANGE);
 	/*
 	* NOTE: The current implementation uses substring ()
 	* which can reference a potentially large character
 	* array.
 	*/
 	//NOT DONE - use OS in SINGLE text
-	return getText ().substring (start, end + 1);
+	return text.substring (start, end + 1);
 }
 
 /**

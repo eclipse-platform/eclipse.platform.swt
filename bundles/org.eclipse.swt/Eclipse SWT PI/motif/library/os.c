@@ -152,6 +152,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(XChangeActivePointerGrab)
 }
 #endif
 
+#ifndef NO_XChangeProperty
+JNIEXPORT void JNICALL OS_NATIVE(XChangeProperty)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jintArray arg6, jint arg7)
+{
+	jint *lparg6=NULL;
+	NATIVE_ENTER(env, that, "XChangeProperty\n")
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	XChangeProperty((Display *)arg0, (Window)arg1, (Atom)arg2, (Atom)arg3, arg4, arg5, (unsigned char *)lparg6, arg7);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	NATIVE_EXIT(env, that, "XChangeProperty\n")
+}
+#endif
+
 #ifndef NO_XChangeWindowAttributes
 JNIEXPORT void JNICALL OS_NATIVE(XChangeWindowAttributes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
@@ -578,6 +591,16 @@ JNIEXPORT void JNICALL OS_NATIVE(XDrawLines)
 	XDrawLines((Display *)arg0, (Drawable)arg1, (GC)arg2, (XPoint *)lparg3, arg4, arg5);
 	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
 	NATIVE_EXIT(env, that, "XDrawLines\n")
+}
+#endif
+
+#ifndef NO_XDrawPoint
+JNIEXPORT void JNICALL OS_NATIVE(XDrawPoint)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	NATIVE_ENTER(env, that, "XDrawPoint\n")
+	XDrawPoint((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4);
+	NATIVE_EXIT(env, that, "XDrawPoint\n")
 }
 #endif
 
@@ -3130,6 +3153,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XmStringComponentCreate)
 	rc = (jint)XmStringComponentCreate(arg0, arg1, (XtPointer)lparg2);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "XmStringComponentCreate\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmStringConcat
+JNIEXPORT jint JNICALL OS_NATIVE(XmStringConcat)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmStringConcat\n")
+	rc = (jint)XmStringConcat((XmString)arg0, (XmString)arg1);
+	NATIVE_EXIT(env, that, "XmStringConcat\n")
 	return rc;
 }
 #endif

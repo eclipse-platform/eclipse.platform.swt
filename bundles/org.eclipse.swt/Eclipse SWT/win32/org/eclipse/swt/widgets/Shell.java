@@ -1325,6 +1325,13 @@ LRESULT WM_DESTROY (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_ENTERIDLE (int wParam, int lParam) {
+	LRESULT result = super.WM_ENTERIDLE (wParam, lParam);
+	if (result != null) return result;
+	display.runAsyncMessages ();
+	return result;
+}
+
 LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	LRESULT result = super.WM_MOUSEACTIVATE (wParam, lParam);
 	if (result != null) return result;

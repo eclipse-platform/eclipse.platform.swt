@@ -91,8 +91,8 @@ public class ToolBar extends Composite {
  * @see SWT#HORIZONTAL
  * @see SWT#SHADOW_OUT
  * @see SWT#VERTICAL
- * @see Widget#checkSubclass
- * @see Widget#getStyle
+ * @see Widget#checkSubclass()
+ * @see Widget#getStyle()
  */
 public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -222,22 +222,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
-	
-	/*
-	* Feature in Windows.  When TBSTYLE_FLAT is used to create
-	* a flat toolbar, for some reason TBSTYLE_TRANSPARENT is
-	* also set.  This causes the toolbar to flicker when it is
-	* moved or resized.  The fix is to clear TBSTYLE_TRANSPARENT.
-	* 
-	* NOTE:  This work around is unnecessary on XP.  There is no
-	* flickering and clearing the TBSTYLE_TRANSPARENT interferes
-	* with the XP theme.
-	*/
-	if (COMCTL32_MAJOR < 6) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		bits &= ~OS.TBSTYLE_TRANSPARENT;
-		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-	}
 
 	/*
 	* Feature in Windows.  Despite the fact that the
@@ -548,7 +532,18 @@ boolean mnemonicHit (char ch) {
 boolean mnemonicMatch (char ch) {
 	int key = wcsToMbcs (ch);
 	int [] id = new int [1];
-	return OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, id) != 0;
+	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, id) == 0) {
+		return false;
+}
+	/*
+	* Feature in Windows.  TB_MAPACCELERATOR matches either the mnemonic
+	* character or the first character in a tool item.  This behavior is
+	* undocumented and unwanted.  The fix is to ensure that the tool item
+	* contains a mnemonic when TB_MAPACCELERATOR returns true.
+	*/
+	int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, id [0], 0);
+	if (index == -1) return false;
+	return items [id [0]].text.indexOf ('&') != -1;
 }
 
 void releaseWidget () {
@@ -701,7 +696,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	int index = hdr.idFrom;
 	int hwndToolTip = OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom) {
-		if (toolTipText != null) return ""; //$NON-NLS-2$
+		if (toolTipText != null) return ""; //$NON-NLS-1$
 		if (0 <= index && index < items.length) {
 			ToolItem item = items [index];
 			if (item != null) return item.toolTipText;
@@ -711,7 +706,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 }
 
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.CCS_NORESIZE | OS.TBSTYLE_TOOLTIPS;
+	int bits = super.widgetStyle () | OS.CCS_NORESIZE | OS.TBSTYLE_TOOLTIPS | OS.TBSTYLE_CUSTOMERASE;
 	if ((style & SWT.SHADOW_OUT) == 0) bits |= OS.CCS_NODIVIDER;
 	if ((style & SWT.WRAP) != 0) bits |= OS.TBSTYLE_WRAPABLE;
 	if ((style & SWT.FLAT) != 0) bits |= OS.TBSTYLE_FLAT;
@@ -749,16 +744,6 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	LRESULT result = super.WM_COMMAND (wParam, lParam);
 	if (result != null) return result;
 	return LRESULT.ZERO;
-}
-
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
-	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	if (result != null) return result;
-	if (background != -1) {
-		drawBackground (wParam);
-		return LRESULT.ONE;
-	}
-	return result;
 }
 
 LRESULT WM_GETDLGCODE (int wParam, int lParam) {
@@ -982,6 +967,18 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				event.y = rect.bottom;
 				child.postEvent (SWT.Selection, event);
 				return null;
+			}
+			break;
+		case OS.NM_CUSTOMDRAW: 
+			if (background == -1) break;
+			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
+			OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
+			switch (nmcd.dwDrawStage) {
+				case OS.CDDS_PREERASE:
+					return new LRESULT (OS.CDRF_NOTIFYPOSTERASE);
+				case OS.CDDS_POSTERASE :
+					drawBackground(nmcd.hdc);
+					return null;
 			}
 			break;
 	}

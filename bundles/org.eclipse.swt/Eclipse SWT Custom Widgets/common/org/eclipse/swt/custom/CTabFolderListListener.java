@@ -12,6 +12,11 @@ package org.eclipse.swt.custom;
 
 import org.eclipse.swt.internal.*;
 
+/**
+* DO NOT USE - UNDER CONSTRUCTION
+*
+* @ since 3.0
+*/
 public interface CTabFolderListListener extends SWTEventListener {
 
 public void showList(CTabFolderEvent event);

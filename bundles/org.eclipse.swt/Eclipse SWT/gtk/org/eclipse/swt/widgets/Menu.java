@@ -61,7 +61,7 @@ public class Menu extends Widget {
  * @see Widget#getStyle
  */
 public Menu (Control parent) {
-	this (parent.menuShell (), SWT.POP_UP);
+	this (checkNull (parent).menuShell (), SWT.POP_UP);
 }
 
 /**
@@ -122,7 +122,7 @@ public Menu (Decorations parent, int style) {
  * @see Widget#getStyle
  */
 public Menu (Menu parentMenu) {
-	this (parentMenu.parent, SWT.DROP_DOWN);
+	this (checkNull (parentMenu).parent, SWT.DROP_DOWN);
 }
 
 /**
@@ -146,7 +146,22 @@ public Menu (Menu parentMenu) {
  * @see Widget#getStyle
  */
 public Menu (MenuItem parentItem) {
-	this (parentItem.parent);
+	this (checkNull (parentItem).parent);
+}
+
+static Control checkNull (Control control) {
+	if (control == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return control;
+}
+
+static Menu checkNull (Menu menu) {
+	if (menu == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return menu;
+}
+
+static MenuItem checkNull (MenuItem item) {
+	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return item;
 }
 
 static int checkStyle (int style) {

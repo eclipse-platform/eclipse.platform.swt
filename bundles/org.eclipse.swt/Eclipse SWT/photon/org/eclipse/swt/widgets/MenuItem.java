@@ -72,7 +72,9 @@ public class MenuItem extends Item {
  * @see Widget#getStyle
  */
 public MenuItem (Menu parent, int style) {
-	this (parent, style, parent.getItemCount());
+	super (parent, checkStyle (style));
+	this.parent = parent;
+	createWidget (parent.getItemCount ());
 }
 
 /**

@@ -430,14 +430,10 @@ int gtk_focus_out_event (int widget, int event) {
 	return (state & CANVAS) != 0 ? 1 : result;
 }
 
-int gtk_key_press_event (int widget, int event) {
-	int result = super.gtk_key_press_event (widget, event);
-	return (state & CANVAS) != 0 && result != 1 && hasFocus () ? 1 : result;
-}
-
-int gtk_key_release_event (int widget, int event) {
-	int result = super.gtk_key_release_event (widget, event);
-	return (state & CANVAS) != 0 && result != 1 && hasFocus () ? 1 : result;
+int gtk_scroll_child (int widget, int scrollType, int horizontal) {
+	/* Stop GTK scroll child signal for canvas */
+	OS.g_signal_stop_emission_by_name (widget, OS.scroll_child);
+	return 1;
 }
 
 boolean hasBorder () {
@@ -448,6 +444,9 @@ void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0) {
 		OS.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
+		if (scrolledHandle != 0) {
+			OS.g_signal_connect (scrolledHandle, OS.scroll_child, display.windowProc4, SCROLL_CHILD);
+		}
 	}
 }
 

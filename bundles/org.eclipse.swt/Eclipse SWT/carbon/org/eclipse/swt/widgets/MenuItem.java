@@ -775,7 +775,7 @@ void updateText (short menuIndex) {
 	text.getChars (0, buffer.length, buffer, 0);
 	int i=0, j=0;
 	while (i < buffer.length) {
-		if (accelerator != 0 && buffer [i] == '\t') break;
+		if (buffer [i] == '\t') break;
 		if ((buffer [j++] = buffer [i++]) == '&') {
 			if (i == buffer.length) {continue;}
 			if (buffer [i] == '&') {i++; continue;}

@@ -16,14 +16,43 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class CTabFolderEvent extends TypedEvent {
+	/**
+	 * The tab item for the operation.
+	 */
  	public Widget item;
- 	public boolean doit;
+
  	/**
- 	 * @since 3.0
- 	 */
+	 * A flag indicating whether the operation should be allowed.
+	 * Setting this field to <code>false</code> will cancel the operation.
+	 */
+ 	public boolean doit;
+
+	/**
+	* DO NOT USE FIELD RECT - UNDER CONSTRUCTION
+	* @ since 3.0
+	*/
  	public Rectangle rect;
- 	
+
+/**
+ * Constructs a new instance of this class.
+ *
+ * @param w the widget that fired the event
+ */
 CTabFolderEvent(Widget w) {
 	super(w);
+}
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
+public String toString() {
+	String string = super.toString ();
+	return string.substring (0, string.length() - 1) // remove trailing '}'
+		+ " item=" + item
+		+ " doit=" + doit
+		+ "}";
 }
 }

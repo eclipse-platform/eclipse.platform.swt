@@ -37,8 +37,8 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class ToolItem extends Item {
-	int handle, iconHandle, labelHandle, arrowHandle;
-	int cIcon, labelCIcon, arrowCIcon;
+	int handle, iconHandle, labelHandle;
+	int cIcon, labelCIcon;
 	int visibleRgn;
 	ToolBar parent;
 	Image hotImage, disabledImage;
@@ -49,6 +49,7 @@ public class ToolItem extends Item {
 	static final int DEFAULT_WIDTH = 24;
 	static final int DEFAULT_HEIGHT = 22;
 	static final int DEFAULT_SEPARATOR_WIDTH = 8;
+	static final int ARROW_WIDTH = 9;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -210,8 +211,7 @@ Point computeSize () {
 			height = stringHeight + imageHeight;
 		}
 		if ((style & SWT.DROP_DOWN) != 0) {
-			int arrowWidth = 6; //NOT DONE
-			width += 3 + arrowWidth;
+			width += ARROW_WIDTH;
 		}
 		int inset = 3;
 		width += space + inset * 2;
@@ -230,12 +230,6 @@ void createHandle () {
 	int width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
 	if ((style & SWT.SEPARATOR) == 0) {
 		ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
-		if ((style & SWT.DROP_DOWN) != 0) {
-			OS.CreateIconControl(window, null, inContent, false, outControl);
-			if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-			arrowHandle = outControl [0];
-			updateArrow ();
-		}
 		OS.CreateIconControl(window, null, inContent, false, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		iconHandle = outControl [0];
@@ -268,7 +262,6 @@ void deregister () {
 	display.removeWidget (handle);
 	if (iconHandle != 0) display.removeWidget (iconHandle);
 	if (labelHandle != 0) display.removeWidget (labelHandle);
-	if (arrowHandle != 0) display.removeWidget (arrowHandle);
 }
 
 void destroyWidget () {
@@ -276,7 +269,7 @@ void destroyWidget () {
 	int theControl = handle;
 	releaseHandle ();
 	if (theControl != 0) {
-		display.addDisposeControl (theControl);
+		OS.DisposeControl (theControl);
 	}
 }
 
@@ -292,12 +285,21 @@ void drawBackground (int control) {
 }
 
 void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
-	if ((style & SWT.SEPARATOR) != 0) {
+	if ((style & (SWT.DROP_DOWN | SWT.SEPARATOR)) != 0) {
+		int state = OS.IsControlEnabled(control) && OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
 		Rect rect = new Rect ();
 		OS.GetControlBounds (handle, rect);
-		rect.top += 2;
-		rect.bottom -= 2;
-		OS.DrawThemeSeparator (rect, 0);
+		if ((style & SWT.SEPARATOR) != 0) {
+			rect.top += 2;
+			rect.bottom -= 2;
+			OS.DrawThemeSeparator (rect, state);
+		}
+		if ((style & SWT.DROP_DOWN) != 0) {
+			int height = rect.bottom - rect.top;
+			rect.top = (short) (rect.bottom - (height / 2) - 1);
+			rect.left = (short) (rect.right - ARROW_WIDTH);
+			OS.DrawThemePopupArrow (rect, (short) OS.kThemeArrowDown, (short) OS.kThemeArrow5pt, state, 0, 0);
+		}
 	}
 }
 
@@ -540,10 +542,6 @@ void hookEvents () {
 		controlTarget = OS.GetControlEventTarget (labelHandle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, labelHandle, null);
 	}
-	if (arrowHandle != 0) {
-		controlTarget = OS.GetControlEventTarget (arrowHandle);
-		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, arrowHandle, null);
-	}
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
 }
@@ -580,24 +578,13 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlHit (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	Event event = new Event ();
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
 			selectRadio ();
 		}
 	}
 	if ((style & SWT.CHECK) != 0) setSelection (!getSelection ());
-	if ((style & SWT.DROP_DOWN) != 0) {
-		int [] theControl = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-		if (theControl [0] == arrowHandle) {
-			event.detail = SWT.ARROW;
-			Rect rect = getControlBounds (handle);
-			event.x = rect.left;
-			event.y = rect.bottom;
-		}
-	}
-	postEvent (SWT.Selection, event);
+	postEvent (SWT.Selection);
 	return OS.eventNotHandledErr;
 }
 
@@ -609,6 +596,29 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = parent.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	
+	if ((style & SWT.DROP_DOWN) != 0) {
+		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+		Rect rect = new Rect ();
+		int window = OS.GetControlOwner (handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		int x = pt.h - rect.left;
+		int y = pt.v - rect.top;
+		OS.GetControlBounds (handle, rect);
+		x -= rect.left;
+		y -= rect.top;
+		int width = rect.right - rect.left;
+		if (width - x < 12) {
+			Event event = new Event ();
+			event.detail = SWT.ARROW;
+			event.x = x;
+			event.y = y;
+			postEvent (SWT.Selection, event);
+		}
+	}
+	
 	/*
 	* Feature in the Macintosh.  When some controls get kEventControlClick
 	* (which gets sent from kEventMouseDown), they call TrackControl() or
@@ -663,7 +673,6 @@ void register () {
 	display.addWidget (handle, this);
 	if (iconHandle != 0) display.addWidget (iconHandle, this);
 	if (labelHandle != 0) display.addWidget (labelHandle, this);
-	if (arrowHandle != 0) display.addWidget (arrowHandle, this);
 }
 
 void releaseChild () {
@@ -673,15 +682,14 @@ void releaseChild () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	handle = iconHandle = labelHandle = arrowHandle = 0;
+	handle = iconHandle = labelHandle = 0;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
 	if (cIcon != 0) destroyCIcon (cIcon);
 	if (labelCIcon != 0) destroyCIcon (labelCIcon);
-	if (arrowCIcon != 0) destroyCIcon (arrowCIcon);
-	cIcon = labelCIcon = arrowCIcon = 0;
+	cIcon = labelCIcon = 0;
 	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
 	visibleRgn = 0;
 	parent = null;
@@ -754,10 +762,9 @@ void setBounds (int x, int y, int width, int height) {
 		imageWidth = rect.width;
 		imageHeight = rect.height;
 	}
-	int arrowWidth = 0, arrowHeight = 0;
+	int arrowWidth = 0;
 	if ((style & SWT.DROP_DOWN) != 0) {
-		arrowWidth = 6;
-		arrowHeight = 4; //NOT DONE
+		arrowWidth = ARROW_WIDTH;
 	}
 	if ((parent.style & SWT.RIGHT) != 0) {
 		int imageX = inset;
@@ -767,17 +774,12 @@ void setBounds (int x, int y, int width, int height) {
 		int labelY = inset + (height - (inset * 2) - stringHeight) / 2;
 		setBounds (labelHandle, labelX, labelY, stringWidth, stringHeight, true, true, false);
 	} else {
-		int imageX = inset + (width - (inset * 2) - (arrowWidth + 3) - imageWidth) / 2;
+		int imageX = inset + (width - (inset * 2) - arrowWidth - imageWidth) / 2;
 		int imageY = inset;
 		setBounds (iconHandle, imageX, imageY, imageWidth, imageHeight, true, true, false);
-		int labelX = inset + (width - (inset * 2) - (arrowWidth + 3) - stringWidth) / 2;
+		int labelX = inset + (width - (inset * 2) - arrowWidth - stringWidth) / 2;
 		int labelY = imageY + imageHeight + space;
 		setBounds (labelHandle, labelX, labelY, stringWidth, stringHeight, true, true, false);
-	}
-	if ((style & SWT.DROP_DOWN) != 0) {
-		int arrowX = width - inset - arrowWidth;
-		int arrowY = inset + (height - (inset * 2) - arrowHeight) / 2;
-		setBounds (arrowHandle, arrowX, arrowY, arrowWidth, arrowHeight, true, true, false);
 	}
 }
 
@@ -1029,7 +1031,6 @@ void setZOrder () {
 	OS.HIViewAddSubview (parent.handle, handle);
 	if (iconHandle != 0) OS.HIViewAddSubview (handle, iconHandle);
 	if (labelHandle != 0) OS.HIViewAddSubview (handle, labelHandle);
-	if (arrowHandle != 0) OS.HIViewAddSubview (handle, arrowHandle);
 }
 
 void updateImage () {
@@ -1055,29 +1056,6 @@ void updateImage () {
 	redrawWidget (iconHandle, false);
 	Point size = computeSize ();
 	setSize (size.x, size.y, true);
-}
-
-void updateArrow () {
-	if (arrowCIcon != 0) destroyCIcon (arrowCIcon);
-	arrowCIcon = 0;
-	Image image = new Image (display, 7, 4);
-	GC gc = new GC (image);
-	int startX = 0, startY = 0;
-	int [] arrow = {startX, startY, startX + 3, startY + 3, startX + 6, startY};
-	gc.setBackground (parent.getForeground ());
-	gc.fillPolygon (arrow);
-	gc.drawPolygon (arrow);
-	gc.dispose ();
-	ImageData data = image.getImageData ();
-	data.transparentPixel = 0xFFFFFFFF;
-	image.dispose ();
-	image = new Image (display, data, data.getTransparencyMask());
-	arrowCIcon = createCIcon (image);
-	image.dispose ();
-	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
-	inContent.contentType = (short) OS.kControlContentCIconHandle;
-	inContent.iconRef = arrowCIcon;
-	OS.SetBevelButtonContentInfo (arrowHandle, inContent);	
 }
 
 void updateText () {

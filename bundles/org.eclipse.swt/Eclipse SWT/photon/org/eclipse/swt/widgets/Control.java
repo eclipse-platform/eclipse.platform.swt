@@ -1303,6 +1303,8 @@ int Ph_EV_BUT_PRESS (int widget, int info) {
 			}
 		}
 	}
+	display.dragStartX = pe.pos_x + ev.translation_x;
+	display.dragStartY = pe.pos_y + ev.translation_y;
 	/*
 	* It is possible that the shell may be
 	* disposed at this point.  If this happens

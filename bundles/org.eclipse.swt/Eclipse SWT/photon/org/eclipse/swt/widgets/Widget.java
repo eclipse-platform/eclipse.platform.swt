@@ -1080,7 +1080,6 @@ boolean setKeyState (Event event, int type, PhKeyEvent_t ke) {
 		case OS.Pk_KP_Enter:
 		case OS.Pk_Return: 		event.character = '\r'; break;
 		case OS.Pk_Delete:		event.character = 0x7F; break;
-		case OS.Pk_Cancel:
 		case OS.Pk_Escape:		event.character = 0x1B; break;
 		case OS.Pk_KP_Tab:
 		case OS.Pk_Tab: 	event.character = '\t'; break;

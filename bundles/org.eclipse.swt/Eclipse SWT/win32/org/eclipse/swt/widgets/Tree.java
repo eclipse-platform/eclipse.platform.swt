@@ -44,7 +44,7 @@ public class Tree extends Composite {
 	int hAnchor;
 	TreeItem [] items;
 	ImageList imageList;
-	boolean dragStarted;
+	boolean dragStarted, gestureCompleted;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect;
 	boolean customDraw;
 	static final int TreeProc;
@@ -1624,7 +1624,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 
 	/* Do the selection */
 	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
-	dragStarted = false;
+	dragStarted = gestureCompleted = false;
 	ignoreDeselect = ignoreSelect = true;
 	int code = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
 	ignoreDeselect = ignoreSelect = false;
@@ -1737,12 +1737,15 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if ((wParam & OS.MK_SHIFT) == 0) hAnchor = hNewItem;
 			
 	/* Issue notification */
-	tvItem.hItem = hNewItem;
-	tvItem.mask = OS.TVIF_PARAM;
-	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-	Event event = new Event ();
-	event.item = items [tvItem.lParam];
-	postEvent (SWT.Selection, event);
+	if (!gestureCompleted) {
+		tvItem.hItem = hNewItem;
+		tvItem.mask = OS.TVIF_PARAM;
+		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+		Event event = new Event ();
+		event.item = items [tvItem.lParam];
+		postEvent (SWT.Selection, event);
+	}
+	gestureCompleted = false;
 	
 	/*
 	* Feature in Windows.  Inside WM_LBUTTONDOWN and WM_RBUTTONDOWN,
@@ -1753,7 +1756,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* issue a fake mouse up.
 	*/
 	if (dragStarted) {
-		postEvent (SWT.DragDetect);
+		Event event = new Event ();
+		event.x = (short) (lParam & 0xFFFF);
+		event.y = (short) (lParam >> 16);
+		postEvent (SWT.DragDetect, event);
 	} else {
 		sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
 	}
@@ -1874,12 +1880,13 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.NM_DBLCLK:
 			int pos = OS.GetMessagePos ();
-			TVHITTESTINFO lpht = new TVHITTESTINFO ();
 			POINT pt = new POINT ();
 			pt.x = (short) (pos & 0xFFFF);
 			pt.y = (short) (pos >> 16);
 			OS.ScreenToClient (handle, pt);
-			lpht.x = pt.x;  lpht.y = pt.y;
+			TVHITTESTINFO lpht = new TVHITTESTINFO ();
+			lpht.x = pt.x;
+			lpht.y = pt.y;
 			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 			if ((lpht.flags & OS.TVHT_ONITEM) == 0) break;
 			// FALL THROUGH
@@ -1994,14 +2001,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				if (hasMenu || hooks (SWT.MenuDetect)) {
 					NMRGINFO nmrg = new NMRGINFO ();
 					OS.MoveMemory (nmrg, lParam, NMRGINFO.sizeof);
-					/*
-					* Feature on Pocket PC.  The popup menu is expected to become
-					* visible when the stylus is still down.  On a tree and a
-					* table, activating the menu from within the event loop causes
-					* the menu to be visible only when the stylus is released.
-					* The fix is to force the menu to be visible immediately.
-					*/
-					showMenu (nmrg.x, nmrg.y, true);
+					showMenu (nmrg.x, nmrg.y);
+					gestureCompleted = true;
+					return LRESULT.ONE;
 				}
 			}
 			break;

@@ -72,6 +72,8 @@ public class CTabFolder2 extends Composite {
  	/**
 	 * A multiple of the tab height that specifies the minimum width to which a tab 
 	 * will be compressed before scrolling arrows are used to navigate the tabs.
+	 * 
+	 * NOTE This field is badly named for historical reasons.  It is not static.
 	 */
 	public int MIN_TAB_WIDTH = 3;
 	
@@ -123,23 +125,12 @@ public class CTabFolder2 extends Composite {
 	boolean showExpand = false;
 	Rectangle expandRect = new Rectangle(0, 0, 0, 0);
 	boolean expanded = true;
-	int decoratorWidth = 16;
 	
 	boolean tipShowing;
 	
 	// borders and shapes
 	int border = 0;
 	boolean showBorder =  false;
-	int cornerWidth = 5;
-	int[] topLeftCorner = new int[] {0,5, 1,4, 1,3, 2,2, 3,1, 4,1, 5,0,};
-	int[] topRightCorner = new int[] {-5,0, -4,1, -3,1, -2,2, -1,3, -1,4, 0,5};
-	int[] bottomLeftCorner = new int[] {0,-5, 1,-5, 1,-3, 2,-3, 2,-2, 3,-2, 3,-1, 5,-1, 5,0};
-	int[] bottomRightCorner = new int[] {-5,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-5};
-	int[] topLeftOutsideCorner = new int[] {0,7, 1,7, 1,5, 2,4, 3,3, 4,2, 5,1, 7,1, 7,0};
-	int[] topRightOutsideCorner = new int[] {-7,0, -7,1, -5,1, -4,2, -3,3, -2,4, -1,5, -1,7, 0,7};
-	int[] bottomLeftOutsideCorner = new int[] {0,-7, 1,-7, 1,-6, 2,-5, 3,-4, 4,-3, 5,-2, 6,-1, 7,-1, 7,0};
-	int[] bottomRightOutsideCorner = new int[] {-7,0, -7,-1, -6,-1, -5,-2, -4,-3, -3,-4, -2,-5, -1,-6, -1,-7, 0,-7};
-
 	int[] curve;
 	
 	// when disposing CTabFolder, don't try to layout the items or 
@@ -158,11 +149,18 @@ public class CTabFolder2 extends Composite {
 	// internal constants
 	static final int DEFAULT_WIDTH = 64;
 	static final int DEFAULT_HEIGHT = 64;
-	
 	static final int SELECTION_BORDER = 4;
 	static final int CURVE_WIDTH = 50;
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
+	static final int[] TOP_LEFT_CORNER = new int[] {0,5, 1,4, 1,3, 2,2, 3,1, 4,1, 5,0,};
+	static final int[] TOP_RIGHT_CORNER = new int[] {-5,0, -4,1, -3,1, -2,2, -1,3, -1,4, 0,5};
+	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-5, 1,-5, 1,-3, 2,-3, 2,-2, 3,-2, 3,-1, 5,-1, 5,0};
+	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-5,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-5};
+	static final int[] TOP_LEFT_OUTSIDE_CORNER = new int[] {0,7, 1,7, 1,5, 2,4, 3,3, 4,2, 5,1, 7,1, 7,0};
+	static final int[] TOP_RIGHT_OUTSIDE_CORNER = new int[] {-7,0, -7,1, -5,1, -4,2, -3,3, -2,4, -1,5, -1,7, 0,7};
+	static final int[] BOTTOM_LEFT_OUTSIDE_CORNER = new int[] {0,-7, 1,-7, 1,-6, 2,-5, 3,-4, 4,-3, 5,-2, 6,-1, 7,-1, 7,0};
+	static final int[] BOTTOM_RIGHT_OUTSIDE_CORNER = new int[] {-7,0, -7,-1, -6,-1, -5,-2, -4,-3, -3,-4, -2,-5, -1,-6, -1,-7, 0,-7};
 
 /**
  * Constructs a new instance of this class given its parent
@@ -279,7 +277,7 @@ static int checkStyle (int style) {
 	if ((style & SWT.MULTI) != 0) 
 		style = style & ~(SWT.SINGLE | SWT.MULTI) | SWT.MULTI;
 	// reduce the flash by not redrawing the entire area on a Resize event
-	style |= SWT.NO_REDRAW_RESIZE;
+	style |= SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND;
 	return style;
 }
 static void fillRegion(GC gc, Region region) {
@@ -572,60 +570,60 @@ void drawBorder(GC gc) {
 		int[] inside = null;
 		int[] outside = null;
 		if (onBottom) {
-			inside = new int[bottomLeftCorner.length+bottomRightCorner.length+4];
+			inside = new int[BOTTOM_LEFT_CORNER.length+BOTTOM_RIGHT_CORNER.length+4];
 			int index = 0;
-			for (int i = 0; i < bottomLeftCorner.length/2; i++) {
-				inside[index++] = border+bottomLeftCorner[2*i];
-				inside[index++] = size.y-border+bottomLeftCorner[2*i+1];
+			for (int i = 0; i < BOTTOM_LEFT_CORNER.length/2; i++) {
+				inside[index++] = border+BOTTOM_LEFT_CORNER[2*i];
+				inside[index++] = size.y-border+BOTTOM_LEFT_CORNER[2*i+1];
 			}
-			for (int i = 0; i < bottomRightCorner.length/2; i++) {
-				inside[index++] = size.x-border+bottomRightCorner[2*i];
-				inside[index++] = size.y-border+bottomRightCorner[2*i+1];
+			for (int i = 0; i < BOTTOM_RIGHT_CORNER.length/2; i++) {
+				inside[index++] = size.x-border+BOTTOM_RIGHT_CORNER[2*i];
+				inside[index++] = size.y-border+BOTTOM_RIGHT_CORNER[2*i+1];
 			}
 			inside[index++] = size.x-border;
 			inside[index++] = border;
 			inside[index++] = border;
 			inside[index++] = border;
 			
-			outside = new int[bottomLeftOutsideCorner.length+bottomRightOutsideCorner.length+4];
+			outside = new int[BOTTOM_LEFT_OUTSIDE_CORNER.length+BOTTOM_RIGHT_OUTSIDE_CORNER.length+4];
 			index = 0;
-			for (int i = 0; i < bottomLeftOutsideCorner.length/2; i++) {
-				outside[index++] = bottomLeftOutsideCorner[2*i];
-				outside[index++] = size.y+bottomLeftOutsideCorner[2*i+1];
+			for (int i = 0; i < BOTTOM_LEFT_OUTSIDE_CORNER.length/2; i++) {
+				outside[index++] = BOTTOM_LEFT_OUTSIDE_CORNER[2*i];
+				outside[index++] = size.y+BOTTOM_LEFT_OUTSIDE_CORNER[2*i+1];
 			}
-			for (int i = 0; i < bottomRightOutsideCorner.length/2; i++) {
-				outside[index++] = size.x+bottomRightOutsideCorner[2*i];
-				outside[index++] = size.y+bottomRightOutsideCorner[2*i+1];
+			for (int i = 0; i < BOTTOM_RIGHT_OUTSIDE_CORNER.length/2; i++) {
+				outside[index++] = size.x+BOTTOM_RIGHT_OUTSIDE_CORNER[2*i];
+				outside[index++] = size.y+BOTTOM_RIGHT_OUTSIDE_CORNER[2*i+1];
 			}
 			outside[index++] = size.x;
 			outside[index++] = 0;
 			outside[index++] = 0;
 			outside[index++] = 0;
 		} else { // on top
-			inside = new int[topLeftCorner.length+topRightCorner.length+4];
+			inside = new int[TOP_LEFT_CORNER.length+TOP_RIGHT_CORNER.length+4];
 			int index = 0;
-			for (int i = 0; i < topLeftCorner.length/2; i++) {
-				inside[index++] = border+topLeftCorner[2*i];
-				inside[index++] = border+topLeftCorner[2*i+1];
+			for (int i = 0; i < TOP_LEFT_CORNER.length/2; i++) {
+				inside[index++] = border+TOP_LEFT_CORNER[2*i];
+				inside[index++] = border+TOP_LEFT_CORNER[2*i+1];
 			}
-			for (int i = 0; i < topRightCorner.length/2; i++) {
-				inside[index++] = size.x-border+topRightCorner[2*i];
-				inside[index++] = border+topRightCorner[2*i+1];
+			for (int i = 0; i < TOP_RIGHT_CORNER.length/2; i++) {
+				inside[index++] = size.x-border+TOP_RIGHT_CORNER[2*i];
+				inside[index++] = border+TOP_RIGHT_CORNER[2*i+1];
 			}
 			inside[index++] = size.x-border;
 			inside[index++] = size.y-border;
 			inside[index++] = border;
 			inside[index++] = size.y-border;
 			
-			outside = new int[topLeftOutsideCorner.length+topRightOutsideCorner.length+4];
+			outside = new int[TOP_LEFT_OUTSIDE_CORNER.length+TOP_RIGHT_OUTSIDE_CORNER.length+4];
 			index = 0;
-			for (int i = 0; i < topLeftOutsideCorner.length/2; i++) {
-				outside[index++] = topLeftOutsideCorner[2*i];
-				outside[index++] = topLeftOutsideCorner[2*i+1];
+			for (int i = 0; i < TOP_LEFT_OUTSIDE_CORNER.length/2; i++) {
+				outside[index++] = TOP_LEFT_OUTSIDE_CORNER[2*i];
+				outside[index++] = TOP_LEFT_OUTSIDE_CORNER[2*i+1];
 			}
-			for (int i = 0; i < topRightOutsideCorner.length/2; i++) {
-				outside[index++] = size.x+topRightOutsideCorner[2*i];
-				outside[index++] = topRightOutsideCorner[2*i+1];
+			for (int i = 0; i < TOP_RIGHT_OUTSIDE_CORNER.length/2; i++) {
+				outside[index++] = size.x+TOP_RIGHT_OUTSIDE_CORNER[2*i];
+				outside[index++] = TOP_RIGHT_OUTSIDE_CORNER[2*i+1];
 			}
 			outside[index++] = size.x;
 			outside[index++] = size.y;
@@ -679,7 +677,7 @@ void drawBorder(GC gc) {
 			int itemH = item.height;
 			int extra = CTabFolder2.CURVE_WIDTH/2;
 			if (onBottom) {
-				int[] left = bottomLeftCorner;
+				int[] left = BOTTOM_LEFT_CORNER;
 				int[] right = curve;
 				shape = new int[left.length + right.length + 14];
 				int index = 0;
@@ -729,7 +727,7 @@ void drawBorder(GC gc) {
 				shape[index++] = itemY + SELECTION_BORDER - 1;
 				
 			} else {
-				int[] left = topLeftCorner;
+				int[] left = TOP_LEFT_CORNER;
 				int[] right = curve;
 				shape = new int[left.length+right.length+12];
 				int index = 0;
@@ -785,11 +783,11 @@ void drawChevron(GC gc) {
 	int x = chevronRect.x, y = chevronRect.y, width = chevronRect.width, height = chevronRect.height;
 	int[] shape = null;
 	if (onBottom) {
-		shape = new int[bottomRightCorner.length+6];
+		shape = new int[BOTTOM_RIGHT_CORNER.length+6];
 		int index = 0;
-		for (int i = 0; i < bottomRightCorner.length/2; i++) {
-			shape[index++] = x+width+bottomRightCorner[2*i];
-			shape[index++] = y+height+bottomRightCorner[2*i+1];
+		for (int i = 0; i < BOTTOM_RIGHT_CORNER.length/2; i++) {
+			shape[index++] = x+width+BOTTOM_RIGHT_CORNER[2*i];
+			shape[index++] = y+height+BOTTOM_RIGHT_CORNER[2*i+1];
 		}
 		shape[index++] = x+width;
 		shape[index++] = y;
@@ -798,11 +796,11 @@ void drawChevron(GC gc) {
 		shape[index++] = x+2;
 		shape[index++] = y+height;
 	} else {
-		shape = new int[topRightCorner.length+6];
+		shape = new int[TOP_RIGHT_CORNER.length+6];
 		int index = 0;
-		for (int i = 0; i < topRightCorner.length/2; i++) {
-			shape[index++] = x+width+topRightCorner[2*i];
-			shape[index++] = y+topRightCorner[2*i+1];
+		for (int i = 0; i < TOP_RIGHT_CORNER.length/2; i++) {
+			shape[index++] = x+width+TOP_RIGHT_CORNER[2*i];
+			shape[index++] = y+TOP_RIGHT_CORNER[2*i+1];
 		}
 		shape[index++] = x+width;
 		shape[index++] = y+height;
@@ -836,11 +834,11 @@ void drawClose(GC gc) {
 	int x = closeRect.x, y = closeRect.y, width = closeRect.width, height = closeRect.height;
 	int[] shape = null;
 	if (onBottom) {
-		shape = new int[bottomRightCorner.length+6];
+		shape = new int[BOTTOM_RIGHT_CORNER.length+6];
 		int index = 0;
-		for (int i = 0; i < bottomRightCorner.length/2; i++) {
-			shape[index++] = x+width+bottomRightCorner[2*i];
-			shape[index++] = y+height+bottomRightCorner[2*i+1];
+		for (int i = 0; i < BOTTOM_RIGHT_CORNER.length/2; i++) {
+			shape[index++] = x+width+BOTTOM_RIGHT_CORNER[2*i];
+			shape[index++] = y+height+BOTTOM_RIGHT_CORNER[2*i+1];
 		}
 		shape[index++] = x+width;
 		shape[index++] = y;
@@ -849,11 +847,11 @@ void drawClose(GC gc) {
 		shape[index++] = x+2;
 		shape[index++] = y+height;
 	} else {
-		shape = new int[topRightCorner.length+6];
+		shape = new int[TOP_RIGHT_CORNER.length+6];
 		int index = 0;
-		for (int i = 0; i < topRightCorner.length/2; i++) {
-			shape[index++] = x+width+topRightCorner[2*i];
-			shape[index++] = y+topRightCorner[2*i+1];
+		for (int i = 0; i < TOP_RIGHT_CORNER.length/2; i++) {
+			shape[index++] = x+width+TOP_RIGHT_CORNER[2*i];
+			shape[index++] = y+TOP_RIGHT_CORNER[2*i+1];
 		}
 		shape[index++] = x+width;
 		shape[index++] = y+height;
@@ -887,11 +885,11 @@ void drawExpand(GC gc) {
 	int x = expandRect.x, y = expandRect.y, width = expandRect.width, height = expandRect.height;
 	int[] shape = null;
 	if (onBottom) {
-		shape = new int[bottomLeftCorner.length+6];
+		shape = new int[BOTTOM_LEFT_CORNER.length+6];
 		int index = 0;
-		for (int i = 0; i < bottomLeftCorner.length/2; i++) {
-			shape[index++] = x+bottomLeftCorner[2*i];
-			shape[index++] = y+height+bottomLeftCorner[2*i+1];
+		for (int i = 0; i < BOTTOM_LEFT_CORNER.length/2; i++) {
+			shape[index++] = x+BOTTOM_LEFT_CORNER[2*i];
+			shape[index++] = y+height+BOTTOM_LEFT_CORNER[2*i+1];
 		}
 		shape[index++] = x+width-2;
 		shape[index++] = y+height;
@@ -900,11 +898,11 @@ void drawExpand(GC gc) {
 		shape[index++] = x;
 		shape[index++] = y;
 	} else {
-		shape = new int[topLeftCorner.length+6];
+		shape = new int[TOP_LEFT_CORNER.length+6];
 		int index = 0;
-		for (int i = 0; i < topLeftCorner.length/2; i++) {
-			shape[index++] = x+topLeftCorner[2*i];
-			shape[index++] = y+topLeftCorner[2*i+1];
+		for (int i = 0; i < TOP_LEFT_CORNER.length/2; i++) {
+			shape[index++] = x+TOP_LEFT_CORNER[2*i];
+			shape[index++] = y+TOP_LEFT_CORNER[2*i+1];
 		}
 		shape[index++] = x+width-2;
 		shape[index++] = y;
@@ -1616,6 +1614,10 @@ void onPaint(Event event) {
 //		}
 //	}
 	
+	Rectangle rect = getClientArea();
+	gc.setBackground(getBackground());
+	gc.fillRectangle(rect);
+	
 	gc.setForeground(getForeground());
 	gc.setBackground(getBackground());	
 }
@@ -1867,6 +1869,7 @@ public void setBorderVisible(boolean show) {
 	redraw();
 }
 boolean setButtonBounds() {
+	int decoratorWidth = 16;
 	boolean changed = false;
 	Point size = getSize();
 	

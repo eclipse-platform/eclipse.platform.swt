@@ -28,12 +28,22 @@ public void addLocationListener(LocationListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);	
 }
 
+public void addNewWindowListener(NewWindowListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);	
+}
+
 public void addProgressListener(ProgressListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 }
 
 public void addStatusTextListener(StatusTextListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+}
+
+public void addVisibilityListener(VisibilityListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 }
@@ -70,6 +80,11 @@ public void removeLocationListener(LocationListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 }
 
+public void removeNewWindowListener(NewWindowListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+}
+
 public void removeProgressListener(ProgressListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -78,6 +93,17 @@ public void removeProgressListener(ProgressListener listener) {
 public void removeStatusTextListener(StatusTextListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+}
+
+public void removeVisibilityListener(VisibilityListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+}
+
+public boolean setText(String html) {
+	checkWidget();
+	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	return false;
 }
 
 public boolean setUrl(String url) {

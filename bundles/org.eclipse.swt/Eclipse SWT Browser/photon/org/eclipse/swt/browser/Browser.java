@@ -43,8 +43,10 @@ public class Browser extends Composite {
 	
 	/* External Listener management */
 	LocationListener[] locationListeners = new LocationListener[0];
+	NewWindowListener[] newWindowListeners = new NewWindowListener[0];
 	ProgressListener[] progressListeners = new ProgressListener[0];
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
+	VisibilityListener[] visibilityListeners = new VisibilityListener[0];
 	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
@@ -201,6 +203,32 @@ public void addLocationListener(LocationListener listener) {
  *
  * @since 3.0
  */
+public void addNewWindowListener(NewWindowListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	NewWindowListener[] newNewWindowListeners = new NewWindowListener[newWindowListeners.length + 1];
+	System.arraycopy(newWindowListeners, 0, newNewWindowListeners, 0, newWindowListeners.length);
+	newWindowListeners = newNewWindowListeners;
+	newWindowListeners[newWindowListeners.length - 1] = listener;
+}
+
+/**	 
+ * Adds the listener to receive events.
+ * <p>
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
 public void addProgressListener(ProgressListener listener) {
 	checkWidget();
 	if (listener == null)
@@ -236,6 +264,32 @@ public void addStatusTextListener(StatusTextListener listener) {
 	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, statusTextListeners.length);
 	statusTextListeners = newStatusTextListeners;
 	statusTextListeners[statusTextListeners.length - 1] = listener;
+}
+
+/**	 
+ * Adds the listener to receive events.
+ * <p>
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void addVisibilityListener(VisibilityListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	VisibilityListener[] newVisibilityListeners = new VisibilityListener[visibilityListeners.length + 1];
+	System.arraycopy(visibilityListeners, 0, newVisibilityListeners, 0, visibilityListeners.length);
+	visibilityListeners = newVisibilityListeners;
+	visibilityListeners[visibilityListeners.length - 1] = listener;
 }
 
 /**
@@ -341,16 +395,23 @@ void onFocusGained(Event e) {
 }
 
 int Pt_CB_WEB_COMPLETE(int info) {
-	LocationEvent event = new LocationEvent(Browser.this);
+	Display display = getDisplay();
+	LocationEvent event = new LocationEvent(this);
+	event.display = display;
+	event.widget = this;
 	event.location = url;
 	for (int i = 0; i < locationListeners.length; i++)
 		locationListeners[i].changed(event);
-	ProgressEvent progress = new ProgressEvent(Browser.this);
+	ProgressEvent progress = new ProgressEvent(this);
+	progress.display = display;
+	progress.widget = this;
 	progress.current = totalProgress;
 	progress.total = totalProgress;
 	for (int i = 0; i < progressListeners.length; i++)
 		progressListeners[i].completed(progress);
-	StatusTextEvent statusevent = new StatusTextEvent(Browser.this);
+	StatusTextEvent statusevent = new StatusTextEvent(this);
+	statusevent.display = display;
+	statusevent.widget = this;
 	statusevent.text = ""; //$NON-NLS-1$
 	for (int i = 0; i < statusTextListeners.length; i++)
 		statusTextListeners[i].changed(statusevent);
@@ -358,16 +419,19 @@ int Pt_CB_WEB_COMPLETE(int info) {
 }
 
 int Pt_CB_WEB_START(int info) {
-	LocationEvent event = new LocationEvent(Browser.this);
+	LocationEvent event = new LocationEvent(this);
+	event.display = getDisplay();
+	event.widget = this;
 	event.location = url;
-	event.cancel = false;
 	for (int i = 0; i < locationListeners.length; i++)
 		locationListeners[i].changing(event);
 	if (event.cancel) {
 		stop();
 	} else {
 		currentProgress = 1;
-		ProgressEvent progress = new ProgressEvent(Browser.this);
+		ProgressEvent progress = new ProgressEvent(this);
+		progress.display = getDisplay();
+		progress.widget = this;
 		progress.current = currentProgress;
 		progress.total = totalProgress;
 		for (int i = 0; i < progressListeners.length; i++)
@@ -384,14 +448,18 @@ int Pt_CB_WEB_STATUS(int info) {
 	switch (webstatus.type) {
 		case OS.Pt_WEB_STATUS_MOUSE :
 		case OS.Pt_WEB_STATUS_PROGRESS :
-			StatusTextEvent statusevent = new StatusTextEvent(Browser.this);
+			StatusTextEvent statusevent = new StatusTextEvent(this);
+			statusevent.display = getDisplay();
+			statusevent.widget = this;
 			statusevent.text = new String(webstatus.desc, 0, OS.strlen(cbinfo_t.cbdata));
 			for (int i = 0; i < statusTextListeners.length; i++)
 				statusTextListeners[i].changed(statusevent);
 			if (webstatus.type == OS.Pt_WEB_STATUS_PROGRESS) {
 				currentProgress++;
 				if (currentProgress >= totalProgress) currentProgress = 1;
-				ProgressEvent progress = new ProgressEvent(Browser.this);
+				ProgressEvent progress = new ProgressEvent(this);
+				progress.display = getDisplay();
+				progress.widget = this;
 				progress.current = currentProgress;
 				progress.total = totalProgress;
 				for (int i = 0; i < progressListeners.length; i++)
@@ -480,6 +548,44 @@ public void removeLocationListener(LocationListener listener) {
  * 
  * @since 3.0
  */
+public void removeNewWindowListener(NewWindowListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (newWindowListeners.length == 0) return;
+	int index = -1;
+	for (int i = 0; i < newWindowListeners.length; i++) {
+		if (listener == newWindowListeners[i]){
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return;
+	if (newWindowListeners.length == 1) {
+		newWindowListeners = new NewWindowListener[0];
+		return;
+	}
+	NewWindowListener[] newNewWindowListeners = new NewWindowListener[newWindowListeners.length - 1];
+	System.arraycopy(newWindowListeners, 0, newNewWindowListeners, 0, index);
+	System.arraycopy(newWindowListeners, index + 1, newNewWindowListeners, index, newWindowListeners.length - index - 1);
+	newWindowListeners = newNewWindowListeners;
+}
+
+/**	 
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public void removeProgressListener(ProgressListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -538,6 +644,70 @@ public void removeStatusTextListener(StatusTextListener listener) {
 	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, index);
 	System.arraycopy(statusTextListeners, index + 1, newStatusTextListeners, index, statusTextListeners.length - index - 1);
 	statusTextListeners = newStatusTextListeners;
+}
+
+/**	 
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void removeVisibilityListener(VisibilityListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (visibilityListeners.length == 0) return;
+	int index = -1;
+	for (int i = 0; i < visibilityListeners.length; i++) {
+		if (listener == visibilityListeners[i]){
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return;
+	if (visibilityListeners.length == 1) {
+		visibilityListeners = new VisibilityListener[0];
+		return;
+	}
+	VisibilityListener[] newVisibilityListeners = new VisibilityListener[visibilityListeners.length - 1];
+	System.arraycopy(visibilityListeners, 0, newVisibilityListeners, 0, index);
+	System.arraycopy(visibilityListeners, index + 1, newVisibilityListeners, index, visibilityListeners.length - index - 1);
+	visibilityListeners = newVisibilityListeners;
+}
+
+/**
+ * Renders HTML.
+ * 
+ * @param html the HTML content to be rendered
+ *
+ * @return true if the operation was successful and false otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *  
+ * @see #setUrl
+ * 
+ * @since 3.0
+ */
+public boolean setText(String html) {
+	checkWidget();
+	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	return false;
 }
 
 /**

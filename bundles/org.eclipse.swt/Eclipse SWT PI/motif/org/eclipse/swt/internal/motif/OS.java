@@ -67,6 +67,7 @@ public class OS {
 	public static final int CWStackMode = 0x40;
 	public static final int CWWidth = 0x4;
 	public static final int CapButt = 0x1;
+	public static final int CapRound = 0x2;
 	public static final int ClientMessage = 33;
 	public static final int Complex = 0;
 	public static final int ConfigureNotify = 22;
@@ -96,6 +97,7 @@ public class OS {
 	public static final int GrabModeAsync = 1;
 	public static final int GrabSuccess = 0;
 	public static final int GraphicsExpose = 13;
+	public static final int hpXK_BackTab = 0x1000FF74;
 	public static final int IconicState = 0x3;
 	public static final int IncludeInferiors = 0x1;
 	public static final int IsUnviewable = 0x1;
@@ -139,6 +141,7 @@ public class OS {
 	public static final int PointerMotionMask = 1 << 6;
 	public static final int PropertyChangeMask = 1 << 22;
 	public static final int PropertyNotify = 28;
+	public static final int PropModeReplace = 0;
 	public static final int QueuedAfterReading = 1;
 	public static final int RectangleOut = 0x0;
 	public static final int ReparentNotify = 21;
@@ -155,6 +158,7 @@ public class OS {
 	public static final int SunXK_F37 = 0x1005FF11;
 	public static final int UnmapNotify = 18;
 	public static final int Unsorted = 0x0;
+	public static final int XA_ATOM = 4;
 	public static final int XA_FONT = 18;
 	public static final int XBufferOverflow = 0xFFFFFFFF;
 	public static final int XC_X_cursor = 0;
@@ -608,6 +612,7 @@ public static final synchronized native int XAllocColor(int display, int colorma
 public static final synchronized native void XBell(int display, int ms);
 public static final synchronized native int XBlackPixel(int display, int screenNum);
 public static final synchronized native int XChangeActivePointerGrab(int display, int eventMask, int cursor, int time);
+public static final synchronized native void XChangeProperty(int display, int w, int property, int type, int format, int mode, int[] data, int nelements);
 public static final synchronized native void XChangeWindowAttributes(int display, int window, int mask, XSetWindowAttributes attributes);
 public static final synchronized native int XCheckIfEvent(int display, int event_return, int predicate, int arg);
 public static final synchronized native boolean XCheckMaskEvent(int display, int mask, int event);
@@ -645,6 +650,7 @@ public static final synchronized native void XDrawArc(int display, int drawable,
 public static final synchronized native void XDrawLine(int display, int drawable, int gc, int x1, int y1, int x2, int y2);
 public static final synchronized native void XDrawLines(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode);
 public static final synchronized native void XDrawRectangle(int display, int drawable, int gc, int x, int y, int width, int height);
+public static final synchronized native void XDrawPoint(int display, int drawable, int gc, int x, int y);
 public static final synchronized native boolean XEmptyRegion(int region);
 public static final synchronized native int XEventsQueued(int display, int mode);
 public static final synchronized native void XFillArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2);
@@ -830,6 +836,7 @@ public static final synchronized native int XmRenditionCreate(int widget, byte[]
 public static final synchronized native void XmRenditionFree(int rendition);
 public static final synchronized native boolean XmStringCompare(int xmString1, int xmString2);
 public static final synchronized native int XmStringComponentCreate(int type, int length, byte[] value);
+public static final synchronized native int XmStringConcat(int xmString1, int xmString2);
 public static final synchronized native int XmStringCreate(byte[] string, byte[] charset);
 public static final synchronized native int XmStringCreateLocalized(byte[] string);
 public static final synchronized native void XmStringDraw(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);

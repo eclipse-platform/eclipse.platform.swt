@@ -910,6 +910,7 @@ void register () {
  */
 public void remove (int start, int end) {
 	checkWidget();
+	if (start > end) return;
 	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	if (!(0 <= start && start <= end && end < args [1])) {

@@ -847,20 +847,13 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
-	int count = end - start + 1;
-	/*
-	* Feature in Motif.  An index out of range is handled
-	* correctly by the list widget but causes an unwanted
-	* Xm warning.  The fix is to check the range before
-	* deleting an item.
-	*/
 	int [] argList = {OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (!(0 <= start && start < argList [1])) {
+	if (!(0 <= start && start <= end && end < argList [1])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
+	int count = end - start + 1;
 	OS.XmListDeleteItemsPos (handle, count, start + 1);
-	if (end >= argList [1]) error (SWT.ERROR_INVALID_RANGE);
 }
 /**
  * Searches the receiver's list starting at the first item
@@ -913,23 +906,19 @@ public void remove (String string) {
 public void remove (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	/*
-	* Feature in Motif.  An index out of range handled
-	* correctly by the list widget but causes an unwanted
-	* Xm Warning.  The fix is to check the range before
-	* deleting an item.
-	*/
+	if (indices.length == 0) return;
 	int [] argList = {OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int length = 0, count = argList [1];
 	int [] newIndices = new int [indices.length];
 	for (int i=0; i<indices.length; i++) {
 		int index = indices [i];
-		if (!(0 <= index && index < count)) break;
+		if (!(0 <= index && index < count)) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
 		newIndices [length++] = index + 1;
 	}
 	OS.XmListDeletePositions (handle, newIndices, length);
-	if (length < indices.length) error (SWT.ERROR_INVALID_RANGE);
 }
 /**
  * Removes all of the items from the receiver.
