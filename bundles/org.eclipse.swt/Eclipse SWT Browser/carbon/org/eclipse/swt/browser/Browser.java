@@ -60,7 +60,7 @@ public class Browser extends Composite {
 	Point location;
 	Point size;
 	boolean statusBar = true, toolBar = true;
-	boolean added;
+	boolean added, doit;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -312,7 +312,11 @@ public Browser(Composite parent, int style) {
 	int[] keyboardMask = new int[] {OS.kEventClassKeyboard, OS.kEventRawKeyDown};
 	int controlTarget = OS.GetControlEventTarget(webViewHandle);
 	OS.InstallEventHandler(controlTarget, Callback3.getAddress(), keyboardMask.length / 2, keyboardMask, webViewHandle, null);
-	
+		
+	int[] textInputMask = new int[] { OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent };
+	int windowTarget = OS.GetWindowEventTarget(OS.GetControlOwner(handle));
+	OS.InstallEventHandler (windowTarget, Callback3.getAddress(), textInputMask.length / 2, textInputMask, webViewHandle, null);
+
 	if (Callback7 == null) Callback7 = new Callback(this.getClass(), "eventProc7", 7); //$NON-NLS-1$
 	
 	// delegate = [[WebResourceLoadDelegate alloc] init eventProc];
@@ -656,23 +660,51 @@ public String getUrl() {
 }
 
 int handleCallback(int nextHandler, int theEvent) {
-	/*
-	* Bug in Safari. The WebView blocks the propagation of certain Carbon events
-	* such as kEventRawKeyDown. On the Mac, Carbon events propagate from the
-	* Focus Target Handler to the Control Target Handler, Window Target and finally
-	* the Application Target Handler. It is assumed that WebView hooks its events
-	* on the Window Target and does not pass kEventRawKeyDown to the next handler.
-	* Since kEventRawKeyDown events never make it to the Application Target Handler,
-	* the Application Target Handler never gets to emit kEventTextInputUnicodeForKeyEvent
-	* used by SWT to send a SWT.KeyDown event.
-	* The workaround is to hook kEventRawKeyDown on the Control Target Handler which gets
-	* called before the WebView hook on the Window Target Handler. Then, forward this event
-	* directly to the Application Target Handler. Note that if in certain conditions Safari
-	* does not block the kEventRawKeyDown, then multiple kEventTextInputUnicodeForKeyEvent
-	* events might be generated as a result of this workaround.
-	*/
-	if (OS.GetEventKind(theEvent) == OS.kEventRawKeyDown) {
-		OS.SendEventToEventTarget(theEvent, OS.GetApplicationEventTarget());
+	int eventKind = OS.GetEventKind(theEvent);
+	switch (eventKind) {
+		case OS.kEventRawKeyDown: {
+			/*
+			* Bug in Safari. The WebView blocks the propagation of certain Carbon events
+			* such as kEventRawKeyDown. On the Mac, Carbon events propagate from the
+			* Focus Target Handler to the Control Target Handler, Window Target and finally
+			* the Application Target Handler. It is assumed that WebView hooks its events
+			* on the Window Target and does not pass kEventRawKeyDown to the next handler.
+			* Since kEventRawKeyDown events never make it to the Application Target Handler,
+			* the Application Target Handler never gets to emit kEventTextInputUnicodeForKeyEvent
+			* used by SWT to send a SWT.KeyDown event.
+			* The workaround is to hook kEventRawKeyDown on the Control Target Handler which gets
+			* called before the WebView hook on the Window Target Handler. Then, forward this event
+			* directly to the Application Target Handler. Note that if in certain conditions Safari
+			* does not block the kEventRawKeyDown, then multiple kEventTextInputUnicodeForKeyEvent
+			* events might be generated as a result of this workaround.
+			*/
+			doit = false;
+			int result = OS.SendEventToEventTarget(theEvent, OS.GetApplicationEventTarget());
+			if (!doit) return OS.noErr;
+			break;
+		}
+		case OS.kEventTextInputUnicodeForKeyEvent: {
+			/*
+			* Note.  This event is received from the Window Target therefore after it was received
+			* by the Focus Target. The SWT.KeyDown event is sent by SWT on the Focus Target. If it
+			* is received here, then the SWT.KeyDown doit flag must have been left to the value
+			* true.  For package visibility reasons we cannot access the doit flag directly.
+			* 
+			* Sequence of events when the user presses a key down
+			* 
+			* .Control Target - kEventRawKeyDown
+			* 	.forward to ApplicationEventTarget
+			* 		.Focus Target kEventTextInputUnicodeForKeyEvent - SWT emits SWT.KeyDown - 
+			* 			blocks further propagation if doit false. Browser does not know directly about
+			* 			the doit flag value.
+			* 			.Window Target kEventTextInputUnicodeForKeyEvent - if received, Browser knows 
+			* 			SWT.KeyDown is not blocked and event should be sent to WebKit
+			*  Return from Control Target - kEventRawKeyDown: let the event go to WebKit if doit true 
+			*  (eventNotHandledErr) or stop it (noErr).
+			*/
+			doit = true;
+			break;
+		}
 	}
 	return OS.eventNotHandledErr;
 }
