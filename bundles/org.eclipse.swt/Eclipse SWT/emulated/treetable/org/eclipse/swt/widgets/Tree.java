@@ -329,8 +329,17 @@ void destroyItem (TreeItem item) {
 			availableItems [i].availableIndex = i;
 		}
 		item.availableIndex = -1;
-		updateVerticalBar ();
 		updateHorizontalBar (0, -rightX);
+		int oldTopIndex = topIndex;
+		updateVerticalBar ();
+		/* 
+		 * If destroyed item is above viewport then adjust topIndex and the vertical
+		 * scrollbar so that the current viewport items will not change. 
+		 */
+		if (availableIndex < topIndex) {
+			topIndex = oldTopIndex - 1;
+			getVerticalBar ().setSelection (topIndex);
+		}
 	}
 	/* selectedItems array */
 	if (item.isSelected ()) {
@@ -1732,24 +1741,16 @@ void makeAvailable (TreeItem item) {
 		}
 	}
 	
-	TreeItem[] itemsToInsert = item.computeAvailableDescendents ();
-	TreeItem[] newAvailableItems = new TreeItem [availableItems.length + itemsToInsert.length];
+	TreeItem[] newAvailableItems = new TreeItem [availableItems.length + 1];
 	System.arraycopy (availableItems, 0, newAvailableItems, 0, index);
-	System.arraycopy (itemsToInsert, 0, newAvailableItems, index, itemsToInsert.length);
-	System.arraycopy (availableItems, index, newAvailableItems, index + itemsToInsert.length, availableItems.length - index);
+	newAvailableItems [index] = item;
+	System.arraycopy (availableItems, index, newAvailableItems, index + 1, availableItems.length - index);
 	availableItems = newAvailableItems;
 	
 	/* update availableIndex as needed */
 	for (int i = index; i < availableItems.length; i++) {
 		availableItems [i].availableIndex = i;
 	}
-	updateVerticalBar ();
-	int rightX = 0;
-	for (int i = 0; i < itemsToInsert.length; i++) {
-		Rectangle bounds = itemsToInsert [i].getBounds ();
-		rightX = Math.max (rightX, bounds.x + bounds.width);
-	}
-	updateHorizontalBar (rightX, rightX);
 }
 
 /*
@@ -1775,14 +1776,6 @@ void makeDescendentsAvailable (TreeItem item, TreeItem[] descendents) {
 	for (int i = itemAvailableIndex; i < availableItems.length; i++) {
 		availableItems [i].availableIndex = i;
 	}
-	
-	updateVerticalBar ();
-	int rightX = 0;
-	for (int i = 1; i < descendents.length; i++) {
-		Rectangle bounds = descendents [i].getBounds ();
-		rightX = Math.max (rightX, bounds.x + bounds.width);
-	}
-	updateHorizontalBar (rightX, rightX);
 }
 
 /*
@@ -1823,9 +1816,6 @@ void makeDescendentsUnavailable (TreeItem item, TreeItem[] descendents) {
 	if (anchorItem != null && anchorItem != item && anchorItem.hasAncestor (item)) {
 		anchorItem = null;
 	}
-	
-	updateVerticalBar ();
-	updateHorizontalBar ();
 }
 /*
  * The current focus item is about to become unavailable, so reassign focus.

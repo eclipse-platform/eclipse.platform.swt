@@ -1007,6 +1007,15 @@ public void setExpanded (boolean value) {
 		TreeItem[] availableDescendents = computeAvailableDescendents ();
 		int descendentsCount = availableDescendents.length;
 		parent.makeDescendentsAvailable (this, availableDescendents);
+
+		/* update scrollbars */
+		int rightX = 0;
+		for (int i = 1; i < availableDescendents.length; i++) {
+			Rectangle bounds = availableDescendents [i].getBounds ();
+			rightX = Math.max (rightX, bounds.x + bounds.width);
+		}
+		parent.updateHorizontalBar (rightX, rightX);
+		parent.updateVerticalBar ();
 		/* 
 		 * If new item is above viewport then adjust topIndex and the vertical scrollbar
 		 * so that the current viewport items will not change. 
@@ -1050,6 +1059,10 @@ public void setExpanded (boolean value) {
 			gc.copyArea (image, 0, startY);
 		}
 		parent.makeDescendentsUnavailable (this, descendents);
+		parent.updateHorizontalBar ();
+		int oldTopIndex = parent.topIndex;
+		parent.updateVerticalBar ();
+
 		/* move focus (and selection if SWT.SINGLE) to item if a descendent had focus */
 		TreeItem focusItem = parent.focusItem;
 		if (focusItem != null && focusItem != this && focusItem.hasAncestor (this)) {
@@ -1064,6 +1077,17 @@ public void setExpanded (boolean value) {
 			if (isDisposed ()) return;
 			parent.showItem (this);
 			parent.redrawItem (availableIndex, true);
+		} else {
+			/* 
+			 * If all collapsed items are above the viewport then adjust topIndex and
+			 * the vertical scrollbar so that the current viewport items will not change.
+			 */
+			int bottomIndex = availableIndex + descendents.length - 1;
+			if (bottomIndex < parent.topIndex) {
+				parent.topIndex = oldTopIndex - descendents.length + 1;
+				parent.getVerticalBar ().setSelection (parent.topIndex);
+				return;
+			}
 		}
 		itemY = parent.getItemY (this);
 		if (image != null) {
