@@ -1194,7 +1194,6 @@ public boolean setText(String html) {
 	char[] c = new char[arg.length+1];
 	System.arraycopy(arg,0,c,0,arg.length);
 	rc = webNavigation.LoadURI(c, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
-	onFocusGained(null); // Fixes the keyboard input Tag issues
 	webNavigation.Release();
 	return rc == XPCOM.NS_OK;
 }
@@ -1232,7 +1231,6 @@ public boolean setUrl(String url) {
     char[] c = new char[arg.length+1];
     System.arraycopy(arg,0,c,0,arg.length);
 	rc = webNavigation.LoadURI(c, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
-	onFocusGained(null); // Fixes the keyboard input Tag issues
 	webNavigation.Release();
 	return rc == XPCOM.NS_OK;
 }
