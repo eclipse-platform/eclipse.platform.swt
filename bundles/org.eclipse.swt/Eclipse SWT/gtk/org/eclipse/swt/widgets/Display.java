@@ -2360,7 +2360,7 @@ public boolean readAndDispatch () {
 		runDeferredEvents ();
 		return true;
 	}
-	return runAsyncMessages ();
+	return runAsyncMessages (false);
 }
 
 synchronized void register () {
@@ -2634,8 +2634,8 @@ Widget removeWidget (int /*long*/ handle) {
 	return widget;	
 }
 
-boolean runAsyncMessages () {
-	return synchronizer.runAsyncMessages ();
+boolean runAsyncMessages (boolean all) {
+	return synchronizer.runAsyncMessages (all);
 }
 
 boolean runDeferredEvents () {
@@ -2874,7 +2874,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	checkDevice ();
 	if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (this.synchronizer != null) {
-		this.synchronizer.runAsyncMessages();
+		this.synchronizer.runAsyncMessages(true);
 	}
 	this.synchronizer = synchronizer;
 }

@@ -2554,14 +2554,14 @@ public boolean readAndDispatch () {
 		* message are supposed to have priority over async messages.
 		*/
 		if (eventClass == WAKE_CLASS && eventKind == WAKE_KIND) {
-			runAsyncMessages ();
+			runAsyncMessages (false);
 		}
 	}
 	if (events) {
 		runDeferredEvents ();
 		return true;
 	}
-	return runAsyncMessages ();
+	return runAsyncMessages (false);
 }
 
 static synchronized void register (Display display) {
@@ -2772,8 +2772,8 @@ Widget removeWidget (int handle) {
 	return widget;
 }
 
-boolean runAsyncMessages () {
-	return synchronizer.runAsyncMessages ();
+boolean runAsyncMessages (boolean all) {
+	return synchronizer.runAsyncMessages (all);
 }
 
 boolean runEnterExit () {
@@ -2938,7 +2938,7 @@ boolean runGrabs () {
 			int type = 0, button = 0;
 			switch ((int) outResult [0]) {
 				case OS.kMouseTrackingTimedOut: {
-					runAsyncMessages ();
+					runAsyncMessages (false);
 					break;
 				}
 				case OS.kMouseTrackingMouseDown: {
@@ -3251,7 +3251,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	checkDevice ();
 	if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (this.synchronizer != null) {
-		this.synchronizer.runAsyncMessages();
+		this.synchronizer.runAsyncMessages(true);
 	}
 	this.synchronizer = synchronizer;
 }

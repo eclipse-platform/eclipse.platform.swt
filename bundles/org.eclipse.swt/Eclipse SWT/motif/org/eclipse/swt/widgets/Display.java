@@ -2646,7 +2646,7 @@ public boolean readAndDispatch () {
 		runDeferredEvents ();
 		return true;
 	}
-	return runAsyncMessages ();
+	return runAsyncMessages (false);
 }
 static synchronized void register (Display display) {
 	for (int i=0; i<Displays.length; i++) {
@@ -2920,8 +2920,8 @@ public void removeListener (int eventType, Listener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, listener);
 }
-boolean runAsyncMessages () {
-	return synchronizer.runAsyncMessages ();
+boolean runAsyncMessages (boolean all) {
+	return synchronizer.runAsyncMessages (all);
 }
 boolean runDeferredEvents () {
 	/*
@@ -3175,7 +3175,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	checkDevice ();
 	if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (this.synchronizer != null) {
-		this.synchronizer.runAsyncMessages();
+		this.synchronizer.runAsyncMessages(true);
 	}
 	this.synchronizer = synchronizer;
 }
