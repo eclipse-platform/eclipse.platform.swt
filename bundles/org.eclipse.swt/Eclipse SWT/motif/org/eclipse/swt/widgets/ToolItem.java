@@ -240,6 +240,7 @@ Point computeSize () {
 }
 void createWidget (int index) {
 	super.createWidget (index);
+	setBackgroundPixel (parent.getBackgroundPixel ());
 	toolTipText = "";
 	parent.relayout ();
 }
@@ -507,6 +508,12 @@ void selectRadio () {
 	while (++i < items.length && ((item = items [i]).style & SWT.RADIO) != 0) {
 		item.setSelection (false);
 	}
+}
+void setBackgroundPixel(int pixel) {
+	int [] argList = {OS.XmNforeground, 0, OS.XmNhighlightColor, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	OS.XmChangeColor (handle, pixel);
+	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 void setBounds (int x, int y, int width, int height) {
 	if (control != null) control.setBounds(x, y, width, height);
@@ -905,7 +912,7 @@ int processPaint (int callData) {
 		gc.setForeground (parent.getForeground ());
 	}
 	gc.setBackground (parent.getBackground ());
-		
+	
 	final String plainText = stripMnemonicCodes(this.text);
 	int textX = 0, textY = 0, textWidth = 0, textHeight = 0;
 	if (plainText.length () != 0) {

@@ -555,6 +555,14 @@ void relayout() {
 	Point size = layout(getSize().x, true);
 	super.setSize(size.x, size.y);
 }
+void setBackgroundPixel (int pixel) {
+	super.setBackgroundPixel (pixel);
+	pixel = getBackgroundPixel ();
+	CoolItem[] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		items[i].setBackgroundPixel (pixel);
+	}
+}
 public void setBounds (int x, int y, int width, int height) {
 	super.setBounds (x, y, width, height);
 	layout(width, true);

@@ -347,6 +347,15 @@ void releaseWidget () {
 	items = null;
 	super.releaseWidget ();
 }
+void setBackgroundPixel (int pixel) {
+	super.setBackgroundPixel (pixel);
+	pixel = getBackgroundPixel ();
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setBackgroundPixel (pixel);
+		}
+	}
+}
 public void setBounds (int x, int y, int width, int height) {
 	super.setBounds (x, y, width, height);
 	Rectangle rect = getClientArea ();
@@ -365,4 +374,5 @@ public void setSize (int width, int height) {
 	Rectangle rect = getClientArea ();
 	relayout (rect.width, rect.height);
 }
+
 }

@@ -156,6 +156,8 @@ void createHandle (int index) {
 	int parentHandle = parent.handle;
 	handle = OS.XmCreateDrawingArea(parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	int pixel = parent.getBackgroundPixel ();
+	setBackgroundPixel (pixel);
 }
 public void dispose () {
 	if (isDisposed()) return;
@@ -425,6 +427,12 @@ void setLocation (int x, int y) {
 public void setSize (Point size) {
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
+}
+void setBackgroundPixel(int pixel) {
+	int [] argList = {OS.XmNforeground, 0, OS.XmNhighlightColor, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	OS.XmChangeColor (handle, pixel);
+	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 void setBounds (int x, int y, int width, int height) {
 	/*
