@@ -2716,11 +2716,11 @@ void setLastItem(int index) {
 	if (index < 0 || index > items.length - 1) return;
 	Point size = getSize();
 	if (size.x <= 0) return;
-	int maxWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width - chevronRect.width;
+	int maxWidth = getRightItemEdge() - borderLeft;
 	int tabWidth = items[index].width;
 	while (index > 0) {
 		tabWidth += items[index - 1].width;
-		if (tabWidth > maxWidth) break;
+		if (tabWidth >= maxWidth) break;
 		index--;
 	}
 	if (topTabIndex == index) return;
@@ -2746,6 +2746,7 @@ public void setMaximizeVisible(boolean visible) {
 public void setMaximized(boolean maximize) {
 	checkWidget ();
 	if (this.maximized == maximize) return;
+	if (maximize && this.minimized) setMinimized(false);
 	this.maximized = maximize;
 	redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 	update();
@@ -2768,6 +2769,7 @@ public void setMinimizeVisible(boolean visible) {
 public void setMinimized(boolean minimize) {
 	checkWidget ();
 	if (this.minimized == minimize) return;
+	if (minimize && this.maximized) setMaximized(false);
 	this.minimized = minimize;
 	redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
 	update();
@@ -2829,10 +2831,7 @@ public void setSelection(int index) {
 			control.setVisible(false);
 		}		
 	}
-	setItemSize();
-	setItemLocation();
-	showItem(items[selectedIndex]);
-	setButtonBounds();
+	updateItems();
 	redraw();
 }
 void setSelection(int index, boolean notify) {	
@@ -3136,7 +3135,7 @@ public void setTopRight(Control control) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	topRight = control;
-	if (setButtonBounds()) redraw();
+	if (updateItems()) redraw();
 }
 /**
  * Shows the item.  If the item is already showing in the receiver,
@@ -3298,6 +3297,11 @@ boolean updateItems() {
 	if (setItemSize()) changed = true;
 	if (setItemLocation()) changed = true;
 	if (setButtonBounds()) changed = true;
+	if (selectedIndex != -1) {
+		int top = topTabIndex;
+		showItem(items[selectedIndex]);
+		if (top != topTabIndex) changed = true;
+	}
 	return changed;
 }
 boolean updateTabHeight(int oldHeight, boolean force){
