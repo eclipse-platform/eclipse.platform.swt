@@ -1288,6 +1288,13 @@ public void setVisible (boolean visible) {
 		} else {
 			OS.ShowWindow (handle, OS.SW_HIDE);
 		}
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in an event
+		* triggered by ShowWindow().  If this happens, just
+		* return.
+		*/
+		if (isDisposed ()) return;
 		sendEvent (SWT.Hide);
 	}
 }
