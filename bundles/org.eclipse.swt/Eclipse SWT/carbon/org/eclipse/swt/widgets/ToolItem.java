@@ -551,6 +551,10 @@ void invalidateVisibleRegion (int control) {
 	parent.resetVisibleRegion (control);
 }
 
+void invalWindowRgn (int window, int rgn) {
+	parent.invalWindowRgn (window, rgn);
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>

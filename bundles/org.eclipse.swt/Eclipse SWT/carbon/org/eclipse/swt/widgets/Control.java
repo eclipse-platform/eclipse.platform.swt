@@ -1152,6 +1152,10 @@ void invalidateVisibleRegion (int control) {
 	parent.resetVisibleRegion (control);
 }
 
+void invalWindowRgn (int window, int rgn) {
+	parent.invalWindowRgn (window, rgn);
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
@@ -2925,7 +2929,7 @@ void update (boolean all) {
 						OS.SetPort (port);
 						OS.BeginUpdate (window);	
 						OS.DiffRgn (updateRgn, visibleRgn, updateRgn);
-						OS.InvalWindowRgn (window, updateRgn);
+						invalWindowRgn (window, updateRgn);
 						OS.UpdateControls (window, visibleRgn);
 						OS.EndUpdate (window);
 						OS.SetPort (currentPort [0]);

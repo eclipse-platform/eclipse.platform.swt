@@ -103,7 +103,8 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized, drawing, reshape;
+	boolean resized, drawing, reshape, update;
+	int invalRgn;
 	Control lastActive;
 	Region region;
 	Rect rgnRect;
@@ -734,6 +735,23 @@ void invalidateVisibleRegion (int control) {
 	invalidateChildrenVisibleRegion (control);
 }
 
+void invalWindowRgn (int window, int rgn) {
+	/*
+	* Bug in the Macintosh.  InvalidWindowRgn() will not invalidate
+	* the window when it is called from the default kEventWindowUpdate
+	* handler.  The fix is to detect that case, acumulate the region
+	* to invalidate and call InvalWindowRgn() after the default handler
+	* is done.  
+	*/
+	if (update) {
+		if (invalRgn == 0) invalRgn = OS.NewRgn();
+		OS.UnionRgn (rgn, invalRgn, invalRgn);
+	} else {
+		OS.InvalWindowRgn (window, rgn);
+	}
+	
+}
+
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled ();
@@ -936,7 +954,14 @@ int kEventWindowShown (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventWindowUpdate (int nextHandler, int theEvent, int userData) {
+	update = true;
 	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	update = false;
+	if (invalRgn != 0) {
+		OS.InvalWindowRgn (shellHandle, invalRgn);
+		OS.DisposeRgn (invalRgn);
+		invalRgn = 0;
+	}
 	return result;
 }
 
@@ -1001,7 +1026,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (windowGroup != 0) OS.ReleaseWindowGroup (windowGroup);
 	display.updateQuitMenu ();
-	windowGroup = 0;
+	if (invalRgn != 0) OS.DisposeRgn (invalRgn);
+	invalRgn = windowGroup = 0;
 	lastActive = null;
 	region = null;
 }

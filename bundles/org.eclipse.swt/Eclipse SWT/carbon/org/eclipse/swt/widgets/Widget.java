@@ -748,6 +748,10 @@ boolean hooks (int eventType) {
 void invalidateVisibleRegion (int control) {
 }
 
+void invalWindowRgn (int window, int rgn) {
+	OS.InvalWindowRgn (window, rgn);
+}
+
 /**
  * Returns <code>true</code> if the widget has been disposed,
  * and <code>false</code> otherwise.
@@ -1060,7 +1064,7 @@ void redrawWidget (int control, boolean children) {
 	if (!isDrawing (control)) return;
 	int window = OS.GetControlOwner (control);
 	int visibleRgn = getVisibleRegion (control, !children);
-	OS.InvalWindowRgn (window, visibleRgn);
+	invalWindowRgn (window, visibleRgn);
 	OS.DisposeRgn (visibleRgn);
 }
 
@@ -1076,7 +1080,7 @@ void redrawWidget (int control, int x, int y, int width, int height, boolean chi
 	int visibleRgn = getVisibleRegion (control, !children);
 	OS.SectRgn (rectRgn, visibleRgn, visibleRgn);
 	int window = OS.GetControlOwner (control);
-	OS.InvalWindowRgn (window, visibleRgn);
+	invalWindowRgn (window, visibleRgn);
 	OS.DisposeRgn (rectRgn);
 	OS.DisposeRgn (visibleRgn);
 }
@@ -1267,13 +1271,13 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	if (visible) {
 		tempRgn = OS.NewRgn ();
 		OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
-		OS.InvalWindowRgn (window, tempRgn);
+		invalWindowRgn (window, tempRgn);
 	}
 	OS.SetControlBounds (control, newBounds);
 	invalidateVisibleRegion (control);
 	if (visible) {
 		OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
-		OS.InvalWindowRgn (window, tempRgn);
+		invalWindowRgn (window, tempRgn);
 		OS.DisposeRgn(tempRgn);
 	}
 	
@@ -1568,7 +1572,7 @@ void setVisible (int control, boolean visible) {
 	if (drawing && visible) visibleRgn = getVisibleRegion (control, false);
 	if (drawing) {
 		int window = OS.GetControlOwner (control);
-		OS.InvalWindowRgn (window, visibleRgn);
+		invalWindowRgn (window, visibleRgn);
 		OS.DisposeRgn (visibleRgn);
 	}
 }
@@ -1588,7 +1592,7 @@ void setZOrder (int control, int otheControl, boolean above) {
 			OS.DiffRgn (oldRgn, newRgn, newRgn);
 		}
 		int window = OS.GetControlOwner (control);
-		OS.InvalWindowRgn (window, newRgn);
+		invalWindowRgn (window, newRgn);
 		OS.DisposeRgn (oldRgn);
 		OS.DisposeRgn (newRgn);
 	}

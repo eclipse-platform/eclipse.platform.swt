@@ -417,6 +417,10 @@ void invalidateVisibleRegion (int control) {
 	parent.resetVisibleRegion (control);
 }
 
+void invalWindowRgn (int window, int rgn) {
+	parent.invalWindowRgn (window, rgn);
+}
+
 boolean isDrawing (int control) {
 	/*
 	* Feature in the Macintosh.  The scroll bars in a DataBrowser are
