@@ -586,10 +586,9 @@ public void setLayout (Layout layout) {
  * Sets the tabbing order for the specified controls to
  * match the order that they occur in the argument list.
  *
- * @param tabList the ordered list of controls representing the tab order; must not be null
+ * @param tabList the ordered list of controls representing the tab order or null
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the tabList is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li> 
  *    <li>ERROR_INVALID_PARENT - if widget in the tabList is not in the same widget tree</li>
  * </ul>
@@ -600,13 +599,27 @@ public void setLayout (Layout layout) {
  */
 public void setTabList (Control [] tabList) {
 	checkWidget ();
-	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i=0; i<tabList.length; i++) {
-		Control control = tabList [i];
-		if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
-	}
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			Control control = tabList [i];
+			if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
+			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+			/*
+			* This code is intentionally commented.
+			* Tab lists are currently only supported
+			* for the direct children of a composite.
+			*/
+//			Shell shell = control.getShell ();
+//			while (control != shell && control != this) {
+//				control = control.parent;
+//			}
+//			if (control != this) error (SWT.ERROR_INVALID_PARENT);
+			if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
+		}
+		Control [] newList = new Control [tabList.length];
+		System.arraycopy (tabList, 0, newList, 0, tabList.length);
+		tabList = newList;
+	} 
 	this.tabList = tabList;
 }
 boolean setTabGroupFocus () {

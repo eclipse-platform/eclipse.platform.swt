@@ -308,6 +308,12 @@ public String getText () {
 	checkWidget();
 	return label;
 }
+boolean isTabGroup () {
+	return true;
+}
+boolean isTabItem () {
+	return false;
+}
 Decorations menuShell () {
 	return this;
 }
