@@ -447,6 +447,8 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	int ctree = parent.handle;
+	OS.gtk_ctree_node_set_background (ctree, handle, color != null ? color.handle : null);
 }
 
 /**
@@ -538,6 +540,8 @@ public void setForeground (Color color){
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	int ctree = parent.handle;
+	OS.gtk_ctree_node_set_foreground (ctree, handle, color != null ? color.handle : null);
 }
 
 public void setImage (Image image) {

@@ -364,6 +364,10 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	int row = parent.indexOf (this);
+	if (row == -1) return;
+	int clist = parent.handle;
+	OS.gtk_clist_set_background (clist, row, color != null ? color.handle : null);
 }
 
 /**
@@ -411,6 +415,10 @@ public void setForeground (Color color){
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	int row = parent.indexOf (this);
+	if (row == -1) return;
+	int clist = parent.handle;
+	OS.gtk_clist_set_foreground (clist, row, color != null ? color.handle : null);
 }
 
 /**

@@ -1702,6 +1702,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1select_1
 	gtk_clist_select_row((GtkCList *)arg0, (gint)arg1, (gint)arg2);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1set_1background
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	GdkColor _arg2, *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1clist_1set_1background\n")
+
+	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
+	gtk_clist_set_background((GtkCList *)arg0, (gint)arg1, (GdkColor *)lparg2);
+	if (arg2) setGdkColorFields(env, arg2, lparg2);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1set_1column_1justification
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
@@ -1744,6 +1756,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1set_1col
 	DEBUG_CALL("gtk_1clist_1set_1column_1width\n")
 
 	gtk_clist_set_column_width((GtkCList *)arg0, (gint)arg1, (gint)arg2);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1set_1foreground
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	GdkColor _arg2, *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1clist_1set_1foreground\n")
+
+	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
+	gtk_clist_set_foreground((GtkCList *)arg0, (gint)arg1, (GdkColor *)lparg2);
+	if (arg2) setGdkColorFields(env, arg2, lparg2);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1set_1pixtext
@@ -2039,6 +2063,30 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1node_1nt
 	DEBUG_CALL("gtk_1ctree_1node_1nth\n")
 
 	return (jint)gtk_ctree_node_nth((GtkCTree *)arg0, (guint)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1node_1set_1background
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	GdkColor _arg2, *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1ctree_1node_1set_1background\n")
+
+	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
+	gtk_ctree_node_set_background((GtkCTree *)arg0, (GtkCTreeNode *)arg1, (GdkColor *)lparg2);
+	if (arg2) setGdkColorFields(env, arg2, lparg2);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1node_1set_1foreground
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	GdkColor _arg2, *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1ctree_1node_1set_1foreground\n")
+
+	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
+	gtk_ctree_node_set_foreground((GtkCTree *)arg0, (GtkCTreeNode *)arg1, (GdkColor *)lparg2);
+	if (arg2) setGdkColorFields(env, arg2, lparg2);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1node_1set_1row_1data
