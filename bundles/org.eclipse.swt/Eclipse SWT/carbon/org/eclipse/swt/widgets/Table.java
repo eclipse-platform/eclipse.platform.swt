@@ -106,12 +106,10 @@ void createHandle () {
 	* 
 	* NOTE: The widget must be visible and SizeControl() must be used
 	* to resize the widget to a minimim size or the widget will not
-	* create the scroll bars.
+	* create the scroll bars.  This work around currently flashes.
 	*/
-	OS.MoveControl (handle, (short) -256, (short) -256);
-	OS.SizeControl (handle, (short) 256, (short) 256);
+	OS.SizeControl (handle, (short) 0xFF, (short) 0xFF);
 	OS.SizeControl (handle, (short) 0, (short) 0);
-	OS.MoveControl (handle, (short) 0, (short) 0);
 }
 
 void createItem (TableColumn column, int index) {
