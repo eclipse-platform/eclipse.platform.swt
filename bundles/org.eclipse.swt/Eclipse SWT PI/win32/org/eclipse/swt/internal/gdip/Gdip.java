@@ -43,6 +43,30 @@ public class Gdip extends Platform {
     public static final int LineCapRound = 2;
     public static final int MatrixOrderPrepend = 0;
     public static final int MatrixOrderAppend = 1;
+    public static final int QualityModeDefault = 0;
+    public static final int QualityModeLow = 1;
+    public static final int QualityModeHigh = 2;
+    public static final int InterpolationModeDefault = QualityModeDefault;
+    public static final int InterpolationModeLowQuality = QualityModeLow;
+    public static final int InterpolationModeHighQuality = QualityModeHigh;
+    public static final int InterpolationModeBilinear = QualityModeHigh + 1;
+    public static final int InterpolationModeBicubic = QualityModeHigh + 2;
+    public static final int InterpolationModeNearestNeighbor = QualityModeHigh + 3;
+    public static final int InterpolationModeHighQualityBilinear = QualityModeHigh + 4;
+    public static final int InterpolationModeHighQualityBicubic = QualityModeHigh + 5;
+    public static final int SmoothingModeDefault = QualityModeDefault;
+    public static final int SmoothingModeHighSpeed = QualityModeLow;
+    public static final int SmoothingModeHighQuality = QualityModeHigh;
+    public static final int SmoothingModeNone = 3;
+    public static final int SmoothingModeAntiAlias8x4 = 4;
+    public static final int SmoothingModeAntiAlias = SmoothingModeAntiAlias8x4;
+    public static final int SmoothingModeAntiAlias8x8 = 5;
+    public static final int TextRenderingHintSystemDefault = 0;
+    public static final int TextRenderingHintSingleBitPerPixelGridFit = 1;
+    public static final int TextRenderingHintSingleBitPerPixel = 2;
+    public static final int TextRenderingHintAntiAliasGridFit = 3;
+    public static final int TextRenderingHintAntiAlias = 4;
+    public static final int TextRenderingHintClearTypeGridFit = 5;
     public static final int UnitPixel = 2;
 
 
