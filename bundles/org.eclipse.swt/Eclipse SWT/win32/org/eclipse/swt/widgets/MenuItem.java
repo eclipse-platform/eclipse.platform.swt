@@ -198,21 +198,40 @@ void fillAccel (ACCEL accel) {
 	accel.fVirt = 0;
 	accel.cmd = accel.key = 0;
 	if (accelerator == 0) return;
+	int fVirt = OS.FVIRTKEY;
 	int key = accelerator & ~(SWT.ALT | SWT.CTRL | SWT.SHIFT);
-	int newKey = Display.untranslateKey (key);
-	if (newKey != 0) {
-		key = newKey;
+	int vKey = Display.untranslateKey (key);
+	if (vKey != 0) {
+		key = vKey;	
 	} else {
-		if (key == 0x7F) {
-			key = OS.VK_DELETE;
-		} else {
-			short ch = (short) wcsToMbcs ((char) key);
-			key = OS.CharUpper (ch);
+		switch (key) {
+			/*
+			* Bug in Windows.  For some reason, VkKeyScan
+			* fails to map ESC to VK_ESCAPE and DEL to
+			* VK_DELETE.  The fix is to map these keys
+			* as a special case.
+			*/
+			case 27: key = OS.VK_ESCAPE; break;
+			case 127: key = OS.VK_DELETE; break;
+			default: {
+				key = wcsToMbcs ((char) key);
+				if (key == 0) return;
+				if (OS.IsWinCE) {
+					key = OS.CharUpper ((short) key);
+				} else {
+					vKey = OS.VkKeyScan ((short) key) & 0xFF;
+					if (vKey == -1) {
+						fVirt = 0;
+					} else {
+						key = vKey;
+					}
+				}
+			}
 		}
 	}
 	accel.key = (short) key;
 	accel.cmd = (short) id;
-	accel.fVirt = (byte) OS.FVIRTKEY;
+	accel.fVirt = (byte) fVirt;
 	if ((accelerator & SWT.ALT) != 0) accel.fVirt |= OS.FALT;
 	if ((accelerator & SWT.CTRL) != 0) accel.fVirt |= OS.FCONTROL;
 	if ((accelerator & SWT.SHIFT) != 0) accel.fVirt |= OS.FSHIFT;
