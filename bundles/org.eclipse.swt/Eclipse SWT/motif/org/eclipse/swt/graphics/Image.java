@@ -689,7 +689,10 @@ public int internal_new_GC (GCData data) {
 	return xGC;
 }
 public void internal_dispose_GC (int gc, GCData data) {
-	int xDisplay = device.xDisplay;
+	int xDisplay = 0;
+	if (data != null) xDisplay = data.display;
+	if (xDisplay == 0 && device != null) xDisplay = device.xDisplay;
+	if (xDisplay == 0) SWT.error (SWT.ERROR_NO_HANDLES);;
 	OS.XFreeGC(xDisplay, gc);
 }
 public boolean isDisposed() {
