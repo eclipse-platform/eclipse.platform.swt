@@ -213,12 +213,13 @@ protected Object nativeToJava(TransferData transferData){
 		return null;
 	}
 	
-	int size = OS.GlobalSize(stgmedium.unionField);
+	int hMem = stgmedium.unionField;
+	int size = OS.GlobalSize(hMem);
 	byte[] buffer = new byte[size];
-	int ptr = OS.GlobalLock(stgmedium.unionField);
+	int ptr = OS.GlobalLock(hMem);
 	OS.MoveMemory(buffer, ptr, size);
-	OS.GlobalUnlock(ptr);	
-	OS.GlobalFree(stgmedium.unionField);
+	OS.GlobalUnlock(hMem);	
+	OS.GlobalFree(hMem);
 		
 	return buffer;
 }
