@@ -43,7 +43,7 @@ Program () {
  * @param extension the program extension
  * @return the program or <code>null</code>
  *
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
  *		<li>ERROR_NULL_ARGUMENT when extension is null</li>
  *	</ul>
  */
@@ -165,7 +165,7 @@ public static Program [] getPrograms () {
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
  *		<li>ERROR_NULL_ARGUMENT when fileName is null</li>
  *	</ul>
  */
@@ -272,8 +272,8 @@ static String [][] loadAssociationTable () {
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
- * @exception SWTError <ul>
- *		<li>ERROR_NULL_ARGUMENT when fileName is null</li>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
  *	</ul>
  */
 public boolean execute (String fileName) {

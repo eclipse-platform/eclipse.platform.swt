@@ -1928,7 +1928,7 @@ void initializeWidgetTable () {
  * @return the platform specific GC handle
  * 
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
