@@ -1854,7 +1854,9 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		SetWindowPos (handle, 0, x, y, width, height, flags);
 		return;
 	}
-	if (parent.lpwp == null) {
+	forceResize ();
+	WINDOWPOS [] lpwp = parent.lpwp;
+	if (lpwp == null) {
 		/*
 		* This code is intentionally commented.  All widgets that
 		* are created by SWT have WS_CLIPSIBLINGS to ensure that
@@ -1868,8 +1870,6 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		SetWindowPos (handle, 0, x, y, width, height, flags);
 		return;
 	}
-	forceResize ();
-	WINDOWPOS [] lpwp = parent.lpwp;
 	int index = 0;
 	while (index < lpwp.length) {
 		if (lpwp [index] == null) break;
