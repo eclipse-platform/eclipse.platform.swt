@@ -13,6 +13,8 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.events.PaintEvent
@@ -59,5 +61,10 @@ public static java.util.Vector methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Event")) test_ConstructorLorg_eclipse_swt_widgets_Event();
 	else super.runTest();
+}
+
+/* custom */
+protected TypedEvent newTypedEvent(Event event) {
+	return new PaintEvent(event);
 }
 }

@@ -14,7 +14,7 @@ package org.eclipse.swt.tests.junit;
 import junit.framework.*;
 import junit.textui.*;
 
-import org.eclipse.swt.events.TypedEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -47,14 +47,14 @@ public void test_ConstructorLjava_lang_Object() {
 public void test_ConstructorLorg_eclipse_swt_widgets_Event() {
 	Event event = new Event();
 	event.widget = shell;
-	TypedEvent typedEvent = new TypedEvent(event);
+	TypedEvent typedEvent = newTypedEvent(event);
 	assertNotNull(typedEvent);
 }
 
 public void test_toString() {
 	Event event = new Event();
 	event.widget = shell;
-	TypedEvent typedEvent = new TypedEvent(event);
+	TypedEvent typedEvent = newTypedEvent(event);
 	assertNotNull(typedEvent.toString());
 	assertTrue(typedEvent.toString().length() > 0);
 }
@@ -83,4 +83,8 @@ protected void runTest() throws Throwable {
 
 /* custom */
 public Shell shell;
+
+protected TypedEvent newTypedEvent(Event event) {
+	return new TypedEvent(event);
+}
 }
