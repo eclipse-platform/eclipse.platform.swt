@@ -211,7 +211,7 @@ public class CTabFolder extends Composite {
 	static final int FOREGROUND = SWT.COLOR_WIDGET_FOREGROUND;
 	static final int BACKGROUND = SWT.COLOR_WIDGET_BACKGROUND;
 	static final int BUTTON_BORDER = SWT.COLOR_WIDGET_DARK_SHADOW;
-	static final int BUTTON_FILL = SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW;
+	static final int BUTTON_FILL = SWT.COLOR_LIST_BACKGROUND;
 	
 	static final int NONE = 0;
 	static final int NORMAL = 1;
