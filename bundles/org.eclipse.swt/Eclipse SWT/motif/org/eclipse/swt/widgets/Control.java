@@ -1460,14 +1460,13 @@ int processMouseUp (int callData) {
 	return 0;
 }
 int processPaint (int callData) {
-	if (!hooks (SWT.Paint)) return 0;
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
 	XExposeEvent xEvent = new XExposeEvent ();
 	OS.memmove (xEvent, callData, XExposeEvent.sizeof);
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return 0;
 	Event event = new Event ();
 	event.count = xEvent.count;
-	event.time = OS.XtLastTimestampProcessed (xDisplay);
 	event.x = xEvent.x;  event.y = xEvent.y;
 	event.width = xEvent.width;  event.height = xEvent.height;
 	GC gc = event.gc = new GC (this);

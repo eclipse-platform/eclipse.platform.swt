@@ -458,7 +458,7 @@ int processPaint (int callData) {
 	if ((state & CANVAS) == 0) {
 		return super.processPaint (callData);
 	}
-	if (!hooks (SWT.Paint)) return 0;
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
 	if ((style & SWT.NO_MERGE_PAINTS) != 0) {
 		return super.processPaint (callData);
 	}
@@ -496,7 +496,6 @@ int processPaint (int callData) {
 	gc.setClipping (region);
 	XRectangle rect = new XRectangle ();
 	OS.XClipBox (damagedRegion, rect);
-	event.time = OS.XtLastTimestampProcessed (xDisplay);
 	event.x = rect.x;  event.y = rect.y;
 	event.width = rect.width;  event.height = rect.height;
 	sendEvent (SWT.Paint, event);

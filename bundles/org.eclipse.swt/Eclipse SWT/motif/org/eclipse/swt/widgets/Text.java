@@ -944,7 +944,7 @@ int processModify (int callData) {
 }
 int processVerify (int callData) {
 	super.processVerify (callData);
-	if (echoCharacter == '\0' && !hooks (SWT.Verify)) return 0;
+	if (echoCharacter == '\0' && !hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	XmTextVerifyCallbackStruct textVerify = new XmTextVerifyCallbackStruct ();
 	OS.memmove (textVerify, callData, XmTextVerifyCallbackStruct.sizeof);
 	XmTextBlockRec textBlock = new XmTextBlockRec ();

@@ -290,6 +290,10 @@ void enableHandle (boolean enabled, int widgetHandle) {
 void error (int code) {
 	SWT.error(code);
 }
+boolean filters (int eventType) {
+	Display display = getDisplay ();
+	return display.filters (eventType);
+}
 /**
  * Returns the application defined widget data associated
  * with the receiver, or null if it has not been set. The
@@ -492,20 +496,11 @@ public void notifyListeners (int eventType, Event event) {
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	sendEvent (eventType, event);
 }
-void postEvent (int eventType, Event event) {
-	if (eventTable == null) return;
-	Display display = getDisplay ();
-	event.type = eventType;
-	event.widget = this;
-	event.display = display;
-	if (event.time == 0) {
-		event.time = OS.XtLastTimestampProcessed (display.xDisplay);
-	}
-	display.postEvent (event);
-}
 void postEvent (int eventType) {
-	if (eventTable == null) return;
-	postEvent (eventType, new Event ());
+	sendEvent (eventType, null, false);
+}
+void postEvent (int eventType, Event event) {
+	sendEvent (eventType, event, false);
 }
 int processArm (int callData) {
 	return 0;
@@ -851,24 +846,36 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 	}
 	setInputState (event, xEvent);
 }
+void sendEvent (Event event) {
+	Display display = event.display;
+	if (!display.filterEvent (event)) {
+		if (eventTable != null) eventTable.sendEvent (event);
+	}
+}
+void sendEvent (int eventType) {
+	sendEvent (eventType, null, true);
+}
 void sendEvent (int eventType, Event event) {
-	if (eventTable == null) return;
+	sendEvent (eventType, event, true);
+}
+void sendEvent (int eventType, Event event, boolean send) {
 	Display display = getDisplay ();
+	if (eventTable == null && !display.filters (eventType)) {
+		return;
+	}
+	if (eventTable == null) return;
+	if (event == null) event = new Event ();
 	event.type = eventType;
 	event.display = display;
 	event.widget = this;
 	if (event.time == 0) {
-		event.time = OS.XtLastTimestampProcessed (display.xDisplay);
+		event.time = display.getLastEventTime ();
 	}
-	eventTable.sendEvent (event);
-}
-void sendEvent (int eventType) {
-	if (eventTable == null) return;
-	sendEvent (eventType, new Event ());
-}
-void sendEvent (Event event) {
-	if (eventTable == null) return;
-	eventTable.sendEvent (event);
+	if (send) {
+		sendEvent (event);
+	} else {
+		display.postEvent (event);
+	}
 }
 /**
  * Sets the application defined widget data associated
