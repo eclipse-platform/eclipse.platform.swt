@@ -2129,6 +2129,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1event_1handler_1set)
 }
 #endif
 
+#ifndef NO_gdk_1event_1put
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1event_1put)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "gdk_1event_1put\n")
+	gdk_event_put((GdkEvent *)arg0);
+	NATIVE_EXIT(env, that, "gdk_1event_1put\n")
+}
+#endif
+
 #ifndef NO_gdk_1flush
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1flush)
 	(JNIEnv *env, jclass that)
@@ -3281,6 +3291,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1lower)
 }
 #endif
 
+#ifndef NO_gdk_1window_1process_1all_1updates
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1process_1all_1updates)
+	(JNIEnv *env, jclass that)
+{
+	NATIVE_ENTER(env, that, "gdk_1window_1process_1all_1updates\n")
+	gdk_window_process_all_updates();
+	NATIVE_EXIT(env, that, "gdk_1window_1process_1all_1updates\n")
+}
+#endif
+
 #ifndef NO_gdk_1window_1process_1updates
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1process_1updates)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
@@ -3298,6 +3318,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1raise)
 	NATIVE_ENTER(env, that, "gdk_1window_1raise\n")
 	gdk_window_raise((GdkWindow *)arg0);
 	NATIVE_EXIT(env, that, "gdk_1window_1raise\n")
+}
+#endif
+
+#ifndef NO_gdk_1window_1scroll
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1scroll)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "gdk_1window_1scroll\n")
+	gdk_window_scroll((GdkWindow *)arg0, arg1, arg2);
+	NATIVE_EXIT(env, that, "gdk_1window_1scroll\n")
 }
 #endif
 

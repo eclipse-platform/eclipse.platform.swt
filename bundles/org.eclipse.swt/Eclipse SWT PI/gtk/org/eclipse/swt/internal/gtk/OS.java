@@ -68,6 +68,7 @@ public class OS {
 	public static final int GDK_ENTER_NOTIFY_MASK = 0x1000;
 	public static final int GDK_ENTER_NOTIFY = 10;
 	public static final int GDK_EVEN_ODD_RULE = 0;
+	public static final int GDK_EXPOSE = 2;
 	public static final int GDK_EXPOSURE_MASK = 0x2;
 	public static final int GDK_End = 0xff57;
 	public static final int GDK_Escape = 0xff1b;
@@ -144,6 +145,7 @@ public class OS {
 	public static final int GDK_Meta_R = 0xFFE8;
 	public static final int GDK_MOD1_MASK = 0x8;
 	public static final int GDK_MOTION_NOTIFY = 0x3;
+	public static final int GDK_NO_EXPOSE = 30;
 	public static final int GDK_NONE = 0;
 	public static final int PANGO_ALIGN_LEFT = 0;
 	public static final int PANGO_ALIGN_CENTER = 1;
@@ -531,6 +533,7 @@ public static final synchronized native int /*long*/ gdk_event_get_graphics_expo
 public static final synchronized native boolean gdk_event_get_state(int /*long*/ event, int[] pmod);
 public static final synchronized native int gdk_event_get_time(int /*long*/ event);
 public static final synchronized native void gdk_event_handler_set(int /*long*/ func, int /*long*/ data, int /*long*/ notify);
+public static final synchronized native void gdk_event_put(int /*long*/ event);
 public static final synchronized native void gdk_error_trap_push();
 public static final synchronized native int gdk_error_trap_pop();
 public static final synchronized native void gdk_flush();
@@ -620,8 +623,10 @@ public static final synchronized native void gdk_window_get_user_data(int /*long
 public static final synchronized native void gdk_window_invalidate_rect(int /*long*/ window, GdkRectangle rectangle, boolean invalidate_children);
 public static final synchronized native void gdk_window_invalidate_region(int /*long*/ window, int /*long*/ region, boolean invalidate_children);
 public static final synchronized native void gdk_window_lower(int /*long*/ window);
+public static final synchronized native void gdk_window_process_all_updates();
 public static final synchronized native void gdk_window_process_updates(int /*long*/ window, boolean update_children);
 public static final synchronized native void gdk_window_raise(int /*long*/ window);
+public static final synchronized native void gdk_window_scroll(int /*long*/ window, int dx, int dy);
 public static final synchronized native void gdk_window_set_accept_focus(int /*long*/ window, boolean accept_focus);
 public static final synchronized native void gdk_window_set_back_pixmap(int /*long*/ window, int /*long*/ pixmap, boolean parent_relative);
 public static final synchronized native void gdk_window_set_cursor(int /*long*/ window, int /*long*/ cursor);
