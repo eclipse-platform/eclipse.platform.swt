@@ -44,6 +44,7 @@ public class Menu extends Widget {
 	short id;
 	int x, y;
 	boolean hasLocation, modified, closed;
+	MenuItem [] items;
 	MenuItem cascade, defaultItem, lastTarget;
 	Decorations parent;
 
@@ -255,15 +256,19 @@ void createItem (MenuItem item, int index) {
 	checkWidget ();
 	int count = OS.CountMenuItems (handle);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-	Display display = getDisplay ();
-	display.addMenuItem (item);
 	int attributes = 0;
 	if ((item.style & SWT.SEPARATOR) != 0) attributes = OS.kMenuItemAttrSeparator;
-	int result = OS.InsertMenuItemTextWithCFString (handle, 0, (short) index, attributes, item.id);
+	int result = OS.InsertMenuItemTextWithCFString (handle, 0, (short) index, attributes, 0);
 	if (result != OS.noErr) {
-		display.removeMenuItem (item);
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
+	if (count == items.length) {
+		MenuItem [] newItems = new MenuItem [items.length + 4];
+		System.arraycopy (items, 0, newItems, 0, items.length);
+		items = newItems;
+	}
+	System.arraycopy (items, index, items, index + 1, count - index);
+	items [index] = item;
 	modified = true;
 	if ((style & SWT.BAR) != 0) {
 //		Display display = getDisplay ();
@@ -279,12 +284,25 @@ void createItem (MenuItem item, int index) {
 void createWidget () {
 	checkOrientation (parent);
 	super.createWidget ();
+	items = new MenuItem [4];
 }
 
 void destroyItem (MenuItem item) {
-	short [] outIndex = new short [1];
-	if (OS.GetIndMenuItemWithCommandID (handle, item.id, 1, null, outIndex) != OS.noErr) {
-		error (SWT.ERROR_ITEM_NOT_REMOVED);
+	int count = OS.CountMenuItems (handle);
+	int index = 0;
+	while (index < count) {
+		if (items [index] == item) break;
+		index++;
+	}
+	if (index == count) return;	// not found
+	int selectionIndex = OS.GetControl32BitValue (handle) - 1;
+	--count;
+	OS.SetControl32BitMaximum (handle, count);
+	if (count == 0) {
+		items = new MenuItem [4];
+	} else {
+		System.arraycopy (items, index + 1, items, index, count - index);
+		items [count] = null;
 	}
 	modified = true;
 	if ((style & SWT.BAR) != 0) {
@@ -295,7 +313,7 @@ void destroyItem (MenuItem item) {
 //			OS.DisposeMenu (outMenuRef [0]);
 //		}
 	}
-	OS.DeleteMenuItem (handle, outIndex [0]);
+	OS.DeleteMenuItem (handle, (short) (index + 1));
 }
 
 void destroyWidget (Display display) {
@@ -367,12 +385,9 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget ();
-	int [] outCommandID= new int [1];
-	if (OS.GetMenuItemCommandID (handle, (short)(index+1), outCommandID) != OS.noErr) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
-	Display display = getDisplay ();
-	return display.findMenuItem (outCommandID[0]);
+	int count = OS.CountMenuItems (handle);
+	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+	return items [index];
 }
 
 /**
@@ -408,17 +423,10 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget ();
-	Display display = getDisplay ();
-	int length = OS.CountMenuItems (handle);
-	MenuItem [] items = new MenuItem [length];
-	int [] outCommandID= new int [1];	
-	for (int i=0; i<items.length; i++) {
-		if (OS.GetMenuItemCommandID (handle, (short)(i+1), outCommandID) != OS.noErr) {
-			error (SWT.ERROR_CANNOT_GET_ITEM);
-		}
-		items [i] = display.findMenuItem (outCommandID [0]);
-	}
-	return items;
+	int count = OS.CountMenuItems (handle);
+	MenuItem [] result = new MenuItem [count];
+	System.arraycopy (items, 0, result, 0, count);
+	return result;
 }
 
 String getNameText () {
@@ -572,10 +580,9 @@ int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMenuTargetItem (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	lastTarget = null;
-	int [] commandID = new int [1];
-	if (OS.GetEventParameter (theEvent, OS.kEventParamMenuCommand, OS.typeMenuCommand, null, 4, null, commandID) == OS.noErr) {
-		Display display = getDisplay ();
-		lastTarget = display.findMenuItem (commandID [0]);
+	short [] index = new short [1];
+	if (OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index) == OS.noErr) {
+		if (index [0] != 0) lastTarget = getItem (index [0] - 1);
 		if (lastTarget != null) lastTarget.sendEvent (SWT.Arm);
 	}
 	return OS.eventNotHandledErr;
@@ -601,11 +608,10 @@ int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
 public int indexOf (MenuItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int [] outMenu = new int [1];
-	short [] outIndex = new short [1];
-	if (OS.GetIndMenuItemWithCommandID (handle, item.id, 1, outMenu, outIndex) == OS.noErr) {
-		return handle == outMenu [0] ? outIndex [0] - 1 : 0;
-	}	
+	int count = OS.CountMenuItems (handle);
+	for (int i=0; i<count; i++) {
+		if (items [i] == item) return i;
+	}
 	return -1;
 }
 
@@ -664,11 +670,12 @@ void releaseHandle () {
 }
 
 void releaseWidget () {
-	MenuItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
+	int count = OS.CountMenuItems (handle);
+	for (int i=0; i<count; i++) {
 		MenuItem item = items [i];
 		if (!item.isDisposed ()) item.releaseResources ();
 	}
+	items = null;
 	super.releaseWidget ();
 	Display display = getDisplay ();
 	display.removeMenu (this);

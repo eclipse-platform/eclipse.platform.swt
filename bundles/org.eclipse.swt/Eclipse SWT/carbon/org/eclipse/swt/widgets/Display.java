@@ -150,7 +150,6 @@ public class Display extends Device {
 	/* Menus */
 	Menu menuBar;
 	Menu [] menus, popups;
-	MenuItem [] items;
 	static final int ID_TEMPORARY = 1000;
 	static final int ID_START = 1001;
 	
@@ -395,22 +394,6 @@ void addMenu (Menu menu) {
 	menus = newMenus;
 }
 
-void addMenuItem (MenuItem item) {
-	if (items == null) items = new MenuItem [12];
-	for (int i=0; i<items.length; i++) {
-		if (items [i] == null) {
-			item.id = ID_START + i;
-			items [i] = item;
-			return;
-		}
-	}
-	MenuItem [] newItems = new MenuItem [items.length + 12];
-	item.id = ID_START + items.length;
-	newItems [items.length] = item;
-	System.arraycopy (items, 0, newItems, 0, items.length);
-	items = newItems;
-}
-
 void addPopup (Menu menu) {
 	if (popups == null) popups = new Menu [4];
 	int length = popups.length;
@@ -572,7 +555,7 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 						if (menu.closed && menu.modified) {
 							item = menu.lastTarget;
 						} else {
-							item = findMenuItem (command.commandID);
+							item = menu.getItem (command.menu_menuItemIndex - 1);
 						}
 						if (item != null) {
 							return item.kEventProcessCommand (nextHandler, theEvent, userData);
@@ -767,13 +750,6 @@ Menu findMenu (int id) {
 	if (menus == null) return null;
 	int index = id - ID_START;
 	if (0 <= index && index < menus.length) return menus [index];
-	return null;
-}
-
-MenuItem findMenuItem (int id) {
-	if (items == null) return null;
-	int index = id - ID_START;
-	if (0 <= index && index < items.length) return items [index];
 	return null;
 }
 
@@ -1884,11 +1860,6 @@ public void removeListener (int eventType, Listener listener) {
 void removeMenu (Menu menu) {
 	if (menus == null) return;
 	menus [menu.id - ID_START] = null;
-}
-
-void removeMenuItem (MenuItem item) {
-	if (items == null) return;
-	items [item.id - ID_START] = null;
 }
 
 void removePopup (Menu menu) {
