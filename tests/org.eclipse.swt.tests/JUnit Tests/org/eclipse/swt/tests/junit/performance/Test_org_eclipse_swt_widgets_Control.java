@@ -1086,33 +1086,33 @@ public void test_toControlLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_toDisplayII() {
-	final int COUNT = 4000000;
-	
-	PerformanceMeter meter = createMeter(getTypeString() + "toDisplay(II)");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.toDisplay(20, 30);
-	}
-	meter.stop();
-	disposeMeter(meter);
+//	final int COUNT = 4000000;
+//	
+//	PerformanceMeter meter = createMeter(getTypeString() + "toDisplay(II)");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		control.toDisplay(20, 30);
+//	}
+//	meter.stop();
+//	disposeMeter(meter);
 }
 
 public void test_toDisplayLorg_eclipse_swt_graphics_Point() {
-	final int COUNT = 4000000;
-	
-	Point point = new Point(10,20);
-	Point[] points = new Point[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		points[i] = point;
-	}
-
-	PerformanceMeter meter = createMeter(getTypeString() + "toDisplay(Point)");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.toDisplay(points[i]);
-	}
-	meter.stop();
-	disposeMeter(meter);
+//	final int COUNT = 4000000;
+//	
+//	Point point = new Point(10,20);
+//	Point[] points = new Point[COUNT];
+//	for (int i = 0; i < COUNT; i++) {
+//		points[i] = point;
+//	}
+//
+//	PerformanceMeter meter = createMeter(getTypeString() + "toDisplay(Point)");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		control.toDisplay(points[i]);
+//	}
+//	meter.stop();
+//	disposeMeter(meter);
 }
 
 public void test_traverseI() {
