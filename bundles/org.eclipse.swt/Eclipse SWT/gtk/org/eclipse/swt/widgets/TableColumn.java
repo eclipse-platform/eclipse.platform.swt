@@ -261,6 +261,14 @@ public int getWidth () {
  */
 public void pack () {
 	checkWidget();
+	//TEMPORARY CODE
+	if (!parent.isVisible()) {
+		OS.gtk_tree_view_column_set_sizing (handle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+		return;
+	} else {
+		OS.gtk_tree_view_column_set_sizing (handle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
+	}
+
 	int parentHandle = parent.handle;
 	int list = OS.gtk_tree_view_column_get_cell_renderers (handle);
 	if (list == 0) return;
