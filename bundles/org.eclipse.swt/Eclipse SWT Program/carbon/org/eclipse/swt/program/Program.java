@@ -68,7 +68,7 @@ public static String [] getExtensions () {
 	extensions.add(".properties");
 	extensions.add(".jar");
 	extensions.add(".zip");
-	extensions.add(".xml");	
+	extensions.add(".html");	
 	String[] result = new String[extensions.size()];
 	extensions.copyInto(result);
 	return result;
