@@ -1154,11 +1154,13 @@ public boolean setText(String html) {
 public boolean setUrl(String url) {
 	checkWidget();
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	
+
 	StringBuffer buffer = new StringBuffer();
+	if (url.indexOf('/') == 0) buffer.append("file://"); //$NON-NLS-1$  //$NON-NLS-2$
+	else if (url.indexOf(':') == -1) buffer.append("http://");	 //$NON-NLS-1$
 	for (int i = 0; i < url.length(); i++) {
 		char c = url.charAt(i);
-		if (c == ' ') buffer.append("%20");
+		if (c == ' ') buffer.append("%20"); //$NON-NLS-1$  //$NON-NLS-2$
 		else buffer.append(c);
 	}
 	
