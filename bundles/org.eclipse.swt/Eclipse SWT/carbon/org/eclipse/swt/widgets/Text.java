@@ -17,6 +17,7 @@ import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.EventRecord;
 import org.eclipse.swt.internal.carbon.TXNBackground;
 import org.eclipse.swt.internal.carbon.TXNLongRect;
+import org.eclipse.swt.internal.carbon.CFRange;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -368,6 +369,7 @@ ScrollBar createScrollBar (int type) {
  */
 public void cut () {
 	checkWidget();
+	boolean cut = true;
 	Point oldSelection = getSelection ();
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		if (oldSelection.x != oldSelection.y) {
@@ -375,12 +377,14 @@ public void cut () {
 			if (newText == null) return;
 			if (newText.length () != 0) {
 				setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
+				OS.TXNShowSelection (txnObject, false);
+				cut = false;
 			}
 		}
 	}
-	OS.TXNCut (txnObject);
+	if (cut) OS.TXNCut (txnObject);
 	Point newSelection = getSelection ();
-	if (!oldSelection.equals (newSelection)) sendEvent (SWT.Modify);
+	if (!cut || !oldSelection.equals (newSelection)) sendEvent (SWT.Modify);
 }
 
 void drawBackground (int control) {
@@ -468,6 +472,29 @@ public int getCaretPosition () {
 public int getCharCount () {
 	checkWidget();
 	return OS.TXNDataSize (txnObject) / 2;
+}
+
+String getClipboardText() {
+	int [] scrap = new int [1];
+	OS.GetCurrentScrap (scrap);
+	int [] size = new int [1];
+	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeText, size) != OS.noErr || size [0] == 0) return "";
+	byte [] buffer = new byte [size [0]];
+	if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeText, size, buffer) != OS.noErr) return "";
+	int encoding = OS.CFStringGetSystemEncoding ();
+	int cfstring = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
+	if (cfstring == 0) return "";
+	String string = "";
+	int length = OS.CFStringGetLength (cfstring);
+	if (length != 0) {
+		char [] chars = new char [length];
+		CFRange range = new CFRange ();
+		range.length = length;
+		OS.CFStringGetCharacters (cfstring, range, chars);
+		string = new String (chars);
+	}
+	OS.CFRelease(cfstring);
+	return string;
 }
 
 /**
@@ -926,8 +953,21 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
  */
 public void paste () {
 	checkWidget();
-	//NOT DONE - get clipboard text and verify or use undo?
-	OS.TXNPaste (txnObject);
+	boolean paste = true;
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		String oldText = getClipboardText ();
+		if (oldText != null) {
+			Point selection = getSelection ();
+			String newText = verifyText (oldText, selection.x, selection.y, null);
+			if (newText == null) return;
+			if (newText != oldText) {
+				setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
+				OS.TXNShowSelection (txnObject, false);
+				paste = false;
+			}
+		}
+	}
+	if (paste) OS.TXNPaste (txnObject);
 	sendEvent (SWT.Modify);
 }
 
@@ -1052,6 +1092,9 @@ boolean sendKeyEvent (int type, Event event) {
 	if (type != SWT.KeyDown) return true;
 	if ((style & SWT.READ_ONLY) != 0) return true;
 	if (event.character == 0) return true;
+	if ((event.stateMask & (SWT.ALT | SWT.SHIFT | SWT.CONTROL | SWT.COMMAND)) != 0) {
+		return true;
+	}
 	String oldText = "";
 	int charCount = getCharCount ();
 	Point selection = getSelection ();
