@@ -1994,6 +1994,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1combo_1new
 	return (jint)gtk_combo_new();
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1combo_1set_1case_1sensitive
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("gtk_1combo_1set_1case_1sensitive\n")
+
+	gtk_combo_set_case_sensitive((GtkCombo *)arg0, (gboolean)arg1);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1combo_1set_1popdown_1strings
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -2705,6 +2713,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1get_1current_1e
 	return (jint)gtk_get_current_event_time();
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1grab_1add
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1grab_1add\n")
+
+	gtk_grab_add((GtkWidget *)arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1grab_1get_1current
 	(JNIEnv *env, jclass that)
 {
@@ -3192,6 +3208,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1range_1get_1adj
 	return (jint)gtk_range_get_adjustment((GtkRange *)arg0);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1rc_1style_1set_1xthickness
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1rc_1style_1set_1xthickness\n")
+
+	((GtkRcStyle *)arg0)->xthickness = arg1;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1rc_1style_1set_1ythickness
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1rc_1style_1set_1ythickness\n")
+
+	((GtkRcStyle *)arg0)->ythickness = arg1;
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1scale_1set_1digits
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -3597,6 +3629,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1get_1de
 	return (jint)gtk_widget_get_default_style();
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1get_1modifier_1style
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1widget_1get_1modifier_1style\n")
+
+	return (jint)gtk_widget_get_modifier_style((GtkWidget *)arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1get_1pango_1context
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -3679,6 +3719,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1modify_
 	DEBUG_CALL("gtk_1widget_1modify_1font\n")
 
 	gtk_widget_modify_font((GtkWidget *)arg0, (PangoFontDescription *)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1modify_1style
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1widget_1modify_1style\n")
+
+	gtk_widget_modify_style((GtkWidget *)arg0, (GtkRcStyle *)arg1);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1modify_1text
