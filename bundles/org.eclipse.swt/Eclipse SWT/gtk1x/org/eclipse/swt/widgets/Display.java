@@ -1014,7 +1014,7 @@ public int internal_new_GC (GCData data) {
 	return gc;
 }
 
-boolean isValidThread () {
+final boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
 

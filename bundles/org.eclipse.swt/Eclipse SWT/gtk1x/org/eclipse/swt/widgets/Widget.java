@@ -224,7 +224,7 @@ protected void checkSubclass () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-protected void checkWidget () {
+protected final void checkWidget () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
@@ -485,7 +485,7 @@ boolean hooks (int eventType) {
 	return eventTable.hooks (eventType);
 }
 
-boolean isValidThread () {
+final boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 public boolean isValidWidget () {
@@ -494,7 +494,7 @@ public boolean isValidWidget () {
 	return (state & DISPOSED) == 0;
 }
 
-boolean isValidSubclass() {
+final boolean isValidSubclass() {
 	return Display.isValidClass(getClass());
 }
 
