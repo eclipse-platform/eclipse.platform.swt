@@ -33,7 +33,7 @@ KDE_LIB = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
-GTKLIBS = `pkg-config --libs gtk+-2.0` -L$(XTEST_LIB_PATH) -lXtst
+GTKLIBS = `pkg-config --libs gtk+-2.0` `pkg-config --libs gthread-2.0` -L$(XTEST_LIB_PATH) -lXtst
 
 AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared
 

@@ -397,6 +397,7 @@ public static int VERSION(int major, int minor, int micro) {
 public static final int PTR_SIZEOF = PTR_sizeof();
 public static final synchronized native int PTR_sizeof();
 public static final synchronized native int GInterfaceInfo_sizeof ();
+public static final synchronized native int GPollFD_sizeof ();
 public static final synchronized native int GTypeInfo_sizeof ();
 public static final synchronized native int GTypeQuery_sizeof ();
 public static final synchronized native int GdkColor_sizeof();
@@ -484,7 +485,7 @@ public static final int VisibilityNotify = 15;
 public static final int SYSTEM_TRAY_REQUEST_DOCK = 0;
 public static final synchronized native int Call(int /*long*/ proc, int /*long*/ arg1, int /*long*/ arg2);
 public static final native boolean GDK_WINDOWING_X11();
-public static final native int /*long*/ GDK_PIXMAP_XID(int /*long*/ pixmap);
+public static final synchronized native int /*long*/ GDK_PIXMAP_XID(int /*long*/ pixmap);
 public static final synchronized native boolean XCheckMaskEvent(int /*long*/ display, int /*long*/ event_mask, int /*long*/ event_return);
 public static final synchronized native boolean XCheckWindowEvent(int /*long*/ display, int /*long*/ window, int /*long*/ event_mask, int /*long*/ event_return);
 public static final synchronized native boolean XCheckIfEvent(int /*long*/ display, int /*long*/ event_return, int /*long*/ predicate, int /*long*/ arg);
@@ -521,7 +522,12 @@ public static final native void memmove(XExposeEvent dest, int /*long*/ src, int
 public static final native void memmove(XFocusChangeEvent dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(XVisibilityEvent dest, int /*long*/ src, int /*long*/ size);
 
+/** JNI native methods */
+public static final native int MonitorEnter(Object obj);
+public static final native int MonitorExit(Object obj);
+
 /** Native methods */
+public static final native int Call (int /*long*/ func, int /*long*/ arg0, int arg1, int arg2);
 public static final synchronized native int /*long*/ GDK_DISPLAY();
 public static final synchronized native int /*long*/ GDK_ROOT_PARENT();
 public static final synchronized native int /*long*/ GDK_TYPE_COLOR();
@@ -549,6 +555,16 @@ public static final synchronized native int /*long*/ G_OBJECT_TYPE (int /*long*/
 public static final synchronized native int /*long*/ G_TYPE_STRING();
 public static final synchronized native int PANGO_PIXELS(int dimension);
 public static final synchronized native int /*long*/ PANGO_TYPE_FONT_DESCRIPTION();
+public static final synchronized native boolean g_main_context_acquire(int /*long*/ context);
+public static final synchronized native int g_main_context_check(int /*long*/ context, int max_priority, int /*long*/ fds, int n_fds);
+public static final synchronized native int /*long*/ g_main_context_default();
+public static final synchronized native boolean g_main_context_iteration(int /*long*/ context, boolean may_block);
+public static final synchronized native boolean g_main_context_pending(int /*long*/ context);
+public static final synchronized native int g_main_context_get_poll_func(int /*long*/ context);
+public static final synchronized native boolean g_main_context_prepare(int /*long*/ context, int[] priority);
+public static final synchronized native int g_main_context_query(int /*long*/ context, int max_priority, int[] timeout_, int /*long*/ fds, int n_fds);
+public static final synchronized native void g_main_context_release(int /*long*/ context);
+public static final native void g_main_context_wakeup(int /*long*/ context);
 public static final synchronized native int /*long*/ g_filename_to_utf8(int /*long*/ opsysstring, int /*long*/ len, int /*long*/[] bytes_read, int /*long*/[] bytes_written, int /*long*/[] error);
 public static final synchronized native int /*long*/ g_filename_to_uri(int /*long*/ filename, int /*long*/ hostname, int /*long*/[] error);
 public static final synchronized native int /*long*/ g_filename_from_utf8(int /*long*/ opsysstring, int /*long*/ len,  int /*long*/[] bytes_read, int /*long*/[] bytes_written, int /*long*/[] error);
@@ -612,6 +628,8 @@ public static final synchronized native int /*long*/ g_type_name (int /*long*/ h
 public static final synchronized native int /*long*/ g_type_parent (int /*long*/ type);
 public static final synchronized native void g_type_query (int /*long*/ type, int /*long*/ query);
 public static final synchronized native int /*long*/ g_type_register_static (int /*long*/ parent_type, byte[] type_name, int /*long*/ info, int flags);
+public static final synchronized native void g_thread_init(int /*long*/ vtable);
+public static final synchronized native boolean g_thread_supported();
 public static final synchronized native int /*long*/ g_utf16_to_utf8(char[] str, int /*long*/ len, int /*long*/[] items_read, int /*long*/[] items_written, int /*long*/[] error);
 public static final synchronized native int /*long*/ g_utf8_offset_to_pointer(int /*long*/ str, int /*long*/ offset);
 public static final synchronized native int /*long*/ g_utf8_pointer_to_offset(int /*long*/ str, int /*long*/ pos);

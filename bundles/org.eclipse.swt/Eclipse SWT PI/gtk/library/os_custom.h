@@ -14,6 +14,7 @@
 *******************************************************************************/
 
 /* Special sizeof's */
+#define GPollFD_sizeof() sizeof(GPollFD)
 #define GtkFixedClass_sizeof() sizeof(GtkFixedClass)
 #define GtkTextIter_sizeof() sizeof(GtkTextIter)
 #define GtkTreeIter_sizeof() sizeof(GtkTreeIter)

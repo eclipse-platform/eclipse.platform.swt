@@ -100,6 +100,9 @@ public class Display extends Device {
 	int [] dispatchEvents;
 	Widget [] gdkEventWidgets;
 	Event [] eventQueue;
+	int /*long*/ fds;
+	int allocated_nfds;
+	int [] max_priority = new int [1], timeout = new int [1];
 	Callback eventCallback, filterCallback;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	int /*long*/ eventProc, filterProc, windowProc2, windowProc3, windowProc4, windowProc5;
@@ -704,13 +707,9 @@ protected void create (DeviceData data) {
 }
 
 synchronized void createDisplay (DeviceData data) {
-	/*
-	* This code is intentionally commented.
-	*/
-//	if (!OS.g_thread_supported ()) {
-//		OS.g_thread_init (0);
-//		OS.gdk_threads_init ();
-//	}
+	if (!OS.g_thread_supported ()) {
+		OS.g_thread_init (0);
+	}
 	OS.gtk_set_locale();
 	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES);
@@ -2355,10 +2354,9 @@ void putGdkEvents () {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	runPopups ();
-	int status = OS.gtk_events_pending ();
-	if (status != 0) {
-		OS.gtk_main_iteration ();
+	boolean events = runPopups ();
+	events |= OS.g_main_context_iteration (0, false);
+	if (events) {
 		runDeferredEvents ();
 		return true;
 	}
@@ -2926,18 +2924,56 @@ void showIMWindow (Control control) {
  */
 public boolean sleep () {
 	checkDevice ();
-	//TODO need to sleep waiting for the next event
+	if (getMessageCount () != 0) return true;
+	if (fds == 0) {
+		allocated_nfds = 2;
+		fds = OS.g_malloc (OS.GPollFD_sizeof () * allocated_nfds);
+	}
+	max_priority [0] = timeout [0] = 0;
+	int /*long*/ context = OS.g_main_context_default ();
+	boolean result = false;
 	do {
-		if (getMessageCount () != 0) break;
-		if (OS.gtk_events_pending () != 0) break;
-		try {
-			synchronized (OS_LOCK) {
-				OS_LOCK.wait (50);
+		if (OS.g_main_context_acquire (context)) {
+			result = OS.g_main_context_prepare (context, max_priority);
+			int nfds;
+			while ((nfds = OS.g_main_context_query (context, max_priority [0], timeout, fds, allocated_nfds)) > allocated_nfds) {
+				OS.g_free (fds);
+				allocated_nfds = nfds;
+				fds = OS.g_malloc (OS.GPollFD_sizeof() * allocated_nfds);
 			}
-		} catch (Exception e) {
-			return false;
+			int /*long*/ poll = OS.g_main_context_get_poll_func (context);
+			if (poll != 0) {
+				if (nfds > 0 || timeout [0] != 0) {
+					/*
+					* Bug in GTK. For some reason, g_main_context_wakeup() may 
+					* fail to wake up the UI thread from the polling function.
+					* The fix is to sleep for a maximum of 50 milliseconds.
+					*/
+					if (timeout [0] < 0) timeout [0] = 50;
+					
+					/* Exit the OS lock to allow other threads to enter GTK */
+					int count = Callback.getEntryCount ();
+					for (int i = 0; i < count; i++) {
+						synchronized (OS_LOCK) {
+							OS.MonitorExit (OS_LOCK);
+						}
+					}
+					try {
+						wake = false;
+						OS.Call (poll, fds, nfds, timeout [0]);
+					} finally {
+						for (int i = 0; i < count; i++) {
+							synchronized (OS_LOCK) {
+								OS.MonitorEnter (OS_LOCK);
+							}
+						}
+					}
+				}
+			}
+			OS.g_main_context_check (context, max_priority [0], fds, nfds);
+			OS.g_main_context_release (context);
 		}
-	} while (!wake);
+	} while (!result && getMessageCount () == 0 && !wake);
 	wake = false;
 	return true;
 }
@@ -3139,11 +3175,8 @@ public void wake () {
 }
 
 void wakeThread () {
+	OS.g_main_context_wakeup (0);
 	wake = true;
- 	//TEMPORARY CODE
-//	synchronized (OS_LOCK) {
-//		OS_LOCK.notifyAll ();
-//	}
 }
 
 static char wcsToMbcs (char ch) {

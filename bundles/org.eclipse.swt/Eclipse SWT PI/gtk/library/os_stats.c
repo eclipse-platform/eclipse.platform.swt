@@ -18,10 +18,11 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 912;
-int OS_nativeFunctionCallCount[912];
+int OS_nativeFunctionCount = 928;
+int OS_nativeFunctionCallCount[928];
 char * OS_nativeFunctionNames[] = {
-	"Call", 
+	"Call__III", 
+	"Call__IIII", 
 	"GDK_1DISPLAY", 
 	"GDK_1PIXMAP_1XID", 
 	"GDK_1ROOT_1PARENT", 
@@ -29,6 +30,7 @@ char * OS_nativeFunctionNames[] = {
 	"GDK_1TYPE_1PIXBUF", 
 	"GDK_1WINDOWING_1X11", 
 	"GInterfaceInfo_1sizeof", 
+	"GPollFD_1sizeof", 
 	"GTK_1ACCEL_1LABEL_1GET_1ACCEL_1STRING", 
 	"GTK_1ACCEL_1LABEL_1SET_1ACCEL_1STRING", 
 	"GTK_1ENTRY_1IM_1CONTEXT", 
@@ -95,6 +97,8 @@ char * OS_nativeFunctionNames[] = {
 	"GtkTargetPair_1sizeof", 
 	"GtkTextIter_1sizeof", 
 	"GtkTreeIter_1sizeof", 
+	"MonitorEnter", 
+	"MonitorExit", 
 	"PANGO_1PIXELS", 
 	"PANGO_1TYPE_1FONT_1DESCRIPTION", 
 	"PTR_1sizeof", 
@@ -157,6 +161,16 @@ char * OS_nativeFunctionNames[] = {
 	"g_1log_1default_1handler", 
 	"g_1log_1remove_1handler", 
 	"g_1log_1set_1handler", 
+	"g_1main_1context_1acquire", 
+	"g_1main_1context_1check", 
+	"g_1main_1context_1default", 
+	"g_1main_1context_1get_1poll_1func", 
+	"g_1main_1context_1iteration", 
+	"g_1main_1context_1pending", 
+	"g_1main_1context_1prepare", 
+	"g_1main_1context_1query", 
+	"g_1main_1context_1release", 
+	"g_1main_1context_1wakeup", 
 	"g_1malloc", 
 	"g_1object_1get", 
 	"g_1object_1get_1qdata", 
@@ -186,6 +200,8 @@ char * OS_nativeFunctionNames[] = {
 	"g_1slist_1length", 
 	"g_1slist_1next", 
 	"g_1strfreev", 
+	"g_1thread_1init", 
+	"g_1thread_1supported", 
 	"g_1type_1add_1interface_1static", 
 	"g_1type_1class_1peek", 
 	"g_1type_1class_1peek_1parent", 
