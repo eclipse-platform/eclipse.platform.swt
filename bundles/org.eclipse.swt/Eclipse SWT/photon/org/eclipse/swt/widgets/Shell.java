@@ -115,11 +115,10 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle (int index) {
-	state |= HANDLE;
+	state |= HANDLE | CANVAS;
 	if (handle != 0) {
 		int clazz = display.PtContainer;
 		int [] args = {
-			OS.Pt_ARG_FLAGS, OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};
 		shellHandle = OS.PtCreateWidget (clazz, handle, args.length / 3, args);
@@ -186,66 +185,6 @@ void deregister () {
 	WidgetTable.remove (shellHandle);
 }
 
-void hookEvents () {
-	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (shellHandle, OS.Pt_CB_WINDOW, windowProc, SWT.Move);
-	OS.PtAddCallback (shellHandle, OS.Pt_CB_RESIZE, windowProc, -1);
-}
-
-public void open () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	bringToTop ();
-	setVisible (true);
-}
-
-int processMove (int info) {
-	if (info == 0) return OS.Pt_CONTINUE;
-	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
-	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
-	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
-	PhWindowEvent_t we = new PhWindowEvent_t ();
-	OS.memmove (we, cbinfo.cbdata, PhWindowEvent_t.sizeof);
-	switch (we.event_f) {
-		case OS.Ph_WM_CLOSE:
-			closeWidget ();
-			break;
-		case OS.Ph_WM_ICON:
-			if ((we.state_f & OS.Ph_WM_STATE_ISICONIFIED) != 0) {
-				sendEvent (SWT.Iconify);
-			} else {
-				sendEvent (SWT.Deiconify);
-			}
-			break;
-		case OS.Ph_WM_FOCUS:
-			switch (we.event_state) {
-				case OS.Ph_WM_EVSTATE_FOCUS: sendEvent (SWT.Activate); break;
-				case OS.Ph_WM_EVSTATE_FOCUSLOST: sendEvent (SWT.Deactivate); break;
-			}
-			break;
-		case OS.Ph_WM_MOVE:
-			sendEvent (SWT.Move);
-			break;	
-	}
-	return OS.Pt_CONTINUE;
-}
-
-int processShellResize (int info) {
-	if (info == 0) return OS.Pt_CONTINUE;
-	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
-	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
-	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
-	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
-	OS.PtGetResources (shellHandle, args.length / 3, args);
-	resizeBounds (args [1], args [4]);
-	return OS.Pt_CONTINUE;
-}
-
-void register () {
-	super.register ();
-	WidgetTable.put (shellHandle, this);
-}
 
 public Display getDisplay () {
 	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -337,6 +276,78 @@ public Point getSize () {
 	int width = args [4] + left [0] + right [0];
 	int height = args [7] + top [0] + bottom [0];
 	return new Point (width, height);
+}
+
+void hookEvents () {
+	super.hookEvents ();
+	int windowProc = getDisplay ().windowProc;
+	OS.PtAddCallback (shellHandle, OS.Pt_CB_WINDOW, windowProc, SWT.Move);
+	OS.PtAddCallback (shellHandle, OS.Pt_CB_RESIZE, windowProc, -1);
+}
+
+public void open () {
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	bringToTop ();
+	setVisible (true);
+}
+
+int processHotkey (int data, int info) {
+	if (data != 0) {
+		Widget widget = WidgetTable.get (data);
+		if (widget instanceof MenuItem) {
+			MenuItem item = (MenuItem) widget;
+			if (item.isEnabled ()) item.processSelection (info);
+		}
+	}
+	return OS.Pt_CONTINUE;
+}
+
+int processMove (int info) {
+	if (info == 0) return OS.Pt_CONTINUE;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
+	PhWindowEvent_t we = new PhWindowEvent_t ();
+	OS.memmove (we, cbinfo.cbdata, PhWindowEvent_t.sizeof);
+	switch (we.event_f) {
+		case OS.Ph_WM_CLOSE:
+			closeWidget ();
+			break;
+		case OS.Ph_WM_ICON:
+			if ((we.state_f & OS.Ph_WM_STATE_ISICONIFIED) != 0) {
+				sendEvent (SWT.Iconify);
+			} else {
+				sendEvent (SWT.Deiconify);
+			}
+			break;
+		case OS.Ph_WM_FOCUS:
+			switch (we.event_state) {
+				case OS.Ph_WM_EVSTATE_FOCUS: sendEvent (SWT.Activate); break;
+				case OS.Ph_WM_EVSTATE_FOCUSLOST: sendEvent (SWT.Deactivate); break;
+			}
+			break;
+		case OS.Ph_WM_MOVE:
+			sendEvent (SWT.Move);
+			break;	
+	}
+	return OS.Pt_CONTINUE;
+}
+
+int processShellResize (int info) {
+	if (info == 0) return OS.Pt_CONTINUE;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
+	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
+	OS.PtGetResources (shellHandle, args.length / 3, args);
+	resizeBounds (args [1], args [4]);
+	return OS.Pt_CONTINUE;
+}
+
+void register () {
+	super.register ();
+	WidgetTable.put (shellHandle, this);
 }
 
 void realizeWidget() {

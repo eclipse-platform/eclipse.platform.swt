@@ -72,7 +72,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle (int index) {
-	state |= HANDLE;
+	state |= HANDLE | CANVAS;
 	int parentHandle = parent.handle;
 	createScrolledHandle (parentHandle);
 }
@@ -90,13 +90,9 @@ void createScrollBars () {
 void createScrolledHandle (int parentHandle) {
 	int etches = OS.Pt_ALL_ETCHES | OS.Pt_ALL_OUTLINES;
 	int [] args = new int [] {
-		/*
-		* Bug in Photon.  We must set Pt_GETS_FOCUS or Photon will
-		* segment fault when no widget has focus and a key is pressed.
-		*/
-		OS.Pt_ARG_FLAGS, OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS,
 		OS.Pt_ARG_FLAGS, hasBorder () ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 		OS.Pt_ARG_BASIC_FLAGS, hasBorder () ? etches : 0, etches,
+		OS.Pt_ARG_CONTAINER_FLAGS, 0, OS.Pt_ENABLE_CUA | OS.Pt_ENABLE_CUA_ARROWS,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	scrolledHandle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
@@ -104,7 +100,7 @@ void createScrolledHandle (int parentHandle) {
 	Display display = getDisplay ();
 	int clazz = display.PtContainer;
 	args = new int [] {
-		OS.Pt_ARG_FLAGS, OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS,
+		OS.Pt_ARG_CONTAINER_FLAGS, 0, OS.Pt_ENABLE_CUA | OS.Pt_ENABLE_CUA_ARROWS,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (clazz, scrolledHandle, args.length / 3, args);
@@ -147,6 +143,10 @@ boolean hasBorder () {
 	return (style & SWT.BORDER) != 0;
 }
 
+boolean hasFocus () {
+	return OS.PtIsFocused (handle) == 2;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
@@ -179,8 +179,37 @@ public void layout (boolean changed) {
 	layout.layout (this, changed);
 }
 
+int processMouse (int info) {
+
+	/* Set focus for a canvas with no children */
+	if (OS.PtWidgetChildFront (handle) == 0) {
+		if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0) {
+			if (info == 0) return OS.Pt_END;
+			PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+			OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+			if (cbinfo.event == 0) return OS.Pt_END;
+			PhEvent_t ev = new PhEvent_t ();
+			OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+			switch (ev.type) {
+				case OS.Ph_EV_BUT_PRESS: {
+					int data = OS.PhGetData (cbinfo.event);
+					if (data == 0) return OS.Pt_END;
+					PhPointerEvent_t pe = new PhPointerEvent_t ();
+					OS.memmove (pe, data, PhPointerEvent_t.sizeof);
+					if (pe.buttons == OS.Ph_BUTTON_SELECT) {
+						setFocus ();
+					}
+				}
+			}
+		}
+	}
+	return super.processMouse (info);
+}
+
 int processPaint (int damage) {
-	OS.PtSuperClassDraw (OS.PtContainer (), handle, damage);
+	if ((state & CANVAS) != 0) {
+		OS.PtSuperClassDraw (OS.PtContainer (), handle, damage);
+	}
 	return super.processPaint (damage);
 }
 
@@ -189,6 +218,11 @@ int processResize (int info) {
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
 	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
+	PtContainerCallback_t cbdata = new PtContainerCallback_t ();
+	OS.memmove(cbdata, cbinfo.cbdata, PtContainerCallback_t.sizeof);
+	if (cbdata.new_dim_w == cbdata.old_dim_w && cbdata.new_dim_h == cbdata.old_dim_h) {
+		return OS.Pt_CONTINUE;
+	}
 	sendEvent (SWT.Resize);
 	if (layout != null) layout (false);
 	return OS.Pt_CONTINUE;
@@ -287,6 +321,11 @@ public void setLayout (Layout layout) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	this.layout = layout;
+}
+
+int traversalCode (int key_sym, PhKeyEvent_t ke) {
+	if ((state & CANVAS) != 0 && hooks (SWT.KeyDown)) return 0;
+	return super.traversalCode (key_sym, ke);
 }
 
 }
