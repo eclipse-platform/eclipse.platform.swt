@@ -3345,6 +3345,7 @@ boolean updateItems() {
 	if (setItemSize()) changed = true;
 	if (setItemLocation()) changed = true;
 	if (setButtonBounds()) changed = true;
+	if (setItemLocation()) changed = true; // repeat this call since button positions can affect item sizes
 	if (selectedIndex != -1) {
 		int top = firstIndex;
 		showItem(items[selectedIndex]);
