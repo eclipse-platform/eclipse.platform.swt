@@ -178,7 +178,7 @@ void createHandle (int index) {
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (boxHandle, imageHandle);
 		OS.gtk_container_add (boxHandle, labelHandle);
-	}	
+	}
 	int bits = SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN;
 	switch (style & bits) {
 		case SWT.SEPARATOR:
@@ -481,7 +481,9 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 					double [] x_win = new double [1];
 					double [] y_win = new double [1];
 					OS.gdk_event_get_coords (eventPtr, x_win, y_win);
-					if ((int) x_win [0] > OS.GTK_WIDGET_WIDTH (boxHandle)) {
+					int x = OS.GTK_WIDGET_X (arrowHandle) - OS.GTK_WIDGET_X (handle);
+					int width = OS.GTK_WIDGET_WIDTH (arrowHandle);
+					if (x <= (int)x_win [0] && (int)x_win [0] <= x + width) {
 						event.detail = SWT.ARROW;
 						int /*long*/ topHandle = topHandle ();
 						event.x = OS.GTK_WIDGET_X (topHandle);
@@ -824,6 +826,18 @@ public void setImage (Image image) {
 		OS.gtk_widget_hide (imageHandle);
 	}
 	parent.layoutItems ();
+}
+
+void setOrientation () {
+	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (handle != 0) OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, OS.GTK_TEXT_DIR_RTL);
+		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, OS.GTK_TEXT_DIR_RTL);
+		if (separatorHandle != 0) OS.gtk_widget_set_direction (separatorHandle, OS.GTK_TEXT_DIR_RTL);
+		if (arrowHandle != 0) OS.gtk_widget_set_direction (arrowHandle, OS.GTK_TEXT_DIR_RTL);
+		if (boxHandle != 0) OS.gtk_widget_set_direction (boxHandle, OS.GTK_TEXT_DIR_RTL);
+		if (arrowBoxHandle != 0) OS.gtk_widget_set_direction (arrowBoxHandle, OS.GTK_TEXT_DIR_RTL);
+	}
 }
 
 boolean setRadioSelection (boolean value) {
