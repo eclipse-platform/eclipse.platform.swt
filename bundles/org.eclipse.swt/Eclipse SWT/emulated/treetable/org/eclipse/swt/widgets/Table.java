@@ -2555,12 +2555,14 @@ public void setHeaderVisible(boolean headerVisible) {
 	}
 }
 public void setItemCount (int count) {
-	checkWidget();
+	checkWidget ();
+	count = Math.max (0, count);
+	int itemCount = getItemCount ();
+	if (count == itemCount) return;
 	setRedraw (false);
-	removeAll();
-	int itemCount = Math.max(0, count);
-	for (int i=0; i<itemCount; i++) {
-		new TableItem (this, SWT.NONE, i);
+	remove (count, itemCount - 1);
+	for (int i = itemCount; i<count; i++) {
+		new TableItem (this, SWT.NONE);
 	}
 	setRedraw (true);
 }

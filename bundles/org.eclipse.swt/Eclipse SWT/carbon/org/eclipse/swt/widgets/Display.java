@@ -340,8 +340,18 @@ int appleEventProc (int nextHandler, int theEvent, int userData) {
 	int [] aeEventID = new int [1];
 	if (OS.GetEventParameter (theEvent, OS.kEventParamAEEventID, OS.typeType, null, 4, null, aeEventID) == OS.noErr) {
 		if (aeEventID [0] == OS.kAEQuitApplication) {
-			close ();
-			return OS.noErr;
+			Event event = new Event ();
+			sendEvent (SWT.Close, event);
+			if (event.doit) {
+				/*
+				* When the application is closing, no SWT program can continue
+				* to run.  In order to avoid running code after the display has
+				* been disposed, exit from Java.
+				*/
+				dispose ();
+				System.exit (0);
+			}
+			return OS.userCanceledErr;
 		}
 	}
 	return OS.eventNotHandledErr;
