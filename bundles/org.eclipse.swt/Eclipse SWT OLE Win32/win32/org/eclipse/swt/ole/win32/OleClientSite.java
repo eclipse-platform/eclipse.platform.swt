@@ -66,7 +66,6 @@ public class OleClientSite extends Composite {
 	protected IStorage tempStorage;     // IStorage interface of the receiver
 	
 	// Internal state and style information
-	private boolean active;    // Track whether the object is in place active
 	private int     aspect;    // the display aspect of the embedded object, e.g., DvaspectContent or DvaspectIcon
 	private int     type;      // Indicates the type of client that can be supported inside this container
 	private boolean isStatic;  // Indicates item's display is static, i.e., a bitmap, metafile, etc.
@@ -80,10 +79,18 @@ public class OleClientSite extends Composite {
 
 	private Listener listener;
 	
+	static final int STATE_NONE = 0;
+	static final int STATE_RUNNING = 1;
+	static final int STATE_INPLACEACTIVE = 2;
+	static final int STATE_UIACTIVE = 3;
+	static final int STATE_ACTIVE = 4;
+	int state = STATE_NONE;
+	
 protected OleClientSite(Composite parent, int style) {
-	// this constructor should never be used by itself because it does
-	// not create an Ole Object
-
+	/*
+	 * NOTE: this constructor should never be used by itself because it does
+	 * not create an Ole Object
+	 */
 	super(parent, style);
 	
 	createCOMInterfaces();
@@ -99,7 +106,6 @@ protected OleClientSite(Composite parent, int style) {
 	if (frame == null) OLE.error(SWT.ERROR_INVALID_ARGUMENT);
 	frame.AddRef();
 	
-	active   = false;
 	aspect   = COM.DVASPECT_CONTENT;
 	type     = COM.OLEEMBEDDED;
 	isStatic = false;
@@ -178,7 +184,7 @@ public OleClientSite(Composite parent, int style, File file) {
 		// Init sinks
 		addObjectReferences();
 		
-		COM.OleRun(objIUnknown.getAddress());
+		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state = STATE_RUNNING;
 	} catch (SWTException e) {
 		disposeCOMInterfaces();
 		frame.Release();
@@ -226,7 +232,7 @@ public OleClientSite(Composite parent, int style, String progId) {
 		// Init sinks
 		addObjectReferences();
 
-		COM.OleRun(objIUnknown.getAddress());
+		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state = STATE_RUNNING;
 		
 	} catch (SWTException e) {
 		disposeCOMInterfaces();
@@ -341,25 +347,14 @@ public OleClientSite(Composite parent, int style, String progId, File file) {
 		// Init sinks
 		addObjectReferences();
 		
-		COM.OleRun(objIUnknown.getAddress());
+		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state = STATE_RUNNING;
 	} catch (SWTException e) {
 		disposeCOMInterfaces();
 		frame.Release();
 		throw e;
 	}
 }
-private void activateInPlaceClient() {
-	if (objIOleInPlaceObject == null) return;
-
-	// bring client window to foreground
-	int[] phwnd = new int[1];
-	if (objIOleInPlaceObject.GetWindow(phwnd) == COM.S_OK) {
-		OS.SetWindowPos(phwnd[0], OS.HWND_TOP, 0, 0, 0, 0, OS.SWP_NOSIZE | OS.SWP_NOMOVE);
-	}
-	frame.setCurrentDocument(this);
-}
 protected void addObjectReferences() {
-	
 	//
 	int[] ppvObject = new int[1];
 	if (objIUnknown.QueryInterface(COM.IIDIPersist, ppvObject) == COM.S_OK) {
@@ -482,7 +477,7 @@ protected IStorage createTempStorage() {
  * Deactivates an active in-place object and discards the object's undo state.
  */
 public void deactivateInPlaceClient() {
-	if (active && objIOleInPlaceObject != null) {
+	if (objIOleInPlaceObject != null) {
 		objIOleInPlaceObject.InPlaceDeactivate();
 	}
 }
@@ -491,11 +486,9 @@ private void deleteTempStorage() {
 	if (tempStorage != null){
 		tempStorage.Release();
 	}
-	
 	tempStorage = null;
 }
 protected void disposeCOMInterfaces() {
-
 	if (iUnknown != null)
 		iUnknown.dispose();
 	iUnknown = null;
@@ -522,28 +515,13 @@ protected void disposeCOMInterfaces() {
  *         success
  */
 public int doVerb(int verb) {
-	if (objIOleObject == null || isStatic)
+	if (state == STATE_NONE || isStatic)
 		return COM.E_FAIL;
-	boolean wasActive = active;
-
-	int oleobject = objIOleObject.getAddress();
-	COM.OleRun(oleobject);
 	
 	// See PR: 1FV9RZW
 	int result = objIOleObject.DoVerb(verb, null, iOleClientSite.getAddress(), 0, handle, null);
 
-	if (active) setObjectRects();
-	
-	// synch up with state of object
-	if (wasActive != active){
-		if (active) {
-			activateInPlaceClient();
-		} else {
-			deactivateInPlaceClient();
-		}
-	}
-
-	if (active && inInit) {
+	if (state != STATE_RUNNING && inInit) {
 		updateStorage();
 		inInit = false;
 	}
@@ -624,11 +602,10 @@ protected GUID getClassID(String clientName) {
 	return guid;
 }
 private int GetContainer(int ppContainer) {
-	
 	/* Simple containers that do not support links to their embedded 
-	   objects probably do not need to implement this method. Instead, 
-	   they can return E_NOINTERFACE and set ppContainer to NULL.*/
-
+	 * objects probably do not need to implement this method. Instead, 
+	 * they can return E_NOINTERFACE and set ppContainer to NULL.
+	 */
 	if (ppContainer != 0)
 		COM.MoveMemory(ppContainer, new int[]{0}, 4);
 	return COM.E_NOINTERFACE;
@@ -673,7 +650,6 @@ public String getProgramID(){
 	return null;
 }
 protected int GetWindow(int phwnd) {
-
 	if (phwnd == 0)
 		return COM.E_INVALIDARG;
 	if (frame == null) {
@@ -685,8 +661,7 @@ protected int GetWindow(int phwnd) {
 	COM.MoveMemory(phwnd, new int[] {frame.handle}, 4);
 	return COM.S_OK;
 }
-private int GetWindowContext(int ppFrame, int ppDoc, int lprcPosRect, int lprcClipRect, int lpFrameInfo) {
-	
+private int GetWindowContext(int ppFrame, int ppDoc, int lprcPosRect, int lprcClipRect, int lpFrameInfo) {	
 	if (frame == null || ppFrame == 0)
 		return COM.E_NOTIMPL;
 
@@ -748,9 +723,11 @@ private int GetWindowContext(int ppFrame, int ppDoc, int lprcPosRect, int lprcCl
 	return COM.S_OK;
 }
 public boolean isDirty() {
-	// Note: this method must return true unless it is absolutely clear that the
-	// contents of the Ole Document do not differ from the contents in the file
-	// on the file system.
+	/*
+	 *  Note: this method must return true unless it is absolutely clear that the
+	 * contents of the Ole Document do not differ from the contents in the file
+	 * on the file system.
+	 */
 	
 	// Get access to the persistant storage mechanism
 	int[] address = new int[1];
@@ -782,7 +759,6 @@ private int OnDataChange(int pFormatetc, int pStgmed) {
 	return COM.S_OK;
 }
 private void onDispose(Event e) {
-
 	doVerb(OLE.OLEIVERB_DISCARDUNDOSTATE);
 	
 	releaseObjectInterfaces(); // Note, must release object interfaces before releasing frame
@@ -801,6 +777,7 @@ private void onDispose(Event e) {
 	frame = null;
 }
 void onFocusIn(Event e) {
+	if (state != STATE_UIACTIVE) doVerb(OLE.OLEIVERB_SHOW);
 	if (objIOleInPlaceObject == null) return;
 	if (isFocusControl()) return;
 	int[] phwnd = new int[1];
@@ -811,7 +788,8 @@ void onFocusIn(Event e) {
 void onFocusOut(Event e) {
 }
 private int OnInPlaceActivate() {
-	active = true;
+	state = STATE_INPLACEACTIVE;
+	frame.setCurrentDocument(this);
 	if (objIOleObject == null)
 		return COM.S_OK;
 	int[] ppvObject = new int[1];
@@ -823,17 +801,19 @@ private int OnInPlaceActivate() {
 private int OnInPlaceDeactivate() {
 	if (objIOleInPlaceObject != null) objIOleInPlaceObject.Release();
 	objIOleInPlaceObject = null;
-	active = false;
+	state = STATE_RUNNING;
+	redraw();
+	if (getDisplay().getFocusControl() == null) {
+		getShell().traverse(SWT.TRAVERSE_TAB_NEXT);
+	}
 	return COM.S_OK;
 }
 private int OnPosRectChange(int lprcPosRect) {
-
 	setObjectRects();
-	
 	return COM.S_OK;
 }
 private void onPaint(Event e) {
-	if (!active && objIUnknown != null) {
+	if (state == STATE_RUNNING || state == STATE_INPLACEACTIVE) {
 		SIZE size = getExtent();
 		Rectangle area = getClientArea();
 		RECT rect = new RECT();
@@ -863,27 +843,25 @@ private void onResize(Event e) {
 private void OnSave() {
 }
 private int OnShowWindow(int fShow) {
-	boolean wasActive = active;
-	active = (fShow != 0);
-	if (wasActive != active){
-		if (active) {
-			activateInPlaceClient();
-		} else {
-			deactivateInPlaceClient();
-		}
-	}
 	return COM.S_OK;
 }
 private int OnUIActivate() {
+	state = STATE_UIACTIVE;
+	int[] phwnd = new int[1];
+	if (objIOleInPlaceObject.GetWindow(phwnd) == COM.S_OK) {
+		OS.SetWindowPos(phwnd[0], OS.HWND_TOP, 0, 0, 0, 0, OS.SWP_NOSIZE | OS.SWP_NOMOVE);
+	}
 	return COM.S_OK;
 }
 private int OnUIDeactivate(int fUndoable) {
-
 	// currently, we are ignoring the fUndoable flag
 	if (frame == null || frame.isDisposed()) return COM.S_OK;
-
+	state = STATE_INPLACEACTIVE;
 	frame.SetActiveObject(0,0);
-
+	redraw();
+	if (getDisplay().getFocusControl() == frame) {
+		getShell().traverse(SWT.TRAVERSE_TAB_NEXT);
+	}
 	Shell shell = getShell();
 	Menu menubar = shell.getMenuBar();
 	if (menubar == null || menubar.isDisposed())
@@ -1223,7 +1201,6 @@ public void setIndent(Rectangle newIndent) {
 	indent.bottom = newIndent.height;
 }
 private void setObjectRects() {
-
 	if (objIOleInPlaceObject == null) return;
 
 	// size the object to fill the available space
@@ -1245,8 +1222,7 @@ private void setObjectRects() {
 	clipRect.right  = frameArea.x + frameArea.width;
 	clipRect.bottom = frameArea.y + frameArea.height;
 
-	objIOleInPlaceObject.SetObjectRects(posRect, clipRect);
-	
+	objIOleInPlaceObject.SetObjectRects(posRect, clipRect);	
 }
 
 private int ShowObject() {

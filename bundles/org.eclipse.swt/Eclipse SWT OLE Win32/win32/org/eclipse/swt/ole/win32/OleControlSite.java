@@ -136,7 +136,7 @@ public OleControlSite(Composite parent, int style, String progId) {
 		throw e;
 	}
 			
-	COM.OleRun(objIUnknown.getAddress());
+	if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state= STATE_RUNNING;
 }
 /**	 
  * Adds the listener to receive events.
@@ -545,6 +545,7 @@ private int OnFocus(int fGotFocus) {
 protected int OnUIDeactivate(int fUndoable) {
 	// controls don't need to do anything for
 	// border space or menubars
+	state = STATE_INPLACEACTIVE;
 	return COM.S_OK;
 }
 protected int QueryInterface(int riid, int ppvObject) {
