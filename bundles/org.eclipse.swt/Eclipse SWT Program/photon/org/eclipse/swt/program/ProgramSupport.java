@@ -1,9 +1,8 @@
 package org.eclipse.swt.program;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 import java.io.*;
 import java.util.*;
