@@ -55,6 +55,7 @@ public class Browser extends Composite {
 	String html;
 	Point location;
 	Point size;
+	boolean addressBar, menuBar, statusBar, toolBar;
 	Shell tip = null;
 
 	/* External Listener management */
@@ -78,11 +79,11 @@ public class Browser extends Composite {
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	
-static {
-	String osName = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
-	IsWindows = osName.startsWith("windows");
-	IsLinux = osName.startsWith("linux");
-}
+	static {
+		String osName = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
+		IsWindows = osName.startsWith("windows");
+		IsLinux = osName.startsWith("linux");
+	}
 
 /**
  * Constructs a new instance of this class given its parent
@@ -298,8 +299,8 @@ public Browser(Composite parent, int style) {
 			switch (event.type) {
 				case SWT.Dispose: onDispose(); break;
 				case SWT.Resize: onResize(); break;
-				case SWT.FocusIn: onFocusGained(event);	break;
-				case SWT.FocusOut: onFocusLost(event); break;
+				case SWT.FocusIn: onFocusGained();	break;
+				case SWT.FocusOut: onFocusLost(); break;
 			}
 		}
 	};	
@@ -896,7 +897,7 @@ void onDispose() {
 //	}
 }
 
-void onFocusGained(Event e) {
+void onFocusGained() {
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -908,7 +909,7 @@ void onFocusGained(Event e) {
 	webBrowserFocus.Release();
 }
 	
-void onFocusLost(Event e) {
+void onFocusLost() {
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -916,6 +917,18 @@ void onFocusLost(Event e) {
 	
 	nsIWebBrowserFocus webBrowserFocus = new nsIWebBrowserFocus(result[0]);
 	rc = webBrowserFocus.Deactivate();
+	if (rc != XPCOM.NS_OK) error(rc);
+	webBrowserFocus.Release();
+}
+
+void SetFocusAtFirstElement() {
+	int[] result = new int[1];
+	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	
+	nsIWebBrowserFocus webBrowserFocus = new nsIWebBrowserFocus(result[0]);
+	rc = webBrowserFocus.SetFocusAtFirstElement();
 	if (rc != XPCOM.NS_OK) error(rc);
 	webBrowserFocus.Release();
 }
@@ -1835,6 +1848,10 @@ int SetVisibility(int aVisibility) {
 	if (aVisibility == 1) {
 		event.location = location;
 		event.size = size;
+		event.addressBar = addressBar;
+		event.menuBar = menuBar;
+		event.statusBar = statusBar;
+		event.toolBar = toolBar;
 		for (int i = 0; i < visibilityWindowListeners.length; i++)
 			visibilityWindowListeners[i].show(event);
 		location = null;
