@@ -542,7 +542,10 @@ int gtk_show (int widget) {
 
 
 int gtk_show_help (int widget, int helpType) {
-	if (sendHelpEvent (helpType)) OS.gtk_menu_shell_deactivate (handle);
+	if (sendHelpEvent (helpType)) {
+		OS.gtk_menu_shell_deactivate (handle);
+		return 1;
+	}
 	return 0;
 }
 

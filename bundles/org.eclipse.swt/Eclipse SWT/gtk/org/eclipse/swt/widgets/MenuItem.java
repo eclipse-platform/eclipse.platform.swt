@@ -401,13 +401,16 @@ int gtk_select (int item) {
 }
 
 int gtk_show_help (int widget, int helpType) {
-	boolean hooks = hooks (SWT.Help);
-	if (hooks) {
+	boolean handled = hooks (SWT.Help);
+	if (handled) {
 		postEvent (SWT.Help);
 	} else {
-		hooks = parent.sendHelpEvent (helpType);
+		handled = parent.sendHelpEvent (helpType);
 	}
-	if (hooks) OS.gtk_menu_shell_deactivate (parent.handle);
+	if (handled) {
+		OS.gtk_menu_shell_deactivate (parent.handle);
+		return 1;
+	}
 	return 0;
 }
 

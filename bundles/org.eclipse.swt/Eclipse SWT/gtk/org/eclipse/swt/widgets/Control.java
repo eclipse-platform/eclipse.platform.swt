@@ -1849,8 +1849,7 @@ int gtk_realize (int widget) {
 }
 
 int gtk_show_help (int widget, int helpType) {
-	sendHelpEvent (helpType);
-	return 0;
+	return sendHelpEvent (helpType) ? 1 : 0;
 }
 
 int gtk_unrealize (int widget) {
