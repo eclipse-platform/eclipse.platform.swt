@@ -302,8 +302,6 @@ void computeRuns (GC gc) {
 			lineCount++;
 		}
 	}
-	if (srcHdc != 0) OS.DeleteDC(srcHdc);
-	if (gc == null) device.internal_dispose_GC(hDC, null);
 	lineWidth = 0;
 	runs = new StyleItem[lineCount][];
 	lineOffset = new int[lineCount + 1];
@@ -317,6 +315,13 @@ void computeRuns (GC gc) {
 		lineWidth += run.width;
 		lineHeight = Math.max(run.height + lineSpacing, lineHeight);
 		if (run.lineBreak || i == allRuns.length - 1) {
+			if (lineRunCount == 1 && i == allRuns.length - 1) {
+				TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+				OS.SelectObject(srcHdc, getItemFont(run));
+				OS.GetTextMetrics(srcHdc, lptm);
+				run.height = lptm.tmHeight;
+				lineHeight = run.height + lineSpacing;
+			}
 			runs[line] = new StyleItem[lineRunCount];
 			System.arraycopy(lineRuns, 0, runs[line], 0, lineRunCount);
 			StyleItem lastRun = runs[line][lineRunCount - 1];
@@ -328,6 +333,8 @@ void computeRuns (GC gc) {
 			lineRunCount = lineWidth = lineHeight = 0;
 		}
 	}
+	if (srcHdc != 0) OS.DeleteDC(srcHdc);
+	if (gc == null) device.internal_dispose_GC(hDC, null);	
 }
 
 /**
