@@ -455,7 +455,16 @@ public String getString() {
 		OS.GlobalFree(newPtr);
 	}
 }
-short getType() {
+/**
+ * Returns the ytpe of the variant type.  This will be an OLE.VT_* value or
+ * a bitwise combination of OLE.VT_* values as in the case of 
+ * OLE.VT_BSTR | OLE.VT_BYREF.
+ * 
+ * @return the type of the variant data
+ * 
+ * @since 2.0
+ */
+public short getType() {
 	return type;
 }
 /**
