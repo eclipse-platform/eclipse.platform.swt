@@ -31,7 +31,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Group extends Composite {
-	int clientHandle;
+	int clientHandle, labelHandle;
 	String text = "";
 
 /**
@@ -75,65 +75,6 @@ static int checkStyle (int style) {
 	* the SWT style.
 	*/
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
-}
-
-void createHandle(int index) {
-	state |= HANDLE;
-	fixedHandle = OS.gtk_fixed_new ();
-	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_fixed_set_has_window (fixedHandle, true);
-	handle = OS.gtk_frame_new(null);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	clientHandle = OS.gtk_fixed_new();
-	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	int parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
-	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_container_add (handle, clientHandle);
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_show (clientHandle);
-	OS.gtk_widget_show (fixedHandle);
-	
-	if ((style & SWT.SHADOW_IN) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_IN);
-	}
-	if ((style & SWT.SHADOW_OUT) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_OUT);
-	}
-	if ((style & SWT.SHADOW_ETCHED_IN) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_IN);
-	}
-	if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_OUT);
-	}
-}
-
-void register () {
-	super.register ();
-	WidgetTable.put (clientHandle, this);
-}
-
-void releaseHandle () {
-	super.releaseHandle ();
-	clientHandle = 0;
-}
-
-void releaseWidget () {
-	super.releaseWidget ();
-	text = null;
-}
-
-void deregister () {
-	super.deregister ();
-	WidgetTable.remove (clientHandle);
-}
-
-int eventHandle () {
-	return fixedHandle;
-}
-
-int parentingHandle() {
-	return clientHandle;
 }
 
 int clientHandle () {
@@ -184,6 +125,51 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return new Rectangle (x-trims[1], y-trims[0], width+trims[1]+trims[2], height+trims[0]+trims[3]);
 }
 
+void createHandle(int index) {
+	state |= HANDLE;
+	fixedHandle = OS.gtk_fixed_new ();
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
+	handle = OS.gtk_frame_new (null);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	labelHandle = OS.gtk_label_new (null);
+	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	clientHandle = OS.gtk_fixed_new();
+	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
+	OS.gtk_container_add (fixedHandle, handle);
+	OS.gtk_container_add (handle, clientHandle);
+	OS.gtk_widget_show (handle);
+	OS.gtk_widget_show (clientHandle);
+	OS.gtk_widget_show (fixedHandle);
+	
+	OS.gtk_frame_set_label_widget (handle, labelHandle);
+	
+	if ((style & SWT.SHADOW_IN) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_IN);
+	}
+	if ((style & SWT.SHADOW_OUT) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_OUT);
+	}
+	if ((style & SWT.SHADOW_ETCHED_IN) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_IN);
+	}
+	if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_OUT);
+	}
+}
+
+void deregister () {
+	super.deregister ();
+	WidgetTable.remove (clientHandle);
+	WidgetTable.remove (labelHandle);
+}
+
+int eventHandle () {
+	return fixedHandle;
+}
+
 public Rectangle getClientArea () {
 	checkWidget();
 	int width = OS.GTK_WIDGET_WIDTH (clientHandle);
@@ -212,6 +198,36 @@ public String getText () {
 	return text;
 }
 
+int parentingHandle() {
+	return clientHandle;
+}
+
+void register () {
+	super.register ();
+	WidgetTable.put (clientHandle, this);
+	WidgetTable.put (labelHandle, this);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	clientHandle = labelHandle = 0;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	text = null;
+}
+
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	OS.gtk_widget_modify_font (labelHandle, font);
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	OS.gtk_widget_modify_fg (labelHandle, 0, color);
+}
+
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,
@@ -237,14 +253,9 @@ public void setText (String string) {
 	for (int i=0; i<length; i++) {
 		if (text [i] == '&') text [i] = '_';
 	}
-	//FIXME - create label widget when frame handle is created
 	byte [] buffer = Converter.wcsToMbcs (null, text);
-	int label = OS.gtk_frame_get_label_widget (handle);
-	if (label == 0) {
-		OS.gtk_frame_set_label (handle, buffer);
-		label = OS.gtk_frame_get_label_widget (handle);
-	}
-	OS.gtk_label_set_text_with_mnemonic (label, buffer);
+	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	OS.gtk_widget_show (labelHandle);
 }
 
 }

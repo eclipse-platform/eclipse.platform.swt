@@ -915,6 +915,7 @@ public static final native void gdk_window_process_updates(int window, boolean u
 public static final native void gtk_label_set_text_with_mnemonic(int label, byte[] str);
 public static final native int gtk_label_new_with_mnemonic(byte[] str);
 public static final native int gtk_frame_get_label_widget(int frame);
+public static final native void gtk_frame_set_label_widget(int frame, int label_widget);
 
 public static final native void gtk_widget_set_size_request(int widget, int width, int height);
 public static final native void gtk_widget_get_size_request(int widget, int [] width, int [] height);
@@ -931,6 +932,8 @@ public static final native void gtk_fixed_set_has_window(int fixed, boolean has_
 public static final native void gtk_scrolled_window_add_with_viewport (int scrolled_window, int child);
 public static final native void gtk_widget_modify_bg (int widget, int state, GdkColor color);
 public static final native void gtk_widget_modify_fg (int widget, int state, GdkColor color);
+public static final native void gtk_widget_modify_base (int widget, int state, GdkColor color);
+public static final native void gtk_widget_modify_text (int widget, int state, GdkColor color);
 public static final native void GTK_BIN_SET_CHILD (int bin, int child);
 public static final native void gtk_scrolled_window_set_shadow_type(int scrolled_window, int type);
 public static final native void gtk_widget_queue_resize(int widget);

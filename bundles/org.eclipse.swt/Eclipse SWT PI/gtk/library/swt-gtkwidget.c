@@ -458,6 +458,38 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1modify_
 	}
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1modify_1text
+  (JNIEnv *env, jclass that, jint widget, jint state, jobject color)
+{
+	DECL_GLOB(pGlob)
+	GdkColor color_struct, *color1 = NULL;
+	if (color) {
+		color1 = &color_struct;
+		cacheGdkColorFids(env, color, &PGLOB(GdkColorFc));
+		getGdkColorFields(env, color, color1, &PGLOB(GdkColorFc));
+	}
+	gtk_widget_modify_text((GtkWidget*)widget, (GtkStateType)state, (GdkColor*)color1);
+	if (color) {
+		setGdkColorFields(env, color, color1, &PGLOB(GdkColorFc));
+	}
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1modify_1base
+  (JNIEnv *env, jclass that, jint widget, jint state, jobject color)
+{
+	DECL_GLOB(pGlob)
+	GdkColor color_struct, *color1 = NULL;
+	if (color) {
+		color1 = &color_struct;
+		cacheGdkColorFids(env, color, &PGLOB(GdkColorFc));
+		getGdkColorFields(env, color, color1, &PGLOB(GdkColorFc));
+	}
+	gtk_widget_modify_base((GtkWidget*)widget, (GtkStateType)state, (GdkColor*)color1);
+	if (color) {
+		setGdkColorFields(env, color, color1, &PGLOB(GdkColorFc));
+	}
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1scrolled_1window_1set_1shadow_1type
   (JNIEnv *env, jclass that, jint scroll, jint type)
 {

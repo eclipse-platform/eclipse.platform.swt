@@ -518,7 +518,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1label_1new_1wit
 	return (jint) result;
 }
 
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1frame_1get_1label_1widget
   (JNIEnv *env, jclass that, jint frame)
 {
@@ -527,6 +526,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1frame_1get_1lab
 #endif
 
 	return (jint)gtk_frame_get_label_widget((GtkFrame*)frame);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1frame_1set_1label_1widget
+  (JNIEnv *env, jclass that, jint frame, jint label)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_frame_set_label_widget");
+#endif
+
+	gtk_frame_set_label_widget((GtkFrame*)frame, (GtkWidget*)label);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1button_1set_1relief

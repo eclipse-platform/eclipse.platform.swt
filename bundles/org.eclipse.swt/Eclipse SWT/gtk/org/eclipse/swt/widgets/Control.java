@@ -1177,17 +1177,12 @@ public boolean forceFocus () {
  */
 public Color getBackground () {
 	checkWidget();
-	return Color.gtk_new (getDisplay (), _getBackgroundGdkColor());
+	return Color.gtk_new (getDisplay (), getBackgroundColor ());
 }
 
-/*
- *  Subclasses should override this to pass a meaningful handle
- */
-GdkColor _getBackgroundGdkColor() {
-	/* Override this */
-	int h = paintHandle();
-	
-	int hStyle = OS.gtk_widget_get_style (handle);
+GdkColor getBackgroundColor () {
+	int fontHandle = fontHandle ();
+	int hStyle = OS.gtk_widget_get_style (fontHandle);
 	GtkStyle style = new GtkStyle (hStyle);
 	GdkColor color = new GdkColor ();
 	color.pixel = style.bg0_pixel;
@@ -1258,15 +1253,15 @@ public boolean getEnabled () {
  */
 public Font getFont () {
 	checkWidget();
-	int fontHandle = fontHandle ();
-	int context = OS.gtk_widget_get_pango_context (fontHandle);
-	int font = OS.pango_context_get_font_description (context);
-	return Font.gtk_new (getDisplay (), font);
+	return Font.gtk_new (getDisplay (), getFontDescription ());
 }
-/*
- * Subclasses should override this, passing a meaningful handle
- */
-
+	
+int getFontDescription () {
+	int fontHandle = fontHandle ();
+	int hStyle = OS.gtk_widget_get_style (fontHandle);
+	GtkStyle style = new GtkStyle (hStyle);
+	return style.font_desc;
+}
 
 /**
  * Returns the foreground color that the receiver will use to draw.
@@ -1280,17 +1275,12 @@ public Font getFont () {
  */
 public Color getForeground () {
 	checkWidget();
-	return Color.gtk_new (getDisplay (), _getForegroundGdkColor());
+	return Color.gtk_new (getDisplay (), getForegroundColor ());
 }
 
-/*
- *  Subclasses should override this to pass a meaningful handle
- */
-GdkColor _getForegroundGdkColor() {
-	/* Override this */
-	int h = paintHandle();
-	
-	int hStyle = OS.gtk_widget_get_style (handle);
+GdkColor getForegroundColor () {
+	int fontHandle = fontHandle ();
+	int hStyle = OS.gtk_widget_get_style (fontHandle);
 	GtkStyle style = new GtkStyle (hStyle);
 	GdkColor color = new GdkColor ();
 	color.pixel = style.fg0_pixel;
@@ -1449,11 +1439,24 @@ public int internal_new_GC (GCData data) {
 	int gdkGC = OS.gdk_gc_new (window);
 	if (gdkGC == 0) error (SWT.ERROR_NO_HANDLES);	
 	if (data != null) {
+		int fontHandle = fontHandle ();
+		int hStyle = OS.gtk_widget_get_style (fontHandle);
+		GtkStyle style = new GtkStyle (hStyle);
+		GdkColor foreground = new GdkColor ();
+		foreground.pixel = style.fg0_pixel;
+		foreground.red = style.fg0_red;
+		foreground.green = style.fg0_green;
+		foreground.blue = style.fg0_blue;
+		GdkColor background = new GdkColor ();
+		background.pixel = style.bg0_pixel;
+		background.red = style.bg0_red;
+		background.green = style.bg0_green;
+		background.blue = style.bg0_blue;
 		data.drawable = window;
 		data.device = getDisplay ();
-		data.background = _getBackgroundGdkColor ();
-		data.foreground = _getForegroundGdkColor ();
-		data.font = getFont().handle;
+		data.background = background;
+		data.foreground = foreground;
+		data.font = style.font_desc;
 	}	
 	return gdkGC;
 }
@@ -1752,12 +1755,11 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	OS.gdk_window_invalidate_rect (window, rect, all);
 }
 
-
-
 void releaseHandle () {
 	super.releaseHandle ();
 	fixedHandle = 0;
 }
+
 void releaseWidget () {
 	super.releaseWidget ();
 	toolTipText = null;
@@ -1823,11 +1825,21 @@ void sendMouseEvent (int type, int button, int gdkEvent) {
  * </ul>
  */
 public void setBackground (Color color) {
-	checkWidget ();
-	//TEMPORARY CODE - should fix setBackground()/setForeground() everywhere
-	//NULL CHECK
-	if (color == null) return;
-	OS.gtk_widget_modify_bg (handle, 0, color.handle);
+	checkWidget();
+	GdkColor gdkColor;
+	if (color == null) {
+//		gdkColor = defaultBackground ();
+		return;
+	} else {
+		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		gdkColor = color.handle;
+	}
+	setBackgroundColor (gdkColor);
+}
+
+void setBackgroundColor (GdkColor color) {
+	if (fixedHandle != 0) OS.gtk_widget_modify_bg (fixedHandle, 0, color);
+	OS.gtk_widget_modify_bg (handle, 0, color);
 }
 
 /**
@@ -1942,11 +1954,20 @@ public boolean setFocus () {
  */
 public void setFont (Font font) {
 	checkWidget();
-	
-	int fontHandle = fontHandle ();
-	OS.gtk_widget_modify_font (fontHandle, font.handle);
+	int fontDesc;
+	if (font == null) {
+//		fontDesc = defaultFont ();
+		return;
+	} else {
+		if (font.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		fontDesc = font.handle;
+	}
+	setFontDescription (fontDesc);
 }
-
+	
+void setFontDescription (int font) {
+	OS.gtk_widget_modify_font (handle, font);
+}
 
 /**
  * Sets the receiver's foreground color to the color specified
@@ -1965,10 +1986,21 @@ public void setFont (Font font) {
  */
 public void setForeground (Color color) {
 	checkWidget();
-	//TEMPORARY CODE - should fix setBackground()/setForeground() everywhere
-	//NULL CHECK
-	if (color == null) return;
-	OS.gtk_widget_modify_fg (handle, 0, color.handle);}
+	GdkColor gdkColor;
+	if (color == null) {
+//		gdkColor = defaultForeground ();
+		return;
+	} else {
+		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		gdkColor = color.handle;
+	}
+	setForegroundColor (gdkColor);
+}
+
+void setForegroundColor (GdkColor color) {
+	if (fixedHandle != 0) OS.gtk_widget_modify_fg (fixedHandle, 0, color);
+	OS.gtk_widget_modify_fg (handle, 0, color);
+}
 
 void setInitialSize () {
 	resizeHandle (1, 1);

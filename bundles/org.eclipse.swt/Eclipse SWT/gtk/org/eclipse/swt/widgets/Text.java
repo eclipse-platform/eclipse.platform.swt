@@ -900,7 +900,12 @@ public void removeVerifyListener (VerifyListener listener) {
  */
 public void selectAll () {
 	checkWidget ();
-	/*OS.gtk_editable_select_region (handle, 0, -1);*/
+	OS.gtk_editable_select_region (handle, 0, -1);
+}
+
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	OS.gtk_widget_modify_base (handle, 0, color);
 }
 
 /**
@@ -957,6 +962,11 @@ public void setEchoChar (char echo) {
 public void setEditable (boolean editable) {
 	checkWidget ();
 	/*OS.gtk_editable_set_editable (handle, editable);*/
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	OS.gtk_widget_modify_text (handle, 0, color);
 }
 
 /**

@@ -838,9 +838,8 @@ public void removeTreeListener(TreeListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
-public void setFont (Font font) {
-	checkWidget ();
-	super.setFont (font);
+void setFontDescription (int font) {
+	super.setFontDescription (font);
 	if (imageHeight != 0) {
 		OS.gtk_widget_realize (handle);
 		OS.gtk_clist_set_row_height (handle, 0);
@@ -864,6 +863,11 @@ public void selectAll () {
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_ctree_select_recursive (handle, 0);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);	
+}
+
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	OS.gtk_widget_modify_base (handle, 0, color);
 }
 
 public void setRedraw (boolean redraw) {

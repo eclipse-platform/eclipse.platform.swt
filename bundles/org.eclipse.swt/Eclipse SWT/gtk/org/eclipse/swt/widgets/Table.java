@@ -1136,6 +1136,11 @@ public void selectAll () {
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	OS.gtk_widget_modify_base (handle, 0, color);
+}
+
 /**
  * Returns <code>true</code> if the receiver's header is visible,
  * and <code>false</code> otherwise.
