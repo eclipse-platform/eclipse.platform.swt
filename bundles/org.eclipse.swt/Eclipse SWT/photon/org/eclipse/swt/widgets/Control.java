@@ -622,12 +622,14 @@ int processMouse (int info) {
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	event.x = pe.pos_x + ev.translation_x;
 	event.y = pe.pos_y + ev.translation_y;
-	switch (pe.buttons) {
-		case OS.Ph_BUTTON_SELECT:	event.button = 1; break;
-		case OS.Ph_BUTTON_ADJUST:	event.button = 2; break;
-		case OS.Ph_BUTTON_MENU:		event.button = 3; break;
+	if (ev.type == OS.Ph_EV_BUT_PRESS || ev.type == OS.Ph_EV_BUT_RELEASE) {
+		switch (pe.buttons) {
+			case OS.Ph_BUTTON_SELECT:	event.button = 1; break;
+			case OS.Ph_BUTTON_ADJUST:	event.button = 2; break;
+			case OS.Ph_BUTTON_MENU:		event.button = 3; break;
+		}
 	}
-	setMouseState (event, pe);
+	setMouseState (ev.type, event, pe);
 	postEvent (event.type, event);
 	if (ev.type == OS.Ph_EV_BUT_PRESS && pe.click_count == 2) {
 		Event clickEvent = new Event ();
@@ -1040,7 +1042,7 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 }
 
-void setMouseState(Event event, PhPointerEvent_t pe) {
+void setMouseState(int type, Event event, PhPointerEvent_t pe) {
 	int key_mods = pe.key_mods;
 	int buttons = pe.buttons;
 	int button_state = pe.button_state;
@@ -1050,7 +1052,7 @@ void setMouseState(Event event, PhPointerEvent_t pe) {
 	if ((button_state & OS.Ph_BUTTON_SELECT) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((button_state & OS.Ph_BUTTON_ADJUST) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((button_state & OS.Ph_BUTTON_MENU) != 0) event.stateMask |= SWT.BUTTON3;
-	if (event.type == SWT.MouseDown) {
+	if (type == OS.Ph_EV_BUT_PRESS) {
 		if (buttons == OS.Ph_BUTTON_SELECT && (button_state & OS.Ph_BUTTON_SELECT) != 0) {
 			event.stateMask &= ~SWT.BUTTON1;
 		}
@@ -1060,8 +1062,7 @@ void setMouseState(Event event, PhPointerEvent_t pe) {
 		if (buttons == OS.Ph_BUTTON_MENU && (button_state & OS.Ph_BUTTON_MENU) != 0) {
 			event.stateMask &= ~SWT.BUTTON3;
 		}
-	}
-	if (event.type == SWT.MouseUp) {
+	} else if (type == OS.Ph_EV_BUT_RELEASE || type == OS.Ph_EV_DRAG) {
 		if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask |= SWT.BUTTON1;
 		if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask |= SWT.BUTTON2;
 		if (buttons == OS.Ph_BUTTON_MENU) event.stateMask |= SWT.BUTTON3;
