@@ -8,7 +8,6 @@
     <property name="jar_destdir" value="${fragment_dir}/ws/linux" />
     <property name="lib_destdir" value="${fragment_dir}/os/linux/x86" />
 	
-    <mkdir dir="${jar_destdir}" />
     <mkdir dir="${lib_destdir}" />
 </target>
 
