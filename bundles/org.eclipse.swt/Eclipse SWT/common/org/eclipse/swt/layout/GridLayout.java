@@ -393,7 +393,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 									trim = child.getBorderWidth () * 2;
 								}
 								currentWidth = Math.max (0, currentWidth - trim);
-								Point size = child.computeSize (currentWidth, data.heightHint, true);
+								Point size = child.computeSize (currentWidth, data.heightHint, flushCache);
 								data.cacheWidth = size.x;
 								data.cacheHeight = size.y;
 								data.flushCache = true;
