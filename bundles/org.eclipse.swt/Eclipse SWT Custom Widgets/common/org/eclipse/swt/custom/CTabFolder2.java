@@ -78,17 +78,14 @@ public class CTabFolder2 extends Composite {
 	
 	/**
 	 * Color of innermost line of drop shadow border.
-	 * @deprecated
 	 */
 	public static RGB borderInsideRGB  = new RGB (132, 130, 132);
 	/**
 	 * Color of middle line of drop shadow border.
-	 * @deprecated
 	 */
 	public static RGB borderMiddleRGB  = new RGB (143, 141, 138);
 	/**
 	 * Color of outermost line of drop shadow border.
-	 * @deprecated
 	 */
 	public static RGB borderOutsideRGB = new RGB (171, 168, 165); 
 
@@ -724,7 +721,7 @@ void drawBorder(GC gc) {
 		for (int i = 0; i < shape.length/2; i++) { 
 			shape2[index] = shape[index++] + (left ? -1 : +1);
 			shape2[index] = shape[index++];
-			if (left) left = onBottom ? shape[index+1] < itemY +itemH - 1 : shape[index+1] > itemY;
+			if (left && (index + 1 < shape.length)) left = onBottom ? shape[index+1] < itemY +itemH - 1 : shape[index+1] > itemY;
 		}
 		RGB from = CTabFolder2.borderColor1.getRGB();
 		RGB to = single ? getBackground().getRGB() : getParent().getBackground().getRGB();
@@ -741,7 +738,7 @@ void drawBorder(GC gc) {
 		for (int i = 0; i < shape.length/2; i++) {
 			shape3[index] = shape[index++] + (left ? +1 : -1);
 			shape3[index] = shape[index++];
-			if (left) left = onBottom ? shape[index+1] < itemY +itemH - 1 : shape[index+1] > itemY;
+			if (left && (index + 1 < shape.length)) left = onBottom ? shape[index+1] < itemY +itemH - 1 : shape[index+1] > itemY;
 		}
 		from = CTabFolder2.borderColor1.getRGB();
 		to = selectionBackground == null ? getBackground().getRGB() : selectionBackground.getRGB();
@@ -2352,17 +2349,6 @@ public void setBackground (Color color) {
 }
 
 /**
- * @deprecated
- * @since 3.0
- */
-public void setBorderColor(Color color) {
-	checkWidget();
-//	if (color == null) color = getDisplay().getSystemColor(BORDER_COLOR);
-//	borderColor = color;
-//	redraw();
-}
-
-/**
  * Toggle the visibility of the border
  * 
  * @param show true if the border should be displayed
@@ -2423,7 +2409,7 @@ boolean setButtonBounds() {
 	if (items.length > 1) {
 		if (single && selectedIndex != -1){
 			CTabItem2 item = items[selectedIndex];
-			chevronRect.x = Math.min(item.x +item.width + CURVE_WIDTH/2 - decoratorWidth, size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth - 3);
+			chevronRect.x = Math.min(item.x +item.width, size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth - 3);
 			if (borderRight > 0) chevronRect.x += 1;
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
 			chevronRect.width = decoratorWidth;
