@@ -140,6 +140,8 @@ public class CTabFolder extends Composite {
 	                         
 	// tool tip
 	private Shell tip;
+	
+	private boolean inDoubleClick = false;
 
 /**
  * Construct a CTabFolder with the specified parent and style.
@@ -183,6 +185,7 @@ public CTabFolder(Composite parent, int style) {
 	};
 	addListener(SWT.Dispose, listener);
 	addListener(SWT.MouseUp, listener);
+	addListener(SWT.MouseDoubleClick, listener);
 	addListener(SWT.MouseMove, listener);
 	addListener(SWT.MouseExit, listener);
 	addListener(SWT.Paint, listener);
@@ -650,6 +653,9 @@ private void handleEvents (Event event){
 			break;
 		case SWT.Resize:
 			onResize();
+			break;
+		case SWT.MouseDoubleClick:
+			inDoubleClick = true;
 			break;
 		case SWT.MouseUp:
 			onMouseUp(event);
@@ -1397,7 +1403,15 @@ private void initScrollBarImages() {
  * direction.
  * If a tab was hit select the tab.
  */
-private void onMouseUp(Event event) {
+private void onMouseUp(Event event) { 
+	if (inDoubleClick) {
+		inDoubleClick = false;
+		Event e = new Event();
+		e.item = getItem(new Point(event.x, event.y));
+		notifyListeners(SWT.DefaultSelection, e);
+		return;
+	}
+	
 	for (int i=0; i<items.length; i++) {
 		if (items[i].getBounds().contains(new Point(event.x, event.y))) {
 			setSelectionNotify(i);
