@@ -953,7 +953,7 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	* NOTE:  In version 6.00 of COMCTL32.DLL, when WM_SETREDRAW
 	* is off, we cannot detect that the size has changed causing
 	* pixel corruption.  The fix is to disallow WM_SETREDRAW by
-	* by not running the default window proc or the rebar window
+	* not running the default window proc or the rebar window
 	* proc.
 	*/
 	if (COMCTL32_MAJOR >= 6) return LRESULT.ZERO;
