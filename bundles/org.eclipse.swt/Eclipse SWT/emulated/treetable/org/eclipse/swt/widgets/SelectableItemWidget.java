@@ -353,16 +353,23 @@ void deselectAllExcept(Vector keepSelected) {
  * Deselect 'item'. Notify listeners.
  * @param item - item that should be deselected
  */
-void deselectNotify(SelectableItem item) {
-	Event event = new Event();
-
+void deselectNotify(final SelectableItem item) {
 	if (item.isSelected() == true) {
 		deselect(item);
 		setLastSelection(item, true);		
 		update();												// looks better when event notification takes long to return
 	}
-	event.item = item;
-	notifyListeners(SWT.Selection, event);
+	display.asyncExec(new Runnable() {
+		public void run() {
+			// Only send a selection event when the item has not been disposed.
+			// Fixes 1GE6XQA
+			if (item.isDisposed() == false) {
+				Event event = new Event();
+				event.item = item;
+				notifyListeners(SWT.Selection, event);
+			}
+		}
+	});
 }
 /**
  * Deselect all items starting at and including 'fromIndex'
@@ -1713,7 +1720,7 @@ void selectNotify(final SelectableItem item, boolean asyncNotify) {
  * @param item - item that should be selected
  */
 void selectNotify(SelectableItem item) {
-	selectNotify(item, false);
+	selectNotify(item, true);
 }
 /**
  * Select all items of the receiver starting at 'fromIndex' 
