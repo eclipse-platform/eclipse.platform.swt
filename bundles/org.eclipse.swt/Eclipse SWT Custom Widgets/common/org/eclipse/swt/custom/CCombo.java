@@ -124,7 +124,7 @@ public CCombo (Composite parent, int style) {
 	int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.FocusOut};
 	for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
 	
-	int [] arrowEvents = {SWT.MouseDown, SWT.FocusIn, SWT.FocusOut};
+	int [] arrowEvents = {SWT.Selection, SWT.FocusIn, SWT.FocusOut};
 	for (int i=0; i<arrowEvents.length; i++) arrow.addListener (arrowEvents [i], listener);
 	
 	initAccessible();
@@ -240,8 +240,7 @@ void arrowEvent (Event event) {
 			notifyListeners(SWT.FocusOut, e);
 			break;
 		}
-		case SWT.MouseDown: {
-			if (event.button != 1) return;
+		case SWT.Selection: {
 			dropDown (!isDropped ());
 			break;
 		}
