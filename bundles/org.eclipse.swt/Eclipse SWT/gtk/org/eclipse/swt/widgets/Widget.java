@@ -1106,6 +1106,7 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 		case OS.GDK_Linefeed:		event.character = '\n'; break;
 		case OS.GDK_KP_Enter:
 		case OS.GDK_Return: 		event.character = '\r'; break;
+		case OS.GDK_KP_Delete:
 		case OS.GDK_Delete:		event.character = 0x7F; break;
 		case OS.GDK_Cancel:
 		case OS.GDK_Escape:		event.character = 0x1B; break;
@@ -1117,15 +1118,15 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 				if (OS.gdk_keymap_translate_keyboard_state(OS.gdk_keymap_get_default (), keyEvent.hardware_keycode, 0, keyEvent.group, keyval, effective_group, level, consumed_modifiers)) {
 					event.keyCode = OS.gdk_keyval_to_unicode (keyval [0]);
 				}
-				int key = keyEvent.keyval;
-				if ((keyEvent.state & OS.GDK_CONTROL_MASK) != 0 && (0 <= key && key <= 0x7F)) {
-					if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
-					if (64 <= key && key <= 95) key -= 64;
-					event.character = (char) key;
-					isNull = keyEvent.keyval == '@' && key == 0;
-				} else {
-					event.character = (char) OS.gdk_keyval_to_unicode (key);
-				}
+			}
+			int key = keyEvent.keyval;
+			if ((keyEvent.state & OS.GDK_CONTROL_MASK) != 0 && (0 <= key && key <= 0x7F)) {
+				if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
+				if (64 <= key && key <= 95) key -= 64;
+				event.character = (char) key;
+				isNull = keyEvent.keyval == '@' && key == 0;
+			} else {
+				event.character = (char) OS.gdk_keyval_to_unicode (key);
 			}
 		}
 	}

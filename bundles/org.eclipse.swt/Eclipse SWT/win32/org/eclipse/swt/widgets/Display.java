@@ -237,6 +237,7 @@ public class Display extends Device {
 		{OS.VK_PAUSE,		SWT.PAUSE},
 		{OS.VK_CANCEL,		SWT.BREAK},
 		{OS.VK_SNAPSHOT,	SWT.PRINT_SCREEN},
+//		{OS.VK_????,		SWT.HELP},
 		
 	};
 

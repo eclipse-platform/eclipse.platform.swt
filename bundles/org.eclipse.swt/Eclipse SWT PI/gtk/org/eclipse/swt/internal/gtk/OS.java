@@ -47,7 +47,9 @@ public class OS {
 	public static final int GDK_COPY = 0x0;
 	public static final int GDK_CROSS = 0x1e;
 	public static final int GDK_CROSSING_NORMAL = 0;
+	public static final int GDK_Break = 0xff6b;
 	public static final int GDK_Cancel = 0xff69;
+	public static final int GDK_Caps_Lock = 0xffE5;
 	public static final int GDK_Clear = 0xff0B;
 	public static final int GDK_Control_L = 0xffe3;
 	public static final int GDK_Control_R = 0xffe4;
@@ -71,6 +73,9 @@ public class OS {
 	public static final int GDK_F10 = 0xffc7;
 	public static final int GDK_F11 = 0xffc8;
 	public static final int GDK_F12 = 0xffc9;
+	public static final int GDK_F13 = 0xffca;
+	public static final int GDK_F14 = 0xffcb;
+	public static final int GDK_F15 = 0xffcc;
 	public static final int GDK_F2 = 0xffbf;
 	public static final int GDK_F3 = 0xffc0;
 	public static final int GDK_F4 = 0xffc1;
@@ -86,6 +91,7 @@ public class OS {
 	public static final int GDK_GC_CLIP_Y_ORIGIN = 0x1000;
 	public static final int GDK_GRAB_SUCCESS = 0x0;
 	public static final int GDK_HAND1 = 0x3a;
+	public static final int GDK_Help = 0xFF6A;
 	public static final int GDK_Home = 0xff50;
 	public static final int GDK_INCLUDE_INFERIORS = 0x1;
 	public static final int GDK_INTERP_BILINEAR = 0x2;
@@ -108,10 +114,20 @@ public class OS {
 	public static final int GDK_KP_9 = 0xffb9;
 	public static final int GDK_KP_Add = 0xffab;
 	public static final int GDK_KP_Decimal = 0xffae;
+	public static final int GDK_KP_Delete = 0xFF9F;
 	public static final int GDK_KP_Divide = 0xffaf;
+	public static final int GDK_KP_Down = 0xFF99;
+	public static final int GDK_KP_End = 0xFF9C;
 	public static final int GDK_KP_Enter = 0xff8d;
+	public static final int GDK_KP_Home = 0xFF95;
+	public static final int GDK_KP_Insert = 0xFF9E;
+	public static final int GDK_KP_Left = 0xFF96;
 	public static final int GDK_KP_Multiply = 0xffaa;
+	public static final int GDK_KP_Page_Down = 0xFF9B;
+	public static final int GDK_KP_Page_Up = 0xFF9A;
+	public static final int GDK_KP_Right = 0xFF98;
 	public static final int GDK_KP_Subtract = 0xffad;
+	public static final int GDK_KP_Up = 0xFF97;
 	public static final int GDK_LEAVE_NOTIFY_MASK = 0x2000;
 	public static final int GDK_LEFT_PTR = 0x44;
 	public static final int GDK_LEFT_SIDE = 0x46;
@@ -125,6 +141,7 @@ public class OS {
 	public static final int GDK_MOD1_MASK = 0x8;
 	public static final int GDK_MOTION_NOTIFY = 0x3;
 	public static final int GDK_NONE = 0;
+	public static final int GDK_Num_Lock = 0xFF7F;
 	public static final int GDK_OVERLAP_RECTANGLE_OUT = 0x1;
 	public static final int GDK_PIXBUF_ALPHA_BILEVEL = 0x0;
 	public static final int GDK_POINTER_MOTION_HINT_MASK = 0x8;
@@ -132,6 +149,7 @@ public class OS {
 	public static final int GDK_Page_Down = 0xff56;
 	public static final int GDK_Page_Up = 0xff55;
 	public static final int GDK_Pause = 0xff13;
+	public static final int GDK_Print = 0xff61;
 	public static final int GDK_QUESTION_ARROW = 0x5c;
 	public static final int GDK_RGB_DITHER_NORMAL = 0x1;
 	public static final int GDK_RIGHT_SIDE = 0x60;
