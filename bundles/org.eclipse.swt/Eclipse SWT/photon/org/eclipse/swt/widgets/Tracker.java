@@ -27,7 +27,15 @@ public class Tracker extends Widget {
 	Composite parent;
 	Display display;
 	boolean tracking, stippled;
-	Rectangle [] rectangles = new Rectangle [0];
+	Rectangle [] rectangles, proportions;
+	int resizeCursor, clientCursor, clientBitmap;
+	int cursorOrientation = SWT.NONE;
+
+	/*
+	* The following values mirror step sizes on Windows
+	*/
+	final static int STEPSIZE_SMALL = 1;
+	final static int STEPSIZE_LARGE = 9;
 	
 /**
  * Constructs a new instance of this class given the display
@@ -64,7 +72,7 @@ public Tracker (Display display, int style) {
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
-	this.style = style;
+	this.style = checkStyle (style);
 	this.display = display;
 }
 
@@ -97,10 +105,11 @@ public Tracker (Display display, int style) {
  * @see Widget#getStyle
  */
 public Tracker (Composite parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle (style));
 	this.parent = parent;
-	this.display = parent.getDisplay ();
+	display = parent.getDisplay ();
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -126,6 +135,103 @@ public void addControlListener(ControlListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Move,typedListener);
 }
+
+Point adjustMoveCursor () {
+	Rectangle bounds = computeBounds ();
+	int newX = bounds.x + bounds.width / 2;
+	int newY = bounds.y;
+	/*
+	 * Convert to screen coordinates iff needed
+ 	 */
+	if (parent != null) {
+		short [] x = new short [1], y = new short [1];
+		OS.PtGetAbsPosition (parent.handle, x, y);
+		newX += x [0];
+		newY += y [0];
+	}
+	OS.PhMoveCursorAbs(OS.PhInputGroup (0), newX, newY);
+	return new Point (newX, newY);
+}
+
+Point adjustResizeCursor () {
+	int newX, newY;
+	Rectangle bounds = computeBounds ();
+
+	if ((cursorOrientation & SWT.LEFT) != 0) {
+		newX = bounds.x;
+	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
+		newX = bounds.x + bounds.width;
+	} else {
+		newX = bounds.x + bounds.width / 2;
+	}
+
+	if ((cursorOrientation & SWT.UP) != 0) {
+		newY = bounds.y;
+	} else if ((cursorOrientation & SWT.DOWN) != 0) {
+		newY = bounds.y + bounds.height;
+	} else {
+		newY = bounds.y + bounds.height / 2;
+	}
+
+	/*
+	 * Convert to screen coordinates iff needed
+ 	 */
+	if (parent != null) {
+		short [] x = new short [1], y = new short [1];
+		OS.PtGetAbsPosition (parent.handle, x, y);
+		newX += x [0];
+		newY += y [0];
+	}
+	OS.PhMoveCursorAbs(OS.PhInputGroup (0), newX, newY);
+
+	/*
+	* If the client has not provided a custom cursor then determine
+	* the appropriate resize cursor.
+	*/
+	if (clientCursor == 0) {
+		int newCursor = 0;
+		switch (cursorOrientation) {
+			case SWT.UP:
+				newCursor = OS.Ph_CURSOR_DRAG_TOP;
+				break;
+			case SWT.DOWN:
+				newCursor = OS.Ph_CURSOR_DRAG_BOTTOM;
+				break;
+			case SWT.LEFT:
+				newCursor = OS.Ph_CURSOR_DRAG_LEFT;
+				break;
+			case SWT.RIGHT:
+				newCursor = OS.Ph_CURSOR_DRAG_RIGHT;
+				break;
+			case SWT.LEFT | SWT.UP:
+				newCursor = OS.Ph_CURSOR_DRAG_TL;
+				break;
+			case SWT.RIGHT | SWT.DOWN:
+				newCursor = OS.Ph_CURSOR_DRAG_BR;
+				break;
+			case SWT.LEFT | SWT.DOWN:
+				newCursor = OS.Ph_CURSOR_DRAG_BL;
+				break;
+			case SWT.RIGHT | SWT.UP:
+				newCursor = OS.Ph_CURSOR_DRAG_TR;
+				break;
+			default:
+				newCursor = OS.Ph_CURSOR_MOVE;
+				break;
+		}
+		resizeCursor = newCursor;
+	}
+		
+	return new Point (newX, newY);
+}
+
+static int checkStyle (int style) {
+	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN)) == 0) {
+		style |= SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN;
+	}
+	return style;
+}
+
 /**
  * Stop displaying the tracker rectangles.
  *
@@ -139,7 +245,38 @@ public void close () {
 	tracking = false;
 }
 
-void drawRectangles () {
+Rectangle computeBounds () {
+	int xMin = rectangles [0].x;
+	int yMin = rectangles [0].y;
+	int xMax = rectangles [0].x + rectangles [0].width;
+	int yMax = rectangles [0].y + rectangles [0].height;
+	
+	for (int i = 1; i < rectangles.length; i++) {
+		if (rectangles [i].x < xMin) xMin = rectangles [i].x;
+		if (rectangles [i].y < yMin) yMin = rectangles [i].y;
+		int rectRight = rectangles [i].x + rectangles [i].width;
+		if (rectRight > xMax) xMax = rectRight;		
+		int rectBottom = rectangles [i].y + rectangles [i].height;
+		if (rectBottom > yMax) yMax = rectBottom;
+	}
+	
+	return new Rectangle (xMin, yMin, xMax - xMin, yMax - yMin);
+}
+
+Rectangle [] computeProportions (Rectangle [] rects) {
+	Rectangle [] result = new Rectangle [rects.length];
+	Rectangle bounds = computeBounds ();
+	for (int i = 0; i < rects.length; i++) {
+		result[i] = new Rectangle (
+			(rects[i].x - bounds.x) * 100 / bounds.width,
+			(rects[i].y - bounds.y) * 100 / bounds.height,
+			rects[i].width * 100 / bounds.width,
+			rects[i].height * 100 / bounds.height);
+	}
+	return result;
+}
+
+void drawRectangles (Rectangle [] rects) {
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		parent.getShell ().update ();
@@ -161,8 +298,8 @@ void drawRectangles () {
 		bandWidth = 2;
 		OS.PgSetFillTransPat (OS.Pg_PAT_HALF);
 	}
-	for (int i=0; i<rectangles.length; i++) {
-		Rectangle r = rectangles [i];
+	for (int i=0; i<rects.length; i++) {
+		Rectangle r = rects [i];
 		int x1 = r.x;
 		int y1 = r.y;
 		int x2 = r.x + r.width;
@@ -194,6 +331,7 @@ public Rectangle [] getRectangles () {
 	checkWidget();
 	return rectangles;
 }
+
 /**
  * Returns <code>true</code> if the rectangles are drawn with a stippled line, <code>false</code> otherwise.
  *
@@ -208,6 +346,20 @@ public boolean getStippled () {
 	checkWidget();
 	return stippled;
 }
+
+void moveRectangles (int xChange, int yChange) {
+	if (xChange < 0 && ((style & SWT.LEFT) == 0)) return;
+	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) return;
+	if (yChange < 0 && ((style & SWT.UP) == 0)) return;
+	if (yChange > 0 && ((style & SWT.DOWN) == 0)) return;
+	Rectangle bounds = computeBounds ();
+	bounds.x += xChange; bounds.y += yChange;
+	for (int i = 0; i < rectangles.length; i++) {
+		rectangles [i].x += xChange;
+		rectangles [i].y += yChange;
+	}
+}
+
 /**
  * Start displaying the Tracker rectangles.
  * 
@@ -218,33 +370,64 @@ public boolean getStippled () {
  */
 public boolean open () {
 	checkWidget();
-	int sense = OS.Ph_EV_DRAG | OS.Ph_EV_KEY | OS.Ph_EV_BUT_PRESS |
-		OS.Ph_EV_BUT_RELEASE | OS.Ph_EV_PTR_MOTION;
-	int [] args = {
-		OS.Pt_ARG_WIDTH, 0, 0,
-		OS.Pt_ARG_HEIGHT, 0, 0,
-		OS.Pt_ARG_REGION_OPAQUE, 0, ~0,
-		OS.Pt_ARG_REGION_SENSE, sense, ~0,
-		OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0,
-	};
-	OS.PtSetParentWidget (0);
-	int handle = OS.PtCreateWidget (OS.PtRegion (), 0, args.length / 3, args);
-	OS.PtRealizeWidget (handle);
-	PhRect_t rect = new PhRect_t ();
-	int rid = OS.PtWidgetRid (handle);
+	if (rectangles == null) return false;
+	
 	int input_group = OS.PhInputGroup (0);
-	OS.PhInitDrag (rid, OS.Ph_DRAG_KEY_MOTION | OS.Ph_TRACK_DRAG, rect, null, input_group, null, null, null, null, null);
 	PhCursorInfo_t info = new PhCursorInfo_t ();
 	OS.PhQueryCursor ((short)input_group, info);
-	int oldX = info.pos_x;
-	int oldY = info.pos_y;
+	
+	if ((style & SWT.MENU) == 0) {
+		/*
+		* This code is intentionally commented. Tracking can happen through
+		* the keyboard.
+		*/
+//		if ((info.button_state & OS.Ph_BUTTON_SELECT) == 0) return false;
+	}
+	
+	int region = 0;
+	if (info.dragger == 0) {
+		PgDisplaySettings_t settings = new PgDisplaySettings_t ();
+		OS.PgGetVideoMode (settings);
+		int sense = OS.Ph_EV_DRAG | OS.Ph_EV_KEY | OS.Ph_EV_BUT_PRESS |
+			OS.Ph_EV_BUT_RELEASE | OS.Ph_EV_PTR_MOTION;
+		int [] args = {
+			OS.Pt_ARG_WIDTH, settings.xres, 0,
+			OS.Pt_ARG_HEIGHT, settings.yres, 0,
+			OS.Pt_ARG_REGION_OPAQUE, 0, ~0,
+			OS.Pt_ARG_REGION_SENSE, sense, ~0,
+			OS.Pt_ARG_REGION_FLAGS, OS.Ph_FORCE_BOUNDARY, OS.Ph_FORCE_BOUNDARY,
+			OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0,
+		};
+		region = OS.PtCreateWidget (OS.PtRegion (), OS.Pt_NO_PARENT, args.length / 3, args);
+		OS.PtRealizeWidget (region);
+	
+		PhRect_t rect = new PhRect_t ();
+		int rid = OS.PtWidgetRid (region);
+		OS.PhInitDrag (rid, OS.Ph_DRAG_KEY_MOTION | OS.Ph_TRACK_DRAG, rect, null, input_group, null, null, null, null, null);
+	}
+
+	int oldX, oldY;
 	int size = PhEvent_t.sizeof + 1024;
 	int buffer = OS.malloc (size);
-	PhEvent_t event = new PhEvent_t ();
-	Event ev = new Event ();
+	PhEvent_t phEvent = new PhEvent_t ();
+	Event event = new Event ();
+	Point cursorPos;
 
-	drawRectangles ();
-	boolean tracking = true;
+	drawRectangles (rectangles);
+	if ((style & SWT.MENU) == 0) {
+		oldX = info.pos_x;
+		oldY = info.pos_y;
+	} else {
+		if ((style & SWT.RESIZE) != 0) {
+			cursorPos = adjustResizeCursor ();
+		} else {
+			cursorPos = adjustMoveCursor ();
+		}
+		oldX = cursorPos.x;
+		oldY = cursorPos.y;
+	}
+	
+	tracking = true;
 	boolean cancelled = false;
 	while (tracking && !cancelled) {
 		if (parent != null && parent.isDisposed ()) break;
@@ -257,9 +440,12 @@ public boolean open () {
 				buffer = OS.malloc (size);
 				continue;
 		}
-		OS.memmove (event, buffer, PhEvent_t.sizeof);
-		if (event.type == OS.Ph_EV_DRAG) {
-			switch (event.subtype) {
+		OS.memmove (phEvent, buffer, PhEvent_t.sizeof);
+		if (phEvent.type == OS.Ph_EV_BUT_RELEASE) {
+			System.out.println(WidgetTable.get(phEvent.collector_handle));
+		}
+		if (phEvent.type == OS.Ph_EV_DRAG) {
+			switch (phEvent.subtype) {
 				case OS.Ph_EV_DRAG_MOTION_EVENT: {
 					int data = OS.PhGetData (buffer);
 					if (data == 0) break;
@@ -268,10 +454,17 @@ public boolean open () {
 					int newX = pe.pos_x;
 					int newY = pe.pos_y;
 					if (newX != oldX || newY != oldY) {
-						drawRectangles ();
-						for (int i=0; i<rectangles.length; i++) {
-							rectangles [i].x += newX - oldX;
-							rectangles [i].y += newY - oldY;
+						drawRectangles (rectangles);
+						event.x = newX;
+						event.y = newY;
+						if ((style & SWT.RESIZE) != 0) {
+							resizeRectangles (newX - oldX, newY - oldY);
+							cursorPos = adjustResizeCursor ();
+							newX = cursorPos.x; newY = cursorPos.y;
+							sendEvent (SWT.Resize, event);
+						} else {
+							moveRectangles (newX - oldX, newY - oldY);
+							sendEvent (SWT.Move, event);
 						}
 						/*
 						* It is possible (but unlikely), that application
@@ -279,13 +472,9 @@ public boolean open () {
 						* event.  If this happens, return false to indicate
 						* that the tracking has failed.
 						*/
-						ev.x = newX;
-						ev.y = newY;
-						sendEvent (SWT.Move, ev);
 						if (isDisposed ()) return false;
-						drawRectangles ();
-						oldX = newX;
-						oldY = newY;
+						drawRectangles (rectangles);
+						oldX = newX;  oldY = newY;
 					}
 					break;
 				}
@@ -295,7 +484,54 @@ public boolean open () {
 					PhKeyEvent_t ke = new PhKeyEvent_t ();
 					OS.memmove (ke, data, PhKeyEvent_t.sizeof);
 					if ((ke.key_flags & OS.Pk_KF_Sym_Valid) != 0) {
-						cancelled = ke.key_sym == OS.Pk_Escape;
+						int stepSize = (ke.key_mods & OS.Pk_KM_Ctrl) != 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
+						int xChange = 0, yChange = 0;
+						switch (ke.key_sym) {
+							case OS.Pk_Escape:
+								cancelled = true;
+								tracking = false;
+								break;
+							case OS.Pk_Return:
+								tracking = false;
+								break;
+							case OS.Pk_Left:
+								xChange = -stepSize;
+								break;
+							case OS.Pk_Right:
+								xChange = stepSize;
+								break;
+							case OS.Pk_Up:
+								yChange = -stepSize;
+								break;
+							case OS.Pk_Down:
+								yChange = stepSize;
+								break;
+						}
+						if (xChange != 0 || yChange != 0) {
+							drawRectangles (rectangles);
+							int newX = oldX + xChange;
+							int newY = oldY + yChange;
+							event.x = newX;
+							event.y = newY;
+							if ((style & SWT.RESIZE) != 0) {
+								resizeRectangles (xChange, yChange);
+								cursorPos = adjustResizeCursor ();
+								sendEvent (SWT.Resize, event);
+							} else {
+								moveRectangles (xChange, yChange);
+								cursorPos = adjustMoveCursor ();
+								sendEvent (SWT.Move, event);
+							}
+							/*
+							* It is possible (but unlikely) that application
+							* code could have disposed the widget in the move
+							* event.  If this happens return false to indicate
+							* that the tracking has failed.
+							*/
+							if (isDisposed ()) return false;
+							drawRectangles (rectangles);
+							oldX = cursorPos.x;  oldY = cursorPos.y;
+						}
 					}
 					break;
 				}
@@ -304,20 +540,31 @@ public boolean open () {
 					break;
 				}
 			}
+			if (phEvent.collector_handle != 0) {
+				setCursor (phEvent.collector_handle);
+			}
+			/*
+			* Don't dispatch mouse and key events in general, EXCEPT once this
+			* tracker has finished its work.
+			*/
+			if (tracking && !cancelled) continue;
+				
 		}
 		OS.PtEventHandler (buffer);
 	}
-	drawRectangles ();
+	drawRectangles (rectangles);
 	tracking = false;
-	OS.PtDestroyWidget (handle);
+	if (region != 0) OS.PtDestroyWidget (region);
 	return !cancelled;
 }
+
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
 	display = null;
 	rectangles = null;
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control is moved or resized.
@@ -341,8 +588,93 @@ public void removeControlListener (ControlListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
 }
-public void setCursor (Cursor value) {
+
+void resizeRectangles (int xChange, int yChange) {
+	/*
+	* If the cursor orientation has not been set in the orientation of
+	* this change then try to set it here.
+	*/
+	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
+		cursorOrientation |= SWT.LEFT;
+	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
+		cursorOrientation |= SWT.RIGHT;
+	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
+		cursorOrientation |= SWT.UP;
+	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
+		cursorOrientation |= SWT.DOWN;
+	}
+	Rectangle bounds = computeBounds ();
+	if ((cursorOrientation & SWT.LEFT) != 0) {
+		bounds.x += xChange;
+		bounds.width -= xChange;
+	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
+		bounds.width += xChange;
+	}
+	if ((cursorOrientation & SWT.UP) != 0) {
+		bounds.y += yChange;
+		bounds.height -= yChange;
+	} else if ((cursorOrientation & SWT.DOWN) != 0) {
+		bounds.height += yChange;
+	}
+	/*
+	* The following are conditions under which the resize should not be applied
+	*/
+	if (bounds.width < 0 || bounds.height < 0) return;
+	
+	Rectangle [] newRects = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
+		Rectangle proportion = proportions[i];
+		newRects[i] = new Rectangle (
+			proportion.x * bounds.width / 100 + bounds.x,
+			proportion.y * bounds.height / 100 + bounds.y,
+			proportion.width * bounds.width / 100,
+			proportion.height * bounds.height / 100);
+	}
+	rectangles = newRects;	
 }
+
+public void setCursor (Cursor cursor) {
+	checkWidget();
+	int type = 0;
+	int bitmap = 0;
+	if (cursor != null) {
+		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		type = cursor.type;
+		bitmap = cursor.bitmap;
+	}
+	clientCursor = type;
+	clientBitmap = bitmap;
+}
+
+void setCursor (int cursorHandle) {
+	if (cursorHandle == 0) return;
+	int type = 0;
+	int bitmap = 0;
+	if (clientCursor != 0) {
+		type = clientCursor;
+		bitmap = clientBitmap;
+	} else if (resizeCursor != 0) {
+		type = resizeCursor;
+	}
+	int [] args = new int []{
+		OS.Pt_ARG_CURSOR_TYPE, type, 0,
+		OS.Pt_ARG_BITMAP_CURSOR, bitmap, 0,
+	};
+	OS.PtSetResources (cursorHandle, args.length / 3, args);
+	
+	/*
+	* Bug in Photon. For some reason, the widget cursor will
+	* not change, when the new cursor is a bitmap cursor, if
+	* the flag Ph_CURSOR_NO_INHERIT is reset. The fix is to reset
+	* this flag after changing the cursor type to Ph_CURSOR_BITMAP.
+	*/
+	if (type == OS.Ph_CURSOR_BITMAP) {
+		type &= ~OS.Ph_CURSOR_NO_INHERIT;
+		args = new int []{OS.Pt_ARG_CURSOR_TYPE, type, 0};
+		OS.PtSetResources (cursorHandle, args.length / 3, args);
+	}
+}
+
 /**
  * Specify the rectangles that should be drawn.
  *
@@ -357,7 +689,9 @@ public void setRectangles (Rectangle [] rectangles) {
 	checkWidget();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.rectangles = rectangles;
+	proportions = computeProportions (rectangles);
 }
+
 /**
  * Change the appearance of the line used to draw the rectangles.
  *
