@@ -706,6 +706,19 @@ public boolean setFocus () {
 	}
 	return super.setFocus ();
 }
+void setForegroundPixel (int pixel) {
+	super.setForegroundPixel (pixel);
+	if ((state & CANVAS) != 0) {
+		int xDisplay = OS.XtDisplay (handle);
+		if (xDisplay == 0) return;
+		int xWindow = OS.XtWindow (handle);
+		if (xWindow == 0) return;
+		int [] argList = {OS.XmNforeground, 0};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		if (pixel == argList [1]) return;
+		OS.XClearArea (xDisplay, xWindow, 0, 0, 0, 0, true);
+	}
+}
 /**
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.

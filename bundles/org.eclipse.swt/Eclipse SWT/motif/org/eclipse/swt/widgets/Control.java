@@ -2118,11 +2118,6 @@ public void setForeground (Color color) {
 void setForegroundPixel (int pixel) {
 	int [] argList = {OS.XmNforeground, pixel};
 	OS.XtSetValues (handle, argList, argList.length / 2);
-	int xDisplay = OS.XtDisplay (handle);
-	if (xDisplay == 0) return;
-	int xWindow = OS.XtWindow (handle);
-	if (xWindow == 0) return;
-	OS.XClearArea (xDisplay, xWindow, 0, 0, 0, 0, true);
 }
 /**
  * Sets the layout data associated with the receiver to the argument.
