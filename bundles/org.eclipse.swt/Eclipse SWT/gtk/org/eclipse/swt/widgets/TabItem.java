@@ -218,6 +218,10 @@ void releaseWidget () {
  */
 public void setControl (Control control) {
 	checkWidget ();
+	if (control != null) {
+		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
+	}
 	Control oldControl = this.control, newControl = control;
 	this.control = control;
 	int index = parent.indexOf (this);
