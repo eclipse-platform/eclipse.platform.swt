@@ -13,7 +13,6 @@ package org.eclipse.swt.browser;
 import org.eclipse.swt.internal.mozilla.*;
 
 class InputStream {
-	XPCOMObject supports;
 	XPCOMObject inputStream;
 	int refCount = 0;
 
@@ -33,12 +32,6 @@ int AddRef() {
 
 void createCOMInterfaces() {
 	/* Create each of the interfaces that this object implements */
-	supports = new XPCOMObject(new int[]{2, 0, 0}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-	};
-	
 	inputStream = new XPCOMObject(new int[]{2, 0, 0, 0, 1, 3, 4, 1}){
 		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
@@ -52,10 +45,6 @@ void createCOMInterfaces() {
 }
 
 void disposeCOMInterfaces() {
-	if (supports != null) {
-		supports.dispose();
-		supports = null;
-	}	
 	if (inputStream != null) {
 		inputStream.dispose();
 		inputStream = null;	
@@ -72,7 +61,7 @@ int queryInterface(int riid, int ppvObject) {
 	XPCOM.memmove(guid, riid, nsID.sizeof);
 	
 	if (guid.Equals(nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {supports.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int[] {inputStream.getAddress()}, 4);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
@@ -132,8 +121,8 @@ int ReadSegments(int aWriter, int aClosure, int aCount, int _retval) {
 }
 
 int IsNonBlocking(int _retval) {
-	/* non blocking */
-	XPCOM.memmove(_retval, new int[] {1}, 4);
+	/* blocking */
+	XPCOM.memmove(_retval, new int[] {0}, 4);
 	return XPCOM.NS_OK;
 }		
 }
