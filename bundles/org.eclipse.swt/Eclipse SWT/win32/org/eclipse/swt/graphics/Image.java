@@ -1686,6 +1686,8 @@ static int[] init(Device device, Image image, ImageData source, ImageData mask) 
 			imageData.setPixels(0, y, source.width, imagePixels, 0);
 		}
 	}
+	imageData.maskPad = mask.scanlinePad;
+	imageData.maskData = mask.data;	
 	return init(device, image, imageData);
 }
 void init(Device device, ImageData i) {
