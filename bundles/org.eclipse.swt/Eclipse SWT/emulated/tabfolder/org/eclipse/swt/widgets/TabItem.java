@@ -199,7 +199,7 @@ private int imageHeight() {
 	
 	if (parent.getImageHeight() != -1) {
 		return parent.getImageHeight();
-	} else if (image != null) {
+	} else if (image != null && !image.isDisposed()) {
 		return image.getBounds().height;
 	}
 	else {
@@ -212,7 +212,7 @@ private int imageHeight() {
 private int imageWidth() {
 	Image image = getImage();
 	
-	if (image != null) {
+	if (image != null && !image.isDisposed()) {
 		return image.getBounds().width;
 	} else {
 		return 0;
