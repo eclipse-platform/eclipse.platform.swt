@@ -874,6 +874,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1utf16_1to_1utf8)
 }
 #endif
 
+#ifndef NO_g_1utf8_1offset_1to_1pointer
+JNIEXPORT jint JNICALL OS_NATIVE(g_1utf8_1offset_1to_1pointer)
+	(JNIEnv *env, jclass that, jint arg0, jlong arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "g_1utf8_1offset_1to_1pointer\n")
+	rc = (jint)g_utf8_offset_to_pointer((const gchar *)arg0, arg1);
+	NATIVE_EXIT(env, that, "g_1utf8_1offset_1to_1pointer\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1utf8_1pointer_1to_1offset
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1utf8_1pointer_1to_1offset)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jlong rc;
+	NATIVE_ENTER(env, that, "g_1utf8_1pointer_1to_1offset\n")
+	rc = (jlong)g_utf8_pointer_to_offset((const gchar *)arg0, (const gchar *)arg1);
+	NATIVE_EXIT(env, that, "g_1utf8_1pointer_1to_1offset\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1utf8_1strlen
 JNIEXPORT jint JNICALL OS_NATIVE(g_1utf8_1strlen)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -882,18 +906,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1utf8_1strlen)
 	NATIVE_ENTER(env, that, "g_1utf8_1strlen\n")
 	rc = (jint)g_utf8_strlen((const gchar *)arg0, arg1);
 	NATIVE_EXIT(env, that, "g_1utf8_1strlen\n")
-	return rc;
-}
-#endif
-
-#ifndef NO_g_1utf8_1strncpy
-JNIEXPORT jint JNICALL OS_NATIVE(g_1utf8_1strncpy)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	jint rc;
-	NATIVE_ENTER(env, that, "g_1utf8_1strncpy\n")
-	rc = (jint)g_utf8_strncpy((gchar*)arg0, (const gchar*)arg1, arg2);
-	NATIVE_EXIT(env, that, "g_1utf8_1strncpy\n")
 	return rc;
 }
 #endif
@@ -7679,6 +7691,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(pango_1layout_1get_1attributes)
 }
 #endif
 
+#ifndef NO_pango_1layout_1get_1cursor_1pos
+JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1get_1cursor_1pos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3)
+{
+	PangoRectangle _arg2, *lparg2=NULL;
+	PangoRectangle _arg3, *lparg3=NULL;
+	NATIVE_ENTER(env, that, "pango_1layout_1get_1cursor_1pos\n")
+	if (arg2) lparg2 = &_arg2;
+	if (arg3) lparg3 = &_arg3;
+	pango_layout_get_cursor_pos((PangoLayout *)arg0, arg1, (PangoRectangle *)lparg2, (PangoRectangle *)lparg3);
+	if (arg3) setPangoRectangleFields(env, arg3, lparg3);
+	if (arg2) setPangoRectangleFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "pango_1layout_1get_1cursor_1pos\n")
+}
+#endif
+
 #ifndef NO_pango_1layout_1get_1size
 JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1get_1size)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
@@ -7801,6 +7829,24 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1set_1wrap)
 	NATIVE_ENTER(env, that, "pango_1layout_1set_1wrap\n")
 	pango_layout_set_wrap((PangoLayout *)arg0, arg1);
 	NATIVE_EXIT(env, that, "pango_1layout_1set_1wrap\n")
+}
+#endif
+
+#ifndef NO_pango_1layout_1xy_1to_1index
+JNIEXPORT jboolean JNICALL OS_NATIVE(pango_1layout_1xy_1to_1index)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "pango_1layout_1xy_1to_1index\n")
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jboolean)pango_layout_xy_to_index((PangoLayout *)arg0, arg1, arg2, (int *)lparg3, (int *)lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "pango_1layout_1xy_1to_1index\n")
+	return rc;
 }
 #endif
 
