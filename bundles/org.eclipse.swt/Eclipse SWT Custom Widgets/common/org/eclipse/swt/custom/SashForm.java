@@ -34,6 +34,12 @@ public class SashForm extends Composite {
 	
 	private int orientation = SWT.HORIZONTAL;
 	private Sash[] sashes = new Sash[0];
+	// Remember background and foreground
+	// colors to determine whether to set
+	// sashes to the default color (null) or
+	// a specific color
+	private Color background = null;
+	private Color foreground = null;
 	private Control[] controls = new Control[0];
 	private Control maxControl = null;
 	private Listener sashListener;
@@ -90,25 +96,25 @@ private static int checkStyle (int style) {
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	Control[] controls = getControls(true);
-	if (controls.length == 0) return new Point(wHint, hHint);
+	Control[] cArray = getControls(true);
+	if (cArray.length == 0) return new Point(wHint, hHint);
 	
 	int sashwidth = sashes.length > 0 ? SASH_WIDTH + sashes [0].getBorderWidth() * 2 : SASH_WIDTH;
 	int width = 0;
 	int height = 0;
 	boolean vertical = (orientation == SWT.VERTICAL);
 	if (vertical) {
-		height += (controls.length - 1) * sashwidth;
+		height += (cArray.length - 1) * sashwidth;
 	} else {
-		width += (controls.length - 1) * sashwidth;
+		width += (cArray.length - 1) * sashwidth;
 	}
-	for (int i = 0; i < controls.length; i++) {
+	for (int i = 0; i < cArray.length; i++) {
 		if (vertical) {
-			Point size = controls[i].computeSize(wHint, SWT.DEFAULT);
+			Point size = cArray[i].computeSize(wHint, SWT.DEFAULT);
 			height += size.y;	
 			width = Math.max(width, size.x);
 		} else {
-			Point size = controls[i].computeSize(SWT.DEFAULT, hHint);
+			Point size = cArray[i].computeSize(SWT.DEFAULT, hHint);
 			width += size.x;
 			height = Math.max(height, size.y);
 		}
@@ -167,19 +173,19 @@ public int[] getWeights() {
 	}
 	return ratios;
 }
-private Control[] getControls(boolean onlyVisible) {
+Control[] getControls(boolean onlyVisible) {
 	Control[] children = getChildren();
-	Control[] controls = new Control[0];
+	Control[] result = new Control[0];
 	for (int i = 0; i < children.length; i++) {
 		if (children[i] instanceof Sash) continue;
 		if (onlyVisible && !children[i].getVisible()) continue;
 
-		Control[] newControls = new Control[controls.length + 1];
-		System.arraycopy(controls, 0, newControls, 0, controls.length);
-		newControls[controls.length] = children[i];
-		controls = newControls;
+		Control[] newResult = new Control[result.length + 1];
+		System.arraycopy(result, 0, newResult, 0, result.length);
+		newResult[result.length] = children[i];
+		result = newResult;
 	}
-	return controls;
+	return result;
 }
 public void layout(boolean changed) {
 	checkWidget();
@@ -207,10 +213,10 @@ public void layout(boolean changed) {
 		System.arraycopy(sashes, 0, newSashes, 0, sashes.length);
 		int sashStyle = (orientation == SWT.HORIZONTAL) ? SWT.VERTICAL : SWT.HORIZONTAL;
 		if ((getStyle() & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
-		Color background = getBackground();
 		for (int i = sashes.length; i < newSashes.length; i++) {
 			newSashes[i] = new Sash(this, sashStyle);
 			newSashes[i].setBackground(background);
+			newSashes[i].setForeground(foreground);
 			newSashes[i].addListener(SWT.Selection, sashListener);
 		}
 		sashes = newSashes;
@@ -292,7 +298,7 @@ public void layout(boolean changed) {
 
 	}
 }
-private void onDragSash(Event event) {
+void onDragSash(Event event) {
 	if (event.detail == SWT.DRAG) {
 		// constrain feedback
 		Rectangle area = getClientArea();
@@ -370,25 +376,27 @@ public void setOrientation(int orientation) {
 	
 	int sashStyle = (orientation == SWT.HORIZONTAL) ? SWT.VERTICAL : SWT.HORIZONTAL;
 	if ((getStyle() & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
-	Color background = getBackground();
 	for (int i = 0; i < sashes.length; i++) {
 		sashes[i].dispose();
 		sashes[i] = new Sash(this, sashStyle);
 		sashes[i].setBackground(background);
+		sashes[i].setForeground(foreground);
 		sashes[i].addListener(SWT.Selection, sashListener);
 	}
 	layout();
 }
 public void setBackground (Color color) {
 	super.setBackground(color);
+	background = color;
 	for (int i = 0; i < sashes.length; i++) {
-		sashes[i].setBackground(color);
+		sashes[i].setBackground(background);
 	}
 }
 public void setForeground (Color color) {
 	super.setForeground(color);
+	foreground = color;
 	for (int i = 0; i < sashes.length; i++) {
-		sashes[i].setForeground(color);
+		sashes[i].setForeground(foreground);
 	}
 }
 public void setLayout (Layout layout) {
