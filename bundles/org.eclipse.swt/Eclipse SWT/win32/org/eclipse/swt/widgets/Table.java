@@ -234,6 +234,20 @@ void createHandle () {
 	int bits = OS.LVS_EX_SUBITEMIMAGES | OS.LVS_EX_LABELTIP;
 	if ((style & SWT.FULL_SELECTION) != 0) bits |= OS.LVS_EX_FULLROWSELECT;
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+	
+	/*
+	* Feature in Windows.  Windows does not explicitly set the orientation of
+	* the header.  Instead, the orientation is inherited when WS_EX_LAYOUTRTL
+	* is specified for the table.  This means that when both WS_EX_LAYOUTRTL
+	* and WS_EX_NOINHERITLAYOUT are specified for the table, the header will
+	* not be oriented correctly.  The fix is to explicitly set the orientation
+	* for the header.
+	*/
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		int extStyle = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
+		OS.SetWindowLong (hwndHeader, OS.GWL_EXSTYLE, extStyle | OS.WS_EX_LAYOUTRTL);
+	}
 }
 
 void createItem (TableColumn column, int index) {

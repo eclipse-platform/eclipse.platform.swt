@@ -223,6 +223,17 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 	return style;
 }
 
+void checkOrientation (Widget parent) {
+	style &= ~SWT.MIRRORED;
+	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
+		if (parent != null) {
+			if ((parent.style & SWT.LEFT_TO_RIGHT) != 0) style |= SWT.LEFT_TO_RIGHT;
+			if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.RIGHT_TO_LEFT;
+		}
+	}
+	style = checkBits (style, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, 0, 0, 0, 0);
+}
+
 /**
  * Throws an exception if the specified widget can not be
  * used as a parent for the receiver.
