@@ -121,7 +121,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection,typedListener);
 }
 
-int clientHandle () {
+int /*long*/ clientHandle () {
 	int index = OS.gtk_notebook_get_current_page (handle);
 	if (index != -1 && items [index] != null) {
 		return items [index].pageHandle;
@@ -163,7 +163,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	int clientHandle = clientHandle ();
+	int /*long*/ clientHandle = clientHandle ();
 	int clientX = OS.GTK_WIDGET_X (clientHandle);
 	int clientY = OS.GTK_WIDGET_Y (clientHandle);
 	x -= clientX;
@@ -186,7 +186,7 @@ void createHandle (int index) {
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_notebook_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_widget_show (handle);
@@ -216,15 +216,15 @@ void createItem (TabItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	int boxHandle = OS.gtk_hbox_new (false, 0);
+	int /*long*/ boxHandle = OS.gtk_hbox_new (false, 0);
 	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	int labelHandle = OS.gtk_label_new_with_mnemonic (null);
+	int /*long*/ labelHandle = OS.gtk_label_new_with_mnemonic (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	int imageHandle = OS.gtk_image_new ();
+	int /*long*/ imageHandle = OS.gtk_image_new ();
 	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (boxHandle, imageHandle);
 	OS.gtk_container_add (boxHandle, labelHandle);
-	int pageHandle = OS.gtk_fixed_new ();
+	int /*long*/ pageHandle = OS.gtk_fixed_new ();
 	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	OS.gtk_notebook_insert_page (handle, pageHandle, boxHandle, index);
@@ -308,7 +308,7 @@ void enableWidget (boolean enabled) {
 	OS.gtk_widget_set_sensitive (handle, enabled);
 }
 
-int eventHandle () {
+int /*long*/ eventHandle () {
 	return fixedHandle;
 }
 		
@@ -420,11 +420,11 @@ public int getSelectionIndex () {
 	return OS.gtk_notebook_get_current_page (handle);
 }
 
-int gtk_focus (int widget, int directionType) {
+int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
 	return 0;
 }
 
-int gtk_switch_page (int widget, int page, int page_num) {
+int /*long*/ gtk_switch_page (int /*long*/ widget, int /*long*/ page, int /*long*/ page_num) {
 	int index = OS.gtk_notebook_get_current_page (handle);
 	if (index != -1) {
 		Control control = items [index].getControl ();
@@ -432,13 +432,14 @@ int gtk_switch_page (int widget, int page, int page_num) {
 			control.setVisible (false);
 		}
 	}
-	Control control = items [page_num].getControl ();
+	TabItem item = items [(int)/*64*/page_num];
+	Control control = item.getControl ();
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds(getClientArea());
 		control.setVisible (true);
 	}
 	Event event = new Event();
-	event.item = items[page_num];
+	event.item = item;
 	postEvent(SWT.Selection, event);
 	return 0;
 }
@@ -510,7 +511,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 boolean mnemonicHit (char key) {
 	int itemCount = getItemCount ();
 	for (int i=0; i<itemCount; i++) {
-		int labelHandle = items [i].labelHandle;
+		int /*long*/ labelHandle = items [i].labelHandle;
 		if (labelHandle != 0 && mnemonicHit (labelHandle, key)) return true;
 	}
 	return false;
@@ -519,7 +520,7 @@ boolean mnemonicHit (char key) {
 boolean mnemonicMatch (char key) {
 	int itemCount = getItemCount ();
 	for (int i=0; i<itemCount; i++) {
-		int labelHandle = items [i].labelHandle;
+		int /*long*/ labelHandle = items [i].labelHandle;
 		if (labelHandle != 0 && mnemonicMatch (labelHandle, key)) return true;
 	}
 	return false;

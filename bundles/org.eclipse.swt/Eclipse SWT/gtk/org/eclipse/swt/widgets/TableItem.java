@@ -168,11 +168,11 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
-	int parentHandle = parent.handle;
-	int column = OS.gtk_tree_view_get_column (parentHandle, index);
+	int /*long*/ parentHandle = parent.handle;
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
 	GdkRectangle rect = new GdkRectangle ();
-	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
@@ -357,8 +357,8 @@ public Image getImage (int index) {
 	checkWidget ();
 	if (!(0 <= index && index <= parent.columnCount )) return null;
 	if (index == 0) return super.getImage ();
-	int parentHandle = parent.handle;
-	int column = OS.gtk_tree_view_get_column (parentHandle, index);
+	int /*long*/ parentHandle = parent.handle;
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return null;
 	int [] ptr = new int [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
@@ -385,15 +385,16 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
-	int parentHandle = parent.handle;
-	int column = OS.gtk_tree_view_get_column (parentHandle, index);
+	int /*long*/ parentHandle = parent.handle;
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
-	int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
 	if (list == 0) return new Rectangle (0, 0, 0, 0);
 	int count = OS.g_list_length (list);
-	int pixbufRenderer = 0, i = 0;
+	int /*long*/ pixbufRenderer = 0;
+	int i = 0;
 	while (i < count) {
-		int renderer = OS.g_list_nth_data (list, i);
+		int /*long*/ renderer = OS.g_list_nth_data (list, i);
 		if (OS.GTK_IS_CELL_RENDERER_PIXBUF (renderer)) {
 			pixbufRenderer = renderer;
 			break;
@@ -403,7 +404,7 @@ public Rectangle getImageBounds (int index) {
 	OS.g_list_free (list);	
 	if (pixbufRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 	GdkRectangle rect = new GdkRectangle ();
-	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
@@ -498,8 +499,8 @@ public String getText (int index) {
 	checkWidget ();
 	if (!(0 <= index && index <= parent.columnCount )) return "";
 	if (index == 0) return super.getText();
-	int parentHandle = parent.handle;
-	int column = OS.gtk_tree_view_get_column (parentHandle, index);
+	int /*long*/ parentHandle = parent.handle;
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) error(SWT.ERROR_CANNOT_GET_TEXT);
 	int [] ptr = new int [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
@@ -578,8 +579,8 @@ public void setBackground (int index, Color color) {
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
 	GdkColor gdkColor = color != null ? color.handle : null;
-	int parentHandle = parent.handle;
-	int column = OS.gtk_tree_view_get_column (parentHandle, index);
+	int /*long*/ parentHandle = parent.handle;
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 3, gdkColor, -1);
@@ -587,10 +588,10 @@ public void setBackground (int index, Color color) {
 	if (color != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
-			int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+			int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
 			int length = OS.g_list_length (list);
-			int textRenderer = OS.g_list_nth_data (list, length - 1);
-			int pixbufRenderer = OS.g_list_nth_data (list, length - 2);
+			int /*long*/ textRenderer = OS.g_list_nth_data (list, length - 1);
+			int /*long*/ pixbufRenderer = OS.g_list_nth_data (list, length - 2);
 			OS.g_list_free (list);
 			OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
 			OS.gtk_tree_view_column_set_cell_data_func (column, pixbufRenderer, display.pixbufCellDataProc, parent.handle, 0);
@@ -642,7 +643,7 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int fontHandle  = font != null ? font.handle : 0;
+	int /*long*/ fontHandle  = font != null ? font.handle : 0;
 	OS.gtk_list_store_set (parent.modelHandle, handle, Table.FONT_COLUMN, fontHandle, -1);
 }
 
@@ -672,20 +673,20 @@ public void setFont (int index, Font font) {
 	}
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
-	int parentHandle = parent.handle;
-	int column = OS.gtk_tree_view_get_column (parentHandle, index);
+	int /*long*/ parentHandle = parent.handle;
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	int fontHandle  = font != null ? font.handle : 0;
+	int /*long*/ fontHandle  = font != null ? font.handle : 0;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 4, fontHandle, -1);
 	
 	if (font != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
-			int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+			int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
 			int length = OS.g_list_length (list);
-			int imageRenderer = OS.g_list_nth_data (list, length - 2);
-			int textRenderer = OS.g_list_nth_data (list, length - 1);
+			int /*long*/ imageRenderer = OS.g_list_nth_data (list, length - 2);
+			int /*long*/ textRenderer = OS.g_list_nth_data (list, length - 1);
 			OS.g_list_free (list);
 			OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parent.handle, 0);
 			OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
@@ -752,8 +753,8 @@ public void setForeground (int index, Color color){
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
 	GdkColor gdkColor = color != null ? color.handle : null;
-	int parentHandle = parent.handle;
-	int column = OS.gtk_tree_view_get_column (parentHandle, index);
+	int /*long*/ parentHandle = parent.handle;
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 2, gdkColor, -1);
@@ -761,10 +762,10 @@ public void setForeground (int index, Color color){
 	if (color != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
-			int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+			int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
 			int length = OS.g_list_length (list);
-			int textRenderer = OS.g_list_nth_data (list, length - 1);
-			int imageRenderer = OS.g_list_nth_data (list, length - 2);
+			int /*long*/ textRenderer = OS.g_list_nth_data (list, length - 1);
+			int /*long*/ imageRenderer = OS.g_list_nth_data (list, length - 2);
 			OS.g_list_free (list);
 			OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
 			OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parent.handle, 0);
@@ -817,10 +818,10 @@ public void setImage (int index, Image image) {
 	if (index == 0) {
 		super.setImage (image);
 	}
-	int parentHandle = parent.handle;
-	int column = OS.gtk_tree_view_get_column (parentHandle, index);
+	int /*long*/ parentHandle = parent.handle;
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
-	int pixbuf = 0;
+	int /*long*/ pixbuf = 0;
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
@@ -896,8 +897,8 @@ public void setText (int index, String string) {
 	if (index == 0) {
 		super.setText (string);
 	}
-	int parentHandle = parent.handle;
-	int column = OS.gtk_tree_view_get_column (parentHandle, index);
+	int /*long*/ parentHandle = parent.handle;
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;

@@ -32,7 +32,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class TableColumn extends Item {
-	int boxHandle, labelHandle, imageHandle, buttonHandle;
+	int /*long*/ boxHandle, labelHandle, imageHandle, buttonHandle;
 	Table parent;
 	int modelIndex, lastButton, lastTime, lastX, lastWidth;
 	boolean customDraw;
@@ -261,7 +261,7 @@ public int getWidth () {
 	return OS.gtk_tree_view_column_get_width (handle);
 }
 
-int gtk_clicked (int widget) {
+int /*long*/ gtk_clicked (int /*long*/ widget) {
 	/*
 	* There is no API to get a double click on a table column.  Normally, when
 	* the mouse is double clicked, this is indicated by GDK_2BUTTON_PRESS
@@ -270,7 +270,7 @@ int gtk_clicked (int widget) {
 	* and testing for the double click interval.
 	*/
 	boolean doubleClick = false;
-	int eventPtr = OS.gtk_get_current_event ();
+	int /*long*/ eventPtr = OS.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventButton gdkEvent = new GdkEventButton ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
@@ -291,11 +291,11 @@ int gtk_clicked (int widget) {
 	return 0;
 }
 
-int gtk_mnemonic_activate (int widget, int arg1) {
+int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
-int gtk_size_allocate (int widget, int allocation) {
+int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	boolean mapped = OS.GTK_WIDGET_MAPPED (widget); 
 	int x = OS.GTK_WIDGET_X (widget);
 	int width = OS.GTK_WIDGET_WIDTH (widget);
@@ -430,7 +430,7 @@ public void setAlignment (int alignment) {
 	parent.createRenderers (handle, modelIndex, index == 0, style);
 }
 
-void setFontDescription (int font) {
+void setFontDescription (int /*long*/ font) {
 	OS.gtk_widget_modify_font (labelHandle, font);
 	OS.gtk_widget_modify_font (imageHandle, font);
 }

@@ -100,7 +100,7 @@ import org.eclipse.swt.events.*;
  * @see SWT
  */
 public class Shell extends Decorations {
-	int shellHandle, tooltipsHandle;
+	int /*long*/ shellHandle, tooltipsHandle;
 	boolean hasFocus, mapped;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
@@ -361,7 +361,7 @@ public void addShellListener (ShellListener listener) {
 void adjustTrim () {
 	int [] width = new int [1], height = new int [1];
 	OS.gtk_window_get_size (shellHandle, width, height);
-	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gdk_window_get_frame_extents (window, rect);
 	int trimWidth = Math.max (0, rect.width - width [0]);
@@ -405,7 +405,7 @@ void bringToTop (boolean force) {
 	Shell shell = display.getActiveShell ();
 	if (!force) {
 		if (shell == null) return;
-		int focusHandle = OS.gtk_window_get_focus (shell.shellHandle);
+		int /*long*/ focusHandle = OS.gtk_window_get_focus (shell.shellHandle);
 		if (focusHandle != 0) {
 			if (!OS.GTK_WIDGET_HAS_FOCUS (focusHandle)) return;
 		}
@@ -414,7 +414,7 @@ void bringToTop (boolean force) {
 	/*
 	* Feature on GTK.  
 	*/
-	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	if ((style & SWT.ON_TOP) != 0 && OS.GDK_WINDOWING_X11 ()) {
 		int xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 		int xid = OS.gdk_x11_drawable_get_xid (window);
@@ -489,7 +489,7 @@ void createHandle (int index) {
 	OS.gtk_window_set_resizable (shellHandle, true);
 	createHandle (index, shellHandle, true);
 	OS.gtk_widget_realize (shellHandle);
-	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	int decorations = 0;
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
@@ -530,8 +530,8 @@ boolean hasBorder () {
 
 void hookEvents () {
 	super.hookEvents ();
-	int shellMapProc = display.shellMapProc;
-	int windowProc3 = display.windowProc3;
+	int /*long*/ shellMapProc = display.shellMapProc;
+	int /*long*/ windowProc3 = display.windowProc3;
 	OS.g_signal_connect (shellHandle, OS.map_event, windowProc3, MAP_EVENT);
 	OS.g_signal_connect (shellHandle, OS.unmap_event, windowProc3, UNMAP_EVENT);
 	OS.g_signal_connect (shellHandle, OS.window_state_event, windowProc3, WINDOW_STATE_EVENT);
@@ -561,7 +561,7 @@ void releaseChild () {
 	/* Do nothing */
 }
 
-int topHandle () {
+int /*long*/ topHandle () {
 	return shellHandle;
 }
 
@@ -586,7 +586,7 @@ public Point getSize () {
 	int width = OS.GTK_WIDGET_WIDTH (scrolledHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (scrolledHandle);
 	if (menuBar != null)  {
-		int barHandle = menuBar.handle;
+		int /*long*/ barHandle = menuBar.handle;
 		height += OS.GTK_WIDGET_HEIGHT (barHandle);
 	}
 	return new Point (width + trimWidth (), height + trimHeight ());
@@ -671,7 +671,7 @@ public Shell [] getShells () {
 	return result;
 }
 
-int gtk_configure_event (int widget, int event) {
+int /*long*/ gtk_configure_event (int /*long*/ widget, int /*long*/ event) {
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
 	if (oldX != x [0] || oldY != y [0]) {
@@ -682,13 +682,13 @@ int gtk_configure_event (int widget, int event) {
 	return 0;
 }
 
-int gtk_delete_event (int widget, int event) {
+int /*long*/ gtk_delete_event (int /*long*/ widget, int /*long*/ event) {
 	closeWidget ();
 	return 1;
 }
 
-int gtk_event_after (int widget, int event) {
-	int result = super.gtk_event_after (widget, event);
+int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_event_after (widget, event);
 	if (widget == shellHandle) {
 		GdkEvent gdkEvent = new GdkEvent ();
 		OS.memmove (gdkEvent, event, GdkEvent.sizeof);
@@ -708,13 +708,13 @@ int gtk_event_after (int widget, int event) {
 	return result;
 }
 
-int gtk_map_event (int widget, int event) {
+int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 	minimized = false;
 	sendEvent (SWT.Deiconify);
 	return 0;
 }
 
-int gtk_size_allocate (int widget, int allocation) {
+int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	int [] width = new int [1], height = new int [1];
 	OS.gtk_window_get_size (shellHandle, width, height);
 	if (oldWidth != width [0] || oldHeight != height [0]) {
@@ -725,13 +725,13 @@ int gtk_size_allocate (int widget, int allocation) {
 	return 0;
 }
 
-int gtk_unmap_event (int widget, int event) {
+int /*long*/ gtk_unmap_event (int /*long*/ widget, int /*long*/ event) {
 	minimized = true;
 	sendEvent (SWT.Iconify);
 	return 0;
 }
 
-int gtk_window_state_event (int widget, int event) {
+int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventWindowState gdkEvent = new GdkEventWindowState ();
 	OS.memmove (gdkEvent, event, GdkEventWindowState.sizeof);
 	minimized = (gdkEvent.new_window_state & OS.GDK_WINDOW_STATE_ICONIFIED) != 0;
@@ -765,7 +765,7 @@ public void open () {
 	setVisible (true);
 	bringToTop (false);
 	if (!restoreFocus ()) {
-		int focusHandle = OS.gtk_window_get_focus (shellHandle);
+		int /*long*/ focusHandle = OS.gtk_window_get_focus (shellHandle);
 		if (focusHandle == 0 || focusHandle == handle) traverseGroup (true);
 	}
 }
@@ -864,7 +864,7 @@ void setActiveControl (Control control) {
 void resizeBounds (int width, int height, boolean notify) {
 	int menuHeight = 0;
 	if (menuBar != null) {
-		int menuHandle = menuBar.handle;
+		int /*long*/ menuHandle = menuBar.handle;
 		OS.gtk_widget_set_size_request (menuHandle, -1, -1);
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (menuHandle, requisition);
@@ -947,13 +947,13 @@ public void setMenuBar (Menu menu) {
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if (menuBar != null) {
-		int menuHandle = menuBar.handle;
+		int /*long*/ menuHandle = menuBar.handle;
 		OS.gtk_widget_hide (menuHandle);
 		destroyAccelGroup ();
 	}
 	menuBar = menu;
 	if (menuBar != null) {
-		int menuHandle = menu.handle;
+		int /*long*/ menuHandle = menu.handle;
 		OS.gtk_widget_show (menuHandle);
 		createAccelGroup ();
 		menuBar.addAccelerators (accelGroup);
@@ -993,8 +993,8 @@ public void setMinimized (boolean minimized) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
-	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
-	int shape_region = (region == null) ? 0 : region.handle;
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	int /*long*/ shape_region = (region == null) ? 0 : region.handle;
 	OS.gdk_window_shape_combine_region (window, shape_region, 0, 0);
 	this.region = region;
 }
@@ -1046,7 +1046,7 @@ void setZOrder (Control sibling, boolean above) {
 	 setZOrder (sibling, above, false);
 }
 
-int shellMapProc (int handle, int arg0, int user_data) {
+int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	mapped = true;
 	return 0;
 }
@@ -1152,7 +1152,7 @@ public Rectangle getBounds () {
 	int width = OS.GTK_WIDGET_WIDTH (scrolledHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (scrolledHandle);
 	if (menuBar != null)  {
-		int barHandle = menuBar.handle;
+		int /*long*/ barHandle = menuBar.handle;
 		height += OS.GTK_WIDGET_HEIGHT (barHandle);
 	}
 	return new Rectangle (x [0], y [0], width + trimWidth (), height + trimHeight ());
@@ -1181,7 +1181,7 @@ void releaseWidget () {
 	lastActive = null;
 }
 
-void setToolTipText (int widget, String string) {
+void setToolTipText (int /*long*/ widget, String string) {
 	byte [] buffer = null;
 	if (string != null && string.length () > 0) {
 		buffer = Converter.wcsToMbcs (null, string, true);

@@ -148,7 +148,7 @@ void createHandle (int index) {
 	fixedHandle = OS.gtk_fixed_new ();
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
-	int hAdjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+	int /*long*/ hAdjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 	if (hAdjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.HORIZONTAL) != 0) {
 		handle = OS.gtk_hscrollbar_new (hAdjustment);
@@ -157,14 +157,14 @@ void createHandle (int index) {
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
-	int parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
 }
 
-int gtk_value_changed (int adjustment) {
+int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 	postEvent (SWT.Selection);
 	return 0;
 }
@@ -176,13 +176,13 @@ void hookEvents () {
 
 void register () {
 	super.register ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	display.addWidget (hAdjustment, this);
 }
 
 void deregister () {
 	super.deregister ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	display.removeWidget (hAdjustment);
 }
 
@@ -213,7 +213,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  */
 public int getIncrement () {
 	checkWidget ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.step_increment;
@@ -231,7 +231,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.upper;
@@ -249,7 +249,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.lower;
@@ -269,7 +269,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.page_increment;
@@ -287,7 +287,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.value;
@@ -306,7 +306,7 @@ public int getSelection () {
  */
 public int getThumb () {
 	checkWidget ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.page_size;
@@ -372,7 +372,7 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	int minimum = (int) adjustment.lower;
@@ -401,7 +401,7 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget ();
 	if (value < 0) return;
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	int maximum = (int) adjustment.upper;
@@ -472,7 +472,7 @@ public void setSelection (int value) {
 public void setThumb (int value) {
 	checkWidget ();
 	if (value < 1) return;
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	value = (int) Math.min (value, (int)(adjustment.upper - adjustment.lower));
@@ -513,7 +513,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
 	thumb = Math.min (thumb, maximum - minimum);
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
+	int /*long*/ hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	adjustment.value = Math.min (Math.max (selection, minimum), maximum - thumb);

@@ -30,7 +30,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class TabItem extends Item {
-	int labelHandle, imageHandle, pageHandle;
+	int /*long*/ labelHandle, imageHandle, pageHandle;
 	Control control;
 	TabFolder parent;
 	String toolTipText;
@@ -168,7 +168,7 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
-int gtk_mnemonic_activate (int widget, int arg1) {
+int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
@@ -236,7 +236,7 @@ public void setControl (Control control) {
 	if (oldControl != null) oldControl.setVisible (false);
 }
 
-void setFontDescription (int font) {
+void setFontDescription (int /*long*/ font) {
 	OS.gtk_widget_modify_font (labelHandle, font);
 	OS.gtk_widget_modify_font (imageHandle, font);
 }
