@@ -30,11 +30,11 @@ public class IconExe {
 	 * These icons are typically shown in various places of the Windows desktop.
 	 * 
 	 * Note.  The Eclipse 3.1 launcher returns the following 6 images
-	 * 1. 32x32, 4 bit (16 colors)
-	 * 2. 16x16, 4 bit (16 colors)
+	 * 1. 32x32, 4 bit (Windows 16 colors palette)
+	 * 2. 16x16, 4 bit (Windows 16 colors palette)
 	 * 3. 16x16, 8 bit (256 colors)
 	 * 4. 32x32, 8 bit (256 colors)
-	 * 5. 48x48, 4 bit (16 colors)
+	 * 5. 48x48, 4 bit (Windows 16 colors palette)
 	 * 6. 48x48, 8 bit (256 colors)
 	 * 
 	 * @param program the Windows executable e.g c:/eclipse/eclipse.exe
@@ -64,11 +64,11 @@ public class IconExe {
 	 * to verify the icons have changed as expected.
 	 * 
 	 * Note 3. The Eclipse 3.1 launcher requires the following 6 images (in any order).
-	 * 1. 32x32, 4 bit (16 colors)
-	 * 2. 16x16, 4 bit (16 colors)
+	 * 1. 32x32, 4 bit (Windows 16 colors palette)
+	 * 2. 16x16, 4 bit (Windows 16 colors palette)
 	 * 3. 16x16, 8 bit (256 colors)
 	 * 4. 32x32, 8 bit (256 colors)
-	 * 5. 48x48, 4 bit (16 colors)
+	 * 5. 48x48, 4 bit (Windows 16 colors palette)
 	 * 6. 48x48, 8 bit (256 colors)
 	 * 
 	 * Note 4. This function modifies the content of the executable program and may cause
