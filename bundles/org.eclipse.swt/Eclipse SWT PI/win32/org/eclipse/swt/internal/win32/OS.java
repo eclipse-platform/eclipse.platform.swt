@@ -523,6 +523,7 @@ public class OS {
 	public static final int KEY_QUERY_VALUE = 0x1;
 	public static final int KEY_READ = 0x20019;
 	public static final int KEYEVENTF_KEYUP = 0x0002;
+	public static final int LANG_NEUTRAL = 0x0;
 	public static final int LANG_USER_DEFAULT = 1 << 10;
 	public static final int LAYOUT_RTL = 0x1;
 	public static final int LBN_DBLCLK = 0x2;
