@@ -1006,13 +1006,51 @@ boolean setInputState (Event event, int type) {
 	return true;
 }
 
-boolean setKeyState (Event event, int type) {
-	if (display.lastAscii != 0 || display.lastNull) {
-		event.character = mbcsToWcs ((char) display.lastAscii);
+boolean setKeyState (Event event, int type, int wParam, int lParam) {
+	
+	/*
+	* Feature in Windows.  When the user presses Ctrl+Backspace
+	* or Ctrl+Enter, Windows sends a WM_CHAR with Delete (0x7F)
+	* and '\n' instead of '\b' and '\r'.  This is the correct
+	* platform behavior but is not portable.  The fix is detect
+	* these cases and convert the character.
+	*/
+	switch (display.lastAscii) {
+		case SWT.DEL:
+			if (display.lastKey == SWT.BS) display.lastAscii = SWT.BS;
+			break;
+		case SWT.LF:
+			if (display.lastKey == SWT.CR) display.lastAscii = SWT.CR;
+			break;
+	}
+	
+	/*
+	* Feature in Windows.  When the user presses either the Enter
+	* key or the numeric keypad Enter key, Windows sends a WM_KEYDOWN
+	* with wParam=VK_RETURN in both cases.  In order to distinguish
+	* between the keys, the extended key bit is tested. If the bit
+	* is set, assume that the numeric keypad Enter was pressed. 
+	*/
+	if (display.lastKey == SWT.CR && display.lastAscii == SWT.CR) {
+		if ((lParam & 0x1000000) != 0) display.lastKey = SWT.KEYPAD_CR;
+	}
+	
+	if (display.lastVirtual) {
+		/*
+		* Feature in Windows.  The virtual key VK_DELETE is not
+		* treated as both a virtual key and an ASCII key by Windows.
+		* Therefore, we will not receive a WM_CHAR for this key.
+		* The fix is to treat VK_DELETE as a special case and map
+		* the ASCII value explictly (Delete is 0x7F).
+		*/
+		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
+		
+		event.keyCode = Display.translateKey (display.lastKey);
+	} else {
 		event.keyCode = display.lastKey;
 	}
-	if (display.lastVirtual) {
-		event.keyCode = Display.translateKey (display.lastKey);
+	if (display.lastAscii != 0 || display.lastNull) {
+		event.character = mbcsToWcs ((char) display.lastAscii);
 	}
 	if (event.keyCode == 0 && event.character == 0) {
 		if (!display.lastNull) return false;

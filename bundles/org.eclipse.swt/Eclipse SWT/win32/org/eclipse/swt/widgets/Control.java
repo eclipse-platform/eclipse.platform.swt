@@ -1694,7 +1694,7 @@ public void removeTraverseListener(TraverseListener listener) {
 
 boolean sendKeyEvent (int type, int msg, int wParam, int lParam) {
 	Event event = new Event ();
-	if (!setKeyState (event, type)) return true;
+	if (!setKeyState (event, type, wParam, lParam)) return true;
 	return sendKeyEvent (type, msg, wParam, lParam, event);
 }
 
@@ -2522,11 +2522,11 @@ boolean translateMnemonic (MSG msg) {
 	}
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {
-		display.lastAscii = mbcsToWcs ((char) msg.wParam);
-		display.lastVirtual = display.lastNull = false;
+		display.lastAscii = msg.wParam;
+		display.lastNull = false;
 		Event event = new Event ();
 		event.detail = SWT.TRAVERSE_MNEMONIC;
-		if (setKeyState (event, SWT.Traverse)) {
+		if (setKeyState (event, SWT.Traverse, msg.wParam, msg.lParam)) {
 			return translateMnemonic (event, null) || shell.translateMnemonic (event, this);
 		}
 	}
@@ -2645,7 +2645,7 @@ boolean translateTraversal (MSG msg) {
 	display.lastAscii = lastAscii;
 	display.lastVirtual = lastVirtual;
 	display.lastNull = false;
-	if (!setKeyState (event, SWT.Traverse)) return false;
+	if (!setKeyState (event, SWT.Traverse, msg.wParam, msg.lParam)) return false;
 	Shell shell = getShell ();
 	Control control = this;
 	do {
@@ -3007,23 +3007,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 		byte lead = (byte) (wParam & 0xFF);
 		if (OS.IsDBCSLeadByte (lead)) return null;
 	}
-	
-	/*
-	* Feature in Windows.  When the user presses Ctrl+Backspace
-	* or Ctrl+Enter, Windows sends a WM_CHAR with Delete (0x7F)
-	* and '\n' instead of '\b' and '\r'.  This is the correct
-	* platform behavior but is not portable.  The fix is detect
-	* these cases and convert the character.
-	*/
 	display.lastAscii = wParam;
-	switch (display.lastAscii) {
-		case SWT.DEL:
-			if (display.lastKey == SWT.BS) display.lastAscii = SWT.BS;
-			break;
-		case SWT.LF:
-			if (display.lastKey == SWT.CR) display.lastAscii = SWT.CR;
-			break;
-	}
 	display.lastNull = wParam == 0;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_CHAR, wParam, lParam)) {
 		return LRESULT.ZERO;
@@ -3338,7 +3322,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			for (int i=0; i<ACCENTS.length; i++) {
 				int value = OS.VkKeyScan (ACCENTS [i]);
 				if ((value & 0xFF) == wParam && (value & 0x600) == 0x600) {
-					display.lastVirtual = (mapKey == 0);
+					display.lastVirtual = mapKey == 0;
 					display.lastKey = display.lastVirtual ? wParam : mapKey;
 					return null;
 				}
@@ -3360,8 +3344,13 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	* There is no way to map wParam=30 in WM_CHAR to the correct
 	* value.  Also, on international keyboards, the control key
 	* may be down when the user has not entered a control character.
+	* 
+	* NOTE: On Windows 98, keypad keys are virtual despite the
+	* fact that a WM_CHAR is issued.  On Windows 2000 and XP,
+	* they are not virtual.  Therefore it is necessary to force
+	* numeric keypad keys to be virtual.
 	*/
-	display.lastVirtual = (mapKey == 0);
+	display.lastVirtual = mapKey == 0 || display.numpadKey (wParam) != 0;
 	if (display.lastVirtual) {
 		display.lastKey = wParam;
 		/*
@@ -3371,10 +3360,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		* The fix is to treat VK_DELETE as a special case and map
 		* the ASCII value explictly (Delete is 0x7F).
 		*/
-		if (display.lastKey == OS.VK_DELETE) {
-			display.lastVirtual = false;
-			display.lastKey = display.lastAscii = 0x7F;
-		}
+		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
 
 		/*
 		* It is possible to get a WM_CHAR for a virtual key when
@@ -3384,8 +3370,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		* to ensure that the last key has the correct value.  Note
 		* that Ctrl+Home does not issue a WM_CHAR when Num Lock is
 		* down.
-		* 
-		* NOTE: This only happens on Windows 98.
 		*/
 		if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
 			if (display.asciiKey (display.lastKey) != 0) return null;
@@ -3400,6 +3384,15 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		*/
 	 	display.lastKey = OS.CharLower ((short) mapKey);
 
+		/*
+		* Feature in Windows. The virtual key VK_CANCEL is treated
+		* as both a virtual key and ASCII key by Windows.  This
+		* means that a WM_CHAR with WPARAM=3 will be issued for
+		* this key.  In order to distinguish between this key and
+		* Ctrl+C, mark the key as virtual.
+		*/
+		if (wParam == OS.VK_CANCEL) display.lastVirtual = true;
+		
 		/*
 		* Some key combinations map to Windows ASCII keys depending
 		* on the keyboard.  For example, Ctrl+Alt+Q maps to @ on a
@@ -3419,6 +3412,14 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			*/
 			if (asciiKey == ' ') return null;
 			if (asciiKey != wParam) return null;
+			/*
+			* Feature in Windows. The virtual key VK_CANCEL is treated
+			* as both a virtual key and ASCII key by Windows.  This
+			* means that a WM_CHAR with WPARAM=3 will be issued for
+			* this key. To avoid the extra SWT.KeyDown, look for
+			* VK_CANCEL and issue the event from WM_CHAR.
+			*/
+			if (wParam == OS.VK_CANCEL) return null;
 		}
 		
 		/*
@@ -3534,11 +3535,25 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 			}
 		}
 	}
-		
-	display.lastVirtual = (mapKey == 0);
+	
+	/*
+	* NOTE: On Windows 98, keypad keys are virtual despite the
+	* fact that a WM_CHAR is issued.  On Windows 2000 and XP,
+	* they are not virtual.  Therefore it is necessary to force
+	* numeric keypad keys to be virtual.
+	*/
+	display.lastVirtual = mapKey == 0 || display.numpadKey (wParam) != 0;
 	if (display.lastVirtual) {
 		display.lastKey = wParam;
 	} else {
+		/*
+		* Feature in Windows. The virtual key VK_CANCEL is treated
+		* as both a virtual key and ASCII key by Windows.  This
+		* means that a WM_CHAR with WPARAM=3 will be issued for
+		* this key.  In order to distingush between this key and
+		* Ctrl+C, mark the key as virtual.
+		*/
+		if (wParam == OS.VK_CANCEL) display.lastVirtual = true;
 		if (display.lastKey == 0) {
 			display.lastAscii = 0;
 			display.lastNull = false;
@@ -4118,7 +4133,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_SYSCHAR (int wParam, int lParam) {
 	Display display = this.display;
 	display.lastAscii = wParam;
-	display.lastNull = false;
+	display.lastNull = wParam == 0;
 
 	/* Do not issue a key down if a menu bar mnemonic was invoked */
 	if (!hooks (SWT.KeyDown) && !display.filters (SWT.KeyDown)) {
@@ -4285,9 +4300,14 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 	* The fix is to rely on a key mappings table to determine
 	* whether the key event must be sent now or if a WM_SYSCHAR
 	* event will follow.
+	* 
+	* NOTE: On Windows 98, keypad keys are virtual despite the
+	* fact that a WM_CHAR is issued.  On Windows 2000 and XP,
+	* they are not virtual.  Therefore it is necessary to force
+	* numeric keypad keys to be virtual.
 	*/
 	int mapKey = OS.IsWinCE ? 0 : OS.MapVirtualKey (wParam, 2);
-	display.lastVirtual = (mapKey == 0);
+	display.lastVirtual = mapKey == 0 || display.numpadKey (wParam) != 0;
 	if (display.lastVirtual) {
 	 	display.lastKey = wParam;
 		/*
@@ -4297,10 +4317,7 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 		* The fix is to treat VK_DELETE as a special case and map
 		* the ASCII value explictly (Delete is 0x7F).
 		*/
-		if (display.lastKey == OS.VK_DELETE) {
-			display.lastVirtual = false;
-			display.lastKey = display.lastAscii = 0x7F;
-		}
+		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
 
 		/*
 		* It is possible to get a WM_CHAR for a virtual key when
