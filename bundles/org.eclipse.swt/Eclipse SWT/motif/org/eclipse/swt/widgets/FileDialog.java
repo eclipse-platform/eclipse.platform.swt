@@ -169,17 +169,18 @@ void extractValues() {
 				null,
 				0,
 				OS.XmOUTPUT_ALL);
-			if (address == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
-			int length = OS.strlen (address);
-			byte [] buffer = new byte [length];
-			OS.memmove (buffer, address, length);
-			OS.XtFree (address);
-			/* Use the character encoding for the default locale */
-			String fullFilename = new String (Converter.mbcsToWcs (null, buffer));
-			int index = fullFilename.lastIndexOf ('/');
-			fileNames [i] = fullFilename.substring (index + 1, fullFilename.length ());
+			if (address != 0) {
+				int length = OS.strlen (address);
+				byte [] buffer = new byte [length];
+				OS.memmove (buffer, address, length);
+				OS.XtFree (address);
+				/* Use the character encoding for the default locale */
+				String fullFilename = new String (Converter.mbcsToWcs (null, buffer));
+				int index = fullFilename.lastIndexOf ('/');
+				fileNames [i] = fullFilename.substring (index + 1, fullFilename.length ());
+				if (fullFilename.equals (fullPath)) match = true;
+			}
 			items += 4;
-			if (fullFilename.equals(fullPath)) match = true;
 		}
 		if (match) {
 			fileName = fileNames [0];
@@ -194,6 +195,7 @@ void extractValues() {
 	} else {
 		int index = fullPath.lastIndexOf ('/');
 		fileName = fullPath.substring (index + 1, fullPath.length ());
+		fileNames = new String [] {fileName};
 	}
 }
 /**
@@ -214,9 +216,7 @@ public String getFileName () {
  * @return the relative paths of the files
  */
 public String [] getFileNames () {
-	if (cancel) return null;
-	if ((style & SWT.MULTI) != 0) return fileNames;
-	return new String [] {fileName};
+	return fileNames;
 }
 
 /**
@@ -262,35 +262,27 @@ int itemSelected (int widget, int client, int call) {
 	int [] argList = {OS.XmNselectedItems, 0, OS.XmNselectedItemCount, 0};
 	OS.XtGetValues (fileList, argList, argList.length / 2);
 	int items = argList [1], itemCount = argList [3];
-	int address = 0;
+	int ptr = 0;
 	if (itemCount == 0) {
 		int [] argList2 = {OS.XmNdirectory, 0};
 		OS.XtGetValues (dialog, argList2, argList2.length / 2);
-		int ptr = argList2 [1];
-		address = OS.XmStringUnparse (
-			ptr,
-			null,
-			OS.XmCHARSET_TEXT,
-			OS.XmCHARSET_TEXT,
-			null,
-			0,
-			OS.XmOUTPUT_ALL);
-		OS.XmStringFree (ptr);
+		ptr = argList2 [1];
 	} else {
 		int [] buffer = new int [1];
 		OS.memmove (buffer, items, 4);
-		int ptr = buffer [0];
-		address = OS.XmStringUnparse (
-			ptr,
-			null,
-			OS.XmCHARSET_TEXT,
-			OS.XmCHARSET_TEXT,
-			null,
-			0,
-			OS.XmOUTPUT_ALL);
+		ptr = buffer [0];
 	}
-	
-	if (address == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
+	if (ptr == 0) return 0;
+	int address = OS.XmStringUnparse (
+		ptr,
+		null,
+		OS.XmCHARSET_TEXT,
+		OS.XmCHARSET_TEXT,
+		null,
+		0,
+		OS.XmOUTPUT_ALL);
+	if (itemCount == 0) OS.XmStringFree (ptr);
+	if (address == 0) return 0;
 	int length = OS.strlen (address);
 	byte [] buffer = new byte [length + 1];
 	OS.memmove (buffer, address, length);
@@ -463,7 +455,10 @@ public String open () {
 	cancelCallback.dispose ();
 	if (selectCallback != null) selectCallback.dispose ();
 
-	if (cancel) return null;
+	if (cancel) {
+		fileNames = null;
+		return null;
+	}
 	return fullPath;
 }
 
