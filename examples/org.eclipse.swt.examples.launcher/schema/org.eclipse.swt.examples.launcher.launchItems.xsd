@@ -125,20 +125,12 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="enabled" value="true">
+         <attribute name="enabled" type="string">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
-            <simpleType>
-               <restriction base="boolean">
-                  <enumeration value="true">
-                  </enumeration>
-                  <enumeration value="false">
-                  </enumeration>
-               </restriction>
-            </simpleType>
          </attribute>
          <attribute name="description" type="string">
             <annotation>
