@@ -25,13 +25,16 @@ import org.eclipse.swt.internal.gtk.*;
  * within the SWT implementation.
  * </p>
  */
-public class FileDialog extends GtkFileDialog {
+public class FileDialog extends Dialog {
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
 	String filterPath = "";
 	String fileName = "";
 	String[] fileNames;
 	String fullPath = "";
+	String answer;
+	int handle;
+	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 	
 /**
  * Constructs a new instance of this class given only its
@@ -141,7 +144,6 @@ public String [] getFilterNames () {
 public String getFilterPath () {
 	return filterPath;
 }
-
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -155,11 +157,24 @@ public String getFilterPath () {
  * </ul>
  */
 public String open () {
-	/*
-	 * The only reason this method is not just left out to
-	 * fall through to the superclass, is the JavaDoc comment.
-	 */
-	return super.open();
+	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
+	handle = OS.gtk_file_selection_new (titleBytes);
+	if (parent!=null) {
+		OS.gtk_window_set_transient_for(handle, parent.topHandle());
+	}
+	answer = null;
+	preset();
+	int response = OS.gtk_dialog_run(handle);
+	if (response == OS.GTK_RESPONSE_OK) {
+		int lpFilename = OS.gtk_file_selection_get_filename (handle);
+		int filenameLength = OS.strlen (lpFilename);
+		byte [] filenameBytes = new byte [filenameLength];
+		OS.memmove (filenameBytes, lpFilename, filenameLength);
+		String osAnswer = new String( Converter.mbcsToWcs (null, filenameBytes) );
+		interpretOsAnswer(osAnswer);
+	}
+	OS.gtk_widget_destroy(handle);
+	return answer;
 }
 /**
  * Set the initial filename which the dialog will
@@ -218,8 +233,8 @@ void preset() {
 	} else {
 		if (filterPath.length () > 0) {
 			stringBuffer.append (filterPath);
-			if (filterPath.charAt (filterPath.length () - 1) != separator) {
-				stringBuffer.append (separator);
+			if (filterPath.charAt (filterPath.length () - 1) != SEPARATOR) {
+				stringBuffer.append (SEPARATOR);
 			}
 		}
 	}
@@ -243,10 +258,9 @@ void preset() {
 	
 	fullPath = null;
 }
-
 void interpretOsAnswer(String osAnswer) {
 	if (osAnswer==null) return;
-	int separatorIndex = calculateLastSeparatorIndex(osAnswer);
+	int separatorIndex = osAnswer.lastIndexOf(SEPARATOR);
 	if (separatorIndex+1 == osAnswer.length()) {
 		/*
 		 * the selected thing is a directory
@@ -286,7 +300,7 @@ void interpretOsAnswer(String osAnswer) {
 			// The better way to do it would be:
 			// fileNames[i] = new String(bytes);
 			String name = new String(Converter.mbcsToWcs(null, bytes));
-			fileNames[i] = name.substring(calculateLastSeparatorIndex(name)+1);
+			fileNames[i] = name.substring(name.lastIndexOf(SEPARATOR)+1);
 			/*
 			 * NB:  Unlike other similar functions (e.g., g_convert), the glib
 			 * documentation does not say the resulting UTF8 string should be

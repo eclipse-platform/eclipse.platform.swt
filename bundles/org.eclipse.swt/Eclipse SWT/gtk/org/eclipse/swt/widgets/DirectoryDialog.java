@@ -20,8 +20,10 @@ import org.eclipse.swt.widgets.*;
  * within the SWT implementation.
  * </p>
  */
-public class DirectoryDialog extends GtkFileDialog {
-	String message = "", filterPath = "";
+public class DirectoryDialog extends Dialog {
+	String message = "", filterPath = "", answer;
+	int handle;
+	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 
 /**
  * Constructs a new instance of this class given only its
@@ -101,7 +103,6 @@ public String getFilterPath () {
 public String getMessage () {
 	return message;
 }
-
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -115,9 +116,39 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-	return super.open();
+	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
+	handle = OS.gtk_file_selection_new (titleBytes);
+	if (parent!=null) {
+		OS.gtk_window_set_transient_for(handle, parent.topHandle());
+	}
+	answer = null;
+	if (filterPath != null) {
+		byte [] filterBytes = Converter.wcsToMbcs (null, filterPath, true);
+		OS.gtk_file_selection_set_filename (handle, filterBytes);
+	}
+	GtkFileSelection selection = new GtkFileSelection();
+	OS.memmove(selection, handle);
+	OS.gtk_file_selection_hide_fileop_buttons (handle);
+	int fileListParent = OS.gtk_widget_get_parent(selection.file_list);
+	OS.gtk_widget_hide(selection.file_list);
+	OS.gtk_widget_hide(fileListParent);
+	int response = OS.gtk_dialog_run(handle);
+	if (response == OS.GTK_RESPONSE_OK) {
+		int lpFilename = OS.gtk_file_selection_get_filename (handle);
+		int filenameLength = OS.strlen (lpFilename);
+		byte [] filenameBytes = new byte [filenameLength];
+		OS.memmove (filenameBytes, lpFilename, filenameLength);
+		String osAnswer = new String( Converter.mbcsToWcs (null, filenameBytes) );
+		if (osAnswer!=null) {
+			answer = osAnswer;
+			// add trailing separator if not already present
+			int separatorIndex = answer.lastIndexOf(SEPARATOR);
+			if (separatorIndex != answer.length() - 1) answer += SEPARATOR;
+		}
+	}
+	OS.gtk_widget_destroy(handle);
+	return answer;
 }
-
 /**
  * Sets the path which the dialog will use to filter
  * the directories it shows to the argument, which may be
@@ -142,25 +173,5 @@ public void setMessage (String string) {
 	 * message so at least the application programs get back the same string.
 	 */
 	message = string;
-}
-
-void interpretOsAnswer(String osAnswer) {
-	if (osAnswer==null) return;
-	answer = osAnswer;
-	// add trailing separator if not already present
-	int separatorIndex = calculateLastSeparatorIndex(answer);
-	if (separatorIndex != answer.length() - 1) answer += separator;
-}
-void preset() {
-	if (filterPath != null) {
-		byte [] filterBytes = Converter.wcsToMbcs (null, filterPath, true);
-		OS.gtk_file_selection_set_filename (handle, filterBytes);
-	}
-	GtkFileSelection selection = new GtkFileSelection();
-	OS.memmove(selection, handle);
-	OS.gtk_file_selection_hide_fileop_buttons (handle);
-	int fileListParent = OS.gtk_widget_get_parent(selection.file_list);
-	OS.gtk_widget_hide(selection.file_list);
-	OS.gtk_widget_hide(fileListParent);
 }
 }
