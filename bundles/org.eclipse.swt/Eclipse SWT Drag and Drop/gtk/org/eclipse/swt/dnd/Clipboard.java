@@ -326,12 +326,21 @@ public String[] getAvailableTypeNames() {
 	checkWidget();
 	int[] types = _getAvailableTypes();
 	String[] result = new String[types.length];
+	int count = 0;
 	for (int i = 0; i < types.length; i++) {
 		int pName = OS.gdk_atom_name(types[i]);
+		if (pName == 0) {
+			continue;
+		}
 		byte[] buffer = new byte [OS.strlen(pName)];
 		OS.memmove (buffer, pName, buffer.length);
 		OS.g_free (pName);
-		result[i] = new String (Converter.mbcsToWcs (null, buffer));
+		result[count++] = new String (Converter.mbcsToWcs (null, buffer));
+	}
+	if (count < types.length){
+		String[] temp = new String[count];
+		System.arraycopy(result, 0, temp, 0, count);
+		result = temp;
 	}
 	return result;
 }
