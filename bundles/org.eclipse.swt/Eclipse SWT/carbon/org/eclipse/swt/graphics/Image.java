@@ -1056,7 +1056,7 @@ public boolean isDisposed() {
 	return pixmap == 0;
 }
 /*
-public static Image macosx_new(Device device, int type, int pixmap, int mask) {
+public static Image carbon_new(Device device, int type, int pixmap, int mask) {
 	if (device == null) device = Device.getDevice();
 	Image image = new Image();
 	image.device = device;
