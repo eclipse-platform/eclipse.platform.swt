@@ -1584,10 +1584,22 @@ int traversalCode (int key, GdkEventKey event) {
 }
 
 String verifyText (String string, int start, int end) {
+	if (string.length () == 0 && start == end) return null;
 	Event event = new Event ();
 	event.text = string;
 	event.start = start;
 	event.end = end;
+	int eventPtr = OS.gtk_get_current_event ();
+	if (eventPtr != 0) {
+		GdkEventKey gdkEvent = new GdkEventKey ();
+		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+		switch (gdkEvent.type) {
+			case OS.GDK_KEY_PRESS:
+				setKeyState (event, gdkEvent);
+				break;
+		}
+		OS.gdk_event_free (eventPtr);
+	}
 	/*
 	 * It is possible (but unlikely), that application
 	 * code could have disposed the widget in the verify
