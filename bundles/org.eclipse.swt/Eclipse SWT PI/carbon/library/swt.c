@@ -1730,6 +1730,11 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SelectWindow(JNIE
 	SelectWindow((WindowRef)wHandle);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ActivateWindow(JNIEnv *env, jclass zz,
+		jint wHandle, jboolean activate) {
+	ActivateWindow((WindowRef)wHandle, activate);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_BringToFront(JNIEnv *env, jclass zz, jint wHandle) {
 	BringToFront((WindowRef)wHandle);
 }

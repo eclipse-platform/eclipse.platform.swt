@@ -350,4 +350,28 @@ void setThumb (int sliderSize) {
 	display.setWarnings (warnings);
 }
 */
+
+////////////////////////////////////////////////////////
+// Mac stuff
+////////////////////////////////////////////////////////
+
+/**
+ * Overridden from Control since we want to center the bar within its area. 
+ * x and y are relative to window!
+ */
+void handleResize(int hndl, int x, int y, int width, int height) {
+	final int WIDTH= 16;
+	if (width > height) { 	// horizontal
+		int shift= (height-WIDTH)/2;
+		if (shift < 0)
+			shift= 0;
+		super.handleResize(hndl, x, y+shift, width, WIDTH);
+	} else {	// vertical
+		int shift= (width-WIDTH)/2;
+		if (shift < 0)
+			shift= 0;
+		super.handleResize(hndl, x+shift, y, WIDTH, height);
+	}
+}
+
 }

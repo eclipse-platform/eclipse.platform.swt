@@ -531,6 +531,7 @@ public class OS {
 	public static native int FrontWindow();
 	public static native int FrontNonFloatingWindow();
 	public static native void SelectWindow(int wHandle);
+	public static native void ActivateWindow(int wHandle, boolean activate);
 	public static native void BringToFront(int wHandle);
 	public static native short FindWindow(short[] where, int[] wHandle);
 	//public static native boolean ResizeWindow(int wHandle, short[] startPt, short[] sizeConstraints, short[] newContentRect);

@@ -929,10 +929,11 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowClose,
 		OS.kEventClassWindow, OS.kEventWindowDrawContent,
 
+		// the window only tracks the down and move events;
+		// up and dragged events are handled by the application because
+		// we need to get these events even if the mouse is outside of the window.
 		OS.kEventClassMouse, OS.kEventMouseDown,
 		OS.kEventClassMouse, OS.kEventMouseMoved,
-		OS.kEventClassMouse, OS.kEventMouseDragged,
-		OS.kEventClassMouse, OS.kEventMouseUp
 	};
 	OS.InstallEventHandler(ref, display.fWindowProc, mask, shellHandle);
 }

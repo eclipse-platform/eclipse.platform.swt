@@ -224,7 +224,7 @@ public class Display extends Device {
 
 	// callback procs
 	int fApplicationProc;
-	int fMouseProc;
+	//int fMouseProc;
 	int fWindowProc;
 	int fMenuProc;
 	int fControlProc;
@@ -920,7 +920,11 @@ protected void init () {
 		OS.kEventClassMenu, OS.kEventMenuBeginTracking,
 		OS.kEventClassMenu, OS.kEventMenuEndTracking,
 	
+		// we track down events here because we need to know when the user 
+		//clicked in the menu bar
 		OS.kEventClassMouse, OS.kEventMouseDown,
+		// we track up and dragged events because
+		// we need to get these events even if the mouse is outside of the window.
 		OS.kEventClassMouse, OS.kEventMouseDragged,
 		OS.kEventClassMouse, OS.kEventMouseUp,
 		
@@ -972,8 +976,10 @@ protected void init () {
 	if (OS.InstallEventHandler(OS.GetUserFocusEventTarget(), textInputProc, mask, 0) != OS.kNoErr)
 		error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
+	/*
 	fMouseProc= OS.NewMouseMovedCallbackUPP(this, "handleMouseCallback");
 	if (fMouseProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	*/
 	
 	mouseHoverProc = OS.NewEventLoopTimerUPP3(this, "mouseHoverProc");
 	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1972,8 +1978,6 @@ static String convertToLf(String text) {
 		return OS.eventNotHandledErr;
 	}
 	
-	private int fActiveWindow;
-
 	private int handleWindowCallback(int nextHandler, int eRefHandle, int whichWindow) {
 		//whichWindow= getDirectObject(eRefHandle);
 		int eventClass= OS.GetEventClass(eRefHandle);
@@ -1982,16 +1986,15 @@ static String convertToLf(String text) {
 		switch (eventClass) {
 			
 		case OS.kEventClassMouse:
-			return handleMouseCallback(nextHandler, eRefHandle);
+			return handleMouseCallback(nextHandler, eRefHandle, whichWindow);
 			
 		case OS.kEventClassWindow:
 			switch (eventKind) {
 			case OS.kEventWindowActivated:
-				fActiveWindow= whichWindow;
 				windowProc(whichWindow, SWT.FocusIn, new Boolean(true));
 				return OS.kNoErr;
 			case OS.kEventWindowDeactivated:
-				fActiveWindow= 0;
+				//System.out.println("-kEventWindowDeactivated");
 				windowProc(whichWindow, SWT.FocusIn, new Boolean(false));
 				return OS.kNoErr;
 			case OS.kEventWindowBoundsChanged:
@@ -2005,12 +2008,10 @@ static String convertToLf(String text) {
 			case OS.kEventWindowDrawContent:
 				if (toolTipWindowHandle == whichWindow) {
 					processPaintToolTip(whichWindow);
-					return OS.kNoErr;
 				} else {
 					updateWindow2(whichWindow);
-					return OS.kNoErr;
 				}
-				//break;
+				return OS.kNoErr;
 			default:
 				System.out.println("handleWindowCallback: kEventClassWindow kind:" + eventKind);
 				break;
@@ -2076,12 +2077,18 @@ static String convertToLf(String text) {
 			break;
 			
 		case OS.kEventClassMouse:
-			if (eventKind == OS.kEventMouseDown) {
-					
-				hideToolTip ();
+			switch (eventKind) {
+				
+			case OS.kEventMouseDown:
+			
+				System.out.println("handleApplicationCallback: kEventMouseDown");
+				
+				
+				fTrackedControl= 0;
+				
+				hideToolTip();
 	
 				OS.ConvertEventRefToEventRecord(eRefHandle, mEvent.getData());
-				
 				MacPoint where= mEvent.getWhere();
 				int[] w= new int[1];
 				short part= OS.FindWindow(where.getData(), w);
@@ -2095,7 +2102,14 @@ static String convertToLf(String text) {
 					doMenuCommand(OS.MenuSelect(mEvent.getWhere().getData()));
 					return OS.kNoErr;
 				}
-			}		
+				break;
+				
+			case OS.kEventMouseDragged:
+				return handleMouseCallback(nextHandler, eRefHandle, 0);
+				
+			case OS.kEventMouseUp:
+				return handleMouseCallback(nextHandler, eRefHandle, 0);
+			}
 			return OS.eventNotHandledErr;
 						
 		case SWT_USER_EVENT:	// SWT1 user event
@@ -2109,38 +2123,41 @@ static String convertToLf(String text) {
 		return OS.eventNotHandledErr;
 	}
 		
-	private int handleMouseCallback(int nextHandler, int eRefHandle) {
+	private int handleMouseCallback(int nextHandler, int eRefHandle, int whichWindow) {
 		
 		int eventKind= OS.GetEventKind(eRefHandle);
 		
 		if (eventKind == OS.kEventMouseDown) {
+			//System.out.println("  handleMouseCallback: kEventMouseDown " + whichWindow);	
+			//System.out.println("     frontw " + OS.FrontWindow());
 			fTrackedControl= 0;
 		}
 		
 		MacEvent me= new MacEvent();
 		OS.ConvertEventRefToEventRecord(eRefHandle, me.getData());
 		
-		int whichWindow= 0;
 		short part= 0;
 		MacPoint where= me.getWhere();
 		
-		if (fTrackedControl != 0) {
-			whichWindow= OS.GetControlOwner(fTrackedControl);
+		if (whichWindow == 0) {
+			if (fTrackedControl != 0) {
+				whichWindow= OS.GetControlOwner(fTrackedControl);
+			} else {
+				int[] w= new int[1];
+				part= OS.FindWindow(where.getData(), w);
+				whichWindow= w[0];
+				//part= getWindowDefPart(eRefHandle);
+				//whichWindow= getDirectObject(eRefHandle);
+			}
 		} else {
-			int[] w= new int[1];
-			part= OS.FindWindow(where.getData(), w);
-			whichWindow= w[0];
-			//part= getWindowDefPart(eRefHandle);
-			//whichWindow= getDirectObject(eRefHandle);
+			part= OS.FindWindow(where.getData(), new int[1]);
 		}
-				
-		/*
-		if (eventKind == OS.kEventMouseDown) {
-			Widget w= findWidget(whichWindow);
-			System.out.println("click: " + whichWindow + " " + w);
-		}
-		*/
 		
+		if (whichWindow == 0) {
+			System.out.println("Display.handleMouseCallback:  whichWindow == 0");
+			return OS.eventNotHandledErr;
+		}
+			
 		int oldPort= OS.GetPort();
 		OS.SetPortWindowPort(whichWindow);
 		OS.GlobalToLocal(where.getData());
@@ -2150,37 +2167,36 @@ static String convertToLf(String text) {
 		
 		case OS.kEventMouseDown:
 					
-			hideToolTip ();
-		
-			//if (whichWindow != OS.FrontNonFloatingWindow()) {
-			//if (whichWindow != OS.FrontWindow()) {
-			//if (OS.IsWindowActive(whichWindow)) {
-			if (whichWindow != fActiveWindow) {
-				//System.out.println("  front click");
-				//OS.CallNextEventHandler(nextHandler, eRefHandle);
+			if (!OS.IsWindowActive(whichWindow)) {
+				// let the default handler activate the window
+				// (I had no success when calling SelectWindow)
 				return OS.eventNotHandledErr;
 			}
 		
+			hideToolTip ();
+		
 			fTrackedControl= 0;
 					
-			if (part == OS.inContent) {
-				if (handleContentClick(me, whichWindow))
-					return OS.eventNotHandledErr;
-			} else
-				return OS.eventNotHandledErr;
+			if (part == OS.inContent)
+				if (!handleContentClick(me, whichWindow))
+					return OS.kNoErr;
+
 			break;
 		
 		case OS.kEventMouseDragged:
 			if (fTrackedControl != 0) {
 				me.getData()[0]= 12345;
 				windowProc(fTrackedControl, SWT.MouseMove, me);
+				return OS.kNoErr;
 			}
 			break;
 
 		case OS.kEventMouseUp:
-			if (fTrackedControl != 0)
+			if (fTrackedControl != 0) {
 				windowProc(fTrackedControl, SWT.MouseUp, me);
-			fTrackedControl= 0;
+				fTrackedControl= 0;
+				return OS.kNoErr;
+			}	
 			break;
 			
 		case OS.kEventMouseMoved:
@@ -2188,11 +2204,9 @@ static String convertToLf(String text) {
 			short[] cpart= new short[1];
 			int whichControl= MacUtil.findControlUnderMouse(where, whichWindow, cpart);
 		
-			//System.out.println("  kEventMouseMoved");
 			if (fCurrentControl != whichControl) {
 			
 				if (fCurrentControl != 0) {
-					//System.out.println("mouse exit: " + WidgetTable.get(fCurrentControl));
 					fLastHoverHandle= 0;
 					windowProc(fCurrentControl, SWT.MouseExit, me);
 				}
@@ -2200,20 +2214,19 @@ static String convertToLf(String text) {
 				fCurrentControl= whichControl;
 				
 				if (fCurrentControl != 0) {
-					//System.out.println("mouse enter: " + WidgetTable.get(fCurrentControl));
 					windowProc(fCurrentControl, SWT.MouseEnter, me);
 				}
-				
+				return OS.kNoErr;			
 			} else {
 				if (fCurrentControl != 0) {
 					windowProc(fCurrentControl, SWT.MouseMove, me);
-					//System.out.println("mouse moved: " + WidgetTable.get(fCurrentControl));
+					return OS.kNoErr;
 				}
 			}
 			break;
 		}
 					
-		return OS.kNoErr;
+		return OS.eventNotHandledErr;
 	}
 
 	boolean setMacFocusHandle(int wHandle, int focusHandle) {
