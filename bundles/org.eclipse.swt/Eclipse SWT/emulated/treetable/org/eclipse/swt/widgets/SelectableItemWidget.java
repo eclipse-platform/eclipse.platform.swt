@@ -361,17 +361,9 @@ void deselectNotify(final SelectableItem item) {
 		setLastSelection(item, true);		
 		update();												// looks better when event notification takes long to return
 	}
-	display.asyncExec(new Runnable() {
-		public void run() {
-			// Only send a selection event when the item has not been disposed.
-			// Fixes 1GE6XQA
-			if (item.isDisposed() == false) {
-				Event event = new Event();
-				event.item = item;
-				notifyListeners(SWT.Selection, event);
-			}
-		}
-	});
+	Event event = new Event();
+	event.item = item;
+	postEvent (SWT.Selection, event);
 }
 /**
  * Deselect all items starting at and including 'fromIndex'
