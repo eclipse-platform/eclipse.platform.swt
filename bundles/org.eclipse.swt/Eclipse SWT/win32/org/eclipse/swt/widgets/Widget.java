@@ -977,7 +977,7 @@ boolean setKeyState (Event event, int type) {
 		event.keyCode = Display.translateKey (display.lastKey);
 	}
 	if (event.keyCode == 0 && event.character == 0) {
-		return false;
+		if (!display.lastNull) return false;
 	}
 	return setInputState (event, type);
 }

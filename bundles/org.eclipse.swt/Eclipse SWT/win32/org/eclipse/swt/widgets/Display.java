@@ -123,8 +123,8 @@ public class Display extends Device {
 	Runnable [] timerList;
 	
 	/* Keyboard and Mouse State */
-	boolean lastVirtual;
 	boolean lockActiveWindow;
+	boolean lastVirtual, lastNull;
 	int lastKey, lastAscii, lastMouse;
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;

@@ -2306,9 +2306,9 @@ boolean translateMnemonic (char key) {
 	event.doit = mnemonicMatch (key);
 	event.detail = SWT.TRAVERSE_MNEMONIC;
 	Display display = getDisplay ();
-	display.lastVirtual = false;
 	display.lastKey = 0;
 	display.lastAscii = key;
+	display.lastVirtual = display.lastNull = false;
 	if (!setKeyState (event, SWT.Traverse)) {
 		return false;
 	}
@@ -2407,6 +2407,7 @@ boolean translateTraversal (MSG msg) {
 	display.lastKey = lastKey;
 	display.lastAscii = lastAscii;
 	display.lastVirtual = lastVirtual;
+	display.lastNull = false;
 	if (!setKeyState (event, SWT.Traverse)) {
 		return false;
 	}
@@ -2732,6 +2733,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	* compute the keycode in WPARAM.
 	*/
 	display.lastAscii = wParam;
+	display.lastNull = false;
 	if (display.lastKey == 0) {
 		display.lastKey = wParam;
 		display.lastVirtual = display.isVirtualKey (wParam);
@@ -2896,7 +2898,7 @@ LRESULT WM_IME_CHAR (int wParam, int lParam) {
 	Display display = getDisplay ();
 	display.lastKey = 0;
 	display.lastAscii = wParam;
-	display.lastVirtual = false;
+	display.lastVirtual = display.lastNull = false;
 	sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam);
 	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
 	display.lastKey = display.lastAscii = 0;
@@ -2985,20 +2987,7 @@ LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
 }
 
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
-	
-	/*
-	* Do not report a lead byte as a key pressed.
-	*/
-	Display display = getDisplay ();
-	if (!OS.IsUnicode && OS.IsDBLocale) {
-		byte lead = (byte) (wParam & 0xFF);
-		if (OS.IsDBCSLeadByte (lead)) {
-			display.lastAscii = display.lastKey = 0;
-			display.lastVirtual = false;
-			return null;
-		}
-	}
-	
+
 	/* Ignore repeating modifier keys by testing key down state */
 	switch (wParam) {
 		case OS.VK_SHIFT:
@@ -3009,13 +2998,22 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		case OS.VK_SCROLL:
 			if ((lParam & 0x40000000) != 0) return null;
 	}
+	
+	/* Clear last key and last ascii because a new key has been typed */
+	Display display = getDisplay ();
+	display.lastAscii = display.lastKey = 0;
+	display.lastVirtual = display.lastNull = false;
 
-	/* Set last key and clear last ascii because a new key has been typed */
-	display.lastAscii = 0;
-	display.lastKey = wParam;
-
+	/*
+	* Do not report a lead byte as a key pressed.
+	*/
+	if (!OS.IsUnicode && OS.IsDBLocale) {
+		byte lead = (byte) (wParam & 0xFF);
+		if (OS.IsDBCSLeadByte (lead)) return null;
+	}
+	
 	/* Map the virtual key */
-	int mapKey = OS.MapVirtualKey (display.lastKey, 2);
+	int mapKey = OS.MapVirtualKey (wParam, 2);
 
 	/*
 	* Bug in Windows 95 and NT.  When the user types an accent key such
@@ -3072,6 +3070,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	* value.  Also, on international keyboards, the control key
 	* may be down when the user has not entered a control character.
 	*/
+	display.lastKey = wParam;
 	display.lastVirtual = (mapKey == 0);
 	if (display.lastVirtual) {
 		/*
@@ -3150,6 +3149,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		*/
 		display.lastVirtual = display.isVirtualKey (display.lastKey);
 		display.lastAscii = display.controlKey (display.lastKey);
+		display.lastNull = display.lastAscii == 0 && display.lastKey == '@';
 	}
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_KEYDOWN, wParam, lParam)) {
 		return LRESULT.ZERO;
@@ -3163,8 +3163,8 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	/* Check for hardware keys */
 	if (OS.IsWinCE) {
 		if (OS.VK_APP1 <= wParam && wParam <= OS.VK_APP6) {
-			display.lastVirtual = false;
 			display.lastKey = display.lastAscii = 0;
+			display.lastVirtual = display.lastNull = false;
 			Event event = new Event ();
 			event.detail = wParam - OS.VK_APP1 + 1;
 			/* Check the bit 30 to get the key state */
@@ -3179,8 +3179,8 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	* and last ascii in case the key down is hooked.
 	*/
 	if (!hooks (SWT.KeyUp)) {
-		display.lastVirtual = false;
 		display.lastKey = display.lastAscii = 0;
+		display.lastVirtual = display.lastNull = false;
 		return null;
 	}
 	
@@ -3222,6 +3222,8 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 		for (int i=0; i<ACCENTS.length; i++) {
 			int value = OS.VkKeyScan (ACCENTS [i]);
 			if ((value & 0xFF) == wParam && (value & 0x600) == 0x600) {
+				display.lastKey = display.lastAscii = 0;
+				display.lastVirtual = display.lastNull = false;
 				return null;
 			}
 		}
@@ -3233,17 +3235,19 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	} else {
 		if (display.lastKey == 0) {
 			display.lastAscii = 0;
+			display.lastNull = false;
 			return null;
 		}
 		display.lastVirtual = display.isVirtualKey (display.lastKey);
 	}
 	
+	
 	LRESULT result = null;
 	if (!sendKeyEvent (SWT.KeyUp, OS.WM_KEYUP, wParam, lParam)) {
 		result = LRESULT.ZERO;
 	}
-	display.lastVirtual = false;
 	display.lastKey = display.lastAscii = 0;
+	display.lastVirtual = display.lastNull = false;
 	return result;
 }
 
@@ -3819,6 +3823,7 @@ LRESULT WM_SYSCHAR (int wParam, int lParam) {
 	/* Set last key and last ascii because a new key has been typed */
 	display.lastAscii = display.lastKey = wParam;
 	display.lastVirtual = display.isVirtualKey (display.lastKey);
+	display.lastNull = false;
 
 	/* Do not issue a key down if a menu bar mnemonic was invoked */
 	if (!hooks (SWT.KeyDown)) return null;
@@ -3937,6 +3942,7 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 	display.lastAscii = 0;
 	display.lastKey = wParam;
 	display.lastVirtual = true;
+	display.lastNull = false;
 
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_SYSKEYDOWN, wParam, lParam)) {
 		return LRESULT.ZERO;
