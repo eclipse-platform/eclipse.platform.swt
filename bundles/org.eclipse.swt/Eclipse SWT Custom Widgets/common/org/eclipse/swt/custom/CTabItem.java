@@ -52,6 +52,7 @@ public void dispose () {
 	control = null;
 	toolTipText = null;
 }
+
 /**
  * Return the bounds of the CTabItem.
  */
@@ -134,6 +135,11 @@ void onPaint(GC gc, boolean isSelected) {
 	int index = parent.indexOf(this);
 	
 	if (isSelected) {
+		
+		if (parent.isFocusControl()) {
+			// draw a focus rectangle
+			gc.drawFocus(x + 2, y + 1, width - 3, height - 1);
+		}
 		final Rectangle bounds;
 		if (index == parent.topTabIndex) {
 			bounds = new Rectangle(x + 1, y, width - 2, height);
@@ -282,6 +288,7 @@ void onPaint(GC gc, boolean isSelected) {
 	}
 	int textY = y + (height - textHeight(gc)) / 2; 	
 	gc.drawString(text, xDraw, textY, true);
+	//gc.drawText(text, xDraw, textY, true, true);
 	
 	gc.setForeground(parent.getForeground());
 }

@@ -72,6 +72,8 @@ public class CTabFolder extends Composite {
 	 */
 	public static int MIN_TAB_WIDTH = 3;
 	
+	static final char Mnemonic = '&';
+	
 	/* sizing, positioning */
 	int xClient, yClient;
 	boolean onBottom = false;
@@ -193,20 +195,24 @@ public CTabFolder(Composite parent, int style) {
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Dispose:		onDispose(); break;
+				case SWT.Dispose:			onDispose(); break;
 				case SWT.Paint:			onPaint(event);	break;
-				case SWT.Resize:		onResize();	break;
+				case SWT.Resize:			onResize();	break;
 				case SWT.MouseDoubleClick:	onMouseDoubleClick(event);	break;
 				case SWT.MouseDown:		onMouseDown(event);	break;
 				case SWT.MouseExit:		onMouseExit(event);	break;
-				case SWT.MouseHover:	onMouseHover(event);	break;
+				case SWT.MouseHover:		onMouseHover(event);	break;
 				case SWT.MouseMove:		onMouseMove(event);	break;
 				case SWT.Selection:		onSelection(event);	break;
+				case SWT.FocusIn:			onFocus(event);	break;
+				case SWT.FocusOut:			onFocus(event);	break;
+				case SWT.KeyDown:			onKeyDown(event); break;
 			}
 		}
 	};
 	
-	int[] folderEvents = new int[]{SWT.Dispose, SWT.MouseDown, SWT.MouseDoubleClick, SWT.MouseMove, SWT.MouseExit, SWT.MouseHover, SWT.Paint, SWT.Resize};
+
+	int[] folderEvents = new int[]{SWT.Dispose, SWT.MouseDown, SWT.MouseDoubleClick, SWT.MouseMove, SWT.MouseExit, SWT.MouseHover, SWT.Paint, SWT.Resize, SWT.FocusIn, SWT.FocusOut, SWT.KeyDown};
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
 	}
@@ -411,6 +417,24 @@ void destroyItem (CTabItem item) {
 	ensureVisible();
 	redrawTabArea(-1);
 }
+private void onKeyDown(Event e) {
+	if (e.keyCode == SWT.ARROW_LEFT) {
+		if (selectedIndex > 0) {
+			setSelection(selectedIndex - 1);
+		}
+	}
+	if (e.keyCode == SWT.ARROW_RIGHT) {
+		if (selectedIndex < items.length - 1) {
+			setSelection(selectedIndex + 1);
+		}
+	}
+	if (e.character == '\t' || e.character == SWT.CR) {
+		traverse(SWT.TRAVERSE_TAB_NEXT);
+	}
+	if (e.stateMask == SWT.ALT) {
+		mnemonicHit(e.character);
+	}
+}
 /**
  * Dispose the items of the receiver
  */
@@ -474,6 +498,11 @@ private void onDispose() {
 	if (borderColor3 != null) {
 		borderColor3.dispose();
 		borderColor3 = null;
+	}
+}
+public void onFocus(Event e) {
+	if (selectedIndex >= 0) {
+		redrawTabArea(selectedIndex);
 	}
 }
 /** 
@@ -778,6 +807,21 @@ private void layoutItems() {
 	
 	// resize the scrollbar and close butotns
 	layoutButtons();
+}
+
+boolean mnemonicHit (char key) {
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			char mnemonic = findMnemonic (items[i].getText ());
+			if (mnemonic != '\0') {
+				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+					setSelectionNotify(i);
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }
 /** 
  * Paint the receiver.
@@ -1219,6 +1263,18 @@ private void ensureVisible() {
 			width -=  scrollWidth;
 		}
 	}
+}
+
+char findMnemonic (String string) {
+	int index = 0;
+	int length = string.length ();
+	do {
+		while ((index < length) && (string.charAt (index) != Mnemonic)) index++;
+		if (++index >= length) return '\0';
+		if (string.charAt (index) != Mnemonic) return string.charAt (index);
+		index++;
+	} while (index < length);
+ 	return '\0';
 }
 /**
  * Set the selection to the specified item.
