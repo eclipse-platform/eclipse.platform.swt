@@ -78,7 +78,6 @@ import org.eclipse.swt.internal.win32.*;
 public class DragSource extends Widget {
 	
 	// ole interfaces
-	private COMObject iUnknown;
 	private COMObject iDropSource;
 	private COMObject iDataObject;
 	private int refCount;
@@ -157,12 +156,6 @@ static int checkStyle (int style) {
 }
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
-	iUnknown    = new COMObject(new int[]{2, 0, 0}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-	};
-	
 	iDropSource = new COMObject(new int[]{2, 0, 0, 2, 1}){
 		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
@@ -213,11 +206,6 @@ private int osToOp(int osOperation){
 
 }
 private void disposeCOMInterfaces() {
-	
-	if (iUnknown != null)
-		iUnknown.dispose();
-	iUnknown = null;
-	
 	if (iDropSource != null)
 		iDropSource.dispose();
 	iDropSource = null;
@@ -227,7 +215,6 @@ private void disposeCOMInterfaces() {
 	iDataObject = null;
 }
 private void drag() {
-	
 	if (transferAgents == null || getStyle() == 0) return;
 	
 	DNDEvent event = new DNDEvent();
@@ -264,7 +251,6 @@ private void drag() {
 	} catch (Throwable e) {
 	}
 }
-
 private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 	// only allow getting of data - SetData is not currently supported
 	if (dwDirection == COM.DATADIR_SET) return COM.E_NOTIMPL;
@@ -343,10 +329,7 @@ private int GetData(int pFormatetc, int pmedium) {
 	COM.MoveMemory(pmedium, transferData.stgmedium, STGMEDIUM.sizeof);
 	return transferData.result;
 }
-
-
 public Display getDisplay () {
-
 	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	return control.getDisplay ();
 }
@@ -361,8 +344,6 @@ public Transfer[] getTransfer(){
 private int GiveFeedback(int dwEffect) {
 	return COM.DRAGDROP_S_USEDEFAULTCURSORS;
 }
-
-
 private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 	if (fEscapePressed != 0)
 		return COM.DRAGDROP_S_CANCEL;
@@ -372,9 +353,7 @@ private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 	return COM.S_OK;
 }
 private int QueryGetData(int pFormatetc) {
-
 	if (transferAgents == null) return COM.E_FAIL;
-
 	TransferData transferData = new TransferData();
 	transferData.formatetc = new FORMATETC();
 	COM.MoveMemory(transferData.formatetc, pFormatetc, FORMATETC.sizeof);
@@ -389,19 +368,12 @@ private int QueryGetData(int pFormatetc) {
 	return COM.DV_E_FORMATETC;
 }
 private int QueryInterface(int riid, int ppvObject) {
-	
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	
-	if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-		COM.MoveMemory(ppvObject, new int[] {iUnknown.getAddress()}, 4);
-		AddRef();
-		return COM.S_OK;
-	}
-	
-	if (COM.IsEqualGUID(guid, COM.IIDIDropSource)) {
+	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDropSource)) {
 		COM.MoveMemory(ppvObject, new int[] {iDropSource.getAddress()}, 4);
 		AddRef();
 		return COM.S_OK;
@@ -422,7 +394,6 @@ private int Release() {
 		disposeCOMInterfaces();
 		COM.CoFreeUnusedLibraries();
 	}
-	
 	return refCount;
 }
 /**	 
@@ -443,9 +414,7 @@ public void removeDragListener(DragSourceListener listener) {
 }
 private static int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	
 private int SetData(int pFormatetc, int pmedium, int fRelease) {
-	
 	if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
-	
 	FORMATETC formatetc = new FORMATETC();
 	COM.MoveMemory(formatetc, pFormatetc, FORMATETC.sizeof);
 	if (formatetc.cfFormat == CFSTR_PERFORMEDDROPEFFECT && formatetc.tymed == COM.TYMED_HGLOBAL) {
@@ -477,6 +446,4 @@ protected void checkSubclass () {
 		DND.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
 }
-
-
 }

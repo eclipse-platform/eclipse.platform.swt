@@ -16,7 +16,6 @@ import org.eclipse.swt.widgets.*;
 public class Clipboard {
 
 	// ole interfaces
-	private COMObject iUnknown;
 	private COMObject iDataObject;
 	private int refCount;
 
@@ -76,7 +75,6 @@ public Object getContents(Transfer transfer) {
 	return transfer.nativeToJava(match);
 }
 public void setContents(Object[] data, Transfer[] dataTypes){
-		
 	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -113,11 +111,6 @@ private int AddRef() {
 }
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
-	iUnknown    = new COMObject(new int[]{2, 0, 0}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-	};	
 	iDataObject = new COMObject(new int[]{2, 0, 0, 2, 2, 1, 2, 3, 2, 4, 1, 1}){
 		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
@@ -134,10 +127,6 @@ private void createCOMInterfaces() {
 	};
 }
 private void disposeCOMInterfaces() {
-	if (iUnknown != null)
-		iUnknown.dispose();
-	iUnknown = null;
-	
 	if (iDataObject != null)
 		iDataObject.dispose();
 	iDataObject = null;
@@ -223,13 +212,7 @@ private int QueryInterface(int riid, int ppvObject) {
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	
-	if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-		COM.MoveMemory(ppvObject, new int[] {iUnknown.getAddress()}, 4);
-		AddRef();
-		return COM.S_OK;
-	}
-
-	if (COM.IsEqualGUID(guid, COM.IIDIDataObject) ) {
+	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDataObject) ) {
 		COM.MoveMemory(ppvObject, new int[] {iDataObject.getAddress()}, 4);
 		AddRef();
 		return COM.S_OK;

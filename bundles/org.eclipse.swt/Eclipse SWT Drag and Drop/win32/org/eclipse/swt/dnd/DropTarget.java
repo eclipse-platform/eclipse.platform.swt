@@ -67,7 +67,6 @@ public class DropTarget extends Widget {
 
 	
 	// interfaces
-	private COMObject iUnknown;
 	private COMObject iDropTarget;
 
 	// info for registering as a droptarget	
@@ -164,12 +163,6 @@ static int checkStyle (int style) {
 }
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
-	iUnknown    = new COMObject(new int[]{2, 0, 0}){
-		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-	};
-	
 	iDropTarget = new COMObject(new int[]{2, 0, 0, 5, 4, 0, 5}){
 		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
@@ -199,11 +192,6 @@ private void onDispose () {
 	COM.CoFreeUnusedLibraries();
 }
 private void disposeCOMInterfaces() {
-	
-	if (iUnknown != null)
-		iUnknown.dispose();
-	iUnknown = null;
-	
 	if (iDropTarget != null)
 		iDropTarget.dispose();
 	iDropTarget = null;
@@ -546,12 +534,7 @@ private int QueryInterface(int riid, int ppvObject) {
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
-	if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-		COM.MoveMemory(ppvObject, new int[] {iUnknown.getAddress()}, 4);
-		AddRef();
-		return COM.S_OK;
-	}
-	if (COM.IsEqualGUID(guid, COM.IIDIDropTarget)) {
+	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDropTarget)) {
 		COM.MoveMemory(ppvObject, new int[] {iDropTarget.getAddress()}, 4);
 		AddRef();
 		return COM.S_OK;
