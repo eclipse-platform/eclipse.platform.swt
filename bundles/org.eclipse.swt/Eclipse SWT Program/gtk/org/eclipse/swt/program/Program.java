@@ -202,24 +202,24 @@ static Program[] getPrograms(Display display) {
  */
 static Hashtable gnome_getMimeInfo(Display display) {
 	Hashtable mimeInfo = new Hashtable();
-	int[] mimeData = new int[1];
-	int[] extensionData = new int[1];
-	int mimeList = GNOME.gnome_vfs_get_registered_mime_types();
+	int /*long*/[] mimeData = new int /*long*/[1];
+	int /*long*/[] extensionData = new int /*long*/[1];
+	int /*long*/ mimeList = GNOME.gnome_vfs_get_registered_mime_types();
 	int /*long*/ mimeElement = mimeList;
 	while (mimeElement != 0) {
-		OS.memmove (mimeData, mimeElement, 4);
-		int mimePtr = mimeData[0];
+		OS.memmove (mimeData, mimeElement, OS.PTR_SIZEOF);
+		int /*long*/ mimePtr = mimeData[0];
 		int mimeLength = OS.strlen(mimePtr);
 		byte[] mimeTypeBuffer = new byte[mimeLength];
 		OS.memmove(mimeTypeBuffer, mimePtr, mimeLength);
 		String mimeType = new String(Converter.mbcsToWcs(null, mimeTypeBuffer));
-		int extensionList = GNOME.gnome_vfs_mime_get_extensions_list(mimePtr);
+		int /*long*/ extensionList = GNOME.gnome_vfs_mime_get_extensions_list(mimePtr);
 		if (extensionList != 0) {
 			Vector extensions = new Vector();
 			int /*long*/ extensionElement = extensionList;
 			while (extensionElement != 0) {
 				OS.memmove(extensionData, extensionElement, 4);
-				int extensionPtr = extensionData[0];
+				int /*long*/ extensionPtr = extensionData[0];
 				int extensionLength = OS.strlen(extensionPtr);
 				byte[] extensionBuffer = new byte[extensionLength];
 				OS.memmove(extensionBuffer, extensionPtr, extensionLength);
@@ -241,7 +241,7 @@ static Program gnome_getProgram(Display display, String mimeType) {
 	Program program = null;
 	GnomeVFSMimeApplication application = new GnomeVFSMimeApplication();
 	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, mimeType, true);
-	int ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
+	int /*long*/ ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
 	if (ptr != 0) {
 		program = new Program();
 		program.display = display;
@@ -260,10 +260,10 @@ static Program gnome_getProgram(Display display, String mimeType) {
 		* Note.  gnome_icon_theme_new uses g_object_new to allocate the data it returns.
 		* Use g_object_unref to free the pointer it returns.
 		*/
-		int icon_theme = GNOME.gnome_icon_theme_new();
-		int icon_name = GNOME.gnome_icon_lookup(icon_theme, 0, null, buffer, 0, mimeTypeBuffer, 
+		int /*long*/ icon_theme = GNOME.gnome_icon_theme_new();
+		int /*long*/ icon_name = GNOME.gnome_icon_lookup(icon_theme, 0, null, buffer, 0, mimeTypeBuffer, 
 				GNOME.GNOME_ICON_LOOKUP_FLAGS_NONE, null);
-		int path = 0;
+		int /*long*/ path = 0;
 		if (icon_name != 0) path = GNOME.gnome_icon_theme_lookup_icon(icon_theme, icon_name, PREFERRED_ICON_SIZE, null, null);
 		GNOME.g_object_unref(icon_theme);
 		if (path != 0) {
