@@ -83,7 +83,7 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
-int gtk_button_press_event (int widget, int eventPtr) {
+int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;

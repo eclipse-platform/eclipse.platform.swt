@@ -18,8 +18,7 @@ import org.eclipse.swt.internal.win32.*;
  */
 public class TrayIcon extends Widget {
 	int id;
-	Image image, iconImage;
-	Menu menu;
+	Image image, image2;
 	String toolTipText;
 	boolean visible;
 	static final int SHELL32_MAJOR, SHELL32_MINOR;
@@ -58,7 +57,7 @@ public class TrayIcon extends Widget {
  * </ul>
  */
 public TrayIcon (Display display) {
-//	checkSubclass ();
+	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
 	if (display == null) display = Display.getDefault ();
 	if (!display.isValidThread ()) {
@@ -139,21 +138,6 @@ public Image getImage () {
 }
 
 /**
- * Returns the receiver's context menu, or null if the menu has not been set.
- *
- * @return the receiver's context menu
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-Menu getMenu () {
-	checkWidget ();
-	return menu;
-}
-
-/**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
  *
@@ -195,20 +179,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			postEvent (SWT.DefaultSelection);
 			break;
 		case OS.WM_RBUTTONDOWN: {
-			POINT pos = new POINT ();
-			OS.GetCursorPos (pos);
-			Event event = new Event ();
-//			event.x = pos.x;
-//			event.y = pos.y;
-			sendEvent (SWT.MenuDetect, event);
-			if (event.doit) {
-				if (menu != null && !menu.isDisposed ()) {
-					if (pos.x != event.x || pos.y != event.y) {
-						menu.setLocation (event.x, event.y);
-					}
-					menu.setVisible (true);
-				}
-			}
+			sendEvent (SWT.MenuDetect);
 			break;
 		}
 	}
@@ -217,11 +188,10 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (iconImage != null) iconImage.dispose ();
-	iconImage = null;
+	if (image2 != null) image2.dispose ();
+	image2 = null;
 	image = null;
 	toolTipText = null;
-	menu = null;
 	display.removeTrayIcon (this);
 }
 	
@@ -267,8 +237,8 @@ public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
-	if (iconImage != null) iconImage.dispose ();
-	iconImage = null;
+	if (image2 != null) image2.dispose ();
+	image2 = null;
 	int hIcon = 0;
 	Image icon = image;
 	if (icon != null) {
@@ -276,8 +246,8 @@ public void setImage (Image image) {
 			case SWT.BITMAP:
 				ImageData data = icon.getImageData ();
 				ImageData mask = data.getTransparencyMask ();
-				iconImage = new Image (display, data, mask);
-				hIcon = iconImage.handle;
+				image2 = new Image (display, data, mask);
+				hIcon = image2.handle;
 				break;
 			case SWT.ICON:
 				hIcon = icon.handle;
@@ -292,23 +262,6 @@ public void setImage (Image image) {
 	iconData.hWnd = display.hwndMessage;
 	iconData.uFlags = OS.NIF_ICON;
 	OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
-}
-
-/**
- * Sets the receiver's context menu.  This argument may be null to indicate
- * that the receiver should have no context menu.
- *
- * @param menu the new menu, or null
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-void setMenu (Menu menu) {
-	checkWidget ();
-	if (menu != null && menu.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	this.menu = menu;
 }
 
 /**
