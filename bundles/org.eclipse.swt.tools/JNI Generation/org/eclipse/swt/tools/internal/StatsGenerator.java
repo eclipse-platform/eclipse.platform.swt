@@ -88,7 +88,7 @@ void generateNATIVEMacros(Class clazz) {
 
 public void generateHeaderFile(Method[] methods) {
 	sort(methods);
-	generateDefines(methods);	
+	generateFunctionEnum(methods);	
 }
 
 public void generateSourceFile(Class[] classes) {
@@ -193,7 +193,7 @@ void generateStringArray(Method method) {
 	outputln("\", ");
 }
 
-void generateDefines(Method[] methods) {
+void generateFunctionEnum(Method[] methods) {
 	if (methods.length == 0) return;
 	outputln("typedef enum {");
 	for (int i = 0; i < methods.length; i++) {
