@@ -46,16 +46,31 @@ public class IconExe {
 	 * does not match a user icon, it is silently left as is.
 	 * 
 	 * Note 3. This function modifies the content of the executable program and may cause
-	 * its corruption. 
+	 * its corruption.
 	 */
 	public static void main(String[] args) {
-		if (args.length != 2) {
+		if (args.length < 2) {
 			System.err.println("Usage: IconExe <windows executable> <ico file>");
 			return;
 		}
 		ImageLoader loader = new ImageLoader();
 		try {
-			ImageData[] data = loader.load(args[1]);
+			ImageData[] data = null;
+			
+			if (args.length == 2) {
+				/* ICO case */
+				data = loader.load(args[1]);
+			} else {
+				/* BMP case - each following argument is a single BMP file
+				 * BMP is handled for testing purpose only. The ICO file is the
+				 * official Microsoft format for image resources.
+				 */
+				data = new ImageData[args.length - 1];
+				for (int i = 1; i < args.length; i++) {
+					ImageData[] current = loader.load(args[i]);
+					data[i - 1] = current[0];
+				}
+			}
 			int nMissing = unloadIcons(args[0], data);
 			if (nMissing != 0) System.err.println("Error - "+nMissing+" icon(s) not replaced in "+args[0]+" using "+args[1]);
 		} catch (Exception e) {
@@ -138,7 +153,7 @@ public class IconExe {
 		return iconInfo.length - cnt;
 	}
 	
-	public static final String VERSION = "20050118";
+	public static final String VERSION = "20050124";
 	
 	static final boolean DEBUG = false;
 	public static class IconResInfo {
@@ -2728,8 +2743,12 @@ public ImageData[] loadFromStream(LEDataInputStream stream) {
 public static ImageData[] load(InputStream is, ImageLoader loader) {
 	LEDataInputStream stream = new LEDataInputStream(is);
 	boolean isSupported = false;	
-	WinICOFileFormat fileFormat = new WinICOFileFormat();
+	FileFormat fileFormat = new WinICOFileFormat();
 	if (fileFormat.isFileFormat(stream)) isSupported = true;
+	else {
+		fileFormat = new WinBMPFileFormat();
+		if (fileFormat.isFileFormat(stream)) isSupported = true;
+	}
 	if (!isSupported) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	fileFormat.loader = loader;
 	return fileFormat.loadFromStream(stream);
