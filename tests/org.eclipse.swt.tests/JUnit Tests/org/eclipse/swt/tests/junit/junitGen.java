@@ -266,6 +266,7 @@ public class junitGen {
 		void writePackage() throws IOException {
 			writer.write("package org.eclipse.swt.tests.junit;");
 			writer.write(lineSep);
+			writer.write(lineSep);
 		}
 		
 		void writeCopyRights() throws IOException {
