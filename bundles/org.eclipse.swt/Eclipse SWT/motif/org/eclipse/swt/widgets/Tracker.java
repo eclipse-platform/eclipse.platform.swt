@@ -301,14 +301,11 @@ public boolean getStippled () {
 	return stippled;
 }
 
-void moveRectangles (int xChange, int yChange, Rectangle moveBounds) {
+void moveRectangles (int xChange, int yChange) {
 	if (xChange < 0 && ((style & SWT.LEFT) == 0)) return;
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) return;
 	if (yChange < 0 && ((style & SWT.UP) == 0)) return;
 	if (yChange > 0 && ((style & SWT.DOWN) == 0)) return;
-//	Rectangle bounds = computeBounds();
-//	bounds.x += xChange; bounds.y += yChange;
-//	if (!bounds.union (moveBounds).equals (moveBounds)) return;
 	for (int i = 0; i < rectangles.length; i++) {
 		rectangles [i].x += xChange;
 		rectangles [i].y += yChange;
@@ -369,12 +366,12 @@ public boolean open () {
 					event.x = newX [0];
 					event.y = newY [0];
 					if ((style & SWT.RESIZE) != 0) {
-						resizeRectangles (newX [0] - oldX [0], newY [0] - oldY [0], null);
+						resizeRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Resize, event);
 						cursorPos = adjustResizeCursor (xDisplay, xWindow);
 						newX [0] = cursorPos.x; newY [0] = cursorPos.y;
 					} else {
-						moveRectangles (newX [0] - oldX [0], newY [0] - oldY [0], null);
+						moveRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Move, event);
 					}
 					/*
@@ -429,11 +426,11 @@ public boolean open () {
 						event.x = oldX[0] + xChange;
 						event.y = oldY[0] + yChange;
 						if ((style & SWT.RESIZE) != 0) {
-							resizeRectangles (xChange, yChange, null);
+							resizeRectangles (xChange, yChange);
 							sendEvent (SWT.Resize,event);
 							cursorPos = adjustResizeCursor (xDisplay, xWindow);
 						} else {
-							moveRectangles (xChange, yChange, null);
+							moveRectangles (xChange, yChange);
 							sendEvent (SWT.Move,event);
 							cursorPos = adjustMoveCursor (xDisplay, xWindow);
 						}
@@ -480,7 +477,7 @@ public void removeControlListener (ControlListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
 }
-void resizeRectangles (int xChange, int yChange, Rectangle resizeBounds) {
+void resizeRectangles (int xChange, int yChange) {
 	/*
 	* If the cursor orientation has not been set in the orientation of
 	* this change then try to set it here.
@@ -510,7 +507,6 @@ void resizeRectangles (int xChange, int yChange, Rectangle resizeBounds) {
 	/*
 	* The following are conditions under which the resize should not be applied
 	*/
-//	if (!bounds.union (resizeBounds).equals (resizeBounds)) return;
 	if (bounds.width < 0 || bounds.height < 0) return;
 	
 	Rectangle [] newRects = new Rectangle [rectangles.length];
@@ -525,6 +521,8 @@ void resizeRectangles (int xChange, int yChange, Rectangle resizeBounds) {
 	rectangles = newRects;	
 }
 
+public void setCursor (Cursor value) {
+}
 /**
  * Specify the rectangles that should be drawn.
  *
