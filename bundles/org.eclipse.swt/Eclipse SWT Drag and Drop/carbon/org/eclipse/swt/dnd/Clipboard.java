@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.carbon.OS;
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
  */
 public class Clipboard {
-	
+
 	private Display display;
 
 /**
@@ -45,7 +45,7 @@ public Clipboard(Display display) {
 	if (display == null) {
 		display = Display.getCurrent();
 		if (display == null) {
-			display =  Display.getDefault();
+			display = Display.getDefault();
 		}
 	}
 	if (display.getThread() != Thread.currentThread()) {
