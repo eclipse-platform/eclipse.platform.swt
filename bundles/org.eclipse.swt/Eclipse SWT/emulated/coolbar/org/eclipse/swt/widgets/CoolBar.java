@@ -34,7 +34,9 @@ public class CoolBar extends Composite {
 	Cursor hoverCursor, dragCursor;
 	CoolItem dragging = null;
 	int mouseXOffset, itemXOffset;
+	Point click = new Point(0, 0);
 	static final int ROW_SPACING = 2;
+	static final int CLICK_DISTANCE = 3;
 		
 /**
  * Constructs a new instance of this class given its parent
@@ -94,12 +96,13 @@ public CoolBar (Composite parent, int style) {
 	}
 }
 private static int checkStyle (int style) {
-	return (style | SWT.NO_REDRAW_RESIZE);
+	return (style | SWT.NO_REDRAW_RESIZE) & ~(SWT.V_SCROLL | SWT.H_SCROLL);
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget();
 	int width = 0, height = 0;
 	for (int row = 0; row < items.length; row++) {
 		int rowWidth = 0, rowHeight = 0;
@@ -341,7 +344,7 @@ void createItem (CoolItem item, int index) {
 		items[row] = newRow;
 	}
 	item.requestedWidth = CoolItem.MINIMUM_WIDTH;
-	relayout();
+	layoutItems();
 }
 void destroyItem(CoolItem item) {
 	int row = findItem(item).y;
@@ -350,11 +353,6 @@ void destroyItem(CoolItem item) {
 	removeItemFromRow(item, row);
 	redraw(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height, false);
 	
-	Control control = item.getControl();
-	if (control != null && !control.isDisposed()) {
-		control.setVisible(false);
-	}
-	
 	/* Fix the id of each remaining item. */
 	for (row = 0; row < items.length; row++) {
 		for (int i = 0; i < items[row].length; i++) {
@@ -362,13 +360,15 @@ void destroyItem(CoolItem item) {
 			if (next.id > item.id) --next.id; 	
 		}	
 	}
-	relayout();	
+	layoutItems();
 }
 void moveDown(CoolItem item, int x_root) {
 	int oldRowIndex = findItem(item).y;
-	if (oldRowIndex == items.length - 1 && items[oldRowIndex].length == 1) {
-		/* This is the only item in the bottom row, don't move it. */
-		return;
+	boolean resize = false;
+	if (items[oldRowIndex].length == 1) {
+		resize = true;
+		/* If this is the only item in the bottom row, don't move it. */
+		if (oldRowIndex == items.length - 1) return;
 	}
 	int newRowIndex = (items[oldRowIndex].length == 1) ? oldRowIndex : oldRowIndex + 1;
 	removeItemFromRow(item, oldRowIndex);
@@ -382,11 +382,13 @@ void moveDown(CoolItem item, int x_root) {
 		newRows[row] = new CoolItem[1];
 		newRows[row][0] = item;
 		items = newRows;
+		resize = true;
 	}
 	else {	
 		insertItemIntoRow(item, newRowIndex, x_root);
 	}
-	relayout();
+	if (resize) relayout();
+	else layoutItems();
 }
 void moveLeft(CoolItem item, int pixels) {
 	Point point = findItem(item);
@@ -453,9 +455,11 @@ void moveRight(CoolItem item, int pixels) {
 void moveUp(CoolItem item, int x_root) {
 	Point point = findItem(item);
 	int oldRowIndex = point.y;
-	if (oldRowIndex == 0 && items[oldRowIndex].length == 1) {
-		/* This is the only item in the top row, don't move it. */
-		return;
+	boolean resize = false;
+	if (items[oldRowIndex].length == 1) {
+		resize = true;
+		/* If this is the only item in the top row, don't move it. */
+		if (oldRowIndex == 0) return;
 	}
 	removeItemFromRow(item, oldRowIndex);
 	Rectangle old = item.getBounds();
@@ -468,11 +472,13 @@ void moveUp(CoolItem item, int x_root) {
 		newRows[0] = new CoolItem[1];
 		newRows[0][0] = item;
 		items = newRows;
+		resize = true;
 	}
 	else {
 		insertItemIntoRow(item, newRowIndex, x_root);
 	}
-	relayout();
+	if (resize) relayout();
+	else layoutItems();
 }
 void onDispose() {
 	hoverCursor.dispose();
@@ -485,6 +491,8 @@ void onMouseDown(Event event) {
 		itemXOffset = mouseXOffset - dragging.getBounds().x;
 		setCursor(dragCursor);
 	}
+	click.x = event.x;
+	click.y = event.y;
 }
 void onMouseExit() {
 	if (dragging == null) setCursor(null);
@@ -520,12 +528,57 @@ void onMouseMove(Event event) {
 }
 void onMouseUp(Event event) {
 	dragging = null;
-	if (getGrabbedItem(event.x, event.y) != null) {
-		setCursor(hoverCursor);
+	CoolItem target = getGrabbedItem(event.x, event.y);
+	if (target == null) {
+		setCursor(null);
+		return;	
 	}
-	else {
-		setCursor(null);	
-	}	
+	int xDelta = Math.abs(click.x - event.x), yDelta = Math.abs(click.y - event.y);
+	if (xDelta <= CLICK_DISTANCE && yDelta <= CLICK_DISTANCE) {
+		Point location = findItem(target);
+		int row = location.y;
+		int index = location.x;
+		if (items[row].length > 1) {
+			Point size = target.getSize();
+			int maxSize = getSize().x - (items[row].length - 1) * CoolItem.MINIMUM_WIDTH;
+			if (size.x == maxSize) {
+				/* The item is at its maximum width. It should be resized to its minimum width. */
+				int distance = size.x - CoolItem.MINIMUM_WIDTH;
+				if (index + 1 < items[row].length) {
+					/* There is an item to the right. Maximize it. */
+					CoolItem right = items[row][index + 1];
+					moveLeft(right, distance);
+				}
+				else {
+					/* There is no item to the right. Move the item all the way right. */
+					moveRight(target, distance);
+				}
+			}
+			else if (size.x < target.preferredWidth) {
+				/* The item is less than its preferredWidth. Resize to preferredWidth. */
+				int distance = target.preferredWidth - size.x;
+				if (index + 1 < items[row].length) {
+					CoolItem right = items[row][index + 1];
+					moveRight(right, distance);	
+					distance = target.preferredWidth - target.getSize().x;
+				}
+				if (distance > 0) {
+					moveLeft(target, distance);
+				}
+			}
+			else {
+				/* The item is at its minimum width. Maximize it. */
+				for (int i = 0; i < items[row].length; i++) {
+					if (i != index) items[row][i].requestedWidth = CoolItem.MINIMUM_WIDTH;	
+				}
+				target.requestedWidth = getDisplay().getBounds().width;
+				layoutItems();
+			}
+			target = getGrabbedItem(event.x, event.y);
+			if (target != null) setCursor(hoverCursor);
+			else setCursor(null);
+		}
+	}
 }
 void onPaint(Event event) {
 	GC gc = event.gc;
@@ -621,8 +674,8 @@ void removeItemFromRow(CoolItem item, int rowIndex) {
  * Return the height of the bar after it has
  * been properly layed out for the given width.
  */
-int layout (int width) {
-	int y = 0, maxWidth = 0;
+int layoutItems () {
+	int y = 0, maxWidth = 0, width = getSize().x;
 	for (int row = 0; row < items.length; row++) {
 		int count = items[row].length;
 		int available = width - count * CoolItem.MINIMUM_WIDTH;
@@ -668,8 +721,8 @@ int layout (int width) {
 					 */
 					damage.y = newBounds.y + Math.min(oldBounds.height, newBounds.height) - 3;
 					damage.height = newBounds.y + newBounds.height + ROW_SPACING;
-					damage.x = oldBounds.x;
-					damage.width = oldBounds.width;
+					damage.x = oldBounds.x - CoolItem.MARGIN_WIDTH;
+					damage.width = oldBounds.width + CoolItem.MARGIN_WIDTH;
 				}
 				else if (oldBounds.x != newBounds.x) {
 					/* Redraw only the difference between the separators. */
@@ -689,17 +742,17 @@ int layout (int width) {
 }
 void relayout() {
 	Point size = getSize();
-	int height = layout(size.x);
+	int height = layoutItems();
 	height += 2 * getBorderWidth();
 	if (height != size.y) super.setSize(size.x, height);
 }
 public void setBounds (int x, int y, int width, int height) {
 	super.setBounds (x, y, width, height);
-	layout(width);
+	layoutItems();
 }
 public void setSize (int width, int height) {
 	super.setSize (width, height);
-	layout (width);
+	layoutItems();
 }
 CoolItem getChild (int id) {
 	for (int row = 0; row < items.length; row++) {
