@@ -230,15 +230,7 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 				int result = OS.iconv (cd, inBuf, inBytesLeft, outBuf, outBytesLeft);
 				outBytes = outBuf [0] - ptr2;
 				wideCharStr = new char [outBytes / 2];
-				
-				/* Memmove can not be used because of the endianess */
-//				OS.memmove (wideCharStr, ptr2, outBytesLeft [0]);
-				byte[] b = new byte [outBytes];
-				OS.memmove (b, ptr2, outBytes);
-				for (int j=0; j<outBytes; j+=2) {
-					wideCharStr [j >> 1] = (char)(((b [j] & 0xFF) << 8) | (b [j + 1] & 0xFF));
-				}
-				
+				OS.memmove (wideCharStr, ptr2, outBytes);
 				if (ptr1 != BufferTimes2) OS.XtFree (ptr1);
 				if (ptr2 != BufferTimes4) OS.XtFree (ptr2);
 			}
@@ -332,17 +324,7 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 				int [] inBytesLeft = {inBytes};
 				int [] outBuf = {ptr2};
 				int [] outBytesLeft = {outBytes};
-				
-				/* Memmove can not be used because of the endianess */
-//				OS.memmove (ptr1, buffer, inBytes);
-				byte[] b = new byte[inBytes];
-				for (int j=0; j<inBytes; j+=2) {
-					int c = buffer [j >> 1];
-					b [j] = (byte)(c & 0xFF);
-					b [j + 1] = (byte)(c >> 8);
-				}
-				OS.memmove (ptr1, b, inBytes);
-				
+				OS.memmove (ptr1, buffer, inBytes);
 				int result = OS.iconv (cd, inBuf, inBytesLeft, outBuf, outBytesLeft);
 				outBytes = outBuf [0] - ptr2;
 				mbcs = new byte [outBytes];
