@@ -30,7 +30,7 @@ public class BrowserView extends ViewPart {
 	 * @see ViewPart#createPartControl
 	 */
 	public void createPartControl(Composite frame) {
-		instance = new BrowserExample(frame);
+		instance = new BrowserExample(frame, true);
 	}
 
 	/**
@@ -39,7 +39,7 @@ public class BrowserView extends ViewPart {
 	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
 	public void setFocus() {
-		instance.setFocus();
+		instance.focus();
 	}
 
 	/**
