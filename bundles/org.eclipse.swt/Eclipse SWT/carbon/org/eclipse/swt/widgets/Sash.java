@@ -229,7 +229,8 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
 	Point location = getLocation();
 	lastX = location.x;
 	lastY = location.y;

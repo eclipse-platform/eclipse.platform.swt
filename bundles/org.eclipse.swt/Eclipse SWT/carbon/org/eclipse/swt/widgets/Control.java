@@ -1347,7 +1347,9 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
 		sendFocusEvent (part [0] != 0, false);
+		// widget could be disposed at this point
 	}
+	if (isDisposed ()) return OS.noErr;
 	return OS.eventNotHandledErr;
 }	
 
