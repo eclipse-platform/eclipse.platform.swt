@@ -2011,8 +2011,9 @@ private boolean scroll_rightVisible() {
 	if (rightEdge <= 0) return false;
 	if (topTabIndex > 0) {
 		rightEdge -=  arrowBar.getSize().x;
-		if (topRight != null)
-			rightEdge -= topRight.getSize().x;
+	}
+	if (topRight != null) {
+		rightEdge -= topRight.getSize().x;
 	}
 	CTabItem item = items[items.length-1];
 	return (item.x + item.width > rightEdge);
