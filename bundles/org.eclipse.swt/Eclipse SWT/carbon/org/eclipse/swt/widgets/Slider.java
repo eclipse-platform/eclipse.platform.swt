@@ -166,7 +166,7 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
-	int maximum = OS.GetControl32BitMinimum (handle);
+	int maximum = OS.GetControl32BitMaximum (handle);
 	int viewSize = OS.GetControlViewSize (handle);
 	if (maximum - value - viewSize < 0) return;
 	OS.SetControl32BitMinimum (handle, value);

@@ -111,17 +111,19 @@ public void setIncrement (int value) {
 
 public void setMaximum (int value) {
 	checkWidget();
+	if (value < 0) return;
 	int minimum = OS.GetControl32BitMinimum (handle);
-	if (0 <= minimum && minimum < value) {
+	if (value >= minimum) {
 		OS.SetControl32BitMaximum (handle, value);
 	}
 }
 
 public void setMinimum (int value) {
 	checkWidget();
+	if (value < 0) return;
 	int maximum = OS.GetControl32BitMaximum (handle);
-	if (0 <= value && value < maximum) {
-		OS.SetControl32BitMaximum (handle, value);
+	if (value <= maximum) {
+		OS.SetControl32BitMinimum (handle, value);
 	}
 }
 
