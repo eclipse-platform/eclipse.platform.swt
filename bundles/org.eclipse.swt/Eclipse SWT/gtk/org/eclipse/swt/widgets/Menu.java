@@ -31,7 +31,7 @@ import org.eclipse.swt.events.*;
 public class Menu extends Widget {
 	int x, y;
 	boolean hasLocation;
-	MenuItem cascade;
+	MenuItem cascade, selectedItem;
 	Decorations parent;
 	int barHandle;
 	Callback barHandleCallback;
@@ -546,7 +546,7 @@ public boolean isVisible () {
 }
 
 int processHelp (int int0, int int1, int int2) {
-	sendHelpEvent (int0);
+	if (sendHelpEvent (int0)) OS.gtk_menu_shell_deactivate (handle);
 	return 0;
 }
 
@@ -654,12 +654,18 @@ public void removeHelpListener (HelpListener listener) {
 	eventTable.unhook (SWT.Help, listener);
 }
 
-void sendHelpEvent (int helpType) {
+boolean sendHelpEvent (int helpType) {
+	if (selectedItem != null && !selectedItem.isDisposed()) {
+		if (selectedItem.hooks (SWT.Help)) {
+			selectedItem.postEvent (SWT.Help);
+			return true;
+		}
+	}
 	if (hooks (SWT.Help)) {
 		postEvent (SWT.Help);
-		return;
+		return true;
 	}
-	parent.sendHelpEvent (helpType);
+	return parent.sendHelpEvent (helpType);
 }
 
 /**

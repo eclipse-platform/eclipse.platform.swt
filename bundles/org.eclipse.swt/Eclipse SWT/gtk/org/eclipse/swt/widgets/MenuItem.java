@@ -379,16 +379,19 @@ public boolean isEnabled () {
 }
 
 int processArm (int int0, int int1, int int2) {
+	parent.selectedItem = this;
 	postEvent (SWT.Arm);
 	return 0;
 }
 
 int processHelp (int int0, int int1, int int2) {
-	if (hooks (SWT.Help)) {
+	boolean hooks = hooks (SWT.Help);
+	if (hooks) {
 		postEvent (SWT.Help);
-		return 0;
+	} else {
+		hooks = parent.sendHelpEvent (int0);
 	}
-	parent.sendHelpEvent (int0);
+	if (hooks) OS.gtk_menu_shell_deactivate (parent.handle);
 	return 0;
 }
 
