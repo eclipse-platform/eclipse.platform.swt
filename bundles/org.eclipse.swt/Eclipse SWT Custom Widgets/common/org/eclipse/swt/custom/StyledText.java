@@ -205,7 +205,9 @@ public class StyledText extends Canvas {
 				endPage = startPage;
 				startPage = temp;
 			}			
-		} if (data.scope == PrinterData.SELECTION) {
+		} 
+		else 
+		if (data.scope == PrinterData.SELECTION) {
 			selection = parent.getSelectionRange();
 		}
 
@@ -422,15 +424,23 @@ public class StyledText extends Canvas {
 		pageSize = clientArea.height / renderer.getLineHeight();
 		StyledTextContent content = renderer.getContent();
 		startLine = 0;
+		if (singleLine) {
+			endLine = 0;
+		}
+		else {
 			endLine = content.getLineCount() - 1;
+		}
 		PrinterData data = printer.getPrinterData();
 		if (data.scope == PrinterData.PAGE_RANGE) {
 			startLine = (startPage - 1) * pageSize;
-		} else if (data.scope == PrinterData.SELECTION) {
+		} 
+		else
+		if (data.scope == PrinterData.SELECTION) {
 			startLine = content.getLineAtOffset(selection.x);
 			if (selection.y > 0) {
 				endLine = content.getLineAtOffset(selection.x + selection.y - 1);
-			} else {
+			} 
+			else {
 				endLine = startLine - 1;
 			}
 		}
@@ -462,13 +472,9 @@ public class StyledText extends Canvas {
 		Color background = gc.getBackground();
 		Color foreground = gc.getForeground();
 		int lineHeight = renderer.getLineHeight();
-		int lineCount = content.getLineCount();
 		int paintY = clientArea.y;
 		int page = startPage;
 		
-		if (singleLine) {
-			lineCount = 1;
-		}
 		for (int i = startLine; i <= endLine && page <= endPage; i++, paintY += lineHeight) {
 			String line = content.getLine(i);
 			
@@ -481,9 +487,6 @@ public class StyledText extends Canvas {
 				endPage(page);
 				paintY = clientArea.y - lineHeight;
 				page++;
-				if (page > endPage || i == lineCount - 1) {
-					break;
-				}
 			}
 		}
 		if (paintY > clientArea.y && paintY <= clientArea.y + clientArea.height) {
