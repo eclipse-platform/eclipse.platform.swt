@@ -1451,13 +1451,10 @@ void setVisible (int control, boolean visible) {
 }
 
 RGBColor toRGBColor (float [] color) {
-	int red = (short) (color [0] * 255);
-	int green = (short) (color [1] * 255);
-	int blue = (short) (color [2] * 255);
 	RGBColor rgb = new RGBColor ();
-	rgb.red = (short) (red << 8 | red);
-	rgb.green = (short) (green << 8 | green);
-	rgb.blue = (short) (blue << 8 | blue);
+	rgb.red = (short) (color [0] * 0xffff);
+	rgb.green = (short) (color [1] * 0xffff);
+	rgb.blue = (short) (color [2] * 0xffff);
 	return rgb;
 }
 
