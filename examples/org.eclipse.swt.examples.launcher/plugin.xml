@@ -28,7 +28,7 @@
 
 
 <!-- Extension points -->
-   <extension-point id="launchItems" name="%extension-point.launchItems.name" schema="schema/org.eclipse.swt.examples.launcher.launchItems.xsd"/>
+   <extension-point id="launchItems" name="%extension-point.launchItems.name" schema="schema/org.eclipse.swt.examples.launcher.launchItems.exsd"/>
 
 <!-- Extensions -->
    <extension
