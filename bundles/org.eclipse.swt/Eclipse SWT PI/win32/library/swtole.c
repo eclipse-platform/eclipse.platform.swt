@@ -3358,7 +3358,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_NotifyWinEven
 #endif
 
     /*
-    *  GetMenuInfo is a Win2000 and Win98 specific call
+    *  NotifyWinEvent is a Win2000 and Win98 specific call
     *  If you link it into swt.dll a system modal entry point not found dialog will
     *  appear as soon as swt.dll is loaded. Here we check for the entry point and
     *  only do the call if it exists.
