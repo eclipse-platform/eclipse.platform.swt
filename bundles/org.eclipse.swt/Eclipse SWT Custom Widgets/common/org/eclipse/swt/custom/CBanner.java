@@ -42,23 +42,23 @@ import org.eclipse.swt.events.*;
 public class CBanner extends Composite {	
 
 	Control left;
-	Control middle;
 	Control right;
 	int[] curve;
 	int curveStart;
+	int rightWidth = SWT.DEFAULT;
 	
 	static final int OFFSCREEN = -200;
 	static final int CURVE_WIDTH = 50;
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
 	static final int CURVE_TAIL = 200;
-	static final int LEFT_MIDDLE_GAP = 8;
 	static final int BORDER_BOTTOM = 2;
 	static final int BORDER_TOP = 3;
 	static final int BORDER_LEFT = 2;
 	static final int BORDER_RIGHT = 2;
 	static final int BORDER_STRIPE = 2;
-	static final int INDENT = 5;
+	static final int INDENT_LEFT = 10;
+	static final int INDENT_RIGHT = 10;
 	
 	static RGB BORDER1 = null;
 	
@@ -74,7 +74,7 @@ public class CBanner extends Composite {
 public CBanner(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	
-	if (BORDER1 == null)BORDER1 = getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW).getRGB();
+	if (BORDER1 == null) BORDER1 = getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW).getRGB();
 	addPaintListener(new PaintListener() {
 		public void paintControl(PaintEvent event) {
 			onPaint(event.gc);
@@ -119,24 +119,15 @@ static int checkStyle (int style) {
 }
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
-	Point rightSize = new Point(0, 0);
-	if (right != null) {
-		 rightSize = right.computeSize(SWT.DEFAULT, hHint);
-	}
-	Point middleSize = new Point(0, 0);
-	if (middle != null) {
-		 middleSize = middle.computeSize(SWT.DEFAULT, hHint);
-	}
-	Point leftSize = new Point(0, 0);
-	if (left != null) {
-		int width = wHint - rightSize.x - middleSize.x - CURVE_WIDTH - 2*INDENT - BORDER_LEFT - BORDER_RIGHT;
-		if (middle != null) width -= LEFT_MIDDLE_GAP;
-		leftSize = left.computeSize((wHint != SWT.DEFAULT) ? width : SWT.DEFAULT, SWT.DEFAULT);
+	Point rightSize = (right == null) ? new Point(0, 0) : right.computeSize(rightWidth, hHint);
+	int width = (wHint == SWT.DEFAULT) ? SWT.DEFAULT : wHint - rightSize.x - CURVE_WIDTH + INDENT_LEFT + INDENT_RIGHT;
+	Point leftSize = (left == null) ? new Point(0, 0) : left.computeSize(width, hHint);
+	if (leftSize.y > rightSize.y && (hHint == SWT.DEFAULT || hHint > rightSize.y)) {
+		
 	}
 	Point size = new Point(0, 0);
-	size.x = leftSize.x + middleSize.x + CURVE_WIDTH -2*INDENT + rightSize.x;
-	if (left != null && middle != null) size.x += + LEFT_MIDDLE_GAP;
-	size.y = Math.max(Math.max(leftSize.y, middleSize.y), rightSize.y);
+	size.x = leftSize.x + CURVE_WIDTH - INDENT_LEFT - INDENT_RIGHT + rightSize.x;
+	size.y = (left != null) ? leftSize.y : rightSize.y;
 	
 	if (wHint != SWT.DEFAULT) size.x  = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
@@ -174,23 +165,6 @@ public Control getLeft() {
 }
 
 /**
-* Returns the Control that appears in the middle of the banner.
-* 
-* @return the control that appears in the middle of the banner or null
-* 
-* @exception SWTException <ul>
-*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-* </ul>
-* 
-* @since 3.0
-*/
-public Control getMiddle() {
-	checkWidget();
-	return middle;
-}
-
-/**
 * Returns the Control that appears on the right side of the banner.
 * 
 * @return the control that appears on the right side of the banner or null
@@ -206,40 +180,39 @@ public Control getRight() {
 	checkWidget();
 	return right;
 }
-
+public int getRightWidth() {
+	checkWidget();
+	if (right == null) return 0;
+	if (rightWidth == SWT.DEFAULT) return right.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	return rightWidth;
+}
 public void layout (boolean changed) {
 	checkWidget();
 	Point size = getSize();
-	
 	Point rightSize = (right == null) ? new Point (0, 0) : right.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	Point middleSize = (middle == null) ? new Point (0, 0) : middle.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	int width = size.x - rightSize.x - middleSize.x - CURVE_WIDTH + 2*INDENT - BORDER_LEFT - BORDER_RIGHT; 
-	if (middle != null) width -= LEFT_MIDDLE_GAP;
+	if (rightWidth != SWT.DEFAULT && rightSize.x > rightWidth) {
+		rightSize = right.computeSize(rightWidth, SWT.DEFAULT);
+	}
+	int width = size.x - CURVE_WIDTH + INDENT_LEFT + INDENT_RIGHT - BORDER_LEFT - BORDER_RIGHT; 
+	rightSize.x = Math.min(width, rightSize.x);
+	width -= rightSize.x;
 	Point leftSize = (left == null) ? new Point (0, 0) : left.computeSize(width, SWT.DEFAULT);
 
 	int x = BORDER_LEFT;
 	int oldStart = curveStart;
 	Rectangle leftRect = null;
-	Rectangle middleRect = null;
 	Rectangle rightRect = null;
 	if(left != null) {
-		int height = size.y - BORDER_TOP - BORDER_BOTTOM - BORDER_STRIPE;
-		int y = BORDER_STRIPE + BORDER_TOP;
-		leftRect = new Rectangle(x, y, leftSize.x, Math.min(height, leftSize.y));
+		int height = Math.min(size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, leftSize.y);
+		int y = BORDER_TOP + BORDER_STRIPE;
+		leftRect = new Rectangle(x, y, leftSize.x, height);
 		x += leftSize.x;
 	}
-	if (middle != null) {
-		if (left != null) x += LEFT_MIDDLE_GAP;
-		int height = Math.min(size.y  - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, middleSize.y);
-		int y = BORDER_STRIPE + BORDER_TOP;
-		middleRect = new Rectangle(x, y, middleSize.x, height);
-		x += middleSize.x;
-	}
-	curveStart = x - INDENT;
-	x += CURVE_WIDTH - 2*INDENT;
+	curveStart = x - INDENT_LEFT;
+	x += CURVE_WIDTH - INDENT_LEFT - INDENT_RIGHT;
 	if (right != null) {
-		int height = Math.min(size.y  - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, rightSize.y);
-		int y = BORDER_STRIPE + BORDER_TOP;
+		int height = size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE;
+		int y = BORDER_TOP + BORDER_STRIPE;
 		rightRect = new Rectangle(x, y, rightSize.x, height);
 	}
 	if (curveStart < oldStart) {
@@ -250,7 +223,6 @@ public void layout (boolean changed) {
 	}
 	update();
 	if (leftRect != null) left.setBounds(leftRect);
-	if (middleRect != null) middle.setBounds(middleRect);
 	if (rightRect != null) right.setBounds(rightRect);
 }
 void onDispose() {
@@ -363,32 +335,6 @@ public void setLeft(Control control) {
 	layout();
 }
 /**
-* Set the control that appears in the middle of the banner.
-* The middle control is optional.  Setting the middle control to null will remove it from 
-* the banner - however, the creator of the control must dispose of the control.
-* 
-* @param control the control to be displayed in the middle or null
-* 
-* @exception SWTException <ul>
-*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
-*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
-*    <li>ERROR_INVALID_ARGUMENT - if the middle control was not created as a child of the receiver</li>
-* </ul>
-* 
-* @since 3.0
-*/
-public void setMiddle(Control control) {
-	checkWidget();
-	if (control != null && control.getParent() != this) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	if (middle != null && !middle.isDisposed()) {
-		middle.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
-	}
-	middle = control;
-	layout();
-}
-/**
 * Set the control that appears on the right side of the banner.
 * The right control is optional.  Setting the right control to null will remove it from 
 * the banner - however, the creator of the control must dispose of the control.
@@ -413,6 +359,12 @@ public void setRight(Control control) {
 	}
 	right = control;
 	layout();
+}
+public void setRightWidth(int width) {
+	checkWidget();
+	if (width < SWT.DEFAULT) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	rightWidth = width;
+	layout(true);
 }
 void updateCurve () {
 	Point size = getSize();
