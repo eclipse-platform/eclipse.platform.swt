@@ -80,6 +80,7 @@ public final class TextLayout {
 		int width;
 		int ascent;
 		int descent;
+		int leading;
 
 		/* ScriptBreak */
 		int psla;
@@ -445,8 +446,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	int foreground = OS.GetTextColor(hdc);
 	int state = OS.SaveDC(hdc);
 	RECT rect = new RECT();
-	int selBrush = 0;
-	if (hasSelection) selBrush = OS.CreateSolidBrush (selectionBackground.handle);
+	int selBrush = 0, selPen = 0;
+	if (hasSelection) {
+		selBrush = OS.CreateSolidBrush(selectionBackground.handle);
+		selPen = OS.CreatePen(OS.BS_SOLID, 1, selectionForeground.handle);
+	}
 	int rop2 = 0;
 	if (OS.IsWinCE) {
 		rop2 = OS.SetROP2(hdc, OS.R2_COPYPEN);
@@ -537,6 +541,22 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					OS.SelectObject(hdc, getItemFont(run));
 					int drawRunY = drawY + (baseline - run.ascent);
 					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
+					if ((run.style != null) && (run.style.underline || run.style.strikeout)) {
+						int newPen = fg == selectionForeground.handle ? selPen : OS.CreatePen(OS.BS_SOLID, 1, fg);
+						int oldPen = OS.SelectObject(hdc, newPen);
+						if (run.style.underline) {
+							int underlineY = drawY + baseline + 1;
+							OS.MoveToEx(hdc, drawX, underlineY, 0);
+							OS.LineTo(hdc, drawX + run.width, underlineY);
+						}
+						if (run.style.strikeout) {
+							int strikeoutY = drawRunY + run.leading + run.ascent / 2;
+							OS.MoveToEx(hdc, drawX, strikeoutY, 0);
+							OS.LineTo(hdc, drawX + run.width, strikeoutY);	
+						}
+						OS.SelectObject(hdc, oldPen);
+						if (fg != selectionForeground.handle) OS.DeleteObject(newPen);
+					}
 					boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
 					if (!fullSelection && partialSelection && fg != selectionForeground.handle) {
 						OS.SetTextColor(hdc, selectionForeground.handle);
@@ -554,6 +574,20 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						rect.right = drawX + runX;
 						rect.bottom = drawY + lineHeight;
 						OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
+						if ((run.style != null) && (run.style.underline || run.style.strikeout)) {							
+							int oldPen = OS.SelectObject(hdc, selPen);
+							if (run.style.underline) {
+								int underlineY = drawY + baseline + 1;
+								OS.MoveToEx(hdc, rect.left, underlineY, 0);
+								OS.LineTo(hdc, rect.right, underlineY);
+							}
+							if (run.style.strikeout) {
+								int strikeoutY = drawRunY + run.leading + run.ascent / 2;
+								OS.MoveToEx(hdc, rect.left, strikeoutY, 0);
+								OS.LineTo(hdc, rect.right, strikeoutY);	
+							}
+							OS.SelectObject(hdc, oldPen);
+						}
 					}
 				}
 			}
@@ -562,6 +596,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	}
 	OS.RestoreDC(hdc, state);
 	if (selBrush != 0) OS.DeleteObject (selBrush);
+	if (selPen != 0) OS.DeleteObject (selPen);
 }
 
 void freeRuns () {
@@ -1903,6 +1938,7 @@ void shape (final int hdc, final StyleItem run) {
 	OS.GetTextMetrics(hdc, lptm);
 	run.ascent = lptm.tmAscent;
 	run.descent = lptm.tmDescent;
+	run.leading = lptm.tmInternalLeading;
 }
 
 int validadeOffset(int offset, int step) {

@@ -50,6 +50,16 @@ public class TextStyle {
 	 */
 	public Color background;
 
+	/**
+	 * the underline flag of the style
+	 */	
+	public boolean underline;
+	
+	/**
+	 * the strikeout flag of the style
+	 */	
+	public boolean strikeout;
+
 /** 
  * Create a new text style with the specified font, foreground
  * and background.
@@ -80,7 +90,9 @@ public boolean equals(Object object) {
 	} else if (style.background != null) return false;
 	if (this.font != null) {
 		if (!this.font.equals(style.font)) return false;
-	} else if (style.font != null) return false;	
+	} else if (style.font != null) return false;
+	if (this.underline != style.underline) return false;
+	if (this.strikeout != style.strikeout) return false;
 	return true;
 }
 
@@ -89,6 +101,8 @@ public int hashCode() {
 	if (font != null) hash ^= font.hashCode();
 	if (foreground != null) hash ^= foreground.hashCode();
 	if (background != null) hash ^= background.hashCode();
+	if (underline) hash ^= hash;
+	if (strikeout) hash ^= hash;
 	return hash;
 }
 
@@ -99,7 +113,7 @@ public int hashCode() {
  * @return a string representation of the <code>RGB</code>
  */
 public String toString () {
-	return "TextStyle {font: " + font + ", foreground: " + foreground + ", background: " + background + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	return "TextStyle {font: " + font + ", foreground: " + foreground + ", background: " + background + ", underline: " + underline + ", strikeout: " + strikeout + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 }
 
 }
