@@ -423,7 +423,7 @@ void hookEvents () {
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
-	// TO DO - fix multiple selection events for one user action
+	// TODO - fix multiple selection events for one user action
 	OS.g_signal_connect (listHandle, OS.select_child, windowProc3, SELECT_CHILD);
 	OS.g_signal_connect_after (entryHandle, OS.changed, windowProc2, CHANGED);
 	OS.g_signal_connect (entryHandle, OS.activate, windowProc2, ACTIVATE);
@@ -441,6 +441,7 @@ void hookEvents () {
 			OS.g_signal_connect (handle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
 			OS.g_signal_connect (handle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
 			OS.g_signal_connect (handle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
+			OS.g_signal_connect (handle, OS.show_help, windowProc3, SHOW_HELP);
 		
 			/*
 			* Feature in GTK.  Events such as mouse move are propagate up
