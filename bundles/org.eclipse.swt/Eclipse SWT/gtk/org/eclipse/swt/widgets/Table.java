@@ -285,7 +285,7 @@ void createRenderers (int columnHandle, int modelIndex, boolean check, int colum
 		/*
 		* Feature in GTK. The inconsistent property only exists in GTK 2.2.x.
 		*/
-		if (OS.gtk_major_version () >= 2 || (OS.gtk_major_version () == 2 && OS.gtk_minor_version () >= 2)) {
+		if (OS.gtk_major_version () > 2 || (OS.gtk_major_version () == 2 && OS.gtk_minor_version () >= 2)) {
 			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "inconsistent", GRAYED_COLUMN);
 		}
 	}
