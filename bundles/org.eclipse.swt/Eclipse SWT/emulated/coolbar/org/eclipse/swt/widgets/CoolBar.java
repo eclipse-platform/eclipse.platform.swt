@@ -710,9 +710,7 @@ void removeControl (Control control) {
 	CoolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		CoolItem item = items [i];
-		if (item != null && item.control == control) {
-			item.setControl (null);
-		}
+		if (item.control == control) item.setControl (null);
 	}
 }
 /**
