@@ -15,6 +15,7 @@ public class TreeItem extends Item {
 	String[] texts = new String [0];
 	int[] textWidths = new int [0];		/* cached string measurements */
 	int fontHeight;						/* cached item font height */
+	int[] fontHeights;
 	Image[] images = new Image [0];
 	Color foreground, background;
 	Color[] cellForeground, cellBackground;
@@ -329,7 +330,7 @@ int getContentX (int columnIndex) {
 		int contentX = column.getX () + MARGIN_TEXT;
 		if ((column.style & SWT.LEFT) != 0) return contentX;
 		
-		int contentWidth = internalGetTextWidth (columnIndex);
+		int contentWidth = getTextWidth (columnIndex);
 		Image image = internalGetImage (columnIndex);
 		if (image != null) {
 			contentWidth += Tree.MARGIN_IMAGE + image.getBounds ().width;
@@ -548,9 +549,21 @@ public String getText (int columnIndex) {
  * column, including the margins on the ends of the text. 
  */
 int getTextPaintWidth (int columnIndex) {
-	int result = internalGetTextWidth (columnIndex);
+	int result = getTextWidth (columnIndex);
 	if (result > 0) result += 2 * MARGIN_TEXT;
 	return result;
+}
+/*
+ * Returns the receiver's text width for the specified column index.  This method
+ * assumes that the column index is valid.
+ * 
+ * Important: All references to an item's text length should go through this method
+ * since it compensates for empty slots that are left in the text lengths structure
+ * which still represent valid cells. 
+ */
+int getTextWidth (int columnIndex) {
+	if (textWidths.length < columnIndex + 1) return 0;
+	return textWidths[columnIndex];
 }
 /*
  * Returns the x value at which the receiver's text begins.
@@ -611,18 +624,6 @@ Image internalGetImage (int columnIndex) {
 String internalGetText (int columnIndex) {
 	if (texts.length < columnIndex + 1) return "";
 	return texts[columnIndex];
-}
-/*
- * Returns the receiver's text length for the specified column index.  This method
- * assumes that the column index is valid.
- * 
- * Important: All references to an item's text length should go through this method
- * since it compensates for empty slots that are left in the text lengths structure
- * which still represent valid cells. 
- */
-int internalGetTextWidth (int columnIndex) {
-	if (textWidths.length < columnIndex + 1) return 0;
-	return textWidths[columnIndex];
 }
 boolean isAvailable () {
 	if (parentItem == null) return true; 	/* root items are always available */
@@ -902,12 +903,14 @@ public void setExpanded (boolean value) {
 	if (parent.inExpand) return;
 	if (value) {
 		expanded = value;
+		if (availableIndex == -1) return;
 		parent.makeDescendentsAvailable (this);
 		parent.redrawFromItemDownwards (availableIndex);
 	} else {
 		int oldAvailableLength = parent.availableItems.length;
 		TreeItem[] descendents = computeAvailableDescendents ();
 		expanded = value;
+		if (availableIndex == -1) return;
 		parent.makeDescendentsUnavailable (this, descendents);
 		/* move focus (and selection if SWT.SINGLE) to item if a descendent had focus */
 		TreeItem focusItem = parent.focusItem;
