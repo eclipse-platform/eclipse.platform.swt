@@ -40,15 +40,66 @@ protected void tearDown() {
 
 public void test_Constructor() {
 	// test Region()
-	Region reg = new Region(display);
+	Region reg = new Region();
 	if (reg.isDisposed()) {
-		fail("Constructor for Region didn't initialize handle field");
+		fail("Constructor for Region didn't initialize");
 	}
 	reg.dispose();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_Device() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_Device not written");
+	Region reg = new Region(display);
+	if (reg.isDisposed()) {
+		fail("Constructor for Region didn't initialize");
+	}
+	reg.dispose();
+}
+
+public void test_add$I() {
+	Region reg = new Region(display);
+	try {
+		reg.add((int[])null);
+		fail("no exception thrown for adding a null rectangle");
+	}
+	catch (IllegalArgumentException e) {
+	}	
+	reg.dispose();
+	try {
+		reg.add(new int[]{});
+		fail("no exception thrown on disposed region");
+	}
+	catch (SWTException e) {
+	}
+	reg = new Region(display);
+	reg.add(new int[] {
+		0,0, 50,0, 0,25, 50,25, 
+		10,10, 20,10, 10,20, 20,20}
+	);
+	Rectangle box = reg.getBounds();
+	if (!box.equals(new Rectangle (0,0,50,25))) {
+		reg.dispose();
+		fail("add 1 failed");
+	}
+	reg.dispose();
+	
+	reg = new Region(display);
+	reg.add(new int[] {0,0, 50,0, 0,25, 50,25});
+	reg.add(new int[] {0,25, 50,25, 0,40, 50,40});
+	box = reg.getBounds();
+	if (!box.equals(new Rectangle (0,0,50,40))) {
+		reg.dispose();
+		fail("add 2 failed");
+	}
+	reg.dispose();
+	
+	reg = new Region(display);
+	reg.add(new int[] {0,0, 5,5, 10,10, 5,20, 0,30});
+	box = reg.getBounds();
+	if (!box.equals(new Rectangle (0,0,10,30))) {
+		reg.dispose();
+		fail("add 3 failed");
+	}
+	reg.dispose();
 }
 
 public void test_addLorg_eclipse_swt_graphics_Rectangle() {
@@ -320,11 +371,158 @@ public void test_hashCode() {
 }
 
 public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
-	warnUnimpl("Test test_intersectLorg_eclipse_swt_graphics_Rectangle not written");
+	Rectangle rect1 = new Rectangle(0,0,50,25);
+	Rectangle rect2 = new Rectangle(0,0,50,25);
+	Rectangle rect3 = new Rectangle(10,10,10,10);
+	Rectangle rect4 = new Rectangle(50,25,10,10);
+	Rectangle rect5 = new Rectangle(25,20,25,10);
+
+	Region reg = new Region(display);
+	reg.dispose();
+	try {
+		reg.intersect(rect1);
+		fail("no exception thrown on disposed region");
+	}
+	catch (SWTException e) {
+	}
+	
+	reg = new Region(display);
+	reg.intersect(rect1);
+	Rectangle box = reg.getBounds();
+	if (!box.isEmpty()) {
+		reg.dispose();
+		fail("intersect failed for empty region");
+	}
+	reg.add(rect1);
+	reg.intersect(rect2);
+	box = reg.getBounds();
+	if (!box.equals(rect1)) {
+		reg.dispose();
+		fail("intersect failed 1");
+	}
+	reg.intersect(rect3);
+	box = reg.getBounds();
+	if (!box.equals(rect3)) {
+		reg.dispose();
+		fail("intersect failed 2");
+	}
+	reg.intersect(rect4);
+	box = reg.getBounds();
+	if (!box.isEmpty()) {
+		reg.dispose();
+		fail("intersect failed 3");
+	}
+	reg.add(rect1.union(rect4));
+	reg.intersect(rect5);
+	box = reg.getBounds();
+	if (!box.equals(rect5)) {
+		reg.dispose();
+		fail("intersect failed 4");
+	}
+	reg.dispose();
+
+	reg = new Region(display);
+	reg.add(rect1);
+	reg.add(rect4);
+	reg.intersect(rect5);
+	box = reg.getBounds();
+	if (!box.equals(new Rectangle(25,20,25,5))) {
+		reg.dispose();
+		fail("intersect failed 5");
+	}
+	reg.dispose();
 }
 
 public void test_intersectLorg_eclipse_swt_graphics_Region() {
-	warnUnimpl("Test test_intersectLorg_eclipse_swt_graphics_Region not written");
+	Region reg = new Region(display);
+	Region reg1 = new Region(display);
+	reg1.add(new Rectangle(0,0,50,25));
+
+	reg.dispose();
+	try {
+		reg.intersect(reg1);
+		reg1.dispose();
+		fail("no exception thrown on disposed region");
+	}
+	catch (SWTException e) {
+	}
+	
+	reg = new Region(display);
+	reg.intersect(reg1);
+	Rectangle box = reg.getBounds();
+	if (!box.isEmpty()) {
+		reg.dispose();
+		reg1.dispose();
+		fail("intersect failed for empty region");
+	}
+	
+	Region reg2 = new Region(display);
+	reg2.add(new Rectangle(0,0,50,25));
+
+	reg.add(reg1);
+	reg.intersect(reg2);
+	box = reg.getBounds();
+	if (!box.equals(reg1.getBounds())) {
+		reg.dispose();
+		reg1.dispose();
+		reg2.dispose();
+		fail("intersect failed 1");
+	}
+	reg2.dispose();
+	
+	Region reg3 = new Region(display);
+	reg3.add(new Rectangle(10,10,10,10));
+	
+	reg.intersect(reg3);
+	box = reg.getBounds();
+	if (!box.equals(reg3.getBounds())) {
+		reg.dispose();
+		reg1.dispose();
+		reg3.dispose();
+		fail("intersect failed 2");
+	}
+	reg3.dispose();
+	
+	Region reg4 = new Region(display);
+	reg4.add(new Rectangle(50,25,10,10));
+
+	reg.intersect(reg4);
+	box = reg.getBounds();
+	if (!box.isEmpty()) {
+		reg.dispose();
+		reg1.dispose();
+		reg4.dispose();
+		fail("intersect failed 3");
+	}
+	
+	Region reg5 = new Region(display);
+	reg5.add(new Rectangle(25,20,25,10));
+	
+	reg.add(reg1.getBounds().union(reg4.getBounds()));
+	reg.intersect(reg5);
+	box = reg.getBounds();
+	if (!box.equals(reg5.getBounds())) {
+		reg.dispose();
+		reg1.dispose();
+		reg4.dispose();
+		fail("intersect failed 4");
+	}
+	reg.dispose();
+
+	reg = new Region(display);
+	reg.add(reg1);
+	reg.add(reg4);
+	reg.intersect(reg5);
+	box = reg.getBounds();
+	if (!box.equals(new Rectangle(25,20,25,5))) {
+		reg.dispose();
+		reg1.dispose();
+		reg4.dispose();
+		fail("intersect failed 5");
+	}
+	reg.dispose();
+	reg1.dispose();
+	reg4.dispose();
 }
 
 public void test_intersectsIIII() {
@@ -471,12 +669,201 @@ public void test_isEmpty() {
 	reg.dispose();	
 }
 
+public void test_subtract$I() {
+	Region reg = new Region(display);
+	try {
+		reg.subtract((int[])null);
+		fail("no exception thrown for subtract a null array");
+	}
+	catch (IllegalArgumentException e) {
+	}	
+	reg.dispose();
+	try {
+		reg.subtract(new int[]{});
+		fail("no exception thrown on disposed region");
+	}
+	catch (SWTException e) {
+	}
+	reg = new Region(display);
+	reg.add(new int[] {0,0, 50,0, 0,25, 50,25});
+	reg.subtract(new int[] {0,0, 50,0, 0,20, 50,20});
+	Rectangle box = reg.getBounds();
+	if (!box.equals(new Rectangle (0,20,59,5))) {
+		reg.dispose();
+		fail("subtract 1 failed");
+	}
+	reg.dispose();
+	
+	reg = new Region(display);
+	reg.add(new int[] {0,0, 50,0, 0,25, 50,25});
+	reg.add(new int[] {0,25, 50,25, 0,40, 50,40});
+	reg.subtract(new int[] {0,25, 50,25, 0,40, 50,40});
+	box = reg.getBounds();
+	if (!box.equals(new Rectangle (0,0,50,25))) {
+		reg.dispose();
+		fail("subtract 2 failed");
+	}
+	reg.dispose();
+}
+
 public void test_subtractLorg_eclipse_swt_graphics_Rectangle() {
-	warnUnimpl("Test test_subtractLorg_eclipse_swt_graphics_Rectangle not written");
+	Rectangle rect1 = new Rectangle(0,0,50,25);
+	Rectangle rect2 = new Rectangle(0,0,50,25);
+	Rectangle rect3 = new Rectangle(10,10,10,10);
+	Rectangle rect4 = new Rectangle(50,25,10,10);
+	Rectangle rect5 = new Rectangle(0,0,60,20);
+
+	Region reg = new Region(display);
+	reg.dispose();
+	try {
+		reg.subtract(rect1);
+		fail("no exception thrown on disposed region");
+	}
+	catch (SWTException e) {
+	}
+	
+	reg = new Region(display);
+	reg.subtract(rect1);
+	Rectangle box = reg.getBounds();
+	if (!box.isEmpty()) {
+		reg.dispose();
+		fail("subtract failed for empty region");
+	}
+	reg.add(rect1);
+	reg.subtract(rect2);
+	box = reg.getBounds();
+	if (!box.isEmpty()) {
+		reg.dispose();
+		fail("subtract failed 1");
+	}
+	reg.add(rect1);
+	reg.subtract(rect3);
+	box = reg.getBounds();
+	if (!box.equals(rect1)) {
+		reg.dispose();
+		fail("subtract failed 2");
+	}
+	reg.subtract(rect4);
+	box = reg.getBounds();
+	if (!box.equals(rect1)) {
+		reg.dispose();
+		fail("subtract failed 3");
+	}
+	reg.add(rect1.union(rect4));
+	reg.subtract(rect5);
+	box = reg.getBounds();
+	if (!box.equals(new Rectangle(0,20,60,15))) {
+		reg.dispose();
+		fail("subtract failed 4");
+	}
+	reg.dispose();
+
+	reg = new Region(display);
+	reg.add(rect1);
+	reg.add(rect4);
+	reg.subtract(rect5);
+	box = reg.getBounds();
+	if (!box.equals(new Rectangle(0,20,60,15))) {
+		reg.dispose();
+		fail("subtract failed 5");
+	}
+	reg.dispose();
 }
 
 public void test_subtractLorg_eclipse_swt_graphics_Region() {
-	warnUnimpl("Test test_subtractLorg_eclipse_swt_graphics_Region not written");
+	Region reg1 = new Region(display);
+	reg1.add(new Rectangle(0,0,50,25));
+
+	Region reg = new Region(display);
+	reg.dispose();
+	try {
+		reg.subtract(reg1);
+		reg1.dispose();
+		fail("no exception thrown on disposed region");
+	}
+	catch (SWTException e) {
+	}
+	
+	reg = new Region(display);
+	reg.subtract(reg1);
+	Rectangle box = reg.getBounds();
+	if (!box.isEmpty()) {
+		reg.dispose();
+		reg1.dispose();
+		fail("subtract failed for empty region");
+	}
+	
+	Region reg2 = new Region(display);
+	reg2.add(new Rectangle(0,0,50,25));
+	
+	reg.add(reg1);
+	reg.subtract(reg2);
+	box = reg.getBounds();
+	if (!box.isEmpty()) {
+		reg.dispose();
+		reg1.dispose();
+		reg2.dispose();
+		fail("subtract failed 1");
+	}
+	reg2.dispose();
+	
+	Region reg3 = new Region(display);
+	reg3.add(new Rectangle(10,10,10,10));
+	
+	reg.add(reg1);
+	reg.subtract(reg3);
+	box = reg.getBounds();
+	if (!box.equals(reg1.getBounds())) {
+		reg.dispose();
+		reg1.dispose();
+		reg3.dispose();
+		fail("subtract failed 2");
+	}
+	reg3.dispose();
+	
+	Region reg4 = new Region(display);
+	reg4.add(new Rectangle(50,25,10,10));
+	
+	reg.subtract(reg4);
+	box = reg.getBounds();
+	if (!box.equals(reg1.getBounds())) {
+		reg.dispose();
+		reg1.dispose();
+		reg4.dispose();
+		fail("subtract failed 3");
+	}
+
+	Region reg5 = new Region(display);
+	reg5.add(new Rectangle(0,0,60,20));
+	
+	reg.add(reg1.getBounds().union(reg4.getBounds()));
+	reg.subtract(reg5);
+	box = reg.getBounds();
+	if (!box.equals(new Rectangle(0,20,60,15))) {
+		reg.dispose();
+		reg1.dispose();
+		reg4.dispose();
+		reg5.dispose();
+		fail("subtract failed 4");
+	}
+	reg.dispose();
+
+	reg = new Region(display);
+	reg.add(reg1);
+	reg.add(reg4);
+	reg.subtract(reg5);
+	box = reg.getBounds();
+	if (!box.equals(new Rectangle(0,20,60,15))) {
+		reg.dispose();
+		reg1.dispose();
+		reg4.dispose();
+		reg5.dispose();
+		fail("subtract failed 5");
+	}
+	reg.dispose();
+	reg1.dispose();
+	reg4.dispose();
+	reg5.dispose();
 }
 
 public void test_toString() {
@@ -504,7 +891,9 @@ public void test_toString() {
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
-	warnUnimpl("Test test_win32_newLorg_eclipse_swt_graphics_DeviceI not written");
+	if (SWT.getPlatform().equals("win32")) {
+		warnUnimpl("Test test_win32_newLorg_eclipse_swt_graphics_DeviceI not written");
+	}
 }
 
 public static Test suite() {
