@@ -37,9 +37,6 @@ import org.eclipse.swt.graphics.*;
 public class Composite extends Scrollable {
 	Layout layout;
 	Control[] tabList;
-	/* AW
-	int damagedRegion;
-	*/
 
 Composite () {
 	/* Do nothing */
