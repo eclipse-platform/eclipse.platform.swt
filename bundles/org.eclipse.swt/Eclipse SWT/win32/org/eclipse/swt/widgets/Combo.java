@@ -1032,7 +1032,7 @@ public void setSelection (Point selection) {
 }
 
 boolean setTabGroupFocus () {
-	return setFocus ();
+	return setTabItemFocus ();
 }
 
 /**
