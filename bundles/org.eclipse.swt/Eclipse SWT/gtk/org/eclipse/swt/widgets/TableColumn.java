@@ -339,7 +339,7 @@ public void pack () {
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		//NOT DONE
 	} else {
-		int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		OS.gtk_tree_model_get_iter_first (parent.modelHandle, iter);
 		int /*long*/ renderers = OS.gtk_tree_view_column_get_cell_renderers (handle);
 		do {

@@ -226,7 +226,7 @@ int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, in
 	return 0;
 }
 
-int calculateWidth (int column, int iter) {
+int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	int /*long*/ renderers = OS.gtk_tree_view_column_get_cell_renderers (column);
 	int width = calculateWidth (column, iter, renderers);
 	if (renderers != 0) OS.g_list_free (renderers);
@@ -1753,7 +1753,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	return result;
 }
 
-boolean setCellData(int tree_model, int iter) {
+boolean setCellData(int /*long*/ tree_model, int /*long*/ iter) {
 	if ((style & SWT.VIRTUAL) != 0) {
 		int [] index = new int [1];
 		int /*long*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
@@ -1859,7 +1859,7 @@ public void setRedraw (boolean redraw) {
 	}
 }
 
-void setScrollWidth (int column, int iter) {
+void setScrollWidth (int /*long*/ column, int /*long*/ iter) {
 	if (columnCount != 0) return;
 	int width = OS.gtk_tree_view_column_get_width (column);
 	int itemWidth = calculateWidth (column, iter);

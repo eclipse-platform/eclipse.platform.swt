@@ -858,7 +858,7 @@ public static final synchronized native int /*long*/ gtk_tooltips_new();
 public static final synchronized native void gtk_tooltips_set_tip(int /*long*/ tooltips, int /*long*/ widget, byte[] tip_text, byte[] tip_private);
 public static final synchronized native void gtk_tree_model_get(int /*long*/ tree_model, int /*long*/ iter, int column, int[] ptr, int terminator);
 public static final synchronized native boolean gtk_tree_model_get_iter(int /*long*/ tree_model, int /*long*/ iter, int /*long*/ path);
-public static final synchronized native boolean gtk_tree_model_get_iter_first(int /*long*/ tree_model, int iter);
+public static final synchronized native boolean gtk_tree_model_get_iter_first(int /*long*/ tree_model, int /*long*/ iter);
 public static final synchronized native int gtk_tree_model_get_n_columns(int /*long*/ tree_model);
 public static final synchronized native int /*long*/ gtk_tree_model_get_path(int /*long*/ tree_model, int /*long*/ iter);
 public static final synchronized native int /*long*/ gtk_tree_model_get_type();
