@@ -692,7 +692,6 @@ void destroyItem (TreeColumn column) {
 			bits &= ~OS.TVS_NOHSCROLL;
 			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 		}
-		//TODO - try to do only one setScrollWidth () outside of the if
 		setScrollWidth ();
 	} else {
 		setScrollWidth ();
