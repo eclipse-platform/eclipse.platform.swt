@@ -2135,6 +2135,36 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetClassInfoW)
 }
 #endif
 
+#ifndef NO_GetClassNameA
+JNIEXPORT jint JNICALL OS_NATIVE(GetClassNameA)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GetClassNameA_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)GetClassNameA((HWND)arg0, lparg1, arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetClassNameA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetClassNameW
+JNIEXPORT jint JNICALL OS_NATIVE(GetClassNameW)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GetClassNameW_FUNC);
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	rc = (jint)GetClassNameW((HWND)arg0, lparg1, arg2);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetClassNameW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetClientRect
 JNIEXPORT jboolean JNICALL OS_NATIVE(GetClientRect)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)

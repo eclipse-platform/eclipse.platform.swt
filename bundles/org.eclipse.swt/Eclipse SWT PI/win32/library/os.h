@@ -180,6 +180,7 @@
 #define NO_GetCharacterPlacementA
 #define NO_GetCharacterPlacementW
 #define NO_GetClassInfoA
+#define NO_GetClassNameA
 #define NO_GetClipboardFormatNameA
 #define NO_GetComboBoxInfo
 #define NO_GetDIBColorTable

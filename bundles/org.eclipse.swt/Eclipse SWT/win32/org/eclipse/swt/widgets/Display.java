@@ -137,6 +137,7 @@ public class Display extends Device {
 	/* Message Hook */
 	Callback getMsgCallback, embeddedCallback;
 	int getMsgProc, msgHook, embeddedHwnd, embeddedProc;
+	static final String AWT_WINDOW_CLASS = "SunAwtWindow";
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);

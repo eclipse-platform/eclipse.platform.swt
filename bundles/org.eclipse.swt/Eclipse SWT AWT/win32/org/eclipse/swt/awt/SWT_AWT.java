@@ -51,8 +51,6 @@ public class SWT_AWT {
 
 	static final int JAVA_VERSION;
 	static boolean loaded, swingInitialized;
-	static Object menuSelectionManager;
-	static Method clearSelectionPath;
 
 static {
 	JAVA_VERSION = parseVersion(System.getProperty("java.version"));
@@ -111,14 +109,6 @@ static synchronized void initializeSwing() {
 		Class clazz = Class.forName("javax.swing.UIManager");
 		Method method = clazz.getMethod("getDefaults", emptyClass);
 		if (method != null) method.invoke(clazz, emptyObject);
-
-		/* Get the swing menu selection manager to dismiss swing popups properly */
-		clazz = Class.forName("javax.swing.MenuSelectionManager");
-		method = clazz.getMethod("defaultManager", emptyClass);
-		if (method == null) return;
-		menuSelectionManager = method.invoke(clazz, emptyObject);
-		if (menuSelectionManager == null) return;
-		clearSelectionPath = menuSelectionManager.getClass().getMethod("clearSelectedPath", emptyClass);
 	} catch (Throwable e) {}
 }
 
@@ -219,13 +209,6 @@ public static Frame new_Frame (final Composite parent) {
 					} else {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
-					}
-					if (JAVA_VERSION >= JAVA_VERSION(1, 4, 2)) {
-						if (menuSelectionManager != null && clearSelectionPath != null) {
-							try {
-								clearSelectionPath.invoke(menuSelectionManager, new Object[0]);
-							} catch (Throwable e) {}
-						}
 					}
 				}
 			});

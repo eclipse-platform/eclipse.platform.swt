@@ -47,8 +47,6 @@ public class SWT_AWT {
 	public static String embeddedFrameClass;
 
 static boolean loaded, swingInitialized;
-static Object menuSelectionManager;
-static Method clearSelectionPath;
 
 static native final int /*long*/ getAWTHandle (Canvas canvas);
 
@@ -69,14 +67,6 @@ static synchronized void initializeSwing() {
 		Class clazz = Class.forName("javax.swing.UIManager");
 		Method method = clazz.getMethod("getDefaults", emptyClass);
 		if (method != null) method.invoke(clazz, emptyObject);
-
-		/* Get the swing menu selection manager to dismiss swing popups properly */
-		clazz = Class.forName("javax.swing.MenuSelectionManager");
-		method = clazz.getMethod("defaultManager", emptyClass);
-		if (method == null) return;
-		menuSelectionManager = method.invoke(clazz, emptyObject);
-		if (menuSelectionManager == null) return;
-		clearSelectionPath = menuSelectionManager.getClass().getMethod("clearSelectedPath", emptyClass);
 	} catch (Throwable e) {}
 }
 
@@ -141,19 +131,6 @@ public static Frame new_Frame (final Composite parent) {
 		Method method = clazz.getMethod("registerListeners", null);
 		if (method != null) method.invoke(value, null);
 	} catch (Throwable e) {}
-	parent.addListener (SWT.Deactivate, new Listener () {
-		public void handleEvent (Event event) {
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					if (menuSelectionManager != null && clearSelectionPath != null) {
-						try {
-							clearSelectionPath.invoke(menuSelectionManager, new Object[0]);
-						} catch (Throwable e) {}
-					}
-				}
-			});
-		}
-	});
 	parent.addListener (SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
 			parent.setVisible(false);
