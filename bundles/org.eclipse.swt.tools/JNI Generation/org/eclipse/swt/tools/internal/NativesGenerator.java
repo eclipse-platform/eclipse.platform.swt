@@ -803,10 +803,6 @@ boolean isCritical(Class paramType, ParameterData paramData) {
 	return paramType.isArray() && paramType.getComponentType().isPrimitive() && paramData.getFlag("critical");
 }
 
-boolean isUnique(Method method) {
-	return isUnique(method, Modifier.NATIVE);
-}
-
 public static void main(String[] args) {
 //	args = new String[]{"org.eclipse.swt.internal.win32.OS"};
 	if (args.length < 1) {

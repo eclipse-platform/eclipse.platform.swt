@@ -59,13 +59,16 @@ static String getFunctionName(Method method) {
 static String getFunctionName(Method method, Class[] paramTypes) {
 	String function = toC(method.getName());
 	if (!isUnique(method, Modifier.NATIVE)) {
-		function += "__";
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(function);
+		buffer.append("__");
 		if (paramTypes.length > 0) {
 			for (int i = 0; i < paramTypes.length; i++) {
 				Class paramType = paramTypes[i];
-				function += toC(getTypeSignature(paramType));
+				buffer.append(toC(getTypeSignature(paramType)));
 			}
 		}
+		return buffer.toString();
 	}
 	return function;
 }
@@ -223,8 +226,9 @@ static void sort(Class[] classes) {
 }
 
 static String toC(String str) {
-	StringBuffer buf = new StringBuffer();
-	for (int i = 0; i < str.length(); i++) {
+	int length = str.length();
+	StringBuffer buf = new StringBuffer(length * 2);
+	for (int i = 0; i < length; i++) {
 		char c = str.charAt(i);
 		switch (c) {
 			case '_': buf.append("_1"); break;
