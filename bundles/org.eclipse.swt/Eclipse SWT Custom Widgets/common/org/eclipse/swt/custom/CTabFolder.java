@@ -645,20 +645,18 @@ void drawBackground(GC gc, int[] shape, boolean selected) {
 	Image image = selected ? selectionBgImage : bgImage;
 	Color[] colors = selected ? selectionGradientColors : gradientColors;
 	int[] percents = selected ? selectionGradientPercents : gradientPercents;
-	boolean vertical = selected ? selectionGradientVertical : gradientVertical;
-	
-	drawBackground(gc, shape, defaultBackground, image, colors, percents, vertical);
-}
-void drawBackground(GC gc, int[] shape, Color defaultBackground, Image image, Color[] colors, int[] percents, boolean vertical) {
+	boolean vertical = selected ? selectionGradientVertical : gradientVertical; 
 	Point size = getSize();
-	int height = tabHeight + highlight_header; 
-	int y = onBottom ? size.y - borderBottom - height : borderTop;
-	int x = 0;
 	int width = size.x;
+	int height = tabHeight + highlight_header;
+	int x = 0;
 	if (borderLeft > 0) {
 		x += 1; width -= 2;
 	}
-	
+	int y = onBottom ? size.y - borderBottom - height : borderTop;
+	drawBackground(gc, shape, x, y, width, height, defaultBackground, image, colors, percents, vertical);
+}
+void drawBackground(GC gc, int[] shape, int x, int y, int width, int height, Color defaultBackground, Image image, Color[] colors, int[] percents, boolean vertical) {
 	Region clipping = new Region();
 	gc.getClipping(clipping);
 	Region region = new Region();
@@ -718,7 +716,7 @@ void drawBackground(GC gc, int[] shape, Color defaultBackground, Image image, Co
 				}
 			} else { //horizontal gradient
 				y = 0;
-				height = size.y;
+				height = getSize().y;
 				Color lastColor = colors[0];
 				if (lastColor == null) lastColor = defaultBackground;
 				int pos = 0;
