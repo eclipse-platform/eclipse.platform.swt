@@ -90,25 +90,16 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	Rect bounds = new Rect ();
 	OS.GetControlBounds (handle, bounds);
-	//NEEDS WORK
-//	int kControlGroupBoxTitleRectTag = ('t'<<24) + ('r'<<16) + ('e'<<8) + 'c';
-//	Rect inBuffer = new Rect ();
-//	int [] actualSize = new int [1];
-//	OS.GetControlData (handle, (short)OS.kControlEntireControl, kControlGroupBoxTitleRectTag, Rect.sizeof, inBuffer, actualSize);
-//	int h = inBuffer.right - inBuffer.left;
-//	int v = inBuffer.bottom - inBuffer.top; // gives a negative result ???
-	int h = 8;
-	int v = 22;
-	if (bounds.right - bounds.left != 0 && bounds.bottom - bounds.top != 0) {
-		int rgnHandle = OS.NewRgn();
-		OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
-		Rect clientArea = new Rect ();
-		OS.GetRegionBounds (rgnHandle, clientArea);
-		OS.DisposeRgn (rgnHandle);
-		h = bounds.right - bounds.left - clientArea.right + clientArea.left;
-		v = bounds.bottom - bounds.top - clientArea.bottom + clientArea.top;
-	}
-	return new Rectangle (x - h, y - v, width + h, height + v);
+	int rgnHandle = OS.NewRgn ();
+	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
+	Rect client = new Rect ();
+	OS.GetRegionBounds (rgnHandle, client);
+	OS.DisposeRgn (rgnHandle);
+	x -= client.left - bounds.left;
+	y -= client.top - bounds.top;
+	width += Math.max (8, (bounds.right - bounds.left) - (client.right - client.left));
+	height += Math.max (22, (bounds.bottom - bounds.top) - (client.bottom - client.top));
+	return new Rectangle (x, y, width, height);
 }
 
 void createHandle () {
@@ -121,12 +112,18 @@ void createHandle () {
 
 public Rectangle getClientArea () {
 	checkWidget();
+	Rect bounds = new Rect ();
+	OS.GetControlBounds (handle, bounds);
 	int rgnHandle = OS.NewRgn ();
 	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
-	Rect bounds = new Rect ();
-	OS.GetRegionBounds (rgnHandle, bounds);
+	Rect client = new Rect ();
+	OS.GetRegionBounds (rgnHandle, client);
 	OS.DisposeRgn (rgnHandle);
-	return new Rectangle (bounds.left, bounds.top, bounds.right - bounds.left, bounds.bottom - bounds.top);
+	int x = Math.max (0, client.left - bounds.left);
+	int y = Math.max (0, client.top - bounds.top);
+	int width = Math.max (0, client.right - client.left);
+	int height = Math.max (0, client.bottom - client.top);
+	return new Rectangle (x, y, width, height);
 }
 
 /**

@@ -121,19 +121,12 @@ void layoutControl () {
 		int width = Math.max (0, rect.right - rect.left - vWidth);
 		int height = Math.max (0, rect.bottom - rect.top - hHeight);
 		if (horizontalBar != null) {
-			int x = 0, y = height;
-			Rect rect1 = new Rect ();
-			OS.SetRect (rect1, (short) x, (short) y, (short)(x + width), (short)(y + hHeight));
-			OS.SetControlBounds (horizontalBar.handle, toRoot (horizontalBar.handle, rect1));
+			setBounds (horizontalBar.handle, 0, height, width, hHeight, true, true);
 		}
 		if (verticalBar != null) {
-			int x = width, y = 0;
-			Rect rect2 = new Rect ();
-			OS.SetRect (rect2, (short) x, (short) y, (short)(x + vWidth), (short)(y + height));
-			OS.SetControlBounds (verticalBar.handle, toRoot (verticalBar.handle, rect2));
+			setBounds (verticalBar.handle, width, 0, vWidth, height, true, true);
 		}
-		OS.SetRect (rect, (short) 0, (short) 0, (short) width, (short) height);
-		OS.SetControlBounds (handle, toRoot (handle, rect));
+		setBounds (verticalBar.handle, 0, 0, width, height, true, true);
 	}	
 }
 
