@@ -651,6 +651,7 @@ public class OS {
 	public static final int XmNdropSiteType = malloc ("dropSiteType", 1);
 	public static final int XmNeditable = malloc ("editable", 1);
 	public static final int XmNenableThinThickness = malloc ("enableThinThickness", 1);
+	public static final int XmNfillOnSelect = malloc ("fillOnSelect", 1);
 	public static final int XmNframeChildType = malloc ("frameChildType", 1);
 	public static final int XmNiconic = malloc ("iconic", 1);
 	public static final int XmNlabelType = malloc ("labelType", 1);

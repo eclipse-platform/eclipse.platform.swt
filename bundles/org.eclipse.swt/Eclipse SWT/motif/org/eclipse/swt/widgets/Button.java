@@ -230,6 +230,13 @@ void createHandle (int index) {
 		};
 		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		if ((style & SWT.FLAT) != 0) {
+			int [] argList1 = {
+				OS.XmNshadowThickness, 0,
+				OS.XmNborderWidth, 1,
+				OS.XmNfillOnSelect, 1};
+			OS.XtSetValues (handle, argList1, argList1.length / 2);
+		}
 		return;
 	}
 	
