@@ -32,6 +32,7 @@ public class TreeItem extends Item {
 	 * (Warning: This field is platform dependent)
 	 */	
 	public int handle;
+	
 	Tree parent;
 	int background, foreground;
 	
