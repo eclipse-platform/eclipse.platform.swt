@@ -186,15 +186,17 @@ public int getBorderWidth () {
 	int topHandle = topHandle ();
 	int [] args = {
 		OS.Pt_ARG_BASIC_FLAGS, 0, 0,
+		OS.Pt_ARG_FLAGS, 0, 0,
 //		OS.Pt_ARG_BEVEL_WIDTH, 0, 0,
 	};
 	OS.PtGetResources (topHandle, args.length / 3, args);
+	if ((args [4] & OS.Pt_HIGHLIGHTED) == 0) return 0;
 	int border = 0;
 	int flags = args [1];
 	if ((flags & OS.Pt_ALL_ETCHES) != 0) border++;
 	if ((flags & OS.Pt_ALL_OUTLINES) != 0) border++;
 	if ((flags & OS.Pt_ALL_INLINES) != 0) border++;
-//	if ((flags & OS.Pt_ALL_BEVELS) != 0) border += args [4];
+//	if ((flags & OS.Pt_ALL_BEVELS) != 0) border += args [7];
 	return border;
 }
 

@@ -218,6 +218,32 @@ protected void checkSubclass () {
 	if (!isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+String convertToLf (String text) {
+	int length = text.length ();
+	if (length == 0) return text;
+	
+	/* Check for an LF or CR/LF.  Assume the rest of the string 
+	 * is formated that way.  This will not work if the string 
+	 * contains mixed delimiters. */
+	int i = text.indexOf ('\n', 0);
+	if (i == -1 || i == 0) return text;
+	if (text.charAt (i - 1) != '\r') return text;
+
+	/* The string is formatted with CR/LF.
+	 * Create a new string with the LF line delimiter. */
+	i = 0;
+	StringBuffer result = new StringBuffer ();
+	while (i < length) {
+		int j = text.indexOf ('\r', i);
+		if (j == -1) j = length;
+		String s = text.substring (i, j);
+		result.append (s);
+		i = j + 2;
+		result.append ('\n');
+	}
+	return result.toString ();
+}
+
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay ();
@@ -946,6 +972,15 @@ public void syncExec (Runnable runnable) {
 	synchronizer.syncExec (runnable);
 }
 
+int textWidth (String string, byte[] font) {
+	if (string.length () == 0) return 0;
+	byte [] textBuffer = Converter.wcsToMbcs (null, string, false);
+	PhRect_t rect = new PhRect_t ();
+	OS.PfExtentText(rect, null, font, textBuffer, textBuffer.length);
+	if (rect.lr_x == rect.ul_x) return 0;
+	return rect.lr_x - rect.ul_x + 1;
+}
+
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
 	if (timerList == null) timerList = new Runnable [4];
@@ -1026,6 +1061,61 @@ int windowProc (int handle, int data, int info) {
 int workProc (int data) {
 	idle = true;
 	return OS.Pt_CONTINUE;
+}
+
+String wrapText (String text, byte[] font, int width) {
+	text = convertToLf (text);
+	int length = text.length ();
+	if (width <= 0 || length == 0 || length == 1) return text;
+	StringBuffer result = new StringBuffer ();
+	int lineStart = 0, lineEnd = 0;
+	while (lineStart < length) {
+		lineEnd = text.indexOf ('\n', lineStart);
+		boolean noLf = lineEnd == -1;
+		if (noLf) lineEnd = length;
+		int nextStart = lineEnd + 1;
+		while (lineEnd > lineStart + 1 && Character.isWhitespace (text.charAt (lineEnd - 1))) {
+			lineEnd--;
+		}
+		int wordStart = lineStart, wordEnd = lineStart;
+		int i = lineStart;
+		while (i < lineEnd) {
+			int lastStart = wordStart, lastEnd = wordEnd;
+			wordStart = i;
+			while (i < lineEnd && !Character.isWhitespace (text.charAt (i))) {
+				i++;
+			}
+			wordEnd = i - 1;
+			String line = text.substring (lineStart, wordEnd + 1);
+			int lineWidth = textWidth (line, font);
+			while (i < lineEnd && Character.isWhitespace (text.charAt (i))) {
+				i++;
+			}
+			if (lineWidth > width) {
+				if (lastStart == wordStart) {
+					while (wordStart < wordEnd) {
+						line = text.substring (lineStart, wordStart + 1);
+						lineWidth = textWidth (line, font);
+						if (lineWidth >= width) break;
+						wordStart++;
+					}
+					if (wordStart == lastStart) wordStart++;
+					lastEnd = wordStart - 1;
+				}
+				line = text.substring (lineStart, lastEnd + 1);
+				result.append (line); result.append ('\n');
+				i = wordStart; lineStart = wordStart; wordEnd = wordStart;
+			}
+		}
+		if (lineStart < lineEnd) {
+			result.append (text.substring (lineStart, lineEnd));
+		}
+		if (!noLf) {
+			result.append ('\n');
+		}
+		lineStart = nextStart;
+	}
+	return result.toString ();
 }
 
 }

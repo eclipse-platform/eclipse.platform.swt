@@ -1456,7 +1456,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawText
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PgDrawText
- * Signature: ([CISSI)I
+ * Signature: ([BISSI)I
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawText
   (JNIEnv *env, jclass that, jbyteArray ptr, jint len, jshort x, jshort y, jint flags)
@@ -1479,6 +1479,39 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawText
 		
         (*env)->ReleaseByteArrayElements(env, ptr, ptr1, JNI_ABORT);    
     }
+    
+    return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PgDrawMultiTextArea
+ * Signature: ([BILorg/eclipse/swt/photon/PhRect_t;III)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawMultiTextArea
+  (JNIEnv *env, jclass that, jbyteArray ptr, jint len, jobject canvas, jint text_flags, jint canvas_flags, int linespacing)
+{
+	DECL_GLOB(pGlob)
+	jint result = 0;
+    jbyte * ptr1 = NULL;
+    PhRect_t canvas1, *lpCanvas1;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PgDrawMultiTextArea\n");
+#endif
+
+    /* don't do anything if ptr is NULL */
+    if (!ptr) return 0;
+ 
+	if (canvas) {
+        lpCanvas1 = &canvas1;
+        cachePhRect_tFids(env, canvas, &PGLOB(PhRect_tFc));
+        getPhRect_tFields(env, canvas, lpCanvas1, &PGLOB(PhRect_tFc));
+    }
+    ptr1 = (*env)->GetByteArrayElements(env, ptr, NULL);
+
+	result = (jint)PgDrawMultiTextArea((char *)ptr1, len, lpCanvas1, text_flags, canvas_flags, linespacing);
+		
+	(*env)->ReleaseByteArrayElements(env, ptr, ptr1, JNI_ABORT);    
     
     return result;
 }
@@ -2277,18 +2310,67 @@ JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PfExtentWideTe
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
- * Method:    PfExtentText
- * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhPoint_t;[B[BI)Lorg/eclipse/swt/internal/photon/PhRect_t;
+ * Method:    PgExtentMultiText
+ * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhPoint_t;[B[BII)Lorg/eclipse/swt/internal/photon/PhRect_t;
  */
-/*
-JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PfExtentText
-  (JNIEnv *env, jobject that, jobject extent, jobject pos, jbyteArray font, jbyteArray str, jint len)
+JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PgExtentMultiText
+  (JNIEnv *env, jobject that, jobject extent, jobject pos, jbyteArray font, jbyteArray str, jint n, int linespacing)
 {
 	DECL_GLOB(pGlob)
 	PhRect_t extent1, *lpExtent1=NULL;
 	PhPoint_t pos1, *lpPos1=NULL;
     jbyte *font1=NULL;
     jbyte *str1=NULL;
+    PhRect_t * result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PgExtentMultiText\n");
+#endif
+
+    if (extent) {
+        lpExtent1 = &extent1;
+        cachePhRect_tFids(env, extent, &PGLOB(PhRect_tFc));
+        getPhRect_tFields(env, extent, lpExtent1, &PGLOB(PhRect_tFc));
+    }
+    if (pos) {
+        lpPos1 = &pos1;
+        cachePhPoint_tFids(env, pos, &PGLOB(PhPoint_tFc));
+        getPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
+    }
+    if (font)
+        font1 = (*env)->GetByteArrayElements(env, font, NULL);
+    if (str)
+        str1 = (*env)->GetByteArrayElements(env, str, NULL);
+
+    result = PgExtentMultiText(lpExtent1, lpPos1, font1, str1, n, linespacing);
+
+    if (extent) {
+        setPhRect_tFields(env, extent, lpExtent1, &PGLOB(PhRect_tFc));
+    }
+    if (pos) {
+        setPhPoint_tFields(env, pos, lpPos1, &PGLOB(PhPoint_tFc));
+    }
+    if (font)
+        (*env)->ReleaseByteArrayElements(env, font, font1, JNI_ABORT);
+    if (str)
+        (*env)->ReleaseByteArrayElements(env, str, str1, JNI_ABORT);
+	
+	return result != NULL ? extent : NULL;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PfExtentText
+ * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhPoint_t;[B[BI)Lorg/eclipse/swt/internal/photon/PhRect_t;
+ */
+JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2_3B_3BI
+  (JNIEnv *env, jclass that, jobject extent, jobject pos, jbyteArray font, jbyteArray str, jint len)
+{
+	DECL_GLOB(pGlob)
+	PhRect_t extent1, *lpExtent1=NULL;
+	PhPoint_t pos1, *lpPos1=NULL;
+    jbyte *str1=NULL;
+    jbyte *font1=NULL;
     PhRect_t * result;
 
 #ifdef DEBUG_CALL_PRINTS
@@ -2325,15 +2407,14 @@ JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PfExtentText
 	
 	return result != NULL ? extent : NULL;
 }
-*/
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PfExtentText
- * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhPoint_t;[B[BI)Lorg/eclipse/swt/internal/photon/PhRect_t;
+ * Signature: (Lorg/eclipse/swt/internal/photon/PhRect_t;Lorg/eclipse/swt/internal/photon/PhPoint_t;III)Lorg/eclipse/swt/internal/photon/PhRect_t;
  */
-JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PfExtentText
-  (JNIEnv *env, jobject that, jobject extent, jobject pos, int font, int str, jint len)
+JNIEXPORT jobject JNICALL Java_org_eclipse_swt_internal_photon_OS_PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III
+  (JNIEnv *env, jclass that, jobject extent, jobject pos, jint font, jint str, jint len)
 {
 	DECL_GLOB(pGlob)
 	PhRect_t extent1, *lpExtent1=NULL;
