@@ -600,7 +600,7 @@ int[] createImage (int type) {
 		OS.DisposePtr (data);
 		return null;
 	}
-	int cgImage = OS.CGImageCreate (width, height, 8, 32, bpr, colorspace, OS.kCGImageAlphaFirst, provider, null, false, 0);
+	int cgImage = OS.CGImageCreate (width, height, 8, 32, bpr, colorspace, OS.kCGImageAlphaFirst, provider, null, true, 0);
 	OS.CGColorSpaceRelease (colorspace);
 	OS.CGDataProviderRelease (provider);
 	

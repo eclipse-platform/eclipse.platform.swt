@@ -300,6 +300,20 @@ public class SWT {
 	public static final int ON = 1;
 
 	/**
+	 * Indicates low quality (value is 1).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int LOW = 1;
+
+	/**
+	 * Indicates high quality (value is 2).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int HIGH = 2;
+
+	/**
 	 * Style constant for menu bar behavior (value is 1&lt;&lt;1).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Menu</code></li>

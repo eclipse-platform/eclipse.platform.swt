@@ -2411,6 +2411,27 @@ public Color getForeground() {
 	return Color.win32_new(data.device, color);
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public int getInterpolation() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.gdipGraphics == 0) return SWT.DEFAULT;
+	int mode = Gdip.Graphics_GetInterpolationMode(data.gdipGraphics);
+	System.out.println("os inter=" + mode);
+	switch (mode) {
+		case Gdip.InterpolationModeDefault: return SWT.DEFAULT;
+		case Gdip.InterpolationModeNearestNeighbor: return SWT.NONE;
+		case Gdip.InterpolationModeBilinear:
+		case Gdip.InterpolationModeLowQuality: return SWT.LOW;
+		case Gdip.InterpolationModeBicubic:
+		case Gdip.InterpolationModeHighQualityBilinear:
+		case Gdip.InterpolationModeHighQualityBicubic:
+		case Gdip.InterpolationModeHighQuality: return SWT.HIGH;
+	}
+	return SWT.DEFAULT;
+}
+
 /** 
  * Returns the receiver's line cap style, which will be one
  * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
@@ -3019,6 +3040,24 @@ public void setForeground (Color color) {
 	data.foreground = color.handle;
 	OS.SetTextColor(handle, color.handle);
 	setPen(color.handle, -1, -1, -1, -1, data.dashes);
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setInterpolation(int interpolation) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int mode = 0;
+	switch (interpolation) {
+		case SWT.DEFAULT: mode = Gdip.InterpolationModeDefault; break;
+		case SWT.NONE: mode = Gdip.InterpolationModeNearestNeighbor; break;
+		case SWT.LOW: mode = Gdip.InterpolationModeLowQuality; break;
+		case SWT.HIGH: mode = Gdip.InterpolationModeHighQuality; break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	initGdip(false, false);
+	Gdip.Graphics_SetInterpolationMode(data.gdipGraphics, mode);
 }
 
 /** 

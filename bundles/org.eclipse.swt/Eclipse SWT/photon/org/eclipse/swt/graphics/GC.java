@@ -2045,6 +2045,14 @@ public Color getForeground() {
 	return Color.photon_new(data.device, data.foreground);
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public int getInterpolation() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return SWT.DEFAULT;
+}
+
 /** 
  * Returns the receiver's line cap style, which will be one
  * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
@@ -2489,6 +2497,22 @@ public void setForeground (Color color) {
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.foreground = color.handle;
 	dirtyBits |= DIRTY_FOREGROUND;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setInterpolation(int interpolation) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	switch (interpolation) {
+		case SWT.DEFAULT:
+		case SWT.NONE:
+		case SWT.LOW:
+		case SWT.HIGH:
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 }
 
 /** 

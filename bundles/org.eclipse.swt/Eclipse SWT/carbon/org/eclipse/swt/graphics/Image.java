@@ -233,7 +233,7 @@ public Image(Device device, Image srcImage, int flag) {
 		OS.DisposePtr(data);
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
-	handle = OS.CGImageCreate(width, height, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, false, 0);
+	handle = OS.CGImageCreate(width, height, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, true, 0);
 	OS.CGDataProviderRelease(provider);
 	if (handle == 0) {
 		OS.DisposePtr(data);
@@ -685,7 +685,7 @@ void init(Device device, int width, int height) {
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 	int colorspace = device.colorspace;
-	handle = OS.CGImageCreate(width, height, 8, 32, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, false, 0);
+	handle = OS.CGImageCreate(width, height, 8, 32, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, true, 0);
 	OS.CGDataProviderRelease(provider);
 	if (handle == 0) {
 		OS.DisposePtr(data);
@@ -730,7 +730,7 @@ void init(Device device, ImageData image) {
 	int colorspace = device.colorspace;
 	int transparency = image.getTransparencyType(); 
 	int alphaInfo = transparency == SWT.TRANSPARENCY_NONE ? OS.kCGImageAlphaNoneSkipFirst : OS.kCGImageAlphaFirst;
-	handle = OS.CGImageCreate(width, height, 8, 32, width * 4, colorspace, alphaInfo, provider, null, false, 0);
+	handle = OS.CGImageCreate(width, height, 8, 32, width * 4, colorspace, alphaInfo, provider, null, true, 0);
 	OS.CGDataProviderRelease(provider);
 	if (handle == 0) {
 		OS.DisposePtr(data);

@@ -638,6 +638,14 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		if (srcWidth != destWidth || srcHeight != destHeight) {
 			Cairo.cairo_scale(cairo, destWidth / (float)srcWidth,  destHeight / (float)srcHeight);
 		}
+		int filter = Cairo.CAIRO_FILTER_GOOD;
+		switch (data.interpolation) {
+			case SWT.DEFAULT: filter = Cairo.CAIRO_FILTER_GOOD; break;
+			case SWT.NONE: filter = Cairo.CAIRO_FILTER_NEAREST; break;
+			case SWT.LOW: filter = Cairo.CAIRO_FILTER_FAST; break;
+			case SWT.HIGH: filter = Cairo.CAIRO_FILTER_BEST; break;
+		}
+		Cairo.cairo_surface_set_filter(srcImage.surface, filter);
 		Cairo.cairo_show_surface(cairo, srcImage.surface, imgWidth, imgHeight);
 		Cairo.cairo_restore(cairo);
 		return;
@@ -2468,6 +2476,13 @@ public Color getForeground() {
 	return Color.motif_new(data.device, xColor);
 	
 }
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public int getInterpolation() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.interpolation;
+}
 /** 
  * Returns the receiver's line cap style, which will be one
  * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
@@ -3052,6 +3067,23 @@ public void setForeground (Color color) {
 		XColor xColor = color.handle;
 		Cairo.cairo_set_rgb_color(cairo, (xColor.red & 0xFFFF) / (float)0xFFFF, (xColor.green & 0xFFFF) / (float)0xFFFF, (xColor.blue & 0xFFFF) / (float)0xFFFF);
 	}
+}
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setInterpolation(int interpolation) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	switch (interpolation) {
+		case SWT.DEFAULT:
+		case SWT.NONE:
+		case SWT.LOW:
+		case SWT.HIGH:
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	initCairo();
+	data.interpolation = interpolation;
 }
 /** 
  * Sets the receiver's line cap style to the argument, which must be one

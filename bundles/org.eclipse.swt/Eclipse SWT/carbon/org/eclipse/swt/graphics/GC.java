@@ -203,7 +203,7 @@ public void copyArea(Image image, int x, int y) {
 				int bpp = OS.CGDisplayBitsPerPixel(display);
 				int bps = OS.CGDisplayBitsPerSample(display);
 				int provider = OS.CGDataProviderCreateWithData(0, address, bpr * height, 0);
-				int srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, data.device.colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, false, 0);
+				int srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, data.device.colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, true, 0);
 				OS.CGDataProviderRelease(provider);
 				copyArea(image, x, y, srcImage);
 				if (srcImage != 0) OS.CGImageRelease(srcImage);
@@ -601,7 +601,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		int data = srcImage.data + (srcY * bpr) + srcX * 4;
 		int provider = OS.CGDataProviderCreateWithData(0, data, srcHeight * bpr, 0);
 		if (provider != 0) {
-			int subImage = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, false, 0);
+			int subImage = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, true, 0);
 			OS.CGDataProviderRelease(provider);
 			if (subImage != 0) {
 		 		OS.CGContextDrawImage(handle, rect, subImage);
@@ -1653,6 +1653,21 @@ public Color getForeground() {
 	return Color.carbon_new(data.device, data.foreground);	
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public int getInterpolation() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int interpolation = OS.CGContextGetInterpolationQuality(handle);
+	switch (interpolation) {
+		case OS.kCGInterpolationDefault: return SWT.DEFAULT;
+		case OS.kCGInterpolationNone: return SWT.NONE;
+		case OS.kCGInterpolationLow: return SWT.LOW;
+		case OS.kCGInterpolationHigh: return SWT.HIGH;
+	}
+	return SWT.DEFAULT;
+}
+
 /** 
  * Returns the receiver's line cap style, which will be one
  * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
@@ -2140,6 +2155,23 @@ public void setForeground(Color color) {
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.foreground = color.handle;
 	OS.CGContextSetStrokeColor(handle, color.handle);
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setInterpolation(int interpolation) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int quality = 0;
+	switch (interpolation) {
+		case SWT.DEFAULT: quality = OS.kCGInterpolationDefault; break;
+		case SWT.NONE: quality = OS.kCGInterpolationNone; break;
+		case SWT.LOW: quality = OS.kCGInterpolationLow; break;
+		case SWT.HIGH: quality = OS.kCGInterpolationHigh; break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	OS.CGContextSetInterpolationQuality(handle, quality);
 }
 
 /** 
