@@ -22,8 +22,7 @@ import org.eclipse.swt.graphics.*;
  */
 abstract class StyledTextRenderer {
 	private Device device;					// device to render on
-	protected Font regularFont;
-	protected Font boldFont, italicFont, boldItalicFont;
+	protected Font regularFont, boldFont, italicFont, boldItalicFont;
 	private int tabWidth;					// width in pixels of a tab character
 	private int lineHeight;					// height in pixels of a line
 	private int lineEndSpaceWidth;			// width in pixels of the space used to represent line delimiters
@@ -36,19 +35,6 @@ abstract class StyledTextRenderer {
  * @param leftMargin margin to the left of the text
  */
 StyledTextRenderer(Device device, Font regularFont) {
-	FontData[] fontDatas = regularFont.getFontData();
-	for (int i = 0; i < fontDatas.length; i++) {
-		fontDatas[i].setStyle(SWT.BOLD);
-	}
-	boldFont = new Font(device, fontDatas);
-	for (int i = 0; i < fontDatas.length; i++) {
-		fontDatas[i].setStyle(SWT.ITALIC );
-	}
-	italicFont = new Font(device, fontDatas);
-	for (int i = 0; i < fontDatas.length; i++) {
-		fontDatas[i].setStyle(SWT.BOLD | SWT.ITALIC );
-	}
-	boldItalicFont = new Font(device, fontDatas);
 	this.device = device;
 	this.regularFont = regularFont;
 }
@@ -64,14 +50,22 @@ void calculateLineHeight() {
 	
 	// don't assume that bold and normal fonts have the same height
 	// fixes bug 41773
-	gc.setFont(boldFont);
+	gc.setFont(getFont(SWT.BOLD));
 	lineHeight = Math.max(lineHeight, gc.getFontMetrics().getHeight());
-	gc.setFont(italicFont);
+	gc.setFont(getFont(SWT.ITALIC));
 	lineHeight = Math.max(lineHeight, gc.getFontMetrics().getHeight());
-	gc.setFont(boldItalicFont);
-	lineHeight = Math.max(lineHeight, gc.getFontMetrics().getHeight());		
+	gc.setFont(getFont(SWT.BOLD | SWT.ITALIC));
+	lineHeight = Math.max(lineHeight, gc.getFontMetrics().getHeight());
 	gc.setFont(originalFont);
 	disposeGC(gc);
+	
+	// clear the font cache
+	boldFont.dispose();
+	boldFont = null;
+	italicFont.dispose();
+	italicFont = null;
+	boldItalicFont.dispose();
+	boldItalicFont = null;
 }
 /**
  * Disposes the resource created by the receiver.
@@ -214,6 +208,37 @@ Device getDevice() {
  * </ul>
  */
 protected abstract int[] getBidiSegments(int lineOffset, String lineText);
+/**
+ *  Returns the Font according with the given style
+ */
+Font getFont(int style) {
+	FontData[] fontDatas;
+	switch (style) {
+		case SWT.BOLD:
+			if (boldFont != null) return boldFont;
+			fontDatas = regularFont.getFontData();
+			for (int i = 0; i < fontDatas.length; i++) {
+				fontDatas[i].setStyle(style);
+			}
+			return boldFont = new Font(device, fontDatas);
+		case SWT.ITALIC:
+			if (italicFont != null) return italicFont;
+			fontDatas = regularFont.getFontData();
+			for (int i = 0; i < fontDatas.length; i++) {
+				fontDatas[i].setStyle(style);
+			}
+			return italicFont = new Font(device, fontDatas);
+		case SWT.BOLD | SWT.ITALIC:
+			if (boldItalicFont != null) return boldItalicFont;
+			fontDatas = regularFont.getFontData();
+			for (int i = 0; i < fontDatas.length; i++) {
+				fontDatas[i].setStyle(style);
+			}
+			return boldItalicFont = new Font(device, fontDatas);
+		default:
+			return regularFont;
+	}
+}
 /**
  * Returns the GC to use for rendering and measuring.
  * Allows subclasses to reuse GCs.
@@ -411,17 +436,9 @@ TextLayout getTextLayout(String line, int lineOffset) {
 			}
 			if (start >= length) break;
 			if (lastOffset != start) {
-				layout.setStyle(null, lastOffset, start - 1);				
+				layout.setStyle(null, lastOffset, start - 1);	
 			}
-			Font font = regularFont;
-			if (style.fontStyle == SWT.BOLD) {
-				font = boldFont;
-			} else if (style.fontStyle == SWT.ITALIC) {
-				font = italicFont;
-			} else if (style.fontStyle == (SWT.BOLD | SWT.ITALIC)) {
-				font = boldItalicFont;
-			} 
-			TextStyle textStyle = new TextStyle(font, style.foreground, style.background);
+			TextStyle textStyle = new TextStyle(getFont(style.fontStyle), style.foreground, style.background);
 			layout.setStyle(textStyle, start, end - 1);
 			lastOffset = end;
 		}
