@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -26,12 +27,6 @@ class Download {
 	Shell shell;
 	Label status;
 	Button cancel;
-	
-	static String DOWNLOAD = SWT.getMessage("SWT_Download")+" ";
-	static String SAVING = SWT.getMessage("SWT_Saving")+" ";
-	static String FROM = " "+SWT.getMessage("SWT_from")+" ";
-	static String KO = SWT.getMessage("SWT_KB");
-	static String OF = " "+SWT.getMessage("SWT_of")+" ";
 	
 public Download() {
 	createCOMInterfaces();
@@ -201,15 +196,18 @@ public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, int s
 		}
 	};
 	shell = new Shell(SWT.DIALOG_TRIM);
-	shell.setText(DOWNLOAD+file);
+	String msg = Compatibility.getMessage("SWT_Download_File", new Object[] {file});
+	shell.setText(msg);
 	GridLayout gridLayout = new GridLayout();
 	gridLayout.marginHeight = 15;
 	gridLayout.marginWidth = 15;
 	gridLayout.verticalSpacing = 20;
 	shell.setLayout(gridLayout);
-	new Label(shell, SWT.SIMPLE).setText(SAVING+file+FROM+url);
+	msg = Compatibility.getMessage("SWT_Download_Location", new Object[] {file, url});	
+	new Label(shell, SWT.SIMPLE).setText(msg);
 	status = new Label(shell, SWT.SIMPLE);
-	status.setText(DOWNLOAD);
+	msg = Compatibility.getMessage("SWT_Download_Started");	
+	status.setText(msg);
 	GridData data = new GridData ();
 	data.grabExcessHorizontalSpace = true;
 	data.grabExcessVerticalSpace = true;
@@ -321,7 +319,10 @@ int OnProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int a
 	int currentBytes = aCurTotalProgress / 1024;
 	int totalBytes = aMaxTotalProgress / 1024;
 	if (shell != null & !shell.isDisposed()) {
-		status.setText(DOWNLOAD+currentBytes+KO+OF+totalBytes+KO);
+		Object[] arguments = {new Integer(currentBytes), new Integer(totalBytes)};
+		String statusMsg = Compatibility.getMessage("SWT_Download_Status", arguments);
+		status.setText(statusMsg);
+		
 		shell.layout(true);
 		shell.getDisplay().update();
 	}
