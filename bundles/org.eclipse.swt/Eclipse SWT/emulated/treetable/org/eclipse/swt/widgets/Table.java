@@ -333,7 +333,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	int width;
 	int newItemWidth = 0;
 		
-	if (getHeaderVisible() == true) {
+	if (getHeaderVisible() == true && hHint == SWT.DEFAULT) {
 		headerSize = getHeader().computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
 		size.y += headerSize.y;		
 	}
