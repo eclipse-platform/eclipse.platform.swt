@@ -33,11 +33,13 @@ class CTabFolderTab extends Tab {
 								  ControlExample.getResourceString("CTabItem1_2")};
 
 	/* Controls and resources added to the "Fonts" group */
-	Button itemFontButton;
+	Button foregroundSelectionButton, backgroundSelectionButton, itemFontButton;
+	Image foregroundSelectionImage, backgroundSelectionImage;
+	Color foregroundSelectionColor, backgroundSelectionColor;
 	Font itemFont;
 	
 	/* Other widgets added to the "Other" group */
-	Button setSimpleTabButton, setImageButton;
+	Button simpleTabButton, singleTabButton, imageButton, showMinButton, showMaxButton, unselectedCloseButton, unselectedImageButton;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -50,20 +52,134 @@ class CTabFolderTab extends Tab {
 	 * Creates the "Fonts" group.
 	 */
 	void createColorGroup () {
-		super.createColorGroup();
+		/* Create the group */
+		colorGroup = new Group(controlGroup, SWT.NONE);
+		colorGroup.setLayout (new GridLayout (2, false));
+		colorGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		colorGroup.setText (ControlExample.getResourceString ("Colors"));
 		
-		itemGroup = new Group (colorGroup, SWT.NONE);
-		itemGroup.setText (ControlExample.getResourceString ("CTab_Item_Colors"));
-		GridData data = new GridData ();
-		data.horizontalSpan = 2;
-		itemGroup.setLayoutData (data);
-		itemGroup.setLayout (new GridLayout (2, false));
-		itemFontButton = new Button (itemGroup, SWT.PUSH);
-		itemFontButton.setText(ControlExample.getResourceString("Font"));
-		itemFontButton.setLayoutData(new GridData (GridData.HORIZONTAL_ALIGN_FILL));
+		new Label (colorGroup, SWT.NONE).setText (ControlExample.getResourceString ("Foreground_Color"));
+		foregroundButton = new Button (colorGroup, SWT.PUSH);
 		
-		Shell shell = colorGroup.getShell ();
+		new Label (colorGroup, SWT.NONE).setText (ControlExample.getResourceString ("Background_Color"));
+		backgroundButton = new Button (colorGroup, SWT.PUSH);
+		
+		new Label (colorGroup, SWT.NONE).setText (ControlExample.getResourceString ("Selection_Foreground_Color"));
+		foregroundSelectionButton = new Button (colorGroup, SWT.PUSH);
+		
+		new Label (colorGroup, SWT.NONE).setText (ControlExample.getResourceString ("Selection_Background_Color"));
+		backgroundSelectionButton = new Button (colorGroup, SWT.PUSH);
+		
+		fontButton = new Button (colorGroup, SWT.PUSH);
+		fontButton.setText(ControlExample.getResourceString("Font"));
+		fontButton.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false, 2, 1));
+	
+		itemFontButton = new Button (colorGroup, SWT.PUSH);
+		itemFontButton.setText(ControlExample.getResourceString("Item_Font"));
+		itemFontButton.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false, 2, 1));
+		
+		Button defaultsButton = new Button (colorGroup, SWT.PUSH);
+		defaultsButton.setText(ControlExample.getResourceString("Defaults"));
+
+		Shell shell = controlGroup.getShell ();
+		final ColorDialog colorDialog = new ColorDialog (shell);
 		final FontDialog fontDialog = new FontDialog (shell);
+
+		/* Create images to display current colors */
+		int imageSize = 12;
+		Display display = shell.getDisplay ();
+		foregroundImage = new Image (display, imageSize, imageSize);
+		backgroundImage = new Image (display, imageSize, imageSize);
+		foregroundSelectionImage = new Image (display, imageSize, imageSize);
+		backgroundSelectionImage = new Image (display, imageSize, imageSize);
+
+		/* Add listeners to set the colors and font */
+		foregroundButton.setImage(foregroundImage); // sets the size of the button
+		foregroundButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Color oldColor = foregroundColor;
+				if (oldColor == null) {
+					Control [] controls = getExampleWidgets ();
+					if (controls.length > 0) oldColor = controls [0].getForeground ();
+				}
+				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB()); // seed dialog with current color
+				RGB rgb = colorDialog.open();
+				if (rgb == null) return;
+				oldColor = foregroundColor; // save old foreground color to dispose when done
+				foregroundColor = new Color (event.display, rgb);
+				setExampleWidgetForeground ();
+				if (oldColor != null) oldColor.dispose ();
+			}
+		});
+		backgroundButton.setImage(backgroundImage); // sets the size of the button
+		backgroundButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Color oldColor = backgroundColor;
+				if (oldColor == null) {
+					Control [] controls = getExampleWidgets ();
+					if (controls.length > 0) oldColor = controls [0].getBackground (); // seed dialog with current color
+				}
+				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB());
+				RGB rgb = colorDialog.open();
+				if (rgb == null) return;
+				oldColor = backgroundColor; // save old background color to dispose when done
+				backgroundColor = new Color (event.display, rgb);
+				setExampleWidgetBackground ();
+				if (oldColor != null) oldColor.dispose ();
+			}
+		});
+		foregroundSelectionButton.setImage(foregroundSelectionImage); // sets the size of the button
+		foregroundSelectionButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Color oldColor = foregroundSelectionColor;
+				if (oldColor == null) {
+					Control [] controls = getExampleWidgets ();
+					if (controls.length > 0) oldColor = controls [0].getForeground ();
+				}
+				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB()); // seed dialog with current color
+				RGB rgb = colorDialog.open();
+				if (rgb == null) return;
+				oldColor = foregroundSelectionColor; // save old foreground color to dispose when done
+				foregroundSelectionColor = new Color (event.display, rgb);
+				setExampleWidgetForeground ();
+				if (oldColor != null) oldColor.dispose ();
+			}
+		});
+		backgroundSelectionButton.setImage(backgroundSelectionImage); // sets the size of the button
+		backgroundSelectionButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Color oldColor = backgroundSelectionColor;
+				if (oldColor == null) {
+					Control [] controls = getExampleWidgets ();
+					if (controls.length > 0) oldColor = controls [0].getBackground (); // seed dialog with current color
+				}
+				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB());
+				RGB rgb = colorDialog.open();
+				if (rgb == null) return;
+				oldColor = backgroundSelectionColor; // save old background color to dispose when done
+				backgroundSelectionColor = new Color (event.display, rgb);
+				setExampleWidgetBackground ();
+				if (oldColor != null) oldColor.dispose ();
+			}
+		});
+		fontButton.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				Font oldFont = font;
+				if (oldFont == null) {
+					Control [] controls = getExampleWidgets ();
+					if (controls.length > 0) oldFont = controls [0].getFont ();
+				}
+				if (oldFont != null) fontDialog.setFontList(oldFont.getFontData()); // seed dialog with current font
+				FontData fontData = fontDialog.open ();
+				if (fontData == null) return;
+				oldFont = font; // dispose old font when done
+				font = new Font (event.display, fontData);
+				setExampleWidgetFont ();
+				setExampleWidgetSize ();
+				if (oldFont != null) oldFont.dispose ();
+			}
+		});
+	
 
 		/* Add listeners to set the colors and font */
 		itemFontButton.addSelectionListener(new SelectionAdapter () {
@@ -80,8 +196,29 @@ class CTabFolderTab extends Tab {
 				if (oldFont != null) oldFont.dispose ();
 			}
 		});
+		
+		defaultsButton.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				resetColorsAndFonts ();
+			}
+		});
+		
 		shell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent event) {
+				if (foregroundImage != null) foregroundImage.dispose();
+				if (backgroundImage != null) backgroundImage.dispose();
+				if (foregroundColor != null) foregroundColor.dispose();
+				if (backgroundColor != null) backgroundColor.dispose();
+				if (font != null) font.dispose();
+				foregroundColor = null;
+				backgroundColor = null;
+				font = null;				
+				if (foregroundSelectionImage != null) foregroundSelectionImage.dispose();
+				if (backgroundSelectionImage != null) backgroundSelectionImage.dispose();
+				if (foregroundSelectionColor != null) foregroundSelectionColor.dispose();
+				if (backgroundSelectionColor != null) backgroundSelectionColor.dispose();
+				foregroundSelectionColor = null;
+				backgroundSelectionColor = null;
 				if (itemFont != null) itemFont.dispose();
 				itemFont = null;
 			}
@@ -95,21 +232,64 @@ class CTabFolderTab extends Tab {
 		super.createOtherGroup ();
 	
 		/* Create display controls specific to this example */
-		setSimpleTabButton = new Button (otherGroup, SWT.CHECK);
-		setSimpleTabButton.setText (ControlExample.getResourceString("Set_Simple_Tabs"));
-		setSimpleTabButton.setSelection(true);
-		setImageButton = new Button (otherGroup, SWT.CHECK);
-		setImageButton.setText (ControlExample.getResourceString("Set_Image"));
-	
-		/* Add the listeners */
-		setSimpleTabButton.addSelectionListener (new SelectionAdapter () {
+		simpleTabButton = new Button (otherGroup, SWT.CHECK);
+		simpleTabButton.setText (ControlExample.getResourceString("Set_Simple_Tabs"));
+		simpleTabButton.setSelection(true);
+		simpleTabButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setSimpleTabs();
 			}
 		});
-		setImageButton.addSelectionListener (new SelectionAdapter () {
+				
+		singleTabButton = new Button (otherGroup, SWT.CHECK);
+		singleTabButton.setText (ControlExample.getResourceString("Set_Single_Tabs"));
+		singleTabButton.setSelection(false);
+		singleTabButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setSingleTabs();
+			}
+		});
+		
+		showMinButton = new Button (otherGroup, SWT.CHECK);
+		showMinButton.setText (ControlExample.getResourceString("Set_Min_Visible"));
+		showMinButton.setSelection(false);
+		showMinButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setMinimizeVisible();
+			}
+		});
+		
+		showMaxButton = new Button (otherGroup, SWT.CHECK);
+		showMaxButton.setText (ControlExample.getResourceString("Set_Max_Visible"));
+		showMaxButton.setSelection(false);
+		showMaxButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setMaximizeVisible();
+			}
+		});
+		
+		imageButton = new Button (otherGroup, SWT.CHECK);
+		imageButton.setText (ControlExample.getResourceString("Set_Image"));
+		imageButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setImages();
+			}
+		});
+		
+		unselectedImageButton = new Button (otherGroup, SWT.CHECK);
+		unselectedImageButton.setText (ControlExample.getResourceString("Set_Unselected_Image_Visible"));
+		unselectedImageButton.setSelection(true);
+		unselectedImageButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setUnselectedImageVisible();
+			}
+		});
+		unselectedCloseButton = new Button (otherGroup, SWT.CHECK);
+		unselectedCloseButton.setText (ControlExample.getResourceString("Set_Unselected_Close_Visible"));
+		unselectedCloseButton.setSelection(true);
+		unselectedCloseButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setUnselectedCloseVisible();
 			}
 		});
 	}
@@ -145,7 +325,7 @@ class CTabFolderTab extends Tab {
 		for (int i = 0; i < CTabItems1.length; i++) {
 			CTabItem item = new CTabItem(tabFolder1, SWT.NONE);
 			item.setText(CTabItems1[i]);
-			Text text = new Text(tabFolder1, SWT.NONE);
+			Text text = new Text(tabFolder1, SWT.READ_ONLY);
 			text.setText(ControlExample.getResourceString("CTabItem_content") + ": " + i);
 			item.setControl(text);
 		}
@@ -250,37 +430,83 @@ class CTabFolderTab extends Tab {
 	 * TreeItems to default settings.
 	 */
 	void resetColorsAndFonts () {
-		super.resetColorsAndFonts ();
-		Font oldFont = font;
+		Color oldColor = foregroundSelectionColor;
+		foregroundSelectionColor = null;
+		if (oldColor != null) oldColor.dispose();
+		oldColor = backgroundSelectionColor;
+		backgroundSelectionColor = null;
+		if (oldColor != null) oldColor.dispose();
+		Font oldFont = itemFont;
 		itemFont = null;
-		setItemFont ();
-		setExampleWidgetSize ();
 		if (oldFont != null) oldFont.dispose();
+		super.resetColorsAndFonts ();
 	}
 	
+	void setExampleWidgetForeground () {
+		if (foregroundSelectionButton == null || tabFolder1 == null) return;
+		tabFolder1.setSelectionForeground(foregroundSelectionColor);
+		// Set the foreground button's color to match the color just set.
+		Color color = foregroundSelectionColor;
+		if (color == null) color = tabFolder1.getSelectionForeground ();
+		drawImage (foregroundSelectionImage, color);
+		foregroundSelectionButton.setImage (foregroundSelectionImage);
+		super.setExampleWidgetForeground();
+	}
+	
+	void setExampleWidgetBackground () {
+		if (backgroundSelectionButton == null || tabFolder1 == null) return;
+		tabFolder1.setSelectionBackground(backgroundSelectionColor);
+		// Set the background button's color to match the color just set.
+		Color color = backgroundSelectionColor;
+		if (color == null) color = tabFolder1.getSelectionBackground ();
+		drawImage (backgroundSelectionImage, color);
+		backgroundSelectionButton.setImage (backgroundSelectionImage);
+		super.setExampleWidgetBackground();
+	}
+	void setExampleWidgetFont () {
+		if (instance.startup) return;
+		if (itemFontButton == null) return; // no font button on this tab
+		CTabItem[] items = tabFolder1.getItems();
+		if (items.length > 0) {
+			items[0].setFont(itemFont);
+		}
+		super.setExampleWidgetFont();
+	}
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
 	void setExampleWidgetState () {
-		super.setExampleWidgetState ();
-		setSimpleTabs ();
-		setImages ();
-		setItemFont ();
-		setExampleWidgetSize ();
+		super.setExampleWidgetState();
+		setSimpleTabs();
+		setSingleTabs();
+		setImages();
+		setMinimizeVisible();
+		setMaximizeVisible();
+		setUnselectedCloseVisible();
+		setUnselectedImageVisible();
+		setExampleWidgetSize();
 	}
 	
 	/**
-	 * Sets the header visible state of the "Example" widgets.
+	 * Sets the shape that the CTabFolder will use to render itself. 
 	 */
 	void setSimpleTabs () {
-		tabFolder1.setSimple (setSimpleTabButton.getSelection ());
+		tabFolder1.setSimple (simpleTabButton.getSelection ());
+		setExampleWidgetSize();
 	}
 	
+	/**
+	 * Sets the number of tabs that the CTabFolder should display.
+	 */
+	void setSingleTabs () {
+		tabFolder1.setSingle (singleTabButton.getSelection ());
+		setExampleWidgetSize();
+	}
 	/**
 	 * Sets an image into each item of the "Example" widgets.
 	 */
 	void setImages () {
-		boolean setImage = setImageButton.getSelection ();
+		boolean setImage = imageButton.getSelection ();
 		CTabItem items[] = tabFolder1.getItems ();
 		for (int i = 0; i < items.length; i++) {
 			if (setImage) {
@@ -291,12 +517,40 @@ class CTabFolderTab extends Tab {
 		}
 		setExampleWidgetSize ();
 	}
-
+	/**
+	 * Sets the visibility of the minimize button
+	 */
+	void setMinimizeVisible () {
+		tabFolder1.setMinimizeVisible(showMinButton.getSelection ());
+		setExampleWidgetSize();
+	}
+	/**
+	 * Sets the visibility of the maximize button
+	 */
+	void setMaximizeVisible () {
+		tabFolder1.setMaximizeVisible(showMaxButton.getSelection ());
+		setExampleWidgetSize();
+	}
+	/**
+	 * Sets the visibility of the close button on unselected tabs
+	 */
+	void setUnselectedCloseVisible () {
+		tabFolder1.setUnselectedCloseVisible(unselectedCloseButton.getSelection ());
+		setExampleWidgetSize();
+	}
+	/**
+	 * Sets the visibility of the image on unselected tabs
+	 */
+	void setUnselectedImageVisible () {
+		tabFolder1.setUnselectedImageVisible(unselectedImageButton.getSelection ());
+		setExampleWidgetSize();
+	}
 	/**
 	 * Sets the font of CTabItem 0.
 	 */
 	void setItemFont () {
 		if (instance.startup) return;
 		tabFolder1.getItem (0).setFont (itemFont);
+		setExampleWidgetSize();
 	}
 }
