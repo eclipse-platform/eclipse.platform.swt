@@ -28,6 +28,7 @@ import org.eclipse.swt.internal.carbon.*;
  */
 public class Menu extends Widget {
 	int x, y;
+	short lastIndex;
 	boolean hasLocation;
 	MenuItem cascade, defaultItem;
 	Decorations parent;
@@ -834,63 +835,20 @@ public void setLocation (int x, int y) {
 public void setVisible (boolean visible) {
 	checkWidget ();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	/* AW
-	int hwndParent = parent.handle;
-	*/
-	if (!visible) {
-		/* AW
-		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
-		*/
-		return;
-	}
-	/* AW
-	int flags = OS.TPM_LEFTBUTTON | OS.TPM_RIGHTBUTTON | OS.TPM_LEFTALIGN;
-	*/
+	if (!visible) return;
 	int nX = x, nY = y;
 	if (!hasLocation) {
-		/* AW
-		int pos = OS.GetMessagePos ();
-		nX = (short) (pos & 0xFFFF);
-		nY = (short) (pos >> 16);
-		*/
-		System.out.println("Menu.setVisible: nyi");
+		MacPoint where= new MacPoint();
+		OS.GetGlobalMouse (where.getData());
+		nX = where.getX(); nY = where.getY();
 	}
-	/*
-	* Feature in Windows.  It is legal use TrackPopupMenu ()
-	* to display an empty menu as long menu items are added
-	* inside of WM_INITPOPUPMENU.  If no items are added, then
-	* TrackPopupMenu () fails and does not send an indication
-	* that the menu has been closed.  This is not strictly a
-	* bug but leads to unwanted behavior when application code
-	* assumes that every WM_INITPOPUPMENU will eventually result
-	* in a WM_MENUSELECT, wParam=0xFFFF0000, lParam=0 to indicate
-	* that the menu has been closed.  The fix is to detect the
-	* case when TrackPopupMenu fails and the number of items in
-	* the menu is zero and issue a fake WM_MENUSELECT.
-	*/
-	/* AW
-	boolean success = OS.TrackPopupMenu (handle, flags, nX, nY, 0, hwndParent, null);
-	if (!success && GetMenuItemCount (handle) == 0) {
-		OS.SendMessage (hwndParent, OS.WM_MENUSELECT, 0xFFFF0000, 0);
-	}
-	*/
-	int defaultIndex= -1;
-	if (defaultItem != null)
-		defaultIndex= indexOf(defaultItem);
-	getDisplay().menuIsVisible(true);
-	int result= OS.PopUpMenuSelect(handle, (short)nY, (short)nX, (short)(defaultIndex+1));
-	getDisplay().menuIsVisible(false);
-	short menuID= OS.HiWord(result);
-	if (menuID != 0) {
-		System.out.println("Menu.setVisible: should not happen");
-		/*
-		Menu menu= getShell().findMenu(menuID);
-		if (menu != null)
-			menu.handleMenu(result);
-		*/
-	}
+	int index = defaultItem != null ? indexOf (defaultItem) + 1 : lastIndex;
+	Display d= getDisplay();
+	d.fInContextMenu= true;
+	int result = OS.PopUpMenuSelect (handle, (short)nY, (short)nX, (short)(index));
+	d.fInContextMenu= false;
+	lastIndex = OS.LoWord (result);
 }
-
 ///////////////////////////////////////////////////
 // Mac stuff
 ///////////////////////////////////////////////////

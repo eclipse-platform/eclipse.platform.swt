@@ -227,14 +227,13 @@ public class Display extends Device {
 	int fUserPaneDrawProc, fUserPaneHitTestProc, fUserPaneTrackingProc;
 	int fDataBrowserDataProc, fDataBrowserCompareProc, fDataBrowserItemNotificationProc;
 	
-	private boolean fMenuIsVisible;
 	private int fUpdateRegion;
 	private int fTrackedControl;
 	private int fFocusControl;
 	private int fCurrentControl;
 	private String fToolTipText;
 	private int fLastHoverHandle;
-	private boolean fInContextMenu;	// true while tracking context menu
+	boolean fInContextMenu;	// true while tracking context menu
 	public int fCurrentCursor;
 	private Shell fMenuRootShell;
 	
@@ -1492,7 +1491,7 @@ void showToolTip (int handle, String toolTipText) {
 		//beep();
 		return;
 	}
-	if (fMenuIsVisible) {
+	if (fInContextMenu) {
 		//System.out.println("Display.showToolTip: menu is visible");
 		//beep();
 		return;
@@ -1672,7 +1671,6 @@ public void update () {
 			updateWindow(wHandle);
 		}
 	}
-	
 	/*
 	if (wHandle != 0) {
 		int port= OS.GetWindowPort(wHandle);
@@ -2266,14 +2264,15 @@ static String convertToLf(String text) {
 			if (oldFocus != 0)
 				windowProc(oldFocus, false);
 			
-			//fFocusControl= focusHandle;
 			
-			int[] focusControl= new int[1];
-			OS.GetKeyboardFocus(wHandle, focusControl);
-			if (focusControl[0] != fFocusControl) {
-				OS.SetKeyboardFocus(wHandle, focusHandle, (short)-1);
-				//if (rc != OS.kNoErr)
-				//	System.out.println("Display.setMacFocusHandle: SetKeyboardFocus " + rc);
+			if (wHandle != 0) {
+				int[] focusControl= new int[1];
+				OS.GetKeyboardFocus(wHandle, focusControl);
+				if (focusControl[0] != fFocusControl) {
+					OS.SetKeyboardFocus(wHandle, focusHandle, (short)-1);
+					//if (rc != OS.kNoErr)
+					//	System.out.println("Display.setMacFocusHandle: SetKeyboardFocus " + rc);
+				}
 			}
 
 			if (fFocusControl != 0)
@@ -2456,10 +2455,6 @@ static String convertToLf(String text) {
 		return new MacFont(MacUtil.toString(fontName), fontSize[0], style[0]);
 	}
 	
-	void menuIsVisible(boolean menuIsVisible) {
-		fMenuIsVisible= menuIsVisible;
-	}
-	
 	public void setCursor(int cursor) {
 		if (fCurrentCursor != cursor) {
 			fCurrentCursor= cursor;
@@ -2480,10 +2475,4 @@ static String convertToLf(String text) {
 			error (SWT.ERROR_NO_MORE_CALLBACKS);
 		return proc;
 	}
-	
-	private int hiobProc (int inHandlerCallRef, int inEvent, int inUserData) {
-		System.out.println("hiobProc: " + inUserData);
-		return 0;
-	}
-
 }
