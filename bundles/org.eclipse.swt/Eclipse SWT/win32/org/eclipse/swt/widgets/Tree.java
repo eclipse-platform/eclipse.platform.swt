@@ -269,10 +269,6 @@ void createItem (TreeItem item, int hParent, int hInsertAfter) {
 	}
 }
 
-ScrollBar createScrollBar (int type) {
-	return new ScrollBar (this, type);
-}
-
 void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];
