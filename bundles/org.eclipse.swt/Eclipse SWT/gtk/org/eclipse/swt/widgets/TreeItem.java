@@ -101,7 +101,7 @@ public TreeItem (Tree parent, int style, int index) {
 	super (parent, style);
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
-	parent.createItem (this, 0, index);
+	if (!parent.createItem (this, 0, index)) error (SWT.ERROR_INVALID_RANGE);
 }
 
 /**
@@ -175,7 +175,7 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 	super (checkNull (parentItem).parent, style);
 	if (index < 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	this.parent = parentItem.parent;
-	parent.createItem (this, parentItem.handle, index);
+	if (!parent.createItem (this, parentItem.handle, index)) error (SWT.ERROR_INVALID_RANGE);
 }
 
 static TreeItem checkNull (TreeItem item) {
@@ -291,7 +291,7 @@ public Color getForeground () {
 	checkWidget ();
 	int [] ptr = new int [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, 2, ptr, -1);
-	if (ptr [0]==0) return parent.getBackground();
+	if (ptr [0]==0) return parent.getForeground();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
 	return Color.gtk_new (getDisplay (), gdkColor);

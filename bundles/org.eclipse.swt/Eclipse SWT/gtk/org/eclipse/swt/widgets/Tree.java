@@ -224,9 +224,10 @@ void createHandle (int index) {
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 }
 
-void createItem (TreeItem item, int iter, int index) {
+boolean createItem (TreeItem item, int iter, int index) {
 	int id = 0;
 	while (id < items.length && items [id] != null) id++;
+	if (index > id) return false;
 	if (id == items.length) {
 		TreeItem [] newItems = new TreeItem [items.length + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);
@@ -241,6 +242,7 @@ void createItem (TreeItem item, int iter, int index) {
 	}
 	OS.gtk_tree_store_set (modelHandle, item.handle, 4, id, -1);
 	items [id] = item;
+	return true;
 }
 
 void createWidget (int index) {
