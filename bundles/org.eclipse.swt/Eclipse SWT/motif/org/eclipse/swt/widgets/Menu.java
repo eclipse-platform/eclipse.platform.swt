@@ -274,6 +274,7 @@ void createHandle (int index) {
 	}
 }
 void createWidget (int index) {
+	checkOrientation (parent);
 	super.createWidget (index);
 	parent.add (this);
 }

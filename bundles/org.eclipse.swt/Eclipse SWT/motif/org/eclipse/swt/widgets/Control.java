@@ -411,6 +411,7 @@ Control [] computeTabList () {
 }
 
 void createWidget (int index) {
+	checkOrientation (parent);
 	super.createWidget (index);
 	
 	/*
@@ -1314,12 +1315,11 @@ int processFocusIn () {
 			short [] point = getIMECaretPos ();
 			int ptr = OS.XtMalloc (4);
 			OS.memmove (ptr, point, 4);
-		
 			/*
-			* Bug in Motif. On Linux Japanese only, XmImSetFocusValues will cause
-			* a GPF when the XmNfontList value does not containt a FontSet. The fix
-			* is to call XmImSetValues to set the values and then call
-			* XmImSetFocusValues.
+			* Bug in Motif. On Linux Japanese only, XmImSetFocusValues() causes
+			* a GP when the XmNfontList resources does not containt a FontSet.
+			* The fix is to call XmImSetValues() to set the values and then call
+			* XmImSetFocusValues() with no parameters to set the IME focus.
 			*/
 			int[] argList = {
 //				OS.XmNforeground, getForegroundPixel(),
