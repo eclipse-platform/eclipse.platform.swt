@@ -1104,7 +1104,13 @@ public int [] getSelectionIndices () {
  */
 public int getTopIndex () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0);
+	/*
+	* Bug in Windows.  Under rare circumstances, LVM_GETTOPINDEX
+	* can return a negative number.  When this happens, the table
+	* is displaying blank lines at the top of the controls.  The
+	* fix is to check for a negative number and return zero instead.
+	*/
+	return Math.max (0, OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0));
 }
 
 int imageIndex (Image image) {
