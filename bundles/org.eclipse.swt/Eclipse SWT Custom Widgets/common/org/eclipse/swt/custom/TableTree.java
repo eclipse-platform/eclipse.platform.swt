@@ -62,9 +62,6 @@ public class TableTree extends Composite {
 public TableTree(Composite parent, int style) {
 	super(parent, SWT.NONE);
 	table = new Table(this, style);
-	setBackground(table.getBackground());
-	setForeground(table.getForeground());
-	setFont(table.getFont());
 	Listener tableListener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
