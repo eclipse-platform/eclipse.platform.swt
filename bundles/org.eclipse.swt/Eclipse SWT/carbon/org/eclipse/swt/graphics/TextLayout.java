@@ -218,8 +218,8 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	OS.CGContextSaveGState(gc.handle);
 
 	/* 
-	* Draw the background of styles. There is no API to set a background attribute
-	* in an ATSU style.
+	* Feature in ATSU. There is no API to set a background attribute
+	* of an ATSU style. Draw the background of styles ourselfs.
 	*/
 	Rectangle rect = null;
 	Region clipping = null, region = null;
