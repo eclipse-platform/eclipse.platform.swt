@@ -9,8 +9,8 @@
 # getSharedLibraryMajorVersionNumber and getSharedLibraryMinorVersionNumber
 # calls so java can query the swt shared library version number
 
-setenv MAJOR_VER  0
-setenv MINOR_VER  125
+setenv MAJOR_VER  1
+setenv MINOR_VER  126
 setenv BUILD_NUM  0
 
 # Some UNIX/Linux compilers don't like <CR>'s in files (DOS format).
