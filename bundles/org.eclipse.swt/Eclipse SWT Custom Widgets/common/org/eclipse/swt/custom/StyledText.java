@@ -5033,6 +5033,11 @@ void handleMouseDown(Event event) {
 	if (event.button == 2) {
 		String text = (String)getClipboardContent(DND.SELECTION_CLIPBOARD);
 		if (text != null && text.length() > 0) {
+			// position cursor
+			int x = event.x;
+			int y = event.y - topMargin;
+			doMouseLocationChange(x, y, false);
+			// insert text
 			Event e = new Event();
 			e.start = selection.x;
 			e.end = selection.y;
@@ -6485,8 +6490,6 @@ void sendSelectionEvent() {
 	try {
 		if (selection.y - selection.x > 0) {
 			setClipboardContent(selection.x, selection.y - selection.x, DND.SELECTION_CLIPBOARD);
-		} else {
-			clipboard.clearContents(DND.SELECTION_CLIPBOARD);
 		}
 	}
 	catch (SWTError error) {
