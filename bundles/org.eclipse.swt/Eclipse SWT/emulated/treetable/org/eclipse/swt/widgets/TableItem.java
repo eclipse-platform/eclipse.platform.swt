@@ -289,9 +289,6 @@ public Color getBackground(){
  * @param index the column index
  * @return the background color
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_Range - if the column index is invalid</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -301,10 +298,9 @@ public Color getBackground(){
  */
 public Color getBackground (int index) {
 	checkWidget ();
-	Table parent = getParent();
-	if (0 > index || index >= parent.getColumnCount ()) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	Table parent = getParent ();
+	int count = parent.getColumnCount ();
+	if (0 > index || index > (count == 0 ? 0 : count -1 )) return getBackground ();
 	// TODO
 	return getBackground ();
 }
@@ -448,9 +444,6 @@ public Color getForeground(){
  * @param index the column index
  * @return the foreground color
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_Range - if the column index is invalid</li> 
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -460,10 +453,9 @@ public Color getForeground(){
  */
 public Color getForeground (int index) {
 	checkWidget ();
-	Table parent = getParent();
-	if (0 > index || index >= parent.getColumnCount ()) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	Table parent = getParent ();
+	int count = parent.getColumnCount ();
+	if (0 > index || index > (count == 0 ? 0 : count -1 )) return getForeground ();
 	// TODO
 	return getForeground ();
 }
@@ -1117,10 +1109,9 @@ public void setBackground (int index, Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	Table parent = getParent();
-	if (0 > index || index >= parent.getColumnCount ()) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	Table parent = getParent ();
+	int count = parent.getColumnCount ();
+	if (0 > index || index > (count == 0 ? 0 : count -1 )) return;
 	// TODO
 }
 /**
@@ -1172,10 +1163,9 @@ public void setForeground (int index, Color color){
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	Table parent = getParent();
-	if (0 > index || index >= parent.getColumnCount()) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	Table parent = getParent ();
+	int count = parent.getColumnCount ();
+	if (0 > index || index > (count == 0 ? 0 : count -1 )) return;
 	// TODO
 }
 /**
