@@ -732,6 +732,8 @@ private static void setAccelerator(int menu, short index, int accelerator) {
 	}
 	*/
 	
+	// use SetMenuItemData instead!
+	
 	int key= accelerator & ~(SWT.SHIFT | SWT.CONTROL | SWT.ALT);
 	int macKey= 0;
 	if (key != ' ')

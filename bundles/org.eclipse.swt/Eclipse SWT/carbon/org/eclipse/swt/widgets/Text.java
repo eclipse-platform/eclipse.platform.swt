@@ -365,8 +365,12 @@ void createHandle (int index) {
 	
 	// count number of controls under root before we create the MLTE
 	short[] numControls= new short[1];
-	int root= OS.GetRootControl(wHandle);
-	short oldCount= OS.CountSubControls(root);
+	int[] rootHandle= new int[1];
+	OS.GetRootControl(wHandle, rootHandle);
+	int root= rootHandle[0];
+	short[] cnt= new short[1];
+	OS.CountSubControls(root, cnt);
+        short oldCount= cnt[0];
 	
 	int status= OS.TXNNewObject(0, wHandle, bounds.getData(), frameOptions, frameType, iFileType, iPermanentEncoding,
 						tnxObject, frameID, handle);
@@ -376,14 +380,18 @@ void createHandle (int index) {
 		OS.TXNActivate(fTX, fFrameID, OS.kScrollBarsSyncWithFocus);
 	}
 	
+	// AW: HACK ALERT!
 	// remove all controls created by MLTE from the root control and embed them
 	// in the user pane
-	short newCount= OS.CountSubControls(root);
+	short[] newCnt= new short[1];
+	OS.CountSubControls(root, newCnt);
+	short newCount= newCnt[0];
 	int[] child= new int[1];
 	for (short i= newCount; i > oldCount; i--) {
 		OS.GetIndexedSubControl(root, i, child);
 		MacUtil.embedControl(child[0], handle);
-	}	
+	}
+	OS.TXNSetTXNObjectControls(fTX, false, 1, new int[] { OS.kTXNDoFontSubstitution }, new int[] { 1 });
 }	
 ScrollBar createScrollBar (int type) {
 	return createStandardBar (type);
@@ -1393,7 +1401,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 	
 	int sendKeyEvent(int nextHandler, int eRefHandle) {
 	
-		int status= OS.kNoErr;
+		int status= OS.kNoErr;	// we handled the event
 		
 		if (hooks (SWT.Verify)) {
 

@@ -322,7 +322,9 @@ int topHandle () {
 	
 		if (OS.IsValidControlHandle(parentControlHandle)) {
 		} else if (OS.IsValidWindowPtr(parentControlHandle)) {
-			parentControlHandle= OS.CreateRootControl(parentControlHandle);		
+			int[] root= new int[1];
+			OS.CreateRootControl(parentControlHandle, root);
+			parentControlHandle= root[0];
 		} else
 			System.out.println("createScrollView: don't know");
 	

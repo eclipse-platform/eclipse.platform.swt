@@ -851,8 +851,14 @@ protected void init () {
 	fApplicationProc= OS.NewApplicationCallbackUPP(this, "handleApplicationCallback");
 	if (fApplicationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	OS.InstallStandardEventHandler(OS.GetApplicationEventTarget());	
+	/*
+	int status= OS.InstallStandardEventHandler(OS.GetApplicationEventTarget());
+	System.out.println("init: InstallStandardEventHandler: " + status);
+	*/
+	
 	int[] mask2= new int[] {
+		OS.kEventClassMenu, OS.kEventMenuBeginTracking,
+		OS.kEventClassMenu, OS.kEventMenuEndTracking,
 	
 		OS.kEventClassMouse, OS.kEventMouseDown,
 		OS.kEventClassMouse, OS.kEventMouseDragged,
@@ -1099,12 +1105,23 @@ void postEvent (Event event) {
 public boolean readAndDispatch () {
 	checkDevice ();
 	int[] evt= new int[1];
-	if (OS.ReceiveNextEvent(null, OS.kEventDurationNoWait, true, evt) == OS.kNoErr) {
-		OS.SendEventToEventTarget(evt[0], OS.GetEventDispatcherTarget());					
+	int rc= OS.ReceiveNextEvent(null, OS.kEventDurationNoWait, true, evt);
+	
+	switch (rc) {
+	case OS.kNoErr:
+		int target= OS.GetEventDispatcherTarget();
+		OS.SendEventToEventTarget(evt[0], target);
 		OS.ReleaseEvent(evt[0]);
 		repairPending();
 		runDeferredEvents ();
 		return true;
+		
+	case OS.eventLoopTimedOutErr:
+		break;	// no event: run async
+		
+	default:
+		System.out.println("readAndDispatch: error " + rc);
+		break;
 	}
 	return runAsyncMessages ();
 }
@@ -1443,6 +1460,8 @@ void showToolTip (int handle, String toolTipText) {
 		//beep();
 		return;
 	}	
+	
+	toolTipText= MacUtil.removeMnemonics(toolTipText);
 	
 	// remember text
 	fToolTipText= toolTipText;
@@ -1823,7 +1842,8 @@ static String convertToLf(String text) {
 			return ((Combo)focus).sendKeyEvent(nextHandler, eRefHandle);
 		if (focus instanceof Text)
 			return ((Text)focus).sendKeyEvent(nextHandler, eRefHandle);
-		return OS.CallNextEventHandler(nextHandler, eRefHandle);
+		//return OS.CallNextEventHandler(nextHandler, eRefHandle);
+		return OS.eventNotHandledErr;
 	}
 
 	private int handleWindowCallback(int nextHandler, int eRefHandle, int whichWindow) {
@@ -1868,6 +1888,17 @@ static String convertToLf(String text) {
 		int eventKind= OS.GetEventKind(eRefHandle);
 		
 		switch (eventClass) {
+				
+		case OS.kEventClassMenu:
+			switch (eventKind) {
+			case OS.kEventMenuBeginTracking:
+				System.out.println("kEventMenuBeginTracking");
+				break;
+			case OS.kEventMenuEndTracking:
+				System.out.println("kEventMenuEndTracking");
+				break;
+			}
+			break;
 		
 		case OS.kEventClassKeyboard:
 			if (OS.ConvertEventRefToEventRecord(eRefHandle, mEvent.getData())) {
@@ -1884,7 +1915,15 @@ static String convertToLf(String text) {
 					break;
 					
 				case OS.kEventRawKeyUp:
-					handleKeyEvent(SWT.KeyUp, mEvent);
+					int code= mEvent.getKeyCode();
+					if (code == 48)	// AW Hack for getting the Tab to work
+						handleKeyEvent(SWT.KeyDown, mEvent);
+					else	
+						handleKeyEvent(SWT.KeyUp, mEvent);
+					break;
+					
+				case OS.kEventHotKeyPressed:
+					System.out.println("HOT KEY PRESSED");
 					break;
 				}
 			}
@@ -1924,6 +1963,8 @@ static String convertToLf(String text) {
 			int[] w= new int[1];
 			part= OS.FindWindow(where.getData(), w);
 			whichWindow= w[0];
+			//part= getWindowDefPart(eRefHandle);
+			//whichWindow= getDirectObject(eRefHandle);
 		}
 		
 		/*
@@ -1955,8 +1996,10 @@ static String convertToLf(String text) {
 			fTrackedControl= 0;
 			
 			if (part == OS.inMenuBar) {
+				System.out.println("---> menu click");
 				doMenuCommand(OS.MenuSelect(me.getWhere().getData()));
 				return OS.kNoErr;
+				//return OS.eventNotHandledErr;
 			}
 		
 			if (part == OS.inContent) {
@@ -2013,6 +2056,20 @@ static String convertToLf(String text) {
 	}
 	
 	boolean setMacFocusHandle(int wHandle, int focusHandle) {
+	
+		/*
+		int[] focusControl= new int[1];
+		OS.GetKeyboardFocus(wHandle, focusControl);
+		if (focusControl[0] == fFocusControl)
+			return false;
+			
+		int rc= OS.SetKeyboardFocus(wHandle, focusHandle, (short)-1);
+		if (rc != OS.kNoErr) {
+			System.out.println("Display.setMacFocusHandle: SetKeyboardFocus " + rc);
+			return false;
+		}
+		*/
+		
 		if (fFocusControl != focusHandle) {
 			int oldFocus= fFocusControl;
 			fFocusControl= focusHandle;
@@ -2021,11 +2078,14 @@ static String convertToLf(String text) {
 				windowProc(oldFocus, SWT.FocusIn, new Boolean(false));
 			
 			//fFocusControl= focusHandle;
-				
+			
 			int[] focusControl= new int[1];
 			OS.GetKeyboardFocus(wHandle, focusControl);
-			if (focusControl[0] != fFocusControl)
-				OS.SetKeyboardFocus(wHandle, focusHandle, (short)-1);
+			if (focusControl[0] != fFocusControl) {
+				int rc= OS.SetKeyboardFocus(wHandle, focusHandle, (short)-1);
+				if (rc != OS.kNoErr)
+					System.out.println("Display.setMacFocusHandle: SetKeyboardFocus " + rc);
+			}
 
 			if (fFocusControl != 0)
 				windowProc(fFocusControl, SWT.FocusIn, new Boolean(true));
@@ -2256,7 +2316,9 @@ static String convertToLf(String text) {
 			int[] evt= new int[1];
 			while (OS.ReceiveNextEvent(mask, 0.2, true, evt) == OS.kNoErr) {
 				System.out.println("got update");
-				OS.SendEventToEventTarget(evt[0], OS.GetEventDispatcherTarget());					
+				int rc= OS.SendEventToEventTarget(evt[0], OS.GetEventDispatcherTarget());
+                                if (rc != OS.kNoErr)
+                                    System.out.println("processAllUpdateEvents: " + rc);
 				OS.ReleaseEvent(evt[0]);
 			}
 		}
@@ -2325,6 +2387,20 @@ static String convertToLf(String text) {
 		int[] wHandle= new int[1];
 		if (OS.GetEventParameter(eRefHandle, OS.kEventParamDirectObject, OS.typeWindowRef, null, null, wHandle) == OS.kNoErr)	
 			return wHandle[0];
+		return 0;
+	}
+	
+	private static short getWindowDefPart(int eRefHandle) {
+		short[] part= new short[1];
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamWindowDefPart, OS.typeWindowDefPartCode, null, null, part) == OS.kNoErr)	
+			return part[0];
+		return 0;
+	}
+	
+	private static int getControlRef(int eRefHandle) {
+		int[] cHandle= new int[1];
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamControlRef, OS.typeControlRef, null, null, cHandle) == OS.kNoErr)	
+			return cHandle[0];
 		return 0;
 	}
 }

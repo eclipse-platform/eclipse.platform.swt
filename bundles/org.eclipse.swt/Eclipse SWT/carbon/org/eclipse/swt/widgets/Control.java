@@ -1342,6 +1342,7 @@ int processPaint (Object callData) {
     */
 	gc.carbon_focus();
 	
+	// erase background
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
 			gc.fillRectangle(r);
@@ -2268,6 +2269,10 @@ public boolean setParent (Composite parent) {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget();
+	/*
+	int topHandle = topHandle ();
+	OS.SetControlVisibility(topHandle, redraw, redraw);
+	*/
 }
 /**
  * Sets the receiver's size to the point specified by the arguments.
@@ -2391,7 +2396,9 @@ void setZOrder (Control control, boolean above) {
 		otherHandle= control.topHandle();
 		
 	int pos= 0;
-	int count= OS.CountSubControls(destHandle);
+	short[] cnt= new short[1];
+	OS.CountSubControls(destHandle, cnt);
+	int count= cnt[0];
 	int children[]= new int[count];
 	int[] outHandle= new int[1];
 	int to= 0;

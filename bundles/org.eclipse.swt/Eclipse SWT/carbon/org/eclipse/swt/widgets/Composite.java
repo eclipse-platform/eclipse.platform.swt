@@ -71,8 +71,10 @@ Control [] _getChildren () {
 	int [] argList = {OS.XmNchildren, 0, OS.XmNnumChildren, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int ptr = argList [1], count = argList [3];
-	*/	
-	int count= OS.CountSubControls(handle);
+	*/
+	short[] cnt= new short[1];
+	OS.CountSubControls(handle, cnt);
+	int count= cnt[0];
 	if (count == 0) return new Control [0];
 	/* AW
 	int [] handles = new int [count];
@@ -272,7 +274,9 @@ int getChildrenCount () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
     */
-	return OS.CountSubControls(handle);
+	short[] cnt= new short[1];
+	OS.CountSubControls(handle, cnt);
+	return cnt[0];
 }
 /**
  * Returns layout which is associated with the receiver, or

@@ -269,6 +269,7 @@ void createWidget (int index) {
 public void dispose () {
 	if (isDisposed()) return;
 	ToolBar parent = this.parent;
+	parent.redraw();	// AW workaround for Toolbar update problem
 	super.dispose ();
 	parent.relayout ();
 }
@@ -1038,7 +1039,9 @@ int processPaint (Object callData) {
 		}
 
 		if (newInfo != null) {
-			OS.DrawThemeButton(bounds.getData(), OS.kThemeSmallBevelButton, newInfo, prevInfo, 0, 0, 0);
+			MacRect b= new MacRect(bounds.getX()+1, bounds.getY()+1, width-2, height-2);
+			//OS.DrawThemeButton(bounds.getData(), OS.kThemeSmallBevelButton, newInfo, prevInfo, 0, 0, 0);
+			OS.DrawThemeButton(b.getData(), OS.kThemeSmallBevelButton, newInfo, prevInfo, 0, 0, 0);
 		}
 		prevInfo= newInfo;
 			

@@ -667,27 +667,30 @@ final void redrawHandle (int x, int y, int width, int height, int widgetHandle, 
 	
 	MacRect br= new MacRect();
 	OS.GetControlBounds(widgetHandle, br.getData());
-	x+= br.getX();
-	y+= br.getY();
-	if (width == 0)
-		width= br.getWidth();
-	else
-		width+= 1; // AW workaround for Caret
-	if (height == 0)
-		height= br.getHeight();
-		
-	int rgn= OS.NewRgn();
-	OS.RectRgn(rgn, new MacRect(x, y, width, height).getData());
-		
-	int region= OS.NewRgn();
-	MacUtil.getVisibleRegion(widgetHandle, region, all);
-	
-	OS.SectRgn(region, rgn, region);
-	
-	OS.InvalWindowRgn(OS.GetControlOwner(widgetHandle), region);
-	
-	OS.DisposeRgn(rgn);
-	OS.DisposeRgn(region);
+        if (!br.isEmpty()) {
+            x+= br.getX();
+            y+= br.getY();
+            if (width == 0)
+                    width= br.getWidth();
+            else
+                    width+= 1; // AW workaround for Caret
+            if (height == 0)
+                    height= br.getHeight();
+                    
+            int rgn= OS.NewRgn();
+            OS.RectRgn(rgn, new MacRect(x, y, width, height).getData());
+                    
+            int region= OS.NewRgn();
+            if (MacUtil.getVisibleRegion(widgetHandle, region, all) == OS.kNoErr) {
+            
+                OS.SectRgn(region, rgn, region);
+            
+                OS.InvalWindowRgn(OS.GetControlOwner(widgetHandle), region);
+            }
+            
+            OS.DisposeRgn(rgn);
+            OS.DisposeRgn(region);
+        }
 }
 void register () {
 	if (handle == 0) return;
@@ -956,20 +959,7 @@ char wcsToMbcs (char ch, String codePage) {
 ////////////////////////////////////////////
 
 static String removeMnemonics(String s) {
-	if (s != null) {
-		int l= s.length();
-		if (l > 0) {
-			char[] buf= new char[l];
-			int j= 0;
-			for (int i= 0; i < l; i++) {
-				char c= s.charAt(i);
-				if (c != Mnemonic)
-					buf[j++]= c;
-			}
-			return new String(buf, 0, j);
-		}
-	}
-	return s;
+	return MacUtil.removeMnemonics(s);
 }
 
 }

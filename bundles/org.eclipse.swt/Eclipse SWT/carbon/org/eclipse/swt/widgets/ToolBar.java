@@ -402,6 +402,10 @@ void releaseWidget () {
 	items = null;
 	super.releaseWidget ();
 }
+// AW workaround
+public void setBackground (Color color) {
+}
+// AW end workaround
 /* AW
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
