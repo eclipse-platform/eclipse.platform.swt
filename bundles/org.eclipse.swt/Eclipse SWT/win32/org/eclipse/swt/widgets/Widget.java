@@ -60,38 +60,15 @@ public abstract class Widget {
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 
-	/* COMCTL32.DLL flags */
+	/* Check and initialize the Common Controls DLL */
 	static final int MAJOR = 4, MINOR = 71;
-	static final int COMCTL32_MAJOR, COMCTL32_MINOR;
 	static {
-
-		/* Get the COMCTL32.DLL version */
-		DLLVERSIONINFO dvi = new DLLVERSIONINFO ();
-		dvi.cbSize = DLLVERSIONINFO.sizeof;
-		dvi.dwMajorVersion = 4;
-		dvi.dwMinorVersion = 0;
-		TCHAR lpLibFileName = new TCHAR (0, "comctl32.dll", true); //$NON-NLS-1$
-		int hModule = OS.LoadLibrary (lpLibFileName);
-		if (hModule != 0) {
-			String name = "DllGetVersion\0"; //$NON-NLS-1$
-			byte [] lpProcName = new byte [name.length ()];
-			for (int i=0; i<lpProcName.length; i++) {
-				lpProcName [i] = (byte) name.charAt (i);
-			}
-			int DllGetVersion = OS.GetProcAddress (hModule, lpProcName);
-			if (DllGetVersion != 0) OS.Call (DllGetVersion, dvi);
-			OS.FreeLibrary (hModule);
-		}
-		COMCTL32_MAJOR = dvi.dwMajorVersion;
-		COMCTL32_MINOR = dvi.dwMinorVersion;
 		if (!OS.IsWinCE) {
-			if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) < (MAJOR << 16 | MINOR)) {
+			if ((OS.COMCTL32_MAJOR << 16 | OS.COMCTL32_MINOR) < (MAJOR << 16 | MINOR)) {
 				System.out.println ("***WARNING: SWT requires comctl32.dll version " + MAJOR + "." + MINOR + " or greater"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				System.out.println ("***WARNING: Detected: " + COMCTL32_MAJOR + "." + COMCTL32_MINOR); //$NON-NLS-1$ //$NON-NLS-2$
+				System.out.println ("***WARNING: Detected: " + OS.COMCTL32_MAJOR + "." + OS.COMCTL32_MINOR); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
-		
-		/* Initialize the Common Controls DLL */
 		OS.InitCommonControls ();
 	}
 	

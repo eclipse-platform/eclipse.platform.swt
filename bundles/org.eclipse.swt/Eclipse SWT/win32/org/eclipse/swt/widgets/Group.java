@@ -344,7 +344,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	* BS_GROUP, there is no problem.  The fix is to save
 	* and restore the current font.
 	*/
-	if (COMCTL32_MAJOR >= 6) {
+	if (OS.COMCTL32_MAJOR >= 6) {
 		int nSavedDC = OS.SaveDC (wParam);
 		int code = callWindowProc (OS.WM_PRINTCLIENT, wParam, lParam);
 		OS.RestoreDC (wParam, nSavedDC);

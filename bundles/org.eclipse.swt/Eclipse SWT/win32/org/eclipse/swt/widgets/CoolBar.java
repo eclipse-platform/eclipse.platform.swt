@@ -120,7 +120,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		ignoreResize = true;
 		boolean redraw = false;
 		if (OS.IsWindowVisible (handle)) {
-			if (COMCTL32_MAJOR >= 6) {
+			if (OS.COMCTL32_MAJOR >= 6) {
 				redraw = true;
 				OS.UpdateWindow (handle);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
@@ -157,7 +157,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 		width = Math.max(width, rowWidth);
 		if (redraw) {
-			if (COMCTL32_MAJOR >= 6) {
+			if (OS.COMCTL32_MAJOR >= 6) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 			} else {
 				OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
@@ -933,7 +933,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	* On XP, this work around is unnecessary because
 	* the background is drawn using NM_CUSTOMDRAW.
 	*/
-	if (COMCTL32_MAJOR < 6) drawBackground (wParam);
+	if (OS.COMCTL32_MAJOR < 6) drawBackground (wParam);
 	return null;
 }
 
@@ -983,7 +983,7 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	* not running the default window proc or the rebar window
 	* proc.
 	*/
-	if (COMCTL32_MAJOR >= 6) return LRESULT.ZERO;
+	if (OS.COMCTL32_MAJOR >= 6) return LRESULT.ZERO;
 	Rectangle rect = getBounds ();		
 	int code = callWindowProc (OS.WM_SETREDRAW, wParam, lParam);
 	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
@@ -1033,7 +1033,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			* the separators.  The fix is to draw the background
 			* in WM_ERASEBKGND.
 			*/
-			if (COMCTL32_MAJOR < 6) break;
+			if (OS.COMCTL32_MAJOR < 6) break;
 			if (background != -1) {
 				NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
 				OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);

@@ -2074,7 +2074,7 @@ void setRowHeight () {
 	*
 	* NOTE: In version 5.80 of COMCTL32.DLL, the bug is fixed.
 	*/
-	if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) >= (5 << 16 | 80)) return;
+	if ((OS.COMCTL32_MAJOR << 16 | OS.COMCTL32_MINOR) >= (5 << 16 | 80)) return;
 	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
 	if (hOldList != 0) return;
 	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);

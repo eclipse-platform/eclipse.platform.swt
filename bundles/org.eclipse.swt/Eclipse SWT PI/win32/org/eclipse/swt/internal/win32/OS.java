@@ -14,9 +14,12 @@ package org.eclipse.swt.internal.win32;
 import org.eclipse.swt.internal.*;
 
 public class OS {
+	static {
+		Library.loadLibrary ("swt"); //$NON-NLS-1$
+	}
 	
 	/*
-	* SWT Windows flags.
+	* SWT Windows flags
 	*/
 	public static final boolean IsWin32s;
 	public static final boolean IsWin95;
@@ -28,23 +31,19 @@ public class OS {
 	public static final boolean IsDBLocale;
 	public static final boolean IsUnicode;
 	public static final int WIN32_MAJOR, WIN32_MINOR;
+	public static final int COMCTL32_MAJOR, COMCTL32_MINOR;
+	public static final int SHELL32_MAJOR, SHELL32_MINOR;
 
 	/*
-	* Flags for Window API GetVersionEx
+	* Flags for Window API GetVersionEx()
 	*/
 	public static final int VER_PLATFORM_WIN32s = 0;
 	public static final int VER_PLATFORM_WIN32_WINDOWS = 1;
 	public static final int VER_PLATFORM_WIN32_NT = 2;
 	public static final int VER_PLATFORM_WIN32_CE = 3;
 	
-	/*
-	* Initialize the Windows flags
-	*/
+	/* Get the Windows version and the flags */
 	static {
-		
-		/* Load the SWT library */
-		Library.loadLibrary ("swt"); //$NON-NLS-1$
-
 		/*
 		* Try the UNICODE version of GetVersionEx first
 		* and then the ANSI version.  The UNICODE version
@@ -102,6 +101,49 @@ public class OS {
 			index++;
 		}
 		IsDBLocale = index <= 0xFF;
+	}
+	
+	/* Get the COMCTL32.DLL version */
+	static {
+		DLLVERSIONINFO dvi = new DLLVERSIONINFO ();
+		dvi.cbSize = DLLVERSIONINFO.sizeof;
+		dvi.dwMajorVersion = 4;
+		dvi.dwMinorVersion = 0;
+		TCHAR lpLibFileName = new TCHAR (0, "comctl32.dll", true); //$NON-NLS-1$
+		int hModule = OS.LoadLibrary (lpLibFileName);
+		if (hModule != 0) {
+			String name = "DllGetVersion\0"; //$NON-NLS-1$
+			byte [] lpProcName = new byte [name.length ()];
+			for (int i=0; i<lpProcName.length; i++) {
+				lpProcName [i] = (byte) name.charAt (i);
+			}
+			int DllGetVersion = OS.GetProcAddress (hModule, lpProcName);
+			if (DllGetVersion != 0) OS.Call (DllGetVersion, dvi);
+			OS.FreeLibrary (hModule);
+		}
+		COMCTL32_MAJOR = dvi.dwMajorVersion;
+		COMCTL32_MINOR = dvi.dwMinorVersion;
+	}
+	
+	/* Get the Shell32.DLL version */
+	static {
+		DLLVERSIONINFO dvi = new DLLVERSIONINFO ();
+		dvi.cbSize = DLLVERSIONINFO.sizeof;
+		dvi.dwMajorVersion = 4;
+		TCHAR lpLibFileName = new TCHAR (0, "Shell32.dll", true); //$NON-NLS-1$
+		int hModule = OS.LoadLibrary (lpLibFileName);
+		if (hModule != 0) {
+			String name = "DllGetVersion\0"; //$NON-NLS-1$
+			byte [] lpProcName = new byte [name.length ()];
+			for (int i=0; i<lpProcName.length; i++) {
+				lpProcName [i] = (byte) name.charAt (i);
+			}
+			int DllGetVersion = OS.GetProcAddress (hModule, lpProcName);
+			if (DllGetVersion != 0) OS.Call (DllGetVersion, dvi);
+			OS.FreeLibrary (hModule);
+		}
+		SHELL32_MAJOR = dvi.dwMajorVersion;
+		SHELL32_MINOR = dvi.dwMinorVersion;
 	}
 
 	/* Flag used on WinCE */

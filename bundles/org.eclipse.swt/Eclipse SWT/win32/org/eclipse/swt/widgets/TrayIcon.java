@@ -21,27 +21,6 @@ public class TrayIcon extends Widget {
 	Image image, image2;
 	String toolTipText;
 	boolean visible;
-	static final int SHELL32_MAJOR, SHELL32_MINOR;
-	static {
-		/* Get the Shell32.DLL version */
-		DLLVERSIONINFO dvi = new DLLVERSIONINFO ();
-		dvi.cbSize = DLLVERSIONINFO.sizeof;
-		dvi.dwMajorVersion = 4;
-		TCHAR lpLibFileName = new TCHAR (0, "Shell32.dll", true); //$NON-NLS-1$
-		int hModule = OS.LoadLibrary (lpLibFileName);
-		if (hModule != 0) {
-			String name = "DllGetVersion\0"; //$NON-NLS-1$
-			byte [] lpProcName = new byte [name.length ()];
-			for (int i=0; i<lpProcName.length; i++) {
-				lpProcName [i] = (byte) name.charAt (i);
-			}
-			int DllGetVersion = OS.GetProcAddress (hModule, lpProcName);
-			if (DllGetVersion != 0) OS.Call (DllGetVersion, dvi);
-			OS.FreeLibrary (hModule);
-		}
-		SHELL32_MAJOR = dvi.dwMajorVersion;
-		SHELL32_MINOR = dvi.dwMinorVersion;
-	}
 
 /**
  * Constructs a new instance of this class given its Display.
@@ -102,7 +81,6 @@ public void addSelectionListener(SelectionListener listener) {
 
 void createWidget () {
 	visible = true;
-	if (SHELL32_MAJOR < 5) return;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
@@ -113,7 +91,6 @@ void createWidget () {
 }
 
 void destroyWidget () {
-	if (SHELL32_MAJOR < 5) return;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
@@ -254,12 +231,11 @@ public void setImage (Image image) {
 				break;
 		}
 	}
-	if (SHELL32_MAJOR < 5) return;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
-	iconData.hIcon = hIcon;
 	iconData.hWnd = display.hwndMessage;
+	iconData.hIcon = hIcon;
 	iconData.uFlags = OS.NIF_ICON;
 	OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
 }
@@ -278,7 +254,6 @@ public void setImage (Image image) {
 public void setToolTipText (String value) {
 	checkWidget ();
 	toolTipText = value;
-	if (SHELL32_MAJOR < 5) return;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	TCHAR buffer = new TCHAR (0, toolTipText == null ? "" : toolTipText, true);
 	if (OS.IsUnicode) {
@@ -321,16 +296,14 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 	}
 	this.visible = visible;
-	if (SHELL32_MAJOR >= 5) {
-		NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-		iconData.cbSize = NOTIFYICONDATA.sizeof;
-		iconData.uID = id;
-		iconData.hWnd = display.hwndMessage;
-		iconData.uFlags = OS.NIF_STATE;
-		iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
-		iconData.dwStateMask = OS.NIS_HIDDEN;
-		OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
-	}
+	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+	iconData.cbSize = NOTIFYICONDATA.sizeof;
+	iconData.uID = id;
+	iconData.hWnd = display.hwndMessage;
+	iconData.uFlags = OS.NIF_STATE;
+	iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
+	iconData.dwStateMask = OS.NIS_HIDDEN;
+	OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
 	if (!visible) sendEvent (SWT.Hide);
 }
 

@@ -225,7 +225,7 @@ public void setImage (Image image) {
 	* The image  overlaps the label.  The fix is to remove
 	* all '&' characters from the string. 
 	*/
-	if (COMCTL32_MAJOR >= 6) {
+	if (OS.COMCTL32_MAJOR >= 6) {
 		if (text.indexOf ('&') != -1) setText (text);
 	}
 	int hwnd = parent.handle;
@@ -273,7 +273,7 @@ public void setText (String string) {
 	* The image  overlaps the label.  The fix is to remove
 	* all '&' characters from the string. 
 	*/
-	if (COMCTL32_MAJOR >= 6 && image != null) {
+	if (OS.COMCTL32_MAJOR >= 6 && image != null) {
 		if (text.indexOf ('&') != -1) {
 			int length = string.length ();
 			char[] text = new char [length];
