@@ -73,9 +73,9 @@ public class ApplicationRunner {
 	/**
 	 * Run the application asynchronously in its own VM and Eclipse Platform instance.
 	 * 
-	 * @return a VMRunnerResult with status and control information about the launch, may be null
+	 * @return an ILaunch with status and control information about the launch, may be null
 	 */
-	public VMRunnerResult run() {
+	public ILaunch run() {
 		int numArgs = (appArgs != null) ? appArgs.length : 0;
 		numArgs += 4;
 		if (appPluginsPath != null && appPluginsPath.length != 0) numArgs += 2;
@@ -121,30 +121,29 @@ public class ApplicationRunner {
 	}
 
 	/**
-	 * Determines if a VMRunnerResult indicates success or failure.
+	 * Determines if an ILaunch indicates success or failure.
 	 * <p>
 	 * A return value of <code>true</code> should be taken on advisory only.  There is at present
 	 * no general way of determining if the operation was completed successfully.
 	 * </p>
-	 * @param result the VMRunnerResult to check, null is permissible and causes a return value of false
+	 * @param result the ILaunch to check, null is permissible and causes a return value of false
 	 * @return true if the VM started correctly (not a guarantee that the application will run!)
 	 */
-	public static boolean isResultOk(VMRunnerResult result) {
+	public static boolean isResultOk(ILaunch result) {
 		if (result == null) return false;
 		
 		IProcess[] processes = result.getProcesses();
 		return (processes != null && processes.length > 0);		
 	}
 
-	protected static VMRunnerResult runJavaClass(String className, String[] classPath,
+	protected static ILaunch runJavaClass(String className, String[] classPath,
 		String[] vmArgs, String[] programArgs) {
 		IVMRunner vmRunner = getJavaVMRunner();
 		if (vmRunner == null) return null;
 		
 		VMRunnerConfiguration vmRunConfig = new VMRunnerConfiguration(className, classPath);
 		vmRunConfig.setVMArguments(vmArgs);
-		vmRunConfig.setProgramArguments(programArgs);		try {
-			return vmRunner.run(vmRunConfig);		} catch (CoreException ex) {			// a null return value indicates failure to run the application			return null;		}
+		vmRunConfig.setProgramArguments(programArgs);		ILaunch launch = new Launch((ILaunchConfiguration)null, ILaunchManager.RUN_MODE, null);		try {			vmRunner.run(vmRunConfig, launch, null);		} catch (CoreException ex) {			// a null return value indicates failure to run the application			return null;		}		return launch;
 	}
 
 	protected static String getPlatformClass() {

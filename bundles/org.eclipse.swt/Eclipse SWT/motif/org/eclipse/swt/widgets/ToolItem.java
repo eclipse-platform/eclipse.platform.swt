@@ -578,6 +578,24 @@ public void setControl (Control control) {
 	this.control = control;
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
+		int xDisplay = OS.XtDisplay (handle);
+		if (xDisplay == 0) return;
+		if (!OS.XtIsRealized (handle)) {
+			Shell shell = parent.getShell ();
+			shell.realizeWidget ();
+		}
+		int topHandle1 = control.topHandle ();
+		int window1 = OS.XtWindow (topHandle1);
+		if (window1 == 0) return;
+		int topHandle2 = this.topHandle ();
+		int window2 = OS.XtWindow (topHandle2);
+		if (window2 == 0) return;
+		XWindowChanges struct = new XWindowChanges ();
+		struct.sibling = window2;
+		struct.stack_mode = OS.Above;
+		int screen = OS.XDefaultScreen (xDisplay);
+		int flags = OS.CWStackMode | OS.CWSibling;
+		OS.XReconfigureWMWindow (xDisplay, window1, screen, flags, struct);
 	}
 }
 /**
