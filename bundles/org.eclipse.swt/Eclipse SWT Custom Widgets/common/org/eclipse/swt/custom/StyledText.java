@@ -2289,7 +2289,7 @@ void createCaretBitmaps() {
 	if (leftCaretBitmap != null) {
 		Caret caret = getCaret();
 		if (caret != null && leftCaretBitmap.equals(caret.getImage())) {
-			getCaret().setImage(null);
+			caret.setImage(null);
 		}
 		leftCaretBitmap.dispose();
 	}
@@ -2306,7 +2306,7 @@ void createCaretBitmaps() {
 	if (rightCaretBitmap != null) {
 		Caret caret = getCaret();
 		if (caret != null && rightCaretBitmap.equals(caret.getImage())) {
-			getCaret().setImage(null);
+			caret.setImage(null);
 		}
 		rightCaretBitmap.dispose();
 	}

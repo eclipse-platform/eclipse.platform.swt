@@ -398,7 +398,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			if (run.length == 0) continue;
 			if (!run.lineBreak || run.softBreak) {
 				int end = run.start + run.length - 1;
-				boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;				
+				boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
 				if (fullSelection) {
 					OS.SelectObject(hdc, selBrush);
 					OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight, dwRop);
@@ -409,7 +409,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						if (run.style != null) font = run.style.font;
 						if (font == null) font = this.font;
 						if (font == null) font = device.getSystemFont();
-						OS.SelectObject(hdc, font.handle);						
+						OS.SelectObject(hdc, font.handle);
 						OS.GetTextMetrics(hdc, lptm);
 						int drawRunY = drawY + (baseline - lptm.tmAscent);
 						int hBrush = OS.CreateSolidBrush (bg);
