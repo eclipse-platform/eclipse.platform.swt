@@ -143,6 +143,10 @@ void paint (GC gc) {
 		gc.drawText (text, startX, (headerHeight - fontHeight) / 2, SWT.DRAW_MNEMONIC);
 	}
 }
+public void pack () {
+	checkWidget();
+	
+}
 public void removeControlListener (ControlListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
