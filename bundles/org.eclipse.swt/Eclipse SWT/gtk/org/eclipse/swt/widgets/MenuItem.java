@@ -138,11 +138,8 @@ void addAccelerator (int accelGroup) {
 }
 
 void addAccelerators (int accelGroup) {
-	if (menu == null) {
-		addAccelerator (accelGroup);
-	} else {
-		menu.addAccelerators (accelGroup);
-	}
+	addAccelerator (accelGroup);
+	if (menu != null) menu.addAccelerators (accelGroup);
 }
 
 /**
@@ -457,11 +454,8 @@ void removeAccelerator (int accelGroup) {
 }
 
 void removeAccelerators (int accelGroup) {
-	if (menu == null) {
-		removeAccelerator (accelGroup);
-	} else {
-		menu.removeAccelerators (accelGroup);
-	}
+	removeAccelerator (accelGroup);
+	if (menu != null) menu.removeAccelerators (accelGroup);
 }
 
 /**
