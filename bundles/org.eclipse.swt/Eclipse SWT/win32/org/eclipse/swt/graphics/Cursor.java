@@ -46,7 +46,7 @@ public final class Cursor {
 	/**
 	 * data used to create a HAND cursor.
 	 */
-	static final byte[] HandSrcData = {
+	static final byte[] HAND_SOURCE = {
 		(byte)0xf9,(byte)0xff,(byte)0xff,(byte)0xff,
 		(byte)0xf0,(byte)0xff,(byte)0xff,(byte)0xff,
 		(byte)0xf0,(byte)0xff,(byte)0xff,(byte)0xff,
@@ -83,7 +83,7 @@ public final class Cursor {
 		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff,
 		(byte)0xff,(byte)0xff,(byte)0xff,(byte)0xff
 	};
-	static final byte[] HandMaskData = {
+	static final byte[] HAND_MASK = {
 		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
 		(byte)0x06,(byte)0x00,(byte)0x00,(byte)0x00,
 		(byte)0x06,(byte)0x00,(byte)0x00,(byte)0x00,
@@ -184,7 +184,7 @@ public Cursor(Device device, int style) {
 		int height = OS.GetSystemMetrics(OS.SM_CYCURSOR);
 		if (width == 32 && height == 32) {
 			int hInst = OS.GetModuleHandle(null);
-			handle = OS.CreateCursor(hInst, 5, 0, 32, 32, HandSrcData, HandMaskData);
+			handle = OS.CreateCursor(hInst, 5, 0, 32, 32, HAND_SOURCE, HAND_MASK);
 
 		}
 	}
@@ -259,6 +259,19 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
  */
 public void dispose () {
 	if (handle == 0) return;
+	
+	/*
+	* It is an error in Windows to destroy the current
+	* cursor.  Check that the cursor that is about to
+	* be destroyed is the current cursor.  If so, set
+	* the current cursor to be IDC_ARROW.  Note that
+	* Windows shares predefined cursors so the call to
+	* LoadCursor() does not leak.
+	*/
+	if (OS.GetCursor() == handle) {
+		OS.SetCursor(OS.LoadCursor(0, OS.IDC_ARROW));
+	}
+	
 	/*
 	 * The MSDN states that one should not destroy a shared
 	 * cursor, that is, one obtained from LoadCursor.
