@@ -670,8 +670,6 @@ protected void layout(Composite composite, boolean flushCache) {
 				} else
 					if (vAlign == GridData.END) {
 						widgetY = widgetY + spannedHeight - childExtent.y;
-					} else {
-						widgetY = widgetY;
 					}
 				if (vAlign == GridData.FILL) {
 					widgetH = spannedHeight;

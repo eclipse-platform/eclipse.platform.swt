@@ -231,7 +231,6 @@ Shell (Display display, Shell parent, int style) {
 	this.style = checkStyle (style);
 	this.parent = parent;
 	this.display = display;
-	this.handle = handle;
 	createWidget (0);
 }
 /**
