@@ -1572,6 +1572,7 @@ Vector internalGetColumnVector() {
  */
 boolean isColumnResize(Event event) {
 	TableColumn hotColumn = getColumnAtX(event.x);
+	if (hotColumn == null) return false;
 	Rectangle bounds = hotColumn.getBounds();
 	int hotColumnIndex = hotColumn.getIndex();
 	int columnX = event.x - bounds.x;
