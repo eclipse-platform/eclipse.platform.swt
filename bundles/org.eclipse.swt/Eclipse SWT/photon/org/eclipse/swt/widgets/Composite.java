@@ -512,22 +512,19 @@ int Ph_EV_BUT_PRESS (int widget, int info) {
 	int result = super.Ph_EV_BUT_PRESS (widget, info);
 	if (result != OS.Pt_CONTINUE)return result;
 	if ((state & CANVAS) != 0) {
-		if (info == 0) return OS.Pt_END;
-		PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
-		OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
-		if (cbinfo.event == 0) return OS.Pt_END;
-		PhEvent_t ev = new PhEvent_t ();
-		OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
-		int data = OS.PhGetData (cbinfo.event);
-		if (data == 0) return OS.Pt_END;
-		PhPointerEvent_t pe = new PhPointerEvent_t ();
-		OS.memmove (pe, data, PhPointerEvent_t.sizeof);
-	
 		/* Set focus for a CANVAS with no children */
-		if ((style & SWT.NO_FOCUS) == 0) {
-			if (pe.buttons == OS.Ph_BUTTON_SELECT) {
-				if (OS.PtWidgetChildFront (handle) == 0) setFocus ();
-			}
+		if ((style & SWT.NO_FOCUS) == 0 && OS.PtWidgetChildFront (handle) == 0) {
+			if (info == 0) return OS.Pt_END;
+			PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+			OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+			if (cbinfo.event == 0) return OS.Pt_END;
+			PhEvent_t ev = new PhEvent_t ();
+			OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+			int data = OS.PhGetData (cbinfo.event);
+			if (data == 0) return OS.Pt_END;
+			PhPointerEvent_t pe = new PhPointerEvent_t ();
+			OS.memmove (pe, data, PhPointerEvent_t.sizeof);
+			if (pe.buttons == OS.Ph_BUTTON_SELECT) setFocus ();
 		}
 	}
 	return result;
