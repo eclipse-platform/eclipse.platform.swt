@@ -1767,6 +1767,7 @@ private void updateCloseBar() {
 	if ("gtk".equals(platform)) toolbarTrim = 8; //$NON-NLS-1$
 
 	int maxHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN - toolbarTrim;
+	if (maxHeight < 3) return;
 	int imageHeight = Math.max(9, maxHeight);
 	
 	if (closeImage != null) {
@@ -1811,10 +1812,14 @@ private void updateCloseBar() {
 	gc.dispose();
 	
 	if (maxHeight < imageHeight) {
-		//rescale image
-		Image temp = scaleImage(closeImage, imageHeight, maxHeight);
-		closeImage.dispose();
-		closeImage = temp;
+		try {
+			//rescale image
+			Image temp = scaleImage(closeImage, imageHeight, maxHeight);
+			closeImage.dispose();
+			closeImage = temp;
+		} catch (IllegalArgumentException e) {
+		} catch (SWTException e) {
+		}
 	}
 	closeItem.setImage(closeImage);
 	inactiveCloseItem.setImage(closeImage);
@@ -1827,6 +1832,7 @@ private void updateArrowBar() {
 	if ("gtk".equals(platform)) toolbarTrim = 8; //$NON-NLS-1$
 
 	int maxHeight = tabHeight - toolbarTrim;
+	if (maxHeight < 3) return;
 	int imageHeight = Math.max(9, maxHeight);	
 	
 	if (arrowLeftImage != null) {
@@ -1883,14 +1889,22 @@ private void updateArrowBar() {
 	gc.dispose();
 	
 	if (maxHeight < imageHeight) {
-		//rescale image
-		Image leftTemp = scaleImage(arrowLeftImage, imageHeight, maxHeight);
-		arrowLeftImage.dispose();
-		arrowLeftImage = leftTemp;
+		try {
+			//rescale image
+			Image leftTemp = scaleImage(arrowLeftImage, imageHeight, maxHeight);
+			arrowLeftImage.dispose();
+			arrowLeftImage = leftTemp;
+		} catch (IllegalArgumentException e) {
+		} catch (SWTException e) {
+		}
 		
-		Image rightTemp = scaleImage(arrowRightImage, imageHeight, maxHeight);
-		arrowRightImage.dispose();
-		arrowRightImage = rightTemp;
+		try {
+			Image rightTemp = scaleImage(arrowRightImage, imageHeight, maxHeight);
+			arrowRightImage.dispose();
+			arrowRightImage = rightTemp;
+		} catch (IllegalArgumentException e) {
+		} catch (SWTException e) {
+		}	
 	}
 	left.setImage(arrowLeftImage);
 	right.setImage(arrowRightImage);
