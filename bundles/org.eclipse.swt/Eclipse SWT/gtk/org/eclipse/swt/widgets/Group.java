@@ -93,6 +93,8 @@ int clientHandle () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
+	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	Point defaultSize = computeNativeSize (handle, wHint, hHint, changed);
 	Point size;
 	if (layout != null) {

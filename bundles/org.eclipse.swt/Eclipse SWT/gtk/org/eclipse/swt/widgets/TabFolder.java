@@ -128,6 +128,8 @@ int clientHandle () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
+	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
 	OS.gtk_widget_set_size_request (handle, wHint, hHint);

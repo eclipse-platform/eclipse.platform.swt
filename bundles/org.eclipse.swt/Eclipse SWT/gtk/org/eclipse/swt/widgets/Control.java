@@ -309,6 +309,8 @@ void createWidget (int index) {
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
+	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
+	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	return computeNativeSize (handle, wHint, hHint, changed);	
 }
 
