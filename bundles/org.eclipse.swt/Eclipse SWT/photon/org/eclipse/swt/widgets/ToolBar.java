@@ -164,4 +164,15 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 
+/* TEMPORARY CODE.  Hack for eclipse. */
+public void setData(Object data) {
+	super.setData(data);
+	if (data != null && data.getClass().getName().indexOf("org.eclipse.ui.internal.ShortcutBarPart") != -1) {
+		int [] args = {
+			OS.Pt_ARG_ORIENTATION, OS.Pt_VERTICAL, 0,
+		};
+		OS.PtSetResources(handle, args.length / 3, args);
+	}
+}
+
 }
