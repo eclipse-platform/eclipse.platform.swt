@@ -719,7 +719,7 @@ void setData(int pData){
 				COM.MoveMemory(buffer, hMem[0], size);
 				stringData = new String(buffer);
 			} else {
-				stringData = "";
+				stringData = ""; //$NON-NLS-1$
 			}
 			break;
 	

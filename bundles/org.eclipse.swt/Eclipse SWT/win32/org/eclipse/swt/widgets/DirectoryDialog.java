@@ -21,7 +21,7 @@ import org.eclipse.swt.*;
  */
 
 public class DirectoryDialog extends Dialog {
-	String message = "", filterPath = "";
+	String message = "", filterPath = "";  //$NON-NLS-1$//$NON-NLS-2$
 	String directoryPath;
 	
 /**
@@ -167,7 +167,7 @@ public String open () {
 	}
 
 	/* Create the BrowseCallbackProc */
-	Callback callback = new Callback (this, "BrowseCallbackProc", 4);
+	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
 	int address = callback.getAddress ();
 	
 	/* Open the dialog */
