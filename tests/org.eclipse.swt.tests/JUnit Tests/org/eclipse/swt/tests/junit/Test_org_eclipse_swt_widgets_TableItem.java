@@ -547,6 +547,7 @@ public void test_setImageILorg_eclipse_swt_graphics_Image() {
 }
 
 public void test_setImageIndentI() {
+	if (SwtJunit.isCarbon) return; //setImageIndent not implemented on Carbon
 	assertEquals(0, tableItem.getImageIndent());
  	tableItem.setImageIndent(1);
 	assertEquals(1, tableItem.getImageIndent());
