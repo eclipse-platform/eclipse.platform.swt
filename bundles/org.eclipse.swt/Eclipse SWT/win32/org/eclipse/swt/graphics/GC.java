@@ -1087,12 +1087,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText (String string, int x, int y) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	RECT rect = new RECT();
-	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
-	TCHAR buffer = new TCHAR (getCodePage(), string, false);
-	OS.DrawText(handle, buffer, buffer.length(), rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
+	drawText(string, x, y, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 
 /** 
@@ -1116,17 +1111,61 @@ public void drawText (String string, int x, int y) {
  * </ul>
  */
 public void drawText (String string, int x, int y, boolean isTransparent) {
+	int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
+	if (isTransparent) flags |= SWT.DRAW_TRANSPARENT;
+	drawText(string, x, y, flags);
+}
+
+/** 
+ * Draws the given string, using the receiver's current font and
+ * foreground color. Tab expansion, line delimiter and mnemonic
+ * processing are performed according to the specified flags. If
+ * <code>flags</code> includes <code>DRAW_TRANSPARENT</code>,
+ * then the background of the rectangular area where the text is being
+ * drawn will not be modified, otherwise it will be filled with the
+ * receiver's background color.
+ * <p>
+ * The parameter <code>flags</code> may be a combination of:
+ * <dl>
+ * <dt><b>DRAW_DELIMITER</b></dt>
+ * <dd>draw multiple lines</dd>
+ * <dt><b>DRAW_TAB</b></dt>
+ * <dd>expand tabs</dd>
+ * <dt><b>DRAW_MNEMONIC</b></dt>
+ * <dd>underline the mnemonic character</dd>
+ * <dt><b>DRAW_TRANSPARENT</b></dt>
+ * <dd>transparent background</dd>
+ * </dl>
+ * </p>
+ *
+ * @param string the string to be drawn
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param flags the flags specifing how to process the text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
 	TCHAR buffer = new TCHAR(getCodePage(), string, false);
-	if (isTransparent) {
+	int uFormat = OS.DT_LEFT;
+	if ((flags & SWT.DRAW_DELIMITER) == 0) uFormat |= OS.DT_SINGLELINE;
+	if ((flags & SWT.DRAW_TAB) != 0) uFormat |= OS.DT_EXPANDTABS;
+	if ((flags & SWT.DRAW_MNEMONIC) == 0) uFormat |= OS.DT_NOPREFIX;	
+	if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
 		int oldBkMode = OS.SetBkMode(handle, OS.TRANSPARENT);
-		OS.DrawText(handle, buffer, buffer.length(), rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
+		OS.DrawText(handle, buffer, buffer.length(), rect, uFormat);
 		OS.SetBkMode(handle, oldBkMode);
 	} else {
-		OS.DrawText(handle, buffer, buffer.length(), rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
+		OS.DrawText(handle, buffer, buffer.length(), rect, uFormat);
 	}
 }
 
@@ -2069,6 +2108,41 @@ public Point stringExtent(String string) {
  * </ul>
  */
 public Point textExtent(String string) {
+	return textExtent(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
+}
+
+/**
+ * Returns the extent of the given string. Tab expansion, line
+ * delimiter and mnemonic processing are performed according to
+ * the specified flags, which can be a combination of:
+ * <dl>
+ * <dt><b>DRAW_DELIMITER</b></dt>
+ * <dd>draw multiple lines</dd>
+ * <dt><b>DRAW_TAB</b></dt>
+ * <dd>expand tabs</dd>
+ * <dt><b>DRAW_MNEMONIC</b></dt>
+ * <dd>underline the mnemonic character</dd>
+ * <dt><b>DRAW_TRANSPARENT</b></dt>
+ * <dd>transparent background</dd>
+ * </dl>
+ * <p>
+ * The <em>extent</em> of a string is the width and height of
+ * the rectangular area it would cover if drawn in a particular
+ * font (in this case, the current font in the receiver).
+ * </p>
+ *
+ * @param string the string to measure
+ * @param flags the flags specifing how to process the text
+ * @return a point containing the extent of the string
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (string.length () == 0) {
@@ -2076,12 +2150,15 @@ public Point textExtent(String string) {
 //		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);
 		OS.GetTextExtentPoint32W(handle, new char [] {' '}, 1, size);
 		return new Point(0, size.cy);
-	} else {
-		RECT rect = new RECT();
-		TCHAR buffer = new TCHAR(getCodePage(), string, false);
-		OS.DrawText(handle, buffer, buffer.length(), rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX | OS.DT_CALCRECT);
-		return new Point(rect.right, rect.bottom);
 	}
+	RECT rect = new RECT();
+	TCHAR buffer = new TCHAR(getCodePage(), string, false);
+	int uFormat = OS.DT_LEFT | OS.DT_CALCRECT;
+	if ((flags & SWT.DRAW_DELIMITER) == 0) uFormat |= OS.DT_SINGLELINE;
+	if ((flags & SWT.DRAW_TAB) != 0) uFormat |= OS.DT_EXPANDTABS;
+	if ((flags & SWT.DRAW_MNEMONIC) == 0) uFormat |= OS.DT_NOPREFIX;
+	OS.DrawText(handle, buffer, buffer.length(), rect, uFormat);
+	return new Point(rect.right, rect.bottom);
 }
 
 /**
