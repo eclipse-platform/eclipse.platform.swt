@@ -40,6 +40,8 @@ public class CTabItem extends Item {
 	// internal constants
 	static final int TOP_MARGIN = 2;
 	static final int BOTTOM_MARGIN = 2;
+	static final int LEFT_MARGIN = 4;
+	static final int RIGHT_MARGIN = 4;
 	static final int INTERNAL_SPACING = 2;
 	static final int FLAGS = SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC;
 	static final String ELLIPSIS = "..."; //$NON-NLS-1$
@@ -114,19 +116,18 @@ static int checkStyle(int style) {
 }
 static String shortenText(GC gc, String text, int width) {
 	if (gc.textExtent(text, FLAGS).x <= width) return text;
-	
 	int ellipseWidth = gc.textExtent(ELLIPSIS, FLAGS).x;
 	int length = text.length();
 	int end = length - 1;
 	while (end > 0) {
 		text = text.substring(0, end);
-		int l1 = gc.textExtent(text, FLAGS).x;
-		if (l1 + ellipseWidth <= width) {
+		int l = gc.textExtent(text, FLAGS).x;
+		if (l + ellipseWidth <= width) {
 			return text + ELLIPSIS;
 		}
 		end--;
 	}
-	return text + ELLIPSIS;
+	return text.substring(0,1);
 }
 public void dispose() {
 	if (isDisposed ()) return;
@@ -199,7 +200,7 @@ void drawClose(GC gc) {
 void drawSelected(GC gc ) {
 	Point size = parent.getSize();
 	int deadspace = parent.simple || parent.single ? 0 : parent.curveWidth - parent.curveIndent;
-	int rightEdge = Math.min (x + width - deadspace, parent.getRightItemEdge() - deadspace);
+	int rightEdge = Math.min (x + width - deadspace, parent.getRightItemEdge());
 	if (parent.single) {
 		if (!isShowing()) return;
 	} else {
@@ -291,12 +292,12 @@ void drawSelected(GC gc ) {
 	}
 	
 	// draw Image
-	int xDraw = x + marginLeft(true);
+	int xDraw = x + LEFT_MARGIN;
 	Image image = getImage();
 	if (image != null) {
 		Rectangle imageBounds = image.getBounds();
 		// only draw image if it won't overlap with close button
-		int maxImageWidth = rightEdge - xDraw - marginRight(true);
+		int maxImageWidth = rightEdge - xDraw - RIGHT_MARGIN;
 		if (closeRect.width > 0) maxImageWidth -= closeRect.width + INTERNAL_SPACING;
 		if (imageBounds.width < maxImageWidth) {
 			int imageX = xDraw;
@@ -312,7 +313,7 @@ void drawSelected(GC gc ) {
 	}
 	
 	// draw Text
-	int textWidth = rightEdge - xDraw - marginRight(true);
+	int textWidth = rightEdge - xDraw - RIGHT_MARGIN;
 	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
 	if (textWidth > 0) {
 		Font gcFont = gc.getFont();
@@ -338,7 +339,7 @@ void drawSelected(GC gc ) {
 				gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 				gc.drawFocus(xDraw-1, textY-1, extent.x+2, extent.y+2);
 			} else {
-				gc.setForeground(parent.selectionForeground);
+				gc.setForeground(display.getSystemColor(CTabFolder.BUTTON_BORDER));
 				gc.drawLine(xDraw, textY+extent.y+1, xDraw+extent.x+1, textY+extent.y+1);
 			}
 		}
@@ -355,12 +356,12 @@ void drawUnselected(GC gc) {
 		gc.drawLine(x + width - 1, y, x + width - 1, y + height);
 	}
 	// draw Image
-	int xDraw = x + marginLeft(false);
+	int xDraw = x + LEFT_MARGIN;
 	Image image = getImage();
 	if (image != null && parent.showUnselectedImage) {
 		Rectangle imageBounds = image.getBounds();
 		// only draw image if it won't overlap with close button
-		int maxImageWidth = x + width - xDraw - marginRight(false);
+		int maxImageWidth = x + width - xDraw - RIGHT_MARGIN;
 		if (parent.showUnselectedClose && (parent.showClose || showClose)) {
 			maxImageWidth -= closeRect.width + INTERNAL_SPACING;
 		}
@@ -377,7 +378,7 @@ void drawUnselected(GC gc) {
 		}
 	}
 	// draw Text
-	int textWidth = x + width - xDraw - marginRight(false);
+	int textWidth = x + width - xDraw - RIGHT_MARGIN;
 	if (parent.showUnselectedClose && (parent.showClose || showClose)) {
 		textWidth -= closeRect.width + INTERNAL_SPACING;
 	}
@@ -503,12 +504,6 @@ public boolean isShowing () {
 	}
 	return (x + width < parent.getRightItemEdge());
 }
-int marginLeft(boolean isSelected) {
-	return 4;
-}
-int marginRight(boolean isSelected) {
-	return 4;
-}
 void onPaint(GC gc, boolean isSelected) {
 	if (width == 0 || height == 0) return;
 	if (isSelected) {
@@ -558,7 +553,7 @@ int preferredWidth(GC gc, boolean isSelected) {
 			w += CTabFolder.BUTTON_SIZE;
 		}
 	}
-	return w + marginLeft(isSelected) + marginRight(isSelected);
+	return w + LEFT_MARGIN + RIGHT_MARGIN;
 }
 /**
  * Sets the control that is used to fill the client area of

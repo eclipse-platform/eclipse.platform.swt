@@ -77,8 +77,9 @@ public class CTabFolder extends Composite {
 	 * Color of innermost line of drop shadow border.
 	 * 
 	 * NOTE This field is badly named and can not be fixed for backwards compatability.
-	 * It should be capitalized. 
-	 * @deprecated
+	 * It should be capitalized.
+	 * 
+	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
 	public static RGB borderInsideRGB  = new RGB (132, 130, 132);
 	/**
@@ -87,7 +88,7 @@ public class CTabFolder extends Composite {
 	 * NOTE This field is badly named and can not be fixed for backwards compatability.
 	 * It should be capitalized.
 	 * 
-	 * @deprecated
+	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
 	public static RGB borderMiddleRGB  = new RGB (143, 141, 138);
 	/**
@@ -96,7 +97,7 @@ public class CTabFolder extends Composite {
 	 * NOTE This field is badly named and can not be fixed for backwards compatability.
 	 * It should be capitalized.
 	 * 
-	 * @deprecated
+	 * @deprecated drop shadow border is no longer drawn in 3.0
 	 */
 	public static RGB borderOutsideRGB = new RGB (171, 168, 165); 
 
@@ -141,6 +142,7 @@ public class CTabFolder extends Composite {
 	
 	Rectangle chevronRect = new Rectangle(0, 0, 0, 0);
 	int chevronImageState = NORMAL;
+	boolean showChevron = false;
 	
 	boolean showMin = false;
 	Rectangle minRect = new Rectangle(0, 0, 0, 0);
@@ -518,9 +520,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 	}
 	gc.dispose();
-	if (showMax) tabW += BUTTON_SIZE + 3;
-	if (showMin) tabW += BUTTON_SIZE + 3;
-	if (single) tabW += 3*BUTTON_SIZE/2 + 3; //chevron
+	tabW += 3;
+	if (showMax) tabW += BUTTON_SIZE;
+	if (showMin) tabW += BUTTON_SIZE;
+	if (single) tabW += 3*BUTTON_SIZE/2; //chevron
 	if (topRight != null) tabW += topRight.computeSize(SWT.DEFAULT, tabHeight).x;
 	
 	int controlW = 0;
@@ -1345,8 +1348,11 @@ public boolean getMaximizeVisible() {
 	return showMax;
 }
 int getRightItemEdge (){
-	int x = getSize().x - borderRight - minRect.width - maxRect.width - chevronRect.width - 1;
-	if (topRightAlignment != SWT.FILL) x -= topRightRect.width;
+	int x = getSize().x - borderRight - 3;
+	if (showMin) x -= BUTTON_SIZE;
+	if (showMax) x -= BUTTON_SIZE;
+	if (showChevron) x -= 3*BUTTON_SIZE/2;
+	if (topRight != null && topRightAlignment != SWT.FILL) x -= topRightRect.width;
 	return x;
 }
 /**
@@ -2434,7 +2440,7 @@ boolean setButtonBounds() {
 	if (topRight != null) {
 		switch (topRightAlignment) {
 			case SWT.FILL:
-				int rightEdge = size.x - borderRight - minRect.width - maxRect.width - 1;
+				int rightEdge = getRightItemEdge();
 				int lastIndex = getLastIndex();
 				if (lastIndex == -1) {
 					topRightRect.x = borderLeft + 3;
@@ -2448,7 +2454,7 @@ boolean setButtonBounds() {
 						}
 					} else {
 						// fill size is 0 if chevron showing
-						if (firstIndex > 0 || lastIndex < items.length - 1) {
+						if (showChevron) {
 							break;
 						}
 					}
@@ -2496,16 +2502,13 @@ boolean setButtonBounds() {
 			if (borderRight > 0) chevronRect.x += 1;
 		}
 	} else {
-		if (items.length > 1) {
+		if (showChevron) {
+			chevronRect.width = 3*BUTTON_SIZE/2;
+			chevronRect.height = BUTTON_SIZE + 2;
 			int lastIndex = getLastIndex();
-			if (firstIndex > 0 || lastIndex < items.length - 1) {
-				chevronRect.width = 3*BUTTON_SIZE/2;
-				chevronRect.height = BUTTON_SIZE + 2;
-				lastIndex = getLastIndex(); // last index may change when chevron is present
-				CTabItem lastItem = items[lastIndex];
-				chevronRect.x = Math.min(lastItem.x +lastItem.width + 3, size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width);
-				chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
-			}
+			CTabItem lastItem = items[lastIndex];
+			chevronRect.x = Math.min(lastItem.x +lastItem.width + 3, getRightItemEdge());
+			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
 		}
 	}
 	if (oldX != chevronRect.x || oldWidth != chevronRect.width ||
@@ -2613,7 +2616,7 @@ boolean setItemLocation() {
 			item.y = y;
 			if (showClose || item.showClose) {
 				int rightEdge = Math.min(item.x + item.width, getRightItemEdge());
-				item.closeRect.x = rightEdge - BUTTON_SIZE - item.marginRight(true);
+				item.closeRect.x = rightEdge - BUTTON_SIZE - CTabItem.RIGHT_MARGIN;
 				item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			}
 			if (item.x != oldX || item.y != oldY) changed = true;
@@ -2628,7 +2631,7 @@ boolean setItemLocation() {
 			// layout tab items from right to left thus making them invisible
 			item.x = x;
 			item.y = y;
-			item.closeRect.x = item.x + item.width - BUTTON_SIZE - item.marginRight(false);
+			item.closeRect.x = item.x + item.width - BUTTON_SIZE - CTabItem.RIGHT_MARGIN;
 			item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2 : borderTop + (tabHeight - BUTTON_SIZE)/2;
 		}
 		
@@ -2636,15 +2639,15 @@ boolean setItemLocation() {
 		for (int i = firstIndex; i < items.length; i++) {
 			// continue laying out remaining, visible items left to right 
 			CTabItem item = items[i];
-			if (i > 0 && !simple && i-1 == selectedIndex) x -= curveIndent;
+			if (i > firstIndex && !simple && i-1 == selectedIndex) x -= curveIndent;
 			item.x = x;
 			item.y = y;
 			if (i == selectedIndex) {
 				int deadSpace = simple ? 0 : curveWidth - curveIndent;
-				int rightEdge = Math.min(item.x + item.width - deadSpace, getRightItemEdge() - deadSpace);
-				item.closeRect.x = rightEdge - item.marginRight(true) - BUTTON_SIZE;
+				int rightEdge = Math.min(item.x + item.width - deadSpace, getRightItemEdge());
+				item.closeRect.x = rightEdge - CTabItem.RIGHT_MARGIN - BUTTON_SIZE;
 			} else {
-				item.closeRect.x = item.x + item.width - item.marginRight(false) - BUTTON_SIZE;
+				item.closeRect.x = item.x + item.width - CTabItem.RIGHT_MARGIN - BUTTON_SIZE;
 			}
 			item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			x = x + item.width;
@@ -2677,10 +2680,13 @@ boolean setItemSize() {
 	}
 	gc.dispose();
 	
+	showChevron = single ? true : false;
+	
 	if (!single && items.length > 1) {
 		int totalWidth = 0;
-		int tabAreaWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width;
-		if (!simple) tabAreaWidth -= curveWidth - curveIndent;
+		int tabAreaWidth = size.x - borderLeft - borderRight - 3;
+		if (showMin) tabAreaWidth -= BUTTON_SIZE;
+		if (showMax) tabAreaWidth -= BUTTON_SIZE;
 		int count = items.length;
 		for (int i = 0 ; i < count; i++) {
 			totalWidth += widths[i];
@@ -2694,8 +2700,9 @@ boolean setItemSize() {
 				totalWidth += Math.min(widths[i], minWidth);
 				if (widths[i] > minWidth) large++;
 			}
-			if (totalWidth >= tabAreaWidth) {
+			if (totalWidth > tabAreaWidth) {
 				// maximum compression required
+				showChevron = true;
 				for (int i = 0; i < count; i++) {
 					widths[i] = Math.min(widths[i], minWidth);
 				}
@@ -2743,10 +2750,6 @@ boolean setItemSize() {
 			}
 		}
 		totalWidth += widths[i];
-	}
-	int tabAreaWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width - chevronRect.width;
-	if (totalWidth <= tabAreaWidth) {
-		firstIndex = 0;		
 	}
 	return changed;
 }
