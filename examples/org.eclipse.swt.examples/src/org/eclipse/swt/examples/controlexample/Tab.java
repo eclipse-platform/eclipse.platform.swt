@@ -460,7 +460,7 @@ abstract class Tab {
 		}
 		/*
 		 * Force the entire widget tree to layout,
-		 * even when the child sizes nay not have
+		 * even when the child sizes may not have
 		 * changed.
 		 */
 		int seenCount = 0;

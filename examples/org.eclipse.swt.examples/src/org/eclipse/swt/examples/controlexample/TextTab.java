@@ -136,6 +136,11 @@ class TextTab extends ScrollableTab {
 		yellowImage = createBitmapImage (display, "yellow");
 		
 		/* Create controls to modify the StyledText */
+		Label label = new Label (styledTextStyleGroup, SWT.NONE);
+		label.setText (ControlExample.getResourceString ("StyledText_Style_Instructions"));
+		GridData data = new GridData(GridData.FILL_HORIZONTAL);
+		data.horizontalSpan = 2;
+		label.setLayoutData(data);
 		new Label (styledTextStyleGroup, SWT.NONE).setText (ControlExample.getResourceString ("Bold"));
 		boldButton = new Button (styledTextStyleGroup, SWT.PUSH);
 		boldButton.setImage (boldImage);
@@ -222,14 +227,6 @@ class TextTab extends ScrollableTab {
 		text.setForeground (foregroundColor);
 		styledText.setBackground (backgroundColor);
 		styledText.setForeground (foregroundColor);
-	}
-	
-	/**
-	 * Sets the size of the "Example" widgets.
-	 */
-	void setExampleWidgetSize () {
-		styledText.setSize (SWT.DEFAULT, SWT.DEFAULT);
-		super.setExampleWidgetSize ();
 	}
 	
 	/**
