@@ -290,6 +290,9 @@ public Image getDisabledImage () {
  */
 public boolean getEnabled () {
 	checkWidget();
+	if ((style & SWT.SEPARATOR) != 0) {
+		return (state & DISABLED) == 0;
+	}
 	int hwnd = parent.handle;
 	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
 	return (fsState & OS.TBSTATE_ENABLED) != 0;
@@ -527,6 +530,61 @@ public void setControl (Control control) {
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
 	this.control = control;
+	/*
+	* Feature in Windows.  When a tool bar wraps, tool items
+	* with the style BTNS_SEP are used as wrap points.  This
+	* means that controls that are placed on top of separator
+	* items are not positioned properly.  The fix is to change
+	* the tool item style from BTNS_SEP to BTNS_BUTTON, causing
+	* the item to wrap like a tool item button.  The new tool
+	* item button is disabled to avoid key traversal and the
+	* image is set to I_IMAGENONE to avoid getting the first
+	* image from the image list.
+	*/
+	if ((parent.style & SWT.WRAP) != 0) {
+		boolean changed = false;
+		int hwnd = parent.handle;
+		TBBUTTONINFO info = new TBBUTTONINFO ();
+		info.cbSize = TBBUTTONINFO.sizeof;
+		info.dwMask = OS.TBIF_STYLE | OS.TBIF_STATE;
+		OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
+		if (control == null) {
+			if ((info.fsStyle & OS.BTNS_SEP) == 0) {
+				changed = true;
+				info.fsStyle &= ~OS.BTNS_BUTTON;
+				info.fsStyle |= OS.BTNS_SEP;
+				if ((state & DISABLED) != 0) {
+					info.fsState &= ~OS.TBSTATE_ENABLED;
+				} else {
+					info.fsState |= OS.TBSTATE_ENABLED;
+				}
+			}
+		} else {
+			if ((info.fsStyle & OS.BTNS_SEP) != 0) {
+				changed = true;
+				info.fsStyle &= ~OS.BTNS_SEP;
+				info.fsStyle |= OS.BTNS_BUTTON;
+				info.fsState &= ~OS.TBSTATE_ENABLED;
+				info.dwMask |= OS.TBIF_IMAGE;
+				info.iImage = OS.I_IMAGENONE;
+			}
+		}
+		if (changed) {
+			OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
+			/*
+			* Bug in Windows.  When TB_SETBUTTONINFO changes the
+			* style of a tool item from BTNS_SEP to BTNS_BUTTON
+			* and the tool bar is wrapped, the tool bar does not
+			* redraw properly.  Windows uses separator items as
+			* wrap points and sometimes draws etching above or
+			* below and entire row.  The fix is to redraw the
+			* tool bar.
+			*/
+			if (OS.SendMessage (hwnd, OS.TB_GETROWS, 0, 0) > 1) {
+				OS.InvalidateRect (hwnd, null, true);
+			}
+		}
+	}
 	resizeControl ();
 }
 
@@ -559,8 +617,10 @@ public void setEnabled (boolean enabled) {
 	if (((fsState & OS.TBSTATE_ENABLED) != 0) == enabled) return;
 	if (enabled) {
 		fsState |= OS.TBSTATE_ENABLED;
+		state &= ~DISABLED;
 	} else {
 		fsState &= ~OS.TBSTATE_ENABLED;
+		state |= DISABLED;
 	}
 	OS.SendMessage (hwnd, OS.TB_SETSTATE, id, fsState);
 	if (image != null) updateImages ();
