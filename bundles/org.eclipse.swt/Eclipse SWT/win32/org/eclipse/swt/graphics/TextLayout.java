@@ -1070,10 +1070,10 @@ int _getOffset(int offset, int movement, boolean forward) {
 							if (!logAttr.fInvalid && logAttr.fWordStop) return untranslateOffset(offset);
 						} else {
 							if (offset > 0) {
-								boolean letterOrDigit = Compatibility.isLetterOrDigit(text.charAt(offset));
-								boolean previousLetterOrDigit = Compatibility.isLetterOrDigit(text.charAt(offset - 1));
+								boolean letterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset));
+								boolean previousLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset - 1));
 								if (letterOrDigit != previousLetterOrDigit || !letterOrDigit) {
-									if (!Compatibility.isWhitespace(text.charAt(offset))) {
+									if (!Compatibility.isWhitespace(segmentsText.charAt(offset))) {
 										return untranslateOffset(offset);
 									}
 								}
@@ -1858,7 +1858,7 @@ void shape (final int hdc, final StyleItem run) {
 			cachedLogFont.lfWidth = logFont.lfWidth;
 			int newFont = OS.CreateFontIndirect(cachedLogFont);
 			OS.SelectObject(hdc, newFont);
-			int hr = OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
+			OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
 			run.glyphCount = buffer[0];
 			run.fallbackFont = newFont;
 		} else {
