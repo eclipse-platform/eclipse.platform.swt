@@ -270,8 +270,6 @@ public void pack () {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	int hwnd = parent.handle;
-	parent.ignoreResize = true;
-	parent.unsubclass ();
 	int oldWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
 	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
@@ -286,69 +284,50 @@ public void pack () {
 		Rectangle rect = image.getBounds ();
 		headerWidth += rect.width + margin * 2;
 	}
-	if ((parent.style & SWT.VIRTUAL) != 0) {
+	boolean oldIgnoreRezize = parent.ignoreResize;
+	parent.ignoreResize = true;
+	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
+	int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+	/*
+	* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
+	* where each item has I_IMAGECALLBACK but there are no images in the
+	* table, the size computed by LVM_SETCOLUMNWIDTH is too small for the
+	* first column, causing long items to be clipped with '...'.  The fix
+	* is to increase the value by a small amount. 
+	*/
+	if (index == 0 && parent.imageList == null) columnWidth += 2;
+	if (headerWidth > columnWidth) {
 		if (image == null) {
 			/*
 			* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
 			* with LVM_SETCOLUMNWIDTH to resize the last column, the last
 			* column is expanded to fill the client area.  The fix is to
-			* insert and remove a temporary last column for the duration
-			* of LVM_SETCOLUMNWIDTH.
+			* resize the table to be small, set the column width and then
+			* restor the table to its original size.
 			*/
+			RECT rect = null;
 			boolean fixWidth = index == parent.getColumnCount () - 1;
 			if (fixWidth) {
-				LVCOLUMN lvColumn = new LVCOLUMN ();
-				lvColumn.mask = OS.LVCF_WIDTH;
-				OS.SendMessage (hwnd, OS.LVM_INSERTCOLUMN, index + 1, lvColumn);
+				rect = new RECT ();
+				OS.GetWindowRect (hwnd, rect);
+				OS.UpdateWindow (hwnd);
+				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
+				SetWindowPos (hwnd, 0, 0, 0, 0, rect.bottom - rect.top, flags);
 			}
 			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
 			if (fixWidth) {
-				OS.SendMessage (hwnd, OS.LVM_DELETECOLUMN, index + 1, 0);
+				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOZORDER;
+				SetWindowPos (hwnd, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
 			}
 		} else {
 			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, headerWidth);
-		}		
+		}
 	} else {
-		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
-		int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
-		/*
-		* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
-		* where each item has I_IMAGECALLBACK but there are no images in the
-		* table, the size computed by LVM_SETCOLUMNWIDTH is to small for the
-		* first column, causing long items to be clipped with '...'.  The fix
-		* is to increase the value by a small amount. 
-		*/
-		if (index == 0 && parent.imageList == null) columnWidth += 2;
-		if (headerWidth > columnWidth) {
-			if (image == null) {
-				/*
-				* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
-				* with LVM_SETCOLUMNWIDTH to resize the last column, the last
-				* column is expanded to fill the client area.  The fix is to
-				* insert and remove a temporary last column for the duration
-				* of LVM_SETCOLUMNWIDTH.
-				*/
-				boolean fixWidth = index == parent.getColumnCount () - 1;
-				if (fixWidth) {
-					LVCOLUMN lvColumn = new LVCOLUMN ();
-					lvColumn.mask = OS.LVCF_WIDTH;
-					OS.SendMessage (hwnd, OS.LVM_INSERTCOLUMN, index + 1, lvColumn);
-				}
-				OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
-				if (fixWidth) {
-					OS.SendMessage (hwnd, OS.LVM_DELETECOLUMN, index + 1, 0);
-				}
-			} else {
-				OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, headerWidth);
-			}
-		} else {
-			if (index == 0) {
-				OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
-			}
+		if (index == 0) {
+			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
 		}
 	}
-	parent.subclass ();
-	parent.ignoreResize = false;
+	parent.ignoreResize = oldIgnoreRezize;
 	int newWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	if (oldWidth != newWidth) {
 		sendEvent (SWT.Resize);

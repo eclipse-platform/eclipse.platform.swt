@@ -3370,6 +3370,7 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 }
 
 LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
+	if (ignoreResize) return null;
 	LRESULT result = super.WM_WINDOWPOSCHANGED (wParam, lParam);
 	if (result != null) return result;
 	WINDOWPOS lpwp = new WINDOWPOS ();
@@ -3408,16 +3409,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
-			/*
-			* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
-			* with LVM_SETCOLUMNWIDTH to resize the last column, the last
-			* column is expanded to fill the client area.  The fix is to
-			* insert and remove a temporary last column for the duration
-			* of LVM_SETCOLUMNWIDTH.  As a result, LVN_GETDISPINFO should
-			* be ignored for the temporary column.
-			*/
-			if (ignoreResize && (plvfi.iSubItem >= columns.length || columns [plvfi.iSubItem] == null)) break;
-
 			lastIndexOf = plvfi.iItem;
 			TableItem item = _getItem (plvfi.iItem);
 			/*
