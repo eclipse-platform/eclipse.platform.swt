@@ -294,11 +294,17 @@ public void dispose () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	short[] bounds= new short[4];
-	short[] pbounds= new short[4];
-	OS.GetControlBounds(handle, bounds);
-	OS.GetControlBounds(parent.handle, pbounds);
-	return new Rectangle(bounds[1]-pbounds[1], bounds[0]-pbounds[0], bounds[3]-bounds[1], bounds[2]-bounds[0]);
+	if (MacUtil.USE_FRAME) {
+		float[] f= new float[4];
+		OS.HIViewGetFrame(handle, f);
+		return new Rectangle((int)f[0], (int)f[1], (int)f[2], (int)f[3]);
+	} else {
+		short[] bounds= new short[4];
+		short[] pbounds= new short[4];
+		OS.GetControlBounds(handle, bounds);
+		OS.GetControlBounds(parent.handle, pbounds);
+		return new Rectangle(bounds[1]-pbounds[1], bounds[0]-pbounds[0], bounds[3]-bounds[1], bounds[2]-bounds[0]);
+	}
 }
 /**
  * Returns the control that is used to fill the bounds of
@@ -555,18 +561,26 @@ void setBounds (int x, int y, int width, int height) {
 	
 	width = Math.max(width, 0);
 	height = Math.max(height, 0);
-	short[] bounds= new short[4];
-	short[] pbounds= new short[4];
-	OS.GetControlBounds(handle, bounds);
-	OS.GetControlBounds(parent.handle, pbounds);
-		
-	boolean sameOrigin = (bounds[1]-pbounds[1]) == x && (bounds[0]-pbounds[0]) == y;
-	boolean sameExtent = (bounds[3]-bounds[1]) == width && (bounds[2]-bounds[0]) == height;
-	if (!sameOrigin || !sameExtent)
-		OS.SetControlBounds(handle, new MacRect(pbounds[1]+x, pbounds[0]+y, width, height).getData());
+	
+	if (MacUtil.USE_FRAME) {
+		float[] f= new float[4];
+		OS.HIViewGetFrame(handle, f);
+		if (f[0] != x || f[1] != y || f[2] != width || f[3] != height)
+			OS.HIViewSetFrame(handle, x, y, width, height);
+	} else {
+		short[] bounds= new short[4];
+		short[] pbounds= new short[4];
+		OS.GetControlBounds(handle, bounds);
+		OS.GetControlBounds(parent.handle, pbounds);
+			
+		boolean sameOrigin = (bounds[1]-pbounds[1]) == x && (bounds[0]-pbounds[0]) == y;
+		boolean sameExtent = (bounds[3]-bounds[1]) == width && (bounds[2]-bounds[0]) == height;
+		if (!sameOrigin || !sameExtent)
+			OS.SetControlBounds(handle, new MacRect(pbounds[1]+x, pbounds[0]+y, width, height).getData());
+	}
 
 	if (parent.fGotSize)
-		OS.ShowControl(handle);
+		OS.HIViewSetVisible(handle, true);
 }
 /**
  * Sets the control that is used to fill the bounds of
@@ -1062,9 +1076,13 @@ int processPaint (Object callData) {
 			}	
 			int imageX = 0, imageY = 0, imageWidth = 0, imageHeight = 0;
 			if (currentImage != null) {
-				Rectangle imageBounds = currentImage.getBounds ();
-				imageWidth = imageBounds.width;
-				imageHeight = imageBounds.height;
+				try { // AW FIXME
+					Rectangle imageBounds = currentImage.getBounds ();
+					imageWidth = imageBounds.width;
+					imageHeight = imageBounds.height;
+				} catch (SWTError e) {
+					System.out.println("ToolItem.processPaint: error in image.getBounds: " + e);
+				}
 			}
 			
 			int spacing = 0;
