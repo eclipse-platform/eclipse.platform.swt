@@ -30,7 +30,7 @@ public class TransferData {
 	 * The type is a unique identifier of a system format or user defined format.
 	 * (Warning: This field is platform dependent)
 	 */
-	public int type;
+	public int /*long*/ type;
 	
 	/**
 	 * Specifies the number of units in pValue.
@@ -52,7 +52,7 @@ public class TransferData {
 	 * Pointer to the data being transferred.
 	 * (Warning: This field is platform dependent)
 	 */
-	public int pValue;
+	public int /*long*/ pValue;
 
 	/**
 	 * The result field contains the result of converting a java data type

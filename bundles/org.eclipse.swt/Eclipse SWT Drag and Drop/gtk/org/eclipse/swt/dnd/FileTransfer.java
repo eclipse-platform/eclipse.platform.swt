@@ -74,13 +74,13 @@ public void javaToNative(Object object, TransferData transferData) {
 		if (length == 0) continue;
 		char[] chars = new char[length];
 		string.getChars(0, length, chars, 0);		
-		int[] error = new int[1];
-		int utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
+		int /*long*/[] error = new int /*long*/[1];
+		int /*long*/ utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
 		if (error[0] != 0 || utf8Ptr == 0) continue;
-		int localePtr = OS.g_locale_from_utf8(utf8Ptr, -1, null, null, error);
+		int /*long*/ localePtr = OS.g_locale_from_utf8(utf8Ptr, -1, null, null, error);
 		OS.g_free(utf8Ptr);
 		if (error[0] != 0 || localePtr == 0) continue;
-		int uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
+		int /*long*/ uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
 		OS.g_free(localePtr);
 		if (error[0] != 0 || uriPtr == 0) continue;
 		length = OS.strlen(uriPtr);
@@ -100,7 +100,7 @@ public void javaToNative(Object object, TransferData transferData) {
 		buffer = newBuffer;
 	}
 	if (buffer.length == 0) return;
-	int ptr = OS.g_malloc(buffer.length+1);
+	int /*long*/ ptr = OS.g_malloc(buffer.length+1);
 	OS.memset(ptr, '\0', buffer.length+1);
 	OS.memmove(ptr, buffer, buffer.length);
 	transferData.pValue = ptr;
@@ -124,16 +124,16 @@ public Object nativeToJava(TransferData transferData) {
 	int length = transferData.length;
 	byte[] temp = new byte[length];
 	OS.memmove(temp, transferData.pValue, length);
-	int[] files = new int[0];
+	int /*long*/[] files = new int /*long*/[0];
 	int offset = 0;
 	for (int i = 0; i < temp.length - 1; i++) {
 		if (temp[i] == '\r' && temp[i+1] == '\n') {
 			int size =  i - offset;
-			int file = OS.g_malloc(size + 1);
+			int /*long*/ file = OS.g_malloc(size + 1);
 			byte[] fileBuffer = new byte[size + 1];
 			System.arraycopy(temp, offset, fileBuffer, 0, size);
 			OS.memmove(file, fileBuffer, size + 1);
-			int[] newFiles = new int[files.length + 1];
+			int /*long*/[] newFiles = new int /*long*/[files.length + 1];
 			System.arraycopy(files, 0, newFiles, 0, files.length);
 			newFiles[files.length] = file;
 			files = newFiles;
@@ -142,26 +142,26 @@ public Object nativeToJava(TransferData transferData) {
 	}
 	if (offset < temp.length - 2) {
 		int size =  temp.length - offset;
-		int file = OS.g_malloc(size + 1);
+		int /*long*/ file = OS.g_malloc(size + 1);
 		byte[] fileBuffer = new byte[size + 1];
 		System.arraycopy(temp, offset, fileBuffer, 0, size);
 		OS.memmove(file, fileBuffer, size + 1);
-		int[] newFiles = new int[files.length + 1];
+		int /*long*/[] newFiles = new int /*long*/[files.length + 1];
 		System.arraycopy(files, 0, newFiles, 0, files.length);
 		newFiles[files.length] = file;
 		files = newFiles;
 	}
 	String[] fileNames = new String[0];
 	for (int i = 0; i < files.length; i++) {
-		int[] error = new int[1];
-		int localePtr = OS.g_filename_from_uri(files[i], null, error);
+		int /*long*/[] error = new int /*long*/[1];
+		int /*long*/ localePtr = OS.g_filename_from_uri(files[i], null, error);
 		OS.g_free(files[i]);
 		if (error[0] != 0 || localePtr == 0) continue;
-		int utf8Ptr = OS.g_locale_to_utf8(localePtr, -1, null, null, error);
+		int /*long*/ utf8Ptr = OS.g_locale_to_utf8(localePtr, -1, null, null, error);
 		OS.g_free(localePtr);
 		if (error[0] != 0 || utf8Ptr == 0) continue;
 		int[] items_written = new int[1];
-		int utf16Ptr = OS.g_utf8_to_utf16(utf8Ptr, -1, null, items_written, null);
+		int /*long*/ utf16Ptr = OS.g_utf8_to_utf16(utf8Ptr, -1, null, items_written, null);
 		OS.g_free(utf8Ptr);
 		length = items_written[0];
 		char[] buffer = new char[length];

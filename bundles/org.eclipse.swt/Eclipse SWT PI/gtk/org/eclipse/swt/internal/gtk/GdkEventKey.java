@@ -13,13 +13,13 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkEventKey extends GdkEvent {
-	public int window;
+	public int /*long*/ window;
 	public byte send_event;
 	public int time;
 	public int state;
 	public int keyval;
 	public int length;
-	public int string;
+	public int /*long*/ string;
 	public short hardware_keycode;
     public byte group;
    	public static final int sizeof = OS.GdkEventKey_sizeof();

@@ -14,7 +14,7 @@ package org.eclipse.swt.internal.gtk;
 
 public class GdkImage {
 	public int type;
-	public int visual;
+	public int /*long*/ visual;
 	public int byte_order;
 	public int width;
 	public int height;
@@ -22,7 +22,7 @@ public class GdkImage {
 	public short bpp;
 	public short bpl;
 	public short bits_per_pixel;
-	public int mem;
-	public int colormap;
-	public int windowing_data;
+	public int /*long*/ mem;
+	public int /*long*/ colormap;
+	public int /*long*/ windowing_data;
 }

@@ -13,24 +13,24 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GtkFileSelection {
-	public int dir_list;
-	public int file_list;
-	public int selection_entry;
-	public int selection_text;
-	public int main_vbox;
-	public int ok_button;
-	public int cancel_button;
-	public int help_button;
-	public int history_pulldown;
-	public int history_menu;
-	public int history_list;
-	public int fileop_dialog;
-	public int fileop_entry;
-	public int fileop_file;
-	public int cmpl_state;			// gpointer
-	public int fileop_c_dir;
-	public int fileop_del_file;
-	public int fileop_ren_file;
-	public int button_area;
-	public int action_area;
+	public int /*long*/ dir_list;
+	public int /*long*/ file_list;
+	public int /*long*/ selection_entry;
+	public int /*long*/ selection_text;
+	public int /*long*/ main_vbox;
+	public int /*long*/ ok_button;
+	public int /*long*/ cancel_button;
+	public int /*long*/ help_button;
+	public int /*long*/ history_pulldown;
+	public int /*long*/ history_menu;
+	public int /*long*/ history_list;
+	public int /*long*/ fileop_dialog;
+	public int /*long*/ fileop_entry;
+	public int /*long*/ fileop_file;
+	public int /*long*/ cmpl_state;			// gpointer
+	public int /*long*/ fileop_c_dir;
+	public int /*long*/ fileop_del_file;
+	public int /*long*/ fileop_ren_file;
+	public int /*long*/ button_area;
+	public int /*long*/ action_area;
 }

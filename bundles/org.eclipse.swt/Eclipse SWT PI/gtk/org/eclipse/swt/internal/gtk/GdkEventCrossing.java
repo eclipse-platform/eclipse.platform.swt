@@ -13,9 +13,9 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkEventCrossing extends GdkEvent {
-	public int window;
+	public int /*long*/ window;
 	public byte send_event;
-	public int subwindow;
+	public int /*long*/ subwindow;
 	public int time;
 	public double x;
 	public double y;

@@ -13,6 +13,6 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GtkCombo {
-	public int entry;
-	public int list;
+	public int /*long*/ entry;
+	public int /*long*/ list;
 }

@@ -27,14 +27,14 @@ public class Clipboard {
 
 	private Display display;
 	
-	static int GTKCLIPBOARD;
-	static int GTKPRIMARYCLIPBOARD;
-	private static int TARGET;
+	static int /*long*/ GTKCLIPBOARD;
+	static int /*long*/ GTKPRIMARYCLIPBOARD;
+	private static int /*long*/ TARGET;
 	
 	static {
 		GTKCLIPBOARD = OS.gtk_clipboard_get(OS.GDK_NONE);
 		byte[] buffer = Converter.wcsToMbcs(null, "PRIMARY", true);
-		int primary = OS.gdk_atom_intern(buffer, false);
+		int /*long*/ primary = OS.gdk_atom_intern(buffer, false);
 		GTKPRIMARYCLIPBOARD = OS.gtk_clipboard_get(primary);
 		buffer = Converter.wcsToMbcs(null, "TARGETS", true);
 		TARGET = OS.gdk_atom_intern(buffer, false);
@@ -184,7 +184,7 @@ public void dispose () {
 public Object getContents(Transfer transfer) {
 	checkWidget();
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
-	int selection_data = 0;
+	int /*long*/ selection_data = 0;
 	int[] typeIds = transfer.getTypeIds();
 	for (int i = 0; i < typeIds.length; i++) {
 		// try the primary selection first
@@ -328,7 +328,7 @@ public String[] getAvailableTypeNames() {
 	String[] result = new String[types.length];
 	int count = 0;
 	for (int i = 0; i < types.length; i++) {
-		int pName = OS.gdk_atom_name(types[i]);
+		int /*long*/ pName = OS.gdk_atom_name(types[i]);
 		if (pName == 0) {
 			continue;
 		}
@@ -348,7 +348,7 @@ public String[] getAvailableTypeNames() {
 private  int[] _getAvailableTypes() {
 	int[] types = new int[0];
 	// first try the primary clipboard
-	int selection_data = OS.gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, TARGET);
+	int /*long*/ selection_data = OS.gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, TARGET);
 	if (selection_data != 0) {
 		try {
 			GtkSelectionData gtkSelectionData = new GtkSelectionData();

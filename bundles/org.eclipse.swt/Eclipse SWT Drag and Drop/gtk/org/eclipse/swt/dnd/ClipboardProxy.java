@@ -125,7 +125,7 @@ boolean setData(Object[] data, Transfer[] dataTypes) {
 			GtkTargetEntry	entry = new GtkTargetEntry();						
 			entry.info = typeIds[j];
 			byte[] buffer = Converter.wcsToMbcs(null, typeNames[j], true);
-			int pName = OS.g_malloc(buffer.length);
+			int /*long*/ pName = OS.g_malloc(buffer.length);
 			OS.memmove(pName, buffer, buffer.length);
 			entry.target = pName;
 			GtkTargetEntry[] tmp = new GtkTargetEntry [entries.length + 1];
@@ -135,7 +135,7 @@ boolean setData(Object[] data, Transfer[] dataTypes) {
 		}	
 	}
 	
-	int pTargetsList = OS.g_malloc(GtkTargetEntry.sizeof * entries.length);
+	int /*long*/ pTargetsList = OS.g_malloc(GtkTargetEntry.sizeof * entries.length);
 	int offset = 0;
 	for (int i = 0; i < entries.length; i++) {
 		OS.memmove(pTargetsList + offset, entries[i], GtkTargetEntry.sizeof);

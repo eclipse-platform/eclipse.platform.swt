@@ -13,13 +13,13 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkEventExpose extends GdkEvent {
-	public int window;
+	public int /*long*/ window;
 	public byte send_event;
 	public int area_x;
 	public int area_y;
 	public int area_width;
 	public int area_height;
-	public int region;
+	public int /*long*/ region;
 	public int count;
 	public static final int sizeof = OS.GdkEventExpose_sizeof();
 }

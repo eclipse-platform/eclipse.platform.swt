@@ -690,7 +690,7 @@ public void setTransfer(Transfer[] transferAgents){
 		}	
 	}
 	
-	int pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
+	int /*long*/ pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
 	for (int i = 0; i < targets.length; i++) {
 		OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);		
 	}			
@@ -729,7 +729,7 @@ private boolean setEventData(int context, int x, int y, int time, DNDEvent event
 	int length = OS.g_list_length(dragContext.targets);
 	TransferData[] dataTypes = new TransferData[0];
 	for (int i = 0; i < length; i++) {
-		int pData = OS.g_list_nth(dragContext.targets, i);
+		int /*long*/ pData = OS.g_list_nth(dragContext.targets, i);
 		GtkTargetPair gtkTargetPair = new GtkTargetPair();
 		OS.memmove(gtkTargetPair, pData, GtkTargetPair.sizeof);
 		TransferData data = new TransferData();

@@ -21,12 +21,12 @@ public class GdkGCValues {
 	public short background_red;
 	public short background_green;
 	public short background_blue;
-	public int font;
-	public int function;
+	public int /*long*/ font;
+	public int /*long*/ function;
 	public int fill;
-	public int tile;
-	public int stipple;
-	public int clip_mask;
+	public int /*long*/ tile;
+	public int /*long*/ stipple;
+	public int /*long*/ clip_mask;
 	public int subwindow_mode;
 	public int ts_x_origin;
 	public int ts_y_origin;

@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class PangoAttribute {
-	public int klass;
+	public int /*long*/ klass;
 	public int start_index;
 	public int end_index;
 	public static final int sizeof = OS.PangoAttribute_sizeof();

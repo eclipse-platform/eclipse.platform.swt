@@ -15,9 +15,9 @@ package org.eclipse.swt.internal.gtk;
 public class GdkDragContext {     
    public int protocol;
    public boolean is_source;
-   public int source_window;
-   public int dest_window;
-   public int targets;
+   public int /*long*/ source_window;
+   public int /*long*/ dest_window;
+   public int /*long*/ targets;
    public int actions;
    public int suggested_action;
    public int action; 

@@ -13,12 +13,12 @@ package org.eclipse.swt.internal.gtk;
 
  
 public class GnomeVFSMimeApplication {
-	public int id;
-	public int name;
-	public int command;
+	public int /*long*/ id;
+	public int /*long*/ name;
+	public int /*long*/ command;
 	public boolean can_open_multiple_files;
 	public int expects_uris;
-	public int supported_uri_schemes;
+	public int /*long*/ supported_uri_schemes;
 	public boolean requires_terminal;
 	public static final int sizeof = GNOME.GnomeVFSMimeApplication_sizeof();
 }

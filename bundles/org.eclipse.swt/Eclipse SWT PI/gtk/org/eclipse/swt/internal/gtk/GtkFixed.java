@@ -13,5 +13,5 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GtkFixed {
-	public int children;
+	public int /*long*/ children;
 }

@@ -152,7 +152,7 @@ protected void javaToNative (Object object, TransferData transferData) {
 	if ((object == null) || !(object instanceof byte[]) || !(isSupportedType(transferData))) return;
 	byte[] buffer = (byte[])object;
 	if (buffer.length == 0) return;
-	int pValue = OS.g_malloc(buffer.length);
+	int /*long*/ pValue = OS.g_malloc(buffer.length);
 	if (pValue == 0) return;
 	OS.memmove(pValue, buffer, buffer.length);
 	transferData.length = buffer.length;

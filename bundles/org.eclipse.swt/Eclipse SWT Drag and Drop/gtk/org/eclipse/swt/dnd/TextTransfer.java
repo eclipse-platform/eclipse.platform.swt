@@ -62,9 +62,9 @@ public void javaToNative (Object object, TransferData transferData) {
 	
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	if  (transferData.type ==  COMPOUND_TEXT_ID) {
-		int[] encoding = new int[1];
+		int /*long*/[] encoding = new int /*long*/[1];
 		int[] format = new int[1];
-		int[] ctext = new int[1];
+		int /*long*/[] ctext = new int /*long*/[1];
 		int[] length = new int[1];
 		boolean result = OS.gdk_utf8_to_compound_text(buffer, encoding, format, ctext, length);
 		if (!result) return;
@@ -75,7 +75,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		transferData.result = 1;
 	} 
 	if (transferData.type == STRING_ID) {
-		int pValue = OS.g_malloc(buffer.length);
+		int /*long*/ pValue = OS.g_malloc(buffer.length);
 		if (pValue ==  0) return;
 		OS.memmove(pValue, buffer, buffer.length);
 		transferData.type = STRING_ID;
@@ -100,7 +100,7 @@ public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
 	byte[] buffer = null;
 	if (transferData.type == COMPOUND_TEXT_ID) { 	
-		int[] list = new int[1];
+		int /*long*/[] list = new int /*long*/[1];
 		int count = OS.gdk_text_property_to_utf8_list(transferData.type, transferData.format, transferData.pValue, transferData.length, list);
 		if (count == 0) return null;
 		int[] ptr = new int[1];

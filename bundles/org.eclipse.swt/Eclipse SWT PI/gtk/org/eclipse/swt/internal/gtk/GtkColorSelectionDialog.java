@@ -13,8 +13,8 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GtkColorSelectionDialog {
-	public int colorsel;
-	public int ok_button;
-	public int cancel_button;
-	public int help_button;
+	public int /*long*/ colorsel;
+	public int /*long*/ ok_button;
+	public int /*long*/ cancel_button;
+	public int /*long*/ help_button;
 }

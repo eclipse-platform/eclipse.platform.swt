@@ -99,7 +99,7 @@ public class DragSource extends Widget {
 	private Listener controlListener;
 	private Transfer[] transferAgents = new Transfer[0];
 
-	private int targetList;
+	private int /*long*/ targetList;
 	
 	//workaround - remember action performed for DragEnd
 	private boolean moveData = false;
@@ -473,7 +473,7 @@ public void setTransfer(Transfer[] transferAgents){
 		}	
 	}
 	
-	int pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
+	int /*long*/ pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
 	for (int i = 0; i < targets.length; i++) {
 		OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);		
 	}			

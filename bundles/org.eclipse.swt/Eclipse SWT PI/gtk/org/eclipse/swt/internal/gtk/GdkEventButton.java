@@ -13,15 +13,15 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GdkEventButton extends GdkEvent {
-	public int window;
+	public int /*long*/ window;
 	public byte send_event;
 	public int time;
 	public double x;
 	public double y;
-	public int axes;
+	public int /*long*/ axes;
 	public int state;
 	public int button;
-	public int device;
+	public int /*long*/ device;
 	public double x_root;
 	public double y_root;
 	public static final int sizeof = OS.GdkEventButton_sizeof();

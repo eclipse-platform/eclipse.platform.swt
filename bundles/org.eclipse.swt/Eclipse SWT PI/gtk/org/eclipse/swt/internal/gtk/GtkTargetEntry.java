@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GtkTargetEntry {
-	public int target;
+	public int /*long*/ target;
 	public int flags;
 	public int info;
 	public static final int sizeof = OS.GtkTargetEntry_sizeof();

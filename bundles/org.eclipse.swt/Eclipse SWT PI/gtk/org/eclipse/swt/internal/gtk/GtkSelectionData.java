@@ -13,11 +13,11 @@ package org.eclipse.swt.internal.gtk;
 
 
 public class GtkSelectionData {
-	public int  selection;
-	public int  target;
-	public int  type;
+	public int /*long*/  selection;
+	public int /*long*/  target;
+	public int /*long*/  type;
 	public int  format;
-	public int  data;  
+	public int /*long*/  data;  
 	public int  length;
 	public static final int sizeof = OS.GtkSelectionData_sizeof();
 }
