@@ -114,8 +114,8 @@ int defaultThemeFont () {
 	return OS.kThemeEmphasizedSystemFont;
 }
 
-void drawWidget (int control) {
-	drawBackground (handle, background);
+void drawBackground (int control) {
+	drawBackground (control, background);
 }
 
 public Rectangle getClientArea () {

@@ -29,7 +29,9 @@ public Caret getCaret () {
 }
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	boolean isFocus = caret != null && caret.isFocusCaret ();
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	boolean isFocus = theControl [0] == handle && caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
 	if (isFocus) caret.setFocus ();

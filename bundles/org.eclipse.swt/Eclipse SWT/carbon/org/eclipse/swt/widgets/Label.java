@@ -83,6 +83,17 @@ void createHandle () {
 	handle = outControl [0];
 }
 
+void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+	if (isImage && image != null) {
+		GCData data = new GCData ();
+		data.paintEvent = theEvent;
+		GC gc = GC.carbon_new (this, data);
+		gc.drawImage (image, 0, 0);
+		gc.dispose ();
+	}
+	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
+}
+
 public int getAlignment () {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return SWT.LEFT;
@@ -109,22 +120,6 @@ public String getText () {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return text;
-}
-
-int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
-	if (result == -1) return result;
-	if (isImage) {
-		if (image != null) {
-			GCData data = new GCData ();
-			data.paintEvent = theEvent;
-			GC gc = GC.carbon_new (this, data);
-			gc.drawImage (image, 0, 0);
-			gc.dispose ();
-		}
-		return OS.noErr;
-	}
-	return result;
 }
 
 public void setAlignment (int alignment) {

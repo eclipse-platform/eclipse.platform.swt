@@ -171,8 +171,11 @@ public void dispose () {
 	parent.relayout ();
 }
 
-void drawWidget (int control) {
+void drawBackground (int control) {
 	drawBackground (control, null);
+}
+
+void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	if ((style & SWT.SEPARATOR) != 0) {
 		Rect rect = new Rect ();
 		OS.GetControlBounds (handle, rect);

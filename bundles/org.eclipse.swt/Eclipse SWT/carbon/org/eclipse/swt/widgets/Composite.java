@@ -140,18 +140,19 @@ void createScrolledHandle (int parentHandle) {
 	handle = outControl [0];
 }
 
-void drawWidget (int control) {
-	if ((state & CANVAS) != 0) {
-		if (control == scrolledHandle) {
-			if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
-				drawFocus (control, hasFocus (), hasBorder (), inset ());
-			}
+void drawBackground (int control) {
+	if (control == scrolledHandle) {
+		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+			drawFocus (control, hasFocus (), hasBorder (), inset ());
 		} else {
-			if ((style & SWT.NO_BACKGROUND) != 0) return;
-			drawBackground (control, background);
+			drawBackground (control, null);			
 		}
 	} else {
-		super.drawWidget (control);	
+		if ((state & CANVAS) != 0) {
+			if ((style & SWT.NO_BACKGROUND) == 0) {
+				drawBackground (control, background);
+			}	
+		}
 	}
 }
 

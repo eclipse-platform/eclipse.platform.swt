@@ -57,8 +57,8 @@ void createHandle () {
 	handle = outControl [0];
 }
 
-void drawWidget (int control) {
-	drawBackground (handle, background);
+void drawBackground (int control) {
+	drawBackground (control, background);
 }
 
 int kEventControlClick (int nextHandler, int theEvent, int userData) {

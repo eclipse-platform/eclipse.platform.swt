@@ -101,8 +101,8 @@ void destroyItem (ToolItem item) {
 	items [itemCount] = null;
 }
 
-void drawWidget (int control) {
-	drawBackground (handle, background);
+void drawBackground (int control) {
+	drawBackground (control, background);
 }
 
 void enableWidget (boolean enabled) {

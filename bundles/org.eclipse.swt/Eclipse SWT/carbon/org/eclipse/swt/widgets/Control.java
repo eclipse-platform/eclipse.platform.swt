@@ -213,6 +213,33 @@ void destroyWidget () {
 	}
 }
 
+void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+	if (control != handle) return;
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
+
+	/* Retrieve the damage rect */
+	Rect rect = new Rect ();
+	OS.GetRegionBounds (visibleRgn, rect);
+	Rect bounds = new Rect ();
+	OS.GetControlBounds (handle, bounds);
+	OS.OffsetRect (rect, (short) -bounds.left, (short) -bounds.top);
+
+	/* Send paint event */
+	GCData data = new GCData ();
+	data.paintEvent = theEvent;
+	data.visibleRgn = visibleRgn;
+	GC gc = GC.carbon_new (this, data);
+	Event event = new Event ();
+	event.gc = gc;
+	event.x = rect.left;
+	event.y = rect.top;
+	event.width = rect.right - rect.left;
+	event.height = rect.bottom - rect.top;
+	sendEvent (SWT.Paint, event);
+	event.gc = null;
+	gc.dispose ();
+}
+
 void enableWidget (boolean enabled) {
 	int topHandle = topHandle ();
 	if (enabled) {
@@ -465,36 +492,30 @@ void hookEvents () {
 
 public int internal_new_GC (GCData data) {
 	checkWidget();
+	int visibleRgn = 0;
+	int window = OS.GetControlOwner (handle);
+	int port = OS.GetWindowPort (window);
 	int [] buffer = new int [1];
-	int context = 0, paintRgn = 0, visibleRgn = 0;
-	if (data.paintEvent != 0) {
-		int theEvent = data.paintEvent;
-		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
-		context = buffer [0];	
-		OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, buffer);
-		visibleRgn = paintRgn = buffer [0];
-	}
-	if (context == 0) {
-		int window = OS.GetControlOwner (handle);
-		int port = OS.GetWindowPort (window);
-		OS.CreateCGContextForPort (port, buffer);
-		context = buffer [0];
-		if (context != 0) {
-			Rect rect = new Rect ();
-			OS.GetControlBounds (handle, rect);
-			Rect portRect = new Rect ();
-			OS.GetPortBounds (port, portRect);
+	OS.CreateCGContextForPort (port, buffer);
+	int context = buffer [0];
+	if (context != 0) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (handle, rect);
+		Rect portRect = new Rect ();
+		OS.GetPortBounds (port, portRect);
+		if (data != null && data.paintEvent != 0) {
+			visibleRgn = data.visibleRgn;
+		} else {
 			if (getDrawCount (handle) > 0) {
 				visibleRgn = OS.NewRgn ();
 			} else {
 				visibleRgn = getVisibleRegion (handle, true);
 			}
-			if (paintRgn != 0) OS.SectRgn (paintRgn, visibleRgn, visibleRgn);
-			OS.ClipCGContextToRegion (context, portRect, visibleRgn);
-			int portHeight = portRect.bottom - portRect.top;
-			OS.CGContextScaleCTM (context, 1, -1);
-			OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
 		}
+		OS.ClipCGContextToRegion (context, portRect, visibleRgn);
+		int portHeight = portRect.bottom - portRect.top;
+		OS.CGContextScaleCTM (context, 1, -1);
+		OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
 	}
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
@@ -505,29 +526,17 @@ public int internal_new_GC (GCData data) {
 		data.font = font != null ? font : defaultFont ();
 		data.visibleRgn = visibleRgn;
 		data.control = handle;
-	} else {
-		if (visibleRgn != paintRgn) OS.DisposeRgn (visibleRgn);
 	}
 	return context;
 }
 
 public void internal_dispose_GC (int context, GCData data) {
 	checkWidget ();
-	if (data != null) {
-		int paintContext = 0, paintRgn = 0;
-		if (data.paintEvent != 0) {
-			int theEvent = data.paintEvent;
-			int [] buffer = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
-			paintContext = buffer [0];	
-			OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, buffer);
-			paintRgn = buffer [0];
-		}
-		if (data.visibleRgn != 0 && data.visibleRgn != paintRgn) {
+	if (data != null && data.paintEvent == 0) {
+		if (data.visibleRgn != 0) {
 			OS.DisposeRgn (data.visibleRgn);
 			data.visibleRgn = 0;
 		}
-		if (paintContext == context) return;
 	}
 	OS.CGContextFlush (context);
 	OS.CGContextRelease (context);
@@ -614,43 +623,6 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 		return OS.noErr;
 	}
 	return OS.eventNotHandledErr;
-}
-
-int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
-	if (result == -1) return result;
-	int [] theControl = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	if (theControl [0] != handle) return result;
-	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return result;
-
-	/* Retrieve the damage region */
-	int [] region = new int [1];	
-	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
-	Rect bounds = new Rect ();
-	OS.GetRegionBounds (region [0], bounds);
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	if (!OS.SectRect (rect, bounds, bounds)) return result;
-	OS.OffsetRect (bounds, (short) -rect.left, (short) -rect.top);
-
-	GCData data = new GCData ();
-	data.paintEvent = theEvent;
-	GC gc = GC.carbon_new (this, data);
-	
-	/* Send the paint event */
-	Event event = new Event ();
-	event.gc = gc;
-	event.x = bounds.left;
-	event.y = bounds.top;
-	event.width = bounds.right - bounds.left;
-	event.height = bounds.bottom - bounds.top;
-//	gc.setClipping (Region.carbon_new (region [0]));
-	sendEvent (SWT.Paint, event);
-	event.gc = null;
-	gc.dispose ();
-
-	return result;
 }
 
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
@@ -1374,7 +1346,6 @@ public void update () {
 void update (boolean all) {
 //	checkWidget();
 	if (!isDrawing (handle)) return;
-	long start = System.currentTimeMillis();
 	int window = OS.GetControlOwner (handle);
 	int port = OS.GetWindowPort (window);
 	int portRgn = OS.NewRgn ();

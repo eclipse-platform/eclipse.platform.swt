@@ -202,9 +202,13 @@ public void cut () {
 	if (!oldSelection.equals (newSelection)) sendEvent (SWT.Modify);
 }
 
-void drawWidget (int control) {
+void drawBackground (int control) {
 	drawFocus (control, hasFocus (), hasBorder (), inset ());
+}
+
+void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	OS.TXNDraw (txnObject, 0);
+	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
 }
 
 public int getCaretLineNumber () {

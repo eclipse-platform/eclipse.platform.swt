@@ -275,6 +275,10 @@ public void dispose () {
 	destroyWidget ();
 }
 
+void drawBackground (int control) {
+	/* Do nothing */
+}
+
 void drawBackground (int control, float [] background) {
 	Rect rect = new Rect ();
 	OS.GetControlBounds (control, rect);
@@ -323,7 +327,7 @@ void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, Rect in
 	OS.DisposeRgn (visibleRgn);
 }
 
-void drawWidget (int control) {
+void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 }
 
 void error (int code) {
@@ -527,25 +531,23 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	if (getDrawCount (theControl [0]) > 0) return -1;
+	if (getDrawCount (theControl [0]) > 0) return OS.noErr;
 	int [] region = new int [1];	
 	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
 	int visibleRgn = getVisibleRegion (theControl [0], true);
 	OS.SectRgn(region [0], visibleRgn, visibleRgn);
-	int result = -1;
 	if (!OS.EmptyRgn (visibleRgn)) {
 		int oldClip = OS.NewRgn ();
 		OS.GetClip (oldClip);
 		OS.SetClip (visibleRgn);
-		drawWidget (theControl [0]);
-		Rect rect = new Rect ();
-		OS.GetRegionBounds(visibleRgn, rect);
-		result = OS.CallNextEventHandler (nextHandler, theEvent);
+		drawBackground (theControl [0]);
+		OS.CallNextEventHandler (nextHandler, theEvent);
+		drawWidget (theControl [0], region [0], visibleRgn, theEvent);
 		OS.SetClip (oldClip);
 		OS.DisposeRgn (oldClip);
 	}
 	OS.DisposeRgn (visibleRgn);
-	return result;
+	return OS.noErr;
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {

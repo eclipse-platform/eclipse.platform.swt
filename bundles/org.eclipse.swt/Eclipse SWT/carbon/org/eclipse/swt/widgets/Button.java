@@ -217,6 +217,24 @@ int defaultThemeFont () {
 	return OS.kThemePushButtonFont;
 }
 
+void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+	if (isImage && image != null && (style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
+		Rect rect = new Rect();
+		OS.GetControlBounds (handle, rect);
+		int width = OS.CGImageGetWidth (image.handle);
+		int height = OS.CGImageGetHeight (image.handle);
+		int x = Math.max (0, (rect.right - rect.left - width) / 2);
+		int y = Math.max (0, (rect.bottom - rect.top - height) / 2);
+		GCData data = new GCData ();
+		data.paintEvent = theEvent;
+		data.visibleRgn = visibleRgn;
+		GC gc = GC.carbon_new (this, data);
+		gc.drawImage (image, x, y);
+		gc.dispose ();
+	}
+	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
+}
+
 public int getAlignment () {
 	checkWidget ();
 	if ((style & SWT.ARROW) != 0) {
@@ -255,26 +273,6 @@ Rect getInset () {
 	if ((style & SWT.PUSH) == 0) return super.getInset();
 	Display display = getDisplay ();
 	return display.buttonInset;
-}
-
-int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
-	if (result == -1) return result;
-	if (isImage && image != null && (style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
-		Rect rect = new Rect();
-		OS.GetControlBounds (handle, rect);
-		int width = OS.CGImageGetWidth (image.handle);
-		int height = OS.CGImageGetHeight (image.handle);
-		int x = Math.max (0, (rect.right - rect.left - width) / 2);
-		int y = Math.max (0, (rect.bottom - rect.top - height) / 2);
-		GCData data = new GCData ();
-		data.paintEvent = theEvent;
-		GC gc = GC.carbon_new (this, data);
-		gc.drawImage (image, x, y);
-		gc.dispose ();
-		return OS.noErr;
-	}
-	return result;
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
