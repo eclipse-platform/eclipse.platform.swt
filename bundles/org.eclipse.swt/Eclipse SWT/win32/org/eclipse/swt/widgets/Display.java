@@ -1830,10 +1830,6 @@ public void internal_dispose_GC (int hDC, GCData data) {
 	OS.ReleaseDC (0, hDC);
 }
 
-boolean isWakeMessage (MSG msg) {
-	return msg.hwnd == hwndMessage && msg.message == OS.WM_NULL;
-}
-
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
@@ -2150,11 +2146,6 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				System.exit (0);
 			}
 			break;
-		case OS.WM_NULL:
-			if (OS.IsWinCE) {
-				if (runAsyncMessages ()) wakeThread ();
-			}
-			break;
 		case OS.WM_QUERYENDSESSION:
 			Event event = new Event ();
 			sendEvent (SWT.Close, event);
@@ -2384,14 +2375,12 @@ public boolean readAndDispatch () {
 	drawMenuBars ();
 	runPopups ();
 	if (OS.PeekMessage (msg, 0, 0, 0, OS.PM_REMOVE)) {
-		if (!isWakeMessage (msg)) {
-			if (!filterMessage (msg)) {
-				OS.TranslateMessage (msg);
-				OS.DispatchMessage (msg);
-			}
-			runDeferredEvents ();
-			return true;
+		if (!filterMessage (msg)) {
+			OS.TranslateMessage (msg);
+			OS.DispatchMessage (msg);
 		}
+		runDeferredEvents ();
+		return true;
 	}
 	return runAsyncMessages ();
 }
