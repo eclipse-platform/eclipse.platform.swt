@@ -16,6 +16,4 @@
 
 #include <Carbon/Carbon.h>
 
-#include "os_stats.h"
-
 #endif /* INC_os_H */

@@ -10,7 +10,7 @@
 *******************************************************************************/
 
 #include "swt.h"
-#include "os_structs.h"
+#include "os_stats.h"
 
 #ifdef NATIVE_STATS
 

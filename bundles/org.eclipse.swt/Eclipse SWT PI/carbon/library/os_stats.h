@@ -19,758 +19,760 @@ char* OS_nativeFunctionNames[];
 #define OS_NATIVE_EXIT(env, that, func) 
 #endif
 
-#define AECountItems_FUNC 0
-#define AEGetNthPtr_FUNC 1
-#define AEProcessAppleEvent_FUNC 2
-#define ATSFontGetPostScriptName_FUNC 3
-#define ATSUBatchBreakLines_FUNC 4
-#define ATSUCreateStyle_FUNC 5
-#define ATSUCreateTextLayout_FUNC 6
-#define ATSUCreateTextLayoutWithTextPtr_FUNC 7
-#define ATSUDisposeStyle_FUNC 8
-#define ATSUDisposeTextLayout_FUNC 9
-#define ATSUDrawText_FUNC 10
-#define ATSUFindFontFromName_FUNC 11
-#define ATSUFindFontName_FUNC 12
-#define ATSUGetFontIDs_FUNC 13
-#define ATSUGetGlyphBounds__IIIIISII_3I_FUNC 14
-#define ATSUGetGlyphBounds__IIIIISILorg_eclipse_swt_internal_carbon_ATSTrapezoid_2_3I_FUNC 15
-#define ATSUGetLayoutControl_FUNC 16
-#define ATSUGetLineControl_FUNC 17
-#define ATSUGetSoftLineBreaks_FUNC 18
-#define ATSUGetTextHighlight_FUNC 19
-#define ATSUGetUnjustifiedBounds_FUNC 20
-#define ATSUHighlightText_FUNC 21
-#define ATSUNextCursorPosition_FUNC 22
-#define ATSUOffsetToPosition_FUNC 23
-#define ATSUPositionToOffset_FUNC 24
-#define ATSUPreviousCursorPosition_FUNC 25
-#define ATSUSetAttributes_FUNC 26
-#define ATSUSetFontFeatures_FUNC 27
-#define ATSUSetHighlightingMethod_FUNC 28
-#define ATSUSetLayoutControls_FUNC 29
-#define ATSUSetLineControls_FUNC 30
-#define ATSUSetRunStyle_FUNC 31
-#define ATSUSetSoftLineBreak_FUNC 32
-#define ATSUSetTabArray_FUNC 33
-#define ATSUSetTextPointerLocation_FUNC 34
-#define ATSUSetTransientFontMatching_FUNC 35
-#define ATSUTextDeleted_FUNC 36
-#define ATSUTextInserted_FUNC 37
-#define ActiveNonFloatingWindow_FUNC 38
-#define AddDataBrowserItems_FUNC 39
-#define AddDataBrowserListViewColumn_FUNC 40
-#define AddDragItemFlavor_FUNC 41
-#define AppendMenuItemTextWithCFString_FUNC 42
-#define AutoSizeDataBrowserListViewColumns_FUNC 43
-#define BeginUpdate_FUNC 44
-#define BringToFront_FUNC 45
-#define CFArrayAppendValue_FUNC 46
-#define CFArrayCreateMutable_FUNC 47
-#define CFArrayGetCount_FUNC 48
-#define CFArrayGetValueAtIndex_FUNC 49
-#define CFRelease_FUNC 50
-#define CFStringCreateWithBytes_FUNC 51
-#define CFStringCreateWithCharacters_FUNC 52
-#define CFStringGetBytes_FUNC 53
-#define CFStringGetCharacters_FUNC 54
-#define CFStringGetLength_FUNC 55
-#define CFStringGetSystemEncoding_FUNC 56
-#define CFURLCopyFileSystemPath_FUNC 57
-#define CFURLCopyLastPathComponent_FUNC 58
-#define CFURLCreateCopyAppendingPathComponent_FUNC 59
-#define CFURLCreateCopyDeletingLastPathComponent_FUNC 60
-#define CFURLCreateFromFSRef_FUNC 61
-#define CFURLCreateWithFileSystemPath_FUNC 62
-#define CFURLGetFSRef_FUNC 63
-#define CGBitmapContextCreate_FUNC 64
-#define CGColorSpaceCreateDeviceRGB_FUNC 65
-#define CGColorSpaceRelease_FUNC 66
-#define CGContextAddArc_FUNC 67
-#define CGContextAddArcToPoint_FUNC 68
-#define CGContextAddLineToPoint_FUNC 69
-#define CGContextAddLines_FUNC 70
-#define CGContextBeginPath_FUNC 71
-#define CGContextClearRect_FUNC 72
-#define CGContextClip_FUNC 73
-#define CGContextClosePath_FUNC 74
-#define CGContextDrawImage_FUNC 75
-#define CGContextEOFillPath_FUNC 76
-#define CGContextFillPath_FUNC 77
-#define CGContextFillRect_FUNC 78
-#define CGContextFlush_FUNC 79
-#define CGContextGetTextPosition_FUNC 80
-#define CGContextMoveToPoint_FUNC 81
-#define CGContextRelease_FUNC 82
-#define CGContextRestoreGState_FUNC 83
-#define CGContextSaveGState_FUNC 84
-#define CGContextScaleCTM_FUNC 85
-#define CGContextSelectFont_FUNC 86
-#define CGContextSetFillColor_FUNC 87
-#define CGContextSetFillColorSpace_FUNC 88
-#define CGContextSetFont_FUNC 89
-#define CGContextSetFontSize_FUNC 90
-#define CGContextSetLineCap_FUNC 91
-#define CGContextSetLineDash_FUNC 92
-#define CGContextSetLineWidth_FUNC 93
-#define CGContextSetRGBFillColor_FUNC 94
-#define CGContextSetRGBStrokeColor_FUNC 95
-#define CGContextSetShouldAntialias_FUNC 96
-#define CGContextSetShouldSmoothFonts_FUNC 97
-#define CGContextSetStrokeColor_FUNC 98
-#define CGContextSetStrokeColorSpace_FUNC 99
-#define CGContextSetTextDrawingMode_FUNC 100
-#define CGContextSetTextMatrix_FUNC 101
-#define CGContextSetTextPosition_FUNC 102
-#define CGContextShowText_FUNC 103
-#define CGContextShowTextAtPoint_FUNC 104
-#define CGContextStrokePath_FUNC 105
-#define CGContextStrokeRect_FUNC 106
-#define CGContextSynchronize_FUNC 107
-#define CGContextTranslateCTM_FUNC 108
-#define CGDataProviderCreateWithData_FUNC 109
-#define CGDataProviderRelease_FUNC 110
-#define CGDisplayBaseAddress_FUNC 111
-#define CGDisplayBitsPerPixel_FUNC 112
-#define CGDisplayBitsPerSample_FUNC 113
-#define CGDisplayBytesPerRow_FUNC 114
-#define CGDisplayPixelsHigh_FUNC 115
-#define CGDisplayPixelsWide_FUNC 116
-#define CGFontCreateWithPlatformFont_FUNC 117
-#define CGFontRelease_FUNC 118
-#define CGGetDisplaysWithRect_FUNC 119
-#define CGImageCreate_FUNC 120
-#define CGImageGetAlphaInfo_FUNC 121
-#define CGImageGetBitsPerComponent_FUNC 122
-#define CGImageGetBitsPerPixel_FUNC 123
-#define CGImageGetBytesPerRow_FUNC 124
-#define CGImageGetColorSpace_FUNC 125
-#define CGImageGetHeight_FUNC 126
-#define CGImageGetWidth_FUNC 127
-#define CGImageRelease_FUNC 128
-#define CGPostKeyboardEvent_FUNC 129
-#define CGPostMouseEvent_FUNC 130
-#define CGWarpMouseCursorPosition_FUNC 131
-#define CPSEnableForegroundOperation_FUNC 132
-#define CPSSetProcessName_FUNC 133
-#define CallNextEventHandler_FUNC 134
-#define CharWidth_FUNC 135
-#define ClearCurrentScrap_FUNC 136
-#define ClearKeyboardFocus_FUNC 137
-#define ClearMenuBar_FUNC 138
-#define ClipCGContextToRegion_FUNC 139
-#define CloseDataBrowserContainer_FUNC 140
-#define ClosePoly_FUNC 141
-#define CloseRgn_FUNC 142
-#define CollapseWindow_FUNC 143
-#define ConvertEventRefToEventRecord_FUNC 144
-#define ConvertFromPStringToUnicode_FUNC 145
-#define ConvertFromUnicodeToPString_FUNC 146
-#define CopyBits_FUNC 147
-#define CopyControlTitleAsCFString_FUNC 148
-#define CopyDeepMask_FUNC 149
-#define CopyMenuItemTextAsCFString_FUNC 150
-#define CopyRgn_FUNC 151
-#define CountDragItemFlavors_FUNC 152
-#define CountDragItems_FUNC 153
-#define CountMenuItems_FUNC 154
-#define CountSubControls_FUNC 155
-#define CreateBevelButtonControl_FUNC 156
-#define CreateCGContextForPort_FUNC 157
-#define CreateCheckBoxControl_FUNC 158
-#define CreateDataBrowserControl_FUNC 159
-#define CreateEditUnicodeTextControl_FUNC 160
-#define CreateEvent_FUNC 161
-#define CreateGroupBoxControl_FUNC 162
-#define CreateIconControl_FUNC 163
-#define CreateNewMenu_FUNC 164
-#define CreateNewWindow_FUNC 165
-#define CreatePopupArrowControl_FUNC 166
-#define CreatePopupButtonControl_FUNC 167
-#define CreateProgressBarControl_FUNC 168
-#define CreatePushButtonControl_FUNC 169
-#define CreatePushButtonWithIconControl_FUNC 170
-#define CreateRadioButtonControl_FUNC 171
-#define CreateRootControl_FUNC 172
-#define CreateScrollBarControl_FUNC 173
-#define CreateSeparatorControl_FUNC 174
-#define CreateSliderControl_FUNC 175
-#define CreateStandardAlert_FUNC 176
-#define CreateStaticTextControl_FUNC 177
-#define CreateTabsControl_FUNC 178
-#define CreateTextToUnicodeInfoByEncoding_FUNC 179
-#define CreateUnicodeToTextInfoByEncoding_FUNC 180
-#define CreateUserPaneControl_FUNC 181
-#define CreateWindowGroup_FUNC 182
-#define DMGetFirstScreenDevice_FUNC 183
-#define DMGetNextScreenDevice_FUNC 184
-#define DeleteMenu_FUNC 185
-#define DeleteMenuItem_FUNC 186
-#define DeleteMenuItems_FUNC 187
-#define DiffRgn_FUNC 188
-#define DisableControl_FUNC 189
-#define DisableMenuCommand_FUNC 190
-#define DisableMenuItem_FUNC 191
-#define DisposeControl_FUNC 192
-#define DisposeDrag_FUNC 193
-#define DisposeGWorld_FUNC 194
-#define DisposeHandle_FUNC 195
-#define DisposeMenu_FUNC 196
-#define DisposePtr_FUNC 197
-#define DisposeRgn_FUNC 198
-#define DisposeTextToUnicodeInfo_FUNC 199
-#define DisposeUnicodeToTextInfo_FUNC 200
-#define DisposeWindow_FUNC 201
-#define DrawControlInCurrentPort_FUNC 202
-#define DrawMenuBar_FUNC 203
-#define DrawText_FUNC 204
-#define DrawThemeButton_FUNC 205
-#define DrawThemeEditTextFrame_FUNC 206
-#define DrawThemeFocusRect_FUNC 207
-#define DrawThemePopupArrow_FUNC 208
-#define DrawThemeSeparator_FUNC 209
-#define DrawThemeTextBox_FUNC 210
-#define EmbedControl_FUNC 211
-#define EmptyRect_FUNC 212
-#define EmptyRgn_FUNC 213
-#define EnableControl_FUNC 214
-#define EnableMenuCommand_FUNC 215
-#define EnableMenuItem_FUNC 216
-#define EndUpdate_FUNC 217
-#define EqualRect_FUNC 218
-#define EraseRect_FUNC 219
-#define EraseRgn_FUNC 220
-#define FMCreateFontFamilyInstanceIterator_FUNC 221
-#define FMCreateFontFamilyIterator_FUNC 222
-#define FMDisposeFontFamilyInstanceIterator_FUNC 223
-#define FMDisposeFontFamilyIterator_FUNC 224
-#define FMGetATSFontRefFromFont_FUNC 225
-#define FMGetFontFamilyFromName_FUNC 226
-#define FMGetFontFamilyInstanceFromFont_FUNC 227
-#define FMGetFontFamilyName_FUNC 228
-#define FMGetFontFromFontFamilyInstance_FUNC 229
-#define FMGetNextFontFamily_FUNC 230
-#define FMGetNextFontFamilyInstance_FUNC 231
-#define FPIsFontPanelVisible_FUNC 232
-#define FPShowHideFontPanel_FUNC 233
-#define FSGetCatalogInfo_FUNC 234
-#define FSpGetFInfo_FUNC 235
-#define FSpMakeFSRef_FUNC 236
-#define FetchFontInfo_FUNC 237
-#define FindWindow_FUNC 238
-#define Fix2Long_FUNC 239
-#define FrameOval_FUNC 240
-#define FramePoly_FUNC 241
-#define FrameRect_FUNC 242
-#define FrameRoundRect_FUNC 243
-#define FrontWindow_FUNC 244
-#define Gestalt_FUNC 245
-#define GetAppFont_FUNC 246
-#define GetApplicationEventTarget_FUNC 247
-#define GetAvailableWindowAttributes_FUNC 248
-#define GetAvailableWindowPositioningBounds_FUNC 249
-#define GetBestControlRect_FUNC 250
-#define GetCaretTime_FUNC 251
-#define GetClip_FUNC 252
-#define GetControl32BitMaximum_FUNC 253
-#define GetControl32BitMinimum_FUNC 254
-#define GetControl32BitValue_FUNC 255
-#define GetControlBounds_FUNC 256
-#define GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlFontStyleRec_2_3I_FUNC 257
-#define GetControlData__ISIILorg_eclipse_swt_internal_carbon_Rect_2_3I_FUNC 258
-#define GetControlData__ISII_3B_3I_FUNC 259
-#define GetControlData__ISII_3I_3I_FUNC 260
-#define GetControlData__ISII_3S_3I_FUNC 261
-#define GetControlEventTarget_FUNC 262
-#define GetControlFeatures_FUNC 263
-#define GetControlOwner_FUNC 264
-#define GetControlProperty_FUNC 265
-#define GetControlReference_FUNC 266
-#define GetControlRegion_FUNC 267
-#define GetControlValue_FUNC 268
-#define GetControlViewSize_FUNC 269
-#define GetCurrentEventButtonState_FUNC 270
-#define GetCurrentEventKeyModifiers_FUNC 271
-#define GetCurrentEventLoop_FUNC 272
-#define GetCurrentEventQueue_FUNC 273
-#define GetCurrentProcess_FUNC 274
-#define GetCurrentScrap_FUNC 275
-#define GetDataBrowserCallbacks_FUNC 276
-#define GetDataBrowserItemCount_FUNC 277
-#define GetDataBrowserItemDataButtonValue_FUNC 278
-#define GetDataBrowserItemPartBounds_FUNC 279
-#define GetDataBrowserItemState_FUNC 280
-#define GetDataBrowserItems_FUNC 281
-#define GetDataBrowserListViewHeaderBtnHeight_FUNC 282
-#define GetDataBrowserListViewHeaderDesc_FUNC 283
-#define GetDataBrowserScrollBarInset_FUNC 284
-#define GetDataBrowserScrollPosition_FUNC 285
-#define GetDataBrowserSelectionAnchor_FUNC 286
-#define GetDataBrowserSelectionFlags_FUNC 287
-#define GetDataBrowserSortProperty_FUNC 288
-#define GetDataBrowserTableViewColumnPosition_FUNC 289
-#define GetDataBrowserTableViewItemID_FUNC 290
-#define GetDataBrowserTableViewItemRow_FUNC 291
-#define GetDataBrowserTableViewNamedColumnWidth_FUNC 292
-#define GetDataBrowserTableViewRowHeight_FUNC 293
-#define GetDblTime_FUNC 294
-#define GetDefFontSize_FUNC 295
-#define GetDeviceList_FUNC 296
-#define GetDragAllowableActions_FUNC 297
-#define GetDragDropAction_FUNC 298
-#define GetDragItemReferenceNumber_FUNC 299
-#define GetDragModifiers_FUNC 300
-#define GetDragMouse_FUNC 301
-#define GetEventClass_FUNC 302
-#define GetEventDispatcherTarget_FUNC 303
-#define GetEventKind_FUNC 304
-#define GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGPoint_2_FUNC 305
-#define GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_HICommand_2_FUNC 306
-#define GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_Point_2_FUNC 307
-#define GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_RGBColor_2_FUNC 308
-#define GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_Rect_2_FUNC 309
-#define GetEventParameter__III_3II_3I_3B_FUNC 310
-#define GetEventParameter__III_3II_3I_3C_FUNC 311
-#define GetEventParameter__III_3II_3I_3I_FUNC 312
-#define GetEventParameter__III_3II_3I_3S_FUNC 313
-#define GetEventTime_FUNC 314
-#define GetFlavorData_FUNC 315
-#define GetFlavorDataSize_FUNC 316
-#define GetFlavorType_FUNC 317
-#define GetFontInfo_FUNC 318
-#define GetGDevice_FUNC 319
-#define GetGWorld_FUNC 320
-#define GetGlobalMouse_FUNC 321
-#define GetHandleSize_FUNC 322
-#define GetIconFamilyData_FUNC 323
-#define GetIconRef_FUNC 324
-#define GetIndMenuItemWithCommandID_FUNC 325
-#define GetIndexedSubControl_FUNC 326
-#define GetItemMark_FUNC 327
-#define GetKeyboardFocus_FUNC 328
-#define GetLastUserEventTime_FUNC 329
-#define GetMBarHeight_FUNC 330
-#define GetMainDevice_FUNC 331
-#define GetMainEventQueue_FUNC 332
-#define GetMenuCommandMark_FUNC 333
-#define GetMenuEventTarget_FUNC 334
-#define GetMenuFont_FUNC 335
-#define GetMenuHeight_FUNC 336
-#define GetMenuID_FUNC 337
-#define GetMenuItemCommandID_FUNC 338
-#define GetMenuItemHierarchicalMenu_FUNC 339
-#define GetMenuItemRefCon_FUNC 340
-#define GetMenuTrackingData_FUNC 341
-#define GetMenuWidth_FUNC 342
-#define GetMouse_FUNC 343
-#define GetNextDevice_FUNC 344
-#define GetPixBounds_FUNC 345
-#define GetPixDepth_FUNC 346
-#define GetPort_FUNC 347
-#define GetPortBitMapForCopyBits_FUNC 348
-#define GetPortBounds_FUNC 349
-#define GetPortClipRegion_FUNC 350
-#define GetPortVisibleRegion_FUNC 351
-#define GetPreviousWindow_FUNC 352
-#define GetPtrSize_FUNC 353
-#define GetRegionBounds_FUNC 354
-#define GetRootControl_FUNC 355
-#define GetScrapFlavorCount_FUNC 356
-#define GetScrapFlavorData_FUNC 357
-#define GetScrapFlavorInfoList_FUNC 358
-#define GetScrapFlavorSize_FUNC 359
-#define GetScriptManagerVariable_FUNC 360
-#define GetSuperControl_FUNC 361
-#define GetTabContentRect_FUNC 362
-#define GetThemeBrushAsColor_FUNC 363
-#define GetThemeButtonContentBounds_FUNC 364
-#define GetThemeDrawingState_FUNC 365
-#define GetThemeFont_FUNC 366
-#define GetThemeMenuItemExtra_FUNC 367
-#define GetThemeMetric_FUNC 368
-#define GetThemeTextColor_FUNC 369
-#define GetThemeTextDimensions_FUNC 370
-#define GetUserFocusEventTarget_FUNC 371
-#define GetUserFocusWindow_FUNC 372
-#define GetWRefCon_FUNC 373
-#define GetWindowActivationScope_FUNC 374
-#define GetWindowBounds_FUNC 375
-#define GetWindowDefaultButton_FUNC 376
-#define GetWindowEventTarget_FUNC 377
-#define GetWindowFromPort_FUNC 378
-#define GetWindowGroupOfClass_FUNC 379
-#define GetWindowModality_FUNC 380
-#define GetWindowPort_FUNC 381
-#define GetWindowRegion_FUNC 382
-#define GetWindowResizeLimits_FUNC 383
-#define GetWindowStructureWidths_FUNC 384
-#define HIComboBoxAppendTextItem_FUNC 385
-#define HIComboBoxCopyTextItemAtIndex_FUNC 386
-#define HIComboBoxCreate_FUNC 387
-#define HIComboBoxGetItemCount_FUNC 388
-#define HIComboBoxInsertTextItemAtIndex_FUNC 389
-#define HIComboBoxRemoveItemAtIndex_FUNC 390
-#define HIObjectCopyClassID_FUNC 391
-#define HIObjectCreate_FUNC 392
-#define HIObjectRegisterSubclass_FUNC 393
-#define HIViewAddSubview_FUNC 394
-#define HIViewClick_FUNC 395
-#define HIViewConvertPoint_FUNC 396
-#define HIViewCreateOffscreenImage_FUNC 397
-#define HIViewFindByID_FUNC 398
-#define HIViewGetFirstSubview_FUNC 399
-#define HIViewGetFrame_FUNC 400
-#define HIViewGetLastSubview_FUNC 401
-#define HIViewGetNextView_FUNC 402
-#define HIViewGetRoot_FUNC 403
-#define HIViewGetSizeConstraints_FUNC 404
-#define HIViewGetSubviewHit_FUNC 405
-#define HIViewGetViewForMouseEvent_FUNC 406
-#define HIViewIsVisible_FUNC 407
-#define HIViewRemoveFromSuperview_FUNC 408
-#define HIViewSetBoundsOrigin_FUNC 409
-#define HIViewSetDrawingEnabled_FUNC 410
-#define HIViewSetFrame_FUNC 411
-#define HIViewSetNeedsDisplay_FUNC 412
-#define HIViewSetNeedsDisplayInRegion_FUNC 413
-#define HIViewSetVisible_FUNC 414
-#define HIViewSetZOrder_FUNC 415
-#define HIViewSimulateClick_FUNC 416
-#define HLock_FUNC 417
-#define HMGetTagDelay_FUNC 418
-#define HMHideTag_FUNC 419
-#define HMInstallControlContentCallback_FUNC 420
-#define HMSetTagDelay_FUNC 421
-#define HUnlock_FUNC 422
-#define HandleControlClick_FUNC 423
-#define HandleControlSetCursor_FUNC 424
-#define HiWord_FUNC 425
-#define HideWindow_FUNC 426
-#define HiliteMenu_FUNC 427
-#define IconRefToIconFamily_FUNC 428
-#define InitContextualMenus_FUNC 429
-#define InitCursor_FUNC 430
-#define InitDataBrowserCallbacks_FUNC 431
-#define InitDataBrowserCustomCallbacks_FUNC 432
-#define InsertMenu_FUNC 433
-#define InsertMenuItemTextWithCFString_FUNC 434
-#define InstallEventHandler_FUNC 435
-#define InstallEventLoopTimer_FUNC 436
-#define InstallReceiveHandler_FUNC 437
-#define InstallTrackingHandler_FUNC 438
-#define InvalWindowRect_FUNC 439
-#define InvalWindowRgn_FUNC 440
-#define InvertRect_FUNC 441
-#define InvertRgn_FUNC 442
-#define IsControlActive_FUNC 443
-#define IsControlEnabled_FUNC 444
-#define IsControlVisible_FUNC 445
-#define IsDataBrowserItemSelected_FUNC 446
-#define IsMenuCommandEnabled_FUNC 447
-#define IsMenuItemEnabled_FUNC 448
-#define IsValidControlHandle_FUNC 449
-#define IsValidMenu_FUNC 450
-#define IsValidWindowPtr_FUNC 451
-#define IsWindowActive_FUNC 452
-#define IsWindowCollapsed_FUNC 453
-#define IsWindowVisible_FUNC 454
-#define KeyTranslate_FUNC 455
-#define KillPoly_FUNC 456
-#define LineTo_FUNC 457
-#define LoWord_FUNC 458
-#define LockPortBits_FUNC 459
-#define Long2Fix_FUNC 460
-#define MenuSelect_FUNC 461
-#define MoveControl_FUNC 462
-#define MoveTo_FUNC 463
-#define MoveWindow_FUNC 464
-#define NavCreateChooseFolderDialog_FUNC 465
-#define NavCreateGetFileDialog_FUNC 466
-#define NavCreatePutFileDialog_FUNC 467
-#define NavDialogDispose_FUNC 468
-#define NavDialogGetReply_FUNC 469
-#define NavDialogGetSaveFileName_FUNC 470
-#define NavDialogGetUserAction_FUNC 471
-#define NavDialogRun_FUNC 472
-#define NavDialogSetSaveFileName_FUNC 473
-#define NavGetDefaultDialogCreationOptions_FUNC 474
-#define NewControl_FUNC 475
-#define NewDrag_FUNC 476
-#define NewGWorldFromPtr_FUNC 477
-#define NewHandle_FUNC 478
-#define NewHandleClear_FUNC 479
-#define NewPtr_FUNC 480
-#define NewPtrClear_FUNC 481
-#define NewRgn_FUNC 482
-#define OffsetRect_FUNC 483
-#define OffsetRgn_FUNC 484
-#define OpenDataBrowserContainer_FUNC 485
-#define OpenPoly_FUNC 486
-#define OpenRgn_FUNC 487
-#define PMCreatePageFormat_FUNC 488
-#define PMCreatePrintSettings_FUNC 489
-#define PMCreateSession_FUNC 490
-#define PMFlattenPageFormat_FUNC 491
-#define PMFlattenPrintSettings_FUNC 492
-#define PMGetAdjustedPageRect_FUNC 493
-#define PMGetAdjustedPaperRect_FUNC 494
-#define PMGetCollate_FUNC 495
-#define PMGetCopies_FUNC 496
-#define PMGetFirstPage_FUNC 497
-#define PMGetJobNameCFString_FUNC 498
-#define PMGetLastPage_FUNC 499
-#define PMGetPageRange_FUNC 500
-#define PMGetResolution_FUNC 501
-#define PMRelease_FUNC 502
-#define PMSessionBeginDocumentNoDialog_FUNC 503
-#define PMSessionBeginPageNoDialog_FUNC 504
-#define PMSessionCopyDestinationLocation_FUNC 505
-#define PMSessionCreatePrinterList_FUNC 506
-#define PMSessionDefaultPageFormat_FUNC 507
-#define PMSessionDefaultPrintSettings_FUNC 508
-#define PMSessionEndDocumentNoDialog_FUNC 509
-#define PMSessionEndPageNoDialog_FUNC 510
-#define PMSessionError_FUNC 511
-#define PMSessionGetDestinationType_FUNC 512
-#define PMSessionGetGraphicsContext_FUNC 513
-#define PMSessionPageSetupDialog_FUNC 514
-#define PMSessionPrintDialog_FUNC 515
-#define PMSessionSetCurrentPrinter_FUNC 516
-#define PMSessionSetDestination_FUNC 517
-#define PMSessionSetDocumentFormatGeneration_FUNC 518
-#define PMSessionSetError_FUNC 519
-#define PMSessionUseSheets_FUNC 520
-#define PMSessionValidatePageFormat_FUNC 521
-#define PMSessionValidatePrintSettings_FUNC 522
-#define PMSetCollate_FUNC 523
-#define PMSetFirstPage_FUNC 524
-#define PMSetJobNameCFString_FUNC 525
-#define PMSetLastPage_FUNC 526
-#define PMSetPageRange_FUNC 527
-#define PMUnflattenPageFormat_FUNC 528
-#define PMUnflattenPrintSettings_FUNC 529
-#define PaintOval_FUNC 530
-#define PaintPoly_FUNC 531
-#define PaintRect_FUNC 532
-#define PaintRoundRect_FUNC 533
-#define PenSize_FUNC 534
-#define PickColor_FUNC 535
-#define PopUpMenuSelect_FUNC 536
-#define PostEvent_FUNC 537
-#define PostEventToQueue_FUNC 538
-#define PtInRect_FUNC 539
-#define PtInRgn_FUNC 540
-#define PutScrapFlavor_FUNC 541
-#define QDBeginCGContext_FUNC 542
-#define QDEndCGContext_FUNC 543
-#define QDFlushPortBuffer_FUNC 544
-#define QDGlobalToLocalPoint_FUNC 545
-#define QDLocalToGlobalPoint_FUNC 546
-#define QDSetDirtyRegion_FUNC 547
-#define QDSetPatternOrigin_FUNC 548
-#define QDSwapTextFlags_FUNC 549
-#define RGBBackColor_FUNC 550
-#define RGBForeColor_FUNC 551
-#define ReceiveNextEvent_FUNC 552
-#define RectInRgn_FUNC 553
-#define RectRgn_FUNC 554
-#define RegisterAppearanceClient_FUNC 555
-#define ReleaseEvent_FUNC 556
-#define ReleaseIconRef_FUNC 557
-#define ReleaseMenu_FUNC 558
-#define ReleaseWindow_FUNC 559
-#define ReleaseWindowGroup_FUNC 560
-#define RemoveControlProperty_FUNC 561
-#define RemoveDataBrowserItems_FUNC 562
-#define RemoveDataBrowserTableViewColumn_FUNC 563
-#define RemoveEventHandler_FUNC 564
-#define RemoveEventLoopTimer_FUNC 565
-#define RemoveReceiveHandler_FUNC 566
-#define RemoveTrackingHandler_FUNC 567
-#define RepositionWindow_FUNC 568
-#define ReshapeCustomWindow_FUNC 569
-#define RestoreApplicationDockTileImage_FUNC 570
-#define RetainEvent_FUNC 571
-#define RetainMenu_FUNC 572
-#define RetainWindow_FUNC 573
-#define RevealDataBrowserItem_FUNC 574
-#define RunStandardAlert_FUNC 575
-#define ScrollRect_FUNC 576
-#define SectRect_FUNC 577
-#define SectRgn_FUNC 578
-#define SelectWindow_FUNC 579
-#define SendBehind_FUNC 580
-#define SendEventToEventTarget_FUNC 581
-#define SetApplicationDockTileImage_FUNC 582
-#define SetBevelButtonContentInfo_FUNC 583
-#define SetClip_FUNC 584
-#define SetControl32BitMaximum_FUNC 585
-#define SetControl32BitMinimum_FUNC 586
-#define SetControl32BitValue_FUNC 587
-#define SetControlAction_FUNC 588
-#define SetControlBounds_FUNC 589
-#define SetControlColorProc_FUNC 590
-#define SetControlData__IIIII_FUNC 591
-#define SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlButtonContentInfo_2_FUNC 592
-#define SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlTabInfoRecV1_2_FUNC 593
-#define SetControlData__IIIILorg_eclipse_swt_internal_carbon_Rect_2_FUNC 594
-#define SetControlData__IIII_3B_FUNC 595
-#define SetControlData__IIII_3I_FUNC 596
-#define SetControlData__IIII_3S_FUNC 597
-#define SetControlFontStyle_FUNC 598
-#define SetControlPopupMenuHandle_FUNC 599
-#define SetControlProperty_FUNC 600
-#define SetControlReference_FUNC 601
-#define SetControlTitleWithCFString_FUNC 602
-#define SetControlViewSize_FUNC 603
-#define SetControlVisibility_FUNC 604
-#define SetCursor_FUNC 605
-#define SetDataBrowserCallbacks_FUNC 606
-#define SetDataBrowserCustomCallbacks_FUNC 607
-#define SetDataBrowserHasScrollBars_FUNC 608
-#define SetDataBrowserItemDataBooleanValue_FUNC 609
-#define SetDataBrowserItemDataButtonValue_FUNC 610
-#define SetDataBrowserItemDataIcon_FUNC 611
-#define SetDataBrowserItemDataItemID_FUNC 612
-#define SetDataBrowserItemDataText_FUNC 613
-#define SetDataBrowserListViewDisclosureColumn_FUNC 614
-#define SetDataBrowserListViewHeaderBtnHeight_FUNC 615
-#define SetDataBrowserListViewHeaderDesc_FUNC 616
-#define SetDataBrowserScrollPosition_FUNC 617
-#define SetDataBrowserSelectedItems_FUNC 618
-#define SetDataBrowserSelectionFlags_FUNC 619
-#define SetDataBrowserSortOrder_FUNC 620
-#define SetDataBrowserTableViewColumnPosition_FUNC 621
-#define SetDataBrowserTableViewHiliteStyle_FUNC 622
-#define SetDataBrowserTableViewItemRow_FUNC 623
-#define SetDataBrowserTableViewNamedColumnWidth_FUNC 624
-#define SetDataBrowserTarget_FUNC 625
-#define SetDragAllowableActions_FUNC 626
-#define SetDragDropAction_FUNC 627
-#define SetDragInputProc_FUNC 628
-#define SetEventLoopTimerNextFireTime_FUNC 629
-#define SetEventParameter__IIII_3C_FUNC 630
-#define SetEventParameter__IIII_3S_FUNC 631
-#define SetFontInfoForSelection_FUNC 632
-#define SetFrontProcess_FUNC 633
-#define SetFrontProcessWithOptions_FUNC 634
-#define SetGWorld_FUNC 635
-#define SetItemMark_FUNC 636
-#define SetKeyboardFocus_FUNC 637
-#define SetMenuCommandMark_FUNC 638
-#define SetMenuFont_FUNC 639
-#define SetMenuItemCommandKey_FUNC 640
-#define SetMenuItemHierarchicalMenu_FUNC 641
-#define SetMenuItemIconHandle_FUNC 642
-#define SetMenuItemKeyGlyph_FUNC 643
-#define SetMenuItemModifiers_FUNC 644
-#define SetMenuItemRefCon_FUNC 645
-#define SetMenuItemTextWithCFString_FUNC 646
-#define SetMenuTitleWithCFString_FUNC 647
-#define SetOrigin_FUNC 648
-#define SetPort_FUNC 649
-#define SetPortBounds_FUNC 650
-#define SetPortWindowPort_FUNC 651
-#define SetPt_FUNC 652
-#define SetRect_FUNC 653
-#define SetRectRgn_FUNC 654
-#define SetRootMenu_FUNC 655
-#define SetThemeBackground_FUNC 656
-#define SetThemeCursor_FUNC 657
-#define SetThemeDrawingState_FUNC 658
-#define SetThemeTextColor_FUNC 659
-#define SetThemeWindowBackground_FUNC 660
-#define SetUpControlBackground_FUNC 661
-#define SetWRefCon_FUNC 662
-#define SetWindowActivationScope_FUNC 663
-#define SetWindowBounds_FUNC 664
-#define SetWindowDefaultButton_FUNC 665
-#define SetWindowGroup_FUNC 666
-#define SetWindowGroupOwner_FUNC 667
-#define SetWindowGroupParent_FUNC 668
-#define SetWindowModality_FUNC 669
-#define SetWindowResizeLimits_FUNC 670
-#define SetWindowTitleWithCFString_FUNC 671
-#define ShowWindow_FUNC 672
-#define SizeControl_FUNC 673
-#define SizeWindow_FUNC 674
-#define StillDown_FUNC 675
-#define SyncCGContextOriginWithPort_FUNC 676
-#define SysBeep_FUNC 677
-#define TXNActivate_FUNC 678
-#define TXNAdjustCursor_FUNC 679
-#define TXNClick_FUNC 680
-#define TXNCopy_FUNC 681
-#define TXNCut_FUNC 682
-#define TXNDataSize_FUNC 683
-#define TXNDeleteObject_FUNC 684
-#define TXNDraw_FUNC 685
-#define TXNEchoMode_FUNC 686
-#define TXNFocus_FUNC 687
-#define TXNGetData_FUNC 688
-#define TXNGetLineCount_FUNC 689
-#define TXNGetLineMetrics_FUNC 690
-#define TXNGetRectBounds_FUNC 691
-#define TXNGetSelection_FUNC 692
-#define TXNGetTXNObjectControls_FUNC 693
-#define TXNGetViewRect_FUNC 694
-#define TXNInitTextension_FUNC 695
-#define TXNNewObject_FUNC 696
-#define TXNOffsetToPoint_FUNC 697
-#define TXNPaste_FUNC 698
-#define TXNPointToOffset_FUNC 699
-#define TXNSelectAll_FUNC 700
-#define TXNSetBackground_FUNC 701
-#define TXNSetData_FUNC 702
-#define TXNSetFrameBounds_FUNC 703
-#define TXNSetRectBounds_FUNC 704
-#define TXNSetSelection_FUNC 705
-#define TXNSetTXNObjectControls_FUNC 706
-#define TXNSetTypeAttributes_FUNC 707
-#define TXNShowSelection_FUNC 708
-#define TestControl_FUNC 709
-#define TextFace_FUNC 710
-#define TextFont_FUNC 711
-#define TextMode_FUNC 712
-#define TextSize_FUNC 713
-#define TextWidth_FUNC 714
-#define TrackDrag_FUNC 715
-#define TrackMouseLocationWithOptions_FUNC 716
-#define UnionRect_FUNC 717
-#define UnionRgn_FUNC 718
-#define UnlockPortBits_FUNC 719
-#define UpdateControls_FUNC 720
-#define UpdateDataBrowserItems_FUNC 721
-#define UpgradeScriptInfoToTextEncoding_FUNC 722
-#define WaitMouseMoved_FUNC 723
-#define X2Fix_FUNC 724
-#define ZoomWindowIdeal_FUNC 725
-#define kHIViewWindowContentID_FUNC 726
-#define kPMDocumentFormatPDF_FUNC 727
-#define kPMGraphicsContextCoreGraphics_FUNC 728
-#define memcpy__III_FUNC 729
-#define memcpy__ILorg_eclipse_swt_internal_carbon_ATSUTab_2I_FUNC 730
-#define memcpy__ILorg_eclipse_swt_internal_carbon_BitMap_2I_FUNC 731
-#define memcpy__ILorg_eclipse_swt_internal_carbon_Cursor_2I_FUNC 732
-#define memcpy__ILorg_eclipse_swt_internal_carbon_EventRecord_2I_FUNC 733
-#define memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I_FUNC 734
-#define memcpy__ILorg_eclipse_swt_internal_carbon_HMHelpContentRec_2I_FUNC 735
-#define memcpy__ILorg_eclipse_swt_internal_carbon_PixMap_2I_FUNC 736
-#define memcpy__ILorg_eclipse_swt_internal_carbon_RGBColor_2I_FUNC 737
-#define memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I_FUNC 738
-#define memcpy__I_3BI_FUNC 739
-#define memcpy__I_3CI_FUNC 740
-#define memcpy__I_3II_FUNC 741
-#define memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II_FUNC 742
-#define memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II_FUNC 743
-#define memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II_FUNC 744
-#define memcpy__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II_FUNC 745
-#define memcpy__Lorg_eclipse_swt_internal_carbon_PixMap_2II_FUNC 746
-#define memcpy__Lorg_eclipse_swt_internal_carbon_Rect_2II_FUNC 747
-#define memcpy___3BII_FUNC 748
-#define memcpy___3B_3CI_FUNC 749
-#define memcpy___3CII_FUNC 750
-#define memcpy___3C_3BI_FUNC 751
-#define memcpy___3FII_FUNC 752
-#define memcpy___3III_FUNC 753
-#define memset_FUNC 754
+typedef enum {
+	AECountItems_FUNC,
+	AEGetNthPtr_FUNC,
+	AEProcessAppleEvent_FUNC,
+	ATSFontGetPostScriptName_FUNC,
+	ATSUBatchBreakLines_FUNC,
+	ATSUCreateStyle_FUNC,
+	ATSUCreateTextLayout_FUNC,
+	ATSUCreateTextLayoutWithTextPtr_FUNC,
+	ATSUDisposeStyle_FUNC,
+	ATSUDisposeTextLayout_FUNC,
+	ATSUDrawText_FUNC,
+	ATSUFindFontFromName_FUNC,
+	ATSUFindFontName_FUNC,
+	ATSUGetFontIDs_FUNC,
+	ATSUGetGlyphBounds__IIIIISII_3I_FUNC,
+	ATSUGetGlyphBounds__IIIIISILorg_eclipse_swt_internal_carbon_ATSTrapezoid_2_3I_FUNC,
+	ATSUGetLayoutControl_FUNC,
+	ATSUGetLineControl_FUNC,
+	ATSUGetSoftLineBreaks_FUNC,
+	ATSUGetTextHighlight_FUNC,
+	ATSUGetUnjustifiedBounds_FUNC,
+	ATSUHighlightText_FUNC,
+	ATSUNextCursorPosition_FUNC,
+	ATSUOffsetToPosition_FUNC,
+	ATSUPositionToOffset_FUNC,
+	ATSUPreviousCursorPosition_FUNC,
+	ATSUSetAttributes_FUNC,
+	ATSUSetFontFeatures_FUNC,
+	ATSUSetHighlightingMethod_FUNC,
+	ATSUSetLayoutControls_FUNC,
+	ATSUSetLineControls_FUNC,
+	ATSUSetRunStyle_FUNC,
+	ATSUSetSoftLineBreak_FUNC,
+	ATSUSetTabArray_FUNC,
+	ATSUSetTextPointerLocation_FUNC,
+	ATSUSetTransientFontMatching_FUNC,
+	ATSUTextDeleted_FUNC,
+	ATSUTextInserted_FUNC,
+	ActiveNonFloatingWindow_FUNC,
+	AddDataBrowserItems_FUNC,
+	AddDataBrowserListViewColumn_FUNC,
+	AddDragItemFlavor_FUNC,
+	AppendMenuItemTextWithCFString_FUNC,
+	AutoSizeDataBrowserListViewColumns_FUNC,
+	BeginUpdate_FUNC,
+	BringToFront_FUNC,
+	CFArrayAppendValue_FUNC,
+	CFArrayCreateMutable_FUNC,
+	CFArrayGetCount_FUNC,
+	CFArrayGetValueAtIndex_FUNC,
+	CFRelease_FUNC,
+	CFStringCreateWithBytes_FUNC,
+	CFStringCreateWithCharacters_FUNC,
+	CFStringGetBytes_FUNC,
+	CFStringGetCharacters_FUNC,
+	CFStringGetLength_FUNC,
+	CFStringGetSystemEncoding_FUNC,
+	CFURLCopyFileSystemPath_FUNC,
+	CFURLCopyLastPathComponent_FUNC,
+	CFURLCreateCopyAppendingPathComponent_FUNC,
+	CFURLCreateCopyDeletingLastPathComponent_FUNC,
+	CFURLCreateFromFSRef_FUNC,
+	CFURLCreateWithFileSystemPath_FUNC,
+	CFURLGetFSRef_FUNC,
+	CGBitmapContextCreate_FUNC,
+	CGColorSpaceCreateDeviceRGB_FUNC,
+	CGColorSpaceRelease_FUNC,
+	CGContextAddArc_FUNC,
+	CGContextAddArcToPoint_FUNC,
+	CGContextAddLineToPoint_FUNC,
+	CGContextAddLines_FUNC,
+	CGContextBeginPath_FUNC,
+	CGContextClearRect_FUNC,
+	CGContextClip_FUNC,
+	CGContextClosePath_FUNC,
+	CGContextDrawImage_FUNC,
+	CGContextEOFillPath_FUNC,
+	CGContextFillPath_FUNC,
+	CGContextFillRect_FUNC,
+	CGContextFlush_FUNC,
+	CGContextGetTextPosition_FUNC,
+	CGContextMoveToPoint_FUNC,
+	CGContextRelease_FUNC,
+	CGContextRestoreGState_FUNC,
+	CGContextSaveGState_FUNC,
+	CGContextScaleCTM_FUNC,
+	CGContextSelectFont_FUNC,
+	CGContextSetFillColor_FUNC,
+	CGContextSetFillColorSpace_FUNC,
+	CGContextSetFont_FUNC,
+	CGContextSetFontSize_FUNC,
+	CGContextSetLineCap_FUNC,
+	CGContextSetLineDash_FUNC,
+	CGContextSetLineWidth_FUNC,
+	CGContextSetRGBFillColor_FUNC,
+	CGContextSetRGBStrokeColor_FUNC,
+	CGContextSetShouldAntialias_FUNC,
+	CGContextSetShouldSmoothFonts_FUNC,
+	CGContextSetStrokeColor_FUNC,
+	CGContextSetStrokeColorSpace_FUNC,
+	CGContextSetTextDrawingMode_FUNC,
+	CGContextSetTextMatrix_FUNC,
+	CGContextSetTextPosition_FUNC,
+	CGContextShowText_FUNC,
+	CGContextShowTextAtPoint_FUNC,
+	CGContextStrokePath_FUNC,
+	CGContextStrokeRect_FUNC,
+	CGContextSynchronize_FUNC,
+	CGContextTranslateCTM_FUNC,
+	CGDataProviderCreateWithData_FUNC,
+	CGDataProviderRelease_FUNC,
+	CGDisplayBaseAddress_FUNC,
+	CGDisplayBitsPerPixel_FUNC,
+	CGDisplayBitsPerSample_FUNC,
+	CGDisplayBytesPerRow_FUNC,
+	CGDisplayPixelsHigh_FUNC,
+	CGDisplayPixelsWide_FUNC,
+	CGFontCreateWithPlatformFont_FUNC,
+	CGFontRelease_FUNC,
+	CGGetDisplaysWithRect_FUNC,
+	CGImageCreate_FUNC,
+	CGImageGetAlphaInfo_FUNC,
+	CGImageGetBitsPerComponent_FUNC,
+	CGImageGetBitsPerPixel_FUNC,
+	CGImageGetBytesPerRow_FUNC,
+	CGImageGetColorSpace_FUNC,
+	CGImageGetHeight_FUNC,
+	CGImageGetWidth_FUNC,
+	CGImageRelease_FUNC,
+	CGPostKeyboardEvent_FUNC,
+	CGPostMouseEvent_FUNC,
+	CGWarpMouseCursorPosition_FUNC,
+	CPSEnableForegroundOperation_FUNC,
+	CPSSetProcessName_FUNC,
+	CallNextEventHandler_FUNC,
+	CharWidth_FUNC,
+	ClearCurrentScrap_FUNC,
+	ClearKeyboardFocus_FUNC,
+	ClearMenuBar_FUNC,
+	ClipCGContextToRegion_FUNC,
+	CloseDataBrowserContainer_FUNC,
+	ClosePoly_FUNC,
+	CloseRgn_FUNC,
+	CollapseWindow_FUNC,
+	ConvertEventRefToEventRecord_FUNC,
+	ConvertFromPStringToUnicode_FUNC,
+	ConvertFromUnicodeToPString_FUNC,
+	CopyBits_FUNC,
+	CopyControlTitleAsCFString_FUNC,
+	CopyDeepMask_FUNC,
+	CopyMenuItemTextAsCFString_FUNC,
+	CopyRgn_FUNC,
+	CountDragItemFlavors_FUNC,
+	CountDragItems_FUNC,
+	CountMenuItems_FUNC,
+	CountSubControls_FUNC,
+	CreateBevelButtonControl_FUNC,
+	CreateCGContextForPort_FUNC,
+	CreateCheckBoxControl_FUNC,
+	CreateDataBrowserControl_FUNC,
+	CreateEditUnicodeTextControl_FUNC,
+	CreateEvent_FUNC,
+	CreateGroupBoxControl_FUNC,
+	CreateIconControl_FUNC,
+	CreateNewMenu_FUNC,
+	CreateNewWindow_FUNC,
+	CreatePopupArrowControl_FUNC,
+	CreatePopupButtonControl_FUNC,
+	CreateProgressBarControl_FUNC,
+	CreatePushButtonControl_FUNC,
+	CreatePushButtonWithIconControl_FUNC,
+	CreateRadioButtonControl_FUNC,
+	CreateRootControl_FUNC,
+	CreateScrollBarControl_FUNC,
+	CreateSeparatorControl_FUNC,
+	CreateSliderControl_FUNC,
+	CreateStandardAlert_FUNC,
+	CreateStaticTextControl_FUNC,
+	CreateTabsControl_FUNC,
+	CreateTextToUnicodeInfoByEncoding_FUNC,
+	CreateUnicodeToTextInfoByEncoding_FUNC,
+	CreateUserPaneControl_FUNC,
+	CreateWindowGroup_FUNC,
+	DMGetFirstScreenDevice_FUNC,
+	DMGetNextScreenDevice_FUNC,
+	DeleteMenu_FUNC,
+	DeleteMenuItem_FUNC,
+	DeleteMenuItems_FUNC,
+	DiffRgn_FUNC,
+	DisableControl_FUNC,
+	DisableMenuCommand_FUNC,
+	DisableMenuItem_FUNC,
+	DisposeControl_FUNC,
+	DisposeDrag_FUNC,
+	DisposeGWorld_FUNC,
+	DisposeHandle_FUNC,
+	DisposeMenu_FUNC,
+	DisposePtr_FUNC,
+	DisposeRgn_FUNC,
+	DisposeTextToUnicodeInfo_FUNC,
+	DisposeUnicodeToTextInfo_FUNC,
+	DisposeWindow_FUNC,
+	DrawControlInCurrentPort_FUNC,
+	DrawMenuBar_FUNC,
+	DrawText_FUNC,
+	DrawThemeButton_FUNC,
+	DrawThemeEditTextFrame_FUNC,
+	DrawThemeFocusRect_FUNC,
+	DrawThemePopupArrow_FUNC,
+	DrawThemeSeparator_FUNC,
+	DrawThemeTextBox_FUNC,
+	EmbedControl_FUNC,
+	EmptyRect_FUNC,
+	EmptyRgn_FUNC,
+	EnableControl_FUNC,
+	EnableMenuCommand_FUNC,
+	EnableMenuItem_FUNC,
+	EndUpdate_FUNC,
+	EqualRect_FUNC,
+	EraseRect_FUNC,
+	EraseRgn_FUNC,
+	FMCreateFontFamilyInstanceIterator_FUNC,
+	FMCreateFontFamilyIterator_FUNC,
+	FMDisposeFontFamilyInstanceIterator_FUNC,
+	FMDisposeFontFamilyIterator_FUNC,
+	FMGetATSFontRefFromFont_FUNC,
+	FMGetFontFamilyFromName_FUNC,
+	FMGetFontFamilyInstanceFromFont_FUNC,
+	FMGetFontFamilyName_FUNC,
+	FMGetFontFromFontFamilyInstance_FUNC,
+	FMGetNextFontFamily_FUNC,
+	FMGetNextFontFamilyInstance_FUNC,
+	FPIsFontPanelVisible_FUNC,
+	FPShowHideFontPanel_FUNC,
+	FSGetCatalogInfo_FUNC,
+	FSpGetFInfo_FUNC,
+	FSpMakeFSRef_FUNC,
+	FetchFontInfo_FUNC,
+	FindWindow_FUNC,
+	Fix2Long_FUNC,
+	FrameOval_FUNC,
+	FramePoly_FUNC,
+	FrameRect_FUNC,
+	FrameRoundRect_FUNC,
+	FrontWindow_FUNC,
+	Gestalt_FUNC,
+	GetAppFont_FUNC,
+	GetApplicationEventTarget_FUNC,
+	GetAvailableWindowAttributes_FUNC,
+	GetAvailableWindowPositioningBounds_FUNC,
+	GetBestControlRect_FUNC,
+	GetCaretTime_FUNC,
+	GetClip_FUNC,
+	GetControl32BitMaximum_FUNC,
+	GetControl32BitMinimum_FUNC,
+	GetControl32BitValue_FUNC,
+	GetControlBounds_FUNC,
+	GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlFontStyleRec_2_3I_FUNC,
+	GetControlData__ISIILorg_eclipse_swt_internal_carbon_Rect_2_3I_FUNC,
+	GetControlData__ISII_3B_3I_FUNC,
+	GetControlData__ISII_3I_3I_FUNC,
+	GetControlData__ISII_3S_3I_FUNC,
+	GetControlEventTarget_FUNC,
+	GetControlFeatures_FUNC,
+	GetControlOwner_FUNC,
+	GetControlProperty_FUNC,
+	GetControlReference_FUNC,
+	GetControlRegion_FUNC,
+	GetControlValue_FUNC,
+	GetControlViewSize_FUNC,
+	GetCurrentEventButtonState_FUNC,
+	GetCurrentEventKeyModifiers_FUNC,
+	GetCurrentEventLoop_FUNC,
+	GetCurrentEventQueue_FUNC,
+	GetCurrentProcess_FUNC,
+	GetCurrentScrap_FUNC,
+	GetDataBrowserCallbacks_FUNC,
+	GetDataBrowserItemCount_FUNC,
+	GetDataBrowserItemDataButtonValue_FUNC,
+	GetDataBrowserItemPartBounds_FUNC,
+	GetDataBrowserItemState_FUNC,
+	GetDataBrowserItems_FUNC,
+	GetDataBrowserListViewHeaderBtnHeight_FUNC,
+	GetDataBrowserListViewHeaderDesc_FUNC,
+	GetDataBrowserScrollBarInset_FUNC,
+	GetDataBrowserScrollPosition_FUNC,
+	GetDataBrowserSelectionAnchor_FUNC,
+	GetDataBrowserSelectionFlags_FUNC,
+	GetDataBrowserSortProperty_FUNC,
+	GetDataBrowserTableViewColumnPosition_FUNC,
+	GetDataBrowserTableViewItemID_FUNC,
+	GetDataBrowserTableViewItemRow_FUNC,
+	GetDataBrowserTableViewNamedColumnWidth_FUNC,
+	GetDataBrowserTableViewRowHeight_FUNC,
+	GetDblTime_FUNC,
+	GetDefFontSize_FUNC,
+	GetDeviceList_FUNC,
+	GetDragAllowableActions_FUNC,
+	GetDragDropAction_FUNC,
+	GetDragItemReferenceNumber_FUNC,
+	GetDragModifiers_FUNC,
+	GetDragMouse_FUNC,
+	GetEventClass_FUNC,
+	GetEventDispatcherTarget_FUNC,
+	GetEventKind_FUNC,
+	GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGPoint_2_FUNC,
+	GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_HICommand_2_FUNC,
+	GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_Point_2_FUNC,
+	GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_RGBColor_2_FUNC,
+	GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_Rect_2_FUNC,
+	GetEventParameter__III_3II_3I_3B_FUNC,
+	GetEventParameter__III_3II_3I_3C_FUNC,
+	GetEventParameter__III_3II_3I_3I_FUNC,
+	GetEventParameter__III_3II_3I_3S_FUNC,
+	GetEventTime_FUNC,
+	GetFlavorData_FUNC,
+	GetFlavorDataSize_FUNC,
+	GetFlavorType_FUNC,
+	GetFontInfo_FUNC,
+	GetGDevice_FUNC,
+	GetGWorld_FUNC,
+	GetGlobalMouse_FUNC,
+	GetHandleSize_FUNC,
+	GetIconFamilyData_FUNC,
+	GetIconRef_FUNC,
+	GetIndMenuItemWithCommandID_FUNC,
+	GetIndexedSubControl_FUNC,
+	GetItemMark_FUNC,
+	GetKeyboardFocus_FUNC,
+	GetLastUserEventTime_FUNC,
+	GetMBarHeight_FUNC,
+	GetMainDevice_FUNC,
+	GetMainEventQueue_FUNC,
+	GetMenuCommandMark_FUNC,
+	GetMenuEventTarget_FUNC,
+	GetMenuFont_FUNC,
+	GetMenuHeight_FUNC,
+	GetMenuID_FUNC,
+	GetMenuItemCommandID_FUNC,
+	GetMenuItemHierarchicalMenu_FUNC,
+	GetMenuItemRefCon_FUNC,
+	GetMenuTrackingData_FUNC,
+	GetMenuWidth_FUNC,
+	GetMouse_FUNC,
+	GetNextDevice_FUNC,
+	GetPixBounds_FUNC,
+	GetPixDepth_FUNC,
+	GetPort_FUNC,
+	GetPortBitMapForCopyBits_FUNC,
+	GetPortBounds_FUNC,
+	GetPortClipRegion_FUNC,
+	GetPortVisibleRegion_FUNC,
+	GetPreviousWindow_FUNC,
+	GetPtrSize_FUNC,
+	GetRegionBounds_FUNC,
+	GetRootControl_FUNC,
+	GetScrapFlavorCount_FUNC,
+	GetScrapFlavorData_FUNC,
+	GetScrapFlavorInfoList_FUNC,
+	GetScrapFlavorSize_FUNC,
+	GetScriptManagerVariable_FUNC,
+	GetSuperControl_FUNC,
+	GetTabContentRect_FUNC,
+	GetThemeBrushAsColor_FUNC,
+	GetThemeButtonContentBounds_FUNC,
+	GetThemeDrawingState_FUNC,
+	GetThemeFont_FUNC,
+	GetThemeMenuItemExtra_FUNC,
+	GetThemeMetric_FUNC,
+	GetThemeTextColor_FUNC,
+	GetThemeTextDimensions_FUNC,
+	GetUserFocusEventTarget_FUNC,
+	GetUserFocusWindow_FUNC,
+	GetWRefCon_FUNC,
+	GetWindowActivationScope_FUNC,
+	GetWindowBounds_FUNC,
+	GetWindowDefaultButton_FUNC,
+	GetWindowEventTarget_FUNC,
+	GetWindowFromPort_FUNC,
+	GetWindowGroupOfClass_FUNC,
+	GetWindowModality_FUNC,
+	GetWindowPort_FUNC,
+	GetWindowRegion_FUNC,
+	GetWindowResizeLimits_FUNC,
+	GetWindowStructureWidths_FUNC,
+	HIComboBoxAppendTextItem_FUNC,
+	HIComboBoxCopyTextItemAtIndex_FUNC,
+	HIComboBoxCreate_FUNC,
+	HIComboBoxGetItemCount_FUNC,
+	HIComboBoxInsertTextItemAtIndex_FUNC,
+	HIComboBoxRemoveItemAtIndex_FUNC,
+	HIObjectCopyClassID_FUNC,
+	HIObjectCreate_FUNC,
+	HIObjectRegisterSubclass_FUNC,
+	HIViewAddSubview_FUNC,
+	HIViewClick_FUNC,
+	HIViewConvertPoint_FUNC,
+	HIViewCreateOffscreenImage_FUNC,
+	HIViewFindByID_FUNC,
+	HIViewGetFirstSubview_FUNC,
+	HIViewGetFrame_FUNC,
+	HIViewGetLastSubview_FUNC,
+	HIViewGetNextView_FUNC,
+	HIViewGetRoot_FUNC,
+	HIViewGetSizeConstraints_FUNC,
+	HIViewGetSubviewHit_FUNC,
+	HIViewGetViewForMouseEvent_FUNC,
+	HIViewIsVisible_FUNC,
+	HIViewRemoveFromSuperview_FUNC,
+	HIViewSetBoundsOrigin_FUNC,
+	HIViewSetDrawingEnabled_FUNC,
+	HIViewSetFrame_FUNC,
+	HIViewSetNeedsDisplay_FUNC,
+	HIViewSetNeedsDisplayInRegion_FUNC,
+	HIViewSetVisible_FUNC,
+	HIViewSetZOrder_FUNC,
+	HIViewSimulateClick_FUNC,
+	HLock_FUNC,
+	HMGetTagDelay_FUNC,
+	HMHideTag_FUNC,
+	HMInstallControlContentCallback_FUNC,
+	HMSetTagDelay_FUNC,
+	HUnlock_FUNC,
+	HandleControlClick_FUNC,
+	HandleControlSetCursor_FUNC,
+	HiWord_FUNC,
+	HideWindow_FUNC,
+	HiliteMenu_FUNC,
+	IconRefToIconFamily_FUNC,
+	InitContextualMenus_FUNC,
+	InitCursor_FUNC,
+	InitDataBrowserCallbacks_FUNC,
+	InitDataBrowserCustomCallbacks_FUNC,
+	InsertMenu_FUNC,
+	InsertMenuItemTextWithCFString_FUNC,
+	InstallEventHandler_FUNC,
+	InstallEventLoopTimer_FUNC,
+	InstallReceiveHandler_FUNC,
+	InstallTrackingHandler_FUNC,
+	InvalWindowRect_FUNC,
+	InvalWindowRgn_FUNC,
+	InvertRect_FUNC,
+	InvertRgn_FUNC,
+	IsControlActive_FUNC,
+	IsControlEnabled_FUNC,
+	IsControlVisible_FUNC,
+	IsDataBrowserItemSelected_FUNC,
+	IsMenuCommandEnabled_FUNC,
+	IsMenuItemEnabled_FUNC,
+	IsValidControlHandle_FUNC,
+	IsValidMenu_FUNC,
+	IsValidWindowPtr_FUNC,
+	IsWindowActive_FUNC,
+	IsWindowCollapsed_FUNC,
+	IsWindowVisible_FUNC,
+	KeyTranslate_FUNC,
+	KillPoly_FUNC,
+	LineTo_FUNC,
+	LoWord_FUNC,
+	LockPortBits_FUNC,
+	Long2Fix_FUNC,
+	MenuSelect_FUNC,
+	MoveControl_FUNC,
+	MoveTo_FUNC,
+	MoveWindow_FUNC,
+	NavCreateChooseFolderDialog_FUNC,
+	NavCreateGetFileDialog_FUNC,
+	NavCreatePutFileDialog_FUNC,
+	NavDialogDispose_FUNC,
+	NavDialogGetReply_FUNC,
+	NavDialogGetSaveFileName_FUNC,
+	NavDialogGetUserAction_FUNC,
+	NavDialogRun_FUNC,
+	NavDialogSetSaveFileName_FUNC,
+	NavGetDefaultDialogCreationOptions_FUNC,
+	NewControl_FUNC,
+	NewDrag_FUNC,
+	NewGWorldFromPtr_FUNC,
+	NewHandle_FUNC,
+	NewHandleClear_FUNC,
+	NewPtr_FUNC,
+	NewPtrClear_FUNC,
+	NewRgn_FUNC,
+	OffsetRect_FUNC,
+	OffsetRgn_FUNC,
+	OpenDataBrowserContainer_FUNC,
+	OpenPoly_FUNC,
+	OpenRgn_FUNC,
+	PMCreatePageFormat_FUNC,
+	PMCreatePrintSettings_FUNC,
+	PMCreateSession_FUNC,
+	PMFlattenPageFormat_FUNC,
+	PMFlattenPrintSettings_FUNC,
+	PMGetAdjustedPageRect_FUNC,
+	PMGetAdjustedPaperRect_FUNC,
+	PMGetCollate_FUNC,
+	PMGetCopies_FUNC,
+	PMGetFirstPage_FUNC,
+	PMGetJobNameCFString_FUNC,
+	PMGetLastPage_FUNC,
+	PMGetPageRange_FUNC,
+	PMGetResolution_FUNC,
+	PMRelease_FUNC,
+	PMSessionBeginDocumentNoDialog_FUNC,
+	PMSessionBeginPageNoDialog_FUNC,
+	PMSessionCopyDestinationLocation_FUNC,
+	PMSessionCreatePrinterList_FUNC,
+	PMSessionDefaultPageFormat_FUNC,
+	PMSessionDefaultPrintSettings_FUNC,
+	PMSessionEndDocumentNoDialog_FUNC,
+	PMSessionEndPageNoDialog_FUNC,
+	PMSessionError_FUNC,
+	PMSessionGetDestinationType_FUNC,
+	PMSessionGetGraphicsContext_FUNC,
+	PMSessionPageSetupDialog_FUNC,
+	PMSessionPrintDialog_FUNC,
+	PMSessionSetCurrentPrinter_FUNC,
+	PMSessionSetDestination_FUNC,
+	PMSessionSetDocumentFormatGeneration_FUNC,
+	PMSessionSetError_FUNC,
+	PMSessionUseSheets_FUNC,
+	PMSessionValidatePageFormat_FUNC,
+	PMSessionValidatePrintSettings_FUNC,
+	PMSetCollate_FUNC,
+	PMSetFirstPage_FUNC,
+	PMSetJobNameCFString_FUNC,
+	PMSetLastPage_FUNC,
+	PMSetPageRange_FUNC,
+	PMUnflattenPageFormat_FUNC,
+	PMUnflattenPrintSettings_FUNC,
+	PaintOval_FUNC,
+	PaintPoly_FUNC,
+	PaintRect_FUNC,
+	PaintRoundRect_FUNC,
+	PenSize_FUNC,
+	PickColor_FUNC,
+	PopUpMenuSelect_FUNC,
+	PostEvent_FUNC,
+	PostEventToQueue_FUNC,
+	PtInRect_FUNC,
+	PtInRgn_FUNC,
+	PutScrapFlavor_FUNC,
+	QDBeginCGContext_FUNC,
+	QDEndCGContext_FUNC,
+	QDFlushPortBuffer_FUNC,
+	QDGlobalToLocalPoint_FUNC,
+	QDLocalToGlobalPoint_FUNC,
+	QDSetDirtyRegion_FUNC,
+	QDSetPatternOrigin_FUNC,
+	QDSwapTextFlags_FUNC,
+	RGBBackColor_FUNC,
+	RGBForeColor_FUNC,
+	ReceiveNextEvent_FUNC,
+	RectInRgn_FUNC,
+	RectRgn_FUNC,
+	RegisterAppearanceClient_FUNC,
+	ReleaseEvent_FUNC,
+	ReleaseIconRef_FUNC,
+	ReleaseMenu_FUNC,
+	ReleaseWindow_FUNC,
+	ReleaseWindowGroup_FUNC,
+	RemoveControlProperty_FUNC,
+	RemoveDataBrowserItems_FUNC,
+	RemoveDataBrowserTableViewColumn_FUNC,
+	RemoveEventHandler_FUNC,
+	RemoveEventLoopTimer_FUNC,
+	RemoveReceiveHandler_FUNC,
+	RemoveTrackingHandler_FUNC,
+	RepositionWindow_FUNC,
+	ReshapeCustomWindow_FUNC,
+	RestoreApplicationDockTileImage_FUNC,
+	RetainEvent_FUNC,
+	RetainMenu_FUNC,
+	RetainWindow_FUNC,
+	RevealDataBrowserItem_FUNC,
+	RunStandardAlert_FUNC,
+	ScrollRect_FUNC,
+	SectRect_FUNC,
+	SectRgn_FUNC,
+	SelectWindow_FUNC,
+	SendBehind_FUNC,
+	SendEventToEventTarget_FUNC,
+	SetApplicationDockTileImage_FUNC,
+	SetBevelButtonContentInfo_FUNC,
+	SetClip_FUNC,
+	SetControl32BitMaximum_FUNC,
+	SetControl32BitMinimum_FUNC,
+	SetControl32BitValue_FUNC,
+	SetControlAction_FUNC,
+	SetControlBounds_FUNC,
+	SetControlColorProc_FUNC,
+	SetControlData__IIIII_FUNC,
+	SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlButtonContentInfo_2_FUNC,
+	SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlTabInfoRecV1_2_FUNC,
+	SetControlData__IIIILorg_eclipse_swt_internal_carbon_Rect_2_FUNC,
+	SetControlData__IIII_3B_FUNC,
+	SetControlData__IIII_3I_FUNC,
+	SetControlData__IIII_3S_FUNC,
+	SetControlFontStyle_FUNC,
+	SetControlPopupMenuHandle_FUNC,
+	SetControlProperty_FUNC,
+	SetControlReference_FUNC,
+	SetControlTitleWithCFString_FUNC,
+	SetControlViewSize_FUNC,
+	SetControlVisibility_FUNC,
+	SetCursor_FUNC,
+	SetDataBrowserCallbacks_FUNC,
+	SetDataBrowserCustomCallbacks_FUNC,
+	SetDataBrowserHasScrollBars_FUNC,
+	SetDataBrowserItemDataBooleanValue_FUNC,
+	SetDataBrowserItemDataButtonValue_FUNC,
+	SetDataBrowserItemDataIcon_FUNC,
+	SetDataBrowserItemDataItemID_FUNC,
+	SetDataBrowserItemDataText_FUNC,
+	SetDataBrowserListViewDisclosureColumn_FUNC,
+	SetDataBrowserListViewHeaderBtnHeight_FUNC,
+	SetDataBrowserListViewHeaderDesc_FUNC,
+	SetDataBrowserScrollPosition_FUNC,
+	SetDataBrowserSelectedItems_FUNC,
+	SetDataBrowserSelectionFlags_FUNC,
+	SetDataBrowserSortOrder_FUNC,
+	SetDataBrowserTableViewColumnPosition_FUNC,
+	SetDataBrowserTableViewHiliteStyle_FUNC,
+	SetDataBrowserTableViewItemRow_FUNC,
+	SetDataBrowserTableViewNamedColumnWidth_FUNC,
+	SetDataBrowserTarget_FUNC,
+	SetDragAllowableActions_FUNC,
+	SetDragDropAction_FUNC,
+	SetDragInputProc_FUNC,
+	SetEventLoopTimerNextFireTime_FUNC,
+	SetEventParameter__IIII_3C_FUNC,
+	SetEventParameter__IIII_3S_FUNC,
+	SetFontInfoForSelection_FUNC,
+	SetFrontProcess_FUNC,
+	SetFrontProcessWithOptions_FUNC,
+	SetGWorld_FUNC,
+	SetItemMark_FUNC,
+	SetKeyboardFocus_FUNC,
+	SetMenuCommandMark_FUNC,
+	SetMenuFont_FUNC,
+	SetMenuItemCommandKey_FUNC,
+	SetMenuItemHierarchicalMenu_FUNC,
+	SetMenuItemIconHandle_FUNC,
+	SetMenuItemKeyGlyph_FUNC,
+	SetMenuItemModifiers_FUNC,
+	SetMenuItemRefCon_FUNC,
+	SetMenuItemTextWithCFString_FUNC,
+	SetMenuTitleWithCFString_FUNC,
+	SetOrigin_FUNC,
+	SetPort_FUNC,
+	SetPortBounds_FUNC,
+	SetPortWindowPort_FUNC,
+	SetPt_FUNC,
+	SetRect_FUNC,
+	SetRectRgn_FUNC,
+	SetRootMenu_FUNC,
+	SetThemeBackground_FUNC,
+	SetThemeCursor_FUNC,
+	SetThemeDrawingState_FUNC,
+	SetThemeTextColor_FUNC,
+	SetThemeWindowBackground_FUNC,
+	SetUpControlBackground_FUNC,
+	SetWRefCon_FUNC,
+	SetWindowActivationScope_FUNC,
+	SetWindowBounds_FUNC,
+	SetWindowDefaultButton_FUNC,
+	SetWindowGroup_FUNC,
+	SetWindowGroupOwner_FUNC,
+	SetWindowGroupParent_FUNC,
+	SetWindowModality_FUNC,
+	SetWindowResizeLimits_FUNC,
+	SetWindowTitleWithCFString_FUNC,
+	ShowWindow_FUNC,
+	SizeControl_FUNC,
+	SizeWindow_FUNC,
+	StillDown_FUNC,
+	SyncCGContextOriginWithPort_FUNC,
+	SysBeep_FUNC,
+	TXNActivate_FUNC,
+	TXNAdjustCursor_FUNC,
+	TXNClick_FUNC,
+	TXNCopy_FUNC,
+	TXNCut_FUNC,
+	TXNDataSize_FUNC,
+	TXNDeleteObject_FUNC,
+	TXNDraw_FUNC,
+	TXNEchoMode_FUNC,
+	TXNFocus_FUNC,
+	TXNGetData_FUNC,
+	TXNGetLineCount_FUNC,
+	TXNGetLineMetrics_FUNC,
+	TXNGetRectBounds_FUNC,
+	TXNGetSelection_FUNC,
+	TXNGetTXNObjectControls_FUNC,
+	TXNGetViewRect_FUNC,
+	TXNInitTextension_FUNC,
+	TXNNewObject_FUNC,
+	TXNOffsetToPoint_FUNC,
+	TXNPaste_FUNC,
+	TXNPointToOffset_FUNC,
+	TXNSelectAll_FUNC,
+	TXNSetBackground_FUNC,
+	TXNSetData_FUNC,
+	TXNSetFrameBounds_FUNC,
+	TXNSetRectBounds_FUNC,
+	TXNSetSelection_FUNC,
+	TXNSetTXNObjectControls_FUNC,
+	TXNSetTypeAttributes_FUNC,
+	TXNShowSelection_FUNC,
+	TestControl_FUNC,
+	TextFace_FUNC,
+	TextFont_FUNC,
+	TextMode_FUNC,
+	TextSize_FUNC,
+	TextWidth_FUNC,
+	TrackDrag_FUNC,
+	TrackMouseLocationWithOptions_FUNC,
+	UnionRect_FUNC,
+	UnionRgn_FUNC,
+	UnlockPortBits_FUNC,
+	UpdateControls_FUNC,
+	UpdateDataBrowserItems_FUNC,
+	UpgradeScriptInfoToTextEncoding_FUNC,
+	WaitMouseMoved_FUNC,
+	X2Fix_FUNC,
+	ZoomWindowIdeal_FUNC,
+	kHIViewWindowContentID_FUNC,
+	kPMDocumentFormatPDF_FUNC,
+	kPMGraphicsContextCoreGraphics_FUNC,
+	memcpy__III_FUNC,
+	memcpy__ILorg_eclipse_swt_internal_carbon_ATSUTab_2I_FUNC,
+	memcpy__ILorg_eclipse_swt_internal_carbon_BitMap_2I_FUNC,
+	memcpy__ILorg_eclipse_swt_internal_carbon_Cursor_2I_FUNC,
+	memcpy__ILorg_eclipse_swt_internal_carbon_EventRecord_2I_FUNC,
+	memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I_FUNC,
+	memcpy__ILorg_eclipse_swt_internal_carbon_HMHelpContentRec_2I_FUNC,
+	memcpy__ILorg_eclipse_swt_internal_carbon_PixMap_2I_FUNC,
+	memcpy__ILorg_eclipse_swt_internal_carbon_RGBColor_2I_FUNC,
+	memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I_FUNC,
+	memcpy__I_3BI_FUNC,
+	memcpy__I_3CI_FUNC,
+	memcpy__I_3II_FUNC,
+	memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II_FUNC,
+	memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II_FUNC,
+	memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II_FUNC,
+	memcpy__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II_FUNC,
+	memcpy__Lorg_eclipse_swt_internal_carbon_PixMap_2II_FUNC,
+	memcpy__Lorg_eclipse_swt_internal_carbon_Rect_2II_FUNC,
+	memcpy___3BII_FUNC,
+	memcpy___3B_3CI_FUNC,
+	memcpy___3CII_FUNC,
+	memcpy___3C_3BI_FUNC,
+	memcpy___3FII_FUNC,
+	memcpy___3III_FUNC,
+	memset_FUNC,
+} OS_FUNCS;
