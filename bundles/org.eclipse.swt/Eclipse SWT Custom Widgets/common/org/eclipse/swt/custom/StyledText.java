@@ -2461,7 +2461,6 @@ void doAutoScroll(int direction) {
  */
 void doBackspace() {
 	Event event = new Event();
-	advancing = true;
 	event.text = "";
 	if (selection.x != selection.y) {
 		event.start = selection.x;
@@ -2610,8 +2609,6 @@ void doCursorNext() {
  */
 void doDelete() {
 	Event event = new Event();
-
-	advancing = false;
 	event.text = "";
 	if (selection.x != selection.y) {
 		event.start = selection.x;
@@ -5581,6 +5578,26 @@ void modifyContent(Event event, boolean updateCaret) {
 			styledTextEvent.end = event.start + event.text.length();
 			styledTextEvent.text = content.getTextRange(event.start, replacedLength);
 		}
+		if (updateCaret) {
+			//Fix advancing flag for delete/backspace key on direction boundary
+			if (event.text.length() == 0) {
+				int lineIndex = content.getLineAtOffset(event.start);
+				int lineOffset = content.getOffsetAtLine(lineIndex);
+				String lineText = content.getLine(lineIndex);
+				TextLayout layout = renderer.getTextLayout(lineText, lineOffset);
+				int levelStart = layout.getLevel(event.start - lineOffset);
+				int lineIndexEnd = content.getLineAtOffset(event.end);
+				if (lineIndex != lineIndexEnd) {
+					renderer.disposeTextLayout(layout);
+					lineOffset = content.getOffsetAtLine(lineIndexEnd);
+					lineText = content.getLine(lineIndexEnd);
+					layout = renderer.getTextLayout(lineText, lineOffset);
+				}
+				int levelEnd = layout.getLevel(event.end - lineOffset);
+				renderer.disposeTextLayout(layout);
+				advancing = levelStart != levelEnd;
+			}
+		}
 		content.replaceTextRange(event.start, replacedLength, event.text);
 		// set the caret position prior to sending the modify event.
 		// fixes 1GBB8NJ
@@ -5588,8 +5605,8 @@ void modifyContent(Event event, boolean updateCaret) {
 			// always update the caret location. fixes 1G8FODP
 			internalSetSelection(event.start + event.text.length(), 0, true);
 			showCaret();
-		}	
-		sendModifyEvent(event);		
+		}
+		sendModifyEvent(event);
 		if (isListening(ExtendedModify)) {
 			notifyListeners(ExtendedModify, styledTextEvent);
 		}
