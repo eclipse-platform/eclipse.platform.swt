@@ -260,7 +260,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 	return result;
 }
 
-void drawRectangles (Rectangle [] rects) {
+void drawRectangles (Rectangle [] rects, boolean stippled) {
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		parent.getShell ().update ();
@@ -371,7 +371,7 @@ public boolean open () {
 	}
 	boolean cancelled = false;
 	tracking = true;
-	drawRectangles (rectangles);
+	drawRectangles (rectangles, stippled);
 	int [] oldX = new int [1], oldY = new int [1];
 	int [] unused = new int [1], mask = new int [1];
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, oldX, oldY, unused, unused, mask);
@@ -445,6 +445,7 @@ public boolean open () {
 				OS.XQueryPointer (xDisplay, xWindow, unused, unused, newX, newY, unused, unused, unused);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
 					Rectangle [] oldRectangles = rectangles;
+					boolean oldStippled = stippled;
 					Rectangle [] rectsToErase = new Rectangle [rectangles.length];
 					for (int i = 0; i < rectangles.length; i++) {
 						Rectangle current = rectangles [i];
@@ -489,8 +490,8 @@ public boolean open () {
 							draw = true;
 						}
 						if (draw) {
-							drawRectangles (rectsToErase);
-							drawRectangles (rectangles);
+							drawRectangles (rectsToErase, oldStippled);
+							drawRectangles (rectangles, stippled);
 						}
 						cursorPos = adjustResizeCursor (xDisplay, xWindow);
 						newX [0] = cursorPos.x;  newY [0] = cursorPos.y;
@@ -530,8 +531,8 @@ public boolean open () {
 							draw = true;
 						}
 						if (draw) {
-							drawRectangles (rectsToErase);
-							drawRectangles (rectangles);
+							drawRectangles (rectsToErase, oldStippled);
+							drawRectangles (rectangles, stippled);
 						}
 					}
 					oldX [0] = newX [0];  oldY [0] = newY [0];
@@ -579,6 +580,7 @@ public boolean open () {
 					}
 					if (xChange != 0 || yChange != 0) {
 						Rectangle [] oldRectangles = rectangles;
+						boolean oldStippled = stippled;
 						Rectangle [] rectsToErase = new Rectangle [rectangles.length];
 						for (int i = 0; i < rectangles.length; i++) {
 							Rectangle current = rectangles [i];
@@ -623,8 +625,8 @@ public boolean open () {
 								draw = true;
 							}
 							if (draw) {
-								drawRectangles (rectsToErase);
-								drawRectangles (rectangles);
+								drawRectangles (rectsToErase, oldStippled);
+								drawRectangles (rectangles, stippled);
 							}
 							cursorPos = adjustResizeCursor (xDisplay, xWindow);
 						} else {
@@ -663,8 +665,8 @@ public boolean open () {
 								draw = true;
 							}
 							if (draw) {
-								drawRectangles (rectsToErase);
-								drawRectangles (rectangles);
+								drawRectangles (rectsToErase, oldStippled);
+								drawRectangles (rectangles, stippled);
 							}
 							cursorPos = adjustMoveCursor (xDisplay, xWindow);
 						}
@@ -683,7 +685,7 @@ public boolean open () {
 		}
 	}
 	OS.XtFree (xEvent);
-	if (!isDisposed()) drawRectangles (rectangles);
+	if (!isDisposed()) drawRectangles (rectangles, stippled);
 	if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
 	if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);
 	return !cancelled;
