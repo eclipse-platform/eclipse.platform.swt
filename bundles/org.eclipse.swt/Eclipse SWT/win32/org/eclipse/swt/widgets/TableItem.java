@@ -643,12 +643,12 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int newFont = -1;
+	int hFont = -1;
 	if (font != null) {
 		parent.customDraw = true;
-		newFont = font.handle;
+		hFont = font.handle;
 	}
-	this.font = newFont;
+	this.font = hFont;
 	redraw ();
 }
 
@@ -678,10 +678,10 @@ public void setFont (int index, Font font) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return;
-	int newFont = -1;
+	int hFont = -1;
 	if (font != null) {
 		parent.customDraw = true;
-		newFont = font.handle;
+		hFont = font.handle;
 	}
 	if (cellFont == null) {
 		int hwndHeader = OS.SendMessage (parent.handle, OS.LVM_GETHEADER, 0, 0);
@@ -691,7 +691,7 @@ public void setFont (int index, Font font) {
 			cellFont [i] = -1;
 		}
 	}
-	cellFont [index] = newFont;
+	cellFont [index] = hFont;
 	redraw ();
 }
 /**
