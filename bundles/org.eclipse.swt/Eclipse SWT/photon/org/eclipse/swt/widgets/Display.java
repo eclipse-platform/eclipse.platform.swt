@@ -1543,6 +1543,7 @@ public void update() {
  */
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	if (thread == Thread.currentThread ()) return;
 //	int flags = OS.PtEnter (0);	
 	OS.PtAppPulseTrigger (app_context, pulse);
 //	if (flags >= 0) OS.PtLeave (flags);
