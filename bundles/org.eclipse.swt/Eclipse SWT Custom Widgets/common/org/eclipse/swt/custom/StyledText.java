@@ -6052,7 +6052,6 @@ public void setFont(Font font) {
 		caretDirection = SWT.NULL;
 		createCaretBitmaps();
 		createBidiCaret();
-		setCaretLocation();		
 	} 
 	else {
 		Caret caret = getCaret();
@@ -6060,6 +6059,8 @@ public void setFont(Font font) {
 			caret.setSize(caret.getSize().x, lineHeight);
 		}
 	}
+	// always set the caret location. Fixes 6685
+	setCaretLocation();
 	super.redraw();
 }
 /**
