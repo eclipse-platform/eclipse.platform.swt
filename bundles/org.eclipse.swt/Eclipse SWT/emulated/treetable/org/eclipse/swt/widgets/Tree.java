@@ -1736,6 +1736,11 @@ static void initImages (final Display display) {
 			if (grayUnchecked != null) grayUnchecked.dispose ();
 			Image checkmark = (Image) display.getData (ID_CHECKMARK);
 			if (checkmark != null) checkmark.dispose ();
+			display.setData (ID_EXPANDED, null);
+			display.setData (ID_COLLAPSED, null);
+			display.setData (ID_UNCHECKED, null);
+			display.setData (ID_GRAYUNCHECKED, null);
+			display.setData (ID_CHECKMARK, null);
 		}
 	});
 }
