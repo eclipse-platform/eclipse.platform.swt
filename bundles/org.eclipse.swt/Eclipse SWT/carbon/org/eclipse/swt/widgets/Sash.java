@@ -33,6 +33,8 @@ import org.eclipse.swt.internal.carbon.Rect;
 public /*final*/ class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
+	
+	private static final int SASH_WIDTH= 3;
 
 	private static int H_ARROW;
 	private static int V_ARROW;
@@ -152,9 +154,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.HORIZONTAL) != 0) {
-		width += DEFAULT_WIDTH;  height += 3;
+		width += DEFAULT_WIDTH;  height += SASH_WIDTH;
 	} else {
-		width += 3; height += DEFAULT_HEIGHT;
+		width += SASH_WIDTH; height += DEFAULT_HEIGHT;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
@@ -181,31 +183,25 @@ int defaultBackground () {
 	return getDisplay ().labelBackground;
 }
 void drawBand (int x, int y, int width, int height) {
-
-	Rect bounds= new Rect();
-	//OS.GetControlBounds(parent.handle, bounds.getData());
-	MacUtil.getControlBounds(parent.handle, bounds);
-	x+= bounds.left;
-	y+= bounds.top;
-	
-	int[] port= new int[1];
-	OS.GetPort(port);
-	OS.SetPortWindowPort(OS.GetControlOwner(handle));
-	Rect r = new Rect();
-	OS.SetRect(r, (short)x, (short)y, (short)(x+width), (short)(y+height));
-	OS.InvertRect(r);
-	OS.SetPort(port[0]);
+	GC gc= new GC(getParent());		// we draw outside of the Sash's bounds in its parent
+	gc.carbon_setClipAgainstChildren(false);	// we don't want to be clipped against our children
+	gc.setXORMode(true);
+	gc.fillRectangle(x, y, width, height);
+	gc.dispose();
 }
 void hookEvents () {
 	super.hookEvents ();
-	Display display= getDisplay();		
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
+	Display display= getDisplay();
+	
+	final int SIZEOF_INT= 4;
+	int[] data= new int[] { display.fUserPaneHitTestProc };
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, data.length*SIZEOF_INT, data);
+
 	int[] mask= new int[] {
 		OS.kEventClassControl, OS.kEventControlDraw,
 	};
 	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, mask.length/2, mask, handle, null);	
 }
-
 int processMouseDown (MacMouseEvent mmEvent) {
 	super.processMouseDown (mmEvent);
 
@@ -291,29 +287,20 @@ int processMouseUp (MacMouseEvent mmEvent) {
 	return 0;
 }
 int processPaint (Object callData) {
-	
 	GC gc= new GC(this);
 	MacControlEvent me= (MacControlEvent) callData;
 	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle(), me.getGCContext());
-	
 	if (! r.isEmpty()) {
 		Point e= getSize();
-		
-		// erase background
-		gc.fillRectangle(0, 0, e.x, e.y);
-		
 		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
-		if (e.x < e.y) {	// vertical
+		if (e.x < e.y)	// vertical
 			gc.fillRectangle ((e.x-1)/2, (e.y-20)/2, 1, 20);
-		} else {			// horizontal
+		else			// horizontal
 			gc.fillRectangle ((e.x-20)/2, (e.y-1)/2, 20, 1);
-		}
 	}
-	
 	gc.carbon_unfocus();
 	gc.dispose();
-	
-	return 0;
+	return OS.noErr;
 }
 /**
  * Removes the listener from the collection of listeners who will

@@ -46,6 +46,7 @@ public final class GC {
 	private boolean fXorMode= false;
 	private int fDamageRgn;
 	private boolean fPendingClip;
+	private boolean fClipAgainstChildren= true;
 	
 	private int[] fContext= new int[1];
 	private boolean fCGContextCreated;
@@ -745,7 +746,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	*/
 	try {
 		if (focus(true, null)) {
-			installFont();
+			carbon_installFont();
 			MacUtil.RGBForeColor(data.foreground);
 			if (isTransparent) {
 				OS.TextMode((short)OS.srcOr);
@@ -885,7 +886,7 @@ public void drawText (String string, int x, int y, int flags) {
 	*/
 	try {
 		if (focus(true, null)) {
-			installFont();
+			carbon_installFont();
 			MacUtil.RGBForeColor(data.foreground);
 			if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
 				OS.TextMode((short)OS.srcOr);
@@ -1233,7 +1234,9 @@ public void fillRectangle (int x, int y, int width, int height) {
 	try {
 		if (focus(true, null)) {
 			OS.SetRect(fRect, (short)x, (short)y, (short)(x+width), (short)(y+height));
-			if ((data.background & 0xFF000000) == 0) {
+			if (fXorMode) {
+				OS.InvertRect(fRect);
+			} else if ((data.background & 0xFF000000) == 0) {
 				MacUtil.RGBForeColor(data.background);
 				OS.PaintRect(fRect);
 			} else {
@@ -1322,7 +1325,7 @@ public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	try {
 		focus(false, null);
-		installFont();
+		carbon_installFont();
 		return OS.CharWidth((byte) ch);
 	} finally {
 		unfocus(false);
@@ -1475,7 +1478,7 @@ public Font getFont () {
 int getFontHeight () {
 	try {
 		focus(false, null);
-		installFont();
+		carbon_installFont();
 		short[] fontInfo= new short[4];
 		OS.GetFontInfo(fontInfo);	// FontInfo
 		return fontInfo[0] + fontInfo[1];
@@ -1499,7 +1502,7 @@ public FontMetrics getFontMetrics() {
 	
 	try {
 		focus(false, null);
-		installFont();
+		carbon_installFont();
 		short[] fontInfo= new short[4];
 		OS.GetFontInfo(fontInfo);	// FontInfo
 		byte[] s= "abcdefghijklmnopqrstuvwxyz".getBytes();
@@ -1926,7 +1929,7 @@ public Point stringExtent(String string) {
 	*/
 	try {
 		focus(false, null);
-		installFont();
+		carbon_installFont();
 		byte[] s= string.getBytes();
 		int width= OS.TextWidth(s, (short)0, (short)s.length);
 		short[] fontInfo= new short[4];
@@ -2016,7 +2019,7 @@ public Point textExtent(String string, int flags) {
 	*/
 	try {
 		focus(false, null);
-		installFont();
+		carbon_installFont();
 		byte[] s= string.getBytes();
 		int width= OS.TextWidth(s, (short)0, (short)s.length);
 		short[] fontInfo= new short[4];
@@ -2037,11 +2040,15 @@ public String toString () {
 	return "GC {" + handle + "}";
 }
 
-//---- Mac Stuff
+//---- MacOS X Carbon-only API
 
-	public void installFont() {
+	public void carbon_installFont() {
 		if (data != null && data.font != null)
 			data.font.installInGrafPort();
+	}
+	
+	public void carbon_setClipAgainstChildren(boolean clipAgainstChildren) {
+		fClipAgainstChildren= clipAgainstChildren;
 	}
 
 	private boolean focus(boolean doClip, Rect bounds) {
@@ -2057,7 +2064,8 @@ public String toString () {
 		if (!doClip)
 			return true;
 		
-		int dx= 0, dy= 0;
+		int dx= 0;
+		int dy= 0;
 
 		// set origin of port using drawable bounds
 		if (data.controlHandle != 0) {
@@ -2066,34 +2074,39 @@ public String toString () {
 			dy= fRect.top;
 			OS.SetOrigin((short)-dx, (short)-dy);
 			org.eclipse.swt.internal.carbon.Point p= new org.eclipse.swt.internal.carbon.Point();
-			OS.SetPt(p, (short)-dx, (short)-dy);
+			p.h= (short)-dx;
+			p.v= (short)-dy;
 			OS.QDSetPatternOrigin(p);
 		}
 		// save clip region
 		OS.GetClip(fSaveClip);
 		
-		// calculate new clip based on the controls bound and GC clipping region
+		// calculate new clip based on the Control's bound and GC clipping region
 		if (data.controlHandle != 0) {
 						
 			int result= OS.NewRgn();
-			MacUtil.getVisibleRegion(data.controlHandle, result, true);
-			OS.OffsetRgn(result, (short)-dx, (short)-dy);
 			
-			// clip against damage 
-			if (fDamageRgn != 0) {
-				int dRgn= OS.NewRgn();
-				OS.CopyRgn(fDamageRgn, dRgn);
-				OS.SectRgn(result, dRgn, result);
+			if (fDamageRgn == 0) {
+				// since we've got no damage region
+				// we assume that focus has been called for direct drawing.
+				// We need to calculate the visible region of the control.
+				MacUtil.getVisibleRegion(data.controlHandle, result, fClipAgainstChildren); 
+				OS.OffsetRgn(result, (short)-dx, (short)-dy);
+			} else {
+				// the damage area takes the visible region of the Control into account
+				OS.CopyRgn(fDamageRgn, result);
 			}
 			
 			// clip against GC clipping region
-			if (data.clipRgn != 0) {
+			if (data.clipRgn != 0)
 				OS.SectRgn(result, data.clipRgn, result);
-			}
 				
 			OS.SetClip(result);
+			
+			// optionally extract clip bounds
 			if (bounds != null)
 				OS.GetRegionBounds(result, bounds);
+				
 			OS.DisposeRgn(result);
 			
 		} else {

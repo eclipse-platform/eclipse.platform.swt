@@ -111,7 +111,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			int sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(text));
 			
 			GC gc= new GC(this);
-			gc.installFont();
+			gc.carbon_installFont();
 			OS.GetThemeTextDimensions(sHandle, (short)OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds, baseLine);
 			gc.dispose();
 			
@@ -298,7 +298,7 @@ int processPaint (Object callData) {
 			else if ((style & SWT.CENTER) != 0)
 				just= 1;
 			MacUtil.RGBForeColor(enabled ? 0x000000 : 0x808080);
-			gc.installFont();
+			gc.carbon_installFont();
 			OS.SetRect(bounds, (short)borderWidth, (short)borderWidth, (short)(w-borderWidth), (short)(h-borderWidth));
 			OS.DrawThemeTextBox(sHandle, (short)OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds, just, 0);
 			OS.CFRelease(sHandle);
