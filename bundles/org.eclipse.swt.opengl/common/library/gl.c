@@ -2038,7 +2038,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glGetPolygonStipple)
 	{
 		if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	}
-	glGetPolygonStipple(lparg0);
+	glGetPolygonStipple((GLubyte *)lparg0);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
