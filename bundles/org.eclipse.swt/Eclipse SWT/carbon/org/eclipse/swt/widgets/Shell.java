@@ -392,12 +392,14 @@ void closeWidget () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim = super.computeTrim (x, y, width, height);
-	Rect rect = new Rect ();
-	OS.GetWindowStructureWidths (shellHandle, rect);
-	trim.x -= rect.left;
-	trim.y -= rect.top;
-	trim.width += rect.left + rect.right;
-	trim.height += rect.top + rect.bottom;
+	if (clipRgn == 0) {
+		Rect rect = new Rect ();
+		OS.GetWindowStructureWidths (shellHandle, rect);
+		trim.x -= rect.left;
+		trim.y -= rect.top;
+		trim.width += rect.left + rect.right;
+		trim.height += rect.top + rect.bottom;
+	}
 	return trim;
 }
 
