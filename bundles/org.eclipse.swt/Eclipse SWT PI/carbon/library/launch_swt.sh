@@ -26,8 +26,10 @@
 # Since this script is a replacement for the VM it takes roughly the same arguments.
 # 
 # Detailled steps:
-# - adapt the value of the shell variable SWT_DLL below. (I have it point to the
-#   folder where the Ant export script 'make_carbon.xml' places it).
+# - verify the value of the shell variable SWT_DLL. By default the dll from the 
+#   enclosing Eclipse is used. If you don't build and export your own dll 
+#   the default should be just fine. However if you want to build the dll yourself,
+#   point SWT_DLL to the place where the Ant-script 'make_carbon.xml' places it.
 # - create a "fake" jdk by creating a folder 'swt_jdk' somewhere on your disk
 # - inside swt_jdk create a folder 'bin'
 # - copy this script into 'bin' and rename it to 'java' (or make a symbolic link 'java'
@@ -38,11 +40,18 @@
 #   new 'SWT VM' instead of the standard one
 # - Now you can run or debug your application (however you will have to bring it
 #   to front manually).
+#
 
 #
 # Place of the SWT dll. 
 #
-SWT_DLL="/Users/weinand/tmp/eclipse/workspace3/export/libswt-carbon-2105.jnilib"
+SWT_DLL="$JAVA_LIBRARY_PATH"/plugins/org.eclipse.swt.carbon_*/os/macosx/ppc/libswt-carbon-*.jnilib
+
+#
+# Since I'm building my own dll, I set SWT_DLL to the place where the
+# Ant-script 'make_carbon.xml' places it.
+#
+#SWT_DLL="/Users/weinand/tmp/eclipse/workspace3/export/libswt-carbon-2106.jnilib"
 
 #
 # In order to build an application bundle under MacOS X we need
@@ -58,9 +67,14 @@ TMP_APP_DIR="/tmp/swt_stubs"
 
 #
 # We remember the current working directory
-# so that we can later define the property "com.apple.mrj.application.workingdirectory"
+# so that we can later define the property "WorkingDirectory"
 #
 CURRENT_DIR="$PWD"
+
+#
+# Ensure that we get our own JDI implementation
+# 
+VM_OPTIONS="<string>-Xbootclasspath/p:$JAVA_LIBRARY_PATH"/plugins/org.eclipse.jdt.debug*/jdi.jar"</string>"
 
 #
 # Process command line arguments until we see the main class...
@@ -71,11 +85,11 @@ while [ $# -gt 0 ]; do
 			CLASS_PATH="$2"
 			shift;
 			;;	
-		-Xbootclasspath* )
+		#-Xbootclasspath* )
 			#echo "ignoring Xbootclasspath"
-			;;
+		#	;;
 		-* )
-			VM_OPTIONS="$VM_OPTIONS $1"
+			VM_OPTIONS="$VM_OPTIONS<string>$1</string>"
 			;;
 		* )
 			MAIN_CLASS="$1"
@@ -86,19 +100,10 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-#
-# All options and arguments following the main class name
-# are passed as a single property "com.apple.mrj.application.parameters"
-#
-PARAMETERS="$*"
-
-#
-# Uncomment when debugging
-#
-#echo "Working Directory: $PWD"
-#echo "VM Options: $VM_OPTIONS"
-#echo "Main Class: $MAIN_CLASS"
-#echo "Parameters: $PARAMETERS"
+while [ $# -gt 0 ]; do
+	PARAMETERS="$PARAMETERS<string>$1</string>"
+	shift
+done
 
 #
 # Application name is name of main class without package prefix 
@@ -129,37 +134,47 @@ cp $JAVASTUB MacOS/$APP_NAME
 # Create a symbolic link to the SWT dll (*.jnilib)
 #
 mkdir -p Resources/Java
-ln -s $SWT_DLL Resources/Java
-
-#
-# Create the PkgInfo file.
-#
-echo "APPL????" > PkgInfo
+ln -s $SWT_DLL Resources/Java 
 
 #
 # Create the Info.plist file.
 #
 cat > Info.plist <<End_Of_Input
 <?xml version="1.0" encoding="UTF-8"?>
-<plist version="0.9">
-  <dict>
-	<key>CFBundleExecutable</key><string>$APP_NAME</string>
-  </dict>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+		<string>English</string>
+	<key>CFBundleGetInfoString</key>
+		<string>$APP_NAME</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+	<key>CFBundleName</key>
+		<string>$APP_NAME</string>
+	<key>CFBundlePackageType</key>
+		<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+		<string>2.0.1</string>
+	<key>CFBundleSignature</key>
+		<string>????</string>
+	<key>CFBundleVersion</key>
+		<string>1.0.1</string>
+	<key>Java</key>
+	<dict>
+		<key>VMOptions</key>
+			<array>$VM_OPTIONS</array>
+		<key>ClassPath</key>
+			<string>$CLASS_PATH</string>
+		<key>MainClass</key>
+			<string>$MAIN_CLASS</string>
+		<key>WorkingDirectory</key>
+			<string>$CURRENT_DIR</string>
+		<key>Arguments</key>
+			<array>$PARAMETERS</array>
+	</dict>
+</dict>
 </plist>
-End_Of_Input
-
-#
-# Create an old-style MRJApp.properties containing the relevant options.
-# We cannot put the properties in the Info.plist file because a SWT app
-# will crash on startup.
-#
-cat > Resources/MRJApp.properties <<End_Of_Input
-com.apple.mrj.application.apple.menu.about.name= $APP_NAME
-com.apple.mrj.application.classpath= $CLASS_PATH
-com.apple.mrj.application.workingdirectory= $CURRENT_DIR
-com.apple.mrj.application.vm.options= $VM_OPTIONS
-com.apple.mrj.application.main= $MAIN_CLASS
-com.apple.mrj.application.parameters= $PARAMETERS
 End_Of_Input
 
 #
