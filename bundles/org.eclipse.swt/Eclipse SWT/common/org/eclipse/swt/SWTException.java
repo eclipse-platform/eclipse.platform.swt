@@ -29,12 +29,20 @@ package org.eclipse.swt;
  */
 
 public class SWTException extends RuntimeException {
+	/**
+	 * The SWT error code, one of SWT.ERROR_*.
+	 */
 	public int code;
+
+	/**
+	 * The underlying throwable that caused the problem,
+	 * or null if this information is not available.
+	 */
 	public Throwable throwable;
 	
 /**
  * Constructs a new instance of this class with its 
- * walkback filled in. The error code is set to an
+ * stack trace filled in. The error code is set to an
  * unspecified value.
  */
 public SWTException () {
@@ -43,7 +51,7 @@ public SWTException () {
 
 /**
  * Constructs a new instance of this class with its 
- * walkback and message filled in. The error code is
+ * stack trace and message filled in. The error code is
  * set to an unspecified value.
  *
  * @param message the detail message for the exception
@@ -54,7 +62,7 @@ public SWTException (String message) {
 
 /**
  * Constructs a new instance of this class with its 
- * walkback and error code filled in.
+ * stack trace and error code filled in.
  *
  * @param code the SWT error code
  */
@@ -64,7 +72,7 @@ public SWTException (int code) {
 
 /**
  * Constructs a new instance of this class with its 
- * walkback, error code and message filled in.
+ * stack trace, error code and message filled in.
  *
  * @param code the SWT error code
  * @param message the detail message for the exception
@@ -91,7 +99,7 @@ public String getMessage() {
 
 /**
  * Outputs a printable representation of this exception's
- * walkback on the standard error stream.
+ * stack trace on the standard error stream.
  * <p>
  * Note: printStackTrace(PrintStream) and printStackTrace(PrintWriter)
  * are not provided in order to maintain compatibility with CLDC.
