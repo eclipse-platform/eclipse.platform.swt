@@ -214,7 +214,7 @@ int createMask (int hBitmap, int destWidth, int destHeight, int background, int 
 		*/
 		boolean isDib = bm.bmBits != 0;
 		byte[] originalColors = null;
-		if (transparentPixel != -1 && isDib && bm.bmBitsPixel <= 8) {
+		if (!OS.IsWinCE && transparentPixel != -1 && isDib && bm.bmBitsPixel <= 8) {
 			int maxColors = 1 << bm.bmBitsPixel;
 			byte[] oldColors = new byte[maxColors * 4];
 			OS.GetDIBColorTable(hdc1, 0, maxColors, oldColors);
