@@ -21,7 +21,7 @@ SWT_VERSION = $(maj_ver)$(min_ver)
 JAVA_HOME =/bluebird/teamswt/swt-builddir/ive/bin
 
 #  mozilla dist folder
-MOZ_HOME = /usr/local/mozilla2swt/mozilla1.4/mozilla/dist
+MOZ_HOME = /bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist
 
 # Define the shared library to be made.
 WS_PREFIX = gtk
@@ -35,7 +35,8 @@ MOZ_INCLUDES =  -I$(MOZ_HOME)/include \
 	-I$(MOZ_HOME)/include/xpcom \
 	-I$(MOZ_HOME)/include/string \
 	-I$(MOZ_HOME)/include/nspr \
-	-I$(MOZ_HOME)/include/embed_base
+	-I$(MOZ_HOME)/include/embed_base \
+	-I$(MOZ_HOME)/include/gfx
 
 CFLAGS = -O \
 	-fPIC \
