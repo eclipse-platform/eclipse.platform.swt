@@ -37,6 +37,7 @@ public class CoolBar extends Composite {
 	CoolItem [] items;
 	CoolItem [] originalItems;
 	boolean locked;
+	boolean ignoreResize;
 	static final int ReBarProc;
 	static final TCHAR ReBarClass = new TCHAR (0, OS.REBARCLASSNAME, true);
 	static {
@@ -105,32 +106,83 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int width = 0, rowWidth = 0, height = 0, rowHeight = 0;
-	RECT rect = new RECT ();
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_IDEALSIZE | OS.RBBIM_CHILDSIZE | OS.RBBIM_STYLE;
+	int width = 0, height = 0;
+	int border = getBorderWidth ();
+	int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + (border * 2);
+	int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + (border * 2);
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	for (int i=0; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, i, rect);
-		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
-			width = Math.max (width, rowWidth);
-			height += rowHeight;
-			rowWidth = rowHeight = 0;
+	if (count != 0) {
+		ignoreResize = true;
+		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		if (redraw) {
+			OS.UpdateWindow (handle);	
+			if (COMCTL32_MAJOR < 6) {
+				OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+			} else if (drawCount > 0) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+			}	
+		} else {
+			/*
+			* Feature in Windows.  In version 6.00 of COMCTL32.DLL,
+			* the rebar control uses WM_SETREDRAW as a flag to stop
+			* layout of the items.  This is a problem because we rely
+			* on the rebar to position the items to the determine the
+			* preferred height.  The fix is to temporarily turn redraw
+			* back on using WM_SETREDRAW so the control will layuout,
+			* then turn it off using the DefaultWindowProc () so that
+			* nothing will draw and then turn it back on.
+			*/
+			if (drawCount > 0 && COMCTL32_MAJOR >= 6) {	
+				OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+			}
 		}
-		rowWidth += rbBand.cxIdeal + rect.left + rect.right + 2;
-		rowHeight = Math.max (rowHeight, rbBand.cyMinChild + rect.top + rect.bottom);
+		RECT oldRect = new RECT ();
+		OS.GetWindowRect (handle, oldRect);
+		int oldWidth = oldRect.right - oldRect.left;
+		int oldHeight = oldRect.bottom - oldRect.top;
+		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;	
+		OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
+		RECT rect = new RECT ();
+		OS.SendMessage (handle, OS.RB_GETRECT, count - 1, rect);
+		height = Math.max (height, rect.bottom);
+		OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
+		REBARBANDINFO rbBand = new REBARBANDINFO ();
+		rbBand.cbSize = REBARBANDINFO.sizeof;
+		rbBand.fMask = OS.RBBIM_IDEALSIZE | OS.RBBIM_STYLE;
+		int rowWidth = 0;
+		for (int i = 0; i < count; i++) {
+			OS.SendMessage(handle, OS.RB_GETBANDINFO, i, rbBand);
+			OS.SendMessage(handle, OS.RB_GETBANDBORDERS, i, rect);
+			if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
+				width = Math.max(width, rowWidth);
+				rowWidth = 0;
+			}
+			rowWidth += rbBand.cxIdeal + rect.left + rect.right + 2;
+		}
+		width = Math.max(width, rowWidth);
+		if (redraw) {
+			if (COMCTL32_MAJOR < 6) {
+				OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+			} else if (drawCount > 0) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+			}	
+			OS.ValidateRect (handle, null);			
+		} else {
+			/* Feature in Windows.  Turn redraw back on. */
+			if (drawCount > 0 && COMCTL32_MAJOR >= 6) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+			}
+		}
+		ignoreResize = false;
 	}
-	width = Math.max (width, rowWidth);
-	height += rowHeight - rect.top - rect.bottom;
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int border = getBorderWidth ();
-	width += border * 2;
 	height += border * 2;
+	width += border * 2;	
 	return new Point (width, height);
 }
 
@@ -222,29 +274,7 @@ void destroyItem (CoolItem item) {
 			 * so that it occupies all the available space to the right in the row.
 			 */
 			resizeToMaximumWidth (lastIndex - 1);
-		} else if (index != 0) {
-			/*
-			* Feature in Windows.   Consider a coolbar with two rows; row A and row B.
-			* The last item of each row is sized so that it occupies all the space to the right.
-			* Thus, the last item in row A and the last item in row B will occupy all the space to the right.  
-			* When  the  first item in a row is removed all the remaining items on the same 
-			* row are moved to the previous row.  Thus if the first item in row B is removed, all 
-			* the remaining items in row B will move to row A.  However, the item that was previously
-			* the last item in row A is still occupying all the space to the right.  In order for the items from
-			* row B to be visible in row A, the item that was previously the last item in row A must 
-			* be resized to have its ideal size.
-			* 
-			* Note: this does not apply to the very first item in the very first row which is the 
-			* item with index 0.
-			*/
-			REBARBANDINFO rbBand = new REBARBANDINFO ();
-			rbBand.cbSize = REBARBANDINFO.sizeof;
-			rbBand.fMask = OS.RBBIM_STYLE;
-			OS.SendMessage (handle, OS.RB_GETBANDINFO, index, rbBand);
-			if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
-				resizeToPreferredWidth (index - 1);
-			}			
-		}							
+		}						
 	}	
 		
 	/*
@@ -260,6 +290,12 @@ void destroyItem (CoolItem item) {
 	}
 	items [item.id] = null;
 	item.id = -1;
+	if (wasWrap) {
+		if (0 <= index && index < getItemCount ()) {
+			getItem (index).setWrap (true);
+		}
+	}
+	if (wasVisible) control.setVisible (true);
 	index = 0;
 	while (index < originalItems.length) {
 		if (originalItems [index] == item) break;
@@ -270,12 +306,6 @@ void destroyItem (CoolItem item) {
 	System.arraycopy (originalItems, 0, newOriginals, 0, index);
 	System.arraycopy (originalItems, index + 1, newOriginals, index, length - index);
 	originalItems = newOriginals;
-	if (wasWrap) {
-		if (0 <= index && index < getItemCount ()) {
-			getItem (index).setWrap (true);
-		}
-	}
-	if (wasVisible) control.setVisible (true);
 }
 
 /**
@@ -869,15 +899,51 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
+LRESULT WM_SETREDRAW (int wParam, int lParam) {
+	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  When redraw is turned off, the rebar
+	* control does not call the default window proc.  This means
+	* that the rebar will redraw and children of the rebar will
+	* also redraw.  The fix is to call both the rebar window proc
+	* and the default window proc.
+	* 
+	* NOTE: The rebar control can resize itself in WM_SETREDRAW.
+	* When redraw is turned off by the default window proc, this
+	* can leave pixel corruption in the parent.  The fix is to
+	* detect the size change and damage the previous area in the
+	* parent.
+	*/
+	Rectangle rect = getBounds ();
+	int code = callWindowProc (OS.WM_SETREDRAW, wParam, lParam);
+	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
+	if (!rect.equals (getBounds ())) {
+		parent.redraw (rect.x, rect.y, rect.width, rect.height, true);
+	}
+	return new LRESULT (code);
+}
+
+LRESULT WM_SIZE(int wParam, int lParam) {
+	if (ignoreResize) {
+		int code = callWindowProc (OS.WM_SIZE, wParam, lParam);
+		if (code == 0) return LRESULT.ZERO;
+		return new LRESULT (code);
+	}
+	return super.WM_SIZE(wParam, lParam);
+}
+
 LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
 		case OS.RBN_HEIGHTCHANGE:
-			Point size = getSize ();
-			int border = getBorderWidth ();
-			int height = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
-			setSize (size.x, height + (border * 2));
+			if (!ignoreResize) {
+				Point size = getSize ();
+				int border = getBorderWidth ();
+				int height = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
+				setSize (size.x, height + (border * 2));
+			}
 			break;
 		case OS.RBN_CHEVRONPUSHED:
 			NMREBARCHEVRON lpnm = new NMREBARCHEVRON ();

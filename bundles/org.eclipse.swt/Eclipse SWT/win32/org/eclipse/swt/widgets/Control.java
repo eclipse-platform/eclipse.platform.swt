@@ -2722,6 +2722,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_SETFOCUS:			result = WM_SETFOCUS (wParam, lParam); break;
 		case OS.WM_SETFONT:			result = WM_SETFONT (wParam, lParam); break;
 		case OS.WM_SETTINGCHANGE:		result = WM_SETTINGCHANGE (wParam, lParam); break;
+		case OS.WM_SETREDRAW:			result = WM_SETREDRAW (wParam, lParam); break;
 		case OS.WM_SHOWWINDOW:			result = WM_SHOWWINDOW (wParam, lParam); break;
 		case OS.WM_SIZE:				result = WM_SIZE (wParam, lParam); break;
 		case OS.WM_SYSCHAR:			result = WM_SYSCHAR (wParam, lParam); break;
@@ -3793,6 +3794,10 @@ LRESULT WM_SETTINGCHANGE (int wParam, int lParam) {
 }
 
 LRESULT WM_SETFONT (int wParam, int lParam) {
+	return null;
+}
+
+LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	return null;
 }
 
