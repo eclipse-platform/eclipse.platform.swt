@@ -833,7 +833,7 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+5,y,   x+7,y+2);
 			gc.drawLine(x+7,y+2, x+4,y+4);
 			FontData fd = getFont().getFontData()[0];
-			fd.height -= 1;
+			fd.setHeight(fd.getHeight() - 1);
 			Font f = new Font(getDisplay(), fd);
 			gc.setFont(f);
 			gc.drawString(String.valueOf(count), x+7, y+4, true);
@@ -852,7 +852,7 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+5,y,   x+7,y+2);
 			gc.drawLine(x+7,y+2, x+4,y+4);
 			FontData fd = getFont().getFontData()[0];
-			fd.height -= 1;
+			fd.setHeight(fd.getHeight() - 1);
 			Font f = new Font(getDisplay(), fd);
 			gc.setFont(f);
 			gc.drawString(String.valueOf(count), x+7, y+4, true);
@@ -872,7 +872,7 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+6,y+1, x+8,y+3);
 			gc.drawLine(x+8,y+3, x+5,y+5);
 			FontData fd = getFont().getFontData()[0];
-			fd.height -= 1;
+			fd.setHeight(fd.getHeight() - 1);
 			Font f = new Font(getDisplay(), fd);
 			gc.setFont(f);
 			gc.drawString(String.valueOf(count), x+7, y+4, true);
