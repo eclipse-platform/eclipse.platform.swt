@@ -85,7 +85,7 @@ public class Table extends SelectableItemWidget {
  */
 public Table(Composite parent, int style) {
 	// use NO_MERGE_PAINTS to avoid flashing during column and widget resize redraw
-	super(parent, checkStyle(style| SWT.NO_MERGE_PAINTS));
+	super(parent, checkStyle(style| SWT.NO_REDRAW_RESIZE));
 }
 
 /**
