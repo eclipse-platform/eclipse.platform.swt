@@ -47,11 +47,12 @@ import org.eclipse.swt.events.*;
  */
 public class Table extends Composite {
 	TableItem [] items;
+	int lastIndexOf;
 	TableColumn [] columns;
 	GC paintGC;
 	int itemCount, columnCount, idCount, anchorFirst, anchorLast, headerHeight;
 	boolean ignoreSelect;
-	int showIndex = -1;
+	int showIndex;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
 	static final int EXTRA_WIDTH = 25;
@@ -138,6 +139,31 @@ static int checkStyle (int style) {
 	*/
 	style |= SWT.H_SCROLL | SWT.V_SCROLL;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
+}
+
+void checkItems (boolean setScrollWidth) {
+	int [] count = new int [1];
+	if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemAnyState, count) != OS.noErr) {
+		error (SWT.ERROR_CANNOT_GET_COUNT);
+	}
+	if (itemCount != count [0]) {
+		int delta = itemCount - count [0];
+		if (delta < 1024) {
+			int [] ids = new int [delta];
+			for (int i=0; i<ids.length; i++) {
+				ids [i] = count [0] + i + 1;
+			}
+			if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.noErr) {
+				error (SWT.ERROR_ITEM_NOT_ADDED);
+			}
+			OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+		} else {
+			if (OS.AddDataBrowserItems (handle, 0, itemCount, null, OS.kDataBrowserItemNoProperty) != OS.noErr) {
+				error (SWT.ERROR_ITEM_NOT_ADDED);
+			}
+		}
+	}
+	if (setScrollWidth) setScrollWidth ();
 }
 
 protected void checkSubclass () {
@@ -296,18 +322,23 @@ void createItem (TableColumn column, int index) {
 
 void createItem (TableItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
-	int [] id = new int [] {itemCount + 1};
-	if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, id, 0) != OS.noErr) {
-		error (SWT.ERROR_ITEM_NOT_ADDED);
+	boolean add = drawCount == 0 || index != itemCount;
+	if (add) {
+		int [] id = new int [] {itemCount + 1};
+		if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, id, 0) != OS.noErr) {
+			error (SWT.ERROR_ITEM_NOT_ADDED);
+		}
 	}
 	if (itemCount == items.length) {
-		TableItem [] newItems = new TableItem [itemCount + 4];
+		/* Grow the array faster when redraw is off */
+		int newLength = drawCount == 0 ? items.length + 4 : items.length * 3 / 2;
+		TableItem [] newItems = new TableItem [newLength];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
-	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	if (add) OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 }
 
 ScrollBar createScrollBar (int style) {
@@ -318,6 +349,7 @@ void createWidget () {
 	super.createWidget ();
 	items = new TableItem [4];
 	columns = new TableColumn [4];
+	showIndex = -1;
 }
 
 Color defaultBackground () {
@@ -457,6 +489,7 @@ void destroyItem (TableColumn column) {
 }
 
 void destroyItem (TableItem item) {
+	checkItems (true);
 	int index = 0;
 	while (index < itemCount) {
 		if (items [index] == item) break;
@@ -748,6 +781,7 @@ public TableItem getItem (int index) {
  */
 public TableItem getItem (Point point) {
 	checkWidget ();
+	checkItems (true);
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
@@ -1039,8 +1073,14 @@ public int indexOf (TableColumn column) {
 public int indexOf (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i=0; i<itemCount; i++) {
-		if (items [i] == item) return i;
+	if (lastIndexOf < itemCount / 2) {
+		for (int i=0; i<itemCount; i++) {
+			if (items [i] == item) return lastIndexOf = i;
+		}
+	} else {
+		for (int i=itemCount - 1; i>=0; --i) {
+			if (items [i] == item) return lastIndexOf = i;
+		}
 	}
 	return -1;
 }
@@ -1246,6 +1286,7 @@ void releaseWidget () {
  */
 public void remove (int index) {
 	checkWidget();
+	checkItems (true);
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	int [] id = new int [] {itemCount};
 	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
@@ -1375,6 +1416,7 @@ public void removeSelectionListener(SelectionListener listener) {
  */
 public void select (int index) {
 	checkWidget();
+	checkItems (false);
 	if (0 <= index && index < itemCount) {
 		int [] id = new int [] {index + 1};
 		ignoreSelect = true;
@@ -1401,6 +1443,7 @@ public void select (int index) {
  */
 public void select (int start, int end) {
 	checkWidget();
+	checkItems (false);
 	//TODO - check range
 	int length = end - start + 1;
 	if (length <= 0) return;
@@ -1431,6 +1474,7 @@ public void select (int start, int end) {
  */
 public void select (int [] indices) {
 	checkWidget();
+	checkItems (false);
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	//TODO - check range
 	int length = indices.length;
@@ -1452,6 +1496,7 @@ public void select (int [] indices) {
  */
 public void selectAll () {
 	checkWidget ();
+	checkItems (false);
 	if ((style & SWT.SINGLE) != 0) return;
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, 0, null, OS.kDataBrowserItemsAssign);
@@ -1512,6 +1557,45 @@ public void setLinesVisible (boolean show) {
 	checkWidget ();
 }
 
+public void setRedraw (boolean redraw) {
+	checkWidget();
+	super.setRedraw (redraw);
+	if (redraw && drawCount == 0) {
+	 	/* Resize the item array to match the item count */
+		if (items.length > 4 && items.length - itemCount > 3) {
+			TableItem [] newItems = new TableItem [(itemCount + 3) / 4 * 4];
+			System.arraycopy (items, 0, newItems, 0, itemCount);
+			items = newItems;
+		}		
+	 	checkItems (true);
+	}
+}
+
+void setScrollWidth () {
+	if (columnCount != 0) return;
+	setScrollWidth (items, true);
+}
+
+void setScrollWidth (TableItem [] items, boolean set) {
+	if (columnCount != 0) return;
+	GC gc = new GC (this);
+	int newWidth = 0;
+	for (int i = 0; i < items.length; i++) {
+		TableItem item = items [i];
+		if (item != null) {
+			newWidth = Math.max (newWidth, item.calculateWidth (0, gc));
+		}
+	}
+	gc.dispose ();
+	newWidth += EXTRA_WIDTH;
+	if (!set) {
+		short [] width = new short [1];
+		OS.GetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width);
+		if (width [0] >= newWidth) return;
+	}
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) newWidth);
+}
+
 void setScrollWidth (TableItem item) {
 	if (columnCount != 0) return;
 	GC gc = new GC (this);
@@ -1541,6 +1625,7 @@ void setScrollWidth (TableItem item) {
  */
 public void setSelection (int index) {
 	checkWidget();
+	checkItems (false);
 	setSelection (index, false);
 }
 
@@ -1574,6 +1659,7 @@ void setSelection (int index, boolean notify) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
+	checkItems (false);
 	int length = end - start + 1;
 	if (length <= 0) return;
 	int count = length;
@@ -1606,6 +1692,8 @@ public void setSelection (int start, int end) {
  * @see Table#select(int[])
  */
 public void setSelection (int [] indices) {
+	checkWidget ();
+	checkItems (false);
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
 	int count = length;
@@ -1642,6 +1730,7 @@ public void setSelection (int [] indices) {
  */
 public void setSelection (TableItem [] items) {
 	checkWidget();
+	checkItems (false);
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = items.length;
 	int count = length;
@@ -1671,6 +1760,7 @@ public void setSelection (TableItem [] items) {
  */
 public void setTopIndex (int index) {
 	checkWidget();
+	checkItems (false);
     int [] top = new int [1], left = new int [1];
     OS.GetDataBrowserScrollPosition (handle, top, left);
     top [0] = index * getItemHeight ();
@@ -1717,6 +1807,7 @@ void showIndex (int index) {
  */
 public void showItem (TableItem item) {
 	checkWidget ();
+	checkItems (false);
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int index = indexOf (item);
@@ -1737,6 +1828,7 @@ public void showItem (TableItem item) {
  */
 public void showSelection () {
 	checkWidget();
+	checkItems (false);
 	int index = getSelectionIndex ();
 	if (index >= 0) showIndex (index);
 }

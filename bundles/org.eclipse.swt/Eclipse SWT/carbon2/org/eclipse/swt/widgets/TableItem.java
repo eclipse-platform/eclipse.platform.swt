@@ -155,6 +155,7 @@ public Color getBackground () {
  */
 public Rectangle getBounds (int index) {
 	checkWidget ();
+	parent.checkItems (true);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);;
 	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
@@ -268,6 +269,7 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget();
+	parent.checkItems (true);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
@@ -347,9 +349,11 @@ public String getText (int index) {
 }
 
 void redraw () {
-	int itemIndex = parent.indexOf (this);
-	int [] id = new int [] {itemIndex + 1};
-	OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	if (parent.drawCount == 0) {
+		int itemIndex = parent.indexOf (this);
+		int [] id = new int [] {itemIndex + 1};
+		OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	}
 }
 
 void releaseChild () {
@@ -496,10 +500,7 @@ public void setImage (int index, Image image) {
 	}
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
-	if (index == 0) {
-		super.setImage (image);
-		parent.setScrollWidth (this);
-	}
+	if (index == 0) super.setImage (image);
 	int columnCount = parent.columnCount;
 	if (0 <= index && index < columnCount) {
 		if (images == null) images = new Image [columnCount];
@@ -510,8 +511,11 @@ public void setImage (int index, Image image) {
 		}
 		if (0 <= index && index < images.length) images [index] = image;
 	}	
-	int [] id = new int [] {itemIndex + 1};
-	OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	if (parent.drawCount == 0) {
+		if (index == 0) parent.setScrollWidth (this);
+		int [] id = new int [] {itemIndex + 1};
+		OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	}
 }
 
 public void setImage (Image image) {
@@ -576,10 +580,7 @@ public void setText (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
-	if (index == 0) {
-		super.setText (string);
-		parent.setScrollWidth (this);
-	}
+	if (index == 0) super.setText (string);
 	int columnCount = parent.columnCount;
 	if (0 <= index && index < columnCount) {
 		if (strings == null) strings = new String [columnCount];
@@ -590,8 +591,11 @@ public void setText (int index, String string) {
 		}
 		if (0 <= index && index < strings.length) strings [index] = string;
 	}
-	int [] id = new int [] {itemIndex + 1};
-	OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	if (parent.drawCount == 0) {
+		if (index == 0) parent.setScrollWidth (this);
+		int [] id = new int [] {itemIndex + 1};
+		OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	}
 }
 
 public void setText (String string) {
