@@ -564,6 +564,13 @@ public static final native void gtk_ctree_set_node_info(int ctree, int node, byt
 public static final native int gtk_drawing_area_new();
 public static final native int gtk_dialog_new();
 public static final native int gtk_event_box_new();
+
+public static final native int gtk_editable_get_selection_start(int editable);
+public static final native int gtk_editable_get_selection_end(int editable);
+public static final native int gtk_editable_get_editable(int editable);
+public static final native int gtk_editable_copy_clipboard(int editable);
+public static final native int gtk_editable_cut_clipboard(int editable);
+public static final native int gtk_editable_paste_clipboard(int editable);
 public static final native int gtk_editable_get_position(int editable);
 public static final native void gtk_editable_set_position(int editable, int position);
 public static final native void gtk_entry_set_editable(int entry, boolean editable);
