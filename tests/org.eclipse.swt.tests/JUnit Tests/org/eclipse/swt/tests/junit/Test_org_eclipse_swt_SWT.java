@@ -10,10 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.SWT
@@ -38,38 +37,6 @@ protected void tearDown() {
 
 public void test_Constructor() {
 	// Do nothing. Class SWT is not intended to be subclassed.
-}
-
-public void test_getMessageLjava_lang_String() {
-	boolean passed = false;
-	try {
-		passed = false;
-		SWT.getMessage(null);
-	} catch (IllegalArgumentException ex) {
-		passed = true;
-	}
-	assertTrue ("did not correctly throw exception with null argument", passed);
-	try {
-		SWT.getMessage("SWT_Yes");
-	} catch (Throwable t) {
-		fail ("exception " + t + " generated for SWT_Yes");
-	}
-	assertTrue (
-		"invalid key did not return as itself",
-		"_NOT_FOUND_IN_PROPERTIES_".equals(SWT.getMessage("_NOT_FOUND_IN_PROPERTIES_")));
-		
-}
-
-public void test_getPlatform() {
-	// Can't test the list of platforms, since this may change,
-	// so just test to see it returns something.
-	assertTrue ("returned null platform name", SWT.getPlatform() != null);
-}
-
-public void test_getVersion() {
-	// Test that the version number which is returned is reasonable.
-	int ver = SWT.getVersion();
-	assertTrue ("unreasonable value returned", ver > 0 && ver < 1000000);
 }
 
 public void test_errorI() {
@@ -130,6 +97,38 @@ public void test_errorILjava_lang_Throwable() {
 	assertTrue ("did not correctly throw exception for error(-1)", passed);
 }
 
+public void test_getMessageLjava_lang_String() {
+	boolean passed = false;
+	try {
+		passed = false;
+		SWT.getMessage(null);
+	} catch (IllegalArgumentException ex) {
+		passed = true;
+	}
+	assertTrue ("did not correctly throw exception with null argument", passed);
+	try {
+		SWT.getMessage("SWT_Yes");
+	} catch (Throwable t) {
+		fail ("exception " + t + " generated for SWT_Yes");
+	}
+	assertTrue (
+		"invalid key did not return as itself",
+		"_NOT_FOUND_IN_PROPERTIES_".equals(SWT.getMessage("_NOT_FOUND_IN_PROPERTIES_")));
+		
+}
+
+public void test_getPlatform() {
+	// Can't test the list of platforms, since this may change,
+	// so just test to see it returns something.
+	assertTrue ("returned null platform name", SWT.getPlatform() != null);
+}
+
+public void test_getVersion() {
+	// Test that the version number which is returned is reasonable.
+	int ver = SWT.getVersion();
+	assertTrue ("unreasonable value returned", ver > 0 && ver < 1000000);
+}
+
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -142,19 +141,19 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_Constructor");
+	methodNames.addElement("test_errorI");
+	methodNames.addElement("test_errorILjava_lang_Throwable");
 	methodNames.addElement("test_getMessageLjava_lang_String");
 	methodNames.addElement("test_getPlatform");
 	methodNames.addElement("test_getVersion");
-	methodNames.addElement("test_errorI");
-	methodNames.addElement("test_errorILjava_lang_Throwable");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
+	else if (getName().equals("test_errorI")) test_errorI();
+	else if (getName().equals("test_errorILjava_lang_Throwable")) test_errorILjava_lang_Throwable();
 	else if (getName().equals("test_getMessageLjava_lang_String")) test_getMessageLjava_lang_String();
 	else if (getName().equals("test_getPlatform")) test_getPlatform();
 	else if (getName().equals("test_getVersion")) test_getVersion();
-	else if (getName().equals("test_errorI")) test_errorI();
-	else if (getName().equals("test_errorILjava_lang_Throwable")) test_errorILjava_lang_Throwable();
 }
 }

@@ -44,6 +44,9 @@ public AllTests() {
 	 * - printing and program
 	 * - events
 	 * - drag & drop
+	 * - accessibility
+	 * - OLE
+	 * - browser
 	 */
 	addTest(Test_org_eclipse_swt_SWT.suite());
 	addTest(Test_org_eclipse_swt_SWTException.suite());
@@ -115,6 +118,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_layout_GridLayout.suite());
 	addTest(Test_org_eclipse_swt_layout_FillLayout.suite());
 	addTest(Test_org_eclipse_swt_layout_RowLayout.suite());
+	addTest(Test_org_eclipse_swt_layout_FormLayout.suite());
 
 	addTest(Test_org_eclipse_swt_custom_TableTree.suite());
 	addTest(Test_org_eclipse_swt_custom_BidiSegmentEvent.suite());
@@ -181,5 +185,33 @@ public AllTests() {
 //	addTest(Test_org_eclipse_swt_dnd_Clipboard.suite());
 //	addTest(Test_org_eclipse_swt_dnd_DropTargetEvent.suite());
 //	addTest(Test_org_eclipse_swt_dnd_DropTarget.suite());
+
+	addTest(Test_org_eclipse_swt_accessibility_ACC.suite());
+	addTest(Test_org_eclipse_swt_accessibility_Accessible.suite());
+	addTest(Test_org_eclipse_swt_accessibility_AccessibleAdapter.suite());
+	addTest(Test_org_eclipse_swt_accessibility_AccessibleControlAdapter.suite());
+	addTest(Test_org_eclipse_swt_accessibility_AccessibleControlEvent.suite());
+	addTest(Test_org_eclipse_swt_accessibility_AccessibleControlListener.suite());
+	addTest(Test_org_eclipse_swt_accessibility_AccessibleEvent.suite());
+	addTest(Test_org_eclipse_swt_accessibility_AccessibleListener.suite());
+
+	addTest(Test_org_eclipse_swt_ole_win32_OLE.suite());
+	addTest(Test_org_eclipse_swt_ole_win32_OleAutomation.suite());
+	addTest(Test_org_eclipse_swt_ole_win32_OleClientSite.suite());
+	addTest(Test_org_eclipse_swt_ole_win32_OleControlSite.suite());
+	addTest(Test_org_eclipse_swt_ole_win32_OleEvent.suite());
+	addTest(Test_org_eclipse_swt_ole_win32_OleFrame.suite());
+	addTest(Test_org_eclipse_swt_ole_win32_OleFunctionDescription.suite());
+	addTest(Test_org_eclipse_swt_ole_win32_OleListener.suite());
+	addTest(Test_org_eclipse_swt_ole_win32_OleParameterDescription.suite());
+	addTest(Test_org_eclipse_swt_ole_win32_Variant.suite());
+
+	addTest(Test_org_eclipse_swt_browser_Browser.suite());
+	addTest(Test_org_eclipse_swt_browser_LocationListener.suite());
+	addTest(Test_org_eclipse_swt_browser_ProgressAdapter.suite());
+	addTest(Test_org_eclipse_swt_browser_ProgressListener.suite());
+	addTest(Test_org_eclipse_swt_browser_StatusTextListener.suite());
+
+
 }
 }

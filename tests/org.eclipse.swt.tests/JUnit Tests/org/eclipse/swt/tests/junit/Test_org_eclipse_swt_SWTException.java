@@ -11,9 +11,9 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.SWTException
@@ -42,12 +42,6 @@ public void test_Constructor() {
 		new SWTException().code == SWT.ERROR_UNSPECIFIED);
 }
 
-public void test_ConstructorLjava_lang_String() {
-	assertTrue (
-		"did not fill in code properly",
-		new SWTException("An uninteresting message").code == SWT.ERROR_UNSPECIFIED);
-}
-
 public void test_ConstructorI() {
 	assertTrue (
 		"did not fill in code properly",
@@ -61,6 +55,12 @@ public void test_ConstructorILjava_lang_String() {
 			== SWT.ERROR_CANNOT_BE_ZERO);
 }
 
+public void test_ConstructorLjava_lang_String() {
+	assertTrue (
+		"did not fill in code properly",
+		new SWTException("An uninteresting message").code == SWT.ERROR_UNSPECIFIED);
+}
+
 public void test_getMessage() {
 	assertTrue (
 		"did not include creation string in result",
@@ -68,12 +68,8 @@ public void test_getMessage() {
 			.indexOf("An interesting message") >= 0);
 }
 
-public void test_printStackTraceLjava_io_PrintStream() {
-	// Should not test. Result varies by VM.
-}
-
-public void test_printStackTraceLjava_io_PrintWriter() {
-	// Should not test. Result varies by VM.
+public void test_printStackTrace() {
+	warnUnimpl("Test test_printStackTrace not written");
 }
 
 public static Test suite() {
@@ -88,21 +84,19 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_ConstructorLjava_lang_String");
 	methodNames.addElement("test_ConstructorI");
 	methodNames.addElement("test_ConstructorILjava_lang_String");
+	methodNames.addElement("test_ConstructorLjava_lang_String");
 	methodNames.addElement("test_getMessage");
-	methodNames.addElement("test_printStackTraceLjava_io_PrintStream");
-	methodNames.addElement("test_printStackTraceLjava_io_PrintWriter");
+	methodNames.addElement("test_printStackTrace");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_ConstructorLjava_lang_String")) test_ConstructorLjava_lang_String();
 	else if (getName().equals("test_ConstructorI")) test_ConstructorI();
 	else if (getName().equals("test_ConstructorILjava_lang_String")) test_ConstructorILjava_lang_String();
+	else if (getName().equals("test_ConstructorLjava_lang_String")) test_ConstructorLjava_lang_String();
 	else if (getName().equals("test_getMessage")) test_getMessage();
-	else if (getName().equals("test_printStackTraceLjava_io_PrintStream")) test_printStackTraceLjava_io_PrintStream();
-	else if (getName().equals("test_printStackTraceLjava_io_PrintWriter")) test_printStackTraceLjava_io_PrintWriter();
+	else if (getName().equals("test_printStackTrace")) test_printStackTrace();
 }
 }
