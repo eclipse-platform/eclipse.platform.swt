@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.*;
 public abstract class FileFormat {
 	static final String FORMAT_PACKAGE = "org.eclipse.swt.internal.image";
 	static final String FORMAT_SUFFIX = "FileFormat";
-	static String[] FORMATS = {"WinBMP", "WinBMP", "GIF", "WinICO", "JPEG", "PNG"};
+	static final String[] FORMATS = {"WinBMP", "WinBMP", "GIF", "WinICO", "JPEG", "PNG"};
 	
 	LEDataInputStream inputStream;
 	LEDataOutputStream outputStream;
