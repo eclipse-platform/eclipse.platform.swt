@@ -1387,7 +1387,7 @@ public static final synchronized native int XmImGetXIC (int widget, int input_po
 public static final synchronized native int XmImGetXIM (int widget);
 public static final synchronized native void XmImRegister (int widget, int reserved);
 public static final synchronized native int XmImSetFocusValues (int widget, int[] args, int num_args);
-public static final synchronized native int XmImVaSetFocusValues(int widget, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9);
+//public static final synchronized native int XmImVaSetFocusValues(int widget, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9);
 public static final synchronized native int XmImSetValues (int widget, int[] args, int num_args);
 public static final synchronized native void XmImUnregister (int widget);
 public static final synchronized native void XmImUnsetFocus (int widget);

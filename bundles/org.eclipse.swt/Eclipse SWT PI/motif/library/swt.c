@@ -8379,6 +8379,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImSetFocusValues
  * Method:    XmImVaSetFocusValues
  * Signature: (IIIIIIIIII)I
  */
+/*
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImVaSetFocusValues
   (JNIEnv *env, jclass that, jint widget, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9)
 {
@@ -8387,6 +8388,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImVaSetFocusValu
 #endif
 	XmImVaSetFocusValues((Widget)widget, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 }
+*/
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
