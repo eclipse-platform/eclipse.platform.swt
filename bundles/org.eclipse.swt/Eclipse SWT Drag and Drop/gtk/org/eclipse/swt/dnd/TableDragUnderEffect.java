@@ -33,7 +33,7 @@ private int checkEffect(int effect) {
 
 void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
-	int handle = table.handle;
+	int /*long*/ handle = table.handle;
 	Point coordinates = new Point(x, y);
 	coordinates = table.toControl(coordinates);
 	int /*long*/ [] path = new int /*long*/ [1];
