@@ -1427,7 +1427,6 @@ void setMenuBar (Menu menu) {
 
 public boolean sleep () {
 	checkDevice ();
-	//NOT DONE - timers shouldn't run here
 	return OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
 }
 
