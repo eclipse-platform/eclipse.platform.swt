@@ -539,48 +539,32 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 		NMHDR hdr = new NMHDR ();
 		OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 		switch (hdr.code) {
-			/*
-			* Bug in Windows 98.  For some reason, the tool bar control
-			* sends both TTN_GETDISPINFOW and TTN_GETDISPINFOA to get
-			* the tool tip text and the tab folder control sends only 
-			* TTN_GETDISPINFOW.  The fix is to handle only TTN_GETDISPINFOW,
-			* even though it should never be sent on Windows 98.
-			*
-			* NOTE:  Because the size of NMTTDISPINFO differs between
-			* Windows 98 and NT, guard against the case where the wrong
-			* kind of message occurs by copy inlining the memory moves
-			* and UNICODE conversion code.
-			*/
+			case OS.TTN_GETDISPINFOW:
 			case OS.TTN_GETDISPINFOA: {
 				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
-				OS.MoveMemoryA (lpnmtdi, lParam, NMTTDISPINFO.sizeofA);
+				OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
 				String string = toolTipText (lpnmtdi);
 				if (string != null && string.length () != 0) {
 					Shell shell = getShell ();
 					string = Display.withCrLf (string);
-					int length = string.length ();
-					char [] chars = new char [length];
-					string.getChars (0, length, chars, 0);
-					byte [] bytes = new byte [chars.length * 2 + 1];
-					OS.WideCharToMultiByte (OS.CP_ACP, 0, chars, chars.length, bytes, bytes.length, null, null);
-					shell.setToolTipText (lpnmtdi, bytes);
-					OS.MoveMemoryA (lParam, lpnmtdi, NMTTDISPINFO.sizeofA);
-					return LRESULT.ZERO;
-				}
-				break;
-			}
-			case OS.TTN_GETDISPINFOW: {
-				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
-				OS.MoveMemoryW (lpnmtdi, lParam, NMTTDISPINFO.sizeofW);
-				String string = toolTipText (lpnmtdi);
-				if (string != null && string.length () != 0) {
-					Shell shell = getShell ();
-					string = Display.withCrLf (string);
-					int length = string.length ();
-					char [] buffer = new char [length + 1];
-					string.getChars (0, length, buffer, 0);
-					shell.setToolTipText (lpnmtdi, buffer);
-					OS.MoveMemoryW (lParam, lpnmtdi, NMTTDISPINFO.sizeofW);
+					/*
+					* Bug in Windows 98.  For some reason, the tool bar control
+					* sends both TTN_GETDISPINFOW and TTN_GETDISPINFOA to get
+					* the tool tip text and the tab folder control sends only 
+					* TTN_GETDISPINFOW.  The fix is to handle only TTN_GETDISPINFOW,
+					* even though it should never be sent on Windows 98.
+					*/
+					if (hdr.code == OS.TTN_GETDISPINFOW) {
+						int length = string.length ();
+						char [] buffer = new char [length + 1];
+						string.getChars(0, length, buffer, 0);
+						shell.setToolTipText (lpnmtdi, buffer);
+					} else {
+						/* Use the character encoding for the default locale */
+						TCHAR buffer = new TCHAR (0, string, true);
+						shell.setToolTipText (lpnmtdi, buffer);
+					}
+					OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
 					return LRESULT.ZERO;
 				}
 				break;
