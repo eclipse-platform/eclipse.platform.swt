@@ -9,9 +9,7 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.*;
-/* Start ACCESSIBILITY */
 import org.eclipse.swt.accessibility.*;
-/* End ACCESSIBILITY */
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -34,9 +32,7 @@ public abstract class Control extends Widget implements Drawable {
 	Object layoutData;
 	String toolTipText;
 	int toolTipHandle;
-/* Start ACCESSIBILITY */
 	Accessible accessible;
-/* End ACCESSIBILITY */
 	
 Control () {
 	/* Do nothing */
@@ -455,7 +451,6 @@ int defaultForeground () {
 	return display.WIDGET_FOREGROUND;
 }
 
-/* Start ACCESSIBILITY */
 /**
  * Returns the accessible object for the receiver.
  * If this is the first time this object is requested,
@@ -478,7 +473,6 @@ public Accessible getAccessible () {
 	}
 	return accessible;
 }
-/* End ACCESSIBILITY */
 
 /**
  * Returns the receiver's background color.
