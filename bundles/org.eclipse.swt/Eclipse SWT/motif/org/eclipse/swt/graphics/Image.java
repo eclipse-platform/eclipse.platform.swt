@@ -573,7 +573,7 @@ void createMask() {
 	int maskPixmap = OS.XCreatePixmap(xDisplay, drawable, maskImage.width, maskImage.height, 1);
 	XColor[] xcolors = device.xcolors;
 	int gc = OS.XCreateGC(xDisplay, maskPixmap, 0, null);
-	int error = Image.putImage(maskImage, 0, 0, maskImage.width, maskImage.height, 0, 0, maskImage.width, maskImage.height, xDisplay, visual, screenDepth, xcolors, null, maskPixmap, gc);
+	int error = Image.putImage(maskImage, 0, 0, maskImage.width, maskImage.height, 0, 0, maskImage.width, maskImage.height, xDisplay, visual, screenDepth, xcolors, null, true, maskPixmap, gc);
 	OS.XFreeGC(xDisplay, gc);
 	this.mask = maskPixmap;
 }
@@ -937,7 +937,7 @@ void init(Device device, ImageData image) {
 	int gc = OS.XCreateGC(xDisplay, pixmap, 0, null);
 	int[] transPixel = null;
 	if (image.transparentPixel != -1) transPixel = new int[]{image.transparentPixel};
-	int error = putImage(image, 0, 0, image.width, image.height, 0, 0, image.width, image.height, xDisplay, visual, screenDepth, device.xcolors, transPixel, pixmap, gc);
+	int error = putImage(image, 0, 0, image.width, image.height, 0, 0, image.width, image.height, xDisplay, visual, screenDepth, device.xcolors, transPixel, false, pixmap, gc);
 	OS.XFreeGC(xDisplay, gc);
 	if (error != 0) {
 		OS.XFreePixmap (xDisplay, pixmap);
@@ -948,7 +948,7 @@ void init(Device device, ImageData image) {
 		ImageData maskImage = image.getTransparencyMask();
 		int mask = OS.XCreatePixmap(xDisplay, drawable, image.width, image.height, 1);
 		gc = OS.XCreateGC(xDisplay, mask, 0, null);
-		error = putImage(maskImage, 0, 0, maskImage.width, maskImage.height, 0, 0, maskImage.width, maskImage.height, xDisplay, visual, screenDepth, device.xcolors, null, mask, gc);
+		error = putImage(maskImage, 0, 0, maskImage.width, maskImage.height, 0, 0, maskImage.width, maskImage.height, xDisplay, visual, screenDepth, device.xcolors, null, true, mask, gc);
 		OS.XFreeGC(xDisplay, gc);
 		if (error != 0) {
 			OS.XFreePixmap (xDisplay, pixmap);
@@ -1053,7 +1053,7 @@ public static Image motif_new(Device device, int type, int pixmap, int mask) {
  * Put a device-independent image of any depth into a drawable of any depth, 
  * stretching if necessary.
  */
-static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, int display, int visual, int screenDepth, XColor[] xcolors, int[] transparentPixel, int drawable, int gc) {
+static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, int display, int visual, int screenDepth, XColor[] xcolors, int[] transparentPixel, boolean isMask, int drawable, int gc) {
 	PaletteData palette = image.palette;
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
 		((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
@@ -1116,6 +1116,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 
 	/* Depth 1 */
 	if (image.depth == 1) {
+
 		int bplX = ((destWidth + 7) / 8 + 3) & 0xFFFC;
 		int bufSize = bplX * destHeight;
 		byte[] buf = new byte[bufSize];
@@ -1126,6 +1127,17 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 			return SWT.ERROR_NO_HANDLES;
 		}
 		int foreground = 1, background = 0;
+		if (!isMask) {
+			foreground = 0;
+			if (srcReds.length > 1) {
+				foreground = ImageData.closestMatch(screenDepth, srcReds[1], srcGreens[1], srcBlues[1],
+					destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
+			}
+			if (srcReds.length > 0) {
+				background = ImageData.closestMatch(screenDepth, srcReds[0], srcGreens[0], srcBlues[0],
+					destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
+			}
+		}
 		XImage xImage = new XImage();
 		OS.memmove(xImage, xImagePtr, XImage.sizeof);
 		xImage.byte_order = OS.MSBFirst;
@@ -1138,6 +1150,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 			ImageData.ALPHA_OPAQUE, null, 0,
 			buf, 1, bplX, destOrder, 0, 0, destWidth, destHeight, null, null, null,
 			flipX, flipY);
+		
 		OS.memmove(xImage.data, buf, bufSize);
 		XGCValues values = new XGCValues();
 		OS.XGetGCValues(display, gc, OS.GCForeground | OS.GCBackground, values);
