@@ -187,7 +187,7 @@ public class OS {
 	public static final int GTK_PROGRESS_CONTINUOUS = 0x0;
 	public static final int GTK_PROGRESS_DISCRETE = 0x1;
 	public static final int GTK_PROGRESS_LEFT_TO_RIGHT = 0x0;
-	public static final int GTK_PROGRESS_TOP_TO_BOTTOM = 0x3;
+	public static final int GTK_PROGRESS_BOTTOM_TO_TOP = 0x2;
 	public static final int GTK_REALIZED  = 1 << 6;
 	public static final int GTK_RELIEF_NONE = 0x2;
 	public static final int GTK_RESPONSE_OK = 0xfffffffb;

@@ -80,7 +80,7 @@ void createHandle (int index) {
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, handle);
 	OS.gtk_widget_show (handle);
-	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_PROGRESS_TOP_TO_BOTTOM : OS.GTK_PROGRESS_LEFT_TO_RIGHT;
+	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_PROGRESS_BOTTOM_TO_TOP : OS.GTK_PROGRESS_LEFT_TO_RIGHT;
 	OS.gtk_progress_bar_set_orientation (handle, orientation);
 	if ((style & SWT.INDETERMINATE) != 0) {
 		timerId = OS.gtk_timeout_add (DELAY, display.windowTimerProc, handle);
