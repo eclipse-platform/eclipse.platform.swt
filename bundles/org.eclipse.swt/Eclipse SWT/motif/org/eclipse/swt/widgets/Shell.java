@@ -634,6 +634,12 @@ public void dispose () {
 	* but XGetInputFocus returns the root window, not the
 	* parent.  The fix is to make the parent be the active
 	* top level shell when the child shell is disposed.
+	* 
+	* Feature in Motif.  When an active shell is disposed,
+	* Motif assigns focus temporarily to the root window
+	* unless it has previously been told to do otherwise.
+	* The fix is to make the parent be the active top level
+	* shell when the child shell is disposed.
 	*/
 	Composite parent = this.parent;
 	if (parent != null) {
