@@ -9,6 +9,7 @@ package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Instances of this class manage operating system resources that
@@ -42,16 +43,12 @@ public final class Cursor {
 	public int handle;
 
 	/**
-	 * The device where this image was created.
+	 * The device where this Cursor was created.
 	 */
 	Device device;
 	
 	// AW
 	private boolean fDispose;
-	
-	private static int IBEAM;
-	private static int CROSS;
-	private static int WATCH;
 	
 	private static int NO_CURSOR;
 	// AW
@@ -104,23 +101,23 @@ public Cursor (Device device, int style) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	
-	handle = -1;		// the default cursor
+	handle = OS.kThemeArrowCursor;		// the default cursor
 	
 	switch (style) {
 	case SWT.CURSOR_ARROW:
+		handle= OS.kThemeArrowCursor;
 		break;
 	case SWT.CURSOR_WAIT:
+		handle= OS.kThemeSpinningCursor;
+		break;
 	case SWT.CURSOR_APPSTARTING:
-		if (WATCH == 0)
-			WATCH= OS.DerefHandle(OS.GetCursor(OS.watchCursor));
-		handle = WATCH;
+		handle= OS.kThemeWatchCursor;
 		break;
 	case SWT.CURSOR_HAND:
+		handle= OS.kThemeOpenHandCursor;
 		break;
 	case SWT.CURSOR_CROSS:
-		if (CROSS == 0)
-			CROSS= OS.DerefHandle(OS.GetCursor(OS.crossCursor));
-		handle = CROSS;
+		handle= OS.kThemeCrossCursor;
 		break;
 	case SWT.CURSOR_HELP: 				break;
 	case SWT.CURSOR_SIZEALL: 			break;
@@ -138,9 +135,7 @@ public Cursor (Device device, int style) {
 	case SWT.CURSOR_SIZENW: 			break;
 	case SWT.CURSOR_UPARROW: 			break;
 	case SWT.CURSOR_IBEAM:
-		if (IBEAM == 0)
-			IBEAM= OS.DerefHandle(OS.GetCursor(OS.iBeamCursor));
-		handle = IBEAM;
+		handle= OS.kThemeIBeamCursor;
 		break;
 	case SWT.CURSOR_NO:
 		if (NO_CURSOR == 0) {
@@ -230,8 +225,8 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 	}
 	
 	OS.NewCursor((short) hotspotX, (short)hotspotY, data, msk);
-	
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	fDispose= true;
 }
 //public static Cursor carbon_new(Device device, int handle) {
 //	if (device == null) device = Device.getDevice();
@@ -251,7 +246,7 @@ public void dispose () {
 	if (fDispose)
 		OS.DisposePtr(handle);
 	device = null;
-	handle = 0;
+	handle = -1;
 }
 /**
  * Compares the argument to the receiver, and returns true
@@ -293,7 +288,7 @@ public int hashCode () {
  * @return <code>true</code> when the cursor is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-	return handle == 0;
+	return handle == -1;
 }
 /**
  * Returns a string containing a concise, human-readable
@@ -305,4 +300,36 @@ public String toString () {
 	if (isDisposed()) return "Cursor {*DISPOSED*}";
 	return "Cursor {" + handle + "}";
 }
+
+////////////////////////////////////////////////////////
+// Mac stuff
+////////////////////////////////////////////////////////
+
+	/**
+	 * Method install.
+	 */
+	public void install(Display display) {
+		if (handle != display.fCurrentCursor) {
+			display.fCurrentCursor= handle;
+			switch (handle) {
+				
+			case -1:	// disposed
+				break;
+
+			case OS.kThemeArrowCursor:
+			case OS.kThemeSpinningCursor:
+			case OS.kThemeWatchCursor:
+			case OS.kThemeOpenHandCursor:
+			case OS.kThemeCrossCursor:
+			case OS.kThemeIBeamCursor:
+				OS.SetThemeCursor(handle);
+				break;
+				
+			default:
+				display.setCursor(handle);
+				break;
+			}
+		}
+	}
+
 }
