@@ -124,6 +124,17 @@ public final class RowLayout extends Layout {
 public RowLayout () {
 }
 
+/**
+ * Constructs a new instance of this class given the type.
+ *
+ * @param type the type of row layout
+ * 
+ * @since 2.0
+ */
+public RowLayout (int type) {
+	this.type = type;
+}
+
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
 	Point extent;
 	if (type == SWT.HORIZONTAL) {
