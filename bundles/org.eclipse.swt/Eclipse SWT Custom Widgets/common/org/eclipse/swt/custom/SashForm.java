@@ -299,16 +299,16 @@ public void layout(boolean changed) {
 	}
 }
 void onDragSash(Event event) {
-	if (event.detail == SWT.DRAG) {
-		// constrain feedback
-		Rectangle area = getClientArea();
-		if (orientation == SWT.HORIZONTAL) {
-			event.x = Math.min(Math.max(DRAG_MINIMUM, event.x), area.width - DRAG_MINIMUM);
-		} else {
-			event.y = Math.min(Math.max(DRAG_MINIMUM, event.y), area.height - DRAG_MINIMUM);
-		}
-		return;
-	}
+  if (event.detail == SWT.DRAG) {
+    // constrain feedback
+    Rectangle area = getClientArea();
+    if (orientation == SWT.HORIZONTAL) {
+			event.x = Math.min(Math.max(DRAG_MINIMUM, event.x), area.width - DRAG_MINIMUM - SASH_WIDTH);
+    } else {
+			event.y = Math.min(Math.max(DRAG_MINIMUM, event.y), area.height - DRAG_MINIMUM - SASH_WIDTH);
+    }
+    return;
+  }
 
 	Sash sash = (Sash)event.widget;
 	int sashIndex = -1;
