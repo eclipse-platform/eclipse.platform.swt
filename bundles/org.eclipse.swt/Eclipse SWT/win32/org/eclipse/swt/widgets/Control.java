@@ -996,7 +996,12 @@ public int internal_new_GC (GCData data) {
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
-			data.style |= style & (mask | SWT.MIRRORED);
+			int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+			if ((bits & OS.WS_EX_LAYOUTRTL) != 0) {
+				data.style |= SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
+			} else {
+				data.style |= SWT.LEFT_TO_RIGHT;
+			}
 			data.layout = -1;
 		}
 		data.device = display;
