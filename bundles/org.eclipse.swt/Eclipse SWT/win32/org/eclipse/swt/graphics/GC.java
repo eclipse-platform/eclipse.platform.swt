@@ -1019,7 +1019,9 @@ public void drawLine (int x1, int y1, int x2, int y2) {
 		OS.MoveToEx (handle, x1, y1, 0);
 		OS.LineTo (handle, x2, y2);
 	}
-	OS.SetPixel (handle, x2, y2, OS.GetTextColor (handle));
+	if (data.lineWidth <= 1) {
+		OS.SetPixel (handle, x2, y2, OS.GetTextColor (handle));
+	}
 }
 
 /** 
@@ -1124,7 +1126,9 @@ public void drawPolyline(int[] pointArray) {
 	OS.Polyline(handle, pointArray, pointArray.length / 2);
 	int length = pointArray.length;
 	if (length >= 2) {
-		OS.SetPixel (handle, pointArray[length - 2], pointArray[length - 1], OS.GetTextColor (handle));
+		if (data.lineWidth <= 1) {
+			OS.SetPixel (handle, pointArray[length - 2], pointArray[length - 1], OS.GetTextColor (handle));
+		}
 	}
 }
 
@@ -2046,6 +2050,72 @@ public Color getForeground() {
 }
 
 /** 
+ * Returns the receiver's line cap style, which will be one
+ * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
+ * or <code>SWT.CAP_SQUARE</code>.
+ *
+ * @return the cap style used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public int getLineCap() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int style, size;
+	int hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
+	if ((size = OS.GetObject(hPen, 0, (LOGPEN)null)) == LOGPEN.sizeof) {
+		LOGPEN logPen = new LOGPEN();
+		OS.GetObject(hPen, LOGPEN.sizeof, logPen);
+		style = logPen.lopnStyle | OS.PS_ENDCAP_FLAT;
+	} else {
+		EXTLOGPEN logPen = new EXTLOGPEN();
+		OS.GetObject(hPen, size, logPen);
+		style = logPen.elpPenStyle & OS.PS_ENDCAP_MASK;
+	}
+	int cap = SWT.CAP_ROUND;
+	switch (style) {
+		case OS.PS_ENDCAP_ROUND: cap = SWT.CAP_ROUND; break;
+		case OS.PS_ENDCAP_FLAT: cap = SWT.CAP_FLAT; break;
+		case OS.PS_ENDCAP_SQUARE: cap = SWT.CAP_SQUARE; break;
+	}
+	return cap;
+}
+
+/** 
+ * Returns the receiver's line join style, which will be one
+ * of the constants <code>SWT.JOIN_MITER</code>, <code>SWT.JOIN_ROUND</code>,
+ * or <code>SWT.JOIN_BEVEL</code>.
+ *
+ * @return the join style used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public int getLineJoin() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int style, size;
+	int hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
+	if ((size = OS.GetObject(hPen, 0, (LOGPEN)null)) == LOGPEN.sizeof) {
+		LOGPEN logPen = new LOGPEN();
+		OS.GetObject(hPen, LOGPEN.sizeof, logPen);
+		style = logPen.lopnStyle | OS.PS_JOIN_MITER;
+	} else {
+		EXTLOGPEN logPen = new EXTLOGPEN();
+		OS.GetObject(hPen, size, logPen);
+		style = logPen.elpPenStyle & OS.PS_JOIN_MASK;
+	}
+	int join = SWT.JOIN_ROUND;
+	switch (style) {
+		case OS.PS_JOIN_MITER: join = SWT.JOIN_MITER; break;
+		case OS.PS_JOIN_ROUND: join = SWT.JOIN_ROUND; break;
+		case OS.PS_JOIN_BEVEL: join = SWT.JOIN_BEVEL; break;
+	}
+	return join;
+}
+
+/** 
  * Returns the receiver's line style, which will be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
  * <code>SWT.LINE_DOT</code>, <code>SWT.LINE_DASHDOT</code> or
@@ -2059,10 +2129,18 @@ public Color getForeground() {
  */
 public int getLineStyle() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int style, size;
 	int hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
-	LOGPEN logPen = new LOGPEN();
-	OS.GetObject(hPen, LOGPEN.sizeof, logPen);
-	switch (logPen.lopnStyle) {
+	if ((size = OS.GetObject(hPen, 0, (LOGPEN)null)) == LOGPEN.sizeof) {
+		LOGPEN logPen = new LOGPEN();
+		OS.GetObject(hPen, LOGPEN.sizeof, logPen);
+		style = logPen.lopnStyle;
+	} else {
+		EXTLOGPEN logPen = new EXTLOGPEN();
+		OS.GetObject(hPen, size, logPen);
+		style = logPen.elpPenStyle & OS.PS_STYLE_MASK;
+	}
+	switch (style) {
 		case OS.PS_SOLID:		return SWT.LINE_SOLID;
 		case OS.PS_DASH:		return SWT.LINE_DASH;
 		case OS.PS_DOT:			return SWT.LINE_DOT;
@@ -2086,10 +2164,17 @@ public int getLineStyle() {
  */
 public int getLineWidth() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int size;
 	int hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
-	LOGPEN logPen = new LOGPEN();
-	OS.GetObject(hPen, LOGPEN.sizeof, logPen);
-	return logPen.x;
+	if ((size = OS.GetObject(hPen, 0, (LOGPEN)null)) == LOGPEN.sizeof) {
+		LOGPEN logPen = new LOGPEN();
+		OS.GetObject(hPen, LOGPEN.sizeof, logPen);
+		return logPen.x;
+	} else {
+		EXTLOGPEN logPen = new EXTLOGPEN();
+		OS.GetObject(hPen, size, logPen);
+		return logPen.elpWidth;
+	}
 }
 
 /**
@@ -2373,14 +2458,74 @@ public void setForeground (Color color) {
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (OS.GetTextColor(handle) == color.handle) return;
 	data.foreground = color.handle;
-	int hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
-	LOGPEN logPen = new LOGPEN();
-	OS.GetObject(hPen, LOGPEN.sizeof, logPen);
 	OS.SetTextColor(handle, color.handle);
-	int newPen = OS.CreatePen(logPen.lopnStyle, logPen.x, color.handle);
-	OS.SelectObject(handle, newPen);
-	if (data.hPen != 0) OS.DeleteObject(data.hPen);
-	data.hPen = newPen;
+	setPen(color.handle, -1, -1, -1, -1);
+}
+
+/** 
+ * Sets the receiver's line cap style to the argument, which must be one
+ * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
+ * or <code>SWT.CAP_SQUARE</code>.
+ *
+ * @param cap the cap style to be used for drawing lines
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the style is not valid</li>
+ * </ul> 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void setLineCap(int cap) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int capStyle = 0;
+	switch (cap) {
+		case SWT.CAP_ROUND:
+			capStyle = OS.PS_ENDCAP_ROUND;
+			break;
+		case SWT.CAP_FLAT:
+			capStyle = OS.PS_ENDCAP_FLAT;
+			break;
+		case SWT.CAP_SQUARE:
+			capStyle = OS.PS_ENDCAP_SQUARE;
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	setPen(-1, -1, -1, capStyle, -1);
+}
+
+/** 
+ * Sets the receiver's line join style to the argument, which must be one
+ * of the constants <code>SWT.JOIN_MITER</code>, <code>SWT.JOIN_ROUND</code>,
+ * or <code>SWT.JOIN_BEVEL</code>.
+ *
+ * @param join the join style to be used for drawing lines
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the style is not valid</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void setLineJoin(int join) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int joinStyle = 0;
+	switch (join) {
+		case SWT.JOIN_MITER:
+			joinStyle = OS.PS_JOIN_MITER;
+			break;
+		case SWT.JOIN_ROUND:
+			joinStyle = OS.PS_JOIN_ROUND;
+			break;
+		case SWT.JOIN_BEVEL:
+			joinStyle = OS.PS_JOIN_BEVEL;
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	setPen(-1, -1, -1, -1, joinStyle);
 }
 
 /** 
@@ -2391,6 +2536,9 @@ public void setForeground (Color color) {
  *
  * @param lineStyle the style to be used for drawing lines
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the style is not valid</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2407,15 +2555,8 @@ public void setLineStyle(int lineStyle) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
-	LOGPEN logPen = new LOGPEN();
-	OS.GetObject(hPen, LOGPEN.sizeof, logPen);
-	if (logPen.lopnStyle == style) return;
 	OS.SetBkMode (handle, style == OS.PS_SOLID ? OS.OPAQUE : OS.TRANSPARENT);
-	int newPen = OS.CreatePen(style, logPen.x, logPen.lopnColor);
-	OS.SelectObject(handle, newPen);
-	if (data.hPen != 0) OS.DeleteObject(data.hPen);
-	data.hPen = newPen;
+	setPen(-1, -1, lineStyle, -1, -1);
 }
 
 /** 
@@ -2432,14 +2573,85 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int lineWidth) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
-	LOGPEN logPen = new LOGPEN();
-	OS.GetObject(hPen, LOGPEN.sizeof, logPen);
-	if (logPen.x == lineWidth) return;
-	int newPen = OS.CreatePen(logPen.lopnStyle, lineWidth, logPen.lopnColor);
+	setPen(-1, lineWidth, -1, -1, -1);
+}
+
+void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinStyle) {
+	boolean extPen = false, changed = false;
+	int style, color, width, size, hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
+	if ((size = OS.GetObject(hPen, 0, (LOGPEN)null)) == LOGPEN.sizeof) {
+		LOGPEN logPen = new LOGPEN();
+		OS.GetObject(hPen, LOGPEN.sizeof, logPen);
+		color = logPen.lopnColor;
+		width = logPen.x;
+		style = logPen.lopnStyle;
+		/*
+		* Feature in Windows.  The default end caps is PS_ENDCAP_ROUND
+		* and the default line join is PS_JOIN_ROUND which are different
+		* from other platforms.  The fix is to change these values when
+		* line width is widen.
+		*/
+		if (width <= 1 && newWidth > 1) {
+			if (capStyle == -1) capStyle = OS.PS_ENDCAP_FLAT;
+			if (joinStyle == -1) joinStyle = OS.PS_JOIN_MITER;
+		}
+	} else {
+		EXTLOGPEN logPen = new EXTLOGPEN();
+		OS.GetObject(hPen, size, logPen);
+		color = logPen.elpColor;
+		width = logPen.elpWidth;
+		style = logPen.elpPenStyle;
+		extPen = true;
+	}
+	if (newColor != -1) {
+		if (newColor != color) {
+			color = newColor;
+			changed = true;
+		}
+	}
+	if (newWidth != -1) {
+		if (newWidth != width) {
+			width = newWidth;
+			changed = true;
+		}
+	}
+	if (lineStyle != -1) {
+		if ((style & OS.PS_STYLE_MASK) != lineStyle) {
+			style = (style & ~OS.PS_STYLE_MASK) | lineStyle;
+			changed = true;
+		}
+	}
+	if (capStyle != -1) {
+		if ((style & OS.PS_ENDCAP_MASK) != capStyle) {
+			style = (style & ~OS.PS_ENDCAP_MASK) | capStyle;
+			changed = true;
+		}
+	}
+	if (joinStyle != -1) {
+		if ((style & OS.PS_JOIN_MASK) != joinStyle) {
+			style = (style & ~OS.PS_JOIN_MASK) | joinStyle;
+			changed = true;
+		}
+	}
+	if (!changed) return;
+	/*
+	* Feature in Windows.  Windows XP does not honour the line style
+	* for pens wider than 1 pixel created with CreatePen().  The fix
+	* is to use ExtCreatePen() instead.
+	*/
+	int newPen;
+	if (!OS.IsWinCE && (extPen || width > 1)) {
+		LOGBRUSH logBrush = new LOGBRUSH();
+		logBrush.lbStyle = OS.BS_SOLID;
+		logBrush.lbColor = color;
+		newPen = OS.ExtCreatePen (style | OS.PS_GEOMETRIC, width, logBrush, 0, null);
+	} else {
+		newPen = OS.CreatePen(style, width, color);
+	}
 	OS.SelectObject(handle, newPen);
 	if (data.hPen != 0) OS.DeleteObject(data.hPen);
 	data.hPen = newPen;
+	data.lineWidth = width;
 }
 
 /** 
