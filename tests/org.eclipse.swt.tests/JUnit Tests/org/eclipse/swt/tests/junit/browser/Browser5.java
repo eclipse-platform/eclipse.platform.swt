@@ -25,6 +25,7 @@ public class Browser5 {
 				{null, null}};
 	static int index = 0;
 	static int cntPassed = 0;
+	static int cntClosed = 0;
 	
 	public static boolean test1(String url) {
 		System.out.println("javascript window.open with location and size parameters - args: "+url+" Expected Event Sequence: Visibility.open");
@@ -53,32 +54,43 @@ public class Browser5 {
 						parent.setText("SWT Browser shell "+index);
 						parent.open();
 						if (index < 0) {
-							System.out.println("Failure - Browser "+index+" is receiving multiple show events");
-							passed = false;
-							shell.close();
-							return;
-						}
-						browser.setData("index", new Integer(-index));
-						System.out.println("Visibility.show browser "+index+" location "+event.location+" size "+event.size);
-						if (((event.location == null && regressionBounds[index][0] == null) ||
-							(event.location.equals(regressionBounds[index][0]))) &&
-						   ((event.size == null && regressionBounds[index][1] == null) ||
-							(event.size.equals(regressionBounds[index][1])))) cntPassed++;
-						else {
-							System.out.println("Failure - was expecting location "+regressionBounds[index][0]+" size "+regressionBounds[index][1]);
-							passed = false;
-							shell.close();
-							return;
+							/* Certain browsers fire multiple show events for no good reason. Further show events
+							 * are considered 'legal' as long as they don't contain size and location information.
+							 */
+							if (event.location != null || event.size != null) {
+								System.out.println("Failure - Browser "+index+" is receiving multiple show events");
+								passed = false;
+								shell.close();
+							} else {
+								System.out.println("Unnecessary (but harmless) visibility.show event Browser "+index);
+							}
+						} else {
+							browser.setData("index", new Integer(-100-index));
+							System.out.println("Visibility.show browser "+index+" location "+event.location+" size "+event.size);
+							if (((event.location == null && regressionBounds[index][0] == null) ||
+								(event.location != null && event.location.equals(regressionBounds[index][0]))) &&
+								((event.size == null && regressionBounds[index][1] == null) ||
+								(event.size != null && event.size.equals(regressionBounds[index][1])))) cntPassed++;
+							else {
+								System.out.println("Failure - was expecting location "+regressionBounds[index][0]+" size "+regressionBounds[index][1]);
+								passed = false;
+								shell.close();
+								return;
+							}
 						}
 					}
 				});
 				browser.addCloseWindowListener(new CloseWindowListener() {
 					public void close(CloseWindowEvent event) {
+						cntClosed++;
 						System.out.println("Close");
 						Browser browser = (Browser)event.widget;
 						browser.getShell().close();
 						if (cntPassed == regressionBounds.length) passed = true;
-						shell.close();
+						if (cntClosed == regressionBounds.length) {
+							shell.close();
+							return;
+						}
 					}
 				});
 				event.browser = browser;
