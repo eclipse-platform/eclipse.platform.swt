@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 434;
-int OS_nativeFunctionCallCount[434];
+int OS_nativeFunctionCount = 435;
+int OS_nativeFunctionCallCount[435];
 char * OS_nativeFunctionNames[] = {
 	"CODESET", 
 	"Call", 
@@ -146,6 +146,7 @@ char * OS_nativeFunctionNames[] = {
 	"XTestFakeButtonEvent", 
 	"XTestFakeKeyEvent", 
 	"XTestFakeMotionEvent", 
+	"XTranslateCoordinates", 
 	"XUndefineCursor", 
 	"XUngrabKeyboard", 
 	"XUngrabPointer", 

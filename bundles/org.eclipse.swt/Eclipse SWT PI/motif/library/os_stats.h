@@ -149,6 +149,7 @@ typedef enum {
 	XTestFakeButtonEvent_FUNC,
 	XTestFakeKeyEvent_FUNC,
 	XTestFakeMotionEvent_FUNC,
+	XTranslateCoordinates_FUNC,
 	XUndefineCursor_FUNC,
 	XUngrabKeyboard_FUNC,
 	XUngrabPointer_FUNC,

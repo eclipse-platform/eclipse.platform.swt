@@ -747,6 +747,7 @@ public static final synchronized native int XSynchronize(int display, boolean on
 public static final synchronized native void XTestFakeButtonEvent(int display, int button, boolean is_press, int delay);
 public static final synchronized native void XTestFakeKeyEvent(int display, int keycode, boolean is_press, int delay);
 public static final synchronized native void XTestFakeMotionEvent(int display, int screen_number, int x, int y, int delay);
+public static final synchronized native boolean XTranslateCoordinates(int display, int src_w, int dest_w, int src_x, int src_y, int[] dest_x_return, int[] dest_y_return, int[] child_return);
 public static final synchronized native void XUndefineCursor(int display, int window);
 public static final synchronized native int XUngrabKeyboard(int display, int time);
 public static final synchronized native int XUngrabPointer(int display, int time);
