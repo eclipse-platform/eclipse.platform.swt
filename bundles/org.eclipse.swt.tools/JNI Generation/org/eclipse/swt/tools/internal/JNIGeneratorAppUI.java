@@ -870,6 +870,11 @@ void createActionButtons(Composite parent) {
 			generateNatives();
 		}
 	});
+	createActionButton(actionsPanel, "Generate Meta Data", new Listener() {
+		public void handleEvent(Event e) {
+			generateMetaData();
+		}
+	});
 	createActionButton(actionsPanel, "Generate Constants", new Listener() {
 		public void handleEvent(Event e) {
 			generateConstants();
@@ -880,20 +885,17 @@ void createActionButtons(Composite parent) {
 			generateSizeof();
 		}
 	});
-	createActionButton(actionsPanel, "Generate Meta Data", new Listener() {
-		public void handleEvent(Event e) {
-			generateMetaData();
-		}
-	});
 
 	Composite filler = new Composite(actionsPanel, SWT.NONE);
 	filler.setLayoutData(new GridData(GridData.FILL_BOTH));
 	
 	progressLabel = new Label(actionsPanel, SWT.NONE);
+	data = new GridData(GridData.FILL_HORIZONTAL);
 	progressLabel.setLayoutData(data);
 	progressLabel.setVisible(false);
 	
 	progressBar = new ProgressBar(actionsPanel, SWT.NONE);
+	data = new GridData(GridData.FILL_HORIZONTAL);
 	progressBar.setLayoutData(data);
 	progressBar.setVisible(false);
 }

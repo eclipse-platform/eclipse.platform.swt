@@ -56,7 +56,7 @@ public Object getParam(String key) {
 	return value == null ? "" : value;
 }
 
-public boolean isGenerate() {
+public boolean getGenerate() {
 	return !getFlag("no_gen");
 }
 
