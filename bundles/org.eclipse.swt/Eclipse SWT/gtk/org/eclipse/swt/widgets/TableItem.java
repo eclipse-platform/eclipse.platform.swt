@@ -350,11 +350,11 @@ public Rectangle getImageBounds (int index) {
 	* width.
 	*/
 	int [] w = new int[1];
-	OS.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, false, false);
 	if (OS.gtk_major_version () * 100 + OS.gtk_minor_version ()  * 10 + OS.gtk_micro_version () < 213) {
+		OS.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, false, false);
 		OS.gtk_cell_renderer_get_size (pixbufRenderer, parentHandle, null, null, null, w, null);
 	} else {
-		OS.gtk_tree_view_column_cell_get_position(column, pixbufRenderer, null, w);
+		OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
 	}
 	int headerHeight = parent.getHeaderHeight ();
 	return new Rectangle (rect.x, rect.y + headerHeight, w [0], rect.height);
