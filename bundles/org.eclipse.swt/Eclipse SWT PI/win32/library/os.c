@@ -7208,6 +7208,21 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(StretchBlt)
 }
 #endif
 
+#ifndef NO_SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I
+JNIEXPORT jboolean JNICALL OS_NATIVE(SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	HIGHCONTRAST _arg2, *lparg2=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I\n")
+	if (arg2) lparg2 = getHIGHCONTRASTFields(env, arg2, &_arg2);
+	rc = (jboolean)SystemParametersInfoA(arg0, arg1, lparg2, arg3);
+	if (arg2) setHIGHCONTRASTFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSA_2I
 JNIEXPORT jboolean JNICALL OS_NATIVE(SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSA_2I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
@@ -7249,6 +7264,21 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SystemParametersInfoA__II_3II)
 	rc = (jboolean)SystemParametersInfoA(arg0, arg1, lparg2, arg3);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "SystemParametersInfoA__II_3II\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I
+JNIEXPORT jboolean JNICALL OS_NATIVE(SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	HIGHCONTRAST _arg2, *lparg2=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I\n")
+	if (arg2) lparg2 = getHIGHCONTRASTFields(env, arg2, &_arg2);
+	rc = (jboolean)SystemParametersInfoW(arg0, arg1, lparg2, arg3);
+	if (arg2) setHIGHCONTRASTFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I\n")
 	return rc;
 }
 #endif

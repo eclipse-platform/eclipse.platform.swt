@@ -428,6 +428,7 @@ public class OS {
 	public static final int GW_HWNDNEXT = 0x2;
 	public static final int GW_HWNDPREV = 0x3;
 	public static final int HBMMENU_CALLBACK = 0xffffffff;
+	public static final int HCF_HIGHCONTRASTON = 0x1;
 	public static final int HDI_WIDTH = 0x1;
 	public static final int HDM_FIRST = 0x1200;
 	public static final int HDM_GETBITMAPMARGIN = HDM_FIRST + 21;
@@ -916,6 +917,7 @@ public class OS {
 	public static final int SM_CYMENU = 0xf;
 	public static final int SM_CYSCREEN = 0x1;
 	public static final int SM_CYVSCROLL = 0x14;
+	public static final int SPI_GETHIGHCONTRAST = 66;
 	public static final int SPI_GETWORKAREA = 0x30;
 	public static final int SPI_GETNONCLIENTMETRICS = 41;
 	public static final int SPI_GETWHEELSCROLLLINES = 104;
@@ -2042,6 +2044,11 @@ public static final boolean SystemParametersInfo (int uiAction, int uiParam, REC
 	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
 }
 
+public static final boolean SystemParametersInfo (int uiAction, int uiParam, HIGHCONTRAST pvParam, int fWinIni) {
+	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, pvParam, fWinIni);
+	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
+}
+
 public static final boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni) {
 	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, (NONCLIENTMETRICSW)pvParam, fWinIni);
 	return SystemParametersInfoA (uiAction, uiParam, (NONCLIENTMETRICSA)pvParam, fWinIni);
@@ -2582,6 +2589,8 @@ public static final native int StartDocW (int hdc, DOCINFO lpdi);
 public static final native int StartDocA (int hdc, DOCINFO lpdi);
 public static final native int StartPage (int hdc);
 public static final native boolean StretchBlt (int hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int dwRop);
+public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, HIGHCONTRAST pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, HIGHCONTRAST pvParam, int fWinIni);
 public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, RECT pvParam, int fWinIni);
 public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, RECT pvParam, int fWinIni);
 public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, NONCLIENTMETRICSW pvParam, int fWinIni);

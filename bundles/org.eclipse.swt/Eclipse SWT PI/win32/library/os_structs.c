@@ -1018,6 +1018,43 @@ void setHELPINFOFields(JNIEnv *env, jobject lpObject, HELPINFO *lpStruct)
 }
 #endif
 
+#ifndef NO_HIGHCONTRAST
+typedef struct HIGHCONTRAST_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, dwFlags, lpszDefaultScheme;
+} HIGHCONTRAST_FID_CACHE;
+
+HIGHCONTRAST_FID_CACHE HIGHCONTRASTFc;
+
+void cacheHIGHCONTRASTFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIGHCONTRASTFc.cached) return;
+	HIGHCONTRASTFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIGHCONTRASTFc.cbSize = (*env)->GetFieldID(env, HIGHCONTRASTFc.clazz, "cbSize", "I");
+	HIGHCONTRASTFc.dwFlags = (*env)->GetFieldID(env, HIGHCONTRASTFc.clazz, "dwFlags", "I");
+	HIGHCONTRASTFc.lpszDefaultScheme = (*env)->GetFieldID(env, HIGHCONTRASTFc.clazz, "lpszDefaultScheme", "I");
+	HIGHCONTRASTFc.cached = 1;
+}
+
+HIGHCONTRAST *getHIGHCONTRASTFields(JNIEnv *env, jobject lpObject, HIGHCONTRAST *lpStruct)
+{
+	if (!HIGHCONTRASTFc.cached) cacheHIGHCONTRASTFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, HIGHCONTRASTFc.cbSize);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, HIGHCONTRASTFc.dwFlags);
+	lpStruct->lpszDefaultScheme = (*env)->GetIntField(env, lpObject, HIGHCONTRASTFc.lpszDefaultScheme);
+	return lpStruct;
+}
+
+void setHIGHCONTRASTFields(JNIEnv *env, jobject lpObject, HIGHCONTRAST *lpStruct)
+{
+	if (!HIGHCONTRASTFc.cached) cacheHIGHCONTRASTFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIGHCONTRASTFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, HIGHCONTRASTFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntField(env, lpObject, HIGHCONTRASTFc.lpszDefaultScheme, (jint)lpStruct->lpszDefaultScheme);
+}
+#endif
+
 #ifndef NO_ICONINFO
 typedef struct ICONINFO_FID_CACHE {
 	int cached;

@@ -201,6 +201,16 @@ void setHELPINFOFields(JNIEnv *env, jobject lpObject, HELPINFO *lpStruct);
 #define HELPINFO_sizeof() 0
 #endif
 
+#ifndef NO_HIGHCONTRAST
+HIGHCONTRAST *getHIGHCONTRASTFields(JNIEnv *env, jobject lpObject, HIGHCONTRAST *lpStruct);
+void setHIGHCONTRASTFields(JNIEnv *env, jobject lpObject, HIGHCONTRAST *lpStruct);
+#define HIGHCONTRAST_sizeof() sizeof(HIGHCONTRAST)
+#else
+#define getHIGHCONTRASTFields(a,b,c) NULL
+#define setHIGHCONTRASTFields(a,b,c)
+#define HIGHCONTRAST_sizeof() 0
+#endif
+
 #ifndef NO_ICONINFO
 ICONINFO *getICONINFOFields(JNIEnv *env, jobject lpObject, ICONINFO *lpStruct);
 void setICONINFOFields(JNIEnv *env, jobject lpObject, ICONINFO *lpStruct);
