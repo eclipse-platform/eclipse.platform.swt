@@ -5820,7 +5820,10 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__II_3
 		case EM_GETSEL:
 		case CB_GETEDITSEL: {
 			jint wParam = 0, lParam = 0;
-			rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)&wParam, (LPARAM)&lParam);
+			jint *lpwParam = NULL, *lplParam = NULL;
+			if (lparg2 != NULL) lpwParam = &wParam;
+			if (lparg3 != NULL) lplParam = &lParam;
+			rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lpwParam, (LPARAM)lplParam);
 			if (lparg2 != NULL) lparg2[0] = wParam;
 			if (lparg3 != NULL) lparg3[0] = lParam;
 			break;
