@@ -13,16 +13,13 @@ package org.eclipse.swt.custom;
 
 import java.util.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTError;
+import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.BidiUtil;
-import org.eclipse.swt.internal.Compatibility;
-import org.eclipse.swt.printing.Printer;
-import org.eclipse.swt.printing.PrinterData;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.printing.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -552,7 +549,7 @@ public class StyledText extends Canvas {
 		if (pageIndex != -1) {
 			final int PageTagLength = StyledTextPrintOptions.PAGE_TAG.length();
 			StringBuffer buffer = new StringBuffer(segment.substring (0, pageIndex));
-			buffer.append (new Integer(page).toString());
+			buffer.append (page);
 			buffer.append (segment.substring(pageIndex + PageTagLength));
 			segment = buffer.toString();
 		}
