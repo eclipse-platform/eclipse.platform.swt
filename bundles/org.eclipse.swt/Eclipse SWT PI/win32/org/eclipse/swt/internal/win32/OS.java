@@ -649,6 +649,7 @@ public class OS {
 	public static final int PBM_SETBKCOLOR = 0x2001;
 	public static final int PBM_SETPOS = 0x402;
 	public static final int PBM_SETRANGE32 = 0x406;
+	public static final int PBM_STEPIT = OS.WM_USER + 5;
 	public static final int PBS_SMOOTH = 0x1;
 	public static final int PBS_VERTICAL = 0x4;
 	public static final int PD_ALLPAGES = 0x0;

@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.*;
  * typically in the form of a bar.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SMOOTH, HORIZONTAL, VERTICAL</dd>
+ * <dd>SMOOTH, HORIZONTAL, VERTICAL, INDETERMINATE</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
@@ -29,6 +29,8 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class ProgressBar extends Control {
+	static final int DELAY = 100;
+	static final int TIMER_ID = 100;
 	static final int ProgressBarProc;
 	static final TCHAR ProgressBarClass = new TCHAR (0, OS.PROGRESS_CLASS, true);
 	static {
@@ -98,9 +100,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	OS.SendMessage (handle, OS.TBM_SETRANGEMAX, 0, 100);
-	OS.SendMessage (handle, OS.TBM_SETPAGESIZE, 0, 10);
-	OS.SendMessage (handle, OS.TBM_SETTICFREQ, 10, 0);
+	if ((style & SWT.INDETERMINATE) != 0) {
+		OS.SetTimer (handle, TIMER_ID, DELAY, 0);
+	}
 }
 
 int defaultForeground () {
@@ -150,6 +152,13 @@ public int getMinimum () {
 public int getSelection () {
 	checkWidget ();
 	return OS.SendMessage (handle, OS.PBM_GETPOS, 0, 0);
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	if ((style & SWT.INDETERMINATE) != 0) {
+		OS.KillTimer (handle, TIMER_ID);
+	}
 }
 
 void setBackgroundPixel (int pixel) {
@@ -257,6 +266,15 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	* STATIC control.
 	*/
 	return new LRESULT (OS.DLGC_STATIC);
+}
+
+LRESULT WM_TIMER (int wParam, int lParam) {
+	LRESULT result = super.WM_TIMER (wParam, lParam);
+	if (result != null) return result;
+	if (wParam == TIMER_ID) {
+		OS.SendMessage (handle, OS.PBM_STEPIT, 0, 0);
+	}
+	return null;
 }
 
 }
