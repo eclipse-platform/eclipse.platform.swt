@@ -391,7 +391,7 @@ void hookEvents () {
 }
 
 boolean hooksKeys () {
-	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
+	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 }
 
 int imHandle () {

@@ -263,7 +263,7 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 boolean hooksKeys () {
-	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
+	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 }
 
 public void layout () {
