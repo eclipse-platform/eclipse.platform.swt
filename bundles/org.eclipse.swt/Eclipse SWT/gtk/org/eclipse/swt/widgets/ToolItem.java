@@ -796,6 +796,13 @@ public void setImage (Image image) {
 		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
 		OS.gtk_widget_hide (imageHandle);
 	}
+	/*
+	* Bug in GTK.  For some reason, the button does not allocate the size of its internal
+	* children if its bounds is set before the text is set.  The fix is to force this by calling
+	* gtk_widget_size_request() (and throw the results away).
+	*/
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (handle, requisition);
 	parent.layoutItems ();
 }
 
@@ -871,6 +878,13 @@ public void setText (String string) {
 	} else {
 		OS.gtk_widget_hide (labelHandle);
 	}
+	/*
+	* Bug in GTK.  For some reason, the button does not allocate the size of its internal
+	* children if its bounds is set before the text is set.  The fix is to force this by calling
+	* gtk_widget_size_request() (and throw the results away).
+	*/
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (handle, requisition);
 	parent.layoutItems ();
 }
 
@@ -909,11 +923,6 @@ public void setWidth (int width) {
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
 	OS.gtk_widget_set_size_request (handle, width, -1);
-	/*
-	* Force the container to allocate the size of its children.
-	*/
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_resize_children (parentHandle);
 	parent.layoutItems ();
 }
 
