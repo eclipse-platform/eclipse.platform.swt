@@ -15,15 +15,13 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-/* DO NOT USE - UNDER CONSTRUCTION */
-
 /**
  * Instances of this class are selectable user interface
  * objects that allow the user to enter and modify number
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>READ_ONLY, WRAP</dd>
+ * <dd>READ_ONLY</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, Modify</dd>
  * </dl>
@@ -31,7 +29,7 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-class Spinner extends Composite {
+public class Spinner extends Composite {
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -162,7 +160,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @see VerifyListener
  * @see #removeVerifyListener
  */
-public void addVerifyListener (VerifyListener listener) {
+void addVerifyListener (VerifyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
@@ -374,7 +372,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * @see VerifyListener
  * @see #addVerifyListener
  */
-public void removeVerifyListener (VerifyListener listener) {
+void removeVerifyListener (VerifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
