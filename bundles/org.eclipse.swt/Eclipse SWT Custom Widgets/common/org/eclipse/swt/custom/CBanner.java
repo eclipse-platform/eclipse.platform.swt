@@ -44,25 +44,23 @@ public class CBanner extends Composite {
 	Control left;
 	Control right;
 	int[] curve;
-	int curveStart;
-	int rightWidth = SWT.DEFAULT;
+	int curveWidth = 0;
+	int curveIndent = 0;
+	int curveStart = 0;
 	Rectangle curveRect = new Rectangle(0, 0, 0, 0);
+	
+	int rightWidth = SWT.DEFAULT;
 	Cursor resizeCursor;
 	boolean dragging = false;
 	int rightDragDisplacement = 0;
 	
 	static final int OFFSCREEN = -200;
-	static final int CURVE_WIDTH = 50;
-	static final int CURVE_RIGHT = 30;
-	static final int CURVE_LEFT = 30;
-	static final int CURVE_TAIL = 200;
 	static final int BORDER_BOTTOM = 2;
 	static final int BORDER_TOP = 3;
 	static final int BORDER_LEFT = 2;
 	static final int BORDER_RIGHT = 2;
-	static final int BORDER_STRIPE = 2;
-	static final int INDENT_LEFT = 10;
-	static final int INDENT_RIGHT = 10;
+	static final int BORDER_STRIPE = 1;
+	static final int CURVE_TAIL = 200;
 	
 	static RGB BORDER1 = null;
 	
@@ -80,92 +78,66 @@ public CBanner(Composite parent, int style) {
 	if (BORDER1 == null) BORDER1 = getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW).getRGB();
 	resizeCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEWE);
 	
-	addPaintListener(new PaintListener() {
-		public void paintControl(PaintEvent event) {
-			onPaint(event.gc);
-		}
-	});
-	addControlListener(new ControlAdapter(){
-		public void controlResized(ControlEvent e) {
-			onResize();
-		}
-	});
-	addListener(SWT.Dispose, new Listener() {
+	Listener listener = new Listener() {
 		public void handleEvent(Event e) {
-			onDispose();
+			switch (e.type) {
+				case SWT.Dispose:
+					onDispose(); break;
+				case SWT.MouseDown:
+					onMouseDown (e.x, e.y); break;
+				case SWT.MouseExit:
+					onMouseExit(); break;
+				case SWT.MouseMove:
+					onMouseMove(e.x, e.y); break;
+				case SWT.MouseUp:
+					onMouseUp(); break;
+				case SWT.Paint:
+					onPaint(e.gc); break;
+				case SWT.Resize:
+					onResize(); break;
+			}
 		}
-	});
-	addListener(SWT.MouseMove, new Listener() {
-		public void handleEvent(Event event) {
-			onMouseMove(event.x, event.y);
-		}
-	});
-	addListener(SWT.MouseExit, new Listener() {
-		public void handleEvent(Event event) {
-			onMouseExit();
-		}
-	});
-	addListener(SWT.MouseDown, new Listener() {
-		public void handleEvent(Event event) {
-			onMouseDown (event.x, event.y);
-		}
-	});
-	addListener(SWT.MouseUp, new Listener() {
-		public void handleEvent(Event event) {
-			onMouseUp ();
-		}
-	});
-}
-static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, int count) {
-	// The parametric equations for a Bezier curve for x[t] and y[t] where  0 <= t <=1 are:
-	// x[t] = x0+3(x1-x0)t+3(x0+x2-2x1)t^3+(x3-x0+3x1-3x2)t^3
-	// y[t] = y0+3(y1-y0)t+3(y0+y2-2y1)t^2+(y3-y0+3y1-3y2)t^3
-	double a0 = x0;
-	double a1 = 3*(x1 - x0);
-	double a2 = 3*(x0 + x2 - 2*x1);
-	double a3 = x3 - x0 + 3*x1 - 3*x2;
-	double b0 = y0;
-	double b1 = 3*(y1 - y0);
-	double b2 = 3*(y0 + y2 - 2*y1);
-	double b3 = y3 - y0 + 3*y1 - 3*y2;
-
-	int[] polygon = new int[2*count + 2];
-	for (int i = 0; i <= count; i++) {
-		double t = (double)i / (double)count;
-		polygon[2*i] = (int)(a0 + a1*t + a2*t*t + a3*t*t*t);
-		polygon[2*i + 1] = (int)(b0 + b1*t + b2*t*t + b3*t*t*t);
+	};
+	int[] events = new int[] {SWT.Dispose, SWT.MouseDown, SWT.MouseExit, SWT.MouseMove, SWT.MouseUp, SWT.Paint, SWT.Resize};
+	for (int i = 0; i < events.length; i++) {
+		addListener(events[i], listener);
 	}
-	return polygon;
 }
-
 static int checkStyle (int style) {
 	return SWT.NONE;
 }
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
-	Point rightSize = (right == null) ? new Point(0, 0) : right.computeSize(rightWidth, hHint);
-	int width = (wHint == SWT.DEFAULT) ? SWT.DEFAULT : wHint - rightSize.x - CURVE_WIDTH + INDENT_LEFT + INDENT_RIGHT;
-	Point leftSize = (left == null) ? new Point(0, 0) : left.computeSize(width, hHint);
+	Point rightSize = new Point(0, 0);
+	if (right != null) {
+		Point trim = right.computeSize(rightWidth, hHint);
+		trim.x = trim.x - rightWidth;
+		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, hHint);
+	}
+	int width = (wHint == SWT.DEFAULT) ? SWT.DEFAULT : (right == null ? wHint : wHint - rightSize.x - curveWidth + 2* curveIndent);
+	Point leftSize = new Point(0, 0);
+	if (left != null) {
+		Point trim = left.computeSize(width, hHint);
+		trim.x = trim.x - width;
+		leftSize = left.computeSize(width == SWT.DEFAULT ? SWT.DEFAULT : width - trim.x, hHint);
+	}
 	Point size = new Point(0, 0);
-	size.x = leftSize.x + CURVE_WIDTH - INDENT_LEFT - INDENT_RIGHT + rightSize.x;
-	size.y = Math.max (leftSize.y, rightSize.y);
+	size.x = leftSize.x;
+	if (left != null && right != null) size.x += curveWidth - 2*curveIndent;
+	size.x += rightSize.x;
+	size.y = left != null ? leftSize.y : rightSize.y;
+	
+	size.x += (left == null || right == null) ? 0 : BORDER_LEFT + BORDER_RIGHT;
+	size.y += (left == null || right == null) ? 0 : BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
 	
 	if (wHint != SWT.DEFAULT) size.x = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
 	
-	Rectangle trim = computeTrim(0, 0, size.x, size.y);
-	return new Point(trim.width, trim.height);
+	return new Point(size.x, size.y);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	boolean drawCurve = left != null && right != null;
-	int borderTop = drawCurve ? BORDER_TOP : 0;
-	int borderBottom = drawCurve ? BORDER_BOTTOM : 0;
-	int trimX = x - BORDER_LEFT;
-	int trimY = y - borderTop;
-	int trimWidth = width + BORDER_LEFT + BORDER_RIGHT;
-	int trimHeight = height + borderTop + borderBottom + 2*BORDER_STRIPE;
-	return new Rectangle(trimX, trimY, trimWidth, trimHeight);
+	return new Rectangle(x, y, width, height);
 }
 public Rectangle getClientArea() {
 	return new Rectangle(0, 0, 0, 0);
@@ -207,52 +179,53 @@ public Control getRight() {
 public int getRightWidth() {
 	checkWidget();
 	if (right == null) return 0;
-	if (rightWidth == SWT.DEFAULT) return right.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+	if (rightWidth == SWT.DEFAULT) return right.computeSize(SWT.DEFAULT, getSize().y).x;
 	return rightWidth;
 }
 public void layout (boolean changed) {
 	checkWidget();
 	Point size = getSize();
-	Point rightSize;
-	boolean drawCurve = left != null && right != null;
-	int curveWidth = drawCurve ? CURVE_WIDTH : 0;
-	int indentLeft = drawCurve ? INDENT_LEFT : 0;
-	int indentRight = drawCurve ? INDENT_RIGHT : 0;
-	int borderTop = drawCurve ? BORDER_TOP : 0;
-	int borderBottom = drawCurve ? BORDER_BOTTOM : 0;
-	if (right == null) {
-		int width = rightWidth == SWT.DEFAULT ? 0 : rightWidth;
-		rightSize = new Point(width, 0);
-	} else {
-		rightSize = right.computeSize(rightWidth, SWT.DEFAULT);
+	boolean noCurve = left == null || right == null;
+	Point rightSize = new Point(0,0);
+	if (right != null) {
+		Point trim = right.computeSize(rightWidth, SWT.DEFAULT);
+		trim.x = trim.x - rightWidth;
+		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, SWT.DEFAULT);
 	}
-	int width = size.x - curveWidth + indentLeft + indentRight - BORDER_LEFT - BORDER_RIGHT; 
+	int width = noCurve ? size.x : size.x - curveWidth + 2* curveIndent - BORDER_LEFT - BORDER_RIGHT; 
 	rightSize.x = Math.min(width, rightSize.x);
 	width -= rightSize.x;
-	Point leftSize = (left == null) ? new Point (0, 0) : left.computeSize(width, SWT.DEFAULT);
+	Point leftSize = new Point(0, 0);
+	if (left != null) {
+		Point trim = left.computeSize(width, SWT.DEFAULT);
+		trim.x = trim.x - width;
+		leftSize = left.computeSize(width - trim.x, SWT.DEFAULT);
+	}
 
-	int x = BORDER_LEFT;
+	int x = noCurve ? 0 : BORDER_LEFT;
 	int oldStart = curveStart;
 	Rectangle leftRect = null;
 	Rectangle rightRect = null;
 	if(left != null) {
-		int height = Math.min(size.y - borderTop - borderBottom - 2*BORDER_STRIPE, leftSize.y);
-		int y = borderTop + BORDER_STRIPE;
+		int height = Math.min(noCurve ? size.y : size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, leftSize.y);
+		int y = noCurve ? 0 : BORDER_TOP + BORDER_STRIPE;
 		leftRect = new Rectangle(x, y, leftSize.x, height);
 		x += leftSize.x;
 	}
-	curveStart = x - indentLeft;
-	x += curveWidth - indentLeft - indentRight;
+	if (!noCurve) {
+		curveStart = x - curveIndent;
+		x += curveWidth - 2*curveIndent;
+	}
 	if (right != null) {
-		int height = Math.min(size.y - borderTop - borderBottom - 2*BORDER_STRIPE, rightSize.y);
-		int y = borderTop + BORDER_STRIPE;
+		int height = Math.min(noCurve ? size.y : size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, rightSize.y);
+		int y = noCurve ? 0 : BORDER_TOP + BORDER_STRIPE;
 		rightRect = new Rectangle(x, y, rightSize.x, height);
 	}
 	if (curveStart < oldStart) {
-		redraw(curveStart - CURVE_TAIL, 0, oldStart + CURVE_WIDTH - curveStart + CURVE_TAIL, size.y, false);
+		redraw(curveStart - CURVE_TAIL, 0, oldStart + curveWidth - curveStart + CURVE_TAIL + 5, size.y, false);
 	}
 	if (curveStart > oldStart) {
-		redraw(oldStart - CURVE_TAIL, 0, curveStart + CURVE_WIDTH - oldStart + CURVE_TAIL, size.y, false);
+		redraw(oldStart - CURVE_TAIL, 0, curveStart + curveWidth - oldStart + CURVE_TAIL + 5, size.y, false);
 	}
 	curveRect = new Rectangle(curveStart, 0, curveWidth, size.y);
 	update();
@@ -268,7 +241,7 @@ void onDispose() {
 void onMouseDown (int x, int y) {
 	if (curveRect.contains(x, y)) {
 		dragging = true;
-		rightDragDisplacement = curveStart - x + BORDER_LEFT + CURVE_WIDTH - INDENT_RIGHT;
+		rightDragDisplacement = curveStart - x + BORDER_LEFT + curveWidth - curveIndent;
 	}
 }
 void onMouseExit() {
@@ -293,20 +266,28 @@ void onMouseUp () {
 	dragging = false;
 }
 void onPaint(GC gc) {
+//	 Useful for debugging paint problems
+//	{
+//	Point size = getSize();	
+//	gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GREEN));
+//	gc.fillRectangle(-10, -10, size.x+20, size.y+20);
+//	}
+	
 	if (left == null || right == null) return;
 	if (curve == null) updateCurve();
 	Point size = getSize();
+	
 	int[] line1 = new int[curve.length+6];
 	int index = 0;
 	int x = curveStart;
 	int y = 0;
-	line1[index++] = x +1;
+	line1[index++] = x + 1;
 	line1[index++] = size.y - BORDER_STRIPE;
 	for (int i = 0; i < curve.length/2; i++) {
 		line1[index++]=x+curve[2*i];
 		line1[index++]=y+curve[2*i+1];
 	}
-	line1[index++] = x + CURVE_WIDTH;
+	line1[index++] = x + curveWidth;
 	line1[index++] = 0;
 	line1[index++] = size.x;
 	line1[index++] = 0;
@@ -431,24 +412,11 @@ public void setRightWidth(int width) {
 }
 void updateCurve () {
 	Point size = getSize();
-	curve = bezier(0, size.y - BORDER_STRIPE + 1,
-	               CURVE_LEFT, size.y - BORDER_STRIPE + 1,
-			       CURVE_WIDTH-CURVE_RIGHT, 0,
-	               CURVE_WIDTH, 0,
-	               CURVE_WIDTH * 2);
-	// workaround to get rid of blip at end of bezier
-	int index = -1;
-	for (int i = 0; i < curve.length/2; i++) {
-		if (curve[2*i+1] > size.y - BORDER_STRIPE) {
-			index = i;
-		} else {
-			break;
-		}
-	}
-	if (index > -1) {
-		int[] newCurve = new int[curve.length - 2*(index+1)];
-		System.arraycopy(curve, 2*(index+1), newCurve, 0, newCurve.length);
-		curve = newCurve;
-	}
+	int d = size.y - 12;
+	curve = new int[]{0,12+d, 0,11+d, 3,11+d, 4,10+d, 6,10+d, 7,9+d, 8,9+d, 10,7+d, 11,7+d,
+			          12,6+d, 12+d,6,
+					  13+d,5, 14+d,5, 16+d,3, 17+d,3, 18+d,2, 20+d,2, 21+d,1, 25+d,1, 26+d,0}; 
+	curveWidth = 26+d;
+	curveIndent = 5;	
 }
 }
