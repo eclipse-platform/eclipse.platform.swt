@@ -837,9 +837,7 @@ public void test_setEnabledZ() {
 }
 
 public void test_setFocus() {
-	// TODO
-	final int COUNT = 10000;
-	
+	final int COUNT = 2000000;
 	PerformanceMeter meter = createMeter(getTypeString() + "setFocus");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -1018,7 +1016,7 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_setToolTipTextLjava_lang_String() {
-	final int COUNT = 100000;
+	final int COUNT = 1000000;
 	
 	String[] strings = new String[COUNT];
 	for (int i = 0; i < COUNT; i += 4) {

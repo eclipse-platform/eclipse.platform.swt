@@ -35,7 +35,7 @@ public static void main(String[] args) {
 }
 
 public void test_Constructor() {
-	final int COUNT = 5000000;
+	final int COUNT = 25000000;
 	
 	PerformanceMeter meter = createMeter("ImageLoader constr.");
 	meter.start();
