@@ -965,7 +965,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Ph_GFXVAL_VRAMSIZE                                    = 0x00000800;
 //public static final int Ph_GFXVAL_VRES                                        = 0x00000200;
 //public static final int Ph_GFXVAL_WORKSPACES                                  = 0x00008000;
-//public static final int Ph_GRAFX_REGION                                       = 0x00000004;
+public static final int Ph_GRAFX_REGION                                       = 0x00000004;
 //public static final int Ph_GRAPHIC_EXPOSE                                     = 2;
 //public static final int Ph_INFO_CTRL_BUF_GC                                   = 6;
 //public static final int Ph_INFO_CTRL_DFLT_GC                                  = 5;
@@ -2870,6 +2870,7 @@ public static final native int PtWidgetExtent (int widget, PhRect_t extent);
 public static final native int PtWidgetArea (int widget, PhArea_t area);
 public static final native int PhQueryCursor (short ig, PhCursorInfo_t buf);
 public static final native int PhInputGroup (int event);
+public static final native int PhQueryRids (int flags, int rid, int input_group, int type, int sense, int emitter, PhRect_t rect, int [] rids, int num);
 
 public static final native int PtContainer ();
 public static final native int PtDisjoint ();
