@@ -1191,7 +1191,7 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 		backgroundImage = temp;
 		
 		Color closeBackground = colorsCopy[colorsCopy.length - 1];
-		if (closeBackground == null){
+		if (closeBackground == null || display.getDepth() < 15){
 			closeBackground = background;
 		}
 		Color closeForeground = getForeground();
