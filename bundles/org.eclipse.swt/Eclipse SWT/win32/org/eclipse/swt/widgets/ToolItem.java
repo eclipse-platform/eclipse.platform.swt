@@ -159,12 +159,7 @@ void click (boolean dropDown) {
 	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
-	int lParam = 0;
-	if (dropDown) {
-		lParam = rect.right | (rect.top << 16);
-	} else {
-		lParam = rect.left | (rect.top << 16);
-	}
+	int lParam = (rect.top << 16) | (dropDown ? rect.right - 1 : rect.left);
 	int hotIndex = OS.SendMessage (hwnd, OS.TB_GETHOTITEM, 0, 0);
 	OS.SendMessage (hwnd, OS.WM_LBUTTONDOWN, 0, lParam);
 	OS.SendMessage (hwnd, OS.WM_LBUTTONUP, 0, lParam);
