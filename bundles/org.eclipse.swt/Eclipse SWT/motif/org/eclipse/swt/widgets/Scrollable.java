@@ -150,16 +150,7 @@ void deregister () {
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	if (formHandle != 0) enableHandle (enabled, formHandle);
-	if (scrolledHandle != 0) {
-		enableHandle (enabled, scrolledHandle);
-		int [] argList = {
-			OS.XmNhorizontalScrollBar, 0,
-			OS.XmNverticalScrollBar, 0,
-		};
-		OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
-		if (argList [1] != 0) enableHandle (enabled, argList [1]);
-		if (argList [3] != 0) enableHandle (enabled, argList [3]);
-	}
+	if (scrolledHandle != 0) enableHandle (enabled, scrolledHandle);
 }
 /**
  * Returns a rectangle which describes the area of the
