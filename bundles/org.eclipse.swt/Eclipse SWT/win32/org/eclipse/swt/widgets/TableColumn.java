@@ -271,6 +271,7 @@ public void pack () {
 	if (index == -1) return;
 	int hwnd = parent.handle;
 	parent.ignoreResize = true;
+	parent.unsubclass ();
 	int oldWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
 	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
@@ -346,6 +347,7 @@ public void pack () {
 			}
 		}
 	}
+	parent.subclass ();
 	parent.ignoreResize = false;
 	int newWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	if (oldWidth != newWidth) {
