@@ -678,7 +678,9 @@ int processMouseEnter (int info) {
 			break;
 		case OS.Ph_EV_PTR_LEAVE:
 		case OS.Ph_EV_PTR_LEAVE_TO_CHILD:
-			sendEvent (SWT.MouseExit, event);
+			sendEvent (SWT.MouseExit, event);			
+		case OS.Ph_EV_PTR_STEADY:
+			postEvent (SWT.MouseHover, event);
 			break;		
 	}
 	return OS.Pt_END;

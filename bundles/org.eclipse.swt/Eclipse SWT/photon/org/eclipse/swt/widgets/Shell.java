@@ -146,6 +146,11 @@ void createHandle (int index) {
 			if ((style & SWT.MENU) != 0) decorations |= OS.Ph_WM_RENDER_MENU;
 			if ((style & SWT.TITLE) != 0) decorations |= OS.Ph_WM_RENDER_TITLE;
 		}
+		int notifyFlags =
+			OS.Ph_WM_ICON | OS.Ph_WM_FOCUS | 
+			OS.Ph_WM_MOVE | OS.Ph_WM_RESIZE;
+		int windowState = OS.Ph_WM_STATE_ISFOCUS;
+		if ((style & SWT.ON_TOP) != 0) windowState = OS.Ph_WM_STATE_ISFRONT;
 		int titlePtr = OS.malloc (1);
 		int [] args = {
 			OS.Pt_ARG_WIDTH, width, 0,
@@ -153,10 +158,8 @@ void createHandle (int index) {
 			OS.Pt_ARG_WINDOW_TITLE, titlePtr, 0,
 			OS.Pt_ARG_WINDOW_RENDER_FLAGS, decorations, flags,
 			OS.Pt_ARG_WINDOW_MANAGED_FLAGS, 0, OS.Ph_WM_CLOSE,
-			OS.Pt_ARG_WINDOW_NOTIFY_FLAGS, OS.Ph_WM_ICON, OS.Ph_WM_ICON,
-			OS.Pt_ARG_WINDOW_NOTIFY_FLAGS, OS.Ph_WM_FOCUS, OS.Ph_WM_FOCUS,
-			OS.Pt_ARG_WINDOW_NOTIFY_FLAGS, OS.Ph_WM_MOVE, OS.Ph_WM_MOVE,
-			OS.Pt_ARG_WINDOW_NOTIFY_FLAGS, OS.Ph_WM_RESIZE, OS.Ph_WM_RESIZE,
+			OS.Pt_ARG_WINDOW_NOTIFY_FLAGS, notifyFlags, notifyFlags,
+			OS.Pt_ARG_WINDOW_STATE, windowState, ~0,
 			OS.Pt_ARG_FLAGS, OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};
@@ -166,6 +169,13 @@ void createHandle (int index) {
 		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
 	createScrolledHandle (shellHandle);
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+		int [] args = {
+			OS.Pt_ARG_FLAGS, OS.Pt_HIGHLIGHTED, OS.Pt_HIGHLIGHTED,
+			OS.Pt_ARG_BASIC_FLAGS, OS.Pt_ALL_OUTLINES, OS.Pt_ALL_OUTLINES,
+		};
+		OS.PtSetResources (scrolledHandle, args.length / 3, args);
+	}
 	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	resizeBounds (args [1], args [4]);
