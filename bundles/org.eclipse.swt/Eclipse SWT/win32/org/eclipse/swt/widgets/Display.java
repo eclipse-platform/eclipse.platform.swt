@@ -2149,12 +2149,7 @@ protected void release () {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) shell.dispose ();
 	}
-	if (tray != null) {
-		TrayItem [] items = tray.items;
-		for (int i=0; i<items.length; i++) {
-			if (items [i] != null) items [i].dispose (); 
-		}
-	}
+	if (tray != null) tray.dispose ();
 	tray = null;
 	while (readAndDispatch ()) {}
 	if (disposeList != null) {
