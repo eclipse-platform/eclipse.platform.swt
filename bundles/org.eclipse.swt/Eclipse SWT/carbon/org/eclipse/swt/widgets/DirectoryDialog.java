@@ -129,12 +129,10 @@ public String open () {
 		title.getChars (0, buffer.length, buffer, 0);
 		titlePtr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 	}
-	if (message != null) {
-		char [] buffer = new char [message.length ()];
-		message.getChars (0, buffer.length, buffer, 0);
-		messagePtr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-	}
-
+	char [] buffer = new char [message.length ()];
+	message.getChars (0, buffer.length, buffer, 0);
+	messagePtr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	
 	NavDialogCreationOptions options = new NavDialogCreationOptions ();
 	options.parentWindow = OS.GetControlOwner (parent.handle);
 	// NEEDS WORK - no title displayed
@@ -169,7 +167,7 @@ public String open () {
 					int dirString = OS.CFURLCopyFileSystemPath(dirUrl, OS.kCFURLPOSIXPathStyle);
 					OS.CFRelease (dirUrl);						
 					int length = OS.CFStringGetLength (dirString);
-					char [] buffer= new char [length];
+					buffer= new char [length];
 					CFRange range = new CFRange ();
 					range.length = length;
 					OS.CFStringGetCharacters (dirString, range, buffer);
