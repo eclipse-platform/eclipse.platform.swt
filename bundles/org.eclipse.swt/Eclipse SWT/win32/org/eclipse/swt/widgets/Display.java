@@ -1011,6 +1011,10 @@ Shell getModalShell () {
 	return null;
 }
 
+int getLastEventTime () {
+	return OS.IsWinCE ? OS.GetTickCount () : OS.GetMessageTime ();
+}
+
 /**
  * Returns an array containing all shells which have not been
  * disposed and have the receiver as their display.
@@ -1737,13 +1741,7 @@ void sendEvent (int eventType, Event event) {
 	if (event == null) event = new Event ();
 	event.display = this;
 	event.type = eventType;
-	if (event.time == 0) {
-		if (OS.IsWinCE) {
-			event.time = OS.GetTickCount ();
-		} else {
-			event.time = OS.GetMessageTime ();
-		}
-	}
+	if (event.time == 0) event.time = getLastEventTime ();
 	if (!filterEvent (event)) {
 		if (eventTable != null) eventTable.sendEvent (event);
 	}

@@ -845,11 +845,7 @@ void sendEvent (int eventType, Event event, boolean send) {
 	event.display = display;
 	event.widget = this;
 	if (event.time == 0) {
-		if (OS.IsWinCE) {
-			event.time = OS.GetTickCount ();
-		} else {
-			event.time = OS.GetMessageTime ();
-		}
+		event.time = display.getLastEventTime ();
 	}
 	if (send) {
 		sendEvent (event);
