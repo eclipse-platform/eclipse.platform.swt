@@ -319,10 +319,16 @@ private void openAddressBook() {
 	}
 	
 	String[][] tableInfo = new String[data.length][table.getColumnCount()];
+	int writeIndex = 0;
 	for (int i = 0; i < data.length; i++) {
-		tableInfo[i] = decodeLine(data[i]);
+		String[] line = decodeLine(data[i]);
+		if (line != null) tableInfo[writeIndex++] = line;
 	}
-
+	if (writeIndex != data.length) {
+		String[][] result = new String[writeIndex][table.getColumnCount()];
+		System.arraycopy(tableInfo, 0, result, 0, writeIndex);
+		tableInfo = result;
+	}
 	Arrays.sort(tableInfo, new RowComparator(0));
 
 	for (int i = 0; i < tableInfo.length; i++) {
