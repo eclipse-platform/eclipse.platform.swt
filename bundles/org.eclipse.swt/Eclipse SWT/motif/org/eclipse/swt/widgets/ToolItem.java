@@ -800,9 +800,6 @@ public void setToolTipText (String string) {
 	toolTipText = string;
 }
 void setVisible (boolean visible) {
-	int [] argList = {OS.XmNmappedWhenManaged, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if ((argList [1] != 0) == visible) return;	
 	OS.XtSetMappedWhenManaged (handle, visible);
 }
 /**
