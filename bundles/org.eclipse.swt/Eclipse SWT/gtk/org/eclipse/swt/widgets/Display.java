@@ -952,7 +952,7 @@ public Widget findWidget (int /*long*/ handle) {
 	return getWidget (handle);
 }
 
-public Widget findWidget (int handle, int id) {
+public Widget findWidget (int /*long*/ handle, int id) {
 	return null;
 }
 
