@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
- 
 import org.eclipse.swt.internal.gtk.OS;
 
 /**
@@ -151,7 +150,8 @@ public boolean isSupportedType(TransferData transferData){
 protected void javaToNative (Object object, TransferData transferData) {
 	transferData.result = 0;
 	if ((object == null) || !(object instanceof byte[]) || !(isSupportedType(transferData))) return;
-	byte[] buffer = (byte[])object;	
+	byte[] buffer = (byte[])object;
+	if (buffer.length == 0) return;
 	int pValue = OS.g_malloc(buffer.length);
 	if (pValue == 0) return;
 	OS.memmove(pValue, buffer, buffer.length);
@@ -174,12 +174,11 @@ protected void javaToNative (Object object, TransferData transferData) {
  * conversion was successful; otherwise null
  */
 protected Object nativeToJava(TransferData transferData) {
-	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
+	if ( !isSupportedType(transferData) || transferData.pValue == 0) return null;
 	int size = transferData.format * transferData.length / 8;
 	if (size == 0) return null;
 	byte[] buffer = new byte[size];
 	OS.memmove(buffer, transferData.pValue, size);
 	return buffer;
 }
-
 }

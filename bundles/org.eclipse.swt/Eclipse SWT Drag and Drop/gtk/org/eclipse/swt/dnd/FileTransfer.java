@@ -39,7 +39,7 @@ public class FileTransfer extends ByteArrayTransfer {
 	private static final int URI_LIST_ID = registerType(URI_LIST);
 	private static final String URI_LIST_PREFIX = "file:";
 	private static final String URI_LIST_SEPARATOR = "\r";
-	
+
 private FileTransfer() {}
 
 /**

@@ -60,7 +60,7 @@ public void javaToNative (Object object, TransferData transferData) {
 	String string = (String)object;
 	if (string.length() == 0) return;
 	
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	if  (transferData.type ==  COMPOUND_TEXT_ID) {
 		int[] encoding = new int[1];
 		int[] format = new int[1];
@@ -131,5 +131,4 @@ protected int[] getTypeIds() {
 protected String[] getTypeNames() {
 	return new String[] {COMPOUND_TEXT, STRING};
 }
-
 }

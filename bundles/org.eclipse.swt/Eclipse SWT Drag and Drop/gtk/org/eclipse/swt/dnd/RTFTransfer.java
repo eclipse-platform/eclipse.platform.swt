@@ -99,5 +99,4 @@ protected int[] getTypeIds() {
 protected String[] getTypeNames() {
 	return new String[] {TEXT_RTF, TEXT_RTF2, APPLICATION_RTF};
 }
-
 }
