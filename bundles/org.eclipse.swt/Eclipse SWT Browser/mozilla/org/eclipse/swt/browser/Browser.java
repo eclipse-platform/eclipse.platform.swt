@@ -62,6 +62,7 @@ public class Browser extends Composite {
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocProvider; 
 	static int BrowserCount;
+	static boolean mozilla;
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
@@ -100,7 +101,7 @@ public Browser(Composite parent, int style) {
 	super(parent,style);
 	
 	int[] result = new int[1];
-	if (BrowserCount == 0) {
+	if (!mozilla) {
 		try {
 			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
 		} catch (UnsatisfiedLinkError e) {
@@ -150,6 +151,7 @@ public Browser(Composite parent, int style) {
 		if (rc != XPCOM.NS_OK) error(rc);
 		rc = AppShell.Spinup();
 		if (rc != XPCOM.NS_OK) error(rc);
+		mozilla = true;
 	}
 	BrowserCount++;
 	int rc = XPCOM.NS_GetComponentManager(result);
@@ -566,13 +568,13 @@ void onDispose() {
 	Release();
 	webBrowser.Release();
 
+	BrowserCount--;
 	/*
 	* This code is intentionally commented.  It is not possible to reinitialize
 	* Mozilla once it has been terminated.  NS_InitEmbedding always fails after
 	* NS_TermEmbedding has been called.  The workaround is to call NS_InitEmbedding
 	* once and never call NS_TermEmbedding.
 	*/
-//	BrowserCount--;
 //	if (BrowserCount == 0) {
 //		if (AppShell != null) {
 //			// Shutdown the appshell service.
@@ -584,6 +586,7 @@ void onDispose() {
 //		LocProvider.Release();
 //		LocProvider = null;
 //		XPCOM.NS_TermEmbedding();
+//		mozilla = false;
 //	}
 }
 

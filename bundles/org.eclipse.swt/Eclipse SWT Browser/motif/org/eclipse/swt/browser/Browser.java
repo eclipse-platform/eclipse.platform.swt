@@ -64,6 +64,7 @@ public class Browser extends Composite {
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocProvider; 
 	static int BrowserCount;
+	static boolean mozilla;
 	static boolean IsLinux;
 
 	/* Package Name */
@@ -113,7 +114,7 @@ public Browser(Composite parent, int style) {
 	}
 
 	int[] result = new int[1];
-	if (BrowserCount == 0) {
+	if (!mozilla) {
 		try {
 			Library.loadLibrary("swt-gtk"); //$NON-NLS-1$
 			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
@@ -164,6 +165,7 @@ public Browser(Composite parent, int style) {
 		if (rc != XPCOM.NS_OK) error(rc);
 		rc = AppShell.Spinup();
 		if (rc != XPCOM.NS_OK) error(rc);
+		mozilla = true;
 	}
 	BrowserCount++;
 	if (BrowserCount == 1) {
@@ -171,10 +173,10 @@ public Browser(Composite parent, int style) {
 		final Display display = getDisplay();
 		display.asyncExec(new Runnable() {
 			public void run() {
+				if (BrowserCount == 0) return;
 				while (GTK.gtk_events_pending() != 0) {
 					GTK.gtk_main_iteration();
 				}
-				if (BrowserCount == 0) return;
 				display.timerExec(25, this);		
 			}
 		});
@@ -599,13 +601,13 @@ void onDispose() {
 	GTK.gtk_widget_destroy(gtkHandle);
 	gtkHandle = 0;
 	
+	BrowserCount--;
 	/*
 	* This code is intentionally commented.  It is not possible to reinitialize
 	* Mozilla once it has been terminated.  NS_InitEmbedding always fails after
 	* NS_TermEmbedding has been called.  The workaround is to call NS_InitEmbedding
 	* once and never call NS_TermEmbedding.
 	*/
-//	BrowserCount--;
 //	if (BrowserCount == 0) {
 //		if (AppShell != null) {
 //			// Shutdown the appshell service.
@@ -617,6 +619,7 @@ void onDispose() {
 //		LocProvider.Release();
 //		LocProvider = null;
 //		XPCOM.NS_TermEmbedding();
+//		mozilla = false;
 //	}
 }
 
