@@ -488,6 +488,7 @@ public class OS {
 
 /** Natives */
 public static final native int kHIViewWindowContentID();
+public static final native int ActiveNonFloatingWindow();
 public static final native int AECountItems(AEDesc theAEDescList, int[] theCount);
 public static final native int AEGetNthPtr(AEDesc theAEDescList, int index, int desiredType, int[] theAEKeyword, int[] typeCode, int dataPtr, int maximumSize, int[] actualSize);
 public static final native int AEProcessAppleEvent(EventRecord theEventRecord);
@@ -1051,5 +1052,5 @@ public static final native void memcpy(Rect dest, int src, int n);
 public static final native void memcpy(int dest, Rect src, int n);
 public static final native void memset(int dest, int value, int size);
 
-public static final native int HIViewSetBoundsOrigin(int inView, float inX, float inY);   
+public static final native int HIViewSetBoundsOrigin(int inView, float inX, float inY); 
 }

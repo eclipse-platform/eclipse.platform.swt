@@ -14,6 +14,16 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_carbon_OS_##func
 
+#ifndef NO_ActiveNonFloatingWindow
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ActiveNonFloatingWindow
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("ActiveNonFloatingWindow\n")
+
+	return (jint)ActiveNonFloatingWindow();
+}
+#endif
+
 #ifndef NO_AddDataBrowserItems
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserItems
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4)
