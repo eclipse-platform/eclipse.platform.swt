@@ -131,6 +131,7 @@ public PaletteData(int redMask, int greenMask, int blueMask) {
 /**
  * Returns the pixel value corresponding to the given <code>RBG</code>.
  *
+ * @param rgb the RGB to get the pixel value for
  * @return the pixel value for the given RGB
  * 
  * @exception IllegalArgumentException <ul>
@@ -159,6 +160,7 @@ public int getPixel(RGB rgb) {
 /**
  * Returns an <code>RGB</code> corresponding to the given pixel value.
  *
+ * @param pixel the pixel to get the RGB value for
  * @return the RGB value for the given pixel
  *
  * @exception IllegalArgumentException <ul>
