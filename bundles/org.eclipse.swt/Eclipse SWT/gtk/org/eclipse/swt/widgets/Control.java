@@ -122,6 +122,10 @@ void fixFocus () {
 	}
 }
 
+int focusHandle () {
+	return handle;
+}
+
 int fontHandle () {
 	return handle;
 }
@@ -1290,8 +1294,9 @@ public boolean forceFocus () {
 	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible ()) return false;
 	shell.bringToTop (false);
-	OS.gtk_widget_grab_focus (handle);
-	return OS.gtk_widget_is_focus (handle);
+	int focusHandle = focusHandle ();
+	OS.gtk_widget_grab_focus (focusHandle);
+	return OS.gtk_widget_is_focus (focusHandle);
 }
 
 /**

@@ -39,7 +39,8 @@ import org.eclipse.swt.graphics.*;
  * @see Canvas
  */
 public class Composite extends Scrollable {
-	int imHandle;
+	public int  embeddedHandle;
+	int imHandle, socketHandle;
 	Layout layout;
 	Control[] tabList;
 
@@ -223,6 +224,13 @@ void createScrolledHandle (int parentHandle) {
 		OS.gtk_container_add (parentHandle, handle);		
 	}
 	OS.gtk_widget_show (handle);
+	if ((style & SWT.EMBEDDED) != 0) {
+		socketHandle = OS.gtk_socket_new ();
+		if (socketHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (handle, socketHandle);
+		OS.gtk_widget_show (socketHandle);
+		embeddedHandle = OS.gtk_socket_get_id (socketHandle);
+	}
 	if (imHandle != 0) {
 		int window = OS.GTK_WIDGET_WINDOW (handle);
 		if (window != 0) {
@@ -247,6 +255,11 @@ void enableWidget (boolean enabled) {
 			OS.gtk_widget_set_sensitive (barHandle, enabled);
 		}
 	}
+}
+
+int focusHandle () {
+	if (socketHandle != 0) return socketHandle;
+	return super.focusHandle ();
 }
 
 public int getBorderWidth () {
@@ -555,6 +568,11 @@ void releaseWidget () {
 	layout = null;
 }
 
+void resizeHandle (int width, int height) {
+	super.resizeHandle (width, height);
+	if (socketHandle != 0) OS.gtk_widget_set_size_request (socketHandle, width, height);
+}
+
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	if (changed && resize && layout != null) layout.layout (this, false);
@@ -592,7 +610,7 @@ boolean setTabGroupFocus () {
 	if ((style & SWT.NO_FOCUS) == 0) {
 		boolean takeFocus = true;
 		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
-		if (takeFocus && setTabItemFocus ()) return true;
+		if ((takeFocus || socketHandle != 0) && setTabItemFocus ()) return true;
 	}
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -606,7 +624,7 @@ boolean setTabItemFocus () {
 	if ((style & SWT.NO_FOCUS) == 0) {
 		boolean takeFocus = true;
 		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
-		if (takeFocus) {
+		if (takeFocus || socketHandle != 0) {
 			if (!isShowing ()) return false;
 			if (forceFocus ()) return true;
 		}

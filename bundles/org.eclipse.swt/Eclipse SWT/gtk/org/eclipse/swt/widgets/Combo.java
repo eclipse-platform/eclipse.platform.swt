@@ -422,10 +422,9 @@ int fontHandle () {
 	return super.fontHandle ();
 }
 
-public boolean forceFocus () {
-	checkWidget();
-	OS.gtk_widget_grab_focus (entryHandle);
-	return OS.gtk_widget_is_focus (entryHandle);
+int focusHandle () {
+	if (entryHandle != 0) return entryHandle;
+	return super.focusHandle ();
 }
 
 boolean hasFocus () {
