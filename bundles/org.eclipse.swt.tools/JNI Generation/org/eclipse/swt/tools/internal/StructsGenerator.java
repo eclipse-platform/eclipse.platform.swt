@@ -11,8 +11,6 @@
 package org.eclipse.swt.tools.internal;
 
 import java.lang.reflect.*;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -63,7 +61,7 @@ public void generateHeaderFile(Class clazz) {
 
 public void generateHeaderFile(Class[] classes) {
 	if (classes.length == 0) return;
-	sortStructs(classes);
+	sort(classes);
 	generateMetaData("swt_copyright");
 	generateMetaData("swt_includes");
 	generateExcludes(classes);
@@ -88,7 +86,7 @@ public void generateSourceFile(Class clazz) {
 
 public void generateSourceFile(Class[] classes) {
 	if (classes.length == 0) return;
-	sortStructs(classes);
+	sort(classes);
 	generateMetaData("swt_copyright");
 	generateMetaData("swt_includes");
 	for (int i = 0; i < classes.length; i++) {
@@ -124,6 +122,10 @@ void generateBlankMacros(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("#else");
 	outputDelimiter();
+	output("#define cache");
+	output(clazzName);
+	output("Fields(a,b)");
+	outputDelimiter();
 	output("#define get");
 	output(clazzName);
 	output("Fields(a,b,c) NULL");
@@ -140,6 +142,10 @@ void generateBlankMacros(Class clazz) {
 
 void generatePrototypes(Class clazz) {
 	String clazzName = getClassName(clazz);
+	output("void cache");
+	output(clazzName);
+	output("Fields(JNIEnv *env, jobject lpObject);");
+	outputDelimiter();
 	output(clazzName);
 	output(" *get");
 	output(clazzName);
@@ -512,25 +518,6 @@ boolean ignoreField(Field field) {
 		((mods & Modifier.PUBLIC) == 0) ||
 		((mods & Modifier.FINAL) != 0) ||
 		((mods & Modifier.STATIC) != 0);
-}
-
-void sortStructs(Class[] classes) {
-	Arrays.sort(classes, new Comparator() {
-		public int compare(Object a, Object b) {
-			if (a == b) return 0;
-			Class class1 = (Class)a;
-			Class class2 = (Class)b;
-			Class tempClass = class1;
-			while ((tempClass = tempClass.getSuperclass()) != Object.class) {
-				if (tempClass == class2) return 1;
-			}
-			tempClass = class2;
-			while ((tempClass = tempClass.getSuperclass()) != Object.class) {
-				if (tempClass == class1) return -1;
-			}
-			return class1.getName().compareTo(class2.getName());
-		}
-	});
 }
 
 public static void main(String[] args) {
