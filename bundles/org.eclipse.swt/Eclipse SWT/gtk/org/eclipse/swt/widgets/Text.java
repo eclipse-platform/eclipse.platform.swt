@@ -790,7 +790,7 @@ int processModify (int arg0, int arg1, int int2) {
 }
 
 int processVerify (int int0, int int1, int int2) {
-	/*if (!hooks (SWT.Verify)) return 0;
+	if (!hooks (SWT.Verify)) return 0;
 	if (int2 != 0) {
 		// Insert 
 		if (int0 == 0 || int1==0){
@@ -835,7 +835,7 @@ int processVerify (int int0, int int1, int int2) {
 			OS.gtk_signal_emit_stop_by_name (handle, delete_text);
 			return 0;
 		}
-	}*/
+	}
 	return 0;
 }
 
