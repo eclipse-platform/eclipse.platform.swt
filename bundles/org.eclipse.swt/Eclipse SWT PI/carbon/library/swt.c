@@ -1411,21 +1411,18 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateStaticTextC
 
 #ifndef NO_CreateTabsControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateTabsControl
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jshort arg2, jshort arg3, jshort arg4, jobject arg5, jintArray arg6)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jshort arg2, jshort arg3, jshort arg4, jint arg5, jintArray arg6)
 {
 	Rect _arg1, *lparg1=NULL;
-	ControlTabEntry _arg5, *lparg5=NULL;
 	jint *lparg6=NULL;
 	jint rc;
 
 	DEBUG_CALL("CreateTabsControl\n")
 
 	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
-	if (arg5) lparg5 = getControlTabEntryFields(env, arg5, &_arg5);
 	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
-	rc = (jint)CreateTabsControl((WindowRef)arg0, (const Rect *)lparg1, (ControlTabSize)arg2, (ControlTabDirection)arg3, (UInt16)arg4, (const ControlTabEntry *)lparg5, (ControlRef *)lparg6);
+	rc = (jint)CreateTabsControl((WindowRef)arg0, (const Rect *)lparg1, (ControlTabSize)arg2, (ControlTabDirection)arg3, (UInt16)arg4, (const ControlTabEntry *)arg5, (ControlRef *)lparg6);
 	if (arg1) setRectFields(env, arg1, lparg1);
-	if (arg5) setControlTabEntryFields(env, arg5, lparg5);
 	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	return rc;
 }
@@ -4801,6 +4798,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__I
 	return rc;
 }
 #endif /* NO_SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlTabInfoRecV1_2 */
+
+#ifndef NO_SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlButtonContentInfo_2
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlButtonContentInfo_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	ControlButtonContentInfo _arg4, *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlButtonContentInfo_2\n")
+
+	if (arg4) lparg4 = getControlButtonContentInfoFields(env, arg4, &_arg4);
+	rc = (jint)SetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (const void *)lparg4);
+	if (arg4) setControlButtonContentInfoFields(env, arg4, lparg4);
+	return rc;
+}
+#endif
 
 #ifndef NO_SetControlFontStyle
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlFontStyle

@@ -10,7 +10,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
-import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 
 import org.eclipse.swt.*;
@@ -134,11 +133,11 @@ void createHandle () {
 			textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
 			graphicAlignment = OS.kControlBevelButtonAlignLeft;
 		}
-		if ((style & SWT.RIGHT) != 0) {
+		if ((style & SWT.CENTER) != 0) {
 			textAlignment = OS.kControlBevelButtonAlignTextCenter;
 			graphicAlignment = OS.kControlBevelButtonAlignCenter;
 		}
-		if ((style & SWT.CENTER) != 0) {
+		if ((style & SWT.RIGHT) != 0) {
 			textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
 			graphicAlignment = OS.kControlBevelButtonAlignRight;
 		}
