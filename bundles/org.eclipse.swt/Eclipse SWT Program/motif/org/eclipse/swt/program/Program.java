@@ -15,7 +15,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gnome.*;
-import org.eclipse.swt.internal.kde.*;
 import org.eclipse.swt.internal.cde.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.widgets.*;
@@ -46,8 +45,7 @@ public final class Program {
 	static final String DESKTOP_DATA = "Program_DESKTOP";
 	static final int DESKTOP_UNKNOWN = 0;
 	static final int DESKTOP_GNOME = 1;
-	static final int DESKTOP_KDE = 2;
-	static final int DESKTOP_CDE = 3;
+	static final int DESKTOP_CDE = 2;
 	static final int PREFERRED_ICON_SIZE = 16;
 	
 /**
@@ -72,16 +70,6 @@ static int getDesktop(Display display) {
 	if (propList != 0) {
 		OS.memmove(property, propList, (property.length * OS.PTR_SIZEOF));
 		OS.XFree(propList);
-	}
-	
-	/* KDE is detected by checking if the the KWIN_RUNNING exists */
-	if (desktop == DESKTOP_UNKNOWN) {
-		byte[] kdeName = Converter.wcsToMbcs(null, "KWIN_RUNNING", true);
-		int /*long*/ kde = OS.XInternAtom(xDisplay, kdeName, true);
-		for (int index = 0; desktop == DESKTOP_UNKNOWN && index < property.length; index++) {
-			if (property[index] == OS.None) continue;
-			if (property[index] == kde && kde_init()) desktop = DESKTOP_KDE;
-		}
 	}
 	
 	/*
@@ -481,200 +469,6 @@ static boolean gnome_init() {
 	}
 }
 
-static String kde_convertQStringAndFree(int /*long*/ qString) {
-	if (qString == 0) return null;
-	int /*long*/ qCString = KDE.QString_utf8(qString);
-	int /*long*/ charString = KDE.QCString_data(qCString);
-	
-	int length = OS.strlen(charString);
-	byte[] buffer = new byte[length];
-	OS.memmove(buffer, charString, length);
-	/* Use the character encoding for the default locale */
-	String answer = new String(Converter.mbcsToWcs(null, buffer));
-		
-	KDE.QCString_delete(qCString);
-	KDE.QString_delete(qString);
-	return answer;
-}
-
-static boolean kde_init() {
-	//TEMPORARY CODE
-	if (true) return false;
-	
-	/*
-	* Bug in the JVM.  Under some versions of the JVM,
-	* C++ code that dynaminc_cast causes a segmentation
-	* fault.  The fix is to avoid running KDE C++ code
-	* for those JVMs.
-	*/
-	if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 2)) return false;
-
-	try {
-		Library.loadLibrary("swt-kde");
-	} catch (Throwable e) {
-		return false;
-	}
-
-	/* Use the character encoding for the default locale */
-	byte[] nameBuffer = Converter.wcsToMbcs(null, "SWT", true);
-	int /*long*/ qcString = KDE.QCString_new(nameBuffer);
-	/*
-	* Feature in KDE. The argv argument passed to KApplication()
-	* is kept by KDE and cannot be freed.
-	*/
-	int /*long*/ ptr = KDE.malloc(nameBuffer.length);
-	OS.memmove(ptr, nameBuffer, nameBuffer.length);
-	int /*long*/ argv = KDE.malloc(OS.PTR_SIZEOF * 2);
-	OS.memmove(argv, new int /*long*/ []{ptr, 0}, OS.PTR_SIZEOF * 2);
-	/*
-	* Feature in KDE.  When a KDE application is initialized, it installs
-	* its own SIGSEGV,SIGFPE,SIGILL,SIGABRT signal handlers so that it can
-	* pop up a dialo box and display an error message should SIGSEGV occur.
-	* After the dialogue box is closed, it terminates the program. Some Java VMs
-	* happen to catch SIGSEGV signals so that it can throw a null pointer exception.
-	* Thus when KDE is initialized, the Java try ... catch mechanism for null pointers
-	* does not work.  The fix is to obtain the VM's signal handlers before
-	* initializing KDE and to reinstall that handlers after the initialization. The
-	* method sigaction() must be used instead of signal() because it returns more
-	* information on how to handle the signal.
-	*/
-	byte[] sigabrt = new byte[KDE.sigaction_sizeof()];
-	KDE.sigaction(KDE.SIGABRT, null, sigabrt);
-	byte[] sigfpe = new byte[KDE.sigaction_sizeof()];
-	KDE.sigaction(KDE.SIGFPE, null, sigfpe);
-	byte[] sigill = new byte[KDE.sigaction_sizeof()];
-	KDE.sigaction(KDE.SIGILL, null, sigill);
-	byte[] sigsegv = new byte[KDE.sigaction_sizeof()];
-	KDE.sigaction(KDE.SIGSEGV, null, sigsegv);
-	KDE.KApplication_new(1, argv, qcString, false, true);
-	KDE.sigaction(KDE.SIGABRT, sigill, null);
-	KDE.sigaction(KDE.SIGFPE, sigill, null);
-	KDE.sigaction(KDE.SIGILL, sigill, null);
-	KDE.sigaction(KDE.SIGSEGV, sigsegv, null);
-	KDE.QCString_delete(qcString);
-	return true;
-}
-
-boolean kde_execute(String fileName) {
-	String urlString = "file://" + fileName;
-	/* Use the character encoding for the default locale */
-	byte[] buffer = Converter.wcsToMbcs(null, urlString, true);
-	int /*long*/ qString = KDE.QString_new(buffer);
-	int /*long*/ url = KDE.KURL_new(qString);
-	/* Use the character encoding for the default locale */
-	buffer = Converter.wcsToMbcs(null, name, true);
-	int /*long*/ mimeTypeName = KDE.QString_new(buffer);
-	int pid = KDE.KRun_runURL(url, mimeTypeName);
-	KDE.QString_delete(mimeTypeName);
-	KDE.KURL_delete(url);
-	KDE.QString_delete(qString);
-	return pid != 0;
-}
-
-ImageData kde_getImageData() {
-	if (iconPath == null) return null;
-	if (iconPath.endsWith("xpm")) {
-		int xDisplay = display.xDisplay;
-		int screen  = OS.XDefaultScreenOfDisplay(xDisplay);
-		int fgPixel = OS.XWhitePixel(display.xDisplay, OS.XDefaultScreen(xDisplay));
-		int bgPixel = OS.XBlackPixel(display.xDisplay, OS.XDefaultScreen(xDisplay));
-		/* Use the character encoding for the default locale */
-		byte[] iconName = Converter.wcsToMbcs(null, iconPath, true);
-		int pixmap = OS.XmGetPixmap(screen, iconName, fgPixel, bgPixel);
-		if (pixmap == OS.XmUNSPECIFIED_PIXMAP) return null;
-		Image image = Image.motif_new(display, SWT.BITMAP, pixmap, 0);
-		ImageData imageData = image.getImageData();
-		imageData.transparentPixel = 0;
-		
-		/* The pixmap returned from XmGetPixmap is cached by Motif
-		 * and must be deleted by XmDestroyPixmap. Because it cannot
-		 * be deleted directly by XFreePixmap, image.dispose() must not
-		 * be called. The following code should do an equivalent image.dispose().
-		 */
-		OS.XmDestroyPixmap(screen, pixmap);
-		return imageData;	
-	}
-	try {
-		return new ImageData(iconPath);
-	} catch (Exception e) {}
-	return null;
-}
-
-static Hashtable kde_getMimeInfo() {
-	Hashtable mimeInfo = new Hashtable();
-	Vector mimeExts = null;
-	String mimeType;
-	
-	/* Get the list of all mime types available. */
-	int /*long*/ mimeTypeList = KDE.KMimeType_allMimeTypes();
-	int /*long*/ iterator = KDE.KMimeTypeList_begin(mimeTypeList);
-	int /*long*/ listEnd = KDE.KMimeTypeList_end(mimeTypeList);
-	while (!KDE.KMimeTypeListIterator_equals(iterator, listEnd)) {
-		int /*long*/ kMimeType = KDE.KMimeTypeListIterator_dereference(iterator);
-		int /*long*/ mimeName = KDE.KMimeType_name(kMimeType);
-		mimeType = kde_convertQStringAndFree(mimeName);
-		
-		/* Get the list of extension patterns. */
-		mimeExts = new Vector();
-		String extension;
-		
-		/* Add the mime type to the hash table with its extensions. */
-		int /*long*/ patternList = KDE.KMimeType_patterns(kMimeType);
-		int /*long*/ patIterator = KDE.QStringList_begin(patternList);
-		int /*long*/ patListEnd  = KDE.QStringList_end(patternList);
-		while (!KDE.QStringListIterator_equals(patIterator, patListEnd)) {
-			/* Get the next extension pattern from the list. */
-			int /*long*/ patString = KDE.QStringListIterator_dereference(patIterator);
-			extension = kde_convertQStringAndFree(patString);
-			int period = extension.indexOf('.');
-			if (period != -1) mimeExts.addElement(extension.substring(period));
-
-			/* Advance to the next pattern. */		
-			KDE.QStringListIterator_increment(patIterator);
-		}
-		KDE.QStringListIterator_delete(patIterator);
-		KDE.QStringListIterator_delete(patListEnd);
-		KDE.QStringList_delete(patternList);
-		
-		/* If there is at least one extension, save the mime type. */
-		if (mimeExts.size() > 0) mimeInfo.put(mimeType, mimeExts);
-
-		/* Advance to the next mime type. */		
-		KDE.KMimeTypeListIterator_increment(iterator);
-	}
-	KDE.KMimeTypeListIterator_delete(iterator);
-	KDE.KMimeTypeListIterator_delete(listEnd);
-	KDE.KMimeTypeList_delete(mimeTypeList);
-	return mimeInfo;
-}
-
-static Program kde_getProgram(Display display, String mimeType) {
-	Program program = null;
-	/* Use the character encoding for the default locale */
-	byte[] buffer = Converter.wcsToMbcs(null, mimeType, true);
-	int /*long*/ mimeTypeName = KDE.QString_new(buffer);
-	int /*long*/ serviceList = KDE.KMimeType_offers(mimeTypeName);
-	if (serviceList != 0) {
-		KDE.KServiceList_delete(serviceList);
-		program = new Program();
-		program.display = display;
-		program.name = mimeType;
-		program.command = "KRun::runURL(url,mimeType)";
-		int /*long*/ kMimeType = KDE.KMimeType_mimeType(mimeTypeName);
-		if (kMimeType != 0) {
-			int /*long*/ mimeIcon = KDE.KMimeType_icon(kMimeType, 0, false);
-			int /*long*/ loader = KDE.KGlobal_iconLoader();
-			int /*long*/ path = KDE.KIconLoader_iconPath(loader, mimeIcon, KDE.KICON_SMALL, true);
-			program.iconPath = kde_convertQStringAndFree(path);
-			KDE.QString_delete(mimeIcon);
-			KDE.KMimeType_delete(kMimeType);
-		}
-		
-	}
-	KDE.QString_delete(mimeTypeName);
-	return program;
-}
-
 /**
  * Finds the program that is associated with an extension.
  * The extension may or may not begin with a '.'.  Note that
@@ -704,7 +498,6 @@ static Program findProgram(Display display, String extension) {
 	Hashtable mimeInfo = null;
 	switch (desktop) {
 		case DESKTOP_GNOME: mimeInfo = gnome_getMimeInfo(); break;
-		case DESKTOP_KDE: mimeInfo = kde_getMimeInfo(); break;
 		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return null;
@@ -724,7 +517,6 @@ static Program findProgram(Display display, String extension) {
 	Program program = null;
 	switch (desktop) {
 		case DESKTOP_GNOME: program = gnome_getProgram(display, mimeType); break;
-		case DESKTOP_KDE: program = kde_getProgram(display, mimeType); break;
 		case DESKTOP_CDE: program = cde_getProgram(display, mimeType); break;
 	}
 	return program;
@@ -750,7 +542,6 @@ static String[] getExtensions(Display display) {
 	Hashtable mimeInfo = null;
 	switch (desktop) {
 		case DESKTOP_GNOME: mimeInfo = gnome_getMimeInfo(); break;
-		case DESKTOP_KDE: mimeInfo = kde_getMimeInfo(); break;
 		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return new String[0];
@@ -796,7 +587,6 @@ static Program[] getPrograms(Display display) {
 	Hashtable mimeInfo = null;
 	switch (desktop) {
 		case DESKTOP_GNOME: mimeInfo = gnome_getMimeInfo(); break;
-		case DESKTOP_KDE: mimeInfo = kde_getMimeInfo(); break;
 		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return new Program[0];
@@ -807,7 +597,6 @@ static Program[] getPrograms(Display display) {
 		Program program = null;
 		switch (desktop) {
 			case DESKTOP_GNOME: program = gnome_getProgram(display, mimeType); break;
-			case DESKTOP_KDE: program = kde_getProgram(display, mimeType); break;
 			case DESKTOP_CDE: program = cde_getProgram(display, mimeType); break;
 		}
 		if (program != null) programs.addElement(program);
@@ -895,7 +684,6 @@ public boolean execute(String fileName) {
 	int desktop = getDesktop(display);
 	switch (desktop) {
 		case DESKTOP_GNOME: return gnome_execute(fileName);
-		case DESKTOP_KDE: return kde_execute(fileName);
 		case DESKTOP_CDE: return cde_execute(fileName);
 	}
 	return false;
@@ -911,7 +699,6 @@ public boolean execute(String fileName) {
 public ImageData getImageData() {
 	switch (getDesktop(display)) {
 		case DESKTOP_GNOME: return gnome_getImageData();
-		case DESKTOP_KDE: return kde_getImageData();
 		case DESKTOP_CDE: return cde_getImageData();
 	}
 	return null;

@@ -33,8 +33,6 @@ case $OS in
 				fi
 				AWT_LIB_PATH=$JAVA_HOME/jre/lib/amd64
 				XTEST_LIB_PATH=/usr/X11R6/lib64
-				KDE_LIB_PATH=/usr/lib64
-				KDE_INCLUDE_PATH=/usr/include/kde
 				if [ "${GECKO_SDK}" = "" ]; then
 					GECKO_SDK=/mozilla/mozilla/1.7/amd64/gtk2/mozilla/dist/sdk
 					GECKO_INCLUDES="-include ${GECKO_SDK}/include/mozilla-config.h -I${GECKO_SDK}/include"
@@ -53,8 +51,6 @@ case $OS in
 				fi
 				AWT_LIB_PATH=$JAVA_HOME/jre/bin
 				XTEST_LIB_PATH=/usr/X11R6/lib
-				KDE_LIB_PATH=/usr/lib
-				KDE_INCLUDE_PATH=/usr/include/kde
 				if [ "${GECKO_SDK}" = "" ]; then
 					GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
 					GECKO_INCLUDES="-include ${GECKO_SDK}/mozilla-config.h -I${GECKO_SDK}/nspr/include -I${GECKO_SDK}/xpcom/include -I${GECKO_SDK}/string/include -I${GECKO_SDK}/embed_base/include -I${GECKO_SDK}/embedstring/include"
@@ -72,8 +68,6 @@ case $OS in
 				fi
 				AWT_LIB_PATH=$JAVA_HOME/jre/bin
 				XTEST_LIB_PATH=/usr/X11R6/lib
-				KDE_LIB_PATH=/opt/kde3/lib
-				KDE_INCLUDE_PATH=/opt/kde3/include
 				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/ppc
 				makefile="make_linux.mak"
 				;;
@@ -85,8 +79,6 @@ case $OS in
 				fi
 				AWT_LIB_PATH=$JAVA_HOME/jre/bin
 				XTEST_LIB_PATH=/usr/X11R6/lib
-				KDE_LIB_PATH=/opt/kde3/lib
-				KDE_INCLUDE_PATH=/opt/kde3/include
 				SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
 				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/ppc64
 				makefile="make_linux.mak"
@@ -99,8 +91,6 @@ case $OS in
 				fi
 				AWT_LIB_PATH=$JAVA_HOME/jre/lib/ia64
 				XTEST_LIB_PATH=/usr/X11R6/lib
-				KDE_LIB_PATH="/usr/lib/kde -L/usr/lib/qt-3.1/lib"
-				KDE_INCLUDE_PATH="/usr/include/kde -I/usr/lib/qt-3.1/include"
 				SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
 				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/ia64
 				makefile="make_linux.mak"
@@ -136,6 +126,6 @@ case $OS in
 	;;
 esac
 
-export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK GECKO_INCLUDES GECKO_LIBS SWT_PTR_CFLAGS CDE_HOME KDE_LIB_PATH KDE_INCLUDE_PATH OUTPUT_DIR
+export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK GECKO_INCLUDES GECKO_LIBS SWT_PTR_CFLAGS CDE_HOME OUTPUT_DIR
 
 make -f $makefile ${1} ${2} ${3} ${4}

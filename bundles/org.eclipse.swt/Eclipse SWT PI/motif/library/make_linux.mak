@@ -18,7 +18,6 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 # This makefile expects the following environment variables set:
 #    JAVA_HOME  - The JDK > 1.3
 #    MOTIF_HOME - Motif includes and libraries
-#    QT_HOME - identifier namespace package (used by KDE)
 
 # Define the various DLL (shared) libraries to be made.
 
@@ -42,12 +41,6 @@ GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 GNOME_CFLAGS = -O -Wall -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DLINUX -DGTK -I$(JAVA_HOME)/include `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 GNOME_LIBS = -shared -fpic -fPIC `pkg-config --libs-only-L gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0` -lgnomevfs-2 -lgnome-2 -lgnomeui-2
 
-KDE_PREFIX = swt-kde
-KDE_LIB = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-KDE_OBJS = swt.o kde.o kde_stats.o
-KDE_LIBS = -L/usr/lib  -L$(QT_HOME)/lib -shared  -lkdecore -lqt -lkparts
-KDE_CFLAGS = -fno-rtti -c -O -I/usr/include/kde -I$(QT_HOME)/include -I$(JAVA_HOME)/include
-
 AWT_PREFIX = swt-awt
 AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 AWT_OBJS = swt_awt.o
@@ -59,7 +52,7 @@ GTK_OBJS = swt.o gtk.o
 GTK_CFLAGS = `pkg-config --cflags gtk+-2.0`
 GTK_LIBS = -x -shared `pkg-config --libs-only-L gtk+-2.0` -lgtk-x11-2.0
 	
-all: make_swt make_awt make_gnome make_gtk make_kde
+all: make_swt make_awt make_gnome make_gtk
 
 make_swt: $(SWT_LIB)
 
@@ -90,17 +83,6 @@ gnome_structs.o: gnome_structs.c
 
 gnome_stats.o: gnome_stats.c
 	gcc $(GNOME_CFLAGS) -c -o gnome_stats.o gnome_stats.c
-
-make_kde: $(KDE_LIB)
-
-$(KDE_LIB): $(KDE_OBJS)
-	ld -o $@ $(KDE_OBJS) $(KDE_LIBS)
-
-kde.o: kde.cpp
-	g++ $(CFLAGS) $(KDE_CFLAGS) -o kde.o kde.cpp
-
-kde_stats.o: kde_stats.cpp
-	g++ $(CFLAGS) $(KDE_CFLAGS) -o kde_stats.o kde_stats.cpp
 
 make_awt: $(AWT_LIB)
 

@@ -38,7 +38,7 @@ public class NativeStats {
 	
 	Hashtable snapshot;
 	
-	final static String[] classes = new String[]{"OS", "ATK", "CDE", "GNOME", "GTK", "KDE", "XPCOM", "COM"};
+	final static String[] classes = new String[]{"OS", "ATK", "CDE", "GNOME", "GTK", "XPCOM", "COM"};
 
 	
 	public static class NativeFunction implements Comparable {
@@ -186,10 +186,6 @@ public static final native int GNOME_GetFunctionCallCount(int index);
 public static final native int GTK_GetFunctionCount();
 public static final native String GTK_GetFunctionName(int index);
 public static final native int GTK_GetFunctionCallCount(int index);
-
-public static final native int KDE_GetFunctionCount();
-public static final native String KDE_GetFunctionName(int index);
-public static final native int KDE_GetFunctionCallCount(int index);
 
 public static final native int XPCOM_GetFunctionCount();
 public static final native String XPCOM_GetFunctionName(int index);
