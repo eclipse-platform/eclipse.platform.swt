@@ -413,7 +413,7 @@ void init (Device device, FontData[] fds) {
 	this.device = device;
 	int xDisplay = device.xDisplay;
 	
-	/* A alternative locale have to be set in the first font data */
+	/* An alternative locale have to be set in the first font data */
 	FontData firstFd = fds[0];
 	if (firstFd.lang != null) {
 		String lang = firstFd.lang;
@@ -463,12 +463,12 @@ void init (Device device, FontData[] fds) {
 	int[] missingCharsetCount = new int[1];
 	int[] defString = new int[1];
 	StringBuffer stringBuffer = new StringBuffer(newFds[0].getXlfd());	
-	for (int i = 1; i < newFds.length; i++) {
-		stringBuffer.append (',');
-		stringBuffer.append (newFds[i].getXlfd());
+	for (int i=1; i<newFds.length; i++) {
+		stringBuffer.append(',');
+		stringBuffer.append(newFds[i].getXlfd());
 	}
-	byte[] buffer = Converter.wcsToMbcs (null, stringBuffer.toString() , true);
-	int fontSet = OS.XCreateFontSet (xDisplay, buffer, missingCharset, missingCharsetCount, defString);
+	byte[] buffer = Converter.wcsToMbcs(null, stringBuffer.toString() , true);
+	int fontSet = OS.XCreateFontSet(xDisplay, buffer, missingCharset, missingCharsetCount, defString);
 	
 	/*
 	* If failed to load desired font or there are missing character
@@ -476,9 +476,9 @@ void init (Device device, FontData[] fds) {
 	*/
 	if (fontSet == 0 || missingCharsetCount[0] != 0) {
 		int index = 0;
-		int lastMissingCharsetCount = 0xFFFF;
+		int lastMissingCharsetCount = fontSet != 0 ? missingCharsetCount[0] : 0xFFFF;
 		String loadedXlfds = getXlfds(fontSet);
-		while ((index = wildcardXfld(newFds, index)) < fds.length) {
+		while ((index = wildcardXfld(newFds, index)) < newFds.length) {
 			stringBuffer.setLength(0);
 			stringBuffer.append(loadedXlfds);
 			if (stringBuffer.length() != 0) stringBuffer.append(",");
@@ -499,7 +499,7 @@ void init (Device device, FontData[] fds) {
 		}
 	}
 	
-	/* If no font could be loaded, use system font. */
+	/* If no font could be loaded, use the system font. */
 	if (fontSet == 0) {
 		Font systemFont = device.systemFont;
 		handle = systemFont.handle;
