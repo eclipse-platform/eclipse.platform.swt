@@ -77,7 +77,9 @@ void createWidget () {
 int defaultFont () {
 	int hwnd = parent.handle;
 	int hwndIME = OS.ImmGetDefaultIMEWnd (hwnd);
+	if (hwndIME == 0) return parent.defaultFont ();
 	int hFont = OS.SendMessage (hwndIME, OS.WM_GETFONT, 0, 0);
+	if (hFont == 0) return parent.defaultFont ();
 	return hFont;
 }
 
@@ -119,7 +121,10 @@ public Display getDisplay () {
  */
 public Font getFont () {
 	checkWidget();
-	if (font == null) return Font.win32_new (getDisplay (), defaultFont ());
+	if (font == null) {
+		int hFont = defaultFont ();
+		return Font.win32_new (getDisplay (), hFont);
+	}
 	return font;
 }
 
@@ -374,6 +379,9 @@ void setFocus () {
  *
  * @param font the new font (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the font has been disposed</li>
+ * </ul> 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -381,6 +389,9 @@ void setFocus () {
  */
 public void setFont (Font font) {
 	checkWidget();
+	if (font != null && font.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 	this.font = font;
 	if (isVisible && parent.hasFocus ()) {
 		int hFont = 0;
@@ -398,6 +409,9 @@ public void setFont (Font font) {
  *
  * @param font the new font (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ * </ul> 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -405,6 +419,9 @@ public void setFont (Font font) {
  */
 public void setImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 	this.image = image;
 	if (isVisible && parent.hasFocus ()) resize ();
 }
