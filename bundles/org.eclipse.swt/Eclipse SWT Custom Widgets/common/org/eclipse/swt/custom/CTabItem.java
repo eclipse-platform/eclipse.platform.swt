@@ -37,6 +37,7 @@ public class CTabItem extends Item {
 	Color[] gradientColors;
 	int[] gradientPercents;
 	boolean gradientVertical;
+	Image disabledImage; 
 	
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
 	int closeImageState = CTabFolder.NONE;
@@ -224,10 +225,9 @@ void drawSelected(GC gc ) {
 	int[] shape = new int[] {xx,yy, xx+ww,yy, xx+ww,yy+hh, xx,yy+hh};
 	parent.drawBackground(gc, shape, true);
 
-	int rightTabEdge = parent.getRightItemEdge();
 	// if selected tab scrolled out of view or partially out of view
 	// just draw bottom line
-	if (!parent.single && parent.selectedIndex != parent.firstIndex && x + width > rightTabEdge){
+	if (!isShowing()){
 		int x1 = Math.max(0, parent.borderLeft - 1);
 		int y1 = (parent.onBottom) ? y - 1 : y + height;
 		int x2 = size.x - parent.borderRight;
@@ -238,12 +238,11 @@ void drawSelected(GC gc ) {
 	
 	// draw selected tab background and outline
 	int extra = parent.simple ? 0 : CTabFolder.CURVE_WIDTH/2 + 4; // +4 to avoid overlapping with text in next tab
+	int rightTabEdge = parent.getRightItemEdge();
 	shape = null;
 	if (this.parent.onBottom) {
 		int[] left = parent.simple ? new int[] {0, 0} :CTabFolder.BOTTOM_LEFT_CORNER;
 		int[] right = parent.simple ? new int[] {0, 0} : parent.curve;
-		//int[] left = CTabFolder.BOTTOM_LEFT_CORNER;
-		//int[] right = parent.simple ? CTabFolder.BOTTOM_RIGHT_CORNER : parent.curve;
 		shape = new int[left.length+right.length+8];
 		int index = 0;
 		shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
@@ -258,9 +257,9 @@ void drawSelected(GC gc ) {
 			shape[index++] = x + width - extra + right[2*i];
 			shape[index++] = parent.simple ? y + height + right[2*i+1] - 1 : y + right[2*i+1] - 2;
 		}
-		shape[index++] = x + width + extra;
+		shape[index++] = Math.min(x + width + extra, rightTabEdge);
 		shape[index++] = y - 1;
-		shape[index++] = rightTabEdge;
+		shape[index++] = Math.max(x + width + extra, rightTabEdge);
 		shape[index++] = y - 1;
 		int temp = 0;
 		for (int i = 0; i < shape.length/2; i++) {
@@ -277,8 +276,6 @@ void drawSelected(GC gc ) {
 	} else {
 		int[] left = parent.simple ? new int[] {0, 0} : CTabFolder.TOP_LEFT_CORNER;
 		int[] right = parent.simple ? new int[] {0, 0} : parent.curve;
-		//int[] left = CTabFolder.TOP_LEFT_CORNER;
-		//int[] right = parent.simple ? CTabFolder.TOP_RIGHT_CORNER : parent.curve;
 		shape = new int[left.length+right.length+8];
 		int index = 0;
 		shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
@@ -293,9 +290,9 @@ void drawSelected(GC gc ) {
 			shape[index++] = x + width - extra + right[2*i];
 			shape[index++] = y + right[2*i+1];
 		}
-		shape[index++] = x + width + extra;
+		shape[index++] = Math.min (x + width + extra, rightTabEdge);
 		shape[index++] = y + height + 1;
-		shape[index++] = rightTabEdge;
+		shape[index++] = Math.max (x + width + extra, rightTabEdge);
 		shape[index++] = y + height + 1;
 		int temp = 0;
 		for (int i = 0; i < shape.length/2; i++) {
@@ -393,11 +390,8 @@ void drawSelected(GC gc ) {
 	gc.drawPolyline(shape);
 }
 void drawUnselected(GC gc) {
-	int rightTabEdge = parent.getRightItemEdge();
 	// Do not draw partial items
-	if (parent.items[parent.firstIndex] != this && x + width > rightTabEdge){
-		return;
-	}
+	if (!isShowing()) return;
 	if (background != null || bgImage != null || gradientColors != null) {
 		int x1 = x, y1 = parent.onBottom ? y : y+1;
 		int x2 = x + width, y2 = parent.onBottom ? y+height-1 : y+height;
@@ -498,6 +492,15 @@ public Rectangle getBounds () {
 	return new Rectangle(x, y, width, height);
 }
 /**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public Rectangle getCloseBounds() {
+	checkWidget();
+	return closeRect;
+}
+
+/**
 * Gets the control that is displayed in the content are of the tab item.
 *
 * @return the control
@@ -524,8 +527,8 @@ public Control getControl () {
  * @deprecated
  */
 public Image getDisabledImage(){
-	//checkWidget();
-	return null;
+	checkWidget();
+	return disabledImage;
 }
 /**
  * UNDER CONSTRUCTION
@@ -577,6 +580,13 @@ public String getToolTipText () {
 		if (!shortenedText.equals(text)) return text;
 	}
 	return toolTipText;
+}
+boolean isShowing () {
+	int index = parent.indexOf(this);
+	if (parent.single) return index == parent.selectedIndex;
+	if (index < parent.firstIndex) return false;
+	if (parent.firstIndex == index) return true;
+	return (x + width < parent.getRightItemEdge());
 }
 void onPaint(GC gc, boolean isSelected) {
 	if (width == 0 || height == 0) return;
@@ -662,9 +672,8 @@ public void setBackground(Color color){
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	background = color;
-	int edge = parent.getRightItemEdge();
 	int index = parent.indexOf(this);
-	if (x + width < edge && parent.selectedIndex != index) {
+	if (isShowing() && parent.selectedIndex != index) {
 		parent.redraw();
 	}
 }
@@ -795,9 +804,8 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	}
 
 	// Refresh with the new settings
-	int edge = parent.getRightItemEdge();
 	int index = parent.indexOf(this);
-	if (x + width < edge && parent.selectedIndex != index) {
+	if (isShowing() && parent.selectedIndex != index) {
 		parent.redraw();
 	}
 }
@@ -818,15 +826,17 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
  */
 public void setBackground(Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (image == bgImage) return;
 	if (image != null) {
 		gradientColors = null;
 		gradientPercents = null;
 	}
 	bgImage = image;
-	int edge = parent.getRightItemEdge();
 	int index = parent.indexOf(this);
-	if (x + width < edge && parent.selectedIndex != index) {
+	if (isShowing() && parent.selectedIndex != index) {
 		parent.redraw();
 	}
 }
@@ -880,6 +890,10 @@ public void setControl (Control control) {
  */
 public void setDisabledImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	this.disabledImage = image;
 }
 /**
  * Sets the font that the receiver will use to paint textual information
@@ -901,6 +915,9 @@ public void setDisabledImage (Image image) {
  */
 public void setFont (Font font){
 	checkWidget();
+	if (font != null && font.isDisposed ()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (font != null && font.equals(this.font)) return;
 	this.font = font;
 	if (!parent.updateTabHeight(parent.tabHeight, false)) {
@@ -933,14 +950,16 @@ public void setForeground (Color color){
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	foreground = color;
-	int edge = parent.getRightItemEdge();
 	int index = parent.indexOf(this);
-	if (x + width < edge && parent.selectedIndex != index) {
+	if (isShowing() && parent.selectedIndex != index) {
 		parent.redraw(x, y, width, height, false);
 	}
 }
 public void setImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (image != null && image.equals(getImage())) return;
 	super.setImage(image);
 	if (!parent.updateTabHeight(parent.tabHeight, false)) {

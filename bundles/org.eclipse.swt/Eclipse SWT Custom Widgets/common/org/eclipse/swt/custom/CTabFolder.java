@@ -188,12 +188,7 @@ public class CTabFolder extends Composite {
 	static final int CURVE_LEFT = 30;
 	static final int CURVE_INDENT = 8;
 	static final int BUTTON_SIZE = 16;
-// Linda's curve
-//	static final int[] TOP_LEFT_CORNER = new int[] {0,9, 1,8, 1,7, 2,6, 2,5, 3,4, 4,3, 5,2, 6,2, 7,1, 8,1, 9,0};
-//	static final int[] TOP_RIGHT_CORNER = new int[] {-9,0, -8,1, -7,1, -6,2, -5,2, -4,3, -3,4, -2,5, -2,6, -1,7, -1,8, 0,9};
-//	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-9, 1,-8, 1,-7, 2,-6, 2,-5, 3,-4, 4,-3, 5,-2, 6,-2, 7,-1, 8,-1, 9,0};
-//	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-9,0, -8,-1, -7,-1, -6,-2, -5,-2, -4,-3, -3,-4, -2,-5, -2,-6, -1,-7, -1,-8, 0,-9};
-// Mac / Windows XP curve
+
 	static final int[] TOP_LEFT_CORNER = new int[] {0,6, 1,5, 1,4, 4,1, 5,1, 6,0};
 	static final int[] TOP_RIGHT_CORNER = new int[] {-6,0, -5,1, -4,1, -1,4, -1,5, 0,6};
 	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-6, 1,-5, 1,-4, 4,-1, 5,-1, 6,0};
@@ -592,10 +587,7 @@ void createItem (CTabItem item, int index) {
 	} else {
 		updateItems();
 		// redraw tabs if new item visible
-		if (index == firstIndex ||  
-		    (index > firstIndex && item.x + item.width < getRightItemEdge())){
-			redraw();
-		}
+		if (item.isShowing()) redraw();
 	}
 }
 void destroyItem (CTabItem item) {
@@ -825,7 +817,7 @@ void drawChevron(GC gc) {
 		count = selectedIndex == -1 ? items.length : items.length - 1;
 	} else {
 		int lastIndex = getLastIndex();
-		count = items.length - (lastIndex - firstIndex + 1);
+		count = Math.max(0, items.length - (lastIndex - firstIndex + 1));
 	}
 	switch (chevronImageState) {
 		case NORMAL: {
@@ -1182,6 +1174,14 @@ public boolean getBorderVisible() {
 	checkWidget();
 	return borderLeft == 1;
 }
+/**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public Rectangle getChevronBounds() {
+	checkWidget();
+	return chevronRect;
+}
 public Rectangle getClientArea() {
 	checkWidget();
 	if (minimized) return new Rectangle(xClient, yClient, 0, 0);
@@ -1274,12 +1274,11 @@ public CTabItem [] getItems() {
 }
 int getLastIndex() {
 	if (single) return selectedIndex;
-	int edge = getRightItemEdge();
+	if (items.length == 0) return -1;
 	for (int i = firstIndex; i < items.length; i++) {
 		CTabItem item = items[i];
-		if (item.x + item.width > edge) {
-			return i == firstIndex ? firstIndex : i - 1;
-		}
+		if (item.isShowing()) continue;
+		return i == firstIndex ? firstIndex : i - 1;
 	}
 	return items.length - 1;
 }
@@ -1293,6 +1292,14 @@ char getMnemonic (String string) {
 		index++;
 	} while (index < length);
  	return '\0';
+}
+/**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public Rectangle getMinimizeBounds() {
+	checkWidget();
+	return minRect;
 }
 /**
  * Returns <code>true</code> if the receiver is minimized,
@@ -1320,6 +1327,14 @@ public boolean getMinimized() {
 public boolean getMinimizeVisible() {
 	checkWidget();
 	return showMin;
+}
+/**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public Rectangle getMaximizeBounds() {
+	checkWidget();
+	return maxRect;
 }
 /**
  * Returns <code>true</code> if the receiver is maximized,
@@ -1822,9 +1837,23 @@ void onMouse(Event event) {
 				update();
 				return;
 			}
-			for (int i=0; i<items.length; i++) {
-				CTabItem item = items[i];
-				Rectangle bounds = item.getBounds();
+			CTabItem item = null;
+			if (single) {
+				if (selectedIndex != -1) {
+					Rectangle bounds = items[selectedIndex].getBounds();
+					if (bounds.contains(x, y)){
+						item = items[selectedIndex];
+					}
+				}
+			} else {
+				for (int i=0; i<items.length; i++) {
+					Rectangle bounds = items[i].getBounds();
+					if (bounds.contains(x, y)){
+						item = items[i];
+					}
+				}
+			}
+			if (item != null) {
 				if (item.closeRect.contains(x,y)){
 					if (event.button != 1) return;
 					item.closeImageState = SELECTED;
@@ -1832,15 +1861,15 @@ void onMouse(Event event) {
 					update();
 					return;
 				}
-				if (bounds.contains(x, y)) {
-					if (event.button == 1 && i == selectedIndex && items.length > 1) {
-						showList = true;
-					}
-					if (!single && i != firstIndex && bounds.x + bounds.width >= getRightItemEdge())return;
-					setSelection(i, true);
-					setFocus();
-					return;
+				int index = indexOf(item);
+				if (event.button == 1 && index == selectedIndex && items.length > 1) {
+					showList = true;
 				}
+				if (item.isShowing()){
+					setSelection(index, true);
+					setFocus();
+				}
+				return;
 			}
 			break;
 		}
@@ -1974,8 +2003,23 @@ void onMouse(Event event) {
 				if (e.doit && !isDisposed()) setMaximized(!restore);
 				return;
 			}
-			for (int i=0; i<items.length; i++) {
-				CTabItem item = items[i];
+			CTabItem item = null;
+			if (single) {
+				if (selectedIndex != -1) {
+					Rectangle bounds = items[selectedIndex].getBounds();
+					if (bounds.contains(x, y)){
+						item = items[selectedIndex];
+					}
+				}
+			} else {
+				for (int i=0; i<items.length; i++) {
+					Rectangle bounds = items[i].getBounds();
+					if (bounds.contains(x, y)){
+						item = items[i];
+					}
+				}
+			}
+			if (item != null) {
 				if (item.closeRect.contains(x,y)) {
 					boolean selected = item.closeImageState == SELECTED;
 					item.closeImageState = HOT;
@@ -2488,23 +2532,29 @@ boolean setButtonBounds() {
 	oldWidth = chevronRect.width;
 	oldHeight = chevronRect.height;
 	chevronRect.x = chevronRect.y = chevronRect.height = chevronRect.width = 0;
-	if (items.length > 1) {
-		if (single && selectedIndex > -1){
-			CTabItem item = items[selectedIndex];
+	if (single) {
+		if (selectedIndex == -1 || items.length > 1){
 			chevronRect.width = 3*BUTTON_SIZE/2;
 			chevronRect.height = BUTTON_SIZE;
-			chevronRect.x = Math.min(item.x +item.width + 3, size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width + 3);
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
+			if (selectedIndex > -1) {
+				CTabItem item = items[selectedIndex];				
+				chevronRect.x = Math.min(item.x +item.width + 3, size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width);
+			} else {
+				chevronRect.x = size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width;
+			}
 			if (borderRight > 0) chevronRect.x += 1;
-		} else {
-			int rightEdge = getRightItemEdge();
-			CTabItem item = items[items.length-1];
-			if (firstIndex > 0 || item.x + item.width >= rightEdge) {
+		}
+	} else {
+		if (items.length > 1) {
+			int lastIndex = getLastIndex();
+			if (firstIndex > 0 || lastIndex < items.length - 1) {
 				chevronRect.width = 3*BUTTON_SIZE/2;
 				chevronRect.height = BUTTON_SIZE;
-				chevronRect.x = size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width - 3;
-				if (borderRight > 0) chevronRect.x += 1;
-				chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2: borderTop + (tabHeight - chevronRect.height)/2;
+				lastIndex = getLastIndex(); // last index may change when chevron is present
+				CTabItem lastItem = items[lastIndex];
+				chevronRect.x = Math.min(lastItem.x +lastItem.width + 3, size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width);
+				chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
 			}
 		}
 	}
@@ -2518,6 +2568,7 @@ void setFirstItem(int index) {
 	if (index == firstIndex) return;
 	firstIndex = index;
 	setItemLocation();
+	setButtonBounds();
 	redraw();
 }
 public void setFont(Font font) {
@@ -2644,15 +2695,11 @@ boolean setItemLocation() {
 			x = x + item.width;
 		}
 
-		int rightEdge = getRightItemEdge();
-		if (rightEdge > 0) {
-			CTabItem item = items[items.length - 1];
-			if (item.x + item.width < rightEdge) {
-				setLastIndex(items.length - 1);
-				changed = true;
-			}
+		CTabItem item = items[items.length - 1];
+		if (item.isShowing()) {
+			setLastIndex(items.length - 1);
+			changed = true;
 		}
-
 	}
 	return changed;
 }
@@ -2759,6 +2806,7 @@ void setLastIndex(int index) {
 	if (firstIndex == index) return;
 	firstIndex = index;
 	setItemLocation();
+	setButtonBounds();
 	redraw();
 }
 /**
@@ -3234,18 +3282,17 @@ public void showItem (CTabItem item) {
 	checkWidget();
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	
+	if (item.isShowing()) return;
 	Point size = getSize();
 	int index = indexOf(item);
 	if (size.x <= borderLeft + borderRight || index < firstIndex) {
 		setFirstItem(index);
-		return;
+	} else {
+		setLastIndex(index);
 	}
-	int rightEdge = getRightItemEdge();
-	if (item.x + item.width < rightEdge) return;
-	setLastIndex(index);
 }
 void showList (Rectangle rect, int alignment) {
+	if (items.length == 0) return;
 	// if all items are showing, no list is required
 	int lastIndex = getLastIndex();
 	if (!single && firstIndex == 0 && lastIndex == items.length - 1) return;
@@ -3271,8 +3318,8 @@ void showList (Rectangle rect, int alignment) {
 			}
 		});
 	}
-	Point size = menu.getSize();
 	// Code commented due to bug 53404
+	//Point size = menu.getSize();
 	//int x = alignment == SWT.LEFT ? rect.x : rect.x + rect.width - size.x;
 	//int y = onBottom ? rect.y - size.y : rect.y + rect.height;
 	int x = rect.x;
@@ -3370,34 +3417,32 @@ boolean updateTabHeight(int oldHeight, boolean force){
 	if (!force && tabHeight == oldHeight) return false;
 	
 	oldSize = null;
-	if (!simple) {
-		if (onBottom) {
-			curve = bezier(0, tabHeight + 2,
-			               CURVE_LEFT, tabHeight + 2,
-					       CURVE_WIDTH - CURVE_RIGHT, 1,
-			               CURVE_WIDTH, 1,
-			               CURVE_WIDTH);
-			// workaround to get rid of blip at end of bezier
-			int index = -1;
-			for (int i = 0; i < curve.length/2; i++) {
-				if (curve[2*i+1] > tabHeight) {
-					index = i;
-				} else {
-					break;
-				}
+	if (onBottom) {
+		curve = bezier(0, tabHeight + 2,
+		               CURVE_LEFT, tabHeight + 2,
+				       CURVE_WIDTH - CURVE_RIGHT, 1,
+		               CURVE_WIDTH, 1,
+		               CURVE_WIDTH);
+		// workaround to get rid of blip at end of bezier
+		int index = -1;
+		for (int i = 0; i < curve.length/2; i++) {
+			if (curve[2*i+1] > tabHeight) {
+				index = i;
+			} else {
+				break;
 			}
-			if (index > 0) {
-				int[] newCurve = new int[curve.length - 2*(index-1)];
-				System.arraycopy(curve, 2*(index-1), newCurve, 0, newCurve.length);
-				curve = newCurve;
-			}	
-		} else {
-			curve = bezier(0, 0,
-			               CURVE_LEFT, 0, 
-			               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 1,
-			               CURVE_WIDTH, tabHeight + 1,
-			               CURVE_WIDTH);
 		}
+		if (index > 0) {
+			int[] newCurve = new int[curve.length - 2*(index-1)];
+			System.arraycopy(curve, 2*(index-1), newCurve, 0, newCurve.length);
+			curve = newCurve;
+		}	
+	} else {
+		curve = bezier(0, 0,
+		               CURVE_LEFT, 0, 
+		               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 1,
+		               CURVE_WIDTH, tabHeight + 1,
+		               CURVE_WIDTH);
 	}
 	notifyListeners(SWT.Resize, new Event());
 	return true;
