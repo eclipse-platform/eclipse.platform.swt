@@ -1604,6 +1604,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1screen_1width_1
 }
 #endif
 
+#ifndef NO_gdk_1threads_1enter
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1threads_1enter
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gdk_1threads_1enter\n")
+
+	gdk_threads_enter();
+}
+#endif
+
 #ifndef NO_gdk_1threads_1init
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1threads_1init
 	(JNIEnv *env, jclass that)
@@ -1611,6 +1621,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1threads_1init
 	DEBUG_CALL("gdk_1threads_1init\n")
 
 	gdk_threads_init();
+}
+#endif
+
+#ifndef NO_gdk_1threads_1leave
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1threads_1leave
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gdk_1threads_1leave\n")
+
+	gdk_threads_leave();
 }
 #endif
 
