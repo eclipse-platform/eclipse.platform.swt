@@ -734,7 +734,7 @@ LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
 	* 
 	* NOTE: WS_EX_LAYOUTRTL is not supported on Windows NT.
 	*/
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR)	< (4 << 16 | 10)) return result;
+	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return result;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		int code = wParam & 0xFFFF;
 		switch (code) {

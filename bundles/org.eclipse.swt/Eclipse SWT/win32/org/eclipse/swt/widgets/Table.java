@@ -515,7 +515,7 @@ void createHandle () {
 	* 
 	* NOTE: WS_EX_LAYOUTRTL is not supported on Windows NT.
 	*/
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) return;
+	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		int exStyle = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
@@ -2043,7 +2043,7 @@ void setCheckboxImageList (int width, int height) {
 	int count = 4;
 	int hStateList = OS.ImageList_Create (width, height, OS.ILC_COLOR, count, count);
 	int hDC = OS.GetDC (handle);
-	if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 		OS.SetLayout (hDC, 0);
 	}
 	int memDC = OS.CreateCompatibleDC (hDC);
@@ -2327,7 +2327,7 @@ void setRowHeight () {
 	*
 	* NOTE: In version 5.80 of COMCTL32.DLL, the bug is fixed.
 	*/
-	if ((OS.COMCTL32_MAJOR << 16 | OS.COMCTL32_MINOR) >= (5 << 16 | 80)) return;
+	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) return;
 	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
 	if (hOldList != 0) return;
 	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);

@@ -860,7 +860,7 @@ public Menu getMenu () {
  */
 public Monitor getMonitor () {
 	checkWidget ();
-	if (OS.IsWinCE || (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
+	if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
 		return display.getPrimaryMonitor ();
 	}
 	int hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
@@ -1045,7 +1045,7 @@ public int internal_new_GC (GCData data) {
 	}
 	if (hDC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
-		if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 			int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 			if ((data.style & mask) != 0) {
 				data.layout = (data.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.LAYOUT_RTL : 0;
@@ -2893,7 +2893,7 @@ int widgetExtStyle () {
 	* WS_EX_LAYOUTRTL or WS_EX_NOINHERITLAYOUT, CreateWindowEx()
 	* fails to create the HWND. The fix is to not use these bits.
 	*/
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10))  {
+	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
 		return bits;
 	} 
 	bits |= OS.WS_EX_NOINHERITLAYOUT;

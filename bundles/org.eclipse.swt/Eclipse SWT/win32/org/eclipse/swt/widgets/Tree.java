@@ -994,7 +994,7 @@ void setCheckboxImageList () {
 	int height = OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0), width = height;
 	int hImageList = OS.ImageList_Create (width, height, OS.ILC_COLOR, count, count);
 	int hDC = OS.GetDC (handle);
-	if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 		OS.SetLayout (hDC, 0);
 	}
 	int memDC = OS.CreateCompatibleDC (hDC);

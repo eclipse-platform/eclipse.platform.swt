@@ -274,7 +274,7 @@ public void pack () {
 	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + 10;
 	if (image != null) {
 		int margin = 0;
-		if ((OS.COMCTL32_MAJOR << 16 | OS.COMCTL32_MINOR) >= (5 << 16 | 80)) {
+		if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
 			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 			margin = OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
 		} else {

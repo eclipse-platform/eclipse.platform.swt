@@ -1341,7 +1341,7 @@ int widgetExtStyle () {
 	*/
 	if (parent != null) {
 		if (OS.IsWin95) return bits;
-		if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
+		if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
 			return bits;
 		}
 	}
@@ -1426,7 +1426,7 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	* Note.  When the Shell is reactivated, the text in the
 	* composition window has been lost.
 	*/
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (5 << 16 | 1)) {
+	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 		if ((wParam & 0xFFFF) == 0 && OS.IsDBLocale && hIMC != 0) {
 			OS.ImmSetOpenStatus (hIMC, false);
 		}

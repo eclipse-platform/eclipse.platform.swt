@@ -64,7 +64,7 @@ public abstract class Widget {
 	static final int MAJOR = 4, MINOR = 71;
 	static {
 		if (!OS.IsWinCE) {
-			if ((OS.COMCTL32_MAJOR << 16 | OS.COMCTL32_MINOR) < (MAJOR << 16 | MINOR)) {
+			if (OS.COMCTL32_VERSION < OS.VERSION (MAJOR, MINOR)) {
 				System.out.println ("***WARNING: SWT requires comctl32.dll version " + MAJOR + "." + MINOR + " or greater"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				System.out.println ("***WARNING: Detected: " + OS.COMCTL32_MAJOR + "." + OS.COMCTL32_MINOR); //$NON-NLS-1$ //$NON-NLS-2$
 			}

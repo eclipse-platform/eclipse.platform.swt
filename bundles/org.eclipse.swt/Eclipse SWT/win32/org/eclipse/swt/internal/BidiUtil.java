@@ -134,7 +134,7 @@ static int EnumSystemLanguageGroupsProc(int lpLangGrpId, int lpLangGrpIdString, 
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 	int length = renderDx.length;
 	
-	if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
 		if (OS.GetLayout (gc.handle) != 0) {
 			reverse(renderDx);
 			renderDx[length-1]--;               //fixes bug 40006
@@ -170,7 +170,7 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	int[] lpCs = new int[8];
 	int cs = OS.GetTextCharset(gc.handle);
 	boolean isRightOriented = false;
-	if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
 		isRightOriented = OS.GetLayout(gc.handle) != 0;
 	} 
 	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
@@ -306,7 +306,7 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	TCHAR textBuffer = new TCHAR(lpCs[1], text, false);
 	int byteCount = textBuffer.length();
 	boolean isRightOriented = false;
-	if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
 		isRightOriented = OS.GetLayout(gc.handle) != 0;
 	} 
 
@@ -543,7 +543,8 @@ public static void setKeyboardLanguage(int language) {
  * 	could not be changed
  */
 public static boolean setOrientation (int hwnd, int orientation) {
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) return false;
+	if (OS.IsWinCE) return false;
+	if (OS.WIN32_VERSION < OS.VERSION(4, 10)) return false;
 	int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 		bits |= OS.WS_EX_LAYOUTRTL; 

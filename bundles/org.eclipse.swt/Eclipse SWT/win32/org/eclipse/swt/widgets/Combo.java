@@ -1209,7 +1209,7 @@ public void setItems (String [] items) {
 public void setOrientation (int orientation) {
 	checkWidget();
 	if (OS.IsWinCE) return;
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) return;
+	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
 	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
 	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
 	style &= ~flags;

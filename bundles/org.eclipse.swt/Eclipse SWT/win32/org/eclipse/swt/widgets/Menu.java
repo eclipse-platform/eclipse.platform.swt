@@ -1267,7 +1267,7 @@ void update () {
 		if (this == parent.menuBar) OS.DrawMenuBar (parent.handle);
 		return;
 	}
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
+	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
 		return;
 	}
 	boolean hasCheck = false, hasImage = false;

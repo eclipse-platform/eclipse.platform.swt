@@ -30,9 +30,9 @@ public class OS {
 	public static final boolean IsSP;
 	public static final boolean IsDBLocale;
 	public static final boolean IsUnicode;
-	public static final int WIN32_MAJOR, WIN32_MINOR;
-	public static final int COMCTL32_MAJOR, COMCTL32_MINOR;
-	public static final int SHELL32_MAJOR, SHELL32_MINOR;
+	public static final int WIN32_MAJOR, WIN32_MINOR, WIN32_VERSION;
+	public static final int COMCTL32_MAJOR, COMCTL32_MINOR, COMCTL32_VERSION;
+	public static final int SHELL32_MAJOR, SHELL32_MINOR, SHELL32_VERSION;
 
 	/*
 	* Flags for Window API GetVersionEx()
@@ -75,6 +75,7 @@ public class OS {
 		IsHPC = IsWinCE && !IsPPC && !IsSP;	
 		WIN32_MAJOR = info.dwMajorVersion;
 		WIN32_MINOR = info.dwMinorVersion;
+		WIN32_VERSION = VERSION (WIN32_MAJOR, WIN32_MINOR);
 		IsUnicode = !IsWin32s && !IsWin95;
 
 		/* Get the DBCS flag */
@@ -106,6 +107,7 @@ public class OS {
 		}
 		COMCTL32_MAJOR = dvi.dwMajorVersion;
 		COMCTL32_MINOR = dvi.dwMinorVersion;
+		COMCTL32_VERSION = VERSION (COMCTL32_MAJOR, COMCTL32_MINOR);
 	}
 	
 	/* Get the Shell32.DLL version */
@@ -127,6 +129,7 @@ public class OS {
 		}
 		SHELL32_MAJOR = dvi.dwMajorVersion;
 		SHELL32_MINOR = dvi.dwMinorVersion;
+		SHELL32_VERSION = VERSION (SHELL32_MAJOR, SHELL32_MINOR);
 	}
 
 	/* Flag used on WinCE */
@@ -1398,6 +1401,10 @@ public class OS {
 	public static final int WS_VISIBLE = 0x10000000;
 	public static final int WS_VSCROLL = 0x200000;
 	
+public static int VERSION (int major, int minor) {
+	return major << 16 | minor;
+}
+
 /** Ansi/Unicode wrappers */
 
 public static final int CallWindowProc (int lpPrevWndFunc, int hWnd, int Msg, int wParam, int lParam) {

@@ -219,7 +219,7 @@ public Rectangle getBounds (int index) {
 	* the grid width when the grid is visible.  The fix is to
 	* move the top of the rectangle up by the grid width.
 	*/
-	if ((OS.COMCTL32_MAJOR << 16 | OS.COMCTL32_MINOR) >= (5 << 16 | 80)) {
+	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
 		rect.top -= gridWidth;
 	}
 	return new Rectangle (rect.left + gridWidth, rect.top + gridWidth, width, height);
@@ -421,7 +421,7 @@ public Rectangle getImageBounds (int index) {
 	* the grid width when the grid is visible.  The fix is to
 	* move the top of the rectangle up by the grid width.
 	*/
-	if ((OS.COMCTL32_MAJOR << 16 | OS.COMCTL32_MINOR) >= (5 << 16 | 80)) {
+	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
 		rect.top -= gridWidth;
 	}
 	return new Rectangle (rect.left + gridWidth, rect.top + gridWidth, width, height);

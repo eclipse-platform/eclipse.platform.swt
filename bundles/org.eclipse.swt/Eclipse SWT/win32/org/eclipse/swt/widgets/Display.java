@@ -1365,7 +1365,7 @@ Shell getModalDialogShell () {
  */
 public Monitor [] getMonitors () {
 	checkDevice ();
-	if (OS.IsWinCE || (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
+	if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
 		return new Monitor [] {getPrimaryMonitor ()};
 	}
 	monitors = new Monitor [4];
@@ -1434,7 +1434,7 @@ int getMsgProc (int code, int wParam, int lParam) {
  */
 public Monitor getPrimaryMonitor () {
 	checkDevice ();
-	if (OS.IsWinCE || (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
+	if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
 		Monitor monitor = new Monitor();
 		int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
 		int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);

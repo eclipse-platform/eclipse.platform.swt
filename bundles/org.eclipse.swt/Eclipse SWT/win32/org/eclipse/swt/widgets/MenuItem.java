@@ -617,7 +617,7 @@ public void setImage (Image image) {
 		}
 		return;
 	}
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
+	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
 		return;
 	}
 	MENUITEMINFO info = new MENUITEMINFO ();
@@ -709,7 +709,7 @@ public void setMenu (Menu menu) {
 		* The fix is to temporarily remove the bitmap and restore it after
 		* the text and submenu have been set.
 		*/
-		if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 			info.fMask = OS.MIIM_BITMAP;
 			OS.GetMenuItemInfo (hMenu, index, true, info);
 			hasBitmap = info.hbmpItem != 0;
@@ -766,7 +766,7 @@ public void setMenu (Menu menu) {
 			* in GetMenuItemInfo() and menu items that have bitmaps set with
 			* MIIM_BITMAP.
 			*/
-			if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+			if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 				if (hasBitmap) {
 					info.fMask = OS.MIIM_BITMAP;
 					info.hbmpItem = OS.HBMMENU_CALLBACK;
@@ -912,7 +912,7 @@ public void setText (String string) {
 		* Note, this does not happen on Windows 98.
 		*/
 		boolean hasBitmap = false;
-		if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 			info.fMask = OS.MIIM_BITMAP;
 			OS.GetMenuItemInfo (hMenu, id, false, info);
 			hasBitmap = info.hbmpItem != 0;
@@ -933,7 +933,7 @@ public void setText (String string) {
 		* in GetMenuItemInfo() and menu items that have bitmaps set with
 		* MIIM_BITMAP.
 		*/
-		if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 			if (hasBitmap) {
 				info.fMask = OS.MIIM_BITMAP;
 				info.hbmpItem = OS.HBMMENU_CALLBACK;
