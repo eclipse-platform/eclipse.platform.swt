@@ -15,7 +15,7 @@ import org.eclipse.swt.graphics.*;
 public class Decorations extends Canvas {
 	Image image;
 	Menu menuBar;
-	String text;
+	String text = "";
 	boolean minimized, maximized;
 	Control savedFocus;
 	Button defaultButton, saveDefault;

@@ -459,9 +459,8 @@ public static synchronized Display findDisplay (Thread thread) {
 
 public Shell getActiveShell () {
 	checkDevice ();
-	int theWindow = OS.FrontWindow ();
+	int theWindow = OS.ActiveNonFloatingWindow ();
 	if (theWindow == 0) return null;
-	if (!OS.IsWindowActive (theWindow)) return null;
 	int [] theControl = new int [1];
 	OS.GetRootControl (theWindow, theControl);
 	Widget widget = WidgetTable.get (theControl [0]);
@@ -542,9 +541,8 @@ public int getDoubleClickTime () {
 
 public Control getFocusControl () {
 	checkDevice ();
-	int theWindow = OS.FrontWindow ();
+	int theWindow = OS.ActiveNonFloatingWindow ();
 	if (theWindow == 0) return null;
-	if (!OS.IsWindowActive (theWindow)) return null;
 	return getFocusControl (theWindow);
 }
 
@@ -814,11 +812,10 @@ int itemNotificationProc (int browser, int item, int message) {
 int keyboardProc (int nextHandler, int theEvent, int userData) {
 	Widget widget = WidgetTable.get (userData);
 	if (widget == null) {
-		int theWindow = OS.FrontWindow ();
+		int theWindow = OS.ActiveNonFloatingWindow ();
 		if (theWindow == 0) return OS.eventNotHandledErr;
 		int [] theControl = new int [1];
 		OS.GetKeyboardFocus (theWindow, theControl);
-		//TEMPORARY CODE
 		if (theControl [0] == 0) {
 			OS.GetRootControl (theWindow, theControl);
 		}
