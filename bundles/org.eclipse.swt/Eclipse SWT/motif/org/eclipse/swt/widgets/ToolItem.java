@@ -786,7 +786,7 @@ int processMouseMove (int callData) {
 	*/
 //	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
 //	parent.processMouseMove (callData);
-	parent.sendMouseEvent (SWT.MouseMove, 0, xEvent.state, xEvent);
+	parent.sendMouseEvent (SWT.MouseMove, 0, xEvent);
 
 	return 0;
 }

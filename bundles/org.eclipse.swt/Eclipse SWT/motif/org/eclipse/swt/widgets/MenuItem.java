@@ -499,12 +499,8 @@ int processSelection (int callData) {
 			case OS.ButtonRelease:
 			case OS.KeyPress:
 			case OS.KeyRelease:
-				if ((xEvent.state & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
-				if ((xEvent.state & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
-				if ((xEvent.state & OS.ControlMask) != 0) event.stateMask |= SWT.CONTROL;
-				if ((xEvent.state & OS.Button1Mask) != 0) event.stateMask |= SWT.BUTTON1;
-				if ((xEvent.state & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
-				if ((xEvent.state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;
+				setInputState (event, xEvent);
+				break;
 		}
 	}
 	postEvent (SWT.Selection, event);

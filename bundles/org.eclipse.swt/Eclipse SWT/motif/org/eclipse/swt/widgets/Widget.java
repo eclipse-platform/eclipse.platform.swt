@@ -715,6 +715,44 @@ void sendEvent (int eventType) {
 	if (eventTable == null) return;
 	sendEvent (eventType, new Event ());
 }
+void setInputState (Event event, XInputEvent xEvent) {
+	if ((xEvent.state & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
+	if ((xEvent.state & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
+	if ((xEvent.state & OS.ControlMask) != 0) event.stateMask |= SWT.CONTROL;
+	if ((xEvent.state & OS.Button1Mask) != 0) event.stateMask |= SWT.BUTTON1;
+	if ((xEvent.state & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
+	if ((xEvent.state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;	
+}
+void setKeyState (Event event, XKeyEvent xEvent) {
+	if (xEvent.keycode != 0) {
+		byte [] buffer1 = new byte [1];
+		int [] keysym = new int [1];
+		if (OS.XLookupString (xEvent, buffer1, buffer1.length, keysym, null) == 0) {
+			/*
+			* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
+			* translated correctly by XLookupString().  They are mapped
+			* to 0x1005FF10 and 0x1005FF11 respectively.  The fix is to
+			* look for these values explicitly and correct them.
+			*/
+			if (OS.IsSunOS) {
+				if ((keysym [0] == 0x1005FF10) || (keysym [0] == 0x1005FF11)) {
+					if (keysym [0] == 0x1005FF10) keysym [0] = OS.XK_F11;
+					if (keysym [0] == 0x1005FF11) keysym [0] = OS.XK_F12;
+				}
+			}
+			/*
+			* Bug in MOTIF.  On Solaris only, their is garbage in the
+			* high 16-bits for Keysyms such as XK_Down.  Since Keysyms
+			* must be 16-bits to fit into a Character, mask away the
+			* high 16-bits on all platforms.
+			*/
+			event.keyCode = Display.translateKey (keysym [0] & 0xFFFF);
+		} else {
+			event.character = (char) buffer1 [0];
+		}
+	}
+	setInputState (event, xEvent);
+}
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null) return;
 	event.type = eventType;

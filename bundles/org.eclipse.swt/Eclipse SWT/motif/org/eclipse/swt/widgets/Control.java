@@ -1165,7 +1165,11 @@ int processIMEFocusOut () {
 int processKeyDown (int callData) {
 	XKeyEvent xEvent = new XKeyEvent ();
 	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
-	sendKeyEvent (SWT.KeyDown, xEvent);
+	if (xEvent.keycode != 0) {
+		sendKeyEvent (SWT.KeyDown, xEvent);
+	} else {
+		sendIMEKeyEvent (SWT.KeyDown, xEvent);
+	}
 	return 0;
 }
 int processKeyUp (int callData) {
@@ -1183,7 +1187,7 @@ int processMouseDown (int callData) {
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-	sendMouseEvent (SWT.MouseDown, xEvent.button, xEvent.state, xEvent);
+	sendMouseEvent (SWT.MouseDown, xEvent.button, xEvent);
 	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
 		sendEvent (SWT.DragDetect);
 	}
@@ -1195,10 +1199,9 @@ int processMouseDown (int callData) {
 	int lastTime = display.lastTime, eventTime = xEvent.time;
 	int lastButton = display.lastButton, eventButton = xEvent.button;
 	if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
-		sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent.state, xEvent);
+		sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent);
 	}
-	if (eventTime == 0) eventTime = 1;
-	display.lastTime = eventTime;
+	display.lastTime = eventTime == 0 ? 1 : eventTime;
 	display.lastButton = eventButton;
 	return 0;
 }
@@ -1218,7 +1221,7 @@ int processMouseMove (int callData) {
 	display.addMouseHoverTimeOut (handle);
 	XMotionEvent xEvent = new XMotionEvent ();
 	OS.memmove (xEvent, callData, XMotionEvent.sizeof);
-	sendMouseEvent (SWT.MouseMove, 0, xEvent.state, xEvent);
+	sendMouseEvent (SWT.MouseMove, 0, xEvent);
 	return 0;
 }
 int processMouseExit (int callData) {
@@ -1249,7 +1252,7 @@ int processMouseUp (int callData) {
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-	sendMouseEvent (SWT.MouseUp, xEvent.button, xEvent.state, xEvent);
+	sendMouseEvent (SWT.MouseUp, xEvent.button, xEvent);
 	return 0;
 }
 int processPaint (int callData) {
@@ -1647,52 +1650,21 @@ void sendHelpEvent (int callData) {
 		control = control.parent;
 	}
 }
-byte [] sendKeyEvent (int type, XKeyEvent xEvent) {
-	
-	/* Look up the keysym and character(s) */
-	byte [] buffer;
-	boolean isVirtual = false;
-	int [] keysym = new int [1];
-	if (xEvent.keycode != 0) {
-		buffer = new byte [1];
-		isVirtual = OS.XLookupString (xEvent, buffer, buffer.length, keysym, null) == 0;
-	} else {
-		/*
-		* Bug in Motif. On Linux only, XmImMbLookupString() does not return 
-		* XBufferOverflow as the status if the buffer is too small. The fix is
-		* to pass a bigger buffer.
-		*/
-		buffer = new byte [512];
-		int [] status = new int [1];
-		int size = OS.XmImMbLookupString (handle, xEvent, buffer, buffer.length, keysym, status);
-		if (status [0] == OS.XBufferOverflow) {
-			buffer = new byte [size];
-			size = OS.XmImMbLookupString (handle, xEvent, buffer, size, keysym, status);
-		}
-		if (size == 0) return null;
-	}
-
+byte [] sendIMEKeyEvent (int type, XKeyEvent xEvent) {
 	/*
-	* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
-	* translated correctly by XLookupString().  They are mapped
-	* to 0x1005FF10 and 0x1005FF11 respectively.  The fix is to
-	* look for these values explicitly and correct them.
+	* Bug in Motif. On Linux only, XmImMbLookupString () does not return 
+	* XBufferOverflow as the status if the buffer is too small. The fix
+	* is to pass a large buffer.
 	*/
-	if (OS.IsSunOS) {
-		if ((keysym [0] == 0x1005FF10) || (keysym [0] == 0x1005FF11)) {
-			if (keysym [0] == 0x1005FF10) keysym [0] = OS.XK_F11;
-			if (keysym [0] == 0x1005FF11) keysym [0] = OS.XK_F12;
-		}
+	byte [] buffer = new byte [512];
+	int [] status = new int [1], unused = new int [1];
+	int length = OS.XmImMbLookupString (handle, xEvent, buffer, buffer.length, unused, status);
+	if (status [0] == OS.XBufferOverflow) {
+		buffer = new byte [length];
+		length = OS.XmImMbLookupString (handle, xEvent, buffer, length, unused, status);
 	}
+	if (length == 0) return null;
 	
-	/*
-	* Bug in MOTIF.  On Solaris only, their is garbage in the
-	* high 16-bits for Keysyms such as XK_Down.  Since Keysyms
-	* must be 16-bits to fit into a Character, mask away the
-	* high 16-bits on all platforms.
-	*/
-	keysym [0] &= 0xFFFF;
-
 	/* Convert from MBCS to UNICODE and send the event */
 	/* Use the character encoding for the default locale */
 	char [] result = Converter.mbcsToWcs (null, buffer);
@@ -1702,30 +1674,24 @@ byte [] sendKeyEvent (int type, XKeyEvent xEvent) {
 		Event event = new Event ();
 		event.time = xEvent.time;
 		event.character = result [index];
-		if (isVirtual) event.keyCode = Display.translateKey (keysym [0]);
-		if ((xEvent.state & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
-		if ((xEvent.state & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
-		if ((xEvent.state & OS.ControlMask) != 0) event.stateMask |= SWT.CONTROL;
-		if ((xEvent.state & OS.Button1Mask) != 0) event.stateMask |= SWT.BUTTON1;
-		if ((xEvent.state & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
-		if ((xEvent.state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;
+		setInputState (event, xEvent);
 		postEvent (type, event);
 		index++;
 	}
-	
 	return buffer;
 }
-void sendMouseEvent (int type, int button, int mask, XWindowEvent xEvent) {
+void sendKeyEvent (int type, XKeyEvent xEvent) {
+	Event event = new Event ();
+	event.time = xEvent.time;
+	setKeyState (event, xEvent);
+	postEvent (type, event);
+}
+void sendMouseEvent (int type, int button, XInputEvent xEvent) {
 	Event event = new Event ();
 	event.time = xEvent.time;
 	event.button = button;
 	event.x = xEvent.x;  event.y = xEvent.y;
-	if ((mask & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
-	if ((mask & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
-	if ((mask & OS.ControlMask) != 0) event.stateMask |= SWT.CONTROL;
-	if ((mask & OS.Button1Mask) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((mask & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
-	if ((mask & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;
+	setInputState (event, xEvent);
 	postEvent (type, event);
 }
 /**
@@ -2031,24 +1997,6 @@ void setGrabCursor (int cursor) {
 	eventMask := attributes yourEventMask bitAnd: grabMask.
 	XDisplay xChangeActivePointerGrab: eventMask cursor: aCursor time: CurrentTime.
 	*/
-}
-void setKeyState (Event event, XKeyEvent xEvent) {
-	if (xEvent.keycode != 0) {
-		event.time = xEvent.time;
-		byte [] buffer1 = new byte [1];
-		int [] keysym = new int [1];
-		if (OS.XLookupString (xEvent, buffer1, buffer1.length, keysym, null) == 0) {
-			event.keyCode = Display.translateKey (keysym [0] & 0xFFFF);
-		} else {
-			event.character = (char) buffer1 [0];
-		}
-		if ((xEvent.state & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
-		if ((xEvent.state & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
-		if ((xEvent.state & OS.ControlMask) != 0) event.stateMask |= SWT.CONTROL;
-		if ((xEvent.state & OS.Button1Mask) != 0) event.stateMask |= SWT.BUTTON1;
-		if ((xEvent.state & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
-		if ((xEvent.state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;
-	}	
 }
 /**
  * Sets the layout data associated with the receiver to the argument.
@@ -2428,6 +2376,7 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 		Event event = new Event();
 		event.doit = doit;
 		event.detail = detail;
+		event.time = xEvent.time;
 		setKeyState (event, xEvent);
 		sendEvent (SWT.Traverse, event);
 		doit = event.doit;
