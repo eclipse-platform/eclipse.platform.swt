@@ -2258,7 +2258,7 @@ public void setBackground (Color color) {
  * UNDER CONSTRUCTION
  * @since 3.0
  */
-public void setBackground(Color[] colors, int[] percents) {
+void setBackground(Color[] colors, int[] percents) {
 	setBackground(colors, percents, false);
 }
 /**
@@ -2291,7 +2291,7 @@ public void setBackground(Color[] colors, int[] percents) {
  * UNDER CONSTRUCTION
  * @since 3.0
  */
-public void setBackground(Color[] colors, int[] percents, boolean vertical) {
+void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	checkWidget();
 	if (colors != null) {
 		if (percents == null || percents.length != colors.length - 1) {

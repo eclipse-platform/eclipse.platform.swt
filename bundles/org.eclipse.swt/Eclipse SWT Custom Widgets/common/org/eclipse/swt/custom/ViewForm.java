@@ -483,7 +483,7 @@ public void setLayout (Layout layout) {
  * UNDER CONSTRUCTION
  * @since 3.0
  */
-public void setSelectionBackground (Color color) {
+void setSelectionBackground (Color color) {
 	checkWidget();
 	if (selectionBackground == color) return;
 	if (color == null) color = getDisplay().getSystemColor(SELECTION_BACKGROUND);
