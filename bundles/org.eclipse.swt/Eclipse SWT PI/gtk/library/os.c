@@ -4758,6 +4758,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1box_1set_1child_1packing)
 }
 #endif
 
+#ifndef NO_gtk_1button_1clicked
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1button_1clicked)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, gtk_1button_1clicked_FUNC);
+	gtk_button_clicked((GtkButton *)arg0);
+	OS_NATIVE_EXIT(env, that, gtk_1button_1clicked_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1button_1new
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1button_1new)
 	(JNIEnv *env, jclass that)

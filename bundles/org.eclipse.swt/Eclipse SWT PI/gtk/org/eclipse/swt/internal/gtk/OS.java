@@ -802,6 +802,7 @@ public static final synchronized native int /*long*/ gtk_arrow_new(int arrow_typ
 public static final synchronized native void gtk_arrow_set(int /*long*/ arrow, int arrow_type, int shadow_type);
 public static final synchronized native int /*long*/ gtk_bin_get_child(int /*long*/ bin);
 public static final synchronized native void gtk_box_set_child_packing(int /*long*/ box, int /*long*/ child, boolean expand, boolean fill, int padding, int pack_type);
+public static final synchronized native void gtk_button_clicked(int /*long*/ button);
 public static final synchronized native int /*long*/ gtk_button_new();
 public static final synchronized native void gtk_button_set_relief(int /*long*/ button, int newstyle);
 public static final synchronized native void gtk_cell_renderer_get_size(int /*long*/ cell, int /*long*/ widget, GdkRectangle area, int[] x_offset, int[] y_offset, int[] width, int[] height);

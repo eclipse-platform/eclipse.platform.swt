@@ -386,6 +386,7 @@ typedef enum {
 	gtk_1arrow_1set_FUNC,
 	gtk_1bin_1get_1child_FUNC,
 	gtk_1box_1set_1child_1packing_FUNC,
+	gtk_1button_1clicked_FUNC,
 	gtk_1button_1new_FUNC,
 	gtk_1button_1set_1relief_FUNC,
 	gtk_1cell_1renderer_1get_1size_FUNC,

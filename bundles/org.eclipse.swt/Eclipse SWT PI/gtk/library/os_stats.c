@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 937;
-int OS_nativeFunctionCallCount[937];
+int OS_nativeFunctionCount = 938;
+int OS_nativeFunctionCallCount[938];
 char * OS_nativeFunctionNames[] = {
 	"Call__III",
 	"Call__IIII",
@@ -382,6 +382,7 @@ char * OS_nativeFunctionNames[] = {
 	"gtk_1arrow_1set",
 	"gtk_1bin_1get_1child",
 	"gtk_1box_1set_1child_1packing",
+	"gtk_1button_1clicked",
 	"gtk_1button_1new",
 	"gtk_1button_1set_1relief",
 	"gtk_1cell_1renderer_1get_1size",
