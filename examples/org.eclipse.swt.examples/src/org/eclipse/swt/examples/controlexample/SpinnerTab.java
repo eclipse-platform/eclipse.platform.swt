@@ -23,7 +23,7 @@ class SpinnerTab extends RangeTab {
 	Group spinnerGroup;
 	
 	/* Style widgets added to the "Style" group */
-	Button readOnlyButton;
+	Button readOnlyButton, wrapButton;
 	
 	/* Scale widgets added to the "Control" group */
 	Scale incrementScale, pageIncrementScale;
@@ -66,6 +66,7 @@ class SpinnerTab extends RangeTab {
 		int style = getDefaultStyle();
 		if (readOnlyButton.getSelection ()) style |= SWT.READ_ONLY;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
+		if (wrapButton.getSelection ()) style |= SWT.WRAP;
 		
 		/* Create the example widgets */
 		spinner1 = new Spinner (spinnerGroup, style);
@@ -187,6 +188,8 @@ class SpinnerTab extends RangeTab {
 		/* Create the extra widgets */
 		readOnlyButton = new Button (styleGroup, SWT.CHECK);
 		readOnlyButton.setText ("SWT.READ_ONLY");
+		wrapButton = new Button (styleGroup, SWT.CHECK);
+		wrapButton.setText ("SWT.WRAP");
 	}
 	
 	/**
@@ -209,6 +212,7 @@ class SpinnerTab extends RangeTab {
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		readOnlyButton.setSelection ((spinner1.getStyle () & SWT.READ_ONLY) != 0);
+		wrapButton.setSelection ((spinner1.getStyle () & SWT.WRAP) != 0);
 		setWidgetIncrement ();
 		setWidgetPageIncrement ();
 	}
