@@ -21,7 +21,7 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 #    JAVA_HOME  - Sun's version of Java (JDK2)
 #    MOTIF_HOME - Motif includes and libraries
 #    CDE_HOME - CDE includes and libraries
-JAVA_HOME  = /opt/java1.3
+JAVA_HOME  = /opt/jdk14101
 MOTIF_HOME = /usr
 CDE_HOME   = /usr/dt
 
@@ -43,10 +43,6 @@ CDE_LIB      = -G -L$(CDE_HOME)/lib -lDtSvc
 # The following CFLAGS are for compiling both the SWT library and the CDE
 # library.
 #
-# Note:
-#   The flag -xarch=generic ensure the compiled modules will be targeted
-#   for 32-bit architectures. If this flag is not
-#
 CFLAGS = -Ae +z \
 	-DSWT_VERSION=$(SWT_VERSION) \
 	-DNO_XINERAMA_EXTENSIONS \
@@ -54,7 +50,8 @@ CFLAGS = -Ae +z \
 	-I./ \
 	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/hp-ux \
 	-I$(MOTIF_HOME)/include \
-	-I$(CDE_HOME)/include
+	-I$(CDE_HOME)/include \
+	+DAportable
 
 all: make_swt make_cde
 
