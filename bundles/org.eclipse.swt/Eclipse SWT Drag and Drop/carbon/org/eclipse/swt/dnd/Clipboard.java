@@ -9,6 +9,7 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.carbon.MacUtil;
 import org.eclipse.swt.internal.carbon.OS;
 
 
@@ -136,7 +137,7 @@ public Object getContents(Transfer transfer) {
 	for (int i= 0; i < typeIds.length; i++) {
 		int flavorType= typeIds[i];
 		int[] size= new int[1];
-		if (OS.GetScrapFlavorSize(scrap, flavorType, size) == OS.noErr) {
+		if (OS.GetScrapFlavorSize(scrap, flavorType, size) == OS.kNoErr) {
 			if (size[0] > 0) {
 				
 				TransferData tdata= new TransferData();
@@ -227,12 +228,12 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 					status = OS.XmClipboardCopy(xDisplay, xWindow, item_id[0], bName, buffer, transferData.length, 0, null);
 				}
 				*/
-				status= OS.PutScrapFlavor(scrap, transferData.type, 0, transferData.data.length, transferData.data);
+				status= OS.PutScrapFlavor(scrap, transferData.type, 0, transferData.data);
 			}
 		}
 	}
 	
-	if (status != OS.noErr)
+	if (status != OS.kNoErr)
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 }
 /**

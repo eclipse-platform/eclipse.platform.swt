@@ -6,16 +6,16 @@
  *
  * Andre Weinand, OTI - Initial version
  */
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.carbon;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.graphics.*;
 
-class MacEvent {
+public class MacEvent {
 
 	private static int fgMouseButtonState;
 	
-	static final boolean EMULATE_RIGHT_BUTTON= true;
+	private static final boolean EMULATE_RIGHT_BUTTON= true;
 
 	private int fEventRef;
 	private int fNextHandler;
@@ -40,7 +40,17 @@ class MacEvent {
 	public int getNextHandler() {
 		return fNextHandler;
 	}
-		
+	
+	public int[] toOldMacEvent() {
+		if (fEventRef != -1) {
+			int macEvent[]= new int[6];
+			if (OS.ConvertEventRefToEventRecord(fEventRef, macEvent))
+				return macEvent;
+		}
+		System.out.println("MacEvent.toOldMacEvent: can't convert event");
+		return null;
+	}
+	
 	public int getKind() {
 		if (fEventRef != -1)
 			return OS.GetEventKind(fEventRef);
@@ -55,19 +65,28 @@ class MacEvent {
 		return 0;
 	}
 	
-	public org.eclipse.swt.internal.carbon.Point getWhere() {
+	public MacPoint getWhere() {
 		if (fEventRef != -1) {
 			short[] loc= new short[2];
-			if (OS.GetEventParameter(fEventRef, OS.kEventParamMouseLocation, OS.typeQDPoint, null, loc.length*2, null, loc) == OS.noErr) {
-				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point();
-				OS.SetPt(pt, loc[1], loc[0]);
-				return pt;
+			if (OS.GetEventParameter(fEventRef, OS.kEventParamMouseLocation, OS.typeQDPoint, null, null, loc) == OS.kNoErr) {
+				return new MacPoint(loc[1], loc[0]);
 			}
 		}
 		System.out.println("MacEvent.getWhere: no EventRef");
-		return new org.eclipse.swt.internal.carbon.Point();
+		return new MacPoint(0, 0);
 	}
 	
+	public Point getWhere2() {
+		if (fEventRef != -1) {
+			short[] loc= new short[2];
+			if (OS.GetEventParameter(fEventRef, OS.kEventParamMouseLocation, OS.typeQDPoint, null, null, loc) == OS.kNoErr) {
+				return new Point(loc[1], loc[0]);
+			}
+		}
+		System.out.println("MacEvent.getWhere2: no EventRef");
+		return new Point(0, 0);
+	}
+
 	/**
 	 * Returns the Mac modifiers for this event
 	 */
@@ -82,19 +101,35 @@ class MacEvent {
 	 * Returns the SWT modifiers for this event
 	 */
 	public int getStateMask() {
+		
 		int stateMask= fgMouseButtonState;
-		int modifiers= getModifiers ();
-		if ((modifiers & OS.shiftKey) != 0) stateMask |= SWT.SHIFT;
+		
+		int modifiers= getModifiers();
+
+		if ((modifiers & OS.shiftKey) != 0)
+			stateMask |= SWT.SHIFT;
+		
 		if ((modifiers & OS.controlKey) != 0) {
 			if (EMULATE_RIGHT_BUTTON) {
 				// we only report CONTROL, iff it was not used to emulate the right mouse button
-				if ((stateMask & SWT.BUTTON3) == 0) stateMask |= SWT.CONTROL;
+				if ((stateMask & SWT.BUTTON3) == 0)
+					stateMask |= SWT.CONTROL;
 			} else {
 				stateMask |= SWT.CONTROL;
 			}
 		}
-		if ((modifiers & OS.cmdKey) != 0) stateMask |= SWT.COMMAND;
-		if ((modifiers & OS.optionKey) != 0) stateMask |= SWT.ALT;
+		
+		if ((modifiers & OS.cmdKey) != 0) {
+			// the Command modifier is always mapped to Control
+			stateMask |= SWT.CONTROL;
+		
+			// if the Command modifier is pressed we report the Option modifier as 'ALT'
+			if ((modifiers & OS.optionKey) != 0)
+				stateMask |= SWT.ALT;
+		} else {
+			// we don't report the option modifier as 'ALT'
+		}
+
 		return stateMask;
 	}
 		
@@ -140,11 +175,11 @@ class MacEvent {
 			return null;
 		}
 		int[] actualSize= new int[1];
-		OS.GetEventParameter(fEventRef, OS.kEventParamTextInputSendText, OS.typeUnicodeText, null, 0, actualSize, (char[])null);
+		OS.GetEventParameter(fEventRef, OS.kEventParamTextInputSendText, OS.typeUnicodeText, null, actualSize, (char[])null);
 		int size= actualSize[0] / 2;
 		if (size > 0) {
 			char[] buffer= new char[size];
-			OS.GetEventParameter(fEventRef, OS.kEventParamTextInputSendText, OS.typeUnicodeText, null, buffer.length*2, null, buffer);
+			OS.GetEventParameter(fEventRef, OS.kEventParamTextInputSendText, OS.typeUnicodeText, null, null, buffer);
 			return new String(buffer);			
 		}
 		return "";
@@ -154,28 +189,28 @@ class MacEvent {
 	
 	public static int getDirectObject(int eRefHandle) {
 		int[] wHandle= new int[1];
-		if (OS.GetEventParameter(eRefHandle, OS.kEventParamDirectObject, OS.typeWindowRef, null, wHandle.length*4, null, wHandle) == OS.noErr)	
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamDirectObject, OS.typeWindowRef, null, null, wHandle) == OS.kNoErr)	
 			return wHandle[0];
 		return 0;
 	}
 	
 	public static short getWindowDefPart(int eRefHandle) {
 		short[] part= new short[1];
-		if (OS.GetEventParameter(eRefHandle, OS.kEventParamWindowDefPart, OS.typeWindowDefPartCode, null, part.length*2, null, part) == OS.noErr)	
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamWindowDefPart, OS.typeWindowDefPartCode, null, null, part) == OS.kNoErr)	
 			return part[0];
 		return 0;
 	}
 	
 	public static int getControlRef(int eRefHandle) {
 		int[] cHandle= new int[1];
-		if (OS.GetEventParameter(eRefHandle, OS.kEventParamControlRef, OS.typeControlRef, null, cHandle.length*4, null, cHandle) == OS.noErr)	
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamControlRef, OS.typeControlRef, null, null, cHandle) == OS.kNoErr)	
 			return cHandle[0];
 		return 0;
 	}
 	
 	public static int getEventModifiers(int eRefHandle) {
 		int[] modifierKeys= new int[1];
-		if (OS.GetEventParameter(eRefHandle, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifierKeys.length*4, null, modifierKeys) == OS.noErr) {	
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamKeyModifiers, OS.typeUInt32, null, null, modifierKeys) == OS.kNoErr) {	
 			return modifierKeys[0];
 		}
 		System.out.println("MacEvent.getModifierKeys: getEventModifiers error");			
@@ -184,7 +219,7 @@ class MacEvent {
 
 	private static int getMouseChord(int eRefHandle) {
 		int[] mouseChord= new int[1];
-		if (OS.GetEventParameter(eRefHandle, OS.kEventParamMouseChord, OS.typeUInt32, null, mouseChord.length*4, null, mouseChord) == OS.noErr) {	
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamMouseChord, OS.typeUInt32, null, null, mouseChord) == OS.kNoErr) {	
 			return mouseChord[0];
 		}
 		System.out.println("MacEvent.getMouseChord: getMouseChord error");			
@@ -193,7 +228,7 @@ class MacEvent {
 	
 	public static int getKeyCode(int eRefHandle) {
 		int[] keyCode= new int[1];
-		if (OS.GetEventParameter(eRefHandle, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length*4, null, keyCode) == OS.noErr)
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamKeyCode, OS.typeUInt32, null, null, keyCode) == OS.kNoErr)
 			return keyCode[0];
 		System.out.println("MacEvent.getMouseChord: getKeyCode error");			
 		return -1;
@@ -201,14 +236,14 @@ class MacEvent {
 	
 	public static int getCharCode(int eRefHandle) {
 		byte[] charCode= new byte[1];
-		if (OS.GetEventParameter(eRefHandle, OS.kEventParamKeyMacCharCodes, OS.typeChar, null, charCode.length, null, charCode) == OS.noErr)	
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamKeyMacCharCodes, OS.typeChar, null, null, charCode) == OS.kNoErr)	
 			return charCode[0];
 		return -1;
 	}
 
 	private static short getEventMouseButton(int eRefHandle) {
 		short[] mouseButtons= new short[1];
-		if (OS.GetEventParameter(eRefHandle, OS.kEventParamMouseButton, OS.typeMouseButton, null, mouseButtons.length*2, null, mouseButtons) == OS.noErr) {	
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamMouseButton, OS.typeMouseButton, null, null, mouseButtons) == OS.kNoErr) {	
 			short button= mouseButtons[0];
 			switch (button) {
 			case OS.kEventMouseButtonPrimary:		// left mouse button

@@ -213,18 +213,19 @@ static int checkStyle (int style) {
 }
 
 void createHandle () {
-	state |= HIDDEN;
 	Display display= getDisplay();
 	int menuHandle[]= new int[1];
-	if (OS.CreateNewMenu(display.nextMenuId(), 0, menuHandle) == OS.noErr)
+	if (OS.CreateNewMenu(display.nextMenuId(), 0, menuHandle) == OS.kNoErr)
 		handle= menuHandle[0];
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.RetainMenu(handle);
-	int[] mask = new int[] {
-		OS.kEventClassMenu, OS.kEventMenuOpening,
-		OS.kEventClassMenu, OS.kEventMenuClosed
-	};
-	OS.InstallEventHandler(OS.GetMenuEventTarget(handle), display.fMenuProc, mask.length / 2, mask, handle, null);
+	OS.InstallEventHandler(OS.GetMenuEventTarget(handle), display.fMenuProc,
+		new int[] {
+			OS.kEventClassMenu, OS.kEventMenuOpening,
+			OS.kEventClassMenu, OS.kEventMenuClosed
+		},
+		handle
+	);
 }
 
 void createItem (MenuItem item, int index) {
@@ -261,7 +262,7 @@ void createItem (MenuItem item, int index) {
 	int attributes= 0;
 	if ((item.style & SWT.SEPARATOR) != 0) 
 		attributes= OS.kMenuItemAttrSeparator;
-	if (OS.InsertMenuItemTextWithCFString(handle, 0, (short) index, attributes, item.id) == OS.noErr)
+	if (OS.InsertMenuItemTextWithCFString(handle, 0, (short) index, attributes, item.id) == OS.kNoErr)
 		success= true;
 	
 	if (!success) {
@@ -374,7 +375,7 @@ public boolean getEnabled () {
 public MenuItem getItem (int index) {
 	checkWidget ();
 	int[] commandID= new int[1];
-	if (OS.GetMenuItemCommandID(handle, (short)(index+1), commandID) != OS.noErr)
+	if (OS.GetMenuItemCommandID(handle, (short)(index+1), commandID) != OS.kNoErr)
 		error (SWT.ERROR_INVALID_RANGE);
 	return parent.findMenuItem (commandID[0]);
 }
@@ -422,7 +423,7 @@ public MenuItem [] getItems () {
 	while (OS.GetMenuItemInfo (handle, index, true, info)) {
 	*/
 	int[] commandID= new int[1];	
-	while (OS.GetMenuItemCommandID(handle, (short)(index+1), commandID) == OS.noErr) {
+	while (OS.GetMenuItemCommandID(handle, (short)(index+1), commandID) == OS.kNoErr) {
 		if (index == items.length) {
 			MenuItem [] newItems = new MenuItem [index + 4];
 			System.arraycopy (newItems, 0, items, 0, index);
@@ -540,10 +541,7 @@ public Shell getShell () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	if ((style & SWT.BAR) != 0) {
-		return this == parent.menuShell ().menuBar;
-	}
-	return (state & HIDDEN) == 0;
+	return true;
 }
 
 /**
@@ -580,7 +578,7 @@ public int indexOf (MenuItem item) {
 	
 	int[] menu= new int[1];
 	short[] index= new short[1];
-	if (OS.GetIndMenuItemWithCommandID(handle, item.id, 1, menu, index) == OS.noErr) {
+	if (OS.GetIndMenuItemWithCommandID(handle, item.id, 1, menu, index) == OS.kNoErr) {
 		if (handle == menu[0])	// ensure that we found item not in submenu
 			return index[0];
 	}
@@ -630,13 +628,11 @@ public boolean isVisible () {
 
 int processHide (Object callData) {
 	//sendEvent (SWT.Hide);
-	state |= HIDDEN;
 	postEvent (SWT.Hide);	// fix for #23947
 	return 0;
 }
 
 int processShow (Object callData) {
-	state &= ~HIDDEN;
 	sendEvent (SWT.Show);
 	return 0;
 }
@@ -687,10 +683,7 @@ void releaseWidget () {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
-		if (!item.isDisposed ()) {
-			item.releaseWidget ();
-			item.releaseHandle ();
-		}
+		if (!item.isDisposed ()) item.releaseWidget ();
 	}
 	super.releaseWidget ();
 	if (parent != null) parent.remove (this);

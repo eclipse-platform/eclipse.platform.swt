@@ -7,13 +7,12 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.TreeListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
-import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
+import java.util.*;
+
+import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class provide a selectable user interface object
@@ -210,20 +209,12 @@ void createHandle (int index) {
 	state |= HANDLE;
 	state &= ~CANVAS;
 		
-	int parentHandle= parent.handle;
+	int parentHandle = parent.handle;
 	int windowHandle= OS.GetControlOwner(parentHandle);
-	int[] controlRef= new int[1];
-	OS.CreateDataBrowserControl(windowHandle, null, OS.kDataBrowserListView, controlRef);
-	handle= controlRef[0];
+	handle= OS.createDataBrowserControl(windowHandle);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	DataBrowserCallbacks callbacks= new DataBrowserCallbacks();
-	callbacks.version= OS.kDataBrowserLatestCallbacks;
-	OS.InitDataBrowserCallbacks(callbacks);
-	OS.SetDataBrowserCallbacks(controlRef[0], callbacks);
-
-	//OS.HIViewAddSubview(parentHandle, handle);
-	MacUtil.insertControl(handle, parentHandle, -1);
+	MacUtil.addControl(handle, parentHandle);
+	MacUtil.initLocation(handle);
 	
 	/* Single or Multiple Selection */
 	int mode= OS.kDataBrowserSelectOnlyOne | OS.kDataBrowserNeverEmptySelectionSet;
@@ -240,52 +231,22 @@ void createHandle (int index) {
 		OS.AutoSizeDataBrowserListViewColumns(handle);
 		
 	if ((style & SWT.CHECK) != 0) {
-		DataBrowserListViewColumnDesc checkColumnDesc= new DataBrowserListViewColumnDesc();
-		checkColumnDesc.propertyDesc_propertyID= CHECK_COL_ID;
-		checkColumnDesc.propertyDesc_propertyType= OS.kDataBrowserCheckboxType;
-		checkColumnDesc.propertyDesc_propertyFlags= OS.kDataBrowserPropertyIsMutable;
-	
-		checkColumnDesc.headerBtnDesc_version= OS.kDataBrowserListViewLatestHeaderDesc;
-		checkColumnDesc.headerBtnDesc_minimumWidth= 40;
-		checkColumnDesc.headerBtnDesc_maximumWidth= 40;
-
-		checkColumnDesc.headerBtnDesc_titleOffset= 0;
-		checkColumnDesc.headerBtnDesc_titleString= 0;
-		checkColumnDesc.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
-	
-		/*
-		checkColumnDesc.headerBtnDesc_titleAlignment= teCenter;
-		checkColumnDesc.headerBtnDesc_titleFontTypeID= OS.kControlFontViewSystemFont;
-		checkColumnDesc.headerBtnDesc_btnFontStyle= normal;
-		*/
+		int checkColumnDesc= OS.newColumnDesc(CHECK_COL_ID, OS.kDataBrowserCheckboxType,
+						OS.kDataBrowserPropertyIsMutable,
+						(short)40, (short)40);
 		OS.AddDataBrowserListViewColumn(handle, checkColumnDesc, 1999);
 	}
-	
-	DataBrowserListViewColumnDesc columnDesc= new DataBrowserListViewColumnDesc();
-	columnDesc.propertyDesc_propertyID= COL_ID;
-	columnDesc.propertyDesc_propertyType= OS.kDataBrowserTextType; // OS.kDataBrowserIconAndTextType
-	columnDesc.propertyDesc_propertyFlags= OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
-	
-	columnDesc.headerBtnDesc_version= OS.kDataBrowserListViewLatestHeaderDesc;
-	columnDesc.headerBtnDesc_minimumWidth= 0;
-	columnDesc.headerBtnDesc_maximumWidth= 300;
-
-	columnDesc.headerBtnDesc_titleOffset= 0;
-	columnDesc.headerBtnDesc_titleString= 0;
-	columnDesc.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
-	
-	/*
-	columnDesc.headerBtnDesc_titleAlignment= teCenter;
-	columnDesc.headerBtnDesc_titleFontTypeID= OS.kControlFontViewSystemFont;
-	columnDesc.headerBtnDesc_btnFontStyle= normal;
-	*/			
+					
+	int columnDesc= OS.newColumnDesc(COL_ID, OS.kDataBrowserTextType, // OS.kDataBrowserIconAndTextType,
+					OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags,
+					(short)0, (short)300);
 	OS.AddDataBrowserListViewColumn(handle, columnDesc, 2000);
 	OS.SetDataBrowserListViewDisclosureColumn(handle, COL_ID, false);
 	
 	/*
 	Display disp= getDisplay();
 	Font font= Font.carbon_new (disp, disp.getThemeFont(OS.kThemeSmallSystemFont));
-	if (OS.SetControlFontStyle(handle, font.handle.fID, font.handle.fSize, font.handle.fFace) != OS.noErr)
+	if (OS.SetControlFontStyle(handle, font.handle.fID, font.handle.fSize, font.handle.fFace) != OS.kNoErr)
 		System.out.println("Tree2.setFont("+this+"): error");
 	*/
 }
@@ -580,7 +541,7 @@ public TreeItem2 [] getSelection () {
 public int getSelectionCount () {
 	checkWidget ();
 	int[] result= new int[1];
-	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, result) != OS.noErr)
+	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, result) != OS.kNoErr)
 		error (SWT.ERROR_CANNOT_GET_COUNT);
 	return result[0];
 }
@@ -588,12 +549,8 @@ public int getSelectionCount () {
 void hookEvents () {
 	super.hookEvents ();
 	Display display= getDisplay();
-	DataBrowserCallbacks callbacks= new DataBrowserCallbacks();
-	OS.GetDataBrowserCallbacks(handle, callbacks);
-	callbacks.v1_itemDataCallback= display.fDataBrowserDataProc;
-	callbacks.v1_itemCompareCallback= display.fDataBrowserCompareProc;
-	callbacks.v1_itemNotificationCallback= display.fDataBrowserItemNotificationProc;
-	OS.SetDataBrowserCallbacks(handle, callbacks);
+	OS.setDataBrowserCallbacks(handle, display.fDataBrowserDataProc,
+				display.fDataBrowserCompareProc, display.fDataBrowserItemNotificationProc);
 }
 
 /* AW
@@ -893,7 +850,7 @@ public void setSelection (TreeItem2 [] items) {
 }
 
 void showItem (int hItem) {
-	if (OS.RevealDataBrowserItem(handle, hItem, COL_ID, false) != OS.noErr)
+	if (OS.RevealDataBrowserItem(handle, hItem, COL_ID, false) != OS.kNoErr)
 		System.out.println("Tree2.RevealDataBrowserItem");
 }
 
@@ -1540,7 +1497,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		TreeItem2 ti= find(item);
 		if (ti == null) {
 			System.out.println("handleItemCallback: can't find row with id: " + item);
-			return OS.noErr;
+			return OS.kNoErr;
 		}
 			
 		switch (property) {
@@ -1593,7 +1550,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 		}
 		
-		return OS.noErr;
+		return OS.kNoErr;
 	}
 
 	int handleCompareCallback(int item1ID, int item2ID, int item) {
@@ -1608,7 +1565,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		TreeItem2 ti= find(item);
 		if (ti == null) {
 			System.out.println("handleItemNotificationCallback: can't find row with id: " + item);
-			return OS.noErr;
+			return OS.kNoErr;
 		}
 		
 		Event event= null;
@@ -1652,7 +1609,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 		}
 		
-		return OS.noErr;
+		return OS.kNoErr;
 	}
 		
 	TreeItem2 find(int id) {

@@ -6,13 +6,12 @@
  *
  * Andre Weinand, OTI - Initial version
  */
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal.carbon;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.carbon.OS;
 
-class MacMouseEvent {
+public class MacMouseEvent {
 	
 	private int fWhen;
 	private Point fWhere;
@@ -32,15 +31,11 @@ class MacMouseEvent {
 	public MacMouseEvent(MacEvent me) {
 		fMacEvent= me;
 		fWhen= me.getWhen();
-		
-		short[] loc= new short[2];
-		OS.GetEventParameter(me.getEventRef(), OS.kEventParamMouseLocation, OS.typeQDPoint, null, loc.length*2, null, loc);
-		fWhere= new Point(loc[1], loc[0]);
-		
+		fWhere= me.getWhere2();
 		fState= me.getStateMask();
 		fButton= me.getButton();
 	}
-		
+	
 	public int getWhen() {
 		return fWhen;
 	}
@@ -57,7 +52,10 @@ class MacMouseEvent {
 		return fButton;
 	}
 	
-	public int getEventRef() {
-		return fMacEvent.getEventRef();
+	public int[] toOldMacEvent() {
+		if (fMacEvent != null)
+			return fMacEvent.toOldMacEvent();
+		System.err.println("MacMouseEvent.toOldMacEvent: nyi");
+		return null;
 	}
 }

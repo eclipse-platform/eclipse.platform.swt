@@ -7,15 +7,12 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
-import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /** 
  * Instances of this class represent a selectable user interface
@@ -146,7 +143,7 @@ public void add (String string, int index) {
 	}
     Pair p= new Pair(string);
 	fData.add(index, p);
-	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) != OS.noErr)
+	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) != OS.kNoErr)
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 }
 /**
@@ -256,20 +253,12 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle (int index) {
 	state |= HANDLE;
 
-	int parentHandle= parent.handle;
+	int parentHandle = parent.handle;
 	int windowHandle= OS.GetControlOwner(parentHandle);
-	int[] controlRef= new int[1];
-	OS.CreateDataBrowserControl(windowHandle, null, OS.kDataBrowserListView, controlRef);
-	handle= controlRef[0];
+	handle= OS.createDataBrowserControl(windowHandle);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	DataBrowserCallbacks callbacks= new DataBrowserCallbacks();
-	callbacks.version= OS.kDataBrowserLatestCallbacks;
-	OS.InitDataBrowserCallbacks(callbacks);
-	OS.SetDataBrowserCallbacks(handle, callbacks);
-
-	//OS.HIViewAddSubview(parentHandle, handle);
-	MacUtil.insertControl(handle, parentHandle, -1);
+	MacUtil.addControl(handle, parentHandle);
+	MacUtil.initLocation(handle);
 	
 	/* Single or Multiple Selection */
 	int mode= OS.kDataBrowserSelectOnlyOne;
@@ -284,26 +273,10 @@ void createHandle (int index) {
 	OS.SetDataBrowserHasScrollBars(handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
 	if ((style & SWT.H_SCROLL) == 0)
 		OS.AutoSizeDataBrowserListViewColumns(handle);
-
-	DataBrowserListViewColumnDesc columnDesc= new DataBrowserListViewColumnDesc();
-	columnDesc.propertyDesc_propertyID= COL_ID;
-	columnDesc.propertyDesc_propertyType= OS.kDataBrowserTextType;
-	columnDesc.propertyDesc_propertyFlags= OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
-	
-	columnDesc.headerBtnDesc_version= OS.kDataBrowserListViewLatestHeaderDesc;
-	columnDesc.headerBtnDesc_minimumWidth= 0;
-	columnDesc.headerBtnDesc_maximumWidth= 2000;
-
-	columnDesc.headerBtnDesc_titleOffset= 0;
-	columnDesc.headerBtnDesc_titleString= 0;
-	columnDesc.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
-	
-	/*
-	columnDesc.headerBtnDesc_titleAlignment= teCenter;
-	columnDesc.headerBtnDesc_titleFontTypeID= OS.kControlFontViewSystemFont;
-	columnDesc.headerBtnDesc_btnFontStyle= normal;
-	*/
-
+		
+	int columnDesc= OS.newColumnDesc(COL_ID, OS.kDataBrowserTextType,
+					OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags,
+					(short)0, (short)2000);
 	OS.AddDataBrowserListViewColumn(handle, columnDesc, 10000);
 }
 ScrollBar createScrollBar (int type) {
@@ -552,7 +525,7 @@ public String [] getSelection () {
 public int getSelectionCount () {
 	checkWidget();
 	int[] result= new int[1];
-	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, result) != OS.noErr)
+	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, result) != OS.kNoErr)
 		error (SWT.ERROR_CANNOT_GET_COUNT);
 	return result[0];
 }
@@ -625,12 +598,8 @@ public int getTopIndex () {
 void hookEvents () {
 	super.hookEvents ();
 	Display display= getDisplay();
-	DataBrowserCallbacks callbacks= new DataBrowserCallbacks();
-	OS.GetDataBrowserCallbacks(handle, callbacks);
-	callbacks.v1_itemDataCallback= display.fDataBrowserDataProc;
-	callbacks.v1_itemCompareCallback= display.fDataBrowserCompareProc;
-	callbacks.v1_itemNotificationCallback= display.fDataBrowserItemNotificationProc;
-	OS.SetDataBrowserCallbacks(handle, callbacks);
+	OS.setDataBrowserCallbacks(handle, display.fDataBrowserDataProc,
+				display.fDataBrowserCompareProc, display.fDataBrowserItemNotificationProc);
 }
 /**
  * Gets the index of an item.
@@ -756,7 +725,7 @@ public void remove (int start, int end) {
 	if (start < 0 || start >= n || end < 0 || end >= n)
 		error (SWT.ERROR_INVALID_RANGE);
 	int[] ids= getIds(start, end);
-	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.noErr)
+	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.kNoErr)
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 /**
@@ -784,7 +753,7 @@ public void remove (String string) {
 	Pair p= getPair(string);
 	if (p == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	fData.remove(p);
-	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) != OS.noErr)
+	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) != OS.kNoErr)
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 /**
@@ -808,7 +777,7 @@ public void remove (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int[] ids= getIds(indices);
-	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.noErr)
+	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.kNoErr)
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 /**
@@ -1019,7 +988,7 @@ public void setItems (String [] items) {
 		fData.add(p);
 		ids[i]= p.fId;
 	}
-	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.noErr)
+	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.kNoErr)
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 }
 /**
@@ -1162,7 +1131,7 @@ public void showSelection () {
 		
 		if (colID != COL_ID) {
 			//System.out.println("List.handleItemCallback: wrong column id: " + colID);
-			return OS.noErr;
+			return OS.kNoErr;
 		}
 			
 		String s= get(rowID);
@@ -1179,7 +1148,7 @@ public void showSelection () {
 			if (sHandle != 0)
 				OS.CFRelease(sHandle);
 		}
-		return OS.noErr;
+		return OS.kNoErr;
 	}
 
 	int handleCompareCallback(int item1ID, int item2ID, int item) {
@@ -1189,7 +1158,7 @@ public void showSelection () {
 	}
 	
 	int handleItemNotificationCallback(int item, int message) {
-		return OS.noErr;
+		return OS.kNoErr;
 	}
 	
 	/**

@@ -3,33 +3,57 @@
 <!-- This file is made available under the terms of the Common Public License v1.0 -->
 <!-- which accompanies this distribution, and is available at                      -->
 <!-- http://www.eclipse.org/legal/cpl-v10.html                                     -->
+<!--                                                                               -->
+<!-- Andre Weinand, OTI - Initial version                                          -->
 <!-- ============================================================================= --> 
 
-<project default="build_lib" basedir=".">
+<project default="build_dll" basedir=".">
 
 	<target name="init">
 		<tstamp/>
        	<property name="fragment_dir" value="../../../../org.eclipse.swt.carbon" />
         <property name="jar_destdir" value="${fragment_dir}/ws/carbon" />
-        <property name="lib_destdir" value="${fragment_dir}/os/macosx/ppc" />
+        <property name="dll_destdir" value="${fragment_dir}/os/macosx/ppc" />
 		<property name="plugin" value="org.eclipse.swt" />
 		<property name="bin_dir" value="../../../bin" />
+        <property name="common_library" value="../../../Eclipse SWT/common/library" />
         <mkdir dir="${jar_destdir}" />
-        <mkdir dir="${lib_destdir}" />
+        <mkdir dir="${dll_destdir}" />
 	</target>
 
 	<target name="build" depends="init">
     	<eclipse.incrementalBuild project="${plugin}" kind="incr" />
 	</target>
 	
-	<target name="build_lib" depends="build">
+	<target name="build_header" depends="build">
+ 		<javah
+ 			destdir="."
+ 			force="yes"
+ 			classpath="${bin_dir}"
+  			class= "org.eclipse.swt.internal.carbon.OS"
+		/>
+	</target>
+
+	<target name="build_dll" depends="build_header">
 	
-		<exec dir="${bin_dir}/library/" executable="csh">
-  			<arg line='build.csh' />
+		<property file="${common_library}/make_common.mak" />		
+		<property name="SWT_VERSION" value="${maj_ver}${min_ver}" />
+		<property name="SWT_PREFIX" value="swt" />
+		<property name="WS_PREFIX" value="carbon" />
+		<property name="SWT_DLL" value="lib${SWT_PREFIX}-${WS_PREFIX}-${SWT_VERSION}.jnilib" />
+		
+		<exec executable="cc">
+  			<arg line="-bundle" />
+  			<arg value='-DPLATFORM="carbon"' />
+  			<arg value="-DREDUCED_CALLBACKS=1" />
+  			<arg line="-I /System/Library/Frameworks/JavaVM.framework/Headers" />
+  			<arg line="-o ${dll_destdir}/${SWT_DLL}" />
+  			<arg line="-framework JavaVM" />
+  			<arg line="-framework Carbon" />
+  			<arg line="swt.c" />
+ 			<arg value="${common_library}/callback.c" />
 		</exec>
-		<copy todir="${lib_destdir}">
-		    <fileset dir="${bin_dir}/library" includes="**/*.jnilib"/>
-		</copy>
+		
 	</target>
 		
     <target name="build_jar" depends="build">
@@ -38,16 +62,8 @@
             basedir="${bin_dir}"
         />
     </target>
-    
-	<target name="clean" depends="init">
-	
-		<exec dir="${bin_dir}/library/" executable="csh">
-  			<arg line='build.csh' />
-  			<arg line='clean' />
-		</exec>
-	</target>
 
-    <target name="export" depends="build_jar,build_lib">
+    <target name="export" depends="build_jar,build_dll">
     </target>
 	
 </project>

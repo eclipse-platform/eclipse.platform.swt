@@ -55,7 +55,7 @@ public abstract class Widget {
 //	static final int RESIZEREDRAW	= 0x00000010;
 //	static final int WRAP			= 0x00000020;
 //	static final int DISABLED		= 0x00000040;
-	static final int HIDDEN			= 0x00000080;
+//	static final int HIDDEN			= 0x00000080;
 //	static final int FOREGROUND		= 0x00000100;
 //	static final int BACKGROUND		= 0x00000200;
 	static final int DISPOSED		= 0x00000400;
@@ -298,10 +298,6 @@ void enableHandle (boolean enabled, int widgetHandle) {
 void error (int code) {
 	SWT.error(code);
 }
-boolean filters (int eventType) {
-	Display display = getDisplay ();
-	return display.filters (eventType);
-}
 /**
  * Returns the application defined widget data associated
  * with the receiver, or null if it has not been set. The
@@ -489,19 +485,31 @@ public void notifyListeners (int eventType, Event event) {
 	eventTable.sendEvent (event);
 }
 void postEvent (int eventType) {
-	sendEvent (eventType, null, false);
+	if (eventTable == null) return;
+	postEvent (eventType, new Event ());
 }
 void postEvent (int eventType, Event event) {
-	sendEvent (eventType, event, false);
+	if (eventTable == null) return;
+	Display display = getDisplay ();
+	event.type = eventType;
+	event.widget = this;
+	event.display = display;
+	if (event.time == 0) {
+        /* AW
+		event.time = OS.XtLastTimestampProcessed (display.xDisplay);
+        */
+		event.time = (int)(OS.GetLastUserEventTime() * 1000.0);
+	}
+	display.postEvent (event);
 }
 int processArm (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processDispose (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processDefaultSelection (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 final int processEvent (int eventNumber) {
 	switch (eventNumber) {
@@ -511,7 +519,7 @@ final int processEvent (int eventNumber) {
 		System.out.println("Widget.processEvent(): unexpected event");
 		break;
 	}
-	return OS.eventNotHandledErr;
+	return 0;
 }
 final int processEvent (int eventNumber, MacControlEvent mcEvent) {
 	switch (eventNumber) {
@@ -521,7 +529,7 @@ final int processEvent (int eventNumber, MacControlEvent mcEvent) {
 		System.out.println("Widget.processEvent(MacMouseEvent): unexpected event");
 		break;
 	}
-	return OS.eventNotHandledErr;
+	return 0;
 }
 final int processEvent (int eventNumber, MacMouseEvent mmEvent) {
 	switch (eventNumber) {
@@ -535,7 +543,7 @@ final int processEvent (int eventNumber, MacMouseEvent mmEvent) {
 		System.out.println("Widget.processEvent(MacMouseEvent): unexpected event");
 		break;
 	}
-	return OS.eventNotHandledErr;
+	return 0;
 }
 final int processEvent (int eventNumber, MacEvent me) {
 	switch (eventNumber) {
@@ -552,61 +560,61 @@ final int processEvent (int eventNumber, MacEvent me) {
 		System.out.println("Widget.processEvent(Object): unexpected event");
 		break;
 	}
-	return OS.eventNotHandledErr;
+	return 0;
 }
 int processHelp (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processHide (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processKeyDown (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processKeyUp (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processModify (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processMouseDown (MacMouseEvent mme) {
-	return OS.noErr;
+	return 0;
 }
 int processMouseEnter (MacMouseEvent mme) {
-	return OS.noErr;
+	return 0;
 }
 int processMouseExit (MacMouseEvent mme) {
-	return OS.noErr;
+	return 0;
 }
 int processMouseHover (MacMouseEvent mme) {
-	return OS.noErr;
+	return 0;
 }
 int processMouseMove (MacMouseEvent mme) {
-	return OS.noErr;
+	return 0;
 }
 int processMouseUp (MacMouseEvent mme) {
-	return OS.noErr;
+	return 0;
 }
 int processNonMaskable (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processPaint (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processResize (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processSelection (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processSetFocus (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processShow (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 int processVerify (Object callData) {
-	return OS.noErr;
+	return 0;
 }
 void propagateHandle (boolean enabled, int widgetHandle) {
 	/* AW
@@ -661,17 +669,40 @@ final void redrawHandle (int x, int y, int width, int height, int widgetHandle, 
 	}
 	OS.XClearArea (display, window, x, y, width, height, true);
 	*/
-	Rect r= new Rect();
-	OS.SetRect(r, (short)x, (short)y, (short)(x + width), (short)(y + height));
-	if (width <= 0 || height <= 0) {
-		OS.HIViewSetNeedsDisplay(widgetHandle, true);
-		return;
-		//OS.GetControlBounds(widgetHandle, r.getData());
+	
+	if (false) {
+		int rgn= OS.NewRgn();
+		OS.RectRgn(rgn, new MacRect(x, y, width, height).getData());
+		OS.HIViewSetNeedsDisplayInRegion(widgetHandle, rgn, true);
+		OS.DisposeRgn(rgn);
+	} else {
+		MacRect br= new MacRect();
+		OS.GetControlBounds(widgetHandle, br.getData());
+	    if (!br.isEmpty()) {
+	        x+= br.getX();
+	        y+= br.getY();
+	        if (width == 0)
+	        	width= br.getWidth();
+	        else
+				width+= 1; // AW strange workaround for Caret
+	        if (height == 0)
+				height= br.getHeight();
+	                
+	        int rgn= OS.NewRgn();
+	        OS.RectRgn(rgn, new MacRect(x, y, width, height).getData());
+	                
+	        int region= OS.NewRgn();
+	        if (MacUtil.getVisibleRegion(widgetHandle, region, all) == OS.kNoErr) {
+	        
+	            OS.SectRgn(region, rgn, region);
+	        
+	            OS.InvalWindowRgn(OS.GetControlOwner(widgetHandle), region);
+	        }
+	        
+	        OS.DisposeRgn(rgn);
+	        OS.DisposeRgn(region);
+	    }
 	}
-	int rgn= OS.NewRgn();
-	OS.RectRgn(rgn, r);
-	OS.HIViewSetNeedsDisplayInRegion(widgetHandle, rgn, true);
-	OS.DisposeRgn(rgn);
 }
 void register () {
 	if (handle == 0) return;
@@ -769,136 +800,36 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
 }
-
-void setInputState (Event event, MacMouseEvent mEvent) {
-	event.stateMask= mEvent.getState();
-	switch (event.type) {
-		case SWT.MouseDown:
-		case SWT.MouseDoubleClick:
-			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
-			if (event.button == 2) event.stateMask &= ~SWT.BUTTON2;
-			if (event.button == 3)  event.stateMask &= ~SWT.BUTTON3;
-			break;
-		case SWT.MouseUp:
-			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
-			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
-			if (event.button == 3) {
-				event.stateMask |= SWT.BUTTON3;	
-				if (MacEvent.EMULATE_RIGHT_BUTTON) event.stateMask &= ~SWT.CONTROL;
-			}
-			break;
-	}
-}
-
-void setInputState (Event event, MacEvent mEvent) {
-	event.stateMask= mEvent.getStateMask();
-	switch (event.type) {
-		case SWT.KeyDown:
-		case SWT.Traverse: {
-			if (event.keyCode != 0 || event.character != 0) return;
-			int modifiers = mEvent.getModifiers();
-			int fLastModifiers = getDisplay().fLastModifiers;
-			if ((modifiers & OS.shiftKey) != 0 && (fLastModifiers & OS.shiftKey) == 0) {
-				event.stateMask &= ~SWT.SHIFT;
-				event.keyCode = SWT.SHIFT;
-				return;
-			}
-			if ((modifiers & OS.controlKey) != 0 && (fLastModifiers & OS.controlKey) == 0) {
-				event.stateMask &= ~SWT.CONTROL;
-				event.keyCode = SWT.CONTROL;
-				return;
-			}
-			if ((modifiers & OS.cmdKey) != 0 && (fLastModifiers & OS.cmdKey) == 0) {
-				event.stateMask &= ~SWT.COMMAND;
-				event.keyCode = SWT.COMMAND;
-				return;
-			}	
-			if ((modifiers & OS.optionKey) != 0 && (fLastModifiers & OS.optionKey) == 0) {
-				event.stateMask &= ~SWT.ALT;
-				event.keyCode = SWT.ALT;
-				return;
-			}
-			break;
-		}
-		case SWT.KeyUp: {
-			if (event.keyCode != 0 || event.character != 0) return;
-			int modifiers = mEvent.getModifiers();
-			int fLastModifiers = getDisplay().fLastModifiers;
-			if ((modifiers & OS.shiftKey) == 0 && (fLastModifiers & OS.shiftKey) != 0) {
-				event.stateMask |= SWT.SHIFT;
-				event.keyCode = SWT.SHIFT;
-				return;
-			}
-			if ((modifiers & OS.controlKey) == 0 && (fLastModifiers & OS.controlKey) != 0) {
-				event.stateMask |= SWT.CONTROL;
-				event.keyCode = SWT.CONTROL;
-				return;
-			}
-			if ((modifiers & OS.cmdKey) == 0 && (fLastModifiers & OS.cmdKey) != 0) {
-				event.stateMask |= SWT.COMMAND;
-				event.keyCode = SWT.COMMAND;
-				return;
-			}	
-			if ((modifiers & OS.optionKey) != 0 && (fLastModifiers & OS.optionKey) == 0) {
-				event.stateMask |= SWT.ALT;
-				event.keyCode = SWT.ALT;
-				return;
-			}
-			break;
-		}
-	}
-}
-
-void setKeyState (Event event, MacEvent mEvent) {
-	event.keyCode = Display.translateKey (mEvent.getKeyCode ());
-	switch (event.keyCode) {
-		case 0:
-		case SWT.BS:
-		case SWT.CR:
-		case SWT.DEL:
-		case SWT.ESC:
-		case SWT.TAB:
-			event.character = (char) mEvent.getMacCharCodes ();
-			break;
-		case SWT.LF:
-			event.character = '\n';
-			break;
-	}
-	setInputState (event, mEvent);
-}
-
-void sendEvent (Event event) {
-	Display display = event.display;
-	if (!display.filterEvent (event)) {
-		if (eventTable != null) eventTable.sendEvent (event);
-	}
-}
-
 void sendEvent (int eventType) {
-	sendEvent (eventType, null, true);
+	if (eventTable == null) return;
+	sendEvent (eventType, new Event ());
 }
-
+/*
+final void setInputState (Event event, MacEvent mEvent) {
+	event.stateMask= mEvent.getStateMask();
+}
+*/
+void setKeyState (Event event, MacEvent mEvent) {
+	int kc= Display.translateKey(mEvent.getKeyCode());
+	if (kc != 0) {
+		event.keyCode = kc;
+	} else {
+		//event.keyCode = 0;
+		event.character = (char) mEvent.getMacCharCodes();
+	}	
+	// AW setInputState (event, mEvent);
+	event.stateMask= mEvent.getStateMask();
+}
 void sendEvent (int eventType, Event event) {
-	sendEvent (eventType, event, true);
-}
-
-void sendEvent (int eventType, Event event, boolean send) {
+	if (eventTable == null) return;
 	Display display = getDisplay ();
-	if (eventTable == null && !display.filters (eventType)) {
-		return;
-	}
-	if (event == null) event = new Event ();
 	event.type = eventType;
 	event.display = display;
 	event.widget = this;
 	if (event.time == 0) {
-		event.time = display.getLastEventTime ();
+		event.time = (int)(OS.GetLastUserEventTime() * 1000.0);
 	}
-	if (send) {
-		sendEvent (event);
-	} else {
-		display.postEvent (event);
-	}
+	eventTable.sendEvent (event);
 }
 /**
  * Sets the application defined widget data associated

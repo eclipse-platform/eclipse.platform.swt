@@ -7,13 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTError;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.ThemeButtonDrawInfo;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -37,8 +34,13 @@ public class ToolItem extends Item {
 	String toolTipText;
 	Control control;
 	boolean set;
-	boolean pressed;
-		
+	
+	// AW
+	private boolean fPressed;
+	private short[] fPrevInfo;
+	private int fBackground;
+	// AW
+	
 	static final int DEFAULT_WIDTH = 24;
 	static final int DEFAULT_HEIGHT = 22;
 	static final int DEFAULT_SEPARATOR_WIDTH = 8;
@@ -190,13 +192,8 @@ void createHandle (int index) {
 		else
 			height= DEFAULT_SEPARATOR_WIDTH;
 	}
-		
-	Rect bounds= new Rect();
-	OS.SetRect(bounds, (short)0, (short)0, (short)width, (short)height);
-	handle= OS.NewControl(0, bounds, null, false, (short)(OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick), (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
+	handle = MacUtil.createDrawingArea(parentHandle, index, false, width, height, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.insertControl(handle, parentHandle, index);
-	OS.HIViewSetVisible(handle, true);
 }
 void click (boolean dropDown, MacMouseEvent mmEvent) {
 	if ((style & SWT.RADIO) != 0) {
@@ -216,9 +213,9 @@ void click (boolean dropDown, MacMouseEvent mmEvent) {
 }
 Point computeSize () {
 	if ((style & SWT.SEPARATOR) != 0) {
-		Rect bounds= new Rect();
-		OS.GetControlBounds(handle, bounds);
-		return new Point(bounds.right - bounds.left, bounds.bottom - bounds.top);
+		MacRect bounds= new MacRect();
+		OS.GetControlBounds(handle, bounds.getData());
+		return bounds.getSize();
 	}
 	/* AW
 	int [] argList = {
@@ -300,9 +297,17 @@ public void dispose () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	return new Rectangle(bounds.left, bounds.top, bounds.right-bounds.left, bounds.bottom-bounds.top);
+	if (MacUtil.USE_FRAME) {
+		float[] f= new float[4];
+		OS.HIViewGetFrame(handle, f);
+		return new Rectangle((int)f[0], (int)f[1], (int)f[2], (int)f[3]);
+	} else {
+		short[] bounds= new short[4];
+		short[] pbounds= new short[4];
+		OS.GetControlBounds(handle, bounds);
+		OS.GetControlBounds(parent.handle, pbounds);
+		return new Rectangle(bounds[1]-pbounds[1], bounds[0]-pbounds[0], bounds[3]-bounds[1], bounds[2]-bounds[0]);
+	}
 }
 /**
  * Returns the control that is used to fill the bounds of
@@ -441,22 +446,16 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	return bounds.right - bounds.left;
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
+	return bounds.getWidth();
 }
 boolean hasCursor () {
-	Display display= getDisplay();
-	org.eclipse.swt.internal.carbon.Point mp= new org.eclipse.swt.internal.carbon.Point();
-	mp.h= display.lastGlobalMouseXPos;
-	mp.v= display.lastGlobalMouseYPos;
-	int wHandle= OS.GetControlOwner(handle);
-	Rect bounds= new Rect();
-	OS.GetWindowBounds(wHandle, (short)OS.kWindowContentRgn, bounds);
-	mp.h-= bounds.left;
-	mp.v-= bounds.top;
-	MacUtil.getControlBounds(handle, bounds);
-	return OS.PtInRect(mp, bounds);
+	MacPoint mp= new MacPoint();
+	OS.GetMouse(mp.getData());
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
+	return bounds.toRectangle().contains(mp.toPoint());
 }
 void hookEvents () {
 	super.hookEvents ();
@@ -471,13 +470,10 @@ void hookEvents () {
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, SWT.MouseExit);
 	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, SWT.Paint);
 	*/
-	Display display= getDisplay();
-	int[] mask= new int[] {
-		OS.kEventClassControl, OS.kEventControlDraw,
-	};
-	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, mask.length/2, mask, handle, null);
+	Display display= getDisplay();		
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, display.fUserPaneHitTestProc);
 }
 /**
  * Returns <code>true</code> if the receiver is enabled and all
@@ -544,14 +540,19 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);	
 }
 void selectRadio () {
-	int index = 0;
+	this.setSelection (true);
 	ToolItem [] items = parent.getItems ();
+	int index = 0;
 	while (index < items.length && items [index] != this) index++;
-	int i = index - 1;
-	while (i >= 0 && items [i].setRadioSelection (false)) --i;
-	int j = index + 1;
-	while (j < items.length && items [j].setRadioSelection (false)) j++;
-	setSelection (true);
+	ToolItem item;
+	int i = index;
+	while (--i >= 0 && ((item = items [i]).style & SWT.RADIO) != 0) {
+		item.setSelection (false);
+	}
+	i = index;
+	while (++i < items.length && ((item = items [i]).style & SWT.RADIO) != 0) {
+		item.setSelection (false);
+	}
 }
 /*
  * This setBounds is only called from ToolBar.relayout()
@@ -564,9 +565,25 @@ void setBounds (int x, int y, int width, int height) {
 	width = Math.max(width, 0);
 	height = Math.max(height, 0);
 	
-	Rect bounds= new Rect();
-	OS.SetRect(bounds, (short)x, (short)y, (short)(x+width), (short)(y+height));
-	OS.SetControlBounds(handle, bounds);
+	if (MacUtil.USE_FRAME) {
+		float[] f= new float[4];
+		OS.HIViewGetFrame(handle, f);
+		if (f[0] != x || f[1] != y || f[2] != width || f[3] != height)
+			OS.HIViewSetFrame(handle, x, y, width, height);
+	} else {
+		short[] bounds= new short[4];
+		short[] pbounds= new short[4];
+		OS.GetControlBounds(handle, bounds);
+		OS.GetControlBounds(parent.handle, pbounds);
+			
+		boolean sameOrigin = (bounds[1]-pbounds[1]) == x && (bounds[0]-pbounds[0]) == y;
+		boolean sameExtent = (bounds[3]-bounds[1]) == width && (bounds[2]-bounds[0]) == height;
+		if (!sameOrigin || !sameExtent)
+			OS.SetControlBounds(handle, new MacRect(pbounds[1]+x, pbounds[0]+y, width, height).getData());
+	}
+
+	if (parent.fGotSize)
+		OS.HIViewSetVisible(handle, true);
 }
 /**
  * Sets the control that is used to fill the bounds of
@@ -676,15 +693,6 @@ public void setImage (Image image) {
 	//redraw ();
 }
 
-boolean setRadioSelection (boolean value) {
-	if ((style & SWT.RADIO) == 0) return false;
-	if (getSelection () != value) {
-		setSelection (value);
-		postEvent (SWT.Selection);
-	}
-	return true;
-}
-
 /**
  * Sets the selection state of the receiver.
  * <p>
@@ -709,9 +717,9 @@ public void setSelection (boolean selected) {
 }
 
 void setSize (int width, int height) {
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	if ((bounds.right - bounds.left) != width || (bounds.bottom - bounds.top) != height) {
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
+	if (bounds.getWidth() != width || bounds.getHeight() != height) {
 		OS.SizeControl(handle, (short) width, (short) height);
 		parent.relayout();
 	}
@@ -754,16 +762,21 @@ public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	setSize (width, bounds.bottom-bounds.top);
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
+	setSize (width, bounds.getHeight());
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}
 }
 void setDrawPressed (boolean value) {
-	if (pressed != value) {
-		pressed= value;
+	/* AW
+	int shadowType = value ? OS.XmSHADOW_IN : OS.XmSHADOW_OUT;
+	int [] argList = {OS.XmNshadowType, shadowType};
+	OS.XtSetValues(handle, argList, argList.length / 2);
+	*/
+	if (fPressed != value) {
+		fPressed= value;
 		redraw();
 	}
 }
@@ -864,7 +877,6 @@ int processMouseEnter (MacMouseEvent mme) {
 	return 0;
 }
 int processMouseExit (MacMouseEvent mme) {
-	parent.processMouseExit(mme);
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
@@ -872,27 +884,23 @@ int processMouseExit (MacMouseEvent mme) {
 	else if ((parent.style & SWT.FLAT) != 0) redraw ();
 	return 0;
 }
+Point toControl (Point point) {
+	return MacUtil.toControl(handle, point);
+}
 /* AW
 boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return parent.translateTraversal (key, xEvent);
 }
 */
-int processMouseHover (MacMouseEvent mmEvent) {
-	/*
-	* Forward the mouse event to the parent.
-	* This is necessary so that mouse listeners
-	* in the parent will be called, despite the
-	* fact that the event did not really occur
-	* in X in the parent.  This is done to be
-	* compatible with Windows.
-	*/
-	parent.processMouseHover(mmEvent);
-	getDisplay().showToolTip(handle, toolTipText);
-	return OS.noErr;
+int processMouseHover (MacMouseEvent mme) {
+	Display display = getDisplay ();
+	display.showToolTip (handle, toolTipText);
+	return 0;
 }
 int processMouseMove (MacMouseEvent mmEvent) {
 	Display display = getDisplay ();
 	display.addMouseHoverTimeOut (handle);
+
 	/*
 	* Forward the mouse event to the parent.
 	* This is necessary so that mouse listeners
@@ -901,18 +909,44 @@ int processMouseMove (MacMouseEvent mmEvent) {
 	* in X in the parent.  This is done to be
 	* compatible with Windows.
 	*/
-//	parent.processMouseMove (mmEvent);
+	/* AW
+	XButtonEvent xEvent = new XButtonEvent ();
+	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	xEvent.window = OS.XtWindow (parent.handle);
+	xEvent.x += argList [1];  xEvent.y += argList [3];
+	*/
+	/*
+	* This code is intentionally commented.
+	* Currently, the implementation of the
+	* mouse move code in the parent interferes
+	* with tool tips for tool items.
+	*/
+//	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
+//	parent.processMouseMove (callData);
+
 	parent.sendMouseEvent (SWT.MouseMove, 0, mmEvent);
-	return OS.noErr;
+
+	return 0;
 }
 int processMouseUp (MacMouseEvent mmEvent) {
 	Display display = getDisplay ();
 	display.hideToolTip(); 
+		
 	if (mmEvent.getButton() == 1) {
-		Rect bounds= new Rect();
-		OS.GetControlBounds(handle, bounds);
-		int width = bounds.right - bounds.left, height = bounds.bottom - bounds.top;
+		/* AW
+		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int width = argList [1], height = argList [3];
+		*/
+		MacRect bounds= new MacRect();
+		OS.GetControlBounds(handle, bounds.getData());
+		int width = bounds.getWidth(), height = bounds.getHeight();
+				
 		Point mp= MacUtil.toControl(handle, mmEvent.getWhere());
+		//System.out.println("ToolItem.processMouseUp: " + mp);
+
 		if (0 <= mp.x && mp.x < width && 0 <= mp.y && mp.y < height) {
 			click (mp.x > width - 12, mmEvent);
 		}
@@ -926,19 +960,28 @@ int processMouseUp (MacMouseEvent mmEvent) {
 	* in X in the parent.  This is done to be
 	* compatible with Windows.
 	*/
+	/* AW
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	xEvent.window = OS.XtWindow (parent.handle);
+	xEvent.x += argList [1];  xEvent.y += argList [3];
+	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
+	*/
 	parent.processMouseUp (mmEvent);
-	return OS.noErr;
+
+	return 0;
 }
 int processPaint (Object callData) {
-	
+
 	if ((style & SWT.SEPARATOR) != 0 && control != null)
-		return OS.noErr;
+		return 0;
 		
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	int width= bounds.right - bounds.left;
-	int height= bounds.bottom - bounds.top;
-	OS.SetRect(bounds, (short)0, (short)0, (short)width, (short)height);
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
+	bounds.setLocation(0, 0);
+	
+	int width= bounds.getWidth();
+	int height= bounds.getHeight();
 	
 	final Display display = getDisplay ();
 
@@ -949,9 +992,7 @@ int processPaint (Object callData) {
 			data.background = parent.getBackgroundPixel();
 			data.font = parent.font.handle;
 			data.controlHandle = handle;
-			int port= OS.GetWindowPort(OS.GetControlOwner(handle));
-			if (port == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			return port;
+			return OS.GetWindowPort(OS.GetControlOwner(handle));
 		}
 		public void internal_dispose_GC (int xGC, GCData data) {
 		}
@@ -960,17 +1001,17 @@ int processPaint (Object callData) {
 	boolean hasCursor= hasCursor ();
 
 	GC gc= new GC(drawable);
-	MacControlEvent me= (MacControlEvent) callData;
-	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle(), me.getGCContext());
 	
+	MacControlEvent me= (MacControlEvent) callData;
+	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle());
 	if (!r.isEmpty()) {
 		
 		// erase background
 		gc.fillRectangle(0, 0, width, height);
-
+		
 		if ((style & SWT.SEPARATOR) != 0) {
 		
-			OS.DrawThemeSeparator(bounds, OS.kThemeStateActive);
+			OS.DrawThemeSeparator(bounds.getData(), OS.kThemeStateActive);
 			
 		} else {
 					
@@ -984,30 +1025,33 @@ int processPaint (Object callData) {
 			Image currentImage = image;
 			boolean enabled = getEnabled();
 		
-			ThemeButtonDrawInfo newInfo= new ThemeButtonDrawInfo();
-			newInfo.value= (short)(set ? OS.kThemeButtonOn : OS.kThemeButtonOff);
+			short[] newInfo= new short[3];
+					
+			newInfo[1]= set ? OS.kThemeButtonOn : OS.kThemeButtonOff;
 			
 			if ((parent.style & SWT.FLAT) != 0) {
 				
 				if (hasCursor && enabled) {
-					newInfo.state= (short)(OS.StillDown() ? OS.kThemeStatePressed : OS.kThemeStateActive);
-				} else {
+					if (OS.StillDown())
+						newInfo[0]= OS.kThemeStatePressed;
+					else
+						newInfo[0]= OS.kThemeStateActive;
+				} else
 					newInfo= null;
-				}
 				
 				/* Determine if hot image should be used */
 				if (enabled && hasCursor && hotImage != null) {
 					currentImage = hotImage;
 				}
 			} else {
-				newInfo.state= (short)((hasCursor && OS.StillDown()) ? OS.kThemeStatePressed : OS.kThemeStateActive);
+				newInfo[0]= (hasCursor && OS.StillDown()) ? OS.kThemeStatePressed : OS.kThemeStateActive;
 			}
 	
 			if (newInfo != null) {
-				Rect b= new Rect();
-				OS.SetRect(b, (short)1, (short)1, (short)(width-1), (short)(height-1));
-				OS.DrawThemeButton(b, (short)OS.kThemeSmallBevelButton, newInfo, null, 0, 0, 0);
+				MacRect b= new MacRect(1, 1, width-2, height-2);
+				OS.DrawThemeButton(b.getData(), OS.kThemeSmallBevelButton, newInfo, fPrevInfo, 0, 0, 0);
 			}
+			fPrevInfo= newInfo;
 				
 			if (enabled) {
 				gc.setForeground (parent.getForeground());
@@ -1077,7 +1121,7 @@ int processPaint (Object callData) {
 	gc.carbon_unfocus();
 	gc.dispose ();
 	
-	return OS.noErr;
+	return 0;
 }
 void propagateWidget (boolean enabled) {
 	propagateHandle (enabled, handle);

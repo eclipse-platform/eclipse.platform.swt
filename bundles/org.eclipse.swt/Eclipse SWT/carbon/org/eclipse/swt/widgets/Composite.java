@@ -7,11 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class are controls which are capable
@@ -85,7 +83,7 @@ Control [] _getChildren () {
 	Control [] children = new Control [count];
 	int i = 0, j = 0;
 	while (i < count) {
-		if (MacUtil.getChild(handle, outControl, count, i) != OS.noErr)
+		if (MacUtil.getChild(handle, outControl, count, i) != OS.kNoErr)
 			error (SWT.ERROR_CANNOT_GET_ITEM);
 		int handle = outControl [0];
 		if (handle != 0) {
@@ -181,13 +179,10 @@ void createHandle (int index) {
 			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
 		};
         */
-        int features= OS.kControlSupportsEmbedding;
-        if ((style & SWT.NO_FOCUS) == 0)
-        	features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
-        handle= OS.NewControl(0, new Rect(), null, false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
+		int parentHandle = parent.handle;
+        handle= MacUtil.createDrawingArea (parentHandle, -1, true, 0, 0, border);
+
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		MacUtil.insertControl(handle, parent.handle, -1);
-        OS.HIViewSetVisible(handle, true);
         /* AW
 		Display display = getDisplay ();
 		OS.XtOverrideTranslations (handle, display.tabTranslations);
@@ -206,10 +201,6 @@ void createScrolledHandle (int topHandle) {
     scrolledHandle= createScrollView(topHandle, style);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-	int features= OS.kControlSupportsEmbedding;
-    if ((style & SWT.NO_FOCUS) == 0)
-		features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
-		
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
         /* AW
 		int thickness = display.buttonShadowThickness;
@@ -235,7 +226,7 @@ void createScrolledHandle (int topHandle) {
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
         */
-        handle= OS.NewControl(0, new Rect(), null, false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
+        handle= MacUtil.createDrawingArea (scrolledHandle, -1, true, 0, 0, 0);
 	} else {
         /* AW
 		int [] argList3 = {
@@ -246,11 +237,9 @@ void createScrolledHandle (int topHandle) {
 		};
 		handle = OS.XmCreateDrawingArea (scrolledHandle, null, argList3, argList3.length / 2);
         */
-        handle= OS.NewControl(0, new Rect(), null, false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
+        handle = MacUtil.createDrawingArea (scrolledHandle, -1, true, 0, 0, 0);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.insertControl(handle, scrolledHandle, -1);
-	OS.HIViewSetVisible(handle, true);
     /* AW
 	OS.XtOverrideTranslations (handle, display.tabTranslations);
 	OS.XtOverrideTranslations (handle, display.arrowTranslations);
@@ -358,41 +347,28 @@ public Control [] getTabList () {
 	return tabList;
 }
 
-void handleResize(int handle, Rect bounds) {
-	super.handleResize(handle, bounds);
-	
-	/*
-	 * Bug in compositing mode: after a resize some children of a Composite
-	 * are not redrawn properly. The fix is to make the composite temporarily
-	 * one pixel larger and thereby forcing a relayout.
-	 */
-	bounds.right--;
-	OS.SetControlBounds(handle, bounds);
-	bounds.right++;
-	OS.SetControlBounds(handle, bounds);
-}
-	
 void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0) {
-		Display display= getDisplay();
-		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
+        /* AW
+		int windowProc = getDisplay ().windowProc;
+		OS.XtAddEventHandler (handle, 0, true, windowProc, -1);
+        */
+		Display display= getDisplay();		
+		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
+		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, display.fUserPaneHitTestProc);
 
-		int[] mask= new int[] {
-			OS.kEventClassMouse, OS.kEventMouseDown,
-			OS.kEventClassMouse, OS.kEventMouseWheelMoved,
-		};
-		OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fMouseProc, mask.length/2, mask, handle, null);
-		
-		mask= new int[] {
-			OS.kEventClassControl, OS.kEventControlDraw,
-		};
-		OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, mask.length/2, mask, handle, null);
+
+		if (MacUtil.HIVIEW) {
+			// OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneTrackingProcTag, display.fUserPaneTrackingProc);
+			int ref= OS.GetControlEventTarget(handle);
+			int[] mask= new int[] {
+				OS.kEventClassMouse, OS.kEventMouseDown,
+				OS.kEventClassMouse, OS.kEventMouseWheelMoved,
+			};
+			OS.InstallEventHandler(ref, display.fMouseProc, mask, handle);
+		}
 	}
-}
-
-boolean hooksKeys () {
-	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
 
 /**
@@ -675,7 +651,7 @@ public void setTabList (Control [] tabList) {
 int traversalCode () {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return 0;
-		if (hooksKeys ()) return 0;
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) return 0;
 	}
 	return super.traversalCode ();
 }

@@ -7,10 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of the receiver represent is an unselectable
@@ -91,12 +90,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle (int index) {
 	state |= HANDLE;
 	int parentHandle = parent.handle;
-	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, (short)OS.kControlProgressBarProc, 0);
+	handle = MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, OS.kControlProgressBarProc);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
- 	MacUtil.insertControl(handle, parentHandle, -1);
 	if ((style & SWT.INDETERMINATE) != 0)
-		OS.SetControlData(handle, (short)0, OS.kControlProgressBarIndeterminateTag, 4, new int[]{-1});
-	OS.HIViewSetVisible(handle, true);
+		OS.SetControlData(handle, (short)0, OS.kControlProgressBarIndeterminateTag, -1);
 }
 /* AW
 void disableButtonPress () {
@@ -233,31 +230,27 @@ public void setSelection (int value) {
 /**
  * Overridden from Control since we want to center the bar within its area. 
  */
-void handleResize(int hndl, Rect bounds) {	
+void handleResize(int hndl, MacRect bounds) {	
 	if ((style & SWT.HORIZONTAL) != 0) { 	// horizontal
-		int diff= bounds.bottom-bounds.top-SIZE;
+		int diff= bounds.getHeight()-SIZE;
 		fTopMargin= diff/2;
 		fBottomMargin= diff-fTopMargin;
-		bounds.top+= fTopMargin;
-		bounds.bottom-= fBottomMargin;
+		bounds.inset(0, fTopMargin, 0, fBottomMargin);
 	} else {	// vertical
-		int diff= bounds.right-bounds.left-SIZE;
+		int diff= bounds.getWidth()-SIZE;
 		fTopMargin= diff/2;
 		fBottomMargin= diff-fTopMargin;
-		bounds.left+= fTopMargin;
-		bounds.right-= fBottomMargin;
+		bounds.inset(fTopMargin, 0, fBottomMargin, 0);
 	}
 	super.handleResize(hndl, bounds);
 }
 
-void internalGetControlBounds(int hndl, Rect bounds) {
+void internalGetControlBounds(int hndl, MacRect bounds) {
 	super.internalGetControlBounds(hndl, bounds);
 	if ((style & SWT.HORIZONTAL) != 0) { 	// horizontal
-		bounds.top+= -fTopMargin;
-		bounds.bottom-= -fBottomMargin;
+		bounds.inset(0, -fTopMargin, 0, -fBottomMargin);
 	} else {	// vertical
-		bounds.left+= -fTopMargin;
-		bounds.right-= -fBottomMargin;
+		bounds.inset(-fTopMargin, 0, -fBottomMargin, 0);
 	}
 }
 

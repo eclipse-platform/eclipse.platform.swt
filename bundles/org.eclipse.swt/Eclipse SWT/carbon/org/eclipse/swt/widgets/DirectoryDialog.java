@@ -100,32 +100,19 @@ public String getMessage () {
 	return message;
 }
 private String interpretOsAnswer(int dialog) {
-	String result= null;
-	NavReplyRecord record= new NavReplyRecord();
-	OS.NavDialogGetReply(dialog, record);
-	AEDesc selection= new AEDesc();
-	selection.descriptorType= record.selection_descriptorType;
-	selection.dataHandle= record.selection_dataHandle;
-	int[] count= new int[1];
-	OS.AECountItems(selection, count);
+	int[] tmp= new int[1];
+	OS.NavDialogGetReply(dialog, tmp);
+	int reply= tmp[0];
 	
-	if (count[0] > 0) {
-		int[] theAEKeyword = new int[1];
-		int[] typeCode = new int[1];
-		int maximumSize = 80; // size of FSRef
-		int dataPtr = OS.NewPtr(maximumSize);
-		int[] actualSize = new int[1];
-		int status = OS.AEGetNthPtr(selection, 1, OS.typeFSRef, theAEKeyword, typeCode, dataPtr, maximumSize, actualSize);
-		if (status == OS.noErr && typeCode[0] == OS.typeFSRef) {
-			byte[] fsRef = new byte[actualSize[0]];
-			OS.memcpy(fsRef, dataPtr, actualSize[0]);
-			int anURL= OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault, fsRef);
-			int shandle= OS.CFURLCopyFileSystemPath(anURL, OS.kCFURLPOSIXPathStyle);
-			result= MacUtil.getStringAndRelease(shandle);
-		}
-		OS.DisposePtr(dataPtr);
+	int selection= OS.NavReplyRecordGetSelection(reply);
+	OS.AECountItems(selection, tmp);
+	int count= tmp[0];
+	
+	if (count > 0) {
+		OS.AEGetNthPtr(selection, 1, tmp);
+		return MacUtil.getStringAndRelease(tmp[0]);
 	}
-	return result;
+	return null;
 }
 /**
  * Makes the dialog visible and brings it to the front
@@ -153,12 +140,8 @@ public String open () {
 		titleHandle= OS.CFStringCreateWithCharacters(title);
 		messageHandle= OS.CFStringCreateWithCharacters(message);
 		
-		NavDialogCreationOptions options = new NavDialogCreationOptions();
-		OS.NavGetDefaultDialogCreationOptions(options);
-		options.parentWindow= parentWindowHandle;
-		options.windowTitle= titleHandle;
-		options.message= messageHandle;
-		OS.NavCreateChooseFolderDialog(options, 0, 0, 0, dialogHandle);
+		int flags= 0;
+		OS.NavCreateChooseFolderDialog(flags, titleHandle, messageHandle, parentWindowHandle, dialogHandle);
 		dialog= dialogHandle[0];
 		
 		if (dialog != 0) {

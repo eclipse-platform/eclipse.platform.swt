@@ -7,12 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -235,11 +233,8 @@ void createHandle (int index) {
 		};
 		handle = OS.XmCreateArrowButton (parentHandle, null, argList, argList.length / 2);
         */
-		//handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)OS.kControlPopupArrowEastProc, 0);
-		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)OS.kControlPushButtonProc, 0);
+        handle= MacUtil.newControl(parentHandle, OS.kControlPopupArrowEastProc);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		MacUtil.insertControl(handle, parentHandle, -1);
-		OS.HIViewSetVisible(handle, true);
         /* AW
 		if ((style & SWT.FLAT) != 0) {
 			int [] argList1 = {OS.XmNshadowThickness, 1};
@@ -277,10 +272,8 @@ void createHandle (int index) {
 		};
 		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
         */
-		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)OS.kControlBehaviorToggles, (short)0, (short)OS.kControlBevelButtonNormalBevelProc, 0);
+		handle= MacUtil.newControl(parentHandle, (short)0, OS.kControlBehaviorToggles, (short)0, OS.kControlBevelButtonNormalBevelProc);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		MacUtil.insertControl(handle, parentHandle, -1);
-		OS.HIViewSetVisible(handle, true);
 		setFont(defaultFont());
 		return;
 	}
@@ -306,13 +299,11 @@ void createHandle (int index) {
 		};
 		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
         */
-		int type= (style & SWT.CHECK) != 0
+		short type= (style & SWT.CHECK) != 0
 					? OS.kControlCheckBoxAutoToggleProc
 					: OS.kControlRadioButtonAutoToggleProc;
-		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, (short)type, 0);
+		handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, type);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		MacUtil.insertControl(handle, parentHandle, -1);
-		OS.HIViewSetVisible(handle, true);
 		setFont(defaultFont());
 		return;
 	}
@@ -325,13 +316,11 @@ void createHandle (int index) {
 		OS.XmNalignment, alignment,
 		OS.XmNborderWidth, borderWidth,
     */
-	int type= (style & SWT.FLAT) != 0
+	short type= (style & SWT.FLAT) != 0
 					? OS.kControlBevelButtonNormalBevelProc
 					: OS.kControlPushButtonProc;
-	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)type, 0);
+    handle= MacUtil.newControl(parentHandle, type);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.insertControl(handle, parentHandle, -1);
-	OS.HIViewSetVisible(handle, true);
 	setFont(defaultFont());
 	/* AW
 	if ((style & SWT.FLAT) != 0) {
@@ -429,7 +418,7 @@ public String getText () {
 	checkWidget();
 	if ((style & SWT.ARROW) != 0) return "";
 	int sHandle[]= new int[1];
-    OS.CopyControlTitleAsCFString(handle, sHandle);
+    OS.GetControlTitleAsCFString(handle, sHandle);
 	return MacUtil.getStringAndRelease(sHandle[0]);
 }
 void hookEvents () {
@@ -440,8 +429,10 @@ void hookEvents () {
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) != 0) callback = OS.XmNvalueChangedCallback;
 	OS.XtAddCallback (handle, callback, windowProc, SWT.Selection);
 	*/
-	Display display= getDisplay();
-	OS.SetControlAction(handle, display.fControlActionProc);
+	if (MacUtil.HIVIEW) {
+		Display display= getDisplay();
+		OS.SetControlAction(handle, display.fControlActionProc);
+	}
 }
 boolean mnemonicHit (char key) {
 	if (!setFocus ()) return false;
@@ -475,9 +466,7 @@ int processFocusOut () {
 }
 int processSelection (Object callData) {
 	if ((style & SWT.RADIO) != 0) {
-		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-			selectRadio ();
-		}
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) selectRadio ();
 	}
 	return super.processSelection (callData);
 }
@@ -491,10 +480,8 @@ void releaseWidget () {
 	OS.XtSetValues (handle, argList, argList.length / 2);
     */
     if (fCIconHandle != 0) {
-    	if (handle != 0) {
-    		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
-			OS.SetBevelButtonContentInfo(handle, inContent);
-    	}
+    	if (handle != 0)
+    		OS.SetBevelButtonContentInfo(handle, (short)0, 0);
 		Image.disposeCIcon(fCIconHandle);
 		fCIconHandle= 0;
     }
@@ -525,26 +512,18 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 void selectRadio () {
-	/*
-	* This code is intentionally commented.  When two groups
-	* of radio buttons with the same parent are separated by
-	* another control, the correct behavior should be that
-	* the two groups act independently.  This is consistent
-	* with radio tool and menu items.  The commented code
-	* implements this behavior.
-	*/
-//	int index = 0;
-//	Control [] children = parent._getChildren ();
-//	while (index < children.length && children [index] != this) index++;
-//	int i = index - 1;
-//	while (i >= 0 && children [i].setRadioSelection (false)) --i;
-//	int j = index + 1;
-//	while (j < children.length && children [j].setRadioSelection (false)) j++;
-//	setSelection (true);
 	Control [] children = parent._getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (this != child) child.setRadioSelection (false);
+		if (this != child && child instanceof Button) {
+			Button button = (Button) child;
+			if ((button.getStyle () & SWT.RADIO) != 0) {
+				if (button.getSelection ()) {
+					button.setSelection (false);
+					button.postEvent (SWT.Selection);
+				}
+			}
+		}
 	}
 	setSelection (true);
 }
@@ -612,14 +591,6 @@ public void setImage (Image image) {
 	} else 
 		setMode(0);
 }
-boolean setRadioSelection (boolean value) {
-	if ((style & SWT.RADIO) == 0) return false;
-	if (getSelection () != value) {
-		setSelection (value);
-		postEvent (SWT.Selection);
-	}
-	return true;
-}
 /**
  * Sets the selection state of the receiver, if it is of type <code>CHECK</code>, 
  * <code>RADIO</code>, or <code>TOGGLE</code>.
@@ -666,7 +637,7 @@ public void setText (String string) {
 	int sHandle= 0;
 	try {
 		sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(string));
-		if (OS.SetControlTitleWithCFString(handle, sHandle) != OS.noErr)
+		if (OS.SetControlTitleWithCFString(handle, sHandle) != OS.kNoErr)
 			error (SWT.ERROR_CANNOT_SET_TEXT);
 	} finally {
 		if (sHandle != 0)
@@ -687,10 +658,7 @@ int traversalCode () {
 private void setMode(int icon) {
 	
 	if ((style & SWT.FLAT) != 0 || fImageMode) {
-		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
-		inContent.contentType = (short)OS.kControlContentCIconHandle;
-		inContent.iconRef = icon;
-		OS.SetBevelButtonContentInfo(handle, inContent);
+		OS.SetBevelButtonContentInfo(handle, OS.kControlContentCIconHandle, icon);
 		redraw();
 		return;
 	}
@@ -702,12 +670,12 @@ private void setMode(int icon) {
 	
 	int[] ph= new int[1];
 	int rc= OS.GetSuperControl(handle, ph);
-	if (rc != OS.noErr)
+	if (rc != OS.kNoErr)
 		System.out.println("Button.setMode: " + rc);
 	int parentHandle= ph[0];
 	
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
 	
 	int index= MacUtil.indexOf(parentHandle, handle);
 	if (index < 0)
@@ -716,48 +684,36 @@ private void setMode(int icon) {
 	WidgetTable.remove(handle);
 	OS.DisposeControl(handle);
 	
-	int type= icon != 0 ? OS.kControlBevelButtonNormalBevelProc : OS.kControlPushButtonProc;
+	short type= icon != 0 ? OS.kControlBevelButtonNormalBevelProc : OS.kControlPushButtonProc;
 		
-	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)type, 0);
-	MacUtil.insertControl(handle, parentHandle, index);
-	OS.HIViewSetVisible(handle, true);
+    handle= MacUtil.newControl(parentHandle, index, (short)0, (short)0, (short)0, type);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	WidgetTable.put(handle, w);
 	
-	OS.SetControlBounds(handle, bounds);
-	ControlButtonContentInfo inContent = new ControlButtonContentInfo();
-	inContent.contentType = (short)OS.kControlContentCIconHandle;
-	inContent.iconRef = icon;
-	OS.SetBevelButtonContentInfo(handle, inContent);
+	OS.SetControlBounds(handle, bounds.getData());
+	OS.SetBevelButtonContentInfo(handle, OS.kControlContentCIconHandle, icon);
 }
 
 /**
  * Overridden from Control.
  * x and y are relative to window!
  */
-void handleResize(int hndl, Rect bounds) {
+void handleResize(int hndl, MacRect bounds) {
 	fTopMargin= fBottomMargin= 0;
 	if ((style & SWT.PUSH) != 0 && image == null) {	// for push buttons
-		org.eclipse.swt.graphics.Point result= MacUtil.computeSize(hndl);
-		int diff= (bounds.bottom-bounds.top)-result.y;
+		Point result= MacUtil.computeSize(hndl);
+		int diff= bounds.getHeight()-result.y;
 		fTopMargin= diff/2;
 		fBottomMargin= diff-fTopMargin;
-		bounds.left+= MARGIN;
-		bounds.top+= fTopMargin;
-		bounds.right-= MARGIN;
-		bounds.bottom-= fBottomMargin;
+		bounds.inset(MARGIN, fTopMargin, MARGIN, fBottomMargin);
 	}
 	super.handleResize(hndl, bounds);
 }
 
-void internalGetControlBounds(int hndl, Rect bounds) {
+void internalGetControlBounds(int hndl, MacRect bounds) {
 	super.internalGetControlBounds(hndl, bounds);
-	if ((style & SWT.PUSH) != 0 && image == null) {
-		bounds.left+= -MARGIN;
-		bounds.top+= -fTopMargin;
-		bounds.right-= -MARGIN;
-		bounds.bottom-= -fBottomMargin;
-	}
+	if ((style & SWT.PUSH) != 0 && image == null)
+		bounds.inset(-MARGIN, -fTopMargin, -MARGIN, -fBottomMargin);
 }
 
 public void setFont (Font font) {

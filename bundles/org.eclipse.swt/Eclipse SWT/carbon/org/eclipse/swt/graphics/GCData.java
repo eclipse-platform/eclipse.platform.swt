@@ -9,6 +9,8 @@ package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
 
+import org.eclipse.swt.internal.carbon.MacFont;
+
 /**
  * Instances of this class are descriptions of GCs in terms
  * of unallocated platform-specific data fields.
@@ -29,19 +31,7 @@ public final class GCData {
 	public MacFont font;
 	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
-	
 	// AW
 	public int controlHandle;
-	public boolean clipAgainstChildren= true;
-	public int[] savePort= new int[1];
-	public int[] saveGWorld= new int[1];
-	public int saveClip;
-	public boolean isFocused= false;
-	public int lineWidth= 1;
-	public boolean xorMode= false;
-	public int damageRgn;
-	public boolean pendingClip;
-	public int[] context= new int[1];
-	public boolean isCGContextCreated;
 	// AW
 }

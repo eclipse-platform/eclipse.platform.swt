@@ -10,8 +10,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -166,10 +165,8 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateScrollBar (parent.handle, null, argList, argList.length / 2);
     */
- 	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, (short)OS.kControlScrollBarLiveProc, 0);
+    handle= MacUtil.newControl(parent.handle, (short)0, (short)0, (short)100, OS.kControlScrollBarLiveProc);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.insertControl(handle, parent.handle, -1);
-	OS.HIViewSetVisible(handle, true);
 }
 /**
  * Returns the amount that the receiver's value will be

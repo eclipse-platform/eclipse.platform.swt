@@ -7,9 +7,8 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
-import org.eclipse.swt.*;
 import org.eclipse.swt.internal.carbon.*;
-import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.*;
 
 /**
  * Instances of this class allow the user to navigate
@@ -145,61 +144,54 @@ public String getFilterPath () {
 	return filterPath;
 }
 private String interpretOsAnswer(int dialog) {
-	String separator= System.getProperty ("file.separator");
+	String separator = System.getProperty ("file.separator");
+	
 	String firstResult= null;
 
-	NavReplyRecord record= new NavReplyRecord();
-	OS.NavDialogGetReply(dialog, record);
-	AEDesc selection= new AEDesc();
-	selection.descriptorType= record.selection_descriptorType;
-	selection.dataHandle= record.selection_dataHandle;
-	int[] theCount = new int[1];
-	OS.AECountItems(selection, theCount);
-	int count= theCount[0];
+	int[] tmp= new int[1];
+	OS.NavDialogGetReply(dialog, tmp);
+	int reply= tmp[0];
+	
+	int selection= OS.NavReplyRecordGetSelection(reply);
+	OS.AECountItems(selection, tmp);
+	int count= tmp[0];
 	
 	String commonPath= null;
-	if (count == 0) {
-		fileNames= null;
-	} else {
+	if (count > 0) {
+		String fileName= null;
 		fileNames= new String[count];
-		int maximumSize = 80; // size of FSRef
-		int dataPtr= OS.NewPtr(maximumSize);
 		for (int i= 0; i < count; i++) {
-			int[] aeKeyword= new int[1];
-			int[] typeCode= new int[1];
-			int[] actualSize= new int[1];
-			int status= OS.AEGetNthPtr(selection, i+1, OS.typeFSRef, aeKeyword, typeCode, dataPtr, maximumSize, actualSize);
-			if (status == OS.noErr && typeCode[0] == OS.typeFSRef) {
-				byte[] fsRef= new byte[actualSize[0]];
-				OS.memcpy(fsRef, dataPtr, actualSize[0]);
-				int url= OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault, fsRef);
-				int shandle= OS.CFURLCopyFileSystemPath(url, OS.kCFURLPOSIXPathStyle);
-				String fullPath= MacUtil.getStringAndRelease(shandle);
-				if (firstResult == null)
-					firstResult= fullPath;
-				if (fullPath != null && fullPath.length() > 0) {
-					String fileName= null;
-					int separatorIndex= fullPath.lastIndexOf(separator);
-					if (separatorIndex >= 0) {
-						fileName= fullPath.substring(separatorIndex+separator.length());
-						String fp= fullPath.substring(0, separatorIndex);
-						if (commonPath == null)
-							commonPath= fp;	// remember common filterPath
-						else {
-							if (!commonPath.equals(fp)) // verify that filterPath is in fact common
-								System.out.println("FileDialog.getPaths: mismatch in filterPaths");
-						}
-					} else {
-						fileName= fullPath;
+			OS.AEGetNthPtr(selection, i+1, tmp);
+			String fullPath= MacUtil.getStringAndRelease(tmp[0]);
+			if (firstResult == null)
+				firstResult= fullPath;
+			if (fullPath != null && fullPath.length() > 0) {
+				int separatorIndex= fullPath.lastIndexOf(separator);
+				if (separatorIndex >= 0) {
+					fileName= fullPath.substring(separatorIndex+separator.length());
+					String fp= fullPath.substring(0, separatorIndex);
+					if (commonPath == null)
+						commonPath= fp;	// remember common filterPath
+					else {
+						if (!commonPath.equals(fp))	// verify that filterPath is in fact common
+							System.out.println("FileDialog.getPaths: mismatch in filterPaths");
 					}
-					fileNames[i]= fileName;
+				} else {
+					fileName= fullPath;
 				}
+				fileNames[i]= fileName;
 			}
 		}
-		OS.DisposePtr(dataPtr);
+	} else {
+		fileNames= null;
 	}
 	
-	filterPath= (commonPath != null) ? commonPath : "";
+	if (commonPath != null)
+		filterPath= commonPath;
+	else
+		filterPath= "";
+	
+	OS.NavDialogDisposeReply(reply);
 	
 	return firstResult;
 }
@@ -217,11 +209,8 @@ private String interpretOsAnswer(int dialog) {
  */
 public String open () {
 
-	String separator= System.getProperty("file.separator");
 	int dialog= 0;
 	String result= null;
-	Callback eventCallback= null;
-	Callback filterCallback= null;
 	
 	int titleHandle= 0;
 	try {
@@ -235,32 +224,13 @@ public String open () {
 		int flags= 0;
 		int[] dialogHandle= new int[1];
 		
-		NavDialogCreationOptions options = new NavDialogCreationOptions();
-		OS.NavGetDefaultDialogCreationOptions(options);
-		options.optionFlags |= flags;
-		options.windowTitle= titleHandle;
-		options.parentWindow= parentWindowHandle;
 		if ((style & SWT.SAVE) != 0) {
-			status= OS.NavCreatePutFileDialog(options, MacUtil.OSType("TEXT"),
-							MacUtil.OSType("KAHL"), 0, 0, dialogHandle);
+			status= OS.NavCreatePutFileDialog(flags, titleHandle, parentWindowHandle, dialogHandle,
+							MacUtil.OSType("TEXT"), MacUtil.OSType("KAHL"));
 		} else /* if ((style & SWT.OPEN) != 0) */ {
-			
-			eventCallback= new Callback(this, "eventProc", 3);
-			int eventProc= eventCallback.getAddress();
-			if (eventProc == 0)
-				error (SWT.ERROR_NO_MORE_CALLBACKS);
-				
-			filterCallback= new Callback(this, "filterProc", 4);
-			int filterProc= filterCallback.getAddress();
-			if (filterProc == 0)
-				error (SWT.ERROR_NO_MORE_CALLBACKS);
-			
 			if ((style & SWT.MULTI) != 0)
-				options.optionFlags |= OS.kNavAllowMultipleFiles;
-			options.optionFlags |= OS.kNavSupportPackages;
-			options.optionFlags |= OS.kNavAllowOpenPackages;
-			options.optionFlags |= OS.kNavAllowInvisibleFiles;
-			status= OS.NavCreateGetFileDialog(options, 0/*titleHandle*/, eventProc, 0, filterProc, 12345, dialogHandle);
+				flags |= OS.kNavAllowMultipleFiles;
+			status= OS.NavCreateGetFileDialog(flags, titleHandle, parentWindowHandle, dialogHandle);
 		}
 		
 		if (status == 0) {
@@ -273,21 +243,6 @@ public String open () {
 			//System.out.println("FileDialog.open: got dialog");
 		
 			if ((style & SWT.SAVE) != 0) {
-				String directoryName;
-				String fileName;
-				String pathName= fileNames[0];
-				if (pathName == null)
-					pathName= "";
-				// if fileName is a path, separate directory from filename
-				int separatorIndex= pathName.lastIndexOf(separator);
-				if (separatorIndex >= 0) {
-					fileName= pathName.substring(separatorIndex+separator.length());
-					directoryName= pathName.substring(0, separatorIndex);
-				} else {
-					fileName= pathName;
-					directoryName= null;
-				}
-								
 				int fileNameHandle= 0;
 				try {
 					fileNameHandle= OS.CFStringCreateWithCharacters(fileNames[0]);
@@ -313,9 +268,7 @@ public String open () {
 				break;
 				
 			case OS.kNavUserActionSaveAs:
-				String directory= interpretOsAnswer(dialog);
-				String file= MacUtil.getStringAndRelease(OS.NavDialogGetSaveFileName(dialog));
-				result= directory + separator + file;
+				result= MacUtil.getStringAndRelease(OS.NavDialogGetSaveFileName(dialog));
 				break;
 			}
 		} else {
@@ -329,29 +282,7 @@ public String open () {
 			OS.NavDialogDispose(dialog);
 	}
 	
-	if (eventCallback != null)
-		eventCallback.dispose();
-	if (filterCallback != null)
-		filterCallback.dispose();
 	return result;
-}
-
-private int eventProc(int selector, int params, int callBackUD) {
-	//System.out.println("FileDialog.eventProc: selector: " + selector);
-	switch (selector) {
-	case OS.kNavCBNewLocation:
-		// NavCustomControl()
-		break;
-	default:
-		break;
-	}	
-	return 0;
-}
-
-private int filterProc(int theItem, int info, int callBackUD, int filterMode) {
-	/* AEDesc *theItem, void *info, void *callBackUD, NavFilterModes filterMode */
-	//System.out.println("FileDialog.filterProc: UD: " + callBackUD);
-	return 1;
 }
 
 /**

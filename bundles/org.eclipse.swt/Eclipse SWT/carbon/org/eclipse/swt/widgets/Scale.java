@@ -7,11 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of the receiver represent a selectable user
@@ -127,11 +126,10 @@ void createHandle (int index) {
 		OS.XmNancestorSensitive, 1,
 	};
     */
+	int parentHandle = parent.handle;
  	short procID= (short)(OS.kControlSliderProc + OS.kControlSliderLiveFeedback + OS.kControlSliderNonDirectional);
-    handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, procID, 0);
+    handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, procID);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.insertControl(handle, parent.handle, -1);
-	OS.HIViewSetVisible(handle, true);
 }
 
 /**

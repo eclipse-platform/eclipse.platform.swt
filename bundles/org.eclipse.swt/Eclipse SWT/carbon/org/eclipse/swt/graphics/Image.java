@@ -189,10 +189,10 @@ public Image(Device device, Image srcImage, int flag) {
 	this.type = srcImage.type;
 	this.mask = 0;
 		
-	Rect bounds= new Rect();
-	OS.GetPixBounds(srcImage.pixmap, bounds);
- 	int width = bounds.right - bounds.left;
- 	int height = bounds.bottom - bounds.top;
+	MacRect bounds= new MacRect();
+	OS.GetPixBounds(srcImage.pixmap, bounds.getData());
+ 	int width = bounds.getWidth();
+ 	int height = bounds.getHeight();
 
 	/* Don't create the mask here if flag is SWT.IMAGE_GRAY. See below.*/
 	if (flag != SWT.IMAGE_GRAY && srcImage.mask != 0) {
@@ -700,11 +700,9 @@ public Color getBackground() {
  */
 public Rectangle getBounds () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rect bounds= new Rect();		
-	OS.GetPixBounds(pixmap, bounds);
-	int width = bounds.right - bounds.left;
-	int height = bounds.bottom - bounds.top;
-	return new Rectangle(bounds.left, bounds.top, width, height);
+	MacRect bounds= new MacRect();		
+	OS.GetPixBounds(pixmap, bounds.getData());
+	return bounds.toRectangle();
 }
 /**
  * Returns an <code>ImageData</code> based on the receiver
@@ -941,9 +939,7 @@ void init(Device device, int width, int height) {
 	int[] saveGWorld= new int[1];
 	OS.GetGWorld(savePort, saveGWorld);
 	OS.SetGWorld(gw, 0);
-	Rect rect = new Rect();
-	OS.SetRect(rect, (short)0, (short)0, (short)width, (short)height);
-	OS.EraseRect(rect);
+	OS.EraseRect(new short[] { 0, 0, (short)height, (short)width } );
 	OS.SetGWorld(savePort[0], saveGWorld[0]);
 	
 	OS.DisposeGWorld(gw);
@@ -1056,7 +1052,7 @@ public boolean isDisposed() {
 	return pixmap == 0;
 }
 /*
-public static Image carbon_new(Device device, int type, int pixmap, int mask) {
+public static Image macosx_new(Device device, int type, int pixmap, int mask) {
 	if (device == null) device = Device.getDevice();
 	Image image = new Image();
 	image.device = device;
@@ -1314,7 +1310,7 @@ public String toString () {
 		case 2:
 		case 4:
 		case 8:
-			pixelType= 0; /* Indexed */
+			pixelType= OS.Indexed;
 			pixelSize= depth;
 			cmpCount= 1;
 			cmpSize= depth;
@@ -1497,11 +1493,9 @@ public String toString () {
 	private static int duplicate(int handle) {
 		int rowBytes= OS.getRowBytes(handle);
 		if ((rowBytes & 0x8000) == 0) {
-			Rect bounds= new Rect();
-			OS.GetPixBounds(handle, bounds);
-			int width = bounds.right - bounds.left;
-			int height = bounds.bottom - bounds.top;
-			int copy= newBitMap(width, height, rowBytes);
+			MacRect bounds= new MacRect();
+			OS.GetPixBounds(handle, bounds.getData());
+			int copy= newBitMap(bounds.getWidth(), bounds.getHeight(), rowBytes);
 			int baseAddr= OS.getBaseAddr(handle);
 			if (baseAddr != 0) {
 				int size= OS.GetPtrSize(baseAddr);

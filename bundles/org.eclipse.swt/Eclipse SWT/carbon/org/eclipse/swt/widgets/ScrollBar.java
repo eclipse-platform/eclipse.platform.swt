@@ -7,11 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -270,9 +269,9 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget();
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	return new Point(bounds.right-bounds.left, bounds.bottom-bounds.top);
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
+	return bounds.getSize();
 }
 /**
  * Answers the size of the receiver's thumb relative to the
@@ -408,18 +407,20 @@ int processSelection (Object callData) {
     }
 
 	sendEvent (SWT.Selection, event);
+	// flush display
+	getDisplay().update();
 
-	return OS.noErr;
+	return OS.kNoErr;
 }
 int processWheel(int eRefHandle) {
 	int[] t= new int[1];
-	OS.GetEventParameter(eRefHandle, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, t.length*4, null, t);
+	OS.GetEventParameter(eRefHandle, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, null, t);
 	OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) - (increment * t[0]));
 	Event event= new Event ();
     event.detail= t[0] > 0 ? SWT.ARROW_UP : SWT.ARROW_DOWN;	
 	sendEvent (SWT.Selection, event);
 	getDisplay().update();
-	return OS.noErr;
+	return OS.kNoErr;
 }
 void releaseChild () {
 	super.releaseChild ();
@@ -637,11 +638,27 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	if (this.visible != visible) {
-		this.visible= visible;
-		OS.HIViewSetVisible(handle, visible);		
-		parent._relayout();
-		sendEvent(visible ? SWT.Show : SWT.Hide);
-	}
+	
+//	this.visible= visible;
+//	if (OS.IsControlVisible(handle) != visible) {
+//		OS.HIViewSetVisible(handle, visible);		
+//		parent.relayout123();
+//		sendEvent(visible ? SWT.Show : SWT.Hide);
+//	}
+	
+    if (this.visible != visible) {
+	    this.visible= visible;
+		int topHandle = topHandle ();
+		if (OS.IsControlVisible(topHandle) != visible) {
+			OS.HIViewSetVisible(topHandle, visible);
+			parent.relayout123();
+			sendEvent (visible ? SWT.Show : SWT.Hide);
+		}
+    }
 }
+
+void internalSetBounds(MacRect bounds) {
+	OS.SetControlBounds(handle, bounds.getData());
+}
+
 }

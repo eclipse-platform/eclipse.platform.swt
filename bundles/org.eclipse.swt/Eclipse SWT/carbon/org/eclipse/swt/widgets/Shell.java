@@ -7,12 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ShellListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class represent the "windows"
@@ -322,11 +320,11 @@ static int checkStyle (int style) {
 	if ((style & SWT.PRIMARY_MODAL) != 0) return bits | SWT.PRIMARY_MODAL;
 	return bits;
 }
-/* AW
-public static Shell carbon_new (Display display, int handle) {
+
+public static Shell macosx_new (Display display, int handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle);
 }
-*/
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when operations are performed on the receiver,
@@ -504,11 +502,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	
-	int windowActivationScope= -1;
-
-	int decorations = OS.kWindowCompositingAttribute | OS.kWindowStandardHandlerAttribute;
-
-	/* AW
+	int decorations = 0;
+    /* AW
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.MIN) != 0) decorations |= NSWindow.MiniaturizableWindowMask;
 		if ((style & SWT.MAX) != 0) decorations |= OS.MWM_DECOR_MAXIMIZE;
@@ -519,19 +514,26 @@ void createHandle (int index) {
 	}
     */
     
+	if (MacUtil.HIVIEW)
+    	decorations |= OS.kWindowCompositingAttribute;
+	
 	if (style == SWT.NONE) {
 	} else if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.CLOSE) != 0) decorations |= OS.kWindowCloseBoxAttribute;
 		if ((style & SWT.MIN) != 0) decorations |= OS.kWindowCollapseBoxAttribute;
 		if ((style & SWT.MAX) != 0) decorations |= OS.kWindowFullZoomAttribute;
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.kWindowResizableAttribute;
+		if ((style & SWT.RESIZE) != 0) decorations |= OS.kWindowResizableAttribute | OS.kWindowLiveResizeAttribute;
+		//if ((style & SWT.BORDER) == 0) decorations |= OS.kWindowNoShadowAttribute;
+	//} else {
+	//	decorations |= OS.kWindowNoShadowAttribute;
 	}
 	
-	// if resizable enable 'live resize'
-	if ((decorations & OS.kWindowResizableAttribute) != 0)
-		decorations |= OS.kWindowLiveResizeAttribute;
-	
-	// determine modality
+    /* AW
+	int inputMode = OS.MWM_INPUT_MODELESS;
+	if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.MWM_INPUT_PRIMARY_APPLICATION_MODAL;
+	if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.MWM_INPUT_FULL_APPLICATION_MODAL;
+	if ((style & SWT.SYSTEM_MODAL) != 0) inputMode = OS.MWM_INPUT_SYSTEM_MODAL;
+    */
 	int inputMode = OS.kWindowModalityNone;
 	if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.kWindowModalityWindowModal;
 	if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.kWindowModalityAppModal;
@@ -544,68 +546,101 @@ void createHandle (int index) {
 		OS.XmNoverrideRedirect, (style & SWT.ON_TOP) != 0 ? 1 : 0,
 		OS.XmNtitle, ptr,
 	};
+	byte [] appClass = display.appClass;
     */
 	
+	MacRect bounds= new MacRect(100, 100, 100, 100);
 	int windowClass= 0;
-	int themeBrush= OS.kThemeBrushDialogBackgroundActive;
+	short themeBrush= OS.kThemeBrushDialogBackgroundActive;
 	if (parent == null && (style & SWT.ON_TOP) == 0) {
-		if ((style & SWT.NO_TRIM) != 0) {
-			windowClass= OS.kSheetWindowClass;
-			windowActivationScope= OS.kWindowActivationScopeNone;
-		} else {
+        /* AW
+		int xDisplay = display.xDisplay;
+		int widgetClass = OS.TopLevelShellWidgetClass ();
+		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList1, argList1.length / 2);
+        */
+		if ((style & SWT.NO_TRIM) != 0)
+			windowClass= OS.kHelpWindowClass;
+		else {
 			windowClass= OS.kDocumentWindowClass;
 			//themeBrush= OS.kThemeBrushDocumentWindowBackground;
 		}
 	} else {
+        /* AW
+		int widgetClass = OS.TransientShellWidgetClass ();
+//		if ((style & SWT.ON_TOP) != 0) {
+//			widgetClass = OS.OverrideShellWidgetClass ();
+//		}
+        */
         /* AW
 		int parentHandle = display.shellHandle;
 		if (parent != null) parentHandle = parent.handle;
 		shellHandle = OS.XtCreatePopupShell (appClass, widgetClass, parentHandle, argList1, argList1.length / 2);
         */
 		if (style == SWT.NONE) {
-			windowClass= OS.kSheetWindowClass;
-			windowActivationScope= OS.kWindowActivationScopeNone;
+			//System.out.println("Shell.createHandle: SWT.NONE");
+			windowClass= OS.kHelpWindowClass;
 		} else if ((style & SWT.NO_TRIM) != 0 && (style & SWT.ON_TOP) != 0) {
-			windowClass= OS.kSheetWindowClass;
-			windowActivationScope= OS.kWindowActivationScopeNone;
+			//System.out.println("Shell.createHandle: SWT.NO_TRIM | SWT.ON_TOP");
+			windowClass= OS.kHelpWindowClass;
 		} else if ((style & SWT.NO_TRIM) != 0) {
-			windowClass= OS.kSheetWindowClass;
-			windowActivationScope= OS.kWindowActivationScopeNone;
+			//System.out.println("Shell.createHandle: SWT.NO_TRIM");
+			windowClass= OS.kHelpWindowClass;
 		} else if (inputMode == OS.kWindowModalityAppModal) {
+			//System.out.println("Shell.createHandle: kMovableModalWindowClass");
 			windowClass= OS.kMovableModalWindowClass;
 		} else if (inputMode == OS.kWindowModalitySystemModal) {
+			//System.out.println("Shell.createHandle: kModalWindowClass");
 			windowClass= OS.kModalWindowClass;
 		} else if ((style & SWT.ON_TOP) != 0) {
-			windowClass= OS.kSheetWindowClass;
-			windowActivationScope= OS.kWindowActivationScopeNone;
+			//System.out.println("Shell.createHandle: SWT.ON_TOP");
+			//windowClass= OS.kFloatingWindowClass;
+			windowClass= OS.kHelpWindowClass;
 			decorations= 0;
 		} else {
+			//System.out.println("Shell.createHandle: kDocumentWindowClass");
 			windowClass= OS.kDocumentWindowClass;
 		}
 	}
 	
-	// check whether window class supports a given decoration
-	int allowedAttr= OS.GetAvailableWindowAttributes(windowClass);
-	if (decorations != (decorations & allowedAttr)) {
-		System.out.println("Shell.createHandle: some attributes are not supported");
-		decorations&= allowedAttr;	
+	// check whether window class supports a given decoration 
+	if ((decorations & OS.kWindowCloseBoxAttribute) != 0 &&
+			windowClass != OS.kDocumentWindowClass &&
+				windowClass != OS.kFloatingWindowClass &&
+					windowClass != OS.kUtilityWindowClass) {
+		decorations&= ~OS.kWindowCloseBoxAttribute;
+	}
+	if ((decorations & OS.kWindowFullZoomAttribute) != 0 &&
+			windowClass != OS.kDocumentWindowClass &&
+				windowClass != OS.kFloatingWindowClass &&
+					windowClass != OS.kUtilityWindowClass) {
+		decorations&= ~OS.kWindowFullZoomAttribute;
+	}
+	if ((decorations & OS.kWindowCollapseBoxAttribute) != 0 &&
+			windowClass != OS.kDocumentWindowClass) {
+		decorations&= ~OS.kWindowCollapseBoxAttribute;
+	}
+	if ((decorations & OS.kWindowCollapseBoxAttribute) != 0 &&
+			windowClass != OS.kDocumentWindowClass &&
+				windowClass != OS.kMovableModalWindowClass &&
+					windowClass != OS.kFloatingWindowClass &&
+						windowClass != OS.kUtilityWindowClass &&
+							windowClass != OS.kSheetWindowClass) {
+		decorations&= ~OS.kWindowCollapseBoxAttribute;
 	}
 
 	int[] wHandle= new int[1];
-	Rect bounds= new Rect();
-	OS.SetRect(bounds, (short)100, (short)100, (short)200, (short)200);
-	int rc= OS.CreateNewWindow(windowClass, decorations, bounds, wHandle);
-	if (rc != OS.noErr)
-		System.out.println("Shell.createHandle: can't create window: " + rc);
-	shellHandle= wHandle[0];
+	if (OS.CreateNewWindow(windowClass, decorations | OS.kWindowStandardHandlerAttribute, bounds.getData(), wHandle) == OS.kNoErr)
+		shellHandle= wHandle[0];
+	else {
+		System.out.println("Shell.createHandle: can't create window with these attributes; creating default window");
+		if (OS.CreateNewWindow(OS.kDocumentWindowClass, OS.kWindowStandardHandlerAttribute, bounds.getData(), wHandle) == OS.kNoErr)
+			shellHandle= wHandle[0];
+	}
+
 	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	
-	if (windowActivationScope != -1)	
-		if (OS.SetWindowActivationScope(shellHandle, windowActivationScope) != OS.noErr)
-			System.out.println("Shell.createHandle: can't set activation scope");
-	
 	if (themeBrush != 0)
-		OS.SetThemeWindowBackground(shellHandle, (short)themeBrush, false);
+		OS.SetThemeWindowBackground(shellHandle, themeBrush, false);
 	
 	// set modality
 	if (inputMode != OS.kWindowModalityNone) {
@@ -617,6 +652,20 @@ void createHandle (int index) {
 
 	/* Create scrolled handle */
 	createScrolledHandle (shellHandle);
+
+	/*
+	* Feature in Motif.  There is no way to get the single pixel
+	* border surrounding a TopLevelShell or a TransientShell.
+	* Also, attempts to set a border on either the shell handle
+	* or the main window handle fail.  The fix is to set the border
+	* on the client area.
+	*/
+    /* AW
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+		int [] argList2 = {OS.XmNborderWidth, 1};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
+	}
+    */
 }
 void deregister () {
 	super.deregister ();
@@ -734,11 +783,11 @@ public Rectangle getBounds () {
 	int border = argList [5];
 	*/
 	
-	Rect contentBounds= new Rect();
-	OS.GetWindowBounds(shellHandle, (short)OS.kWindowContentRgn, contentBounds);
+	MacRect contentBounds= new MacRect();
+	OS.GetWindowBounds(shellHandle, OS.kWindowContentRgn, contentBounds.getData());
 	
-	Rect bounds= new Rect();
-	OS.GetControlBounds(scrolledHandle, bounds);
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(scrolledHandle, bounds.getData());
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
 	int border= 0;
 	/* AW
@@ -746,9 +795,9 @@ public Rectangle getBounds () {
 	int height = argList [3] + trimHeight + (border * 2);
 	return new Rectangle (root_x [0], root_y [0], width, height);
     */
-	int width = bounds.right - bounds.left + trimWidth + (border * 2);
-	int height = bounds.bottom - bounds.top + trimHeight + (border * 2);
-	Rectangle r= new Rectangle (contentBounds.left, contentBounds.top, width, height);
+	int width = bounds.getWidth() + trimWidth + (border * 2);
+	int height = bounds.getHeight() + trimHeight + (border * 2);
+	Rectangle r= new Rectangle (contentBounds.getX(), contentBounds.getY(), width, height);
 	return r;
 	
 	/*
@@ -797,9 +846,9 @@ public Point getLocation () {
 	return new Point (root_x [0], root_y [0]);
     */
 	// returns the location of the contentArea
-	Rect bounds= new Rect();
-	OS.GetWindowBounds(shellHandle, (short)OS.kWindowContentRgn, bounds);
-	return new Point(bounds.left, bounds.top);
+	MacRect bounds= new MacRect();
+	OS.GetWindowBounds(shellHandle, OS.kWindowContentRgn, bounds.getData());
+	return bounds.getLocation();
 }
 public Shell getShell () {
 	checkWidget();
@@ -848,8 +897,8 @@ public Point getSize () {
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
 	int border = argList [5];
 	*/
-	Rect bounds= new Rect();
-	OS.GetControlBounds(scrolledHandle, bounds);
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(scrolledHandle, bounds.getData());
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
 	int border = 0;
 	/* AW
@@ -857,8 +906,8 @@ public Point getSize () {
 	int height = argList [3] + trimHeight + (border * 2);
 	return new Point (width, height);
     */
-	int width = bounds.right - bounds.left + trimWidth + (border * 2);
-	int height = bounds.bottom - bounds.top + trimHeight + (border * 2);
+	int width = bounds.getWidth() + trimWidth + (border * 2);
+	int height = bounds.getHeight() + trimHeight + (border * 2);
 	Point p= new Point (width, height);
 	//System.out.println("   Shell.getSize: " + p);
 	return p;
@@ -895,20 +944,22 @@ void hookEvents () {
 		OS.XmAddWMProtocolCallback (shellHandle, atom, windowProc, SWT.Dispose);
 	}
     */
-	Display display= getDisplay();
+	Display display= getDisplay();	
 	int ref= OS.GetWindowEventTarget(shellHandle);
 	int[] mask= new int[] {
 		OS.kEventClassWindow, OS.kEventWindowActivated,
 		OS.kEventClassWindow, OS.kEventWindowDeactivated,
 		OS.kEventClassWindow, OS.kEventWindowBoundsChanged,
 		OS.kEventClassWindow, OS.kEventWindowClose,
+		OS.kEventClassWindow, OS.kEventWindowDrawContent,
+
 		// the window only tracks the down and mouse wheel events;
 		// up, dragged, and move  events are handled by the application because
 		// we need to get these events even if the mouse is outside of the window.
 		OS.kEventClassMouse, OS.kEventMouseDown,
 		OS.kEventClassMouse, OS.kEventMouseWheelMoved,
 	};
-	OS.InstallEventHandler(ref, display.fWindowProc, mask.length / 2, mask, shellHandle, null);
+	OS.InstallEventHandler(ref, display.fWindowProc, mask, shellHandle);
 }
 int imeHeight () {
     /* AW
@@ -934,7 +985,7 @@ boolean isModal () {
 	return (argList [1] != -1 && argList [1] != OS.MWM_INPUT_MODELESS);
     */
 	int[] modalityKind= new int[1];
-	if (OS.GetWindowModality(shellHandle, modalityKind, null) == OS.noErr)
+	if (OS.GetWindowModality(shellHandle, modalityKind, null) == OS.kNoErr)
 		return modalityKind[0] != OS.kWindowModalityNone;
 	return false;
 }
@@ -947,10 +998,8 @@ void manageChildren () {
 	OS.XtSetMappedWhenManaged (shellHandle, false);
     */
 	super.manageChildren ();
-	Rect bounds= new Rect();
-	OS.GetAvailableWindowPositioningBounds(OS.GetMainDevice(), bounds);
-	int width = (bounds.right - bounds.left) * 5 / 8;
-	int height = (bounds.bottom - bounds.top) * 5 / 8;
+	int width = MacUtil.getDisplayWidth() * 5 / 8;
+	int height = MacUtil.getDisplayHeight() * 5 / 8;
 	OS.SizeWindow(shellHandle, (short)width, (short)height, true);
 }
 /**
@@ -985,24 +1034,23 @@ int processDispose (Object callData) {
 
 int processResize (Object callData) {
 
-	Rect bounds= new Rect();
+	MacRect bounds= new MacRect();
 
 	// outside bounds and location
-	OS.GetWindowBounds(shellHandle, (short)OS.kWindowStructureRgn, bounds);
-	int x= bounds.left;
-	int y= bounds.top;
+	OS.GetWindowBounds(shellHandle, OS.kWindowStructureRgn, bounds.getData());
+	int x= bounds.getX();
+	int y= bounds.getY();
 
 	// inside bounds and location
-	OS.GetWindowBounds(shellHandle, (short)OS.kWindowContentRgn, bounds);
-	int w= bounds.right - bounds.left;
-	int h= bounds.bottom - bounds.top;
+	OS.GetWindowBounds(shellHandle, OS.kWindowContentRgn, bounds.getData());
+	int w= bounds.getWidth();
+	int h= bounds.getHeight();
 		
 	boolean positionChanged= (oldX != x || oldY != y);
 	boolean sizeChanged= (oldWidth != w || oldHeight != h);
 
 	if (scrolledHandle != 0 && sizeChanged) {
-		OS.SetRect(bounds, (short)0, (short)0, (short)w, (short)h);
-		handleResize(scrolledHandle, bounds);
+		handleResize(scrolledHandle, new MacRect(0, 0, w, h));
 	}
 	
 	if (positionChanged) {

@@ -7,11 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.events.*;
 
 /**
  * Instances of the receiver represent a selectable user interface object
@@ -33,8 +32,6 @@ import org.eclipse.swt.internal.carbon.Rect;
 public /*final*/ class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
-	
-	private static final int SASH_WIDTH= 3;
 
 	private static int H_ARROW;
 	private static int V_ARROW;
@@ -154,9 +151,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.HORIZONTAL) != 0) {
-		width += DEFAULT_WIDTH;  height += SASH_WIDTH;
+		width += DEFAULT_WIDTH;  height += 3;
 	} else {
-		width += SASH_WIDTH; height += DEFAULT_HEIGHT;
+		width += 3; height += DEFAULT_HEIGHT;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
@@ -174,49 +171,46 @@ void createHandle (int index) {
 		OS.XmNancestorSensitive, 1,
 	};
 	*/
-	handle= OS.NewControl(0, new Rect(), null, false, (short)(OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick), (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
+	handle = MacUtil.createDrawingArea(parent.handle, -1, true, 0, 0, border);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
- 	MacUtil.insertControl(handle, parent.handle, -1);
-	OS.HIViewSetVisible(handle, true);
 }
 int defaultBackground () {
 	return getDisplay ().labelBackground;
 }
 void drawBand (int x, int y, int width, int height) {
-	GC gc= new GC(getParent());		// we draw outside of the Sash's bounds in its parent
-	gc.carbon_setClipAgainstChildren(false);	// we don't want to be clipped against our children
-	gc.setXORMode(true);
-	gc.fillRectangle(x, y, width, height);
-	gc.dispose();
+
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(parent.handle, bounds.getData());
+	x+= bounds.getX();
+	y+= bounds.getY();
+
+	int port= OS.GetPort();
+	OS.SetPortWindowPort(OS.GetControlOwner(handle));
+	OS.InvertRect((short)x, (short)y, (short)width, (short)height);
+	OS.SetPort(port);
 }
 void hookEvents () {
 	super.hookEvents ();
-	Display display= getDisplay();
-	
-	final int SIZEOF_INT= 4;
-	int[] data= new int[] { display.fUserPaneHitTestProc };
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, data.length*SIZEOF_INT, data);
-
-	int[] mask= new int[] {
-		OS.kEventClassControl, OS.kEventControlDraw,
-	};
-	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, mask.length/2, mask, handle, null);	
+	Display display= getDisplay();		
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, display.fUserPaneHitTestProc);
 }
+
 int processMouseDown (MacMouseEvent mmEvent) {
 	super.processMouseDown (mmEvent);
 
 	Point mp= MacUtil.toControl(parent.handle, mmEvent.getWhere());
 	startX = mp.x;  startY = mp.y;
 
-	Rect bounds= new Rect();
-	MacUtil.getControlBounds(handle, bounds);
-	int width = bounds.right-bounds.left, height = bounds.bottom-bounds.top;
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
+	int width = bounds.getWidth(), height = bounds.getHeight();
 	
-	Rect parentBounds= new Rect();
-	MacUtil.getControlBounds(parent.handle, parentBounds);
+	MacRect parentBounds= new MacRect();
+	OS.GetControlBounds(parent.handle, parentBounds.getData());
 	
-	lastX = bounds.left-parentBounds.left;
-	lastY = bounds.top-parentBounds.top;
+	lastX = bounds.getX()-parentBounds.getX();
+	lastY = bounds.getY()-parentBounds.getY();
 	
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
@@ -238,20 +232,20 @@ int processMouseMove (MacMouseEvent mmEvent) {
 	if (!dragging || (mmEvent.getButton() != 1)) return 0;
 	Point mp= MacUtil.toControl(parent.handle, mmEvent.getWhere());
 
-	Rect bounds= new Rect();
-	MacUtil.getControlBounds(handle, bounds);
-	int width = bounds.right-bounds.left, height = bounds.bottom-bounds.top;
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
+	int width = bounds.getWidth(), height = bounds.getHeight();
 	
-	Rect parentBounds= new Rect();
-	MacUtil.getControlBounds(parent.handle, parentBounds);
+	MacRect parentBounds= new MacRect();
+	OS.GetControlBounds(parent.handle, parentBounds.getData());
 
-	int x = bounds.left-parentBounds.left, y = bounds.top-parentBounds.top;
-	
+	int x = bounds.getX()-parentBounds.getX(), y = bounds.getY()-parentBounds.getY();
+
 	int newX = lastX, newY = lastY;
 	if ((style & SWT.VERTICAL) != 0) {
-		newX = Math.min (Math.max (0, x + (mp.x - startX)), parentBounds.right - parentBounds.left - width);
+		newX = Math.min (Math.max (0, x + (mp.x - startX)), parentBounds.getWidth() - width);
 	} else {
-		newY = Math.min (Math.max (0, y + (mp.y - startY)), parentBounds.bottom - parentBounds.top - height);
+		newY = Math.min (Math.max (0, y + (mp.y - startY)), parentBounds.getHeight() - height);
 	}
 	if (newX == lastX && newY == lastY) return 0;
 	drawBand (lastX, lastY, width, height);
@@ -274,9 +268,9 @@ int processMouseUp (MacMouseEvent mmEvent) {
 	if (!dragging) return 0;
 	dragging = false;
 
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	int width = bounds.right-bounds.left, height = bounds.bottom-bounds.top;
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
+	int width = bounds.getWidth(), height = bounds.getHeight();
 
 	Event event = new Event ();
 	//event.time = xEvent.time;
@@ -287,20 +281,29 @@ int processMouseUp (MacMouseEvent mmEvent) {
 	return 0;
 }
 int processPaint (Object callData) {
+	
 	GC gc= new GC(this);
 	MacControlEvent me= (MacControlEvent) callData;
-	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle(), me.getGCContext());
+	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle());
+	
 	if (! r.isEmpty()) {
 		Point e= getSize();
+		
+		// erase background
+		gc.fillRectangle(0, 0, e.x, e.y);
+		
 		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
-		if (e.x < e.y)	// vertical
+		if (e.x < e.y) {	// vertical
 			gc.fillRectangle ((e.x-1)/2, (e.y-20)/2, 1, 20);
-		else			// horizontal
+		} else {			// horizontal
 			gc.fillRectangle ((e.x-20)/2, (e.y-1)/2, 20, 1);
+		}
 	}
+	
 	gc.carbon_unfocus();
 	gc.dispose();
-	return OS.noErr;
+	
+	return 0;
 }
 /**
  * Removes the listener from the collection of listeners who will

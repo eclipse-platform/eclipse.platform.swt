@@ -7,10 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.*;
 
 /**
  * Instances of this class provide an etched border
@@ -117,6 +116,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
+	int parentHandle = parent.handle;
     /*
 	formHandle = OS.XmCreateForm (parentHandle, null, argList1, argList1.length / 2);
 	if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -132,10 +132,8 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateFrame (formHandle, null, argList2, argList2.length / 2);
     */
-	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)OS.kControlGroupBoxTextTitleProc, 0);
+	handle= MacUtil.newControl(parentHandle, OS.kControlGroupBoxTextTitleProc);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
- 	MacUtil.insertControl(handle, parent.handle, -1);
-	OS.HIViewSetVisible(handle, true);
 	setFont(defaultFont());
 }
 Font defaultFont () {
@@ -167,16 +165,8 @@ public Rectangle getClientArea () {
 	}
 	return new Rectangle (x, y, width, height);
     */
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	Rectangle r= new Rectangle (MARGIN, LABEL_HEIGHT,
-			bounds.right-bounds.left-(2*MARGIN), bounds.bottom-bounds.top-(LABEL_HEIGHT+MARGIN));
-	// never return negative values
-	if (r.x < 0) r.x= 0;
-	if (r.y < 0) r.y= 0;
-	if (r.width < 0) r.width= 0;
-	if (r.height < 0) r.height= 0;
-    return r;
+	Point e= getSize();
+    return new Rectangle(MARGIN, LABEL_HEIGHT, e.x-(2*MARGIN), e.y-(LABEL_HEIGHT+MARGIN));
 }
 /**
  * Returns the receiver's text, which is the string that the
@@ -193,7 +183,7 @@ public Rectangle getClientArea () {
 public String getText () {
 	checkWidget();
 	int[] sHandle= new int[1];
-    OS.CopyControlTitleAsCFString(handle, sHandle);
+    OS.GetControlTitleAsCFString(handle, sHandle);
 	return MacUtil.getStringAndRelease(sHandle[0]);
 }
 /* AW

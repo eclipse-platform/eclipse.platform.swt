@@ -7,10 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class represent a non-selectable
@@ -108,14 +107,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				wrap= true;
 				bounds[1]= (short) wHint;	// If we are wrapping text, calculate the height based on wHint.
 			}
-			String string= MacUtil.removeMnemonics(text);
-			char [] chars= new char [string.length()];
-			string.getChars(0, chars.length, chars, 0);
-			int sHandle= OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-			
+			int sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(text));
+					
 			GC gc= new GC(this);
-			gc.carbon_installFont();
-			OS.GetThemeTextDimensions(sHandle, (short)OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds, baseLine);
+			gc.installFont();
+			OS.GetThemeTextDimensions(sHandle, OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds, baseLine);
 			gc.dispose();
 			
 			OS.CFRelease(sHandle);
@@ -141,20 +137,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
+	int parentHandle = parent.handle;
 	int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
-	if ((style & SWT.SEPARATOR) != 0)
-   		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, (short)OS.kControlSeparatorLineProc, 0);
-	else
-	    handle= OS.NewControl(0, new Rect(), null, false, (short)(OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick), (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.insertControl(handle, parent.handle, -1);
 	if ((style & SWT.SEPARATOR) != 0) {
+  		handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, OS.kControlSeparatorLineProc);
 		if ((style & SWT.HORIZONTAL) != 0)
 			OS.SizeControl(handle, (short) 20, (short) 1);
 		else
 			OS.SizeControl(handle, (short) 1, (short) 20);	
+	} else {
+		handle = MacUtil.createDrawingArea(parentHandle, -1, true, 0, 0, borderWidth);
 	}
-	OS.HIViewSetVisible(handle, true);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 int defaultBackground () {
 	return getDisplay ().labelBackground;
@@ -229,13 +223,8 @@ public String getText () {
 }
 void hookEvents () {
 	super.hookEvents ();
-	if ((style & SWT.SEPARATOR) != 0)
-		return;
-	Display display= getDisplay();
-	int[] mask= new int[] {
-		OS.kEventClassControl, OS.kEventControlDraw,
-	};
-	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, mask.length/2, mask, handle, null);	
+	Display display= getDisplay();		
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
 }
 /* AW
 boolean mnemonicHit (char key) {
@@ -262,19 +251,20 @@ boolean mnemonicMatch (char key) {
 }
 */
 int processPaint (Object callData) {
-	if ((style & SWT.SEPARATOR) != 0) return OS.eventNotHandledErr;
+	if ((style & SWT.SEPARATOR) != 0) return 0;
 	
 	GC gc= new GC(this);
 	MacControlEvent me= (MacControlEvent) callData;
-	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle(), me.getGCContext());
+	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle());
+	
 	if (! r.isEmpty()) {
 		
-		Rect bounds= new Rect();
+		MacRect bounds= new MacRect();
 		int hndl= topHandle();
-		OS.GetControlBounds(hndl, bounds);
+		OS.GetControlBounds(hndl, bounds.getData());
 	
-		int w= bounds.right - bounds.left;
-		int h= bounds.bottom - bounds.top;
+		int w= bounds.getWidth();
+		int h= bounds.getHeight();
 		int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
 		
 		gc.fillRectangle(0, 0, r.width, r.height);
@@ -301,9 +291,9 @@ int processPaint (Object callData) {
 			else if ((style & SWT.CENTER) != 0)
 				just= 1;
 			MacUtil.RGBForeColor(enabled ? 0x000000 : 0x808080);
-			gc.carbon_installFont();
-			OS.SetRect(bounds, (short)borderWidth, (short)borderWidth, (short)(w-borderWidth), (short)(h-borderWidth));
-			OS.DrawThemeTextBox(sHandle, (short)OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds, just, 0);
+			gc.installFont();
+			bounds.set(borderWidth, borderWidth, w-2*borderWidth, h-2*borderWidth);
+			OS.DrawThemeTextBox(sHandle, OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds.getData(), just, 0);
 			OS.CFRelease(sHandle);
 		}
 		
@@ -311,12 +301,15 @@ int processPaint (Object callData) {
 			gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
 			gc.drawRectangle(0, 0, w-1, h-1);
 		}
+		
+		// AW: debugging
+		//gc.drawRectangle(0, 0, r.width-1, r.height-1);
 	}
 	
 	gc.carbon_unfocus();
 	gc.dispose();
 	
-	return OS.noErr;
+	return 0;
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
@@ -424,6 +417,21 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;
+
+	/* Strip out mnemonic marker symbols, and remember the mnemonic. */
+	char [] unicode = new char [string.length ()];
+	string.getChars (0, unicode.length, unicode, 0);
+	int i=0, j=0, mnemonic=0;
+	while (i < unicode.length) {
+		if ((unicode [j++] = unicode [i++]) == Mnemonic) {
+			if (i == unicode.length) {continue;}
+			if (unicode [i] == Mnemonic) {i++; continue;}
+			if (mnemonic == 0) mnemonic = unicode [i];
+			j--;
+		}
+	}
+	while (j < unicode.length) unicode [j++] = 0;
+
 	redrawWidget (0, 0, 0, 0, false);
 }
 }

@@ -7,13 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.EventRecord;
-import org.eclipse.swt.internal.carbon.TXNLongRect;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -32,16 +29,18 @@ import org.eclipse.swt.internal.carbon.TXNLongRect;
  * </p>
  */
 public class Text extends Scrollable {
+	// AW
 	private static final int FOCUS_BORDER= 3;
 	private static final int MARGIN= 0; // 2;
 
-	private int textLimit= LIMIT;
-	private int tx;
-	private int txFrameID;
-	private Rectangle txFrameBounds;
-	private boolean txVisible= true;
+	private int fTextLimit= LIMIT;
+	private int fTX;
+	private int fFrameID;
+	private Rectangle fFrameBounds;
+	// AW
 	
 	char echoCharacter;
+	// AW int drawCount;
 
 	public static final int LIMIT;
 	public static final String DELIMITER;
@@ -192,8 +191,8 @@ public void append (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	string = Display.convertToLf (string);
-	int length = OS.TXNDataSize(tx) / 2;
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+	int length = OS.TXNDataSize(fTX) / 2;
+	if (hooks (SWT.Verify)) {
 		string = verifyText (string, length, length);
 		if (string == null) return;
 	}
@@ -218,34 +217,32 @@ static int checkStyle (int style) {
  */
 public void clearSelection () {
 	checkWidget();
-	syncBounds();
-	OS.TXNSetSelection(tx, OS.kTXNStartOffset, OS.kTXNStartOffset);	// AW todo: wrong
+	OS.TXNSetSelection(fTX, OS.kTXNStartOffset, OS.kTXNStartOffset);	// AW: wrong
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = wHint;
 	int height = hHint;
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
-		int size= OS.TXNDataSize(tx);
+		int size= OS.TXNDataSize(fTX);
 		if (size == 0) {
 			if (hHint == SWT.DEFAULT) {
 				if ((style & SWT.SINGLE) != 0) {
-					TXNLongRect oTextRect= new TXNLongRect();
-					OS.TXNGetRectBounds(tx, null, null, oTextRect);
-					height= oTextRect.bottom - oTextRect.top;
-				} else {
+					int[] textBounds= new int[4];
+					OS.TXNGetRectBounds(fTX, null, null, textBounds);
+					height= textBounds[2]-textBounds[0];
+				} else
 					height= DEFAULT_HEIGHT;
-				}
 			}
 			if (wHint == SWT.DEFAULT)
 				width= DEFAULT_WIDTH;
 		} else {
-			TXNLongRect oTextRect = new TXNLongRect();
-			OS.TXNGetRectBounds(tx, null, null, oTextRect);
+			int[] textBounds= new int[4];
+			OS.TXNGetRectBounds(fTX, null, null, textBounds);
 			if (hHint == SWT.DEFAULT)
-				height= oTextRect.bottom - oTextRect.top;					
+				height= textBounds[2]-textBounds[0];					
 			if (wHint == SWT.DEFAULT)
-				width= oTextRect.right - oTextRect.left;
+				width= textBounds[3]-textBounds[1];
 		}
 	}
 	if (horizontalBar != null) {
@@ -307,7 +304,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
  */
 public void copy () {
 	checkWidget();
-	OS.TXNCopy(tx);
+	OS.TXNCopy(fTX);
 }
 void createHandle (int index) {
 	state |= HANDLE;
@@ -336,10 +333,17 @@ void createHandle (int index) {
 		frameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
 	
 	int parentHandle= parent.handle;
-    handle= OS.NewControl(0, new Rect(), null, false, (short)(OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick), (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
+	handle= MacUtil.createDrawingArea(parentHandle, -1, true, 0, 0, 0);		
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.insertControl(handle, parentHandle, -1);
-	OS.HIViewSetVisible(handle, true);
+
+	int wHandle= OS.GetControlOwner(parentHandle);
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
+	int frameType= OS.kTXNTextEditStyleFrameType;
+	int iFileType= OS.kTXNUnicodeTextFile;
+	int iPermanentEncoding= OS.kTXNSystemDefaultEncoding;
+	int[] tnxObject= new int[1];
+	int[] frameID= new int[1];
 	
 	/*
 	 * Since MLTE is no real control it must embed its scrollbars in the root control.
@@ -349,10 +353,14 @@ void createHandle (int index) {
 	 * This is done in two steps: before creating the MLTE object with TXNNewObject
 	 * we count the number of controls under the root control. Second step: see below.
 	 */
-	int wHandle= OS.GetControlOwner(parentHandle);	
-	int[] rootHandle= new int[1];
-	OS.GetRootControl(wHandle, rootHandle);
-	int root= rootHandle[0];
+	int root;
+	if (true) {
+		int[] rootHandle= new int[1];
+		OS.GetRootControl(wHandle, rootHandle);
+		root= rootHandle[0];
+	} else {
+		root= OS.HIViewGetRoot(wHandle);
+	}
 	short[] cnt= new short[1];
 	OS.CountSubControls(root, cnt);
 	short oldCount= cnt[0];
@@ -360,16 +368,9 @@ void createHandle (int index) {
 	/*
 	 * Create the MLTE object (and possibly 0-2 scrollbars)
 	 */
-	int frameType= OS.kTXNTextEditStyleFrameType;
-	int iFileType= OS.kTXNUnicodeTextFile;
-	int iPermanentEncoding= OS.kTXNSystemDefaultEncoding;
-	int[] tnxObject= new int[1];
-	int[] frameID= new int[1];
-	Rect bounds= new Rect();
-	MacUtil.getControlBounds(handle, bounds);
-	int status= OS.TXNNewObject(0, wHandle, bounds, frameOptions, frameType, iFileType,
-					iPermanentEncoding, tnxObject, frameID, handle);
-	if (status != OS.noErr)
+	int status= OS.TXNNewObject(0, wHandle, bounds.getData(), frameOptions, frameType, iFileType, iPermanentEncoding,
+						tnxObject, frameID, handle);
+	if (status != OS.kNoErr)
 		error(SWT.ERROR_NO_HANDLES);
 		
 	/*
@@ -381,32 +382,27 @@ void createHandle (int index) {
 	short newCount= newCnt[0];
 	int[] child= new int[1];
 	for (short i= newCount; i > oldCount; i--) {
-		int rc= OS.GetIndexedSubControl(root, i, child);
-		//OS.HIViewRemoveFromSuperview(child[0]);
+		OS.GetIndexedSubControl(root, i, child);
+		OS.HIViewRemoveFromSuperview(child[0]);
 		OS.HIViewAddSubview(handle, child[0]);
-		//WidgetTable.put(child[0], this);
 	}
 	
-	tx= tnxObject[0];
-	txFrameID= frameID[0];
-	OS.TXNActivate(tx, txFrameID, OS.kScrollBarsSyncWithFocus);
+	fTX= tnxObject[0];
+	fFrameID= frameID[0];
+	OS.TXNActivate(fTX, fFrameID, OS.kScrollBarsSyncWithFocus);
 	
-	OS.TXNFocus(tx, false);
+	OS.TXNFocus(fTX, false);
 	/*
 	 * If the widget remains empty the caret will be too short.
 	 * As a workaround initialize the widget with a single character
 	 * and immediately remove it afterwards.
 	 */
-	OS.TXNSetData(tx, OS.kTXNUnicodeTextData, new char[] { ' ' }, 2, 0, 0);
-	OS.TXNSetData(tx, OS.kTXNUnicodeTextData, new char[0], 0, 0, 1);
+	OS.TXNSetData(fTX, new char[] { ' ' }, 0, 0);
+	OS.TXNSetData(fTX, new char[0], 0, 1);
 	
-	Rect margins= new Rect();
-	margins.top= margins.left= margins.bottom= margins.right= MARGIN;
-	int ptr= OS.NewPtr(Rect.sizeof);
-	OS.memcpy(ptr, margins, Rect.sizeof);
-	OS.TXNSetTXNObjectControls(tx, false, 1, new int[] { OS.kTXNMarginsTag }, new int[] {ptr});
-	OS.DisposePtr(ptr);
-	OS.TXNSetTXNObjectControls(tx, false, 1, new int[] { OS.kTXNDoFontSubstitution }, new int[] { 1 });
+	OS.setTXNMargins(fTX, (short)MARGIN);
+
+	OS.TXNSetTXNObjectControls(fTX, false, 1, new int[] { OS.kTXNDoFontSubstitution }, new int[] { 1 });
 }	
 ScrollBar createScrollBar (int type) {
 	return createStandardBar (type);
@@ -428,15 +424,14 @@ ScrollBar createScrollBar (int type) {
  */
 public void cut () {
 	checkWidget();
-	syncBounds();
-	OS.TXNCut(tx);
+	OS.TXNCut(fTX);
 }
 void destroyWidget () {
 	super.destroyWidget();
-	if (tx != 0) {
+	if (fTX != 0) {
 		//System.out.println("Text.destroyWidget");
-		OS.TXNDeleteObject(tx);
-		tx= 0;
+		OS.TXNDeleteObject(fTX);
+		fTX= 0;
 	}
 }
 int defaultBackground () {
@@ -487,15 +482,15 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget();
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
 	int [] start= new int [1], end= new int [1];
-	OS.TXNGetSelection(tx, start, end);
-	org.eclipse.swt.internal.carbon.Point loc= new org.eclipse.swt.internal.carbon.Point();
-	OS.TXNOffsetToPoint(tx, end[0], loc);
-	Point p= new Point(loc.h, loc.v);
-	p.x-= bounds.left;
-	p.y-= bounds.top;
+	OS.TXNGetSelection(fTX, start, end);
+	MacPoint loc= new MacPoint();
+	OS.TXNOffsetToPoint(fTX, end[0], loc.getData());
+	Point p= loc.toPoint();
+	p.x-= bounds.getX();
+	p.y-= bounds.getY();
 	return p;
 }
 /**
@@ -517,7 +512,7 @@ public int getCaretPosition () {
 	return OS.XmTextGetInsertionPosition (handle);
     */
 	int [] start= new int [1], end= new int [1];
-	OS.TXNGetSelection(tx, start, end);
+	OS.TXNGetSelection(fTX, start, end);
 	return end[0];
 }
 /**
@@ -532,7 +527,7 @@ public int getCaretPosition () {
  */
 public int getCharCount () {
 	checkWidget();
-	return OS.TXNDataSize(tx) / 2;
+	return OS.TXNDataSize(fTX) / 2;
 }
 /**
  * Gets the double click enabled flag.
@@ -607,7 +602,7 @@ public boolean getEditable () {
 public int getLineCount () {
 	checkWidget();
 	int[] lineTotal= new int[1];
-	OS.TXNGetLineCount(tx, lineTotal);
+	OS.TXNGetLineCount(fTX, lineTotal);
 	return lineTotal[0];
 }
 /**
@@ -697,7 +692,7 @@ int getLineNumber (int position) {
 public Point getSelection () {
 	checkWidget();
 	int [] start = new int [1], end = new int [1];
-	OS.TXNGetSelection(tx, start, end);
+	OS.TXNGetSelection(fTX, start, end);
 	return new Point (start [0], end [0]);
 }
 /**
@@ -713,7 +708,7 @@ public Point getSelection () {
 public int getSelectionCount () {
 	checkWidget();
 	int [] start = new int [1], end = new int [1];
-	OS.TXNGetSelection(tx, start, end);
+	OS.TXNGetSelection(fTX, start, end);
 	return end [0] - start [0];
 }
 /**
@@ -806,7 +801,7 @@ public String getText (int start, int end) {
  */
 public int getTextLimit () {
 	checkWidget();
-    return textLimit;
+    return fTextLimit;
 }
 /**
  * Returns the zero-relative index of the line which is currently
@@ -880,11 +875,8 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNmodifyVerifyCallback, windowProc, SWT.Verify);
     */
 	Display display= getDisplay();		
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
-	int[] mask= new int[] {
-		OS.kEventClassControl, OS.kEventControlDraw,
-	};
-	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, mask.length/2, mask, handle, null);
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, display.fUserPaneHitTestProc);
 }
 /**
  * Inserts a string.
@@ -903,9 +895,9 @@ public void insert (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	string = Display.convertToLf (string);
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+	if (hooks (SWT.Verify)) {
 		int [] start = new int [1], end = new int [1];
-		OS.TXNGetSelection(tx, start, end);
+		OS.TXNGetSelection(fTX, start, end);
 		string = verifyText (string, start [0], end [0]);
 		if (string == null) return;
 	}
@@ -929,8 +921,7 @@ public void insert (String string) {
  */
 public void paste () {
 	checkWidget();
-	syncBounds();
-	OS.TXNPaste(tx);
+	OS.TXNPaste(fTX);
 }
 int processFocusIn () {
 	super.processFocusIn ();
@@ -938,9 +929,8 @@ int processFocusIn () {
 	if (handle == 0) return 0;
 	if ((style & SWT.READ_ONLY) != 0) return 0;
 	
-	syncBounds();
-	drawFrame(0);
-	OS.TXNFocus(tx, true);
+	drawFrame(null);
+	OS.TXNFocus(fTX, true);
 	
 	if ((style & SWT.MULTI) != 0) return 0;
     /* AW
@@ -956,9 +946,8 @@ int processFocusOut () {
 	if ((style & SWT.READ_ONLY) != 0) return 0;
 	
 	//fgTextInFocus= null;
-	syncBounds();
-	OS.TXNFocus(tx, false);
-	drawFrame(0);
+	OS.TXNFocus(fTX, false);
+	drawFrame(null);
 	
 	if ((style & SWT.MULTI) != 0) return 0;
     /* AW
@@ -969,20 +958,16 @@ int processFocusOut () {
 }
 int processMouseDown (MacMouseEvent mmEvent) {
 	if (isEnabled()) {
-		EventRecord eventRecord = new EventRecord();
-		if (OS.ConvertEventRefToEventRecord(mmEvent.getEventRef(), eventRecord)) {
-			OS.TXNClick(tx, eventRecord);
-		}
+		int macEvent[]= mmEvent.toOldMacEvent();
+		if (macEvent != null)
+			OS.TXNClick(fTX, macEvent);
 	}
-	return OS.noErr;
+	return 0;
 }
 int processPaint (Object callData) {
-	syncBounds();
-	int damageRegion= 0;
-	if (callData instanceof MacControlEvent)
-		damageRegion= ((MacControlEvent)callData).getDamageRegionHandle();
-	drawFrame(damageRegion);
-	return OS.noErr;
+	syncBounds(null);
+	drawFrame(callData);
+	return 0;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -1064,8 +1049,7 @@ public void removeVerifyListener (VerifyListener listener) {
  */
 public void selectAll () {
 	checkWidget();
-	syncBounds();
-	OS.TXNSelectAll(tx);
+	OS.TXNSelectAll(fTX);
 }
 /**
  * Sets the double click enabled flag.
@@ -1110,8 +1094,7 @@ public void setEchoChar (char echo) {
 	checkWidget();
 	if (echoCharacter == echo) return;
 	echoCharacter = echo;
-	syncBounds();
-	OS.TXNEchoMode(tx, echo, 0, echo != '\0');
+	OS.TXNEchoMode(fTX, echo, 0, echo != '\0');
 }
 /**
  * Sets the editable state.
@@ -1143,7 +1126,6 @@ public void setEditable (boolean editable) {
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
-	syncBounds();
 	super.setRedraw(redraw);
 // AW
 //	if (redraw) {
@@ -1178,8 +1160,7 @@ public void setRedraw (boolean redraw) {
  */
 public void setSelection (int start) {
 	checkWidget();
-	syncBounds();
-	OS.TXNSetSelection(tx, start, start);
+	OS.TXNSetSelection(fTX, start, start);
 }
 /**
  * Sets the selection.
@@ -1207,8 +1188,7 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget();
-	syncBounds();
-	OS.TXNSetSelection(tx, start, end);
+	OS.TXNSetSelection(fTX, start, end);
 }
 /**
  * Sets the selection.
@@ -1280,13 +1260,14 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	string = Display.convertToLf (string);
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		int length = OS.TXNDataSize(tx) / 2;
+	if (hooks (SWT.Verify)) {
+		int length = OS.TXNDataSize(fTX) / 2;
 		string = verifyText (string, 0, length);
 		if (string == null) return;
 	}
 	replaceTXNText(OS.kTXNStartOffset, OS.kTXNEndOffset, string);
-	revealBeginning();
+	
+	showBeginning();
 }
 /**
  * Sets the maximum number of characters that the receiver
@@ -1311,7 +1292,7 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	textLimit= limit;
+	fTextLimit= limit;
 }
 /**
  * Sets the zero-relative index of the line which is currently
@@ -1365,8 +1346,7 @@ void setWrap (boolean wrap) {
  */
 public void showSelection () {
 	checkWidget();
-	syncBounds();
-	OS.TXNShowSelection(tx, false);
+	OS.TXNShowSelection(fTX, false);
 }
 int traversalCode () {
 	int bits = super.traversalCode ();
@@ -1389,8 +1369,8 @@ String verifyText (String string, int start, int end) {
 }
 String verifyText (String string, int start, int end, Event keyEvent) {
 
-	int size= (OS.TXNDataSize(tx) / 2) - (end-start);
-	if (size + string.length() > textLimit)
+	int size= (OS.TXNDataSize(fTX) / 2) - (end-start);
+	if (size + string.length() > fTextLimit)
 		return null;
 
 	Event event = new Event ();
@@ -1417,37 +1397,31 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 ///////////////////////////////////////////
 	
 	private void replaceTXNText(int start, int end, String s) {
-		
-		// before touch anything we have to synch visibility
-		syncBounds();
-		
 		int l= s.length();
 		char[] chars= new char[l];
 		s.getChars(0, l, chars, 0); 
-		OS.TXNSetData(tx, OS.kTXNUnicodeTextData, chars, chars.length * 2, start, end);
+		OS.TXNSetData(fTX, chars, start, end);
+		
+		//syncBounds(null);
 		
 		sendEvent (SWT.Modify);
 	}
 		
 	private String getTXNText(int start, int end) {
 		int[] dataHandle= new int[1];
-		OS.TXNGetData(tx, start, end, dataHandle);
+		OS.TXNGetData(fTX, start, end, dataHandle);
 		int length= OS.GetHandleSize(dataHandle[0]);
 		if (length <= 0)
 			return "";
-		int[] ptr= new int[1];
-		OS.HLock(dataHandle[0]);
-		OS.memcpy(ptr, dataHandle[0], 4);
 		char[] chars= new char[length/2];
-		OS.memcpy(chars, ptr[0], length);
-		OS.HUnlock(dataHandle[0]);
+		OS.getHandleData(dataHandle[0], chars);
 		OS.DisposeHandle(dataHandle[0]);
 		return new String(chars);
 	}
 	
 	int sendKeyEvent(int type, MacEvent mEvent, Event event) {
 	
-		int status= OS.noErr;	// we handled the event
+		int status= OS.kNoErr;	// we handled the event
 		
 		if ((mEvent.getModifiers() & OS.cmdKey) != 0) {
 			int kind= mEvent.getKind();
@@ -1477,7 +1451,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		int eRefHandle= mEvent.getEventRef();
 		int nextHandler= mEvent.getNextHandler();
 
-		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		if (hooks (SWT.Verify)) {
 
 			// extract characters from event
 			String unicode= mEvent.getText();
@@ -1486,7 +1460,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 			
 			// send verify event
 			int[] start= new int[1], end= new int[1];
-			OS.TXNGetSelection(tx, start, end);
+			OS.TXNGetSelection(fTX, start, end);
 			
 			if (text.length() == 1) {
 				switch (text.charAt(0)) {
@@ -1509,12 +1483,12 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 			char[] newChars= new char[l];
 			string.getChars(0, l, newChars, 0);		
 			if (true) {
-				OS.SetEventParameter(eRefHandle, OS.kEventParamTextInputSendText, OS.typeUnicodeText, newChars.length * 2, newChars);
+				OS.SetEventParameter(eRefHandle, OS.kEventParamTextInputSendText, OS.typeUnicodeText, newChars);
 				status= OS.CallNextEventHandler(nextHandler, eRefHandle);
 			} else {
-				OS.TXNSetSelection(tx, start[0], end[0]);
-				OS.TXNSetData(tx, OS.kTXNUnicodeTextData, newChars, newChars.length * 2, OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection);
-				OS.TXNSetSelection(tx, start[0], start[0]+newChars.length);
+				OS.TXNSetSelection(fTX, start[0], end[0]);
+				OS.TXNSetData(fTX, newChars, OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection);
+				OS.TXNSetSelection(fTX, start[0], start[0]+newChars.length);
 			}
 		} else {
 			status= OS.CallNextEventHandler(nextHandler, eRefHandle);
@@ -1525,104 +1499,95 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		return status;
 	}
 
-	void handleResize(int hndl, Rect bounds) {
+	void handleResize(int hndl, MacRect bounds) {
 		super.handleResize(hndl, bounds);
-		syncBounds();
+		syncBounds(bounds);
 	}
 	
-	/**
-	 * Synchronize the size and visibilty of the MLTEtext with the underlying user pane.	 */
-	private void syncBounds() {
+	private void syncBounds(MacRect b) {
 		
-		if (tx == 0)
-			return;			
-		
-		boolean isShowing= isShowing();
-		if (isShowing != txVisible) {
-			txVisible= isShowing;
-			int[] tags= new int[] { OS.kTXNVisibilityTag };
-			int[] data= new int[] { txVisible ? 1 : 0 };
-			OS.TXNSetTXNObjectControls(tx, false, tags.length, tags, data);
-		}
-		
-		if (!isShowing)
+		if (fTX == 0)
 			return;
-				
-		Rect b= new Rect();
-		MacUtil.getControlBounds(handle, b);
-
-		// this is just too hard to explain...
-		OS.HIViewSetBoundsOrigin(handle, b.left, b.top);
-				
+	
+		if (b == null) {
+			b= new MacRect();
+			OS.GetControlBounds(handle, b.getData());
+		}
+	
+		int x= b.getX();
+		int y= b.getY();
+		int w= b.getWidth();
+		int h= b.getHeight();
+		
 		if ((style & SWT.BORDER) != 0) {
-			b.left+= FOCUS_BORDER;
-			b.top+= FOCUS_BORDER;
-			b.right-= FOCUS_BORDER;
-			b.bottom-= FOCUS_BORDER;
+			x+= FOCUS_BORDER;
+			y+= FOCUS_BORDER;
+			w-= 2*FOCUS_BORDER;
+			h-= 2*FOCUS_BORDER;
 		}
 		
-		Rectangle newBounds= new Rectangle(b.left, b.top, b.right-b.left, b.bottom-b.top);
-		if (txFrameBounds == null || !txFrameBounds.equals(newBounds)) {
-			OS.TXNSetFrameBounds(tx, b.top, b.left, b.bottom, b.right, txFrameID);
-			OS.HIViewSetNeedsDisplay(handle, true);
-			txFrameBounds= newBounds;
+		Rectangle oldRect= fFrameBounds;
+		fFrameBounds= new Rectangle(x, y, w, h);
+		if (oldRect == null || !oldRect.equals(fFrameBounds)) {
+			OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
 		}
 		
-		OS.TXNDraw(tx, 0);
+		OS.TXNDraw(fTX, 0);
 	}
 	
-	private void drawFrame(int damageRegion) {
+	private void drawFrame(Object callData) {
 
 		if ((style & SWT.BORDER) == 0)
 			return;
 			
-		GC gc= new GC(this);		
-		Rectangle r= gc.carbon_focus(damageRegion);
-		if (!r.isEmpty()) {
-			Rect bounds= new Rect();
-			OS.GetControlBounds(handle, bounds);
-			OS.SetRect(bounds, (short)0, (short)0, (short)(bounds.right - bounds.left), (short)(bounds.bottom - bounds.top));
-			int m= FOCUS_BORDER;
-			bounds.left+= m;
-			bounds.top+= m;
-			bounds.right-= m;
-			bounds.bottom-= m+1;
-			
-			Rect fbounds= new Rect();
-			OS.GetControlBounds(handle, fbounds);
-			OS.SetRect(fbounds, (short)0, (short)0, (short)(fbounds.right - fbounds.left), (short)(fbounds.bottom - fbounds.top));
-			int fm= FOCUS_BORDER;
-			fbounds.left+= fm;
-			fbounds.top+= fm+1;
-			fbounds.right-= fm;
-			fbounds.bottom-= fm+1;
-			
-			if ((style & SWT.READ_ONLY) == 0) {
-				if (getDisplay().getFocusControl() == this) {
-					OS.DrawThemeEditTextFrame(bounds, OS.kThemeStateActive);
-					OS.DrawThemeFocusRect(fbounds, true);
+		GC gc= new GC(this);
+		int damageRegion= 0;
+		if (callData instanceof MacControlEvent)
+			damageRegion= ((MacControlEvent)callData).getDamageRegionHandle();
+		try {
+			Rectangle r= gc.carbon_focus(damageRegion);
+			if (!r.isEmpty()) {
+				MacRect bounds= new MacRect();
+				OS.GetControlBounds(handle, bounds.getData());
+				bounds.setLocation(0, 0);
+				int m= FOCUS_BORDER;
+				bounds.inset(m, m, m, m+1);
+				
+				MacRect fbounds= new MacRect();
+				OS.GetControlBounds(handle, fbounds.getData());
+				fbounds.setLocation(0, 0);
+				int fm= FOCUS_BORDER;
+				fbounds.inset(fm, fm+1, fm, fm+1);
+				
+				
+				if ((style & SWT.READ_ONLY) == 0) {
+					if (getDisplay().getFocusControl() == this) {
+						OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
+						OS.DrawThemeFocusRect(fbounds.getData(), true);
+					} else {
+						OS.DrawThemeFocusRect(fbounds.getData(), false);
+						OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
+					}
 				} else {
-					OS.DrawThemeFocusRect(fbounds, false);
-					OS.DrawThemeEditTextFrame(bounds, OS.kThemeStateActive);
+					OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
 				}
-			} else {
-				OS.DrawThemeEditTextFrame(bounds, OS.kThemeStateActive);
+				
 			}
-			
+		} finally {
+			gc.carbon_unfocus();
 		}
-		gc.carbon_unfocus();
-		revealBeginning();
+		showBeginning();
 	}
 	
-	private void revealBeginning() {
+	private void showBeginning() {
 		int[] start= new int[1], end= new int [1];
-		OS.TXNGetSelection(tx, start, end);
+		OS.TXNGetSelection(fTX, start, end);
 		if (start[0] != 0 || end[0] != 0) {
-			OS.TXNSetSelection(tx, 0, 0);
-			OS.TXNShowSelection(tx, false);
-			OS.TXNSetSelection(tx, start[0], end[0]);
+			OS.TXNSetSelection(fTX, 0, 0);
+			OS.TXNShowSelection(fTX, false);
+			OS.TXNSetSelection(fTX, start[0], end[0]);
 		} else {
-			OS.TXNShowSelection(tx, false);
+			OS.TXNShowSelection(fTX, false);
 		}
 	}
 }

@@ -7,9 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
 
 /**
  * Instances of this class provide an i-beam that is typically used
@@ -89,10 +89,28 @@ boolean drawCaret () {
 		nHeight = rect.height;
 	}
 	if (nWidth <= 0) nWidth = 2;
-	GC gc= new GC(parent);
-	gc.setXORMode(true);
-	gc.fillRectangle(x, y, nWidth, nHeight);
-	gc.dispose();
+	
+	int clipRgn= OS.NewRgn();
+	MacUtil.getVisibleRegion(parent.handle, clipRgn, true);
+
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(parent.handle, bounds.getData());
+	bounds= new MacRect(x+bounds.getX(), y+bounds.getY(), nWidth, nHeight);
+	
+	int caretRgn= OS.NewRgn();
+	OS.RectRgn(caretRgn, bounds.getData());
+	OS.SectRgn(caretRgn, clipRgn, caretRgn);
+	
+	if (!OS.EmptyRgn(caretRgn)) {
+		int port= OS.GetPort();
+		OS.SetPortWindowPort(OS.GetControlOwner(handle));	
+		OS.InvertRgn(caretRgn);
+		OS.SetPort(port);
+	}
+	
+	OS.DisposeRgn(clipRgn);
+	OS.DisposeRgn(caretRgn);
+
 	return true;
 }
 /**
@@ -378,7 +396,6 @@ public void setImage (Image image) {
 	if (isShowing) hideCaret ();
 	this.image = image;
 	if (isShowing) showCaret ();
-	System.out.println("Caret.setImage: nyi");
 }
 /**
  * Sets the receiver's location to the point specified by
