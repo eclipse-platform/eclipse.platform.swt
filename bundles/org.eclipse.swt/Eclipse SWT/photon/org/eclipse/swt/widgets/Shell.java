@@ -726,6 +726,7 @@ int hotkeyProc (int w, int data, int info) {
 public void open () {
 	checkWidget();
 	setVisible (true);
+	if (isDisposed ()) return;
 	traverseGroup (true);
 }
 
