@@ -273,7 +273,6 @@ Point computeSize () {
 }
 void createWidget (int index) {
 	super.createWidget (index);
-	toolTipText = "";
 	parent.relayout ();
 }
 public void dispose () {
@@ -890,13 +889,13 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return parent.translateTraversal (key, xEvent);
 }
 int processMouseHover (int id) {
-	if (toolTipText == null || toolTipText.length () == 0) {
+	if (parent.toolTipText != null) {
 		return parent.processMouseHover (id);
 	}
 	Display display = getDisplay ();
 	Event event = new Event ();
-	Point local = parent.toControl (display.getCursorLocation ());
-	event.x = local.x; event.y = local.y;
+	Point point = parent.toControl (display.getCursorLocation ());
+	event.x = point.x; event.y = point.y;
 	parent.postEvent (SWT.MouseHover, event);
 	display.showToolTip (handle, toolTipText);
 	return 0;

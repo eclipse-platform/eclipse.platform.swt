@@ -42,7 +42,7 @@ public class TabFolder extends Composite {
 	int topTabIndex = 0;									// index of the first visible tab. Used for tab scrolling
 	boolean scrollButtonDown = false;						// true=one of the scroll buttons is being pushed
 	boolean inDispose = false;
-	String toolTipText = "";
+	String toolTipText;
 
 	// internal constants
 	static final int SCROLL_BUTTON_SIZE = 20;				// width/height of the scroll button used for scrolling tab items
@@ -783,15 +783,19 @@ void mouseDown(Event event) {
 }
 void mouseHover(Event event) {
 	String current = super.getToolTipText();
-	Point point = new Point(event.x, event.y);
-	for (int i=0; i<items.length; i++) {
-		if (items[i].getBounds().contains(point)) {
-			String string = items[i].getToolTipText();
-			if (!string.equals(current)) {
-				super.setToolTipText(string);
+	if (toolTipText == null) {
+		Point point = new Point(event.x, event.y);
+		for (int i=0; i<items.length; i++) {
+			if (items[i].getBounds().contains(point)) {
+				String string = items[i].getToolTipText();
+				if (string != null && !string.equals(current)) {
+					super.setToolTipText(string);
+				}
+				return;
 			}
-			return;
 		}
+		if (current != null) super.setToolTipText(null);
+		return;
 	}
 	if (!toolTipText.equals(current)) {
 		super.setToolTipText(toolTipText);

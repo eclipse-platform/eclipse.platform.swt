@@ -1441,8 +1441,8 @@ int processMouseExit (int callData) {
 int processMouseHover (int id) {
 	Display display = getDisplay ();
 	Event event = new Event ();
-	Point local = toControl (display.getCursorLocation ());
-	event.x = local.x; event.y = local.y;
+	Point point = toControl (display.getCursorLocation ());
+	event.x = point.x; event.y = point.y;
 	postEvent (SWT.MouseHover, event);
 	display.showToolTip (handle, toolTipText);
 	return 0;
