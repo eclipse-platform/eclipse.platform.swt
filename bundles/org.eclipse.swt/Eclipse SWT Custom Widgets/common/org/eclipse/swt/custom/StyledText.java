@@ -3169,7 +3169,8 @@ void doSelectionPageUp() {
  */
 void doSelectionWordNext() {
 	int newCaretOffset = getWordEnd(caretOffset);
-	advancing = true;
+	// Force symmetrical movement for word next and previous. Fixes 14536
+	advancing = false;
 	// don't change caret position if in single line mode and the cursor 
 	// would be on a different line. fixes 5673
 	if (isSingleLine() == false || 
