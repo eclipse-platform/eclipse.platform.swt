@@ -5,9 +5,9 @@ package org.eclipse.swt.widgets;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
  
 /**
  * Instances of this class are selectable user interface
@@ -104,6 +104,43 @@ public CoolItem (CoolBar parent, int style, int index) {
 	super(parent, 0);
 	this.parent = parent;
 	parent.createItem (this, index);
+}
+/**
+ * Adds the listener to the collection of listeners that will
+ * be notified when the control is selected, by sending it one
+ * of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ * <p>
+ * If <code>widgetSelected</code> is called when the mouse is over
+ * the drop-down arrow (or 'chevron') portion of the cool item,
+ * the event object detail field contains the value <code>SWT.ARROW</code>,
+ * and the x and y fields in the event object represent the point at
+ * the bottom left of the chevron, where the menu should be popped up.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ * @see SelectionEvent
+ * 
+ * @since 2.0
+ */
+public void addSelectionListener(SelectionListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Selection,typedListener);
+	addListener (SWT.DefaultSelection,typedListener);
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
@@ -255,6 +292,40 @@ public void setSize (Point size) {
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
 }
+/**
+ * Returns the minimum width that the cool item can
+ * be resized to using the cool item's gripper.
+ * 
+ * @return the minimum width of the cool item, in pixels
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ */
+public int getMinimumWidth () {
+	checkWidget ();
+	return 0;
+}
+
+/**
+ * Sets the minimum width that the cool item can
+ * be resized to using the cool item's gripper.
+ * 
+ * @param width the minimum width of the cool item, in pixels
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ */
+public void setMinimumWidth (int width) {
+	checkWidget ();
+}
 void setBounds (int x, int y, int width, int height) {
 	itemBounds.x = x;
 	itemBounds.y = y;
@@ -286,5 +357,30 @@ public void setPreferredSize (Point size) {
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
 	setPreferredSize(size.x, size.y);
 }
-	
+/**
+ * Removes the listener from the collection of listeners that
+ * will be notified when the control is selected.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ * 
+ * @since 2.0
+ */
+public void removeSelectionListener(SelectionListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Selection, listener);
+	eventTable.unhook (SWT.DefaultSelection,listener);	
+}
 }
