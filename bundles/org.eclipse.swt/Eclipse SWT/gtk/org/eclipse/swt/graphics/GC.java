@@ -263,7 +263,7 @@ public void drawFocus(int x, int y, int width, int height) {
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
 	OS.gdk_gc_set_foreground(handle, color);
-	OS.gdk_draw_rectangle(data.drawable, handle, 0, x, y, width, height);
+	OS.gdk_draw_rectangle(data.drawable, handle, 0, x, y, width - 1, height - 1);
 	color.pixel = values.foreground_pixel;
 	color.red = values.foreground_red;
 	color.green = values.foreground_green;
