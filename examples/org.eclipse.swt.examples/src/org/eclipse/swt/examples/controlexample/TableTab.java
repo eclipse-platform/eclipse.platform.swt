@@ -62,7 +62,7 @@ class TableTab extends ScrollableTab {
 		super.createColorGroup();
 		
 		tableItemGroup = new Group (colorGroup, SWT.NONE);
-		tableItemGroup.setText (ControlExample.getResourceString ("Item_Colors"));
+		tableItemGroup.setText (ControlExample.getResourceString ("Table_Item_Colors"));
 		GridData data = new GridData ();
 		data.horizontalSpan = 2;
 		tableItemGroup.setLayoutData (data);
@@ -238,10 +238,7 @@ class TableTab extends ScrollableTab {
 		drawImage (image, color);
 		itemBackgroundButton.setImage (image);
 		if (itemBackgroundColor == null) return;
-		TableItem [] items = table1.getSelection ();
-		for (int i = 0; i < items.length; i++) {
-			items [i].setBackground (itemBackgroundColor);
-		}
+		table1.getItem (0).setBackground (itemBackgroundColor);
 	}
 	
 	/**
@@ -255,10 +252,7 @@ class TableTab extends ScrollableTab {
 		drawImage (image, color);
 		itemForegroundButton.setImage (image);
 		if (itemForegroundColor == null) return;
-		TableItem [] items = table1.getSelection ();
-		for (int i = 0; i < items.length; i++) {
-			items [i].setForeground (itemForegroundColor);
-		}
+		table1.getItem (0).setForeground (itemForegroundColor);
 	}
 	
 	/**
