@@ -155,6 +155,10 @@ void drawBand (int x, int y, int width, int height) {
 	OS.XFreePixmap (display, stipplePixmap);
 	OS.XFreeGC (display, gc);
 }
+void propagateWidget (boolean enabled) {
+	int xCursor = enabled && super.cursor != null ? super.cursor.handle : cursor;
+	propagateHandle (enabled, handle, xCursor);
+}
 void realizeChildren () {
 	super.realizeChildren ();
 	int xWindow = OS.XtWindow (handle);
@@ -166,9 +170,9 @@ void realizeChildren () {
 	} else {
 		cursor = OS.XCreateFontCursor (xDisplay, OS.XC_sb_h_double_arrow);
 	}
-	if (super.cursor != null) return;
-	if (!isEnabled ()) return;
-	OS.XDefineCursor (xDisplay, xWindow, cursor);
+	if (super.cursor == null && isEnabled ()) {
+		OS.XDefineCursor (xDisplay, xWindow, cursor);
+	}
 }
 void releaseWidget () {
 	super.releaseWidget ();
