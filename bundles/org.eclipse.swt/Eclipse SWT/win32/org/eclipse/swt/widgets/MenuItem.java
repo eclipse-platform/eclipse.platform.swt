@@ -541,8 +541,14 @@ public void setEnabled (boolean enabled) {
 		info.fMask = OS.MIIM_STATE;
 		boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
 		if (!success) error (SWT.ERROR_CANNOT_SET_ENABLED);
-		info.fState &= ~(OS.MFS_DISABLED | OS.MFS_GRAYED);
-		if (!enabled) info.fState |= (OS.MFS_DISABLED | OS.MFS_GRAYED);
+		int bits = OS.MFS_DISABLED | OS.MFS_GRAYED;
+		if (enabled) {
+			if ((info.fState & bits) == 0) return;
+			info.fState &= ~bits;
+		} else {
+			if ((info.fState & bits) == bits) return;
+			info.fState |= bits;
+		}
 		success = OS.SetMenuItemInfo (hMenu, id, false, info);
 		if (!success) error (SWT.ERROR_CANNOT_SET_ENABLED);
 	}
@@ -745,6 +751,7 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
+	if (text.equals (string)) return;
 	super.setText (string);
 	boolean fixPPCMenuBar = false;
 	if (OS.IsPPC) {
