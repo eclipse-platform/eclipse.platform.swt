@@ -974,16 +974,8 @@ void setActiveControl (Control control) {
 	}
 }
 
-void setBounds (int x, int y, int width, int height, int flags) {
-	if (OS.IsWinCE) {
-		swFlags = OS.SW_RESTORE;
-	} else {
-		if (OS.IsIconic (handle) || OS.IsZoomed (handle)) {
-			setPlacement (x, y, width, height, flags);
-			return;
-		}
-	}
-	SetWindowPos (handle, 0, x, y, width, height, flags);
+void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+	super.setBounds (x, y, width, height, flags, false);
 }
 
 public void setEnabled (boolean enabled) {

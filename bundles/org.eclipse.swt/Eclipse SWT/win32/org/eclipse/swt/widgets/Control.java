@@ -1868,44 +1868,48 @@ public void setBounds (int x, int y, int width, int height) {
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
-	if (parent == null) {
+	setBounds (x, y, width, height, flags, true);
+}
+
+void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
+	if (defer && parent != null) {
+		forceResize ();
+		WINDOWPOS [] lpwp = parent.lpwp;
+		if (lpwp == null) {
+			/*
+			* This code is intentionally commented.  All widgets that
+			* are created by SWT have WS_CLIPSIBLINGS to ensure that
+			* application code does not draw outside of the control.
+			*/
+//			int count = parent.getChildrenCount ();
+//			if (count > 1) {
+//				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+//				if ((bits & OS.WS_CLIPSIBLINGS) == 0) flags |= OS.SWP_NOCOPYBITS;
+//			}
+			SetWindowPos (handle, 0, x, y, width, height, flags);
+		} else {
+			int index = 0;
+			while (index < lpwp.length) {
+				if (lpwp [index] == null) break;
+				index ++;
+			}
+			if (index == lpwp.length) {
+				WINDOWPOS [] newLpwp = new WINDOWPOS [lpwp.length + 4];
+				System.arraycopy (lpwp, 0, newLpwp, 0, lpwp.length);
+				parent.lpwp = lpwp = newLpwp;
+			}
+			WINDOWPOS wp = new WINDOWPOS ();
+			wp.hwnd = handle;
+			wp.x = x;
+			wp.y = y;
+			wp.cx = width;
+			wp.cy = height;
+			wp.flags = flags;
+			lpwp [index] = wp;
+		}
+	} else {
 		SetWindowPos (handle, 0, x, y, width, height, flags);
-		return;
 	}
-	forceResize ();
-	WINDOWPOS [] lpwp = parent.lpwp;
-	if (lpwp == null) {
-		/*
-		* This code is intentionally commented.  All widgets that
-		* are created by SWT have WS_CLIPSIBLINGS to ensure that
-		* application code does not draw outside of the control.
-		*/
-//		int count = parent.getChildrenCount ();
-//		if (count > 1) {
-//			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//			if ((bits & OS.WS_CLIPSIBLINGS) == 0) flags |= OS.SWP_NOCOPYBITS;
-//		}
-		SetWindowPos (handle, 0, x, y, width, height, flags);
-		return;
-	}
-	int index = 0;
-	while (index < lpwp.length) {
-		if (lpwp [index] == null) break;
-		index ++;
-	}
-	if (index == lpwp.length) {
-		WINDOWPOS [] newLpwp = new WINDOWPOS [lpwp.length + 4];
-		System.arraycopy (lpwp, 0, newLpwp, 0, lpwp.length);
-		parent.lpwp = lpwp = newLpwp;
-	}
-	WINDOWPOS wp = new WINDOWPOS ();
-	wp.hwnd = handle;
-	wp.x = x;
-	wp.y = y;
-	wp.cx = width;
-	wp.cy = height;
-	wp.flags = flags;
-	lpwp [index] = wp;
 }
 
 /**

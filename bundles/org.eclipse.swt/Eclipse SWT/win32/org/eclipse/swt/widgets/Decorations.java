@@ -101,6 +101,7 @@ public class Decorations extends Canvas {
 	Control savedFocus;
 	Button defaultButton, saveDefault;
 	int swFlags, hAccel, nAccel;
+	boolean moved, resized;
 	int oldX = OS.CW_USEDEFAULT, oldY = OS.CW_USEDEFAULT;
 	int oldWidth = OS.CW_USEDEFAULT, oldHeight = OS.CW_USEDEFAULT;
 
@@ -720,15 +721,25 @@ void saveFocus () {
 	}
 }
 
-void setBounds (int x, int y, int width, int height, int flags) {
+void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	if (OS.IsWinCE) {
-		super.setBounds (x, y, width, height, flags);
+		swFlags = OS.SW_RESTORE;
+	} else {
+		if (OS.IsIconic (handle) || OS.IsZoomed (handle)) {
+			setPlacement (x, y, width, height, flags);
+			return;
+		}
 	}
-	if (OS.IsIconic (handle) || OS.IsZoomed (handle)) {
-		setPlacement (x, y, width, height, flags);
-		return;
+	forceResize ();
+	RECT rect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	if ((OS.SWP_NOMOVE & flags) == 0) {
+		moved = rect.left != x || rect.top != y;
 	}
-	super.setBounds (x, y, width, height, flags);
+	if ((OS.SWP_NOSIZE & flags) == 0) {
+		resized = rect.right - rect.left != width || rect.bottom - rect.top != height;
+	}
+	super.setBounds (x, y, width, height, flags, defer);
 }
 
 /**
@@ -1491,7 +1502,7 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 LRESULT WM_MOVE (int wParam, int lParam) {
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
-	if (rect.left == oldX && rect.top == oldY) {
+	if (moved && rect.left == oldX && rect.top == oldY) {
 		return null;
 	}
 	oldX = rect.left;
@@ -1540,7 +1551,7 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {
-	if ((lParam & 0xFFFF) == oldWidth && (lParam >> 16) == oldHeight) {
+	if (resized && (lParam & 0xFFFF) == oldWidth && (lParam >> 16) == oldHeight) {
 		return null;
 	}
 	oldWidth = lParam & 0xFFFF;
