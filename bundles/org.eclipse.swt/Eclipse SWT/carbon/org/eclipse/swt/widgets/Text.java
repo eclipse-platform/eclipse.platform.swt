@@ -357,7 +357,7 @@ String getTXNText (int iStartOffset, int iEndOffset) {
 	if (oDataHandle [0] == 0) return "";
 	int length = OS.GetHandleSize (oDataHandle [0]);
 	if (length == 0) return "";
-	int [] ptr= new int [1];
+	int [] ptr = new int [1];
 	OS.HLock (oDataHandle [0]);
 	OS.memcpy (ptr, oDataHandle [0], 4);
 	char [] buffer = new char [length / 2];
@@ -533,7 +533,7 @@ boolean sendKeyEvent (int type, Event event) {
 		return false;
 	}
 	if (newText != oldText) setTXNText (start, end, newText);
-	sendEvent (SWT.Modify);
+	postEvent (SWT.Modify);
 	return newText == oldText;
 }
 
