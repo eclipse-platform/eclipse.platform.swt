@@ -1027,9 +1027,10 @@ void postEvent (Event event) {
 public boolean readAndDispatch () {
 	checkDevice ();
 	if (OS.PeekMessage (msg, 0, 0, 0, OS.PM_REMOVE)) {
-		if (filterMessage (msg)) return false;
-		OS.TranslateMessage (msg);
-		OS.DispatchMessage (msg);
+		if (!filterMessage (msg)) {
+			OS.TranslateMessage (msg);
+			OS.DispatchMessage (msg);
+		}
 		runDeferredEvents ();
 		return true;
 	}

@@ -1387,8 +1387,7 @@ public boolean readAndDispatch () {
 		}
 		if ((status & OS.XtIMXEvent) != 0) {
 			OS.XtAppNextEvent (xtContext, xEvent);
-			if (filterEvent (xEvent)) return false;
-			OS.XtDispatchEvent (xEvent);
+			if (!filterEvent (xEvent)) OS.XtDispatchEvent (xEvent);
 		}
 		runDeferredEvents ();
 		return true;
