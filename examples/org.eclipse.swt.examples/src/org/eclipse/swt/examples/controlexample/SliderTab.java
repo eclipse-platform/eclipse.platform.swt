@@ -21,9 +21,6 @@ class SliderTab extends RangeTab {
 	/* Scale widgets added to the "Control" group */
 	Scale incrementScale, pageIncrementScale, thumbScale;
 	
-	/* Flag for setting slider background color */
-	boolean defaultColor = true;
-	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
