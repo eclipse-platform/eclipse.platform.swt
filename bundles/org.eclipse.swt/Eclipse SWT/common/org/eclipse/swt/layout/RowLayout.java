@@ -10,6 +10,13 @@ import org.eclipse.swt.widgets.*;
 
 public final class RowLayout extends Layout {
 	/**
+	 * type specifies whether the layout places controls in rows or 
+	 * columns.
+	 * 
+	 * The default value is horizontal.
+	 */
+	public int type = SWT.HORIZONTAL;	
+	/**
 	 * wrap specifies whether a control will be wrapped to the next
 	 * row if there is insufficient space on the current row.
 	 *
@@ -68,7 +75,11 @@ public final class RowLayout extends Layout {
 public RowLayout () {
 }
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
-	Point extent = layout (composite, false, (wHint != SWT.DEFAULT) && wrap, wHint, flushCache);
+	Point extent;
+	if (type == SWT.HORIZONTAL)
+		extent = layoutHorizontal (composite, false, (wHint != SWT.DEFAULT) && wrap, wHint, flushCache);
+	else
+		extent = layoutVertical (composite, false, (hHint != SWT.DEFAULT) && wrap, wHint, flushCache);
 	if (wHint != SWT.DEFAULT) extent.x = wHint;
 	if (hHint != SWT.DEFAULT) extent.y = hHint;
 	return extent;
@@ -84,9 +95,12 @@ Point getSize (Control control, boolean flushCache) {
 }
 protected void layout (Composite composite, boolean flushCache) {
 	Rectangle clientArea = composite.getClientArea ();
-	layout (composite, true, wrap, clientArea.width, flushCache);
+	if (type == SWT.HORIZONTAL)
+		layoutHorizontal (composite, true, wrap, clientArea.width, flushCache);
+	else	
+		layoutVertical (composite, true, wrap, clientArea.height, flushCache);
 }
-Point layout (Composite composite, boolean move, boolean wrap, int width, boolean flushCache) {
+Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int width, boolean flushCache) {
 	Control [] children = composite.getChildren ();
 	int count = children.length;
 	int childWidth = 0, childHeight = 0, maxHeight = 0;
@@ -146,5 +160,67 @@ Point layout (Composite composite, boolean move, boolean wrap, int width, boolea
 		}
 	}
 	return new Point (maxX, y + maxHeight + marginBottom);
+}
+
+Point layoutVertical (Composite composite, boolean move, boolean wrap, int height, boolean flushCache) {
+	Control [] children = composite.getChildren ();
+	int count = children.length;
+	int childWidth = 0, childHeight = 0, maxWidth = 0;
+	if (!pack) {
+		for (int i=0; i<count; i++) {
+			Control child = children [i];
+			Point pt = getSize (child, flushCache);
+			childWidth = Math.max (childWidth, pt.x);
+			childHeight = Math.max (childHeight, pt.y);
+		}
+		maxWidth = childWidth;
+	}
+	int clientX = 0, clientY = 0;
+	if (move) {
+		Rectangle rect = composite.getClientArea ();
+		clientX = rect.x;  clientY = rect.y;
+	}
+	boolean wrapped = false;
+	Rectangle [] bounds = null;
+	if (move && justify) bounds = new Rectangle [count];
+	int maxY = 0, x = marginLeft, y = marginTop;
+	for (int i=0; i<count; i++) {
+		Control child = children [i];
+		if (pack) {
+			Point pt = getSize (child, flushCache);
+			childWidth = pt.x;  childHeight = pt.y;
+		}
+		if (wrap && (i != 0) && (y + childHeight > height)) {
+			wrapped = true;
+			x += spacing + maxWidth;  y = marginTop;
+		}
+		if (pack) {
+			maxWidth = Math.max (maxWidth, childWidth);
+		}
+		if (move) {
+			int childX = x + clientX, childY = y + clientY;
+			if (justify) {
+				bounds [i] = new Rectangle (childX, childY, childWidth, childHeight);
+			} else {
+				child.setBounds (childX, childY, childWidth, childHeight);
+			}
+		}
+		y += spacing + childHeight;
+		maxY = Math.max (maxY, y);
+	}
+	if (!wrap) maxY = y + marginBottom;
+	if (move && justify) {
+		int space = 0, margin = 0;
+		if (!wrapped) {
+			space = Math.max (0, (height - maxY) / (count + 1));
+			margin = Math.max (0, ((height - maxY) % (count + 1)) / 2);
+		}
+		for (int i=0; i<count; i++) {
+			Control child = children [i];
+			bounds [i].y += (space * (i + 1)) + margin;
+			child.setBounds (bounds [i]);
+		}
+	}
+	return new Point (x + maxWidth + marginRight, maxY);
 }
 }
