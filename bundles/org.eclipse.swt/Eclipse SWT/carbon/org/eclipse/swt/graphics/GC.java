@@ -1787,6 +1787,14 @@ public void setBackground(Color color) {
  */
 public void setClipping(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (width < 0) {
+		x = x + width;
+		width = -width;
+	}
+	if (height < 0) {
+		y = y + height;
+		height = -height;
+	}
 	if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
 	OS.SetRectRgn(data.clipRgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
 	data.updateClip = true;
@@ -1809,14 +1817,11 @@ public void setClipping(Rectangle r) {
 		if (data.clipRgn != 0) {
 			OS.DisposeRgn(data.clipRgn);
 			data.clipRgn = 0;
-		} else {
-			return;
+			data.updateClip = true;
 		}
-	} else {
-		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
-		OS.SetRectRgn(data.clipRgn, (short)r.x, (short)r.y, (short)(r.x + r.width), (short)(r.y + r.height));
+		return;
 	}
-	data.updateClip = true;
+	setClipping (r.x, r.y, r.width, r.height);
 }
 
 /**
