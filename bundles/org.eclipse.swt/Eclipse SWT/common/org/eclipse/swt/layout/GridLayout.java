@@ -1,7 +1,7 @@
 package org.eclipse.swt.layout;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 import org.eclipse.swt.*;
@@ -102,6 +102,8 @@ public GridLayout() {
  *
  * @param numColumns the number of columns in the grid
  * @param makeColumnsEqualWidth whether or not the columns will have equal width
+ * 
+ * @since 2.0
  */
 public GridLayout(int numColumns, boolean makeColumnsEqualWidth) {
 	this.numColumns = numColumns;
