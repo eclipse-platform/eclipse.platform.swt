@@ -139,6 +139,8 @@ public class Display extends Device {
 		{OS.Pk_Shift_R,   SWT.SHIFT},
 		{OS.Pk_Control_L, SWT.CONTROL},
 		{OS.Pk_Control_R, SWT.CONTROL},
+//		{OS.Pk_????, SWT.COMMAND},
+//		{OS.Pk_????, SWT.COMMAND},
 			
 //		{OS.VK_LBUTTON, SWT.BUTTON1},
 //		{OS.VK_MBUTTON, SWT.BUTTON3},
@@ -178,27 +180,37 @@ public class Display extends Device {
 		{OS.Pk_F10,	SWT.F10},
 		{OS.Pk_F11,	SWT.F11},
 		{OS.Pk_F12,	SWT.F12},
-		
-		
+		{OS.Pk_F13,	SWT.F13},
+		{OS.Pk_F14,	SWT.F14},
+		{OS.Pk_F15,	SWT.F15},
+
 		/* Numeric Keypad Keys */
-		/*
-		{OS.XK_KP_Add,		SWT.KP_PLUS},
-		{OS.XK_KP_Subtract,	SWT.KP_MINUS},
-		{OS.XK_KP_Multiply,	SWT.KP_TIMES},
-		{OS.XK_KP_Divide,	SWT.KP_DIVIDE},
-		{OS.XK_KP_Decimal,	SWT.KP_PERIOD},
-		{OS.XK_KP_Enter,	SWT.KP_ENTER},
-		{OS.XK_KP_0,		SWT.KP_0},
-		{OS.XK_KP_1,		SWT.KP_1},
-		{OS.XK_KP_2,		SWT.KP_2},
-		{OS.XK_KP_3,		SWT.KP_3},
-		{OS.XK_KP_4,		SWT.KP_4},
-		{OS.XK_KP_5,		SWT.KP_5},
-		{OS.XK_KP_6,		SWT.KP_6},
-		{OS.XK_KP_7,		SWT.KP_7},
-		{OS.XK_KP_8,		SWT.KP_8},
-		{OS.XK_KP_9,		SWT.KP_9},
-		*/
+		{OS.Pk_KP_Multiply,	SWT.KEYPAD_TIMES},
+		{OS.Pk_KP_Add,		SWT.KEYPAD_PLUS},
+		{OS.Pk_KP_Enter,	SWT.KEYPAD_CR},
+		{OS.Pk_KP_Subtract,	SWT.KEYPAD_MINUS},
+		{OS.Pk_KP_Decimal,	SWT.KEYPAD_DECIMAL},
+		{OS.Pk_KP_Divide,	SWT.KEYPAD_DIVIDE},
+		{OS.Pk_KP_0,		SWT.KEYPAD_0},
+		{OS.Pk_KP_1,		SWT.KEYPAD_1},
+		{OS.Pk_KP_2,		SWT.KEYPAD_2},
+		{OS.Pk_KP_3,		SWT.KEYPAD_3},
+		{OS.Pk_KP_4,		SWT.KEYPAD_4},
+		{OS.Pk_KP_5,		SWT.KEYPAD_5},
+		{OS.Pk_KP_6,		SWT.KEYPAD_6},
+		{OS.Pk_KP_7,		SWT.KEYPAD_7},
+		{OS.Pk_KP_8,		SWT.KEYPAD_8},
+		{OS.Pk_KP_9,		SWT.KEYPAD_9},
+
+		/* Other keys */
+		{OS.Pk_Caps_Lock,	SWT.CAPS_LOCK},
+		{OS.Pk_Num_Lock,	SWT.NUM_LOCK},
+		{OS.Pk_Scroll_Lock,	SWT.SCROLL_LOCK},
+		{OS.Pk_Pause,		SWT.PAUSE},
+		{OS.Pk_Break,		SWT.BREAK},
+		{OS.Pk_Print,		SWT.PRINT_SCREEN},
+		{OS.Pk_Help,		SWT.HELP},
+
 	};
 	
 	/* Multiple Displays. */

@@ -1052,17 +1052,27 @@ boolean setInputState (Event event, int type, int key_mods, int button_state) {
 }
 
 boolean setKeyState (Event event, int type, PhKeyEvent_t ke) {
-	boolean isNull = false;
-	/*
-	* Fetuare in Photon.  The key_sym value is not valid when Ctrl
-	* or Alt is pressed. The fix is to detect this case and try to
-	* use the key_cap value.
-	*/
 	int key = 0;
-	if ((ke.key_flags & OS.Pk_KF_Sym_Valid) != 0) {
-		event.keyCode = Display.translateKey (key = ke.key_sym);
-	} else if ((ke.key_flags & OS.Pk_KF_Cap_Valid) != 0) {
-		event.keyCode = Display.translateKey (key = ke.key_cap);
+	boolean isNull = false;
+	if ((ke.key_flags & OS.Pk_KF_Cap_Valid) != 0) {
+		key = ke.key_cap;
+		if ((ke.key_mods & OS.Pk_KM_Num_Lock) == 0) {
+			switch (key) {
+				case OS.Pk_KP_0: key = OS.Pk_Insert; break;
+				case OS.Pk_KP_1: key = OS.Pk_End; break;
+				case OS.Pk_KP_2: key = OS.Pk_Down; break;
+				case OS.Pk_KP_3: key = OS.Pk_Pg_Down; break;
+				case OS.Pk_KP_4: key = OS.Pk_Left; break;
+				case OS.Pk_KP_5: break;
+				case OS.Pk_KP_6: key = OS.Pk_Right; break;
+				case OS.Pk_KP_7: key = OS.Pk_Home; break;
+				case OS.Pk_KP_8: key = OS.Pk_Up; break;
+				case OS.Pk_KP_9: key = OS.Pk_Pg_Up; break;
+				case OS.Pk_KP_Decimal: key = OS.Pk_Delete; break;
+			}
+			
+		}
+		event.keyCode = Display.translateKey (key);
 	}
 	switch (key) {
 		case OS.Pk_BackSpace:		event.character = '\b'; break;
@@ -1075,23 +1085,24 @@ boolean setKeyState (Event event, int type, PhKeyEvent_t ke) {
 		case OS.Pk_KP_Tab:
 		case OS.Pk_Tab: 	event.character = '\t'; break;
 		/* These keys have no mapping in SWT yet */
-		case OS.Pk_Break:
 		case OS.Pk_Clear:
-		case OS.Pk_Pause:
-		case OS.Pk_Print:
 		case OS.Pk_Menu:
-		case OS.Pk_Help:
 		case OS.Pk_Hyper_L:
 		case OS.Pk_Hyper_R:
-		case OS.Pk_Caps_Lock:
-		case OS.Pk_Num_Lock:
-		case OS.Pk_Scroll_Lock:	break;
+			break;
 		default: {
 			if (event.keyCode == 0) {
 				if ((ke.key_flags & OS.Pk_KF_Cap_Valid) != 0) {
 					event.keyCode = ke.key_cap;
 				}
-				if ((ke.key_mods & (OS.Pk_KM_Alt | OS.Pk_KM_Ctrl)) != 0) {
+			}
+			/*
+			* Fetuare in Photon.  The key_sym value is not valid when Ctrl
+			* or Alt is pressed. The fix is to detect this case and try to
+			* use the key_cap value.
+			*/
+			if ((ke.key_mods & (OS.Pk_KM_Alt | OS.Pk_KM_Ctrl)) != 0) {
+				if (0 <= key && key <= 0x7F) {
 					if ((ke.key_mods & OS.Pk_KM_Ctrl) != 0) {
 						isNull = key == '@';
 						if ('a' <= key && key <= 'z') key -= 'a' - 'A';
@@ -1099,15 +1110,17 @@ boolean setKeyState (Event event, int type, PhKeyEvent_t ke) {
 						event.character = (char) key;
 						isNull &= key == 0;
 					} else {
-						event.character = (char) key;			
+						if ((ke.key_flags & OS.Pk_KF_Sym_Valid) != 0) {
+							event.character = (char) ke.key_sym;
+						}
 					}
-				} else {
-					byte [] buffer = new byte [6];
-					int length = OS.PhKeyToMb (buffer, ke);
-					if (length > 0) {
-						char [] unicode = Converter.mbcsToWcs (null, buffer);
-						if (unicode.length > 0) event.character = unicode [0];
-					}
+				}
+			} else {
+				byte [] buffer = new byte [6];
+				int length = OS.PhKeyToMb (buffer, ke);
+				if (length > 0) {
+					char [] unicode = Converter.mbcsToWcs (null, buffer);
+					if (unicode.length > 0) event.character = unicode [0];
 				}
 			}
 		}
