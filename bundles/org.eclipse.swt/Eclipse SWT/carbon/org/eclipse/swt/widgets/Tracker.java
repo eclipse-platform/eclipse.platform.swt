@@ -340,10 +340,16 @@ void drawRectangles (int window, Rectangle [] rects, boolean erase) {
 	OS.CGContextScaleCTM (context [0], 1, -1);
 	OS.CGContextTranslateCTM (context [0], 0, portRect.top - portRect.bottom);
 	CGRect cgRect = new CGRect ();
+	Point parentOrigin;
+	if (parent != null) {
+		parentOrigin = display.map (parent, null, 0, 0);
+	} else {
+		parentOrigin = new Point (0, 0);	
+	}
 	for (int i=0; i<rects.length; i++) {
 		Rectangle rect = rects [i];
-		cgRect.x = rect.x;
-		cgRect.y = rect.y;
+		cgRect.x = rect.x + parentOrigin.x;
+		cgRect.y = rect.y + parentOrigin.y;
 		cgRect.width = rect.width;
 		cgRect.height = rect.height;
 		if (erase) {
