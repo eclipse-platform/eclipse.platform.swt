@@ -139,13 +139,15 @@ void createHandle (int index) {
 void createScrolledHandle (int topHandle) {
 	scrolledHandle = OS.XmCreateMainWindow (topHandle, null, null, 0);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	Display display = getDisplay ();
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+		int thickness = display.buttonShadowThickness;
 		int [] argList1 = {
 			OS.XmNmarginWidth, 3,
 			OS.XmNmarginHeight, 3, 
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 			OS.XmNshadowType, OS.XmSHADOW_IN,
-			OS.XmNshadowThickness, 2,
+			OS.XmNshadowThickness, thickness,
 		};
 		formHandle = OS.XmCreateForm (scrolledHandle, null, argList1, argList1.length / 2);
 		if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -171,7 +173,6 @@ void createScrolledHandle (int topHandle) {
 		handle = OS.XmCreateDrawingArea (scrolledHandle, null, argList, argList.length / 2);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	Display display = getDisplay ();
 	OS.XtOverrideTranslations (handle, display.tabTranslations);
 	OS.XtOverrideTranslations (handle, display.arrowTranslations);
 }

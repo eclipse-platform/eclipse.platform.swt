@@ -402,6 +402,17 @@ void createWidget (int index) {
 		*/
 		realizeChildren ();
 	}
+	/*
+	* Bug in Motif.  When drag and drop is attempted in an
+	* Override shell, Motif segment faults.  The fix is to
+	* detect this case and disable the drag sequence.
+	*/
+//	Shell shell = getShell ();
+//	int shellHandle = shell.shellHandle;
+//	if (OS.XtIsSubclass (shellHandle, OS.OverrideShellWidgetClass ()))  {
+//		Display display = getDisplay ();
+//		OS.XtOverrideTranslations (handle, display.dragTranslations);
+//	}
 }
 int defaultBackground () {
 	return getDisplay ().defaultBackground;

@@ -324,7 +324,7 @@ void createHandle (int index) {
 		if ((style & SWT.BORDER) == 0) {
 			int [] argList3 = new int [] {
 				OS.XmNmarginHeight, 0,
-				OS.XmNshadowThickness, 0
+				OS.XmNshadowThickness, 0,
 			};
 			OS.XtSetValues (handle, argList3, argList3.length / 2);
 		}

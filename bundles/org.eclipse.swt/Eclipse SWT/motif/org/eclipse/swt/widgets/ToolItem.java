@@ -561,8 +561,8 @@ public void setSelection (boolean selected) {
 	setDrawPressed(set);
 	if ((parent.style & SWT.FLAT) != 0) {
 		Display display = getDisplay ();
-		int shadowThickness = set ? display.buttonShadowThickness : 0;
-		int [] argList = {OS.XmNshadowThickness, shadowThickness};
+		int thickness = set ? display.buttonShadowThickness : 0;
+		int [] argList = {OS.XmNshadowThickness, thickness};
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
 }
@@ -637,7 +637,8 @@ int processMouseDown (int callData) {
 int processMouseEnter (int callData) {
 	if ((parent.style & SWT.FLAT) != 0) {
 		Display display = getDisplay ();
-		int [] argList = {OS.XmNshadowThickness, display.buttonShadowThickness};
+		int thickness = display.buttonShadowThickness;
+		int [] argList = {OS.XmNshadowThickness, thickness};
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
 	XCrossingEvent xEvent = new XCrossingEvent ();
