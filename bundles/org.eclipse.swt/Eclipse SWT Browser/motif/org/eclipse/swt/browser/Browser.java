@@ -691,6 +691,9 @@ void disposeCOMInterfaces() {
 }
 
 public boolean execute(String script) {
+	checkWidget();
+	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	
 	int[] aContentDOMWindow = new int[1];
 	int rc = webBrowser.GetContentDOMWindow(aContentDOMWindow);
 	if (rc != XPCOM.NS_OK) error(rc);

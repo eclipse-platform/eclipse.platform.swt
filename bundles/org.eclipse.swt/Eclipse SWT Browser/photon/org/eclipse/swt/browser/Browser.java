@@ -408,6 +408,9 @@ protected void checkSubclass() {
 }
 
 public boolean execute(String script) {
+	checkWidget();
+	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	
 	return false;
 }
 
