@@ -690,6 +690,35 @@ void disposeCOMInterfaces() {
 	}
 }
 
+public boolean execute(String script) {
+	int[] aContentDOMWindow = new int[1];
+	int rc = webBrowser.GetContentDOMWindow(aContentDOMWindow);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (aContentDOMWindow[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	
+	nsIDOMWindow domWindow = new nsIDOMWindow(aContentDOMWindow[0]);
+	int[] result = new int[1];
+	rc = domWindow.QueryInterface(nsIScriptGlobalObject.NS_ISCRIPTGLOBALOBJECT_IID, result);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	
+	nsIScriptGlobalObject scriptGlobalObject = new nsIScriptGlobalObject(result[0]);
+	int[] aContext = new int[1];
+	rc = scriptGlobalObject.GetContext(aContext);
+	if (rc != XPCOM.NS_OK) aContext[0] = rc;
+	if (aContext[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	scriptGlobalObject.Release();
+	
+	nsIScriptContext scriptContext = new nsIScriptContext(aContext[0]);
+	nsEmbedString aScript = new nsEmbedString(script);
+	nsEmbedString aRetValue = new nsEmbedString();
+	boolean[] aIsUndefined = new boolean[1];
+	rc = scriptContext.EvaluateString(aScript.getAddress(), 0, 0, 0, 0, 0, aRetValue.getAddress(), aIsUndefined);
+	aScript.dispose();	
+	domWindow.Release();
+	return rc == XPCOM.NS_OK;
+}
+
 static Browser findBrowser(int handle) {
 	Display display = Display.getCurrent();
 	Shell[] shells = display.getShells();
