@@ -6,7 +6,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.internal.win32.GCP_RESULTS;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.internal.win32.RECT;
-
+import org.eclipse.swt.internal.win32.TCHAR;
 import java.util.Hashtable;
 /*
  * Wraps Win32 API used to bidi enable the StyledText widget.
@@ -94,8 +94,8 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	int[] lpCs = new int[8];
 	int cs = OS.GetTextCharset(gc.handle);
 	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
-	byte[] textBuffer = Converter.wcsToMbcs(lpCs[1], text, false);
-	int byteCount = textBuffer.length;
+	TCHAR textBuffer = new TCHAR(lpCs[1], text, false);
+	int byteCount = textBuffer.length();
 	boolean linkBefore = (flags & LINKBEFORE) == LINKBEFORE;
 	boolean linkAfter = (flags & LINKAFTER) == LINKAFTER;
 
@@ -152,9 +152,8 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 		// The number of glyphs expected is <= length (segment length);
 		// the actual number returned may be less in case of Arabic ligatures.
 		result.nGlyphs = length;
-		byte [] textBuffer2 = new byte [length];
-		System.arraycopy (textBuffer, offset, textBuffer2, 0, length);
-		OS.GetCharacterPlacementA(gc.handle, textBuffer2, textBuffer2.length, 0, result, dwFlags);
+		TCHAR textBuffer2 = new TCHAR(lpCs[1], text.substring(offset, offset + length), false);
+		OS.GetCharacterPlacement(gc.handle, textBuffer2, textBuffer2.length(), 0, result, dwFlags);
 
 		if (dx != null) {
 			int [] dx2 = new int [result.nGlyphs];
