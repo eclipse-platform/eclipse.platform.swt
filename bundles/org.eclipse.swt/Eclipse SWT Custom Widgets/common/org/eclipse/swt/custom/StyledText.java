@@ -5513,6 +5513,8 @@ void handleTextSet(TextChangedEvent event) {
 void handleTraverse(Event event) {
 	switch (event.detail) {
 		case SWT.TRAVERSE_ESCAPE:
+		case SWT.TRAVERSE_PAGE_NEXT:
+		case SWT.TRAVERSE_PAGE_PREVIOUS:
 			event.doit = true;
 			break;
 		case SWT.TRAVERSE_RETURN:

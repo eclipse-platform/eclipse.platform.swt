@@ -2564,16 +2564,6 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 		case OS.XK_Page_Down: {
 			all = true;
 			if ((xEvent.state & OS.ControlMask) == 0) return false;
-			/*
-			* NOTE: This code causes Ctrl+PgUp and Ctrl+PgDn to always
-			* attempt traversal which is not correct.  This behavior is
-			* currently relied on by StyledText.
-			* 
-			* The correct behavior is to give every key to any
-			* control that wants to see every key.  The default
-			* behavior for a Canvas should be to see every key.
-			*/
-			code |= SWT.TRAVERSE_PAGE_NEXT | SWT.TRAVERSE_PAGE_PREVIOUS;
 			detail = key == OS.XK_Page_Down ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;
 		}

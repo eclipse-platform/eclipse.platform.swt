@@ -2741,21 +2741,6 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 		case OS.GDK_ISO_Left_Tab: 
 		case OS.GDK_Tab: {
 			boolean next = (keyEvent.state & OS.GDK_SHIFT_MASK) == 0;
-			/*
-			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
-			* always attempt traversal which is not correct.
-			* The default should be the same as a plain Tab key.
-			* This behavior is currently relied on by StyledText.
-			* 
-			* The correct behavior is to give every key to any
-			* control that wants to see every key.  The default
-			* behavior for a Canvas should be to see every key.
-			*/
-			switch (keyEvent.state) {
-				case OS.GDK_SHIFT_MASK:
-				case OS.GDK_CONTROL_MASK:
-					code |= SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT;
-			}
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
@@ -2771,16 +2756,6 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 		case OS.GDK_Page_Down: {
 			all = true;
 			if ((keyEvent.state & OS.GDK_CONTROL_MASK) == 0) return false;
-			/*
-			* NOTE: This code causes Ctrl+PgUp and Ctrl+PgDn to always
-			* attempt traversal which is not correct.  This behavior is
-			* currently relied on by StyledText.
-			* 
-			* The correct behavior is to give every key to any
-			* control that wants to see every key.  The default
-			* behavior for a Canvas should be to see every key.
-			*/
-			code |= SWT.TRAVERSE_PAGE_NEXT | SWT.TRAVERSE_PAGE_PREVIOUS;
 			detail = key == OS.GDK_Page_Down ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;
 		}
