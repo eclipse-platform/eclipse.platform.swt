@@ -7200,7 +7200,7 @@ public void setSelection(int start, int end) {
 }
 /** 
  * Sets the selection. The new selection may not be visible. Call showSelection to scroll 
- * the selection into view. 	A negative length places the caret at the visual start of the 
+ * the selection into view. A negative length places the caret at the visual start of the 
  * selection. <p>
  *
  * @param start offset of the first selected character
