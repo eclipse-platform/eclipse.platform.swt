@@ -37,8 +37,8 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	super.setUp();
-	decorations = new Decorations(shell, SWT.NULL);
-	super.setWidget(decorations);
+	// do nothing, even though this is not an abstract class, it was never meant to 
+	// be instantiated
 }
 
 protected void tearDown() {
@@ -46,10 +46,8 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	Display display = decorations.getDisplay();
-	Decorations newDecorations = new Decorations(shell, SWT.NULL);
-	assertTrue("a: ", newDecorations.getDisplay() == display);
-	newDecorations.dispose();
+	// do nothing, even though this is not an abstract class, it was never meant to 
+	// be instantiated
 }
 
 public void test_computeTrimIIII() {
@@ -270,7 +268,7 @@ Decorations decorations;
 Image[] images = new Image [SwtTestCase.imageFormats.length*SwtTestCase.imageFilenames.length];
 
 protected void setWidget(Widget w) {
-	if (!decorations.isDisposed())
+	if (decorations != null && !decorations.isDisposed())
 		decorations.dispose();
 	decorations = (Decorations)w;
 	super.setWidget(w);
