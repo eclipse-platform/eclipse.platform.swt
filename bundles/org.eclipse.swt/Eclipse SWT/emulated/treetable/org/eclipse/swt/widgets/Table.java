@@ -1476,12 +1476,12 @@ void onArrowDown (int stateMask) {
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
 			/* CTRL+Down Arrow, CTRL+Shift+Down Arrow */
-			int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+			Rectangle clientArea = getClientArea ();
+			int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 			if (itemsCount <= topIndex + visibleItemCount) return;	/* at bottom */
 			update ();
 			topIndex++;
 			getVerticalBar ().setSelection (topIndex);
-			Rectangle clientArea = getClientArea ();
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -1506,12 +1506,12 @@ void onArrowDown (int stateMask) {
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
 			/* CTRL+Shift+Down Arrow */
-			int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+			Rectangle clientArea = getClientArea ();
+			int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 			if (itemsCount <= topIndex + visibleItemCount) return;	/* at bottom */
 			update ();
 			topIndex++;
 			getVerticalBar ().setSelection (topIndex);
-			Rectangle clientArea = getClientArea ();
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -1568,11 +1568,11 @@ void onArrowLeft (int stateMask) {
 void onArrowRight (int stateMask) {
 	ScrollBar hBar = getHorizontalBar ();
 	int maximum = hBar.getMaximum ();
-	int clientWidth = getClientArea ().width;
-	if ((horizontalOffset + getClientArea ().width) == maximum) return;
+	Rectangle clientArea = getClientArea ();
+	int clientWidth = clientArea.width;
+	if ((horizontalOffset + clientArea.width) == maximum) return;
 	if (maximum <= clientWidth) return;
 	int newSelection = Math.min (horizontalOffset + SIZE_HORIZONTALSCROLL, maximum - clientWidth);
-	Rectangle clientArea = getClientArea ();
 	update ();
 	GC gc = new GC (this);
 	gc.copyArea (
@@ -3192,7 +3192,8 @@ public void setSelection (int [] indices) {
 public void setTopIndex (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < itemsCount)) return;
-	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+	Rectangle clientArea = getClientArea ();
+	int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 	if (itemsCount <= visibleItemCount) return;
 	index = Math.min (index, itemsCount - visibleItemCount);
 	if (index == topIndex) return;
@@ -3201,7 +3202,6 @@ public void setTopIndex (int index) {
 	int change = topIndex - index;
 	topIndex = index;
 	getVerticalBar ().setSelection (topIndex);
-	Rectangle clientArea = getClientArea ();
 	GC gc = new GC (this);
 	gc.copyArea (0, 0, clientArea.width, clientArea.height, 0, change * itemHeight);
 	gc.dispose ();
