@@ -597,16 +597,26 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 	switch (property) {
 		case CHECK_COLUMN_ID: {
 			if (setValue != 0) {
-				short [] theData = new short [1];
-				OS.GetDataBrowserItemDataButtonValue (itemData, theData);
-				item.checked = theData [0] == OS.kThemeButtonOn;
+//				short [] theData = new short [1];
+//				OS.GetDataBrowserItemDataButtonValue (itemData, theData);
+//				item.checked = theData [0] == OS.kThemeButtonOn;
+				item.checked = !item.checked;
+				if (item.checked && item.grayed) {
+					OS.SetDataBrowserItemDataButtonValue (itemData, (short) OS.kThemeButtonMixed);
+				} else {
+					int theData = item.checked ? OS.kThemeButtonOn : OS.kThemeButtonOff;
+					OS.SetDataBrowserItemDataButtonValue (itemData, (short) theData);
+				}
 				Event event = new Event ();
 				event.item = item;
 				event.detail = SWT.CHECK;
 				postEvent (SWT.Selection, event);
 			} else {
-				short theData = (short)(item.checked ? OS.kThemeButtonOn : OS.kThemeButtonOff);
-				OS.SetDataBrowserItemDataButtonValue (itemData, theData);
+//				short theData = (short)(item.checked ? OS.kThemeButtonOn : OS.kThemeButtonOff);
+//				OS.SetDataBrowserItemDataButtonValue (itemData, theData);
+				int theData = OS.kThemeButtonOff;
+				if (item.checked) theData = item.grayed ? OS.kThemeButtonMixed : OS.kThemeButtonOn;
+				OS.SetDataBrowserItemDataButtonValue (itemData, (short) theData);
 			}
 			break;
 		}
