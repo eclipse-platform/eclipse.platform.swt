@@ -308,6 +308,16 @@ public void setImage (Image image) {
 	}
 	this.image = image;
 	isImage = true;
+	if (image == null) {
+		setText (text);
+		return;
+	}
+	if (text.length () > 0) {
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
+		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+		OS.SetControlData (handle, 0 , OS.kControlStaticTextCFStringTag, 4, new int[]{ptr});
+		OS.CFRelease (ptr);
+	}
 	redraw ();
 }
 
