@@ -43,7 +43,7 @@ JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
 	int i;
 
 	OS_NATIVE_ENTER(env, that, XtGetValues_FUNC)
-	if (argList) CHECK_NULL_VOID(argList1 = (*env)->GetIntArrayElements(env, argList, NULL));
+	if (argList) if ((argList1 = (*env)->GetIntArrayElements(env, argList, NULL)) == NULL) goto failTag;
 	if (numArgs > MAX_ARGS) {
 		values = (int *) XtMalloc (numArgs * sizeof(int));
 		zeros = (int *) XtMalloc (numArgs * sizeof(int));
@@ -58,6 +58,7 @@ JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
 		}
 	}
 	XtGetValues((Widget)widget, (ArgList)argList1, numArgs);
+failTag:
 	for (i = 0; i < numArgs; i++) {   
 		if (zeros[i]) {
 			char* charPtr = (char *)(argList1[i*2] - 1);

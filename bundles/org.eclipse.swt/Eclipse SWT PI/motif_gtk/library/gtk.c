@@ -23,7 +23,7 @@
 JNIEXPORT jint JNICALL GTK_NATIVE(GTK_1WIDGET_1HEIGHT)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	GTK_NATIVE_ENTER(env, that, GTK_1WIDGET_1HEIGHT_FUNC);
 	rc = (jint)GTK_WIDGET_HEIGHT((GtkWidget *)arg0);
 	GTK_NATIVE_EXIT(env, that, GTK_1WIDGET_1HEIGHT_FUNC);
@@ -35,7 +35,7 @@ JNIEXPORT jint JNICALL GTK_NATIVE(GTK_1WIDGET_1HEIGHT)
 JNIEXPORT jint JNICALL GTK_NATIVE(GTK_1WIDGET_1WIDTH)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	GTK_NATIVE_ENTER(env, that, GTK_1WIDGET_1WIDTH_FUNC);
 	rc = (jint)GTK_WIDGET_WIDTH((GtkWidget *)arg0);
 	GTK_NATIVE_EXIT(env, that, GTK_1WIDGET_1WIDTH_FUNC);
@@ -48,11 +48,12 @@ JNIEXPORT jint JNICALL GTK_NATIVE(g_1signal_1connect)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
-	jint rc;
+	jint rc = 0;
 	GTK_NATIVE_ENTER(env, that, g_1signal_1connect_FUNC);
-	if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto failTag;
 	rc = (jint)g_signal_connect((gpointer)arg0, (const gchar *)lparg1, (GCallback)arg2, (gpointer)arg3);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+failTag:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	GTK_NATIVE_EXIT(env, that, g_1signal_1connect_FUNC);
 	return rc;
 }
@@ -62,7 +63,7 @@ JNIEXPORT jint JNICALL GTK_NATIVE(g_1signal_1connect)
 JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1events_1pending)
 	(JNIEnv *env, jclass that)
 {
-	jint rc;
+	jint rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1events_1pending_FUNC);
 	rc = (jint)gtk_events_pending();
 	GTK_NATIVE_EXIT(env, that, gtk_1events_1pending_FUNC);
@@ -76,13 +77,14 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1init_1check)
 {
 	jint *lparg0=NULL;
 	jint *lparg1=NULL;
-	jboolean rc;
+	jboolean rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1init_1check_FUNC);
-	if (arg0) CHECK_NULL(lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL));
-	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto failTag;
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto failTag;
 	rc = (jboolean)gtk_init_check((int *)lparg0, (char ***)lparg1);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+failTag:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1init_1check_FUNC);
 	return rc;
 }
@@ -102,7 +104,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1main)
 JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1main_1iteration)
 	(JNIEnv *env, jclass that)
 {
-	jint rc;
+	jint rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1main_1iteration_FUNC);
 	rc = (jint)gtk_main_iteration();
 	GTK_NATIVE_EXIT(env, that, gtk_1main_1iteration_FUNC);
@@ -114,7 +116,7 @@ JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1main_1iteration)
 JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1plug_1new)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1plug_1new_FUNC);
 	rc = (jint)gtk_plug_new(arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1plug_1new_FUNC);
@@ -156,7 +158,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1show_1now)
 JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1window_1new)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1window_1new_FUNC);
 	rc = (jint)gtk_window_new((GtkWindowType)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1window_1new_FUNC);
