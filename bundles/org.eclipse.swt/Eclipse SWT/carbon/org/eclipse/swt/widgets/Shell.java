@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.CGRect;
 
 import org.eclipse.swt.SWT;
@@ -108,6 +109,9 @@ public class Shell extends Decorations {
 	Control lastActive;
 	Region region;
 	Rect rgnRect;
+
+	static int DEFAULT_SHELL_WIDTH = -1;
+	static int DEFAULT_SHELL_HEIGHT = 0;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -465,6 +469,15 @@ void createHandle () {
 		OS.SetWindowGroupParent (windowGroup, parentGroup);
 	}
 	OS.SetWindowGroupOwner (windowGroup, shellHandle);
+	CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();
+	OS.GetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
+	if (DEFAULT_SHELL_WIDTH == -1) DEFAULT_SHELL_WIDTH = (int) inMinLimits.x;
+	inMinLimits.y = (int) 0;
+	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+	if ((style & SWT.NO_TRIM) != 0 || (style & trim) == 0) {
+		inMinLimits.x = (int) 0;	
+	}
+	OS.SetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
 }
 
 void createWidget () {
@@ -619,6 +632,17 @@ public boolean getMinimized () {
 	checkWidget();
 	if (!getVisible ()) return super.getMinimized ();
 	return OS.IsWindowCollapsed (shellHandle);
+}
+
+public Point getMinimumSize () {
+	checkWidget();
+	Rect rect = new Rect ();
+	OS.GetWindowStructureWidths (shellHandle, rect);
+	CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();
+	OS.GetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
+	int width = Math.max (1, (int) inMinLimits.x + (rect.left + rect.right));
+	int height = Math.max (1, (int) inMinLimits.y + (rect.top + rect.bottom));
+	return new Point (width, height);
 }
 
 float [] getParentBackground () {
@@ -875,9 +899,9 @@ int kEventWindowGetRegion (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	if (region == null || region.isDisposed ()) return OS.eventNotHandledErr;
 	short [] regionCode = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamWindowRegionCode , OS.typeWindowRegionCode , null, 2, null, regionCode);
+	OS.GetEventParameter (theEvent, OS.kEventParamWindowRegionCode, OS.typeWindowRegionCode , null, 2, null, regionCode);
 	int [] temp = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle , OS.typeQDRgnHandle , null, 4, null, temp);
+	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle , null, 4, null, temp);
 	int hRegion = temp [0];
 	switch (regionCode [0]) {
 		case OS.kWindowContentRgn:
@@ -1135,9 +1159,27 @@ void setActiveControl (Control control) {
 
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget ();
-	width = Math.max (0, width);
-	height = Math.max (0, height);
+	setBounds (x, y, Math.max (0, width), Math.max (0, height), true, true);
+}
+
+void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	Rect rect = new Rect ();
+	if (!move) {
+		OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+		x = rect.left;
+		y = rect.top;
+	}
+	if (!resize) {
+		OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+		width = rect.right - rect.left;
+		height = rect.bottom - rect.top;
+	} else {
+		OS.GetWindowStructureWidths (shellHandle, rect);
+		CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();
+		OS.GetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
+		width = Math.max (1, Math.max (width, (int) inMinLimits.x + (rect.left + rect.right)));
+		height = Math.max (1, Math.max (height, (int) inMinLimits.y + (rect.top + rect.bottom)));
+	}
 	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
 	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
 }
@@ -1181,12 +1223,7 @@ public void setImeInputMode (int mode) {
 
 public void setLocation (int x, int y) {
 	checkWidget();
-	Rect rect = new Rect ();
-	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
-	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+	setBounds (x, y, 0, 0, true, false);
 }
 
 public void setMaximized (boolean maximized) {
@@ -1206,6 +1243,35 @@ public void setMinimized (boolean minimized) {
 		if (!activate) OS.SelectWindow (shellHandle);
 	}
 	OS.CollapseWindow (shellHandle, minimized);
+}
+
+public void setMinimumSize (int width, int height) {
+	checkWidget();
+	Rect rect = new Rect ();
+	OS.GetWindowStructureWidths (shellHandle, rect);
+	CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();
+	OS.GetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
+	if (width == SWT.DEFAULT) {
+		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+		if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
+			width = DEFAULT_SHELL_WIDTH;
+		} else {
+			width = 0;
+		}
+	}
+	if (height == SWT.DEFAULT) height = DEFAULT_SHELL_HEIGHT;
+	inMinLimits.x = Math.max (0, (int) width - (rect.left + rect.right));
+	inMinLimits.y = Math.max (0, (int) height - (rect.top + rect.bottom));
+	OS.SetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
+	Point size = getSize ();
+	int newWidth = Math.max (size.x, width), newHeight = Math.max (size.y, height);
+	if (newWidth != size.x || newHeight != size.y) setSize (newWidth, newHeight);
+}
+
+public void setMinimumSize (Point size) {
+	checkWidget();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setMinimumSize (size.x, size.y);
 }
 
 /**
@@ -1257,12 +1323,7 @@ public void setRegion (Region region) {
 
 public void setSize (int width, int height) {
 	checkWidget();
-	width = Math.max (0, width);
-	height = Math.max (0, height);
-	Rect rect = new Rect ();
-	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-	OS.SetRect (rect, rect.left, rect.top, (short)(rect.left + width), (short)(rect.top + height));
-	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+	setBounds (0, 0, Math.max (0, width), Math.max (0, height), false, true);
 }
 
 public void setText (String string) {

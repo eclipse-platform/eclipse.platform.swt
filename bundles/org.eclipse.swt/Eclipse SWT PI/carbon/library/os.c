@@ -1,13 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+* Copyright (c) 2000, 2004 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 
 #include "swt.h"
 #include "os_structs.h"
@@ -5324,6 +5324,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetWindowRegion)
 }
 #endif
 
+#ifndef NO_GetWindowResizeLimits
+JNIEXPORT jint JNICALL OS_NATIVE(GetWindowResizeLimits)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2)
+{
+	CGPoint _arg1, *lparg1=NULL;
+	CGPoint _arg2, *lparg2=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GetWindowResizeLimits_FUNC);
+	if (arg1) lparg1 = getCGPointFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getCGPointFields(env, arg2, &_arg2);
+	rc = (jint)GetWindowResizeLimits((WindowRef)arg0, (HISize *)lparg1, (HISize *)lparg2);
+	if (arg2) setCGPointFields(env, arg2, lparg2);
+	if (arg1) setCGPointFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, GetWindowResizeLimits_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetWindowStructureWidths
 JNIEXPORT void JNICALL OS_NATIVE(GetWindowStructureWidths)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -8984,6 +9002,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetWindowModality)
 	OS_NATIVE_ENTER(env, that, SetWindowModality_FUNC);
 	rc = (jint)SetWindowModality((WindowRef)arg0, (WindowModality)arg1, (WindowRef)arg2);
 	OS_NATIVE_EXIT(env, that, SetWindowModality_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetWindowResizeLimits
+JNIEXPORT jint JNICALL OS_NATIVE(SetWindowResizeLimits)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2)
+{
+	CGPoint _arg1, *lparg1=NULL;
+	CGPoint _arg2, *lparg2=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, SetWindowResizeLimits_FUNC);
+	if (arg1) lparg1 = getCGPointFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getCGPointFields(env, arg2, &_arg2);
+	rc = (jint)SetWindowResizeLimits((WindowRef)arg0, (HISize *)lparg1, (HISize *)lparg2);
+	if (arg2) setCGPointFields(env, arg2, lparg2);
+	if (arg1) setCGPointFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, SetWindowResizeLimits_FUNC);
 	return rc;
 }
 #endif
