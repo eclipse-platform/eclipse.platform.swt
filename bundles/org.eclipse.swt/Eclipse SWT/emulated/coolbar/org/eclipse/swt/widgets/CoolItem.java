@@ -293,10 +293,10 @@ public void setSize (Point size) {
 	setSize (size.x, size.y);
 }
 /**
- * Returns the minimum width that the cool item can
+ * Returns the minimum size that the cool item can
  * be resized to using the cool item's gripper.
  * 
- * @return the minimum width of the cool item, in pixels
+ * @return a point containing the minimum width and height of the cool item, in pixels
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -305,16 +305,33 @@ public void setSize (Point size) {
  * 
  * @since 2.0
  */
-public int getMinimumWidth () {
+public Point getMinimumSize () {
+	return new Point (0, 0);
+}
+/**
+ * Sets the minimum size that the cool item can
+ * be resized to using the cool item's gripper.
+ * 
+ * @param size a point representing the minimum width and height of the cool item, in pixels
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ */
+public void setMinimumSize (Point size) {
 	checkWidget ();
-	return 0;
+	setMinimumSize (size.x, size.y);
 }
 
 /**
- * Sets the minimum width that the cool item can
+ * Sets the minimum size that the cool item can
  * be resized to using the cool item's gripper.
  * 
  * @param width the minimum width of the cool item, in pixels
+ * @param height the minimum height of the cool item, in pixels
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -323,8 +340,21 @@ public int getMinimumWidth () {
  * 
  * @since 2.0
  */
+public void setMinimumSize (int width, int height) {
+	checkWidget ();
+}
+/**
+ * @deprecated use getMinimumSize
+ */
+public int getMinimumWidth () {
+	return getMinimumSize().x;
+}
+/**
+ * @deprecated use setMinimumSize
+ */
 public void setMinimumWidth (int width) {
 	checkWidget ();
+	setMinimumSize (width, getMinimumSize().y);
 }
 void setBounds (int x, int y, int width, int height) {
 	itemBounds.x = x;
