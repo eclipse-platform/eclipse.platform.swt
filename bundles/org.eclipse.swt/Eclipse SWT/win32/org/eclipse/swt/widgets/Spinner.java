@@ -697,13 +697,13 @@ public void setMaximum (int value) {
 	int [] min = new int [1];
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, null);
 	if (value <= min [0]) return;
-	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, min [0], value);	
 	int pos;
 	if (OS.IsWinCE) {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
+	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, min [0], value);	
 	if (pos > value) setSelection (value, false);
 }
 
@@ -726,13 +726,13 @@ public void setMinimum (int value) {
 	int [] max = new int [1];
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, max);
 	if (value >= max [0]) return;
-	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, value, max [0]);
 	int pos;
 	if (OS.IsWinCE) {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
+	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, value, max [0]);
 	if (pos < value) setSelection (value, false);
 }
 
