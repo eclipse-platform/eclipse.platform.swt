@@ -138,6 +138,8 @@ public class OS {
 	public static final int NotifyNonlinear = 0x3;
 	public static final int NotifyNonlinearVirtual = 0x4;
 	public static final int NotifyNormal = 0x0;
+	public static final int PMinSize = 1 << 4;
+	public static final int PMaxSize = 1 << 5;
 	public static final int PointerMotionMask = 1 << 6;
 	public static final int PropertyChangeMask = 1 << 22;
 	public static final int PropertyNotify = 28;
@@ -720,6 +722,7 @@ public static final synchronized native int XSetLineAttributes(int display, int 
 public static final synchronized native void XSetRegion(int display, int gc, int region);
 public static final synchronized native void XSetStipple(int display, int gc, int pixmap);
 public static final synchronized native void XSetSubwindowMode(int display, int gc, int subwindow_mode);
+public static final synchronized native void XSetWMNormalHints(int display, int w, XSizeHints hints);
 public static final synchronized native void XShapeCombineMask(int display, int dest, int dest_kind, int x_off, int y_off, int src, int op);
 public static final synchronized native void XShapeCombineRegion(int display, int dest, int dest_kind, int x_off, int y_off, int region, int op);
 public static final synchronized native void XSubtractRegion(int sra, int srb, int dr_return);

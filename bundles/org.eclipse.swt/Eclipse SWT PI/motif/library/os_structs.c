@@ -1374,6 +1374,82 @@ void setXSetWindowAttributesFields(JNIEnv *env, jobject lpObject, XSetWindowAttr
 }
 #endif
 
+#ifndef NO_XSizeHints
+typedef struct XSizeHints_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID flags, x, y, width, height, min_width, min_height, max_width, max_height, width_inc, height_inc, aspect_x, aspect_y, base_width, base_height, win_gravity;
+} XSizeHints_FID_CACHE;
+
+XSizeHints_FID_CACHE XSizeHintsFc;
+
+void cacheXSizeHintsFields(JNIEnv *env, jobject lpObject)
+{
+	if (XSizeHintsFc.cached) return;
+	XSizeHintsFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XSizeHintsFc.flags = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "flags", "I");
+	XSizeHintsFc.x = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "x", "I");
+	XSizeHintsFc.y = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "y", "I");
+	XSizeHintsFc.width = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "width", "I");
+	XSizeHintsFc.height = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "height", "I");
+	XSizeHintsFc.min_width = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "min_width", "I");
+	XSizeHintsFc.min_height = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "min_height", "I");
+	XSizeHintsFc.max_width = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "max_width", "I");
+	XSizeHintsFc.max_height = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "max_height", "I");
+	XSizeHintsFc.width_inc = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "width_inc", "I");
+	XSizeHintsFc.height_inc = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "height_inc", "I");
+	XSizeHintsFc.aspect_x = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "aspect_x", "I");
+	XSizeHintsFc.aspect_y = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "aspect_y", "I");
+	XSizeHintsFc.base_width = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "base_width", "I");
+	XSizeHintsFc.base_height = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "base_height", "I");
+	XSizeHintsFc.win_gravity = (*env)->GetFieldID(env, XSizeHintsFc.clazz, "win_gravity", "I");
+	XSizeHintsFc.cached = 1;
+}
+
+XSizeHints *getXSizeHintsFields(JNIEnv *env, jobject lpObject, XSizeHints *lpStruct)
+{
+	if (!XSizeHintsFc.cached) cacheXSizeHintsFields(env, lpObject);
+	lpStruct->flags = (*env)->GetIntField(env, lpObject, XSizeHintsFc.flags);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XSizeHintsFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XSizeHintsFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, XSizeHintsFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, XSizeHintsFc.height);
+	lpStruct->min_width = (*env)->GetIntField(env, lpObject, XSizeHintsFc.min_width);
+	lpStruct->min_height = (*env)->GetIntField(env, lpObject, XSizeHintsFc.min_height);
+	lpStruct->max_width = (*env)->GetIntField(env, lpObject, XSizeHintsFc.max_width);
+	lpStruct->max_height = (*env)->GetIntField(env, lpObject, XSizeHintsFc.max_height);
+	lpStruct->width_inc = (*env)->GetIntField(env, lpObject, XSizeHintsFc.width_inc);
+	lpStruct->height_inc = (*env)->GetIntField(env, lpObject, XSizeHintsFc.height_inc);
+	lpStruct->min_aspect.x = (*env)->GetIntField(env, lpObject, XSizeHintsFc.aspect_x);
+	lpStruct->min_aspect.y = (*env)->GetIntField(env, lpObject, XSizeHintsFc.aspect_y);
+	lpStruct->base_width = (*env)->GetIntField(env, lpObject, XSizeHintsFc.base_width);
+	lpStruct->base_height = (*env)->GetIntField(env, lpObject, XSizeHintsFc.base_height);
+	lpStruct->win_gravity = (*env)->GetIntField(env, lpObject, XSizeHintsFc.win_gravity);
+	return lpStruct;
+}
+
+void setXSizeHintsFields(JNIEnv *env, jobject lpObject, XSizeHints *lpStruct)
+{
+	if (!XSizeHintsFc.cached) cacheXSizeHintsFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.flags, (jint)lpStruct->flags);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.height, (jint)lpStruct->height);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.min_width, (jint)lpStruct->min_width);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.min_height, (jint)lpStruct->min_height);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.max_width, (jint)lpStruct->max_width);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.max_height, (jint)lpStruct->max_height);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.width_inc, (jint)lpStruct->width_inc);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.height_inc, (jint)lpStruct->height_inc);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.aspect_x, (jint)lpStruct->min_aspect.x);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.aspect_y, (jint)lpStruct->min_aspect.y);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.base_width, (jint)lpStruct->base_width);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.base_height, (jint)lpStruct->base_height);
+	(*env)->SetIntField(env, lpObject, XSizeHintsFc.win_gravity, (jint)lpStruct->win_gravity);
+}
+#endif
+
 #ifndef NO_XTextProperty
 typedef struct XTextProperty_FID_CACHE {
 	int cached;

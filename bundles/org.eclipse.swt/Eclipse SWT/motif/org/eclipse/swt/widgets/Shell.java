@@ -1196,6 +1196,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		if (move) OS.XtMoveWidget (shellHandle, x, y);
 		if (resize) OS.XtResizeWidget (shellHandle, width, height, 0);
 	}
+	if (resize) updateResizable (width, height);
 	if (isFocus) caret.setFocus ();
 	return move || resize;
 }
@@ -1468,6 +1469,16 @@ int trimWidth () {
 	}
 	return 0;
 }
+void updateResizable (int width, int height) {
+	if (!OS.XtIsRealized (shellHandle)) return;
+	if ((style & SWT.RESIZE) == 0) {
+		XSizeHints hints = new XSizeHints();
+		hints.flags = OS.PMinSize | OS.PMaxSize;
+		hints.min_width = hints.max_width = width;
+		hints.min_height = hints.max_height = height;
+		OS.XSetWMNormalHints (OS.XtDisplay (shellHandle), OS.XtWindow (shellHandle), hints);
+	}
+}
 int WM_DELETE_WINDOW (int w, int client_data, int call_data) {
 	closeWidget ();
 	return 0;
@@ -1519,6 +1530,7 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 			OS.XtGetValues (shellHandle, argList, argList.length / 2);	
 			xEvent.x = root_x [0];  xEvent.y = root_y [0];
 			xEvent.width = argList [1];  xEvent.height = argList [3];
+			updateResizable (xEvent.width, xEvent.height);
 			// FALL THROUGH
 		}
 		case OS.ConfigureNotify:

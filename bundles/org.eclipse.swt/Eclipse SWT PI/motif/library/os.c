@@ -1543,6 +1543,19 @@ JNIEXPORT void JNICALL OS_NATIVE(XSetSubwindowMode)
 }
 #endif
 
+#ifndef NO_XSetWMNormalHints
+JNIEXPORT void JNICALL OS_NATIVE(XSetWMNormalHints)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	XSizeHints _arg2, *lparg2=NULL;
+	NATIVE_ENTER(env, that, "XSetWMNormalHints\n")
+	if (arg2) lparg2 = getXSizeHintsFields(env, arg2, &_arg2);
+	XSetWMNormalHints((Display *)arg0, (Window)arg1, lparg2);
+	if (arg2) setXSizeHintsFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "XSetWMNormalHints\n")
+}
+#endif
+
 #ifndef NO_XShapeCombineMask
 JNIEXPORT void JNICALL OS_NATIVE(XShapeCombineMask)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)

@@ -486,8 +486,12 @@ void createHandle (int index) {
 	* is created or it will not be allowed to be resized smaller that the
 	* initial size by the user.  The fix is to set the size to zero.
 	*/
-	OS.gtk_widget_set_size_request (shellHandle, 0, 0);
-	OS.gtk_window_set_resizable (shellHandle, true);
+	if ((style & SWT.RESIZE) != 0) {
+		OS.gtk_widget_set_size_request (shellHandle, 0, 0);
+		OS.gtk_window_set_resizable (shellHandle, true);
+	} else {
+		OS.gtk_window_set_resizable (shellHandle, false);
+	}
 	createHandle (index, shellHandle, true);
 	OS.gtk_widget_realize (shellHandle);
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
@@ -863,6 +867,7 @@ void setActiveControl (Control control) {
 }
 
 void resizeBounds (int width, int height, boolean notify) {
+	int border = OS.gtk_container_get_border_width (shellHandle);
 	int menuHeight = 0;
 	if (menuBar != null) {
 		int /*long*/ menuHandle = menuBar.handle;
@@ -870,11 +875,11 @@ void resizeBounds (int width, int height, boolean notify) {
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (menuHandle, requisition);
 		menuHeight = requisition.height;
-		OS.gtk_widget_set_size_request (menuHandle, width, menuHeight);
+		OS.gtk_widget_set_size_request (menuHandle, width - (border  * 2), menuHeight);
 		height = Math.max (1, height - menuHeight);
 	}
 	OS.gtk_fixed_move (fixedHandle, scrolledHandle, 0, menuHeight);
-	OS.gtk_widget_set_size_request (scrolledHandle, width, height);
+	OS.gtk_widget_set_size_request (scrolledHandle, width - (border  * 2), height - (border  * 2));
 	OS.gtk_container_resize_children (fixedHandle);
 	if (notify) {
 		sendEvent (SWT.Resize);

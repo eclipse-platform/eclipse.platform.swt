@@ -251,6 +251,16 @@ void setXSetWindowAttributesFields(JNIEnv *env, jobject lpObject, XSetWindowAttr
 #define XSetWindowAttributes_sizeof() 0
 #endif
 
+#ifndef NO_XSizeHints
+XSizeHints *getXSizeHintsFields(JNIEnv *env, jobject lpObject, XSizeHints *lpStruct);
+void setXSizeHintsFields(JNIEnv *env, jobject lpObject, XSizeHints *lpStruct);
+#define XSizeHints_sizeof() sizeof(XSizeHints)
+#else
+#define getXSizeHintsFields(a,b,c) NULL
+#define setXSizeHintsFields(a,b,c)
+#define XSizeHints_sizeof() 0
+#endif
+
 #ifndef NO_XTextProperty
 XTextProperty *getXTextPropertyFields(JNIEnv *env, jobject lpObject, XTextProperty *lpStruct);
 void setXTextPropertyFields(JNIEnv *env, jobject lpObject, XTextProperty *lpStruct);
