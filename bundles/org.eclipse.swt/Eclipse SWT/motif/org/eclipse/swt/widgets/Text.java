@@ -775,9 +775,10 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget();
-	if (start > end) return "";
+	if (!(start <= end && 0 <= end)) return "";
 	boolean hasEcho = echoCharacter != '\0';
 	int length = hasEcho ? hiddenText.length () : OS.XmTextGetLastPosition (handle);
+	if (length == 0) return "";
 	start = Math.max (0, start);
 	end = Math.min (end, length - 1);
 	if (hasEcho) return hiddenText.substring (start, end + 1);
