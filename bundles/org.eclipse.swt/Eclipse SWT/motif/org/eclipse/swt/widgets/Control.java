@@ -433,7 +433,8 @@ void createWidget (int index) {
 	* on a German locale.
 	*/
 	if (!hasIMSupport()) {
-		OS.XmImRegister (handle, 0);
+		int focusHandle = focusHandle ();
+		OS.XmImRegister (focusHandle, 0);
 	}
 	
 	/*
@@ -1371,7 +1372,8 @@ void releaseWidget () {
 	menu = null;
 	cursor = null;
 	if (!hasIMSupport()) {
-		OS.XmImUnregister (handle);
+		int focusHandle = focusHandle ();
+		OS.XmImUnregister (focusHandle);
 	}
 	parent = null;
 	layoutData = null;
@@ -1607,10 +1609,11 @@ byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
 	*/
 	byte [] buffer = new byte [512];
 	int [] status = new int [1], unused = new int [1];
-	int length = OS.XmImMbLookupString (handle, xEvent, buffer, buffer.length, unused, status);
+	int focusHandle = focusHandle ();
+	int length = OS.XmImMbLookupString (focusHandle, xEvent, buffer, buffer.length, unused, status);
 	if (status [0] == OS.XBufferOverflow) {
 		buffer = new byte [length];
-		length = OS.XmImMbLookupString (handle, xEvent, buffer, length, unused, status);
+		length = OS.XmImMbLookupString (focusHandle, xEvent, buffer, length, unused, status);
 	}
 	if (length == 0) return null;
 	
@@ -1948,7 +1951,8 @@ public void setFont (Font font) {
 	int [] argList2 = {OS.XmNfontList, font.handle};
 	OS.XtSetValues (fontHandle, argList2, argList2.length / 2);
 	if (!hasIMSupport()) {
-		OS.XmImSetValues (handle, argList2, argList2.length / 2);
+		int focusHandle = focusHandle ();
+		OS.XmImSetValues (focusHandle, argList2, argList2.length / 2);
 	}
 
 	/* Restore the widget size */
@@ -2799,8 +2803,9 @@ int xFocusIn () {
 				OS.XmNspotLocation, ptr,
 				OS.XmNfontList, font.handle,
 			};
-			OS.XmImSetValues (handle, argList, argList.length / 2);
-			OS.XmImSetFocusValues (handle, null, 0);
+			int focusHandle = focusHandle ();
+			OS.XmImSetValues (focusHandle, argList, argList.length / 2);
+			OS.XmImSetFocusValues (focusHandle, null, 0);
 			if (ptr != 0) OS.XtFree (ptr);
 		}
 	}	
@@ -2816,7 +2821,8 @@ int xFocusOut () {
 	}
 	if (!hasIMSupport()) {
 		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-			OS.XmImUnsetFocus (handle);
+			int focusHandle = focusHandle ();
+			OS.XmImUnsetFocus (focusHandle);
 		}
 	}
 	return 0;

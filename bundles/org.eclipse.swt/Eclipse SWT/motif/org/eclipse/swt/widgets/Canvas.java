@@ -232,7 +232,8 @@ void updateCaret () {
 	int ptr = OS.XtMalloc (4);
 	OS.memmove (ptr, point, 4);
 	int[] argList = {OS.XmNspotLocation, ptr};
-	OS.XmImSetValues (handle, argList, argList.length / 2);
+	int focusHandle = focusHandle ();
+	OS.XmImSetValues (focusHandle, argList, argList.length / 2);
 	if (ptr != 0) OS.XtFree (ptr);
 }
 int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {

@@ -345,9 +345,9 @@ public void setFont (Font font) {
 	}
 	this.font = font;
 	if (isVisible && parent.hasFocus()) {
-		int handle = parent.handle;
+		int focusHandle = parent.focusHandle ();
 		int [] argList = {OS.XmNfontList, font.handle};
-		OS.XmImSetValues (handle, argList, argList.length / 2);
+		OS.XmImSetValues (focusHandle, argList, argList.length / 2);
 	}
 }
 /**
