@@ -998,7 +998,7 @@ void mouseDoubleClick(Event event) {
 		if (!getIgnoreDoubleClick()) {
 			newEvent = new Event();
 			newEvent.item = hitItem;
-			notifyListeners(SWT.DefaultSelection, newEvent);
+			postEvent(SWT.DefaultSelection, newEvent);
 		}
 	}
 	else
