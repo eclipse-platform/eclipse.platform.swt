@@ -19,17 +19,21 @@ import org.eclipse.swt.widgets.Event;
 public final class VerifyEvent extends KeyEvent {
 	
 	/**
-	 * the range of text being modified
+	 * the range of text being modified.
+	 * Setting these fields has no effect.
 	 */
 	public int start, end;
 	
 	/**
-	 * the new text that will be inserted
+	 * the new text that will be inserted.
+	 * Setting this field will change the text that is about to
+	 * be inserted or deleted.
 	 */
 	public String text;
 
 	/**
-	 * a flag indicating whether the operation should be allowed
+	 * a flag indicating whether the operation should be allowed.
+	 * Setting this field to false will cancel the operation.
 	 */
 	public boolean doit;
 	
