@@ -890,9 +890,9 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 		OS.g_signal_stop_emission_by_name (entryHandle, OS.insert_text);
 	} else {
 		if (newText != oldText) {
-			byte [] buffer3 = Converter.wcsToMbcs (null, newText, false);
+			byte [] buffer2 = Converter.wcsToMbcs (null, newText, false);
 			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			OS.gtk_editable_insert_text (entryHandle, buffer3, buffer3.length, pos);
+			OS.gtk_editable_insert_text (entryHandle, buffer2, buffer2.length, pos);
 			OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.g_signal_stop_emission_by_name (entryHandle, OS.insert_text);
 			OS.memmove (position, pos, 4);
