@@ -155,14 +155,7 @@ public int getSelection () {
 void setBackgroundPixel (int pixel) {
 	if (background == pixel) return;
 	background = pixel;
-	/*
-	* Feature in Windows.  Setting the color to be
-	* the current default is not correct because the
-	* widget will not change colors when the colors
-	* are changed from the control panel.  There is
-	* no fix at this time.
-	*/
-	if (pixel == -1) pixel = defaultBackground ();
+	if (pixel == -1) pixel = OS.CLR_DEFAULT;
 	OS.SendMessage (handle, OS.PBM_SETBKCOLOR, 0, pixel);
 }
 
@@ -174,14 +167,7 @@ public boolean setFocus () {
 void setForegroundPixel (int pixel) {
 	if (foreground == pixel) return;
 	foreground = pixel;
-	/*
-	* Feature in Windows.  Setting the color to be
-	* the current default is not correct because the
-	* widget will not change colors when the colors
-	* are changed from the control panel.  There is
-	* no fix at this time.
-	*/
-	if (pixel == -1) pixel = defaultForeground ();
+	if (pixel == -1) pixel = OS.CLR_DEFAULT;
 	OS.SendMessage (handle, OS.PBM_SETBARCOLOR, 0, pixel);
 }
 

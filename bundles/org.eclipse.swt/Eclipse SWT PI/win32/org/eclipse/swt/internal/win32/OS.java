@@ -220,6 +220,7 @@ public class OS {
 	public static final int CF_TEXT = 0x1;
 	public static final int CF_UNICODETEXT = 13;
 	public static final int CF_USESTYLE = 0x80;
+	public static final int CLR_DEFAULT = 0xff000000;
 	public static final int CLR_INVALID = 0xffffffff;
 	public static final int COLORONCOLOR = 0x3;
 	public static final int COLOR_3DDKSHADOW = 0x15 | SYS_COLOR_INDEX_FLAG;
