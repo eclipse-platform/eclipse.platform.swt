@@ -2418,7 +2418,6 @@ public int getInterpolation() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.gdipGraphics == 0) return SWT.DEFAULT;
 	int mode = Gdip.Graphics_GetInterpolationMode(data.gdipGraphics);
-	System.out.println("os inter=" + mode);
 	switch (mode) {
 		case Gdip.InterpolationModeDefault: return SWT.DEFAULT;
 		case Gdip.InterpolationModeNearestNeighbor: return SWT.NONE;
