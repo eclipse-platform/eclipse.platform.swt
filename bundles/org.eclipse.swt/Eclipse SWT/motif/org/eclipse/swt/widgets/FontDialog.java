@@ -26,44 +26,39 @@ import java.util.*;
  * </p>
  */
 public class FontDialog extends Dialog {
-	
-	private FontData fontData;
-	private Font sampleFont; // the current displayed sample font
+	private FontData [] fontData;
+	private FontData currentFontData;
+	private Font sampleFont;	// the displayed sample font
+	private Color sampleColor;	// the displayed sample color
 	private RGB rgb;
-	private Color sampleColor; // the current displayed sample color
-	
+	private boolean okSelected = false;
+	private boolean ignoreEvents = false;
 	/*
 	 * Table containing all available fonts as FontData objects.
 	 * The table is structured as a series of embedded Hashtables as follows:
 	 * <br>characterRegistryName -> faceName -> extendedStyle -> size -> style
 	 */
 	private Hashtable characterSets = new Hashtable ();
-	
-	private boolean okSelected = false;
-	private boolean ignoreEvents = false;
 
 	// widgets	
 	private Shell shell;
-	private Combo charSetCombo;
-	private Combo faceNameCombo;
-	private Combo fontSizeCombo;	
-	private Combo fontStyleCombo;
-	private Combo extStyleCombo;
+	private List fontSetList;
+	private List charSetList, faceNameList, extStyleList;
+	private List fontStyleList, fontSizeList;
 	private Label sampleLabel;
-	private Button okButton;
-	private Button cancelButton;
-	private Button colorButton;	
+	private Button upButton, downButton, newButton, removeButton;
+	private Button okButton, cancelButton, colorButton;	
 
 	// constants
 	private static final String TEXT_SAMPLE = "AaBbYyZz";
-	private static final String SCALABLE_SIZES[] = new String[] {"8", "10", "11", "12", "14", "16", "18", "22", "24", "26"};
+	private static String SCALABLE_SIZES [];
 	private static final int DEFAULT_SIZE = 14;
 	private static final String DEFAULT_STYLE = "medium";
 	private static final Integer SCALABLE_KEY = new Integer (0);
-	private static final Integer NO_SELECTION = new Integer (-1);
-	private static final int COLUMN1_WIDTH = 200;
-	private static final int COLUMN2_WIDTH = 150;
-	private static final int COLUMN3_WIDTH = 100;
+	private static final int LIST_WIDTH = 200;
+	private static final int EXTSTYLE_WIDTH = 150;
+	private static final int LIST_HEIGHT = 150;
+	private static final int SAMPLE_HEIGHT = 75;
 	private static final String PREFIX_ISO8859 = "iso8859";
 	private static final String PREFIX_ISO646 = "iso646";
 	private static final String PREFIX_UNICODE = "ucs";
@@ -91,6 +86,13 @@ public class FontDialog extends Dialog {
 		SWT.getMessage ("SWT_Charset_Romanian")
 	};
 
+	static {
+		SCALABLE_SIZES = new String [69];
+		for (int i = 0; i < 69; i++) {
+			SCALABLE_SIZES [i] = String.valueOf (i + 4);
+		}
+	}
+
 /**
  * Constructs a new instance of this class given only its
  * parent.
@@ -104,7 +106,6 @@ public class FontDialog extends Dialog {
  * </p>
  *
  * @param parent a shell which will be the parent of the new instance
- *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
  * </ul>
@@ -138,7 +139,6 @@ public FontDialog (Shell parent) {
  * </p>
  *
  * @param parent a shell which will be the parent of the new instance
- *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
  * </ul>
@@ -159,12 +159,10 @@ public FontDialog (Shell parent, int style) {
  * captures the different extended styles and the sizes and styles 
  * available for that extended style.
  */
-void addFonts (FontData fonts[]) {
-
+void addFonts (FontData fonts []) {
 	for (int i = 0; i < fonts.length; i++) {
 		FontData font = fonts [i];
-
-		String charSetName = getTranslatedCharSet (font);
+		String charSetName = getTranslatedCharSet (font, true);
 		Hashtable charSet = (Hashtable) characterSets.get (charSetName);
 		if (charSet == null) {
 			charSet = new Hashtable (9);
@@ -197,107 +195,163 @@ void addFonts (FontData fonts[]) {
 	}
 }
 
-/**
- * Create the widgets of the dialog.
- */
-void createChildren () {
-	Label characterSetLabel = new Label (shell, SWT.NONE);
-	Label faceNameLabel = new Label (shell, SWT.NONE);
-	Label extendedStyleLabel = new Label (shell, SWT.NONE);	
+void centerListIndex (List list, int index) {
+	int visibleItems = list.getSize ().y / list.getItemHeight ();
+	int topIndex = Math.max (0, index - visibleItems / 2);
+	list.setTopIndex (topIndex);
+}
+
+FontData copyFontData (FontData data) {
+	FontData result = new FontData ();
+	result.addStyle = data.addStyle;
+	result.averageWidth = data.averageWidth;
+	result.characterSetName = data.characterSetName;
+	result.characterSetRegistry = data.characterSetRegistry;
+	result.fontFamily = data.fontFamily;
+	result.foundry = data.foundry;
+	result.horizontalResolution = data.horizontalResolution;
+	result.pixels = data.pixels;
+	result.points = data.points;
+	result.setWidth = data.setWidth;
+	result.slant = data.slant;
+	result.spacing = data.spacing;
+	result.verticalResolution = data.verticalResolution;
+	result.weight = data.weight;
+	return result;
+}
+
+void createButtons (Composite parent) {
+	int buttonAlignment = GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING;
+	okButton = new Button (parent, SWT.PUSH);
+	okButton.setText (SWT.getMessage ("SWT_OK"));
+	okButton.setLayoutData (new GridData (buttonAlignment));
+	shell.setDefaultButton (okButton);
+	
+	cancelButton = new Button (parent, SWT.PUSH);
+	cancelButton.setText (SWT.getMessage ("SWT_Cancel"));
+	cancelButton.setLayoutData (new GridData (buttonAlignment));
+
+	colorButton = new Button (parent, SWT.PUSH);
+	colorButton.setText (SWT.getMessage ("SWT_Color"));
+	colorButton.setLayoutData (new GridData (buttonAlignment));
+}
+
+void createControls (Composite parent) {
+	Composite composite = new Composite (parent, SWT.NONE);
 	GridLayout layout = new GridLayout ();
-	
-	layout.numColumns = 4;
-	layout.marginWidth = 15;
-	layout.marginHeight = 15;
-	layout.horizontalSpacing = 10;
-	layout.verticalSpacing = 2;
-	shell.setLayout (layout);
+	layout.numColumns = 2;
+	composite.setLayout (layout);
 
-	// row one
-	characterSetLabel.setText (SWT.getMessage ("SWT_Character_set") + ":");
-	faceNameLabel.setText (SWT.getMessage ("SWT_Font") + ":");
-	extendedStyleLabel.setText (SWT.getMessage ("SWT_Extended_style") + ":");
+	Composite controls = new Composite (composite, SWT.NONE);
+	layout = new GridLayout ();
+	layout.marginHeight = layout.marginWidth = 0;
+	layout.numColumns = 3;
+	controls.setLayout (layout);
 	
-	new Label (shell, SWT.NONE);
+	// labels row (1)
+	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Character_set") + ":");
+	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Font") + ":");
+	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Extended_style") + ":");	
 
-	// row two	
-	charSetCombo = new Combo (shell, SWT.SIMPLE | SWT.V_SCROLL);
-	GridData gridData = new GridData ();
-	gridData.widthHint = COLUMN1_WIDTH;
-	gridData.heightHint = 150;
-	gridData.verticalSpan = 3;
-	charSetCombo.setLayoutData (gridData);
-	charSetCombo.setData (NO_SELECTION);
-	
-	faceNameCombo = new Combo (shell, SWT.SIMPLE | SWT.V_SCROLL);
-	gridData = new GridData ();
-	gridData.widthHint = COLUMN2_WIDTH;
-	gridData.heightHint = 150;	
-	gridData.verticalSpan = 3;
-	gridData.verticalAlignment = GridData.FILL;
-	faceNameCombo.setLayoutData (gridData);
-	faceNameCombo.setData (NO_SELECTION);
-	
-	extStyleCombo = new Combo (shell, SWT.SIMPLE | SWT.V_SCROLL);
-	gridData = new GridData ();
-	gridData.widthHint = COLUMN3_WIDTH;
-	gridData.heightHint = 150;	
-	gridData.verticalSpan = 3;
-	gridData.verticalAlignment = GridData.FILL;	
-	extStyleCombo.setLayoutData (gridData);
-	extStyleCombo.setData (NO_SELECTION);
-	
-	// create ok, cancel, and color buttons (row two, three, and four)
-	createButtons ();
-	
-	// row four
-	createEmptyRow ();
-	
-	// row five
-	Label fontSizeLabel = new Label (shell, SWT.NONE);	
-	fontSizeLabel.setText (SWT.getMessage ("SWT_Size") + ":");	
-	Label fontStyleLabel = new Label (shell, SWT.NONE);
-	fontStyleLabel.setText (SWT.getMessage ("SWT_Style") + ":");
-	
-	Label fillLabel = new Label (shell, SWT.NONE);
-	gridData = new GridData ();
-	gridData.horizontalSpan = 2;
-	fillLabel.setLayoutData (gridData);
+	// lists row (2)
+	charSetList = new List (controls, SWT.V_SCROLL);
+	GridData gridData = new GridData (GridData.FILL_HORIZONTAL);
+	gridData.heightHint = LIST_HEIGHT;
+	gridData.widthHint = LIST_WIDTH;
+	charSetList.setLayoutData (gridData);
 
-	// row six
-	fontSizeCombo = new Combo (shell, SWT.SIMPLE | SWT.V_SCROLL);
-	gridData = new GridData ();
-	gridData.horizontalAlignment = GridData.FILL;
-	gridData.verticalAlignment = GridData.FILL;		
-	gridData.heightHint = 110;	
-	fontSizeCombo.setLayoutData (gridData);
-	fontSizeCombo.setData (NO_SELECTION);
-			
-	fontStyleCombo = new Combo (shell, SWT.SIMPLE | SWT.V_SCROLL);
-	gridData = new GridData ();
-	gridData.horizontalAlignment = GridData.FILL;
-	gridData.verticalAlignment = GridData.FILL;		
-	fontStyleCombo.setLayoutData (gridData);
-	fontStyleCombo.setData (NO_SELECTION);
-	
-	fillLabel = new Label (shell, SWT.NONE);
-	gridData = new GridData ();
-	gridData.horizontalSpan = 2;
-	fillLabel.setLayoutData (gridData);
+	faceNameList = new List (controls, SWT.V_SCROLL);
+	gridData = new GridData (GridData.FILL_HORIZONTAL);
+	gridData.heightHint = LIST_HEIGHT;
+	gridData.widthHint = LIST_WIDTH;
+	faceNameList.setLayoutData (gridData);
 
-	// row seven
-	createEmptyRow ();
+	extStyleList = new List (controls, SWT.V_SCROLL | SWT.MULTI);
+	gridData = new GridData (GridData.FILL_HORIZONTAL);
+	gridData.heightHint = LIST_HEIGHT;
+	gridData.widthHint = EXTSTYLE_WIDTH;
+	extStyleList.setLayoutData (gridData);
+
+	// labels row (3)
+	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Size") + ":");	
+	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Style") + ":");
+	new Label (controls, SWT.NONE);		// filler
+
+	// lists row (4)
+	fontSizeList = new List (controls, SWT.V_SCROLL);
+	gridData = new GridData (GridData.FILL_HORIZONTAL);
+	gridData.heightHint = LIST_HEIGHT;
+	gridData.widthHint = LIST_WIDTH;
+	fontSizeList.setLayoutData (gridData);
+
+	fontStyleList = new List (controls, SWT.V_SCROLL);
+	gridData = new GridData (GridData.FILL_HORIZONTAL);
+	gridData.heightHint = LIST_HEIGHT;
+	gridData.widthHint = LIST_WIDTH;
+	fontStyleList.setLayoutData (gridData);
+
+	new Label (controls, SWT.NONE);		// filler
+
+	// font sets group
+	Group fontSetGroup = new Group (controls, SWT.NONE);
+	fontSetGroup.setText(SWT.getMessage ("SWT_FontSet"));
+	layout = new GridLayout ();
+	layout.numColumns = 2;
+	fontSetGroup.setLayout (layout);
+	GridData data = new GridData (GridData.FILL_BOTH);
+	data.horizontalSpan = 3;
+	fontSetGroup.setLayoutData (data);
+
+	fontSetList = new List (fontSetGroup, SWT.V_SCROLL);
+	data = new GridData (GridData.FILL_BOTH);
+	data.grabExcessHorizontalSpace = true;
+	fontSetList.setLayoutData (data);
+
+	Composite buttonsGroup = new Composite (fontSetGroup, SWT.NONE);
+	layout = new GridLayout ();
+	layout.numColumns = 3;
+	layout.makeColumnsEqualWidth = false;
+	layout.marginHeight = layout.marginWidth = 0;
+	layout.horizontalSpacing = layout.verticalSpacing = 0; 
+	buttonsGroup.setLayout (layout);
 	
-	// row eight
-	Group sampleGroup = new Group (shell, SWT.NONE);
+	Composite upDownButtonsGroup = new Composite (buttonsGroup, SWT.NONE);
+	layout = new GridLayout ();
+	layout.marginHeight = layout.marginWidth = 0;
+	layout.horizontalSpacing = layout.verticalSpacing = 0; 
+	upDownButtonsGroup.setLayout(layout);
+
+	int buttonAlignment = GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING;
+	upButton = new Button (upDownButtonsGroup, SWT.PUSH);
+	upButton.setLayoutData (new GridData (buttonAlignment));
+	upButton.setText (SWT.getMessage ("SWT_Up"));
+	downButton = new Button (upDownButtonsGroup, SWT.PUSH);
+	downButton.setLayoutData (new GridData (buttonAlignment));
+	downButton.setText (SWT.getMessage ("SWT_Down"));
+
+	new Label (buttonsGroup, SWT.SEPARATOR | SWT.VERTICAL);	
+
+	Composite newRemoveButtonsGroup = new Composite (buttonsGroup, SWT.NONE);
+	layout = new GridLayout ();
+	layout.marginHeight = layout.marginWidth = 0;
+	layout.horizontalSpacing = layout.verticalSpacing = 0; 
+	newRemoveButtonsGroup.setLayout(layout);
+		
+	newButton = new Button (newRemoveButtonsGroup, SWT.PUSH);
+	newButton.setLayoutData (new GridData (buttonAlignment));
+	newButton.setText (SWT.getMessage ("SWT_NewFont"));
+	removeButton = new Button (newRemoveButtonsGroup, SWT.PUSH);
+	removeButton.setLayoutData (new GridData (buttonAlignment));
+	removeButton.setText (SWT.getMessage ("SWT_Remove"));
+	
+	// font sample group
+	Group sampleGroup = new Group (controls, SWT.NONE);
 	sampleGroup.setText (SWT.getMessage ("SWT_Sample"));
 	gridData = new GridData ();
-	gridData.heightHint = 70;	
+	gridData.heightHint = SAMPLE_HEIGHT;	
 	gridData.horizontalSpan = 3;
 	gridData.horizontalAlignment = GridData.FILL;	
 	sampleGroup.setLayoutData (gridData);
-
-	// setup group box with sample text 
 	layout = new GridLayout ();
 	layout.marginWidth = 10;
 	layout.marginHeight = 10;
@@ -311,48 +365,13 @@ void createChildren () {
 	gridData.verticalAlignment = GridData.FILL;	
 	gridData.horizontalAlignment = GridData.FILL;	
 	sampleLabel.setLayoutData (gridData);
-	shell.setSize (445, 410);
-}
-
-/**
- * Fill one row in the grid layout with empty widgets.
- * Used to achieve a bigger vertical spacing between separate 
- * groups of widgets (ie. new rows of Text/Combo combinations).
- */
-void createEmptyRow () {
-	Label fillLabel = new Label (shell, SWT.NONE);
-	GridData gridData = new GridData ();
 	
-	gridData.heightHint = 5;
-	gridData.horizontalSpan = ((GridLayout) shell.getLayout ()).numColumns;
-	fillLabel.setLayoutData (gridData);
-}
-
-/**
- * Create the widgets of the dialog.
- */
-void createButtons () {
-	okButton = new Button (shell, SWT.PUSH);
-	okButton.setText (SWT.getMessage ("SWT_OK"));
-	shell.setDefaultButton (okButton);	
-	GridData gridData = new GridData ();
-	gridData.horizontalAlignment = GridData.FILL;
-	gridData.widthHint = 70;
-	okButton.setLayoutData (gridData);
-
-	cancelButton = new Button (shell, SWT.PUSH);
-	cancelButton.setText (SWT.getMessage ("SWT_Cancel"));
-	gridData = new GridData ();
-	gridData.horizontalAlignment = GridData.FILL;
-	gridData.verticalAlignment = GridData.BEGINNING;		
-	cancelButton.setLayoutData (gridData);
-
-	colorButton = new Button (shell, SWT.PUSH);
-	colorButton.setText (SWT.getMessage ("SWT_Color"));
-	gridData = new GridData ();
-	gridData.horizontalAlignment = GridData.FILL;
-	gridData.verticalAlignment = GridData.BEGINNING;		
-	colorButton.setLayoutData (gridData);
+	Composite okCancelGroup = new Composite (composite, SWT.NONE);
+	layout = new GridLayout ();
+	layout.marginHeight = layout.marginWidth = layout.verticalSpacing = 0;
+	okCancelGroup.setLayout (layout);
+	okCancelGroup.setLayoutData (new GridData (GridData.VERTICAL_ALIGN_BEGINNING));
+	createButtons (okCancelGroup);
 }
 
 Hashtable getExtStyles (String charsetName, String faceName) {
@@ -370,15 +389,31 @@ Hashtable getFaces (String charsetName) {
  * selected in the dialog, or null if none is available.
  * 
  * @return the FontData for the selected font, or null
+ * @deprecated use #getFontSet ()
  */
 public FontData getFontData () {
-	return fontData;
+	if (fontData != null && fontData.length > 0) {
+		return fontData [0];
+	}
+	return null;
+
 }
 
 FontData getFontData (String charsetName, String faceName, String extStyle, int size, String style) {
 	Hashtable styles = getStyles (charsetName, faceName, extStyle, size);
 	if (styles == null) return null;
 	return (FontData) styles.get (style);
+}
+
+/**
+ * Returns a FontData set describing the font that was
+ * selected in the dialog, or null if none is available.
+ * 
+ * @return the FontData set for the selected font, or null
+ * @since 2.1.1
+ */
+public FontData [] getFontSet () {
+	return fontData;
 }
 
 /**
@@ -391,13 +426,17 @@ Hashtable getFonts () {
 	return characterSets;
 }
 
+String getListSelection (List list) {
+	String [] selection = list.getSelection ();
+	if (selection.length > 0) return selection [0];
+	return "";
+}
+
 /**
  * Returns the currently selected color in the receiver.
  *
  * @return the RGB value for the selected color, may be null
- *
  * @see PaletteData#getRGBs
- * 
  * @since 2.1
  */
 public RGB getRGB () {
@@ -409,12 +448,12 @@ public RGB getRGB () {
  * font.
  */
 FontData getSelectionFontData () {
-	String charSetName = charSetCombo.getText ();
-	String faceName = faceNameCombo.getText ();
-	String extStyle = extStyleCombo.getText ();
+	String charSetName = getListSelection (charSetList);
+	String faceName = getListSelection (faceNameList);
+	String extStyle = getListSelection (extStyleList);
 	int size = DEFAULT_SIZE;
 	try {
-		size = Integer.valueOf (fontSizeCombo.getText ()).intValue ();
+		size = Integer.valueOf (getListSelection (fontSizeList)).intValue ();
 		if (size < 1) size = DEFAULT_SIZE;
 	} catch (NumberFormatException e) {
 		/*
@@ -422,10 +461,12 @@ FontData getSelectionFontData () {
 		 * value is already specified above.
 		 */
 	}
-	String style = fontStyleCombo.getText ();
+	String style = getListSelection (fontStyleList);
 	FontData result = getFontData (charSetName, faceName, extStyle, size, style);
 
-	if (result == null) {
+	if (result != null) {
+		result = copyFontData (result);
+	} else {
 		/*
 		* One or more of the dialog's widgets contain custom typed values.
 		* Create a FontData that mirrors these values so that the Font created
@@ -433,7 +474,7 @@ FontData getSelectionFontData () {
 		*/
 		result = new FontData ();
 		result.characterSetRegistry = charSetName;
-		result.setName(faceName);
+		result.setName (faceName);
 		result.addStyle = extStyle;
 		result.weight = style;
 	}
@@ -460,7 +501,7 @@ Hashtable getStyles (String charsetName, String faceName, String extStyle, int s
  * Returns the character set found in 'fontData' prefixed
  * with a string explaining the character set.
  */
-String getTranslatedCharSet (FontData fontData) {
+String getTranslatedCharSet (FontData fontData, boolean includeDescription) {
 	String characterSet = fontData.characterSetRegistry;
 	String translatedCharSet = null;
 
@@ -474,7 +515,7 @@ String getTranslatedCharSet (FontData fontData) {
 			 * value is already specified above.
 			 */
 		}
-		characterSet += "-" + charSetName;
+		characterSet = PREFIX_ISO8859 + "-" + charSetName;
 		if (charSetName < ISO_CHARSETS.length) {
 			translatedCharSet = ISO_CHARSETS [charSetName];
 		}
@@ -503,8 +544,8 @@ String getTranslatedCharSet (FontData fontData) {
 	if (characterSet.startsWith (PREFIX_KOREAN)) {
 		translatedCharSet = SWT.getMessage("SWT_Charset_Korean");
 	}
-	if (translatedCharSet != null) {
-		translatedCharSet += " (" + characterSet + ')';
+	if (includeDescription && translatedCharSet != null) {
+		translatedCharSet = characterSet + " (" + translatedCharSet + ')';
 	}
 	else {
 		translatedCharSet = characterSet;
@@ -515,7 +556,7 @@ String getTranslatedCharSet (FontData fontData) {
 /**
  * Returns the face name as specified in FontData.familyName followed by
  * the foundry set in parantheses if available.
- * We display the face name first so that the list box sorts the fonts by 
+ * We display the face name first so that the list sorts the fonts by 
  * face name, not by foundry. Users generally want to select fonts based 
  * on the face name and not by foundry. Once they've found the desired 
  * face name in the list they can compare the font variations from 
@@ -538,130 +579,202 @@ String getTranslatedFaceName (FontData fontData) {
 
 /**
  * Handle the events the receiver is listening to.
- * Combo selections cause the downstream combos to be initialized 
+ * List selections cause the downstream lists to be initialized 
  * with font data and the sample text to be updated.
  */
 void handleEvent (Event event) {
 	if (ignoreEvents) return;
-	if (event.widget instanceof Combo) {
-		Combo combo = (Combo) event.widget;
-		int prevSelectIndex = ((Integer) combo.getData ()).intValue ();
-		String text = combo.getText ();
-		int newSelectIndex = combo.indexOf (text);
-		if (prevSelectIndex != newSelectIndex || newSelectIndex == -1) {
+	if (event.widget instanceof List) {
+		List list = (List) event.widget;
+		String text = getListSelection (list);
+		int oldSelectIndex = ((Integer)list.getData ()).intValue ();
+		int newSelectIndex = list.indexOf (text);
+		if (oldSelectIndex != newSelectIndex || newSelectIndex == -1) {
 			ignoreEvents = true;
-			combo.setData (new Integer (newSelectIndex));
-			if (combo == charSetCombo) initFaceNameCombo ();
-			else if (combo == faceNameCombo) initExtStyleCombo ();
-			else if (combo == extStyleCombo) initSizeCombo ();
-			else if (combo == fontSizeCombo) initStyleCombo ();
+			if (list == charSetList) initFaceNameList ();
+			else if (list == faceNameList) initExtStyleList ();
+			else if (list == extStyleList) initSizeList ();
+			else if (list == fontSizeList) initStyleList ();
+			else if (event.widget == fontSetList) {
+				currentFontData = fontData [fontSetList.getSelectionIndex ()];
+				setFontControls (currentFontData);
+				updateButtonEnablements ();
+			}
+	
 			updateSampleFont ();
+			updateFontList ();
+			list.setData (new Integer (newSelectIndex));
 			if (newSelectIndex != -1) {
-				// in case it came by typing the name
-				combo.select (newSelectIndex);
+				list.select (newSelectIndex);
 			}
 			ignoreEvents = false;
 		}
-	}		
-	else
-	if (event.widget == okButton) {
-		okSelected = true;
-		shell.close ();
+		return;
 	}
-	else
-	if (event.widget == cancelButton) {
-		okSelected = false;
-		shell.close ();
-	}
-	else
-	if (event.widget == colorButton) {
-		ColorDialog colorDialog = new ColorDialog (shell, SWT.NONE);
-		colorDialog.setRGB (rgb);
-		RGB newRgb = colorDialog.open ();
-		if (newRgb != null) {
-			rgb = newRgb;
-			updateSampleColor ();
+	
+	if (event.widget instanceof Button) {
+		if (event.widget == okButton) {
+			okSelected = true;
+			shell.close ();
 		}
-	}	
+		else if (event.widget == cancelButton) {
+			okSelected = false;
+			shell.close ();
+		}
+		else if (event.widget == colorButton) {
+			ColorDialog colorDialog = new ColorDialog (shell, SWT.NONE);
+			colorDialog.setRGB (rgb);
+			RGB newRgb = colorDialog.open ();
+			if (newRgb != null) {
+				rgb = newRgb;
+				updateSampleColor ();
+			}
+		}
+		else if (event.widget == newButton) {
+			FontData [] newFontData = new FontData [fontData.length + 1];
+			System.arraycopy (fontData, 0, newFontData, 0, fontData.length);
+			FontData source = fontData [fontSetList.getSelectionIndex ()];
+			FontData newFd = copyFontData (source);
+			newFontData [newFontData.length - 1] = newFd;
+			this.fontData = newFontData;
+			updateFontList ();
+			fontSetList.select (newFontData.length - 1);
+			fontSetList.setData (new Integer (newFontData.length - 1));
+			fontSetList.showSelection();
+			updateButtonEnablements ();
+		}
+		else if (event.widget == removeButton) {
+			int selectionIndex = fontSetList.getSelectionIndex ();
+			FontData [] newFontData = new FontData [fontData.length - 1];
+			System.arraycopy (fontData, 0, newFontData, 0, selectionIndex);
+			System.arraycopy (fontData, selectionIndex + 1, newFontData, selectionIndex, newFontData.length - selectionIndex);
+			fontData = newFontData;
+			updateFontList ();
+			updateButtonEnablements ();
+			setFontControls (fontData [fontSetList.getSelectionIndex ()]);
+		}
+		else if (event.widget == upButton) {
+			int selectionIndex = fontSetList.getSelectionIndex ();
+			FontData temp = fontData [selectionIndex];
+			fontData [selectionIndex] = fontData [selectionIndex - 1];
+			fontData [selectionIndex - 1] = temp;
+			fontSetList.select (selectionIndex - 1);
+			fontSetList.setData (new Integer (selectionIndex - 1));
+			updateFontList ();
+			updateButtonEnablements ();
+		}
+		else if (event.widget == downButton) {
+			int selectionIndex = fontSetList.getSelectionIndex ();
+			FontData temp = fontData [selectionIndex];
+			fontData [selectionIndex] = fontData [selectionIndex + 1];
+			fontData [selectionIndex + 1] = temp;
+			fontSetList.select (selectionIndex + 1);
+			fontSetList.setData (new Integer (selectionIndex + 1));
+			updateFontList ();
+			updateButtonEnablements ();
+		}
+	}
+}
+
+void hookListeners () {
+	Listener listener = new Listener () {
+		public void handleEvent (Event event) {
+			FontDialog.this.handleEvent (event);
+		}
+	};
+	okButton.addListener (SWT.Selection, listener);
+	cancelButton.addListener (SWT.Selection, listener);
+	colorButton.addListener (SWT.Selection, listener);	
+	charSetList.addListener (SWT.Selection, listener);
+	faceNameList.addListener (SWT.Selection, listener);
+	fontStyleList.addListener (SWT.Selection, listener);
+	extStyleList.addListener (SWT.Selection, listener);
+	fontSizeList.addListener (SWT.Selection, listener);
+	newButton.addListener (SWT.Selection, listener);
+	removeButton.addListener (SWT.Selection, listener);
+	upButton.addListener (SWT.Selection, listener);
+	downButton.addListener (SWT.Selection, listener);
+	fontSetList.addListener (SWT.Selection, listener);
 }
 
 /**
- * Initialize the extended styles combo with the extended styles
+ * Initialize the extended styles list with the extended styles
  * available for the selected font.
- * Downstream combos are initialized as well (style and size).
+ * Downstream lists are initialized as well (style and size).
  */
-void initExtStyleCombo () {
-	String oldSelect = extStyleCombo.getText ();
-	extStyleCombo.removeAll ();
+void initExtStyleList () {
+	String oldSelect = getListSelection (extStyleList);
+	extStyleList.removeAll ();
 	
-	String characterSet = charSetCombo.getText ();
-	String faceName = faceNameCombo.getText ();
+	String characterSet = getListSelection (charSetList);
+	String faceName = getListSelection (faceNameList);
 	Hashtable extStyles = getExtStyles (characterSet, faceName);
-	setItemsSorted (extStyleCombo, extStyles);
+	setItemsSorted (extStyleList, extStyles);
 	
-	int selectIndex = extStyleCombo.indexOf (oldSelect);
-	selectIndex = Math.max (0, selectIndex);
-	extStyleCombo.select (selectIndex);
-	extStyleCombo.setData (new Integer (selectIndex));
-	initSizeCombo ();
+	int selectIndex = extStyleList.indexOf (oldSelect);
+	extStyleList.select (selectIndex);
+	extStyleList.setData (new Integer (selectIndex));
+	centerListIndex (extStyleList, selectIndex);
+	initSizeList ();
 }
 
 /**
- * Initialize the face name combo box with all font names 
+ * Initialize the face name list with all font names 
  * available in the selected character set.
- * Downstream combos are initialized as well (extended style).
+ * Downstream lists are initialized as well (extended style).
  */
-void initFaceNameCombo () {
-	String oldSelect = faceNameCombo.getText ();
-	faceNameCombo.removeAll ();
-	String charSetText = charSetCombo.getText ();
+void initFaceNameList () {
+	String oldSelect = getListSelection (faceNameList);
+	faceNameList.removeAll ();
+	String charSetText = getListSelection (charSetList);
 	if (charSetText.length () == 0) return;
 	
 	Hashtable faceNames = getFaces (charSetText);
-	setItemsSorted (faceNameCombo, faceNames);
+	setItemsSorted (faceNameList, faceNames);
 	
-	int selectIndex = faceNameCombo.indexOf (oldSelect);
+	int selectIndex = faceNameList.indexOf (oldSelect);
 	selectIndex = Math.max (0, selectIndex);
-	faceNameCombo.select (selectIndex);
-	faceNameCombo.setData (new Integer (selectIndex));
-	initExtStyleCombo ();
+	faceNameList.select (selectIndex);
+	faceNameList.setData (new Integer (selectIndex));
+	centerListIndex (faceNameList, selectIndex);
+	initExtStyleList ();
 }
 
 /**
  * Initialize the widgets of the receiver with the data of 
- * all installed fonts.
- * If the user specified a default font preselect that font in 
- * the combo boxes.
+ * all installed fonts.  If the user specified a default font
+ * preselect that font in the lists.
  */
-void initializeWidgets () {
-	Display display = shell.getDisplay ();
-	addFonts (display.getFontList (null, false));		// get all fonts availabe on the current display
+void initFonts () {
+	Display display = shell.display;
+	// get all fonts available on the current display
+	addFonts (display.getFontList (null, false));
 	addFonts (display.getFontList (null, true));
-	setItemsSorted (charSetCombo, getFonts ());
+	setItemsSorted (charSetList, getFonts ());
 	if (fontData != null) {
-		Font font = new Font (display, fontData);	// verify that the initial font data is a valid font
-		ignoreEvents = true;
-		setFontCombos (font.getFontData ()[0]);
-		ignoreEvents = false;
+		// verify that the initial font data is a valid font
+		Font font = new Font (display, fontData);
+		fontData = font.getFontData ();
+		currentFontData = fontData [0];
 		font.dispose ();
+	} else {
+		fontData = display.textFont.getFontData ();
+		currentFontData = fontData [0];
 	}
-	updateSampleFont ();
-	updateSampleColor ();
 }
 
 /**
- * Initialize the size combo with the sizes the selected font 
- * is available in.
- * If the selected font is scalable a selection of preset sizes 
- * is used.
+ * Initialize the size list with the sizes the selected font 
+ * is available in.  If the selected font is scalable a selection
+ * of preset sizes is used.
  */
-void initSizeCombo () {
-	String oldSelect = fontSizeCombo.getText ();
-	fontSizeCombo.removeAll ();
+void initSizeList () {
+	String oldSelect = getListSelection (fontSizeList);
+	fontSizeList.removeAll ();
 	
-	String characterSet = charSetCombo.getText ();
-	String faceName = faceNameCombo.getText ();
-	String extStyle = extStyleCombo.getText ();
+	String characterSet = getListSelection (charSetList);
+	String faceName = getListSelection (faceNameList);
+	String extStyle = getListSelection (extStyleList);
 	Hashtable sizes = getSizes (characterSet, faceName, extStyle);
 	if (sizes != null) {
 		if (sizes.get (SCALABLE_KEY) == null) {
@@ -695,65 +808,46 @@ void initSizeCombo () {
 		}
 	}
 	
-	int selectIndex = fontSizeCombo.indexOf (oldSelect);
+	int selectIndex = fontSizeList.indexOf (oldSelect);
 	if (selectIndex == -1) {
-		selectIndex = fontSizeCombo.indexOf (String.valueOf (DEFAULT_SIZE));
+		selectIndex = fontSizeList.indexOf (String.valueOf (DEFAULT_SIZE));
 	}
 	selectIndex = Math.max (0, selectIndex);
-	fontSizeCombo.select (selectIndex);
-	fontSizeCombo.setData (new Integer (selectIndex));
-	initStyleCombo ();
+	fontSizeList.select (selectIndex);
+	fontSizeList.setData (new Integer (selectIndex));
+	centerListIndex (fontSizeList, selectIndex);
+	initStyleList ();
 }
 
 /**
- * Initialize the styles combo with the styles the selected font 
+ * Initialize the styles list with the styles the selected font 
  * is available in.
  */
-void initStyleCombo () {
-	String oldSelect = fontStyleCombo.getText ();
-	fontStyleCombo.removeAll ();
+void initStyleList () {
+	String oldSelect = getListSelection (fontStyleList);
+	fontStyleList.removeAll ();
 	
-	String characterSet = charSetCombo.getText ();
-	String faceName = faceNameCombo.getText ();
-	String extStyle = extStyleCombo.getText ();
+	String characterSet = getListSelection (charSetList);
+	String faceName = getListSelection (faceNameList);
+	String extStyle = getListSelection (extStyleList);
 	try {
-		int size = Integer.valueOf (fontSizeCombo.getText ()).intValue ();
+		int size = Integer.valueOf (getListSelection (fontSizeList)).intValue ();
 		if (size > 0) {
 			Hashtable styles = getStyles (characterSet, faceName, extStyle, size);
-			setItemsSorted (fontStyleCombo, styles);
+			setItemsSorted (fontStyleList, styles);
 		}
 	} catch (NumberFormatException e) {
 		// fall through
 	}
 
-	int selectIndex = fontStyleCombo.indexOf (oldSelect);
+	int selectIndex = fontStyleList.indexOf (oldSelect);
 	if (selectIndex == -1) {
-		selectIndex = fontStyleCombo.indexOf (String.valueOf (DEFAULT_STYLE));
+		selectIndex = fontStyleList.indexOf (String.valueOf (DEFAULT_STYLE));
 	}
 	selectIndex = Math.max (0, selectIndex);
-	fontStyleCombo.select (selectIndex);
-	fontStyleCombo.setData (new Integer (selectIndex));
-	fontStyleCombo.select (Math.max (0, selectIndex));
-}
-
-/**
- * Register the receiver to receive events.
- */
-void installListeners () {
-	Listener listener = new Listener () {
-		public void handleEvent (Event event) {
-			FontDialog.this.handleEvent (event);
-		}
-	};
-	okButton.addListener (SWT.Selection, listener);
-	cancelButton.addListener (SWT.Selection, listener);
-	colorButton.addListener (SWT.Selection, listener);	
-	charSetCombo.addListener (SWT.Selection, listener);
-	charSetCombo.addListener (SWT.Modify, listener);
-	faceNameCombo.addListener (SWT.Modify, listener);
-	fontStyleCombo.addListener (SWT.Modify, listener);
-	extStyleCombo.addListener (SWT.Modify, listener);
-	fontSizeCombo.addListener (SWT.Modify, listener);
+	fontStyleList.select (selectIndex);
+	fontStyleList.setData (new Integer (selectIndex));
+	centerListIndex (fontStyleList, selectIndex);
 }
 
 /**
@@ -762,7 +856,6 @@ void installListeners () {
  *
  * @return a FontData object describing the font that was selected,
  *         or null if the dialog was cancelled or an error occurred
- *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
@@ -770,21 +863,29 @@ void installListeners () {
  */
 public FontData open () {
 	shell = new Shell (getParent (), getStyle () | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
-	createChildren ();
-	installListeners ();	
+	shell.setLayout (new GridLayout ());
+	createControls (shell);
 	
-	FontData originalFontData = fontData;
+	FontData [] originalFontData = fontData;
 	RGB originalRGB = rgb;
-	initializeWidgets ();
+	initFonts ();
 	openDialog ();
-	Display display = shell.getDisplay ();
+	setFontControls (currentFontData);
+	updateSampleFont ();
+	updateSampleColor ();
+	updateFontList ();
+	fontSetList.select (0);
+	fontSetList.setData (new Integer (0));
+	updateButtonEnablements ();
+	hookListeners ();
+	Display display = shell.display;
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	
 	FontData result = null;
 	if (okSelected) {
-		result = fontData;
+		result = fontData [0];
 	} else {
 		fontData = originalFontData;
 		rgb = originalRGB;
@@ -802,10 +903,11 @@ public FontData open () {
  */
 void openDialog () {
 	// Start everything off by setting the shell size to its computed size.
-	Point pt = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
+	Point pt = shell.computeSize (SWT.DEFAULT, SWT.DEFAULT, false);
 	
 	// Ensure that the width of the shell fits the display.
-	Rectangle displayRect = shell.getDisplay().getBounds();
+	Display display = shell.display;
+	Rectangle displayRect = display.getBounds ();
 	int widthLimit = displayRect.width * 7 / 8;
 	int heightLimit = displayRect.height * 7 / 8;
 	if (pt.x > widthLimit) {
@@ -825,49 +927,101 @@ void openDialog () {
 	
 	String title = getText ();
 	if (title.length () == 0) title = SWT.getMessage ("SWT_FontDialog_Title");
-	shell.setText(title);
+	shell.setText (title);
 	
 	// Open the window.
-	shell.open();
+	shell.open ();
 }
 
 /**
- * Initialize the combo boxes with the data of the preselected
+ * Initialize the lists with the data of the preselected
  * font specified by the user.
  */
-void setFontCombos (FontData fontData) {
-	String characterSet = getTranslatedCharSet (fontData);
+void setFontControls (FontData fontData) {
+	ignoreEvents = true;
+	String characterSet = getTranslatedCharSet (fontData, true);
 	String faceName = getTranslatedFaceName (fontData);
-	charSetCombo.setText (characterSet);
-	charSetCombo.setData (new Integer (charSetCombo.indexOf (characterSet)));
+	charSetList.select (new String[] {characterSet});
+	int index = charSetList.indexOf (characterSet);
+	charSetList.setData (new Integer (index));
+	if (index != -1) centerListIndex (charSetList, index);
 
-	initFaceNameCombo ();
-	faceNameCombo.setText (faceName);
-	faceNameCombo.setData (new Integer (faceNameCombo.indexOf (faceName)));
+	initFaceNameList ();
+	faceNameList.select (new String[] {faceName});
+	index = faceNameList.indexOf (faceName);
+	faceNameList.setData (new Integer (index));
+	if (index != -1) centerListIndex (faceNameList, index);
 
-	initExtStyleCombo ();
-	extStyleCombo.setText (fontData.addStyle);
-	extStyleCombo.setData (new Integer (extStyleCombo.indexOf (fontData.addStyle)));
-		
-	initSizeCombo ();
+	initExtStyleList ();
+	extStyleList.select (new String[] {fontData.addStyle});
+	index = extStyleList.indexOf (fontData.addStyle);
+	extStyleList.setData (new Integer (index));
+	if (index != -1) centerListIndex (extStyleList, index);
+
+	initSizeList ();
 	String value = String.valueOf (fontData.getHeight ());
-	fontSizeCombo.setText (value);
-	fontSizeCombo.setData (new Integer (fontSizeCombo.indexOf (value)));
-	
-	initStyleCombo ();
-	fontStyleCombo.setText (fontData.weight);
-	fontStyleCombo.setData (new Integer (fontStyleCombo.indexOf (fontData.weight)));
+	fontSizeList.select (new String[] {value});
+	index = fontSizeList.indexOf (value);
+	fontSizeList.setData (new Integer (index));
+	if (index != -1) centerListIndex (fontSizeList, index);
+
+	initStyleList ();
+	fontStyleList.select (new String[] {fontData.weight});
+	index = fontStyleList.indexOf (fontData.weight);
+	fontStyleList.setData (new Integer (index));
+	if (index != -1) centerListIndex (fontStyleList, index);
+	ignoreEvents = false;
 }
 
 /**
  * Sets a FontData object describing the font to be
  * selected by default in the dialog, or null to let
  * the platform choose one.
- * 
+ *
  * @param fontData the FontData to use initially, or null
+ * @deprecated use #setFontSet (FontData [])
  */
 public void setFontData (FontData fontData) {
+	if (fontData == null) {
+		this.fontData = null;
+	} else {
+		this.fontData = new FontData [1];
+		this.fontData [0] = fontData;
+	}
+}
+
+/**
+ * Sets a set of FontData objects describing the font to
+ * be selected by default in the dialog, or null to let
+ * the platform choose one.
+ * 
+ * @param fontData the set of FontData objects to use initially, or null
+ * @since 2.1.1
+ */
+public void setFontSet (FontData [] fontData) {
 	this.fontData = fontData;
+}
+
+/**
+ * Set the contents of 'list' to the keys of 'items'.
+ * Keys are sorted in ascending order first and have to be Strings.
+ */
+void setItemsSorted (List list, Hashtable items) {
+	if (items == null) return;
+	Enumeration itemKeys = items.keys ();
+	String [] sortedItems = new String [items.size ()];
+	int index = 0;
+	while (itemKeys.hasMoreElements ()) {
+		String item = (String) itemKeys.nextElement ();
+		if (item.length () != 0) sortedItems [index++] = item;
+	}
+	if (index != sortedItems.length) {
+		String [] newItems = new String [index];
+		System.arraycopy (sortedItems, 0, newItems, 0, index);
+		sortedItems = newItems;
+	}
+	sort (sortedItems);
+	list.setItems (sortedItems);
 }
 
 /**
@@ -876,9 +1030,7 @@ public void setFontData (FontData fontData) {
  * @param rgb the new RGB value for the selected color, may be
  *        null to let the platform to select a default when
  *        open() is called
- *
  * @see PaletteData#getRGBs
- * 
  * @since 2.1
  */
 public void setRGB (RGB rgb) {
@@ -886,29 +1038,7 @@ public void setRGB (RGB rgb) {
 }
 
 /**
- * Set the contents of 'combo' to the keys of 'items'.
- * Keys are sorted in ascending order first and have to be Strings.
- */
-void setItemsSorted (Combo combo, Hashtable items) {
-	if (items == null) return;
-	Enumeration itemKeys = items.keys ();
-	String [] sortedItems = new String[items.size ()];
-	int index = 0;
-	while (itemKeys.hasMoreElements ()) {
-		String item = (String) itemKeys.nextElement ();
-		if (item.length () != 0) sortedItems[index++] = item;
-	}
-	if (index != sortedItems.length) {
-		String [] newItems = new String[index];
-		System.arraycopy (sortedItems, 0, newItems, 0, index);
-		sortedItems = newItems;
-	}
-	sort (sortedItems);
-	combo.setItems (sortedItems);
-}
-
-/**
- * Set the contents of the size combo to the keys of 'items'.
+ * Set the contents of the size list to the keys of 'items'.
  * Keys are sorted in ascending order first and have to be Integers.
  */
 void setSizeItemsSorted (Enumeration itemsEnum) {
@@ -916,20 +1046,20 @@ void setSizeItemsSorted (Enumeration itemsEnum) {
 	while (itemsEnum.hasMoreElements ()) {
 		items.addElement (itemsEnum.nextElement ());
 	}
-	Integer[] sortedItems = new Integer [items.size ()];
+	Integer [] sortedItems = new Integer [items.size ()];
 	items.copyInto (sortedItems);
 	sort (sortedItems);
-	String[] sortedItemStrings = new String [items.size ()];
+	String [] sortedItemStrings = new String [items.size ()];
 	for (int i = 0; i < sortedItemStrings.length; i++) {
 		sortedItemStrings [i] = String.valueOf (sortedItems [i].intValue ());
 	}
-	fontSizeCombo.setItems (sortedItemStrings);
+	fontSizeList.setItems (sortedItemStrings);
 }
 
 /**
  * Sort 'items' in ascending order.
  */
-void sort (Integer[] items) {
+void sort (Integer [] items) {
 	/* Shell Sort from K&R, pg 108 */
 	int length = items.length;
 	for (int gap = length / 2; gap > 0; gap /= 2) {
@@ -937,8 +1067,8 @@ void sort (Integer[] items) {
 			for (int j = i - gap; j >= 0; j -= gap) {
 		   		if (items [j].intValue () > items [j + gap].intValue ()) {
 					Integer swap = items [j];
-					items[j] = items [j + gap];
-					items[j + gap] = swap;
+					items [j] = items [j + gap];
+					items [j + gap] = swap;
 		   		}
 	    	}
 	    }
@@ -948,7 +1078,7 @@ void sort (Integer[] items) {
 /**
  * Sort 'items' in ascending order.
  */
-void sort (String items[]) {
+void sort (String items []) {
 	/* Shell Sort from K&R, pg 108 */
 	int length = items.length;
 	for (int gap = length / 2; gap > 0; gap /= 2) {
@@ -956,12 +1086,59 @@ void sort (String items[]) {
 			for (int j = i - gap; j >= 0; j -= gap) {
 		   		if (items [j].compareTo (items [j + gap]) > 0) {
 					String swap = items [j];
-					items [j] = items[j + gap];
+					items [j] = items [j + gap];
 					items [j + gap] = swap;
 		   		}
 	    	}
 	    }
 	}
+}
+
+void updateButtonEnablements () {
+	removeButton.setEnabled (fontSetList.getItemCount () > 1);
+	upButton.setEnabled (fontSetList.getSelectionIndex () > 0);
+	downButton.setEnabled (fontSetList.getSelectionIndex () < fontSetList.getItemCount () - 1);
+}
+
+void updateFontList () {
+	int selectionIndex = fontSetList.getSelectionIndex ();
+	int topIndex = Math.max (0, fontSetList.getTopIndex ());
+	String [] items = new String [fontData.length];
+	for (int i = 0; i < fontData.length; i++) {
+		StringBuffer buffer = new StringBuffer ();
+		buffer.append (i);
+		buffer.append (": ");
+		buffer.append (getTranslatedCharSet (fontData [i], false));
+		buffer.append ("-");
+		buffer.append (getTranslatedFaceName (fontData [i]));
+		buffer.append ("-");
+		if (!fontData [i].addStyle.equals ("")) {
+			buffer.append (fontData [i].addStyle);
+			buffer.append ("-");
+		}
+		buffer.append (fontData [i].getHeight ());
+		buffer.append ("-");
+		buffer.append (fontData [i].weight);
+		items [i] = buffer.toString (); 
+	}
+	fontSetList.setItems (items);
+	if (selectionIndex >= items.length) selectionIndex--;
+	fontSetList.select (selectionIndex);
+	fontSetList.setData (new Integer (selectionIndex));
+	fontSetList.setTopIndex (topIndex);
+	fontSetList.showSelection ();
+}
+
+void updateSampleColor () {
+	if (rgb == null) {
+		rgb = new RGB (0, 0, 0);
+	}
+	if (sampleColor != null) {
+		if (sampleColor.getRGB ().equals (rgb)) return;
+		sampleColor.dispose ();
+	}
+	sampleColor = new Color (parent.display, rgb);
+	sampleLabel.setForeground (sampleColor);
 }
 
 /**
@@ -976,20 +1153,10 @@ void updateSampleFont () {
 	 * This happens when selectionFontData specifies a font alias.
 	 */
 	if (sampleFont != null) sampleFont.dispose ();
-	sampleFont = new Font (shell.getDisplay (), selectionFontData);
-	fontData = selectionFontData;
+	int selectionIndex = Math.max (0, fontSetList.getSelectionIndex ());
+	fontData [selectionIndex] = selectionFontData;
+	sampleFont = new Font (shell.display, selectionFontData);
 	sampleLabel.setFont (sampleFont);
 }
 
-void updateSampleColor() {
-	if (rgb == null) {
-		rgb = new RGB(0, 0, 0);
-	}
-	if (sampleColor != null) {
-		if (sampleColor.getRGB ().equals (rgb)) return;
-		sampleColor.dispose();
-	}
-	sampleColor = new Color (getParent ().getDisplay (), rgb);
-	sampleLabel.setForeground (sampleColor);
-}
 }
