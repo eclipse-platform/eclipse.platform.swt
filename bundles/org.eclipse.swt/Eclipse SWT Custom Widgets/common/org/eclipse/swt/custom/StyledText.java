@@ -1596,6 +1596,8 @@ public StyledText(Composite parent, int style) {
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.BORDER) != 0) {
 		leftMargin = topMargin = rightMargin = bottomMargin = 2;
 	}
+	leftMargin = rightMargin = 10;
+	topMargin = bottomMargin = 0;
 	clipboard = new Clipboard(display);
 	installDefaultContent();
 	initializeRenderer();
@@ -5050,8 +5052,16 @@ void handleResize(Event event) {
 	int oldHeight = clientAreaHeight;
 	int oldWidth = clientAreaWidth;
 	
-	clientAreaHeight = getClientArea().height;
-	clientAreaWidth = getClientArea().width;
+	Rectangle clientArea = getClientArea();
+	clientAreaHeight = clientArea.height;
+	clientAreaWidth = clientArea.width;
+	/* Redraw the old or new right margin if needed */
+    if (oldWidth != clientAreaWidth) {	
+		if (rightMargin > 0) {
+			int x = (oldWidth < clientAreaWidth ? oldWidth : clientAreaWidth)- rightMargin; 
+			redraw(x, 0, rightMargin, oldHeight, false);
+		}
+    }
 	if (wordWrap) {
 	    if (oldWidth != clientAreaWidth) {	
 	    	wordWrapResize(oldWidth);
@@ -5066,7 +5076,7 @@ void handleResize(Event event) {
 		oldBottomIndex = Math.min(oldBottomIndex, lineCount);
 		newItemCount = Math.min(newItemCount, lineCount - oldBottomIndex);
 		lineCache.calculate(oldBottomIndex, newItemCount);
-	}	
+	}
 	setScrollBars();
 	claimBottomFreeSpace();
 	claimRightFreeSpace();	
