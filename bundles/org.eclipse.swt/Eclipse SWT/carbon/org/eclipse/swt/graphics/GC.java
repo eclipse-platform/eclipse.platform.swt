@@ -509,11 +509,11 @@ public void drawFocus(int x, int y, int width, int height) {
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of the image</li>
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
  */
 public void drawImage(Image image, int x, int y) {
@@ -548,11 +548,11 @@ public void drawImage(Image image, int x, int y) {
  *    <li>ERROR_INVALID_ARGUMENT - if any of the width or height arguments are negative.
  *    <li>ERROR_INVALID_ARGUMENT - if the source rectangle is not contained within the bounds of the source image</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
  */
 public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
@@ -685,6 +685,9 @@ public void drawOval(int x, int y, int width, int height) {
 	flush();
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void drawPath(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -856,14 +859,16 @@ public void drawRectangle(Rectangle rect) {
  * right edges of the rectangle are at <code>x</code> and <code>x + width</code>. 
  * The top and bottom edges are at <code>y</code> and <code>y + height</code>.
  * The <em>roundness</em> of the corners is specified by the 
- * <code>arcWidth</code> and <code>arcHeight</code> arguments. 
+ * <code>arcWidth</code> and <code>arcHeight</code> arguments, which
+ * are respectively the width and height of the ellipse used to draw
+ * the corners.
  *
  * @param x the x coordinate of the rectangle to be drawn
  * @param y the y coordinate of the rectangle to be drawn
  * @param width the width of the rectangle to be drawn
  * @param height the height of the rectangle to be drawn
- * @param arcWidth the horizontal diameter of the arc at the four corners
- * @param arcHeight the vertical diameter of the arc at the four corners
+ * @param arcWidth the width of the arc
+ * @param arcHeight the height of the arc
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -1256,6 +1261,9 @@ public void fillOval(int x, int y, int width, int height) {
 	flush();
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void fillPath(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1372,8 +1380,8 @@ public void fillRectangle(Rectangle rect) {
  * @param y the y coordinate of the rectangle to be filled
  * @param width the width of the rectangle to be filled
  * @param height the height of the rectangle to be filled
- * @param arcWidth the horizontal diameter of the arc at the four corners
- * @param arcHeight the vertical diameter of the arc at the four corners
+ * @param arcWidth the width of the arc
+ * @param arcHeight the height of the arc
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -1470,6 +1478,9 @@ public Color getBackground() {
 	return Color.carbon_new (data.device, data.background);
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public int getAlpha() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.alpha;
@@ -1526,6 +1537,7 @@ public Rectangle getClipping() {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the region is disposed</li>
  * </ul>	
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -1625,11 +1637,35 @@ public Color getForeground() {
 	return Color.carbon_new(data.device, data.foreground);	
 }
 
+/** 
+ * Returns the receiver's line cap style, which will be one
+ * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
+ * or <code>SWT.CAP_SQUARE</code>.
+ *
+ * @return the cap style used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1 
+ */
 public int getLineCap() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineCap;
 }
 
+/** 
+ * Returns the receiver's line dash style.
+ *
+ * @return the lin dash style used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1 
+ */
 public int[] getLineDash() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	float[] lengths = data.dashes;
@@ -1641,6 +1677,19 @@ public int[] getLineDash() {
 	return dashes;
 }
 
+/** 
+ * Returns the receiver's line join style, which will be one
+ * of the constants <code>SWT.JOIN_MITER</code>, <code>SWT.JOIN_ROUND</code>,
+ * or <code>SWT.JOIN_BEVEL</code>.
+ *
+ * @return the join style used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1 
+ */
 public int getLineJoin() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineJoin;
@@ -1703,6 +1752,9 @@ public int getStyle () {
 	return data.style;
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void getTransform (Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	float[] cmt = data.transform; 
@@ -1802,6 +1854,9 @@ boolean isIdentity(float[] transform) {
 	 	&& transform[3] == 1 && transform[4] == 0 && transform[5] == 0;
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void setAlpha(int alpha) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.alpha = alpha & 0xFF;
@@ -1877,6 +1932,9 @@ public void setClipping(int x, int y, int width, int height) {
 	OS.DisposeRgn(clipRgn);
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void setClipping(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1913,10 +1971,10 @@ public void setClipping(Rectangle rect) {
  * by the argument.
  *
  * @param region the clipping region.
- *
+ * 
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the font has been disposed</li>
- * </ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
+ * </ul> 
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2040,6 +2098,22 @@ public void setForeground(Color color) {
 	OS.CGContextSetStrokeColor(handle, color.handle);
 }
 
+/** 
+ * Sets the receiver's line cap style to the argument, which must be one
+ * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
+ * or <code>SWT.CAP_SQUARE</code>.
+ *
+ * @param cap the cap style to be used for drawing lines
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the style is not valid</li>
+ * </ul> 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1 
+ */
 public void setLineCap(int cap) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int cap_style = 0;
@@ -2060,6 +2134,20 @@ public void setLineCap(int cap) {
 	OS.CGContextSetLineCap(handle, cap_style);
 }
 
+/** 
+ * Sets the receiver's line dash style to the argument.
+ *
+ * @param dashes the dash style to be used for drawing lines
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the values in the array is less than or equal 0</li>
+ * </ul> 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1 
+ */
 public void setLineDash(int[] dashes) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	float[] lengths = null;
@@ -2078,6 +2166,22 @@ public void setLineDash(int[] dashes) {
 	data.dashes = lengths;
 }
 
+/** 
+ * Sets the receiver's line join style to the argument, which must be one
+ * of the constants <code>SWT.JOIN_MITER</code>, <code>SWT.JOIN_ROUND</code>,
+ * or <code>SWT.JOIN_BEVEL</code>.
+ *
+ * @param join the join style to be used for drawing lines
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the style is not valid</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1 
+ */
 public void setLineJoin(int join) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int join_style = 0;
@@ -2106,6 +2210,9 @@ public void setLineJoin(int join) {
  *
  * @param lineStyle the style to be used for drawing lines
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the style is not valid</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -2282,6 +2389,9 @@ int regionToRects(int message, int rgn, int r, int newRgn) {
 	return 0;
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void setTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

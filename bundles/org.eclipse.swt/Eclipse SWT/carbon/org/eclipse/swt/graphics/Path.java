@@ -14,6 +14,9 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public class Path {
 	
 	/**
