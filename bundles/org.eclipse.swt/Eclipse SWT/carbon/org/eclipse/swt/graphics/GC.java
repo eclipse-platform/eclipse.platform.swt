@@ -462,6 +462,21 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  */
 public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	/*
+	* Feature in Quartz.  Drawing a one-pixel line produces no output.  The
+	* fix is to fill a one-pixel rectangle instead.
+	*/
+	if (x1 == x2 && y1 == y2) {
+		CGRect rect = new CGRect();
+		rect.x = x1;
+		rect.y = y1;
+		rect.width = 1;
+		rect.height = 1;
+		OS.CGContextSetFillColor(handle, data.foreground);
+		OS.CGContextFillRect(handle, rect);
+		OS.CGContextSetFillColor(handle, data.background);
+		return;
+	}
 	OS.CGContextBeginPath(handle);
 	OS.CGContextMoveToPoint(handle, x1+0.5f, y1+0.5f);
 	OS.CGContextAddLineToPoint(handle, x2+0.5f, y2+0.5f);

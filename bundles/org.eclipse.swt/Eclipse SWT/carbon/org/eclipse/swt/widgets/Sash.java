@@ -90,7 +90,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if (!event.doit) return result;
 	
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, pt.sizeof, null, pt);
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, org.eclipse.swt.internal.carbon.Point.sizeof, null, pt);
 	int window = OS.GetControlOwner (handle);
 	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
 	int offsetX = pt.h - rect.left;
