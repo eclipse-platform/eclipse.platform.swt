@@ -11,6 +11,16 @@
 package org.eclipse.swt.graphics;
 
 
+/**
+ * Implementers of <code>Drawable</code> can have a graphics context (GC)
+ * created for them, and then they can be drawn on by sending messages to
+ * their associated GC. SWT images, and device objects such as the Display
+ * device and the Printer device, are drawables. 
+ *
+ * @see Device
+ * @see Image
+ * @see GC
+ */
 public interface Drawable {
 
 /**	 
