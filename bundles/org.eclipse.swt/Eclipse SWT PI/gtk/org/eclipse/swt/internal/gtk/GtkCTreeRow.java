@@ -1,7 +1,8 @@
 package org.eclipse.swt.internal.gtk;
 
 /*
- * Copyright (c) IBM Corp. 2000, 2001.  All rights reserved.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
+ * All rights reserved.
  *
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
