@@ -487,6 +487,7 @@ public void setForeground (Color color){
 		pixel = color.handle;
 	}
 	foreground = pixel;
+	redraw ();
 }
 
 /**
