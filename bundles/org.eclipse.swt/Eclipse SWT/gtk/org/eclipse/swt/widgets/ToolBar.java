@@ -389,10 +389,8 @@ void releaseWidget () {
 	}
 	items = null;
 	super.releaseWidget ();
-	if (imageList != null) {
-		imageList.dispose ();
-		imageList = null;
-	}
+	if (imageList != null) imageList.dispose ();
+	imageList = null;
 }
 
 void removeControl (Control control) {

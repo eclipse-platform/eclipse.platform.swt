@@ -1642,10 +1642,8 @@ void releaseWidget () {
 	modelHandle = 0;
 	if (checkRenderer != 0) OS.g_object_unref (checkRenderer);
 	checkRenderer = 0;
-	if (imageList != null) {
-		imageList.dispose ();
-		imageList = null;
-	}
+	if (imageList != null) imageList.dispose ();
+	imageList = null;
 }
 
 /**

@@ -684,10 +684,8 @@ void releaseWidget () {
 	parent = null;
 	cascade = null;
 	imItem = imSeparator = imHandle = 0;
-	if (imageList != null) {
-		imageList.dispose ();
-		imageList = null;
-	}
+	if (imageList != null) imageList.dispose ();
+	imageList = null;
 }
 
 /**

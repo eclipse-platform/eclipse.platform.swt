@@ -216,10 +216,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	imageHandle = tooltipsHandle = 0;
-	if (imageList != null) {
-		imageList.dispose ();
-		imageList = null;
-	}
+	if (imageList != null) imageList.dispose ();
+	imageList = null;
 	toolTipText = null;
 	if (handle != 0) OS.gtk_widget_destroy (handle);
 	handle = 0;
