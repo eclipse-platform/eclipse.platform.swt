@@ -624,7 +624,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	label = string;
 }
-boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent, boolean doit) {
+boolean translateAccelerator (char key, int keysym, XKeyEvent xEvent, boolean doit) {
 	if (menuBar == null || !menuBar.getEnabled ()) return false;
 	
 	/* Ignore modifiers. */

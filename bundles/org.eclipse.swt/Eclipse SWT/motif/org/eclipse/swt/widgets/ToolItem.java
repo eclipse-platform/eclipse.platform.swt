@@ -825,7 +825,7 @@ void setDrawPressed (boolean value) {
 	int [] argList = {OS.XmNshadowType, shadowType};
 	OS.XtSetValues(handle, argList, argList.length / 2);
 }
-boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent, boolean doit) {
+boolean translateAccelerator (char key, int keysym, XKeyEvent xEvent, boolean doit) {
 	return parent.translateAccelerator (key, keysym, xEvent, doit);
 }
 boolean translateMnemonic (char key, int keysym, XKeyEvent xEvent) {

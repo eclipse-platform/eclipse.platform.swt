@@ -943,7 +943,7 @@ public String toString () {
 int topHandle () {
 	return handle;
 }
-boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent, boolean doit) {
+boolean translateAccelerator (char key, int keysym, XKeyEvent xEvent, boolean doit) {
 	return false;
 }
 boolean translateMnemonic (char key, int keysym, XKeyEvent xEvent) {
