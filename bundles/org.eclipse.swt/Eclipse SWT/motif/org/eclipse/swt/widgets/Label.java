@@ -473,12 +473,11 @@ void setBitmap (Image image) {
 		}
 	}
 	int [] argList = {
-		OS.XmNlabelType, OS.XmPIXMAP,
+		OS.XmNlabelType, image == null ? OS.XmSTRING : OS.XmPIXMAP,
 		OS.XmNlabelPixmap, labelPixmap,
 		OS.XmNlabelInsensitivePixmap, labelInsensitivePixmap,
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
-	if (image == null && text != null && !text.equals("")) _setText(text);
 }
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
