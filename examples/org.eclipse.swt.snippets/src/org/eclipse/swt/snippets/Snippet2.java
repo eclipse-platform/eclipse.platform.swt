@@ -77,6 +77,7 @@ public static void main (String [] args) {
                         items[i].dispose();
                         TableItem item = new TableItem(table, SWT.NONE, j);
                         item.setText(values);
+                        items = table.getItems();
                         break;
                     }
                 }
