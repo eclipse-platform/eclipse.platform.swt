@@ -1326,16 +1326,17 @@ void textEvent (Event event) {
 		case SWT.KeyDown: {
 			if (event.character == SWT.CR) {
 				dropDown (false);
-				Event e = new Event();
+				Event e = new Event ();
 				e.time = event.time;
 				e.stateMask = event.stateMask;
-				notifyListeners(SWT.DefaultSelection, e);
+				notifyListeners (SWT.DefaultSelection, e);
 			}
 			//At this point the widget may have been disposed.
 			// If so, do not continue.
-			if (isDisposed()) break;
+			if (isDisposed ()) break;
 			
 			if (event.keyCode == SWT.ARROW_UP || event.keyCode == SWT.ARROW_DOWN) {
+				event.doit = false;
 				if ((event.stateMask & SWT.ALT) != 0) {
 					boolean dropped = isDropped ();
 					text.selectAll ();
@@ -1350,43 +1351,42 @@ void textEvent (Event event) {
 				} else {
 					select (Math.min (oldIndex + 1, getItemCount () - 1));
 				}
-		
 				if (oldIndex != getSelectionIndex ()) {
 					Event e = new Event();
 					e.time = event.time;
 					e.stateMask = event.stateMask;
-					notifyListeners(SWT.Selection, e);
+					notifyListeners (SWT.Selection, e);
 				}
 				//At this point the widget may have been disposed.
 				// If so, do not continue.
-				if (isDisposed()) break;
+				if (isDisposed ()) break;
 			}
 			
 			// Further work : Need to add support for incremental search in 
 			// pop up list as characters typed in text widget
 						
-			Event e = new Event();
+			Event e = new Event ();
 			e.time = event.time;
 			e.character = event.character;
 			e.keyCode = event.keyCode;
 			e.stateMask = event.stateMask;
-			notifyListeners(SWT.KeyDown, e);
+			notifyListeners (SWT.KeyDown, e);
 			break;
 		}
 		case SWT.KeyUp: {
-			Event e = new Event();
+			Event e = new Event ();
 			e.time = event.time;
 			e.character = event.character;
 			e.keyCode = event.keyCode;
 			e.stateMask = event.stateMask;
-			notifyListeners(SWT.KeyUp, e);
+			notifyListeners (SWT.KeyUp, e);
 			break;
 		}
 		case SWT.Modify: {
 			list.deselectAll ();
-			Event e = new Event();
+			Event e = new Event ();
 			e.time = event.time;
-			notifyListeners(SWT.Modify, e);
+			notifyListeners (SWT.Modify, e);
 			break;
 		}
 		case SWT.MouseDown: {
@@ -1416,13 +1416,13 @@ void textEvent (Event event) {
 					break;
 			}
 			
-			Event e = new Event();
+			Event e = new Event ();
 			e.time = event.time;
 			e.detail = event.detail;
 			e.doit = event.doit;
 			e.character = event.character;
 			e.keyCode = event.keyCode;
-			notifyListeners(SWT.Traverse, e);
+			notifyListeners (SWT.Traverse, e);
 			event.doit = e.doit;
 			event.detail = e.detail;
 			break;
