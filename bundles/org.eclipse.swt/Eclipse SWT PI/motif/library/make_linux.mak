@@ -20,7 +20,6 @@ JAVA_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
 MOTIF_HOME = /bluebird/teamswt/swt-builddir/motif21
 QT_HOME    = /usr/lib/qt3
 
-
 # Define the various DLL (shared) libraries to be made.
 
 SWT_PREFIX   = swt
@@ -33,9 +32,17 @@ SWT_LIB      = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 GNOME_PREFIX = swt-gnome
 GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_OBJ    = gnome.o 
-GNOME_LIB    = -x -shared \
-	           `gnome-config --libs gnome`
-GNOME_CFLAGS = -DGNOME `gnome-config --cflags gnome gnomeui`
+
+GNOME_CFLAGS = `gnome-config --cflags vfs`
+# GNOME_LIB
+# Use the output of `gnome-config --libs vfs`
+# Replace -rdynamic by --export-dynamic to avoid a rpath error with ld
+# (gcc transforms -rdynamic into --export-dynamic when calling ld)
+GNOME_LIB = -x -shared --export-dynamic -L/usr/lib -L/usr/X11R6/lib \
+			-lgnomevfs -lxml -lz -lgconf-gtk-1 -lgconf-1 -loaf \
+			-lORBitCosNaming -lORBit -lIIOP -lORBitutil -lnsl \
+			-lgtk -lgdk -lXi -lXext -lX11 -lm -lgmodule -lgthread \
+			-lglib -lpthread -ldl
 
 KDE_PREFIX   = swt-kde
 KDE_DLL      = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
