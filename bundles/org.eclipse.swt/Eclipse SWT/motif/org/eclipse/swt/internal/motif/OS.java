@@ -581,6 +581,7 @@ public class OS {
 	public static final int XmNindicatorType = malloc ("indicatorType");
 	public static final int XmNnoResize = malloc ("noResize");
 	public static final int XmNorientation = malloc ("orientation");
+	public static final int XmNoverrideRedirect = malloc ("overrideRedirect");
 	public static final int XmNprocessingDirection = malloc ("processingDirection");
 	public static final int XmNrecomputeSize = malloc ("recomputeSize");
 	public static final int XmNpushButtonEnabled = malloc ("pushButtonEnabled");

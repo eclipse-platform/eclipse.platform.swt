@@ -294,7 +294,9 @@ public void addShellListener(ShellListener listener) {
 	addListener(SWT.Deiconify,typedListener);
 }
 void adjustTrim () {
-	if ((style & SWT.ON_TOP) != 0) return;
+	if (OS.XtIsSubclass (shellHandle, OS.OverrideShellWidgetClass ())) {
+		return;
+	}
 	
 	/* Query the trim insets */
 	int shellWindow = OS.XtWindow (shellHandle);
@@ -460,6 +462,7 @@ void createHandle (int index) {
 	int [] argList = {
 		OS.XmNmwmInputMode, inputMode,
 		OS.XmNmwmDecorations, decorations,
+		OS.XmNoverrideRedirect, (style & SWT.ON_TOP) != 0 ? 1 : 0,
 		OS.XmNtitle, ptr,
 	};
 	byte [] appClass = display.appClass;
@@ -469,7 +472,9 @@ void createHandle (int index) {
 		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList, argList.length / 2);
 	} else {
 		int widgetClass = OS.TransientShellWidgetClass ();
-		if ((style & SWT.ON_TOP) != 0) widgetClass = OS.OverrideShellWidgetClass ();
+//		if ((style & SWT.ON_TOP) != 0) {
+//			widgetClass = OS.OverrideShellWidgetClass ();
+//		}
 		int parentHandle = display.shellHandle;
 		if (parent != null) parentHandle = parent.handle;
 		shellHandle = OS.XtCreatePopupShell (appClass, widgetClass, parentHandle, argList, argList.length / 2);
@@ -660,7 +665,7 @@ void hookEvents () {
 	super.hookEvents ();
 	int windowProc = display.windowProc;
 	OS.XtAddEventHandler (shellHandle, OS.StructureNotifyMask, false, windowProc, SWT.Resize);
-	if ((style & SWT.ON_TOP) != 0) return;
+	if (OS.XtIsSubclass (shellHandle, OS.OverrideShellWidgetClass ())) return;
 	OS.XtAddEventHandler (shellHandle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn);
 	int [] argList = {OS.XmNdeleteResponse, OS.XmDO_NOTHING};
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
