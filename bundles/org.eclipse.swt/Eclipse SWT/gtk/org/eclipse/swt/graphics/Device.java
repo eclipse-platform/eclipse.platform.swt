@@ -509,11 +509,9 @@ public void setWarnings (boolean warnings) {
 	checkDevice ();
 	this.warnings = warnings;
 	if (debug) return;
-	OS.g_log_remove_handler (0, handler_id);
+	if (handler_id != 0) OS.g_log_remove_handler (0, handler_id);
 	handler_id = 0;
-	if (warnings) {
-		handler_id = OS.g_log_set_handler (0, -1, logProc, 0);
-	}
+	if (warnings) handler_id = OS.g_log_set_handler (0, -1, logProc, 0);
 }
 
 }
