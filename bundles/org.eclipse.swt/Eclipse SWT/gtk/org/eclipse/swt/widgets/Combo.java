@@ -405,6 +405,26 @@ void deregister () {
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
+boolean filterKey (int keyval, int /*long*/ event) {
+	/*
+	* Bug in GTK.  On simplified Chinese, when the IM is open and the user
+	* presses a tab key, focus traversal occurs and the IM stops working.
+	* In order to process keys properly in SWT, if the same key event is
+	* dispatched twice, it is ignored.  If the tab key is not dispatched twice,
+	* the IM fails.  The fix is to dispatch it.
+	*/
+	boolean isTab = keyval == OS.GDK_Tab || keyval == OS.GDK_ISO_Left_Tab;
+	int time = OS.gdk_event_get_time (event);
+	if (time != lastEventTime ||  isTab) {
+		lastEventTime = time;
+		int /*long*/ imContext = imContext ();
+		if (imContext != 0) {
+			return OS.gtk_im_context_filter_keypress (imContext, event);
+		}
+	}
+	return false;
+}
+
 int /*long*/ fontHandle () {
 	if (entryHandle != 0) return entryHandle;
 	return super.fontHandle ();
@@ -794,31 +814,6 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 	OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
 	OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, entryHandle);
 	return 0;
-}
-
-int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
-	if (widget != entryHandle) {
-		return super.gtk_key_press_event (widget, event);
-	}
-	if (!hasFocus ()) return 0;
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-	/*
-	* Bug in GTK.  On simplified Chinese, when the IM is open and the user
-	* presses a tab key, focus traversal occurs and the IM stops working.
-	* In order to process keys properly in SWT, if the same key event is
-	* dispatched twice, it is ignored.  If the tab key is not dispatched twice,
-	* the IM fails.  The fix is to dispatch it.
-	*/
-	boolean isTab = gdkEvent.keyval == OS.GDK_Tab || gdkEvent.keyval == OS.GDK_ISO_Left_Tab;
-	if (gdkEvent.time != lastEventTime ||  isTab) {
-		lastEventTime = gdkEvent.time;
-		int /*long*/ imContext = imContext ();
-		if (imContext != 0) {
-			if (OS.gtk_im_context_filter_keypress (imContext, event)) return 1;
-		}
-	}
-	return super.gtk_key_press_event (widget, event);
 }
 
 int /*long*/ gtk_popup_menu (int /*long*/ widget) {
