@@ -89,7 +89,7 @@ void createSampleGroup(int colorChooserWidth) {
 	GridLayout layout = new GridLayout();
 	int sampleGroupWidth;
 
-	sampleGroup.setText("Sample");
+	sampleGroup.setText(SWT.getMessage("SWT_Sample"));
 	gridData.horizontalAlignment = GridData.FILL;	
 	sampleGroup.setLayoutData(gridData);
 	sampleGroup.setLayout(layout);
@@ -97,7 +97,7 @@ void createSampleGroup(int colorChooserWidth) {
 		
 	sampleLabel = new Label(sampleGroup, SWT.CENTER | SWT.BORDER);
 	sampleLabel.setAlignment(SWT.CENTER);
-	sampleLabel.setText("A Sample Text");
+	sampleLabel.setText(SWT.getMessage("SWT_A_Sample_Text"));
 	gridData = new GridData();
 	gridData.grabExcessHorizontalSpace = true;
 	gridData.widthHint = sampleGroupWidth;
@@ -116,14 +116,14 @@ void createSelectionGroup() {
 	GridData gridData = new GridData();
 	GridLayout layout = new GridLayout();
 
-	selectionGroup.setText("Selection");
+	selectionGroup.setText(SWT.getMessage("SWT_Selection"));
 	gridData.horizontalAlignment = GridData.FILL;	
 	selectionGroup.setLayoutData(gridData);
 	selectionGroup.setLayout(layout);
 	
 	selectionLabel = new Label(selectionGroup, SWT.CENTER | SWT.BORDER);
 	selectionLabel.setAlignment(SWT.CENTER);
-	selectionLabel.setText("Current Selection");
+	selectionLabel.setText(SWT.getMessage("SWT_Current_Selection"));
 	gridData = new GridData();
 	gridData.grabExcessHorizontalSpace = true;
 	gridData.horizontalAlignment = GridData.FILL;
@@ -419,7 +419,7 @@ void createOkCancel() {
 	GridData gridData;
 	
 	ok = new Button(dialog, SWT.PUSH);
-	ok.setText("OK");
+	ok.setText(SWT.getMessage("SWT_OK"));
 	dialog.setDefaultButton(ok);	
 	gridData = new GridData();
 	gridData.horizontalAlignment = GridData.FILL;
@@ -427,7 +427,7 @@ void createOkCancel() {
 	ok.setLayoutData(gridData);
 
 	cancel = new Button(dialog, SWT.PUSH);
-	cancel.setText("Cancel");
+	cancel.setText(SWT.getMessage("SWT_Cancel"));
 	gridData = new GridData();
 	gridData.horizontalAlignment = GridData.FILL;
 	gridData.verticalAlignment = GridData.BEGINNING;		

@@ -177,7 +177,7 @@ void setButtons (int dialogHandle) {
 	}
 	if ((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)) {
 		OS.XtManageChild (help);
-		byte [] buffer1 = Converter.wcsToMbcs (null, "Yes", true);
+		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Yes"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
 			0,
@@ -186,7 +186,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
-		byte [] buffer2 = Converter.wcsToMbcs (null, "No", true);
+		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_No"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
 			0,
@@ -195,7 +195,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
-		byte [] buffer3 = Converter.wcsToMbcs (null, "Cancel", true);
+		byte [] buffer3 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Cancel"), true);
 		int xmString3 = OS.XmStringParseText (
 			buffer3,
 			0,
@@ -210,7 +210,7 @@ void setButtons (int dialogHandle) {
 		return;
 	}
 	if ((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) {
-		byte [] buffer1 = Converter.wcsToMbcs (null, "Yes", true);
+		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Yes"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
 			0,
@@ -219,7 +219,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
-		byte [] buffer2 = Converter.wcsToMbcs (null, "No", true);
+		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_No"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
 			0,
@@ -234,7 +234,7 @@ void setButtons (int dialogHandle) {
 		return;
 	}
 	if ((style & (SWT.RETRY | SWT.CANCEL)) == (SWT.RETRY | SWT.CANCEL)) {
-		byte [] buffer1 = Converter.wcsToMbcs (null, "Retry", true);
+		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Retry"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
 			0,
@@ -243,7 +243,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
-		byte [] buffer2 = Converter.wcsToMbcs (null, "Cancel", true);
+		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Cancel"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
 			0,
@@ -259,7 +259,7 @@ void setButtons (int dialogHandle) {
 	}
 	if ((style & (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) {
 		OS.XtManageChild (help);
-		byte [] buffer1 = Converter.wcsToMbcs (null, "Abort", true);
+		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Abort"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
 			0,
@@ -268,7 +268,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
-		byte [] buffer2 = Converter.wcsToMbcs (null, "Retry", true);
+		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Retry"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
 			0,
@@ -277,7 +277,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
-		byte [] buffer3 = Converter.wcsToMbcs (null, "Ignore", true);
+		byte [] buffer3 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Ignore"), true);
 		int xmString3 = OS.XmStringParseText (
 			buffer3,
 			0,
