@@ -619,7 +619,7 @@ void forceResize () {
 //				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 //				if ((bits & OS.WS_CLIPSIBLINGS) == 0) wp.flags |= OS.SWP_NOCOPYBITS;
 //			}
-			OS.SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
+			SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
 			lpwp [i] = null;
 			return;
 		}	
@@ -1708,6 +1708,33 @@ public void removeTraverseListener(TraverseListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Traverse, listener);
+}
+
+static boolean SetWindowPos(int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags) {
+	if (OS.IsWinCE) {
+		/*
+		* Feature on Windows CE.  Calling SetWindowPos without SWP_NOSIZE triggers a WM_SIZE event
+		* even if the new size is the same as the current one.  This causes an infinite loop when
+		* SetWindowPos is called from within a WM_SIZE callback.  The workaround is to ignore the
+		* size information in this case. 
+		*/
+		if ((uFlags & OS.SWP_NOSIZE) == 0) {
+			RECT lpRect = new RECT();
+			OS.GetWindowRect(hWnd, lpRect);
+			if (cy == lpRect.bottom - lpRect.top && cx == lpRect.right - lpRect.left) {
+				/*
+				* Feature on Windows CE.  Calling SetWindowPos with SWP_DRAWFRAME triggers
+				* a WM_SIZE event even when SWP_NOSIZE is set and/or when the new size is the same
+				* as the current one.  This causes an infinite loop when SetWindowPos is called 
+				* from within a WM_SIZE callback.  The workaround is to not set SWP_DRAWFRAME in 
+				* this case. 
+				*/
+				uFlags &= ~OS.SWP_DRAWFRAME;
+				uFlags |= OS.SWP_NOSIZE;
+			}
+		}
+	}
+	return OS.SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
 }
 
 boolean sendKeyEvent (int type, int msg, int wParam, int lParam) {
@@ -4433,6 +4460,4 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 LRESULT wmScrollChild (int wParam, int lParam) {
 	return null;
 }
-
 }
-
