@@ -25,7 +25,6 @@ public class Display extends Device {
 	int textHighlightThickness = 4;
 	
 	/* Windows and Events */
-	int [] wakeEvent;
 	static final int WAKE_CLASS = 0;
 	static final int WAKE_KIND = 0;
 	Event [] eventQueue;
@@ -385,9 +384,6 @@ protected void create (DeviceData data) {
 
 void createDisplay (DeviceData data) {
 	queue = OS.GetCurrentEventQueue ();
-	wakeEvent = new int [1];
-	OS.CreateEvent (0, WAKE_CLASS, WAKE_KIND, 0.0, OS.kEventAttributeUserEvent, wakeEvent);
-	OS.RetainEvent (wakeEvent [0]);
 	OS.TXNInitTextension (0, 0, 0);
 }
 
@@ -1080,8 +1076,6 @@ void releaseDisplay () {
 	grabControl = helpControl = currentControl = null;
 	if (helpString != 0) OS.CFRelease (helpString);
 	helpString = 0;
-	if (wakeEvent [0] != 0) OS.ReleaseEvent (wakeEvent [0]);
-	wakeEvent = null;	
 	//NOT DONE - call terminate TXN if this is the last display 
 	//NOTE: - display create and dispose needs to be synchronized on all platforms
 //	 TXNTerminateTextension ();
