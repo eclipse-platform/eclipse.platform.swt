@@ -198,10 +198,12 @@ void createHandle (int index) {
 		* push button look.  The fix is to set the shadow
 		* thickness when ever this resource is changed.
 		*/
+		Display display = getDisplay ();
+		int thickness = display.buttonShadowThickness;
 		int [] argList = {
 			OS.XmNrecomputeSize, 0,
 			OS.XmNindicatorOn, 0,
-			OS.XmNshadowThickness, (style & SWT.FLAT) != 0 ? 1 : 2,
+			OS.XmNshadowThickness, (style & SWT.FLAT) != 0 ? 1 : thickness,
 			OS.XmNalignment, alignment,
 			OS.XmNborderWidth, borderWidth,
 		};
