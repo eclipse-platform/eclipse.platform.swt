@@ -70,9 +70,11 @@ public TextLayout (Device device) {
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	layout = OS.pango_layout_new(context);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);	
-	OS.pango_layout_set_wrap(layout, OS.PANGO_WRAP_WORD_CHAR);
-	OS.pango_layout_set_tabs(layout, device.emptyTab);		
+	OS.pango_context_set_language(context, OS.gtk_get_default_language());
+	OS.pango_context_set_base_dir(context, OS.PANGO_DIRECTION_LTR);
 	OS.gdk_pango_context_set_colormap(context, OS.gdk_colormap_get_system());
+	OS.pango_layout_set_wrap(layout, OS.PANGO_WRAP_WORD_CHAR);
+	OS.pango_layout_set_tabs(layout, device.emptyTab);
 	text = "";
 	ascent = descent = -1;
 	styles = new StyleItem[2];
