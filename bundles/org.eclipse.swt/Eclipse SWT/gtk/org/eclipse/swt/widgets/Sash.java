@@ -27,10 +27,9 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Sash extends Control {
-	boolean dragging, drawing;
-	int startX, startY, lastX, lastY, drawX, drawY;
-	int start_root_x, start_root_y;
-	int last_root_x, last_root_y;
+	boolean dragging;
+	int originX, originY;
+	int lastX, lastY; /* relative to the receiver, not the parent */
 	int cursor;
 
 /**
@@ -154,72 +153,64 @@ public void removeSelectionListener(SelectionListener listener) {
 int processMouseDown (int callData, int arg1, int int2) {
 	super.processMouseDown (callData,arg1,int2);
 	if (OS.gdk_event_button_get_button(callData) != 1) return 0;
-	double[] px = new double[1];
-	double[] py = new double[1];
-	OS.gdk_event_get_coords(callData, px, py);
-	startX = (int)(px[0]);  startY = (int)(py[0]);
-	OS.gdk_event_get_root_coords(callData, px, py);
-	start_root_x=(int)(px[0]); start_root_y=(int)(py[0]);
-	drawX=startX; drawY=startY;
-	int width = OS.GTK_WIDGET_WIDTH (handle);
-	int height = OS.GTK_WIDGET_HEIGHT (handle);
-	lastX = OS.GTK_WIDGET_X(handle);  lastY = OS.GTK_WIDGET_Y(handle);
+	
+	originX = OS.GTK_WIDGET_X(handle);
+	originY = OS.GTK_WIDGET_Y(handle);
+	lastX = 0;
+	lastY = 0;
+	
 	/* The event must be sent because its doit flag is used. */
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
 	event.time = OS.gdk_event_get_time(callData);
-	event.x = lastX;  event.y = lastY;
-	event.width = width;  event.height = height;
+	event.x = originX;
+	event.y = originY;
+	event.width = OS.GTK_WIDGET_WIDTH (handle);
+	event.height = OS.GTK_WIDGET_HEIGHT (handle);
 	/*
 	 * It is possible (but unlikely) that client code could have disposed
 	 * the widget in the selection event.  If this happens end the processing
 	 * of this message by returning.
 	 */
-	sendEvent (SWT.MouseDown, event);
+	sendEvent (SWT.Selection, event);
 	if (isDisposed ()) return 0;
 	if (event.doit) {
 		dragging = true;
-		drawBand (lastX = event.x, lastY = event.y, width, height);
+		drawBand (originX, originY, event.width, event.height);
 	}
 	return 0;
 }
 
 int processMouseMove (int callData, int arg1, int int2) {
+	super.processMouseMove (callData, arg1, int2);
 	if (!dragging) return 0;
-	int width = OS.GTK_WIDGET_WIDTH (handle);
-	int height = OS.GTK_WIDGET_HEIGHT (handle);
-	int x = OS.GTK_WIDGET_X(handle);
-	int y = OS.GTK_WIDGET_Y(handle);
-	Rectangle rect = parent.getClientArea();
-	int parentWidth = rect.width - 2;
-	int parentHeight = rect.height - 2;
 	
-	double px[] = new double[1];
-	double py[] = new double[1];
-	OS.gdk_event_get_root_coords(callData, px, py);
-	last_root_x=(int)(px[0]); last_root_y=(int)(py[0]);
-	int newX = lastX, newY = lastY;
+	/* Get the coordinates where the event happened, relative to the receiver */
+	double[] px = new double[1];
+	double[] py = new double[1];
+	OS.gdk_event_get_coords(callData, px, py);
+	int x = (int)(px[0]);
+	int y = (int)(py[0]);
+
 	if ((style & SWT.VERTICAL) != 0) {
-		if (last_root_x<=start_root_x)
-			newX = Math.min (Math.max (0, x - (start_root_x-last_root_x) - startX ), parentWidth - width);
-		else 	
-			newX = Math.min (Math.max (0, x + (last_root_x-start_root_x) - startX ), parentWidth - width);
+		/* Erase the old one */
+		int oldDrawX = originX + lastX;
+		drawBand(oldDrawX, originY,
+		         OS.GTK_WIDGET_WIDTH(handle), OS.GTK_WIDGET_HEIGHT(handle));
+		
 	} else {
-		if (last_root_y<=start_root_y)
-			newY = Math.min (Math.max (0, y - (start_root_y-last_root_y)  - startY ), parentHeight - height);
-		else
-			newY = Math.min (Math.max (0, y + (last_root_y-start_root_y)  - startY ), parentHeight - height);
 	}
-	if ((newX == lastX) && (newY == lastY)) return 0;
-	drawBand(newX, newY, width, height);
 	return 0;
 }
 
 int processMouseUp (int callData, int arg1, int int2) {
+	super.processMouseUp(callData, arg1,int2);
 	int button = OS.gdk_event_button_get_button(callData);
 	if (button != 1) return 0;
 	if (!dragging) return 0;
-	int width = OS.GTK_WIDGET_WIDTH (handle);
+//	drawBand(lastX, lastY, width, height);
+
+/*	int width = OS.GTK_WIDGET_WIDTH (handle);
 	int height = OS.GTK_WIDGET_HEIGHT (handle);
 	int x = OS.GTK_WIDGET_X(handle);
 	int y = OS.GTK_WIDGET_Y(handle);
@@ -230,6 +221,8 @@ int processMouseUp (int callData, int arg1, int int2) {
 	double[] py = new double[1];
 	OS.gdk_event_get_coords(callData, px, py);
 	last_root_x=(int)(px[0]); last_root_y=(int)(py[0]);
+System.out.println("Event coords: "+last_root_x+"x"+last_root_y);
+System.out.println("Widget coords: "+x+"x"+y);
 	int newX = lastX, newY = lastY;
 	if ((style & SWT.VERTICAL) != 0) {
 		if (last_root_x<=start_root_x)
@@ -246,13 +239,12 @@ int processMouseUp (int callData, int arg1, int int2) {
 
 	Event event = new Event ();
 	event.time = OS.gdk_event_get_time(callData);
-	event.x = newX;  event.y = newY;
+//	event.x = newX;  event.y = newY;
+	event.x = 20;  event.y = 0;
 	event.width = width;  event.height = height;
 	dragging = false;
-	drawBand(newX, newY, width, height);
 	drawing = false;
-	OS.gtk_grab_remove(handle);
-	sendEvent (SWT.Selection, event);
+	sendEvent (SWT.Selection, event);*/
 	return 0;
 }
 
@@ -289,10 +281,9 @@ int processMouseExit (int callData, int arg1, int int2) {
 }
 
 void drawBand (int x, int y, int width, int height) {
-	if (x == drawX && y == drawY) return;
 	Display display= parent.getDisplay ();
 	if (display == null) return;
-	int window = OS.GTK_WIDGET_WINDOW(parent.topHandle());
+	int window = OS.GTK_WIDGET_WINDOW(parent.paintHandle());
 	if (window == 0) return;
 	byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
 	int stipplePixmap = OS.gdk_bitmap_create_from_data (window, bits, 8, 8);
@@ -305,15 +296,11 @@ void drawBand (int x, int y, int width, int height) {
 	OS.gdk_gc_set_subwindow(gc, OS.GDK_INCLUDE_INFERIORS);
 	OS.gdk_gc_set_fill(gc, OS.GDK_STIPPLED);
 	OS.gdk_gc_set_function(gc, OS.GDK_XOR);
-
-	if (drawing) 
-		OS.gdk_draw_rectangle(window, gc, 1, drawX, drawY, width, height);
-	else 	
-		drawing = true;
-	drawX=x;drawY=y;
 	OS.gdk_draw_rectangle(window, gc, 1, x, y, width, height);	
 	OS.g_object_unref(stipplePixmap);
 	OS.g_object_unref(gc);
+	color.dispose();
+	color1.dispose();
 }
 static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
