@@ -29,7 +29,7 @@ public class CoolItem extends Item {
 	CoolBar parent;
 	Control control;
 	int id;
-	boolean ideal;
+	boolean ideal, minimum;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -357,7 +357,8 @@ public void setPreferredSize (int width, int height) {
 	/* Set the size fields we are currently modifying. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	rbBand.cxIdeal = width - rect.left - rect.right;
-	rbBand.cyMinChild = rbBand.cyMaxChild = height;
+	rbBand.cyMaxChild = height;
+	if (!minimum) rbBand.cyMinChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
 
@@ -390,14 +391,15 @@ public void setSize (int width, int height) {
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	
 	/* Get the child size fields first so we don't overwrite them. */
-	rbBand.fMask = OS.RBBIM_CHILDSIZE;
+	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	
 	/* Set the size fields we are currently modifying. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
 	rbBand.cx = width;
 	if (!ideal) rbBand.cxIdeal = width - rect.left - rect.right;
-	rbBand.cyChild = rbBand.cyMinChild = rbBand.cyMaxChild = height;
+	if (!minimum) rbBand.cyMinChild = height;
+	rbBand.cyChild = rbBand.cyMaxChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
 
@@ -407,10 +409,10 @@ public void setSize (Point size) {
 }
 
 /**
- * Returns the minimum width that the cool item can
+ * Returns the minimum size that the cool item can
  * be resized to using the cool item's gripper.
  * 
- * @return the minimum width of the cool item, in pixels
+ * @return a point containing the minimum width and height of the cool item, in pixels
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -419,23 +421,23 @@ public void setSize (Point size) {
  * 
  * @since 2.0
  */
-public int getMinimumWidth () {
+public Point getMinimumSize () {
 	checkWidget ();
 	int index = parent.indexOf (this);
-	if (index == -1) return 0;
+	if (index == -1) return new Point (0, 0);
 	int hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
-	return rbBand.cxMinChild;
+	return new Point (rbBand.cxMinChild, rbBand.cyMinChild);
 }
 
 /**
- * Sets the minimum width that the cool item can
+ * Sets the minimum size that the cool item can
  * be resized to using the cool item's gripper.
  * 
- * @param width the minimum width of the cool item, in pixels
+ * @param size a point representing the minimum width and height of the cool item, in pixels
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -444,10 +446,30 @@ public int getMinimumWidth () {
  * 
  * @since 2.0
  */
-public void setMinimumWidth (int width) {
+public void setMinimumSize (Point size) {
+	checkWidget ();
+	setMinimumSize (size.x, size.y);
+}
+
+/**
+ * Sets the minimum size that the cool item can
+ * be resized to using the cool item's gripper.
+ * 
+ * @param width the minimum width of the cool item, in pixels
+ * @param height the minimum height of the cool item, in pixels
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ */
+public void setMinimumSize (int width, int height) {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
+	minimum = true;
 	int hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -458,7 +480,23 @@ public void setMinimumWidth (int width) {
 	
 	/* Set the size fields we are currently modifying. */
 	rbBand.cxMinChild = width;
+	rbBand.cyMinChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
+}
+
+/**
+ * @deprecated use getMinimumSize
+ */
+public int getMinimumWidth () {
+	return getMinimumSize().x;
+}
+
+/**
+ * @deprecated use setMinimumSize
+ */
+public void setMinimumWidth (int width) {
+	checkWidget ();
+	setMinimumSize (width, getMinimumSize().y);
 }
 
 boolean getWrap() {
