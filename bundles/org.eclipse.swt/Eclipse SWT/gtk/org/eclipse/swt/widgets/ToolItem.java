@@ -708,9 +708,9 @@ void setFontDescription (int font) {
 }
 
 void setForegroundColor (GdkColor color) {
-	OS.gtk_widget_modify_fg (handle, 0, color);
-	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle, 0, color);
-	if (imageHandle != 0) OS.gtk_widget_modify_fg (imageHandle, 0, color);
+	OS.gtk_widget_modify_fg (handle,  OS.GTK_STATE_NORMAL, color);
+	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle,  OS.GTK_STATE_NORMAL, color);
+	if (imageHandle != 0) OS.gtk_widget_modify_fg (imageHandle,  OS.GTK_STATE_NORMAL, color);
 }
 
 /**

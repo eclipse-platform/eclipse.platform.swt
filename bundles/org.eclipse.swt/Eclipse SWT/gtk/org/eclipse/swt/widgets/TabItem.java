@@ -238,8 +238,8 @@ void setFontDescription (int font) {
 }
 
 void setForegroundColor (GdkColor color) {
-	OS.gtk_widget_modify_fg (labelHandle, 0, color);
-	OS.gtk_widget_modify_fg (imageHandle, 0, color);
+	OS.gtk_widget_modify_fg (labelHandle,  OS.GTK_STATE_NORMAL, color);
+	OS.gtk_widget_modify_fg (imageHandle,  OS.GTK_STATE_NORMAL, color);
 }
 
 public void setImage (Image image) {

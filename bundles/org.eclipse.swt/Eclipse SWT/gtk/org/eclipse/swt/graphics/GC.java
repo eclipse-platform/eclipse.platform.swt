@@ -281,7 +281,7 @@ public void drawFocus(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//CHECK - default style might not be attached to any window
 	GdkColor color = new GdkColor();
-	OS.gtk_style_get_fg (OS.gtk_widget_get_default_style(), 0, color);
+	OS.gtk_style_get_fg (OS.gtk_widget_get_default_style(), OS.GTK_STATE_NORMAL, color);
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
 	OS.gdk_gc_set_foreground(handle, color);
