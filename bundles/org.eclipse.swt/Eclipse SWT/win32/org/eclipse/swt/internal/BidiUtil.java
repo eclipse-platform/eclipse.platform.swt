@@ -387,6 +387,7 @@ static int[] getKeyboardLanguageList() {
  * @return true if bidi is supported, false otherwise
  */
 public static boolean isBidiPlatform() {
+	if (OS.IsWinCE) return false;
 	int[] languages = getKeyboardLanguageList();
 	for (int i=0; i<languages.length; i++) {
 		int language = languages[i] & 0x000000FF;;
