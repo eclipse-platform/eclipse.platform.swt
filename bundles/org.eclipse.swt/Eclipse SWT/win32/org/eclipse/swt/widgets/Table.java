@@ -3196,7 +3196,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 								TableColumn [] newColumns = new TableColumn [count];
 								System.arraycopy (columns, 0, newColumns, 0, count);
 								for (int i=phdn.iItem+1; i<count; i++) {
-									if (newColumns [i] != null && !newColumns [i].isDisposed ()) {
+									if (!newColumns [i].isDisposed ()) {
 										newColumns [i].sendEvent (SWT.Move);
 									}
 								}
