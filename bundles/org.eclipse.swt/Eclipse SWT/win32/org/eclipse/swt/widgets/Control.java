@@ -3646,7 +3646,6 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 	Shell shell = getShell ();
 	if (code == -1 && lParam == 0) {
 		Display display = getDisplay ();
-		display.mnemonicKeyHit = true;
 		Menu menu = shell.activeMenu;
 		while (menu != null) {
 			/*
