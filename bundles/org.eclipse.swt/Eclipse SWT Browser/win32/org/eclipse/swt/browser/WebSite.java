@@ -272,9 +272,6 @@ int UpdateUI() {
 
 int ShowMessage(int hwnd, int lpstrText, int lpstrCaption, int dwType, int lpstrHelpFile, int dwHelpContext, int plResult) {
 	/*
-	* Feature on IE.  Executing certain ActiveX controls such as the Java or Flash plugin from within
-	* a java VM can cause the application to crash.  The workaround is to disallow all ActiveX controls.
-	* 
 	* Feature on IE.  When IE navigates to a website that contains an ActiveX that is prevented from
 	* being executed, IE displays a message "Your current security settings prohibit running ActiveX 
 	* controls on this page ...".  The workaround is to selectively block this alert as indicated
