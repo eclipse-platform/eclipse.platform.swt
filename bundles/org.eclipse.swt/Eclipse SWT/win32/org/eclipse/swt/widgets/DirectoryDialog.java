@@ -179,11 +179,13 @@ public String open () {
 	lpbi.ulFlags = OS.BIF_NEWDIALOGSTYLE | OS.BIF_RETURNONLYFSDIRS | OS.BIF_EDITBOX | OS.BIF_VALIDATE;
 	lpbi.lpfn = address;
 	int lpItemIdList = OS.SHBrowseForFolder (lpbi);
-	if (lpItemIdList != 0) {
+	boolean success = lpItemIdList != 0;
+	if (success) {
 		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR (0, 256);
 		if (OS.SHGetPathFromIDList (lpItemIdList, buffer)) {
 			directoryPath = buffer.toString (0, buffer.strlen ());
+			filterPath = directoryPath;
 		}
 	}
 
@@ -212,6 +214,7 @@ public String open () {
 //	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
 	
 	/* Return the directory path */
+	if (!success) return null;
 	return directoryPath;
 }
 
