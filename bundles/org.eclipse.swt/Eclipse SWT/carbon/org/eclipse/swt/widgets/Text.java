@@ -533,6 +533,12 @@ boolean sendKeyEvent (int type, Event event) {
 		return false;
 	}
 	if (newText != oldText) setTXNText (start, end, newText);
+	/*
+	* Post the modify event so that the character will be inserted
+	* into the widget when the modify event is delivered.  Normally,
+	* modify events are sent but it is safe to post the event here
+	* because this method is called from the event loop.
+	*/
 	postEvent (SWT.Modify);
 	return newText == oldText;
 }

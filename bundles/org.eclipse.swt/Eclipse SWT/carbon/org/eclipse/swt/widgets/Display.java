@@ -1094,7 +1094,6 @@ void runGrabs () {
 	Rect rect = new Rect ();
 	int [] outModifiers = new int [1];
 	short [] outResult = new short [1];
-	CGPoint ioPoint = new CGPoint ();
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
 	try {
 		while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
@@ -1138,6 +1137,8 @@ void runGrabs () {
 				y -=  rect.top;
 				int chord = OS.GetCurrentEventButtonState ();
 				grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
+				//TEMPORARY CODE
+				update ();
 			}
 		}
 	} finally {
