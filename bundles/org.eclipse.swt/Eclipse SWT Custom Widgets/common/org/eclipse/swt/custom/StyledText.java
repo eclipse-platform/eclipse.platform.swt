@@ -66,7 +66,19 @@ import java.util.*;
  */
 public class StyledText extends Canvas {
 	static final char TAB = '\t';
-	private final static String PlatformLineDelimiter = System.getProperty("line.separator");
+	static final String PlatformLineDelimiter = System.getProperty("line.separator");
+	static final int BIDI_CARET_WIDTH = 4;		
+	static final int XINSET = BIDI_CARET_WIDTH - 1;
+	static final int DEFAULT_WIDTH	= 64;
+	static final int DEFAULT_HEIGHT = 64;
+	
+	static final int ExtendedModify = 3000;
+	static final int LineGetBackground = 3001;
+	static final int LineGetStyle = 3002;
+	static final int TextChanging = 3003;
+	static final int TextChanged = 3006;
+	static final int TextSet = 3004;
+	static final int VerifyKey = 3005;	
 	
 	StyledTextContent content;
 	TextChangeListener textChangeListener;	// listener for TextChanging, TextChanged and TextSet events from StyledTextContent
@@ -102,26 +114,13 @@ public class StyledText extends Canvas {
 	int lastTextChangeNewCharCount;				// event for use in the 
 	int lastTextChangeReplaceLineCount;			// text changed handler
 	int lastTextChangeReplaceCharCount;	
-
-	boolean bidiColoring = false;	// apply the BIDI algorithm on text segments of the same color
-	static final int BIDI_CARET_WIDTH = 4;		
-	static int xInset = 0;
+	boolean bidiColoring = false;	// apply the BIDI algorithm on text segments of the same color
 	Image leftCaretBitmap = null;
 	Image rightCaretBitmap = null;
 	int caretDirection = SWT.NULL;
 	PaletteData caretPalette = null;	
 	int lastCaretDirection = SWT.NULL;
 	
-	static final int DEFAULT_WIDTH	= 64;
-	static final int DEFAULT_HEIGHT = 64;
-	
-	static final int ExtendedModify = 3000;
-	static final int LineGetBackground = 3001;
-	static final int LineGetStyle = 3002;
-	static final int TextChanging = 3003;
-	static final int TextChanged = 3006;
-	static final int TextSet = 3004;
-	static final int VerifyKey = 3005;	
 	/**
 	 * The <code>RTFWriter</code> class is used to write widget content as
 	 * rich text. The implementation complies with the RTF specification 
@@ -579,7 +578,7 @@ public StyledText(Composite parent, int style) {
 	// always need to draw background in drawLine when using NO_BACKGROUND!
 	super(parent, checkStyle(style | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND));
 	Display display = getDisplay();
-
+
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
 	}
@@ -597,21 +596,12 @@ public StyledText(Composite parent, int style) {
 	else {
 		createCaretBitmaps();
 		createBidiCaret();
-		xInset = BIDI_CARET_WIDTH - 1;
 		Runnable runnable = new Runnable() {
 			public void run() {
-				createBidiCaret();
-				Caret caret = getCaret();
-				// don't use setBidiCaret, will position the caret
-				// incorrectly
-				int caretX = caret.getLocation().x;
-				if (StyledTextBidi.getKeyboardLanguageDirection() == SWT.RIGHT) {
-					caretX -= (getCaretWidth() - 1);
-				} else {
-					caretX += (getCaretWidth() - 1);
-				}
-				int line = content.getLineAtOffset(caretOffset);
-				caret.setLocation(caretX, line * lineHeight - verticalScrollOffset);
+				// setBidiCaretLocation calculates caret location like during 
+				// cursor movement and takes keyboard language into account. 
+				// Fixes 1GKPYMK
+				setBidiCaretLocation();
 			}
 		};
 		StyledTextBidi.addLanguageListener(this.handle, runnable);
@@ -624,7 +614,7 @@ public StyledText(Composite parent, int style) {
 	installListeners();
 	installDefaultLineStyler();
 }
-
+
 /**
  * Sets the BIDI coloring mode.  When true the BIDI text display
  * algorithm is applied to segments of text that are the same
@@ -643,7 +633,7 @@ public void setBidiColoring(boolean mode) {
 	checkWidget();
 	bidiColoring = mode;
 }
-
+
 /**
  * Gets the BIDI coloring mode.  When true the BIDI text display
  * algorithm is applied to segments of text that are the same
@@ -662,7 +652,7 @@ public boolean getBidiColoring() {
 	checkWidget();
 	return bidiColoring;
 }
-
+
 int [] getStyleOffsets (String line, int lineOffset) {
 	StyledTextEvent event = getLineStyleData(lineOffset, line);
 	StyleRange [] styles = new StyleRange [0];
@@ -672,7 +662,7 @@ int [] getStyleOffsets (String line, int lineOffset) {
 	if (styles.length == 0 || !bidiColoring) {
 		return new int[] {0, line.length()};
 	}
-
+
 	int k=0, count = 1;
 	while (k < styles.length && styles[k].start == 0 && styles[k].length == line.length()) {
 		k++;
@@ -709,7 +699,7 @@ int [] getStyleOffsets (String line, int lineOffset) {
 	System.arraycopy (offsets, 0, result, 0, count);
 	return result;
 }
-
+
 /**	 
  * Adds an extended modify listener. An ExtendedModify event is sent by the 
  * widget when the widget text has changed.
@@ -1303,7 +1293,7 @@ void createBidiCaret() {
 	if (caret == null) {
 		caret = new Caret(this, SWT.NULL);			
 	}
-
+
 	int direction = StyledTextBidi.getKeyboardLanguageDirection();
 	if (direction == caretDirection) {
 		return;
@@ -1334,7 +1324,7 @@ void createCaretBitmaps() {
 		leftCaretBitmap.dispose();
 	}
 	ImageData imageData = new ImageData(caretWidth, lineHeight, 1, caretPalette);
-
+
 	leftCaretBitmap = new Image(display, imageData);
 	GC gc = new GC (leftCaretBitmap);
 	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
@@ -1505,44 +1495,39 @@ void doBidiMouseLocationChange(int x, int y, boolean select) {
 	if (line >= 0) {
 		String lineText = content.getLine(line);
 		int lineOffset = content.getOffsetAtLine(line);
-
-
+		StyledTextEvent event = getLineStyleData(lineOffset, lineText);
 		GC gc = new GC(this);
 		StyleRange[] styles = null;
-		StyledTextEvent event = getLineStyleData(lineOffset, lineText);
+		int[] boldStyles;
+		StyledTextBidi bidi;
+		int[] values;
+		int offsetInLine;
+		int newCaretOffset;
 	
 		x += horizontalScrollOffset;
 		if (event != null) {
 			styles = filterLineStyles(event.styles);
 		}
-		lastCaretDirection = SWT.NULL;
-		int[] boldStyles = getBoldRanges(styles, lineOffset, lineText.length());
-		StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont, getStyleOffsets (lineText, lineOffset));
-		int[] values = bidi.getCaretOffsetAndDirectionAtX(x);
-		int offsetInLine = values[0];
+		boldStyles = getBoldRanges(styles, lineOffset, lineText.length());
+		bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont, getStyleOffsets (lineText, lineOffset));
+		values = bidi.getCaretOffsetAndDirectionAtX(x);
+		offsetInLine = values[0];
 		lastCaretDirection = values[1];
-		int newCaretOffset = lineOffset + offsetInLine;
-		if (x >= 0 || content.getLineAtOffset(newCaretOffset) != content.getLineAtOffset(caretOffset)) {
+		newCaretOffset = lineOffset + offsetInLine;
+		if (x >= horizontalScrollOffset || content.getLineAtOffset(newCaretOffset) != content.getLineAtOffset(caretOffset)) {
 			// Only change the caret offset when the mouse is within the left client area border
 			// or on a different line. Otherwise the autoscroll selection may be reset. Fixes 1GKM3XS
 			caretOffset = newCaretOffset;
 			if (select) {
 				doMouseSelection();
 			}
-			Caret caret = getCaret();
-			if (caret != null) {
-				int caretX = bidi.getCaretPosition(offsetInLine, lastCaretDirection);
-				caretX = caretX - horizontalScrollOffset;
-				if (StyledTextBidi.getKeyboardLanguageDirection() == SWT.RIGHT) {
-					caretX -= (getCaretWidth() - 1);
-				}
-				createBidiCaret();
-				caret.setLocation(caretX, line * lineHeight - verticalScrollOffset);
-			}
+			setBidiCaretLocation();
+			setBidiKeyboardLanguage();
 		}
 		if (select == false) {
 			clearSelection(true);
 		}
+		gc.dispose();
 	}
 }
 void doBidiSelectionCursorNext() {
@@ -1552,12 +1537,13 @@ void doBidiSelectionCursorNext() {
 	
 	if (offsetInLine < content.getLine(line).length()) {
 		caretOffset++;
-		boolean scrolled = scrollBidiCaret();
-		if (scrolled) return;
 		// remember the last direction, should reset
 		// this variable whenever the caret offset changes
 		lastCaretDirection = ST.COLUMN_NEXT;
-		setBidiCaret(false);
+		showCaret();
+		// TODO: Method same as doSelectionCursorPrevious except for lastCaretDirection.
+		// Always update lastCaretDirection, even if not used in non bidi mode in order to avoid 
+		// this extra bidi method?
 	}
 	else
 	if (line < content.getLineCount() - 1) {
@@ -1573,12 +1559,13 @@ void doBidiSelectionCursorPrevious() {
 	
 	if (offsetInLine > 0) {
 		caretOffset--;
-		boolean scrolled = scrollBidiCaret();
-		if (scrolled) return;
 		// remember the last direction, should reset
 		// this variable whenever the caret offset changes
 		lastCaretDirection = ST.COLUMN_PREVIOUS;
-		setBidiCaret(false);
+		showCaret();		
+		// TODO: Method same as doSelectionCursorPrevious except for lastCaretDirection.
+		// Always update lastCaretDirection, even if not used in non bidi mode in order to avoid 
+		// this extra bidi method?
 	}
 	else
 	if (line > 0) {
@@ -1598,7 +1585,7 @@ void doColumnLeft() {
 	int line = content.getLineAtOffset(caretOffset);
 	int lineOffset = content.getOffsetAtLine(line);	
 	int offsetInLine = caretOffset - lineOffset;
-
+
 	if (isBidi()) {
 		GC gc = new GC(this);	
 		String lineText = content.getLine(line);
@@ -1606,7 +1593,7 @@ void doColumnLeft() {
 		StyledTextEvent event = getLineStyleData(lineOffset, lineText);
 		int[] boldStyles = null;
 		StyledTextBidi bidi;
-
+
 		if (event != null) {
 			boldStyles = getBoldRanges(event.styles, lineOffset, lineLength);
 		}
@@ -1637,7 +1624,16 @@ void doColumnLeft() {
 				}
 			}
 			else
-			if (offsetInLine < lineLength && bidi.isRightToLeft(offsetInLine) == false) {
+			if (offsetInLine == lineLength && bidi.getCaretPosition(lineLength) != XINSET) {
+				// at logical line end in R2L segment but there's more text (a L2R segment)
+				// go to end of R2L segment (visually left of next L2R segment)/end of line
+				caretOffset--;
+				while (caretOffset < lineOffset + lineLength && bidi.isRightToLeft(caretOffset - lineOffset)) {
+					caretOffset--;
+				}
+			}
+			else
+			if (offsetInLine > 0 && bidi.isRightToLeft(offsetInLine) == false) {
 				// decrease caret logically if in L2R segment (move visually left)
 				caretOffset--;
 				doSelection(SWT.LEFT);
@@ -1650,15 +1646,6 @@ void doColumnLeft() {
 					}
 				}
 			}
-			else
-			if (offsetInLine == lineLength && bidi.getCaretPosition(lineLength) != xInset) {
-				// at logical line end in R2L segment but there's more text (a L2R segment)
-				// go to end of R2L segment (visually left of next L2R segment)/end of line
-				caretOffset--;
-				while (caretOffset < lineOffset + lineLength && bidi.isRightToLeft(caretOffset - lineOffset)) {
-					caretOffset--;
-				}
-			}
 			// if new caret position is to the left of the client area
 			if (bidi.getCaretPosition(caretOffset - lineOffset) < horizontalScrollOffset) {
 				// scroll to the caret position
@@ -1667,6 +1654,12 @@ void doColumnLeft() {
 			else {
 				// otherwise just update caret position without scrolling it into view
 				setCaretLocation();
+				setBidiKeyboardLanguage();
+			}
+			// Beginning of line reached (auto scroll finished) but not scrolled completely to the left?
+			// Fixes 1GKM193
+			if (caretOffset - lineOffset == 0 && horizontalScrollOffset > 0 && horizontalScrollOffset <= XINSET) {
+				scrollHorizontalBar(-horizontalScrollOffset);
 			}
 		}
 		gc.dispose();
@@ -1689,13 +1682,13 @@ void doColumnRight() {
 	int offsetInLine = caretOffset - lineOffset;
 	String lineText = content.getLine(line);
 	int lineLength = lineText.length();
-
+
 	if (isBidi()) {
 		GC gc = new GC(this);	
 		StyledTextEvent event = getLineStyleData(lineOffset, lineText);
 		int[] boldStyles = null;
 		StyledTextBidi bidi;
-
+
 		if (event != null) {
 			boldStyles = getBoldRanges(event.styles, lineOffset, lineLength);
 		}
@@ -1748,6 +1741,7 @@ void doColumnRight() {
 			else {
 				// otherwise just update caret position without scrolling it into view
 				setCaretLocation();
+				setBidiKeyboardLanguage();
 			}
 			if (offsetInLine > 0 && offsetInLine < lineLength - 1) {
 				int clientAreaEnd = horizontalScrollOffset + getClientArea().width;
@@ -2399,7 +2393,7 @@ void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] style
 	int selectionStart = Math.max(0, selection.x - lineOffset);
 	int selectionEnd = selection.y - lineOffset;
 	int selectionLength = selectionEnd - selectionStart;
-
+
 	if (selectionEnd == selectionStart || selectionEnd < 0 || selectionStart > lineLength) {
 		return;
 	}
@@ -2439,7 +2433,7 @@ void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] style
 	}	
 	// handle empty line case
 	if (bidi != null && (paintX == 0)) {
-		paintX = xInset;	
+		paintX = XINSET;	
 	}
 	// fill the background first since expanded tabs are not 
 	// drawn as spaces. tabs just move the draw position. 
@@ -2726,7 +2720,7 @@ int getCaretOffsetAtX(String line, int lineOffset, int lineXOffset) {
 	gc.dispose();
 	return offset;	
 }
-
+
 /**
  * Returns the caret width.
  * <p>
@@ -2783,7 +2777,7 @@ public boolean getDoubleClickEnabled() {
  */
 public boolean getEditable() {
 	checkWidget();
-
+
 	return editable;
 }
 /** 
@@ -4007,7 +4001,7 @@ void internalRedrawRange(int start, int length, boolean clearBackground) {
 	int offsetInFirstLine;
 	int partialBottomIndex = getPartialBottomIndex();
 	int partialTopIndex = verticalScrollOffset / lineHeight;
-
+
 	// do nothing if redraw range is completely invisible	
 	if (firstLine > partialBottomIndex || lastLine < partialTopIndex) {
 		return;
@@ -4182,7 +4176,7 @@ public Runnable print(Printer printer) {
 	checkWidget();
 	return new StyledTextPrinter(this, printer);
 }
-
+
 /** 
  * Scrolls the widget horizontally.
  */
@@ -4416,7 +4410,7 @@ void handleVerticalScroll(Event event) {
 void initializeFonts() {
 	FontData fontData;
 	GC gc = new GC(this);
-
+
 	lineEndSpaceWidth = gc.stringExtent(" ").x;
 	regularFont = getFont();
 	fontData = regularFont.getFontData()[0];
@@ -4721,7 +4715,7 @@ void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int end
 	if (lastLine > firstLine && clearBackground) {
 		int lineBreakStartX = bidi.getTextWidth();
 		// handle empty line case
-		if (lineBreakStartX == 0) lineBreakStartX = xInset;
+		if (lineBreakStartX == 0) lineBreakStartX = XINSET;
 		lineBreakStartX = lineBreakStartX - horizontalScrollOffset;
 		int lineBreakWidth;		
 		if ((getStyle() & SWT.FULL_SELECTION) != 0) {
@@ -4774,7 +4768,7 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 	int redrawStopX;
 	int redrawY = firstLine * lineHeight - verticalScrollOffset;
 	int firstLineOffset = content.getOffsetAtLine(firstLine);
-
+
 	// calculate redraw stop location
 	if ((getStyle() & SWT.FULL_SELECTION) != 0 && lastLine > firstLine) {
 		redrawStopX = clientArea.width;
@@ -5089,7 +5083,7 @@ void reset() {
 		horizontalBar.setSelection(0);	
 	}
 	setScrollBars();
-	setCaret();
+	setCaretLocation();
 	redraw();
 }
 /**
@@ -5117,7 +5111,7 @@ void scrollHorizontal(int pixels) {
 		0, 0,						// source x, y
 		clientArea.width, clientArea.height, true);
 	horizontalScrollOffset += pixels;
-	setCaret();
+	setCaretLocation();
 }
 /**
  * Scrolls the widget horizontally and adjust the horizontal scroll bar to 
@@ -5176,13 +5170,14 @@ void sendSelectionEvent() {
 	event.y = selection.y;
 	notifyListeners(SWT.Selection, event);
 }
-void setCaret () {
-	if (isBidi()) {
-		setBidiCaret(false);
+/**
+ * Sets the caret location and scrolls the caret offset into view.
+ */
+void showBidiCaret() {
+	boolean scrolled = scrollCaret();
+	if (scrolled == false) {
+		setBidiCaretLocation();
 	}
-	else {
-		setCaretLocation();
-	}	
 }
 /**
  * Sets the receiver's caret.  Set the caret's height and location.
@@ -5195,7 +5190,7 @@ void setCaret () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setCaret (Caret caret) {
+public void setCaret(Caret caret) {
 	checkWidget ();
 	super.setCaret(caret);
 	if (caret != null) {
@@ -5203,13 +5198,15 @@ public void setCaret (Caret caret) {
 			caret.setSize(caret.getSize().x, lineHeight);
 		}
 		setCaretLocation();
+		if (isBidi()) {
+			setBidiKeyboardLanguage();	
+		}
 	}		
 }
 /**
- * Moves the Caret to the current caret offset and switches the
- * keyboard according to the input part.
+ * Moves the Caret to the current caret offset.
  */
-void setBidiCaret(boolean setKeyboard) {
+void setBidiCaretLocation() {
 	int line = content.getLineAtOffset(caretOffset);
 	int lineStartOffset = content.getOffsetAtLine(line);
 	int offsetInLine = caretOffset - lineStartOffset;
@@ -5224,15 +5221,6 @@ void setBidiCaret(boolean setKeyboard) {
 		boldStyles = getBoldRanges(event.styles, lineStartOffset, lineText.length());
 	}
 	bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont, getStyleOffsets (lineText, lineStartOffset));
-	if (setKeyboard) {
-		if (offsetInLine > 0 && bidi.isRightToLeft(offsetInLine - 1) != bidi.isRightToLeft(offsetInLine)) {
-			// continue with previous character type
-			bidi.setKeyboardLanguage(offsetInLine - 1);
-		} 
-		else  {
-			bidi.setKeyboardLanguage(offsetInLine);
-		}	
-	}
 	caret = getCaret();
 	if (caret != null) {
 		int caretX;
@@ -5251,11 +5239,36 @@ void setBidiCaret(boolean setKeyboard) {
 	gc.dispose();
 }
 /**
- * Moves the Caret to the current caret offset.
+ * Switches the keyboard language according to the input part.
  */
-void setBidiCaretLocation() {
-	// set the caret location, also set the keyboard
-	setBidiCaret(true);
+void setBidiKeyboardLanguage() {
+	int line = content.getLineAtOffset(caretOffset);
+	int lineStartOffset = content.getOffsetAtLine(line);
+	int offsetInLine = caretOffset - lineStartOffset;
+	String lineText = content.getLine(line);
+	GC gc = new GC(this);
+	StyledTextBidi bidi;
+	int lineLength = lineText.length();
+
+	// Don't supply the bold styles/font since we don't want to measure anything
+	bidi = new StyledTextBidi(gc, tabWidth, lineText, null, null, getStyleOffsets(lineText, lineStartOffset));
+	if (offsetInLine == 0) {
+		bidi.setKeyboardLanguage(offsetInLine);
+	}
+	else
+	if (offsetInLine >= lineLength) {
+		offsetInLine = Math.min(offsetInLine, lineLength - 1);
+		bidi.setKeyboardLanguage(offsetInLine);
+	}
+	else
+	if (lastCaretDirection == ST.COLUMN_NEXT) {
+		// continue with previous character type
+		bidi.setKeyboardLanguage(offsetInLine - 1);
+	} 
+	else {
+		bidi.setKeyboardLanguage(offsetInLine);
+	}	
+	gc.dispose();
 }
 /**
  * Moves the Caret to the current caret offset.
@@ -5317,6 +5330,9 @@ public void setCaretOffset(int offset) {
 	}
 	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
+	if (isBidi()) {
+		setBidiKeyboardLanguage();	
+	}
 }	
 /**
  * Sets the content implementation to use for text storage.
@@ -5389,8 +5405,7 @@ public void setEditable(boolean editable) {
  * </ul>
  */
 public void setFont(Font font) {
-	checkWidget();
-
+	checkWidget();
 	super.setFont(font);	
 	if (boldFont != null) {
 		boldFont.dispose();
@@ -5405,7 +5420,7 @@ public void setFont(Font font) {
 		caretDirection = SWT.NULL;
 		createCaretBitmaps();
 		createBidiCaret();
-		setCaret();		
+		setCaretLocation();		
 	} 
 	else {
 		Caret caret = getCaret();
@@ -5705,6 +5720,9 @@ public void setSelection(int start, int end) {
 	internalSetSelection(start, end - start);
 	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
+	if (isBidi()) {
+		setBidiKeyboardLanguage();	
+	}
 	showSelection();
 }
 /** 
@@ -5742,6 +5760,9 @@ public void setSelectionRange(int start, int length) {
 	internalSetSelection(start, length);
 	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
+	if (isBidi()) {
+		setBidiKeyboardLanguage();	
+	}
 }
 /** 
  * Sets the selection. 
@@ -5849,7 +5870,7 @@ public void setStyleRange(StyleRange range) {
 	// make sure that the caret is positioned correctly.
 	// caret location may change if font style changes.
 	// fixes 1G8FODP
-	setCaret();
+	setCaretLocation();
 }
 
 /** 
@@ -5894,7 +5915,7 @@ public void setStyleRanges(StyleRange[] ranges) {
 	// make sure that the caret is positioned correctly.
 	// caret location may change if font style changes.
 	// fixes 1G8FODP
-	setCaret();
+	setCaretLocation();
 }
 /**
  * Ensures that the selection style ends at the selection end.
@@ -6097,10 +6118,9 @@ void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 		}
 	}
 	verticalScrollOffset = pixelOffset;	
-	setCaret();
+	setCaretLocation();
 }
-
-boolean scrollBidiCaret() {
+boolean scrollCaret() {
 	int line = content.getLineAtOffset(caretOffset);
 	int lineOffset = content.getOffsetAtLine(line);
 	int offsetInLine = caretOffset - lineOffset;
@@ -6138,50 +6158,14 @@ boolean scrollBidiCaret() {
 /**
  * Sets the caret location and scrolls the caret offset into view.
  */
-void showBidiCaret() {
-	boolean scrolled = scrollBidiCaret();
-	if (scrolled == false) {
-		setCaret();
-	}
-}
-/**
- * Sets the caret location and scrolls the caret offset into view.
- */
 void showCaret() {
-	int line = content.getLineAtOffset(caretOffset);
-	int lineOffset = content.getOffsetAtLine(line);
-	int offsetInLine = caretOffset - lineOffset;
-	String lineText = content.getLine(line);
-	int xAtOffset = getXAtOffset(lineText, line, offsetInLine);
-	int clientAreaWidth = getClientArea().width;
-	int verticalIncrement = getVerticalIncrement();
-	int horizontalIncrement = clientAreaWidth / 4;
-	boolean scrolled = false;		
+	boolean scrolled = scrollCaret();		
 	
-	if (xAtOffset < 0) {
-		// always make 1/4 of a page visible
-		xAtOffset = Math.max(horizontalScrollOffset * -1, xAtOffset - horizontalIncrement);	
-		scrollHorizontalBar(xAtOffset);
-		scrolled = true;
-	}
-	else 
-	if (xAtOffset > clientAreaWidth) {
-		// always make 1/4 of a page visible
-		xAtOffset = Math.min(contentWidth - horizontalScrollOffset, xAtOffset + horizontalIncrement);
-		scrollHorizontalBar(xAtOffset - clientAreaWidth);
-		scrolled = true;
-	}
-	if (line < topIndex) {
-		setVerticalScrollOffset(line * verticalIncrement, true);
-		scrolled = true;
-	}
-	else
-	if (line > getBottomIndex()) {
-		setVerticalScrollOffset((line - getBottomIndex()) * verticalIncrement + verticalScrollOffset, true);
-		scrolled = true;
-	}
 	if (scrolled == false) {
 		setCaretLocation();
+	}
+	if (isBidi()) {
+		setBidiKeyboardLanguage();
 	}
 }
 /**
@@ -6411,12 +6395,18 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 		internalSetSelection(startOffset + newLength, 0);
 		// always update the caret location. fixes 1G8FODP
 		setCaretLocation();
+		if (isBidi()) {
+			setBidiKeyboardLanguage();	
+		}
 	}
 	else {
 		// move selection to keep same text selected
 		internalSetSelection(selection.x + newLength - replacedLength, selection.y - selection.x);
 		// always update the caret location. fixes 1G8FODP
 		setCaretLocation();
+		if (isBidi()) {
+			setBidiKeyboardLanguage();	
+		}
 	}	
 }
 }

@@ -96,7 +96,7 @@ public static void addLanguageListener (int hwnd, Runnable runnable) {
 void adjustTabStops(String text) {
 	int tabIndex = text.indexOf('\t', 0);
 	int logicalIndex = 0;
-	int x = StyledText.xInset;
+	int x = StyledText.XINSET;
 				
 	while (tabIndex != -1) {
 		for (; logicalIndex < tabIndex; logicalIndex++) {
@@ -110,7 +110,7 @@ void adjustTabStops(String text) {
 }
 void calculateRenderPositions() {
 	renderPositions = new int[dx.length];	
-	renderPositions[0] = StyledText.xInset;
+	renderPositions[0] = StyledText.XINSET;
 	for (int i = 0; i < dx.length - 1; i++) {
 		renderPositions[i + 1] = renderPositions[i] + dx[i];
 	}
@@ -128,7 +128,7 @@ public int drawBidiText(int logicalStart, int length, int xOffset, int yOffset) 
 	int stopX;
 
 	if (endOffset > getTextLength()) {
-		return StyledText.xInset;
+		return StyledText.XINSET;
 	}
 	while (directionRuns.hasMoreElements()) {
 		DirectionRun run = (DirectionRun) directionRuns.nextElement();
@@ -327,7 +327,7 @@ public int getCaretPosition(int logicalOffset) {
 	int caretX;
 
 	if (getTextLength() == 0) {
-		return StyledText.xInset;
+		return StyledText.XINSET;
 	}
 	// at or past end of line?
 	if (logicalOffset >= order.length) {
@@ -374,7 +374,7 @@ public int getCaretPosition(int logicalOffset) {
 public int getCaretPosition(int logicalOffset, int direction) {
 	// moving to character at logicalOffset
 	if (getTextLength() == 0) {
-		return StyledText.xInset;
+		return StyledText.XINSET;
 	}
 	int caretX;
 	// at or past end of line?
@@ -387,10 +387,8 @@ public int getCaretPosition(int logicalOffset, int direction) {
 		else {
 			caretX = renderPositions[visualOffset] + dx[visualOffset];
 		}
-		setKeyboardLanguage(logicalOffset);
-		return caretX;
 	}
-
+	else
 	// at beginning of line?
 	if (logicalOffset == 0) {
 		int visualOffset = order[logicalOffset];
@@ -400,46 +398,36 @@ public int getCaretPosition(int logicalOffset, int direction) {
 		else {
 			caretX = renderPositions[visualOffset];
 		}
-		setKeyboardLanguage(logicalOffset);
-		return caretX;
-	}	
-
-	if (direction == ST.COLUMN_NEXT) {
-		if (isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1)) {
-			// moving between segments
-			if (isRightToLeft(logicalOffset - 1)) {
-				// moving from RtoL to LtoR
-				int visualOffset = order[logicalOffset-1];
-				caretX = renderPositions[visualOffset];
-			}
-			else {
-				// moving from LtoR to RtoL
-				int visualOffset = order[logicalOffset-1];
-				caretX = renderPositions[visualOffset] + dx[visualOffset];
-			}
-		setKeyboardLanguage(logicalOffset-1);
-		return caretX;
+	}
+	else
+	if (direction == ST.COLUMN_NEXT &&
+		isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1)) {
+		int visualOffset = order[logicalOffset-1];
+		// moving between segments
+		if (isRightToLeft(logicalOffset - 1)) {
+			// moving from RtoL to LtoR
+			caretX = renderPositions[visualOffset];
+		}
+		else {
+			// moving from LtoR to RtoL
+			caretX = renderPositions[visualOffset] + dx[visualOffset];
 		}
 	}
-
-	if (direction == ST.COLUMN_PREVIOUS) {
-		if (isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1)) {
-			// moving between segments
-			if (isRightToLeft(logicalOffset - 1)) {
-				// moving from LtoR to RtoL
-				int visualOffset = order[logicalOffset];
-				caretX = renderPositions[visualOffset];
-			}
-			else {
-				// moving from RtoL to LtoR
-				int visualOffset = order[logicalOffset];
-				caretX = renderPositions[visualOffset] + dx[visualOffset];
-			}
-		setKeyboardLanguage(logicalOffset);
-		return caretX;
+	else
+	if (direction == ST.COLUMN_PREVIOUS &&
+		isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1)) {
+		int visualOffset = order[logicalOffset];
+		// moving between segments
+		if (isRightToLeft(logicalOffset - 1)) {
+			// moving from LtoR to RtoL
+			caretX = renderPositions[visualOffset];
+		}
+		else {
+			// moving from RtoL to LtoR
+			caretX = renderPositions[visualOffset] + dx[visualOffset];
 		}
 	}
-
+	else
 	if (isRightToLeft(logicalOffset)) {
 		int visualOffset = order[logicalOffset];
 		caretX = renderPositions[visualOffset] + dx[visualOffset];
@@ -447,7 +435,6 @@ public int getCaretPosition(int logicalOffset, int direction) {
 	else {
 		caretX = renderPositions[order[logicalOffset]];
 	}
-	setKeyboardLanguage(logicalOffset);
 	return caretX;
 }
 
