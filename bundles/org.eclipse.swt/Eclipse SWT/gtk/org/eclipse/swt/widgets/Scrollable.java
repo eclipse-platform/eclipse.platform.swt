@@ -237,6 +237,7 @@ void setOrientation () {
 		}
 	}
 }
+
 void register () {
 	super.register ();
 	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
