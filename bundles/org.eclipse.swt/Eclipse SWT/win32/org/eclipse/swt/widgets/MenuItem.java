@@ -726,9 +726,6 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	return null;
 }
 
-/*
-* Not currently used.
-*/
 LRESULT wmDrawChild (int wParam, int lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
@@ -757,9 +754,6 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 	return null;
 }
 
-/*
-* Not currently used.
-*/
 LRESULT wmMeasureChild (int wParam, int lParam) {
 	MEASUREITEMSTRUCT struct = new MEASUREITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, MEASUREITEMSTRUCT.sizeof);
