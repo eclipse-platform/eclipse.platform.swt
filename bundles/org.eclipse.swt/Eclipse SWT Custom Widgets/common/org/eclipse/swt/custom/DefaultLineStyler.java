@@ -39,20 +39,31 @@ public DefaultLineStyler(StyledTextContent content) {
  *
  */
 void insertStyle(StyleRange style, int index) {
+	insertStyles(new StyleRange[] {style}, index);
+}
+/** 
+ * Insert the styles at the given location.
+ * <p>
+ *
+ * @param insertStyles	the new styles
+ * @param index	the index at which to insert the styles (the first new style
+ * 	will reside at this index)
+ *
+ */
+void insertStyles(StyleRange[] insertStyles, int index) {
 	int size = styles.length;
-	if (styleCount == size) {
-		// expand the styles array by powers of 2
-		StyleRange[] newStyles = new StyleRange[size+Compatibility.pow2(styleExpandExp)];
+	int insertCount = insertStyles.length;
+	int spaceNeeded = styleCount + insertCount - size;
+	if (spaceNeeded > 0) {
+		StyleRange[] newStyles = new StyleRange[size+spaceNeeded];
 		System.arraycopy(styles, 0, newStyles, 0, size);
 		styles = newStyles;
-		styleExpandExp++;
 	}
-	// shift the styles down to make room for the new style
-	for (int i=styleCount-1; i>=index; i--) {
-		styles[i+1]=styles[i];
-	}
-	styles[index] = style;
-	styleCount++;
+	// shift the styles down to make room for the new styles
+	System.arraycopy(styles, index, styles, index + insertCount, styleCount - index);
+	// add the new styles
+	System.arraycopy(insertStyles, 0, styles, index, insertCount);
+	styleCount = styleCount + insertCount;
 }
 /** 
  * Inserts a style, merging it with adjacent styles if possible.
@@ -144,6 +155,8 @@ void clearStyle(StyleRange clearStyle) {
 	// pt.x is the index of the first overlapped style, pt.y is the number of overlapped
 	// styles
 	int count = 0;
+	int deleteStyle = -1;
+	int deleteCount = 0;
 	for (int i=pt.x; count<pt.y; i++) {
 		StyleRange overlap = styles[i];
 		int overlapEnd = overlap.start + overlap.length - 1;
@@ -164,8 +177,10 @@ void clearStyle(StyleRange clearStyle) {
 		} else {
 			if (overlapEnd <= clearStyleEnd) {	
 				// entire overlap needs to be cleared
-				deleteStyle(i);
-				i--;
+				if (deleteStyle == -1) {
+					deleteStyle = i;
+				} 
+				deleteCount++;
 			} else {
 				// beginning of overlap needs to be cleared
 				overlap.start=clearStyleEnd + 1;
@@ -173,8 +188,9 @@ void clearStyle(StyleRange clearStyle) {
 				break;
 			}
 		}				
-	count++;
+		count++;
 	}
+	deleteStyles(deleteStyle, deleteCount);
 }
 /**
  * Increases the <code>linebackgrounds</code> array to accomodate new line background
@@ -200,12 +216,23 @@ void expandLinesBy(int numLines) {
  * @param index	the index of the style to be deleted
  */
 void deleteStyle(int index) {
-	// move the styles up 
-	for (int i=index+1; i<styleCount; i++) {
-		styles[i-1] = styles[i];
+	deleteStyles(index, 1);
+}
+/** 
+ * Delete count styles starting at <code>index</code>.
+ * <p>
+ *
+ * @param index	the index of the style to be deleted
+ * @param count	the number of styles to be deleted
+ */
+void deleteStyles(int index, int count) {
+	if ((count == 0) || (index < 0)) return;
+	// shift the styles up 
+	System.arraycopy(styles, index + count, styles, index, styleCount - (index + count));
+	for (int i=0; i<count; i++) {
+		styles[styleCount - i - 1] = null;
 	}
-	styles[styleCount-1]=null;
-	styleCount--;
+	styleCount = styleCount - count;
 }
 /** 
  * Returns the styles that are defined.
@@ -405,6 +432,26 @@ void setStyleRange(StyleRange newStyle) {
 	}
 }
 /** 
+ * Replace the styles for the given range.
+ * <p>
+ *
+ * @param styles the new styles, must be in order and non-overlapping
+ */
+void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
+	clearStyle(new StyleRange(start, length, null, null));
+	// find insert point
+	Point insertPt = getOverlappingStyles(0, start - 1);
+	int index;
+	if (insertPt == null) {
+		// insert new styles at beginning of array
+		index = 0;
+	} else {
+		// insert at x + y
+		index = insertPt.x + insertPt.y;
+	};
+	insertStyles(ranges, index);
+}
+/** 
  * Sets the array of styles and discards old styles.  Called by StyledText.
  * <p>
  *
@@ -488,6 +535,8 @@ void textChanging(int start, int delta) {
 	// find the index of the first style for the given offset, use a binary search
 	// to find the index
 	int end;
+	int deleteStart = -1;
+	int deleteCount = 0;
 	boolean inserting = delta > 0;
 	if (inserting) {
 		end = (start + delta) - 1;
@@ -528,8 +577,10 @@ void textChanging(int start, int delta) {
 			} else {
 				if (styleEnd <= end) {
 					// style starts in change range, ends in change range
-					deleteStyle(index);
-					index--;
+					if (deleteStart == -1)	{
+						deleteStart = index;
+					} 
+					deleteCount++;
 				} else {
 					// style starts in change range, ends after change range
 					style.start = start;
@@ -540,8 +591,9 @@ void textChanging(int start, int delta) {
 			}	
 		}
 	}
+	deleteStyles(deleteStart, deleteCount);
 	// change the offsets of the styles after the affected styles
-	for (int i = index ; i < styleCount; i++) {
+	for (int i = index - deleteCount; i < styleCount; i++) {
 		style = styles[i];
 		style.start = style.start + delta;
 	}
