@@ -250,6 +250,99 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	if (device.tracking) device.new_Object(this);
 }
 
+public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (hotspotX >= source.width || hotspotX < 0 ||
+		hotspotY >= source.height || hotspotY < 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	ImageData mask = source.getTransparencyMask();
+	
+	/* Ensure depth is equal to 1 */
+	if (source.depth > 1) {
+		/* Create a destination image with no data */
+		ImageData newSource = new ImageData(
+			source.width, source.height, 1, ImageData.bwPalette(),
+			1, null, 0, null, null, -1, -1, source.type,
+			source.x, source.y, source.disposalMethod, source.delayTime);
+
+		/* Convert the source to a black and white image of depth 1 */
+		PaletteData palette = source.palette;
+		if (palette.isDirect) ImageData.blit(ImageData.BLIT_SRC,
+			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, 0, 0, 0,
+			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+			newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, 0, 0, 0,
+			false, false);
+		else ImageData.blit(ImageData.BLIT_SRC,
+			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, null, null, null,
+			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+			newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, null, null, null,
+			false, false);
+		source = newSource;
+	}
+	type = OS.Ph_CURSOR_BITMAP;
+	
+	short w = (short)source.width;
+	short h = (short)source.height;
+	ImageData mask1 = new ImageData(w, h, 1, source.palette);
+	ImageData mask2 = new ImageData(w, h, 1, mask.palette);
+	for (int y=0; y<h; y++) {
+		for (int x=0; x<w; x++) {
+			int mask1_pixel, src_pixel = source.getPixel(x, y);
+			int mask2_pixel, mask_pixel = mask.getPixel(x, y);
+			if (src_pixel == 0 && mask_pixel == 1) {
+				// BLACK
+				mask1_pixel = 0;
+				mask2_pixel = 1;
+			} else if (src_pixel == 1 && mask_pixel == 1) {
+				// WHITE - cursor color
+				mask1_pixel = 1;
+				mask2_pixel = 0;
+			} else if (src_pixel == 0 && mask_pixel == 0) {
+				// SCREEN
+				mask1_pixel = 0;
+				mask2_pixel = 0;
+			} else {
+				/*
+				* Feature in Photon. It is not possible to have
+				* the reverse screen case using the Photon support.
+				* Reverse screen will be the same as screen.
+				*/
+				// REVERSE SCREEN -> SCREEN
+				mask1_pixel = 0;
+				mask2_pixel = 0;
+			}
+			mask1.setPixel(x, y, mask1_pixel);
+			mask2.setPixel(x, y, mask2_pixel);
+		}
+	}
+	
+	PhCursorDef_t cursor = new PhCursorDef_t();
+	cursor.size1_x = w;
+	cursor.size1_y = h;
+	cursor.offset1_x = (short)-hotspotX;
+	cursor.offset1_y = (short)-hotspotY;
+	cursor.bytesperline1 = (byte)mask1.bytesPerLine;
+	cursor.color1 = OS.Ph_CURSOR_DEFAULT_COLOR;
+	cursor.size2_x = w;
+	cursor.size2_y = h;
+	cursor.offset2_x = (short)-hotspotX;
+	cursor.offset2_y = (short)-hotspotY;
+	cursor.bytesperline2 = (byte)mask2.bytesPerLine;
+	cursor.color2 = 0x000000;
+	int mask1Size = cursor.bytesperline1 * cursor.size1_y;
+	int mask2Size = cursor.bytesperline2 * cursor.size2_y;	
+	bitmap = OS.malloc(PhCursorDef_t.sizeof + mask1Size + mask2Size);
+	if (bitmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.memmove(bitmap, cursor, PhCursorDef_t.sizeof);
+	OS.memmove(bitmap + PhCursorDef_t.sizeof, mask1.data, mask1Size);
+	OS.memmove(bitmap + PhCursorDef_t.sizeof + mask1Size, mask2.data, mask2Size);
+	if (device.tracking) device.new_Object(this);
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the cursor. Applications must dispose of all cursors which
