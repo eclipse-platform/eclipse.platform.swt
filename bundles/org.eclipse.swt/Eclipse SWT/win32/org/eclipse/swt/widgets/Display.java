@@ -603,9 +603,16 @@ public Shell getActiveShell () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
-	int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
-	return new Rectangle (0, 0, width, height);
+	if (OS.GetSystemMetrics (OS.SM_CMONITORS) < 2) {
+		int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
+		int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
+		return new Rectangle (0, 0, width, height);
+	}
+	int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
+	int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
+	int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
+	int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
+	return new Rectangle (x, y, width, height);
 }
 
 /**
@@ -621,11 +628,18 @@ public static synchronized Display getCurrent () {
 
 public Rectangle getClientArea () {
 	checkDevice ();
-	RECT rect = new RECT ();
-	OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	if (OS.GetSystemMetrics (OS.SM_CMONITORS) < 2) {
+		RECT rect = new RECT ();
+		OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+		int width = rect.right - rect.left;
+		int height = rect.bottom - rect.top;
+		return new Rectangle (rect.left, rect.top, width, height);
+	}
+	int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
+	int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
+	int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
+	int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
+	return new Rectangle (x, y, width, height);
 }
 
 /**
