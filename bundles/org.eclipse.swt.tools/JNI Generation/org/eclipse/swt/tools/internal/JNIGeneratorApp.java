@@ -53,7 +53,7 @@ void generateSTATS_C() {
 		String outputName = getClassName(mainClass).toLowerCase();
 		String inc = 
 			"#include \"swt.h\"\n" +
-			"#include \"" + "os_structs.h\"\n";
+			"#include \"" + outputName + "_stats.h\"\n";
 		metaData.setMetaData("swt_includes", inc);
 		StatsGenerator gen = new StatsGenerator();
 		gen.setMetaData(metaData);

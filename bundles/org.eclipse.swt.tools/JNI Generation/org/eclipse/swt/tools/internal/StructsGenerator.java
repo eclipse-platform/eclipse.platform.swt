@@ -60,7 +60,6 @@ public void generateHeaderFile(Class clazz) {
 }
 
 public void generateHeaderFile(Class[] classes) {
-	if (classes.length == 0) return;
 	sort(classes);
 	generateMetaData("swt_copyright");
 	generateMetaData("swt_includes");
