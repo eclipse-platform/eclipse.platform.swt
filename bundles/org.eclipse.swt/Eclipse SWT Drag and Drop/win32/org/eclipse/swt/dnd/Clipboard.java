@@ -27,6 +27,7 @@ public class Clipboard {
 	private final int MAX_RETRIES = 10;
 	private Transfer[] transferAgents = new Transfer[0];
 	private Object[] data = new Object[0];
+	private int CFSTR_PREFERREDDROPEFFECT;
 
 /**
  * Constructs a new instance of this class.  Creating an instance of a Clipboard
@@ -55,6 +56,8 @@ public Clipboard(Display display) {
 		SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 	
+	TCHAR chFormatName = new TCHAR(0, "Preferred DropEffect", true);
+	CFSTR_PREFERREDDROPEFFECT = COM.RegisterClipboardFormat(chFormatName);
 	createCOMInterfaces();
 	this.AddRef();
 }
@@ -267,10 +270,18 @@ private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 	OleEnumFORMATETC enumFORMATETC = new OleEnumFORMATETC();
 	enumFORMATETC.AddRef();
 	
-	FORMATETC[] formats = new FORMATETC[allowedDataTypes.length];
-	for (int i = 0; i < formats.length; i++){
+	FORMATETC[] formats = new FORMATETC[allowedDataTypes.length + 1];
+	for (int i = 0; i < allowedDataTypes.length; i++){
 		formats[i] = allowedDataTypes[i].formatetc;
 	}
+	// include the drop effect format to specify a copy operation
+	FORMATETC dropeffect = new FORMATETC();
+	dropeffect.cfFormat = CFSTR_PREFERREDDROPEFFECT;
+	dropeffect.dwAspect = COM.DVASPECT_CONTENT;
+	dropeffect.lindex = -1;
+	dropeffect.tymed = COM.TYMED_HGLOBAL;
+	formats[formats.length -1] = dropeffect;
+	
 	enumFORMATETC.setFormats(formats);
 	
 	COM.MoveMemory(ppenumFormatetc, new int[] {enumFORMATETC.getAddress()}, 4);
@@ -292,6 +303,17 @@ private int GetData(int pFormatetc, int pmedium) {
 	transferData.type = transferData.formatetc.cfFormat;
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.result = COM.E_FAIL;
+
+	if (transferData.type == CFSTR_PREFERREDDROPEFFECT) {
+		// specify that a copy operation is to be performed
+		STGMEDIUM stgmedium = new STGMEDIUM();
+		stgmedium.tymed = COM.TYMED_HGLOBAL;
+		stgmedium.unionField = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, 4);
+		COM.MoveMemory(stgmedium.unionField, new int[] {COM.DROPEFFECT_COPY}, 4);
+		stgmedium.pUnkForRelease = 0;
+		COM.MoveMemory(pmedium, stgmedium, STGMEDIUM.sizeof);
+		return COM.S_OK;
+	}
 		
 	// get matching transfer agent to perform conversion
 	int transferIndex = -1;
@@ -315,6 +337,8 @@ private int QueryGetData(int pFormatetc) {
 	transferData.formatetc = new FORMATETC();
 	COM.MoveMemory(transferData.formatetc, pFormatetc, FORMATETC.sizeof);
 	transferData.type = transferData.formatetc.cfFormat;
+	
+	if (transferData.type == CFSTR_PREFERREDDROPEFFECT) return COM.S_OK;
 	
 	// is this type supported by the transfer agent?
 	for (int i = 0; i < transferAgents.length; i++){
