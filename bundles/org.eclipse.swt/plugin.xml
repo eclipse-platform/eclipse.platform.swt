@@ -8,6 +8,9 @@
 
 <!-- Runtime -->
 <runtime>
+   <library name="$ws$/swt-pi.jar">
+      <export name="*"/>
+   </library>
    <library name="$ws$/swt.jar">
       <export name="*"/>
    </library>

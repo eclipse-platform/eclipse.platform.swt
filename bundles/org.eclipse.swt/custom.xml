@@ -53,6 +53,26 @@
     <delete dir="${base}"/>
   </target>
 
+  <target name="ws/gtk/swt-pi.jar" depends="init">
+    <ant antfile="${template}" target="jar">
+      <property name="mapping" value="Eclipse SWT PI/gtk/,Eclipse SWT PI/common_j2se/"/>
+      <property name="includes" value="Eclipse SWT PI/gtk/,Eclipse SWT PI/common_j2se/"/>
+      <property name="excludes" value="Eclipse SWT PI/gtk/library/"/>
+      <property name="dest" value="${basedir}/ws/gtk/swt-pi.jar"/>
+      <property name="compilePath" value=""/>
+    </ant>
+  </target>
+
+  <target name="ws/gtk/swt.jar" depends="init">
+    <ant antfile="${template}" target="jar">
+      <property name="mapping" value="Eclipse SWT/gtk/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/gtk/,Eclipse SWT Drag and Drop/common/,Eclipse SWT Printing/gtk/,Eclipse SWT Printing/common/,Eclipse SWT Program/gtk/,Eclipse SWT Program/common/,${emulatedswt}/widgets/CoolBar.java,${emulatedswt}/widgets/CoolItem.java,${emulatedswt}/internal/BidiUtil.java"/>
+      <property name="includes" value="Eclipse SWT/gtk/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/gtk/,Eclipse SWT Drag and Drop/common/,Eclipse SWT Printing/gtk/,Eclipse SWT Printing/common/,Eclipse SWT Program/gtk/,Eclipse SWT Program/common/,${emulatedswt}/widgets/CoolBar.java,${emulatedswt}/widgets/CoolItem.java,${emulatedswt}/internal/BidiUtil.java"/>
+      <property name="excludes" value="Eclipse SWT/common/library/"/>
+      <property name="dest" value="${basedir}/ws/gtk/swt.jar"/>
+      <property name="compilePath" value="ws/gtk/swt-pi.jar"/>
+    </ant>
+  </target>
+
   <target name="ws/motif/swt.jar" depends="init">
     <ant antfile="${template}" target="jar">
       <property name="mapping" value="Eclipse SWT/motif/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/motif/,Eclipse SWT Drag and Drop/common/,Eclipse SWT Printing/motif/,Eclipse SWT Printing/common/,Eclipse SWT Program/motif/,Eclipse SWT Program/common/,Eclipse SWT/emulated/,Eclipse SWT PI/motif/,Eclipse SWT PI/common_j2se/"/>
@@ -83,14 +103,34 @@
     </ant>
   </target>
 
-  <target name="jar" depends="init,ws/motif/swt.jar,ws/photon/swt.jar,ws/win32/swt.jar">
+  <target name="jar" depends="init,ws/gtk/swt-pi.jar,ws/gtk/swt.jar,ws/motif/swt.jar,ws/photon/swt.jar,ws/win32/swt.jar">
+  </target>
+
+  <target name="ws/gtk/swt-pisrc.zip" depends="init">
+    <property name="destroot" value="${basedir}"/>
+    <ant antfile="${template}" target="src">
+      <property name="mapping" value="Eclipse SWT PI/gtk/,Eclipse SWT PI/common_j2se/,Eclipse SWT PI/gtk/"/>
+      <property name="includes" value="Eclipse SWT PI/gtk/**/*.java,Eclipse SWT PI/common_j2se/**/*.java,Eclipse SWT PI/gtk/library/"/>
+      <property name="excludes" value=""/>
+      <property name="dest" value="${destroot}/ws/gtk/swt-pisrc.zip"/>
+    </ant>
+  </target>
+
+  <target name="ws/gtk/swtsrc.zip" depends="init">
+    <property name="destroot" value="${basedir}"/>
+    <ant antfile="${template}" target="src">
+      <property name="mapping" value="Eclipse SWT/gtk/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/gtk/,Eclipse SWT Drag and Drop/common/,Eclipse SWT Printing/gtk/,Eclipse SWT Printing/common/,Eclipse SWT Program/gtk/,Eclipse SWT Program/common/,Eclipse SWT/emulated/,Eclipse SWT/emulated/,Eclipse SWT/emulated/,Eclipse SWT/common/"/>
+      <property name="includes" value="Eclipse SWT/gtk/**/*.java,Eclipse SWT/common/**/*.java,Eclipse SWT/common_j2se/**/*.java,Eclipse SWT Custom Widgets/common/**/*.java,Eclipse SWT Drag and Drop/gtk/**/*.java,Eclipse SWT Drag and Drop/common/**/*.java,Eclipse SWT Printing/gtk/**/*.java,Eclipse SWT Printing/common/**/*.java,Eclipse SWT Program/gtk/**/*.java,Eclipse SWT Program/common/**/*.java,Eclipse SWT/emulated/**/CoolBar.java,Eclipse SWT/emulated/**/CoolItem.java,Eclipse SWT/emulated/**/BidiUtil.java,Eclipse SWT/common/library/"/>
+      <property name="excludes" value=""/>
+      <property name="dest" value="${destroot}/ws/gtk/swtsrc.zip"/>
+    </ant>
   </target>
 
   <target name="ws/motif/swtsrc.zip" depends="init">
     <property name="destroot" value="${basedir}"/>
     <ant antfile="${template}" target="src">
-      <property name="mapping" value="Eclipse SWT/motif/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/motif/,Eclipse SWT Drag and Drop/common/,Eclipse SWT Printing/motif/,Eclipse SWT Printing/common/,Eclipse SWT Program/motif/,Eclipse SWT Program/common/,Eclipse SWT/emulated/,Eclipse SWT PI/motif/,Eclipse SWT PI/common_j2se/"/>
-      <property name="includes" value="Eclipse SWT/motif/**/*.java,Eclipse SWT/common/**/*.java,Eclipse SWT/common_j2se/**/*.java,Eclipse SWT Custom Widgets/common/**/*.java,Eclipse SWT Drag and Drop/motif/**/*.java,Eclipse SWT Drag and Drop/common/**/*.java,Eclipse SWT Printing/motif/**/*.java,Eclipse SWT Printing/common/**/*.java,Eclipse SWT Program/motif/**/*.java,Eclipse SWT Program/common/**/*.java,Eclipse SWT/emulated/**/*.java,Eclipse SWT PI/motif/**/*.java,Eclipse SWT PI/common_j2se/**/*.java"/>
+      <property name="mapping" value="Eclipse SWT/motif/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/motif/,Eclipse SWT Drag and Drop/common/,Eclipse SWT Printing/motif/,Eclipse SWT Printing/common/,Eclipse SWT Program/motif/,Eclipse SWT Program/common/,Eclipse SWT/emulated/,Eclipse SWT PI/motif/,Eclipse SWT PI/common_j2se/,Eclipse SWT/common/,Eclipse SWT PI/motif/"/>
+      <property name="includes" value="Eclipse SWT/motif/**/*.java,Eclipse SWT/common/**/*.java,Eclipse SWT/common_j2se/**/*.java,Eclipse SWT Custom Widgets/common/**/*.java,Eclipse SWT Drag and Drop/motif/**/*.java,Eclipse SWT Drag and Drop/common/**/*.java,Eclipse SWT Printing/motif/**/*.java,Eclipse SWT Printing/common/**/*.java,Eclipse SWT Program/motif/**/*.java,Eclipse SWT Program/common/**/*.java,Eclipse SWT/emulated/**/*.java,Eclipse SWT PI/motif/**/*.java,Eclipse SWT PI/common_j2se/**/*.java,Eclipse SWT/common/library/,Eclipse SWT PI/motif/library/"/>
       <property name="excludes" value=""/>
       <property name="dest" value="${destroot}/ws/motif/swtsrc.zip"/>
     </ant>
@@ -99,8 +139,8 @@
   <target name="ws/photon/swtsrc.zip" depends="init">
     <property name="destroot" value="${basedir}"/>
     <ant antfile="${template}" target="src">
-      <property name="mapping" value="Eclipse SWT/photon/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/photon/,Eclipse SWT Drag and Drop/common/,Eclipse SWT Printing/photon/,Eclipse SWT Printing/common/,Eclipse SWT Program/photon/,Eclipse SWT Program/common/,Eclipse SWT/emulated,Eclipse SWT PI/photon/,Eclipse SWT PI/common_j2se/"/>
-      <property name="includes" value="Eclipse SWT/photon/**/*.java,Eclipse SWT/common/**/*.java,Eclipse SWT/common_j2se/**/*.java,Eclipse SWT Custom Widgets/common/**/*.java,Eclipse SWT Drag and Drop/photon/**/*.java,Eclipse SWT Drag and Drop/common/**/*.java,Eclipse SWT Printing/photon/**/*.java,Eclipse SWT Printing/common/**/*.java,Eclipse SWT Program/photon/**/*.java,Eclipse SWT Program/common/**/*.java,Eclipse SWT/emulated/**/*.java,Eclipse SWT PI/photon/**/*.java,Eclipse SWT PI/common_j2se/**/*.java"/>
+      <property name="mapping" value="Eclipse SWT/photon/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/photon/,Eclipse SWT Drag and Drop/common/,Eclipse SWT Printing/photon/,Eclipse SWT Printing/common/,Eclipse SWT Program/photon/,Eclipse SWT Program/common/,Eclipse SWT/emulated,Eclipse SWT PI/photon/,Eclipse SWT PI/common_j2se/,Eclipse SWT/common/,Eclipse SWT PI/photon/"/>
+      <property name="includes" value="Eclipse SWT/photon/**/*.java,Eclipse SWT/common/**/*.java,Eclipse SWT/common_j2se/**/*.java,Eclipse SWT Custom Widgets/common/**/*.java,Eclipse SWT Drag and Drop/photon/**/*.java,Eclipse SWT Drag and Drop/common/**/*.java,Eclipse SWT Printing/photon/**/*.java,Eclipse SWT Printing/common/**/*.java,Eclipse SWT Program/photon/**/*.java,Eclipse SWT Program/common/**/*.java,Eclipse SWT/emulated/**/*.java,Eclipse SWT PI/photon/**/*.java,Eclipse SWT PI/common_j2se/**/*.java,Eclipse SWT/common/library/,Eclipse SWT PI/photon/library/"/>
       <property name="excludes" value="${emulatedswt}/widgets/TabFolder.java,${emulatedswt}/widgets/TabItem.java"/>
       <property name="dest" value="${destroot}/ws/photon/swtsrc.zip"/>
     </ant>
@@ -109,21 +149,21 @@
   <target name="ws/win32/swtsrc.zip" depends="init">
     <property name="destroot" value="${basedir}"/>
     <ant antfile="${template}" target="src">
-      <property name="mapping" value="Eclipse SWT/win32/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT AWT/win32/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/win32/,Eclipse SWT Drag and Drop/common/,Eclipse SWT OLE Win32/win32/,Eclipse SWT Printing/win32/,Eclipse SWT Printing/common/,Eclipse SWT Program/win32/,Eclipse SWT Program/common/,Eclipse SWT PI/win32/,Eclipse SWT PI/common_j2se/"/>
-      <property name="includes" value="Eclipse SWT/win32/**/*.java,Eclipse SWT/common/**/*.java,Eclipse SWT/common_j2se/**/*.java,Eclipse SWT AWT/win32/**/*.java,Eclipse SWT Custom Widgets/common/**/*.java,Eclipse SWT Drag and Drop/win32/**/*.java,Eclipse SWT Drag and Drop/common/**/*.java,Eclipse SWT OLE Win32/win32/**/*.java,Eclipse SWT Printing/win32/**/*.java,Eclipse SWT Printing/common/**/*.java,Eclipse SWT Program/win32/**/*.java,Eclipse SWT Program/common/**/*.java,Eclipse SWT PI/win32/**/*.java,Eclipse SWT PI/common_j2sse/**/*.java"/>
+      <property name="mapping" value="Eclipse SWT/win32/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT AWT/win32/,Eclipse SWT Custom Widgets/common/,Eclipse SWT Drag and Drop/win32/,Eclipse SWT Drag and Drop/common/,Eclipse SWT OLE Win32/win32/,Eclipse SWT Printing/win32/,Eclipse SWT Printing/common/,Eclipse SWT Program/win32/,Eclipse SWT Program/common/,Eclipse SWT PI/win32/,Eclipse SWT PI/common_j2se/,Eclipse SWT/common/,Eclipse SWT PI/win32/"/>
+      <property name="includes" value="Eclipse SWT/win32/**/*.java,Eclipse SWT/common/**/*.java,Eclipse SWT/common_j2se/**/*.java,Eclipse SWT AWT/win32/**/*.java,Eclipse SWT Custom Widgets/common/**/*.java,Eclipse SWT Drag and Drop/win32/**/*.java,Eclipse SWT Drag and Drop/common/**/*.java,Eclipse SWT OLE Win32/win32/**/*.java,Eclipse SWT Printing/win32/**/*.java,Eclipse SWT Printing/common/**/*.java,Eclipse SWT Program/win32/**/*.java,Eclipse SWT Program/common/**/*.java,Eclipse SWT PI/win32/**/*.java,Eclipse SWT PI/common_j2sse/**/*.java,Eclipse SWT/common/library/,Eclipse SWT PI/win32/library/"/>
       <property name="excludes" value=""/>
       <property name="dest" value="${destroot}/ws/win32/swtsrc.zip"/>
     </ant>
   </target>
 
-  <target name="src" depends="init,ws/motif/swtsrc.zip,ws/photon/swtsrc.zip,ws/win32/swtsrc.zip">
+  <target name="src" depends="init,ws/gtk/swt-pisrc.zip,ws/gtk/swtsrc.zip,ws/motif/swtsrc.zip,ws/photon/swtsrc.zip,ws/win32/swtsrc.zip">
   </target>
 
   <target name="bin" depends="init">
     <property name="destroot" value="${basedir}"/>
     <ant antfile="${template}" target="bin">
       <property name="includes" value="plugin.xml,plugin.properties,ws/,*.jar"/>
-      <property name="excludes" value="Eclipse SWT Printing/common/,Eclipse SWT Printing/motif/,Eclipse SWT Printing/photon/,Eclipse SWT Printing/win32/,Eclipse SWT Drag and Drop/common/,Eclipse SWT Drag and Drop/motif/,Eclipse SWT Drag and Drop/photon/,Eclipse SWT Drag and Drop/win32/,Eclipse SWT Program/common/,Eclipse SWT Program/motif/,Eclipse SWT Program/photon/,Eclipse SWT Program/win32/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT/motif/,Eclipse SWT/photon/,Eclipse SWT/win32/,Eclipse SWT/common_j2se/,Eclipse SWT PI/common_j2se/,Eclipse SWT PI/motif/,Eclipse SWT PI/photon/,Eclipse SWT PI/win32/,Eclipse SWT Custom Widgets/common/,Eclipse SWT AWT/win32/,Eclipse SWT OLE Win32/win32/,Eclipse SWT/emulated/"/>
+      <property name="excludes" value="Eclipse SWT Printing/common/,Eclipse SWT Printing/motif/,Eclipse SWT Printing/photon/,Eclipse SWT Printing/win32/,Eclipse SWT Printing/gtk/,Eclipse SWT Drag and Drop/common/,Eclipse SWT Drag and Drop/motif/,Eclipse SWT Drag and Drop/photon/,Eclipse SWT Drag and Drop/win32/,Eclipse SWT Drag and Drop/gtk/,Eclipse SWT Program/common/,Eclipse SWT Program/motif/,Eclipse SWT Program/photon/,Eclipse SWT Program/win32/,Eclipse SWT Program/gtk/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT/motif/,Eclipse SWT/photon/,Eclipse SWT/win32/,Eclipse SWT/gtk/,Eclipse SWT/common_j2se/,Eclipse SWT PI/common_j2se/,Eclipse SWT PI/motif/,Eclipse SWT PI/photon/,Eclipse SWT PI/win32/,Eclipse SWT PI/gtk/,Eclipse SWT Custom Widgets/common/,Eclipse SWT AWT/win32/,Eclipse SWT OLE Win32/win32/,Eclipse SWT/emulated/"/>
       <property name="dest" value="${destroot}"/>
     </ant>
   </target>
@@ -137,8 +177,8 @@
 
   <target name="clean" depends="init">
     <ant antfile="${template}" target="clean">
-      <property name="jar" value="ws/motif/swt.jar,ws/photon/swt.jar,ws/win32/swt.jar"/>
-      <property name="srczips" value="ws/motif/swtsrc.zip,ws/photon/swtsrc.zip,ws/win32/swtsrc.zip"/>
+      <property name="jar" value="ws/gtk/swt-pi.jar,ws/gtk/swt.jar,ws/motif/swt.jar,ws/photon/swt.jar,ws/win32/swt.jar"/>
+      <property name="srczips" value="ws/gtk/swt-pisrc.zip,ws/gtk/swtsrc.zip,ws/motif/swtsrc.zip,ws/photon/swtsrc.zip,ws/win32/swtsrc.zip"/>
     </ant>
     <delete>
       <fileset dir="." includes="**/*.pdetemp"/>
