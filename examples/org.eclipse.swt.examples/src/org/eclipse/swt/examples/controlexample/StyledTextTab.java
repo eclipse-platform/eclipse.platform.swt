@@ -263,5 +263,6 @@ class StyledTextTab extends ScrollableTab {
 		fullSelectionButton.setSelection ((styledText.getStyle () & SWT.FULL_SELECTION) != 0);
 		horizontalButton.setEnabled ((styledText.getStyle () & SWT.MULTI) != 0);
 		verticalButton.setEnabled ((styledText.getStyle () & SWT.MULTI) != 0);
+		wrapButton.setEnabled ((styledText.getStyle () & SWT.MULTI) != 0);
 	}
 }
