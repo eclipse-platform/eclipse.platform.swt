@@ -782,7 +782,7 @@ public String getText (int start, int end) {
 	}
 	if (OS.XmTextGetLastPosition (handle) <= end) error (SWT.ERROR_INVALID_RANGE);
 	int numChars = end - start + 1;
-	int length = numChars * OS.MB_CUR_MAX() + 1;
+	int length = numChars * OS.MB_CUR_MAX () + 1;
 	byte [] buffer = new byte [length];
 	int code = OS.XmTextGetSubstring (handle, start, numChars, length, buffer);
 	if (code == OS.XmCOPY_FAILED) return "";
