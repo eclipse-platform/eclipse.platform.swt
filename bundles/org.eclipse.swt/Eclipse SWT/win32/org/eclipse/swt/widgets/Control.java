@@ -738,6 +738,10 @@ int getCodePage () {
 	return OS.GetACP ();
 }
 
+Control getControl () {
+	return this;
+}
+
 String getClipboardText () {
 	String string = "";
 	if (OS.OpenClipboard (0)) {
@@ -1775,48 +1779,6 @@ public void removeTraverseListener(TraverseListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Traverse, listener);
-}
-
-boolean sendFocusEvent (int type) {
-	Shell shell = getShell ();
-	
-	/*
-	* Feature in Windows.  During the processing of WM_KILLFOCUS,
-	* when the focus window is queried using GetFocus(), it has
-	* already been assigned to the new window.  The fix is to
-	* remember the control that is losing or gaining focus and
-	* answer it during WM_KILLFOCUS.  If a WM_SETFOCUS occurs
-	* during WM_KILLFOCUS, the focus control needs to be updated
-	* to the current control.  At any other time, the focus
-	* control matches Windows.
-	*/
-	Display display = this.display;
-	display.focusEvent = type;
-	display.focusControl = this;
-	sendEvent (type);
-	// widget could be disposed at this point
-	display.focusEvent = SWT.None;
-	display.focusControl = null;
-
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-	if (!shell.isDisposed ()) {
-		switch (type) {
-			case SWT.FocusIn:
-				shell.setActiveControl (this);
-				break;
-			case SWT.FocusOut:
-				if (shell != display.getActiveShell ()) {
-					shell.setActiveControl (null);
-				}
-				break;
-		}
-	}
-	return true;
 }
 
 /**
