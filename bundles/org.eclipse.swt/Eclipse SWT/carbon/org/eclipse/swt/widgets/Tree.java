@@ -316,6 +316,8 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 			items [id] = null;
 			error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
+	} else {
+		if (count == 0 && parentItem != null) parentItem.redraw ();
 	}
 }
 
