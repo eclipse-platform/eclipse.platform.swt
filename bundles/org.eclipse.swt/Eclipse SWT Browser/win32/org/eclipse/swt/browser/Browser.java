@@ -97,7 +97,7 @@ public Browser(Composite parent, int style) {
 	super(parent, style);
 	frame = new OleFrame(this, SWT.NONE);
 	try {
-		site = new OleControlSite(frame, SWT.NONE, "Shell.Explorer"); //$NON-NLS-1$
+		site = new WebSite(frame, SWT.NONE, "Shell.Explorer"); //$NON-NLS-1$
 	} catch (SWTException e) {
 		dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
