@@ -591,13 +591,6 @@ public void open () {
 	traverseGroup (true);
 }
 
-int processEvent (int widget, int data, int info) {
-	if (widget == shellHandle && data == SWT.Resize) {
-		return processShellResize (info);
-	}
-	return super.processEvent (widget, data, info);
-}
-
 int processHotkey (int data, int info) {
 	if (data != 0) {
 		Widget widget = WidgetTable.get (data);
@@ -640,7 +633,7 @@ int processMove (int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processShellResize (int info) {
+int processResize (int info) {
 	if (info == 0) return OS.Pt_CONTINUE;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
@@ -648,6 +641,8 @@ int processShellResize (int info) {
 	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	resizeBounds (args [1], args [4]);
+	sendEvent(SWT.Resize);
+	if (layout != null) layout (false);
 	return OS.Pt_CONTINUE;
 }
 
@@ -791,7 +786,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		if (!sameOrigin & move) sendEvent (SWT.Move);
 		if (!sameExtent & resize) {
 			resizeBounds (newArea.size_w, newArea.size_h);
-			sendEvent (SWT.Resize);
+			sendEvent(SWT.Resize);
 			if (layout != null) layout (false);
 		}
 	}

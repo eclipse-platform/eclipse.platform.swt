@@ -11,7 +11,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-
 /**
  * Instances of this class implement the notebook user interface
  * metaphor.  It allows the user to select a notebook page from
@@ -405,21 +404,6 @@ int processPaint (int damage) {
 	return OS.Pt_CONTINUE;
 }
 
-int processResize (int info) {
-	int result = super.processResize (info);
-	int [] args = {OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	int index = args [1];
-	if (index != OS.Pt_PG_INVALID) {
-		TabItem item = items [index];
-		Control control = item.control;
-		if (control != null && !control.isDisposed ()) {
-			control.setBounds (getClientArea ());
-		}
-	}
-	return result;
-}
-
 int processSelection (int info) {
 	if (info == 0) return OS.Pt_CONTINUE;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
@@ -482,6 +466,23 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
+}
+
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize) {
+		int [] args = {OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
+		OS.PtGetResources (handle, args.length / 3, args);
+		int index = args [1];
+		if (index != OS.Pt_PG_INVALID) {
+			TabItem item = items [index];
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea ());
+			}
+		}
+	}
+	return changed;
 }
 
 /**

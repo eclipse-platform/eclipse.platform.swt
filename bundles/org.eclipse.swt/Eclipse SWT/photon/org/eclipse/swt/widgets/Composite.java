@@ -356,12 +356,6 @@ boolean hasFocus () {
 	return OS.PtIsFocused (handle) == 2;
 }
 
-void hookEvents () {
-	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_RESIZE, windowProc, SWT.Resize);
-}
-
 /**
  * Gets the last specified tabbing order for the control.
  *
@@ -514,21 +508,6 @@ int processPaint (int damage) {
 	return super.processPaint (damage);
 }
 
-int processResize (int info) {
-	if (info == 0) return OS.Pt_CONTINUE;
-	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
-	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
-	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
-	PtContainerCallback_t cbdata = new PtContainerCallback_t ();
-	OS.memmove(cbdata, cbinfo.cbdata, PtContainerCallback_t.sizeof);
-	if (cbdata.new_dim_w == cbdata.old_dim_w && cbdata.new_dim_h == cbdata.old_dim_h) {
-		return OS.Pt_CONTINUE;
-	}
-	sendEvent (SWT.Resize);
-	if (layout != null) layout (false);
-	return OS.Pt_CONTINUE;
-}
-
 void releaseChildren () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -626,12 +605,16 @@ void resizeClientArea (int width, int height) {
 }
 
 boolean sendResize () {
-	return false;
+	return scrolledHandle == 0;
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
-	if (changed && resize) resizeClientArea (width, height);
+	if (changed && resize) {
+		resizeClientArea (width, height);
+		sendEvent(SWT.Resize);
+		if (layout != null) layout (false);
+	}
 	return changed;
 }
 
