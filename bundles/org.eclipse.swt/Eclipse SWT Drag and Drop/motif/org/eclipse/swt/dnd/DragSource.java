@@ -413,12 +413,21 @@ private int dragDropFinishCallback(int widget, int client_data, int call_data) {
 	return 0;
 }
 private int dropFinishCallback(int widget, int client_data, int call_data) {
-	
 	XmDropFinishCallback data = new XmDropFinishCallback();
 	OS.memmove(data, call_data, XmDropFinishCallback.sizeof);
-
-	if (data.dropAction != OS.XmDROP || data.dropSiteStatus != OS.XmDROP_SITE_VALID) return 0;
-
+	if (data.dropAction != OS.XmDROP || data.dropSiteStatus != OS.XmDROP_SITE_VALID) {
+		DNDEvent event = new DNDEvent();
+		event.widget = this.control;
+		event.time = data.timeStamp;
+		event.detail = DND.DROP_NONE;
+		event.doit = false;
+		try {
+			notifyListeners(DND.DragEnd,event);
+		} catch (Throwable err) {
+		}
+		return 0;
+	} 
+	
 	DNDEvent event = new DNDEvent();
 	event.widget = this.control;
 	event.time = data.timeStamp;
