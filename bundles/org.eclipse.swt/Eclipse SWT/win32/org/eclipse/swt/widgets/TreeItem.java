@@ -410,8 +410,14 @@ public TreeItem [] getItems () {
 	tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 	while (tvItem.hItem != 0) {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-		result [index++] = parent.items [tvItem.lParam];
+		TreeItem item = parent.items [tvItem.lParam];
+		if (item != null) result [index++] = item;
 		tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, tvItem.hItem);
+	}
+	if (index != count) {
+		TreeItem [] newResult = new TreeItem [index];
+		System.arraycopy(result, 0, newResult, 0, index);
+		result = newResult;
 	}
 	return result;
 }

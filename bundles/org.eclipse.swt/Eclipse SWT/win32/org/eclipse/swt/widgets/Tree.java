@@ -1868,7 +1868,18 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				int [] action = new int [1];
 				OS.MoveMemory (action, lParam + NMHDR.sizeof, 4);
 				Event event = new Event ();
-				event.item = items [tvItem.lParam];
+				TreeItem item = items [tvItem.lParam];
+				/*
+				* Feature on Windows.  For some reason, Windows
+				* sometimes sends a TVM_ITEMEXPANDING message from
+				* within a TVM_DELETEITEM message, for the node
+				* being destroyed.  The TreeItem has already been
+				* removed from the tree table and cannot be used
+				* anymore.  The workaround is to detect this case
+				* and return without sending any event. 
+				*/
+				if (item == null) break;
+				event.item = item;
 				/*
 				* It is possible (but unlikely), that application
 				* code could have disposed the widget in the expand
