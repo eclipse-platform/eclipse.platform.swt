@@ -191,7 +191,12 @@ void createHandle (int index) {
 		OS.XmNleftAttachment, OS.XmATTACH_FORM,
 		OS.XmNrightAttachment, OS.XmATTACH_FORM,
 	};
-	handle = OS.XmCreateLabel (formHandle, null, argList2, argList2.length / 2);
+	/*
+	* Bug in Motif.  The widget will not receive mouse events, if the
+	* label string is empty.  The fix is to initialize it to a space.
+	*/
+	byte [] buffer = {(byte) ' ', 0};
+	handle = OS.XmCreateLabel (formHandle, buffer, argList2, argList2.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 int defaultBackground () {
