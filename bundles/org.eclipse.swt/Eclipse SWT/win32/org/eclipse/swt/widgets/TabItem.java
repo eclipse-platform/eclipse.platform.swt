@@ -222,7 +222,7 @@ public void setImage (Image image) {
 	* Bug in Windows.  In version 6.00 of COMCTL32.DLL, tab
 	* items with an image and a label that includes '&' cause
 	* the tab to draw incorrectly (even when doubled '&&').
-	* The image  overlaps the label.  The fix is to remove
+	* The image overlaps the label.  The fix is to remove
 	* all '&' characters from the string. 
 	*/
 	if (OS.COMCTL32_MAJOR >= 6) {
@@ -270,7 +270,7 @@ public void setText (String string) {
 	* Bug in Windows.  In version 6.00 of COMCTL32.DLL, tab
 	* items with an image and a label that includes '&' cause
 	* the tab to draw incorrectly (even when doubled '&&').
-	* The image  overlaps the label.  The fix is to remove
+	* The image overlaps the label.  The fix is to remove
 	* all '&' characters from the string. 
 	*/
 	if (OS.COMCTL32_MAJOR >= 6 && image != null) {

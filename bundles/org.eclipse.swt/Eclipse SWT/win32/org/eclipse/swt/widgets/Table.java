@@ -951,7 +951,9 @@ void destroyItem (TableColumn column) {
 			} else {
 				String [] strings = item.strings;
 				if (strings != null) {
-					if (index == 0) item.text = strings [1];
+					if (index == 0) {
+						item.text = strings [1] != null ? strings [1] : "";
+					}
 					String [] temp = new String [columnCount];
 					System.arraycopy (strings, 0, temp, 0, index);
 					System.arraycopy (strings, index + 1, temp, index, columnCount - index);
