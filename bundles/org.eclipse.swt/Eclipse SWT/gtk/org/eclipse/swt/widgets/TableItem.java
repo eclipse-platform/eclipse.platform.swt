@@ -309,6 +309,7 @@ public Image getImage (int index) {
 	if (ptr [0] == 0) return null;
 	ImageList imageList = parent.imageList;
 	int imageIndex = imageList.indexOf (ptr [0]);
+	if (imageIndex == -1) return null;
 	return imageList.get (imageIndex);
 }
 
