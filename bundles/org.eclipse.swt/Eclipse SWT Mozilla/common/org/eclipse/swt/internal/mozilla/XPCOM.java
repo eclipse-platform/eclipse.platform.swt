@@ -32,6 +32,7 @@ import org.eclipse.swt.internal.*;
 public class XPCOM extends Platform {
 	
 	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
+	public static final String HTTPS_PROTOCOL = "https:";  //$NON-NLS-1$
 	
 	/* CID constants */
 	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$
