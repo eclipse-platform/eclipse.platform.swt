@@ -405,6 +405,7 @@ public void close () {
 	closeWidget ();
 }
 void closeWidget () {
+	if (!isEnabled()) return;
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
 	if (event.doit && !isDisposed ()) dispose ();
@@ -649,7 +650,7 @@ int processDeiconify (int int0, int int1, int int2) {
 
 int processDispose (int int0, int int1, int int2) {
 	closeWidget ();
-	return 0;
+	return 1;
 }
 
 int processEvent (int eventNumber, int int0, int int1, int int2) {
