@@ -807,14 +807,14 @@ public int indexOf (MenuItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
+		if (item.parent != this) return -1;
 		if (OS.IsPPC) {
 			return OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
 		}
 		if (OS.IsSP) {
-			int index = -1;
-			if (item.id == id0) index = id0;
-			else if (item.id == id1) index = id1;
-			return index;
+			if (item.id == id0) return 0;
+			if (item.id == id1) return 1;
+			return -1;
 		}
 	}
 	int index = 0;
@@ -945,8 +945,11 @@ void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
 		if (!item.isDisposed ()) {
-			if (OS.IsPPC && hwndCB != 0) item.dispose ();
-			else item.releaseResources ();
+			if (OS.IsPPC && hwndCB != 0) {
+				item.dispose ();
+			} else {
+				item.releaseResources ();
+			}
 		}
 	}
 	super.releaseWidget ();
