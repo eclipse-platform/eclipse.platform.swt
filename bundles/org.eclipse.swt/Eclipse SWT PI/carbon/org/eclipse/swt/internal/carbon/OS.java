@@ -73,6 +73,7 @@ public class OS {
 
 	public static final short kThemeButtonOff	= 0;
 	public static final short kThemeButtonOn	= 1;
+	public static final short kThemeButtonMixed	= 2;
 
 	public static final short smSystemScript = -1; 	/* designates system script.*/
 
@@ -977,9 +978,11 @@ public class OS {
 
 	public static final int kDataBrowserNoItem= 0;
 	public static final int kDataBrowserDefaultPropertyFlags = 0;
+	public static final int kDataBrowserPropertyIsMutable = 1 << 0;
 	
 	public static final int kDataBrowserTextType= ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';	/* CFStringRef */
 	public static final int kDataBrowserIconAndTextType= ('t'<<24) + ('i'<<16) + ('c'<<8) + 'n';	/* IconRef, CFStringRef, etc */
+	public static final int kDataBrowserCheckboxType= ('c'<<24) + ('h'<<16) + ('b'<<8) + 'x';	/* ThemeButtonValue */
 
 	public static final int kDataBrowserListViewLatestHeaderDesc = 0;
 	
@@ -1015,7 +1018,8 @@ public class OS {
 	public static native int SetDataBrowserItemDataBooleanValue(int itemRef, boolean data);
 	public static native int SetDataBrowserItemDataItemID(int itemRef, int itemID);
 	public static native int SetDataBrowserItemDataIcon(int itemRef, int iconRef);
-
+	public static native int SetDataBrowserItemDataButtonValue(int itemRef, short themeButtonValue);
+	
 	public static native int SetDataBrowserHasScrollBars(int cHandle, boolean hScroll, boolean vScroll);
 	public static native int SetDataBrowserListViewHeaderBtnHeight(int cHandle, short height);
 	public static native int UpdateDataBrowserItems(int cHandle, int container, int numItems, int[] items, int preSortProperty, int propertyID);

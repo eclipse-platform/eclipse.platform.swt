@@ -467,5 +467,27 @@ public class MacUtil {
 			OS.RGBForeColor((short)0xFFFF, (short)0xFFFF, (short)0xFFFF);
 		}
 	}
+	
+	public static int[] getDataBrowserItems(int dataBrowserHandle, int containerID, int state, boolean recurse) {
+		int resultHandle= 0;
+		try {
+			resultHandle= OS.NewHandle(0);
+			if (OS.GetDataBrowserItems(dataBrowserHandle, containerID, recurse, state, resultHandle) == OS.kNoErr) {
+				int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
+				if (itemCount > 0) {	
+					int resultIDs[]= new int[itemCount];
+					OS.getHandleData(resultHandle, resultIDs);
+					return resultIDs;
+				}
+			}
+		} finally {
+			OS.DisposeHandle(resultHandle);
+		}
+		return new int[0];
+	}
+
+	public static int[] getSelectionIDs(int dataBrowserHandle, int containerID, boolean recurse) {
+		return getDataBrowserItems(dataBrowserHandle, containerID, OS.kDataBrowserItemIsSelected, recurse);
+	}
 
 }
