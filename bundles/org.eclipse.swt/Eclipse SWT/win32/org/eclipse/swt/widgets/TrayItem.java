@@ -157,7 +157,15 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_RBUTTONDBLCLK:
 			postEvent (SWT.DefaultSelection);
 			break;
-		case OS.WM_RBUTTONDOWN: {
+		case OS.WM_RBUTTONUP: {
+			/*
+			* Feature in Windows.  When the user clicks outside of the
+			* menu to cancel it, the menu is not hidden until an event
+			* is processed.  If another application is the foreground
+			* window, then the menu is not hidden.  The fix is to force
+			* the tray icon message window to the foreground.
+			*/
+			OS.SetForegroundWindow (hwnd);
 			sendEvent (SWT.MenuDetect);
 			// widget could be disposed at this point
 			if (isDisposed()) return 0;
