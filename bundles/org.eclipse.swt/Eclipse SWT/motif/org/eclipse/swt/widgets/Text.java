@@ -35,7 +35,8 @@ public class Text extends Scrollable {
 	String hiddenText;
 	XmTextVerifyCallbackStruct textVerify;
 	int drawCount;
-
+	
+	static final boolean isGB18030;
 	public static final int LIMIT;
 	public static final String DELIMITER;
 	
@@ -47,6 +48,7 @@ public class Text extends Scrollable {
 	static {
 		LIMIT = 0x7FFFFFFF;
 		DELIMITER = "\n";
+		isGB18030 = Converter.defaultCodePage().endsWith("18030");
 	}
 
 /**
@@ -324,7 +326,7 @@ void createHandle (int index) {
 		OS.XmNeditMode, (style & SWT.SINGLE) != 0 ? OS.XmSINGLE_LINE_EDIT : OS.XmMULTI_LINE_EDIT,
 		OS.XmNscrollHorizontal, (style & SWT.H_SCROLL) != 0 ? 1 : 0,
 		OS.XmNscrollVertical, (style & SWT.V_SCROLL) != 0 ? 1 : 0,
-		OS.XmNwordWrap, (style & SWT.WRAP) != 0 ? 1: 0,
+		OS.XmNwordWrap, !isGB18030 && (style & SWT.WRAP) != 0 ? 1: 0,
 		OS.XmNeditable, (style & SWT.READ_ONLY) != 0 ? 0 : 1,
 		OS.XmNcursorPositionVisible, (style & SWT.READ_ONLY) != 0 && (style & SWT.SINGLE) != 0 ? 0 : 1,
 //		OS.XmNmarginWidth, 3,
@@ -835,12 +837,6 @@ public int getTopIndex () {
 public int getTopPixel () {
 	checkWidget();
 	return getTopIndex () * getLineHeight ();
-}
-boolean getWrap () {
-	checkWidget();
-	int [] argList = {OS.XmNwordWrap, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1] != 0;
 }
 boolean hasIMSupport() {
 	return true;
@@ -1400,11 +1396,6 @@ public void setTopIndex (int index) {
 	int [] argList2 = {OS.XmNvalue, 0};
 	OS.XtGetValues (argList1 [1], argList2, argList2.length / 2);
 	OS.XmTextScroll (handle, index - argList2 [1]);
-}
-void setWrap (boolean wrap) {
-	checkWidget();
-	int [] argList = {OS.XmNwordWrap, wrap ? 1 : 0};
-	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
  * Shows the selection.
