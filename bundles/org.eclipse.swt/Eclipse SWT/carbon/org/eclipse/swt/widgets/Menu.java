@@ -272,6 +272,7 @@ int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	closed = false;
 	sendEvent (SWT.Show);
+	modified = false;
 	return OS.eventNotHandledErr;
 }
 
