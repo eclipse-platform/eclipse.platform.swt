@@ -199,7 +199,7 @@ public int getSelection () {
 	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int minimum = argList [1], sliderSize = argList [3];
-	return minimum + (foreground == -1 ? 0 : sliderSize);
+	return minimum + (foreground != -1 ? 0 : sliderSize);
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
