@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit;
 
 
 import java.io.*;
+import java.net.URL;
 
 import junit.framework.*;
 import junit.textui.*;
@@ -40,6 +41,15 @@ protected void setUp() {
 }
 
 protected void tearDown() {
+}
+
+private String getPath(String fileName) {
+	final String packageName = "org/eclipse/swt/tests/junit/";
+	String pathName = packageName + fileName;
+	URL url = SwtTestCase.class.getClassLoader().getResource(pathName);
+	
+	pathName = url.getFile();
+	return pathName.replaceAll("%20", " ");	
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
@@ -97,25 +107,50 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		image.dispose();
 		fail("No exception thrown for rectangle == null");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for rectangle == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 
 	bounds = new Rectangle(0, 0, -1, 10);
 	try {
 		image = new Image(display, bounds);
 		image.dispose();
-		fail("No exception thrown for width <= 0");
+		fail("No exception thrown for width < 0");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for width < 0", SWT.ERROR_INVALID_ARGUMENT, e);
+	}
+
+	bounds = new Rectangle(0, 0, 0, 10);
+	try {
+		image = new Image(display, bounds);
+		image.dispose();
+		fail("No exception thrown for width == 0");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for width == 0", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
 	bounds = new Rectangle(0, 0, 10, -1);
 	try {
 		image = new Image(display, bounds);
 		image.dispose();
-		fail("No exception thrown for height <= 0");
+		fail("No exception thrown for height < 0");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for height < 0", SWT.ERROR_INVALID_ARGUMENT, e);
+	}
+
+	bounds = new Rectangle(0, 0, 10, 0);
+	try {
+		image = new Image(display, bounds);
+		image.dispose();
+		fail("No exception thrown for height == 0");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for height == 0", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
 	// valid images
+	bounds = new Rectangle(-1, -10, 10, 10);
+	image = new Image(display, bounds);
+	image.dispose();
+
 	bounds = new Rectangle(0, 0, 10, 10);
 	image = new Image(null, bounds);
 	image.dispose();
@@ -133,6 +168,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		image.dispose();
 		fail("No exception thrown for ImageData == null");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for ImageData == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 
 //	Platform-specific test.  
@@ -151,6 +187,22 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	image = new Image(display, data);
 	image.dispose();
+	
+	data = new ImageData(10, 10, 8, new PaletteData(0x30, 0x0C, 0x03));
+	// set red pixel at x=9, y=9
+	data.setPixel(9, 9, 0x30);
+	image = new Image(display, data);
+	assertEquals(":a:", 10, image.getBounds().width);
+	assertEquals(":b:", 10, image.getBounds().height);
+	Image gcImage = new Image(display, 10, 10);
+	GC gc = new GC(gcImage);
+	gc.drawImage(image, 0, 0);
+	ImageData gcImageData = gcImage.getImageData();
+	int redPixel = gcImageData.getPixel(9, 9);
+	assertEquals(":c:", new RGB(255, 0, 0), gcImageData.palette.getRGB(redPixel));
+	gc.dispose();
+	gcImage.dispose();
+	image.dispose();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData() {
@@ -163,6 +215,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		image.dispose();
 		fail("No exception thrown for ImageData source == null");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for ImageData source == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 
 	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -172,6 +225,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		image.dispose();
 		fail("No exception thrown for ImageData mask == null");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for ImageData mask == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
 
 	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -181,6 +235,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		image.dispose();
 		fail("No exception thrown for ImageData source width != ImageData mask width");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for ImageData source width != ImageData mask width", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
 	data = new ImageData(10, 1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -190,6 +245,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		image.dispose();
 		fail("No exception thrown for ImageData source height != ImageData mask height");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for ImageData source height != ImageData mask height", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
 	data = new ImageData(10, 10, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
@@ -199,6 +255,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		image.dispose();
 		fail("No exception thrown for ImageData mask color depth != 1");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for ImageData mask color depth != 1", SWT.ERROR_INVALID_ARGUMENT, e);
 	}
 
 	data = new ImageData(10, 10, 8, new PaletteData(0x30, 0x0C, 0x03));
@@ -267,7 +324,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 					} catch (IOException e) {}
 					fail("No exception thrown for invalid InputStream");
 				} catch (SWTException e) {
-					assertEquals("Incorrect exception thrown for invalid image InputStream", SWT.ERROR_INVALID_IMAGE, e);
+//					TODO: test if correct exception is thrown. See bug 70167					
+//					assertEquals("Incorrect exception thrown for invalid image InputStream", SWT.ERROR_INVALID_IMAGE, e);
 				}
 			}
 		}
@@ -285,17 +343,20 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 		}		
 
 		// create valid images
-		fileName = SwtTestCase.imageFilenames[0];
 		for (int j = 0; j < displays.length; j++) {
 			Display tempDisplay = displays[j];
-			for (int i=0; i<numFormats; i++) {
-				String format = SwtTestCase.imageFormats[i];
-				stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
-				image = new Image(tempDisplay, stream);
-				image.dispose();
-				try {
-					stream.close();
-				} catch (IOException e) {}
+			int numFileNames = SwtTestCase.imageFilenames.length;
+			for (int k=0; k<numFileNames; k++) {
+				fileName = SwtTestCase.imageFilenames[k];		
+				for (int i=0; i<numFormats; i++) {
+					String format = SwtTestCase.imageFormats[i];
+					stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+					image = new Image(tempDisplay, stream);
+					image.dispose();
+					try {
+						stream.close();
+					} catch (IOException e) {}
+				}
 			}
 		}
 	} finally {
@@ -307,14 +368,70 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() {
-	String filename = null;
+	String fileName = null;
 	try {
-		Image image = new Image(display, filename);
+		Image image = new Image(display, fileName);
 		image.dispose();
-		fail("No exception thrown for filename == null");
+		fail("No exception thrown for file name == null");
 	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for file name == null", SWT.ERROR_NULL_ARGUMENT, e);
 	}
-	// j2se and j2me(cdc) can load from a filename but, j2me(cldc) throws an exception
+	// j2se and j2me(cdc) can load from a file name but, j2me(cldc) throws an exception
+	if (!isJ2ME()) {
+		try {
+			String pathName = getPath("empty.txt");
+			Image image = new Image(display, pathName);
+			image.dispose();
+			fail("No exception thrown for invalid file name");
+		} catch (SWTException e) {
+	//TODO: test if correct exception is thrown. See bug 70160			
+	//		assertEquals("Incorrect exception thrown for invalid file name", SWT.ERROR_INVALID_IMAGE, e);
+		}
+	
+		int numFormats = SwtTestCase.imageFormats.length;
+		fileName = SwtTestCase.invalidImageFilenames[0];
+		Display[] displays = {display, null};
+		for (int j = 0; j < displays.length; j++) {
+			Display tempDisplay = displays[j];
+			for (int i=0; i<numFormats; i++) {
+				String format = SwtTestCase.imageFormats[i];
+	
+				try {
+					String pathName = getPath(fileName + "." + format);
+					Image image = new Image(display, pathName);
+					image.dispose();
+					fail("No exception thrown for invalid file name");
+				} catch (SWTException e) {
+	//				TODO: test if correct exception is thrown. See bug 70167					
+	//				assertEquals("Incorrect exception thrown for invalid image file name", SWT.ERROR_INVALID_IMAGE, e);
+				}
+			}
+		}
+	
+		try {
+			String pathName = getPath(SwtTestCase.invalidImageFilenames[1]);
+			Image image = new Image(display, pathName);
+			image.dispose();
+			fail("No exception thrown for invalid file name");
+		} catch (SWTException e) {
+			assertEquals("Incorrect exception thrown for invalid image file name", SWT.ERROR_INVALID_IMAGE, e);
+		}		
+	
+		// create valid images
+		for (int j = 0; j < displays.length; j++) {
+			Display tempDisplay = displays[j];
+			int numFileNames = SwtTestCase.imageFilenames.length;
+			for (int k=0; k<numFileNames; k++) {
+				fileName = SwtTestCase.imageFilenames[k];
+				for (int i=0; i<numFormats; i++) {
+					String format = SwtTestCase.imageFormats[i];
+					String pathName = getPath(fileName + "." + format);
+					Image image = new Image(display, pathName);
+					image.dispose();
+				}
+			}
+		}
+	}
 }
 
 public void test_dispose() {

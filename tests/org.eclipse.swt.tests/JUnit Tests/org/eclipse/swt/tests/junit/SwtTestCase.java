@@ -11,9 +11,13 @@
 package org.eclipse.swt.tests.junit;
 
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import junit.framework.*;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.Compatibility;
 
 public class SwtTestCase extends TestCase {
 	/**
@@ -179,6 +183,15 @@ static private void failNotEquals(String message, Object expected, Object actual
 	if (message != null)
 		formatted= message+" ";
 	fail(formatted+"expected:<"+expected+"> but was:<"+actual+">");
+}
+protected boolean isJ2ME() {
+	try {
+		Compatibility.newFileInputStream("");
+	} catch (FileNotFoundException e) {
+		return false;
+	} catch (IOException e) {
+	}
+	return true;
 }
 protected boolean isReparentablePlatform() {
 	String platform = SWT.getPlatform();
