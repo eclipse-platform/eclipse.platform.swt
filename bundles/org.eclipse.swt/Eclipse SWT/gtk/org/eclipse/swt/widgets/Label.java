@@ -270,7 +270,6 @@ public String getText () {
 }
 
 void hookEvents () {
-	//TO DO - get rid of enter/exit for mouse crossing border
 	super.hookEvents();
 	if (labelHandle != 0) {
 		Display display = getDisplay ();
