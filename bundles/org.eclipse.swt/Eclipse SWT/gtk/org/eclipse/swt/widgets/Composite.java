@@ -224,6 +224,19 @@ void createScrolledHandle (int parentHandle) {
 	}
 }
 
+void enableWidget (boolean enabled) {
+	if (scrolledHandle != 0) {
+		if (horizontalBar != null) {
+			int barHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (scrolledHandle);
+			OS.gtk_widget_set_sensitive (barHandle, enabled);
+		}
+		if (verticalBar != null) {
+			int barHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
+			OS.gtk_widget_set_sensitive (barHandle, enabled);
+		}
+	}
+}
+
 public int getBorderWidth () {
 	checkWidget();
 	int topHandle = topHandle ();

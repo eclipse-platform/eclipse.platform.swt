@@ -1084,6 +1084,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1drawable_1get_1
 }
 #endif
 
+#ifndef NO_gdk_1event_1copy
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1copy
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gdk_1event_1copy\n")
+
+	return (jint)gdk_event_copy(arg0);
+}
+#endif
+
 #ifndef NO_gdk_1event_1free
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1free
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1146,6 +1156,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1get_1tim
 	DEBUG_CALL("gdk_1event_1get_1time\n")
 
 	return (jint)gdk_event_get_time((GdkEvent *)arg0);
+}
+#endif
+
+#ifndef NO_gdk_1event_1handler_1set
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1handler_1set
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("gdk_1event_1handler_1set\n")
+
+	gdk_event_handler_set(arg0, arg1, arg2);
 }
 #endif
 
@@ -1857,6 +1877,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1or
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1window_1get_1parent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1parent
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gdk_1window_1get_1parent\n")
+
+	return (GdkWindow *)gdk_window_get_parent((GdkWindow *)arg0);
 }
 #endif
 
@@ -3460,6 +3490,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1main
 	DEBUG_CALL("gtk_1main\n")
 
 	gtk_main();
+}
+#endif
+
+#ifndef NO_gtk_1main_1do_1event
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1main_1do_1event
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1main_1do_1event\n")
+
+	gtk_main_do_event(arg0);
 }
 #endif
 

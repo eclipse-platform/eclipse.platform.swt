@@ -89,6 +89,7 @@ public class Decorations extends Canvas {
 	boolean minimized, maximized;
 	Menu menuBar;
 	Menu [] menus;
+	Control savedFocus;
 	Button defaultButton, saveDefault;
 	int accelGroup;	
 	
@@ -348,6 +349,23 @@ void releaseWidget () {
 	image = null;
 }
 
+boolean restoreFocus () {
+	if (savedFocus != null && savedFocus.isDisposed ()) savedFocus = null;
+	boolean restored = savedFocus != null && savedFocus.setFocus ();
+	savedFocus = null;
+	/*
+	* This code is intentionally commented.  When no widget
+	* has been given focus, some platforms give focus to the
+	* default button.  Motif doesn't do this.
+	*/
+//	if (restored) return true;
+//	if (defaultButton != null && !defaultButton.isDisposed ()) {
+//		if (defaultButton.setFocus ()) return true;
+//	}
+//	return false;
+	return restored;
+}
+
 /**
  * If the argument is not null, sets the receiver's default
  * button to the argument, and if the argument is null, sets
@@ -487,6 +505,11 @@ public void setMenuBar (Menu menu) {
 public void setMinimized (boolean minimized) {
 	checkWidget();
 	this.minimized = minimized;
+}
+
+void setSavedFocus (Control control) {
+	if (this == control) return;
+	savedFocus = control;
 }
 
 /**

@@ -91,7 +91,8 @@ public class Display extends Device {
 
 	/* Events Dispatching and Callback */
 	Event [] eventQueue;
-	int windowProc2, windowProc3, windowProc4, windowProc5;
+	Callback eventCallback;
+	int eventProc, windowProc2, windowProc3, windowProc4, windowProc5;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT";
@@ -455,6 +456,12 @@ synchronized void createDisplay (DeviceData data) {
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
 	OS.gdk_set_program_class (buffer);
+	
+	/* Initialize the event callback */
+	eventCallback = new Callback (this, "eventProc", 2);
+	eventProc = eventCallback.getAddress ();
+	if (eventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	OS.gdk_event_handler_set (eventProc, 0, 0);
 }
 
 synchronized void deregister () {
@@ -522,6 +529,54 @@ public void disposeExec (Runnable runnable) {
  */
 void error (int code) {
 	SWT.error (code);
+}
+
+int eventProc (int event, int data) {
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	switch (gdkEvent.type) {
+		case OS.GDK_BUTTON_PRESS:
+		case OS.GDK_2BUTTON_PRESS: 
+		case OS.GDK_BUTTON_RELEASE: 
+		case OS.GDK_MOTION_NOTIFY:  {
+			Control control = null;
+			boolean forward = false;
+			int [] user_data = new int [1];
+			int window = gdkEvent.window;
+			do {
+				OS.gdk_window_get_user_data (window, user_data);
+				int handle = user_data [0];
+				if (handle != 0) {
+					Widget widget = WidgetTable.get (handle);
+					if (widget != null && widget instanceof Control) {
+						control = (Control) widget;
+						if (control.isEnabled ()) break;
+						forward = true;
+					}
+				}
+			} while ((window = OS.gdk_window_get_parent (window)) != 0);
+			if (window != 0 && forward && control != null) {
+				int oldWindow = gdkEvent.window;
+				double oldX = gdkEvent.x, oldY = gdkEvent.y;
+				int eventHandle = control.eventHandle ();
+				gdkEvent.window = OS.GTK_WIDGET_WINDOW (eventHandle);
+				int [] origin_x = new int [1], origin_y = new int [1];
+				OS.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);
+				gdkEvent.x = gdkEvent.x_root - origin_x [0];
+				gdkEvent.y = gdkEvent.y_root - origin_y [0];
+				OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
+				int copyEvent = OS.gdk_event_copy (event);
+				OS.gtk_main_do_event (copyEvent);
+				gdkEvent.window = oldWindow;
+				gdkEvent.x = oldX;  gdkEvent.y = oldY;
+				OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
+				OS.gdk_event_free (copyEvent);
+				return 0;
+			}
+		}
+	}
+	OS.gtk_main_do_event (event);
+	return 0;
 }
 
 /**
@@ -607,7 +662,7 @@ public Control getCursorControl () {
 	checkDevice();
 	int[] x = new int[1], y = new int[1];
 	int window = OS.gdk_window_at_pointer (x,y);
-	if (window ==0) return null;
+	if (window == 0) return null;
 	int [] user_data = new int [1];
 	OS.gdk_window_get_user_data (window, user_data);
 	int handle = user_data [0];
@@ -777,9 +832,19 @@ public int getDoubleClickTime () {
  */
 public Control getFocusControl () {
 	checkDevice ();
-	Shell active = getActiveShell();
-	if (active==null) return null;
-	return active.getFocusControl();
+	Shell shell = getActiveShell ();
+	if (shell == null) return null;
+	int shellHandle = shell.shellHandle;
+	int handle = OS.gtk_window_get_focus (shellHandle);
+	if (handle == 0) return null;
+	do {
+		Widget widget = WidgetTable.get (handle);
+		if (widget != null && widget instanceof Control) {
+			Control window = (Control) widget;
+			if (window.getEnabled ()) return window;
+		}
+	} while ((handle = OS.gtk_widget_get_parent (handle)) != 0);
+	return null;
 }
 
 public int getDepth () {
@@ -1345,6 +1410,10 @@ void releaseDisplay () {
 	COLOR_WIDGET_HIGHLIGHT_SHADOW = COLOR_WIDGET_BACKGROUND = COLOR_WIDGET_BORDER =
 	COLOR_LIST_FOREGROUND = COLOR_LIST_BACKGROUND = COLOR_LIST_SELECTION = COLOR_LIST_SELECTION_TEXT =
 	COLOR_INFO_BACKGROUND = null;
+	
+	/* Dispose the event callback */
+	OS.gdk_event_handler_set (0, 0, 0);
+	eventCallback.dispose ();  eventCallback = null;
 }
 
 /**
@@ -1482,7 +1551,8 @@ public void setCursorLocation (int x, int y) {
  */
 public void setCursorLocation (Point point) {
 	checkDevice ();
-	/* This is not supported on GTK */
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setCursorLocation (point.x, point.y);
 }
 
 /**

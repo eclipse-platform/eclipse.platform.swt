@@ -481,6 +481,10 @@ void destroyItem (TableItem item) {
 	items [itemCount] = null;
 }
 
+void enableWidget (boolean enabled) {
+	OS.gtk_widget_set_sensitive (scrolledHandle, enabled);
+}
+
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }

@@ -97,8 +97,21 @@ void deregister () {
 	if (imHandle != 0) WidgetTable.remove (imHandle);
 }
 
+void enableWidget (boolean enabled) {
+	int topHandle = topHandle ();
+	OS.gtk_widget_set_sensitive (topHandle, enabled);
+}
+
 int eventHandle () {
 	return handle;
+}
+
+void fixFocus () {
+	Shell shell = getShell ();
+	Control control = this;
+	while ((control = control.parent) != null) {
+		if (control.setFocus () || control == shell) return;
+	}
 }
 
 int fontHandle () {
@@ -1233,6 +1246,8 @@ public void removeTraverseListener(TraverseListener listener) {
 public boolean forceFocus () {
 	checkWidget();
 	Shell shell = getShell ();
+	shell.setSavedFocus (this);
+	if (!isEnabled () || !isVisible ()) return false;
 	shell.bringToTop (false);
 	OS.gtk_widget_grab_focus (handle);
 	return OS.gtk_widget_is_focus (handle);
@@ -1327,8 +1342,7 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	int topHandle = topHandle ();
-	return OS.GTK_WIDGET_SENSITIVE (topHandle);
+	return (state & DISABLED) == 0;
 }
 
 /**
@@ -1906,7 +1920,16 @@ boolean isTabItem () {
  */
 public boolean isEnabled () {
 	checkWidget ();
-	return OS.GTK_WIDGET_IS_SENSITIVE (handle);
+	return getEnabled () && parent.isEnabled ();
+}
+
+boolean isFocusAncestor () {
+	Display display = getDisplay ();
+	Control control = display.getFocusControl ();
+	while (control != null && control != this) {
+		control = control.parent;
+	}
+	return control == this;
 }
 
 /**
@@ -2166,6 +2189,7 @@ public void setCursor (Cursor cursor) {
 		OS.gdk_window_set_cursor (window,hCursor);
 	}
 }
+
 /**
  * Enables the receiver if the argument is <code>true</code>,
  * and disables it otherwise. A disabled control is typically
@@ -2181,18 +2205,17 @@ public void setCursor (Cursor cursor) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	int topHandle = topHandle ();
-	OS.gtk_widget_set_sensitive (topHandle, enabled);
-	/*
-	* This code is intentionally commented
-	*/
-//	OS.gtk_widget_set_state (topHandle, enabled ? OS.GTK_STATE_NORMAL : OS.GTK_STATE_INSENSITIVE);
-//	if (enabled) {
-//		OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_SENSITIVE);
-//	} else {
-//		OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_SENSITIVE);
-//	}
+	if (enabled) {
+		state &= ~DISABLED;
+	} else {
+		state |= DISABLED;
+	}
+	boolean fixFocus = false;
+	if (!enabled) fixFocus = isFocusAncestor ();
+	enableWidget (enabled);
+	if (fixFocus) fixFocus ();
 }
+
 /**
  * Causes the receiver to have the <em>keyboard focus</em>, 
  * such that all keyboard events will be delivered to it.

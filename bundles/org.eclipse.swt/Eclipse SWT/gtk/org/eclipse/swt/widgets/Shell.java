@@ -507,6 +507,11 @@ void hookEvents () {
 	OS.g_signal_connect (shellHandle, OS.event_after, windowProc3, EVENT_AFTER);
 }
 
+public boolean isEnabled () {
+	checkWidget ();
+	return getEnabled ();
+}
+
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
@@ -540,26 +545,6 @@ public Point getSize () {
 public Display getDisplay () {
 	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return display;
-}
-
-/*
- * Return the control inside this shell that has the focus,
- * if there is one.  Return <code>null</code> if there is no
- * such control - e.g., this shell is not active, or it is active
- * but the user clicked in a no-entry widget (like Label).
- */
-Control getFocusControl() {
-	checkWidget();
-	int h = OS.gtk_window_get_focus(shellHandle);
-	if (h==0) return null;
-	do {
-		Widget widget = WidgetTable.get (h);
-		if (widget != null && widget instanceof Control) {
-			Control window = (Control) widget;
-			if (window.getEnabled ()) return window;
-		}
-	} while ((h = OS.gtk_widget_get_parent(h)) != 0);
-	return null;
 }
 
 /**
@@ -702,8 +687,10 @@ public void open () {
 	checkWidget ();
 	setVisible (true);
 	bringToTop (false);
-	int focusHandle = OS.gtk_window_get_focus (shellHandle);
-	if (focusHandle == 0 || focusHandle == handle) traverseGroup (true);
+	if (!restoreFocus ()) {
+		int focusHandle = OS.gtk_window_get_focus (shellHandle);
+		if (focusHandle == 0 || focusHandle == handle) traverseGroup (true);
+	}
 }
 
 /**
@@ -929,7 +916,6 @@ public void setText (String string) {
 	for (int i=length; i<chars.length; i++)  chars [i] = ' ';
 	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
 	OS.gtk_window_set_title (shellHandle, buffer);
-	
 }
 
 public void setVisible (boolean visible) {

@@ -710,7 +710,11 @@ public void setDefaultItem (MenuItem item) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	OS.gtk_widget_set_sensitive (handle, enabled);
+	if (enabled) {
+		OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_SENSITIVE);
+	} else {
+		OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_SENSITIVE);
+	}
 }
 
 /**

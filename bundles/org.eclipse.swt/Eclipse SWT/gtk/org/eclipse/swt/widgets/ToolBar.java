@@ -108,6 +108,10 @@ void createHandle (int index) {
 	}
 }
 
+void enableWidget (boolean enabled) {
+	/* Do nothing - Tool bar items are individually enabled by the application */
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (layout != null) super.computeSize(wHint, hHint, changed);

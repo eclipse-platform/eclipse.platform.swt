@@ -50,7 +50,7 @@ import org.eclipse.swt.events.*;
  * @see List
  */
 public class Combo extends Composite {
-	int entryHandle, listHandle;
+	int arrowHandle, entryHandle, listHandle;
 	String [] items = new String [0];
 	/**
 	 * the operating system limit for the number of characters
@@ -328,6 +328,28 @@ void createHandle (int index) {
 	OS.memmove (combo, handle);
 	entryHandle = combo.entry;
 	listHandle = combo.list;
+	
+	/*
+	* Feature in GTK.  There is no API to query the arrow
+	* handle from a combo box although it is possible to
+	* get the list and text field.  The arrow handle is needed
+	* to hook events.  The fix is to find the first child that is
+	* not the entry or list and assume this is the arrow handle.
+	*/
+	int list = OS.gtk_container_get_children (handle);
+	if (list != 0) {
+		int i = 0, count = OS.g_list_length (list);
+		while (i<count) {
+			int childHandle = OS.g_list_nth_data (list, i);
+			if (childHandle != entryHandle && childHandle != listHandle) {
+				arrowHandle = childHandle;
+				break;
+			}
+			i++;
+		}
+		OS.g_list_free (list);
+	}
+	
 	boolean editable = (style & SWT.READ_ONLY) == 0;
 	OS.gtk_editable_set_editable (entryHandle, editable);
 	OS.gtk_entry_set_activates_default (entryHandle, true);
@@ -369,6 +391,7 @@ GdkColor defaultForeground () {
 
 void deregister () {
 	super.deregister ();
+	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
 	WidgetTable.remove (entryHandle);
 	WidgetTable.remove (listHandle);
 }
@@ -404,27 +427,28 @@ void hookEvents () {
 		OS.GDK_POINTER_MOTION_MASK | 
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK;
-	//FIXME - missing button handle
-	int [] handles = new int [] {entryHandle, listHandle, /*combo.button*/};
+	int [] handles = new int [] {arrowHandle, entryHandle, listHandle};
 	for (int i=0; i<handles.length; i++) {
 		int handle = handles [i];
-		OS.gtk_widget_add_events (handle, mask);
-		OS.g_signal_connect (handle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
-		OS.g_signal_connect (handle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
-		OS.g_signal_connect (handle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
-		OS.g_signal_connect (handle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
-		OS.g_signal_connect (handle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
-	
-		/*
-		* Feature in GTK.  Events such as mouse move are propagate up
-		* the widget hierarchy and are seen by the parent.  This is the
-		* correct GTK behavior but not correct for SWT.  The fix is to
-		* hook a signal after and stop the propagation using a negative
-		* event number to distinguish this case.
-		*/
-		OS.g_signal_connect_after (handle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
-		OS.g_signal_connect_after (handle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
-		OS.g_signal_connect_after (handle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
+		if (handle != 0) {
+			OS.gtk_widget_add_events (handle, mask);
+			OS.g_signal_connect (handle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
+			OS.g_signal_connect (handle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
+			OS.g_signal_connect (handle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
+			OS.g_signal_connect (handle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
+			OS.g_signal_connect (handle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
+		
+			/*
+			* Feature in GTK.  Events such as mouse move are propagate up
+			* the widget hierarchy and are seen by the parent.  This is the
+			* correct GTK behavior but not correct for SWT.  The fix is to
+			* hook a signal after and stop the propagation using a negative
+			* event number to distinguish this case.
+			*/
+			OS.g_signal_connect_after (handle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
+			OS.g_signal_connect_after (handle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
+			OS.g_signal_connect_after (handle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
+		}
 	}
 }
 
@@ -462,6 +486,10 @@ public void deselect (int index) {
 public void deselectAll () {
 	checkWidget();
 	setItems (items, true, false);
+}
+
+void enableWidget (boolean enabled) {
+	OS.gtk_widget_set_sensitive (handle, enabled);
 }
 
 GdkColor getBackgroundColor () {
@@ -756,6 +784,7 @@ int parentingHandle() {
 
 void register () {
 	super.register ();
+	if (arrowHandle != 0) WidgetTable.put (arrowHandle, this);
 	WidgetTable.put (entryHandle, this);
 	WidgetTable.put (listHandle, this);
 }

@@ -239,7 +239,11 @@ void createHandle (int index) {
 		int label = OS.gtk_bin_get_child (handle);
 		OS.gtk_accel_label_set_accel_widget (label, 0);
 	}
-	OS.gtk_menu_shell_insert (parent.handle, handle, index);
+	int parentHandle = parent.handle;
+	boolean enabled = OS.GTK_WIDGET_SENSITIVE (parentHandle);     
+	if (!enabled) OS.GTK_WIDGET_SET_FLAGS (parentHandle, OS.GTK_SENSITIVE);
+	OS.gtk_menu_shell_insert (parentHandle, handle, index);
+	if (!enabled) OS.GTK_WIDGET_UNSET_FLAGS (parentHandle, OS.GTK_SENSITIVE);
 	OS.gtk_widget_show (handle);
 }
 

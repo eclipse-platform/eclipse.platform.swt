@@ -179,6 +179,10 @@ void deregister () {
 	WidgetTable.remove (labelHandle);
 }
 
+void enableWidget (boolean enabled) {
+	OS.gtk_widget_set_sensitive (labelHandle, enabled);
+}
+
 int eventHandle () {
 	return fixedHandle;
 }
