@@ -80,8 +80,8 @@ public Tree (Composite parent, int style) {
 
 	ScrollBar vBar = getVerticalBar ();
 	ScrollBar hBar = getHorizontalBar ();
-	vBar.setMaximum (1);
-	hBar.setMaximum (1);
+	vBar.setValues (0, 0, 1, 1, 1, 1);
+	hBar.setValues (0, 0, 1, 1, 1, 1);
 	vBar.setVisible (false);
 	hBar.setVisible (false);
 	vBar.addListener (SWT.Selection, listener);

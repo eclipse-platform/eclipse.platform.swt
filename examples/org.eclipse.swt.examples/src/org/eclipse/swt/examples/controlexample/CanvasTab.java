@@ -142,7 +142,6 @@ class CanvasTab extends Tab {
 				}
 			});
 		}
-		resizeScrollBars ();
 	}
 	
 	/**
