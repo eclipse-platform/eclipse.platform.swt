@@ -138,47 +138,6 @@ private static int checkStyle (int style) {
 	int mask = SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER;
 	return style & mask;
 }
-/**
- * Get the content that is being scrolled.
- */
-public Control getContent() {
-	return content;
-}
-private void hScroll() {
-	if (content == null) return;
-	Point location = content.getLocation ();
-	ScrollBar hBar = getHorizontalBar ();
-	int hSelection = hBar.getSelection ();
-	content.setLocation (-hSelection, location.y);
-}
-private boolean needHScroll(Rectangle contentRect, boolean vVisible) {
-	ScrollBar hBar = getHorizontalBar();
-	if (hBar == null) return false;
-	
-	Rectangle hostRect = getBounds();
-	int border = getBorderWidth();
-	hostRect.width -= 2*border;
-	ScrollBar vBar = getVerticalBar();
-	if (vVisible && vBar != null) hostRect.width -= vBar.getSize().x;
-	
-	if (!expandHorizontal && contentRect.width > hostRect.width) return true;
-	if (expandHorizontal && minWidth > hostRect.width) return true;
-	return false;
-}
-private boolean needVScroll(Rectangle contentRect, boolean hVisible) {
-	ScrollBar vBar = getVerticalBar();
-	if (vBar == null) return false;
-	
-	Rectangle hostRect = getBounds();
-	int border = getBorderWidth();
-	hostRect.height -= 2*border;
-	ScrollBar hBar = getHorizontalBar();
-	if (hVisible && hBar != null) hostRect.height -= hBar.getSize().y;
-	
-	if (!expandHorizontal && contentRect.height > hostRect.height) return true;
-	if (expandHorizontal && minHeight > hostRect.height) return true;
-	return false;
-}
 
 /**
  * Returns the Always Show Scrollbars flag.  True if the scrollbars are 
@@ -194,25 +153,44 @@ public boolean getAlwaysShowScrollBars() {
 }
 
 /**
- * Set the Always Show Scrollbars flag.  True if the scrollbars are 
- * always shown even if they are not required.  False if the scrollbars are only 
- * visible when some part of the composite needs to be scrolled to be seen.
- * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the 
- * horizontal and vertical directions.
+ * Get the content that is being scrolled.
  */
-public void setAlwaysShowScrollBars(boolean show) {
-	alwaysShowScroll = show;
-	resize();
+public Control getContent() {
+	return content;
 }
 
-private void resize() {
-	if (content == null || inResize) return;
-	inResize = true;
+private void hScroll() {
+	if (content == null) return;
+	Point location = content.getLocation ();
+	ScrollBar hBar = getHorizontalBar ();
+	int hSelection = hBar.getSelection ();
+	content.setLocation (-hSelection, location.y);
+}
+
+private void init() {
+	ScrollBar vBar = getVerticalBar ();
+	if (vBar != null) {
+		vBar.setMaximum (0);
+		vBar.setThumb (0);
+		vBar.setSelection(0);
+	}
+	ScrollBar hBar = getHorizontalBar ();
+	if (hBar != null) {
+		hBar.setMaximum (0);
+		hBar.setThumb (0);
+		hBar.setSelection(0);
+	}
+	if (content != null) {
+		content.setLocation(0, 0);
+	}
+	layout();
+}
+
+public void layout(boolean changed) {
+	if (content == null) return;
+	Rectangle contentRect = content.getBounds();
 	ScrollBar hBar = getHorizontalBar ();
 	ScrollBar vBar = getVerticalBar ();
-	Rectangle contentRect = content.getBounds();
-	contentRect.x = contentRect.y = 0;
-	
 	if (!alwaysShowScroll) {
 		boolean hVisible = needHScroll(contentRect, false);
 		boolean vVisible = needVScroll(contentRect, hVisible);
@@ -235,7 +213,10 @@ private void resize() {
 		int hPage = contentRect.width - hostRect.width;
 		int hSelection = hBar.getSelection ();
 		if (hSelection >= hPage) {
-			if (hPage <= 0) hSelection = 0;
+			if (hPage <= 0) {
+				hSelection = 0;
+				hBar.setSelection(0);
+			}
 			contentRect.x = -hSelection;
 		}
 	}
@@ -246,13 +227,69 @@ private void resize() {
 		int vPage = contentRect.height - hostRect.height;
 		int vSelection = vBar.getSelection ();
 		if (vSelection >= vPage) {
-			if (vPage <= 0) vSelection = 0;
+			if (vPage <= 0) {
+				vSelection = 0;
+				vBar.setSelection(0);
+			}
 			contentRect.y = -vSelection;
 		}
 	}
 	
 	content.setBounds (contentRect);
+}
+
+private boolean needHScroll(Rectangle contentRect, boolean vVisible) {
+	ScrollBar hBar = getHorizontalBar();
+	if (hBar == null) return false;
+	
+	Rectangle hostRect = getBounds();
+	int border = getBorderWidth();
+	hostRect.width -= 2*border;
+	ScrollBar vBar = getVerticalBar();
+	if (vVisible && vBar != null) hostRect.width -= vBar.getSize().x;
+	
+	if (!expandHorizontal && contentRect.width > hostRect.width) return true;
+	if (expandHorizontal && minWidth > hostRect.width) return true;
+	return false;
+}
+
+private boolean needVScroll(Rectangle contentRect, boolean hVisible) {
+	ScrollBar vBar = getVerticalBar();
+	if (vBar == null) return false;
+	
+	Rectangle hostRect = getBounds();
+	int border = getBorderWidth();
+	hostRect.height -= 2*border;
+	ScrollBar hBar = getHorizontalBar();
+	if (hVisible && hBar != null) hostRect.height -= hBar.getSize().y;
+	
+	if (!expandHorizontal && contentRect.height > hostRect.height) return true;
+	if (expandHorizontal && minHeight > hostRect.height) return true;
+	return false;
+}
+
+private void resize() {
+	if (inResize) return;
+	inResize = true;
+	layout();
 	inResize = false;
+}
+
+/**
+ * Set the Always Show Scrollbars flag.  True if the scrollbars are 
+ * always shown even if they are not required.  False if the scrollbars are only 
+ * visible when some part of the composite needs to be scrolled to be seen.
+ * The H_SCROLL and V_SCROLL style bits are also required to enable scrollbars in the 
+ * horizontal and vertical directions.
+ */
+public void setAlwaysShowScrollBars(boolean show) {
+	if (show == alwaysShowScroll) return;
+	alwaysShowScroll = show;
+	ScrollBar hBar = getHorizontalBar ();
+	if (hBar != null && alwaysShowScroll) hBar.setVisible(true);
+	ScrollBar vBar = getVerticalBar ();
+	if (vBar != null && alwaysShowScroll) vBar.setVisible(true);
+	init();
 }
 
 /**
@@ -261,13 +298,18 @@ private void resize() {
 public void setContent(Control content) {
 	if (this.content != null && !this.content.isDisposed()) {
 		this.content.removeListener(SWT.Resize, contentListener);
-		content.setBounds(new Rectangle(-200, -200, 0, 0));	
+		this.content.setBounds(new Rectangle(-200, -200, 0, 0));	
 	}
 	
 	this.content = content;
 	if (this.content != null) {
+		init();
 		this.content.addListener(SWT.Resize, contentListener);
-		resize();	
+	} else {
+		ScrollBar hBar = getHorizontalBar ();
+		if (hBar != null) hBar.setVisible(alwaysShowScroll);
+		ScrollBar vBar = getVerticalBar ();
+		if (vBar != null) vBar.setVisible(alwaysShowScroll);
 	}
 }
 /**
@@ -281,7 +323,7 @@ public void setContent(Control content) {
 public void setExpandHorizontal(boolean expand) {
 	if (expand == expandHorizontal) return;
 	expandHorizontal = expand;
-	resize();
+	init();
 }
 /**
  * Configure the ScrolledComposite to resize the content object to be as tall as the 
@@ -294,7 +336,7 @@ public void setExpandHorizontal(boolean expand) {
 public void setExpandVertical(boolean expand) {
 	if (expand == expandVertical) return;
 	expandVertical = expand;
-	resize();
+	init();
 }
 public void setLayout (Layout layout) {
 	// do not allow a layout to be set on this class because layout is being handled by the resize listener
@@ -308,7 +350,7 @@ public void setLayout (Layout layout) {
 public void setMinHeight(int height) {
 	if (height == minHeight) return;
 	minHeight = Math.max(0, height);
-	resize();
+	init();
 }
 /**
  * Specify the minimum width at which the ScrolledComposite will begin scrolling the
@@ -319,7 +361,7 @@ public void setMinHeight(int height) {
 public void setMinWidth(int width) {
 	if (width == minWidth) return;
 	minWidth = Math.max(0, width);
-	resize();
+	init();
 }
 
 private void vScroll() {
