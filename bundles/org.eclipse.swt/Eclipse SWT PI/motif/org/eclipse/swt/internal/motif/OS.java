@@ -649,7 +649,6 @@ public class OS {
 	public static final int XmNdropSiteActivity = malloc ("dropSiteActivity", 1);
 	public static final int XmNdropSiteOperations = malloc ("dropSiteOperations", 1);
 	public static final int XmNdropSiteType = malloc ("dropSiteType", 1);
-
 	public static final int XmNeditable = malloc ("editable", 1);
 	public static final int XmNenableThinThickness = malloc ("enableThinThickness", 1);
 	public static final int XmNframeChildType = malloc ("frameChildType", 1);
@@ -725,7 +724,6 @@ public class OS {
 	public static final int XmNdecrementCallback = malloc ("decrementCallback", 4);
 	public static final int XmNdefaultActionCallback = malloc ("defaultActionCallback", 4);
 	public static final int XmNdefaultButtonShadowThickness = malloc ("defaultButtonShadowThickness", 4);
-
 	public static final int XmNdialogTitle = malloc ("dialogTitle", 4);
 	public static final int XmNdirectory = malloc ("directory", 4);
 	public static final int XmNdirMask = malloc ("dirMask", 4);
