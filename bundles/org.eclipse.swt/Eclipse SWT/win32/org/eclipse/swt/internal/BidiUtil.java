@@ -13,10 +13,9 @@ import java.util.Hashtable;
  */
 public class BidiUtil {
 
-	// *** BUG need multiple oldProcs ***
 	// WM_INPUTLANGCHANGE constants
-	static int oldProc;
 	static Hashtable map = new Hashtable ();
+	static Hashtable oldProcMap = new Hashtable ();
 	static Callback callback = new Callback (BidiUtil.class, "windowProc", 4);
 
 	// Keyboard language ids
@@ -66,7 +65,8 @@ public class BidiUtil {
  */
 public static void addLanguageListener (int hwnd, Runnable runnable) {
 	map.put (new Integer (hwnd), runnable);
-	oldProc = OS.GetWindowLong (hwnd, OS.GWL_WNDPROC);
+	int oldProc = OS.GetWindowLong (hwnd, OS.GWL_WNDPROC);
+	oldProcMap.put (new Integer(hwnd), new Integer(oldProc));
 	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, callback.getAddress ());
 }
 /*
@@ -327,7 +327,8 @@ static int[] getKeyboardLanguageList() {
  */
 public static void removeLanguageListener (int hwnd) {
 	map.remove (new Integer (hwnd));
-	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, oldProc);
+	Integer proc = (Integer)oldProcMap.remove (new Integer (hwnd));
+	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, proc.intValue());
 }		
 /*
  * 
@@ -374,7 +375,8 @@ static int windowProc (int hwnd, int msg, int wParam, int lParam) {
 			if (runnable != null) runnable.run ();
 			break;
 		}
-	return OS.CallWindowProc (oldProc, hwnd, msg, wParam, lParam);
+	Integer oldProc = (Integer)oldProcMap.get(new Integer(hwnd));
+	return OS.CallWindowProc (oldProc.intValue(), hwnd, msg, wParam, lParam);
 }
 
 }
