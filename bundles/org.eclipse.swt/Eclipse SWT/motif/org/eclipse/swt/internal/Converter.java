@@ -46,7 +46,7 @@ public final class Converter {
 			CodePage = new String (buffer);
 			if (OS.IsSunOS) {
 				if (length > 3 && CodePage.indexOf ("ISO") == 0) {
-					CodePage = CodePage.substring (3, length - 3);
+					CodePage = CodePage.substring (3, length);
 				}
 			}
 		} else {
@@ -131,6 +131,7 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 				if (LastMBToWC == 0) {
 					LastMBToWCCodePage = cp;
 					LastMBToWC = OS.iconv_open (Unicode, getAsciiBytes (cp));
+					if (LastMBToWC == -1) LastMBToWC = 0;
 				}
 				int cd = LastMBToWC;
 				if (cd == 0) return EMPTY_CHAR_ARRAY;
@@ -229,6 +230,7 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 				if (LastWCToMB == 0) {
 					LastWCToMBCodePage = cp;
 					LastWCToMB = OS.iconv_open (getAsciiBytes (cp), Unicode);
+					if (LastWCToMB == -1) LastWCToMB = 0;
 				}
 				int cd = LastWCToMB;
 				if (cd == 0) return (terminate) ? NULL_BYTE_ARRAY : EMPTY_BYTE_ARRAY;
