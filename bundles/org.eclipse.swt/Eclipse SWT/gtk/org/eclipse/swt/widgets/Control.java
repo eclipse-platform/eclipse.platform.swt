@@ -2186,7 +2186,7 @@ boolean traverse (Event event) {
 		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
 		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
 		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
-		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (event.character);	
+		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (event);	
 		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
 		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
 	}
@@ -2209,7 +2209,13 @@ boolean traverseReturn () {
 boolean traversePage (boolean next) {
 	return false;
 }
-boolean traverseMnemonic (char key) {
+boolean traverseMnemonic (Event event) {
+	// This code is intentionally commented.
+	// TraverseMnemonic always originates from the OS and
+	// never through the API, and on the GTK platform, accels
+	// are hooked by the OS before we get the key event.
+	// int shellHandle = _getShell ().topHandle ();
+	// return OS.gtk_accel_groups_activate (shellHandle, keyCode, stateMask);
 	return true;
 }
 
