@@ -189,6 +189,7 @@ public ImageData[] load(String filename) {
  * @exception SWTException <ul>
  *    <li>ERROR_INVALID_IMAGE if the image data contains invalid data</li>
  *    <li>ERROR_IO if an IO error occurs while writing to the stream</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  */
 public void save(OutputStream stream, int format) {
