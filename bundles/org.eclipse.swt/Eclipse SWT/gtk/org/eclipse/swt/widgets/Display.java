@@ -92,8 +92,7 @@ public class Display extends Device {
 	/* Events Dispatching and Callback */
 	Event [] eventQueue;
 	int windowProc2, windowProc3, windowProc4, windowProc5, keyProc, selectionIterProc, toggleProc;
-	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5,
-	         keyCallback, selectionIterCallback, toggleCallback;
+	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, keyCallback, selectionIterCallback, toggleCallback;
 	EventTable eventTable;
 
 	/* Sync/Async Widget Communication */
@@ -148,6 +147,8 @@ public class Display extends Device {
 		{OS.GDK_Shift_R,	SWT.SHIFT},
 		{OS.GDK_Control_L,	SWT.CONTROL},
 		{OS.GDK_Control_R,	SWT.CONTROL},
+		{OS.GDK_Control_L,	SWT.COMMAND},
+		{OS.GDK_Control_R,	SWT.COMMAND},
 		
 		/* Non-Numeric Keypad Keys */
 		{OS.GDK_Up,			SWT.ARROW_UP},
@@ -1652,6 +1653,12 @@ int timerProc (int index, int id) {
 	return 0;
 }
 
+int toggleProc (int rendererHandle, int int0, int int1) {
+	Widget widget = WidgetTable.get (int1);
+	if (widget == null) return 0;
+	return widget.processToggle (int0, int1);
+}
+
 int caretProc (int clientData, int id) {
 	caretId = 0;
 	if (currentCaret == null) {
@@ -1664,6 +1671,12 @@ int caretProc (int clientData, int id) {
 		currentCaret = null;
 	}
 	return 0;
+}
+
+int selectionIterProc (int handle, int int0, int int1, int int2) {
+	Widget widget = WidgetTable.get (int2);
+	if (widget == null) return 0;
+	return widget.processSelectionIter (int0, int1, int2);
 }
 
 void sendEvent (int eventType, Event event) {
@@ -1779,18 +1792,6 @@ int windowTimerProc (int handle, int id) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
 	return widget.processTimer (id);
-}
-
-int selectionIterProc(int handle, int int0, int int1, int int2) {
-	Widget widget = WidgetTable.get (int2);
-	if (widget == null) return 0;
-	return widget.processSelectionIter(int0, int1, int2);
-}
-
-int toggleProc(int rendererHandle, int int0, int int1) {
-	Widget widget = WidgetTable.get (int1);
-	if (widget == null) return 0;
-	return widget.processToggle(int0, int1);
 }
 
 }

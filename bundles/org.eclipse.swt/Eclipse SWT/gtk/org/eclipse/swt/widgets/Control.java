@@ -2250,6 +2250,7 @@ void setInputState (Event event, int gdkEvent) {
 	if ((state [0] & OS.GDK_MOD1_MASK)    != 0) event.stateMask |= SWT.ALT;
 	if ((state [0] & OS.GDK_SHIFT_MASK)   != 0) event.stateMask |= SWT.SHIFT;
 	if ((state [0] & OS.GDK_CONTROL_MASK) != 0) event.stateMask |= SWT.CONTROL;
+	if ((state [0] & OS.GDK_CONTROL_MASK) != 0) event.stateMask |= SWT.COMMAND;
 	if ((state [0] & OS.GDK_BUTTON1_MASK) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((state [0] & OS.GDK_BUTTON2_MASK) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((state [0] & OS.GDK_BUTTON3_MASK) != 0) event.stateMask |= SWT.BUTTON3;
