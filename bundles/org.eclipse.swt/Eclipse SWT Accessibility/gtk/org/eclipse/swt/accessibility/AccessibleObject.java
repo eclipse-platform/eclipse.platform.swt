@@ -1410,7 +1410,7 @@ class AccessibleObject {
 			// remove old children that were not provided as children anymore
 			Enumeration ids = children.keys ();
 			while (ids.hasMoreElements ()) {
-				Integer id = (Integer)ids.nextElement ();
+				LONG id = (LONG)ids.nextElement ();
 				if (!idsToKeep.contains (id)) {
 					AccessibleObject object = (AccessibleObject) children.get (id);
 					removeChild (object, true);
