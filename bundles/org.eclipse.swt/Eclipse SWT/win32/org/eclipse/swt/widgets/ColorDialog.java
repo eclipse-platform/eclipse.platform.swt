@@ -155,7 +155,22 @@ public RGB open () {
 		int blue = (rgb.blue << 16) & 0xFF0000;
 		lpcc.rgbResult = red | green | blue;
 	}
+	
+	/* Make the parent shell be temporary modal */
+	Shell oldModal = null;
+	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+		oldModal = display.getModalDialogShell ();
+		display.setModalDialogShell (parent);
+	}
+	
+	/* Open the dialog */
 	boolean success = OS.ChooseColor (lpcc);
+	
+	/* Clear the temporary dialog modal parent */
+	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+		display.setModalDialogShell (oldModal);
+	}
+	
 	if (success) {
 		int red = lpcc.rgbResult & 0xFF;
 		int green = (lpcc.rgbResult >> 8) & 0xFF;

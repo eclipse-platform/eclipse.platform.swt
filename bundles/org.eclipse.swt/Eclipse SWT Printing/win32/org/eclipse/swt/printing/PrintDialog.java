@@ -228,7 +228,29 @@ public PrinterData open() {
 	pd.nMaxPage = -1;
 	pd.nFromPage = (short) Math.min (0xFFFF, Math.max (1, startPage));
 	pd.nToPage = (short) Math.min (0xFFFF, Math.max (1, endPage));
-	if (OS.PrintDlg(pd)) {		// success
+	
+	Display display = parent.getDisplay();
+	Shell [] shells = display.getShells();
+	if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+		for (int i=0; i<shells.length; i++) {
+			if (shells[i].isEnabled()) {
+				shells[i].setEnabled(false);
+			} else {
+				shells[i] = null;
+			}
+		}
+	}
+	PrinterData data = null;
+	boolean success = OS.PrintDlg(pd);
+	if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+		for (int i=0; i<shells.length; i++) {
+			if (shells[i] != null && !shells[i].isDisposed ()) {
+				shells[i].setEnabled (true);
+			}
+		}
+	}
+	
+	if (success) {
 		/* Get driver and device from the DEVNAMES struct */
 		int hMem = pd.hDevNames;
 		/* Ensure size is a multiple of 2 bytes on UNICODE platforms */
@@ -265,7 +287,7 @@ public PrinterData open() {
 		String output = buffer.toString(outputOffset, i);
 		
 		/* Create PrinterData object and set fields from PRINTDLG */
-		PrinterData data = new PrinterData(driver, device);
+		data = new PrinterData(driver, device);
 		if ((pd.Flags & OS.PD_PAGENUMS) != 0) {
 			data.scope = PrinterData.PAGE_RANGE;
 			data.startPage = pd.nFromPage & 0xFFFF;
@@ -290,8 +312,7 @@ public PrinterData open() {
 		printToFile = data.printToFile;
 		scope = data.scope;
 		startPage = data.startPage;
-		return data;
 	}
-	return null;
+	return data;
 }
 }

@@ -257,6 +257,7 @@ public class Display extends Device {
 	
 	/* Modality */
 	Shell [] modalShells;
+	Shell modalDialogShell;
 	static boolean TrimEnabled = false;
 
 	/* Private SWT Window Messages */
@@ -1247,7 +1248,6 @@ ImageList getToolDisabledImageList (Point size) {
 	return list;
 }
 
-
 int getLastEventTime () {
 	return OS.IsWinCE ? OS.GetTickCount () : OS.GetMessageTime ();
 }
@@ -1268,6 +1268,11 @@ Shell getModalShell () {
 		if (shell != null) return shell;
 	}
 	return null;
+}
+
+Shell getModalDialogShell () {
+	if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
+	return modalDialogShell;
 }
 
 /**
@@ -1892,11 +1897,20 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			* it should not be brought to the front.
 			*/
 			if (wParam != 0) {
-				Shell modal = getModalShell ();
+				if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
+				Shell modal = modalDialogShell != null ? modalDialogShell : getModalShell ();
 				if (modal != null) {
 					int hwndModal = modal.handle;
 					if (OS.IsWindowEnabled (hwndModal)) {
 						modal.bringToTop ();
+					}
+					int hwndPopup = OS.GetLastActivePopup (hwndModal);
+					if (hwndPopup != 0 && hwndPopup != modal.handle) {
+						if (getControl (hwndPopup) == null) {
+							if (OS.IsWindowEnabled (hwndPopup)) {
+								OS.SetActiveWindow (hwndPopup);
+							}
+						}
 					}
 				}
 			}
@@ -2079,7 +2093,7 @@ protected void release () {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed ())  shell.dispose ();
+		if (!shell.isDisposed ()) shell.dispose ();
 	}
 	while (readAndDispatch ()) {};
 	if (disposeList != null) {
@@ -2149,6 +2163,7 @@ void releaseDisplay () {
 	thread = null;
 	msg = null;
 	keyboard = null;
+	modalDialogShell = null;
 	modalShells = null;
 	data = null;
 	keys = null;
@@ -2564,6 +2579,13 @@ public void setData (Object data) {
  */
 public static void setAppName (String name) {
 	/* Do nothing */
+}
+
+void setModalDialogShell (Shell modalDailog) {
+	if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
+	this.modalDialogShell = modalDailog;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
 
 void setModalShell (Shell shell) {

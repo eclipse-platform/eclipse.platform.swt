@@ -175,8 +175,16 @@ public String open () {
 	/* Create the BrowseCallbackProc */
 	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
 	int address = callback.getAddress ();
+
+	/* Make the parent shell be temporary modal */
+	Shell oldModal = null;
+	Display display = null;
+	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+		display = parent.getDisplay ();
+		oldModal = display.getModalDialogShell ();
+		display.setModalDialogShell (parent);
+	}
 	
-	/* Open the dialog */
 	directoryPath = null;
 	BROWSEINFO lpbi = new BROWSEINFO ();
 	lpbi.hwndOwner = hwndOwner;
@@ -202,7 +210,13 @@ public String open () {
 	*/
 	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 	int lpItemIdList = OS.SHBrowseForFolder (lpbi);
-	OS.SetErrorMode( oldErrorMode);
+	OS.SetErrorMode(oldErrorMode);
+	
+	/* Clear the temporary dialog modal parent */
+	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+		display.setModalDialogShell (oldModal);
+	}
+	
 	boolean success = lpItemIdList != 0;
 	if (success) {
 		/* Use the character encoding for the default locale */

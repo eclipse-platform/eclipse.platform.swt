@@ -989,7 +989,7 @@ boolean hasCursor () {
 	if (!OS.GetClientRect (handle, rect)) return false;
 	if (OS.MapWindowPoints (handle, 0, rect, 2) == 0) return false;
 	POINT pt = new POINT ();
-	return (OS.GetCursorPos (pt) && OS.PtInRect (rect, pt));
+	return OS.GetCursorPos (pt) && OS.PtInRect (rect, pt);
 }
 
 boolean hasFocus () {
@@ -1079,6 +1079,9 @@ public void internal_dispose_GC (int hDC, GCData data) {
 }
 
 boolean isActive () {
+	if (display.getModalDialogShell () != null) {
+		return false;
+	}
 	Shell shell = null;
 	Shell [] modalShells = display.modalShells;
 	if (modalShells != null) {
@@ -4086,7 +4089,7 @@ LRESULT WM_RBUTTONUP (int wParam, int lParam) {
 }
 
 LRESULT WM_SETCURSOR (int wParam, int lParam) {
-	int hitTest = lParam & 0xFFFF;
+	int hitTest = (short) (lParam & 0xFFFF);
  	if (hitTest == OS.HTCLIENT) {
 		Control control = display.getControl (wParam);
 		if (control == null) return null;

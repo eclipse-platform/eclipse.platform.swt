@@ -168,12 +168,17 @@ public int open () {
 	* Feature in Windows.  In order for MB_TASKMODAL to work,
 	* the parent HWND of the MessageBox () call must be NULL.
 	* If the parent is not NULL, MB_TASKMODAL behaves the
-	* same as MB_APPLMODAL.  The fix is to force the parent
-	* to be NULL when this style is set.
+	* same as MB_APPLMODAL.  The fix to set the parent HWND
+	* anyway and not rely on MB_MODAL to work by making the
+	* parent be temporarily modal. 
 	*/
-	int hwndOwner = 0;
-	if (parent != null && (bits & OS.MB_TASKMODAL) == 0) {
-		hwndOwner = parent.handle;
+	int hwndOwner = parent != null ? parent.handle : 0;
+	Shell oldModal = null;
+	Display display = null;
+	if ((bits & OS.MB_TASKMODAL) != 0) {
+		display = parent.getDisplay ();
+		oldModal = display.getModalDialogShell ();
+		display.setModalDialogShell (parent);
 	}
 
 	/* Open the message box */
@@ -181,6 +186,11 @@ public int open () {
 	TCHAR buffer1 = new TCHAR (0, message, true);
 	TCHAR buffer2 = new TCHAR (0, title, true);
 	int code = OS.MessageBox (hwndOwner, buffer1, buffer2, bits);
+	
+	/* Clear the temporarily dialog modal parent */
+	if ((bits & OS.MB_TASKMODAL) != 0) {
+		display.setModalDialogShell (oldModal);
+	}
 	
 	/*
 	* This code is intentionally commented.  On some

@@ -161,7 +161,25 @@ public FontData open () {
 		int blue = (rgb.blue << 16) & 0xFF0000;
 		lpcf.rgbColors = red | green | blue;
 	}
+	
+	/* Make the parent shell be temporary modal */
+	Shell oldModal = null;
+	Display display = null;
+	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+		display = parent.getDisplay ();
+		oldModal = display.getModalDialogShell ();
+		display.setModalDialogShell (parent);
+	}
+
+	/* Open the dialog */
 	boolean success = OS.ChooseFont (lpcf);
+	
+	/* Clear the temporary dialog modal parent */
+	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+		display.setModalDialogShell (oldModal);
+	}
+	
+	/* Compute the result */
 	if (success) {
 		LOGFONT logFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
 		OS.MoveMemory (logFont, lpLogFont, LOGFONT.sizeof);

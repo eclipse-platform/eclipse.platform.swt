@@ -234,7 +234,16 @@ public String open () {
 		lpstrDefExt = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 		struct.lpstrDefExt = lpstrDefExt;
 	}
-
+	
+	/* Make the parent shell be temporary modal */
+	Shell oldModal = null;
+	Display display = null;
+	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+		display = parent.getDisplay ();
+		oldModal = display.getModalDialogShell ();
+		display.setModalDialogShell (parent);
+	}
+	
 	/*
 	* Open the dialog.  If the open fails due to an invalid
 	* file name, use an empty file name and open it again.
@@ -245,6 +254,11 @@ public String open () {
 		success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
 	}
 
+	/* Clear the temporary dialog modal parent */
+	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+		display.setModalDialogShell (oldModal);
+	}
+	
 	/* Set the new path, file name and filter */
 	fileNames = new String [0];
 	String fullPath = null;
