@@ -360,8 +360,6 @@ protected void destroy() {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
- *
- * @private
  */
 public int internal_new_GC(GCData data) {
 	int xGC = OS.XCreateGC(xDisplay, xDrawable, 0, null);
@@ -396,8 +394,6 @@ public int internal_new_GC(GCData data) {
  *
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
- *
- * @private
  */
 public void internal_dispose_GC(int xGC, GCData data) {
 	OS.XFreeGC(xDisplay, xGC);
