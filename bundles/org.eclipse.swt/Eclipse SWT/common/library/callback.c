@@ -277,9 +277,8 @@ int callback(int index, ...)
 
 	(*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_1);
 
-	/* An exception has already occurred. Allow the stack to unwind so that
-	the exception will be thrown in Java */
-	if ((*env)->ExceptionOccurred(env)) {
+	/* Either we are disconnected from the VM or an exception has occurred. */
+	if (env == 0 ||(*env)->ExceptionOccurred(env)) {
 #ifdef DEBUG_CALL_PRINTS
 		fprintf(stderr, "************ java exception occurred\n");
 #endif
