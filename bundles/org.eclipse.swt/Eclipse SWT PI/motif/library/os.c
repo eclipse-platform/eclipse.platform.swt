@@ -11,6 +11,7 @@
 
 #include "swt.h"
 #include "os_structs.h"
+#include "os_stats.h"
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_motif_OS_##func
 

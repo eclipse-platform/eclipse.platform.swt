@@ -68,7 +68,6 @@
 #define NO_XpStartPage
 #endif
 
-#include "os_stats.h"
 #include "os_custom.h"
 
 #endif /* INC_os_H */
