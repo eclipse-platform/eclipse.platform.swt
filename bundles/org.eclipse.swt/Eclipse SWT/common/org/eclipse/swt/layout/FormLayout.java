@@ -57,13 +57,19 @@ import org.eclipse.swt.widgets.*;
  * automatically attached to the left and top of the composite respectively.
  * The following code positions <code>button1</code> and <code>button2</code>
  * but relies on default attachments:
- * 
  * <pre>
  *		FormData data2 = new FormData();
  *		data2.left = new FormAttachment(button1);
  *		data2.right = new FormAttachment(100, 0);
  *		button2.setLayoutData(data2);
  * </pre>
+ * </p>
+ * <p>
+ * IMPORTANT: Do not define circular attachments.  For example, do not attach
+ * the right edge of <code>button1</code> to the left edge of <code>button2</code>
+ * and then attach the left edge of <code>button2</code> to the right edge of
+ * <code>button1</code>.  This will over constrain the layout, causing undefined
+ * behavior.  The algorithm will terminate, but the results are undefined.
  * </p>
  * 
  * @see FormData
@@ -135,10 +141,17 @@ public FormLayout () {
  * 		that will show the control as it will always be
  * 		below the bottom edge of the form.
  * 
- * Case 3: A = C, A != 0, B != 0 and A != 1, C != 0
+ * Case 3: A = C, A != 0, C != 0 and A != 1, C != 0
  * 
- * 		Let X = ... see comments in the code (work in progress)
- * 
+ * 		Let X = D / (1 - C), the distance from the top of the 
+ * 		form to the bottom edge of the control.  In this case, 
+ * 		since C is not 0 or 1, it must be a fraction, U / V.  
+ * 		The offset D is the distance from CX to the bottom edge 
+ * 		of the control.  This represents a fraction of the form 
+ * 		(1 - C)X. Since the height of a fraction of the form is 
+ * 		known, the height of the entire form can be found by setting
+ * 		(1 - C)X = D.  We solve this equation for X in terms of U 
+ * 		and V, giving us X = (U * D) / (U - V)
  */
 int computeHeight (FormData data) {
 	FormAttachment top = data.getTopAttachment ();
@@ -147,15 +160,6 @@ int computeHeight (FormData data) {
 	if (height.numerator == 0) {
 		if (bottom.numerator == 0) return bottom.offset;
 		if (top.numerator == top.denominator) return -top.offset;
-		/*
-		* Case 3: The top and bottom equations both begin with (num/den)X.
-		* The offset of the bottom equation represents the distance from (num/den)X
-		* to the bottom of the control. To find the height of the form, we add the 
-		* distance representing 1-(num/den)X:
-		* 	X=(1-(num/den))X+offset
-		* We solve this to get:
-		*	X=den*offset/(den-num)
-		*/
 		int divider = bottom.denominator - bottom.numerator; 
 		return bottom.denominator * bottom.offset / divider;
 	}
