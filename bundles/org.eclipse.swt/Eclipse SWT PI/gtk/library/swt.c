@@ -2592,7 +2592,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1item_1new
 	return (jint)gtk_menu_item_new();
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1item_1new_1with_1label
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1image_1menu_1item_1new_1with_1label
 	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
 	jbyte *lparg0=NULL;
@@ -2601,9 +2601,21 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1item_1new
 	DEBUG_CALL("gtk_1menu_1item_1new_1with_1label\n")
 
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	rc = (jint)gtk_menu_item_new_with_label((const gchar *)lparg0);
+	rc = (jint)gtk_image_menu_item_new_with_label((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1image_1menu_1item_1get_1image
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	return (jint)gtk_image_menu_item_get_image((GtkImageMenuItem*)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1image_1menu_1item_1set_1image
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	gtk_image_menu_item_set_image((GtkImageMenuItem*)arg0, (GtkWidget*)arg1);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1item_1remove_1submenu
