@@ -405,6 +405,22 @@ void init (Device device, FontData[] fds) {
 		OS.setlocale (OS.LC_CTYPE, buffer);
 	}
 	
+	int fontType = OS.XmFONT_IS_FONTSET;
+	/*
+	* Bug in HPUX.  If the locale is "C" then FontSets do not work
+	* properly.  The fix is to detect this case and use a Font struct
+	* instead.
+	*/
+	if (OS.IsHPUX) {
+		int localePtr = OS.setlocale(OS.LC_CTYPE, null);
+		int length = OS.strlen(localePtr);
+		byte[] buffer = new byte[length];
+		OS.memmove(buffer, localePtr, length);
+		if ("C".equals(new String(Converter.mbcsToWcs(null, buffer)))) {
+			fontType = OS.XmFONT_IS_FONT;
+		}
+	}
+	
 	/* Generate desire font name */
 	Point dpi = null;
 	if (device.setDPI) dpi = device.getDPI();
@@ -417,7 +433,6 @@ void init (Device device, FontData[] fds) {
 			fd.verticalResolution = dpi.y;
 		}
 		stringBuffer.append(fd.getXlfd());
-		stringBuffer.append(',');
 		fd.horizontalResolution = hRes;
 		fd.verticalResolution = vRes;
 	}
@@ -430,32 +445,36 @@ void init (Device device, FontData[] fds) {
 	* font takes a very long time (10 minutes) when there are no Japanese bold
 	* fonts available.  The fix is to wildcard the field weight.
 	*/
-	if (OS.IsAIX && OS.IsDBLocale) {
-		stringBuffer.append(newFd.getXlfd());
-	} else {
-		newFd.weight = firstFd.weight;
-		newFd.slant = firstFd.slant;
-		stringBuffer.append(newFd.getXlfd());
-		newFd.weight = null;
-		newFd.slant = null;		
-		stringBuffer.append(',');
-		stringBuffer.append(newFd.getXlfd());
+	if (fontType == OS.XmFONT_IS_FONTSET) {
+		if (OS.IsAIX && OS.IsDBLocale) {
+			stringBuffer.append(',');
+			stringBuffer.append(newFd.getXlfd());
+		} else {
+			newFd.weight = firstFd.weight;
+			newFd.slant = firstFd.slant;
+			stringBuffer.append(',');
+			stringBuffer.append(newFd.getXlfd());
+			newFd.weight = null;
+			newFd.slant = null;		
+			stringBuffer.append(',');
+			stringBuffer.append(newFd.getXlfd());
+		}
 	}
 	
 	/* Load font list entry */		 
 	boolean warnings = device._getWarnings ();
 	device._setWarnings (false);
 	byte[] buffer = Converter.wcsToMbcs(null, stringBuffer.toString() , true);
-	int fontListEntry = OS.XmFontListEntryLoad(device.xDisplay, buffer, OS.XmFONT_IS_FONTSET, OS.XmFONTLIST_DEFAULT_TAG);
+	int fontListEntry = OS.XmFontListEntryLoad(device.xDisplay, buffer, fontType, OS.XmFONTLIST_DEFAULT_TAG);
 	device._setWarnings (warnings);
 	if (fontListEntry != 0) {
 		handle = OS.XmFontListAppendEntry(0, fontListEntry);
 		OS.XmFontListEntryFree(new int[]{fontListEntry});
 		int codesetPtr = OS.nl_langinfo(OS.CODESET);
 		int length = OS.strlen(codesetPtr);
-		byte[] codeset = new byte[length];
-		OS.memmove(codeset, codesetPtr, length);
-		codePage = new String(Converter.mbcsToWcs(null, codeset));
+		buffer = new byte[length];
+		OS.memmove(buffer, codesetPtr, length);
+		codePage = new String(Converter.mbcsToWcs(null, buffer));
 	} else {
 		Font systemFont = device.systemFont;
 		handle = systemFont.handle;
