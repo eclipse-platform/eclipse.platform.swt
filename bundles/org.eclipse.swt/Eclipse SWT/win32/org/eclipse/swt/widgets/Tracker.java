@@ -5,6 +5,7 @@ package org.eclipse.swt.widgets;
  * All Rights Reserved
  */
  
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
@@ -29,8 +30,9 @@ public class Tracker extends Widget {
 	Display display;
 	boolean tracking, stippled;
 	Rectangle [] rectangles, proportions;
-	int cursorOrientation = SWT.NONE;
-	int cursor;
+	int cursor, cursorOrientation = SWT.NONE;
+	boolean inEvent = false;
+
 	/*
 	* The following values mirror step sizes on Windows
 	*/
@@ -163,7 +165,7 @@ Point adjustResizeCursor () {
 	} else {
 		newX = bounds.x + bounds.width / 2;
 	}
-	
+
 	if ((cursorOrientation & SWT.UP) != 0) {
 		newY = bounds.y;
 	} else if ((cursorOrientation & SWT.DOWN) != 0) {
@@ -181,6 +183,43 @@ Point adjustResizeCursor () {
 		OS.ClientToScreen (parent.handle, pt);
 	}
 	OS.SetCursorPos (pt.x, pt.y);
+
+	int newCursor = 0;
+	switch (cursorOrientation) {
+		case SWT.UP:
+			newCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
+			break;
+		case SWT.DOWN:
+			newCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
+			break;
+		case SWT.LEFT:
+			newCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
+			break;
+		case SWT.RIGHT:
+			newCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
+			break;
+		case SWT.LEFT | SWT.UP:
+			newCursor = OS.LoadCursor (0, OS.IDC_SIZENWSE);
+			break;
+		case SWT.RIGHT | SWT.DOWN:
+			newCursor = OS.LoadCursor (0, OS.IDC_SIZENWSE);
+			break;
+		case SWT.LEFT | SWT.DOWN:
+			newCursor = OS.LoadCursor (0, OS.IDC_SIZENESW);
+			break;
+		case SWT.RIGHT | SWT.UP:
+			newCursor = OS.LoadCursor (0, OS.IDC_SIZENESW);
+			break;
+		default:
+			newCursor = OS.LoadCursor (0, OS.IDC_SIZEALL);
+			break;
+	}
+	OS.SetCursor (newCursor);
+	if (cursor != 0) {
+		OS.DestroyCursor (cursor);
+	}
+	cursor = newCursor;
+		
 	return new Point (pt.x, pt.y);
 }
 static int checkStyle (int style) {
@@ -303,14 +342,13 @@ public boolean getStippled () {
 	return stippled;
 }
 
-void moveRectangles (int xChange, int yChange, Rectangle moveBounds) {
+void moveRectangles (int xChange, int yChange) {
 	if (xChange < 0 && ((style & SWT.LEFT) == 0)) return;
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) return;
 	if (yChange < 0 && ((style & SWT.UP) == 0)) return;
 	if (yChange > 0 && ((style & SWT.DOWN) == 0)) return;
 	Rectangle bounds = computeBounds ();
 	bounds.x += xChange; bounds.y += yChange;
-	if (!bounds.union (moveBounds).equals (moveBounds)) return;
 	for (int i = 0; i < rectangles.length; i++) {
 		rectangles [i].x += xChange;
 		rectangles [i].y += yChange;
@@ -333,38 +371,79 @@ public boolean open () {
 	Event event = new Event ();
 	MSG msg = new MSG ();
 	/*
-	* Create a transparent window that fills the whole screen
-	* so that we will get mouse/keyboard events that occur
-	* outside of our visible windows (ie.- "over" the desktop)
+	* If this tracker is being created without a mouse drag then
+	* we need to create a transparent window that fills the screen
+	* in order to get all mouse/keyboard events that occur
+	* outside of our visible windows (ie.- over the desktop).
 	*/
-	int displayWidth = OS.GetSystemMetrics (OS.SM_CXSCREEN);
-	int displayHeight = OS.GetSystemMetrics (OS.SM_CYSCREEN);
-//	int hwndTransparent = OS.CreateWindowEx (
-//		OS.WS_EX_TRANSPARENT,
-//		display.windowClass,
-//		null,
-//		OS.WS_POPUP | OS.WS_VISIBLE,
-//		0,0,
-//		displayWidth, displayHeight,
-//		0,
-//		0,
-//		OS.GetModuleHandle (null),
-//		null);
+	int hwndTransparent = 0;
+	Callback newProc = null;
+	boolean mouseDown = OS.GetKeyState(OS.VK_LBUTTON) < 0;
+	if (!mouseDown) {
+		int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
+		int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
+		hwndTransparent = OS.CreateWindowEx (
+			OS.WS_EX_TRANSPARENT,
+			display.windowClass,
+			null,
+			OS.WS_POPUP | OS.WS_VISIBLE,
+			0, 0,
+			width, height,
+			0,
+			0,
+			OS.GetModuleHandle (null),
+			null);
+		final int oldProc = OS.GetWindowLong (hwndTransparent, OS.GWL_WNDPROC);
+		Object windowProc = new Object () {
+			public int windowProc (int hwnd, int msg, int wParam, int lParam) {
+				switch (msg) {
+					case OS.WM_MOVE:
+					/*
+					* We typically do not want to answer that the transparent window is
+					* transparent to hits since doing so negates the effect of having it
+					* to grab events.  However, clients of the tracker should not be aware
+					* of this transparent window.  Therefore if there is a hit query
+					* performed as a result of client code then answer that the transparent
+					* window is transparent to hits so that its existence will not impact
+					* the client.
+					*/
+					case OS.WM_NCHITTEST:
+						if (inEvent) {
+							return OS.HTTRANSPARENT;
+						}
+						break;
+					case OS.WM_SIZE:
+						OS.InvalidateRect (hwnd, null, true);
+						OS.UpdateWindow (hwnd);
+						break;
+					case OS.WM_SETCURSOR:
+						if (cursor != 0) {
+							OS.SetCursor(cursor);
+							return LRESULT.ONE.value;
+						}
+				}
+				return OS.CallWindowProc (oldProc, hwnd, msg, wParam, lParam);
+			}
+		};
+		newProc = new Callback (windowProc, "windowProc", 4);
+		OS.SetWindowLong (hwndTransparent, OS.GWL_WNDPROC, newProc.getAddress ());
+	}
+
 	drawRectangles (rectangles);
 	Point cursorPos;
-	if ((style & SWT.MENU) != 0) {
+	if (mouseDown) {
+		POINT pt = new POINT ();
+		OS.GetCursorPos (pt);
+		cursorPos = new Point (pt.x, pt.y);
+	} else {
 		if ((style & SWT.RESIZE) != 0) {
 			cursorPos = adjustResizeCursor ();
 		} else {
 			cursorPos = adjustMoveCursor ();
 		}
-	} else {
-		POINT pt = new POINT ();
-		OS.GetCursorPos (pt);
-		cursorPos = new Point (pt.x, pt.y);
 	}
+	
 	int oldX = cursorPos.x, oldY = cursorPos.y;
-	Rectangle screenBounds = new Rectangle (0, 0, displayWidth, displayHeight);
 	/*
 	* Tracker behaves like a Dialog with its own OS event loop.
 	*/
@@ -375,7 +454,6 @@ public boolean open () {
 		switch (message) {
 			case OS.WM_LBUTTONUP:
 			case OS.WM_MOUSEMOVE:
-				setCursor ();
 				int newPos = OS.GetMessagePos ();
 				int newX = (short) (newPos & 0xFFFF);
 				int newY = (short) (newPos >> 16);	
@@ -384,14 +462,17 @@ public boolean open () {
 					event.x = newX;
 					event.y = newY;
 					if ((style & SWT.RESIZE) != 0) {
-						resizeRectangles (newX - oldX, newY - oldY, screenBounds);
-						sendEvent (SWT.Resize, event);
+						resizeRectangles (newX - oldX, newY - oldY);
 						cursorPos = adjustResizeCursor ();
 						newX = cursorPos.x; newY = cursorPos.y;
+						inEvent = true;
+						sendEvent (SWT.Resize, event);
 					} else {
-						moveRectangles (newX - oldX, newY - oldY, screenBounds);
+						moveRectangles (newX - oldX, newY - oldY);
+						inEvent = true;
 						sendEvent (SWT.Move, event);
 					}
+					inEvent = false;
 					/*
 					* It is possible (but unlikely), that application
 					* code could have disposed the widget in the move
@@ -405,7 +486,6 @@ public boolean open () {
 				tracking = msg.message != OS.WM_LBUTTONUP;
 				break;
 			case OS.WM_KEYDOWN:
-				setCursor ();
 				int stepSize = OS.GetKeyState (OS.VK_CONTROL) < 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 				int xChange = 0, yChange = 0;
 				switch (msg.wParam) {
@@ -436,14 +516,17 @@ public boolean open () {
 					event.x = newX;
 					event.y = newY;
 					if ((style & SWT.RESIZE) != 0) {
-						resizeRectangles (xChange, yChange, screenBounds);
-						sendEvent (SWT.Resize, event);
+						resizeRectangles (xChange, yChange);
 						cursorPos = adjustResizeCursor ();
+						inEvent = true;
+						sendEvent (SWT.Resize, event);
 					} else {
-						moveRectangles (xChange, yChange, screenBounds);
-						sendEvent (SWT.Move, event);
+						moveRectangles (xChange, yChange);
 						cursorPos = adjustMoveCursor ();
+						inEvent = true;
+						sendEvent (SWT.Move, event);
 					}
+					inEvent = false;
 					/*
 					* It is possible (but unlikely) that application
 					* code could have disposed the widget in the move
@@ -467,7 +550,23 @@ public boolean open () {
 		OS.DispatchMessage (msg);
 	}
 	drawRectangles (rectangles);
-//	OS.DestroyWindow (hwndTransparent);
+	/*
+	* Cleanup: If a transparent window was created in order to capture events then
+	* destroy it and its callback object now.
+	*/
+	if (hwndTransparent != 0) {
+		OS.DestroyWindow (hwndTransparent);
+	}
+	if (newProc != null) {
+		newProc.dispose();
+	}
+	/*
+	* Cleanup: If this tracker was resizing then the last cursor that it created
+	* needs to be destroyed.
+	*/
+	if ((style & SWT.RESIZE) != 0 && cursor != 0) {
+		OS.DestroyCursor (cursor);
+	}
 	tracking = false;
 	return !cancelled;
 }
@@ -496,7 +595,7 @@ public void removeControlListener (ControlListener listener) {
 	eventTable.unhook (SWT.Move, listener);
 }
 
-void resizeRectangles (int xChange, int yChange, Rectangle resizeBounds) {
+void resizeRectangles (int xChange, int yChange) {
 	/*
 	* If the cursor orientation has not been set in the orientation of
 	* this change then try to set it here.
@@ -526,7 +625,6 @@ void resizeRectangles (int xChange, int yChange, Rectangle resizeBounds) {
 	/*
 	* The following are conditions under which the resize should not be applied
 	*/
-	if (!bounds.union (resizeBounds).equals (resizeBounds)) return;
 	if (bounds.width < 0 || bounds.height < 0) return;
 	
 	Rectangle [] newRects = new Rectangle [rectangles.length];
@@ -541,47 +639,14 @@ void resizeRectangles (int xChange, int yChange, Rectangle resizeBounds) {
 	rectangles = newRects;	
 }
 
-void setCursor () {
-	int newCursor = 0;
-	if ((style & SWT.RESIZE) != 0) {
-		switch (cursorOrientation) {
-			case SWT.UP:
-				newCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
-				break;
-			case SWT.DOWN:
-				newCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
-				break;
-			case SWT.LEFT:
-				newCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
-				break;
-			case SWT.RIGHT:
-				newCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
-				break;
-			case SWT.LEFT | SWT.UP:
-				newCursor = OS.LoadCursor (0, OS.IDC_SIZENWSE);
-				break;
-			case SWT.RIGHT| SWT.DOWN:
-				newCursor = OS.LoadCursor (0, OS.IDC_SIZENWSE);
-				break;
-			case SWT.LEFT | SWT.DOWN:
-				newCursor = OS.LoadCursor (0, OS.IDC_SIZENESW);
-				break;
-			case SWT.RIGHT | SWT.UP:
-				newCursor = OS.LoadCursor (0, OS.IDC_SIZENESW);
-				break;
-			default:
-				newCursor = OS.LoadCursor (0, OS.IDC_SIZEALL);
-				break;
-		}
-	} else {
-//		newCursor = OS.LoadCursor (0, OS.IDC_ARROW);
-		return;
+public void setCursor(Cursor newCursor) {
+	/*
+	* Check for NOT resizing (ie.- moving)
+	*/
+	if ((style & SWT.RESIZE) == 0) {
+		cursor = newCursor.handle;
+		OS.SetCursor(cursor);
 	}
-	OS.SetCursor (newCursor);
-	if (cursor != 0) {
-		OS.DestroyCursor (cursor);
-	}
-	cursor = newCursor;
 }
 /**
  * Specify the rectangles that should be drawn.
