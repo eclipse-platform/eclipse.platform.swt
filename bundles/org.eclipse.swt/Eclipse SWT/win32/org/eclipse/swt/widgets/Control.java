@@ -2395,7 +2395,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_CHAR:				result = WM_CHAR (wParam, lParam); break;
 		case OS.WM_CLEAR:				result = WM_CLEAR (wParam, lParam); break;
 		case OS.WM_CLOSE:				result = WM_CLOSE (wParam, lParam); break;
-		case OS.WM_COMMAND:			result = WM_COMMAND (wParam, lParam); break;
+		case OS.WM_COMMAND:				result = WM_COMMAND (wParam, lParam); break;
 		case OS.WM_CONTEXTMENU:			result = WM_CONTEXTMENU (wParam, lParam); break;
 		case OS.WM_CTLCOLORBTN:
 		case OS.WM_CTLCOLORDLG:
@@ -2404,18 +2404,18 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_CTLCOLORMSGBOX:
 		case OS.WM_CTLCOLORSCROLLBAR:
 		case OS.WM_CTLCOLORSTATIC:		result = WM_CTLCOLOR (wParam, lParam); break;
-		case OS.WM_CUT:				result = WM_CUT (wParam, lParam); break;
-		case OS.WM_DESTROY:			result = WM_DESTROY (wParam, lParam); break;
+		case OS.WM_CUT:					result = WM_CUT (wParam, lParam); break;
+		case OS.WM_DESTROY:				result = WM_DESTROY (wParam, lParam); break;
 		case OS.WM_DRAWITEM:			result = WM_DRAWITEM (wParam, lParam); break;
 		case OS.WM_ERASEBKGND:			result = WM_ERASEBKGND (wParam, lParam); break;
 		case OS.WM_GETDLGCODE:			result = WM_GETDLGCODE (wParam, lParam); break;
 		case OS.WM_HELP:				result = WM_HELP (wParam, lParam); break;
-		case OS.WM_HSCROLL:			result = WM_HSCROLL (wParam, lParam); break;
+		case OS.WM_HSCROLL:				result = WM_HSCROLL (wParam, lParam); break;
 		case OS.WM_IME_CHAR:			result = WM_IME_CHAR (wParam, lParam); break;
 		case OS.WM_IME_COMPOSITION:		result = WM_IME_COMPOSITION (wParam, lParam); break;
 		case OS.WM_INITMENUPOPUP:		result = WM_INITMENUPOPUP (wParam, lParam); break;
-		case OS.WM_GETFONT:			result = WM_GETFONT (wParam, lParam); break;
-		case OS.WM_KEYDOWN:			result = WM_KEYDOWN (wParam, lParam); break;
+		case OS.WM_GETFONT:				result = WM_GETFONT (wParam, lParam); break;
+		case OS.WM_KEYDOWN:				result = WM_KEYDOWN (wParam, lParam); break;
 		case OS.WM_KEYUP:				result = WM_KEYUP (wParam, lParam); break;
 		case OS.WM_KILLFOCUS:			result = WM_KILLFOCUS (wParam, lParam); break;
 		case OS.WM_LBUTTONDBLCLK:		result = WM_LBUTTONDBLCLK (wParam, lParam); break;
@@ -2435,7 +2435,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_NCACTIVATE:			result = WM_NCACTIVATE (wParam, lParam); break;
 		case OS.WM_NCCALCSIZE:			result = WM_NCCALCSIZE (wParam, lParam); break;
 		case OS.WM_NCHITTEST:			result = WM_NCHITTEST (wParam, lParam); break;
-		case OS.WM_NOTIFY:			result = WM_NOTIFY (wParam, lParam); break;
+		case OS.WM_NOTIFY:				result = WM_NOTIFY (wParam, lParam); break;
 		case OS.WM_PAINT:				result = WM_PAINT (wParam, lParam); break;
 		case OS.WM_PALETTECHANGED:		result = WM_PALETTECHANGED (wParam, lParam); break;
 		case OS.WM_PASTE:				result = WM_PASTE (wParam, lParam); break;
@@ -2446,18 +2446,19 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_RBUTTONUP:			result = WM_RBUTTONUP (wParam, lParam); break;
 		case OS.WM_SETCURSOR:			result = WM_SETCURSOR (wParam, lParam); break;
 		case OS.WM_SETFOCUS:			result = WM_SETFOCUS (wParam, lParam); break;
-		case OS.WM_SETFONT:			result = WM_SETFONT (wParam, lParam); break;
+		case OS.WM_SETFONT:				result = WM_SETFONT (wParam, lParam); break;
 		case OS.WM_SHOWWINDOW:			result = WM_SHOWWINDOW (wParam, lParam); break;
 		case OS.WM_SIZE:				result = WM_SIZE (wParam, lParam); break;
-		case OS.WM_SYSCHAR:			result = WM_SYSCHAR (wParam, lParam); break;
+		case OS.WM_SYSCHAR:				result = WM_SYSCHAR (wParam, lParam); break;
 		case OS.WM_SYSCOLORCHANGE:		result = WM_SYSCOLORCHANGE (wParam, lParam); break;
 		case OS.WM_SYSCOMMAND:			result = WM_SYSCOMMAND (wParam, lParam); break;
 		case OS.WM_SYSKEYDOWN:			result = WM_SYSKEYDOWN (wParam, lParam); break;
 		case OS.WM_SYSKEYUP:			result = WM_SYSKEYUP (wParam, lParam); break;
 		case OS.WM_TIMER:				result = WM_TIMER (wParam, lParam); break;
 		case OS.WM_UNDO:				result = WM_UNDO (wParam, lParam); break;
-		case OS.WM_VSCROLL:			result = WM_VSCROLL (wParam, lParam); break;
-		case OS.WM_WINDOWPOSCHANGING:		result = WM_WINDOWPOSCHANGING (wParam, lParam); break;
+		case OS.WM_VSCROLL:				result = WM_VSCROLL (wParam, lParam); break;
+		case OS.WM_WINDOWPOSCHANGING:	result = WM_WINDOWPOSCHANGING (wParam, lParam); break;
+		case OS.WM_MOUSEWHEEL:			return OS.DefWindowProc(handle, msg, wParam, lParam);
 	}
 	if (result != null) return result.value;
 	return callWindowProc (msg, wParam, lParam);
