@@ -51,11 +51,12 @@ public Object getContents(Transfer transfer) {
 	int cbdata = OS.PhClipboardPasteStart((short)ig);
 	if (cbdata == 0) return result;
 	try {
-		String[] types = transfer.getTypeNames();
+		String[] names = transfer.getTypeNames();
 		int[] ids = transfer.getTypeIds();
-		for (int i = 0; i < types.length; i++) {
-			byte[] type = Converter.wcsToMbcs(null, types[i], true);
-			int pClipHeader = OS.PhClipboardPasteType(cbdata, type);
+		for (int i = 0; i < names.length; i++) {
+			byte[] name = Converter.wcsToMbcs(null, names[i], true);
+			name [Math.min(8, name.length) - 1] = (byte)0;
+			int pClipHeader = OS.PhClipboardPasteType(cbdata, name);
 			if (pClipHeader != 0) {
 				PhClipHeader clipHeader = new PhClipHeader();
 				OS.memmove(clipHeader, pClipHeader, PhClipHeader.sizeof);
@@ -101,7 +102,7 @@ public void setContents(Object[] data, Transfer[] transferAgents){
 			clip.length = (short)transferData.length;
 			byte[] temp = Converter.wcsToMbcs(null, names[j], false);
 			byte[] type = new byte[8];
-			System.arraycopy(temp, 0, type, 0, Math.min(type.length, temp.length));
+			System.arraycopy(temp, 0, type, 0, Math.min(type.length - 1, temp.length));
 			clip.type_0 = type[0];
 			clip.type_1 = type[1];
 			clip.type_2 = type[2];
