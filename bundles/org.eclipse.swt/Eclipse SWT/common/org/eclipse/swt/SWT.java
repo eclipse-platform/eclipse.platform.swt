@@ -534,6 +534,7 @@ public class SWT {
 
 	/**
 	 * style constant for modeless behavior (value is 0)
+	 * <br>Note that this is a <em>HINT</em>.
 	 * <br>Used by:
 	 * <br><code>Shell</code>
 	 */
@@ -541,6 +542,7 @@ public class SWT {
 
 	/**
 	 * style constant for primary modal behavior (value is 1&lt;&lt;15)
+	 * <br>Note that this is a <em>HINT</em>.
 	 * <br>Used by:
 	 * <br><code>Shell</code>
 	 */
@@ -548,6 +550,7 @@ public class SWT {
 
 	/**
 	 * style constant for application modal behavior (value is 1&lt;&lt;16)
+	 * <br>Note that this is a <em>HINT</em>.
 	 * <br>Used by:
 	 * <br><code>Shell</code>
 	 */
