@@ -356,10 +356,8 @@ Point computeLayoutSize(Composite composite, int wHint, int hHint, boolean flush
 		totalHeight = totalHeight + pixelRowHeights[i];
 	}
 
-	if (wHint != SWT.DEFAULT) {
-		totalWidth = wHint;};
-	if (hHint != SWT.DEFAULT) {
-		totalHeight = hHint;};
+	if (wHint != SWT.DEFAULT) totalWidth = wHint;
+	if (hHint != SWT.DEFAULT) totalHeight = hHint;
 	// The preferred extent is the width and height that will accomodate the grid's controls.
 	return new Point(totalWidth, totalHeight);
 }
