@@ -605,7 +605,7 @@ public void setBackground(Color color){
 	int edge = parent.getRightItemEdge();
 	int index = parent.indexOf(this);
 	if (x + width < edge && parent.selectedIndex != index) {
-		parent.redraw(x, y, width, height, false);
+		parent.redraw();
 	}
 }
 /**
@@ -705,7 +705,7 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	int edge = parent.getRightItemEdge();
 	int index = parent.indexOf(this);
 	if (x + width < edge && parent.selectedIndex != index) {
-		parent.redraw(x, y, width, height, false);
+		parent.redraw();
 	}
 }
 
@@ -733,7 +733,7 @@ public void setBackground(Image image) {
 	int edge = parent.getRightItemEdge();
 	int index = parent.indexOf(this);
 	if (x + width < edge && parent.selectedIndex != index) {
-		parent.redraw(x, y, width, height, false);
+		parent.redraw();
 	}
 }
 /**
