@@ -210,17 +210,9 @@ void createItem (TabItem item, int index) {
 void createHandle (int index) {
 	state |= HANDLE;
 	state &= ~CANVAS;
-	int parentHandle = parent.handle;
-	int windowHandle= OS.GetControlOwner(parentHandle);
-	int[] tmp= new int[1];
-	OS.CreateTabFolderControl(windowHandle, tmp);
-	handle= tmp[0];
+		
+	handle= MacUtil.newControl(parent.handle, OS.kControlTabSmallProc);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.embedControl(handle, parentHandle);
-	MacUtil.initLocation(handle);
-	
-	Display display= getDisplay();
-	OS.SetControlAction(handle, display.fControlActionProc);
 }
 
 void createWidget (int index) {
@@ -411,6 +403,12 @@ public TabItem [] getSelection () {
 public int getSelectionIndex () {
 	checkWidget ();
 	return OS.GetControl32BitValue(handle)-1;
+}
+void hookEvents () {
+	super.hookEvents ();
+	
+	Display display= getDisplay();
+	OS.SetControlAction(handle, display.fControlActionProc);
 }
 /**
  * Searches the receiver's list starting at the first item
@@ -643,25 +641,38 @@ private void handleSelectionChange(int newValue)  {
 	postEvent (SWT.Selection, event);
 }
 
-void updateCarbon(int startIndex) {
+private void updateCarbon(int startIndex) {
 	//System.out.println("updateCarbon: " + startIndex);
 	int n= OS.GetControl32BitMaximum(handle);
 	for (int i= startIndex; i < n; i++) {
 		TabItem item= items[i];
 		if (item != null) {
-			int sHandle= 0;
-			try {
-				String t= MacUtil.removeMnemonics(item.getText());
-				//System.out.println("  "+i+": " + t);
-				sHandle= OS.CFStringCreateWithCharacters(t);
-				OS.setTabText(handle, i+1, sHandle);
-			} finally {
-				if (sHandle != 0)
-					OS.CFRelease(sHandle);
-			}
+			setTabText(i, item.getText());
+			setTabImage(i, item.getImage());
 		}
 	}
-	redraw();
+	//redraw();
+}
+
+void setTabText(int index, String string) {
+	int sHandle= 0;
+	try {
+		String t= MacUtil.removeMnemonics(string);
+		sHandle= OS.CFStringCreateWithCharacters(t);
+		OS.setTabText(handle, index+1, sHandle);
+	} finally {
+		if (sHandle != 0)
+			OS.CFRelease(sHandle);
+	}
+}
+
+void setTabImage(int index, Image image) {
+	/* AW: does not work yet...
+	int icon= Image.carbon_createCIcon(image);
+	if (icon != 0)
+		if (OS.setTabIcon(handle, index+1, icon) != OS.kNoErr)
+			System.err.println("TabFolder.setTabImage: error");
+	*/
 }
 
 /**
