@@ -371,7 +371,8 @@ public class OS {
 	public static final int kThemeDisclosureDown = 1;
 	public static final int kThemeDisclosureLeft = 2;
 	public static final int kThemeIBeamCursor = 4;
-	public static final int kThemeOpenHandCursor = 9;
+	public static final int kThemeNotAllowedCursor = 18;
+	public static final int kThemePointingHandCursor = 10;
 	public static final int kThemePushButton = 0;
 	public static final int kThemeRadioButton = 2;
 	public static final int kThemeRoundedBevelButton = 15;

@@ -6568,6 +6568,20 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_BitMa
 }
 #endif
 
+#ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_Cursor_2I
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_Cursor_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	Cursor _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("memcpy__ILorg_eclipse_swt_internal_carbon_Cursor_2I\n")
+
+	if (arg1) lparg1 = getCursorFields(env, arg1, &_arg1);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setCursorFields(env, arg1, lparg1);
+}
+#endif
+
 #ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_PixMap_2I
 JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_PixMap_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)

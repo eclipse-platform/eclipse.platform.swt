@@ -521,6 +521,58 @@ void setControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoR
 }
 #endif /* NO_ControlTabInfoRecV1 */
 
+#ifndef NO_Cursor
+typedef struct Cursor_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID data, mask, hotSpot_v, hotSpot_h;
+} Cursor_FID_CACHE;
+
+Cursor_FID_CACHE CursorFc;
+
+void cacheCursorFids(JNIEnv *env, jobject lpObject)
+{
+	if (CursorFc.cached) return;
+	CursorFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CursorFc.data = (*env)->GetFieldID(env, CursorFc.clazz, "data", "[S");
+	CursorFc.mask = (*env)->GetFieldID(env, CursorFc.clazz, "mask", "[S");
+	CursorFc.hotSpot_v = (*env)->GetFieldID(env, CursorFc.clazz, "hotSpot_v", "S");
+	CursorFc.hotSpot_h = (*env)->GetFieldID(env, CursorFc.clazz, "hotSpot_h", "S");
+	CursorFc.cached = 1;
+}
+
+Cursor *getCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
+{
+	if (!CursorFc.cached) cacheCursorFids(env, lpObject);
+	{
+	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, CursorFc.data);
+	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data) / 2, lpStruct->data);
+	}
+	{
+	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, CursorFc.mask);
+	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->mask) / 2, lpStruct->mask);
+	}
+	lpStruct->hotSpot.v = (*env)->GetShortField(env, lpObject, CursorFc.hotSpot_v);
+	lpStruct->hotSpot.h = (*env)->GetShortField(env, lpObject, CursorFc.hotSpot_h);
+	return lpStruct;
+}
+
+void setCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
+{
+	if (!CursorFc.cached) cacheCursorFids(env, lpObject);
+	{
+	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, CursorFc.data);
+	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data) / 2, lpStruct->data);
+	}
+	{
+	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, CursorFc.mask);
+	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->mask) / 2, lpStruct->mask);
+	}
+	(*env)->SetShortField(env, lpObject, CursorFc.hotSpot_v, (jshort)lpStruct->hotSpot.v);
+	(*env)->SetShortField(env, lpObject, CursorFc.hotSpot_h, (jshort)lpStruct->hotSpot.h);
+}
+#endif /* NO_Cursor */
+
 #ifndef NO_DataBrowserCallbacks
 typedef struct DataBrowserCallbacks_FID_CACHE {
 	int cached;

@@ -100,7 +100,7 @@ public Cursor(Device device, int style) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	switch (style) {
-		case SWT.CURSOR_HAND: 			handle = OS.kThemeOpenHandCursor; break;
+		case SWT.CURSOR_HAND: 			handle = OS.kThemePointingHandCursor; break;
 		case SWT.CURSOR_ARROW: 		handle = OS.kThemeArrowCursor; break;
 		case SWT.CURSOR_WAIT: 			handle = OS.kThemeSpinningCursor; break;
 		case SWT.CURSOR_CROSS: 		handle = OS.kThemeCrossCursor; break;
@@ -121,7 +121,7 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_SIZENW: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_UPARROW: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_IBEAM: 		handle = OS.kThemeIBeamCursor; break;
-		case SWT.CURSOR_NO: 			handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_NO: 			handle = OS.kThemeNotAllowedCursor; break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -215,12 +215,13 @@ public void dispose () {
 	if (handle == -1) return;
 	if (device.isDisposed()) return;
 	switch (handle) {
-		case OS.kThemeOpenHandCursor:
+		case OS.kThemePointingHandCursor:
 		case OS.kThemeArrowCursor:
 		case OS.kThemeSpinningCursor:
 		case OS.kThemeCrossCursor:
 		case OS.kThemeWatchCursor:
 		case OS.kThemeIBeamCursor:
+		case OS.kThemeNotAllowedCursor:
 			break;
 		default:
 			OS.DisposePtr(handle);

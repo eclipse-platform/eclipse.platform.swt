@@ -99,6 +99,14 @@ void setControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoR
 #define setControlTabInfoRecV1Fields(a,b,c)
 #endif /* NO_ControlTabInfoRecV1 */
 
+#ifndef NO_Cursor
+Cursor *getCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct);
+void setCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct);
+#else
+#define getCursorFields(a,b,c) NULL
+#define setCursorFields(a,b,c)
+#endif /* NO_Cursor */
+
 #ifndef NO_DataBrowserCallbacks
 DataBrowserCallbacks *getDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCallbacks *lpStruct);
 void setDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCallbacks *lpStruct);
