@@ -969,26 +969,7 @@ void destroyItem (TableItem item) {
 	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
-	if (count == 0) {
-		if (imageList != null) {
-			int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-			int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-			if (columnCount == 1 && columns [0] == null) columnCount = 0;
-			int i = 0;
-			while (i < columnCount) {
-				TableColumn column = columns [i];
-				if (column.getImage () != null) break;
-				i++;
-			}
-			if (i == columnCount) {
-				OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-				display.releaseImageList (imageList);
-				imageList = null;
-			}
-		}
-		customDraw = false;
-		items = new TableItem [4];
-	}
+	if (count == 0) setTableEmpty ();
 }
 
 void fixCheckboxImageList () {
@@ -1622,6 +1603,7 @@ public void remove (int [] indices) {
 			last = index;
 		}
 	}
+	if (count == 0) setTableEmpty ();
 }
 
 /**
@@ -1650,6 +1632,7 @@ public void remove (int index) {
 	if (item != null && !item.isDisposed ()) item.releaseResources ();
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
+	if (count == 0) setTableEmpty ();
 }
 
 /**
@@ -1691,6 +1674,7 @@ public void remove (int start, int end) {
 		System.arraycopy (items, index, items, start, count - index);
 		for (int i=count-(index-start); i<count; i++) items [i] = null;
 		if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		if (count - index == 0) setTableEmpty ();
 	}
 }
 
@@ -1758,22 +1742,7 @@ public void removeAll () {
 			if (item != null && !item.isDisposed ()) item.releaseResources ();
 		}
 	}
-
-	if (imageList != null) {
-		int i = 0;
-		while (i < columnCount) {
-			TableColumn column = columns [i];
-			if (column.getImage () != null) break;
-			i++;
-		}
-		if (i == columnCount) {
-			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-			display.releaseImageList (imageList);
-			imageList = null;
-		}
-	}
-	customDraw = false;
-	items = new TableItem [4];
+	setTableEmpty ();
 }
 
 /**
@@ -2125,7 +2094,7 @@ public void setFont (Font font) {
 	if ((bits & OS.LVS_EX_GRIDLINES) == 0) return;
 	bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
 	if ((bits & OS.LVS_NOCOLUMNHEADER) != 0) return;
-	setRowHeight ();
+	setItemHeight ();
 }
 
 void setForegroundPixel (int pixel) {
@@ -2178,7 +2147,7 @@ public void setHeaderVisible (boolean show) {
 	if (topIndex != 0) setTopIndex (topIndex);
 	if (show) {
 		int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-		if ((bits & OS.LVS_EX_GRIDLINES) != 0) setRowHeight ();
+		if ((bits & OS.LVS_EX_GRIDLINES) != 0) setItemHeight ();
 	}
 }
 
@@ -2229,6 +2198,32 @@ public void setItemCount (int count) {
 	if (!isVirtual) setRedraw (true);
 }
 
+void setItemHeight () {
+	/*
+	* Bug in Windows.  When both a header and grid lines are
+	* displayed, the grid lines do not take into account the
+	* height of the header and draw in the wrong place.  The
+	* fix is to set the height of the table items to be the
+	* height of the header so that the lines draw in the right
+	* place.  The height of a table item is the maximum of the
+	* height of the font or the height of image list.
+	*
+	* NOTE: In version 5.80 of COMCTL32.DLL, the bug is fixed.
+	*/
+	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) return;
+	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+	if (hOldList != 0) return;
+	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	RECT rect = new RECT ();
+	OS.GetWindowRect (hwndHeader, rect);
+	int height = rect.bottom - rect.top - 1;
+	int hImageList = OS.ImageList_Create (1, height, 0, 0, 0);
+	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+	fixCheckboxImageList ();
+	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
+	OS.ImageList_Destroy (hImageList);
+}
+
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
@@ -2251,7 +2246,7 @@ public void setLinesVisible (boolean show) {
 	if (show) {
 		newBits = OS.LVS_EX_GRIDLINES;
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
-		if ((bits & OS.LVS_NOCOLUMNHEADER) == 0) setRowHeight ();
+		if ((bits & OS.LVS_NOCOLUMNHEADER) == 0) setItemHeight ();
 	}
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_GRIDLINES, newBits);
 }
@@ -2331,32 +2326,6 @@ public void setRedraw (boolean redraw) {
 	}
 }
 
-void setRowHeight () {
-	/*
-	* Bug in Windows.  When both a header and grid lines are
-	* displayed, the grid lines do not take into account the
-	* height of the header and draw in the wrong place.  The
-	* fix is to set the height of the table items to be the
-	* height of the header so that the lines draw in the right
-	* place.  The height of a table item is the maximum of the
-	* height of the font or the height of image list.
-	*
-	* NOTE: In version 5.80 of COMCTL32.DLL, the bug is fixed.
-	*/
-	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) return;
-	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
-	if (hOldList != 0) return;
-	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	RECT rect = new RECT ();
-	OS.GetWindowRect (hwndHeader, rect);
-	int height = rect.bottom - rect.top - 1;
-	int hImageList = OS.ImageList_Create (1, height, 0, 0, 0);
-	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-	fixCheckboxImageList ();
-	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-	OS.ImageList_Destroy (hImageList);
-}
-
 boolean setScrollWidth (TableItem item, boolean force) {
 	if (ignoreRedraw) return false;
 	if (!force && (drawCount != 0 || !OS.IsWindowVisible (handle))) {
@@ -2423,6 +2392,18 @@ boolean setScrollWidth (TableItem item, boolean force) {
 			int [] cx = new int [1], cy = new int [1];
 			OS.ImageList_GetIconSize (hImageList, cx, cy);
 			newWidth += (imageIndent + 1) * cx [0];
+		} else {
+			/*
+			* Bug in Windows.  When LVM_SETIMAGELIST is used to remove the
+			* image list by setting it to NULL, the item width and height
+			* is not changed and space is reserved for icons despite the
+			* fact that there are none.  The fix is to set the image list
+			* to be very small before setting it to NULL.  This causes
+			* Windows to reserve the smallest possible space when an image
+			* list is removed.  In this case, the scroll width must be one
+			* pixel larger.
+			*/
+			newWidth++;
 		}
 		newWidth += 8;
 		int oldWidth = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
@@ -2561,6 +2542,39 @@ public void setSelection (int start, int end) {
 	select (start, end);
 	setFocusIndex (start);
 	showSelection ();
+}
+
+void setTableEmpty () {
+	if (imageList != null) {
+		int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		if (columnCount == 1 && columns [0] == null) columnCount = 0;
+		int i = 0;
+		while (i < columnCount) {
+			TableColumn column = columns [i];
+			if (column.getImage () != null) break;
+			i++;
+		}
+		if (i == columnCount) {
+			/*
+			* Bug in Windows.  When LVM_SETIMAGELIST is used to remove the
+			* image list by setting it to NULL, the item width and height
+			* is not changed and space is reserved for icons despite the
+			* fact that there are none.  The fix is to set the image list
+			* to be very small before setting it to NULL.  This causes
+			* Windows to reserve the smallest possible space when an image
+			* list is removed.
+			*/
+			int hImageList = OS.ImageList_Create (1, 1, 0, 0, 0);
+			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
+			OS.ImageList_Destroy (hImageList);
+			display.releaseImageList (imageList);
+			imageList = null;
+		}
+	}
+	customDraw = false;
+	items = new TableItem [4];
 }
 
 /**
