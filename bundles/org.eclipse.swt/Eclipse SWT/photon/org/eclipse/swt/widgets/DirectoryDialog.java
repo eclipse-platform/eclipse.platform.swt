@@ -140,7 +140,7 @@ public String open () {
 	while (length < info.path.length && info.path [length] != 0) length++;
 	byte [] path = new byte [length];
 	System.arraycopy (info.path, 0, path, 0, length);
-	return new String (Converter.mbcsToWcs (null, path));
+	return filterPath = new String (Converter.mbcsToWcs (null, path));
 }
 
 /**

@@ -174,7 +174,7 @@ public String open () {
 					range.length = length;
 					OS.CFStringGetCharacters (dirString, range, buffer);
 					OS.CFRelease (dirString);
-					directoryPath = new String (buffer);
+					filterPath = directoryPath = new String (buffer);
 				}
 				OS.DisposePtr (dataPtr);
 			}

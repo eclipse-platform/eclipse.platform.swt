@@ -157,6 +157,7 @@ public String open () {
 			char separator = System.getProperty ("file.separator").charAt (0);
 			int separatorIndex = answer.lastIndexOf (separator);
 			if (separatorIndex != answer.length () - 1) answer += separator;
+			filterPath = answer;
 		}
 	}
 	OS.gtk_widget_destroy (handle);
