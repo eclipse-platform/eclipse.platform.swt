@@ -140,7 +140,7 @@ public Font(Device device, String name, int height, int style) {
 public void dispose() {
 	if (handle == 0) return;
 	if (device.isDisposed()) return;
-	if (handle != 0) OS.pango_font_description_free(handle);
+	OS.pango_font_description_free(handle);
 	handle = 0;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;

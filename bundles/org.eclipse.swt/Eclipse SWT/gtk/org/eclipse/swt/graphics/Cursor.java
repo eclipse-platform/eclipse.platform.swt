@@ -46,7 +46,7 @@ public final class Cursor {
 	public int handle;
 
 	/**
-	 * The device where this image was created.
+	 * The device where this cursor was created.
 	 */
 	Device device;
 
@@ -389,7 +389,9 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
  * they allocate.
  */
 public void dispose() {
-	if (handle != 0) OS.gdk_cursor_destroy(handle);
+	if (handle == 0) return;
+	if (device.isDisposed()) return;
+	OS.gdk_cursor_destroy(handle);
 	handle = 0;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;
