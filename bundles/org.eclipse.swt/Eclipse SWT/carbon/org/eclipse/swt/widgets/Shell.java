@@ -178,7 +178,7 @@ public void dispose () {
 
 void destroyWidget () {
 	int theWindow = shellHandle;
-	OS.HideWindow (shellHandle);
+//	OS.HideWindow (shellHandle);
 	releaseHandle ();
 	if (theWindow != 0) OS.DisposeWindow (theWindow);
 }
