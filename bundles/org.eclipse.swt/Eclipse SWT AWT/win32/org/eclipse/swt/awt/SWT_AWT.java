@@ -50,8 +50,6 @@ public class SWT_AWT {
 	public static String embeddedFrameClass;
 
 	static boolean loaded, swingInitialized;
-	static Object menuSelectionManager;
-	static Method clearSelectionPath;
 
 static native final int getAWTHandle (Canvas canvas);
 
@@ -81,14 +79,6 @@ static synchronized void initializeSwing() {
 		Class clazz = Class.forName("javax.swing.UIManager");
 		Method method = clazz.getMethod("getDefaults", emptyClass);
 		if (method != null) method.invoke(clazz, emptyObject);
-
-		/* Get the swing menu selection manager to dismiss swing popups properly */
-		clazz = Class.forName("javax.swing.MenuSelectionManager");
-		method = clazz.getMethod("defaultManager", emptyClass);
-		if (method == null) return;
-		menuSelectionManager = method.invoke(clazz, emptyObject);
-		if (menuSelectionManager == null) return;
-		clearSelectionPath = menuSelectionManager.getClass().getMethod("clearSelectedPath", emptyClass);
 	} catch (Throwable e) {}
 }
 
@@ -164,54 +154,50 @@ public static Frame new_Frame (final Composite parent) {
 	* the embedded frame. This is needed in order to make keyboard
 	* focus work properly for lightweights.
 	*/
-	parent.addListener (SWT.Activate, new Listener () {
+	Listener listener = new Listener () {
 		public void handleEvent (Event e) {
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
-						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
-					} else {
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_GAINED_FOCUS));
-					}
-				}
-			});
-		}
-	});
-	parent.addListener (SWT.Deactivate, new Listener () {
-		public void handleEvent (Event e) {
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
-						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
-					} else {
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
-					}
-					if (Library.JAVA_VERSION >= Library.JAVA_VERSION(1, 4, 2)) {
-						if (menuSelectionManager != null && clearSelectionPath != null) {
-							try {
-								clearSelectionPath.invoke(menuSelectionManager, new Object[0]);
-							} catch (Throwable e) {}
+			switch (e.type) {
+				case SWT.Dispose:
+					parent.setVisible(false);
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							frame.dispose ();
 						}
-					}
-				}
-			});
+					});
+					break;
+				case SWT.Activate:
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
+								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
+							} else {
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_GAINED_FOCUS));
+							}
+						}
+					});
+					break;
+				case SWT.Deactivate:
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
+								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
+							} else {
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
+							}
+						}
+					});
+					break;
+			}
 		}
-	});
-
-	parent.addListener (SWT.Dispose, new Listener () {
-		public void handleEvent (Event event) {
-			parent.setVisible(false);
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					frame.dispose ();
-				}
-			});
-		}
-	});
+	};
+	parent.addListener (SWT.Activate, listener);
+	parent.addListener (SWT.Deactivate, listener);
+	parent.addListener (SWT.Dispose, listener);
+	
 	parent.getDisplay().asyncExec(new Runnable() {
 		public void run () {
 			if (parent.isDisposed()) return;
