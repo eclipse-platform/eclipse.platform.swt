@@ -578,8 +578,10 @@ int GtkCTreeDispose (int ctree, int node, int data) {
 	int index = OS.gtk_ctree_node_get_row_data (ctree, node) - 1;
 	OS.gtk_ctree_node_set_row_data (ctree, node, 0);
 	TreeItem item = items [index];
-	item.releaseWidget ();
-	item.releaseHandle ();
+	if (item != null && !item.isDisposed ()) {
+		item.releaseWidget ();
+		item.releaseHandle ();
+	}
 	items [index] = null;
 	return 0;
 }
@@ -606,6 +608,8 @@ int processCollapse (int int0, int int1, int int2) {
 
 int processKeyDown (int callData, int arg1, int int2) {
 	int result = super.processKeyDown (callData, arg1, int2);
+	if (result != 0) return result;
+
 	/*
 	* Feature in GTK.  When an item is reselected using
 	* the space bar, GTK does not issue notification.
@@ -722,8 +726,10 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 				GdkEventFocus focusEvent = new GdkEventFocus ();
 				OS.memmove (focusEvent, int0, GdkEventFocus.sizeof);
 				if (focusEvent.in == 0) {
-					OS.gtk_grab_remove (handle);
-					OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
+					if (OS.gtk_grab_get_current () == handle) {
+						OS.gtk_grab_remove (handle);
+						OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
+					}
 				}
 				break;
 			}

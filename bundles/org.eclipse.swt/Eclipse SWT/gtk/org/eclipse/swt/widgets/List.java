@@ -696,8 +696,10 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 				GdkEventFocus focusEvent = new GdkEventFocus ();
 				OS.memmove (focusEvent, int0, GdkEventFocus.sizeof);
 				if (focusEvent.in == 0) {
-					OS.gtk_grab_remove (handle);
-					OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
+					if (OS.gtk_grab_get_current () == handle) {
+						OS.gtk_grab_remove (handle);
+						OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
+					}
 				}
 				break;
 			}
@@ -709,6 +711,8 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 
 int processKeyDown (int callData, int arg1, int int2) {
 	int result = super.processKeyDown (callData, arg1, int2);
+	if (result != 0) return result;
+
 	/*
 	* Feature in GTK.  When an item is reselected using
 	* the space bar, GTK does not issue notification.
