@@ -474,7 +474,9 @@ public static final native void gtk_menu_bar_insert(int menu_bar, int child, int
 public static final native int gtk_menu_bar_new();
 public static final native void gtk_menu_insert(int menu, int child, int position);
 public static final native int gtk_menu_item_new();
-public static final native int gtk_menu_item_new_with_label(byte[] label);
+public static final native int gtk_image_menu_item_new_with_label(byte[] label);
+public static final native int  gtk_image_menu_item_get_image(int menu_item);
+public static final native void gtk_image_menu_item_set_image(int menu_item, int image);
 public static final native void gtk_menu_item_remove_submenu(int menu_item);
 public static final native void gtk_menu_item_set_submenu(int menu_item, int submenu);
 public static final native int gtk_menu_new();
