@@ -3217,6 +3217,36 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1main
 }
 #endif
 
+#ifndef NO_gtk_1major_1version
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1major_1version
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1major_1version\n")
+
+	return (jint)gtk_major_version;
+}
+#endif
+
+#ifndef NO_gtk_1minor_1version
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1minor_1version
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1minor_1version\n")
+
+	return (jint)gtk_minor_version;
+}
+#endif
+
+#ifndef NO_gtk_1micro_1version
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1micro_1version
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1micro_1version\n")
+
+	return (jint)gtk_micro_version;
+}
+#endif
+
 #ifndef NO_gtk_1main_1iteration
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1main_1iteration
 	(JNIEnv *env, jclass that)

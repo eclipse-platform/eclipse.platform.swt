@@ -555,6 +555,9 @@ public static final native void gtk_list_store_set(int store, int iter, int colu
 public static final native void gtk_list_store_set(int store, int iter, int column, int value, int terminator);
 public static final native void gtk_list_store_set(int store, int iter, int column, GdkColor value, int terminator);
 public static final native void gtk_list_store_set(int store, int iter, int column, boolean value, int terminator);
+public static final native int gtk_major_version();
+public static final native int gtk_minor_version();
+public static final native int gtk_micro_version();
 public static final native void gtk_main();
 public static final native int gtk_main_iteration();
 public static final native int gtk_menu_bar_new();
