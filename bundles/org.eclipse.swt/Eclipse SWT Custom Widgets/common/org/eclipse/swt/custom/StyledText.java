@@ -6844,10 +6844,18 @@ void setHorizontalScrollBar() {
  * line background color. Should not be called if a LineBackgroundListener 
  * has been set since the listener maintains the line backgrounds.
  * <p>
+ * Line background colors are maintained relative to the line text, not the 
+ * line index that is specified in this method call.
  * During text changes, when entire lines are inserted or removed, the line 
  * background colors that are associated with the lines after the change 
- * will "move" with their respective text.  For all other text changes, 
- * line background colors will remain unchanged. 
+ * will "move" with their respective text. An entire line is defined as 
+ * extending from the first character on a line to the last and including the 
+ * line delimiter. 
+ * </p>
+ * <p>
+ * When two lines are joined by deleting a line delimiter, the top line 
+ * background takes precedence and the color of the bottom line is deleted. 
+ * For all other text changes line background colors will remain unchanged. 
  * </p>
  * 
  * @param startLine first line the color is applied to, 0 based
@@ -7229,7 +7237,7 @@ public void setStyleRange(StyleRange range) {
 }
 /** 
  * Sets styles to be used for rendering the widget content. All styles 
- * will be replaced with the given set of styles.
+ * in the widget will be replaced with the given set of styles.
  * <p>
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
