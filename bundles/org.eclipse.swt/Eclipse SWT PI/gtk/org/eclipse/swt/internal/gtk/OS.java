@@ -4842,6 +4842,15 @@ public static final void gtk_paint_handle(int /*long*/ style, int /*long*/ windo
 		lock.unlock();
 	}
 }
+public static final native void _gtk_paint_focus(int /*long*/ style, int /*long*/ window, int state_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height);
+public static final void gtk_paint_focus(int /*long*/ style, int /*long*/ window, int state_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height) {
+	lock.lock();
+	try {
+		_gtk_paint_focus(style, window, state_type, area, widget, detail, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_plug_get_id(int /*long*/ plug);
 public static final int /*long*/ gtk_plug_get_id(int /*long*/ plug) {
 	lock.lock();

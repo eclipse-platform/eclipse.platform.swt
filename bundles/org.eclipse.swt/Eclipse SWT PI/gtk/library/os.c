@@ -7137,6 +7137,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1object_1sink)
 }
 #endif
 
+#ifndef NO__1gtk_1paint_1focus
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1focus)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jint arg4, jbyteArray arg5, jint arg6, jint arg7, jint arg8, jint arg9)
+{
+	GdkRectangle _arg3, *lparg3=NULL;
+	jbyte *lparg5=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1focus_FUNC);
+	if (arg3) if ((lparg3 = getGdkRectangleFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	gtk_paint_focus((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, lparg3, (GtkWidget *)arg4, lparg5, arg6, arg7, arg8, arg9);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg3 && lparg3) setGdkRectangleFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1focus_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1paint_1handle
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1handle)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)

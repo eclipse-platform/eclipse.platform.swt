@@ -569,6 +569,7 @@ typedef enum {
 	_1gtk_1notebook_1set_1show_1tabs_FUNC,
 	_1gtk_1notebook_1set_1tab_1pos_FUNC,
 	_1gtk_1object_1sink_FUNC,
+	_1gtk_1paint_1focus_FUNC,
 	_1gtk_1paint_1handle_FUNC,
 	_1gtk_1plug_1get_1id_FUNC,
 	_1gtk_1plug_1new_FUNC,

@@ -324,18 +324,12 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
  */
 public void drawFocus(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	//CHECK - default style might not be attached to any window
-	GdkColor color = new GdkColor();
-	OS.gtk_style_get_fg (OS.gtk_widget_get_default_style(), OS.GTK_STATE_NORMAL, color);
-	GdkGCValues values = new GdkGCValues();
-	OS.gdk_gc_get_values(handle, values);
-	OS.gdk_gc_set_foreground(handle, color);
-	OS.gdk_draw_rectangle(data.drawable, handle, 0, x, y, width - 1, height - 1);
-	color.pixel = values.foreground_pixel;
-	color.red = values.foreground_red;
-	color.green = values.foreground_green;
-	color.blue = values.foreground_blue;
-	OS.gdk_gc_set_foreground(handle, color);
+	/*
+	* Do not use gtk_widget_get_default_style() here because
+	* gtk_paint_focus() uses GCs from the style, which are not
+	* valid in the default style.
+	*/
+	OS.gtk_paint_focus (OS.gtk_widget_get_style(data.device.shellHandle), data.drawable, OS.GTK_STATE_NORMAL, null, 0, new byte[1], x, y, width, height);
 }
 
 /**

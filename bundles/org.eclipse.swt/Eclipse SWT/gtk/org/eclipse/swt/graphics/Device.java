@@ -26,6 +26,7 @@ public abstract class Device implements Drawable {
 	 * the handle to the X Display
 	 */
 	int /*long*/ xDisplay;
+	int /*long*/ shellHandle;
 
 	/* Debugging */
 	public static boolean DEBUG;
@@ -558,6 +559,10 @@ protected void init () {
 	emptyTab = OS.pango_tab_array_new(1, false);
 	if (emptyTab == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_tab_array_set_tab(emptyTab, 0, OS.PANGO_TAB_LEFT, 1);
+
+	shellHandle = OS.gtk_window_new(OS.GTK_WINDOW_TOPLEVEL);
+	if (shellHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.gtk_widget_realize(shellHandle);
 }
 
 /**	 
@@ -669,6 +674,9 @@ static synchronized void register (Device device) {
  * @see #destroy
  */
 protected void release () {
+	if (shellHandle != 0) OS.gtk_widget_destroy(shellHandle);
+	shellHandle = 0;
+
 	if (gdkColors != null) {
 		int /*long*/ colormap = OS.gdk_colormap_get_system();
 		for (int i = 0; i < gdkColors.length; i++) {
