@@ -1150,15 +1150,13 @@ int contentWidth(String text, int lineIndex, GC gc) {
 			String tabSegment = text.substring(i, tabIndex);
 			paintX += gc.stringExtent(tabSegment).x;
 			if (tabIndex != textLength && tabWidth > 0) {
-				paintX += tabWidth;
-				paintX -= paintX % tabWidth;
+				paintX = getTabStop(paintX);
 			}
 			i = tabIndex;
 		}
 		else 		
 		if (tabWidth > 0) {
-			paintX += tabWidth;
-			paintX -= paintX % tabWidth;
+			paintX = getTabStop(paintX);
 		}
 	}
 	return paintX;
@@ -2523,16 +2521,14 @@ int drawText(String text, int startOffset, int length, int paintX, int paintY, G
 				gc.drawString(tabSegment, paintX - horizontalScrollOffset, paintY, true);
 				paintX += gc.stringExtent(tabSegment).x;
 				if (tabIndex != endOffset && tabWidth > 0) {
-					paintX += tabWidth;
-					paintX -= paintX % tabWidth;
+					paintX = getTabStop(paintX);
 				}
 			}
 			i = tabIndex;
 		}
 		else 		// is tab at current rendering offset?
 		if (tabWidth > 0 && isBidi() == false) {
-			paintX += tabWidth;
-			paintX -= paintX % tabWidth;
+			paintX = getTabStop(paintX);
 		}
 	}
 	return paintX;
@@ -3515,6 +3511,25 @@ public int getTabs() {
 
 
 	return tabLength;
+}
+/**
+ * Returns the next tab stop for the specified x location.
+ * <p>
+ *
+ * @param x the x location in front of a tab
+ * @return the next tab stop for the specified x location.
+ */
+int getTabStop(int x) {
+	int spaceWidth = tabWidth / tabLength;
+
+	// make sure tab stop is at least one space width apart 
+	// from the last character. fixes 4844.
+	if (tabWidth - x % tabWidth < spaceWidth) {
+		x += tabWidth;
+	}
+	x += tabWidth;
+	x -= x % tabWidth;
+	return x;
 }
 /**
  * Returns a copy of the widget content.
@@ -6251,7 +6266,6 @@ int textWidth(String text, int lineOffset, int startOffset, int length, StyleRan
 	int paintX = 0;
 	int endOffset = startOffset + length;
 	int textLength = text.length();
-	FontData fontData = gc.getFont().getFontData()[0];
 	
 	if (startOffset < 0 || startOffset >= textLength || startOffset + length > textLength) {
 		return paintX;
@@ -6262,6 +6276,8 @@ int textWidth(String text, int lineOffset, int startOffset, int length, StyleRan
 		paintX = bidi.getCaretPosition(endOffset, lastCaretDirection) - startXOffset;
 	}
 	else {
+		FontData fontData = gc.getFont().getFontData()[0];
+
 		for (int i = startOffset; i < endOffset; i++) {
 			int tabIndex = text.indexOf(TAB, i);
 			// is tab not present or past the rendering range?
@@ -6278,15 +6294,13 @@ int textWidth(String text, int lineOffset, int startOffset, int length, StyleRan
 					paintX += gc.stringExtent(tabSegment).x;
 				}
 				if (tabIndex != endOffset && tabWidth > 0) {
-					paintX += tabWidth;
-					paintX -= (startXOffset + paintX) % tabWidth;
+					paintX = getTabStop(startXOffset + paintX) - startXOffset;
 				}
 				i = tabIndex;
 			}
 			else 		
 			if (tabWidth > 0) {
-				paintX += tabWidth;
-				paintX -= (startXOffset + paintX) % tabWidth;
+				paintX = getTabStop(startXOffset + paintX) - startXOffset;
 			}
 		}
 	}
