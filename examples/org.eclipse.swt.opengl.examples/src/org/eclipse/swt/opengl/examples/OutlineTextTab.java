@@ -141,7 +141,7 @@ class OutlineTextTab extends OpenGLTab {
 						(int) currentColor[0] * 255,
 						(int) currentColor[1] * 255,
 						(int) currentColor[2] * 255));
-				fontDialog.setFontData(fontData);
+				fontDialog.setFontList(new FontData[] {fontData});
 				FontData result = fontDialog.open();
 				if (result != null) {
 					fontData = result;
