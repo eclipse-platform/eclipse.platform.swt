@@ -1175,7 +1175,7 @@ void setBackgroundColor (GdkColor color) {
  */
 public boolean getHeaderVisible () {
 	checkWidget();
-	return (OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_CLIST_SHOW_TITLES) != 0;
+	return OS.GTK_CLIST_SHOW_TITLES (handle);
 }
 
 void setFontDescription (int font) {
@@ -1206,6 +1206,7 @@ void setFontDescription (int font) {
  * </ul>
  */
 public void setHeaderVisible (boolean show) {
+	checkWidget ();
 	if (show) {
 		OS.gtk_clist_column_titles_show (handle);
 	} else {

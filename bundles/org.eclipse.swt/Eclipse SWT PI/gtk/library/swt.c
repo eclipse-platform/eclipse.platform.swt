@@ -96,6 +96,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1SELECTIO
 	return (jint)((GtkCList *)arg0)->selection;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1SHOW_1TITLES
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1CLIST_1SHOW_1TITLES\n")
+
+	return (jboolean)GTK_CLIST_SHOW_TITLES(arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1VADJUSTMENT
 	(JNIEnv *env, jclass that, jint arg0)
 {
