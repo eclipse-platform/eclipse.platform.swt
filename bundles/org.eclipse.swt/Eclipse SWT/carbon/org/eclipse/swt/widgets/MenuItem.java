@@ -114,6 +114,9 @@ public boolean getSelection () {
 }
 
 int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
+	//TEMPORARY CODE
+	if (!isEnabled ()) return OS.noErr;
+
 	if ((style & SWT.CHECK) != 0) {
 		setSelection (!getSelection ());
 	} else {

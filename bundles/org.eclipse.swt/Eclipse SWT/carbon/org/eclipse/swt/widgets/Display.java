@@ -959,7 +959,9 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 		case OS.inMenuBar: {
 			if (eventKind == OS.kEventMouseDown) {
 				clearMenuFlags ();
-				OS.MenuSelect (where);
+				if (menuBar != null && menuBar.isEnabled ()) {
+					OS.MenuSelect (where);
+				}					 
 				clearMenuFlags ();
 				return OS.noErr;
 			}
