@@ -1248,7 +1248,7 @@ public void setVisible (boolean visible) {
 		do {
 			OS.g_main_context_iteration (0, false);
 			if (isDisposed ()) break;
-			iconic = shell != null && shell.minimized;
+			iconic = minimized || (shell != null && shell.minimized);
 		} while (!mapped && !iconic);
 		display.dispatchEvents = null;
 		if (isDisposed ()) return;

@@ -1427,7 +1427,7 @@ public void setVisible (boolean visible) {
 		do {
 			display.update ();
 			if (isDisposed ()) return;
-			iconic = shell != null && shell.minimized;
+			iconic = minimized || (shell != null && shell.minimized);
 		} while (!isVisible () && !iconic);
 		if (!iconic) adjustTrim ();
 		
