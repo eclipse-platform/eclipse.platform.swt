@@ -196,12 +196,6 @@ public void append (String string) {
 		string = verifyText (string, length, length);
 		if (string == null) return;
 	}
-	/*
-	OS.SendMessage (handle, OS.EM_SETSEL, length, length);
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
-	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
-	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
-	*/
 	replaceTXNText(OS.kTXNEndOffset, OS.kTXNEndOffset, string);
 }
 static int checkStyle (int style) {
@@ -338,8 +332,8 @@ void createHandle (int index) {
 	if ((style & SWT.WRAP) != 0)
 		frameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
 	
-	int parentHandle = parent.handle;
-	handle= MacUtil.createDrawingArea(parentHandle, 0, 0, 0);		
+	int parentHandle= parent.handle;
+	handle= MacUtil.createDrawingArea(parentHandle, -1, true, 0, 0, 0);		
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	int wHandle= OS.GetControlOwner(parentHandle);
@@ -359,9 +353,14 @@ void createHandle (int index) {
 	 * This is done in two steps: before creating the MLTE object with TXNNewObject
 	 * we count the number of controls under the root control. Second step: see below.
 	 */
-	int[] rootHandle= new int[1];
-	OS.GetRootControl(wHandle, rootHandle);
-	int root= rootHandle[0];
+	int root;
+	if (true) {
+		int[] rootHandle= new int[1];
+		OS.GetRootControl(wHandle, rootHandle);
+		root= rootHandle[0];
+	} else {
+		root= OS.HIViewGetRoot(wHandle);
+	}
 	short[] cnt= new short[1];
 	OS.CountSubControls(root, cnt);
 	short oldCount= cnt[0];
@@ -373,7 +372,7 @@ void createHandle (int index) {
 						tnxObject, frameID, handle);
 	if (status != OS.kNoErr)
 		error(SWT.ERROR_NO_HANDLES);
-	
+		
 	/*
 	 * Second step: count the controls under root again to find out how many
 	 * scrollbars had been added. Then move these new controls under the user pane
@@ -384,7 +383,12 @@ void createHandle (int index) {
 	int[] child= new int[1];
 	for (short i= newCount; i > oldCount; i--) {
 		OS.GetIndexedSubControl(root, i, child);
-		MacUtil.embedControl(child[0], handle);
+		if (true) {
+			OS.HIViewRemoveFromSuperview(child[0]);
+			OS.HIViewAddSubview(handle, child[0]);
+		} else {
+			MacUtil.embedControl(child[0], handle);
+		}
 	}
 	
 	fTX= tnxObject[0];
@@ -1350,8 +1354,20 @@ public void showSelection () {
 	OS.TXNShowSelection(fTX, false);
 }
 int traversalCode () {
-	if ((style & SWT.SINGLE) != 0) return super.traversalCode ();
-	return SWT.TRAVERSE_ESCAPE;
+	int bits = super.traversalCode ();
+	if ((style & SWT.READ_ONLY) != 0) return bits;
+	if ((style & SWT.MULTI) != 0) {
+		bits &= ~SWT.TRAVERSE_RETURN;
+		/* AW
+		if (key == OS.XK_Tab && xEvent != null) {
+			boolean next = (xEvent.state & OS.ShiftMask) == 0;
+			if (next && (xEvent.state & OS.ControlMask) == 0) {
+				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
+			}
+		}
+		*/
+	}
+	return bits;
 }
 String verifyText (String string, int start, int end) {
 	return verifyText (string, start, end, null);
@@ -1408,35 +1424,38 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		return new String(chars);
 	}
 	
-	int sendKeyEvent (int type, MacEvent mEvent, Event event) {
+	int sendKeyEvent(int type, MacEvent mEvent, Event event) {
 	
 		int status= OS.kNoErr;	// we handled the event
 		
-		int kind= mEvent.getKind();
-		if ((kind == OS.kEventRawKeyDown || kind == OS.kEventRawKeyRepeat) && (mEvent.getModifiers() & OS.cmdKey) != 0) {
+		if ((mEvent.getModifiers() & OS.cmdKey) != 0) {
+			int kind= mEvent.getKind();
 			int code= mEvent.getKeyCode();
 			switch (code) {
 			case 0:
-				selectAll();
-				break;
+				if (kind == OS.kEventRawKeyDown)
+					selectAll();
+				return status;
 			case 7:
-				cut();
-				break;
+				if (kind == OS.kEventRawKeyDown)
+					cut();
+				return status;
 			case 8:
-				copy();
-				break;
+				if (kind == OS.kEventRawKeyDown)
+					copy();
+				return status;
 			case 9:
-				paste();
-				break;
+				if (kind == OS.kEventRawKeyDown || kind == OS.kEventRawKeyRepeat)
+					paste();
+				return status;
 			default:
-				//System.out.println("key code: " + code);
 				break;
 			}
-			return OS.kNoErr;
 		}
 		
 		int eRefHandle= mEvent.getEventRef();
 		int nextHandler= mEvent.getNextHandler();
+
 		if (hooks (SWT.Verify)) {
 
 			// extract characters from event
@@ -1461,13 +1480,13 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 				}
 			}
 			
-			String string= verifyText(original, start[0], end[0]);
+			String string= verifyText(original, start[0], end[0], event);
 			if (string == null)
 				return status;	// ignore event
 				
 			int l= string.length();
 			char[] newChars= new char[l];
-			string.getChars(0, l, newChars, 0);
+			string.getChars(0, l, newChars, 0);		
 			if (true) {
 				OS.SetEventParameter(eRefHandle, OS.kEventParamTextInputSendText, OS.typeUnicodeText, newChars);
 				status= OS.CallNextEventHandler(nextHandler, eRefHandle);

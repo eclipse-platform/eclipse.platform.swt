@@ -82,21 +82,13 @@ Control [] _getChildren () {
 	OS.CountSubControls(handle, cnt);
 	int count= cnt[0];
 	if (count == 0) return new Control [0];
-	int handles[]= new int[count];
-	int[] outHandle= new int[1];
-	
-	for (int i= 0; i < count; i++) {
-		int index= (count-i);
-		if (OS.GetIndexedSubControl(handle, (short)index, outHandle) == 0)	// indices are 1 based
-			handles[i]= outHandle[0];
-		else
-			error (SWT.ERROR_CANNOT_GET_ITEM);
-	}
-	
+	int[] outControl= new int[1];
 	Control [] children = new Control [count];
 	int i = 0, j = 0;
 	while (i < count) {
-		int handle = handles [i];
+		if (MacUtil.getChild(handle, outControl, count, i) != OS.kNoErr)
+			error (SWT.ERROR_CANNOT_GET_ITEM);
+		int handle = outControl [0];
 		if (handle != 0) {
 			Widget widget = WidgetTable.get (handle);
 			if (widget != null && widget != this) {
@@ -178,7 +170,7 @@ Control [] computeTabList () {
 
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) { // no scrollbars
 		int border = (style & SWT.BORDER) != 0 ? 1 : 0;
         /* AW
 		int [] argList = {
@@ -191,10 +183,7 @@ void createHandle (int index) {
 		};
         */
 		int parentHandle = parent.handle;
-        /* AW
-		handle = OS.XmCreateDrawingArea (parentHandle, null, argList, argList.length / 2);
-        */
-        handle= MacUtil.createDrawingArea (parentHandle, 0, 0, border);
+        handle= MacUtil.createDrawingArea (parentHandle, -1, true, 0, 0, border);
 
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
         /* AW
@@ -240,7 +229,7 @@ void createScrolledHandle (int topHandle) {
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
         */
-        handle= MacUtil.createDrawingArea (scrolledHandle, 0, 0, 0);
+        handle= MacUtil.createDrawingArea (scrolledHandle, -1, true, 0, 0, 0);
 	} else {
         /* AW
 		int [] argList3 = {
@@ -251,7 +240,7 @@ void createScrolledHandle (int topHandle) {
 		};
 		handle = OS.XmCreateDrawingArea (scrolledHandle, null, argList3, argList3.length / 2);
         */
-        handle = MacUtil.createDrawingArea (scrolledHandle, 0, 0, 0);
+        handle = MacUtil.createDrawingArea (scrolledHandle, -1, true, 0, 0, 0);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
     /* AW
@@ -309,11 +298,6 @@ int getChildrenCount () {
 	* NOTE:  The current implementation will count
 	* non-registered children.
 	*/
-    /* AW
-	int [] argList = {OS.XmNnumChildren, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1];
-    */
 	short[] cnt= new short[1];
 	OS.CountSubControls(handle, cnt);
 	return cnt[0];

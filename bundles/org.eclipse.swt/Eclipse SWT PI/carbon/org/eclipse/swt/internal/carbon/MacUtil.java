@@ -11,6 +11,7 @@ package org.eclipse.swt.internal.carbon;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.Callback;
 
 public class MacUtil {
 
@@ -32,6 +33,55 @@ public class MacUtil {
 		KEEP_MAC_SHORTCUTS= true;
 	}
 	
+	//////////////////////////////////////////////////////////////////////
+	
+	private static int fViewClassID= 0;
+	
+	static int createCallback(String method, int argCount) {
+		Callback cb= new Callback(MacUtil.class, method, argCount);
+		int proc= cb.getAddress();
+		return proc;
+	}
+	
+	static int hiobProc(int a, int b, int c) {
+		System.out.println("hiobProc");
+		return OS.kNoErr;
+	}
+	
+	static int createHIView() {
+		int rc;
+		
+		if (fViewClassID == 0) {
+				
+			fViewClassID= OS.CFStringCreateWithCharacters("org.eclipse.swt.hiview");
+			int baseClassID= OS.CFStringCreateWithCharacters("com.apple.hiview");
+		
+			int[] events= new int[] {
+				OS.kEventClassHIObject, OS.kEventHIObjectConstruct,
+				//OS.kEventClassHIObject, OS.kEventHIObjectInitialize,
+				OS.kEventClassHIObject, OS.kEventHIObjectDestruct,
+				
+				OS.kEventClassControl,	OS.kEventControlDraw,
+				OS.kEventClassControl,	OS.kEventControlAddedSubControl,
+				OS.kEventClassControl,	OS.kEventControlRemovingSubControl,
+			};
+		
+			int hiobProc= createCallback("hiobProc", 3);
+		
+			int[] tmp= new int[1];
+			rc= OS.HIObjectRegisterSubclass(fViewClassID, baseClassID, 0, hiobProc, events, 0, tmp);
+			System.out.println("HIObjectRegisterSubclass: " + rc);
+		
+			OS.CFRelease(baseClassID);
+		}
+		
+		int[] oref= new int[1];
+		//rc= OS.HIObjectCreate(fViewClassID, 0, oref);
+		rc= OS.HIObjectCreate(OS.CFStringCreateWithCharacters("com.apple.hiview"), 0, oref);
+		System.out.println("HIObjectCreate: " + rc + " " + oref[0]);
+		return oref[0];
+	}
+
 	//////////////////////////////////////////////////////////////////////
 		
 	public static int getChild(int handle, int[] t, int n, int i) {
@@ -179,6 +229,68 @@ public class MacUtil {
 		return handle;
 	}
 	
+	public static int getVisibleRegion(int cHandle, int result, boolean includingTop) {
+		int tmpRgn= OS.NewRgn();
+		
+		getControlRegion(cHandle, OS.kControlEntireControl, result);
+
+		int parent= cHandle;
+		while ((parent= MacUtil.getSuperControl(parent)) != 0) {
+			getControlRegion(parent, OS.kControlContentMetaPart, tmpRgn);
+			OS.SectRgn(result, tmpRgn, result);
+		}
+		
+		if (includingTop) {
+			int n= countSubControls(cHandle);
+			if (n > 0) {
+				//System.out.println("have children on top");
+				int[] outHandle= new int[1];
+				for (int i= n; i > 0; i--) {
+					if (OS.GetIndexedSubControl(cHandle, (short)i, outHandle) == 0) {
+						if (OS.IsControlVisible(outHandle[0])) {
+							getControlRegion(outHandle[0], OS.kControlStructureMetaPart, tmpRgn);
+							OS.DiffRgn(result, tmpRgn, result);
+						}
+					} else
+						throw new SWTError();
+				}
+			}
+		}
+		
+		OS.DisposeRgn(tmpRgn);
+                
+		return OS.kNoErr;
+	}
+	
+	private static int find(int cHandle, Rectangle parentBounds, MacRect tmp, Point where) {
+	
+		if (! OS.IsControlVisible(cHandle))
+			return 0;
+		if (! OS.IsControlActive(cHandle))
+			return 0;
+
+		OS.GetControlBounds(cHandle, tmp.getData());
+		Rectangle rr= tmp.toRectangle();
+		if (parentBounds != null)
+			rr= parentBounds.intersection(rr);
+
+		int n= countSubControls(cHandle);
+		if (n > 0) {
+			int[] outHandle= new int[1];
+			for (int i= n; i > 0; i--) {
+				if (OS.GetIndexedSubControl(cHandle, (short)i, outHandle) == 0) {
+					int result= find(outHandle[0], rr, tmp, where);
+					if (result != 0)
+						return result;
+				}
+			}
+		}
+
+		if (rr.contains(where))
+			return cHandle;
+		return 0;
+	}
+
 	public static Point toControl(int cHandle, Point point) {
 		MacPoint mp= new MacPoint(point);
 		
@@ -215,42 +327,7 @@ public class MacUtil {
 		
 		return mp.toPoint();
 	}
-	
-	// clipping regions
-	
-	public static int getVisibleRegion(int cHandle, int result, boolean includingTop) {
-		int tmpRgn= OS.NewRgn();
 		
-		getControlRegion(cHandle, OS.kControlEntireControl, result);
-
-		int parent= cHandle;
-		while ((parent= MacUtil.getSuperControl(parent)) != 0) {
-			getControlRegion(parent, OS.kControlContentMetaPart, tmpRgn);
-			OS.SectRgn(result, tmpRgn, result);
-		}
-		
-		if (includingTop) {
-			int n= countSubControls(cHandle);
-			if (n > 0) {
-				//System.out.println("have children on top");
-				int[] outHandle= new int[1];
-				for (int i= n; i > 0; i--) {
-					if (OS.GetIndexedSubControl(cHandle, (short)i, outHandle) == 0) {
-						if (OS.IsControlVisible(outHandle[0])) {
-							getControlRegion(outHandle[0], OS.kControlStructureMetaPart, tmpRgn);
-							OS.DiffRgn(result, tmpRgn, result);
-						}
-					} else
-						throw new SWTError();
-				}
-			}
-		}
-		
-		OS.DisposeRgn(tmpRgn);
-                
-		return OS.kNoErr;
-	}
-	
 	private static void getControlRegion(int cHandle, short part, int rgn) {
 		if (true) {
 			short[] bounds= new short[4];
@@ -294,35 +371,6 @@ public class MacUtil {
 		return 0;
 	}
 	
-	private static int find(int cHandle, Rectangle parentBounds, MacRect tmp, Point where) {
-	
-		if (! OS.IsControlVisible(cHandle))
-			return 0;
-		if (! OS.IsControlActive(cHandle))
-			return 0;
-
-		OS.GetControlBounds(cHandle, tmp.getData());
-		Rectangle rr= tmp.toRectangle();
-		if (parentBounds != null)
-			rr= parentBounds.intersection(rr);
-
-		int n= countSubControls(cHandle);
-		if (n > 0) {
-			int[] outHandle= new int[1];
-			for (int i= n; i > 0; i--) {
-				if (OS.GetIndexedSubControl(cHandle, (short)i, outHandle) == 0) {
-					int result= find(outHandle[0], rr, tmp, where);
-					if (result != 0)
-						return result;
-				}
-			}
-		}
-
-		if (rr.contains(where))
-			return cHandle;
-		return 0;
-	}
-
 	public static String getStringAndRelease(int sHandle) {
 		int length= OS.CFStringGetLength(sHandle);
 		char[] buffer= new char[length];
@@ -396,12 +444,14 @@ public class MacUtil {
 		return controlHandle;
 	}
 	
+	/*
 	public static int createDrawingArea(int parentControlHandle, boolean visible, int width, int height, int border) {
 		return createDrawingArea(parentControlHandle, -1, visible, width, height, border);
 	}
 	public static int createDrawingArea(int parentControlHandle, int width, int height, int border) {
 		return createDrawingArea(parentControlHandle, true, width, height, border);
 	}
+	*/
 	
 	public static void initLocation(int cHandle) {
 		int parent= getSuperControl(cHandle);
