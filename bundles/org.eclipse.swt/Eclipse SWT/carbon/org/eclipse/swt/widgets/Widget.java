@@ -781,21 +781,102 @@ void sendEvent (int eventType) {
 	if (eventTable == null) return;
 	sendEvent (eventType, new Event ());
 }
-/*
-final void setInputState (Event event, MacEvent mEvent) {
-	event.stateMask= mEvent.getStateMask();
+
+void setInputState (Event event, MacMouseEvent mEvent) {
+	event.stateMask= mEvent.getState();
+	switch (event.type) {
+		case SWT.MouseDown:
+		case SWT.MouseDoubleClick:
+			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
+			if (event.button == 2) event.stateMask &= ~SWT.BUTTON2;
+			if (event.button == 3)  event.stateMask &= ~SWT.BUTTON3;
+			break;
+		case SWT.MouseUp:
+			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
+			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
+			if (event.button == 3) {
+				event.stateMask |= SWT.BUTTON3;	
+				if (MacEvent.EMULATE_RIGHT_BUTTON) event.stateMask &= ~SWT.CONTROL;
+			}
+			break;
+	}
 }
-*/
-void setKeyState (Event event, MacEvent mEvent) {
-	int kc= Display.translateKey(mEvent.getKeyCode());
-	if (kc != 0) {
-		event.keyCode = kc;
-	} else {
-		//event.keyCode = 0;
-		event.character = (char) mEvent.getMacCharCodes();
-	}	
-	// AW setInputState (event, mEvent);
+
+void setInputState (Event event, MacEvent mEvent) {
 	event.stateMask= mEvent.getStateMask();
+	switch (event.type) {
+		case SWT.KeyDown:
+		case SWT.Traverse: {
+			if (event.keyCode != 0 || event.character != 0) return;
+			int modifiers = mEvent.getModifiers();
+			int fLastModifiers = getDisplay().fLastModifiers;
+			if ((modifiers & OS.shiftKey) != 0 && (fLastModifiers & OS.shiftKey) == 0) {
+				event.stateMask &= ~SWT.SHIFT;
+				event.keyCode = SWT.SHIFT;
+				return;
+			}
+			if ((modifiers & OS.controlKey) != 0 && (fLastModifiers & OS.controlKey) == 0) {
+				event.stateMask &= ~SWT.CONTROL;
+				event.keyCode = SWT.CONTROL;
+				return;
+			}
+			if ((modifiers & OS.cmdKey) != 0 && (fLastModifiers & OS.cmdKey) == 0) {
+				event.stateMask &= ~SWT.COMMAND;
+				event.keyCode = SWT.COMMAND;
+				return;
+			}	
+			if ((modifiers & OS.optionKey) != 0 && (fLastModifiers & OS.optionKey) == 0) {
+				event.stateMask &= ~SWT.ALT;
+				event.keyCode = SWT.ALT;
+				return;
+			}
+			break;
+		}
+		case SWT.KeyUp: {
+			if (event.keyCode != 0 || event.character != 0) return;
+			int modifiers = mEvent.getModifiers();
+			int fLastModifiers = getDisplay().fLastModifiers;
+			if ((modifiers & OS.shiftKey) == 0 && (fLastModifiers & OS.shiftKey) != 0) {
+				event.stateMask |= SWT.SHIFT;
+				event.keyCode = SWT.SHIFT;
+				return;
+			}
+			if ((modifiers & OS.controlKey) == 0 && (fLastModifiers & OS.controlKey) != 0) {
+				event.stateMask |= SWT.CONTROL;
+				event.keyCode = SWT.CONTROL;
+				return;
+			}
+			if ((modifiers & OS.cmdKey) == 0 && (fLastModifiers & OS.cmdKey) != 0) {
+				event.stateMask |= SWT.COMMAND;
+				event.keyCode = SWT.COMMAND;
+				return;
+			}	
+			if ((modifiers & OS.optionKey) != 0 && (fLastModifiers & OS.optionKey) == 0) {
+				event.stateMask |= SWT.ALT;
+				event.keyCode = SWT.ALT;
+				return;
+			}
+			break;
+		}
+	}
+}
+
+void setKeyState (Event event, MacEvent mEvent) {
+	event.keyCode = Display.translateKey (mEvent.getKeyCode ());
+	switch (event.keyCode) {
+		case 0:
+		case SWT.BS:
+		case SWT.CR:
+		case SWT.DEL:
+		case SWT.ESC:
+		case SWT.TAB:
+			event.character = (char) mEvent.getMacCharCodes ();
+			break;
+		case SWT.LF:
+			event.character = '\n';
+			break;
+	}
+	setInputState (event, mEvent);
 }
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null) return;

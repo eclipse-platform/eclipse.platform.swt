@@ -142,37 +142,39 @@ public class Display extends Device {
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
 	
-		// AW
-		//{49,				0x20},	// space
-		{51,				SWT.BS},
-		//{36,				SWT.CR},
-		// AW
-		
-		// Keyboard and Mouse Masks
+		/* Keyboard and Mouse Masks */
 //		{OS.XK_Alt_L,		SWT.ALT},
 //		{OS.XK_Alt_R,		SWT.ALT},
 //		{OS.XK_Shift_L,		SWT.SHIFT},
 //		{OS.XK_Shift_R,		SWT.SHIFT},
 //		{OS.XK_Control_L,	SWT.CONTROL},
 //		{OS.XK_Control_R,	SWT.CONTROL},
-		
+
+		/* NOT CURRENTLY USED */
 //		{OS.VK_LBUTTON, SWT.BUTTON1},
 //		{OS.VK_MBUTTON, SWT.BUTTON3},
 //		{OS.VK_RBUTTON, SWT.BUTTON2},
+
+		/* Non-Numeric Keypad Keys */
+		{126,	SWT.ARROW_UP},
+		{125,	SWT.ARROW_DOWN},
+		{123,	SWT.ARROW_LEFT},
+		{124,	SWT.ARROW_RIGHT},
+		{116,	SWT.PAGE_UP},
+		{121,	SWT.PAGE_DOWN},
+		{115,	SWT.HOME},
+		{119,	SWT.END},
+		{71,	SWT.INSERT},
+
+		/* Virtual and Ascii Keys */
+		{51,	SWT.BS},
+		{36,	SWT.CR},
+		{117,	SWT.DEL},
+		{53,	SWT.ESC},
+		{76,	SWT.LF},
+		{48,	SWT.TAB},	
 		
-		// Non-Numeric Keypad Constants
-		{126,				SWT.ARROW_UP},
-		{125,				SWT.ARROW_DOWN},
-		{123,				SWT.ARROW_LEFT},
-		{124,				SWT.ARROW_RIGHT},
-		{116,				SWT.PAGE_UP},
-		{121,				SWT.PAGE_DOWN},
-		{115,				SWT.HOME},
-		{119,				SWT.END},
-		{71,				SWT.INSERT},
-//		{OS.XK_Delete,		SWT.DELETE},
-	
-		// Functions Keys 
+		/* Functions Keys */
 		{122,		SWT.F1},
 		{120,		SWT.F2},
 		{99,		SWT.F3},
@@ -185,6 +187,8 @@ public class Display extends Device {
 		{109,		SWT.F10},
 		{103,		SWT.F11},
 		{111,		SWT.F12},
+		
+		/* Numeric Keypad Keys */
 	};
 
 	/* Multiple Displays. */
@@ -239,6 +243,7 @@ public class Display extends Device {
 	private boolean fInContextMenu;	// true while tracking context menu
 	public int fCurrentCursor;
 	private Shell fMenuRootShell;
+	int fLastModifiers;
 	
 	private static boolean fgCarbonInitialized;
 	private static boolean fgInitCursorCalled;
@@ -925,6 +930,7 @@ protected void init () {
 	int textInputProc= createCallback("handleTextCallback", 3);
 	mask= new int[] {
 		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
+		OS.kEventClassKeyboard, OS.kEventRawKeyModifiersChanged,
 		OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
 		OS.kEventClassKeyboard, OS.kEventRawKeyUp,
 	};
@@ -1921,7 +1927,7 @@ static String convertToLf(String text) {
 						
 			switch (eventKind) {
 			case OS.kEventRawKeyDown:
-				if (MacEvent.getKeyCode(eRefHandle) == 122) {	// help key f1
+				if (MacEvent.getKeyCode(eRefHandle) == 114) {	// help key
 					windowProc(focus.handle, SWT.Help);
 					return OS.noErr;
 				}
@@ -1932,6 +1938,17 @@ static String convertToLf(String text) {
 			case OS.kEventRawKeyUp:
 				return focus.processEvent(SWT.KeyUp, new MacEvent(eRefHandle, nextHandler));
 				
+			case OS.kEventRawKeyModifiersChanged:
+				MacEvent macEvent = new MacEvent(eRefHandle, nextHandler);
+				int modifiers = macEvent.getModifiers();
+				int eventType = SWT.KeyUp;
+				if ((modifiers & OS.shiftKey) != 0 && (fLastModifiers & OS.shiftKey) == 0) eventType = SWT.KeyDown;
+				if ((modifiers & OS.controlKey) != 0 && (fLastModifiers & OS.controlKey) == 0) eventType = SWT.KeyDown;
+				if ((modifiers & OS.cmdKey) != 0 && (fLastModifiers & OS.cmdKey) == 0) eventType = SWT.KeyDown;
+				if ((modifiers & OS.optionKey) != 0 && (fLastModifiers & OS.optionKey) == 0) eventType = SWT.KeyDown;
+				int result = focus.processEvent(eventType, macEvent);
+				fLastModifiers = modifiers;
+				return result;				
 			default:
 				System.out.println("Display.handleTextCallback: kEventClassKeyboard: unexpected event kind");
 				break;
