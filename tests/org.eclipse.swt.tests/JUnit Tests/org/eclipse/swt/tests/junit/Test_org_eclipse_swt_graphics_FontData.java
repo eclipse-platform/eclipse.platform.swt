@@ -168,14 +168,12 @@ public void test_setNameLjava_lang_String() {
 	// valid name
 	fontData.setName(SwtJunit.testFontName);	
 	assertEquals("Wrong name", fontData.getName(), SwtJunit.testFontName);
-System.out.println(4);
 	// illegal argument, name == null
 	try {
 		fontData.setName(null);
 		fail("No exception thrown for name == null");
 	} catch (IllegalArgumentException e) {
 	}
-System.out.println(5);
 }
 
 public void test_setStyleI() {
