@@ -484,7 +484,8 @@ void destroyItem (TableItem item) {
 	if (count == 0) {
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-			imageList.dispose ();
+			Display display = getDisplay ();
+			display.releaseImageList (imageList);
 		}
 		imageList = null;
 		items = new TableItem [4];
@@ -860,12 +861,13 @@ public int getTopIndex () {
 int imageIndex (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
-		imageList = new ImageList ();
-		imageList.setBackground (getBackgroundPixel ());
-		imageList.add (image);
+		Rectangle bounds = image.getBounds ();
+		imageList = getDisplay ().getImageList (new Point (bounds.width, bounds.height));
+		int index = imageList.indexOf (image);
+		if (index == -1) index = imageList.add (image);
 		int hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-		return 0;
+		return index;
 	}
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
@@ -992,15 +994,16 @@ void releaseWidget () {
 //	}
 
 	items = null;
-	super.releaseWidget ();
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-		imageList.dispose ();
+		Display display = getDisplay ();
+		display.releaseImageList (imageList);
 	}
 	imageList = null;
 	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, 0);
 	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
+	super.releaseWidget ();
 }
 
 /**
@@ -1195,7 +1198,8 @@ public void removeAll () {
 
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-		imageList.dispose ();
+		Display display = getDisplay ();
+		display.releaseImageList (imageList);
 	}
 	imageList = null;
 	items = new TableItem [4];
@@ -1439,11 +1443,6 @@ void setBackgroundPixel (int pixel) {
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
 	OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
-	if (imageList != null) {
-		imageList.setBackground (pixel);
-		int hImageList = imageList.getHandle ();
-		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-	}
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
 	
 	/*
@@ -2146,11 +2145,6 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
-	if (imageList != null && background == -1) {
-		imageList.setBackground (defaultBackground ());
-		int hImageList = imageList.getHandle ();
-		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-	}
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
 	return result;
 }

@@ -113,6 +113,9 @@ public class Display extends Device {
 	int lastKey, lastAscii, lastMouse;
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
+	
+	/* Image list cache */	
+	ImageList[] imageList, toolImageList, toolHotImageList, toolDisabledImageList;
 
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
@@ -729,6 +732,114 @@ public int getIconDepth () {
 	return depth;
 }
 
+ImageList getImageList (Point size) {
+	if (imageList == null) imageList = new ImageList [4];
+	
+	int i = 0;
+	int length = imageList.length; 
+	while (i < length) {
+		ImageList list = imageList [i];
+		if (list == null) break;
+		if (list.getImageSize().equals(size)) {
+			list.addRef();
+			return list;
+		}
+		i++;
+	}
+	
+	if (i == length) {
+		ImageList [] newList = new ImageList [length + 4];
+		System.arraycopy (imageList, 0, newList, 0, length);
+		imageList = newList;
+	}
+	
+	ImageList list = new ImageList();
+	imageList [i] = list;
+	list.addRef();
+	return list;
+}
+
+ImageList getToolImageList (Point size) {
+	if (toolImageList == null) toolImageList = new ImageList [4];
+	
+	int i = 0;
+	int length = toolImageList.length; 
+	while (i < length) {
+		ImageList list = toolImageList [i];
+		if (list == null) break;
+		if (list.getImageSize().equals(size)) {
+			list.addRef();
+			return list;
+		}
+		i++;
+	}
+	
+	if (i == length) {
+		ImageList [] newList = new ImageList [length + 4];
+		System.arraycopy (toolImageList, 0, newList, 0, length);
+		toolImageList = newList;
+	}
+	
+	ImageList list = new ImageList();
+	toolImageList [i] = list;
+	list.addRef();
+	return list;
+}
+
+ImageList getToolHotImageList (Point size) {
+	if (toolHotImageList == null) toolHotImageList = new ImageList [4];
+	
+	int i = 0;
+	int length = toolHotImageList.length; 
+	while (i < length) {
+		ImageList list = toolHotImageList [i];
+		if (list == null) break;
+		if (list.getImageSize().equals(size)) {
+			list.addRef();
+			return list;
+		}
+		i++;
+	}
+	
+	if (i == length) {
+		ImageList [] newList = new ImageList [length + 4];
+		System.arraycopy (toolHotImageList, 0, newList, 0, length);
+		toolHotImageList = newList;
+	}
+	
+	ImageList list = new ImageList();
+	toolHotImageList [i] = list;
+	list.addRef();
+	return list;
+}
+
+ImageList getToolDisabledImageList (Point size) {
+	if (toolDisabledImageList == null) toolDisabledImageList = new ImageList [4];
+	
+	int i = 0;
+	int length = toolDisabledImageList.length; 
+	while (i < length) {
+		ImageList list = toolDisabledImageList [i];
+		if (list == null) break;
+		if (list.getImageSize().equals(size)) {
+			list.addRef();
+			return list;
+		}
+		i++;
+	}
+	
+	if (i == length) {
+		ImageList [] newList = new ImageList [length + 4];
+		System.arraycopy (toolDisabledImageList, 0, newList, 0, length);
+		toolDisabledImageList = newList;
+	}
+	
+	ImageList list = new ImageList();
+	toolDisabledImageList [i] = list;
+	list.addRef();
+	return list;
+}
+
 Shell getModalShell () {
 	if (ModalWidgets == null) return null;
 	int index = ModalWidgets.length;
@@ -1127,6 +1238,82 @@ void releaseDisplay () {
 	data = null;
 	keys = null;
 	values = null;
+}
+
+void releaseImageList (ImageList list) {
+	int i = 0;
+	int length = imageList.length; 
+	while (i < length) {
+		if (imageList [i] == list) {
+			if (list.removeRef () > 0) return;
+			list.dispose ();
+			System.arraycopy (imageList, i + 1, imageList, i, --length - i);
+			imageList [length] = null;
+			for (int j=0; j<length; j++) {
+				if (imageList [j] != null) return;
+			}
+			imageList = null;
+			return;
+		}
+		i++;
+	}
+}
+
+void releaseToolImageList (ImageList list) {
+	int i = 0;
+	int length = toolImageList.length; 
+	while (i < length) {
+		if (toolImageList [i] == list) {
+			if (list.removeRef () > 0) return;
+			list.dispose ();
+			System.arraycopy (toolImageList, i + 1, toolImageList, i, --length - i);
+			toolImageList [length] = null;
+			for (int j=0; j<length; j++) {
+				if (toolImageList [j] != null) return;
+			}
+			toolImageList = null;
+			return;
+		}
+		i++;
+	}
+}
+
+void releaseToolHotImageList (ImageList list) {
+	int i = 0;
+	int length = toolHotImageList.length; 
+	while (i < length) {
+		if (toolHotImageList [i] == list) {
+			if (list.removeRef () > 0) return;
+			list.dispose ();
+			System.arraycopy (toolHotImageList, i + 1, toolHotImageList, i, --length - i);
+			toolHotImageList [length] = null;
+			for (int j=0; j<length; j++) {
+				if (toolHotImageList [j] != null) return;
+			}
+			toolHotImageList = null;
+			return;
+		}
+		i++;
+	}
+}
+
+void releaseToolDisabledImageList (ImageList list) {
+	int i = 0;
+	int length = toolDisabledImageList.length; 
+	while (i < length) {
+		if (toolDisabledImageList [i] == list) {
+			if (list.removeRef () > 0) return;
+			list.dispose ();
+			System.arraycopy (toolDisabledImageList, i + 1, toolDisabledImageList, i, --length - i);
+			toolDisabledImageList [length] = null;
+			for (int j=0; j<length; j++) {
+				if (toolDisabledImageList [j] != null) return;
+			}
+			toolDisabledImageList = null;
+			return;
+		}
+		i++;
+	}
 }
 
 boolean runAsyncMessages () {

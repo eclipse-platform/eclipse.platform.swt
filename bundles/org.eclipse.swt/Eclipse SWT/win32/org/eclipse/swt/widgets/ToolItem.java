@@ -546,10 +546,13 @@ void updateImages () {
 	ImageList hotImageList = parent.getHotImageList ();
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
-		if (imageList == null) imageList = new ImageList ();
+		Display display = getDisplay ();
+		Rectangle bounds = image.getBounds ();
+		Point size = new Point (bounds.width, bounds.height);
+		if (imageList == null) imageList = display.getToolImageList (size);
 		info.iImage = imageList.add (image);
 		parent.setImageList (imageList);
-		if (disabledImageList == null) disabledImageList = new ImageList ();
+		if (disabledImageList == null) disabledImageList = display.getToolDisabledImageList (size);
 		Image disabled = disabledImage;
 		if (disabledImage == null) {
 			disabled = image;
@@ -561,7 +564,7 @@ void updateImages () {
 		disabledImageList.add (disabled);
 		parent.setDisabledImageList (disabledImageList);
 		if ((parent.style & SWT.FLAT) != 0) {
-			if (hotImageList == null) hotImageList = new ImageList ();
+			if (hotImageList == null) hotImageList = display.getToolHotImageList (size);
 			hotImageList.add (hotImage != null ? hotImage : image);
 			parent.setHotImageList (hotImageList);
 		}
