@@ -12,6 +12,17 @@
 Eclipse Platform Build Notes<br>
 SWT</h1>
 
+<h2> SWT Build 3.1 023 - Tuesday February 15th, 2005 </h2>
+<h3><a NAME="New APIs"></a>New APIs</h3>
+<p>New API has been added to Table and TableColumn to support reordering of columns by dragging the headers</p>
+<blockquote>
+int[] Table.getColumnOrder()
+<br>Table.setColumnOrder(int[])
+<br>boolean TableColumn.getMoveable() - default is false
+<br>TableColumn.setMoveable(boolean)
+<br>SWT.Move event is sent for the TableColumn when columns are dragged to a new position
+</blockquote>
+
 <h2> SWT Build 3.1 022 - Tuesday February 8th, 2005 </h2>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
