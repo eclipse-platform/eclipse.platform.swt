@@ -894,7 +894,7 @@ static final native void memmove(GtkAdjustment dest, int src);
 static final native void memmove(GtkCombo dest, int src);
 static final native void memmove(GtkEditable dest, int src);
 static final native void memmove(GtkStyle dest, int src);
-static final native void memmove(GtkStyleClass dest, int src);
+//static final native void memmove(GtkStyleClass dest, int src);
 static final native void memmove(GtkCListRow dest, int src);
 static final native void memmove(GtkCListColumn dest, int src);
 static final native void memmove(GtkCList dest, int src);
