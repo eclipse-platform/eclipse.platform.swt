@@ -549,6 +549,7 @@ public TreeItem getTopItem () {
 	OS.gtk_tree_path_free (path [0]);
 	return items [index [0]];
 }
+
 int gtk_changed (int widget) {
 	TreeItem item = getFocusItem ();
 	if (item != null) {
@@ -889,7 +890,6 @@ public void setTopItem (TreeItem item) {
 	OS.gtk_tree_path_free (path);
 }
 
-
 /**
  * Shows the selection.  If the selection is already showing in the receiver,
  * this method simply returns.  Otherwise, the items are scrolled until
@@ -970,4 +970,3 @@ int treeSelectionProc (int model, int path, int iter, int[] selection, int lengt
 }
 
 }
-
