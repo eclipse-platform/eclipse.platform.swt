@@ -116,6 +116,21 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(BringWindowToTop)
 }
 #endif
 
+#ifndef NO_Call
+JNIEXPORT jint JNICALL OS_NATIVE(Call)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DLLVERSIONINFO _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "Call\n")
+	if (arg1) lparg1 = getDLLVERSIONINFOFields(env, arg1, &_arg1);
+	rc = (jint)((DLLGETVERSIONPROC)arg0)(lparg1);
+	if (arg1) setDLLVERSIONINFOFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "Call\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_CallNextHookEx
 JNIEXPORT jint JNICALL OS_NATIVE(CallNextHookEx)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
@@ -1300,6 +1315,37 @@ JNIEXPORT jint JNICALL OS_NATIVE(EndPaint)
 }
 #endif
 
+#ifndef NO_EnumDisplayMonitors
+JNIEXPORT jboolean JNICALL OS_NATIVE(EnumDisplayMonitors)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
+{
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "EnumDisplayMonitors\n")
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1);
+/*
+	rc = (jboolean)EnumDisplayMonitors((HDC)arg0, (LPCRECT)lparg1, (MONITORENUMPROC)arg2, (LPARAM)arg3);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(EnumDisplayMonitors_LIB))) hm = LoadLibrary(EnumDisplayMonitors_LIB);
+			if (hm) fp = GetProcAddress(hm, "EnumDisplayMonitors");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((HDC)arg0, (LPCRECT)lparg1, (MONITORENUMPROC)arg2, (LPARAM)arg3);
+		}
+	}
+	if (arg1) setRECTFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "EnumDisplayMonitors\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_EnumFontFamiliesA
 JNIEXPORT jint JNICALL OS_NATIVE(EnumFontFamiliesA)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
@@ -1326,6 +1372,62 @@ JNIEXPORT jint JNICALL OS_NATIVE(EnumFontFamiliesW)
 	rc = (jint)EnumFontFamiliesW((HDC)arg0, (LPCWSTR)lparg1, (FONTENUMPROCW)arg2, (LPARAM)arg3);
 	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "EnumFontFamiliesW\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_EnumSystemLanguageGroupsA
+JNIEXPORT jboolean JNICALL OS_NATIVE(EnumSystemLanguageGroupsA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "EnumSystemLanguageGroupsA\n")
+/*
+	rc = (jboolean)EnumSystemLanguageGroupsA((LANGUAGEGROUP_ENUMPROCA)arg0, arg1, (LONG_PTR)arg2);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(EnumSystemLanguageGroupsA_LIB))) hm = LoadLibrary(EnumSystemLanguageGroupsA_LIB);
+			if (hm) fp = GetProcAddress(hm, "EnumSystemLanguageGroupsA");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((LANGUAGEGROUP_ENUMPROCA)arg0, arg1, (LONG_PTR)arg2);
+		}
+	}
+	NATIVE_EXIT(env, that, "EnumSystemLanguageGroupsA\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_EnumSystemLanguageGroupsW
+JNIEXPORT jboolean JNICALL OS_NATIVE(EnumSystemLanguageGroupsW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "EnumSystemLanguageGroupsW\n")
+/*
+	rc = (jboolean)EnumSystemLanguageGroupsW((LANGUAGEGROUP_ENUMPROCW)arg0, arg1, (LONG_PTR)arg2);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(EnumSystemLanguageGroupsW_LIB))) hm = LoadLibrary(EnumSystemLanguageGroupsW_LIB);
+			if (hm) fp = GetProcAddress(hm, "EnumSystemLanguageGroupsW");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((LANGUAGEGROUP_ENUMPROCW)arg0, arg1, (LONG_PTR)arg2);
+		}
+	}
+	NATIVE_EXIT(env, that, "EnumSystemLanguageGroupsW\n")
 	return rc;
 }
 #endif
@@ -1841,6 +1943,37 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetClipboardFormatNameW)
 }
 #endif
 
+#ifndef NO_GetComboBoxInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetComboBoxInfo)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	COMBOBOXINFO _arg1, *lparg1=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "GetComboBoxInfo\n")
+	if (arg1) lparg1 = getCOMBOBOXINFOFields(env, arg1, &_arg1);
+/*
+	rc = (jboolean)GetComboBoxInfo((HWND)arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(GetComboBoxInfo_LIB))) hm = LoadLibrary(GetComboBoxInfo_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetComboBoxInfo");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((HWND)arg0, lparg1);
+		}
+	}
+	if (arg1) setCOMBOBOXINFOFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "GetComboBoxInfo\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetCurrentObject
 JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentObject)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -2165,6 +2298,34 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetLastError)
 }
 #endif
 
+#ifndef NO_GetLayout
+JNIEXPORT jint JNICALL OS_NATIVE(GetLayout)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GetLayout\n")
+/*
+	rc = (jint)GetLayout((HDC)arg0);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(GetLayout_LIB))) hm = LoadLibrary(GetLayout_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetLayout");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HDC)arg0);
+		}
+	}
+	NATIVE_EXIT(env, that, "GetLayout\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetLocaleInfoA
 JNIEXPORT jint JNICALL OS_NATIVE(GetLocaleInfoA)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3)
@@ -2207,6 +2368,37 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetMenu)
 }
 #endif
 
+#ifndef NO_GetMenuBarInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetMenuBarInfo)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	MENUBARINFO _arg3, *lparg3=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "GetMenuBarInfo\n")
+	if (arg3) lparg3 = getMENUBARINFOFields(env, arg3, &_arg3);
+/*
+	rc = (jboolean)GetMenuBarInfo(arg0, arg1, arg2, lparg3);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(GetMenuBarInfo_LIB))) hm = LoadLibrary(GetMenuBarInfo_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetMenuBarInfo");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp(arg0, arg1, arg2, lparg3);
+		}
+	}
+	if (arg3) setMENUBARINFOFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "GetMenuBarInfo\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetMenuDefaultItem
 JNIEXPORT jint JNICALL OS_NATIVE(GetMenuDefaultItem)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -2215,6 +2407,37 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetMenuDefaultItem)
 	NATIVE_ENTER(env, that, "GetMenuDefaultItem\n")
 	rc = (jint)GetMenuDefaultItem((HMENU)arg0, arg1, arg2);
 	NATIVE_EXIT(env, that, "GetMenuDefaultItem\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GetMenuInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetMenuInfo)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	MENUINFO _arg1, *lparg1=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "GetMenuInfo\n")
+	if (arg1) lparg1 = getMENUINFOFields(env, arg1, &_arg1);
+/*
+	rc = (jboolean)GetMenuInfo((HMENU)arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(GetMenuInfo_LIB))) hm = LoadLibrary(GetMenuInfo_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetMenuInfo");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((HMENU)arg0, lparg1);
+		}
+	}
+	if (arg1) setMENUINFOFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "GetMenuInfo\n")
 	return rc;
 }
 #endif
@@ -2356,6 +2579,68 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetModuleHandleW)
 	rc = (jint)GetModuleHandleW((LPWSTR)lparg0);
 	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "GetModuleHandleW\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GetMonitorInfoA
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetMonitorInfoA)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	MONITORINFO _arg1, *lparg1=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "GetMonitorInfoA\n")
+	if (arg1) lparg1 = getMONITORINFOFields(env, arg1, &_arg1);
+/*
+	rc = (jboolean)GetMonitorInfoA((HMONITOR)arg0, (LPMONITORINFO)lparg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(GetMonitorInfoA_LIB))) hm = LoadLibrary(GetMonitorInfoA_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetMonitorInfoA");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((HMONITOR)arg0, (LPMONITORINFO)lparg1);
+		}
+	}
+	if (arg1) setMONITORINFOFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "GetMonitorInfoA\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GetMonitorInfoW
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetMonitorInfoW)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	MONITORINFO _arg1, *lparg1=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "GetMonitorInfoW\n")
+	if (arg1) lparg1 = getMONITORINFOFields(env, arg1, &_arg1);
+/*
+	rc = (jboolean)GetMonitorInfoW((HMONITOR)arg0, (LPMONITORINFO)lparg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(GetMonitorInfoW_LIB))) hm = LoadLibrary(GetMonitorInfoW_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetMonitorInfoW");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((HMONITOR)arg0, (LPMONITORINFO)lparg1);
+		}
+	}
+	if (arg1) setMONITORINFOFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "GetMonitorInfoW\n")
 	return rc;
 }
 #endif
@@ -3206,6 +3491,34 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GlobalUnlock)
 }
 #endif
 
+#ifndef NO_GradientFill
+JNIEXPORT jboolean JNICALL OS_NATIVE(GradientFill)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "GradientFill\n")
+/*
+	rc = (jboolean)GradientFill((HDC)arg0, (PTRIVERTEX)arg1, (ULONG)arg2, (PVOID)arg3, (ULONG)arg4, (ULONG)arg5);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(GradientFill_LIB))) hm = LoadLibrary(GradientFill_LIB);
+			if (hm) fp = GetProcAddress(hm, "GradientFill");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((HDC)arg0, (PTRIVERTEX)arg1, (ULONG)arg2, (PVOID)arg3, (ULONG)arg4, (ULONG)arg5);
+		}
+	}
+	NATIVE_EXIT(env, that, "GradientFill\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_HeapAlloc
 JNIEXPORT jint JNICALL OS_NATIVE(HeapAlloc)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -4037,6 +4350,34 @@ JNIEXPORT jint JNICALL OS_NATIVE(MessageBoxW)
 	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "MessageBoxW\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_MonitorFromWindow
+JNIEXPORT jint JNICALL OS_NATIVE(MonitorFromWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "MonitorFromWindow\n")
+/*
+	rc = (jint)MonitorFromWindow(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(MonitorFromWindow_LIB))) hm = LoadLibrary(MonitorFromWindow_LIB);
+			if (hm) fp = GetProcAddress(hm, "MonitorFromWindow");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1);
+		}
+	}
+	NATIVE_EXIT(env, that, "MonitorFromWindow\n")
 	return rc;
 }
 #endif
@@ -6298,6 +6639,34 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetForegroundWindow)
 }
 #endif
 
+#ifndef NO_SetLayout
+JNIEXPORT jint JNICALL OS_NATIVE(SetLayout)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "SetLayout\n")
+/*
+	rc = (jint)SetLayout((HDC)arg0, (DWORD)arg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(SetLayout_LIB))) hm = LoadLibrary(SetLayout_LIB);
+			if (hm) fp = GetProcAddress(hm, "SetLayout");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HDC)arg0, (DWORD)arg1);
+		}
+	}
+	NATIVE_EXIT(env, that, "SetLayout\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_SetMenu
 JNIEXPORT jboolean JNICALL OS_NATIVE(SetMenu)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -6318,6 +6687,37 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetMenuDefaultItem)
 	NATIVE_ENTER(env, that, "SetMenuDefaultItem\n")
 	rc = (jboolean)SetMenuDefaultItem((HMENU)arg0, arg1, arg2);
 	NATIVE_EXIT(env, that, "SetMenuDefaultItem\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_SetMenuInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetMenuInfo)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	MENUINFO _arg1, *lparg1=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "SetMenuInfo\n")
+	if (arg1) lparg1 = getMENUINFOFields(env, arg1, &_arg1);
+/*
+	rc = (jboolean)SetMenuInfo((HMENU)arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(SetMenuInfo_LIB))) hm = LoadLibrary(SetMenuInfo_LIB);
+			if (hm) fp = GetProcAddress(hm, "SetMenuInfo");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((HMENU)arg0, lparg1);
+		}
+	}
+	if (arg1) setMENUINFOFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "SetMenuInfo\n")
 	return rc;
 }
 #endif
@@ -7089,6 +7489,18 @@ JNIEXPORT jshort JNICALL OS_NATIVE(VkKeyScanW)
 	NATIVE_ENTER(env, that, "VkKeyScanW\n")
 	rc = (jshort)VkKeyScanW((WCHAR)arg0);
 	NATIVE_EXIT(env, that, "VkKeyScanW\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "VtblCall\n")
+	rc = (jint)((jint (STDMETHODCALLTYPE *)())(*(int **)arg1)[arg0])(arg1, arg2);
+	NATIVE_EXIT(env, that, "VtblCall\n")
 	return rc;
 }
 #endif
