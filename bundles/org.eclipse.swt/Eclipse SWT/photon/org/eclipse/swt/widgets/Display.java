@@ -1176,12 +1176,6 @@ synchronized void register () {
 }
 
 protected void release () {
-	if (disposeList != null) {
-		for (int i=0; i<disposeList.length; i++) {
-			if (disposeList [i] != null) disposeList [i].run ();
-		}
-	}
-	disposeList = null;
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1190,6 +1184,12 @@ protected void release () {
 		}
 	}
 	while (readAndDispatch ()) {};
+	if (disposeList != null) {
+		for (int i=0; i<disposeList.length; i++) {
+			if (disposeList [i] != null) disposeList [i].run ();
+		}
+	}
+	disposeList = null;
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
 	releaseDisplay ();	
