@@ -102,7 +102,7 @@ public class CLabel extends Canvas {
  */
 public CLabel(Composite parent, int style) {
 	super(parent, checkStyle(style));
-	
+	if ((style & (SWT.CENTER | SWT.RIGHT)) == 0) style |= SWT.LEFT;
 	if ((style & SWT.CENTER) != 0) align = SWT.CENTER;
 	if ((style & SWT.RIGHT) != 0)  align = SWT.RIGHT;
 	if ((style & SWT.LEFT) != 0)   align = SWT.LEFT;
@@ -135,10 +135,9 @@ public CLabel(Composite parent, int style) {
  */
 private static int checkStyle (int style) {
 	if ((style & SWT.BORDER) != 0) style |= SWT.SHADOW_IN;
-	int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE | SWT.LEFT | SWT.RIGHT | SWT.CENTER | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+	int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	style = style & mask;
 	style |= SWT.NO_FOCUS;
-	if ((style & (SWT.CENTER | SWT.RIGHT)) == 0) style |= SWT.LEFT;
 	//TEMPORARY CODE
 	/*
 	 * The default background on carbon and some GTK themes is not a solid color 
@@ -247,7 +246,6 @@ private Point getTotalSize(Image image, String text) {
 }
 public int getStyle () {
 	int style = super.getStyle();
-	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	switch (align) {
 		case SWT.RIGHT: style |= SWT.RIGHT; break;
 		case SWT.CENTER: style |= SWT.CENTER; break;
