@@ -21,10 +21,10 @@ public class Display extends Device {
 
 	/* Windows and Events */
 	Event [] eventQueue;
-	Callback actionCallback, windowCallback;
-	int actionProc, windowProc;
+	Callback actionCallback, itemDataCallback, itemNotificationCallback, windowCallback;
+	int actionProc, itemDataProc, itemNotificationProc, windowProc;
 	EventTable eventTable, filterTable;
-	int lastModifiers;
+	int queue, lastModifiers;
 	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
@@ -34,8 +34,9 @@ public class Display extends Device {
 	Runnable [] disposeList;
 	
 	/* Timers */
-	int [] timerIDs;
+	int [] timerIds;
 	Runnable [] timerList;
+	Callback timerCallback;
 	int timerProc;	
 	
 	/* Grabs */
@@ -139,7 +140,7 @@ static int untranslateKey (int key) {
 int actionProc (int theControl, int partCode) {
 	Control control = WidgetTable.get (theControl);
 	if (control != null) return control.actionProc (theControl, partCode);
-	return 0;
+	return OS.noErr;
 }
 
 public void addFilter (int eventType, Listener listener) {
@@ -195,7 +196,7 @@ public void asyncExec (Runnable runnable) {
 
 public void beep () {
 	checkDevice ();
-	OS.SysBeep ((short)100);
+	OS.SysBeep ((short) 100);
 }
 
 protected void checkDevice () {
@@ -239,6 +240,7 @@ protected void create (DeviceData data) {
 }
 
 void createDisplay (DeviceData data) {
+	queue = OS.GetCurrentEventQueue ();
 }
 
 synchronized static void deregister (Display display) {
@@ -287,15 +289,15 @@ boolean filters (int eventType) {
 
 Menu findMenu (int id) {
 	if (menus == null) return null;
-	id = id - ID_START;
-	if (0 <= id && id < menus.length) return menus [id];
+	int index = id - ID_START;
+	if (0 <= index && index < menus.length) return menus [index];
 	return null;
 }
 
 MenuItem findMenuItem (int id) {
 	if (items == null) return null;
-	id = id - ID_START;
-	if (0 <= id && id < items.length) return items [id];
+	int index = id - ID_START;
+	if (0 <= index && index < items.length) return items [index];
 	return null;
 }
 
@@ -325,16 +327,6 @@ public Shell getActiveShell () {
 	return null;
 }
 
-public Rectangle getBounds () {
-	checkDevice ();
-	return new Rectangle (0, 0, 0, 0);
-}
-
-public Rectangle getClientArea () {
-	checkDevice ();
-	return new Rectangle (0, 0, 0, 0);
-}
-
 public static synchronized Display getCurrent () {
 	return findDisplay (Thread.currentThread ());
 }
@@ -346,6 +338,7 @@ public Control getCursorControl () {
 	int [] theWindow = new int [1];
 	//NOT DONE - exclude window trim
 	if (OS.FindWindow (where, theWindow) != OS.inContent) ; //return null;
+	if (theWindow [0] == 0) return null;
 	Rect rect = new Rect ();
 	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);	
 	CGPoint inPoint = new CGPoint ();
@@ -357,15 +350,18 @@ public Control getCursorControl () {
 	int [] theControl = new int [1];
 	OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
 	if (theControl [0] != 0) {
-		//NOT DONE - check for disabled controls
-		 return WidgetTable.get (theControl [0]);
+		do {
+			Control control = WidgetTable.get (theControl [0]);
+			if (control != null && control.getEnabled ()) return control;
+			OS.GetSuperControl (theControl [0], theControl);
+		} while (theControl [0] != 0);
 	}
 	return WidgetTable.get (theRoot [0]);
 }
 
 public Point getCursorLocation () {
 	checkDevice ();
-	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point();
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetGlobalMouse (pt);
 	return new Point (pt.h, pt.v);
 }
@@ -392,19 +388,23 @@ public Object getData () {
 
 public int getDoubleClickTime () {
 	checkDevice ();
-	return 500; 
+	return OS.GetDblTime (); 
 }
 
 public Control getFocusControl () {
 	checkDevice ();
-	return null;
-}
-
-public int getIconDepth () {
-	return 0;
+	int theWindow = OS.FrontWindow ();
+	if (theWindow == 0) return null;
+	int [] theControl = new int [1];
+	OS.GetKeyboardFocus (theWindow, theControl);
+	return WidgetTable.get (theControl [0]);
 }
 
 int getLastEventTime () {
+	/*
+	* This code is intentionally commented.  Event time is
+	* in seconds and we need an accurate time in milliseconds.
+	*/
 //	return (int) (OS.GetLastUserEventTime () * 1000.0);
 	return (int) System.currentTimeMillis ();
 }
@@ -448,6 +448,7 @@ public Thread getSyncThread () {
 
 public Color getSystemColor (int id) {
 	checkDevice ();
+	//NOT DONE
 	switch (id) {
 //		case SWT.COLOR_INFO_FOREGROUND: 		return COLOR_INFO_FOREGROUND;
 //		case SWT.COLOR_INFO_BACKGROUND: 		return COLOR_INFO_BACKGROUND;	
@@ -473,11 +474,6 @@ public Color getSystemColor (int id) {
 	}
 }
 
-public Font getSystemFont () {
-	checkDevice ();
-	return null;
-}
-
 public Thread getThread () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	return thread;
@@ -487,12 +483,21 @@ protected void init () {
 	super.init ();
 	
 	/* Create the callbacks */
-	windowCallback = new Callback (this, "windowProc", 3);
-	windowProc = windowCallback.getAddress ();
-	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	actionCallback = new Callback (this, "actionProc", 2);
 	actionProc = actionCallback.getAddress ();
 	if (actionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	itemDataCallback = new Callback (this, "itemDataProc", 5);
+	itemDataProc = itemDataCallback.getAddress ();
+	if (itemDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	itemNotificationCallback = new Callback (this, "itemNotificationProc", 3);
+	itemNotificationProc = itemNotificationCallback.getAddress ();
+	if (itemNotificationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	timerCallback = new Callback (this, "timerProc", 2);
+	timerProc = timerCallback.getAddress ();
+	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	windowCallback = new Callback (this, "windowProc", 3);
+	windowProc = windowCallback.getAddress ();
+	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		
 	/* Install Application Event Handlers */
 	int[] mask1 = new int[] {
@@ -521,10 +526,12 @@ protected void init () {
 
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	//NOT DONE
 	return 0;
 }
 
 public void internal_dispose_GC (int gc, GCData data) {
+	//NOT DONE
 }
 
 static boolean isValidClass (Class clazz) {
@@ -535,6 +542,18 @@ static boolean isValidClass (Class clazz) {
 
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
+}
+
+int itemDataProc (int browser, int item, int property, int itemData, int setValue) {
+	Control control = WidgetTable.get (browser);
+	if (control != null) return control.itemDataProc (browser, item, property, itemData,  setValue);
+	return OS.noErr;
+}
+
+int itemNotificationProc (int browser, int item, int message) {
+	Control control = WidgetTable.get (browser);
+	if (control != null) return control.itemNotificationProc (browser, item, message);
+	return OS.noErr;
 }
 
 void postEvent (Event event) {
@@ -567,42 +586,7 @@ public boolean readAndDispatch () {
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
 		runDeferredEvents ();
-		Rect rect = new Rect ();
-		int [] outModifiers = new int [1];
-		short [] outResult = new short [1];
-		CGPoint ioPoint = new CGPoint ();
-		org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
-		try {
-			while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
-				OS.TrackMouseLocationWithOptions (0, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
-				int type = 0;
-				switch (outResult [0]) {
-					case OS.kMouseTrackingMouseDown:					type = SWT.MouseDown; break;
-					case OS.kMouseTrackingMouseUp:						type = SWT.MouseUp; break;
-					case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
-					case OS.kMouseTrackingMouseEntered: 				type = SWT.MouseEnter; break;
-					case OS.kMouseTrackingMouseDragged: 				type = SWT.MouseMove; break;
-					case OS.kMouseTrackingMouseKeyModifiersChanged: {
-						lastModifiers = outModifiers [0];
-						break;
-					}
-					case OS.kMouseTrackingUserCancelled:				break;
-					case OS.kMouseTrackingTimedOut: 					break;
-					case OS.kMouseTrackingMouseMoved: 					type = SWT.MouseMove; break;
-				}
-				if (type != 0) {	
-					int handle = grabControl.handle;
-					int window = OS.GetControlOwner (handle);
-					OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-					ioPoint.x = outPt.h - rect.left;
-					ioPoint.y = outPt.v - rect.top;
-					OS.HIViewConvertPoint (ioPoint, 0, handle); 
-					grabControl.sendMouseEvent (type, (short)0, (short)ioPoint.x, (short)ioPoint.y, outModifiers [0]);
-				}
-			}
-		} finally {
-			grabControl = null;
-		}
+		runGrabs ();
 		return true;
 	}
 	return runAsyncMessages ();
@@ -644,9 +628,11 @@ protected void release () {
 
 void releaseDisplay () {
 	actionCallback.dispose ();
+	itemDataCallback.dispose ();
+	timerCallback.dispose ();
 	windowCallback.dispose ();
-	actionCallback = windowCallback = null;
-	actionProc = windowProc = 0;
+	actionCallback = itemDataCallback = timerCallback = windowCallback = null;
+	actionProc = itemDataProc = timerProc = windowProc = 0;
 }
 
 public void removeFilter (int eventType, Listener listener) {
@@ -713,6 +699,47 @@ boolean runDeferredEvents () {
 	eventQueue = null;
 	return true;
 }
+
+void runGrabs () {
+	if (grabControl == null) return;
+	Rect rect = new Rect ();
+	int [] outModifiers = new int [1];
+	short [] outResult = new short [1];
+	CGPoint ioPoint = new CGPoint ();
+	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
+	try {
+		while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
+			OS.TrackMouseLocationWithOptions (0, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
+			int type = 0;
+			switch (outResult [0]) {
+				case OS.kMouseTrackingMouseDown:					type = SWT.MouseDown; break;
+				case OS.kMouseTrackingMouseUp:						type = SWT.MouseUp; break;
+				case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
+				case OS.kMouseTrackingMouseEntered: 				type = SWT.MouseEnter; break;
+				case OS.kMouseTrackingMouseDragged: 				type = SWT.MouseMove; break;
+				case OS.kMouseTrackingMouseKeyModifiersChanged: {
+					lastModifiers = outModifiers [0];
+					break;
+				}
+				case OS.kMouseTrackingUserCancelled:				break;
+				case OS.kMouseTrackingTimedOut: 					break;
+				case OS.kMouseTrackingMouseMoved: 					type = SWT.MouseMove; break;
+			}
+			if (type != 0) {	
+				int handle = grabControl.handle;
+				int window = OS.GetControlOwner (handle);
+				OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+				ioPoint.x = outPt.h - rect.left;
+				ioPoint.y = outPt.v - rect.top;
+				OS.HIViewConvertPoint (ioPoint, 0, handle); 
+				grabControl.sendMouseEvent (type, (short)0, (short)ioPoint.x, (short)ioPoint.y, outModifiers [0]);
+			}
+		}
+	} finally {
+		grabControl = null;
+	}
+}
+
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null && filterTable == null) {
 		return;
@@ -725,6 +752,7 @@ void sendEvent (int eventType, Event event) {
 		if (eventTable != null) eventTable.sendEvent (event);
 	}
 }
+
 /**
  * On platforms which support it, sets the application name
  * to be the argument. On Motif, for example, this can be used
@@ -750,13 +778,7 @@ public static void setAppName (String name) {
 public void setCursorLocation (Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	/* AW
-	int x = point.x;
-	int y = point.y;
-	int xWindow = OS.XDefaultRootWindow (xDisplay);	
-	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
-	*/
-	System.out.println("Display.setCursorLocation: nyi");
+	/* Not possible on the MAC */
 }
 
 public void setData (String key, Object value) {
@@ -830,8 +852,7 @@ void setMenuBar (Menu menu) {
 
 public boolean sleep () {
 	checkDevice ();
-	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null);
-	return status == OS.noErr;
+	return OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
 }
 
 public void syncExec (Runnable runnable) {
@@ -841,9 +862,27 @@ public void syncExec (Runnable runnable) {
 
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
+	if (runnable == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (timerList == null) timerList = new Runnable [4];
-	if (timerIDs == null) timerIDs = new int [4];
+	if (timerIds == null) timerIds = new int [4];
 	int index = 0;
+	while (index < timerList.length) {
+		if (timerList [index] == runnable) break;
+		index++;
+	}
+	if (index != timerList.length) {
+		int timerId = timerIds [index];
+		if (milliseconds < 0) {
+			OS.RemoveEventLoopTimer (timerId);
+			timerList [index] = null;
+			timerIds [index] = 0;
+		} else {
+			OS.SetEventLoopTimerNextFireTime (timerId, milliseconds / 1000.0);
+		}
+		return;
+	} 
+	if (milliseconds < 0) return;
+	index = 0;
 	while (index < timerList.length) {
 		if (timerList [index] == null) break;
 		index++;
@@ -852,22 +891,33 @@ public void timerExec (int milliseconds, Runnable runnable) {
 		Runnable [] newTimerList = new Runnable [timerList.length + 4];
 		System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
 		timerList = newTimerList;
-		int [] newTimerIDs = new int [timerIDs.length + 4];
-		System.arraycopy (timerIDs, 0, newTimerIDs, 0, timerIDs.length);
-		timerIDs = newTimerIDs;
+		int [] newTimerIds = new int [timerIds.length + 4];
+		System.arraycopy (timerIds, 0, newTimerIds, 0, timerIds.length);
+		timerIds = newTimerIds;
 	}
-	int[] timer= new int[1];
-	//OS.InstallEventLoopTimer(OS.GetCurrentEventLoop(), milliseconds / 1000.0, 0.0, timerProc, index, timer);
-	int timerID = timer[0];
-	
-	if (timerID != 0) {
-		timerIDs [index] = timerID;
+	int [] timerId = new int [1];
+	int eventLoop = OS.GetCurrentEventLoop ();
+	OS.InstallEventLoopTimer (eventLoop, milliseconds / 1000.0, 0.0, timerProc, index, timerId);
+	if (timerId [0] != 0) {
+		timerIds [index] = timerId [0];
 		timerList [index] = runnable;
 	}
 }
 
+int timerProc (int id, int index) {
+	if (timerList == null) return 0;
+	if (0 <= index && index < timerList.length) {
+		Runnable runnable = timerList [index];
+		timerList [index] = null;
+		timerIds [index] = 0;
+		if (runnable != null) runnable.run ();
+	}
+	return 0;
+}
+
 public void update () {
 	checkDevice ();
+	//NOT DONE
 }
 
 int windowProc (int nextHandler, int theEvent, int userData) {
@@ -881,7 +931,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			switch (eventKind) {
 				case OS.kEventProcessCommand: {
 					if (command.commandID == OS.kAEQuitApplication) {
-//						close ();
+						close ();
 						return OS.noErr;
 					}
 					if ((command.attributes & OS.kHICommandFromMenu) != 0) {
@@ -1022,5 +1072,8 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
+	int [] event = new int [1];
+	OS.CreateEvent (0, 0, 0, 0.0, OS.kEventAttributeUserEvent, event);
+	OS.PostEventToQueue (queue, event [0], (short) OS.kEventPriorityStandard);
 }
 }

@@ -16,7 +16,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
-
 public abstract class Control extends Widget implements Drawable {
 	/**
 	* the handle to the OS resource
@@ -27,6 +26,7 @@ public abstract class Control extends Widget implements Drawable {
 	String toolTipText;
 	Object layoutData;
 	int drawCount;
+	Menu menu;
 
 Control () {
 	/* Do nothing */
@@ -238,6 +238,11 @@ public Point getLocation () {
 	return new Point (rect.top, rect.left);
 }
 
+public Menu getMenu () {
+	checkWidget();
+	return menu;
+}
+
 public Composite getParent () {
 	checkWidget();
 	return parent;
@@ -355,6 +360,18 @@ boolean isTabItem () {
 public boolean isVisible () {
 	checkWidget();
 	return OS.HIViewIsVisible (handle);
+}
+
+Decorations menuShell () {
+	return parent.menuShell ();
+}
+
+int itemDataProc (int browser, int item, int property, int itemData, int setValue) {
+	return OS.noErr;
+}
+
+int itemNotificationProc (int browser, int item, int message) {
+	return OS.noErr;
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
@@ -549,6 +566,11 @@ void register () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (menu != null && !menu.isDisposed ()) {
+		menu.dispose ();
+	}
+	menu = null;
+	deregister ();
 	parent = null;
 	layoutData = null;
 }
@@ -740,6 +762,20 @@ public void setLocation (int x, int y) {
 public void setLocation (Point location) {
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
+}
+
+public void setMenu (Menu menu) {
+	checkWidget();
+	if (menu != null) {
+		if (menu.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if ((menu.style & SWT.POP_UP) == 0) {
+			error (SWT.ERROR_MENU_NOT_POP_UP);
+		}
+		if (menu.parent != menuShell ()) {
+			error (SWT.ERROR_INVALID_PARENT);
+		}
+	}
+	this.menu = menu;
 }
 
 public boolean setParent (Composite parent) {

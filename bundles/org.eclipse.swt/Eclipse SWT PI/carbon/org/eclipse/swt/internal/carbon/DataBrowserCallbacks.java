@@ -19,6 +19,5 @@ public class DataBrowserCallbacks {
 	public int v1_itemHelpContentCallback;
 	public int v1_getContextualMenuCallback;
 	public int v1_selectContextualMenuCallback;
-	
 	public static final int sizeof = 44;
 }

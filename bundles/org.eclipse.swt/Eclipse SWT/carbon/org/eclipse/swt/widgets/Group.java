@@ -123,12 +123,12 @@ void createHandle () {
 
 public Rectangle getClientArea () {
 	checkWidget();
-	int rgnHandle = OS.NewRgn();
+	int rgnHandle = OS.NewRgn ();
 	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
 	Rect bounds = new Rect ();
 	OS.GetRegionBounds (rgnHandle, bounds);
 	OS.DisposeRgn (rgnHandle);
-	return new Rectangle ((int)bounds.left, (int)bounds.top, bounds.right - bounds.left, bounds.bottom - bounds.top);
+	return new Rectangle (bounds.left, bounds.top, bounds.right - bounds.left, bounds.bottom - bounds.top);
 }
 
 /**

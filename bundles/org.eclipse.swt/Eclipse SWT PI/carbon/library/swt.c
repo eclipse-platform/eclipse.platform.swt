@@ -1716,6 +1716,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeTextBox
 }
 #endif /* NO_DrawThemeTextBox */
 
+#ifndef NO_EmbedControl
+JNIEXPORT jint JNICALL OS_NATIVE(EmbedControl)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("EmbedControl\n")
+
+	return (jint)EmbedControl((ControlRef)arg0, (ControlRef)arg1);
+}
+#endif
+
 #ifndef NO_EmptyRect
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_EmptyRect
 	(JNIEnv *env, jclass that, jobject arg0)
@@ -2210,6 +2220,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentEventKe
 }
 #endif /* NO_GetCurrentEventKeyModifiers */
 
+#ifndef NO_GetCurrentEventQueue
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentEventQueue
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetCurrentEventQueue\n")
+
+	return (jint)GetCurrentEventQueue();
+}
+#endif /* NO_GetCurrentEventQueue */
+
 #ifndef NO_GetCurrentProcess
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentProcess
 	(JNIEnv *env, jclass that, jintArray arg0)
@@ -2274,6 +2294,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserIte
 }
 #endif /* NO_GetDataBrowserItemCount */
 
+#ifndef NO_GetDataBrowserItemDataButtonValue
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemDataButtonValue
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserItemDataButtonValue\n")
+
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	rc = (jint)GetDataBrowserItemDataButtonValue((ControlRef)arg0, (UInt16 *)lparg1);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_GetDataBrowserItemDataButtonValue */
+
 #ifndef NO_GetDataBrowserItemPartBounds
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemPartBounds
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
@@ -2300,6 +2336,38 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserIte
 }
 #endif /* NO_GetDataBrowserItems */
 
+#ifndef NO_GetDataBrowserItemState
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemState
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserItemState\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetDataBrowserItemState((ControlRef)arg0, (DataBrowserItemID)arg1, (DataBrowserItemState *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_GetDataBrowserItemState */
+
+#ifndef NO_GetDataBrowserTableViewRowHeight
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTableViewRowHeight
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserTableViewRowHeight\n")
+
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	rc = (jint)GetDataBrowserTableViewRowHeight((ControlRef)arg0, (UInt16 *)lparg1);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_GetDataBrowserTableViewRowHeight */
+
 #ifndef NO_GetDataBrowserScrollPosition
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserScrollPosition
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
@@ -2318,6 +2386,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserScr
 	return rc;
 }
 #endif /* NO_GetDataBrowserScrollPosition */
+
+#ifndef NO_GetDataBrowserSelectionAnchor
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserSelectionAnchor
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserSelectionAnchor\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetDataBrowserSelectionAnchor((ControlRef)arg0, (UInt32 *)lparg1, (UInt32 *)lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_GetDataBrowserSelectionAnchor */
 
 #ifndef NO_GetDblTime
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDblTime
@@ -4615,7 +4702,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RetainMenu
 
 #ifndef NO_RevealDataBrowserItem
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RevealDataBrowserItem
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyte arg3)
 {
 	DEBUG_CALL("RevealDataBrowserItem\n")
 
@@ -5060,6 +5147,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTar
 	return (jint)SetDataBrowserTarget((ControlRef)arg0, (DataBrowserItemID)arg1);
 }
 #endif /* NO_SetDataBrowserTarget */
+
+#ifndef NO_SetEventLoopTimerNextFireTime
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetEventLoopTimerNextFireTime
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	DEBUG_CALL("SetEventLoopTimerNextFireTime\n")
+
+	return (jint)SetEventLoopTimerNextFireTime((EventLoopTimerRef)arg0, (EventTimerInterval)arg1);
+}
+#endif /* NO_SetEventLoopTimerNextFireTime */
 
 #ifndef NO_SetEventParameter
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetEventParameter
@@ -6094,3 +6191,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ZoomWindowIdeal
 }
 #endif /* NO_ZoomWindowIdeal */
 
+#ifndef NO_HIViewSetBoundsOrigin
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewSetBoundsOrigin)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
+{
+	DEBUG_CALL("HIViewSetBoundsOrigin\n")
+
+	return (jint)HIViewSetBoundsOrigin(arg0, arg1, arg2);
+}
+#endif
