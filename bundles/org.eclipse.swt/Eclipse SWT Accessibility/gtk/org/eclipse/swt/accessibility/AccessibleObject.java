@@ -27,7 +27,7 @@ public class AccessibleObject {
 	int keybindingPtr = -1;
 	int namePtr = -1;
 	int textPtr = -1;
-	static boolean DEBUG =Display.DEBUG;
+	static boolean DEBUG = Display.DEBUG;
 
 	AccessibleObject (int type, int widget, Accessible accessible, int parentType, boolean isLightweight) {
 		super ();
@@ -751,7 +751,7 @@ public class AccessibleObject {
 			OS.memmove (end_offset, new int[] {endBounds}, 4);
 			text = text.substring (startBounds, endBounds);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-			// TODO gnopernicus bug? freeing previous string can cause gp
+//			TODO gnopernicus bug? freeing previous string can cause gp
 //			if (textPtr != -1) OS.g_free (textPtr);
 			textPtr = OS.g_malloc (bytes.length);
 			OS.memmove (textPtr, bytes, bytes.length);
@@ -769,13 +769,122 @@ public class AccessibleObject {
 	}
 
 	int atkText_get_text_at_offset (int offset, int boundary_type, int start_offset, int end_offset) {
-		// TODO
+		String text = getText ();
+		if (text != null) {
+			int length = text.length ();
+			offset = Math.min (offset, length - 1);
+			int startBounds = offset;
+			int endBounds = offset;
+			switch (boundary_type) {
+				case ATK.ATK_TEXT_BOUNDARY_CHAR: {
+					if (length > offset) endBounds++;
+					break;
+				}
+				case ATK.ATK_TEXT_BOUNDARY_WORD_START: {
+					int wordStart1 = previousIndexOfNotChar (text, " !?.\n", offset);
+					if (wordStart1 == -1) {
+						startBounds = endBounds = 0;
+						break;
+					}
+					wordStart1 = previousIndexOfChar (text, " !?.\n", wordStart1) + 1;
+					if (wordStart1 == -1) {
+						startBounds = 0;
+						break;
+					}
+					startBounds = wordStart1;
+					int wordStart2 = nextIndexOfChar (text, " !?.\n", wordStart1);
+					endBounds = nextIndexOfNotChar (text, " !?.\n", wordStart2);
+					break;
+				}
+				case ATK.ATK_TEXT_BOUNDARY_WORD_END: {
+					int wordEnd1 = previousIndexOfNotChar (text, "!?.", offset + 1);
+					wordEnd1 = previousIndexOfChar (text, " !?.\n", wordEnd1);
+					wordEnd1 = previousIndexOfNotChar (text, " \n", wordEnd1 + 1);
+					if (wordEnd1 == -1) {
+						startBounds = endBounds = 0;
+						break;
+					}
+					startBounds = wordEnd1 + 1;
+					int wordEnd2 = nextIndexOfNotChar (text, " \n", startBounds);
+					if (wordEnd2 == length) {
+						endBounds = startBounds;
+						break;
+					}
+					wordEnd2 = nextIndexOfChar (text, " !?.\n", wordEnd2);
+					if (wordEnd2 == -1) {
+						endBounds = startBounds;
+						break;
+					}
+					endBounds = nextIndexOfNotChar (text, "!?.", wordEnd2);
+					break;
+				}
+				case ATK.ATK_TEXT_BOUNDARY_SENTENCE_START: {
+					int sentenceStart1 = previousIndexOfNotChar (text, " !?.\n", offset + 1);
+					if (sentenceStart1 == -1) {
+						startBounds = endBounds = 0;
+						break;
+					}
+					sentenceStart1 = previousIndexOfChar (text, "!?.", sentenceStart1) + 1;
+					startBounds = nextIndexOfNotChar (text, " \n", sentenceStart1);
+					int sentenceStart2 = nextIndexOfChar (text, "!?.", startBounds);
+					endBounds = nextIndexOfNotChar (text, " !?.\n", sentenceStart2);
+					break;
+				}
+				case ATK.ATK_TEXT_BOUNDARY_SENTENCE_END: {
+					int sentenceEnd1 = previousIndexOfNotChar (text, "!?.", offset + 1);
+					sentenceEnd1 = previousIndexOfChar (text, "!?.", sentenceEnd1);
+					sentenceEnd1 = previousIndexOfNotChar (text, " \n", sentenceEnd1 + 1);
+					if (sentenceEnd1 == -1) {
+						startBounds = endBounds = 0;
+						break;
+					}
+					startBounds = sentenceEnd1 + 1;
+					int sentenceEnd2 = nextIndexOfNotChar (text, " \n", startBounds);
+					if (sentenceEnd2 == length) {
+						endBounds = startBounds;
+						break;
+					}
+					sentenceEnd2 = nextIndexOfChar (text, "!?.", sentenceEnd2);
+					if (sentenceEnd2 == -1) {
+						endBounds = startBounds;
+						break;
+					}
+					endBounds = nextIndexOfNotChar (text, "!?.", sentenceEnd2);
+					break;
+				}
+				case ATK.ATK_TEXT_BOUNDARY_LINE_START: {
+					startBounds = previousIndexOfChar (text, "\n", offset) + 1;
+					int lineEnd2 = nextIndexOfChar (text, "\n", startBounds);
+					if (lineEnd2 < length) lineEnd2++;
+					endBounds = lineEnd2;
+					break;
+				}
+				case ATK.ATK_TEXT_BOUNDARY_LINE_END: {
+					int lineEnd1 = previousIndexOfChar (text, "\n", offset);
+					if (lineEnd1 == -1) {
+						startBounds = endBounds = 0;
+						break;
+					}
+					startBounds = lineEnd1;
+					endBounds = nextIndexOfChar (text, "\n", lineEnd1 + 1);
+				}
+			}
+			OS.memmove (start_offset, new int[] {startBounds}, 4);
+			OS.memmove (end_offset, new int[] {endBounds}, 4);
+			text = text.substring (startBounds, endBounds);
+			byte[] bytes = Converter.wcsToMbcs (null, text, true);
+//			TODO gnopernicus bug? freeing previous string can cause gp
+//			if (textPtr != -1) OS.g_free (textPtr);
+			textPtr = OS.g_malloc (bytes.length);
+			OS.memmove (textPtr, bytes, bytes.length);
+			return textPtr;
+		} 
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
 			int superType = OS.g_type_class_peek (parentType);
 			AtkTextIface textIface = new AtkTextIface ();
 			ATK.memmove (textIface, superType);
-			if (textIface.get_text_at_offset != 0) {
-				return OS.call (textIface.get_text_at_offset, handle, offset, boundary_type, start_offset, end_offset);
+			if (textIface.get_text_after_offset != 0) {
+				return OS.call (textIface.get_text_after_offset, handle, offset, boundary_type, start_offset, end_offset);
 			}
 		}
 		return 0;
@@ -891,7 +1000,7 @@ public class AccessibleObject {
 			OS.memmove (end_offset, new int[] {endBounds}, 4);
 			text = text.substring (startBounds, endBounds);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-			// TODO gnopernicus bug? freeing previous string can cause gp
+//			TODO gnopernicus bug? freeing previous string can cause gp
 //			if (textPtr != -1) OS.g_free (textPtr);
 			textPtr = OS.g_malloc (bytes.length);
 			OS.memmove (textPtr, bytes, bytes.length);
@@ -950,7 +1059,7 @@ public class AccessibleObject {
 		}
 		return null;
 	}
-	
+
 	String getText () {
 		int parentResult = 0;
 		String parentText = "";
@@ -1018,6 +1127,7 @@ public class AccessibleObject {
 	}
 
 	int previousIndexOfNotChar (String string, String searchChars, int startIndex) {
+		if (startIndex < 0) return -1;
 		int index = startIndex - 1; 
 		while (index >= 0) {
 			char current = string.charAt (index);
