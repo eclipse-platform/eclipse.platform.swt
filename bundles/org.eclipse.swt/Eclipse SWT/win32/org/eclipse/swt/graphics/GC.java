@@ -1077,7 +1077,7 @@ void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight,
 		rect.Width = destWidth;
 		rect.Height = destHeight;
 		Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, 0, 0, 0);
-		Gdip.Bitmap_delete(img);			
+		Gdip.Bitmap_delete(img);
 		return;
 	}
 	int srcHdc = OS.CreateCompatibleDC(handle);
@@ -2194,6 +2194,24 @@ public int getAlpha() {
 	return data.alpha;
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public int getAntialias() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.gdipGraphics == 0) return SWT.DEFAULT;
+	int mode = Gdip.Graphics_GetSmoothingMode(data.gdipGraphics);
+	switch (mode) {
+		case Gdip.SmoothingModeDefault: return SWT.DEFAULT;
+		case Gdip.SmoothingModeHighSpeed:
+		case Gdip.SmoothingModeNone: return SWT.OFF;
+		case Gdip.SmoothingModeAntiAlias:
+		case Gdip.SmoothingModeAntiAlias8x8:
+		case Gdip.SmoothingModeHighQuality: return SWT.ON;
+	}
+	return SWT.DEFAULT;
+}
+
 /** 
  * Returns the background color.
  *
@@ -2603,6 +2621,24 @@ public int getStyle () {
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
+public int getTextAntialias() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.gdipGraphics == 0) return SWT.DEFAULT;
+	int mode = Gdip.Graphics_GetTextRenderingHint(data.gdipGraphics);
+	switch (mode) {
+		case Gdip.TextRenderingHintSystemDefault: return SWT.DEFAULT;
+		case Gdip.TextRenderingHintSingleBitPerPixel:
+		case Gdip.TextRenderingHintSingleBitPerPixelGridFit: return SWT.OFF;
+		case Gdip.TextRenderingHintAntiAlias:
+		case Gdip.TextRenderingHintAntiAliasGridFit:
+		case Gdip.TextRenderingHintClearTypeGridFit: return SWT.ON;
+	}
+	return SWT.DEFAULT;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void getTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -2752,6 +2788,29 @@ public boolean isDisposed() {
 boolean isIdentity(float[] xform) {
 	return xform[0] == 1 && xform[1] == 0 && xform[2] == 0 &&
 		xform[3] == 1 && xform[4] == 0 && xform[5] == 0;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setAntialias(int antialias) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int mode = 0;
+	switch (antialias) {
+		case SWT.DEFAULT:
+			mode = Gdip.SmoothingModeDefault;
+			break;
+		case SWT.OFF:
+			mode = Gdip.SmoothingModeNone;
+			break;
+		case SWT.ON:
+			mode = Gdip.SmoothingModeAntiAlias;
+			break;			
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	initGdip(false, false);
+	Gdip.Graphics_SetSmoothingMode(data.gdipGraphics, mode);
 }
 
 /**
@@ -3225,6 +3284,35 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.SetROP2(handle, xor ? OS.R2_XORPEN : OS.R2_COPYPEN);
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setTextAntialias(int antialias) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int textMode = 0;
+	switch (antialias) {
+		case SWT.DEFAULT:
+			textMode = Gdip.TextRenderingHintSystemDefault;
+			break;
+		case SWT.OFF:
+			textMode = Gdip.TextRenderingHintSingleBitPerPixelGridFit;
+			break;
+		case SWT.ON:
+			int[] type = new int[1];
+			OS.SystemParametersInfo(OS.SPI_GETFONTSMOOTHINGTYPE, 0, type, 0);
+			if (type[0] == OS.FE_FONTSMOOTHINGCLEARTYPE) {
+				textMode = Gdip.TextRenderingHintClearTypeGridFit;
+			} else {
+				textMode = Gdip.TextRenderingHintAntiAliasGridFit;
+			}
+			break;			
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	initGdip(false, false);
+	Gdip.Graphics_SetTextRenderingHint(data.gdipGraphics, textMode);
 }
 
 /**
