@@ -236,9 +236,8 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_Callback_getEnabled
 
 int callback(int index, ...)
 {
-	if (!CallbacksEnabled) {
-		return 0;
-	} else {
+	if (!CallbacksEnabled) return 0;
+
 	DECL_GLOB(pGlob)
     jobject callback = PGLOB(dllCallbackInfo)[index].callin;
     JNIEnv *env = PGLOB(dllCallbackInfo)[index].env;
@@ -302,7 +301,6 @@ int callback(int index, ...)
     fprintf(stderr, "* callback exiting %d\n", --PGLOB(counter));
 #endif
 	return result;
-	}
 }
 
 /*
