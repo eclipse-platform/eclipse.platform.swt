@@ -1055,12 +1055,12 @@ public void setSelection (Point selection) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = indexOf (string);
 		if (index != -1) select (index);
 		return;
 	}
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	if (OS.SetWindowText (handle, buffer)) {
 		sendEvent (SWT.Modify);
 		// widget could be disposed at this point
