@@ -187,6 +187,7 @@ int processResize (int info) {
 	if (data [8] == data[10] && data [9] == data [11]) {
 		return OS.Pt_CONTINUE;
 	}
+	if (layout != null) layout (false);
 	
 	sendEvent (SWT.Resize);
 	return OS.Pt_CONTINUE;
@@ -260,7 +261,6 @@ void resizeClientArea (int width, int height) {
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	if (resize) resizeClientArea (width, height);
 	super.setBounds (x, y, width, height, move, resize);
-	if (resize && layout != null) layout (false);
 }
 
 public void setLayout (Layout layout) {
