@@ -107,7 +107,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				wrap= true;
 				bounds[1]= (short) wHint;	// If we are wrapping text, calculate the height based on wHint.
 			}
-			int sHandle= OS.CFStringCreateWithCharacters(removeMnemonics(text));
+			int sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(text));
 					
 			GC gc= new GC(this);
 			gc.installFont();
@@ -266,7 +266,7 @@ int processPaint (Object callData) {
 		Rectangle imageBounds= image.getBounds();
 		gc.drawImage(image, (w-imageBounds.width) / 2, (h-imageBounds.height) / 2);
 	} else {
-		int sHandle= OS.CFStringCreateWithCharacters(removeMnemonics(text));
+		int sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(text));
 		boolean wrap= (style & SWT.WRAP) != 0;
 		short just= 0;
 		if ((style & SWT.RIGHT) != 0)

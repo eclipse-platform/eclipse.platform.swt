@@ -69,13 +69,6 @@ public abstract class Widget {
 	/* Global widget variables */
 	static final char Mnemonic = '&';
 
-	/* DBCS flags */
-	/* AW
-	static final boolean IsDBLocale;
-	static {
-		IsDBLocale = OS.MB_CUR_MAX () != 1;
-	}
-	*/
 Widget () {
 	/* Do nothing */
 }
@@ -472,28 +465,6 @@ boolean isValidThread () {
 void manageChildren () {
 	/* Do nothing */
 }
-char mbcsToWcs (char ch) {
-	return mbcsToWcs (ch, null);
-}
-char mbcsToWcs (char ch, String codePage) {
-	/* AW
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
-	byte [] buffer;
-	if (key <= 0xFF) {
-		buffer = new byte [1];
-		buffer [0] = (byte) key;
-	} else {
-		buffer = new byte [2];
-		buffer [0] = (byte) ((key >> 8) & 0xFF);
-		buffer [1] = (byte) (key & 0xFF);
-	}
-	char [] result = Converter.mbcsToWcs (codePage, buffer);
-	if (result.length == 0) return 0;
-	return result [0];
-	*/
-	return ch;
-}
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
@@ -680,30 +651,30 @@ final void redrawHandle (int x, int y, int width, int height, int widgetHandle, 
 	
 	MacRect br= new MacRect();
 	OS.GetControlBounds(widgetHandle, br.getData());
-        if (!br.isEmpty()) {
-            x+= br.getX();
-            y+= br.getY();
-            if (width == 0)
-                    width= br.getWidth();
-            else
-                    width+= 1; // AW workaround for Caret
-            if (height == 0)
-                    height= br.getHeight();
-                    
-            int rgn= OS.NewRgn();
-            OS.RectRgn(rgn, new MacRect(x, y, width, height).getData());
-                    
-            int region= OS.NewRgn();
-            if (MacUtil.getVisibleRegion(widgetHandle, region, all) == OS.kNoErr) {
-            
-                OS.SectRgn(region, rgn, region);
-            
-                OS.InvalWindowRgn(OS.GetControlOwner(widgetHandle), region);
-            }
-            
-            OS.DisposeRgn(rgn);
-            OS.DisposeRgn(region);
+    if (!br.isEmpty()) {
+        x+= br.getX();
+        y+= br.getY();
+        if (width == 0)
+        	width= br.getWidth();
+        else
+			width+= 1; // AW strange workaround for Caret
+        if (height == 0)
+			height= br.getHeight();
+                
+        int rgn= OS.NewRgn();
+        OS.RectRgn(rgn, new MacRect(x, y, width, height).getData());
+                
+        int region= OS.NewRgn();
+        if (MacUtil.getVisibleRegion(widgetHandle, region, all) == OS.kNoErr) {
+        
+            OS.SectRgn(region, rgn, region);
+        
+            OS.InvalWindowRgn(OS.GetControlOwner(widgetHandle), region);
         }
+        
+        OS.DisposeRgn(rgn);
+        OS.DisposeRgn(region);
+    }
 }
 void register () {
 	if (handle == 0) return;
@@ -954,13 +925,4 @@ public String toString () {
 int topHandle () {
 	return handle;
 }
-
-////////////////////////////////////////////
-// Mac stuff
-////////////////////////////////////////////
-
-static String removeMnemonics(String s) {
-	return MacUtil.removeMnemonics(s);
-}
-
 }
