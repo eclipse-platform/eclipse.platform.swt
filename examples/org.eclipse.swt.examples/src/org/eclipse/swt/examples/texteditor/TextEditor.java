@@ -159,9 +159,9 @@ void createStyledText() {
 	initializeColors();
 	text = new StyledText (shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 	GridData spec = new GridData();
-	spec.horizontalAlignment = spec.FILL;
+	spec.horizontalAlignment = GridData.FILL;
 	spec.grabExcessHorizontalSpace = true;
-	spec.verticalAlignment = spec.FILL;
+	spec.verticalAlignment = GridData.FILL;
 	spec.grabExcessVerticalSpace = true;
 	text.setLayoutData(spec);
 	extendedModifyListener = new ExtendedModifyListener() {

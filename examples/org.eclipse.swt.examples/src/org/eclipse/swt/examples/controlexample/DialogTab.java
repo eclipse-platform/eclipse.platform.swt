@@ -106,90 +106,90 @@ class DialogTab extends Tab {
 		String name = dialogCombo.getText ();
 		Shell shell = tabFolderPage.getShell ();
 		
-		if (name.equals (instance.getResourceString("ColorDialog"))) {
+		if (name.equals (ControlExample.getResourceString("ColorDialog"))) {
 			ColorDialog dialog = new ColorDialog (shell ,style);
 			dialog.setRGB (new RGB (100, 100, 100));
-			dialog.setText (instance.getResourceString("Title"));
+			dialog.setText (ControlExample.getResourceString("Title"));
 			RGB result = dialog.open ();
-			textWidget.append (instance.getResourceString("ColorDialog") + Text.DELIMITER);
-			textWidget.append (instance.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("ColorDialog") + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 		
-		if (name.equals (instance.getResourceString("DirectoryDialog"))) {
+		if (name.equals (ControlExample.getResourceString("DirectoryDialog"))) {
 			DirectoryDialog dialog = new DirectoryDialog (shell, style);
-			dialog.setMessage (instance.getResourceString("Example_string"));
-			dialog.setText (instance.getResourceString("Title"));
+			dialog.setMessage (ControlExample.getResourceString("Example_string"));
+			dialog.setText (ControlExample.getResourceString("Title"));
 			String result = dialog.open ();
-			textWidget.append (instance.getResourceString("DirectoryDialog") + Text.DELIMITER);
-			textWidget.append (instance.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("DirectoryDialog") + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 		
-		if (name.equals (instance.getResourceString("FileDialog"))) {
+		if (name.equals (ControlExample.getResourceString("FileDialog"))) {
 			FileDialog dialog = new FileDialog (shell, style);
-			dialog.setFileName (instance.getResourceString("readme_txt"));
+			dialog.setFileName (ControlExample.getResourceString("readme_txt"));
 			dialog.setFilterNames (FilterNames);
 			dialog.setFilterExtensions (FilterExtensions);
-			dialog.setText (instance.getResourceString("Title"));
+			dialog.setText (ControlExample.getResourceString("Title"));
 			String result = dialog.open();
-			textWidget.append (instance.getResourceString("FileDialog") + Text.DELIMITER);
-			textWidget.append (instance.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("FileDialog") + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 		
-		if (name.equals (instance.getResourceString("FontDialog"))) {
+		if (name.equals (ControlExample.getResourceString("FontDialog"))) {
 			FontDialog dialog = new FontDialog (shell, style);
-			dialog.setText (instance.getResourceString("Title"));
+			dialog.setText (ControlExample.getResourceString("Title"));
 			FontData result = dialog.open ();
-			textWidget.append (instance.getResourceString("FontDialog") + Text.DELIMITER);
-			textWidget.append (instance.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("FontDialog") + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 		
-		if (name.equals (instance.getResourceString("PrintDialog"))) {
+		if (name.equals (ControlExample.getResourceString("PrintDialog"))) {
 			PrintDialog dialog = new PrintDialog (shell, style);
-			dialog.setText(instance.getResourceString("Title"));
+			dialog.setText(ControlExample.getResourceString("Title"));
 			PrinterData result = dialog.open ();
-			textWidget.append (instance.getResourceString("PrintDialog") + Text.DELIMITER);
-			textWidget.append (instance.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("PrintDialog") + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 	
-		if (name.equals(instance.getResourceString("MessageBox"))) {
+		if (name.equals(ControlExample.getResourceString("MessageBox"))) {
 			MessageBox dialog = new MessageBox (shell, style);
-			dialog.setMessage (instance.getResourceString("Example_string"));
-			dialog.setText (instance.getResourceString("Title"));
+			dialog.setMessage (ControlExample.getResourceString("Example_string"));
+			dialog.setText (ControlExample.getResourceString("Title"));
 			int result = dialog.open ();
-			textWidget.append (instance.getResourceString("MessageBox") + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("MessageBox") + Text.DELIMITER);
 			/*
 			 * The resulting integer depends on the original
 			 * dialog style.  Decode the result and display it.
 			 */
 			switch (result) {
 				case SWT.OK:
-					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.OK"}));
+					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.OK"}));
 					break;
 				case SWT.YES:
-					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.YES"}));
+					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.YES"}));
 					break;
 				case SWT.NO:
-					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.NO"}));
+					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.NO"}));
 					break;
 				case SWT.CANCEL:
-					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.CANCEL"}));
+					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.CANCEL"}));
 					break;
 				case SWT.ABORT: 
-					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.ABORT"}));
+					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.ABORT"}));
 					break;
 				case SWT.RETRY:
-					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.RETRY"}));
+					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.RETRY"}));
 					break;
 				case SWT.IGNORE:
-					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.IGNORE"}));
+					textWidget.append (ControlExample.getResourceString("Result", new String [] {"SWT.IGNORE"}));
 					break;
 				default:
-					textWidget.append(instance.getResourceString("Result", new String [] {"" + result}));
+					textWidget.append(ControlExample.getResourceString("Result", new String [] {"" + result}));
 					break;
 			}
 			textWidget.append (Text.DELIMITER + Text.DELIMITER);
@@ -211,7 +211,7 @@ class DialogTab extends Tab {
 		gridLayout.numColumns = 2;
 		gridLayout.makeColumnsEqualWidth = true;
 		controlGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		controlGroup.setText (instance.getResourceString("Parameters"));
+		controlGroup.setText (ControlExample.getResourceString("Parameters"));
 		
 		/*
 		 * Create a group to hold the dialog style combo box and
@@ -222,7 +222,7 @@ class DialogTab extends Tab {
 		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_CENTER);
 		gridData.horizontalSpan = 2;
 		dialogStyleGroup.setLayoutData (gridData);
-		dialogStyleGroup.setText (instance.getResourceString("Dialog_Type"));
+		dialogStyleGroup.setText (ControlExample.getResourceString("Dialog_Type"));
 	}
 	
 	/**
@@ -232,12 +232,12 @@ class DialogTab extends Tab {
 	
 		/* Create the combo */
 		String [] strings = {
-			instance.getResourceString("ColorDialog"), 
-			instance.getResourceString("DirectoryDialog"),
-			instance.getResourceString("FileDialog"),
-			instance.getResourceString("FontDialog"),
-			instance.getResourceString("PrintDialog"),
-			instance.getResourceString("MessageBox"),
+			ControlExample.getResourceString("ColorDialog"), 
+			ControlExample.getResourceString("DirectoryDialog"),
+			ControlExample.getResourceString("FileDialog"),
+			ControlExample.getResourceString("FontDialog"),
+			ControlExample.getResourceString("PrintDialog"),
+			ControlExample.getResourceString("MessageBox"),
 		};
 		dialogCombo = new Combo (dialogStyleGroup, SWT.READ_ONLY);
 		dialogCombo.setItems (strings);
@@ -245,14 +245,14 @@ class DialogTab extends Tab {
 	
 		/* Create the create dialog button */
 		Button createButton = new Button(dialogStyleGroup, SWT.NULL);
-		createButton.setText (instance.getResourceString("Create_Dialog"));
+		createButton.setText (ControlExample.getResourceString("Create_Dialog"));
 		createButton.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 	
 		/* Create a group for the various dialog button style controls */
 		Group buttonStyleGroup = new Group (controlGroup, SWT.NULL);
 		buttonStyleGroup.setLayout (new GridLayout ());
 		buttonStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		buttonStyleGroup.setText (instance.getResourceString("Button_Styles"));
+		buttonStyleGroup.setText (ControlExample.getResourceString("Button_Styles"));
 	
 		/* Create the button style buttons */
 		okButton = new Button (buttonStyleGroup, SWT.CHECK);
@@ -274,7 +274,7 @@ class DialogTab extends Tab {
 		Group iconStyleGroup = new Group (controlGroup, SWT.NULL);
 		iconStyleGroup.setLayout (new GridLayout ());
 		iconStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		iconStyleGroup.setText (instance.getResourceString("Icon_Styles"));
+		iconStyleGroup.setText (ControlExample.getResourceString("Icon_Styles"));
 	
 		/* Create the icon style buttons */
 		iconErrorButton = new Button (iconStyleGroup, SWT.RADIO);
@@ -292,7 +292,7 @@ class DialogTab extends Tab {
 		Group modalStyleGroup = new Group (controlGroup, SWT.NULL);
 		modalStyleGroup.setLayout (new GridLayout ());
 		modalStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		modalStyleGroup.setText (instance.getResourceString("Modal_Styles"));
+		modalStyleGroup.setText (ControlExample.getResourceString("Modal_Styles"));
 	
 		/* Create the modal style buttons */
 		modelessButton = new Button (modalStyleGroup, SWT.RADIO);
@@ -308,7 +308,7 @@ class DialogTab extends Tab {
 		Group fileDialogStyleGroup = new Group (controlGroup, SWT.NULL);
 		fileDialogStyleGroup.setLayout (new GridLayout ());
 		fileDialogStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		fileDialogStyleGroup.setText (instance.getResourceString("File_Dialog_Styles"));
+		fileDialogStyleGroup.setText (ControlExample.getResourceString("File_Dialog_Styles"));
 	
 		/* Create the file dialog style buttons */
 		saveButton = new Button (fileDialogStyleGroup, SWT.RADIO);
@@ -373,7 +373,7 @@ class DialogTab extends Tab {
 		resultGroup = new Group (exampleGroup, SWT.NULL);
 		resultGroup.setLayout (new GridLayout ());
 		resultGroup.setLayoutData (new GridData (GridData.FILL_BOTH));
-		resultGroup.setText (instance.getResourceString("Dialog_Result"));
+		resultGroup.setText (ControlExample.getResourceString("Dialog_Result"));
 	}
 	
 	/**
@@ -397,8 +397,8 @@ class DialogTab extends Tab {
 	
 		/* Enable/Disable the buttons */
 		String name = dialogCombo.getText ();
-		boolean isMessageBox = name.equals (instance.getResourceString("MessageBox"));
-		boolean isFileDialog = name.equals (instance.getResourceString("FileDialog"));
+		boolean isMessageBox = name.equals (ControlExample.getResourceString("MessageBox"));
+		boolean isFileDialog = name.equals (ControlExample.getResourceString("FileDialog"));
 		okButton.setEnabled (isMessageBox);
 		cancelButton.setEnabled (isMessageBox);
 		yesButton.setEnabled (isMessageBox);
