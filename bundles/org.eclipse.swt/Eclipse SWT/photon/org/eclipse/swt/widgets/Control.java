@@ -452,6 +452,7 @@ Control [] computeTabList () {
 }
 
 void createWidget (int index) {
+	checkOrientation (parent);
 	super.createWidget (index);
 	setZOrder ();
 	realizeWidget ();
