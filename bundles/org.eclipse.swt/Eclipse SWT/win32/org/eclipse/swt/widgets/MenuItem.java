@@ -719,7 +719,7 @@ public void setMenu (Menu menu) {
 			index++;
 		}
 		if (info.dwItemData != id) return;
-		boolean success = false;
+		boolean hasBitmap = false, success = false;
 		
 		/*
 		* Bug in Windows.  When GetMenuItemInfo() is used to get the text,
@@ -730,8 +730,10 @@ public void setMenu (Menu menu) {
 		* the text and submenu have been set.
 		*/
 		if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
-			if (image != null) {
-				info.fMask = OS.MIIM_BITMAP;
+			info.fMask = OS.MIIM_BITMAP;
+			OS.GetMenuItemInfo (hMenu, index, true, info);
+			hasBitmap = info.hbmpItem != 0;
+			if (hasBitmap) {
 				info.hbmpItem = 0;
 				success = OS.SetMenuItemInfo (hMenu, id, false, info);
 			}
@@ -785,7 +787,7 @@ public void setMenu (Menu menu) {
 			* MIIM_BITMAP.
 			*/
 			if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
-				if (image != null) {
+				if (hasBitmap) {
 					info.fMask = OS.MIIM_BITMAP;
 					info.hbmpItem = OS.HBMMENU_CALLBACK;
 					success = OS.SetMenuItemInfo (hMenu, id, false, info);
@@ -888,7 +890,7 @@ public void setText (String string) {
 	if (text.equals (string)) return;
 	super.setText (string);
 	int hHeap = OS.GetProcessHeap ();
-	int pszText;
+	int pszText = 0;
 	boolean success = false;
 	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
 		/*
@@ -919,26 +921,40 @@ public void setText (String string) {
 		info2.pszText = pszText;
 		success = OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, id, info2) != 0;
 	} else {
-		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR (0, string, true);
-		int byteCount = buffer.length () * TCHAR.sizeof;
-		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (pszText, buffer, byteCount);	
-		int hMenu = parent.handle;
 		MENUITEMINFO info = new MENUITEMINFO ();
 		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_TYPE;
-		info.fType = widgetStyle ();
-		info.dwTypeData = pszText;
-		success = OS.SetMenuItemInfo (hMenu, id, false, info);
+		int hMenu = parent.handle;
+		
 		/*
 		* Bug in Windows 2000.  For some reason, when MIIM_TYPE is set
 		* on a menu item that also has MIIM_BITMAP, the MIIM_TYPE clears
 		* the MIIM_BITMAP style.  The fix is to reset both MIIM_BITMAP.
 		* Note, this does not happen on Windows 98.
 		*/
+		boolean hasBitmap = false;
 		if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
-			if (image != null) {
+			info.fMask = OS.MIIM_BITMAP;
+			OS.GetMenuItemInfo (hMenu, id, false, info);
+			hasBitmap = info.hbmpItem != 0;
+		}
+		
+		/* Use the character encoding for the default locale */
+		TCHAR buffer = new TCHAR (0, string, true);
+		int byteCount = buffer.length () * TCHAR.sizeof;
+		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (pszText, buffer, byteCount);	
+		info.fMask = OS.MIIM_TYPE;
+		info.fType = widgetStyle ();
+		info.dwTypeData = pszText;
+		success = OS.SetMenuItemInfo (hMenu, id, false, info);
+
+		/*
+		* Restore the bitmap that was removed to work around a problem
+		* in GetMenuItemInfo() and menu items that have bitmaps set with
+		* MIIM_BITMAP.
+		*/
+		if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+			if (hasBitmap) {
 				info.fMask = OS.MIIM_BITMAP;
 				info.hbmpItem = OS.HBMMENU_CALLBACK;
 				success = OS.SetMenuItemInfo (hMenu, id, false, info);

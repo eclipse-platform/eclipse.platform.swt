@@ -1273,10 +1273,10 @@ void update () {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
-		if (item.getImage () != null) {
+		if (item.image != null) {
 			if ((hasImage = true) && hasCheck) break;
 		}
-		if ((item.getStyle () & (SWT.CHECK | SWT.RADIO)) != 0) {
+		if ((item.style & (SWT.CHECK | SWT.RADIO)) != 0) {
 			if ((hasCheck = true) && hasImage) break;
 		}
 	}
@@ -1296,8 +1296,8 @@ void update () {
 	info.fMask = OS.MIIM_BITMAP;
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
-		if ((style & SWT.SEPARATOR | SWT.CASCADE) == 0) {
-			if (item.getImage () == null) {
+		if ((style & SWT.SEPARATOR) == 0) {
+			if (item.image == null) {
 				info.hbmpItem = hasImage ? OS.HBMMENU_CALLBACK : 0;
 				OS.SetMenuItemInfo (handle, item.id, false, info);
 			}
