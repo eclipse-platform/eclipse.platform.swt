@@ -340,23 +340,28 @@ int preferredWidth(GC gc) {
 	return width + LEFT_MARGIN + RIGHT_MARGIN;
 }
 /**
- * Sets the control.
+ * Sets the control that is used to fill the client area of
+ * the tab folder when the user selects the tab item.
  * <p>
- * @param control the new control
+ * @param control the new control (or null)
  *
- * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
- *	when called from the wrong thread
- * @exception SWTError(ERROR_WIDGET_DISPOSED)
- *	when the widget has been disposed
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setControl (Control control) {
-	if (control != null && control.getParent() != parent) {
-		SWT.error (SWT.ERROR_INVALID_PARENT);
+	if (control != null) {
+		if (control.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		if (control.getParent() != parent) SWT.error (SWT.ERROR_INVALID_PARENT);
 	}
 	if (this.control != null && !this.control.isDisposed()) {
 		this.control.setVisible(false);
 	}
-	
 	this.control = control;
 	if (this.control != null) {
 		int index = parent.indexOf (this);
@@ -368,16 +373,6 @@ public void setControl (Control control) {
 		}
 	}
 }	
-/**
- * Sets the image.
- * <p>
- * @param image the new image (or null)
- *
- * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
- *	when called from the wrong thread
- * @exception SWTError(ERROR_WIDGET_DISPOSED)
- *	when the widget has been disposed
- */
 public void setImage (Image image) {
 	if (image != null && image.equals(getImage())) return;
 	int oldHeight = parent.getTabHeight();
@@ -399,10 +394,17 @@ public void setDisabledImage (Image image) {
  * Set the widget text.
  * <p>
  * This method sets the widget label.  The label may include
- * the mnemonic characters but must not contain line delimiters.
+ * mnemonic characters but must not contain line delimiters.
  *
  * @param string the new label for the widget
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setText (String string) {
 	if (string.equals(getText())) return;
