@@ -146,29 +146,14 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
-	int width = CLIENT_MARGIN_WIDTH * 2 + TabItem.SHADOW_WIDTH * 2;
-	int height = 0;
-
+	Point size = super.computeSize (wHint, hHint, changed);
 	if (items.length > 0) {
 		TabItem lastItem = items[items.length-1];
-		width = Math.max (width, lastItem.x + lastItem.width);
+		int border = getBorderWidth ();
+		int width = lastItem.x + lastItem.width + border * 2 + CLIENT_MARGIN_WIDTH * 2 + TabItem.SHADOW_WIDTH * 2;
+		size.x = Math.max (width, size.x);
 	}
-	Point size;
-	Layout layout = getLayout();
-	if (layout != null) {
-		size = layout.computeSize (this, wHint, hHint, changed);
-	} else {
-		size = minimumSize (wHint, hHint, changed);
-	}
-	if (size.x == 0) size.x = DEFAULT_WIDTH;
-	if (size.y == 0) size.y = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) size.x = wHint;
-	if (hHint != SWT.DEFAULT) size.y = hHint;
-	width = Math.max (width, size.x);
-	height = Math.max (height, size.y);
-	Rectangle trim = computeTrim (0, 0, width, height);
-	return new Point (trim.width, trim.height);
+	return size;
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();

@@ -89,6 +89,26 @@ static int checkStyle (int style) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	Point size = super.computeSize (wHint, hHint, changed);
+	if (OS.XtIsManaged (labelHandle)) {
+		int [] argList = {
+			OS.XmNshadowThickness, 0, 
+			OS.XmNmarginWidth, 0, 
+		};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int thickness = argList [1];
+		int marginWidth = argList [3];
+		int borderWidth = getBorderWidth ();
+		int [] argList2 = {OS.XmNchildHorizontalSpacing, 0};
+		OS.XtGetValues (labelHandle, argList2, argList2.length / 2);
+		XtWidgetGeometry result = new XtWidgetGeometry ();
+		OS.XtQueryGeometry (labelHandle, null, result);
+		int titleWidth = result.width + 2 * (argList2 [1] + marginWidth + thickness + borderWidth);
+		size.x = Math.max (size.x, titleWidth);
+	}
+	return size;
+}
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	int trimX, trimY, trimWidth, trimHeight;	
@@ -112,10 +132,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		int titleHeight = ((short) argList2 [1]) + argList2 [3];
 		trimY = y - titleHeight;
 		trimHeight = height + titleHeight + (marginHeight + thickness + borderWidth);
-		XtWidgetGeometry result = new XtWidgetGeometry ();
-		OS.XtQueryGeometry (labelHandle, null, result);
-		int titleWidth = result.width + 2 * (argList2 [5] + marginWidth + thickness + borderWidth);
-		trimWidth = Math.max (trimWidth, titleWidth);
 	}
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
