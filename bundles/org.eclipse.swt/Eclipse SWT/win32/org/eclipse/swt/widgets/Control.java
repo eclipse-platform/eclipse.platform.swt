@@ -1734,7 +1734,6 @@ public void setBounds (int x, int y, int width, int height) {
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
-	flags |= OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
 	if (parent == null) {
 		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 		return;
