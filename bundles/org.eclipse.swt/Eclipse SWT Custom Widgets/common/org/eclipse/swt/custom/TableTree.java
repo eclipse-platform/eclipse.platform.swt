@@ -239,6 +239,9 @@ public Color getBackground () {
 	// the TableTree adapting to changes in the System color settings.
 	return table.getBackground();
 }
+public Rectangle getClientArea () {
+	return table.getClientArea();
+}
 public Color getForeground () {
 	return table.getForeground();
 }
@@ -458,8 +461,8 @@ void onDispose(Event e) {
 }
 
 void onResize(Event e) {
-	Rectangle area = getClientArea();
-	table.setBounds(0, 0, area.width, area.height);
+	Point size = getSize();
+	table.setBounds(0, 0, size.x, size.y);
 }
 
 void onSelection(Event e) {
