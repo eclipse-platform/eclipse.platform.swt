@@ -1,12 +1,10 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
-*/
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
 
-/* Imports */
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
@@ -14,18 +12,21 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
-*	The button class represents a selectable user interface object
-* that issues notificiation when pressed and released. 
-*
-* <p>
-* <b>Styles</b><br>
-* <dd>ARROW, CHECK, PUSH, RADIO, TOGGLE<br>
-* <br>
-* <b>Events</b><br>
-* <dd>Selection<br>
-*/
+ * Instances of this class represent a selectable user interface object that
+ * issues notification when pressed and released. 
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>ARROW, CHECK, PUSH, RADIO, TOGGLE, FLAT</dd>
+ * <dd>LEFT, RIGHT, CENTER</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is intended to be subclassed <em>only</em>
+ * within the SWT implementation.
+ * </p>
+ */
 
-/* Class Definition */
 public /*final*/ class Button extends Control {
 	Image image, bitmap, disabled;
 	static final byte [] ARM_AND_ACTIVATE;
@@ -41,24 +42,60 @@ public /*final*/ class Button extends Control {
 		ARM_AND_ACTIVATE = buffer;
 	}
 /**
-* Creates a new instance of the widget.
-*/
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the control is selected, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ * @see SelectionEvent
+ */
 public void addSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -131,6 +168,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle (int index) {
 	state |= HANDLE;
 	int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
+	int parentHandle = parent.handle;
 	
 	/* ARROW button */
 	if ((style & SWT.ARROW) != 0) {
@@ -143,8 +181,9 @@ void createHandle (int index) {
 			OS.XmNtraversalOn, 0,
 			OS.XmNarrowDirection, alignment,
 			OS.XmNborderWidth, borderWidth,
+			OS.XmNancestorSensitive, 1,
 		};
-		handle = OS.XmCreateArrowButton (parent.handle, null, argList, argList.length / 2);
+		handle = OS.XmCreateArrowButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		if ((style & SWT.FLAT) != 0) {
 			int [] argList1 = {OS.XmNshadowThickness, 1};
@@ -166,14 +205,17 @@ void createHandle (int index) {
 		* push button look.  The fix is to set the shadow
 		* thickness when ever this resource is changed.
 		*/
+		Display display = getDisplay ();
+		int thickness = display.buttonShadowThickness;
 		int [] argList = {
+			OS.XmNancestorSensitive, 1,
 			OS.XmNrecomputeSize, 0,
 			OS.XmNindicatorOn, 0,
-			OS.XmNshadowThickness, (style & SWT.FLAT) != 0 ? 1 : 2,
+			OS.XmNshadowThickness, (style & SWT.FLAT) != 0 ? 1 : thickness,
 			OS.XmNalignment, alignment,
 			OS.XmNborderWidth, borderWidth,
 		};
-		handle = OS.XmCreateToggleButton (parent.handle, null, argList, argList.length / 2);
+		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
@@ -189,24 +231,36 @@ void createHandle (int index) {
 		*/
 		int indicatorType = OS.XmONE_OF_MANY;
 		if ((style & SWT.CHECK) != 0) indicatorType = OS.XmN_OF_MANY;
-		int [] argList = {
+		int [] argList = {	
+			OS.XmNancestorSensitive, 1,
 			OS.XmNrecomputeSize, 0,
 			OS.XmNindicatorType, indicatorType,
 			OS.XmNalignment, alignment,
 			OS.XmNborderWidth, borderWidth,
 		};
-		handle = OS.XmCreateToggleButton (parent.handle, null, argList, argList.length / 2);
+		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
 	
 	/* PUSH button */
 	int [] argList = {
+		OS.XmNancestorSensitive, 1,
 		OS.XmNrecomputeSize, 0,
 		OS.XmNalignment, alignment,
 		OS.XmNborderWidth, borderWidth,
+		/*
+		* This code is intentionally commented.  On some
+		* platforms, the standard behavior is that push
+		* buttons are tab groups, traversed with the tab
+		* key.  On Motif, push buttons are tab items, 
+		* that are traversed with the arrow keys.  This
+		* behavior is unspecifed so the line remains
+		* commented.
+		*/
+//		OS.XmNnavigationType, OS.XmTAB_GROUP,
 	};
-	handle = OS.XmCreatePushButton (parent.handle, null, argList, argList.length / 2);
+	handle = OS.XmCreatePushButton (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.FLAT) != 0) {
 		int [] argList1 = {OS.XmNshadowThickness, 1};
@@ -230,22 +284,21 @@ int defaultForeground () {
 	return getDisplay ().buttonForeground;
 }
 /**
-* Gets the alignment.
-* <p>
-*	This method returns the aligment of the button.
-* If the button is an ARROW, the value indicates
-* the direction of the arrow.
-* <p>
-* LEFT, RIGHT, UP, DOWN - when the button is an ARROW button.<br>
-* LEFT, RIGHT, CENTER - when the button is any other style.
-*
-* @return the button alignment 
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns a value which describes the position of the
+ * text or image in the receiver. The value will be one of
+ * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
+ * unless the receiver is an <code>ARROW</code> button, in 
+ * which case, the alignment will indicate the direction of
+ * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
+ * <code>UP</code> or <code>DOWN</code>.
+ *
+ * @return the alignment 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getAlignment () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -274,15 +327,16 @@ boolean getDefault () {
 	return argList [1] != 0;
 }
 /**
-* Gets the widget image.
-* <p>
-* @return the widget image
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's image if it has one, or null
+ * if it does not.
+ *
+ * @return the receiver's image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Image getImage () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -292,22 +346,20 @@ String getNameText () {
 	return getText ();
 }
 /**
-* Gets the selection.
-* <p>
-*	This method gets the widget selection state for a
-* widgets with the style CHECK, RADIO or TOGGLE.  It
-* returns false for widgets that do not have one of
-* these styles.
-* true or false - for CHECK, RADIO or TOGGLE.
-* false - for all other widget styles
-*
-* @return the selection state
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is selected,
+ * and false otherwise.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
+ * it is selected when it is pushed.
+ *
+ * @return the selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getSelection () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -317,26 +369,25 @@ public boolean getSelection () {
 	return argList [1] != 0;
 }
 /**
-* Gets the widget text.
-* <p>
-*	This method returns the button label.  The label may
-* include the mnemonic character but must not contain line
-* delimiters.
-*
-* @return the button text
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's text, which will be an empty
+ * string if it has never been set.
+ *
+ * @return the receiver's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.ARROW) != 0) return "";
 	int [] argList = {OS.XmNlabelString, 0, OS.XmNmnemonic, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int xmString = argList [1], mnemonic = argList [3];
+	int xmString = argList [1];
+	int mnemonic = argList [3];
+	if (mnemonic == OS.XK_VoidSymbol) mnemonic = 0;
 	if (xmString == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
 	char [] result = null;	
 	int address = OS.XmStringUnparse (
@@ -393,12 +444,16 @@ boolean mnemonicMatch (char key) {
 }
 int processFocusIn () {
 	super.processFocusIn ();
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) == 0) return 0;
 	getShell ().setDefaultButton (this, false);
 	return 0;
 }
 int processFocusOut () {
 	super.processFocusOut ();
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) == 0) return 0;
 	if (getDefault ()) {
 		getShell ().setDefaultButton (null, false);
@@ -422,19 +477,23 @@ void releaseWidget () {
 	if (disabled != null) disabled.dispose ();
 	image = bitmap = disabled = null; 
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is selected.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
 public void removeSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -460,20 +519,21 @@ void selectRadio () {
 	setSelection (true);
 }
 /**
-* Sets the alignment.
-* <p>
-*	This method sets the aligment of the button.
-* If the button is an ARROW, the value indicated
-* the direction of the arrow.
-*
-* @param alignment the button alignment or the direction 
-*	of the arrow if the button is an ARROW
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Controls how text, images and arrows will be displayed
+ * in the receiver. The argument should be one of
+ * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
+ * unless the receiver is an <code>ARROW</code> button, in 
+ * which case, the argument indicates the direction of
+ * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
+ * <code>UP</code> or <code>DOWN</code>.
+ *
+ * @param alignment the new alignment 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setAlignment (int alignment) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -542,35 +602,35 @@ void setDefault (boolean value) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
-* Sets the widget image.
-* <p>
-* @param image the widget image (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's image to the argument, which may be
+ * null indicating that no image should be displayed.
+ *
+ * @param image the image to display on the receiver (may be null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	setBitmap (this.image = image);
 }
 /**
-* Sets the selection.
-* <p>
-*	This method Sets the widget selection state for a
-* widgets with the style CHECK, RADIO or TOGGLE.  It
-* returns false for widgets that do not have one of
-* these styles.
-*
-* @param selected the new selection state
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the selection state of the receiver.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
+ * it is selected when it is pushed.
+ *
+ * @param selected the new selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelection (boolean selected) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -579,20 +639,22 @@ public void setSelection (boolean selected) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
-* Sets the widget text.
-* <p>
-*	This method sets the button label.  The label may include
-* the mnemonic character but must not contain line delimiters.
-*
-* @param string the desired label of the button
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when string is null
-*/
+ * Sets the receiver's text.
+ * <p>
+ * This method sets the button label.  The label may include
+ * the mnemonic character but must not contain line delimiters.
+ * </p>
+ * 
+ * @param string the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -620,6 +682,7 @@ public void setText (String string) {
 		0,
 		0);	
 	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
 	int [] argList = {
 		OS.XmNlabelType, OS.XmSTRING,
 		OS.XmNlabelString, xmString,

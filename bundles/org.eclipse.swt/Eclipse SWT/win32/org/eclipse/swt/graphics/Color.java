@@ -1,8 +1,8 @@
 package org.eclipse.swt.graphics;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.win32.*;
@@ -147,8 +147,13 @@ public boolean equals (Object object) {
  * Returns the amount of blue in the color, from 0 to 255.
  *
  * @return the blue component of the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getBlue () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (handle & 0xFF0000) >> 16;
 }
 
@@ -156,8 +161,13 @@ public int getBlue () {
  * Returns the amount of green in the color, from 0 to 255.
  *
  * @return the green component of the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getGreen () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (handle & 0xFF00) >> 8 ;
 }
 
@@ -165,15 +175,25 @@ public int getGreen () {
  * Returns the amount of red in the color, from 0 to 255.
  *
  * @return the red component of the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getRed () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return handle & 0xFF;
 }
 
 /**
  * Returns an <code>RGB</code> representing the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public RGB getRGB () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return new RGB(handle & 0xFF, (handle & 0xFF00) >> 8, (handle & 0xFF0000) >> 16);
 }
 
@@ -274,6 +294,7 @@ public boolean isDisposed() {
  * @return a string representation of the receiver
  */
 public String toString () {
+	if (isDisposed()) return "Color {*DISPOSED*}";
 	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + "}";
 }
 

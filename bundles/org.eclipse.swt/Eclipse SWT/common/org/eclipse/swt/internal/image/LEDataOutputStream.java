@@ -1,15 +1,12 @@
 package org.eclipse.swt.internal.image;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
-/* Imports */
 import java.io.*;
 
-/* Class Definition */
 final class LEDataOutputStream extends OutputStream {
 	OutputStream out;
 public LEDataOutputStream(OutputStream output) {

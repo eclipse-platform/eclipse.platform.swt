@@ -1,5 +1,10 @@
 package org.eclipse.swt.graphics;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.photon.*;
@@ -14,35 +19,45 @@ public abstract class Device implements Drawable {
 	Object [] objects;
 
 	boolean disposed;
+	
+	/*
+	* TEMPORARY CODE. When a graphics object is
+	* created and the device parameter is null,
+	* the current Display is used. This presents
+	* a problem because SWT graphics does not
+	* reference classes in SWT widgets. The correct
+	* fix is to remove this feature. Unfortunately,
+	* too many application programs rely on this
+	* feature.
+	*
+	* This code will be removed in the future.
+	*/
+	protected static Device CurrentDevice;
+	protected static Runnable DeviceFinder;
+	static {
+		try {
+			Class.forName ("org.eclipse.swt.widgets.Display");
+		} catch (Throwable e) {}
+	}	
+
+static Device getDevice () {
+	if (DeviceFinder != null) DeviceFinder.run();
+	Device device = CurrentDevice;
+	CurrentDevice = null;
+	return device;
+}
 		
 public Device(DeviceData data) {
-	create (data);
-	init ();
 	if (data != null) {
 		debug = data.debug;
 		tracking = data.tracking;
 	}
+	create (data);
+	init ();
 	if (tracking) {
 		errors = new Error [128];
 		objects = new Object [128];
 	}
-}
-
-/**
- * Temporary code.
- */	
-static Device getDevice () {
-	Device device = null;
-	try {
-		Class clazz = Class.forName ("org.eclipse.swt.widgets.Display");
-		java.lang.reflect.Method method = clazz.getMethod("getCurrent", new Class[0]);
-		device = (Device) method.invoke(clazz, new Object[0]);
-		if (device == null) {
-			method = clazz.getMethod("getDefault", new Class[0]);
-			device = (Device)method.invoke(clazz, new Object[0]);
-		}
-	} catch (Throwable e) {};
-	return device;
 }
 
 protected void checkDevice () {

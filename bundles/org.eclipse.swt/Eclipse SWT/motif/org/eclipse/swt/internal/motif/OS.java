@@ -3,8 +3,8 @@ package org.eclipse.swt.internal.motif;
 import org.eclipse.swt.internal.*;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
  
 public class OS {
@@ -155,7 +155,7 @@ public class OS {
 //	public static final int KeymapStateMask = 1 << 14;
 	public static final int KeyPress = 2;
 	public static final int KeyPressMask = 1 << 0;
-//	public static final int KeyRelease = 3;
+	public static final int KeyRelease = 3;
 	public static final int KeyReleaseMask = 1 << 1;
 //	public static final int LeaveNotify = 8;
 	public static final int LeaveWindowMask	= 1 << 5;
@@ -380,6 +380,7 @@ public class OS {
 	public static final int XK_Shift_R = 0xFFE2;
 	public static final int XK_Tab = 0xFF09;
 	public static final int XK_Up = 0xFF52;
+	public static final int XK_VoidSymbol = 0xFFFFFF;
 //	public static final int XLookupBoth = 0x4;
 //	public static final int XLookupChars = 0x2;
 //	public static final int XLookupKeySym = 0x3;
@@ -525,6 +526,7 @@ public class OS {
 //	public static final int XmDOUBLE_DASHED_LINE = 0x4;
 //	public static final int XmDOUBLE_LINE = 0x2;
 	public static final int XmDRAG_DYNAMIC = 5;
+	public static final int XmDRAG_UNDER_NONE = 0;
 	public static final byte XmDROP_COPY = (1 << 1);
 	public static final int XmDROP_DOWN_COMBO_BOX = 0x1;
 	public static final int XmDROP_DOWN_LIST = 0x2;	
@@ -534,6 +536,7 @@ public class OS {
 	public static final int XmDROP_SITE_ACTIVE = 0;
 	public static final int XmDROP_SITE_INVALID = 2;
 	public static final int XmDROP_SITE_VALID = 3;
+	public static final int XmDROP_SITE_COMPOSITE = 1;
 	public static final byte XmDROP = 0;
 	public static final int XmEXTENDED_SELECT = 0x2;
 	public static final int XmFONT_IS_FONT = 0x0;
@@ -557,7 +560,9 @@ public class OS {
 	public static final int XmNONE = 0x0;
 //	public static final int XmNUMERIC = 0x3;
 
-	/* char */
+	/* byte */
+	public static final int XmNancestorSensitive = malloc ("ancestorSensitive");
+	public static final int XmNanimationStyle = malloc ("animationStyle");
 	public static final int XmNalignment = malloc ("alignment");
 	public static final int XmNarrowDirection = malloc ("arrowDirection");
 	public static final int XmNblendModel = malloc ("blendModel");
@@ -571,6 +576,7 @@ public class OS {
 	public static final int XmNdragReceiverProtocolStyle = malloc ("dragReceiverProtocolStyle");
 	public static final int XmNdragOperations = malloc ("dragOperations");
 	public static final int XmNeditable = malloc ("editable");
+	public static final int XmNenableThinThickness = malloc ("enableThinThickness");
 	public static final int XmNiconic = malloc ("iconic");
 	public static final int XmNlabelType = malloc ("labelType");
 	public static final int XmNleftAttachment = malloc ("leftAttachment");
@@ -579,6 +585,7 @@ public class OS {
 	public static final int XmNindicatorType = malloc ("indicatorType");
 	public static final int XmNnoResize = malloc ("noResize");
 	public static final int XmNorientation = malloc ("orientation");
+	public static final int XmNoverrideRedirect = malloc ("overrideRedirect");
 	public static final int XmNprocessingDirection = malloc ("processingDirection");
 	public static final int XmNrecomputeSize = malloc ("recomputeSize");
 	public static final int XmNpushButtonEnabled = malloc ("pushButtonEnabled");
@@ -727,7 +734,7 @@ public class OS {
 	public static final int XmNdropTransfers  = malloc ("dropTransfers");
 	public static final int XmNshowArrows = malloc ("showArrows");
 			
-/* Unknown */	
+	/* Unknown */	
 	public static final int XmNdropSiteActivity = malloc("dropSiteActivity");
 	public static final int XmNdropSiteOperations = malloc("dropSiteOperations");
 	public static final int XmNdropSiteType = malloc("dropSiteType");
@@ -886,6 +893,8 @@ public static final native int XFree (int address);
 public static final native int XFreeColors (int display, int colormap, int [] pixels, int npixels, int planes);
 public static final native void XFreeCursor (int display, int pixmap);
 public static final native void XFreeFontNames(int list);
+public static final native void XFreeFont(int display, int font_struct);
+public static final native void XFreeFontSet(int display, int font_set);
 public static final native void XFreeGC (int display, int gc);
 public static final native void XFreePixmap (int display, int pixmap);
 public static final native int XGetGCValues (int display, int gc, int valuemask, XGCValues values);
@@ -1183,6 +1192,7 @@ public static final native void memmove (int dest, byte [] src, int count);
 public static final native void memmove (int dest, int [] src, int count);
 public static final native void memmove (Visual dest, int src, int count);
 public static final native void memmove (XButtonEvent dest, int src, int count);
+public static final native void memmove (int dest, XButtonEvent src, int count);
 public static final native void memmove (XCharStruct dest, int src, int count);
 public static final native void memmove (XConfigureEvent dest, int src, int count);
 public static final native void memmove (XCrossingEvent dest, int src, int count);
@@ -1247,4 +1257,19 @@ public static final native void XDestroyWindow(int display, int w);
 /*
  * ======== End of printing constants and functions ========
  */
+
+public static final native int pipe (int [] filedes);
+public static final native int read (int filedes, byte [] buf, int nbyte);
+public static final native int write (int filedes, byte [] buf, int nbyte);
+public static final native int close (int filedes);
+public static final native int XtAppAddInput (int app_context, int source, int condition, int proc, int client_data);
+public static final native void XtRemoveInput (int id);
+//	public static final int XtInputNoneMask = 0;
+	public static final int XtInputReadMask = 1;
+//	public static final int XtInputWriteMask = 2;
+//	public static final int XtInputExceptMask = 4;
+
+public static final native int XLoadQueryFont (int display, byte[] name);
+public static final native int XmFontListEntryCreate (byte[] tag, int type, int font);
+
 }

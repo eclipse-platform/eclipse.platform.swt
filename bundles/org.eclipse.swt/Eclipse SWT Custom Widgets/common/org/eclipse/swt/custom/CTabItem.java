@@ -1,8 +1,8 @@
 package org.eclipse.swt.custom;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.*;
@@ -39,19 +39,14 @@ public CTabItem (CTabFolder parent, int style) {
 public CTabItem (CTabFolder parent, int style, int index) {
 	super (parent, checkStyle(style));
 	parent.createItem (this, index);
-	addListener(SWT.Dispose, new Listener() {
-		public void handleEvent(Event event) {
-			onDispose();
-		}
-	});
 }
 private static int checkStyle(int style) {
 	return SWT.NONE;
 }
-/**
- * Dispose the receiver.
- */
-private void onDispose() {
+
+public void dispose () {
+	if (isDisposed()) return;
+	super.dispose();
 	parent.destroyItem(this);
 	parent = null;
 	control = null;

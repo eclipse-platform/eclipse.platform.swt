@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -12,8 +12,8 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class represent a non-selectable
- * user interface object displays a string or image.
- * When the SEPARATOR is specified, displays a single
+ * user interface object that displays a string or image.
+ * When SEPARATOR is specified, displays a single
  * vertical or horizontal line.
  * <dl>
  * <dt><b>Styles:</b></dt>
@@ -40,6 +40,34 @@ public class Label extends Control {
 		LabelProc = lpWndClass.lpfnWndProc;
 	}
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -340,7 +368,11 @@ public void setImage (Image image) {
 
 /**
  * Sets the receiver's text.
- *
+ * <p>
+ * This method sets the widget label.  The label may include
+ * the mnemonic characters and line delimiters.
+ * </p>
+ * 
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>

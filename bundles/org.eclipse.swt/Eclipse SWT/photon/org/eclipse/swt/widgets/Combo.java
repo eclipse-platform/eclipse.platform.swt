@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -91,6 +91,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtComboBox;
 	int parentHandle = parent.handle;
@@ -183,6 +184,23 @@ public void clearSelection () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	OS.PtTextSetSelection (handle, new int [] {0}, new int [] {0});
+}
+
+void deregister () {
+	super.deregister ();
+	int child = OS.PtWidgetChildBack (handle);
+	WidgetTable.remove (child);
+}
+
+int focusHandle () {
+
+	/*
+	* Fetuare in Photon. The combo box does not receive
+	* Pt_CB_GOT_FOCUS and Pt_CB_LOST_FOCUS callbacks itself.
+	* Only the internal PtText receives them. The fix is to
+	* add these callbacks in the internal PtText.
+	*/
+	return OS.PtWidgetChildBack (handle);
 }
 
 public String getItem (int index) {
@@ -309,6 +327,10 @@ public int getTextLimit () {
 	return args [1];
 }
 
+boolean hasFocus () {
+	return OS.PtIsFocused (handle) != 0;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
@@ -319,7 +341,8 @@ void hookEvents () {
 public int indexOf (String string) {
 	if (!isValidThread ()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error(SWT.ERROR_WIDGET_DISPOSED);
-	return indexOf (string, 0);
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	return OS.PtListItemPos(handle, buffer) - 1;
 }
 
 public int indexOf (String string, int start) {
@@ -328,8 +351,7 @@ public int indexOf (String string, int start) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	
 	// NOT DONE - start is ignored
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	return OS.PtListItemPos(handle, buffer) - 1;
+	return indexOf (string);
 }
 
 int processModify (int info) {
@@ -351,6 +373,12 @@ int processSelection (int info) {
 		postEvent(SWT.Selection);
 	}
 	return OS.Pt_CONTINUE;
+}
+
+void register () {
+	super.register ();
+	int child = OS.PtWidgetChildBack (handle);
+	WidgetTable.put (child, this);
 }
 
 public void remove (int start, int end) {
@@ -492,6 +520,19 @@ public void setTextLimit (int limit) {
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	int [] args = new int [] {OS.Pt_ARG_MAX_LENGTH, limit, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
+}
+
+int traversalCode (int key_sym, PhKeyEvent_t ke) {
+	int code = super.traversalCode (key_sym, ke);
+	if (key_sym == OS.Pk_Up || key_sym == OS.Pk_Down) {
+		code &= ~(SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS);
+	}
+	if ((style & SWT.READ_ONLY) == 0) {
+		if (key_sym == OS.Pk_Up || key_sym == OS.Pk_Down) {
+			code &= ~(SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS);
+		}
+	}
+	return code;
 }
 
 }

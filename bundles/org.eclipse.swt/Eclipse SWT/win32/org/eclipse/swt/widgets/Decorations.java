@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -29,7 +29,7 @@ import org.eclipse.swt.graphics.*;
  * no longer maximized.
  * </li><li>
  * When an instance is in the <em>normal</em> state (neither
- * maximized or minimized), it's appearance is controlled by
+ * maximized or minimized), its appearance is controlled by
  * the style constants which were specified when it was created
  * and the restrictions of the window manager (see below).
  * </li><li>
@@ -91,7 +91,7 @@ public class Decorations extends Canvas {
 	MenuItem [] items;
 	Control savedFocus;
 	Button defaultButton, saveDefault;
-	int swFlags, hAccel;
+	int swFlags, hAccel, nAccel;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -188,9 +188,8 @@ protected void checkSubclass () {
 }
 
 void createAcceleratorTable () {
-	hAccel = 0;
-	if ((menuBar == null) || (items == null)) return;
-	int nAccel = 0;
+	hAccel = nAccel = 0;
+	if (menuBar == null || items == null) return;
 	int size = ACCEL.sizeof;
 	ACCEL accel = new ACCEL ();
 	byte [] buffer1 = new byte [size];
@@ -237,7 +236,7 @@ Control currentTabGroup () {
 }
 
 void destroyAcceleratorTable () {
-	if ((hAccel != 0) && (hAccel != -1)) OS.DestroyAcceleratorTable (hAccel);
+	if (hAccel != 0 && hAccel != -1) OS.DestroyAcceleratorTable (hAccel);
 	hAccel = -1;
 }
 
@@ -252,7 +251,7 @@ Menu findMenu (int hMenu) {
 
 MenuItem findMenuItem (int id) {
 	if (items == null) return null;
-	if ((0 <= id) && (id < items.length)) return items [id];
+	if (0 <= id && id < items.length) return items [id];
 	return null;
 }
 
@@ -663,7 +662,7 @@ public void setImage (Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see setMinimized
+ * @see #setMinimized
  */
 public void setMaximized (boolean maximized) {
 	checkWidget ();
@@ -721,7 +720,7 @@ public void setMenuBar (Menu menu) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see setMaximized
+ * @see #setMaximized
  */
 public void setMinimized (boolean minimized) {
 	checkWidget ();
@@ -907,6 +906,16 @@ int widgetStyle () {
 	}
 	
 	return bits;
+}
+
+int windowProc (int msg, int wParam, int lParam) {
+	switch (msg) {
+		case OS.WM_APP:
+		case OS.WM_APP+1:
+			if (hAccel == -1) createAcceleratorTable ();
+			return msg == OS.WM_APP ? nAccel : hAccel;
+	}
+	return super.windowProc (msg, wParam, lParam);
 }
 
 LRESULT WM_ACTIVATE (int wParam, int lParam) {

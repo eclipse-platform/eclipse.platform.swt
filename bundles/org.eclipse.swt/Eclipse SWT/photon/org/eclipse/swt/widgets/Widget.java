@@ -1,10 +1,11 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -14,11 +15,15 @@ import java.util.EventListener;
 
 public abstract class Widget {
 	public int handle;
-	int style;
+	int style, state;
 	EventTable eventTable;
 	Object data;
 	String [] keys;
 	Object [] values;
+	
+	static final int DISPOSED		= 0x00000001;
+	static final int HANDLE			= 0x00000002;
+	static final int CANVAS			= 0x00000004;
 	
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;
@@ -99,6 +104,48 @@ void createHandle (int index) {
 	/* Do nothing */
 }
 
+int createToolTip (String string, int handle, byte [] font) {
+	if (string == null || string.length () == 0 || handle == 0) {
+		return 0;
+	}
+
+	int shellHandle = OS.PtFindDisjoint (handle);
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	Display display = getDisplay ();
+	int fill = display.INFO_BACKGROUND;
+	int text_color = display.INFO_FOREGROUND;
+	int toolTipHandle = OS.PtInflateBalloon (shellHandle, handle, OS.Pt_BALLOON_RIGHT, buffer, font, fill, text_color);
+
+	/*
+	* Feature in Photon. The position of the inflated balloon
+	* is relative to the widget position and not to the cursor
+	* position. The fix is to re-position the balloon.
+	*/
+	int ig = OS.PhInputGroup (0);
+	PhCursorInfo_t info = new PhCursorInfo_t ();
+	OS.PhQueryCursor ((short)ig, info);
+	short [] absX = new short [1], absY = new short [1];
+	OS.PtGetAbsPosition (shellHandle, absX, absY);
+	int x = info.pos_x - absX [0] + 16;
+	int y = info.pos_y - absY [0] + 16;
+	PhArea_t shellArea = new PhArea_t ();
+	OS.PtWidgetArea (shellHandle, shellArea);
+	PhArea_t toolTipArea = new PhArea_t ();
+	OS.PtWidgetArea (toolTipHandle, toolTipArea);
+	x = Math.max (0, Math.min (x, shellArea.size_w - toolTipArea.size_w));
+	y = Math.max (0, Math.min (y, shellArea.size_h - toolTipArea.size_h));
+	PhPoint_t pt = new PhPoint_t ();
+	pt.x = (short) x;
+	pt.y = (short) y;
+	int ptr = OS.malloc (PhPoint_t.sizeof);
+	OS.memmove (ptr, pt, PhPoint_t.sizeof);
+	int [] args = {OS.Pt_ARG_POS, ptr, 0};
+	OS.PtSetResources (toolTipHandle, args.length / 3, args);
+	OS.free (ptr);
+
+	return toolTipHandle;
+}
+
 void createWidget (int index) {
 	createHandle (index);
 	hookEvents ();
@@ -110,6 +157,10 @@ void deregister () {
 	WidgetTable.remove (handle);
 }
 
+void destroyToolTip (int toolTipHandle) {
+	if (toolTipHandle != 0) OS.PtDestroyWidget (toolTipHandle);
+}
+
 void destroyWidget () {
 	int topHandle = topHandle ();
 	releaseHandle ();
@@ -119,8 +170,12 @@ void destroyWidget () {
 }
 
 public void dispose () {
+	/*
+	* Note:  It is valid to attempt to dispose a widget
+	* more than once.  If this happens, fail silently.
+	*/
+	if (!isValidWidget ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	releaseChild ();
 	releaseWidget ();
 	destroyWidget ();
@@ -176,7 +231,9 @@ void hookEvents () {
 }
 
 public boolean isDisposed () {
-	return handle == 0;
+	if (handle != 0) return false;
+	if ((state & HANDLE) != 0) return true;
+	return (state & DISPOSED) != 0;
 }
 
 boolean isValidSubclass () {
@@ -194,7 +251,9 @@ boolean isValidThread () {
 }
 
 boolean isValidWidget () {
-	return true /*handle != 0*/;
+	if (handle != 0) return true;
+	if ((state & HANDLE) != 0) return false;
+	return (state & DISPOSED) == 0;
 }
 
 public void notifyListeners (int eventType, Event event) {
@@ -222,6 +281,14 @@ void postEvent (int eventType, Event event) {
 	getDisplay ().postEvent (event);
 }
 
+int processActivate (int info) {
+	return OS.Pt_CONTINUE;
+}
+
+int processArm (int info) {
+	return OS.Pt_CONTINUE;
+}
+
 int processDefaultSelection (int info) {
 	return OS.Pt_CONTINUE;
 }
@@ -238,13 +305,18 @@ int processHide (int info) {
 	return OS.Pt_CONTINUE;
 }
 
+int processHotkey (int data, int info) {
+	return OS.Pt_CONTINUE;
+}
+
 int processKey (int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processEvent (int data, int info) {
+int processEvent (int widget, int data, int info) {
 	switch (data) {
-//		case SWT.Arm:				return processArm (info);
+		case SWT.Activate:			return processActivate (info);
+		case SWT.Arm:				return processArm (info);
 //		case SWT.Dispose:			return processDispose (info);
 		case SWT.DefaultSelection:	return processDefaultSelection (info);
 		case SWT.FocusIn:			return processFocusIn (info);
@@ -265,7 +337,6 @@ int processEvent (int data, int info) {
 		case SWT.Show:				return processShow (info);
 		case SWT.Selection:			return processSelection (info);
 		case SWT.Verify:			return processVerify (info);
-		case -1:					return processShellResize (info);
 	}
 	return OS.Pt_CONTINUE;
 }
@@ -298,10 +369,6 @@ int processShow (int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processShellResize (int info) {
-	return OS.Pt_CONTINUE;
-}
-
 int processSelection (int info) {
 	return OS.Pt_CONTINUE;
 }
@@ -321,14 +388,16 @@ void register () {
 
 void releaseHandle () {
 	handle = 0;
-//	state |= DISPOSED;
+	state |= DISPOSED;
 }
 
 void releaseWidget () {
 	sendEvent (SWT.Dispose);
-//	state |= DISPOSED;
+	deregister ();
 	eventTable = null;
 	data = null;
+	keys = null;
+	values = null;
 }
 
 public void removeListener (int eventType, Listener handler) {
@@ -353,6 +422,27 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
+}
+
+void replaceMnemonic (int mnemonic, int mods) {
+	Display display = getDisplay ();
+	int [] args = {OS.Pt_ARG_ACCEL_KEY, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	if (args [1] != 0) {
+		int length = OS.strlen (args [1]);
+		if (length > 0) {
+			byte [] buffer = new byte [length];
+			OS.memmove (buffer, args [1], length);
+			char [] accelText = Converter.mbcsToWcs (null, buffer);
+			if (accelText.length > 0) {
+				char key = Character.toLowerCase (accelText [0]);
+				OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+			}
+		}
+	}
+	if (mnemonic == 0) return;
+	char key = Character.toLowerCase ((char)mnemonic);
+	OS.PtAddHotkeyHandler (handle, key, mods, (short)0, SWT.Activate, display.windowProc);
 }
 
 void sendEvent (int eventType) {

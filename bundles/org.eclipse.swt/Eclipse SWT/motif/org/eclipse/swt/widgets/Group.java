@@ -1,29 +1,34 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
-*/
-
-/* Imports */
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+ 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 
 /**
-*	The group class implements an etched border with that
-* is typically used to group radio buttons.  A group can
-* have an optional label.
-* <p>
-* <b>Styles</b><br>
-* <dd>SHADOW_IN, SHADOW_OUT,<br>
-* <dd>SHADOW_ETCHED_IN, SHADOW_ETCHED_OUT<br>
-* <br>
-*/
+ * Instances of this class provide an etched border
+ * with an optional title.
+ * <p>
+ * Shadow styles are hints and may not be honoured
+ * by the platform.  To create a group with the
+ * default shadow style for the platform, do not
+ * specify a shadow style.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>SHADOW_ETCHED_IN, SHADOW_ETCHED_OUT, SHADOW_IN, SHADOW_OUT, SHADOW_NONE</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
 
-/* Class Definition */
 public /*final*/ class Group extends Composite {
 	int labelHandle;
 /**
@@ -83,8 +88,12 @@ void createHandle (int index) {
 	* the list that will disallow geometry requests.
 	*/
 	int border = (style & SWT.BORDER) != 0 ? 1 : 0;
-	int [] argList1 = {OS.XmNborderWidth, border};
-	formHandle = OS.XmCreateForm (parent.handle, null, argList1, argList1.length / 2);
+	int [] argList1 = {
+		OS.XmNancestorSensitive, 1,
+		OS.XmNborderWidth, border,
+	};
+	int parentHandle = parent.handle;
+	formHandle = OS.XmCreateForm (parentHandle, null, argList1, argList1.length / 2);
 	if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int [] argList2 = {
 		OS.XmNshadowType, shadowType (),
@@ -117,9 +126,6 @@ void enableWidget (boolean enabled) {
 int fontHandle () {
 	return labelHandle;
 }
-/**
-* Gets the client area.
-*/
 public Rectangle getClientArea () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -147,15 +153,17 @@ public Rectangle getClientArea () {
 	return new Rectangle (x, y, width, height);
 }
 /**
-* Gets the widget text.
-* <p>
-* @return the text
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's text, which is the string that the
+ * is used as the <em>title</em>. If the text has not previously
+ * been set, returns an empty string.
+ *
+ * @return the text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -203,17 +211,20 @@ void releaseHandle () {
 	labelHandle = 0;
 }
 /**
-* Sets the widget text.
-* <p>
-* @param string the string
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when string is null
-*/
+ * Sets the receiver's text, which is the string that will
+ * be displayed as the receiver's <em>title</em>, to the argument,
+ * which may not be null. 
+ *
+ * @param text the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

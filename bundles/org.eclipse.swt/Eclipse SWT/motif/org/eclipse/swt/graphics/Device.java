@@ -1,5 +1,10 @@
 package org.eclipse.swt.graphics;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
@@ -31,6 +36,11 @@ public abstract class Device implements Drawable {
 	Color COLOR_BLACK, COLOR_DARK_RED, COLOR_DARK_GREEN, COLOR_DARK_YELLOW, COLOR_DARK_BLUE;
 	Color COLOR_DARK_MAGENTA, COLOR_DARK_CYAN, COLOR_GRAY, COLOR_DARK_GRAY, COLOR_RED;
 	Color COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE;
+	
+	/* System Font */
+	int systemFont;
+	String characterSetName;
+	String characterSetRegistry;
 
 	/* Warning and Error Handlers */
 	boolean warnings = true;
@@ -46,10 +56,50 @@ public abstract class Device implements Drawable {
 		XDefaultPrintServer = ":1";
 	}
 	protected static int xPrinter;
+	
+	/*
+	* TEMPORARY CODE. When a graphics object is
+	* created and the device parameter is null,
+	* the current Display is used. This presents
+	* a problem because SWT graphics does not
+	* reference classes in SWT widgets. The correct
+	* fix is to remove this feature. Unfortunately,
+	* too many application programs rely on this
+	* feature.
+	*
+	* This code will be removed in the future.
+	*/
+	protected static Device CurrentDevice;
+	protected static Runnable DeviceFinder;
+	static {
+		try {
+			Class.forName ("org.eclipse.swt.widgets.Display");
+		} catch (Throwable e) {}
+	}	
 
+/* 
+* TEMPORARY CODE 
+*/
+static Device getDevice () {
+	if (DeviceFinder != null) DeviceFinder.run();
+	Device device = CurrentDevice;
+	CurrentDevice = null;
+	return device;
+}
+
+/**
+ * Constructs a new instance of this class.
+ * <p>
+ * You must dispose the device when it is no longer required. 
+ * </p>
+ *
+ * @param data the DeviceData which describes the receiver
+ *
+ * @see #create
+ * @see #init
+ * @see DeviceData
+ */
 public Device(DeviceData data) {
-	create (data);
-	init ();
 	if (data != null) {
 		display_name = data.display_name;
 		application_name = data.application_name;
@@ -57,27 +107,19 @@ public Device(DeviceData data) {
 		tracking = data.tracking;
 		debug = data.debug;
 	}
+	create (data);
+	init ();
 	if (tracking) {
 		errors = new Error [128];
 		objects = new Object [128];
 	}
-}
-
-/**
- * Temporary code.
- */	
-static Device getDevice () {
-	Device device = null;
-	try {
-		Class clazz = Class.forName ("org.eclipse.swt.widgets.Display");
-		java.lang.reflect.Method method = clazz.getMethod("getCurrent", new Class[0]);
-		device = (Device) method.invoke(clazz, new Object[0]);
-		if (device == null) {
-			method = clazz.getMethod("getDefault", new Class[0]);
-			device = (Device)method.invoke(clazz, new Object[0]);
-		}
-	} catch (Throwable e) {};
-	return device;
+	
+	/* Initialize the system font slot */
+	Font font = getSystemFont ();
+	FontData fd = font.getFontData ()[0];
+	systemFont = font.handle;
+	characterSetName = fd.characterSetName;
+	characterSetRegistry = fd.characterSetRegistry;
 }
 
 protected void checkDevice () {
@@ -90,6 +132,16 @@ protected void create (DeviceData data) {
 protected void destroy () {
 }
 
+/**
+ * Disposes of the operating system resources associated with
+ * the receiver. After this method has been invoked, the receiver
+ * will answer <code>true</code> when sent the message
+ * <code>isDisposed()</code>.
+ *
+ * @see #release
+ * @see #destroy
+ * @see #checkDevice
+ */
 public void dispose () {
 	if (isDisposed()) return;
 	checkDevice ();
@@ -112,6 +164,15 @@ void dispose_Object (Object object) {
 	}
 }
 
+/**
+ * Returns a rectangle describing the receiver's size and location.
+ *
+ * @return the bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public Rectangle getBounds () {
 	checkDevice ();
 	int screen = OS.XDefaultScreen (xDisplay);
@@ -120,16 +181,53 @@ public Rectangle getBounds () {
 	return new Rectangle (0, 0, width, height);
 }
 
+/**
+ * Returns a rectangle which describes the area of the
+ * receiver which is capable of displaying data.
+ * 
+ * @return the client area
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #getBounds
+ */
 public Rectangle getClientArea () {
 	return getBounds ();
 }
 
+/**
+ * Returns the bit depth of the screen, which is the number of
+ * bits it takes to represent the number of unique colors that
+ * the screen is currently capable of displaying. This number 
+ * will typically be one of 1, 8, 15, 16, 24 or 32.
+ *
+ * @return the depth of the screen
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public int getDepth () {
 	checkDevice ();
 	int xScreenPtr = OS.XDefaultScreenOfDisplay (xDisplay);
 	return OS.XDefaultDepthOfScreen (xScreenPtr);
 }
 
+/**
+ * Returns a <code>DeviceData</code> based on the receiver.
+ * Modifications made to this <code>DeviceData</code> will not
+ * affect the receiver.
+ *
+ * @return a <code>DeviceData</code> containing the device's data and attributes
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see DeviceData
+ */
 public DeviceData getDeviceData () {
 	checkDevice ();
 	DeviceData data = new DeviceData ();
@@ -156,6 +254,17 @@ public DeviceData getDeviceData () {
 	return data;
 }
 
+/**
+ * Returns a point whose x coordinate is the horizontal
+ * dots per inch of the display, and whose y coordinate
+ * is the vertical dots per inch of the display.
+ *
+ * @return the horizontal and vertical DPI
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public Point getDPI () {
 	checkDevice ();
 	int xScreenNum = OS.XDefaultScreen (xDisplay);
@@ -171,6 +280,19 @@ public Point getDPI () {
 	return new Point (x, y);
 }
 
+/**
+ * Returns <code>FontData</code> objects which describe
+ * the fonts which match the given arguments. If the
+ * <code>faceName</code> is null, all fonts will be returned.
+ *
+ * @param faceName the name of the font to look for, or null
+ * @param scalable true if scalable fonts should be returned.
+ * @return the matching font data
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public FontData [] getFontList (String faceName, boolean scalable) {	
 	checkDevice ();
 	String xlfd;
@@ -212,6 +334,24 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	return result;
 }
 
+/**
+ * Returns the matching standard color for the given
+ * constant, which should be one of the color constants
+ * specified in class <code>SWT</code>. Any value other
+ * than one of the SWT color constants which is passed
+ * in will result in the color black. This color should
+ * not be free'd because it was allocated by the system,
+ * not the application.
+ *
+ * @param id the color constant
+ * @return the matching color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see SWT
+ */
 public Color getSystemColor (int id) {
 	checkDevice ();
 	XColor xColor = null;
@@ -237,25 +377,42 @@ public Color getSystemColor (int id) {
 	return Color.motif_new (this, xColor);
 }
 
+/**
+ * Returns a reasonable font for applications to use.
+ * On some platforms, this will match the "default font"
+ * or "system font" if such can be found.  This font
+ * should not be free'd because it was allocated by the
+ * system, not the application.
+ * <p>
+ * Typically, applications which want the default look
+ * should simply not set the font on the widgets they
+ * create. Widgets are always created with the correct
+ * default font for the class of user-interface component
+ * they represent.
+ * </p>
+ *
+ * @return a font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public Font getSystemFont () {
 	checkDevice ();
-	int shellHandle, widgetHandle;
-	int widgetClass = OS.TopLevelShellWidgetClass ();
-	shellHandle = OS.XtAppCreateShell (null, null, widgetClass, xDisplay, null, 0);
-	widgetHandle = OS.XmCreateLabel (shellHandle, null, null, 0);
-	int [] argList = {OS.XmNfontList, 0};
-	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
-	/**
-	 * Feature in Motif. Querying the font list from the widget and
-	 * then destroying the shell (and the widget) could cause the
-	 * font list to be freed as well. The fix is to make a copy of
-	 * the font list, then to free it when the display is disposed.
-	 */ 
-	int labelFont = OS.XmFontListCopy (argList [1]);
-	OS.XtDestroyWidget (shellHandle);
-	return Font.motif_new (this, labelFont);
+	return Font.motif_new (this, systemFont);
 }
 
+/**
+ * Returns <code>true</code> if the underlying window system prints out
+ * warning messages on the console, and <code>setWarnings</code>
+ * had previously been called with <code>true</code>.
+ *
+ * @return <code>true</code>if warnings are being handled, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public boolean getWarnings () {
 	checkDevice ();
 	return warnings;
@@ -321,10 +478,50 @@ protected void init () {
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
 }
 
+/**	 
+ * Invokes platform specific functionality to allocate a new GC handle.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Device</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param data the platform specific GC data 
+ * @return the platform specific GC handle
+ *
+ * @private
+ */
 public abstract int internal_new_GC (GCData data);
 
+/**	 
+ * Invokes platform specific functionality to dispose a GC handle.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Device</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param handle the platform specific GC handle
+ * @param data the platform specific GC data 
+ *
+ * @private
+ */
 public abstract void internal_dispose_GC (int handle, GCData data);
 
+/**
+ * Returns <code>true</code> if the device has been disposed,
+ * and <code>false</code> otherwise.
+ * <p>
+ * This method gets the dispose state for the device.
+ * When a device has been disposed, it is an error to
+ * invoke any other method using the device.
+ *
+ * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
+ */
 public boolean isDisposed () {
 	return xDisplay == 0;
 }
@@ -374,17 +571,52 @@ protected void release () {
 	COLOR_DARK_BLUE = COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
 	
-	/* Release the warning and error callbacks */
-	xtWarningCallback.dispose (); xtWarningCallback = null;
-	xtWarningProc = 0;
-	xErrorCallback.dispose (); xErrorCallback = null;
-	xErrorProc = 0;
+	/* Free the Xt error handler */
+	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+	OS.XtAppSetErrorHandler (xtContext, xtErrorProc);
 	xtErrorCallback.dispose (); xtErrorCallback = null;
-	xtErrorProc = 0;
+	xtNullErrorProc = xtErrorProc = 0;
+	
+	/* Free the Xt Warning handler */
+	OS.XtAppSetWarningHandler (xtContext, xtWarningProc);
+	xtWarningCallback.dispose (); xtWarningCallback = null;
+	xtNullWarningProc = xtWarningProc = 0;
+	
+	/* Free the X IO error handler */
+	OS.XSetIOErrorHandler (xIOErrorProc);
 	xIOErrorCallback.dispose (); xIOErrorCallback = null;
-	xIOErrorProc = 0;
+	xNullIOErrorProc = xIOErrorProc = 0;
+	
+	/* Free the X error handler */
+	/*
+	* Bug in Motif.  For some reason, when a pixmap is
+	* set into a button or label, despite the fact that
+	* the pixmap is cleared from the widget before it
+	* is disposed, Motif still references the pixmap
+	* and attempts to dispose it in XtDestroyApplicationContext().
+	* The fix is to install the null error handler to avoid the
+	* warning.
+	*
+	* NOTE: The warning callback is leaked.
+	*/
+	OS.XSetErrorHandler (xNullErrorProc);
+//	OS.XSetErrorHandler (xErrorProc);
+//	xErrorCallback.dispose (); xErrorCallback = null;
+//	xNullErrorProc = xErrorProc = 0;
 }
 
+/**
+ * If the underlying window system supports printing warning messages
+ * to the console, setting warnings to <code>true</code> prevents these
+ * messages from being printed. If the argument is <code>false</code>
+ * message printing is not blocked.
+ *
+ * @param warnings <code>true</code>if warnings should be handled, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public void setWarnings (boolean warnings) {
 	checkDevice ();
 	this.warnings = warnings;

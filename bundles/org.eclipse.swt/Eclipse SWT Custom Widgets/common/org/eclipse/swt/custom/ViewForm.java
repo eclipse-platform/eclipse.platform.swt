@@ -1,8 +1,8 @@
 package org.eclipse.swt.custom;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.graphics.*;
@@ -63,6 +63,7 @@ public class ViewForm extends Composite {
 	private Color borderColor3;
 	
 	private Rectangle oldArea;
+	private static final int OFFSCREEN = -200;
 /**
 * Creates a ViewForm.
 * <p>
@@ -376,7 +377,7 @@ public void setContent(Control content) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (this.content != null && !this.content.isDisposed()) {
-		this.content.setVisible(false);
+		this.content.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.content = content;
 	layout();
@@ -394,8 +395,21 @@ public void setFont(Font f) {
 	
 	layout();
 }
+/**
+ * Sets the layout which is associated with the receiver to be
+ * the argument which may be null.
+ * <p>
+ * Note : ViewForm does not use a layout class to size and position its children.
+ * </p>
+ *
+ * @param the receiver's new layout or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setLayout (Layout layout) {
-	// no layout may be set on the ViewForm
 	return;
 }
 /**
@@ -409,7 +423,7 @@ public void setTopCenter(Control topCenter) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (this.topCenter != null && !this.topCenter.isDisposed()) {
-		this.topCenter.setVisible(false);
+		this.topCenter.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.topCenter = topCenter;
 	layout();
@@ -425,7 +439,7 @@ public void setTopLeft(Control c) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (this.topLeft != null && !this.topLeft.isDisposed()) {
-		this.topLeft.setVisible(false);
+		this.topLeft.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.topLeft = c;
 	layout();
@@ -441,7 +455,7 @@ public void setTopRight(Control c) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (this.topRight != null && !this.topRight.isDisposed()) {
-		this.topRight.setVisible(false);
+		this.topRight.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.topRight = c;
 	layout();

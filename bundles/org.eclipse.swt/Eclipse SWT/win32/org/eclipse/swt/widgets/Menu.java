@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
  
 import org.eclipse.swt.internal.win32.*;
@@ -290,7 +290,7 @@ public int getItemCount () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the items in the receiver

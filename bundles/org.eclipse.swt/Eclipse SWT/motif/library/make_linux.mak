@@ -1,5 +1,8 @@
 # Makefile for creating SWT libraries on Linux
-#
+
+# (c) Copyright IBM Corp., 2000, 2001
+# All Rights Reserved.
+
 # The following environment variables are assumed to be defined:
 #
 # MAJOR_VER  - the major version number 
@@ -23,7 +26,7 @@ QT_HOME    = /usr/lib/qt-2.2.0
 SWT_PREFIX   = swt
 SWT_DLL      = lib$(SWT_PREFIX)$(DLL_VERSION).so
 SWT_OBJ      = callback.o globals.o library.o structs.o swt.o
-SWT_LIB      = $(MOTIF_HOME)/lib/libXm.a -L/usr/lib -L/usr/X11R6/lib \
+SWT_LIB      = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 	       -x -shared -lX11 -lm -lXext -lXt -lXp -lXpm -ldl
 
 GNOME_PREFIX = swt-gnome

@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
  
 import org.eclipse.swt.internal.*;
@@ -13,9 +13,17 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class implement the notebook user interface
- * metaphore.  It allows the user to select a notebook page from
+ * metaphor.  It allows the user to select a notebook page from
  * set of pages.
  * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>TabItem</code>.
+ * <code>Control</code> children are created and then set into a
+ * tab item using <code>TabItem#setControl</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to set a layout on it.
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
@@ -71,6 +79,10 @@ public TabFolder (Composite parent, int style) {
  * be notified when the receiver's selection changes, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * When <code>widgetSelected</code> is called, the item field of the event object is valid.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -84,6 +96,7 @@ public TabFolder (Composite parent, int style) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget ();
@@ -285,7 +298,7 @@ public int getItemCount () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the items in the receiver
@@ -310,7 +323,7 @@ public TabItem [] getItems () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  * @return an array representing the selection
  *
@@ -354,8 +367,7 @@ int imageIndex (Image image) {
 	}
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
-	imageList.add (image);
-	return imageList.size () - 1;
+	return imageList.add (image);
 }
 
 /**

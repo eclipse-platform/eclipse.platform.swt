@@ -1,8 +1,8 @@
 package org.eclipse.swt.custom;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.*;
@@ -101,11 +101,6 @@ TableTreeItem(TableTree parent, TableTreeItem parentItem, int style, int index) 
 	} else {
 		parentItem.addItem(this, index);
 	}
-	addDisposeListener(new DisposeListener() {
- 		public void widgetDisposed(DisposeEvent e) {
- 			TableTreeItem.this.widgetDisposed(e);
- 		}
- 	});	
 }
 void addCheck() {
 	Table table = parent.getTable();
@@ -351,10 +346,12 @@ int visibleChildrenCount () {
 	return count;
 }
 
-void widgetDisposed(DisposeEvent e) {
+public void dispose () {
+	if (isDisposed()) return;
 	for (int i = items.length - 1; i >= 0; i--) {
 		items[i].dispose();
 	}
+	super.dispose();
 	if (!parent.inDispose) {
 		if (parentItem != null) {
 			parentItem.removeItem(this);

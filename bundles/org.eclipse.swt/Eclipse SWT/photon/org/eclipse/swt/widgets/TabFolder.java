@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -89,6 +89,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtPanelGroup;
 	int parentHandle = parent.handle;
@@ -300,7 +301,10 @@ void releaseWidget () {
 	int count = args [2];
 	for (int i=0; i<count; i++) {
 		TabItem item = items [i];
-		if (!item.isDisposed ()) item.releaseWidget ();
+		if (!item.isDisposed ()) {
+			item.releaseWidget ();
+			item.releaseHandle ();
+		}
 	}
 	items = null;
 	super.releaseWidget ();

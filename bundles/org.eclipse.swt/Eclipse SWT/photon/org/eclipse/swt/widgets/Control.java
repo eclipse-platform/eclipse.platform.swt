@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.photon.*;
@@ -14,6 +14,8 @@ public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	Menu menu;
 	Object layoutData;
+	String toolTipText;
+	int toolTipHandle;
 	
 Control () {
 	/* Do nothing */
@@ -109,7 +111,8 @@ public boolean forceFocus () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int shellHandle = OS.PtFindDisjoint (handle);
 	OS.PtWindowToFront (shellHandle);
-	return handle != OS.PtContainerGiveFocus (handle, null);
+	OS.PtContainerGiveFocus (handle, null);
+	return hasFocus ();
 }
 
 public Point computeSize (int wHint, int hHint) {
@@ -147,6 +150,7 @@ public Color getBackground () {
 	OS.PtGetResources (handle, args.length / 3, args);
 	return Color.photon_new (getDisplay (), args [1]);
 }
+
 public Font getFont () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -169,6 +173,7 @@ public Font getFont () {
 	}
 	return Font.photon_new (getDisplay (), font);
 }
+
 public Color getForeground () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -183,15 +188,17 @@ public int getBorderWidth () {
 	int topHandle = topHandle ();
 	int [] args = {
 		OS.Pt_ARG_BASIC_FLAGS, 0, 0,
+		OS.Pt_ARG_FLAGS, 0, 0,
 //		OS.Pt_ARG_BEVEL_WIDTH, 0, 0,
 	};
 	OS.PtGetResources (topHandle, args.length / 3, args);
+	if ((args [4] & OS.Pt_HIGHLIGHTED) == 0) return 0;
 	int border = 0;
 	int flags = args [1];
 	if ((flags & OS.Pt_ALL_ETCHES) != 0) border++;
 	if ((flags & OS.Pt_ALL_OUTLINES) != 0) border++;
 	if ((flags & OS.Pt_ALL_INLINES) != 0) border++;
-//	if ((flags & OS.Pt_ALL_BEVELS) != 0) border += args [4];
+//	if ((flags & OS.Pt_ALL_BEVELS) != 0) border += args [7];
 	return border;
 }
 
@@ -245,6 +252,23 @@ public Composite getParent () {
 	return parent;
 }
 
+Control [] getPath () {
+	int count = 0;
+	Shell shell = getShell ();
+	Control control = this;
+	while (control != shell) {
+		count++;
+		control = control.parent;
+	}
+	control = this;
+	Control [] result = new Control [count];
+	while (control != shell) {
+		result [--count] = control;
+		control = control.parent;
+	}
+	return result;
+}
+
 public Point getSize () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -257,7 +281,7 @@ public Point getSize () {
 public String getToolTipText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return null;
+	return toolTipText;
 }
 
 public Shell getShell () {
@@ -276,18 +300,24 @@ public boolean getVisible () {
 }
 
 boolean hasFocus () {
-	return OS.PtIsFocused (handle) == 2;
+	return OS.PtIsFocused (handle) != 0;
 }
 
 void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddEventHandler (handle, OS.Ph_EV_KEY, windowProc, SWT.KeyDown);
+	int focusHandle = focusHandle ();
+	OS.PtAddFilterCallback (handle, OS.Ph_EV_KEY, windowProc, SWT.KeyDown);
 	OS.PtAddEventHandler (handle, OS.Ph_EV_BUT_PRESS, windowProc, SWT.MouseDown);
 	OS.PtAddEventHandler (handle, OS.Ph_EV_BUT_RELEASE, windowProc, SWT.MouseUp);
 	OS.PtAddEventHandler (handle, OS.Ph_EV_PTR_MOTION, windowProc, SWT.MouseMove);
 	OS.PtAddEventHandler (handle, OS.Ph_EV_BOUNDARY, windowProc, SWT.MouseEnter);	
-	OS.PtAddCallback (handle, OS.Pt_CB_GOT_FOCUS, windowProc, SWT.FocusIn);
-	OS.PtAddCallback (handle, OS.Pt_CB_LOST_FOCUS, windowProc, SWT.FocusOut);
+	OS.PtAddCallback (focusHandle, OS.Pt_CB_GOT_FOCUS, windowProc, SWT.FocusIn);
+	OS.PtAddCallback (focusHandle, OS.Pt_CB_LOST_FOCUS, windowProc, SWT.FocusOut);
+	OS.PtAddCallback (handle, OS.Pt_CB_MENU, windowProc, SWT.Show);
+}
+
+int focusHandle () {
+	return handle;
 }
 
 public int internal_new_GC (GCData data) {
@@ -384,6 +414,30 @@ int processPaint (int damage) {
 
 int processFocusIn (int info) {
 	sendEvent (SWT.FocusIn);
+	if (isDisposed ()) return OS.Pt_CONTINUE;
+
+	int index = 0;
+	Shell shell = getShell ();
+	Control [] focusIn = getPath ();
+	Control lastFocus = shell.lastFocus;
+	if (lastFocus != null) {
+		if (!lastFocus.isDisposed ()) {
+			Control [] focusOut = lastFocus.getPath ();
+			int length = Math.min (focusIn.length, focusOut.length);
+			while (index < length) {
+				if (focusIn [index] != focusOut [index]) break;
+				index++;
+			}
+			for (int i=focusOut.length-1; i>=index; --i) {
+				focusOut [i].sendEvent (SWT.Deactivate);
+			}
+		}
+		shell.lastFocus = null;
+	}
+	for (int i=focusIn.length-1; i>=index; --i) {
+		focusIn [i].sendEvent (SWT.Activate);
+	}
+
 	/*
 	* Feature in Photon.  Cannot return Pt_END
 	* or the text widget will not take focus.
@@ -393,6 +447,20 @@ int processFocusIn (int info) {
 
 int processFocusOut (int info) {
 	sendEvent (SWT.FocusOut);
+	if (isDisposed ()) return OS.Pt_CONTINUE;
+
+	Shell shell = getShell ();
+	shell.lastFocus = this;
+	Display display = getDisplay ();
+	Control focusControl = display.getFocusControl ();
+	if (focusControl == null || shell != focusControl.getShell ()) {
+		Control [] focusOut = getPath ();
+		for (int i=focusOut.length-1; i>=0; --i) {
+			focusOut [i].sendEvent (SWT.Deactivate);
+		}
+		shell.lastFocus = null;
+	}
+
 	/*
 	* Feature in Photon.  Cannot return Pt_END
 	* or the text widget will not take focus.
@@ -401,27 +469,21 @@ int processFocusOut (int info) {
 }
 
 int processKey (int info) {
-	if (info == 0) return OS.Pt_END;
+	if (!hasFocus ()) return OS.Pt_PROCESS;
+	if (info == 0) return OS.Pt_PROCESS;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
-	if (cbinfo.event == 0) return OS.Pt_END;
+	if (cbinfo.event == 0) return OS.Pt_PROCESS;
 	PhEvent_t ev = new PhEvent_t ();
 	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+	if ((ev.processing_flags & OS.Ph_FAKE_EVENT) != 0) {
+		return OS.Pt_PROCESS;
+	}
 	int data = OS.PhGetData (cbinfo.event);
-	if (data == 0) return OS.Pt_END;
+	if (data == 0) return OS.Pt_PROCESS;
 	PhKeyEvent_t ke = new PhKeyEvent_t ();
 	OS.memmove (ke, data, PhKeyEvent_t.sizeof);
-	/*
-	* Feature in Photon.  The multi-line text widget consumes
-	* key down events.  The fix is to use a filter callback
-	* for the text widget to see the key down.  The following
-	* code ignores key up when called from a filter callback.
-	*/
-	if (cbinfo.reason == OS.Pt_CB_FILTER) {
-		if ((ke.key_flags & (OS.Pk_KF_Key_Down | OS.Pk_KF_Key_Repeat)) == 0) {
-			return OS.Pt_PROCESS;
-		}
-	}
+
 	/*
 	* Feature in Photon.  When the user presses certain keys
 	* (such as the arrow keys), Photon sends 2 event for one
@@ -431,7 +493,7 @@ int processKey (int info) {
 	* first event.
 	*/
 	if (ke.key_flags == OS.Pk_KF_Scan_Valid) {
-		return (cbinfo.reason == OS.Pt_CB_FILTER) ? OS.Pt_PROCESS : OS.Pt_END;
+		return OS.Pt_PROCESS;
 	}
 	if ((ke.key_flags & OS.Pk_KF_Key_Repeat) != 0) {
 		if ((ke.key_flags & OS.Pk_KF_Sym_Valid) != 0) {
@@ -442,16 +504,45 @@ int processKey (int info) {
 				case OS.Pk_Control_R:
 				case OS.Pk_Shift_L:
 				case OS.Pk_Shift_R:
-					/*
-					* Bug in Photon.  Despite the fact that we return Pt_END,
-					* for some reason, Photon continues to forward the event
-					* to the parent.  The fix is to change the event type to
-					* zero.  This doesn't stop the forwarding but makes the
-					* event unknown.
-					*/
-					if (cbinfo.reason == OS.Pt_CB_FILTER) return OS.Pt_PROCESS;
-					OS.memmove (cbinfo.event, new int [1], 4);
-					return OS.Pt_END;
+					return OS.Pt_PROCESS;
+			}
+		}
+	}
+						
+	if ((ke.key_flags & (OS.Pk_KF_Key_Down | OS.Pk_KF_Key_Repeat)) != 0) {
+		
+		/*
+		* Fetuare in Photon.  The key_sym value is not valid when Ctrl
+		* or Alt is pressed. The fix is to detect this case and try to
+		* use the key_cap value.
+		*/
+		int key = ke.key_sym;
+		if ((ke.key_flags & OS.Pk_KF_Sym_Valid) == 0) {
+			key = 0;
+			if ((ke.key_flags & OS.Pk_KF_Cap_Valid) != 0) {
+				if (ke.key_cap == OS.Pk_Tab && (ke.key_mods & OS.Pk_KM_Ctrl) != 0) {
+					key = OS.Pk_Tab;
+				}
+			}
+		}
+		switch (key) {
+			case OS.Pk_Escape:
+			case OS.Pk_Return:
+			case OS.Pk_KP_Tab:
+			case OS.Pk_Tab:
+			case OS.Pk_Up:
+			case OS.Pk_Down:
+			case OS.Pk_Left:
+			case OS.Pk_Right: {
+				if (key != OS.Pk_Return) {
+					ev.processing_flags |= OS.Ph_NOT_CUAKEY;
+					OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
+				}
+				if (translateTraversal (key, ke)) {
+					ev.processing_flags |= OS.Ph_CONSUMED;
+					OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
+					return OS.Pt_PROCESS;
+				}
 			}
 		}
 	}
@@ -469,12 +560,12 @@ int processKey (int info) {
 				case OS.Pk_BackSpace:	event.character = '\b'; break;
 				case OS.Pk_Tab: 		event.character = '\t'; break;
 				case OS.Pk_Linefeed:	event.character = '\n'; break;
-				case OS.Pk_Clear: 	event.character = 0xB; break;
-				case OS.Pk_Return: 	event.character = '\r'; break;
+				case OS.Pk_Clear: 		event.character = 0xB; break;
+				case OS.Pk_Return: 		event.character = '\r'; break;
 				case OS.Pk_Pause:		event.character = 0x13; break;
 				case OS.Pk_Scroll_Lock:	event.character = 0x14; break;
-				case OS.Pk_Escape:	event.character = 0x1B; break;
-				case OS.Pk_Delete:	event.character = 0x7F; break;
+				case OS.Pk_Escape:		event.character = 0x1B; break;
+				case OS.Pk_Delete:		event.character = 0x7F; break;
 				default:
 					event.character = (char) ke.key_sym;
 			}
@@ -482,42 +573,14 @@ int processKey (int info) {
 		display.lastKey = event.keyCode;
 		display.lastAscii = event.character;
 	}
-	if ((ke.key_mods & OS.Pk_KM_Alt) != 0) {
-		if (type != SWT.KeyDown || event.keyCode != SWT.ALT) {
-			event.stateMask |= SWT.ALT;
-		}
-	}
-	if ((ke.key_mods & OS.Pk_KM_Shift) != 0) {
-		if (type != SWT.KeyDown || event.keyCode != SWT.SHIFT) {
-			event.stateMask |= SWT.SHIFT;
-		}
-	}
-	if ((ke.key_mods & OS.Pk_KM_Ctrl) != 0) {
-		if (type != SWT.KeyDown || event.keyCode != SWT.CONTROL) {
-			event.stateMask |= SWT.CONTROL;
-		}
-	}
-	if ((ke.button_state & OS.Ph_BUTTON_SELECT) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((ke.button_state & OS.Ph_BUTTON_ADJUST) != 0) event.stateMask |= SWT.BUTTON2;
-	if ((ke.button_state & OS.Ph_BUTTON_MENU) != 0) event.stateMask |= SWT.BUTTON3;
+	setKeyState(event, ke);
 	if (type == SWT.KeyUp) {	
 		if (event.keyCode == 0) event.keyCode = display.lastKey;
 		if (event.character == 0) event.character = (char) display.lastAscii;
-		if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
-		if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
-		if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
 	}
 	postEvent (type, event);
-	/*
-	* Bug in Photon.  Despite the fact that we return Pt_END,
-	* for some reason, Photon continues to forward the event
-	* to the parent.  The fix is to change the event type to
-	* zero.  This doesn't stop the forwarding but makes the
-	* event unknown.
-	*/
-	if (cbinfo.reason == OS.Pt_CB_FILTER) return OS.Pt_PROCESS;
-	OS.memmove (cbinfo.event, new int [1], 4);
-	return OS.Pt_END;
+
+	return OS.Pt_PROCESS;
 }
 
 int processMouse (int info) {
@@ -527,6 +590,9 @@ int processMouse (int info) {
 	if (cbinfo.event == 0) return OS.Pt_END;
 	PhEvent_t ev = new PhEvent_t ();
 	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+	if ((ev.processing_flags & OS.Ph_FAKE_EVENT) != 0) {
+		return OS.Pt_CONTINUE;
+	}
 	Event event = new Event ();
 	switch (ev.type) {
 		case OS.Ph_EV_BUT_PRESS:
@@ -556,43 +622,25 @@ int processMouse (int info) {
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	event.x = pe.pos_x + ev.translation_x;
 	event.y = pe.pos_y + ev.translation_y;
-	int type = ev.type;
-	int buttons = pe.buttons;
-	int key_mods = pe.key_mods;
-	int button_state = pe.button_state;
-	int click_count = pe.click_count;
-	switch (buttons) {
+	switch (pe.buttons) {
 		case OS.Ph_BUTTON_SELECT:	event.button = 1; break;
 		case OS.Ph_BUTTON_ADJUST:	event.button = 2; break;
 		case OS.Ph_BUTTON_MENU:		event.button = 3; break;
 	}
-	if ((key_mods & OS.Pk_KM_Alt) != 0) event.stateMask |= SWT.ALT;
-	if ((key_mods & OS.Pk_KM_Shift) != 0) event.stateMask |= SWT.SHIFT;
-	if ((key_mods & OS.Pk_KM_Ctrl) != 0) event.stateMask |= SWT.CONTROL;
-	if ((button_state & OS.Ph_BUTTON_SELECT) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((button_state & OS.Ph_BUTTON_ADJUST) != 0) event.stateMask |= SWT.BUTTON2;
-	if ((button_state & OS.Ph_BUTTON_MENU) != 0) event.stateMask |= SWT.BUTTON3;
-	if (type == OS.Ph_EV_BUT_PRESS) {
-		if (buttons == OS.Ph_BUTTON_SELECT && (button_state & OS.Ph_BUTTON_SELECT) != 0) {
-			event.stateMask &= ~SWT.BUTTON1;
-		}
-		if (buttons == OS.Ph_BUTTON_ADJUST && (button_state & OS.Ph_BUTTON_ADJUST) != 0) {
-			event.stateMask &= ~SWT.BUTTON2;
-		}
-		if (buttons == OS.Ph_BUTTON_MENU && (button_state & OS.Ph_BUTTON_MENU) != 0) {
-			event.stateMask &= ~SWT.BUTTON3;
-		}
-	}
-	if (type == OS.Ph_EV_BUT_RELEASE) {
-		if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask |= SWT.BUTTON1;
-		if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask |= SWT.BUTTON2;
-		if (buttons == OS.Ph_BUTTON_MENU) event.stateMask |= SWT.BUTTON3;
-	}
+	setMouseState (event, pe);
 	postEvent (event.type, event);
-	if (type == OS.Ph_EV_BUT_PRESS && click_count == 2) {
-		postEvent (SWT.MouseDoubleClick, event);
+	if (ev.type == OS.Ph_EV_BUT_PRESS && pe.click_count == 2) {
+		Event clickEvent = new Event ();
+		clickEvent.time = event.time;
+		clickEvent.x = event.x;
+		clickEvent.y = event.y;
+		clickEvent.button = event.button;
+		clickEvent.stateMask = event.stateMask;
+		postEvent (SWT.MouseDoubleClick, clickEvent);
 	}
-	return OS.Pt_END;
+	ev.processing_flags |= OS.Ph_CONSUMED;
+	OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
+	return OS.Pt_CONTINUE;
 }
 
 int processMouseEnter (int info) {
@@ -617,9 +665,30 @@ int processMouseEnter (int info) {
 		case OS.Ph_EV_PTR_LEAVE:
 		case OS.Ph_EV_PTR_LEAVE_TO_CHILD:
 			sendEvent (SWT.MouseExit, event);
+			break;
+		case OS.Ph_EV_PTR_STEADY:
+			postEvent (SWT.MouseHover, event);
+			destroyToolTip (toolTipHandle);
+			toolTipHandle = createToolTip (toolTipText, handle, getFont ().handle);
+			break;
+		case OS.Ph_EV_PTR_UNSTEADY:
+			destroyToolTip (toolTipHandle);
+			toolTipHandle = 0;
 			break;		
 	}
 	return OS.Pt_END;
+}
+
+int processShow (int info) {
+	if (info == 0) return OS.Pt_END;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.reason == OS.Pt_CB_MENU) {
+		if (menu != null && !menu.isDisposed ()) {
+			menu.setVisible (true);
+		}
+	}	
+	return OS.Pt_CONTINUE;
 }
 
 void realizeWidget() {
@@ -627,6 +696,16 @@ void realizeWidget() {
 	if (OS.PtWidgetIsRealized (parentHandle)) {
 		OS.PtRealizeWidget (topHandle ());
 	}
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	if (menu != null && !menu.isDisposed ()) {
+		menu.dispose ();
+	}
+	menu = null;
+	parent = null;
+	layoutData = null;
 }
 
 public void redraw () {
@@ -789,9 +868,28 @@ public void setCursor (Cursor cursor) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int type = OS.Ph_CURSOR_INHERIT;
-	if (cursor != null) type = cursor.handle;
-	int [] args = {OS.Pt_ARG_CURSOR_TYPE, type, 0};
+	int bitmap = 0;
+	if (cursor != null) {
+		type = cursor.type;
+		bitmap = cursor.bitmap;
+	}
+	int [] args = new int []{
+		OS.Pt_ARG_CURSOR_TYPE, type, 0,
+		OS.Pt_ARG_BITMAP_CURSOR, bitmap, 0,
+	};
 	OS.PtSetResources (handle, args.length / 3, args);
+	
+	/*
+	* Bug in Photon. For some reason, the widget cursor will
+	* not change, when the new cursor is a bitmap cursor, if
+	* the flag Ph_CURSOR_NO_INHERIT is reset. The fix is to reset
+	* this flag after changing the cursor type to Ph_CURSOR_BITMAP.
+	*/
+	if (type == OS.Ph_CURSOR_BITMAP) {
+		type &= ~OS.Ph_CURSOR_NO_INHERIT;
+		args = new int []{OS.Pt_ARG_CURSOR_TYPE, type, 0};
+		OS.PtSetResources (handle, args.length / 3, args);
+	}
 }
 
 public void setEnabled (boolean enabled) {
@@ -831,18 +929,20 @@ void sendPaintEvent (int damage) {
 	/* Send the paint event */
 	PhTile_t tile = new PhTile_t ();
 	OS.memmove (tile, damage, PhTile_t.sizeof);
-	Event event = new Event ();
-	event.x = tile.rect_ul_x;
-	event.y = tile.rect_ul_y;
-	event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
-	event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
-	Region region = Region.photon_new (tile.next);
-	GC gc = event.gc = new GC (this);
-	gc.setClipping (region);
-	sendEvent (SWT.Paint, event);
-	gc.dispose ();
+	if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
+		Event event = new Event ();
+		event.x = tile.rect_ul_x;
+		event.y = tile.rect_ul_y;
+		event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
+		event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
+		Region region = Region.photon_new (tile.next);
+		GC gc = event.gc = new GC (this);
+		gc.setClipping (region);
+		sendEvent (SWT.Paint, event);
+		gc.dispose ();
+		event.gc = null;
+	}
 	OS.PhFreeTiles (damage);
-	event.gc = null;
 }
 
 boolean sendResize () {
@@ -882,16 +982,32 @@ public void setForeground (Color color) {
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
-public void setMenu (Menu menu) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	this.menu = menu;
-}
-
-public boolean setParent (Composite parent) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return false;
+void setKeyState(Event event, PhKeyEvent_t ke) {
+	int key_mods = ke.key_mods;
+	int button_state = ke.button_state;
+	if ((key_mods & OS.Pk_KM_Alt) != 0) {
+		if (event.type != SWT.KeyDown || event.keyCode != SWT.ALT) {
+			event.stateMask |= SWT.ALT;
+		}
+	}
+	if ((key_mods & OS.Pk_KM_Shift) != 0) {
+		if (event.type != SWT.KeyDown || event.keyCode != SWT.SHIFT) {
+			event.stateMask |= SWT.SHIFT;
+		}
+	}
+	if ((key_mods & OS.Pk_KM_Ctrl) != 0) {
+		if (event.type != SWT.KeyDown || event.keyCode != SWT.CONTROL) {
+			event.stateMask |= SWT.CONTROL;
+		}
+	}
+	if ((button_state & OS.Ph_BUTTON_SELECT) != 0) event.stateMask |= SWT.BUTTON1;
+	if ((button_state & OS.Ph_BUTTON_ADJUST) != 0) event.stateMask |= SWT.BUTTON2;
+	if ((button_state & OS.Ph_BUTTON_MENU) != 0) event.stateMask |= SWT.BUTTON3;
+	if (event.type == SWT.KeyUp) {	
+		if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
+		if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
+		if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
+	}
 }
 
 public void setLayoutData (Object layoutData) {
@@ -911,6 +1027,51 @@ public void setLocation (Point location) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
+}
+
+public void setMenu (Menu menu) {
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	int flags = menu != null ? OS.Pt_MENUABLE : 0;
+	int [] args = {
+		OS.Pt_ARG_FLAGS, flags, OS.Pt_ALL_BUTTONS | OS.Pt_MENUABLE,
+	};
+	OS.PtSetResources (handle, args.length / 3, args);
+	this.menu = menu;
+}
+
+void setMouseState(Event event, PhPointerEvent_t pe) {
+	int key_mods = pe.key_mods;
+	int buttons = pe.buttons;
+	int button_state = pe.button_state;
+	if ((key_mods & OS.Pk_KM_Alt) != 0) event.stateMask |= SWT.ALT;
+	if ((key_mods & OS.Pk_KM_Shift) != 0) event.stateMask |= SWT.SHIFT;
+	if ((key_mods & OS.Pk_KM_Ctrl) != 0) event.stateMask |= SWT.CONTROL;
+	if ((button_state & OS.Ph_BUTTON_SELECT) != 0) event.stateMask |= SWT.BUTTON1;
+	if ((button_state & OS.Ph_BUTTON_ADJUST) != 0) event.stateMask |= SWT.BUTTON2;
+	if ((button_state & OS.Ph_BUTTON_MENU) != 0) event.stateMask |= SWT.BUTTON3;
+	if (event.type == SWT.MouseDown) {
+		if (buttons == OS.Ph_BUTTON_SELECT && (button_state & OS.Ph_BUTTON_SELECT) != 0) {
+			event.stateMask &= ~SWT.BUTTON1;
+		}
+		if (buttons == OS.Ph_BUTTON_ADJUST && (button_state & OS.Ph_BUTTON_ADJUST) != 0) {
+			event.stateMask &= ~SWT.BUTTON2;
+		}
+		if (buttons == OS.Ph_BUTTON_MENU && (button_state & OS.Ph_BUTTON_MENU) != 0) {
+			event.stateMask &= ~SWT.BUTTON3;
+		}
+	}
+	if (event.type == SWT.MouseUp) {
+		if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask |= SWT.BUTTON1;
+		if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask |= SWT.BUTTON2;
+		if (buttons == OS.Ph_BUTTON_MENU) event.stateMask |= SWT.BUTTON3;
+	}
+}
+
+public boolean setParent (Composite parent) {
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	return false;
 }
 
 public void setSize (Point size) {
@@ -954,10 +1115,27 @@ public void setVisible (boolean visible) {
 public void setToolTipText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	toolTipText = string;
 }
 
 void setZOrder() {
 	OS.PtWidgetToBack (topHandle ());
+}
+
+void sort (int [] items) {
+	/* Shell Sort from K&R, pg 108 */
+	int length = items.length;
+	for (int gap=length/2; gap>0; gap/=2) {
+		for (int i=gap; i<length; i++) {
+			for (int j=i-gap; j>=0; j-=gap) {
+		   		if (items [j] <= items [j + gap]) {
+					int swap = items [j];
+					items [j] = items [j + gap];
+					items [j + gap] = swap;
+		   		}
+	    	}
+	    }
+	}
 }
 
 public Point toControl (Point point) {
@@ -965,7 +1143,7 @@ public Point toControl (Point point) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	short [] x = new short [1], y = new short [1];
 	OS.PtGetAbsPosition (handle, x, y);
-	return new Point (x [0] - point.x, y [0] - point.y);
+	return new Point (point.x - x [0], point.y - y [0]);
 }
 
 public Point toDisplay (Point point) {
@@ -976,10 +1154,117 @@ public Point toDisplay (Point point) {
 	return new Point (point.x + x [0], point.y + y [0]);
 }
 
+boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
+	int detail = 0;
+	boolean shift = (phEvent.key_mods & OS.Pk_KM_Shift) != 0;
+	boolean control = (phEvent.key_mods & OS.Pk_KM_Ctrl) != 0;
+	switch (key_sym) {
+		case OS.Pk_Escape:
+			Shell shell = getShell ();
+			if (shell.parent == null) return false;
+			if (!shell.isVisible () || !shell.isEnabled ()) return false;
+			detail = SWT.TRAVERSE_ESCAPE;
+			break;
+		case OS.Pk_Return:
+			Button button = menuShell ().getDefaultButton ();
+			if (button == null || button.isDisposed ()) return false;
+			if (!button.isVisible () || !button.isEnabled ()) return false;
+			detail = SWT.TRAVERSE_RETURN;
+			break;
+		case OS.Pk_Tab:
+		case OS.Pk_KP_Tab:
+			detail = SWT.TRAVERSE_TAB_NEXT;
+			if (shift) detail = SWT.TRAVERSE_TAB_PREVIOUS;
+			break;
+		case OS.Pk_Up:
+		case OS.Pk_Left: 
+			detail = SWT.TRAVERSE_ARROW_PREVIOUS;
+			break;
+		case OS.Pk_Down:
+		case OS.Pk_Right:
+			detail = SWT.TRAVERSE_ARROW_NEXT;
+			break;
+		default:
+			return false;
+	}
+	boolean doit = (detail & traversalCode (key_sym, phEvent)) != 0;
+	if (!doit && control && (key_sym == OS.Pk_Tab || key_sym == OS.Pk_Tab)) {
+		doit = true;
+		control = false;
+	}
+	if (hooks (SWT.Traverse)) {
+		Event event = new Event();
+		event.doit = doit;
+		event.detail = detail;
+		setKeyState (event, phEvent);
+		sendEvent (SWT.Traverse, event);
+		if (isDisposed ()) return true;
+		doit = event.doit;
+		detail = event.detail;
+	}
+	if (doit) {
+		switch (detail) {
+			case SWT.TRAVERSE_ESCAPE:		return traverseEscape ();
+			case SWT.TRAVERSE_RETURN:		return traverseReturn ();
+			case SWT.TRAVERSE_TAB_NEXT:		return traverseGroup (true, control);
+			case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false, control);
+			case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
+			case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);	
+		}
+	}
+	return false;
+}
+
+int traversalCode (int key_sym, PhKeyEvent_t ke) {
+	return
+		SWT.TRAVERSE_ESCAPE | SWT.TRAVERSE_RETURN |
+		SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS |
+		SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
+}
+
 public boolean traverse (int traversal) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (!isFocusControl () && !setFocus ()) return false;
+	switch (traversal) {
+		case SWT.TRAVERSE_ESCAPE:		return traverseEscape ();
+		case SWT.TRAVERSE_RETURN:		return traverseReturn ();
+		case SWT.TRAVERSE_TAB_NEXT:		return traverseGroup (true, false);
+		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false, false);
+		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
+		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);	
+	}
 	return false;
+}
+
+boolean traverseEscape () {
+	Shell shell = getShell ();
+	if (shell.parent == null) return false;
+	if (!shell.isVisible () || !shell.isEnabled ()) return false;
+	shell.close ();
+	return true;
+}
+
+boolean traverseGroup (boolean next, boolean control) {
+	if (control) {
+		if (next) return OS.PtGlobalFocusPrevContainer (handle, null) != 0;
+		return OS.PtGlobalFocusNextContainer (handle, null) != 0;
+	}
+	if (next) return OS.PtGlobalFocusPrev (handle, null) != 0;
+	return OS.PtGlobalFocusNext (handle, null) != 0;
+}
+
+boolean traverseItem (boolean next) {
+	if (next) return OS.PtContainerFocusPrev (handle, null) != 0;
+	return OS.PtContainerFocusNext (handle, null) != 0;
+}
+
+boolean traverseReturn () {
+	Button button = menuShell ().getDefaultButton ();
+	if (button == null || button.isDisposed ()) return false;
+	if (!button.isVisible () || !button.isEnabled ()) return false;
+	button.click ();
+	return true;
 }
 
 public void update () {

@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -53,6 +53,7 @@ protected void checkSubclass () {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtPane;
 	int parentHandle = parent.handle;

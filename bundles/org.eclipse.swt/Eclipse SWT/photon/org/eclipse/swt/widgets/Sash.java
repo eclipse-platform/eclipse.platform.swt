@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.photon.*;
@@ -47,6 +47,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtContainer;
 	int parentHandle = parent.handle;
@@ -80,6 +81,12 @@ void drawBand (int x, int y, int width, int height) {
 	OS.PgDestroyGC (phGC);
 }
 
+void hookEvents () {
+	super.hookEvents ();
+	int windowProc = getDisplay ().windowProc;
+	OS.PtAddEventHandler (handle, OS.Ph_EV_DRAG, windowProc, SWT.MouseMove);
+}
+
 int processMouse (int info) {
 	int result = super.processMouse (info);
 	
@@ -111,8 +118,8 @@ int processMouse (int info) {
 			rect.ul_x = rect.lr_x = (short) (pos.x + ev.translation_x);
 			rect.ul_y = rect.lr_y = (short) (pos.y + ev.translation_y);
 			int rid = OS.PtWidgetRid (handle);
-			int input_group = OS.PhInputGroup (cbinfo.event);
-//			int input_group = OS.PhInputGroup (0);
+//			int input_group = OS.PhInputGroup (cbinfo.event);
+			int input_group = OS.PhInputGroup (0);
 			OS.PhInitDrag (rid, OS.Ph_DRAG_KEY_MOTION | OS.Ph_DRAG_TRACK | OS.Ph_TRACK_DRAG, rect, null, input_group, null, null, null, pos, null);
 
 			/* Compute the banding rectangle */
@@ -168,12 +175,9 @@ int processMouse (int info) {
 			/* Compute the banding rectangle */
 			x += area.pos_x;
 			y += area.pos_y;
-			int parentHandle = parent.handle;
-			rect = new PhRect_t ();
-			int vParent = OS.PtValidParent (handle, OS.PtContainer ());
-			OS.PtCalcCanvas (vParent, rect);
-			int clientWidth = rect.lr_x - rect.ul_x + 1;
-			int clientHeight = rect.lr_y - rect.ul_y + 1;
+			Rectangle r = parent.getClientArea ();
+			int clientWidth = r.width;
+			int clientHeight = r.height;
 			int newX = lastX, newY = lastY;
 			if ((style & SWT.VERTICAL) != 0) {
 				newX = Math.min (Math.max (0, x - startX), clientWidth - width);

@@ -1,14 +1,14 @@
 package org.eclipse.swt.dnd;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.win32.LVITEM;
 import org.eclipse.swt.internal.win32.OS;
-
-/*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
- */
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;

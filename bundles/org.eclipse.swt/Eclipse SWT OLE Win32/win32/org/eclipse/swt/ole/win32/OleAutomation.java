@@ -1,20 +1,14 @@
 package org.eclipse.swt.ole.win32;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
-/*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
- */
 /**
  * OleAutomation provides a generic mechanism for accessing functionality that is 
  * specific to a particular ActiveX Control or OLE Document.
@@ -192,11 +186,15 @@ public OleFunctionDescription getFunctionDescription(int index) {
 	data.helpFile = getHelpFile(funcdesc.memid);
 	
 	String[] names = getNames(funcdesc.memid, funcdesc.cParams + 1);
-	data.name = names[0];
+	if (names.length > 0) {
+		data.name = names[0];
+	}
 	data.args = new OleParameterDescription[funcdesc.cParams];
 	for (int i = 0; i < data.args.length; i++) {
 		data.args[i] = new OleParameterDescription();
-		data.args[i].name = names[i + 1];
+		if (names.length > i + 1) {
+			data.args[i].name = names[i + 1];
+		}
 		short[] vt = new short[1];	
 		COM.MoveMemory(vt, funcdesc.lprgelemdescParam + i * 16 + 4, 2);				
 		if (vt[0] == OLE.VT_PTR) {

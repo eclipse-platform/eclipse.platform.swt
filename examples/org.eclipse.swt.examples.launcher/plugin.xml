@@ -4,7 +4,7 @@
    id="org.eclipse.swt.examples.launcher"
    name="%plugin.SWTLauncherExample.name"
    version="0.9"
-   provider-name="IBM"
+   provider-name="Object Technology International, Inc."
    class="org.eclipse.swt.examples.launcher.LauncherPlugin">
 <!-- Required plugins -->
 <requires>
@@ -12,8 +12,15 @@
    <import plugin="org.eclipse.core.resources"/>
    <import plugin="org.eclipse.ui"/>
    <import plugin="org.eclipse.swt"/>
+   <import plugin="org.eclipse.jdt.launching"/>
+   <import plugin="org.eclipse.debug.core"/>
+   <import plugin="org.eclipse.core.boot"/>
+   <import plugin="org.eclipse.jdt.core"/>
 </requires>
 
+<!-- Runtime -->
+<!-- Runtime -->
+<!-- Runtime -->
 <!-- Runtime -->
 <runtime>
    <library name="launcher.jar"/>
@@ -24,6 +31,16 @@
 
 <!-- Extensions -->
 <extension
+      id="application"
+      point="org.eclipse.core.runtime.applications">
+   <application>
+      <run
+            name="%launchitem.LauncherApplication.name"
+            class="org.eclipse.swt.examples.launcher.LauncherApplication">
+      </run>
+   </application>
+</extension>
+<extension
       point="org.eclipse.ui.views">
    <category
          name="%category.SWTExamples.name"
@@ -31,6 +48,7 @@
    </category>
    <view
          name="%view.LauncherExample.name"
+         icon="icons/launcher_example.gif"
          category="org.eclipse.swt.examples.category"
          class="org.eclipse.swt.examples.launcher.LauncherView"
          id="org.eclipse.swt.examples.launcher.view">
@@ -39,17 +57,21 @@
 <extension
       point="org.eclipse.swt.examples.launcher.launchItems">
    <category
-         name="%launchcategory.SWTExamples.name"
-         description="%launchcategory.SWTExamples.description"
-         id="org.eclipse.swt.examples.launchcategory">
+         name="%launchcategory.SWTViewExamples.name"
+         description="%launchcategory.SWTViewExamples.description"
+         id="org.eclipse.swt.examples.launchViewCategory">
    </category>
-   <viewItem
-         viewId="org.eclipse.swt.examples.launcher.view"
+   <item
+         enabled="false"
          name="%launchitem.LauncherExample.name"
+         icon="icons/launcher_example.gif"
          description="%launchitem.LauncherExample.description"
-         category="org.eclipse.swt.examples.launchcategory"
-         source="launchersrc.zip"
-         id="org.eclipse.swt.examples.launcher.launcher">
-   </viewItem>
+         category="org.eclipse.swt.examples.launchViewCategory"
+         id="org.eclipse.swt.examples.launcher.viewlauncher">
+      <view
+         viewId="org.eclipse.swt.examples.launcher.view"/>
+      <source
+         zip="launchersrc.zip"/>
+   </item>
 </extension>
 </plugin>

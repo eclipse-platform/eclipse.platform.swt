@@ -1,8 +1,8 @@
 package org.eclipse.swt.internal.image;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 public class PngLzBlockReader {
@@ -65,12 +65,12 @@ void readNextBlockHeader() {
 	if (compressionType > 2) stream.error();	
 	
 	if (compressionType == UNCOMPRESSED) {
-		int length = stream.getNextIdatByte() 
-			| (stream.getNextIdatByte() << 8);
-		int testValue = stream.getNextIdatByte() 
-			| (stream.getNextIdatByte() << 8);
-		if (length != ~testValue) stream.error();
-		uncompressedBytesRemaining = length;
+		byte b1 = stream.getNextIdatByte();
+		byte b2 = stream.getNextIdatByte();
+		byte b3 = stream.getNextIdatByte();
+		byte b4 = stream.getNextIdatByte();
+		if (b1 != ~b3 || b2 != ~b4) stream.error();
+		uncompressedBytesRemaining = (b1 & 0xFF) | ((b2 & 0xFF) << 8);
 	} else if (compressionType == COMPRESSED_DYNAMIC) {
 		huffmanTables = PngHuffmanTables.getDynamicTables(stream);
 	} else {

@@ -1,9 +1,8 @@
 package org.eclipse.swt.internal.image;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.*;
@@ -158,7 +157,7 @@ final class GIFFileFormat extends FileFormat {
 			}
 			id = readID();
 		}
-		if (id == GIF_IMAGE_BLOCK_ID) {
+		if (id == GIF_IMAGE_BLOCK_ID || id == GIF_TRAILER_ID) {
 			try {
 				inputStream.unread(new byte[] {(byte)id});
 			} catch (IOException e) {

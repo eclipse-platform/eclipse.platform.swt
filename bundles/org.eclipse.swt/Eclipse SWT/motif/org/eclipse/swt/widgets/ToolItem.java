@@ -1,12 +1,10 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
-*/
-
-/* Imports */
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+ 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
@@ -14,23 +12,24 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
-*	A tool item is a selectable user interface object
-* that represents a button in a tool bar.
-*
-* <p>
-* <b>Styles</b><br>
-* <dd>CHECK, PUSH,	RADIO,	SEPARATOR<br>
-* <b>Events</b><br>
-* <dd>Selection<br>
-*/
-
-/* Class Definition */
+ * Instances of this class represent a selectable user interface object
+ * that represents a button in a tool bar.
+ * <p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>PUSH, CHECK, RADIO, SEPARATOR, DROP_DOWN</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection</dd>
+ * </dl>
+ * </p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ */
 public /*final*/ class ToolItem extends Item {
 	ToolBar parent;
 	Image hotImage, disabledImage;
 	String toolTipText;
 	Control control;
-	boolean set, drawHotImage;
+	boolean set;
 
 /**
 * Creates a new instance of the widget.
@@ -39,6 +38,7 @@ public ToolItem (ToolBar parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
+	parent.relayout ();
 }
 /**
 * Creates a new instance of the widget.
@@ -47,20 +47,33 @@ public ToolItem (ToolBar parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, index);
+	parent.relayout ();
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the control is selected, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ * <p>
+ * When <code>widgetSelected</code> is called when the mouse is over the arrow portion of a drop-down tool,
+ * the event object detail field contains the value <code>SWT.ARROW</code>.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ * @see SelectionEvent
+ */
 public void addSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -85,6 +98,7 @@ void createHandle (int index) {
 			OS.XmNrecomputeSize, 0,
 			OS.XmNpositionIndex, index,
 			OS.XmNmappedWhenManaged, 0,
+			OS.XmNancestorSensitive, 1,
 		};
 		handle = OS.XmCreateDrawnButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -100,32 +114,36 @@ void createHandle (int index) {
 		OS.XmNtraversalOn, 0,
 		OS.XmNpositionIndex, index,
 		OS.XmNshadowType, OS.XmSHADOW_OUT,
+		OS.XmNancestorSensitive, 1,
 	};
 	handle = OS.XmCreateDrawnButton (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	if ((parent.style & SWT.FLAT) != 0) {
-		argList = new int [] {OS.XmNshadowThickness, 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
 }
 
 Point computeSize () {
-	//if (control != null) return control.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
-
+	if ((style & SWT.SEPARATOR) != 0) {
+		int [] argList = {
+			OS.XmNwidth, 0,
+			OS.XmNheight, 0,
+		};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int width = argList [1], height = argList [3];
+		return new Point(width, height);
+	}
 	int [] argList = {
 		OS.XmNmarginHeight, 0,
 		OS.XmNmarginWidth, 0,
 		OS.XmNshadowThickness, 0,
-		OS.XmNhighlightThickness, 0,
 	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int marginHeight = argList[1];
-	int marginWidth = argList[3];
-	int shadowThickness = 2; //argList[5];
-	int highlightThickness = argList[7];
-
+	int marginHeight = argList [1], marginWidth = argList [3];
+	int shadowThickness = argList [5];
+	if ((parent.style & SWT.FLAT) != 0) {
+		Display display = getDisplay ();
+		shadowThickness = Math.min (2, display.buttonShadowThickness);
+	}
 	int textWidth = 0, textHeight = 0;
-	if (text != null && text.length() > 0) {
+	if (text.length () != 0) {
 		GC gc = new GC (parent);
 		Point textExtent = gc.textExtent (text);
 		textWidth = textExtent.x;
@@ -133,41 +151,34 @@ Point computeSize () {
 		gc.dispose ();
 	}
 	int imageWidth = 0, imageHeight = 0;
-	if (image !=  null) {
-		Rectangle rect = image.getBounds();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
 		imageWidth = rect.width;
-		imageHeight= rect.height;
+		imageHeight = rect.height;
 	}
-	
-	int contentHeight = 0, contentWidth = 0;
-	if ((parent.style & SWT.RIGHT) > 0) {
-		contentHeight = Math.max(imageHeight, textHeight);
-		contentWidth = imageWidth + textWidth;
-		if (imageWidth > 0 && textWidth > 0) contentWidth += marginWidth;
+	int width = 0, height = 0;
+	if ((parent.style & SWT.RIGHT) != 0) {
+		width = imageWidth + textWidth;
+		height = Math.max (imageHeight, textHeight);
+		if (imageWidth != 0 && textWidth != 0) width += 2;
 	} else {
-		contentHeight = imageHeight + textHeight;
-		if (imageHeight > 0 && textHeight > 0) contentHeight += marginHeight;
-		contentWidth = Math.max(imageWidth, textWidth);
+		height = imageHeight + textHeight;
+		if (imageHeight != 0 && textHeight != 0) height += 2;
+		width = Math.max (imageWidth, textWidth);
 	}
+	if ((style & SWT.DROP_DOWN) != 0) width += 12;
 	
-	/* This value comes from Windows */
-	int height = 22;
-	if (contentHeight != 0) {
-		height = contentHeight 
-			+ (2 * marginHeight) 
-			+ (2 * shadowThickness) 
-			+ (2 * highlightThickness);
+	/* The 24 and 22 values come from Windows */
+	if (width != 0) {
+		width += (marginWidth + shadowThickness) * 2 + 2;
+	} else {
+		width = 24;
 	}
-	
-	/* This value comes from Windows */	
-	int width = 24;
-	if (contentWidth != 0) {
-		width = contentWidth
-			+ (2 * marginWidth) 
-			+ (2 * shadowThickness) 
-			+ (2 * highlightThickness);
+	if (height != 0) {
+		height += (marginHeight + shadowThickness) * 2 + 2;
+	} else {
+		height = 22;
 	}
-	
 	return new Point (width, height);
 }
 void createWidget (int index) {
@@ -176,10 +187,22 @@ void createWidget (int index) {
 	parent.relayout ();
 }
 public void dispose () {
+	if (!isValidWidget ()) return;
 	ToolBar parent = this.parent;
 	super.dispose ();
 	parent.relayout ();
 }
+/**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Rectangle getBounds () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -188,15 +211,16 @@ public Rectangle getBounds () {
 	return new Rectangle ((short) argList [1], (short) argList [3], argList [5], argList [7]);
 }
 /**
-* Gets the control.
-* <p>
-* @return the control
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the control that is used to fill the bounds of
+ * the item when the items is a <code>SEPARATOR</code>.
+ *
+ * @return the control
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Control getControl () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -218,19 +242,20 @@ public Image getDisabledmage () {
 	return disabledImage;
 }
 /**
-* Gets the enabled state.
-* <p>
-* A disabled widget is typically not selectable from
-* the user interface and draws with an inactive or
-* grayed look.
-*
-* @return a boolean that is the enabled state of the widget.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise.
+ * <p>
+ * A disabled control is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
+ * </p>
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getEnabled () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -238,54 +263,61 @@ public boolean getEnabled () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1] != 0;
 }
-/**
-* Gets the Display.
-*/
 public Display getDisplay () {
 	Composite parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
 /**
-* Gets the hot image.
-* <p>
-* @return the image
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's hot image if it has one, or null
+ * if it does not.
+ * <p>
+ * The hot image is displayed when the mouse enters the receiver.
+ * </p>
+ *
+ * @return the receiver's hot image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Image getHotImage () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return hotImage;
 }
 /**
-* Gets the parent.
-* <p>
-* @return the parent
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's parent, which must be a <code>ToolBar</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public ToolBar getParent () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
 /**
-* Gets the selection state.
-* <p>
-* @return the selection state
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is selected,
+ * and false otherwise.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
+ * it is selected when it is pushed.
+ * </p>
+ *
+ * @return the selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getSelection () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -293,20 +325,30 @@ public boolean getSelection () {
 	return set;
 }
 /**
-* Gets the hover help text.
-* <p>
-* @return the hover help text
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's tool tip text, or null if it has not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getToolTipText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return toolTipText;
 }
+/**
+ * Gets the width of the receiver.
+ *
+ * @return the width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getWidth () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -314,12 +356,23 @@ public int getWidth () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
 }
+boolean hasCursor () {
+	int [] unused = new int [1], buffer = new int [1];
+	int xDisplay = OS.XtDisplay (handle);
+	int xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
+	do {
+		if (OS.XQueryPointer (
+			xDisplay, xParent, unused, buffer,
+			unused, unused, unused, unused, unused) == 0) return false;
+		if ((xWindow = buffer [0]) != 0) xParent = xWindow;
+	} while (xWindow != 0);
+	return handle == OS.XtWindowToWidget (xDisplay, xParent);
+}
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int windowProc = getDisplay ().windowProc;
 	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, SWT.Paint);
-//	OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, SWT.Selection);
 	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, SWT.MouseDown);
 	OS.XtAddEventHandler (handle, OS.ButtonReleaseMask, false, windowProc, SWT.MouseUp);
 	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, SWT.MouseMove);
@@ -327,19 +380,20 @@ void hookEvents () {
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, SWT.MouseExit);
 }
 /**
-* Gets the enabled status.
-* <p>
-* When an ancestor of the widget is disabled, the enabled
-* stats of the widget in the widget hierarchy is disabled
-* regardless of the actual enabled state of the widget.
-*
-* @param enabled a boolean that is the enabled state.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise.
+ * <p>
+ * A disabled control is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
+ * </p>
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isEnabled () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -348,41 +402,43 @@ public boolean isEnabled () {
 void manageChildren () {
 	OS.XtManageChild (handle);
 }
-int processSelection (int callData) {
-	if ((style & SWT.RADIO) != 0) {
-		selectRadio ();
-	} else {
-		if ((style & SWT.CHECK) != 0) setSelection(!set);			
-	}
-	postEvent (SWT.Selection);
-	return 0;
+void redraw () {
+	int display = OS.XtDisplay (handle);
+	if (display == 0) return;
+	int window = OS.XtWindow (handle);
+	if (window == 0) return;
+	OS.XClearArea (display, window, 0, 0, 0, 0, true);
 }
-
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
 }
 void releaseWidget () {
-	getDisplay ().releaseToolTipHandle (handle);
+	Display display = getDisplay ();
+	display.releaseToolTipHandle (handle);
 	super.releaseWidget ();
 	parent = null;
 	control = null;
 	toolTipText = null;
-	disabledImage = hotImage = null; 
+	image = disabledImage = hotImage = null; 
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is selected.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
 public void removeSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -417,15 +473,16 @@ void setBounds (int x, int y, int width, int height) {
 	OS.XtConfigureWidget (handle, x, y, newWidth, newHeight, 0);
 }
 /**
-* Sets the control.
-* <p>
-* @param control the new control
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the control that is used to fill the bounds of
+ * the item when the items is a <code>SEPARATOR</code>.
+ *
+ * @param control the new control
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setControl (Control control) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -439,19 +496,21 @@ public void setControl (Control control) {
 	}
 }
 /**
-* Sets the enabled state.
-* <p>
-* A disabled widget is typically not selectable from
-* the user interface and draws with an inactive or
-* grayed look.
-*
-* @param enabled the new value of the enabled flag
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Enables the receiver if the argument is <code>true</code>,
+ * and disables it otherwise.
+ * <p>
+ * A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ * </p>
+ *
+ * @param enabled the new enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setEnabled (boolean enabled) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -459,121 +518,125 @@ public void setEnabled (boolean enabled) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
-* Sets the hot image.
-* <p>
-* @param image the new image (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's disabled image to the argument, which may be
+ * null indicating that no disabled image should be displayed.
+ * <p>
+ * The disbled image is displayed when the receiver is disabled.
+ * </p>
+ *
+ * @param image the hot image to display on the receiver (may be null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setDisabledImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	disabledImage = image;
+	if (!getEnabled ()) redraw ();
 }
 /**
-* Sets the hot image.
-* <p>
-* @param image the new image (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's hot image to the argument, which may be
+ * null indicating that no hot image should be displayed.
+ * <p>
+ * The hot image is displayed when the mouse enters the receiver.
+ * </p>
+ *
+ * @param image the hot image to display on the receiver (may be null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setHotImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	hotImage = image;
+	if ((parent.style & SWT.FLAT) != 0) redraw ();
 }
-/**
-* Sets the widget image.
-* <p>
-* @param image the widget image (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
 public void setImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-
-	/* Resize */	
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	Point size = computeSize();
-	if (argList[1] != size.x || argList[3] != size.y) {
-		OS.XtResizeWidget (handle, size.x, size.y, 0);
-	}
-	parent.relayout ();
+	Point size = computeSize ();
+	setSize (size.x, size.y);
+	redraw ();
 }
 
 /**
-* Sets the selection state.
-* <p>
-* @param selected the new selection state
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the selection state of the receiver.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
+ * it is selected when it is pushed.
+ * </p>
+ *
+ * @param selected the new selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelection (boolean selected) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	if (selected == set) return;
 	set = selected;
-	setDrawPressed(set);
-	if ((parent.style & SWT.FLAT) != 0) {
-		int shadowThickness = set ? getDisplay().buttonShadowThickness : 0;
-		int [] argList = {OS.XmNshadowThickness, shadowThickness};
-		OS.XtSetValues (handle, argList, argList.length / 2);
+	setDrawPressed (set);
+}
+void setSize (int width, int height) {
+	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	if (argList [1] != width || argList [3] != height) {
+		OS.XtResizeWidget (handle, width, height, 0);
+		parent.relayout ();
 	}
 }
-/**
-* Sets the widget text.
-*/
 public void setText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-
-	/* Resize */
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	Point size = computeSize();
-	if (argList[1] != size.x || argList[3] != size.y) {
-		OS.XtResizeWidget (handle, size.x, size.y, 0);
-	}
-	parent.relayout ();
+	Point size = computeSize ();
+	setSize (size.x, size.y);
+	redraw ();
 }
 
 /**
-* Sets the hover help text.
-* <p>
-* @param string the hover help text (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that no tool tip text should be shown.
+ *
+ * @param string the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setToolTipText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	toolTipText = string;
 }
-
+/**
+ * Sets the width of the receiver.
+ *
+ * @param width the new width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setWidth (int width) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -581,118 +644,178 @@ public void setWidth (int width) {
 	if (width < 0) return;
 	int [] argList = {OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	OS.XtResizeWidget (handle, width, argList [1], 0);
-	parent.relayout ();
+	setSize (width, argList [1]);
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}
 }
-
 void setDrawPressed (boolean value) {
 	int shadowType = value ? OS.XmSHADOW_IN : OS.XmSHADOW_OUT;
 	int [] argList = {OS.XmNshadowType, shadowType};
 	OS.XtSetValues(handle, argList, argList.length / 2);
 }
-
 int processMouseDown (int callData) {
-	getDisplay ().hideToolTip();
-	if (set && (style & SWT.RADIO) != 0) return 0;
-	setDrawPressed(!set);
-	return 0;
-}
-
-int processMouseEnter (int callData) {
-	if ((parent.style & SWT.FLAT) != 0) {
-		int [] argList = {OS.XmNshadowThickness, getDisplay().buttonShadowThickness};
-		OS.XtSetValues (handle, argList, argList.length / 2);
+	Display display = getDisplay ();
+	display.hideToolTip ();
+	XButtonEvent xEvent = new XButtonEvent ();
+	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
+	if (xEvent.button == 1) {
+		if (!set && (style & SWT.RADIO) == 0) {
+			setDrawPressed (!set);
+		}
 	}
 	
-	XCrossingEvent xEvent = new XCrossingEvent ();
-	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	boolean button1Pressed = (xEvent.state & OS.Button1Mask) != 0;
-	if (button1Pressed) {
-		setDrawPressed(!set);
-	}
-	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
-	if (drawHotImage) { 
-		OS.XClearArea (xEvent.display, xEvent.window, 0, 0, 0, 0, true);
-	}
+	/*
+	* Forward the mouse event to the parent.
+	* This is necessary so that mouse listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	xEvent.window = OS.XtWindow (parent.handle);
+	xEvent.x += argList [1];  xEvent.y += argList [3];
+	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
+	parent.processMouseDown (callData);
+
 	return 0;
 }
-
+int processMouseEnter (int callData) {
+	XCrossingEvent xEvent = new XCrossingEvent ();
+	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
+	if ((xEvent.state & OS.Button1Mask) != 0) setDrawPressed (!set);
+	else if ((parent.style & SWT.FLAT) != 0) redraw ();
+	return 0;
+}
 int processMouseExit (int callData) {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
-	
-	if ((parent.style & SWT.FLAT) != 0 && !set) {
-		int [] argList = {OS.XmNshadowThickness, 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-	
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	boolean button1Pressed = (xEvent.state & OS.Button1Mask) != 0;
-	if (button1Pressed) {
-		setDrawPressed(set);
-	}
-	if (drawHotImage) {
-		drawHotImage = false;
-		OS.XClearArea (xEvent.display, xEvent.window, 0, 0, 0, 0, true);
-	}
+	if ((xEvent.state & OS.Button1Mask) != 0) setDrawPressed (set);
+	else if ((parent.style & SWT.FLAT) != 0) redraw ();
 	return 0;
 }
-
 Point toControl (Point point) {
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
 	return new Point (point.x - root_x [0], point.y - root_y [0]);
 }
-
 int processMouseHover (int id) {
-	Display display = getDisplay();
-	Point local = toControl(display.getCursorLocation());
-	display.showToolTip(handle, toolTipText);
+	Display display = getDisplay ();
+	Point local = toControl (display.getCursorLocation ());
+	display.showToolTip (handle, toolTipText);
 	return 0;
 }
-
 int processMouseMove (int callData) {
 	Display display = getDisplay ();
 	display.addMouseHoverTimeOut (handle);
-	return 0;
-}
 
-int processMouseUp (int callData) {
-	getDisplay ().hideToolTip();	
-
-	/**
-	* Bug in Motif. The activate callback is unreliable on 
-	* drawn buttons. Rather than relying on it to generate
-	* selection events, use the mouseUp event.
+	/*
+	* Forward the mouse event to the parent.
+	* This is necessary so that mouse listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
 	*/
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (xEvent.x >= 0 && xEvent.y >= 0 && xEvent.x <= argList[1] && xEvent.y <= argList[3]) {
-		processSelection(0);
-	}
+	xEvent.window = OS.XtWindow (parent.handle);
+	xEvent.x += argList [1];  xEvent.y += argList [3];
+	/*
+	* This code is intentionally commented.
+	* Currently, the implementation of the
+	* mouse move code in the parent interferes
+	* with tool tips for tool items.
+	*/
+//	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
+//	parent.processMouseMove (callData);
+	parent.sendMouseEvent (SWT.MouseMove, 0, xEvent.state, xEvent);
 
-	setDrawPressed(set);	
 	return 0;
 }
+int processMouseUp (int callData) {
+	Display display = getDisplay ();
+	display.hideToolTip(); 
+	XButtonEvent xEvent = new XButtonEvent ();
+	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
+	if (xEvent.button == 1) {
+		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int width = argList [1], height = argList [3];
+		if (0 <= xEvent.x && xEvent.x < width && 0 <= xEvent.y && xEvent.y < height) {
+			if ((style & SWT.RADIO) != 0) {
+				selectRadio ();
+			} else {
+				if ((style & SWT.CHECK) != 0) setSelection(!set);			
+			}
+			Event event = new Event ();
+			if ((style & SWT.DROP_DOWN) != 0) {
+				if (xEvent.x > width - 12) event.detail = SWT.ARROW;
+			}
+			postEvent (SWT.Selection, event);
+		}
+		setDrawPressed(set);
+	}
 
+	/*
+	* Forward the mouse event to the parent.
+	* This is necessary so that mouse listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	xEvent.window = OS.XtWindow (parent.handle);
+	xEvent.x += argList [1];  xEvent.y += argList [3];
+	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
+	parent.processMouseUp (callData);
+
+	return 0;
+}
 int processPaint (int callData) {
 	if ((style & SWT.SEPARATOR) != 0) return 0;
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return 0;
 	int xWindow = OS.XtWindow (handle);
 	if (xWindow == 0) return 0;
-	
-	int [] argList = {OS.XmNcolormap, 0, OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNmarginWidth, 0, OS.XmNmarginHeight, 0};
+	int [] argList = {
+		OS.XmNcolormap, 0,
+		OS.XmNwidth, 0,
+		OS.XmNheight, 0,
+	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int x = 0, y = 0, width = argList [3], height = argList [5], marginWidth = argList [7],  marginHeight = argList [9];
+	int width = argList [3], height = argList [5];
 	
+	Image currentImage = image;
+	boolean enabled = getEnabled();
+
+	if ((parent.style & SWT.FLAT) != 0) {
+		Display display = getDisplay ();
+		boolean hasCursor = hasCursor ();
+		
+		/* Set the shadow thickness */
+		int thickness = 0;
+		if (set || (hasCursor && enabled)) {
+			thickness = Math.min (2, display.buttonShadowThickness);
+		}
+		argList = new int [] {OS.XmNshadowThickness, thickness};
+		OS.XtSetValues (handle, argList, argList.length / 2);
+		
+		/* Determine if hot image should be used */
+		if (enabled && hasCursor && hotImage != null) {
+			currentImage = hotImage;
+		}
+	}
+
 	ToolDrawable wrapper = new ToolDrawable ();
 	wrapper.device = getDisplay ();
 	wrapper.display = xDisplay;
@@ -710,54 +833,63 @@ int processPaint (int callData) {
 		gc.setClipping (rect);
 	}
 	
-	Image currentImage = drawHotImage ? hotImage : image;
-	if (!getEnabled()) {
+	if (!enabled) {
 		Display display = getDisplay ();
 		currentImage = disabledImage;
 		if (currentImage == null) {
 			currentImage = new Image (display, image, SWT.IMAGE_DISABLE);
 		}
-		Color disabledColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-		gc.setForeground(disabledColor);
+		Color disabledColor = display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
+		gc.setForeground (disabledColor);
 	} else {
 		gc.setForeground (parent.getForeground ());
 	}
 	gc.setBackground (parent.getBackground ());
 		
 	int textX = 0, textY = 0, textWidth = 0, textHeight = 0;
-	if (text != null && text.length() > 0) {
-		Point textExtent = gc.textExtent(text);
+	if (text.length () != 0) {
+		Point textExtent = gc.textExtent (text);
 		textWidth = textExtent.x;
 		textHeight = textExtent.y;
 	}	
 	int imageX = 0, imageY = 0, imageWidth = 0, imageHeight = 0;
 	if (currentImage != null) {
-		Rectangle imageBounds = currentImage.getBounds();
+		Rectangle imageBounds = currentImage.getBounds ();
 		imageWidth = imageBounds.width;
 		imageHeight = imageBounds.height;
 	}
 	
-	if ((parent.style & SWT.RIGHT) > 0) {
-		imageX = x + ((width - imageWidth - textWidth - marginWidth) / 2) + 1;
-		imageY = y + ((height - imageHeight) / 2);
-		textX = imageX + imageWidth + marginWidth;
-		textY = y + ((height - textHeight) / 2);
+	int spacing = 0;
+	if (textWidth != 0 && imageWidth != 0) spacing = 2;
+	if ((parent.style & SWT.RIGHT) != 0) {
+		imageX = (width - imageWidth - textWidth - spacing) / 2;
+		imageY = (height - imageHeight) / 2;
+		textX = spacing + imageX + imageWidth;
+		textY = (height - textHeight) / 2;
 	} else {		
-		imageX = x + ((width - imageWidth) / 2) + 1;
-		imageY = y + ((height - imageHeight - textHeight - marginHeight) / 2) + 1;
-		textX = x + ((width - textWidth) / 2) + 2;
-		textY = imageY + imageHeight + marginHeight;
+		imageX = (width - imageWidth) / 2;
+		imageY = (height - imageHeight - textHeight - spacing) / 2;
+		textX = (width - textWidth) / 2;
+		textY = spacing + imageY + imageHeight;
 	}
 	
+	if ((style & SWT.DROP_DOWN) != 0) {
+		textX -= 6;  imageX -=6;
+	}
 	if (textWidth > 0) gc.drawText(text, textX, textY, false);
 	if (imageWidth > 0) gc.drawImage(currentImage, imageX, imageY);
-
+	if ((style & SWT.DROP_DOWN) != 0) {
+		int startX = width - 12, startY = (height - 2) / 2;
+		int [] arrow = {startX, startY, startX + 3, startY + 3, startX + 6, startY};
+		gc.setBackground (parent.getForeground ());
+		gc.fillPolygon (arrow);
+		gc.drawPolygon (arrow);
+	}
 	gc.dispose ();
 	
-	if (!getEnabled() && disabledImage == null) {
+	if (!enabled && disabledImage == null) {
 		if (currentImage != null) currentImage.dispose ();
 	}
 	return 0;
 }
-
 }

@@ -1,12 +1,12 @@
 package org.eclipse.swt.internal.image;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
 import java.io.*;
 import org.eclipse.swt.*;
-
-/*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
- */
 
 public class PngDecodingDataStream {
 	PngIdatChunk currentChunk;
@@ -103,7 +103,7 @@ private void readCompressedDataHeader() {
 	byte headerByte1 = getNextIdatByte();
 	byte headerByte2 = getNextIdatByte();
 	
-	int number = (headerByte1 << 8) | (headerByte2 & 0xFF);
+	int number = ((headerByte1 & 0xFF) << 8) | (headerByte2 & 0xFF);
 	if (number % 31 != 0) error();
 	
 	int compressionMethod = headerByte1 & 0x0F;

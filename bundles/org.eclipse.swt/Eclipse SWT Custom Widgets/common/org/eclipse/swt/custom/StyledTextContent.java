@@ -1,18 +1,18 @@
 package org.eclipse.swt.custom;
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp 2000, 2001
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
-/* Imports */
 import org.eclipse.swt.events.*;
 
 public interface StyledTextContent {
 
 /**
  * Called by StyledText to add itself as an Observer to content changes.
- * Implementors should send a TextChangedEvent when changes to the content
- * occur. The widget only updates the screen when it receives a TextChangedEvent.
+ * Implementors should send a TextChangingEvent when changes to the content
+ * are about to occur and a TextChangedEvent when the changes did occur. 
+ * The widget only updates the screen properly when it receives both events.
  * <p>
  *
  * @param listener the listener
@@ -20,7 +20,7 @@ public interface StyledTextContent {
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  */
-public void addTextChangedListener(TextChangedListener listener);
+public void addTextChangeListener(TextChangeListener listener);
 
 /**
  * Return the number of characters in the content.
@@ -129,27 +129,38 @@ public String getTextRange(int start, int length);
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  */
-public void removeTextChangedListener(TextChangedListener listener);
+public void removeTextChangeListener(TextChangeListener listener);
 
 /**
  * Replace the text with "newText" starting at position "start" 
  * for a length of "replaceLength".
  * <p>
- * Implementors have to notify TextChanged listeners after the content has 
- * been updated. The TextChangedEvent should be set as follows:
+ * Implementors have to notify the TextChangeListeners that were added 
+ * using <code>addTextChangeListener</code> before and after the content 
+ * is changed. A <code>TextChangingEvent</code> has to be sent before the 
+ * content is changed and a <code>TextChangedEvent</code> has to be sent 
+ * after the content has changed.
+ * The text change that occurs after the <code>TextChangingEvent</code> 
+ * has been sent has to be consistent with the data provided in the 
+ * <code>TextChangingEvent</code>.
+ * This data will be cached by the widget and will be used when the 
+ * <code>TextChangedEvent</code> is received.
+ * <p>
+ * The <code>TextChangingEvent</code> should be set as follows:
  * <ul>
- * <li>event.type = SWT.TextReplaced
  * <li>event.start = start of the replaced text
- * <li>event.numReplacedLines = number of replaced lines
- * <li>event.numNewLines = number of new lines
- * <li>event.replacedLength = length of the replaced text
- * <li>event.newLength = length of the new text
+ * <li>event.newText = text that is going to be inserted or empty String 
+ *	if no text will be inserted
+ * <li>event.replaceCharCount = length of text that is going to be replaced
+ * <li>event.newCharCount = length of text that is going to be inserted
+ * <li>event.replaceLineCount = number of lines that are going to be replaced
+ * <li>event.newLineCount = number of new lines that are going to be inserted
  * </ul>
- * <b>NOTE:</b> numNewLines is the number of inserted lines and numReplacedLines is 
+ * <b>NOTE:</b> newLineCount is the number of inserted lines and replaceLineCount is 
  * the number of deleted lines based on the change that occurs visually.  For
  * example:
  * <ul>
- * <li>(replacedText, newText) ==> (numReplacedLines, numNewLines)
+ * <li>(replaceText, newText) ==> (replaceLineCount, newLineCount)
  * <li>("", "\n") ==> (0, 1)
  * <li>("\n\n", "a") ==> (2, 0)
  * <li>("a", "\n\n") ==> (0, 2)
@@ -166,12 +177,11 @@ public void replaceTextRange(int start, int replaceLength, String text);
 
 /**
  * Set text to "text".
- * Implementors have to notify TextChanged listeners after the content has 
- * been updated. The TextChangedEvent being sent must have the event type 
- * set to SWT.TextSet.
+ * Implementors have to send a <code>TextChangedEvent</code> to the 
+ * TextChangeListeners that were added using <code>addTextChangeListener</code>.
  * <p>
  *
  * @param text the new text
  */
-public void setText (String text);
+public void setText(String text);
 }

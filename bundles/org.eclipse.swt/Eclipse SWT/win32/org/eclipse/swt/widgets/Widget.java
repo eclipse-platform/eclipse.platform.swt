@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -15,7 +15,7 @@ import java.util.EventListener;
 /**
  * This class is the abstract superclass of all user interface objects.  
  * Widgets are created, disposed and issue notification to listeners
- * when events occur which effect them.
+ * when events occur which affect them.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
@@ -298,7 +298,7 @@ protected void checkSubclass () {
  * </p><p>
  * In future releases of SWT, there may be more or fewer error
  * checks and exceptions may be thrown for different reasons.
- * <p>
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -320,7 +320,7 @@ protected void checkWidget () {
  * descendents are also destroyed by the operating system.
  * This means that it is only necessary to call <code>destroyWidget</code>
  * on the root of the widget tree.
- * </p>
+ * </p><p>
  * This method is called after <code>releaseWidget</code>.
  * </p>
  * @see #dispose
@@ -446,6 +446,7 @@ public Object getData (String key) {
  * A widget's display is either provided when it is created
  * (for example, top level <code>Shell</code>s) or is the
  * same as its parent's display.
+ * </p>
  *
  * @return the receiver's display
  *
@@ -533,6 +534,7 @@ boolean hooks (int eventType) {
  * This method gets the dispose state for the widget.
  * When a widget has been disposed, it is an error to
  * invoke any other method using the widget.
+ * </p>
  *
  * @return <code>true</code> when the widget is disposed and <code>false</code> otherwise
  */
@@ -584,6 +586,7 @@ boolean isValidThread () {
  * and <code>false</code> otherwise.
  * <p>
  * Note: This method is no longer required and will be deprecated.
+ * </p>
  *
  * @return <code>true</code> when the widget is not disposed and <code>false</code> otherwise
  *

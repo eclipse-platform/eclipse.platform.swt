@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.win32.*;
@@ -256,7 +256,15 @@ public void setBackground (int color) {
 }
 
 public int size () {
-	return OS.ImageList_GetImageCount (handle);
+	int result = 0;
+	int count = OS.ImageList_GetImageCount (handle);
+	for (int i=0; i<count; i++) {
+		if (images [i] != null) {
+			if (images [i].isDisposed ()) images [i] = null;
+			if (images [i] == null) result++;
+		}
+	}
+	return result;
 }
 
 }

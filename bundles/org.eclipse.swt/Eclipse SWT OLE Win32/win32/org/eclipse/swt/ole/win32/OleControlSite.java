@@ -1,9 +1,8 @@
 package org.eclipse.swt.ole.win32;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 import java.io.*;
 import org.eclipse.swt.*;
@@ -25,6 +24,10 @@ import org.eclipse.swt.internal.win32.*;
  *
  * <p>This object implements the OLE Interfaces IOleControlSite, IDispatch, and IPropertyNotifySink.
  *
+ * <p>Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
  * <dl>
  *	<dt><b>Styles</b> <dd>BORDER 
  *	<dt><b>Events</b> <dd>Dispose, Move, Resize

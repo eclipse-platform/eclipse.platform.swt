@@ -1,19 +1,37 @@
 package org.eclipse.swt.widgets;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import java.io.*;
 import java.util.*;
-
-/*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
- */
  
-/** 
- * Displays a hierarchy of items that can be selected. 
- * Sub hierarchies can be expanded and collapsed.
+/**
+ * Instances of this class provide a selectable user interface object
+ * that displays a hierarchy of items and issue notificiation when an
+ * item in the hierarchy is selected.
+ * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>TreeItem</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>SINGLE, MULTI, CHECK</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection, DefaultSelection, Collapse, Expand</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 public /*final*/ class Tree extends SelectableItemWidget {
 	// These constants are used internally for item hit test on mouse click
@@ -40,8 +58,32 @@ public /*final*/ class Tree extends SelectableItemWidget {
 	Rectangle hierarchyIndicatorRect = null;			// bounding rectangle of the hierarchy indication image (plus/minus)
 
 /**
- * Create a new instance of the receiver with 'parent' 
- * as its parent widget.
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
  */
 public Tree(Composite parent, int style) {
 	super(parent, checkStyle (style));
@@ -59,13 +101,32 @@ void addItem(TreeItem item, int index) {
 	}
 	getRoot().add(item, index);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver's selection changes, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ * <p>
+ * When <code>widgetSelected</code> is called, the item field of the event object is valid.
+ * If the reciever has <code>SWT.CHECK</code> style set and the check selection changes,
+ * the event object detail field contains the value <code>SWT.CHECK</code>.
+ * <code>widgetDefaultSelected</code> is typically called when an item is double-clicked.
+ * </p>
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ * @see SelectionEvent
+ */
 public void addSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -78,13 +139,25 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.Selection, typedListener);
 	addListener(SWT.DefaultSelection, typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when an item in the receiver is expanded or collapsed
+ * by sending it one of the messages defined in the <code>TreeListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TreeListener
+ * @see #removeTreeListener
+ */
 public void addTreeListener(TreeListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -271,10 +344,6 @@ void collapseNoRedraw(TreeItem item) {
 	item.internalSetExpanded(false);
 }
 
-/**
- * Answer the size of the receiver needed to display all or 
- * the first 50 items whichever is less.
- */
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -314,7 +383,12 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	return size;
 }
 /**
- * Deselect all items of the receiver.
+ * Deselects all selected items in the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void deselectAll() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -446,12 +520,12 @@ void expand(TreeItem item, boolean notifyListeners) {
 	if (nestedExpand == false) {
 		setExpandingItem(item);
 	}
-	scrollForExpand(item);
-	item.internalSetExpanded(true);
 	if (notifyListeners == true) {
 		event.item = item;
 		notifyListeners(SWT.Expand, event);
 	}
+	scrollForExpand(item);
+	item.internalSetExpanded(true);
 	// redraw hierarchy image
 	item.redrawExpanded(item.getVisibleIndex() - getTopIndex());
 	calculateVerticalScrollbar();
@@ -555,7 +629,17 @@ int getIndex(SelectableItem item) {
 	return index;
 }
 /**
- * Answer the number of root items.
+ * Returns the number of items contained in the receiver
+ * that are direct item children of the receiver.  The
+ * number that is returned is the number of roots in the
+ * tree.
+ *
+ * @return the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getItemCount() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -564,12 +648,15 @@ public int getItemCount() {
 	return getRoot().getItemCount();
 }
 /**
- * Answer the height of an item in the receiver.
- * The item height is the greater of the item icon height and 
- * text height of the first item that has text or an image 
- * respectively.
- * Calculate a default item height based on the font height if
- * no item height has been calculated yet.
+ * Returns the height of the area which would be used to
+ * display <em>one</em> of the items in the tree.
+ *
+ * @return the height of one item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getItemHeight() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -578,7 +665,21 @@ public int getItemHeight() {
 	return super.getItemHeight();
 }
 /**
- * Answer the root items of the receiver as an Array.
+ * Returns the number of items contained in the receiver
+ * that are direct item children of the receiver.  These
+ * are the roots of the tree.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TreeItem [] getItems() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -600,8 +701,16 @@ int getOffScreenItemCount(TreeItem item) {
 	return expandedItemCount - spaceRemaining;	
 }
 /**
- * Answer the parent item of the receiver. 
- * This is null because the Tree widget does not have a parent item.
+ * Returns the receiver's parent item, which must be a
+ * <code>TreeItem</code> or null when the receiver is a
+ * root.
+ *
+ * @return the receiver's parent item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TreeItem getParentItem() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -616,9 +725,20 @@ TreeRoots getRoot() {
 	return root;
 }
 /**
- * Answer the selected tree items.
- * @return an Array of DrawnTreeItems containing the selected items.
- *	An empty Array if no items are selected.
+ * Returns an array of <code>TreeItem</code>s that are currently
+ * selected in the receiver. An empty array indicates that no
+ * items are selected.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its selection, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ * @return an array representing the selection
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TreeItem [] getSelection() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -873,19 +993,16 @@ void mouseDoubleClick(Event event) {
 	TreeItem hitItem = getRoot().getVisibleItem(hitItemIndex + getTopIndex());
 	Event newEvent;
 	
-	if (hitItem == null) {
+	if (hitItem == null || itemAction(hitItem, event.x, event.y) != ActionSelect) {
 		return;
 	}
 	if (hooks(SWT.DefaultSelection) == true) {
 		newEvent = new Event();
 		newEvent.item = hitItem;
 		notifyListeners(SWT.DefaultSelection, newEvent);
-		return;
 	}
-	if (hitItem.getItemCount() == 0) {		
-		return;									// an item was hit but it does not have children
-	}
-	if (itemAction(hitItem, event.x, event.y) == ActionSelect) {
+	else
+	if (hitItem.isLeaf() == false) {		// item with children was hit. Default behavior is expand/collapse item
 		if (hitItem.getExpanded() == true) {
 			collapse(hitItem, true);
 		}
@@ -1054,7 +1171,12 @@ boolean redrawParentItem(SelectableItem item) {
 }
 
 /**
- * Remove all items of the receiver.
+ * Removes all of the items from the receiver.
+ * <p>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void removeAll() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1076,13 +1198,23 @@ public void removeAll() {
 void removeItem(TreeItem item) {
 	getRoot().removeItem(item);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver's selection changes.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
 public void removeSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1093,13 +1225,23 @@ public void removeSelectionListener(SelectionListener listener) {
 	removeListener (SWT.Selection, listener);
 	removeListener (SWT.DefaultSelection, listener);	
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when items in the receiver are expanded or collapsed..
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TreeListener
+ * @see #addTreeListener
+ */
 public void removeTreeListener(TreeListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1142,7 +1284,7 @@ void removingItem(SelectableItem item) {
 			newSelectionItem = parentItem;
 		}
 		if (newSelectionItem != null) {
-			selectNotify(newSelectionItem);
+			selectNotify(newSelectionItem, true);
 		}
 	}
 	super.removingItem(item);
@@ -1284,10 +1426,12 @@ void scrollVertical(int scrollIndexCount) {
 		clientArea.width, clientArea.height, true);
 }
 /**
- * Select all items of the receiver if it is in multiple 
- * selection mode.
- * A SWT.Selection event will not be sent.
- * Do nothing if the receiver is in single selection mode.
+ * Selects all the items in the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void selectAll() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1306,10 +1450,6 @@ public void selectAll() {
 void setExpandingItem(TreeItem item) {
 	expandingItem = item;
 }
-/**
- * The font is changing. Reset and recalculate the item 
- * height using all items of the receiver.
- */
 public void setFont(Font font) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1343,10 +1483,15 @@ public void setFont(Font font) {
  * Display a mark indicating the point at which an item will be inserted.
  * The drop insert item has a visual hint to show where a dragged item 
  * will be inserted when dropped on the tree.
- * <p>
+ * 
  * @param item the insert item.  Null will clear the insertion mark.
  * @param after true places the insert mark above 'item'. false places 
  *	the insert mark below 'item'.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setInsertMark(TreeItem item, boolean before){
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1355,10 +1500,21 @@ public void setInsertMark(TreeItem item, boolean before){
 	motif_setInsertMark(item, !before);
 }
 /**
- * Select the items stored in 'selectionItems'. 
- * A SWT.Selection event is not going to be sent.
- * @param selectionItems - Array containing the items that should 
- *	be selected
+ * Sets the receiver's selection to be the given array of items.
+ * The current selected is first cleared, then the new items are
+ * selected.
+ *
+ * @param items the array of items
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Tree#deselectAll()
  */
 public void setSelection(TreeItem selectionItems[]) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1386,12 +1542,21 @@ void setTopIndex(int index, boolean adjustScrollbar) {
 	calculateWidestScrolledItem(indexDiff);
 }
 /**
- * Make 'item' visible by expanding its parent items and scrolling 
- * it into the receiver's client area if necessary.
- * An SWT.Expand event is going to be sent for every parent item 
- * that is expanded to make 'item' visible.
- * @param item - the item that should be made visible to the
- *	user.
+ * Shows the item.  If the item is already showing in the receiver,
+ * this method simply returns.  Otherwise, the items are scrolled
+ * and expanded until the item is visible.
+ *
+ * @param item the item to be shown
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Tree#showSelection()
  */
 public void showItem(TreeItem item) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1420,9 +1585,20 @@ void showSelectableItem(SelectableItem item) {
 	super.showSelectableItem(item);
 }
 /**
- * Return the item at the specified location in the widget.
- * Return null if there is no item at the specified location
- * or if the location is outside the widget client area.
+ * Returns the item at the given point in the receiver
+ * or null if no such item exists. The point is in the
+ * coordinate system of the receiver.
+ *
+ * @param point the point used to locate the item
+ * @return the item at the given point
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TreeItem getItem(Point point) {
 	int itemHeight;
@@ -1445,7 +1621,14 @@ public TreeItem getItem(Point point) {
 	return hitItem;
 }
 /**
- * Answer the number of selected items in the receiver.
+ * Returns the number of selected items contained in the receiver.
+ *
+ * @return the number of selected items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getSelectionCount() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1454,10 +1637,19 @@ public int getSelectionCount() {
 	return super.getSelectionCount();
 }
 /**
- * Show the selection. If there is no selection or the 
- * selection is already visible, this method does nothing. 
- * If the selection is not visible, the top index of the 
- * widget is changed such that the selection becomes visible.
+ * Shows the selection.  If the selection is already showing in the receiver,
+ * this method simply returns.  Otherwise, the items are scrolled until
+ * the selection is visible.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Tree#showItem(TreeItem)
  */
 public void showSelection() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);

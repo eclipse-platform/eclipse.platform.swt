@@ -1,29 +1,31 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
-*/
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
 
-/**
-*	The composite class represents a user interface object
-* that contains other widgets.
-*
-* Styles
-*
-*	H_SCROLL, V_SCROLL
-*
-* Events
-*
-**/
-
-/* Imports */
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-/* Class Definition */
+/**
+ * Instances of this class are controls which are capable
+ * of containing other controls.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>NO_BACKGROUND, NO_FOCUS, NO_MERGE_PAINTS, NO_REDRAW_RESIZE</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * This class may be subclassed by custom control implementors
+ * who are building controls that are constructed from aggregates
+ * of other controls.
+ * </p>
+ *
+ * @see Canvas
+ */
 public class Composite extends Scrollable {
 	Layout layout;
 	int damagedRegion;
@@ -31,6 +33,34 @@ public class Composite extends Scrollable {
 Composite () {
 	/* Do nothing */
 }
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Composite (Composite parent, int style) {
 	super (parent, style);
 }
@@ -91,13 +121,15 @@ void createHandle (int index) {
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
 		int border = (style & SWT.BORDER) != 0 ? 1 : 0;
 		int [] argList = {
+			OS.XmNancestorSensitive, 1,
 			OS.XmNborderWidth, border,
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
 		};
-		handle = OS.XmCreateDrawingArea (parent.handle, null, argList, argList.length / 2);
+		int parentHandle = parent.handle;
+		handle = OS.XmCreateDrawingArea (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		Display display = getDisplay ();
 		OS.XtOverrideTranslations (handle, display.tabTranslations);
@@ -107,15 +139,18 @@ void createHandle (int index) {
 	}
 }
 void createScrolledHandle (int topHandle) {
-	scrolledHandle = OS.XmCreateMainWindow (topHandle, null, null, 0);
+	int [] argList = {OS.XmNancestorSensitive, 1};
+	scrolledHandle = OS.XmCreateMainWindow (topHandle, null, argList, argList.length / 2);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	Display display = getDisplay ();
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+		int thickness = display.buttonShadowThickness;
 		int [] argList1 = {
 			OS.XmNmarginWidth, 3,
 			OS.XmNmarginHeight, 3, 
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 			OS.XmNshadowType, OS.XmSHADOW_IN,
-			OS.XmNshadowThickness, 2,
+			OS.XmNshadowThickness, thickness,
 		};
 		formHandle = OS.XmCreateForm (scrolledHandle, null, argList1, argList1.length / 2);
 		if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -132,16 +167,15 @@ void createScrolledHandle (int topHandle) {
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
 	} else {
-		int [] argList = {
+		int [] argList3 = {
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
 		};
-		handle = OS.XmCreateDrawingArea (scrolledHandle, null, argList, argList.length / 2);
+		handle = OS.XmCreateDrawingArea (scrolledHandle, null, argList3, argList3.length / 2);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	Display display = getDisplay ();
 	OS.XtOverrideTranslations (handle, display.tabTranslations);
 	OS.XtOverrideTranslations (handle, display.arrowTranslations);
 }
@@ -170,6 +204,21 @@ public boolean forceFocus () {
 	}
 	return result;
 }
+/**
+ * Returns an array containing the receiver's children.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of children, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return an array of children
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Control [] getChildren () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -181,6 +230,17 @@ int getChildrenCount () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
 }
+/**
+ * Returns layout which is associated with the receiver, or
+ * null if one has not been set.
+ *
+ * @return the receiver's layout or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Layout getLayout () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -196,18 +256,40 @@ void hookEvents () {
 }
 
 /**
-* Lays out the children.
-* <p>
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * If the receiver has a layout, asks the layout to <em>lay out</em>
+ * (that is, set the size and location of) the receiver's children. 
+ * If the receiver does not have a layout, do nothing.
+ * <p>
+ * This is equivalent to calling <code>layout(true)</code>.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void layout () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	layout (true);
 }
+/**
+ * If the receiver has a layout, asks the layout to <em>lay out</em>
+ * (that is, set the size and location of) the receiver's children. 
+ * If the the argument is <code>true</code> the layout must not rely
+ * on any cached information it is keeping about the children. If it
+ * is <code>false</code> the layout may (potentially) simplify the
+ * work it is doing by assuming that the state of the none of the
+ * receiver's children has changed since the last layout.
+ * If the receiver does not have a layout, do nothing.
+ *
+ * @param changed <code>true</code> if the layout must flush its caches, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void layout (boolean changed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -414,6 +496,17 @@ public void setBounds (int x, int y, int width, int height) {
 	super.setBounds (x, y, width, height);
 	if (layout != null) layout (false);
 }
+/**
+ * Sets the layout which is associated with the receiver to be
+ * the argument which may be null.
+ *
+ * @param the receiver's new layout or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setLayout (Layout layout) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

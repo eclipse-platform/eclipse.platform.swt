@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- File written by PDE 1.0 -->
+<plugin
+   id="org.eclipse.swt"
+   name="SWT"
+   version="0.9"
+   provider-name="Object Technology International, Inc.">
+
+<!-- Runtime -->
+<runtime>
+   <library name="swt.jar">
+      <export name="*"/>
+   </library>
+</runtime>
+</plugin>

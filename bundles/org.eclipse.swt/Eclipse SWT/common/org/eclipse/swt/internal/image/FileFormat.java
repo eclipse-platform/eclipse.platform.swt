@@ -1,17 +1,14 @@
 package org.eclipse.swt.internal.image;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
-/* Imports */
 import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-/* Class Definition */
 public abstract class FileFormat {
 	LEDataInputStream inputStream;
 	LEDataOutputStream outputStream;

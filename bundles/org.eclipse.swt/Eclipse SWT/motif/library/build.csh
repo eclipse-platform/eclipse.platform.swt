@@ -1,5 +1,8 @@
 #!/bin/csh
-# (c) Copyright IBM Corp 1999, 2000
+
+# (c) Copyright IBM Corp., 2000, 2001
+# All Rights Reserved.
+
 #    This command script can be invoked with the "clean" argument.
 
 # The major and minor version numbers and the build numbers are returned by the
@@ -7,7 +10,7 @@
 # calls so java can query the swt shared library version number
 
 setenv MAJOR_VER  0
-setenv MINOR_VER  105
+setenv MINOR_VER  125
 setenv BUILD_NUM  0
 
 # Some UNIX/Linux compilers don't like <CR>'s in files (DOS format).
@@ -40,16 +43,6 @@ switch ($OS )
 	    	echo "Building Linux version of KDE DLL."
 	    	make -f make_linux.mak make_kde
 	    endif
-	endif
-	breaksw
-
-    case SunOS:
-	if ( "$1" == "clean" ) then
-	    make -f make_solaris.mak clean
-	else
-	    echo "Building Solaris version of SWT and CDE DLLs."
-	    make -f make_solaris.mak make_swt 
-	    # KJC make -f make_solaris.mak make_cde 
 	endif
 	breaksw
 

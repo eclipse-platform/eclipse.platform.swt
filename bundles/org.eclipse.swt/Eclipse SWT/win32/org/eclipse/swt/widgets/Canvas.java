@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.win32.*;
@@ -21,7 +21,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are <em>not</em> constructed
- * from agregates of other controls. That is, they are either
+ * from aggregates of other controls. That is, they are either
  * painted using SWT graphics calls or are handled by native
  * methods.
  * </p>

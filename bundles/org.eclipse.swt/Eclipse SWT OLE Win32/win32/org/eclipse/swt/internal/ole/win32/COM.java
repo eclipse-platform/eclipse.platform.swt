@@ -1,9 +1,8 @@
 package org.eclipse.swt.internal.ole.win32;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 import org.eclipse.swt.internal.win32.*;
 
@@ -19,7 +18,7 @@ public class COM extends OS {
 	
 	/* Constants */
 
-	// !!!! GUIDs for Home Page Browser !!!!
+	// GUIDs for Home Page Browser
 	public static final GUID IIDIEditorSiteTime = IIDFromString("{6BD2AEFE-7876-45e6-A6E7-3BFCDF6540AA}");
 	public static final GUID IIDIEditorSiteProperty = IIDFromString("{D381A1F4-2326-4f3c-AFB9-B7537DB9E238}");
 	public static final GUID IIDIEditorBaseProperty = IIDFromString("{61E55B0B-2647-47c4-8C89-E736EF15D636}");
@@ -539,6 +538,7 @@ public static final native int VtblCall (int fnNumber, int ppVtbl, int arg0, GUI
 public static final native int VtblCall (int fnNumber, int ppVtbl, int arg0, GUID arg1, int arg2, int arg3);
 public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, GUID arg1, int arg2, int arg3, DISPPARAMS arg4, int arg5, EXCEPINFO arg6, int[] arg7);
 public static final native int VtblCall(int ppVtbl, int fnNumber, int arg0, STATSTG arg1, int[] arg2);
+public static final native int VtblCall (int fnNumber, int ppVtbl, MSG arg0);
 public static final native int VtblCall (int fnNumber, int ppVtbl, int arg0, MSG arg1, int arg2, int arg3, int arg4, RECT arg5);
 public static final native int VtblCall (int fnNumber, int ppVtbl, int arg0, SIZE arg1);
 public static final native int VtblCall (int fnNumber, int ppVtbl, int arg0, boolean arg1);

@@ -1,12 +1,10 @@
 package org.eclipse.swt.ole.win32;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
-/* Imports */
 import java.util.EventListener;
 
 /**
@@ -17,7 +15,6 @@ import java.util.EventListener;
 *
 */
 
-/* Class Definition */
 class OleEventTable {
 	int [] types;
 	OleListener [] handlers;

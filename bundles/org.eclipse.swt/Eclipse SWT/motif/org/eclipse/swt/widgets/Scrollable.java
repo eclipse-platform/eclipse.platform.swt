@@ -1,25 +1,88 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
-*/
-
-/* Imports */
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+ 
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
+/**
+ * This class is the abstract superclass of all classes which
+ * represent controls that have standard scroll bars.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>H_SCROLL, V_SCROLL</dd>
+ * <dt><b>Events:</b>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is intended to be subclassed <em>only</em>
+ * within the SWT implementation.
+ * </p>
+ */
 public abstract class Scrollable extends Control {
 	int scrolledHandle, formHandle;
 	ScrollBar horizontalBar, verticalBar;
 Scrollable () {
 	/* Do nothing */
 }
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
+/**
+ * Given a desired <em>client area</em> for the receiver
+ * (as described by the arguments), returns the bounding
+ * rectangle which would be required to produce that client
+ * area.
+ * <p>
+ * In other words, it returns a rectangle such that, if the
+ * receiver's bounds were set to that rectangle, the area
+ * of the receiver which is capable of displaying data
+ * (that is, not covered by the "trimmings") would be the
+ * rectangle described by the arguments (relative to the
+ * receiver's parent).
+ * </p>
+ * 
+ * @return the required bounds to produce the given client area
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #getClientArea
+ */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -91,6 +154,20 @@ void enableWidget (boolean enabled) {
 		if (argList [3] != 0) enableHandle (enabled, argList [3]);
 	}
 }
+/**
+ * Returns a rectangle which describes the area of the
+ * receiver which is capable of displaying data (that is,
+ * not covered by the "trimmings").
+ * 
+ * @return the client area
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #computeTrim
+ */
 public Rectangle getClientArea () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -98,11 +175,33 @@ public Rectangle getClientArea () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return new Rectangle (0, 0, argList [1], argList [3]);
 }
+/**
+ * Returns the receiver's horizontal scroll bar if it has
+ * one, and null if it does not.
+ *
+ * @return the horizontal scroll bar (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public ScrollBar getHorizontalBar () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return horizontalBar;
 }
+/**
+ * Returns the receiver's vertical scroll bar if it has
+ * one, and null if it does not.
+ *
+ * @return the vertical scroll bar (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public ScrollBar getVerticalBar () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

@@ -4,7 +4,7 @@
    id="org.eclipse.swt.examples.controls"
    name="%plugin.SWTControlsExample.name"
    version="0.9"
-   provider-name="IBM"
+   provider-name="Object Technology International, Inc."
    class="org.eclipse.swt.examples.controls.ControlPlugin">
 <!-- Required plugins -->
 <requires>
@@ -19,34 +19,35 @@
    <library name="controls.jar"/>
 </runtime>
 
-<!-- Extensions -->
 <!-- Extension points -->
+<!-- Extensions -->
 <extension
       point="org.eclipse.ui.views">
-   <category
-         name="%category.SWTExamples.name"
-         id="org.eclipse.swt.examples.category">
-   </category>
    <view
          name="%view.ControlsExample.name"
          category="org.eclipse.swt.examples.category"
          class="org.eclipse.swt.examples.controls.ControlView"
-         id="org.eclipse.swt.examples.controls.view">
+         id="org.eclipse.swt.examples.controls.view"
+         icon="icons/controls_example.gif">
    </view>
 </extension>
 <extension
       point="org.eclipse.swt.examples.launcher.launchItems">
    <category
-         name="%launchcategory.SWTExamples.name"
-         id="org.eclipse.swt.examples.launchcategory">
+         name="%launchcategory.SWTViewExamples.name"
+         description="%launchcategory.SWTViewExamples.description"
+         id="org.eclipse.swt.examples.launchViewCategory">
    </category>
-   <viewItem
-         viewId="org.eclipse.swt.examples.controls.view"
+   <item
          name="%launchitem.ControlsExample.name"
          description="%launchitem.ControlsExample.description"
-         category="org.eclipse.swt.examples.launchcategory"
-         source="controlssrc.zip"
-         id="org.eclipse.swt.examples.controls.launcher">
-   </viewItem>
+         category="org.eclipse.swt.examples.launchViewCategory"
+         id="org.eclipse.swt.examples.controls.viewlauncher"
+         icon="icons/controls_example.gif">
+       <view
+         viewId="org.eclipse.swt.examples.controls.view"/>
+       <source
+         zip="controlssrc.zip"/>
+   </item>
 </extension>
 </plugin>

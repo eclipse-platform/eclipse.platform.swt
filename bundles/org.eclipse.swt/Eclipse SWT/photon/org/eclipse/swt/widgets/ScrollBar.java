@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.photon.*;
@@ -17,6 +17,7 @@ ScrollBar (Scrollable parent, int style, int handle) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	this.handle = handle;
+	state |= HANDLE;
 	createWidget (0);
 }
 
@@ -40,18 +41,34 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	if (handle != 0) return;
+	Display display = getDisplay ();
 	int parentHandle = parent.scrolledHandle;
+	int orientation, sizeArg, size, basicFlags;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		orientation = OS.Pt_HORIZONTAL;
+		sizeArg = OS.Pt_ARG_HEIGHT;
+		size = display.SCROLLBAR_HEIGHT;
+		basicFlags = display.SCROLLBAR_HORIZONTAL_BASIC_FLAGS;
+	} else {
+		orientation = OS.Pt_VERTICAL;
+		sizeArg = OS.Pt_ARG_WIDTH;
+		size = display.SCROLLBAR_WIDTH;
+		basicFlags = display.SCROLLBAR_VERTICAL_BASIC_FLAGS;
+	}
 	int [] args = {
+		sizeArg, size, 0,
 		OS.Pt_ARG_MAXIMUM, 100, 0,
 		OS.Pt_ARG_PAGE_INCREMENT, 10, 0,
 		OS.Pt_ARG_SLIDER_SIZE, 10, 0,
-		OS.Pt_ARG_ORIENTATION, (style & SWT.HORIZONTAL) != 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL, 0,
+		OS.Pt_ARG_BASIC_FLAGS, basicFlags, ~0,
+		OS.Pt_ARG_ORIENTATION, orientation, 0,
+		OS.Pt_ARG_FLAGS, 0, OS.Pt_GETS_FOCUS,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (OS.PtScrollbar (), parentHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.PtExtentWidget (handle);
 }
 
 public Display getDisplay () {
@@ -288,6 +305,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 public void setVisible (boolean visible) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (visible == OS.PtWidgetIsRealized (handle)) return;
 	int [] args = {
 		OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,
 	};

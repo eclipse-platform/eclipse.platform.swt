@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.win32.*;
@@ -17,7 +17,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Styles:</b>
  * <dd>BORDER</dd>
  * <dt><b>Events:</b>
- * <dd>DoubleClick, FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDown, MouseEnter,
+ * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
  *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize</dd>
  * </dl>
  * <p>
@@ -848,9 +848,17 @@ boolean hasCursor () {
 }
 
 boolean hasFocus () {
+	/*
+	* If a non-SWT child of the control has focus,
+	* then this control is considered to have focus
+	* even though it does not have focus in Windows.
+	*/
 	int hwndFocus = OS.GetFocus ();
 	while (hwndFocus != 0) {
 		if (hwndFocus == handle) return true;
+		if (WidgetTable.get (hwndFocus) != null) {
+			return false;
+		}
 		hwndFocus = OS.GetParent (hwndFocus);
 	}
 	return false;
@@ -2248,11 +2256,21 @@ boolean traverseGroup (boolean next) {
 		if (list [index] == group) break;
 		index++;
 	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
 	if (index == length) return false;
 	int start = index, offset = (next) ? 1 : -1;
 	while ((index = ((index + offset + length) % length)) != start) {
-		if (list [index].setTabGroupFocus () && !isFocusControl ()) return true;
+		Control control = list [index];
+		if (!control.isDisposed () && control.setTabGroupFocus ()) {
+			if (!isDisposed () && !isFocusControl ()) return true;
+		}
 	}
+	if (group.isDisposed ()) return false;
 	return group.setTabGroupFocus ();
 }
 
@@ -2264,10 +2282,18 @@ boolean traverseItem (boolean next) {
 		if (children [index] == this) break;
 		index++;
 	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
 	int start = index, offset = (next) ? 1 : -1;
 	while ((index = ((index + offset) + length) % length) != start) {
 		Control child = children [index];
-		if (child.isTabItem () && child.setTabItemFocus ()) return true;
+		if (!child.isDisposed () && child.isTabItem ()) {
+			if (child.setTabItemFocus ()) return true;
+		}
 	}
 	return false;
 }

@@ -1,8 +1,8 @@
 package org.eclipse.swt.graphics;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -52,8 +52,9 @@ public GC(Drawable drawable) {
 }
 
 public void copyArea(Image image, int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (image.type != SWT.BITMAP) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int flags = OS.PtEnter(0);
 	try {
 		Rectangle bounds = image.getBounds();
@@ -111,6 +112,7 @@ public void copyArea(Image image, int x, int y) {
 }
 
 public void copyArea(int x, int y, int width, int height, int destX, int destY) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
@@ -195,14 +197,23 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 			delta.x = (short)deltaX;
 			delta.y = (short)deltaY;
 			int clipRects = data.clipRects;
-			if (clipRects == 0) {
+			int child_clip = getClipping(widget, data.topWidget, true, true);
+			if (clipRects == 0 && child_clip == 0) {
 				OS.PhBlit(rid, rect, delta);
 			} else {
 				int dest = OS.PhGetTile();
 				OS.memmove(dest, rect, PhRect_t.sizeof);
 				OS.PhTranslateTiles(dest, delta);
-				int clip = OS.PhRectsToTiles(clipRects, data.clipRectsCount);
-				int dest_tiles = OS.PhIntersectTilings(dest, clip, new short[1]);
+				short[] unused = new short[1];
+				int clip = child_clip;
+				if (clipRects != 0) {
+					clip = OS.PhRectsToTiles(clipRects, data.clipRectsCount);
+					if (child_clip != 0) {
+						clip = OS.PhIntersectTilings(clip, child_clip, unused);
+						OS.PhFreeTiles(child_clip);
+					}
+				}
+				int dest_tiles = OS.PhIntersectTilings(dest, clip, unused);
 				OS.PhFreeTiles(clip);
 				OS.PhFreeTiles(dest);
 				PhPoint_t inverseDelta = new PhPoint_t();
@@ -276,6 +287,7 @@ public void dispose() {
 }
 
 public void drawArc (int x, int y, int width, int height, int startAngle, int endAngle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (startAngle > 0) {
 		if (endAngle > 0) {
 			//No need to modify start angle.
@@ -336,27 +348,32 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
 }
 
 public void drawFocus (int x, int y, int width, int height) {
+	width = (width < 0 ? -width : width) - 1;
+	height = (height < 0 ? -height : height) - 1;
 	drawRectangle(x, y, width, height);
 }
 
 public void drawImage(Image image, int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (image.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
 }
 
 public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
 	if (srcX < 0 || srcY < 0 || srcWidth < 0 || srcHeight < 0 || destWidth < 0 || destHeight < 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (image.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false);
 }
 void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	int flags = OS.PtEnter(0);
 	try {
 		int drawImage = image.handle;
-		if (drawImage == 0) return;
 		PhImage_t phDrawImage = new PhImage_t();
 		OS.memmove(phDrawImage, drawImage, PhImage_t.sizeof);
 	 	int imgWidth = phDrawImage.size_w;
@@ -683,6 +700,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 }
 
 public void drawLine (int x1, int y1, int x2, int y2) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
@@ -695,6 +713,7 @@ public void drawLine (int x1, int y1, int x2, int y2) {
 }
 
 public void drawOval (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhPoint_t center = new PhPoint_t();
 	center.x = (short)x; center.y = (short)y;
 	PhPoint_t radii = new PhPoint_t();
@@ -713,6 +732,7 @@ public void drawOval (int x, int y, int width, int height) {
 }
 
 public void drawPolygon(int[] pointArray) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	
 	short[] points = new short[pointArray.length];
@@ -732,20 +752,19 @@ public void drawPolygon(int[] pointArray) {
 }
 
 public void drawPolyline(int[] pointArray) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	
 	short[] points = new short[pointArray.length];
 	for (int i = pointArray.length - 1; i >= 0; i--) {
 		points[i] = (short)pointArray[i];
 	}
-	PhPoint_t pos = new PhPoint_t();
-	pos.x = 0; pos.y = 0;
 	
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
 		setGCClipping();
-		OS.PgDrawPolygon(points, pointArray.length / 2,	pos, OS.Pg_DRAW_STROKE);
+		OS.PgDrawPolygon(points, pointArray.length / 2,	new PhPoint_t(), OS.Pg_DRAW_STROKE);
 		unsetGC(prevContext);
 	} finally {
 		if (flags >= 0) OS.PtLeave(flags);
@@ -753,6 +772,7 @@ public void drawPolyline(int[] pointArray) {
 }
 
 public void drawRectangle (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();	
@@ -771,6 +791,7 @@ public void drawRectangle (Rectangle rect) {
 }
 
 public void drawRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhRect_t rect  = new PhRect_t();
 	rect.ul_x = (short)x; rect.ul_y = (short)y;
 	// Don't subtract one, so that the bottom/right edges are drawn
@@ -794,6 +815,7 @@ public void drawString (String string, int x, int y) {
 }
 
 public void drawString (String string, int x, int y, boolean isTransparent) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 
 	int drawFlags = OS.Pg_TEXT_LEFT | OS.Pg_TEXT_TOP;
@@ -816,7 +838,28 @@ public void drawText (String string, int x, int y) {
 }
 
 public void drawText (String string, int x, int y, boolean isTransparent) {
-	drawString(string, x, y, isTransparent);;
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+
+	int drawFlags = OS.Pg_TEXT_LEFT | OS.Pg_TEXT_TOP;
+	if (!isTransparent) drawFlags |= OS.Pg_BACK_FILL;
+	string = replaceTabs(string, 8);
+	byte[] buffer = Converter.wcsToMbcs(null, string, false);
+	PhRect_t rect = new PhRect_t();
+	rect.ul_x = (short)x;
+	rect.ul_y = (short)y;
+	rect.lr_x = (short)0xFFFF;
+	rect.lr_y = (short)0xFFFF;
+
+	int flags = OS.PtEnter(0);
+	try {
+		int prevContext = setGC();	
+		setGCClipping();
+		OS.PgDrawMultiTextArea(buffer, buffer.length, rect, drawFlags, OS.Pg_TEXT_LEFT | OS.Pg_TEXT_TOP, 0);
+		unsetGC(prevContext);
+	} finally {
+		if (flags >= 0) OS.PtLeave(flags);
+	}
 }
 
 public boolean equals (Object object) {
@@ -824,6 +867,7 @@ public boolean equals (Object object) {
 }
 
 public void fillArc (int x, int y, int width, int height, int startAngle, int endAngle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (startAngle > 0) {
 		if (endAngle > 0) {
 			//No need to modify start angle.
@@ -884,6 +928,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 }
 
 public void fillOval (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhPoint_t center = new PhPoint_t();
 	center.x = (short)x; center.y = (short)y;
 	PhPoint_t radii = new PhPoint_t();
@@ -904,6 +949,7 @@ public void fillOval (int x, int y, int width, int height) {
 }
 
 public void fillPolygon(int[] pointArray) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	
 	short[] points = new short[pointArray.length];
@@ -923,6 +969,7 @@ public void fillPolygon(int[] pointArray) {
 }
 
 public void fillRectangle (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0) return;
 	int flags = OS.PtEnter(0);
 	try {
@@ -941,6 +988,7 @@ public void fillRectangle (Rectangle rect) {
 }
 
 public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhRect_t rect  = new PhRect_t();
 	rect.ul_x = (short)x; rect.ul_y = (short)y;
 	rect.lr_x = (short)(x + width - 1); rect.lr_y = (short)(y + height - 1);
@@ -963,16 +1011,19 @@ public int getAdvanceWidth(char ch) {
 }
 
 public Color getBackground() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return Color.photon_new(data.device, data.background);
 }
 
 public int getCharWidth(char ch) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	String string = new String(new char[] {ch});
 	Point point = stringExtent(string);
 	return point.x;
 }
 
 public Rectangle getClipping() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		PhRect_t rect = new PhRect_t();
@@ -1014,6 +1065,7 @@ public Rectangle getClipping() {
 }
 
 public void getClipping (Region region) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int flags = OS.PtEnter(0);
 	try {
@@ -1047,35 +1099,40 @@ public void getClipping (Region region) {
 }
 
 public Font getFont () {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return Font.photon_new(data.device, data.font);
 }
 
 public FontMetrics getFontMetrics() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	FontQueryInfo info = new FontQueryInfo();
 	OS.PfQueryFontInfo(data.font, info);
 	return FontMetrics.photon_new(info);
 }
 
 public Color getForeground() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return Color.photon_new(data.device, data.foreground);
 }
 
 public int getLineStyle() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineStyle;
 }
 
 public int getLineWidth() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineWidth;
 }
 
 public boolean getXORMode() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.xorMode;
 }
 
 public int hashCode () {
 	return handle;
 }
-
 
 void init(Drawable drawable, GCData data, int context) {
 	int prevContext;
@@ -1123,6 +1180,7 @@ void init(Drawable drawable, GCData data, int context) {
 }
 
 public boolean isClipped() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.clipRects != 0;
 }
 
@@ -1130,13 +1188,34 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
+static String replaceTabs(String text, int spaces) {
+	int length = text.length();
+	int index = text.indexOf('\t', 0);
+	if (index == -1) return text;
+
+	int start = 0;
+	StringBuffer result = new StringBuffer();
+	StringBuffer spaceString = new StringBuffer();
+	while (spaces-- > 0) {
+		spaceString.append(' ');
+	}
+	while (index != -1 && index < length) {
+		result.append(text.substring(start, index));
+		result.append(spaceString);
+		index = text.indexOf('\t', start = index + 1);
+	}
+	if (index == -1) result.append(text.substring(start, length));
+	return result.toString();
+}
+
 public void setBackground (Color color) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
-		int backColor = color == null ? DefaultBack : color.handle;
-		OS.PgSetFillColor(backColor);
-		data.background = backColor;
+		OS.PgSetFillColor(data.background = color.handle);
 		unsetGC(prevContext);
 	} finally {
 		if (flags >= 0) OS.PtLeave(flags);
@@ -1144,6 +1223,7 @@ public void setBackground (Color color) {
 }
 
 public void setClipping (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int clipRects = data.clipRects;
@@ -1168,6 +1248,7 @@ public void setClipping (int x, int y, int width, int height) {
 }
 
 public void setClipping (Rectangle rect) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
 		int flags = OS.PtEnter(0);
 		try {
@@ -1186,6 +1267,7 @@ public void setClipping (Rectangle rect) {
 }
 
 public void setClipping (Region region) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int clipRects = data.clipRects;
@@ -1213,6 +1295,8 @@ public void setClipping (Region region) {
 }
 
 public void setFont (Font font) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
@@ -1226,11 +1310,13 @@ public void setFont (Font font) {
 }
 
 public void setForeground (Color color) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
-		int foreColor = color == null ? DefaultFore : color.handle;
-		data.foreground = foreColor;
+		int foreColor = data.foreground = color.handle;
 		OS.PgSetStrokeColor(foreColor);
 		OS.PgSetTextColor(foreColor);
 		unsetGC(prevContext);
@@ -1240,6 +1326,7 @@ public void setForeground (Color color) {
 }
 
 public void setLineStyle(int lineStyle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	byte[] dashList;
 	switch (lineStyle) {
 		case SWT.LINE_SOLID: dashList = DashList[0]; break;
@@ -1263,6 +1350,7 @@ public void setLineStyle(int lineStyle) {
 }
 
 public void setLineWidth(int lineWidth) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
@@ -1294,53 +1382,12 @@ void setGCClipping() {
 
 	if (widget == 0) return;
 	
-	int child_tile = 0;
-	int widget_tile = OS.PhGetTile(); // NOTE: PhGetTile native initializes the tile
-			
-	// Get the rectangle of all siblings in front of the widget
-	int temp_widget = topWidget;
-	while ((temp_widget = OS.PtWidgetBrotherInFront(temp_widget)) != 0) {
-		if (OS.PtWidgetIsRealized(temp_widget)) {
-			int tile = OS.PhGetTile();
-			if (child_tile == 0) child_tile = tile;			
-			else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
-			OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
-		}
-	}
-	// Translate the siblings rectangles to the widget's coordinates
-	OS.PtWidgetCanvas(topWidget, widget_tile); // NOTE: widget_tile->rect
-	OS.PhDeTranslateTiles(child_tile, widget_tile); // NOTE: widget_tile->rect.ul
-			
-	// Get the rectangle of the widget's children
-	temp_widget = OS.PtWidgetChildBack(widget);
-	while (temp_widget != 0) {
-		if (OS.PtWidgetIsRealized(temp_widget)) {
-			int tile = OS.PhGetTile();
-			if (child_tile == 0) child_tile = tile;			
-			else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
-			OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
-		}
-		temp_widget = OS.PtWidgetBrotherInFront(temp_widget);
-	}
-
-	// Get the widget's rectangle
-	OS.PtWidgetCanvas(widget, widget_tile); // NOTE: widget_tile->rect
-	OS.PhDeTranslateTiles(widget_tile, widget_tile); // NOTE: widget_tile->rect.ul
-
-	// Clip the widget's rectangle from the child/siblings rectangle's
-	int clip_rects;
+	int clip_tile = getClipping(widget, topWidget, true, true);
 	int[] clip_rects_count = new int[1];
-	if (child_tile != 0) {
-		int clip_tile = OS.PhClipTilings(widget_tile, child_tile, null);
-		clip_rects = OS.PhTilesToRects(clip_tile, clip_rects_count);
-		OS.PhFreeTiles(child_tile);
-		OS.PhFreeTiles(clip_tile);
-	} else {
-		clip_rects = OS.PhTilesToRects(widget_tile, clip_rects_count);
-		OS.PhFreeTiles(widget_tile);
-	}
+	int clip_rects = OS.PhTilesToRects(clip_tile, clip_rects_count);
+	OS.PhFreeTiles(clip_tile);
 	
-	// PgSetClipping sets the clipping to the full region when the count is zero
+	/* PgSetClipping sets the clipping to the full region when the count is zero */
 	if (clip_rects_count[0] == 0) {
 		clip_rects_count[0] = 1;
 		OS.free(clip_rects);
@@ -1350,7 +1397,55 @@ void setGCClipping() {
 	OS.free(clip_rects);
 }
 
+int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSiblings) {
+	int child_tile = 0;
+	int widget_tile = OS.PhGetTile(); // NOTE: PhGetTile native initializes the tile
+			
+	/* Get the rectangle of all siblings in front of the widget */
+	if (clipSiblings) {
+		int temp_widget = topWidget;
+		while ((temp_widget = OS.PtWidgetBrotherInFront(temp_widget)) != 0) {
+			if (OS.PtWidgetIsRealized(temp_widget)) {
+				int tile = OS.PhGetTile();
+				if (child_tile == 0) child_tile = tile;			
+				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
+				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
+			}
+		}
+		/* Translate the siblings rectangles to the widget's coordinates */
+		OS.PtWidgetCanvas(topWidget, widget_tile); // NOTE: widget_tile->rect
+		OS.PhDeTranslateTiles(child_tile, widget_tile); // NOTE: widget_tile->rect.ul
+	}
+			
+	/* Get the rectangle of the widget's children */
+	if (clipChildren) {
+		int temp_widget = OS.PtWidgetChildBack(widget);
+		while (temp_widget != 0) {
+			if (OS.PtWidgetIsRealized(temp_widget)) {
+				int tile = OS.PhGetTile();
+				if (child_tile == 0) child_tile = tile;			
+				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
+				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
+			}
+			temp_widget = OS.PtWidgetBrotherInFront(temp_widget);
+		}
+	}
+
+	/* Get the widget's rectangle */
+	OS.PtWidgetCanvas(widget, widget_tile); // NOTE: widget_tile->rect
+	OS.PhDeTranslateTiles(widget_tile, widget_tile); // NOTE: widget_tile->rect.ul
+
+	/* Clip the widget's rectangle from the child/siblings rectangle's */
+	if (child_tile != 0) {
+		int clip_tile = OS.PhClipTilings(widget_tile, child_tile, null);
+		OS.PhFreeTiles(child_tile);
+		return clip_tile;
+	}
+	return widget_tile;
+}
+
 public void setXORMode(boolean xor) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
@@ -1364,6 +1459,7 @@ public void setXORMode(boolean xor) {
 }
 
 public Point stringExtent(String string) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	PhRect_t rect = new PhRect_t();
 	int size = string.length();
@@ -1377,13 +1473,40 @@ public Point stringExtent(String string) {
 		if (flags >= 0) OS.PtLeave(flags);
 	}
 	
-	int width = rect.lr_x - rect.ul_x + 1;
+	int width;
+	if (size == 0) width = 0;
+	else width = rect.lr_x - (rect.ul_x < 0 ? rect.ul_x : 0) + 1;
 	int height = rect.lr_y - rect.ul_y + 1;
 	return new Point(width, height);
 }
 
 public Point textExtent(String string) {
-	return stringExtent(string);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	PhRect_t rect = new PhRect_t();
+	string = replaceTabs(string, 8);
+	int size = string.length();
+	byte [] buffer = Converter.wcsToMbcs (null, string, false);
+
+	int flags = OS.PtEnter(0);
+	try {
+		int prevContext = setGC();
+		OS.PgExtentMultiText(rect, null, data.font, buffer, buffer.length, 0);
+		unsetGC(prevContext);
+	} finally {
+		if (flags >= 0) OS.PtLeave(flags);
+	}
+	
+	int width;
+	if (size == 0) width = 0;
+	else width = rect.lr_x - (rect.ul_x < 0 ? rect.ul_x : 0) + 1;
+	int height = rect.lr_y - rect.ul_y + 1;
+	return new Point(width, height);
+}
+
+public String toString () {
+	if (isDisposed()) return "GC {*DISPOSED*}";
+	return "GC {" + handle + "}";
 }
 
 void unsetGC(int prevContext) {

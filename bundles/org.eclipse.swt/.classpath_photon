@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="var" path="JRE_LIB"/>
+    <classpathentry kind="src" path="Eclipse SWT/photon"/>
+    <classpathentry kind="src" path="Eclipse SWT/common"/>
+    <classpathentry kind="src" path="Eclipse SWT Printing/photon"/>
+    <classpathentry kind="src" path="Eclipse SWT Printing/common"/>
+    <classpathentry kind="src" path="Eclipse SWT Program/photon"/>
+    <classpathentry kind="src" path="Eclipse SWT Program/common"/>
+    <classpathentry kind="src" path="Eclipse SWT Drag and Drop/photon"/>
+    <classpathentry kind="src" path="Eclipse SWT Drag and Drop/common"/>
+    <classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>

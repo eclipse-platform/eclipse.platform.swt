@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -27,8 +27,8 @@ public /*final*/ class Display extends Device {
 	Event [] eventQueue;
 	
 	/* Events Dispatching and Callback */
-	Callback windowCallback, drawCallback, workCallback, inputCallback;
-	int windowProc, drawProc, workProc, inputProc, input, pulse;
+	Callback windowCallback, drawCallback, workCallback, inputCallback, hotkeyCallback;
+	int windowProc, drawProc, workProc, inputProc, hotkeyProc, input, pulse;
 	boolean idle;
 
 	/* Sync/Async Widget Communication */
@@ -140,9 +140,16 @@ public /*final*/ class Display extends Device {
 	int WIDGET_DARK_SHADOW, WIDGET_NORMAL_SHADOW, WIDGET_LIGHT_SHADOW;
 	int WIDGET_HIGHLIGHT_SHADOW, WIDGET_BACKGROUND, WIDGET_FOREGROUND, WIDGET_BORDER;
 	int LIST_FOREGROUND, LIST_BACKGROUND, LIST_SELECTION, LIST_SELECTION_TEXT;
+	int INFO_FOREGROUND, INFO_BACKGROUND;
 	
 	/* Fonts */
 	byte [] TEXT_FONT, LIST_FONT;
+	
+	/* ScrollBars */
+	int SCROLLBAR_WIDTH;
+	int SCROLLBAR_HEIGHT;
+	int SCROLLBAR_VERTICAL_BASIC_FLAGS;
+	int SCROLLBAR_HORIZONTAL_BASIC_FLAGS;
 
 	/* Package name */
 	static final String PACKAGE_NAME;
@@ -159,6 +166,22 @@ public /*final*/ class Display extends Device {
 	Object data;
 	String [] keys;
 	Object [] values;
+	
+	/*
+	* TEMPORARY CODE.  Install the runnable that
+	* gets the current display. This code will
+	* be removed in the future.
+	*/
+	static {
+		DeviceFinder = new Runnable () {
+			public void run () {
+				CurrentDevice = getCurrent ();
+				if (CurrentDevice == null) {
+					CurrentDevice = getDefault ();
+				}
+			}
+		};
+	}
 			
 public Display () {
 	this (null);
@@ -193,6 +216,32 @@ synchronized void checkDisplay () {
 
 protected void checkSubclass () {
 	if (!isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+String convertToLf (String text) {
+	int length = text.length ();
+	if (length == 0) return text;
+	
+	/* Check for an LF or CR/LF.  Assume the rest of the string 
+	 * is formated that way.  This will not work if the string 
+	 * contains mixed delimiters. */
+	int i = text.indexOf ('\n', 0);
+	if (i == -1 || i == 0) return text;
+	if (text.charAt (i - 1) != '\r') return text;
+
+	/* The string is formatted with CR/LF.
+	 * Create a new string with the LF line delimiter. */
+	i = 0;
+	StringBuffer result = new StringBuffer ();
+	while (i < length) {
+		int j = text.indexOf ('\r', i);
+		if (j == -1) j = length;
+		String s = text.substring (i, j);
+		result.append (s);
+		i = j + 2;
+		result.append ('\n');
+	}
+	return result.toString ();
 }
 
 protected void create (DeviceData data) {
@@ -407,23 +456,25 @@ public Color getSystemColor (int id) {
 	checkDevice ();
 	int color = 0x000000;
 	switch (id) {
-		case SWT.COLOR_TITLE_FOREGROUND: 				color = 0x000000; break;
-		case SWT.COLOR_TITLE_BACKGROUND:				color = 0x6493E7; break;
+		case SWT.COLOR_INFO_FOREGROUND: 					color = INFO_FOREGROUND; break;
+		case SWT.COLOR_INFO_BACKGROUND: 					color = INFO_BACKGROUND; break;
+		case SWT.COLOR_TITLE_FOREGROUND: 					color = 0x000000; break;
+		case SWT.COLOR_TITLE_BACKGROUND:					color = 0x6493E7; break;
 		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			color = 0x0000FF; break;
 		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			color = 0x000000; break;
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: 		color = 0xABBBD3; break;
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: 			color = 0xABBBD3; break;
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	color = 0x0000FF; break;
-		case SWT.COLOR_WIDGET_DARK_SHADOW:				color = WIDGET_DARK_SHADOW; break;
-		case SWT.COLOR_WIDGET_NORMAL_SHADOW:			color = WIDGET_NORMAL_SHADOW; break;
-		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 			color = WIDGET_LIGHT_SHADOW; break;
-		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:			color = WIDGET_HIGHLIGHT_SHADOW; break;
-		case SWT.COLOR_WIDGET_BACKGROUND: 				color = WIDGET_BACKGROUND; break;
-		case SWT.COLOR_WIDGET_FOREGROUND:				color = WIDGET_FOREGROUND; break;
-		case SWT.COLOR_WIDGET_BORDER: 				color = WIDGET_BORDER; break;
-		case SWT.COLOR_LIST_FOREGROUND: 				color = LIST_FOREGROUND; break;
-		case SWT.COLOR_LIST_BACKGROUND: 				color = LIST_BACKGROUND; break;
-		case SWT.COLOR_LIST_SELECTION: 				color = LIST_SELECTION; break;
-		case SWT.COLOR_LIST_SELECTION_TEXT: 			color = LIST_SELECTION_TEXT; break;
+		case SWT.COLOR_WIDGET_DARK_SHADOW:					color = WIDGET_DARK_SHADOW; break;
+		case SWT.COLOR_WIDGET_NORMAL_SHADOW:				color = WIDGET_NORMAL_SHADOW; break;
+		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				color = WIDGET_LIGHT_SHADOW; break;
+		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:				color = WIDGET_HIGHLIGHT_SHADOW; break;
+		case SWT.COLOR_WIDGET_BACKGROUND: 					color = WIDGET_BACKGROUND; break;
+		case SWT.COLOR_WIDGET_FOREGROUND:					color = WIDGET_FOREGROUND; break;
+		case SWT.COLOR_WIDGET_BORDER: 						color = WIDGET_BORDER; break;
+		case SWT.COLOR_LIST_FOREGROUND: 					color = LIST_FOREGROUND; break;
+		case SWT.COLOR_LIST_BACKGROUND: 					color = LIST_BACKGROUND; break;
+		case SWT.COLOR_LIST_SELECTION: 						color = LIST_SELECTION; break;
+		case SWT.COLOR_LIST_SELECTION_TEXT: 				color = LIST_SELECTION_TEXT; break;
 		default:
 			return super.getSystemColor (id);
 	}
@@ -445,12 +496,19 @@ public Thread getThread () {
 	return thread;
 }
 
+int hotkeyProc (int handle, int data, int info) {
+	Widget widget = WidgetTable.get (handle);
+	if (widget == null) return OS.Pt_CONTINUE;
+	return widget.processHotkey (data, info);
+}
+
 protected void init () {
 	super.init ();
 	initializeDisplay ();
 	initializeWidgetClasses ();
 	initializeWidgetColors ();
 	initializeWidgetFonts ();
+	initializeScrollbars ();
 }
 
 void initializeDisplay () {
@@ -469,6 +527,9 @@ void initializeDisplay () {
 	timerCallback = new Callback (this, "timerProc", 3);
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	hotkeyCallback = new Callback (this, "hotkeyProc", 3);
+	hotkeyProc = hotkeyCallback.getAddress ();
+	if (hotkeyProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	pulse = OS.PtAppCreatePulse (app_context, -1);
 	input = OS.PtAppAddInput (app_context, pulse, inputProc, 0);
@@ -481,6 +542,36 @@ void initializeDisplay () {
 	timerHandle = OS.PtCreateWidget (OS.PtRegion (), 0, args.length / 3, args);
 	if (timerHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.PtRealizeWidget (timerHandle);
+}
+
+void initializeScrollbars () {
+	OS.PtSetParentWidget (0);
+	int shellHandle = OS.PtCreateWidget (OS.PtWindow (), 0, 0, null);
+	int textHandle = OS.PtCreateWidget (OS.PtMultiText (), shellHandle, 0, null);
+	int child = OS.PtWidgetChildFront (textHandle);
+	while (child != 0) {
+		if (OS.PtWidgetClass (child) == OS.PtScrollbar ()) {
+			int [] args = new int [] {
+				OS.Pt_ARG_ORIENTATION, 0, 0,
+				OS.Pt_ARG_WIDTH, 0, 0,
+				OS.Pt_ARG_HEIGHT, 0, 0,
+				OS.Pt_ARG_BASIC_FLAGS, 0, 0,
+			};
+			OS.PtGetResources (child, args.length / 3, args);
+			switch (args [1]) {
+				case OS.Pt_HORIZONTAL:
+					SCROLLBAR_HEIGHT = args [7];
+					SCROLLBAR_HORIZONTAL_BASIC_FLAGS = args [10];
+					break;
+				case OS.Pt_VERTICAL:
+					SCROLLBAR_WIDTH = args [4];
+					SCROLLBAR_VERTICAL_BASIC_FLAGS = args [10];
+					break;
+			}
+		}
+		child = OS.PtWidgetBrotherBehind (child);
+	}
+	OS.PtDestroyWidget (shellHandle);
 }
 
 void initializeWidgetClasses () {
@@ -529,36 +620,57 @@ void initializeWidgetClasses () {
 
 void initializeWidgetColors () {
 	OS.PtSetParentWidget (0);
-	int shellHandle = OS.PtCreateWidget (OS.PtWindow (), 0, 0, null);
 	int [] args = {
+		OS.Pt_ARG_WINDOW_STATE, OS.Ph_WM_STATE_ISHIDDEN, ~0,
+	};
+	int shellHandle = OS.PtCreateWidget (OS.PtWindow (), 0, args.length / 3, args);
+	args = new int [] {
 		OS.Pt_ARG_COLOR, 0, 0,
 		OS.Pt_ARG_FILL_COLOR, 0, 0,
 	};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	WIDGET_FOREGROUND = args [1];
 	WIDGET_BACKGROUND = args [4];
+
 	int handle = OS.PtCreateWidget (OS.PtList (), shellHandle, 0, null);
 	args = new int [] {	
 		OS.Pt_ARG_COLOR, 0, 0,
 		OS.Pt_ARG_FILL_COLOR, 0, 0,
 		OS.Pt_ARG_SELECTION_FILL_COLOR, 0, 0,
 		OS.Pt_ARG_SELECTION_TEXT_COLOR, 0, 0,
-		OS.Pt_ARG_OUTLINE_COLOR, 0, 0,
-		OS.Pt_ARG_OUTLINE_COLOR, 0, 0,
-		OS.Pt_ARG_OUTLINE_COLOR, 0, 0,
-		OS.Pt_ARG_INLINE_COLOR, 0, 0,
-		OS.Pt_ARG_INLINE_COLOR, 0, 0,
 	};
 	OS.PtGetResources (handle, args.length / 3, args);
 	LIST_FOREGROUND = args [1];
 	LIST_BACKGROUND = args [4];
 	LIST_SELECTION = args [7];
 	LIST_SELECTION_TEXT = args [10];
-	WIDGET_BORDER = args [13];
-	WIDGET_DARK_SHADOW = args [16];
-	WIDGET_NORMAL_SHADOW = args [19];
-	WIDGET_LIGHT_SHADOW = args [22];
-	WIDGET_HIGHLIGHT_SHADOW = args [25];
+
+	/*
+	* Feature in Photon. The values of Pt_ARG_DARK_BEVEL_COLOR and
+	* Pt_ARG_LIGHT_BEVEL_COLOR are not initialized until the widget
+	* is realized.  The fix is to realize the shell, but don't
+	* display it.
+	*/
+	handle = OS.PtCreateWidget (OS.PtButton (), shellHandle, 0, null);
+	OS.PtRealizeWidget(shellHandle);
+	args = new int [] {	
+		OS.Pt_ARG_OUTLINE_COLOR, 0, 0,
+		OS.Pt_ARG_OUTLINE_COLOR, 0, 0,
+		OS.Pt_ARG_DARK_BEVEL_COLOR, 0, 0,
+		OS.Pt_ARG_BEVEL_COLOR, 0, 0,
+		OS.Pt_ARG_LIGHT_BEVEL_COLOR, 0, 0,
+		OS.Pt_ARG_BALLOON_COLOR, 0, 0,
+		OS.Pt_ARG_BALLOON_FILL_COLOR, 0, 0,
+	};
+	OS.PtGetResources (handle, args.length / 3, args);
+	WIDGET_BORDER = args [1];
+	WIDGET_DARK_SHADOW = args [4];
+	WIDGET_NORMAL_SHADOW = args [7];
+	WIDGET_LIGHT_SHADOW = args [10];
+	WIDGET_HIGHLIGHT_SHADOW = args [13];
+	INFO_FOREGROUND = args [16];
+	INFO_BACKGROUND = args [19];
+
 	OS.PtDestroyWidget (shellHandle);
 }
 
@@ -713,14 +825,10 @@ void releaseDisplay () {
 	OS.PtAppRemoveInput (app_context, input);
 	OS.PtAppDeletePulse (app_context, pulse);
 	
-	/* Free the window proc */
-	windowCallback.dispose ();
-	windowCallback = null;
-
 	/* Free the timers */
 	if (timers != null) {
-		for (int i=0; i<=timers.length; i++) {
-			 OS.PtDestroyWidget (timers [i]);
+		for (int i=0; i<timers.length; i++) {
+			 if (timers [i] != 0) OS.PtDestroyWidget (timers [i]);
 		}
 	}
 	timers = null;
@@ -728,7 +836,11 @@ void releaseDisplay () {
 	timerProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
-	
+
+	/* Free the window proc */
+	windowCallback.dispose ();
+	windowCallback = null;
+
 	/* Free callbacks */
 	drawCallback.dispose();
 	drawCallback = null;
@@ -736,6 +848,8 @@ void releaseDisplay () {
 	workCallback = null;
 	inputCallback.dispose();
 	inputCallback = null;
+	hotkeyCallback.dispose();
+	hotkeyCallback = null;
 		
 	/* Release references */
 	thread = null;
@@ -858,6 +972,15 @@ public void syncExec (Runnable runnable) {
 	synchronizer.syncExec (runnable);
 }
 
+int textWidth (String string, byte[] font) {
+	if (string.length () == 0) return 0;
+	byte [] textBuffer = Converter.wcsToMbcs (null, string, false);
+	PhRect_t rect = new PhRect_t ();
+	OS.PfExtentText(rect, null, font, textBuffer, textBuffer.length);
+	if (rect.lr_x == rect.ul_x) return 0;
+	return rect.lr_x - rect.ul_x + 1;
+}
+
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
 	if (timerList == null) timerList = new Runnable [4];
@@ -932,12 +1055,67 @@ public void wake () {
 int windowProc (int handle, int data, int info) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return OS.Pt_CONTINUE;
-	return widget.processEvent (data, info);
+	return widget.processEvent (handle, data, info);
 }
 
 int workProc (int data) {
 	idle = true;
 	return OS.Pt_CONTINUE;
+}
+
+String wrapText (String text, byte[] font, int width) {
+	text = convertToLf (text);
+	int length = text.length ();
+	if (width <= 0 || length == 0 || length == 1) return text;
+	StringBuffer result = new StringBuffer ();
+	int lineStart = 0, lineEnd = 0;
+	while (lineStart < length) {
+		lineEnd = text.indexOf ('\n', lineStart);
+		boolean noLf = lineEnd == -1;
+		if (noLf) lineEnd = length;
+		int nextStart = lineEnd + 1;
+		while (lineEnd > lineStart + 1 && Character.isWhitespace (text.charAt (lineEnd - 1))) {
+			lineEnd--;
+		}
+		int wordStart = lineStart, wordEnd = lineStart;
+		int i = lineStart;
+		while (i < lineEnd) {
+			int lastStart = wordStart, lastEnd = wordEnd;
+			wordStart = i;
+			while (i < lineEnd && !Character.isWhitespace (text.charAt (i))) {
+				i++;
+			}
+			wordEnd = i - 1;
+			String line = text.substring (lineStart, wordEnd + 1);
+			int lineWidth = textWidth (line, font);
+			while (i < lineEnd && Character.isWhitespace (text.charAt (i))) {
+				i++;
+			}
+			if (lineWidth > width) {
+				if (lastStart == wordStart) {
+					while (wordStart < wordEnd) {
+						line = text.substring (lineStart, wordStart + 1);
+						lineWidth = textWidth (line, font);
+						if (lineWidth >= width) break;
+						wordStart++;
+					}
+					if (wordStart == lastStart) wordStart++;
+					lastEnd = wordStart - 1;
+				}
+				line = text.substring (lineStart, lastEnd + 1);
+				result.append (line); result.append ('\n');
+				i = wordStart; lineStart = wordStart; wordEnd = wordStart;
+			}
+		}
+		if (lineStart < lineEnd) {
+			result.append (text.substring (lineStart, lineEnd));
+		}
+		if (!noLf) {
+			result.append ('\n');
+		}
+		lineStart = nextStart;
+	}
+	return result.toString ();
 }
 
 }

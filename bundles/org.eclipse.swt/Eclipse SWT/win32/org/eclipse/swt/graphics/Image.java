@@ -1,8 +1,8 @@
 package org.eclipse.swt.graphics;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.win32.*;
@@ -159,6 +159,7 @@ public Image(Device device, int width, int height) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if srcImage is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the flag is not one of <code>IMAGE_COPY</code>, <code>IMAGE_DISABLE</code> or <code>IMAGE_GRAY</code></li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or
@@ -173,6 +174,7 @@ public Image(Device device, Image srcImage, int flag) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
 			Rectangle r = srcImage.getBounds();
@@ -760,8 +762,13 @@ public boolean equals (Object object) {
  * <p>
  *
  * @return the background color of the image, or null if there is no transparency in the image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Color getBackground() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transparentPixel == -1) return null;
 
 	/* Get the HDC for the device */
@@ -816,10 +823,12 @@ public Color getBackground() {
  * @return a rectangle specifying the image's bounds
  *
  * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
  * </ul>
  */
 public Rectangle getBounds() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	switch (type) {
 		case SWT.BITMAP:
 			BITMAP bm = new BITMAP();
@@ -850,12 +859,14 @@ public Rectangle getBounds() {
  * @return an <code>ImageData</code> containing the image's data and attributes
  *
  * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
  * </ul>
  *
  * @see ImageData
  */
 public ImageData getImageData() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	BITMAP bm;
 	int depth, width, height;
 	switch (type) {
@@ -1486,7 +1497,7 @@ public int internal_new_GC (GCData data) {
 		/* Set the GCData fields */
 		data.device = device;
 		data.image = this;
-		data.hFont = device.getSystemFont().handle;
+		data.hFont = device.systemFont;
 	}
 	return imageDC;
 }
@@ -1545,10 +1556,16 @@ public boolean isDisposed() {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public void setBackground(Color color) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (transparentPixel == -1) return;
 
 	/* Get the HDC for the device */
@@ -1572,6 +1589,18 @@ public void setBackground(Color color) {
 	/* Release the HDC for the device */	
 	device.internal_dispose_GC(hDC, null);
 }
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "Image {*DISPOSED*}";
+	return "Image {" + handle + "}";
+}
+
 /**	 
  * Invokes platform specific functionality to allocate a new image.
  * <p>

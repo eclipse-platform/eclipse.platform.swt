@@ -1,10 +1,9 @@
 package org.eclipse.swt.custom;
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp 2000, 2001
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
-/* Imports */
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import java.util.*;
@@ -227,7 +226,10 @@ StyleRange [] getStyleRanges() {
  * @param event.background line background color (output)
  */
 public void lineGetBackground(LineBackgroundEvent event) {
-	event.lineBackground = lineBackgrounds[content.getLineAtOffset(event.lineOffset)];
+	int lineIndex = content.getLineAtOffset(event.lineOffset);
+	// 1GDX9PN
+	if (lineIndex > (lineBackgrounds.length - 1)) event.lineBackground = null;
+	else event.lineBackground = lineBackgrounds[lineIndex];
 }
 /**
  * Handles the get line style information callback.
@@ -416,23 +418,24 @@ void setStyleRanges(StyleRange[] styles) {
 	styleExpandExp = 1;
 }
 /** 
- * Updates the style ranges and line backgrounds to reflect a text change.
- * Called by StyledText when a TextChangedEvent is received.
+ * Updates the style ranges and line backgrounds to reflect a pending text 
+ * change.
+ * Called by StyledText when a TextChangingEvent is received.
  * <p>
  *
  * @param event	the event with the text change information
  */  
-public void textChanged(TextChangedEvent event) {
+public void textChanging(TextChangingEvent event) {
 	int startLine = content.getLineAtOffset(event.start);
 	int startLineOffset = content.getOffsetAtLine(startLine);
 	
-	textChanged(event.start, -event.replacedCharCount);
-	textChanged(event.start, event.newCharCount);
+	textChanging(event.start, -event.replaceCharCount);
+	textChanging(event.start, event.newCharCount);
 	
-	if (event.newCharCount == content.getCharCount()) {
-		// all text replaced, clear line backgrounds
-		linesChanged(0, -lineCount);
-		linesChanged(0, content.getLineCount());
+	if (event.replaceCharCount == content.getCharCount()) {
+		// all text is going to be replaced, clear line backgrounds
+		linesChanging(0, -lineCount);
+		linesChanging(0, content.getLineCount() - event.replaceLineCount + event.newLineCount);
 		return;
 	}
 
@@ -440,18 +443,18 @@ public void textChanged(TextChangedEvent event) {
 		startLine = startLine + 1;
 	}
 			
-	linesChanged(startLine, -event.replacedLineCount);
-	linesChanged(startLine, event.newLineCount);
+	linesChanging(startLine, -event.replaceLineCount);
+	linesChanging(startLine, event.newLineCount);
 }
 /*
- * Updates the line backgrounds to reflect a text change.
+ * Updates the line backgrounds to reflect a pending text change.
  * <p>
  *
- * @param start	the starting line of the change that took place
+ * @param start	the starting line of the change that is about to take place
  * @param delta	the number of lines in the change, > 0 indicates lines inserted,
  * 	< 0 indicates lines deleted
  */
-void linesChanged(int start, int delta) {
+void linesChanging(int start, int delta) {
 	if (delta == 0) return;
 	boolean inserting = delta > 0;
 	if (inserting) {
@@ -475,11 +478,12 @@ void linesChanged(int start, int delta) {
  * Updates the style ranges to reflect a text change.
  * <p>
  *
- * @param start	the starting offset of the change that took place
+ * @param start	the starting offset of the change that is about to 
+ *	take place
  * @param delta	the length of the change, > 0 indicates text inserted,
  * 	< 0 indicates text deleted
  */
-void textChanged(int start, int delta) {
+void textChanging(int start, int delta) {
 	if (delta == 0) return;
 	StyleRange style;
 	// find the index of the first style for the given offset, use a binary search

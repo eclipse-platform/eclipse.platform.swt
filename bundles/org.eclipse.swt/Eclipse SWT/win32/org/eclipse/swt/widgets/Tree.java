@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.win32.*;
@@ -15,6 +15,13 @@ import org.eclipse.swt.events.*;
  * that displays a hierarchy of items and issue notificiation when an
  * item in the hierarchy is selected.
  * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>TreeItem</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI, CHECK</dd>
@@ -25,7 +32,6 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
- 
 public class Tree extends Composite {
 	int hAnchor;
 	TreeItem [] items;
@@ -41,7 +47,34 @@ public class Tree extends Composite {
 		TreeProc = lpWndClass.lpfnWndProc;
 	}
 
-
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -51,6 +84,12 @@ public Tree (Composite parent, int style) {
  * be notified when the receiver's selection changes, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * When <code>widgetSelected</code> is called, the item field of the event object is valid.
+ * If the reciever has <code>SWT.CHECK</code> style set and the check selection changes,
+ * the event object detail field contains the value <code>SWT.CHECK</code>.
+ * <code>widgetDefaultSelected</code> is typically called when an item is double-clicked.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -64,6 +103,7 @@ public Tree (Composite parent, int style) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget ();
@@ -395,7 +435,7 @@ public int getItemHeight () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the number of items
@@ -450,7 +490,7 @@ public TreeItem getParentItem () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  * @return an array representing the selection
  *
@@ -555,8 +595,7 @@ int imageIndex (Image image) {
 	}
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
-	imageList.add (image);
-	return imageList.size () - 1;
+	return imageList.add (image);
 }
 
 void releaseItems (TreeItem [] nodes, TVITEM tvItem) {
@@ -829,9 +868,9 @@ public void setSelection (TreeItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 		
-	/* Select/deselect the first item */	
+	/* Select/deselect the first item */
+	int hOldItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 	if (items.length == 0) {
-		int hOldItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		if (hOldItem != 0) {
 			TVITEM tvItem = new TVITEM ();
 			tvItem.mask = OS.TVIF_STATE;
@@ -846,6 +885,21 @@ public void setSelection (TreeItem [] items) {
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
 		ignoreSelect = false;
+		/*
+		* Feature in Windows.  When the old and new focused item
+		* are the same, Windows does not check to make sure that
+		* the item is actually selected, not just focused.  The
+		* fix is to force the item to draw selected by setting
+		* the state mask.
+		*/
+		if (hOldItem == hNewItem) {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_STATE;
+			tvItem.state = OS.TVIS_SELECTED;
+			tvItem.stateMask = OS.TVIS_SELECTED;
+			tvItem.hItem = hNewItem;
+			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+		}
 	}
 	if ((style & SWT.SINGLE) != 0) return;
 

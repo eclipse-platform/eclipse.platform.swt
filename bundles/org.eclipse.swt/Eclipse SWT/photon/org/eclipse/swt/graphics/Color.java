@@ -1,8 +1,8 @@
 package org.eclipse.swt.graphics;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.*;
@@ -54,18 +54,22 @@ public boolean equals (Object object) {
 }
 
 public int getBlue () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return handle & 0xFF;
 }
 
 public int getGreen () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (handle & 0xFF00) >> 8;
 }
 
 public int getRed () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (handle & 0xFF0000) >> 16;
 }
 
 public RGB getRGB () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return new RGB((handle & 0xFF0000) >> 16, (handle & 0xFF00) >> 8, handle & 0xFF);
 }
 
@@ -86,6 +90,7 @@ public boolean isDisposed() {
 }
 
 public String toString () {
+	if (isDisposed()) return "Color {*DISPOSED*}";
 	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + "}";
 }
 

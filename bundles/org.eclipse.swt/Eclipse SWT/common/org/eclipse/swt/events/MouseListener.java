@@ -1,8 +1,8 @@
 package org.eclipse.swt.events;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import java.util.EventListener;
@@ -31,7 +31,7 @@ public interface MouseListener extends EventListener {
  *
  * @param e an event containing information about the mouse double click
  *
- * @see Display#getDoubleClickTime
+ * @see org.eclipse.swt.widgets.Display#getDoubleClickTime
  */
 public void mouseDoubleClick(MouseEvent e);
 

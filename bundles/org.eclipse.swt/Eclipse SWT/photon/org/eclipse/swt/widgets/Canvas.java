@@ -1,12 +1,13 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.photon.*;
+import org.eclipse.swt.graphics.*;
 
 public class Canvas extends Composite {
 	Caret caret;
@@ -122,37 +123,9 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (!isVisible ()) return;
 	boolean isVisible = (caret != null) && (caret.isVisible ());
 	if (isVisible) caret.hideCaret ();
-	PhRect_t rect = new PhRect_t();
-	rect.ul_x = (short)x;
-	rect.ul_y = (short)y;
-	rect.lr_x = (short)(x + width - 1);
-	rect.lr_y = (short)(y + height - 1);
-	PhPoint_t delta = new PhPoint_t();
-	delta.x = (short)deltaX;
-	delta.y = (short)deltaY;
-	OS.PtFlush ();
-	OS.PhBlit(OS.PtWidgetRid(handle), rect, delta);
-	boolean overlaps = (destX < x + width) && (destY < y + height) &&
-		(destX + width > x) && (destY + height > y);
-	if (!overlaps) {
-		OS.PtDamageExtent (handle, rect);
-	} else {
-		int src = OS.PhGetTile();
-		int dest = OS.PhGetTile();
-		OS.memmove(src, rect, PhRect_t.sizeof);
-		OS.memmove(dest, rect, PhRect_t.sizeof);
-		OS.PhTranslateTiles(dest, delta);
-		int damage_tile = OS.PhClipTilings(src, dest, null);
-		int[] damage_rects_count = new int[1];
-		int damage_rects = OS.PhTilesToRects(damage_tile, damage_rects_count);
-		OS.PhFreeTiles(dest);
-		OS.PhFreeTiles(damage_tile);
-		for (int i=0; i<damage_rects_count[0]; i++) {
-			OS.memmove(rect, damage_rects + (i * PhRect_t.sizeof), PhRect_t.sizeof);
-			OS.PtDamageExtent (handle, rect);
-		}
-		OS.free(damage_rects);
-	}
+	GC gc = new GC (this);
+	gc.copyArea (x, y, width, height, destX, destY);
+	gc.dispose ();
 	if (isVisible) caret.showCaret ();
 }
 

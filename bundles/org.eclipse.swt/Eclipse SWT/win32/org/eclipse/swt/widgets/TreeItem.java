@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
  
 import org.eclipse.swt.internal.*;
@@ -12,7 +12,8 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class represent a selectable user interface object
- * that represents a heirarchy of tree items in a tree widget.
+ * that represents a hierarchy of tree items in a tree widget.
+ * 
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
@@ -219,7 +220,7 @@ public int getItemCount () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the receiver's items
@@ -419,6 +420,11 @@ public void setImage (Image image) {
 	int result = OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
 }
 
+/**
+ * This label will be displayed to the right of the bitmap, 
+ * or, if the receiver doesn't have a bitmap to the right of 
+ * the horizontal hierarchy connector line.
+ */
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

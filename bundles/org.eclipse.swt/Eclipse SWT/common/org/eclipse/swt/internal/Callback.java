@@ -1,8 +1,8 @@
 package org.eclipse.swt.internal;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.*;
@@ -36,7 +36,7 @@ public class Callback {
 	/**
 	 * SWT Minor version number (must be in the range 0..999)
 	 */
-	public static int MINOR_VERSION = 105;
+	public static int MINOR_VERSION = 125;
 	
 	/**
 	 * SWT revision number (must be >= 0)

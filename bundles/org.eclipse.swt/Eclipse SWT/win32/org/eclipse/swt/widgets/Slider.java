@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -54,7 +54,7 @@ import org.eclipse.swt.events.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  *
- * @see Scrollbar
+ * @see ScrollBar
  */
 
 public class Slider extends Control {
@@ -77,6 +77,18 @@ public Slider (Composite parent, int style) {
  * be notified when the receiver's value changes, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * When <code>widgetSelected</code> is called, the event object detail field contains one of the following values:
+ * <code>0</code> - for the end of a drag.
+ * <code>SWT.DRAG</code>.
+ * <code>SWT.HOME</code>.
+ * <code>SWT.END</code>.
+ * <code>SWT.ARROW_DOWN</code>.
+ * <code>SWT.ARROW_UP</code>.
+ * <code>SWT.PAGE_DOWN</code>.
+ * <code>SWT.PAGE_UP</code>.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -90,6 +102,7 @@ public Slider (Composite parent, int style) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
@@ -241,7 +254,7 @@ public int getSelection () {
 }
 
 /**
- * Answers the size of the receiver's thumb relative to the
+ * Returns the size of the receiver's thumb relative to the
  * difference between its maximum and minimum values.
  *
  * @return the thumb value
@@ -250,8 +263,6 @@ public int getSelection () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
- * @see Slider
  */
 public int getThumb () {
 	checkWidget ();

@@ -1,16 +1,13 @@
 package org.eclipse.swt.dnd;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 import org.eclipse.swt.internal.ole.win32.*;
 
 /**
- *
  * The <code>FileTransfer</code> class is used to transfer files in a drag and drop operation.
- *
  */
 public class FileTransfer extends ByteArrayTransfer {
 	
@@ -18,28 +15,31 @@ public class FileTransfer extends ByteArrayTransfer {
 	
 private FileTransfer() {}
 /**
- *
  * Returns the singleton instance of the FileTransfer class.
  *
  * @return the singleton instance of the FileTransfer class
- *
  */
 public static FileTransfer getInstance () {
 	return _instance;
 }
 /**
- *
- * Converts a list of file names to a platform specific representation of these file names. 
- *
- * <p>On a successful conversion, the transferData.result field will be set to COM.S_OK.
- * If this transfer agent is unable to perform the conversion, the transferData.result field 
- * will be set to the failure value of COM.DV_E_TYMED.</p>
+ * Converts a list of filenames to a platform specific representation. 
+ * <p>
+ * On a successful conversion, the transferData.result field will be set as follows:
+ * <ul>
+ * <li>Windows: OLE.S_OK
+ * <li>Motif: 0
+ * </ul>
+ * If this transfer agent is unable to perform the conversion,
+ * the transferData.result field will be set to a failure value as follows:
+ * <ul>
+ * <li>Windows: OLE.DV_E_TYMED
+ * <li>Motif: 1
+ * </ul></p>
  *
  * @param object a list of file names
- *
  * @param transferData an empty TransferData object; this object will be filled in on return
- *						with the platform specific format of the data
- *
+ *        with the platform specific format of the data
  */
 public void javaToNative(Object object, TransferData transferData) {
 
@@ -74,13 +74,11 @@ public void javaToNative(Object object, TransferData transferData) {
 	super.javaToNative(buffer, transferData);
 }
 /**
- *
  * Converts a platform specific representation of a list of file names to a Java array of String.
  *
  * @param transferData the platform specific representation of the data that has been transferred
- *
- * @return a Java array of String containing a list of file names if the conversion was successful; otherwise null
- *
+ * @return a Java array of String containing a list of file names if the conversion was successful;
+ *         otherwise null
  */
 public Object nativeToJava(TransferData transferData) {
 	

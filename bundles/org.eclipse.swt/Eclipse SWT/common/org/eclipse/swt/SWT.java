@@ -1,11 +1,12 @@
 package org.eclipse.swt;
 
-import org.eclipse.swt.internal.*;
-
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
+
+import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * This class provides access to a small number of SWT system-wide
@@ -823,7 +824,7 @@ public class SWT {
 
 	/**
 	 * <code>MessageBox</code> style constant for "working" icon
-	 * behavior (value is 1<<1)
+	 * behavior (value is 1<<4)
 	 */
 	public static final int ICON_WORKING = 1 << 4;
 
@@ -1302,7 +1303,7 @@ public class SWT {
 	 * information see the comment in <code>Widget.checkSubclass()</code>
 	 * (value is 43) 
 	 *
-	 * @see Widget#checkSubclass
+	 * @see org.eclipse.swt.widgets.Widget#checkSubclass
 	 */
 	public static final int ERROR_INVALID_SUBCLASS = 43;
 
@@ -1678,8 +1679,41 @@ static String findErrorText (int code) {
 	return "Unknown error";
 }
 
+private static ResourceBundle msgs = null;
+
 /**
- * Answers the SWT platform name.
+ * Returns the NLS'ed message for the given argument.
+ * 
+ * @param key the key to look up
+ * @return the message for the given key
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the key is null</li>
+ * </ul>
+ */
+public static String getMessage(String key) {
+	String answer = key;
+	
+	if (key == null) {
+		error (ERROR_NULL_ARGUMENT);
+	}
+	if (msgs == null) {
+		try {
+			msgs = ResourceBundle.getBundle("org.eclipse.swt.SWTMessages");
+		} catch (MissingResourceException ex) {
+			answer = key + " (no resource bundle)";
+		}
+	}
+	if (msgs != null) {
+		try {
+			answer = msgs.getString(key);
+		} catch (MissingResourceException ex2) {}
+	}
+	return answer;
+}
+	
+/**
+ * Returns the SWT platform name.
  * Examples: "win32", "motif", "gtk", "photon"
  *
  * @return the SWT version number
@@ -1689,7 +1723,7 @@ public static String getPlatform () {
 }
 
 /**
- * Answers the SWT version number as an integer.
+ * Returns the SWT version number as an integer.
  * Example: "SWT051" == 51
  *
  * @return the SWT version number

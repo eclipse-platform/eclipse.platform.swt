@@ -1,40 +1,31 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
-*/
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
 
-/**
-*	The widget class is the abstract superclass of all
-* user interface objects.  All widgets can be created,
-* disposed and support events.
-*
-* Styles
-*
-*	BORDER
-*	CLIP_CHILDREN, CLIP_SIBLINGS
-*
-* Events
-*
-*	KeyDown, KeyUp,
-* 	MouseDown, MouseUp, MouseMove,
-*	DoubleClick,
-*	Paint,
-*	Move, Resize,
-*	FocusIn, FocusOut,
-*
-**/
-
-/* Imports */
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
-/* Class Definition */
+/**
+ * Control is the abstract superclass of all windowed user interface classes.
+ * <p>
+ * <dl>
+ * <dt><b>Styles:</b>
+ * <dd>BORDER</dd>
+ * <dt><b>Events:</b>
+ * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
+ *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is intended to be subclassed <em>only</em>
+ * within the SWT implementation.
+ * </p>
+ */
 public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	int fontList;
@@ -44,24 +35,58 @@ public abstract class Control extends Widget implements Drawable {
 Control () {
 	/* Do nothing */
 }
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	createWidget (0);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the control is moved or resized, by sending
+ * it one of the messages defined in the <code>ControlListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ControlListener
+ * @see #removeControlListener
+ */
 public void addControlListener(ControlListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -70,19 +95,25 @@ public void addControlListener(ControlListener listener) {
 	addListener (SWT.Resize,typedListener);
 	addListener (SWT.Move,typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the control gains or loses focus, by sending
+ * it one of the messages defined in the <code>FocusListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see FocusListener
+ * @see #removeFocusListener
+ */
 public void addFocusListener(FocusListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -91,19 +122,25 @@ public void addFocusListener(FocusListener listener) {
 	addListener(SWT.FocusIn,typedListener);
 	addListener(SWT.FocusOut,typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the help events are generated for the control, by sending
+ * it one of the messages defined in the <code>HelpListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see HelpListener
+ * @see #removeHelpListener
+ */
 public void addHelpListener (HelpListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -111,19 +148,25 @@ public void addHelpListener (HelpListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Help, typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when keys are pressed and released on the system keyboard, by sending
+ * it one of the messages defined in the <code>KeyListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see KeyListener
+ * @see #removeKeyListener
+ */
 public void addKeyListener(KeyListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -132,19 +175,25 @@ public void addKeyListener(KeyListener listener) {
 	addListener(SWT.KeyUp,typedListener);
 	addListener(SWT.KeyDown,typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when mouse buttons are pressed and released, by sending
+ * it one of the messages defined in the <code>MouseListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseListener
+ * @see #removeMouseListener
+ */
 public void addMouseListener(MouseListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -155,17 +204,24 @@ public void addMouseListener(MouseListener listener) {
 	addListener(SWT.MouseDoubleClick,typedListener);
 }
 /**
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-* 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
-*	</ul>
-*/
+ * Adds the listener to the collection of listeners who will
+ * be notified when the mouse passes or hovers over controls, by sending
+ * it one of the messages defined in the <code>MouseTrackListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseTrackListener
+ * @see #removeMouseTrackListener
+ */
 public void addMouseTrackListener (MouseTrackListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -175,19 +231,25 @@ public void addMouseTrackListener (MouseTrackListener listener) {
 	addListener (SWT.MouseExit,typedListener);
 	addListener (SWT.MouseHover,typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the mouse moves, by sending it one of the
+ * messages defined in the <code>MouseMoveListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseMoveListener
+ * @see #removeMouseMoveListener
+ */
 public void addMouseMoveListener(MouseMoveListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -195,19 +257,25 @@ public void addMouseMoveListener(MouseMoveListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener(SWT.MouseMove,typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver needs to be painted, by sending it
+ * one of the messages defined in the <code>PaintListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see PaintListener
+ * @see #removePaintListener
+ */
 public void addPaintListener(PaintListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -215,18 +283,25 @@ public void addPaintListener(PaintListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener(SWT.Paint,typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-* 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
-*	</ul>
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when traversal events occur, by sending it
+ * one of the messages defined in the <code>TraverseListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TraverseListener
+ * @see #removeTraverseListener
+ */
 public void addTraverseListener (TraverseListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -234,22 +309,60 @@ public void addTraverseListener (TraverseListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Traverse,typedListener);
 }
+/**
+ * Returns the preferred size of the receiver.
+ * <p>
+ * The <em>prefered size</em> of a control is the size that it would
+ * best be displayed at. The width hint and height hint arguments
+ * allow the caller to ask a control questions such as "Given a particular
+ * width, how high does the control need to be to show all of the contents?"
+ * To indicate that the caller does not wish to constrain a particular 
+ * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
+ * </p>
+ *
+ * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
+ * @param hHint the height hint (can be <code>SWT.DEFAULT</code>)
+ * @return the preferred size of the control
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Layout
+ */
 public Point computeSize (int wHint, int hHint) {
 	return computeSize (wHint, hHint, true);
 }
 /**
-* Computes the preferred size.
-* <p>
-* @param wHint the width hint (can be SWT.DEFAULT)
-* @param hHint the height hint (can be SWT.DEFAULT)
-* @param changed the changed hint (for layouts)
-* @return the preferred size of the widget.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the preferred size of the receiver.
+ * <p>
+ * The <em>prefered size</em> of a control is the size that it would
+ * best be displayed at. The width hint and height hint arguments
+ * allow the caller to ask a control questions such as "Given a particular
+ * width, how high does the control need to be to show all of the contents?"
+ * To indicate that the caller does not wish to constrain a particular 
+ * dimension, the constant <code>SWT.DEFAULT</code> is passed for the hint. 
+ * </p><p>
+ * If the changed flag is <code>true</code>, it indicates that the receiver's
+ * <em>contents</em> have changed, therefore any caches that a layout manager
+ * containing the control may have been keeping need to be flushed. When the
+ * control is resized, the changed flag will be <code>false</code>, so layout
+ * manager caches can be retained. 
+ * </p>
+ *
+ * @param wHint the width hint (can be <code>SWT.DEFAULT</code>)
+ * @param hHint the height hint (can be <code>SWT.DEFAULT</code>)
+ * @param changed <code>true</code> if the control's contents have changed, and <code>false</code> otherwise
+ * @return the preferred size of the control.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Layout
+ */
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -265,8 +378,42 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createWidget (int index) {
 	super.createWidget (index);
-	setZOrder ();
-	realizeChildren ();
+	
+	/*
+	* Feature in MOTIF.  When a widget is created before the
+	* parent has been realized, the widget is created behind
+	* all siblings in the Z-order.  When a widget is created
+	* after the parent has been realized, it is created in
+	* front of all siblings.  This is not incorrect but is
+	* unexpected.  The fix is to force all widgets to always
+	* be created behind their siblings.
+	*/
+	int topHandle = topHandle ();
+	if (OS.XtIsRealized (topHandle)) {
+		int window = OS.XtWindow (topHandle);
+		if (window != 0) {
+			int display = OS.XtDisplay (topHandle);
+			if (display != 0) OS.XLowerWindow (display, window);
+		}
+		/*
+		* Make that the widget has been properly realized
+		* because the widget was created after the parent
+		* has been realized.  This is not part of the fix
+		* for Z-order in the code above. 
+		*/
+		realizeChildren ();
+	}
+	
+	/*
+	* Bug in Motif.  Under certain circumstances, when a
+	* text widget is created as a child of another control
+	* that has drag and drop, starting a drag in the text
+	* widget causes a protection fault.  The fix is to
+	* disable the built in drag and drop for all widgets
+	* by overriding the drag start traslation.
+	*/
+	Display display = getDisplay ();
+	OS.XtOverrideTranslations (handle, display.dragTranslations);
 }
 int defaultBackground () {
 	return getDisplay ().defaultBackground;
@@ -298,6 +445,19 @@ char findMnemonic (String string) {
 int fontHandle () {
 	return handle;
 }
+/**
+ * Forces the receiver to have the <em>keyboard focus</em>, causing
+ * all keyboard events to be delivered to it.
+ *
+ * @return <code>true</code> if the control got focus, and <code>false</code> if it was unable to.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #setFocus
+ */
 public boolean forceFocus () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -306,6 +466,16 @@ public boolean forceFocus () {
 	shell.bringToTop ();
 	return OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 }
+/**
+ * Returns the receiver's background color.
+ *
+ * @return the background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Color getBackground () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -316,6 +486,16 @@ int getBackgroundPixel () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
 }
+/**
+ * Returns the receiver's border width.
+ *
+ * @return the border width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getBorderWidth () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -324,6 +504,17 @@ public int getBorderWidth () {
 	OS.XtGetValues (topHandle, argList, argList.length / 2);
 	return argList [1];
 }
+/**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent (or its display if its parent is null).
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Rectangle getBounds () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -341,13 +532,33 @@ Point getClientLocation () {
 	return new Point (handle_x [0] - topHandle_x [0], handle_y [0] - topHandle_y [0]);
 }
 /**
-* Gets the Display.
-*/
+ * Returns the display that the receiver was created on.
+ *
+ * @return the receiver's display
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Display getDisplay () {
 	Composite parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+/**
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getEnabled () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -355,6 +566,16 @@ public boolean getEnabled () {
 	OS.XtGetValues (topHandle (), argList, argList.length / 2);
 	return argList [1] != 0;
 }
+/**
+ * Returns the font that the receiver will use to paint textual information.
+ *
+ * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Font getFont () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -460,6 +681,16 @@ int getFontList () {
 	if (fontList == 0) fontList = defaultFont ();
 	return fontList;
 }
+/**
+ * Returns the foreground color that the receiver will use to draw.
+ *
+ * @return the receiver's foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Color getForeground () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -470,11 +701,32 @@ int getForegroundPixel () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
 }
+/**
+ * Returns layout data which is associated with the receiver.
+ *
+ * @return the receiver's layout data
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Object getLayoutData () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return layoutData;
 }
+/**
+ * Returns a point describing the receiver's location relative
+ * to its parent (or its display if its parent is null).
+ *
+ * @return the receiver's location
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point getLocation () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -483,11 +735,38 @@ public Point getLocation () {
 	OS.XtGetValues (topHandle, argList, argList.length / 2);
 	return new Point ((short) argList [1], (short) argList [3]);
 }
+/**
+ * Returns the receiver's pop up menu if it has one, or null
+ * if it does not. All controls may optionally have a pop up
+ * menu that is displayed when the user requests one for
+ * the control. The sequence of key strokes, button presses
+ * and/or button releases that are used to request a pop up
+ * menu is platform specific.
+ *
+ * @return the receiver's menu
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Menu getMenu () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return menu;
 }
+/**
+ * Returns the receiver's parent, which must be a <code>Composite</code>
+ * or null when the receiver is a shell that was created with null or
+ * a display for a parent.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Composite getParent () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -509,11 +788,39 @@ Control [] getPath () {
 	}
 	return result;
 }
+/**
+ * Returns the receiver's shell. For all controls other than
+ * shells, this simply returns the control's nearest ancestor
+ * shell. Shells return themselves, even if they are children
+ * of other shells.
+ *
+ * @return the receiver's shell
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #getParent
+ */
 public Shell getShell () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getShell ();
 }
+/**
+ * Returns a point describing the receiver's size. The
+ * x coordinate of the result is the width of the receiver.
+ * The y coordinate of the result is the height of the
+ * receiver.
+ *
+ * @return the receiver's size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point getSize () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -524,20 +831,38 @@ public Point getSize () {
 	return new Point (argList [1] + borders, argList [3] + borders);
 }
 /**
-* Gets the tool tip text.
-* <p>
-* @return the tool tip text.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's tool tip text, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getToolTipText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return toolTipText;
 }
+/**
+ * Returns <code>true</code> if the receiver is visible, and
+ * <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getVisible () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -577,13 +902,26 @@ void hookEvents () {
 int inputContext () {
 	return getShell ().inputContext ();
 }
+/**	 
+ * Invokes platform specific functionality to allocate a new GC handle.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Control</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param data the platform specific GC data 
+ * @return the platform specific GC handle
+ *
+ * @private
+ */
 public int internal_new_GC (GCData data) {
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!OS.XtIsRealized (handle)) {
-		int xtParent = handle;
-		while ((OS.XtParent (xtParent) != 0) && !OS.XtIsSubclass (xtParent, OS.ShellWidgetClass ())) {
-			xtParent = OS.XtParent (xtParent);
-		}
-		OS.XtRealizeWidget (xtParent);
+		Shell shell = getShell ();
+		shell.realizeWidget ();
 	}
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -605,26 +943,95 @@ public int internal_new_GC (GCData data) {
 	}
 	return xGC;
 }
+/**	 
+ * Invokes platform specific functionality to dispose a GC handle.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Control</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param handle the platform specific GC handle
+ * @param data the platform specific GC data 
+ *
+ * @private
+ */
 public void internal_dispose_GC (int xGC, GCData data) {
-	int xDisplay = OS.XtDisplay (handle);
+	int xDisplay = 0;
+	if (data != null) xDisplay = data.display;
+	if (xDisplay == 0 && handle != 0) xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.XFreeGC (xDisplay, xGC);
 }
+/**
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isEnabled () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getEnabled () && parent.isEnabled ();
 }
+/**
+ * Returns <code>true</code> if the receiver has the user-interface
+ * focus, and <code>false</code> otherwise.
+ *
+ * @return the receiver's focus state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isFocusControl () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return hasFocus ();
 }
+/**
+ * Returns <code>true</code> if the underlying operating
+ * system supports this reparenting, otherwise <code>false</code>
+ *
+ * @return <code>true</code> if the widget can be reparented, otherwise <code>false</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isReparentable () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return false;
 }
+/**
+ * Returns <code>true</code> if the receiver is visible, and
+ * <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isVisible () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -647,53 +1054,80 @@ boolean mnemonicHit () {
 boolean mnemonicMatch (char key) {
 	return false;
 }
+/**
+ * Moves the receiver above the specified control in the
+ * drawing order. If the argument is null, then the receiver
+ * is moved to the top of the drawing order. The control at
+ * the top of the drawing order will not be covered by other
+ * controls even if they occupy intersecting areas.
+ *
+ * @param the sibling control (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void moveAbove (Control control) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	setZOrder (control, true);
 }
+/**
+ * Moves the receiver below the specified control in the
+ * drawing order. If the argument is null, then the receiver
+ * is moved to the bottom of the drawing order. The control at
+ * the bottom of the drawing order will be covered by all other
+ * controls which occupy intersecting areas.
+ *
+ * @param the sibling control (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void moveBelow (Control control) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	setZOrder (control, false);
 }
 /**
-* Packs the widget.
-* <p>
-* Packing a widget causes it to be resized to the
-* preferred size for the widget.  For a composite,
-* this involves computing the preferred size from
-* the layout.
-*
-* @see Control#computeSize(int, int)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Causes the receiver to be resized to its preferred size.
+ * For a composite, this involves computing the preferred size
+ * from its layout, if there is one.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #computeSize
+ */
 public void pack () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	pack (true);
 }
 /**
-* Packs the widget.
-* <p>
-* Packing a widget causes it to be resized to the
-* preferred size for the widget.  For a composite,
-* this involves computing the preferred size from
-* the layout.
-*
-* @param changed the changed hint (for layouts)
-*
-* @see Control#computeSize(int, int)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Causes the receiver to be resized to its preferred size.
+ * For a composite, this involves computing the preferred size
+ * from its layout, if there is one.
+ * <p>
+ * If the changed flag is <code>true</code>, it indicates that the receiver's
+ * <em>contents</em> have changed, therefore any caches that a layout manager
+ * containing the control may have been keeping need to be flushed. When the
+ * control is resized, the changed flag will be <code>false</code>, so layout
+ * manager caches can be retained. 
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #computeSize
+ */
 public void pack (boolean changed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -734,7 +1168,8 @@ int processModify (int callData) {
 	return 0;
 }
 int processMouseDown (int callData) {
-	getDisplay ().hideToolTip ();
+	Display display = getDisplay ();
+	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
 	sendMouseEvent (SWT.MouseDown, xEvent.button, xEvent.state, xEvent);
@@ -745,19 +1180,15 @@ int processMouseDown (int callData) {
 		OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 		menu.setVisible (true);
 	}
-	int xDisplay = OS.XtDisplay (handle);
-	if (xDisplay != 0) {
-		Display display = getDisplay ();
-		int clickTime = OS.XtGetMultiClickTime (xDisplay);
-		int lastTime = display.lastTime, eventTime = xEvent.time;
-		int lastButton = display.lastButton, eventButton = xEvent.button;
-		if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
-			sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent.state, xEvent);
-		}
-		if (eventTime == 0) eventTime = 1;
-		display.lastTime = eventTime;
-		display.lastButton = eventButton;
+	int clickTime = display.getDoubleClickTime ();
+	int lastTime = display.lastTime, eventTime = xEvent.time;
+	int lastButton = display.lastButton, eventButton = xEvent.button;
+	if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
+		sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent.state, xEvent);
 	}
+	if (eventTime == 0) eventTime = 1;
+	display.lastTime = eventTime;
+	display.lastButton = eventButton;
 	return 0;
 }
 int processMouseEnter (int callData) {
@@ -783,7 +1214,6 @@ int processMouseExit (int callData) {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
-	
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
 	if (xEvent.mode != OS.NotifyNormal) return 0;
@@ -794,8 +1224,18 @@ int processMouseExit (int callData) {
 	postEvent (SWT.MouseExit, event);
 	return 0;
 }
+int processMouseHover (int id) {
+	Display display = getDisplay ();
+	Event event = new Event ();
+	Point local = toControl (display.getCursorLocation ());
+	event.x = local.x; event.y = local.y;
+	postEvent (SWT.MouseHover, event);
+	display.showToolTip (handle, toolTipText);
+	return 0;
+}
 int processMouseUp (int callData) {
-	getDisplay ().hideToolTip ();
+	Display display = getDisplay ();
+	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
 	sendMouseEvent (SWT.MouseUp, xEvent.button, xEvent.state, xEvent);
@@ -832,10 +1272,10 @@ int processSetFocus (int callData) {
 	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
 	OS.memmove (xEvent, callData, XFocusChangeEvent.sizeof);
 
-	/* Ignore focus changes caused by grabbing and ungrabing. */
+	/* Ignore focus changes caused by grabbing and ungrabing */
 	if (xEvent.mode != OS.NotifyNormal) return 0;
 
-	/* Only process focus callbacks between windows. */
+	/* Only process focus callbacks between windows */
 	if (xEvent.detail != OS.NotifyAncestor &&
 		xEvent.detail != OS.NotifyInferior &&
 		xEvent.detail != OS.NotifyNonlinear) return 0;
@@ -855,46 +1295,52 @@ int processSetFocus (int callData) {
 		if (widget != 0 && OS.XtClass (widget) == OS.XmMenuShellWidgetClass ()) return 0;
 	}
 	
-	/* Process the focus change for the widget. */
-	if (xEvent.type == OS.FocusIn) {
-		int result = processFocusIn ();
-		int index = 0;
-		Shell shell = getShell ();
-		Control [] focusIn = getPath ();
-		Control lastFocus = shell.lastFocus;
-		if (lastFocus != null) {
-			if (!lastFocus.isDisposed ()) {
-				Control [] focusOut = lastFocus.getPath ();
-				int length = Math.min (focusIn.length, focusOut.length);
-				while (index < length) {
-					if (focusIn [index] != focusOut [index]) break;
-					index++;
+	/* Process the focus change for the widget */
+	switch (xEvent.type) {
+		case OS.FocusIn: {
+			processFocusIn ();
+			// widget could be disposed at this point
+			if (handle == 0) return 0;
+			int index = 0;
+			Shell shell = getShell ();
+			Control [] focusIn = getPath ();
+			Control lastFocus = shell.lastFocus;
+			if (lastFocus != null) {
+				if (!lastFocus.isDisposed ()) {
+					Control [] focusOut = lastFocus.getPath ();
+					int length = Math.min (focusIn.length, focusOut.length);
+					while (index < length) {
+						if (focusIn [index] != focusOut [index]) break;
+						index++;
+					}
+					for (int i=focusOut.length-1; i>=index; --i) {
+						focusOut [i].sendEvent (SWT.Deactivate);
+					}
 				}
-				for (int i=focusOut.length-1; i>=index; --i) {
+				shell.lastFocus = null;
+			}
+			for (int i=focusIn.length-1; i>=index; --i) {
+				focusIn [i].sendEvent (SWT.Activate);
+			}
+			break;
+		}
+		case OS.FocusOut: {
+			processFocusOut ();
+			// widget could be disposed at this point
+			if (handle == 0) return 0;
+			Shell shell = getShell ();
+			shell.lastFocus = this;
+			Display display = getDisplay ();
+			Control focusControl = display.getFocusControl ();
+			if (focusControl == null || shell != focusControl.getShell ()) {
+				Control [] focusOut = getPath ();
+				for (int i=focusOut.length-1; i>=0; --i) {
 					focusOut [i].sendEvent (SWT.Deactivate);
 				}
+				shell.lastFocus = null;
 			}
-			shell.lastFocus = null;
+			break;
 		}
-		for (int i=focusIn.length-1; i>=index; --i) {
-			focusIn [i].sendEvent (SWT.Activate);
-		}
-		return result;
-	}
-	if (xEvent.type == OS.FocusOut) {
-		int result = processFocusOut ();
-		Shell shell = getShell ();
-		shell.lastFocus = this;
-		Display display = getDisplay ();
-		Control focusControl = display.getFocusControl ();
-		if (focusControl == null || shell != focusControl.getShell ()) {
-			Control [] focusOut = getPath ();
-			for (int i=focusOut.length-1; i>=0; --i) {
-				focusOut [i].sendEvent (SWT.Deactivate);
-			}
-			shell.lastFocus = null;
-		}
-		return result;
 	}
 	return 0;
 }
@@ -925,11 +1371,46 @@ void propagateWidget (boolean enabled) {
 void realizeChildren () {
 	if (!isEnabled ()) propagateWidget (false);
 }
+/**
+ * Causes the entire bounds of the receiver to be marked
+ * as needing to be redrawn. The next time a paint request
+ * is processed, the control will be completely painted.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #update
+ */
 public void redraw () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	redrawWidget (0, 0, 0, 0, false);
 }
+/**
+ * Causes the rectangular area of the receiver specified by
+ * the arguments to be marked as needing to be redrawn. 
+ * The next time a paint request is processed, that area of
+ * the receiver will be painted. If the <code>all</code> flag
+ * is <code>true</code>, any children of the receiver which
+ * intersect with the specified area will also paint their
+ * intersecting areas. If the <code>all</code> flag is 
+ * <code>false</code>, the children will not be painted.
+ *
+ * @param x the x coordinate of the area to draw
+ * @param y the y coordinate of the area to draw
+ * @param width the width of the area to draw
+ * @param height the height of the area to draw
+ * @param all <code>true</code> if children should redraw, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #update
+ */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -984,19 +1465,23 @@ void releaseWidget () {
 	parent = null;
 	layoutData = null;
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is moved or resized.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see ControlListener
+ * @see #addControlListener
+ */
 public void removeControlListener (ControlListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1005,19 +1490,23 @@ public void removeControlListener (ControlListener listener) {
 	eventTable.unhook (SWT.Move, listener);
 	eventTable.unhook (SWT.Resize, listener);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control gains or loses focus.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see FocusListener
+ * @see #addFocusListener
+ */
 public void removeFocusListener(FocusListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1026,19 +1515,23 @@ public void removeFocusListener(FocusListener listener) {
 	eventTable.unhook(SWT.FocusIn, listener);
 	eventTable.unhook(SWT.FocusOut, listener);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the help events are generated for the control.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see HelpListener
+ * @see #addHelpListener
+ */
 public void removeHelpListener (HelpListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1046,19 +1539,23 @@ public void removeHelpListener (HelpListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when keys are pressed and released on the system keyboard.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see KeyListener
+ * @see #addKeyListener
+ */
 public void removeKeyListener(KeyListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1067,19 +1564,23 @@ public void removeKeyListener(KeyListener listener) {
 	eventTable.unhook(SWT.KeyUp, listener);
 	eventTable.unhook(SWT.KeyDown, listener);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when mouse buttons are pressed and released.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseListener
+ * @see #addMouseListener
+ */
 public void removeMouseListener(MouseListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1089,19 +1590,23 @@ public void removeMouseListener(MouseListener listener) {
 	eventTable.unhook(SWT.MouseUp, listener);
 	eventTable.unhook(SWT.MouseDoubleClick, listener);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the mouse moves.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseMoveListener
+ * @see #addMouseMoveListener
+ */
 public void removeMouseMoveListener(MouseMoveListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1109,18 +1614,23 @@ public void removeMouseMoveListener(MouseMoveListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.MouseMove, listener);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-* 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
-*	</ul>
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the mouse passes or hovers over controls.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseTrackListener
+ * @see #addMouseTrackListener
+ */
 public void removeMouseTrackListener(MouseTrackListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1130,37 +1640,46 @@ public void removeMouseTrackListener(MouseTrackListener listener) {
 	eventTable.unhook (SWT.MouseExit, listener);
 	eventTable.unhook (SWT.MouseHover, listener);
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver needs to be painted.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see PaintListener
+ * @see #addPaintListener
+ */
 public void removePaintListener(PaintListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Paint, listener);
-}/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-* 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
-*	</ul>
-*/
+}/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when traversal events occur.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TraverseListener
+ * @see #addTraverseListener
+ */
 public void removeTraverseListener(TraverseListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1257,6 +1776,18 @@ void sendMouseEvent (int type, int button, int mask, XWindowEvent xEvent) {
 	if ((mask & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;
 	postEvent (type, event);
 }
+/**
+ * Sets the receiver's background color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setBackground (Color color) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1273,6 +1804,27 @@ void setBackgroundPixel (int pixel) {
 	OS.XmChangeColor (handle, pixel);
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
+/**
+ * Sets the receiver's size and location to the rectangular
+ * area specified by the arguments. The <code>x</code> and 
+ * <code>y</code> arguments are relative to the receiver's
+ * parent (or its display if its parent is null).
+ * <p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a negative number will cause that
+ * value to be set to zero instead.
+ * </p>
+ *
+ * @param x the new x coordinate for the receiver
+ * @param y the new y coordinate for the receiver
+ * @param width the new width for the receiver
+ * @param height the new height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setBounds (int x, int y, int width, int height) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1299,10 +1851,40 @@ public void setBounds (int x, int y, int width, int height) {
 	if (!sameOrigin) sendEvent (SWT.Move);
 	if (!sameExtent) sendEvent (SWT.Resize);
 }
+/**
+ * Sets the receiver's size and location to the rectangular
+ * area specified by the argument. The <code>x</code> and 
+ * <code>y</code> fields of the rectangle are relative to
+ * the receiver's parent (or its display if its parent is null).
+ * <p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a negative number will cause that
+ * value to be set to zero instead.
+ * </p>
+ *
+ * @param rect the new bounds for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setBounds (Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (rect.x, rect.y, rect.width, rect.height);
 }
+/**
+ * If the argument is <code>true</code>, causes the receiver to have
+ * all mouse events delivered to it until the method is called with
+ * <code>false</code> as the argument.
+ *
+ * @param capture <code>true</code> to capture the mouse, and <code>false</code> to release it
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setCapture (boolean capture) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1325,6 +1907,22 @@ public void setCapture (boolean capture) {
 		OS.XUngrabPointer (display, OS.CurrentTime);
 	}
 }
+/**
+ * Sets the receiver's cursor to the cursor specified by the
+ * argument, or to the default cursor for that kind of control
+ * if the argument is null.
+ * <p>
+ * When the mouse pointer passes over a control its appearance
+ * is changed to match the control's cursor.
+ * </p>
+ *
+ * @param cursor the new cursor (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setCursor (Cursor cursor) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1332,9 +1930,7 @@ public void setCursor (Cursor cursor) {
 	if (display == 0) return;
 	int window = OS.XtWindow (handle);
 	if (window == 0) {
-		if (OS.XtIsRealized (handle)) return;
-		Shell shell = this.getShell ();
-		shell.realizeWidget ();
+		if (!OS.XtIsRealized (handle)) getShell ().realizeWidget ();
 		window = OS.XtWindow (handle);
 		if (window == 0) return;
 	}
@@ -1346,6 +1942,19 @@ public void setCursor (Cursor cursor) {
 		OS.XFlush (display);
 	}
 }
+/**
+ * Enables the receiver if the argument is <code>true</code>,
+ * and disables it otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @param enabled the new enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setEnabled (boolean enabled) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1354,6 +1963,19 @@ public void setEnabled (boolean enabled) {
 		propagateChildren (enabled);
 	}
 }
+/**
+ * Causes the receiver to have the <em>keyboard focus</em>, 
+ * such that all keyboard events will be delivered to it.
+ *
+ * @return <code>true</code> if the control got focus, and <code>false</code> if it was unable to.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #forceFocus
+ */
 public boolean setFocus () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1362,6 +1984,18 @@ public boolean setFocus () {
 	shell.bringToTop ();
 	return OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 }
+/**
+ * Sets the font that the receiver will use to paint textual information
+ * to the font specified by the argument, or to the default font for that
+ * kind of control if the argument is null.
+ *
+ * @param font the new font (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setFont (Font font) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1391,6 +2025,18 @@ void setFontList (int fontList) {
 	/* Restore the widget size */
 	OS.XtSetValues (handle, argList1, argList1.length / 2);
 }
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setForeground (Color color) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1444,11 +2090,34 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 		if ((xEvent.state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;
 	}	
 }
+/**
+ * Sets the layout data associated with the receiver to the argument.
+ * 
+ * @param layoutData the new layout data for the receiver.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setLayoutData (Object layoutData) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	this.layoutData = layoutData;
 }
+/**
+ * Sets the receiver's location to the point specified by
+ * the arguments which are relative to the receiver's
+ * parent (or its display if its parent is null).
+ *
+ * @param x the new x coordinate for the receiver
+ * @param y the new y coordinate for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setLocation (int x, int y) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1460,30 +2129,41 @@ public void setLocation (int x, int y) {
 	OS.XtMoveWidget (topHandle, x, y);
 	if (!sameOrigin) sendEvent (SWT.Move);
 }
+/**
+ * Sets the receiver's location to the point specified by
+ * the argument which is relative to the receiver's
+ * parent (or its display if its parent is null).
+ *
+ * @param location the new location for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setLocation (Point location) {
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
 }
 /**
-* Sets the pop up menu.
-* <p>
-* Every window has a optional pop up menu that is
-* displayed when the user requests a popup menu for
-* the window.  The sequence of key strokes/button
-* presses/button releases that is used to request
-* a pop up menu is platform specific.
-*
-* @param menu the new pop up menu
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_MENU_NOT_POP_UP)
-*	when the menu is not a POP_UP
-* @exception SWTError(ERROR_NO_COMMON_PARENT)
-*	when the menu is not in the same widget tree
-*/
+ * Sets the receiver's pop up menu to the argument.
+ * All controls may optionally have a pop up
+ * menu that is displayed when the user requests one for
+ * the control. The sequence of key strokes, button presses
+ * and/or button releases that are used to request a pop up
+ * menu is platform specific.
+ *
+ * @param menu the new pop up menu
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_MENU_NOT_POP_UP - the menu is not a pop up menu</li>
+ *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setMenu (Menu menu) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1501,12 +2181,10 @@ public void setMenu (Menu menu) {
 /**
  * Changes the parent of the widget to be the one provided if
  * the underlying operating system supports this feature.
- * Answers true if the parent is successfully changed.
+ * Answers <code>true</code> if the parent is successfully changed.
  *
- * @param	parent Composite
- *			the new parent for the control.
- * @return	boolean
- *			true if parent is changed and false otherwise.
+ * @param parent the new parent for the control.
+ * @return <code>true</code> if the parent is changed and <code>false</code> otherwise.
  *
  * @exception SWTError <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
@@ -1519,10 +2197,48 @@ public boolean setParent (Composite parent) {
 	return false;
 }
 
+/**
+ * If the argument is <code>false</code>, causes subsequent drawing
+ * operations in the receiver to be ignored. No drawing of any kind
+ * can occur in the receiver until the flag is set to true.
+ * Graphics operations that occurred while the flag was
+ * <code>false</code> are lost. When the flag is set to <code>true</code>,
+ * the entire widget is marked as needing to be redrawn.
+ * <p>
+ * Note: This operation is a hint and may not be supported on some
+ * platforms or for some widgets.
+ * </p>
+ *
+ * @param redraw the new redraw state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #redraw
+ * @see #update
+ */
 public void setRedraw (boolean redraw) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
+/**
+ * Sets the receiver's size to the point specified by the arguments.
+ * <p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a negative number will cause that
+ * value to be set to zero instead.
+ * </p>
+ *
+ * @param width the new width for the receiver
+ * @param height the new height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSize (int width, int height) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1541,25 +2257,61 @@ public void setSize (int width, int height) {
 	OS.XtResizeWidget (topHandle, newWidth, newHeight, argList [5]);
 	if (!sameExtent) sendEvent (SWT.Resize);
 }
+/**
+ * Sets the receiver's size to the point specified by the argument.
+ * <p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a negative number will cause them to be
+ * set to zero instead.
+ * </p>
+ *
+ * @param size the new size for the receiver
+ * @param height the new height for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSize (Point size) {
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
 }
 /**
-* Sets the tool tip text.
-* <p>
-* @param string the new tool tip text (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that no tool tip text should be shown.
+ *
+ * @param string the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setToolTipText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	toolTipText = string;
 }
+/**
+ * Marks the receiver as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise. 
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setVisible (boolean visible) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1569,25 +2321,6 @@ public void setVisible (boolean visible) {
 	if ((argList [1] != 0) == visible) return;
 	OS.XtSetMappedWhenManaged (topHandle, visible);
 	sendEvent (visible ? SWT.Show : SWT.Hide);
-}
-void setZOrder () {
-	/*
-	* Feature in MOTIF.  When a widget is created before the
-	* parent has been realized, the widget is created behind
-	* all siblings in the Z-order.  When a widget is created
-	* after the parent parent has been realized, it is created
-	* in front of all siblings.  This is not incorrect but is
-	* unexpected.  The fix is to force all widgets to always
-	* be created behind their siblings.
-	*/
-	int topHandle = topHandle ();
-	if (OS.XtIsRealized (topHandle)) {
-		int window = OS.XtWindow (topHandle);
-		if (window != 0) {
-			int display = OS.XtDisplay (topHandle);
-			if (display != 0) OS.XLowerWindow (display, window);
-		}
-	}
 }
 void setZOrder (Control control, boolean above) {
 	/*
@@ -1646,6 +2379,21 @@ void setZOrder (Control control, boolean above) {
 		if (parent != null) parent.moveBelow (topHandle1, topHandle2);
 	}
 }
+/**
+ * Returns a point which is the result of converting the
+ * argument, which is specified in display relative coordinates,
+ * to coordinates relative to the receiver.
+ * <p>
+ * @param point the point to be translated (must not be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point toControl (Point point) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1653,6 +2401,21 @@ public Point toControl (Point point) {
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
 	return new Point (point.x - root_x [0], point.y - root_y [0]);
 }
+/**
+ * Returns a point which is the result of converting the
+ * argument, which is specified in coordinates relative to
+ * the receiver, to display relative coordinates.
+ * <p>
+ * @param point the point to be translated (must not be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point toDisplay (Point point) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1744,16 +2507,20 @@ boolean traverseMnemonic (char key) {
 	return mnemonicMatch (key) && mnemonicHit ();
 }
 /**
-* Traverse the widget.
-* <p>
-* @param traversal the type of traversal.
-* @return true if the traversal succeeded
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-*	</ul>
-*/
+ * Based on the argument, perform one of the expected platform
+ * traversal action. The argument should be one of the constants:
+ * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>, 
+ * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
+ * <code>SWT.TRAVERSE_ARROW_NEXT</code> and <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>.
+ *
+ * @param traversal the type of traversal
+ * @return true if the traversal succeeded
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean traverse (int traversal) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1788,6 +2555,17 @@ boolean traverseReturn () {
 	button.click ();
 	return true;
 }
+/**
+ * Forces all outstanding paint requests for the widget tree
+ * to be processed before this method returns.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #redraw
+ */
 public void update () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1800,14 +2578,5 @@ public void update () {
 	while (OS.XCheckWindowEvent (display, window, OS.ExposureMask, event)) {
 		OS.XtDispatchEvent (event);
 	}
-}
-int processMouseHover (int id) {
-	Display display = getDisplay();
-	Event event = new Event();
-	Point local = toControl(display.getCursorLocation());
-	event.x = local.x; event.y = local.y;
-	postEvent (SWT.MouseHover, event);
-	display.showToolTip(handle, toolTipText);
-	return 0;
 }
 }

@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -21,7 +21,7 @@ import org.eclipse.swt.graphics.*;
  * </dl>
  * <p>
  * This class may be subclassed by custom control implementors
- * who are building controls that are constructed from agregates
+ * who are building controls that are constructed from aggregates
  * of other controls.
  * </p>
  *
@@ -136,7 +136,7 @@ void drawBackground (int hdc, RECT rect) {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of children, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return an array of children

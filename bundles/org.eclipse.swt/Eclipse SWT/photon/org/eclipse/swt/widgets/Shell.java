@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -15,7 +15,8 @@ public class Shell extends Decorations {
 	int shellHandle;
 	Display display;
 	int modal, blockedList;
-	
+	Control lastFocus;
+
 public Shell () {
 	this ((Display) null);
 }
@@ -101,19 +102,23 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int trimWidth = width + left [0] + right [0];
 	int trimHeight = height + top [0] + bottom [0];
 	if (menuBar != null) {
-		args = new int [] {OS.Pt_ARG_HEIGHT, 0, 0};
-		OS.PtGetResources (menuBar.handle, args.length / 3, args);
-		trimHeight += args [1];
-		trimY -= args [1];
+		PhDim_t dim = new PhDim_t ();
+		int menuHandle = menuBar.handle;
+		if (!OS.PtWidgetIsRealized (menuHandle)) {
+			OS.PtExtentWidgetFamily (menuHandle);
+		}
+		OS.PtWidgetPreferredSize (menuHandle, dim);
+		trimHeight += dim.h;
+		trimY -= dim.h;
 	}
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
 
 void createHandle (int index) {
+	state |= HANDLE | CANVAS;
 	if (handle != 0) {
 		int clazz = display.PtContainer;
 		int [] args = {
-			OS.Pt_ARG_FLAGS, OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};
 		shellHandle = OS.PtCreateWidget (clazz, handle, args.length / 3, args);
@@ -140,6 +145,11 @@ void createHandle (int index) {
 			if ((style & SWT.MENU) != 0) decorations |= OS.Ph_WM_RENDER_MENU;
 			if ((style & SWT.TITLE) != 0) decorations |= OS.Ph_WM_RENDER_TITLE;
 		}
+		int notifyFlags =
+			OS.Ph_WM_ICON | OS.Ph_WM_FOCUS | 
+			OS.Ph_WM_MOVE | OS.Ph_WM_RESIZE;
+		int windowState = OS.Ph_WM_STATE_ISFOCUS;
+		if ((style & SWT.ON_TOP) != 0) windowState = OS.Ph_WM_STATE_ISFRONT;
 		int titlePtr = OS.malloc (1);
 		int [] args = {
 			OS.Pt_ARG_WIDTH, width, 0,
@@ -147,10 +157,8 @@ void createHandle (int index) {
 			OS.Pt_ARG_WINDOW_TITLE, titlePtr, 0,
 			OS.Pt_ARG_WINDOW_RENDER_FLAGS, decorations, flags,
 			OS.Pt_ARG_WINDOW_MANAGED_FLAGS, 0, OS.Ph_WM_CLOSE,
-			OS.Pt_ARG_WINDOW_NOTIFY_FLAGS, OS.Ph_WM_ICON, OS.Ph_WM_ICON,
-			OS.Pt_ARG_WINDOW_NOTIFY_FLAGS, OS.Ph_WM_FOCUS, OS.Ph_WM_FOCUS,
-			OS.Pt_ARG_WINDOW_NOTIFY_FLAGS, OS.Ph_WM_MOVE, OS.Ph_WM_MOVE,
-			OS.Pt_ARG_WINDOW_NOTIFY_FLAGS, OS.Ph_WM_RESIZE, OS.Ph_WM_RESIZE,
+			OS.Pt_ARG_WINDOW_NOTIFY_FLAGS, notifyFlags, notifyFlags,
+			OS.Pt_ARG_WINDOW_STATE, windowState, ~0,
 			OS.Pt_ARG_FLAGS, OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};
@@ -159,7 +167,18 @@ void createHandle (int index) {
 		OS.free (titlePtr);
 		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
+	if ((style & SWT.NO_BACKGROUND) != 0) {
+		int [] args = new int [] {OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0};
+		OS.PtSetResources(shellHandle, args.length / 3, args);
+	}
 	createScrolledHandle (shellHandle);
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+		int [] args = {
+			OS.Pt_ARG_FLAGS, OS.Pt_HIGHLIGHTED, OS.Pt_HIGHLIGHTED,
+			OS.Pt_ARG_BASIC_FLAGS, OS.Pt_ALL_OUTLINES, OS.Pt_ALL_OUTLINES,
+		};
+		OS.PtSetResources (scrolledHandle, args.length / 3, args);
+	}
 	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	resizeBounds (args [1], args [4]);
@@ -170,66 +189,6 @@ void deregister () {
 	WidgetTable.remove (shellHandle);
 }
 
-void hookEvents () {
-	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (shellHandle, OS.Pt_CB_WINDOW, windowProc, SWT.Move);
-	OS.PtAddCallback (shellHandle, OS.Pt_CB_RESIZE, windowProc, -1);
-}
-
-public void open () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	bringToTop ();
-	setVisible (true);
-}
-
-int processMove (int info) {
-	if (info == 0) return OS.Pt_CONTINUE;
-	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
-	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
-	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
-	PhWindowEvent_t we = new PhWindowEvent_t ();
-	OS.memmove (we, cbinfo.cbdata, PhWindowEvent_t.sizeof);
-	switch (we.event_f) {
-		case OS.Ph_WM_CLOSE:
-			closeWidget ();
-			break;
-		case OS.Ph_WM_ICON:
-			if ((we.state_f & OS.Ph_WM_STATE_ISICONIFIED) != 0) {
-				sendEvent (SWT.Iconify);
-			} else {
-				sendEvent (SWT.Deiconify);
-			}
-			break;
-		case OS.Ph_WM_FOCUS:
-			switch (we.event_state) {
-				case OS.Ph_WM_EVSTATE_FOCUS: sendEvent (SWT.Activate); break;
-				case OS.Ph_WM_EVSTATE_FOCUSLOST: sendEvent (SWT.Deactivate); break;
-			}
-			break;
-		case OS.Ph_WM_MOVE:
-			sendEvent (SWT.Move);
-			break;	
-	}
-	return OS.Pt_CONTINUE;
-}
-
-int processShellResize (int info) {
-	if (info == 0) return OS.Pt_CONTINUE;
-	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
-	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
-	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
-	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
-	OS.PtGetResources (shellHandle, args.length / 3, args);
-	resizeBounds (args [1], args [4]);
-	return OS.Pt_CONTINUE;
-}
-
-void register () {
-	super.register ();
-	WidgetTable.put (shellHandle, this);
-}
 
 public Display getDisplay () {
 	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -323,14 +282,123 @@ public Point getSize () {
 	return new Point (width, height);
 }
 
-void releaseHandle () {
-	super.releaseHandle ();
-	if (blockedList != 0) OS.PtUnblockWindows (blockedList);
-	blockedList = shellHandle = 0;
+void hookEvents () {
+	super.hookEvents ();
+	int windowProc = getDisplay ().windowProc;
+	OS.PtAddCallback (shellHandle, OS.Pt_CB_WINDOW, windowProc, SWT.Move);
+	OS.PtAddCallback (shellHandle, OS.Pt_CB_RESIZE, windowProc, SWT.Resize);
+}
+
+public void open () {
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	bringToTop ();
+	setVisible (true);
+}
+
+int processEvent (int widget, int data, int info) {
+	if (widget == shellHandle && data == SWT.Resize) {
+		return processShellResize (info);
+	}
+	return super.processEvent (widget, data, info);;
+}
+
+int processHotkey (int data, int info) {
+	if (data != 0) {
+		Widget widget = WidgetTable.get (data);
+		if (widget instanceof MenuItem) {
+			MenuItem item = (MenuItem) widget;
+			if (item.isEnabled ()) item.processSelection (info);
+		}
+	}
+	return OS.Pt_CONTINUE;
+}
+
+int processMove (int info) {
+	if (info == 0) return OS.Pt_CONTINUE;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
+	PhWindowEvent_t we = new PhWindowEvent_t ();
+	OS.memmove (we, cbinfo.cbdata, PhWindowEvent_t.sizeof);
+	switch (we.event_f) {
+		case OS.Ph_WM_CLOSE:
+			closeWidget ();
+			break;
+		case OS.Ph_WM_ICON:
+			if ((we.state_f & OS.Ph_WM_STATE_ISICONIFIED) != 0) {
+				sendEvent (SWT.Iconify);
+			} else {
+				sendEvent (SWT.Deiconify);
+			}
+			break;
+		case OS.Ph_WM_FOCUS:
+			switch (we.event_state) {
+				case OS.Ph_WM_EVSTATE_FOCUS: sendEvent (SWT.Activate); break;
+				case OS.Ph_WM_EVSTATE_FOCUSLOST: sendEvent (SWT.Deactivate); break;
+			}
+			break;
+		case OS.Ph_WM_MOVE:
+			sendEvent (SWT.Move);
+			break;	
+	}
+	return OS.Pt_CONTINUE;
+}
+
+int processShellResize (int info) {
+	if (info == 0) return OS.Pt_CONTINUE;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
+	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
+	OS.PtGetResources (shellHandle, args.length / 3, args);
+	resizeBounds (args [1], args [4]);
+	return OS.Pt_CONTINUE;
+}
+
+void register () {
+	super.register ();
+	WidgetTable.put (shellHandle, this);
 }
 
 void realizeWidget() {
 	/* Do nothing */
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	shellHandle = 0;
+}
+
+void releaseShells () {
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed ()) {
+			/*
+			* Feature in Photon.  A shell may have child shells that have been
+			* temporarily reparented to NULL because they were shown without
+			* showing the parent.  In this case, Photon will not destroy the
+			* child shells because they are not in the widget hierarchy.
+			* The fix is to detect this case and destroy the shells.
+			*/
+			if (shell.parent != null && OS.PtWidgetParent (shell.shellHandle) == 0) {
+				shell.dispose ();
+			} else {
+				shell.releaseWidget ();
+				shell.releaseHandle ();
+			}
+		}
+	}
+}
+
+void releaseWidget () {
+	releaseShells ();
+	super.releaseWidget ();
+	if (blockedList != 0) OS.PtUnblockWindows (blockedList);
+	blockedList = 0;
+	lastFocus = null;
+	display = null;
 }
 
 public void removeShellListener (ShellListener listener) {
@@ -443,7 +511,6 @@ public void setMenuBar (Menu menu) {
 	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	int width = args [1], height = args [4];
-	PhArea_t area = new PhArea_t ();
 	if (menuBar != null) {
 		int menuHandle = menu.handle;
 		args = new int [] {
@@ -451,22 +518,9 @@ public void setMenuBar (Menu menu) {
 			OS.Pt_ARG_FLAGS, 0, OS.Pt_DELAY_REALIZE,
 		};
 		OS.PtSetResources (menuHandle, args.length / 3, args);	
-		args = new int [] {OS.Pt_ARG_HEIGHT, 0, 0};
-		OS.PtGetResources (menuHandle, args.length / 3, args);
-		area.pos_y = (short) args [1];
-		area.size_w = (short) width;
-		area.size_h = (short) Math.max (0, (height - args [1]));
-		OS.PtRealizeWidget (menuBar.handle);
-	} else { 
-		area.size_w = (short) width;
-		area.size_h = (short) height;
+		OS.PtRealizeWidget (menuHandle);
 	}
-	int ptr = OS.malloc (PhArea_t.sizeof);
-	OS.memmove (ptr, area, PhArea_t.sizeof);
-	args = new int [] {OS.Pt_ARG_AREA, ptr, 0};
-	OS.PtSetResources (scrolledHandle, args.length / 3, args);
-	OS.free (ptr);
-	resizeClientArea();
+	resizeBounds(width, height);
 }
 
 public void setMinimized (boolean minimized) {
@@ -517,6 +571,19 @@ public void setVisible (boolean visible) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (visible == OS.PtWidgetIsRealized (shellHandle)) return;
+	/*
+	* Feature in Photon.  It is not possible to show a PtWindow
+	* whose parent is not realized.  The fix is to temporarily
+	* reparent the child shell to NULL and then realize the child
+	* shell.
+	*/
+	if (parent != null) {
+		Shell shell = parent.getShell ();
+		int parentHandle = shell.shellHandle;
+		if (!OS.PtWidgetIsRealized (parentHandle)) {
+			OS.PtReParentWidget (shellHandle, visible ? 0 : parentHandle);
+		}
+	}
 	switch (modal) {
 		case SWT.PRIMARY_MODAL:
 			//NOT DONE: should not disable all windows
@@ -530,6 +597,21 @@ public void setVisible (boolean visible) {
 			}
 	}
 	super.setVisible (visible);
+	/*
+	* Feature in Photon.  When a shell is shown, it may have child
+	* shells that have been temporarily reparented to NULL because
+	* the child was shown before the parent.  The fix is to reparent
+	* the child shells back to the correct parent.
+	*/
+	if (visible) {
+		Shell [] shells = getShells ();
+		for (int i=0; i<shells.length; i++) {
+			int childHandle = shells [i].shellHandle;
+			if (OS.PtWidgetParent (childHandle) == 0) {
+				OS.PtReParentWidget (childHandle, shellHandle);
+			}
+		}
+	}
 	OS.PtSyncWidget (shellHandle);
 	OS.PtFlush ();
 }

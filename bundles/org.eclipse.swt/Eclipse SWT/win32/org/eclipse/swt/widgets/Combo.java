@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -28,6 +28,9 @@ import org.eclipse.swt.events.*;
  * The API documentation is careful to indicate either "the
  * receiver's list" or the "the receiver's text field" to 
  * distinguish between the two cases.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add children to it, or set a layout on it.
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
@@ -36,8 +39,7 @@ import org.eclipse.swt.events.*;
  * <dd>DefaultSelection, Modify, Selection</dd>
  * </dl>
  * <p>
- * IMPORTANT: This class is intended to be subclassed <em>only</em>
- * within the SWT implementation.
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
  * @see List
@@ -209,6 +211,10 @@ public void addModifyListener (ModifyListener listener) {
  * be notified when the receiver's selection changes, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the combo's list selection changes.
+ * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed the combo's text area.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -222,6 +228,7 @@ public void addModifyListener (ModifyListener listener) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget ();
@@ -473,7 +480,7 @@ public int getItemHeight () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the items in the receiver's list

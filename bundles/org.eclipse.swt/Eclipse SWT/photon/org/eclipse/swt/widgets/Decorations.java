@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.photon.*;
@@ -112,6 +112,7 @@ void releaseWidget () {
 	menuBar = null;
 	menus = null;
 	image = null;
+	text = null;
 	super.releaseWidget ();
 }
 
@@ -126,13 +127,28 @@ void remove (Menu menu) {
 }
 
 void resizeBounds (int width, int height) {
+	int menuHeight = 0;
 	if (menuBar != null) {
-		int [] args = {OS.Pt_ARG_HEIGHT, 0, 0};
-		OS.PtGetResources (menuBar.handle, args.length / 3, args);
-		height = Math.max (height - args [1], 0);
+		PhDim_t dim = new PhDim_t ();
+		int menuHandle = menuBar.handle;
+		if (!OS.PtWidgetIsRealized (menuHandle)) {
+			OS.PtExtentWidgetFamily (menuHandle);
+		}
+		OS.PtWidgetPreferredSize (menuHandle, dim);
+		menuHeight = dim.h;
+		int [] args = {OS.Pt_ARG_HEIGHT, menuHeight, 0};
+		OS.PtSetResources (menuHandle, args.length / 3, args);
+		height = height - menuHeight;
 	}
-	int [] args = {OS.Pt_ARG_WIDTH, width, 0, OS.Pt_ARG_HEIGHT, height, 0};
+	PhArea_t area = new PhArea_t ();
+	area.pos_y = (short) menuHeight;
+	area.size_w = (short) Math.max (width, 0);
+	area.size_h = (short) Math.max (height ,0);
+	int ptr = OS.malloc (PhArea_t.sizeof);
+	OS.memmove (ptr, area, PhArea_t.sizeof);
+	int [] args = new int [] {OS.Pt_ARG_AREA, ptr, 0};
 	OS.PtSetResources (scrolledHandle, args.length / 3, args);
+	OS.free (ptr);
 	resizeClientArea (width, height);
 }
 

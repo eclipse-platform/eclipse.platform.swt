@@ -1,8 +1,8 @@
 package org.eclipse.swt.program;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
  
 import org.eclipse.swt.internal.*;
@@ -200,12 +200,23 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	boolean quote = true;
+	String prefix = command, suffix = "";
 	int index = command.indexOf ("%1");
-	if (index == -1) return false;
-	String prefix = command.substring (0, index);
-	String suffix = command.substring (index + 2, command.length ());
+	if (index != -1) {
+		int count=0;
+		int i=index + 2, length = command.length ();
+		while (i < length) {
+			if (command.charAt (i) == '"') count++;
+			i++;
+		}
+		quote = count % 2 == 0;
+		prefix = command.substring (0, index);
+		suffix = command.substring (index + 2, length);
+	}
+	if (quote) fileName = " \"" + fileName + "\"";
 	try {
-		Runtime.getRuntime ().exec (prefix + '"' + fileName + '"' + suffix);
+		Runtime.getRuntime ().exec (prefix + fileName + suffix);
 	} catch (IOException e) {
 		return false;
 	}

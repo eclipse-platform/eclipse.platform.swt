@@ -1,24 +1,71 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
-/* Imports */
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import java.util.*;
 
+/**
+ * Instances of this class provide an area for dynamically
+ * positioning the items they contain.
+ * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>CoolItem</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
 public /*final*/ class CoolBar extends Composite {
 	Vector rows;
 	Cursor hoverCursor;
 	Cursor dragCursor;
 	static final int ROW_SPACING = 2;
 		
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public CoolBar (Composite parent, int style) {
 	super (parent, style);
 }
@@ -36,6 +83,24 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) extent.y = hHint;
 	return extent;
 }
+/**
+ * Returns the item at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ *
+ * @param index the index of the item to return
+ * @return the item at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
 public CoolItem getItem (int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -51,6 +116,19 @@ public CoolItem getItem (int index) {
 	error (SWT.ERROR_INVALID_RANGE);
 	return null;
 }
+/**
+ * Returns the number of items contained in the receiver.
+ *
+ * @return the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
 public int getItemCount () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -61,6 +139,25 @@ public int getItemCount () {
 	}
 	return itemCount;
 }
+/**
+ * Returns an array of <code>CoolItems</code>s which are the
+ * items in the receiver in the order those items were added. 
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
 public CoolItem [] getItems () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -109,6 +206,23 @@ void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
 	OS.XtAddEventHandler (handle, OS.ExposureMask, false, windowProc, SWT.Paint);
 }
+/**
+ * Searches the receiver's items, in the order they were
+ * added, starting at the first item (index 0) until an item
+ * is found that is equal to the argument, and returns the
+ * index of that item. If no item is found, returns -1.
+ *
+ * @param item the search item
+ * @return the index of the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int indexOf (CoolItem item) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -455,6 +569,27 @@ CoolItem getChild (int id) {
 	}
 	return null;
 }
+/**
+ * Returns an array of zero-relative indices which map the order
+ * that the items in the receiver were added in (which is the
+ * order that they are returned by <code>getItems()</code>) to
+ * the order which they are currently being displayed.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the receiver's item order
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
 public int[] getItemOrder () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -478,6 +613,18 @@ void setItemOrder (int[] itemOrder) {
 	rows = new Vector(1);
 	rows.addElement(row);
 }
+/**
+ * Returns an array of points whose x and y coordinates describe
+ * the widths and heights (respectively) of the items in the receiver
+ * in the order the items were added.
+ *
+ * @return the receiver's item sizes
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point[] getItemSizes () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -497,6 +644,18 @@ void setItemSizes (Point[] sizes) {
 		items[i].setBounds(bounds.x, bounds.y, sizes[i].x, sizes[i].y);
 	}
 }
+/**
+ * Returns an array of ints which describe the zero-relative
+ * row number of the row which each of the items in the 
+ * receiver occurs in, in the order the items were added.
+ *
+ * @return the receiver's wrap indices
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int[] getWrapIndices () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -509,6 +668,19 @@ public int[] getWrapIndices () {
 	}
 	return data;
 }
+/**
+ * Sets the row that each of the receiver's items will be
+ * displayed in to the given array of ints which describe
+ * the zero-relative row number of the row for each item 
+ * in the order the items were added.
+ *
+ * @param indices the new wrap indices
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setWrapIndices (int[] data) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -533,6 +705,20 @@ public void setWrapIndices (int[] data) {
 	rows.addElement(row);
 	relayout();
 }
+/**
+ * Sets the receiver's item order, wrap indices, and item
+ * sizes at once. This equivalent to calling the setter
+ * methods for each of these values individually.
+ *
+ * @param itemOrder the new item order
+ * @param wrapIndices the new wrap indices
+ * @param size the new item sizes
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setItemLayout (int[] itemOrder, int[] wrapIndices, Point[] sizes) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

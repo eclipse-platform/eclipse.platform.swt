@@ -1,7 +1,10 @@
- # Makefile for module 'swt'
+# Makefile for module 'swt'
+
+# (c) Copyright IBM Corp., 2000, 2001
+# All Rights Reserved.
 
 maj_ver=0
-min_ver=104
+min_ver=125
 revision=0
 
 #assumes IVE_HOME is set in the environment

@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
  
 import org.eclipse.swt.internal.win32.*;
@@ -15,6 +15,13 @@ import org.eclipse.swt.events.*;
  * object that displays a list of images and strings and issue
  * notificiation when selected.
  * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>TableItem</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION</dd>
@@ -49,6 +56,13 @@ public Table (Composite parent, int style) {
  * be notified when the receiver's selection changes, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * When <code>widgetSelected</code> is called, the item field of the event object is valid.
+ * If the reciever has <code>SWT.CHECK</code> style set and the check selection changes,
+ * the event object detail field contains the value <code>SWT.CHECK</code>.
+ * <code>widgetDefaultSelected</code> is typically called when an item is double-clicked.
+ * The item field of the event object is valid for default selection, but the detail field is not used.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -62,6 +76,7 @@ public Table (Composite parent, int style) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
@@ -544,7 +559,7 @@ public int getColumnCount () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the items in the receiver
@@ -695,7 +710,7 @@ public int getItemHeight () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the items in the receiver
@@ -743,7 +758,7 @@ public boolean getLinesVisible () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  * @return an array representing the selection
  *
@@ -806,7 +821,7 @@ public int getSelectionIndex () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  * @return the array of indices of the selected items
  *
@@ -854,8 +869,7 @@ int imageIndex (Image image) {
 	}
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
-	imageList.add (image);
-	return imageList.size () - 1;
+	return imageList.add (image);
 }
 
 /**
@@ -946,10 +960,37 @@ void releaseWidget () {
 	}
 	columns = null;
 	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<itemCount; i++) {
+	
+	/*
+	* Feature in Windows.  When there are a large number
+	* of items in a table (>1000), it is much faster to
+	* delete each item with LVM_DELETEITEM rather than
+	* using LVM_DELETEALLITEMS.  The fix is to delete the
+	* items, one by one.
+	*
+	* NOTE: LVM_DELETEALLITEMS is also sent by the table
+	* when the table is destroyed.
+	*/
+	/* Turn off redraw and leave it off */
+	OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+	for (int i=itemCount-1; i>=0; --i) {
+		ignoreSelect = true;
+		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
+		ignoreSelect = false;
 		TableItem item = items [i];
 		if (!item.isDisposed ()) item.releaseWidget ();
 	}
+	
+	/*
+	* This code is intentionally commmented.  This is
+	* the correct code, assuming that the problem with
+	* LVM_DELETEALLITEMS did not occur.
+	*/
+//	for (int i=0; i<itemCount; i++) {
+//		TableItem item = items [i];
+//		if (!item.isDisposed ()) item.releaseWidget ();
+//	}
+
 	items = null;
 	super.releaseWidget ();
 	if (imageList != null) {
@@ -1068,21 +1109,26 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget ();
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	int index = end;
-	while (index >= start) {
+	int index = start;
+	while (index <= end) {
 		ignoreSelect = true;
-		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
+		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
 		ignoreSelect = false;
 		if (code == 0) break;
 		
 		// BUG - disposed callback could remove an item
 		items [index].releaseWidget ();
-		--index;
+		index++;
 	}
-	int first = index + 1, last = end + 1;
-	System.arraycopy (items, last, items, first, count - last);
-	for (int i=count-(last-first); i<count; i++) items [i] = null;
-	if (first > start) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	System.arraycopy (items, index, items, start, count - index);
+	for (int i=count-(index-start); i<count; i++) items [i] = null;
+	if (index <= end) {
+		if (0 <= index && index < count) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		} else {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+	}
 }
 
 /**
@@ -1096,14 +1142,57 @@ public void remove (int start, int end) {
 public void removeAll () {
 	checkWidget ();
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	ignoreSelect = true;
-	int code = OS.SendMessage (handle, OS.LVM_DELETEALLITEMS, 0, 0);
-	ignoreSelect = false;
-	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	for (int i=0; i<count; i++) {
-		TableItem item = items [i];
-		if (!item.isDisposed ()) item.releaseWidget ();
+	
+	/*
+	* Feature in Windows.  When there are a large number
+	* of items in a table (>1000), it is much faster to
+	* delete each item with LVM_DELETEITEM rather than
+	* using LVM_DELETEALLITEMS.  The fix is to delete the
+	* items, one by one.
+	*
+	* NOTE: LVM_DELETEALLITEMS is also sent by the table
+	* when the table is destroyed.
+	*/
+	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+	if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+	int index = count - 1;
+	while (index >= 0) {
+		ignoreSelect = true;
+		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
+		ignoreSelect = false;
+		if (code == 0) break;
+		
+		// BUG - disposed callback could remove an item
+		items [index].releaseWidget ();
+		--index;
 	}
+	if (redraw) {
+		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+		/*
+		* This code is intentionally commented.  The window proc
+		* for the table implements WM_SETREDRAW to invalidate
+		* and erase the table so it is not necessary to do this
+		* again.
+		*/
+//		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+//		OS.RedrawWindow (handle, null, 0, flags);
+	}
+	if (index != -1) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	
+	/*
+	* This code is intentionally commmented.  This is
+	* the correct code, assuming that the problem with
+	* LVM_DELETEALLITEMS did not occur.
+	*/
+//	ignoreSelect = true;
+//	int code = OS.SendMessage (handle, OS.LVM_DELETEALLITEMS, 0, 0);
+//	ignoreSelect = false;
+//	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
+//	for (int i=0; i<count; i++) {
+//		TableItem item = items [i];
+//		if (!item.isDisposed ()) item.releaseWidget ();
+//	}
+
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
 		imageList.dispose ();
@@ -2061,8 +2150,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
-		case OS.LVN_MARQUEEBEGIN:
-			return LRESULT.ONE;
+		case OS.LVN_MARQUEEBEGIN: return LRESULT.ONE;
 		case OS.LVN_BEGINDRAG:
 		case OS.LVN_BEGINRDRAG:
 			dragStarted = true;

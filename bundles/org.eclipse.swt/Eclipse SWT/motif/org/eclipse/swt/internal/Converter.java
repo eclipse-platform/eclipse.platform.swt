@@ -1,8 +1,17 @@
 package org.eclipse.swt.internal;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
+/**
+ * This class implements the conversions between unicode characters
+ * and the <em>platform supported</em> representation for characters.
+ * <p>
+ * Note that, unicode characters which can not be found in the platform
+ * encoding will be converted to an arbitrary platform specific character.
+ * </p>
  */
  
 public final class Converter {
@@ -10,6 +19,12 @@ public final class Converter {
 	public static final char [] NullCharArray = new char [1];
 	public static final byte [] EmptyByteArray = new byte [0];
 	public static final char [] EmptyCharArray = new char [0];
+/**
+ * Returns the default code page for the platform where the
+ * application is currently running.
+ *
+ * @return the default code page
+ */
 public static String defaultCodePage () {
 	/*
 	| ptr cp |

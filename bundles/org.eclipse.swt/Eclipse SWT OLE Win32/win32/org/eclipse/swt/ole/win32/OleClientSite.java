@@ -1,9 +1,8 @@
 package org.eclipse.swt.ole.win32;
 
 /*
- * Licensed Materials - Property of IBM,
- * WebSphere Studio Workbench
- * (c) Copyright IBM Corp 2000
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,6 +29,10 @@ import org.eclipse.swt.internal.win32.*;
  * <p>This object implements the OLE Interfaces IUnknown, IOleClientSite, IAdviseSink, 
  * IOleInPlaceSite
  *
+ * <p>Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
  * <dl>
  *	<dt><b>Styles</b> <dd>BORDER 
  *	<dt><b>Events</b> <dd>Dispose, Move, Resize
@@ -730,22 +733,38 @@ private int GetWindowContext(int ppFrame, int ppDoc, int lprcPosRect, int lprcCl
 	frameInfo.cb = OLEINPLACEFRAMEINFO.sizeof;
 	frameInfo.fMDIApp = 0;
 	frameInfo.hwndFrame = frame.handle;
-	//frameInfo.cAccelEntries = ??;
-	//frameInfo.hAccel = ??;
+	Menu menubar = frame.getMenubar();
+	if (menubar != null && !menubar.isDisposed()) {
+		Shell shell = menubar.getShell();
+		int hwnd = shell.handle;
+		int cAccel = OS.SendMessage(hwnd, OS.WM_APP, 0, 0);
+		if (cAccel != 0) {
+			int hAccel = OS.SendMessage(hwnd, OS.WM_APP+1, 0, 0);
+			if (hAccel != 0) {
+				frameInfo.cAccelEntries = cAccel;
+				frameInfo.haccel = hAccel;
+			}
+		}
+	}
 	COM.MoveMemory(lpFrameInfo, frameInfo, OLEINPLACEFRAMEINFO.sizeof);
 	
 	return COM.S_OK;
 }
 public boolean isDirty() {
+	// Note: this method must return true unless it is absolutely clear that the
+	// contents of the Ole Document do not differ from the contents in the file
+	// on the file system.
+	
 	// Get access to the persistant storage mechanism
 	int[] address = new int[1];
 	if (objIOleObject.QueryInterface(COM.IIDIPersistFile, address) != COM.S_OK)
-		return false;
+		return true;
 	IPersistStorage permStorage = new IPersistStorage(address[0]);
 	// Are the contents of the permanent storage different from the file?
 	int result = permStorage.IsDirty();
 	permStorage.Release();
-	return (result == COM.S_OK);
+	if (result == COM.S_FALSE) return false;
+	return true;
 }
 public boolean isFocusControl () {
 	Control focus = getDisplay().getFocusControl();

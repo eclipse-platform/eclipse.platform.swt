@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.photon.*;
@@ -14,7 +14,7 @@ public class Menu extends Widget {
 	int x, y;
 	boolean hasLocation;
 	Decorations parent;
-	MenuItem cascade;
+	MenuItem cascade, defaultItem;
 
 public Menu (Control parent) {
 	this (checkNull (parent).getShell (), SWT.POP_UP);
@@ -71,6 +71,7 @@ public void addMenuListener (MenuListener listener) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	int parentHandle = parent.topHandle ();
 	if ((style & SWT.BAR) != 0) {
 		int [] args = {
@@ -92,8 +93,7 @@ void createWidget (int index) {
 public MenuItem getDefaultItem () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//NOT DONE - NOT NEEDED
-	return null;
+	return defaultItem;
 }
 
 public Display getDisplay () {
@@ -126,12 +126,19 @@ public int getItemCount () {
 public MenuItem getItem (int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//NOT DONE - bogus
-	MenuItem[] items = getItems();
-	if (!(0 <= index && index < items.length)) {
-		error (SWT.ERROR_INVALID_RANGE);
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);	
+	int i = 0;
+	int child = OS.PtWidgetChildBack (handle);
+	if (child != 0 && (style & SWT.BAR) != 0) child = OS.PtWidgetChildBack (child);
+	while (child != 0) {
+		Widget widget = WidgetTable.get (child);
+		if (widget != null && widget instanceof MenuItem) {
+			if (i++ == index) return (MenuItem) widget;
+		}
+		child = OS.PtWidgetBrotherInFront (child);
 	}
-	return items [index];
+	error (SWT.ERROR_INVALID_RANGE);
+	return null;
 }
 
 public MenuItem [] getItems () {
@@ -206,7 +213,6 @@ public boolean getVisible () {
 
 void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_REALIZED, windowProc, SWT.Show);
 	OS.PtAddCallback (handle, OS.Pt_CB_UNREALIZED, windowProc, SWT.Hide);
 }
 
@@ -214,10 +220,14 @@ public int indexOf (MenuItem item) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	//NOT DONE - bogus
-	MenuItem[] items = getItems();
-	for (int i=0; i<items.length; i++) {
-		if (item == items [i]) return i;
+	int i = 0;
+	int child = OS.PtWidgetChildBack (handle);
+	if (child != 0 && (style & SWT.BAR) != 0) child = OS.PtWidgetChildBack (child);
+	while (child != 0) {
+		Widget widget = WidgetTable.get (child);
+		if (item == widget) return i;
+		if (widget != null && widget instanceof MenuItem) i++;
+		child = OS.PtWidgetBrotherInFront (child);
 	}
 	return -1;
 }
@@ -237,12 +247,13 @@ public boolean isVisible () {
 }
 
 int processHide (int info) {
+	if (cascade != null) {
+		int [] args = {OS.Pt_ARG_MENU_FLAGS, 0, OS.Pt_MENU_CHILD};
+		OS.PtSetResources (handle, args.length / 3, args);
+		int shellHandle = parent.topHandle ();
+		OS.PtReParentWidget (handle, shellHandle);
+	}
 	sendEvent (SWT.Hide);
-	return OS.Pt_CONTINUE;
-}
-
-int processShow (int info) {
-	sendEvent (SWT.Show);
 	return OS.Pt_CONTINUE;
 }
 
@@ -266,7 +277,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (parent != null) parent.remove (this);
 	parent = null;
-
+	cascade = null;
 }
 
 public void removeHelpListener (HelpListener listener) {
@@ -289,7 +300,7 @@ public void removeMenuListener (MenuListener listener) {
 public void setDefaultItem (MenuItem item) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//NOT DONE - NOT NEEDED
+	defaultItem = item;
 }
 
 public void setEnabled (boolean enabled) {
@@ -329,6 +340,7 @@ public void setVisible (boolean visible) {
 		int [] args = {OS.Pt_ARG_POS, ptr, 0};
 		OS.PtSetResources (handle, args.length / 3, args);
 		OS.free (ptr);
+		sendEvent (SWT.Show);
 		OS.PtRealizeWidget (handle);
 	} else {
 		OS.PtUnrealizeWidget(handle);

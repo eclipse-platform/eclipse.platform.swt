@@ -1,9 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * SWT - The Simple Widget Toolkit,
- * (c) Copyright IBM Corp 1998, 1999.
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
  
 import java.util.*;

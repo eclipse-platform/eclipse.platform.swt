@@ -1,13 +1,13 @@
 package org.eclipse.swt.widgets;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-/*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
- */
- 
 /**
  * This class implements common behavior of TreeItem and TableItem.
  */
@@ -26,14 +26,14 @@ abstract class SelectableItem extends Item {
  */
 SelectableItem(SelectableItemWidget parent, int style) {
 	super(parent, style);
-	setParent(parent);
-	addListener(SWT.Dispose, new Listener() {
-		public void handleEvent(Event event) {disposeItem();}});	
+	setParent(parent);	
 }
-/**
- * Subclasses should free resources here
- */
-void disposeItem() {
+public void dispose() {
+	if (!isValidWidget ()) return;
+	super.dispose();
+	doDispose();
+}
+void doDispose() {
 	setParent(null);
 }
 /**

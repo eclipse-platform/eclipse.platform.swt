@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -13,7 +13,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
- * issues notificiation when pressed and released. 
+ * issues notification when pressed and released. 
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>ARROW, CHECK, PUSH, RADIO, TOGGLE, FLAT</dd>
@@ -87,6 +87,10 @@ public Button (Composite parent, int style) {
  * be notified when the control is selected, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -100,6 +104,7 @@ public Button (Composite parent, int style) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
@@ -512,7 +517,11 @@ public void setSelection (boolean selected) {
 
 /**
  * Sets the receiver's text.
- *
+ * <p>
+ * This method sets the button label.  The label may include
+ * the mnemonic character but must not contain line delimiters.
+ * </p>
+ * 
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -543,11 +552,11 @@ int widgetStyle () {
 	if ((style & SWT.LEFT) != 0) bits |= OS.BS_LEFT;
 	if ((style & SWT.CENTER) != 0) bits |= OS.BS_CENTER;
 	if ((style & SWT.RIGHT) != 0) bits |= OS.BS_RIGHT;
-	if ((style & SWT.PUSH) != 0) return bits | OS.BS_PUSHBUTTON;
+	if ((style & SWT.PUSH) != 0) return bits | OS.BS_PUSHBUTTON | OS.WS_TABSTOP;
 	if ((style & SWT.CHECK) != 0) return bits | OS.BS_CHECKBOX;
 	if ((style & SWT.RADIO) != 0) return bits | OS.BS_RADIOBUTTON;
 	if ((style & SWT.TOGGLE) != 0) return bits | OS.BS_PUSHLIKE | OS.BS_CHECKBOX;
-	return bits | OS.BS_PUSHBUTTON;
+	return bits | OS.BS_PUSHBUTTON | OS.WS_TABSTOP;
 }
 
 byte [] windowClass () {

@@ -1,12 +1,12 @@
 package org.eclipse.swt.internal.image;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
 import org.eclipse.swt.*;
 import java.io.*;
-
-/*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
- */
 
 class PngChunk extends Object {
 	byte[] reference;

@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -15,7 +15,7 @@ public class Text extends Scrollable {
 	char echoCharacter;
 	boolean ignoreChange;
 	String hiddenText;
-	int lastModifiedText;
+	int tabs, lastModifiedText;
 	PtTextCallback_t textVerify;
 	
 	public static final int LIMIT;
@@ -79,12 +79,15 @@ public void clearSelection () {
 	OS.PtTextSetSelection (handle, new int [] {0}, new int [] {0});
 }
 void createHandle (int index) {
+	state |= HANDLE;
 	Display display = getDisplay ();
 	int parentHandle = parent.handle;
+	boolean hasBorder = (style & SWT.BORDER) != 0;
 	int textFlags = (style & SWT.READ_ONLY) != 0 ? 0 : OS.Pt_EDITABLE;
 	if ((style & SWT.SINGLE) != 0) {
 		int clazz = display.PtText;
 		int [] args = {	
+			OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 			OS.Pt_ARG_FLAGS, OS.Pt_CALLBACKS_ACTIVE, OS.Pt_CALLBACKS_ACTIVE,
 			OS.Pt_ARG_TEXT_FLAGS, textFlags, OS.Pt_EDITABLE,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
@@ -96,6 +99,7 @@ void createHandle (int index) {
 	int clazz = display.PtMultiText;
 	int wrapFlags = (style & SWT.WRAP) != 0 ? OS.Pt_EMT_WORD | OS.Pt_EMT_CHAR : 0;
 	int [] args = {
+		OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 		OS.Pt_ARG_FLAGS, OS.Pt_CALLBACKS_ACTIVE, OS.Pt_CALLBACKS_ACTIVE,
 		OS.Pt_ARG_TEXT_FLAGS, textFlags, OS.Pt_EDITABLE,
 		OS.Pt_ARG_MULTITEXT_WRAP_FLAGS, wrapFlags, OS.Pt_EMT_WORD | OS.Pt_EMT_CHAR,
@@ -106,6 +110,12 @@ void createHandle (int index) {
 	handle = OS.PtCreateWidget (clazz, parentHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	createScrollBars();
+}
+
+void createWidget (int index) {
+	super.createWidget (index);
+//	doubleClick = true;
+	setTabStops (tabs = 8);
 }
 
 public void addModifyListener (ModifyListener listener) {
@@ -171,6 +181,21 @@ public void cut () {
 	OS.PhClipboardCopyString((short)ig, buffer);
 	buffer = new byte[0];
 	OS.PtTextModifyText (handle, start [0], end [0], start [0], buffer, buffer.length);
+}
+
+void deregister () {
+	super.deregister ();
+	
+	/*
+	* Bug in Photon. Even though the Pt_CB_GOT_FOCUS callback
+	* is added to the multi-line text, the widget parameter
+	* in the callback is a child of the multi-line text. The fix
+	* is to register that child so that the lookup in the widget
+	* table will find the muti-line text. 
+	*/
+	if ((style & SWT.MULTI) == 0) return;
+	int child = OS.PtWidgetChildBack (handle);
+	WidgetTable.remove (child);
 }
 
 public int getCaretLineNumber () {
@@ -267,6 +292,11 @@ public int getLineHeight () {
 	return extent.lr_y - extent.ul_y + 1 + args [4];
 }
 
+String getNameText () {
+	if ((style & SWT.SINGLE) != 0) return getText ();
+	return getText (0, Math.min(getCharCount () - 1, 10));
+}
+
 public Point getSelection () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -305,8 +335,19 @@ public String getSelectionText () {
 public int getTabs () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//NOT DONE - NOT NEEDED
-	return 0;
+	return tabs;
+}
+
+int getTabWidth (int tabs) {
+	int [] args = new int [] {OS.Pt_ARG_TEXT_FONT, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	PhRect_t rect = new PhRect_t ();
+	int ptr = OS.malloc (1);
+	OS.memmove (ptr, new byte [] {' '}, 1);
+	OS.PfExtentText(rect, null, args [1], ptr, 1);
+	OS.free (ptr);
+	int width = rect.lr_x - rect.ul_x + 1;
+	return width * tabs;
 }
 
 public String getText (int start, int end) {
@@ -363,9 +404,6 @@ public int getTopPixel () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	if ((style & SWT.MULTI) != 0) {
-		OS.PtAddFilterCallback (handle, OS.Ph_EV_KEY, windowProc, SWT.KeyDown);
-	}
 	OS.PtAddCallback (handle, OS.Pt_CB_MODIFY_VERIFY, windowProc, SWT.Verify); 
 	OS.PtAddCallback (handle, OS.Pt_CB_TEXT_CHANGED, windowProc, SWT.Modify);
 }
@@ -402,6 +440,24 @@ public void paste () {
 	}
 	OS.PtTextModifyText (handle, start [0], end [0], end [0], ptr, length);
 	OS.free(ptr);
+}
+
+int processEvent (int widget, int data, int info) {
+	
+	/*
+	* Bug in Photon. Even though the Pt_CB_GOT_FOCUS callback
+	* is added to the multi-line text, the widget parameter
+	* in the callback is a child of the multi-line text. The fix
+	* is to register that child so that the lookup in the widget
+	* table will find the muti-line text and avoid multiple 
+	* Pt_CB_LOST_FOCUS callbacks.
+	*/
+	if ((style & SWT.MULTI) != 0) {
+		if (widget != handle && data == SWT.FocusOut) {
+			return OS.Pt_CONTINUE;
+		}
+	}
+	return super.processEvent (widget, data, info);
 }
 
 int processModify (int info) {
@@ -478,12 +534,27 @@ int processVerify (int info) {
 	return 0;
 }
 
+void register () {
+	super.register ();
+
+	/*
+	* Bug in Photon. Even though the Pt_CB_GOT_FOCUS callback
+	* is added to the multi-line text, the widget parameter
+	* in the callback is a child of the multi-line text. The fix
+	* is to register that child so that the lookup in the widget
+	* table will find the muti-line text. 
+	*/
+	if ((style & SWT.MULTI) == 0) return;
+	int child = OS.PtWidgetChildBack (handle);
+	WidgetTable.put (child, this);
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
-	if (lastModifiedText != 0) {
-		OS.free (lastModifiedText);
-		lastModifiedText = 0;
-	}
+	if (lastModifiedText != 0) OS.free (lastModifiedText);
+	lastModifiedText = 0;
+	hiddenText = null;
+	textVerify = null;
 }
 
 public void removeModifyListener (ModifyListener listener) {
@@ -553,6 +624,11 @@ public void setEditable (boolean editable) {
 	OS.PtSetResources(handle, args.length / 3, args);
 }
 
+public void setFont (Font font) {
+	super.setFont (font);
+	setTabStops (tabs);
+}
+
 public void setSelection (int position) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -577,8 +653,17 @@ public void setTabs (int tabs) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (tabs < 0) return;
+	setTabStops (this.tabs = tabs);
+}
 
-	//NOT DONE - NOT NEEDED
+void setTabStops (int tabs) {
+	if ((style & SWT.SINGLE) != 0) return;
+	int tabsWidth = getTabWidth (tabs);
+	int ptr = OS.malloc (4);
+	OS.memmove (ptr, new int [] {tabsWidth}, 4);
+	int [] args = {OS.Pt_ARG_MULTITEXT_TABS, ptr, 1};
+	OS.PtSetResources (handle, args.length / 3, args);
+	OS.free (ptr);
 }
 
 public void setText (String string) {
@@ -614,6 +699,17 @@ public void showSelection () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	
 	//NOT DONE - NOT NEEDED
+}
+
+int traversalCode (int key_sym, PhKeyEvent_t ke) {
+	if ((style & SWT.SINGLE) != 0) {
+		int code = super.traversalCode (key_sym, ke);
+		if (key_sym == OS.Pk_Right || key_sym == OS.Pk_Left) {
+			code &= ~(SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS);
+		}
+		return code;
+	}
+	return SWT.TRAVERSE_ESCAPE;
 }
 
 }

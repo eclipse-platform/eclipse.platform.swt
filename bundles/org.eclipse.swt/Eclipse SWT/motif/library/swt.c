@@ -1,3 +1,8 @@
+/*
+ * (c) Copyright IBM Corp., 2000, 2001
+ * All Rights Reserved.
+ */
+
 /**
  * SWT OS natives implementation.
  */ 
@@ -1604,6 +1609,34 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeCursor
 	fprintf(stderr, "XFreeCursor\n");
 #endif
 	XFreeCursor((Display *)display, pixmap);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XFreeFont
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeFont
+  (JNIEnv *env, jclass that, jint display, jint font_struct)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XFreeFont\n");
+#endif
+	XFreeFont((Display *)display, (XFontStruct *)font_struct);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XFreeFontSet
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeFontSet
+  (JNIEnv *env, jclass that, jint display, jint font_set)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XFreeFontSet\n");
+#endif
+	XFreeFontSet((Display *)display, (XFontSet)font_set);
 }
 
 /*
@@ -3845,6 +3878,51 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListEntryGet
     rc = (jint) XmFontListEntryGetFont((XmFontListEntry)entry, (XmFontType *)type_return1);
     if (type_return)
         (*env)->ReleaseIntArrayElements(env, type_return, type_return1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XmFontListEntryCreate
+ * Signature: ([BII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListEntryCreate
+  (JNIEnv *env, jclass that, jbyteArray tag, jint type, int font)
+{
+    char *tag1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XmFontListEntryCreate\n");
+#endif
+
+    if (tag)
+        tag1 = (char *)(*env)->GetByteArrayElements(env, tag, NULL);
+    rc = (jint)XmFontListEntryCreate(tag1, (XmFontType)type, (XtPointer)font);
+    if (tag)
+        (*env)->ReleaseByteArrayElements(env, tag, (jbyte *)tag1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XLoadQueryFont
+ * Signature: (I[B)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XLoadQueryFont
+  (JNIEnv *env, jclass that, jint display, jbyteArray fontName)
+{
+    char *fontName1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XLoadQueryFont\n");
+#endif
+
+    if (fontName)
+        fontName1 = (char *)(*env)->GetByteArrayElements(env, fontName, NULL);
+    rc = (jint)XLoadQueryFont((Display *)display, fontName1);
+    if (fontName)
+        (*env)->ReleaseByteArrayElements(env, fontName, (jbyte *)fontName1, 0);
+    
     return rc;
 }
 
@@ -7897,3 +7975,117 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpQueryVersion
 /*
  * ======== End printing functions ========
  */
+ 
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    pipe
+ * Signature: ([I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_pipe
+  (JNIEnv *env, jclass that, jintArray filedes)
+{
+    jint *filedes1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "pipe\n");
+#endif
+
+    if (filedes) 
+        filedes1 = (*env)->GetIntArrayElements(env, filedes, NULL);
+    rc = (jint) pipe((int *)filedes1);
+    if (filedes)
+    	(*env)->ReleaseIntArrayElements(env, filedes, filedes1, 0);
+
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    read
+ * Signature: (I[BI)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_read
+  (JNIEnv *env, jclass that, int filedes, jbyteArray buf, int nbyte)
+{
+    jbyte *buf1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "read\n");
+#endif
+
+    if (buf) 
+        buf1 = (*env)->GetByteArrayElements(env, buf, NULL);
+    rc = (jint) read(filedes, (char *)buf, nbyte);
+    if (buf)
+    	(*env)->ReleaseByteArrayElements(env, buf, buf1, 0);
+
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    write
+ * Signature: (I[BI)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_write
+  (JNIEnv *env, jclass that, int filedes, jbyteArray buf, int nbyte)
+{
+    jbyte *buf1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "write\n");
+#endif
+
+    if (buf) 
+        buf1 = (*env)->GetByteArrayElements(env, buf, NULL);
+    rc = (jint) write(filedes, (char *)buf, nbyte);
+    if (buf)
+    	(*env)->ReleaseByteArrayElements(env, buf, buf1, 0);
+
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    close
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_close
+  (JNIEnv *env, jclass that, int filedes)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "close\n");
+#endif
+
+    return (jint) close(filedes);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XtAppAddInput
+ * Signature: (IIIII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppAddInput
+  (JNIEnv *env, jclass that, jint app_context, jint source, jint condition, jint proc, jint client_data)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XtAppAddInput\n");
+#endif
+
+    return (jint) XtAppAddInput((XtAppContext)app_context, source, (XtPointer)condition, (XtInputCallbackProc)proc, (XtPointer)client_data);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XtRemoveInput
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtRemoveInput
+  (JNIEnv *env, jclass that, jint id)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XtRemoveInput\n");
+#endif
+
+    XtRemoveInput((XtInputId)id);
+}

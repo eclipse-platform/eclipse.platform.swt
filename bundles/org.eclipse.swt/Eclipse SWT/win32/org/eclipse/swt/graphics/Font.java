@@ -1,8 +1,8 @@
 package org.eclipse.swt.graphics;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.win32.*;
@@ -131,8 +131,13 @@ public boolean equals(Object object) {
  * fonts. To support this case, we return an array of font data objects.
  *
  * @return an array of font data objects describing the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public FontData[] getFontData() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	LOGFONT logFont = new LOGFONT();
 	OS.GetObject(handle, LOGFONT.sizeof, logFont);
 	return new FontData[] {FontData.win32_new(logFont, device.computePoints(logFont))};
@@ -175,6 +180,17 @@ void init (Device device, FontData fd) {
  */
 public boolean isDisposed() {
 	return handle == 0;
+}
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "Font {*DISPOSED*}";
+	return "Font {" + handle + "}";
 }
 
 /**	 

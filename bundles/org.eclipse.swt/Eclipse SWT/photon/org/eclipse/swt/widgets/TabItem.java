@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -53,11 +53,6 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
-public boolean isDisposed () {
-	//NOT DONE - should have a handle or state flag
-	return parent == null;
-}
-
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
@@ -67,6 +62,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	control = null;
 	parent = null;
+	toolTipText = null;
 }
 
 public void setControl (Control control) {

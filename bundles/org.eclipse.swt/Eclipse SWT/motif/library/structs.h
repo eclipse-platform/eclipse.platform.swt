@@ -1,3 +1,8 @@
+/*
+ * (c) Copyright IBM Corp., 2000, 2001
+ * All Rights Reserved.
+ */
+
 /**
  * JNI SWT object field getters and setters declarations for Motif structs
  */
@@ -12,6 +17,7 @@
 #include <X11/Intrinsic.h>
 #include <X11/Shell.h>
 #include <X11/keysym.h>
+#include <X11/extensions/Print.h>
 
 #include <Xm/XmAll.h>
 #include <Mrm/MrmPublic.h>

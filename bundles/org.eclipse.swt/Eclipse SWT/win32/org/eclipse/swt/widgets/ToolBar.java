@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.win32.*;
@@ -13,9 +13,16 @@ import org.eclipse.swt.graphics.*;
  * Instances of this class support the layout of selectable
  * tool bar items.
  * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>ToolItem</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>FLAT, WRAP, RIGHT</dd>
+ * <dd>FLAT, WRAP, RIGHT, HORIZONTAL, VERTICAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
@@ -23,7 +30,6 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
 public class ToolBar extends Composite {
 	ToolItem [] items;
 	ImageList imageList, disabledImageList, hotImageList;
@@ -36,8 +42,45 @@ public class ToolBar extends Composite {
 		ToolBarProc = lpWndClass.lpfnWndProc;
 	}
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	/*
+	* Ensure that either of HORIZONTAL or VERTICAL is set.
+	* NOTE: HORIZONTAL and VERTICAL have the same values
+	* as H_SCROLL and V_SCROLL so it is necessary to first
+	* clear these bits to avoid scroll bars and then reset
+	* the bits using the original style supplied by the
+	* programmer.
+	*/
+	this.style = checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
 int callWindowProc (int msg, int wParam, int lParam) {
@@ -46,6 +89,12 @@ int callWindowProc (int msg, int wParam, int lParam) {
 }
 
 static int checkStyle (int style) {
+	/*
+	* A vertical tool bar cannot wrap because TB_SETROWS
+	* fails when the toobar has TBSTYLE_WRAPABLE.
+	*/
+	if ((style & SWT.VERTICAL) != 0) style &= ~SWT.WRAP;
+	
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
@@ -62,7 +111,9 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	if (layout != null) return super.computeSize (wHint, hHint, changed);
+	if (layout != null) {
+		return super.computeSize (wHint, hHint, changed);
+	}
 	int width = 0, height = 0;
 	RECT oldRect = new RECT ();
 	OS.GetWindowRect (handle, oldRect);
@@ -186,6 +237,9 @@ void createItem (ToolItem item, int index) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	items [item.id = id] = item;
+	if ((style & SWT.VERTICAL) != 0) {
+		OS.SendMessage (handle, OS.TB_SETROWS, count+1, 0);
+	}
 }
 
 void createWidget () {
@@ -232,6 +286,9 @@ void destroyItem (ToolItem item) {
 		}
 		imageList = hotImageList = disabledImageList = null;
 		items = new ToolItem [4];
+	}
+	if ((style & SWT.VERTICAL) != 0) {
+		OS.SendMessage (handle, OS.TB_SETROWS, count-1, 0);
 	}
 }
 
@@ -320,7 +377,7 @@ public int getItemCount () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the items in the receiver

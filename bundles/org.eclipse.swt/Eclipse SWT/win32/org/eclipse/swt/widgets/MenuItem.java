@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
  
 import org.eclipse.swt.internal.*;
@@ -13,7 +13,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent a selectable user interface object
- * that issues notificiation when pressed and released. 
+ * that issues notification when pressed and released. 
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>CHECK, CASCADE, PUSH, RADIO, SEPARATOR</dd>
@@ -98,6 +98,10 @@ public void addHelpListener (HelpListener listener) {
  * be notified when the control is selected, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * When <code>widgetSelected</code> is called, the stateMask field of the event object is valid.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -111,6 +115,7 @@ public void addHelpListener (HelpListener listener) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
@@ -582,7 +587,14 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		setSelection (!getSelection ());
 	}
-	postEvent (SWT.Selection);
+	Event event = new Event ();
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if (OS.GetKeyState (OS.VK_SHIFT) < 0) event.stateMask |= SWT.SHIFT;
+	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.CONTROL;
+	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
+	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
+	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
+	postEvent (SWT.Selection, event);
 	return null;
 }
 

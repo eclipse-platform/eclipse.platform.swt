@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
  
 import org.eclipse.swt.internal.*;
@@ -93,7 +93,6 @@ public Rectangle getBounds (int index) {
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
  * the <code>CHECK style, return false.
- * <p>
  *
  * @return the checked state
  *
@@ -126,7 +125,6 @@ public Display getDisplay () {
  * Returns <code>true</code> if the receiver is grayed,
  * and false otherwise. When the parent does not have
  * the <code>CHECK style, return false.
- * <p>
  *
  * @return the grayed state
  *
@@ -214,7 +212,7 @@ public Rectangle getImageBounds (int index) {
 
 /**
  * Gets the image indent.
- * <p>
+ *
  * @return the indent
  *
  * @exception SWTException <ul>
@@ -287,7 +285,6 @@ void releaseWidget () {
 
 /**
  * Sets the checked state of the receiver.
- * <p>
  *
  * @param checked the new checked state
  *
@@ -321,7 +318,6 @@ public void setChecked (boolean checked) {
 
 /**
  * Sets the grayed state of the receiver.
- * <p>
  *
  * @param checked the new grayed state
  *
@@ -422,7 +418,7 @@ public void setImage (Image image) {
 
 /**
  * Sets the image indent.
- * <p>
+ *
  * @param indent the new indent
  *
  * </ul>

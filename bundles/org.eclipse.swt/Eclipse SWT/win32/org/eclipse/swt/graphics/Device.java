@@ -1,8 +1,8 @@
 package org.eclipse.swt.graphics;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
  
 import org.eclipse.swt.internal.*;
@@ -21,12 +21,45 @@ public abstract class Device implements Drawable {
 	/* Palette */
 	public int hPalette = 0;
 	int [] colorRefCount;
+	
+	/* System Font */
+	int systemFont;
 
 	/* Font Enumeration */
 	int nFonts = 256;
 	LOGFONT [] logFonts;
 
 	boolean disposed;
+	
+	/*
+	* TEMPORARY CODE. When a graphics object is
+	* created and the device parameter is null,
+	* the current Display is used. This presents
+	* a problem because SWT graphics does not
+	* reference classes in SWT widgets. The correct
+	* fix is to remove this feature. Unfortunately,
+	* too many application programs rely on this
+	* feature.
+	*
+	* This code will be removed in the future.
+	*/
+	protected static Device CurrentDevice;
+	protected static Runnable DeviceFinder;
+	static {
+		try {
+			Class.forName ("org.eclipse.swt.widgets.Display");
+		} catch (Throwable e) {}
+	}	
+
+/*
+* TEMPORARY CODE.
+*/
+static Device getDevice () {
+	if (DeviceFinder != null) DeviceFinder.run();
+	Device device = CurrentDevice;
+	CurrentDevice = null;
+	return device;
+}
 	
 /**
  * Constructs a new instance of this class.
@@ -41,33 +74,19 @@ public abstract class Device implements Drawable {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	create (data);
-	init ();
 	if (data != null) {
 		debug = data.debug;
 		tracking = data.tracking;
 	}
+	create (data);
+	init ();
 	if (tracking) {
 		errors = new Error [128];
 		objects = new Object [128];
 	}
-}
-
-/*
- * Temporary code.
- */	
-static Device getDevice () {
-	Device device = null;
-	try {
-		Class clazz = Class.forName ("org.eclipse.swt.widgets.Display");
-		java.lang.reflect.Method method = clazz.getMethod("getCurrent", new Class[0]);
-		device = (Device) method.invoke(clazz, new Object[0]);
-		if (device == null) {
-			method = clazz.getMethod("getDefault", new Class[0]);
-			device = (Device)method.invoke(clazz, new Object[0]);
-		}
-	} catch (Throwable e) {};
-	return device;
+	
+	/* Initialize the system font slot */
+	systemFont = getSystemFont().handle;
 }
 
 /**
@@ -279,7 +298,6 @@ public DeviceData getDeviceData () {
  * </ul>
  *
  * @see #getBounds
- * @see #computeTrim
  */
 public Rectangle getClientArea () {
 	return getBounds ();

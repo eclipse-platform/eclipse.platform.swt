@@ -1,15 +1,15 @@
 package org.eclipse.swt.dnd;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+ 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 
-/*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
- */
- 
 /**
  *
  * Class <code>DragSource</code> defines the source object for a drag and drop transfer.
@@ -84,11 +84,20 @@ public class DragSource extends Widget {
 	private Control control;
 	private Listener controlListener;
 	private Transfer[] transferAgents = new Transfer[0];
-
-	private boolean myDrag;
+	
+	private boolean moveRequested;
 
 	int dragContext;
 
+/**
+ * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
+ * 
+ * @param control the <code>Control</code> that the user clicks on to initiate the drag
+ *
+ * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
+ *					DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
+ *
+ */
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
 	
@@ -117,18 +126,15 @@ public DragSource(Control control, int style) {
 	});
 }
 /**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+ * Adds the listener to receive events.
+ *
+ * @param listener the listener
+ *
+ * @exception SWTError 
+ *	<ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ * 		<li>ERROR_WIDGET_DISPOSED  when the widget has been disposed</li>
+ * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ */
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
@@ -166,6 +172,7 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 
 	//  handle the "Move" case
 	if (target[0] == Transfer.registerType("DELETE\0")) { // DELETE corresponds to a Move request
+		moveRequested = true;
 		OS.memmove(pType_return,new int[]{Transfer.registerType("NULL\0")}, 4);
 		OS.memmove(ppValue_return, new int[]{0}, 4);
 		OS.memmove(pLength_return, new int[]{0}, 4);
@@ -240,13 +247,10 @@ private void drag() {
 	}
 
 	if (!event.doit) { 
-		int time = display.xEvent.pad2; // corresponds to time field in XButtonEvent
-		int[] args = new int[]{	OS.XmNdragOperations,	OS.XmDROP_NOOP};	
+		int time = display.xEvent.pad2; // corresponds to time field in XButtonEvent	
 		int dc = OS.XmGetDragContext(control.handle, time);
 		if (dc != 0){
-			OS.XtSetValues(dc, args, args.length /2);
-		} else {			
-			dc = OS.XmDragStart(this.control.handle, display.xEvent, args, args.length/2);
+			OS.XmDragCancel(dc);
 		}
 		return;
 	}
@@ -296,7 +300,6 @@ private void drag() {
 		OS.XtSetValues(dragContext, args, args.length /2);
 	} else {
 		dragContext = OS.XmDragStart(this.control.handle, display.xEvent, args, args.length / 2);
-		myDrag = true;
 	}
 	OS.XtFree(pExportTargets);
 	if (dragContext == 0) return;
@@ -352,7 +355,16 @@ private int dropFinishCallback(int widget, int client_data, int call_data) {
 	DNDEvent event = new DNDEvent();
 	event.widget = this.control;
 	event.time = data.timeStamp;
-	event.detail = osOpToOp(data.operation);
+	if (moveRequested) {
+		event.detail = DND.DROP_MOVE;
+	} else {
+		if (data.operation == OS.XmDROP_MOVE) {
+			event.detail = DND.DROP_NONE;
+		} else {
+			event.detail = osOpToOp(data.operation);
+		}
+		
+	}
 	event.doit = (data.completionStatus != 0);
 
 	try {
@@ -360,8 +372,16 @@ private int dropFinishCallback(int widget, int client_data, int call_data) {
 	} catch (Throwable err) {
 	}
 	
+	moveRequested = false;
+	
 	return 0;
 }
+/**
+ * Returns the Control which is registered for this DragSource.  This is the control that the 
+ * user clicks in to initiate dragging.
+ *
+ * @return the Control which is registered for this DragSource
+ */
 public Control getControl () {
 	return control;
 }
@@ -373,15 +393,15 @@ public Display getDisplay () {
 	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	return control.getDisplay ();
 }
+/**
+ * Returns the list of data types that can be transferred by this DragSource.
+ *
+ * @return the list of data types that can be transferred by this DragSource
+ */
 public Transfer[] getTransfer(){
 	return transferAgents;
 }
 private void onDispose() {
-
-	// Check if there is a drag in progress and cancel it
-	//if (dragContext != 0 && myDrag)
-	//	OS.XmDragCancel(dragContext);
-		
 	if (convertProc != null)
 		convertProc.dispose();
 	convertProc = null;
@@ -427,24 +447,26 @@ private int osOpToOp(byte osOperation){
 	return operation;
 }
 /**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
+ * @exception SWTError
+ *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
+ * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ */
 public void removeDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener (DND.DragStart, listener);
 	removeListener (DND.DragSetData, listener);
 	removeListener (DND.DragEnd, listener);
 }
+/**
+ * Specifies the list of data types that can be transferred by this DragSource.
+ * The application must be able to provide data to match each of these types when
+ * a successful drop has occurred.
+ */
 public void setTransfer(Transfer[] transferAgents){
 	this.transferAgents = transferAgents;
 }

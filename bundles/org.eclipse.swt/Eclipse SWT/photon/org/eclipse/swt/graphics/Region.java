@@ -1,8 +1,8 @@
 package org.eclipse.swt.graphics;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.photon.*;
@@ -27,6 +27,7 @@ Region(int handle) {
 
 
 public void add (Rectangle rect) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (handle == 0) return;
 	int tile_ptr = OS.PhGetTile();
@@ -41,6 +42,7 @@ public void add (Rectangle rect) {
 }
 
 public void add (Region region) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (handle == 0) return;
 	if (region.handle == 0 || region.handle == EMPTY_REGION) return;
@@ -50,6 +52,7 @@ public void add (Region region) {
 }
 
 public boolean contains (int x, int y) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (handle == 0 || handle == EMPTY_REGION) return false;
 	int tile_ptr = OS.PhGetTile();
 	PhTile_t tile = new PhTile_t();
@@ -82,6 +85,7 @@ public boolean equals (Object object) {
 }
 
 public Rectangle getBounds() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (handle == 0 || handle == EMPTY_REGION) return new Rectangle(0, 0, 0, 0);
 	PhTile_t tile = new PhTile_t();
 	int temp_tile;
@@ -105,6 +109,7 @@ public int hashCode () {
 }
 
 public boolean intersects (int x, int y, int width, int height) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (handle == 0 || handle == EMPTY_REGION) return false;
 	int tile_ptr = OS.PhGetTile();
 	PhTile_t tile = new PhTile_t();
@@ -137,17 +142,9 @@ public boolean isEmpty () {
 public static Region photon_new(int handle) {
 	return new Region(handle);
 }
-/*
-public static void printTile(int tile_ptr, String msg) {
-	if (tile_ptr == 0) return;
-	PhTile_t tile = new PhTile_t();
-	int temp_tile = tile_ptr;
-	int count = 0;
-	do {
-		OS.memmove(tile, temp_tile, PhTile_t.sizeof);
-		System.out.println(msg + "-" + count++ + " address=" + temp_tile + " x1=" + tile.rect_ul_x + " y1=" + tile.rect_ul_y + " x2=" + tile.rect_lr_x + " y2=" + tile.rect_lr_y);
-		temp_tile = tile.next;
-	} while (temp_tile != 0);
+
+public String toString () {
+	if (isDisposed()) return "Region {*DISPOSED*}";
+	return "Region {" + handle + "}";
 }
-*/
 }

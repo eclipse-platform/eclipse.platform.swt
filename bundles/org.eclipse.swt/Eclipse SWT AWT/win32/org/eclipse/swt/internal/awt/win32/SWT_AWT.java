@@ -1,5 +1,10 @@
 package org.eclipse.swt.internal.awt.win32;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
 /* Win32, SUN AWT */
 import sun.awt.DrawingSurface;
 import sun.awt.windows.WDrawingSurfaceInfo;
@@ -20,11 +25,6 @@ import java.awt.Panel;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-
-/*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
- */
 
 public class SWT_AWT {
 

@@ -1,12 +1,10 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
-*/
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
 
-/* Imports */
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 
@@ -14,19 +12,54 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
-*	A label is a non-selectable user interface object
-* that represents displays a static value.
-*
-* <b>Styles</b><br>
-* <dd>SEPARATOR, HORIZONTAL, VERTICAL, SHADOW_IN, SHADOW_OUT<br>
-*/
+ * Instances of this class represent a non-selectable
+ * user interface object that displays a string or image.
+ * When SEPARATOR is specified, displays a single
+ * vertical or horizontal line.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>SEPARATOR, HORIZONTAL, SHADOW_IN, SHADOW_OUT, VERTICAL</dd>
+ * <dd>CENTER, LEFT, RIGHT, WRAP</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is intended to be subclassed <em>only</em>
+ * within the SWT implementation.
+ * </p>
+ */
 
-/* Class Definition */
 public /*final*/ class Label extends Control {
+	String text = "";
 	Image image, bitmap, disabled;
 /**
-* Creates a new instance of the widget.
-*/
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -34,9 +67,6 @@ static int checkStyle (int style) {
 	if ((style & SWT.SEPARATOR) != 0) return style;
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
-/**
-* Computes the preferred size.
-*/
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -52,31 +82,46 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
 		return new Point (width, height);
 	}
-	XtWidgetGeometry result = new XtWidgetGeometry ();
-	result.request_mode = OS.CWWidth | OS.CWHeight;
-	int [] argList2 = {OS.XmNrecomputeSize, 1};
-	OS.XtSetValues(handle, argList2, argList2.length / 2);
-	OS.XtQueryGeometry (handle, null, result);
-	int [] argList3 = {OS.XmNrecomputeSize, 0};
-	OS.XtSetValues(handle, argList3, argList3.length / 2);
-	width += result.width;
-	height += result.height;
+	int [] argList = {OS.XmNlabelType, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int labelType = argList [1];
+	if (labelType == OS.XmSTRING && (style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+		/* If we are wrapping text, calculate the height based on wHint. */
+		int [] argList4 = {
+			OS.XmNfontList, 0,      /* 1 */
+			OS.XmNmarginTop, 0,     /* 3 */
+			OS.XmNmarginBottom, 0,  /* 5 */
+			OS.XmNmarginHeight, 0,  /* 7 */
+		};
+		OS.XtGetValues (handle, argList4, argList4.length / 2);
+		Display display = getDisplay ();
+		String string = display.wrapText (text, argList4 [1], wHint);
+		GC gc = new GC(this);
+		Point extent = gc.textExtent(string);
+		gc.dispose();
+		height = extent.y + argList4 [3] + argList4 [5] + argList4 [7] * 2 + border * 2;
+	} else {
+		/* If we are not wrapping, ask the widget for its geometry. */
+		XtWidgetGeometry result = new XtWidgetGeometry ();
+		result.request_mode = OS.CWWidth | OS.CWHeight;
+		int [] argList2 = {OS.XmNrecomputeSize, 1};
+		OS.XtSetValues(handle, argList2, argList2.length / 2);
+		OS.XtQueryGeometry (handle, null, result);
+		int [] argList3 = {OS.XmNrecomputeSize, 0};
+		OS.XtSetValues(handle, argList3, argList3.length / 2);
+		width += result.width;
+		height += result.height;
+	}
+
 	/**
-	 * Feature in Motif. If a button's labelType is XmSTRING but it
+	 * Feature in Motif. If a label's labelType is XmSTRING but it
 	 * has no label set into it yet, recomputing the size will
 	 * not take into account the height of the font, as we would
 	 * like it to. Take care of this case.
 	 */
-	int [] argList = {OS.XmNlabelType, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] == OS.XmSTRING) {
-		int [] argList1 = {OS.XmNlabelString, 0};
-		OS.XtGetValues (handle, argList1, argList1.length / 2);
-		int xmString = argList1 [1];
-		if (OS.XmStringEmpty (xmString)) {
-			height += getFontHeight ();
-			width = 0;
-		}
+	if (labelType == OS.XmSTRING && text.length () == 0) {
+		height += getFontHeight ();
+		width = 0;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
@@ -84,16 +129,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
+	int parentHandle = parent.handle;
 	int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
 	if ((style & SWT.SEPARATOR) != 0) {
 		int separatorType = separatorType ();
 		int orientation = (style & SWT.HORIZONTAL) != 0 ? OS.XmHORIZONTAL : OS.XmVERTICAL;
 		int [] argList = {
+			OS.XmNancestorSensitive, 1,
 			OS.XmNborderWidth, borderWidth,
 			OS.XmNorientation, orientation,
 			OS.XmNseparatorType, separatorType,
 		};
-		handle = OS.XmCreateSeparator (parent.handle, null, argList, argList.length / 2);
+		handle = OS.XmCreateSeparator (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
@@ -101,11 +148,12 @@ void createHandle (int index) {
 	if ((style & SWT.CENTER) != 0) alignment = OS.XmALIGNMENT_CENTER;
 	if ((style & SWT.RIGHT) != 0) alignment = OS.XmALIGNMENT_END;
 	int [] argList = {
+		OS.XmNancestorSensitive, 1,
 		OS.XmNrecomputeSize, 0,
 		OS.XmNalignment, alignment,
 		OS.XmNborderWidth, borderWidth,
 	};
-	handle = OS.XmCreateLabel (parent.handle, null, argList, argList.length / 2);
+	handle = OS.XmCreateLabel (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 int defaultBackground () {
@@ -118,15 +166,19 @@ int defaultForeground () {
 	return getDisplay ().labelForeground;
 }
 /**
-* Gets the alignment.
-* <p>
-* @return the alignment
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns a value which describes the position of the
+ * text or image in the receiver. The value will be one of
+ * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
+ * unless the receiver is a <code>SEPARATOR</code> label, in 
+ * which case, <code>NONE</code> is returned.
+ *
+ * @return the alignment 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getAlignment () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -140,15 +192,16 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 /**
-* Gets the widget image.
-* <p>
-* @return the widget image
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's image if it has one, or null
+ * if it does not.
+ *
+ * @return the receiver's image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Image getImage () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -158,62 +211,22 @@ String getNameText () {
 	return getText ();
 }
 /**
-* Gets the widget text.
-* <p>
-* @return the widget text
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's text, which will be an empty
+ * string if it has never been set or if the receiver is
+ * a <code>SEPARATOR</code> label.
+ *
+ * @return the receiver's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return "";
-	int [] argList = {OS.XmNlabelString, 0, OS.XmNmnemonic, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int xmString = argList [1], mnemonic = argList [3];
-	if (xmString == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
-	char [] result = null;
-	int [] parseTable = getDisplay ().parseTable;
-	int address = OS.XmStringUnparse (
-		xmString,
-		null,
-		OS.XmCHARSET_TEXT,
-		OS.XmCHARSET_TEXT,
-		parseTable,
-		parseTable.length,
-		OS.XmOUTPUT_ALL);
-	if (address != 0) {
-		int length = OS.strlen (address);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, address, length);
-		OS.XtFree (address);
-		result = Converter.mbcsToWcs (null, buffer);
-	}
-	if (xmString != 0) OS.XmStringFree (xmString);
-	int count = 0;
-	if (mnemonic != 0) count++;
-	for (int i=0; i<result.length-1; i++)
-		if (result [i] == Mnemonic) count++;
-	char [] newResult = result;
-	if ((count != 0) || (mnemonic != 0)) {
-		newResult = new char [result.length + count];
-		int i = 0, j = 0;
-		while (i < result.length) {
-			if ((mnemonic != 0) && (result [i] == mnemonic)) {
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-				mnemonic = 0;
-			}
-			if ((newResult [j++] = result [i++]) == Mnemonic)
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-		}
-	}
-	return new String (newResult);
-}
-boolean getWrap () {
-	return false;
+	return text;
 }
 boolean mnemonicHit () {
 	Composite control = this.parent;
@@ -237,15 +250,15 @@ boolean mnemonicMatch (char key) {
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
-void propagateHandle (boolean enabled, int widgetHandle) {
-	super.propagateHandle (enabled, widgetHandle);
+void propagateWidget (boolean enabled) {
+	super.propagateWidget (enabled);
 	/*
 	* Labels never participate in focus traversal when
 	* either enabled or disabled.
 	*/
 	if (enabled) {
 		int [] argList = {OS.XmNtraversalOn, 0};
-		OS.XtSetValues (widgetHandle, argList, argList.length / 2);
+		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
 }
 void releaseWidget () {
@@ -265,15 +278,18 @@ int separatorType () {
 	return OS.XmSHADOW_ETCHED_IN;
 }
 /**
-* Sets the alignment.
-* <p>
-* @param aligment
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Controls how text and images will be displayed in the receiver.
+ * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
+ * or <code>CENTER</code>.  If the receiver is a <code>SEPARATOR</code>
+ * label, the argument is ignored and the alignment is not changed.
+ *
+ * @param alignment the new alignment 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setAlignment (int alignment) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -326,64 +342,93 @@ void setBitmap (Image image) {
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
+public void setBounds (int x, int y, int width, int height) {
+	super.setBounds (x, y, width, height);
+	if ((style & SWT.WRAP) != 0) setText (text);
+}
+public void setFont (Font font) {
+	super.setFont (font);
+	if ((style & SWT.WRAP) != 0) setText (text);
+}
 /**
-* Sets the widget image.
-* <p>
-* @param image the widget image (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's image to the argument, which may be
+ * null indicating that no image should be displayed.
+ *
+ * @param image the image to display on the receiver (may be null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	setBitmap (this.image = image);
 }
+public void setSize (int width, int height) {
+	super.setSize (width, height);
+	if ((style & SWT.WRAP) != 0) setText (text);
+}
 /**
-* Set the widget text.
-*
-* PARAMETERS
-*
-* 	string - the new label for the widget
-*
-* REMARKS
-*
-*	This method sets the widget label.  The label may include
-* the mnemonic characters and line delimiters.
-*
-**/
-/**
-* Sets the widget text.
-* <p>
-* @param string the widget text
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when string is null
-*/
+ * Sets the receiver's text.
+ * <p>
+ * This method sets the widget label.  The label may include
+ * the mnemonic characters and line delimiters.
+ * </p>
+ * 
+ * @param string the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	char [] text = new char [string.length ()];
-	string.getChars (0, text.length, text, 0);
+	text = string;
+	
+	/* Strip out mnemonic marker symbols, and remember the mnemonic. */
+	char [] unicode = new char [string.length ()];
+	string.getChars (0, unicode.length, unicode, 0);
 	int i=0, j=0, mnemonic=0;
-	while (i < text.length) {
-		if ((text [j++] = text [i++]) == Mnemonic) {
-			if (i == text.length) {continue;}
-			if (text [i] == Mnemonic) {i++; continue;}
-			if (mnemonic == 0) mnemonic = text [i];
+	while (i < unicode.length) {
+		if ((unicode [j++] = unicode [i++]) == Mnemonic) {
+			if (i == unicode.length) {continue;}
+			if (unicode [i] == Mnemonic) {i++; continue;}
+			if (mnemonic == 0) mnemonic = unicode [i];
 			j--;
 		}
 	}
-	while (j < text.length) text [j++] = 0;
-	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	while (j < unicode.length) unicode [j++] = 0;
+	
+	/* Wrap the text if necessary, and convert to mbcs. */
+	byte [] buffer;
+	if ((style & SWT.WRAP) != 0) {
+		int [] argList = {
+			OS.XmNfontList, 0,     /* 1 */
+			OS.XmNwidth, 0,        /* 3 */
+			OS.XmNmarginLeft, 0,   /* 5 */
+			OS.XmNmarginRight, 0,  /* 7 */
+			OS.XmNborderWidth, 0,  /* 9 */
+			OS.XmNmarginWidth, 0,  /* 11 */
+		};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int width = argList [3] - argList [5] - argList [7] - argList [9] * 2 - argList [11] * 2;
+		Display display = getDisplay ();
+		if (mnemonic != 0) string = new String(unicode);
+		string = display.wrapText (string, argList [1], width);
+		buffer = Converter.wcsToMbcs (null, string, true);
+	} else {
+		buffer = Converter.wcsToMbcs (null, unicode, true);
+	}
+	
 	int [] parseTable = getDisplay ().parseTable;
 	int xmString = OS.XmStringParseText (
 		buffer,
@@ -394,6 +439,7 @@ public void setText (String string) {
 		parseTable.length,
 		0);
 	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
 	int [] argList = {
 		OS.XmNlabelType, OS.XmSTRING,
 		OS.XmNlabelString, xmString,
@@ -401,8 +447,5 @@ public void setText (String string) {
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	if (xmString != 0) OS.XmStringFree (xmString);
-}
-void setWrap (boolean wrap) {
-	// NOT DONE
 }
 }

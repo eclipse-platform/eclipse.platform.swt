@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.photon.*;
@@ -15,6 +15,20 @@ public /*final*/ class ToolBar extends Composite {
 
 public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
+
+	/*
+	* Ensure that either of HORIZONTAL or VERTICAL is set.
+	* NOTE: HORIZONTAL and VERTICAL have the same values
+	* as H_SCROLL and V_SCROLL so it is necessary to first
+	* clear these bits to avoid scroll bars and then reset
+	* the bits using the original style supplied by the
+	* programmer.
+	*/
+	this.style = checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
+	int [] args = {
+		OS.Pt_ARG_ORIENTATION, (style & SWT.VERTICAL) == 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL, 0,
+	};
+	OS.PtSetResources(handle, args.length / 3, args);
 }
 static int checkStyle (int style) {
 	/*
@@ -52,10 +66,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	Display display = getDisplay ();
 	int parentHandle = parent.handle;
 	
 	int [] args = {
+		OS.Pt_ARG_FLAGS, hasBorder () ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
+		OS.Pt_ARG_TOOLBAR_FLAGS, 0, OS.Pt_TOOLBAR_DRAGGABLE | OS.Pt_TOOLBAR_END_SEPARATOR,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (OS.PtToolbar (), parentHandle, args.length / 3, args);
@@ -146,6 +163,7 @@ void releaseWidget () {
 		ToolItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
 			item.releaseWidget ();
+			item.releaseHandle ();
 		}
 	}
 	items = null;

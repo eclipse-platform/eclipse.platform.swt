@@ -1,5 +1,8 @@
 @echo off
 
+rem  (c) Copyright IBM Corp., 2000, 2001
+rem  All Rights Reserved.
+
 IF NOT "%JAVA_HOME%"=="" GOTO MAKE
 
 rem *****

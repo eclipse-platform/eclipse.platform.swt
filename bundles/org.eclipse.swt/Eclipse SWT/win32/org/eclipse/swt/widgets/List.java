@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -36,9 +36,35 @@ public class List extends Scrollable {
 		OS.GetClassInfoEx (0, ListClass, lpWndClass);
 		ListProc = lpWndClass.lpfnWndProc;
 	}
+
 /**
-* Creates a new instance of the widget.
-*/
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -118,6 +144,10 @@ public void add (String string, int index) {
  * be notified when the receiver's selection changes, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the selection changes.
+ * <code>widgetDefaultSelected</code> is typically called when an item is double-clicked.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -131,6 +161,7 @@ public void add (String string, int index) {
  *
  * @see SelectionListener
  * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget ();
@@ -149,9 +180,6 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
-/**
-* Computes the preferred size.
-*/
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
@@ -389,6 +417,9 @@ public String getItem (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure</li>
+ * </ul>
  */
 public int getItemCount () {
 	checkWidget ();
@@ -407,6 +438,9 @@ public int getItemCount () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_ITEM_HEIGHT - if the operation fails because of an operating system failure</li>
+ * </ul>
  */
 public int getItemHeight () {
 	checkWidget ();
@@ -421,7 +455,7 @@ public int getItemHeight () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the items in the receiver's list
@@ -431,7 +465,8 @@ public int getItemHeight () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure while getting an item</li>
+ *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure while getting the item count</li>
  * </ul>
  */
 public String [] getItems () {
@@ -449,13 +484,17 @@ public String [] getItems () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  * @return an array representing the selection
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_SELECTION - if the operation fails because of an operating system failure while getting the selection</li>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure while getting an item</li>
  * </ul>
  */
 public String [] getSelection () {
@@ -476,6 +515,9 @@ public String [] getSelection () {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public int getSelectionCount () {
@@ -499,6 +541,9 @@ public int getSelectionCount () {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_SELECTION - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public int getSelectionIndex () {
@@ -525,13 +570,16 @@ public int getSelectionIndex () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  * @return the array of indices of the selected items
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_SELECTION - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public int [] getSelectionIndices () {
@@ -567,22 +615,24 @@ public int getTopIndex () {
 }
 
 /**
-* Gets the index of an item.
-* <p>
-* The list is searched starting at 0 until an
-* item is found that is equal to the search item.
-* If no item is found, -1 is returned.  Indexing
-* is zero based.
-*
-* @param string the search item
-* @return the index of the item
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-*		<li>ERROR_NULL_ARGUMENT when string is null</li>
-*	</ul>
-*/
+ * Gets the index of an item.
+ * <p>
+ * The list is searched starting at 0 until an
+ * item is found that is equal to the search item.
+ * If no item is found, -1 is returned.  Indexing
+ * is zero based.
+ *
+ * @param string the search item
+ * @return the index of the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int indexOf (String string) {
 	checkWidget ();
 	return indexOf (string, 0);
@@ -604,6 +654,10 @@ public int indexOf (String string) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure while getting the item count</li>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure while getting an item</li>
  * </ul>
  */
 public int indexOf (String string, int start) {
@@ -678,6 +732,7 @@ public void remove (int [] indices) {
 	int [] newIndices = new int [indices.length];
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
 	sort (newIndices);
+	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	int topIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	RECT rect = null;
 	int hDC = 0, oldFont = 0, newFont = 0, newWidth = 0;
@@ -688,7 +743,7 @@ public void remove (int [] indices) {
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	}
 	byte [] buffer = null;
-	int i = 0, count = 0, last = -1;
+	int i = 0, topCount = 0, last = -1;
 	while (i < newIndices.length) {
 		int index = newIndices [i];
 		if (index != last || i == 0) {
@@ -706,7 +761,7 @@ public void remove (int [] indices) {
 				OS.DrawText (hDC, buffer, -1, rect, flags);
 				newWidth = Math.max (newWidth, rect.right - rect.left);
 			}
-			if (index < topIndex) count++;
+			if (index < topIndex) topCount++;
 			last = index;
 		}
 		i++;
@@ -716,11 +771,15 @@ public void remove (int [] indices) {
 		OS.ReleaseDC (handle, hDC);
 		setScrollWidth (newWidth, false);
 	}
-	if (count > 0) {
-		topIndex -= count;
+	if (topCount > 0) {
+		topIndex -= topCount;
 		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
 	}
-	if (i < newIndices.length) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	if (i < newIndices.length) {
+		int index = newIndices [i];
+		if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 }
 
 /**
@@ -785,6 +844,7 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
+	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	int topIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	RECT rect = null;
 	int hDC = 0, oldFont = 0, newFont = 0, newWidth = 0;
@@ -822,7 +882,10 @@ public void remove (int start, int end) {
 		topIndex -= end - start + 1;
 		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
 	}
-	if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	if (index <= end) {
+		if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 }
 
 /**

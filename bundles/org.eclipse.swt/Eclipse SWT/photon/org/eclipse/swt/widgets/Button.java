@@ -1,8 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.internal.*;
@@ -41,6 +41,37 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+void click () {
+	int rid = OS.PtWidgetRid (handle);
+	if (rid == 0) return;
+	PhEvent_t event = new PhEvent_t ();
+	event.emitter_rid = rid;
+	event.emitter_handle = handle;
+	event.collector_rid = rid;
+	event.collector_handle = handle;
+	event.flags = OS.Ph_EVENT_DIRECT;
+	event.processing_flags = OS.Ph_FAKE_EVENT;
+	event.type = OS.Ph_EV_BUT_PRESS;
+	event.num_rects = 1;
+	PhPointerEvent_t pe = new PhPointerEvent_t ();
+	pe.click_count = 1;
+	pe.buttons = OS.Ph_BUTTON_SELECT;
+	PhRect_t rect = new PhRect_t ();
+	int ptr = OS.malloc (PhEvent_t.sizeof + PhPointerEvent_t.sizeof + PhRect_t.sizeof);
+	OS.memmove (ptr, event, PhEvent_t.sizeof);
+	OS.memmove (ptr + PhEvent_t.sizeof,  rect, PhRect_t.sizeof);
+	OS.memmove (ptr + PhEvent_t.sizeof + PhRect_t.sizeof, pe, PhPointerEvent_t.sizeof);
+	OS.PtSendEventToWidget (handle, ptr);	
+	OS.PtFlush ();
+	event.type = OS.Ph_EV_BUT_RELEASE;
+	event.subtype = OS.Ph_EV_RELEASE_REAL;
+	OS.memmove (ptr, event, PhEvent_t.sizeof);
+	OS.memmove (ptr + PhEvent_t.sizeof,  rect, PhRect_t.sizeof);
+	OS.memmove (ptr + PhEvent_t.sizeof + PhRect_t.sizeof, pe, PhPointerEvent_t.sizeof);
+	OS.PtSendEventToWidget (handle, ptr);	
+	OS.free (ptr);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -58,18 +89,32 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.PtWidgetPreferredSize(handle, dim);
 	width = dim.w; height = dim.h;
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
+		int [] args = {
+			OS.Pt_ARG_MARGIN_WIDTH, 0, 0,	// 1
+			OS.Pt_ARG_MARGIN_HEIGHT, 0, 0,	// 4
+			OS.Pt_ARG_MARGIN_LEFT, 0, 0,	// 7
+			OS.Pt_ARG_MARGIN_RIGHT, 0, 0,	// 10
+			OS.Pt_ARG_MARGIN_TOP, 0, 0,		// 13
+			OS.Pt_ARG_MARGIN_BOTTOM, 0, 0,	// 16
+		};
+		OS.PtGetResources (handle, args.length / 3, args);
 		PhRect_t rect = new PhRect_t ();
 		PhArea_t area = new PhArea_t ();
 		rect.lr_x = (short) (wHint - 1);
 		rect.lr_y = (short) (hHint - 1);
 		OS.PtSetAreaFromWidgetCanvas (handle, rect, area);
-		if (wHint != SWT.DEFAULT) width = area.size_w;
-		if (hHint != SWT.DEFAULT) height = area.size_h;
+		if (wHint != SWT.DEFAULT) {
+			width = area.size_w + (args [1] * 2) + args [7] + args [10];
+		}
+		if (hHint != SWT.DEFAULT) {
+			height = area.size_h + (args [4] * 2) + args [13] + args [16];
+		}
 	}
 	return new Point (width, height);
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	Display display = getDisplay ();
 	int parentHandle = parent.handle;
 		
@@ -195,6 +240,11 @@ void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
 	OS.PtAddCallback (handle, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
+}
+
+int processActivate (int info) {
+	if (setFocus ()) click ();
+	return OS.Pt_CONTINUE;
 }
 
 int processPaint (int damage) {
@@ -324,6 +374,7 @@ public void setText (String string) {
 		ptr2 = OS.malloc (buffer2.length);
 		OS.memmove (ptr2, buffer2, buffer2.length);
 	}
+	replaceMnemonic (mnemonic, 0);
 	int [] args = {
 		OS.Pt_ARG_TEXT_STRING, ptr, 0,
 		OS.Pt_ARG_LABEL_TYPE, OS.Pt_Z_STRING, 0,

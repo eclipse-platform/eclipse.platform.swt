@@ -1,41 +1,84 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
-*/
-
-/**
-*	A display is the class used to represent a group of widgets
-* that are all running in a single thread.  Display's implement
-* event dispatching and a synchronous/asynchronous communication
-* mechanism to allow widgets in this thread to be accessed from
-* another thread.
-*
-*	A typical application will use multiple threads, but only
-* one display, and therefore only one thread that can directly
-* access widgets.  Other threads are typically used to compute
-* a value and communuicate the result to the widget thread.
-* Often, the widget thread will present a user interface that
-* allows the user to cancel or restart a computation.  When a
-* computation is performed in the widget thread, events for
-* that thread are not dispatch because the widget thread is
-* doing the compuation, not dispatching the events.  In this
-* case, widgets in the thread will not redraw and will not be
-* selectable by the user.  On some platforms, the entire user
-* interface for every running program becomes locked.  For
-* this reason, it is advisable to run only short computations
-* in the widget thread.
-*
-*
-**/
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
+/**
+ * Instances of this class are responsible for managing the
+ * connection between SWT and the underlying operating
+ * system. Their most important function is to implement
+ * the SWT event loop in terms of the platform event model.
+ * They also provide various methods for accessing information
+ * about the operating system, and have overall control over
+ * the operating system resources which SWT allocates.
+ * <p>
+ * Applications which are built with SWT will <em>almost always</em>
+ * require only a single display. In particular, some platforms
+ * which SWT supports will not allow more than one <em>active</em>
+ * display. In other words, some platforms do not support
+ * creating a new display if one already exists that has not been
+ * sent the <code>dispose()</code> message.
+ * <p>
+ * In SWT, the thread which creates a <code>Display</code>
+ * instance is distinguished as the <em>user-interface thread</em>
+ * for that display.
+ * </p>
+ * The user-interface thread for a particular display has the
+ * following special attributes:
+ * <ul>
+ * <li>
+ * The event loop for that display must be run from the thread.
+ * </li>
+ * <li>
+ * Some SWT API methods (notably, most of the public methods in
+ * <code>Widget</code> and its subclasses), may only be called
+ * from the thread. (To support multi-threaded user-interface
+ * applications, class <code>Display</code> provides inter-thread
+ * communication methods which allow threads other than the 
+ * user-interface thread to request that it perform operations
+ * on their behalf.)
+ * </li>
+ * <li>
+ * The thread is not allowed to construct other 
+ * <code>Display</code>s until that display has been disposed.
+ * (Note that, this is in addition to the restriction mentioned
+ * above concerning platform support for multiple displays. Thus,
+ * the only way to have multiple simultaneously active displays,
+ * even on platforms which support it, is to have multiple threads.)
+ * </li>
+ * </ul>
+ * Enforcing these attributes allows SWT to be implemented directly
+ * on the underlying operating system's event model. This has 
+ * numerous benefits including smaller footprint, better use of 
+ * resources, safer memory management, clearer program logic,
+ * better performance, and fewer overall operating system threads
+ * required. The down side however, is that care must be taken
+ * (only) when constructing multi-threaded applications to use the
+ * inter-thread communication mechanisms which this class provides
+ * when required.
+ * </p><p>
+ * All SWT API methods which may only be called from the user-interface
+ * thread are distinguished in their documentation by indicating that
+ * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
+ * SWT exception.
+ * </p><p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ * 
+ * @see #syncExec
+ * @see #asyncExec
+ * @see #wake
+ * @see #readAndDispatch
+ * @see #sleep
+ * @see #dispose
+ */
 public class Display extends Device {
 
 	/* Motif Only Public Fields */
@@ -77,7 +120,7 @@ public class Display extends Device {
 	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
-	Thread thread = Thread.currentThread ();
+	Thread thread;
 	
 	/* Display Shutdown */
 	Runnable [] disposeList;
@@ -183,6 +226,7 @@ public class Display extends Device {
 	int crPointer, tabPointer;
 	
 	/* Xt Translations */
+	int dragTranslations;
 	int arrowTranslations, tabTranslations;
 	
 	/* Check Expose Proc */
@@ -190,16 +234,61 @@ public class Display extends Device {
 	int checkExposeProc;
 	int exposeCount;
 	
-	/* Sleeping */
-	int sleepID;
-	Callback sleepCallback;
-	int sleepProc;
+	/* Wake */
+	Callback wakeCallback;
+	int wakeProc, read_fd, write_fd, inputID;
+	byte [] wake_buffer = new byte [1];
 	
 	/* Display Data */
 	Object data;
 	String [] keys;
 	Object [] values;
 
+	static final byte[] _MOTIF_DEFAULT_LOCALE = Converter.wcsToMbcs(null, "_MOTIF_DEFAULT_LOCALE");
+
+	/*
+	* TEMPORARY CODE.  Install the runnable that
+	* gets the current display. This code will
+	* be removed in the future.
+	*/
+	static {
+		DeviceFinder = new Runnable () {
+			public void run () {
+				Device device = getCurrent ();
+				if (device == null) {
+					device = getDefault ();
+				}
+				setDevice (device);
+			}
+		};
+	}
+
+/*
+* TEMPORARY CODE.
+*/
+static void setDevice (Device device) {
+	CurrentDevice = device;
+}
+
+/**
+ * Constructs a new instance of this class.
+ * <p>
+ * Note: The resulting display is marked as the <em>current</em>
+ * display. If this is the first display which has been 
+ * constructed since the application started, it is also
+ * marked as the <em>default</em> display.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see #getCurrent
+ * @see #getDefault
+ * @see Widget#checkSubclass
+ * @see Shell
+ */
 public Display () {
 	this (null);
 }
@@ -226,10 +315,25 @@ void addMouseHoverTimeOut (int handle) {
 	mouseHoverID = OS.XtAppAddTimeOut (xtContext, 400, mouseHoverProc, handle);
 	mouseHoverHandle = handle;
 }
+/**
+ * Causes the <code>run()</code> method of the runnable to
+ * be invoked by the user-interface thread at the next 
+ * reasonable opportunity. The caller of this method continues 
+ * to run in parallel, and is not notified when the
+ * runnable has completed.
+ *
+ * @param runnable code to run on the user-interface thread.
+ *
+ * @see #syncExec
+ */
 public void asyncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.asyncExec (runnable);
 }
+/**
+ * Causes the system hardware to emit a short sound
+ * (if it supports this capability).
+ */
 public void beep () {
 	checkDevice ();
 	OS.XBell (xDisplay, 100);
@@ -272,6 +376,7 @@ protected void checkSubclass () {
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay ();
+	thread = Thread.currentThread ();
 	createDisplay (data);
 	register ();
 	if (Default == null) Default = this;
@@ -340,6 +445,13 @@ void destroyDisplay () {
 	OS.XtDestroyApplicationContext (xtContext);
 	DisplayDisposed = true;
 }
+/**
+ * Causes the <code>run()</code> method of the runnable to
+ * be invoked by the user-interface thread just before the
+ * receiver is disposed.
+ *
+ * @param runnable code to run at dispose time.
+ */
 public void disposeExec (Runnable runnable) {
 	checkDevice ();
 	if (disposeList == null) disposeList = new Runnable [4];
@@ -407,19 +519,58 @@ boolean filterEvent (XAnyEvent event) {
 	/* Answer false because the event was not processed */
 	return false;
 }
+/**
+ * Given the operating system handle for a widget, returns
+ * the instance of the <code>Widget</code> subclass which
+ * represents it in the currently running application, if
+ * such exists, or null if no matching widget can be found.
+ *
+ * @param handle the handle for the widget
+ * @return the SWT widget that the handle represents
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Widget findWidget (int handle) {
 	checkDevice ();
 	return WidgetTable.get (handle);
 }
+/**
+ * Returns the currently active <code>Shell</code>, or null
+ * if no shell belonging to the currently running application
+ * is active.
+ *
+ * @return the active shell or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Shell getActiveShell () {
 	checkDevice ();
 	Control control = getFocusControl ();
 	if (control == null) return null;
 	return control.getShell ();
 }
+/**
+ * Returns the display which the currently running thread is
+ * the user-interface thread for, or null if the currently
+ * running thread is not a user-interface thread for any display.
+ *
+ * @return the current display
+ */
 public static synchronized Display getCurrent () {
 	return findDisplay (Thread.currentThread ());
 }
+/**
+ * Returns the display which the given thread is the
+ * user-interface thread for, or null if the given thread
+ * is not a user-interface thread for any display.
+ *
+ * @param thread the user-interface thread
+ * @return the display for the given thread
+ */
 public static synchronized Display findDisplay (Thread thread) {
 	for (int i=0; i<Displays.length; i++) {
 		Display display = Displays [i];
@@ -429,6 +580,17 @@ public static synchronized Display findDisplay (Thread thread) {
 	}
 	return null;
 }
+/**
+ * Returns the control which the on-screen pointer is currently
+ * over top of, or null if it is not currently over one of the
+ * controls built by the currently running application.
+ *
+ * @return the control under the cursor
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Control getCursorControl () {
 	checkDevice ();
 	int [] unused = new int [1], buffer = new int [1];
@@ -450,6 +612,16 @@ public Control getCursorControl () {
 	} while ((handle = OS.XtParent (handle)) != 0);
 	return null;
 }
+/**
+ * Returns the location of the on-screen pointer relative
+ * to the top left corner of the screen.
+ *
+ * @return the cursor location
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point getCursorLocation () {
 	checkDevice ();
 	int window = OS.XDefaultRootWindow (xDisplay);
@@ -459,10 +631,41 @@ public Point getCursorLocation () {
 	OS.XQueryPointer(xDisplay, window, unused, unused, rootX, rootY, unused, unused, unused);
 	return new Point (rootX [0], rootY [0]);
 }
+/**
+ * Returns the default display. One is created (making the
+ * thread that invokes this method its user-interface thread)
+ * if it did not already exist.
+ *
+ * @return the default display
+ */
 public static synchronized Display getDefault () {
 	if (Default == null) Default = new Display ();
 	return Default;
 }
+/**
+ * Returns the application defined property of the receiver
+ * with the specified name, or null if it has not been set.
+ * <p>
+ * Applications may have associated arbitrary objects with the
+ * receiver in this fashion. If the objects stored in the
+ * properties need to be notified when the display is disposed
+ * of, it is the application's responsibility provide a
+ * <code>disposeExec()</code> handler which does so.
+ * </p>
+ *
+ * @param key the name of the property
+ * @return the value of the property or null if it has not been set
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the key is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #setData
+ * @see #disposeExec
+ */
 public Object getData (String key) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -472,14 +675,59 @@ public Object getData (String key) {
 	}
 	return null;
 }
+/**
+ * Returns the application defined, display specific data
+ * associated with the receiver, or null if it has not been
+ * set. The <em>display specific data</em> is a single,
+ * unnamed field that is stored with every display. 
+ * <p>
+ * Applications may put arbitrary objects in this field. If
+ * the object stored in the display specific data needs to
+ * be notified when the display is disposed of, it is the
+ * application's responsibility provide a
+ * <code>disposeExec()</code> handler which does so.
+ * </p>
+ *
+ * @return the display specific data
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
+ * </ul>
+ *
+ * @see #setData
+ * @see #disposeExec
+ */
 public Object getData () {
 	checkDevice ();
 	return data;
 }
+/**
+ * Returns the longest duration, in milliseconds, between
+ * two mouse button clicks that will be considered a
+ * <em>double click</em> by the underlying operating system.
+ *
+ * @return the double click time
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getDoubleClickTime () {
 	checkDevice ();
 	return OS.XtGetMultiClickTime (xDisplay);
 }
+/**
+ * Returns the control which currently has keyboard focus,
+ * or null if keyboard events are not currently going to
+ * any of the controls built by the currently running
+ * application.
+ *
+ * @return the control under the cursor
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Control getFocusControl () {
 	checkDevice ();
 	int [] buffer1 = new int [1], buffer2 = new int [1];
@@ -499,9 +747,30 @@ public Control getFocusControl () {
 	} while ((handle = OS.XtParent (handle)) != 0);
 	return null;
 }
+/**
+ * Returns the maximum allowed depth of icons on this display.
+ * On some platforms, this may be different than the actual
+ * depth of the display.
+ *
+ * @return the maximum icon depth
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getIconDepth () {
 	return getDepth ();
 }
+/**
+ * Returns an array containing all shells which have not been
+ * disposed and have the receiver as their display.
+ *
+ * @return the receiver's shells
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Shell [] getShells () {
 	checkDevice ();
 	/*
@@ -531,29 +800,37 @@ public Shell [] getShells () {
 }
 /**
  * Returns the thread that has invoked <code>syncExec</code>
- * or <code>asyncExec</code>, or null if no such runnable is
- * currently being invoked by the user-interface thread.
+ * or null if no such runnable is currently being invoked by
+ * the user-interface thread.
+ * <p>
+ * Note: If a runnable invoked by asyncExec is currently
+ * running, this method will return null.
+ * </p>
  *
- * @return the receiver's sync/async-interface thread
+ * @return the receiver's sync-interface thread
  */
 public Thread getSyncThread () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	return synchronizer.syncThread;
 }
 /**
-* Get a system color
-*
-* RETURNS
-*
-* 	A color that corresponds to a system color.
-*
-* REMARKS
-*
-*	This method returns the color corresponding to a
-* system color constant. All system color constants
-* begin with the prefix COLOR_.
-*
-**/
+ * Returns the matching standard color for the given
+ * constant, which should be one of the color constants
+ * specified in class <code>SWT</code>. Any value other
+ * than one of the SWT color constants which is passed
+ * in will result in the color black. This color should
+ * not be free'd because it was allocated by the system,
+ * not the application.
+ *
+ * @param id the color constant
+ * @return the matching color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ */
 public Color getSystemColor (int id) {
 	checkDevice ();
 	XColor xColor = null;
@@ -583,10 +860,35 @@ public Color getSystemColor (int id) {
 	if (xColor == null) return super.getSystemColor (SWT.COLOR_BLACK);
 	return Color.motif_new (this, xColor);
 }
+/**
+ * Returns a reasonable font for applications to use.
+ * On some platforms, this will match the "default font"
+ * or "system font" if such can be found.  This font
+ * should not be free'd because it was allocated by the
+ * system, not the application.
+ * <p>
+ * Typically, applications which want the default look
+ * should simply not set the font on the widgets they
+ * create. Widgets are always created with the correct
+ * default font for the class of user-interface component
+ * they represent.
+ * </p>
+ *
+ * @return a font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Font getSystemFont () {
 	checkDevice ();
 	return Font.motif_new (this, defaultFontList);
 }
+/**
+ * Returns the user-interface thread for the receiver.
+ *
+ * @return the receiver's user-interface thread
+ */
 public Thread getThread () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	return thread;
@@ -768,16 +1070,24 @@ void initializeDisplay () {
 	checkExposeCallback = new Callback (this, "checkExposeProc", 3);
 	checkExposeProc = checkExposeCallback.getAddress ();
 	if (checkExposeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	sleepCallback = new Callback (this, "sleepProc", 2);
-	sleepProc = sleepCallback.getAddress ();
-	if (sleepProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-
+	wakeCallback = new Callback (this, "wakeProc", 3);
+	wakeProc = wakeCallback.getAddress ();
+	if (wakeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	/* Create and install the pipe used to wake up from sleep */
+	int [] filedes = new int [2];
+	if (OS.pipe (filedes) != 0) error (SWT.ERROR_NO_HANDLES);
+	read_fd = filedes [0];  write_fd = filedes [1];
+	int xtAppContext = OS.XtDisplayToApplicationContext (xDisplay);
+	inputID = OS.XtAppAddInput (xtAppContext, read_fd, OS.XtInputReadMask, wakeProc, 0);
+	
 	/*
 	* Use dynamic Drag and Drop Protocol styles.
 	* Preregistered protocol is not supported.
 	*/
 	int xmDisplay = OS.XmGetXmDisplay (xDisplay);
 	int [] args = new int [] {
+		OS.XmNenableThinThickness, 1,
 		OS.XmNdragInitiatorProtocolStyle, OS.XmDRAG_DYNAMIC,
 		OS.XmNdragReceiverProtocolStyle, OS.XmDRAG_DYNAMIC,
 	};
@@ -955,9 +1265,24 @@ void initializeTranslations () {
 	arrowTranslations = OS.XtParseTranslationTable (buffer1);
 	byte [] buffer2 = Converter.wcsToMbcs (null, "~Meta ~Alt <Key>Tab:\nShift ~Meta ~Alt <Key>Tab:\0");
 	tabTranslations = OS.XtParseTranslationTable (buffer2);
-//      byte [] buffer3 = Converter.wcsToMbcs (null, "<Btn2Down>\0");
-//	overrideDragTranslations = OS.XtParseTranslationTable (buffer3);
+	byte [] buffer3 = Converter.wcsToMbcs (null, "<Btn2Down>:\0");
+	dragTranslations = OS.XtParseTranslationTable (buffer3);
 }
+/**	 
+ * Invokes platform specific functionality to allocate a new GC handle.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Display</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param data the platform specific GC data 
+ * @return the platform specific GC handle
+ *
+ * @private
+ */
 public int internal_new_GC (GCData data) {
 	int xDrawable = OS.XDefaultRootWindow (xDisplay);
 	int xGC = OS.XCreateGC (xDisplay, xDrawable, 0, null);
@@ -972,6 +1297,21 @@ public int internal_new_GC (GCData data) {
 	}
 	return xGC;
 }
+/**	 
+ * Invokes platform specific functionality to dispose a GC handle.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Display</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param handle the platform specific GC handle
+ * @param data the platform specific GC data 
+ *
+ * @private
+ */
 public void internal_dispose_GC (int gc, GCData data) {
 	OS.XFreeGC(xDisplay, gc);
 }
@@ -1010,6 +1350,28 @@ void postEvent (Event event) {
 	}
 	eventQueue [index] = event;
 }
+/**
+ * Reads an event from the operating system's event queue,
+ * dispatches it appropriately, and returns <code>true</code>
+ * if there is potentially more work to do, or <code>false</code>
+ * if the caller can sleep until another event is placed on
+ * the event queue.
+ * <p>
+ * In addition to checking the system event queue, this method also
+ * checks if any inter-thread messages (created by <code>syncExec()</code>
+ * or <code>asyncExec()</code>) are waiting to be processed, and if
+ * so handles them before returning.
+ * </p>
+ *
+ * @return <code>false</code> if the caller can sleep upon return from this method
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #sleep
+ * @see #wake
+ */
 public boolean readAndDispatch () {
 	checkDevice ();
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
@@ -1017,10 +1379,10 @@ public boolean readAndDispatch () {
 	if (status != 0) {
 		if ((status & OS.XtIMTimer) != 0) {
 			OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
-			runAsyncMessages ();
 		}
 		if ((status & OS.XtIMAlternateInput) != 0) {
 			OS.XtAppProcessEvent (xtContext, OS.XtIMAlternateInput);
+//			runAsyncMessages ();
 		}
 		if ((status & OS.XtIMXEvent) != 0) {
 			OS.XtAppNextEvent (xtContext, xEvent);
@@ -1045,7 +1407,6 @@ synchronized void register () {
 	Displays = newDisplays;
 }
 protected void release () {
-	super.release ();
 	
 	/* Release shells */
 	Shell [] shells = WidgetTable.shells ();
@@ -1068,9 +1429,16 @@ protected void release () {
 	/* Release synchronizer */
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
-	releaseDisplay ();	
+	releaseDisplay ();
+
+	super.release ();
 }
 void releaseDisplay () {
+
+	/* Destroy the hidden Override shell parent */
+	if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);
+	shellHandle = 0;
+	
 	/* Dispose the caret callback */
 	if (caretID != 0) OS.XtRemoveTimeOut (caretID);
 	caretID = caretProc = 0;
@@ -1079,8 +1447,8 @@ void releaseDisplay () {
 	
 	/* Dispose the timer callback */
 	if (timerIDs != null) {
-		for (int i=0; i<=timerIDs.length; i++) {
-			 OS.XtRemoveTimeOut (timerIDs [i]);
+		for (int i=0; i<timerIDs.length; i++) {
+			if (timerIDs [i] != 0) OS.XtRemoveTimeOut (timerIDs [i]);
 		}
 	}
 	timerIDs = null;
@@ -1094,18 +1462,19 @@ void releaseDisplay () {
 	mouseHoverID = mouseHoverProc = mouseHoverHandle = toolTipHandle = 0;
 	mouseHoverCallback.dispose ();
 	mouseHoverCallback = null;
-	
-	/* Dispose the sleep callback */
-	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
-	sleepID = sleepProc = 0;
-	sleepCallback.dispose ();
-	sleepCallback = null;
-	
+
 	/* Dispose window and expose callbacks */
 	windowCallback.dispose (); windowCallback = null;
 	checkExposeCallback.dispose (); checkExposeCallback = null;
 	checkExposeProc = 0;
 	
+	/* Dispose the wake callback, id and pipe */
+	if (inputID != 0) OS.XtRemoveInput (inputID);
+	wakeCallback.dispose (); wakeCallback = null;
+	wakeProc = 0;
+	OS.close (read_fd);
+	OS.close (write_fd);
+		
 	/* Free the font lists */
 	if (buttonFont != 0) OS.XmFontListFree (buttonFont);
 	if (labelFont != 0) OS.XmFontListFree (labelFont);
@@ -1123,10 +1492,7 @@ void releaseDisplay () {
 	/* Free the translations (no documentation describes how to do this) */
 	//OS.XtFree (arrowTranslations);
 	//OS.XtFree (tabTranslations);
-
-	/* Destroy the hidden Override shell parent */
-	if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);
-	shellHandle = 0;
+	//OS.XtFree (dragTranslations);
 
 	/* Release references */
 	thread = null;
@@ -1143,9 +1509,7 @@ void releaseToolTipHandle (int handle) {
 	if (toolTipHandle != 0) {
 		int shellHandle = OS.XtParent(toolTipHandle);
 		int shellParent = OS.XtParent(shellHandle);
-		if (handle == shellParent) {
-			toolTipHandle = 0;
-		}
+		if (handle == shellParent) toolTipHandle = 0;
 	}
 }
 void removeMouseHoverTimeOut () {
@@ -1190,6 +1554,13 @@ boolean runDeferredEvents () {
 	eventQueue = null;
 	return true;
 }
+/**
+ * On platforms which support it, sets the application name
+ * to be the argument. On Motif, for example, this can be used
+ * to set the name used for resource lookup.
+ *
+ * @param name the new app name
+ */
 public static void setAppName (String name) {
 	APP_NAME = name;
 }
@@ -1203,6 +1574,30 @@ void setCurrentCaret (Caret caret) {
 		caretID = OS.XtAppAddTimeOut (xtContext, blinkRate, caretProc, 0);
 	}
 }
+/**
+ * Sets the application defined property of the receiver
+ * with the specified name to the given argument.
+ * <p>
+ * Applications may have associated arbitrary objects with the
+ * receiver in this fashion. If the objects stored in the
+ * properties need to be notified when the display is disposed
+ * of, it is the application's responsibility provide a
+ * <code>disposeExec()</code> handler which does so.
+ * </p>
+ *
+ * @param key the name of the property
+ * @param value the new value for the property
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the key is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #setData
+ * @see #disposeExec
+ */
 public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1250,10 +1645,45 @@ public void setData (String key, Object value) {
 	keys = newKeys;
 	values = newValues;
 }
+/**
+ * Sets the application defined, display specific data
+ * associated with the receiver, to the argument.
+ * The <em>display specific data</em> is a single,
+ * unnamed field that is stored with every display. 
+ * <p>
+ * Applications may put arbitrary objects in this field. If
+ * the object stored in the display specific data needs to
+ * be notified when the display is disposed of, it is the
+ * application's responsibility provide a
+ * <code>disposeExec()</code> handler which does so.
+ * </p>
+ *
+ * @param data the new display specific data
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
+ * </ul>
+ *
+ * @see #getData
+ * @see #disposeExec
+ */
 public void setData (Object data) {
 	checkDevice ();
 	this.data = data;
 }
+/**
+ * Sets the synchronizer used by the display to be
+ * the argument, which can not be null.
+ *
+ * @param synchronizer the new synchronizer for the display (must not be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the synchronizer is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSynchronizer (Synchronizer synchronizer) {
 	checkDevice ();
 	if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1267,22 +1697,22 @@ void showToolTip (int handle, String toolTipText) {
 		 return;
 	}
 	
-	/* Create the tooltip widgets. */	
+	/* Create the tooltip widgets */	
 	int widgetClass = OS.OverrideShellWidgetClass ();
-	int [] argList = {OS.XmNmwmDecorations, 0, OS.XmNborderWidth, 1};
-	int shellHandle = OS.XtCreatePopupShell (null, widgetClass, handle, argList, argList.length / 2);
+	int [] argList1 = {OS.XmNmwmDecorations, 0, OS.XmNborderWidth, 1};
+	int shellHandle = OS.XtCreatePopupShell (null, widgetClass, handle, argList1, argList1.length / 2);
 	toolTipHandle = OS.XmCreateLabel(shellHandle, null, null, 0);
 	
-	/* Set the tooltip foreground and background. */
+	/* Set the tooltip foreground and background */
 	Color infoForeground = getSystemColor(SWT.COLOR_INFO_FOREGROUND);
 	Color infoBackground = getSystemColor(SWT.COLOR_INFO_BACKGROUND);
 	int foregroundPixel = (infoForeground == null) ? defaultForeground : infoForeground.handle.pixel;
 	int backgroundPixel = (infoBackground == null) ? defaultBackground : infoBackground.handle.pixel;
 	int [] argList2 = {OS.XmNforeground, foregroundPixel, OS.XmNbackground, backgroundPixel};
 	OS.XtSetValues (toolTipHandle, argList2, argList2.length / 2);
-	OS.XtManageChild(toolTipHandle);		
+	OS.XtManageChild (toolTipHandle);		
 	
-	/* Set the tooltip label string. */
+	/* Set the tooltip label string */
 	byte [] buffer = Converter.wcsToMbcs (null, toolTipText, true);
 	int xmString = OS.XmStringParseText (
 		buffer,
@@ -1295,44 +1725,83 @@ void showToolTip (int handle, String toolTipText) {
 	int [] argList3 = {OS.XmNlabelString, xmString};
 	OS.XtSetValues (toolTipHandle, argList3, argList3.length / 2);
 	if (xmString != 0) OS.XmStringFree (xmString);	
-	
-	/* Position and popup the tooltip. */
-	int xWindow = OS.XDefaultRootWindow (xDisplay);
-	int [] rootX = new int [1], rootY = new int [1], unused = new int [1];
-	OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, unused, unused, unused);
-	
+		
 	/*
 	* Feature in X.  There is no way to query the size of a cursor.
 	* The fix is to use the default cursor size which is 16x16.
 	*/
-	int x = rootX [0] + 16, y = rootY [0] + 16;	
+	int xWindow = OS.XDefaultRootWindow (xDisplay);
+	int [] rootX = new int [1], rootY = new int [1], unused = new int [1];
+	OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, unused, unused, unused);
+	int x = rootX [0] + 16, y = rootY [0] + 16;
+	
+	/*
+	* Ensure that the tooltip is on the screen.
+	*/
+	int screen = OS.XDefaultScreen (xDisplay);
+	int width = OS.XDisplayWidth (xDisplay, screen);
+	int height = OS.XDisplayHeight (xDisplay, screen);
+	int [] argList4 = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (toolTipHandle, argList4, argList4.length / 2);
+	x = Math.max (0, Math.min (x, width - argList4 [1]));
+	y = Math.max (0, Math.min (y, height - argList4 [3]));
 	OS.XtMoveWidget (shellHandle, x, y);
 	OS.XtPopup (shellHandle, OS.XtGrabNone);
 }
+/**
+ * Causes the user-interface thread to <em>sleep</em> (that is,
+ * to be put in a state where it does not consume CPU cycles)
+ * until an event is received or it is otherwise awakened.
+ *
+ * @return <code>true</code> if an event requiring dispatching was placed on the queue.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #wake
+ */
 public boolean sleep () {
 	checkDevice ();
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	/*
-	* Bug in Motif.  For some reason, when a time out
-	* is added from another thread while the display
-	* thread inside of a call-in, it fails to wake up
-	* the display event thread.  The fix is to limit
-	* the maximum time spent waiting for an event.
-	*/
-	sleepID = OS.XtAppAddTimeOut (xtContext, 50, sleepProc, 0);
-	boolean result = OS.XtAppPeekEvent (xtContext, xEvent);
-	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
-	sleepID = 0;
-	return result;
+	return OS.XtAppPeekEvent (xtContext, xEvent);
 }
-int sleepProc (int index, int id) {
-	sleepID = 0;
-	return 0;
-}
+/**
+ * Causes the <code>run()</code> method of the runnable to
+ * be invoked by the user-interface thread at the next 
+ * reasonable opportunity. The thread which calls this method
+ * is suspended until the runnable completes.
+ *
+ * @param runnable code to run on the user-interface thread.
+ *
+ * @see #asyncExec
+ */
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.syncExec (runnable);
 }
+int textWidth (String string, int fontList) {
+	if (string.length () == 0) return 0;
+	byte [] textBuffer = Converter.wcsToMbcs (null, string, true);
+	int xmString = OS.XmStringGenerate (textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
+	int width = OS.XmStringWidth (fontList, xmString);
+	OS.XmStringFree (xmString);
+	return width;
+}
+/**
+ * Causes the <code>run()</code> method of the runnable to
+ * be invoked by the user-interface thread after the specified
+ * number of milliseconds have elapsed.
+ *
+ * @param milliseconds the delay before running the runnable
+ * @param runnable code to run on the user-interface thread
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #asyncExec
+ */
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
 	if (timerList == null) timerList = new Runnable [4];
@@ -1388,14 +1857,108 @@ public void update () {
 	OS.XSync (xDisplay, false); OS.XSync (xDisplay, false);
 	while (OS.XCheckMaskEvent (xDisplay, mask, event)) OS.XtDispatchEvent (event);
 }
+/**
+ * If the receiver's user-interface thread was <code>sleep</code>'ing, 
+ * causes it to be awakened and start running again. Note that this
+ * method may be called from any thread.
+ *
+ * @see #sleep
+ */
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	if (OS.XtAppPending (xtContext) == 0) OS.XtAppAddTimeOut (xtContext, 0, 0, 0);
+	/* Write a single byte to the wake up pipe */
+	while (OS.write (write_fd, wake_buffer, 1) != 1);
+}
+int wakeProc (int closure, int source, int id) {
+	/* Read a single byte from the wake up pipe */
+	while (OS.read (read_fd, wake_buffer, 1) != 1);
+	return 0;
 }
 int windowProc (int handle, int clientData, int callData, int unused) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
 	return widget.processEvent (clientData, callData);
+}
+String wrapText (String text, int fontList, int width) {
+	String Lf = "\n";
+	text = convertToLf (text);
+	int length = text.length ();
+	if (width <= 0 || length == 0 || length == 1) return text;
+	StringBuffer result = new StringBuffer ();
+	int lineStart = 0, lineEnd = 0;
+	while (lineStart < length) {
+		lineEnd = text.indexOf (Lf, lineStart);
+		boolean noLf = lineEnd == -1;
+		if (noLf) lineEnd = length;
+		int nextStart = lineEnd + Lf.length ();
+		while (lineEnd > lineStart + 1 && Character.isWhitespace (text.charAt (lineEnd - 1))) {
+			lineEnd--;
+		}
+		int wordStart = lineStart, wordEnd = lineStart;
+		int i = lineStart;
+		while (i < lineEnd) {
+			int lastStart = wordStart, lastEnd = wordEnd;
+			wordStart = i;
+			while (i < lineEnd && !Character.isWhitespace (text.charAt (i))) {
+				i++;
+			}
+			wordEnd = i - 1;
+			String line = text.substring (lineStart, wordEnd + 1);
+			int lineWidth = textWidth (line, fontList);
+			while (i < lineEnd && Character.isWhitespace (text.charAt (i))) {
+				i++;
+			}
+			if (lineWidth > width) {
+				if (lastStart == wordStart) {
+					line = text.substring (lineStart, wordStart + 1);
+					lineWidth = textWidth (line, fontList);
+					while (wordStart < wordEnd && lineWidth < width) {
+						wordStart++;
+					}
+					if (wordStart == lastStart) wordStart++;
+					lastEnd = wordStart - 1;
+				}
+				line = text.substring (lineStart, lastEnd + 1);
+				result.append (line); result.append (Lf);
+				i = wordStart; lineStart = wordStart; wordEnd = wordStart;
+			}
+		}
+		if (lineStart < lineEnd) {
+			result.append (text.substring (lineStart, lineEnd));
+		}
+		if (!noLf) {
+			result.append (Lf);
+		}
+		lineStart = nextStart;
+	}
+	return result.toString ();
+}
+
+String convertToLf(String text) {
+	char Cr = '\r';
+	char Lf = '\n';
+	int length = text.length ();
+	if (length == 0) return text;
+	
+	/* Check for an LF or CR/LF.  Assume the rest of the string 
+	 * is formated that way.  This will not work if the string 
+	 * contains mixed delimiters. */
+	int i = text.indexOf (Lf, 0);
+	if (i == -1 || i == 0) return text;
+	if (text.charAt (i - 1) != Cr) return text;
+
+	/* The string is formatted with CR/LF.
+	 * Create a new string with the LF line delimiter. */
+	i = 0;
+	StringBuffer result = new StringBuffer ();
+	while (i < length) {
+		int j = text.indexOf (Cr, i);
+		if (j == -1) j = length;
+		String s = text.substring (i, j);
+		result.append (s);
+		i = j + 2;
+		result.append (Lf);
+	}
+	return result.toString ();
 }
 }
