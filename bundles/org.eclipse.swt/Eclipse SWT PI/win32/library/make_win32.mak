@@ -45,12 +45,12 @@ CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUI
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
 
-MOZILLA_INCLUDES = -I$(MOZILLA_HOME)/include \
-	-I$(MOZILLA_HOME)/include/xpcom \
-	-I$(MOZILLA_HOME)/include/string \
-	-I$(MOZILLA_HOME)/include/nspr \
-	-I$(MOZILLA_HOME)/include/embed_base \
-	-I$(MOZILLA_HOME)/include/gfx
+MOZILLA_INCLUDES = -I$(MOZILLA_HOME)\include \
+	-I$(MOZILLA_HOME)\include\xpcom \
+	-I$(MOZILLA_HOME)\include\string \
+	-I$(MOZILLA_HOME)\include\nspr \
+	-I$(MOZILLA_HOME)\include\embed_base \
+	-I$(MOZILLA_HOME)\include\gfx
 MOZILLACFLAGS = $(CFLAGS) -DXP_WIN -DXP_WIN32 $(MOZILLA_INCLUDES)
 MOZILLALFLAGS = $(LFLAGS) /NODEFAULTLIB:MSVCRT.lib /libpath:"$(MOZILLA_HOME)\lib"
 
