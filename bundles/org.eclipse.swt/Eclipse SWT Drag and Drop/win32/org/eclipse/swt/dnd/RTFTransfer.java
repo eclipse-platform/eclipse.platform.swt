@@ -4,7 +4,10 @@ package org.eclipse.swt.dnd;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
- 
+
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.ole.win32.*;
+
 /**
  * The <code>RTFTransfer</code> class is used to transfer text with the RTF format
  * in a drag and drop operation.
@@ -14,6 +17,7 @@ public class RTFTransfer extends ByteArrayTransfer {
 	private static final String CF_RTF_NAME = "Rich Text Format";
 	private static final int CF_RTF = registerType(CF_RTF_NAME);
 	private static RTFTransfer _instance = new RTFTransfer();
+	private static int CodePage = OS.GetACP ();
 
 private RTFTransfer() {}
 /**
@@ -44,13 +48,35 @@ public static RTFTransfer getInstance () {
  *        with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) return;
-		
+	if (object == null || !(object instanceof String)) {
+		transferData.result = COM.E_FAIL;
+		return;
+	}
 	// CF_RTF is stored as a null terminated byte array
-	// create a byte array from object
-	String text = (String) object+'\0';
-	// pass byte array on to super to convert to native
-	super.javaToNative(text.getBytes(), transferData);
+	if (isSupportedType(transferData)) {
+		String string = (String)object;
+		int count = string.length ();
+		char [] buffer = new char [count + 1];
+		string.getChars (0, count, buffer, 0);
+		int cchMultiByte = OS.WideCharToMultiByte (CodePage, 0, buffer, -1, null, 0, null, null);
+		if (cchMultiByte == 0) {
+			transferData.stgmedium = new STGMEDIUM();
+			transferData.result = COM.DV_E_STGMEDIUM;
+			return;
+		}
+		int lpMultiByteStr = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
+		OS.WideCharToMultiByte (CodePage, 0, buffer, -1, lpMultiByteStr, cchMultiByte, null, null);
+		transferData.stgmedium = new STGMEDIUM();
+		transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
+		transferData.stgmedium.unionField = lpMultiByteStr;
+		transferData.stgmedium.pUnkForRelease = 0;
+		transferData.result = COM.S_OK;
+		return;
+	}
+	
+	// did not match the TYMED
+	transferData.stgmedium = new STGMEDIUM();
+	transferData.result = COM.DV_E_TYMED;
 }
 /**
  * Converts a platform specific representation of a string to a Java String.
@@ -60,15 +86,34 @@ public void javaToNative (Object object, TransferData transferData){
  *         otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	// get byte array from super
-	byte[] buffer = (byte[])super.nativeToJava(transferData);
-	if (buffer == null) return null;
-	// convert byte array to a string
-	String string = new String(buffer);
-	// remove null terminator
-	int index = string.indexOf("\0");
-	string = string.substring(0, index);
-	return string;
+	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) {
+		transferData.result = COM.E_FAIL;
+		return null;
+	}
+	
+	IDataObject data = new IDataObject(transferData.pIDataObject);
+	data.AddRef();
+	STGMEDIUM stgmedium = new STGMEDIUM();
+	FORMATETC formatetc = transferData.formatetc;
+	stgmedium.tymed = COM.TYMED_HGLOBAL;	
+	transferData.result = data.GetData(formatetc, stgmedium);
+	data.Release();	
+	if (transferData.result != COM.S_OK) return null;
+
+	int lpMultiByteStr = COM.GlobalLock(stgmedium.unionField);
+	if (lpMultiByteStr != 0) {
+		try {
+			int cchWideChar  = OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
+			if (cchWideChar != 0) {
+				char[] lpWideCharStr = new char [cchWideChar];
+				OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, cchWideChar);
+				return new String(lpWideCharStr);
+			}
+		} finally {
+			COM.GlobalUnlock(lpMultiByteStr);
+		}
+	}
+	return null;
 }
 protected int[] getTypeIds(){
 	return new int[] {CF_RTF};

@@ -2168,6 +2168,7 @@ public static final native void MoveMemory(int DestinationPtr, float[] Source, i
 public static final native void MoveMemory(int DestinationPtr, short[] Source, int Length);
 public static final native boolean MoveToEx (int hdc,int x1, int x2, int lPoint);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, byte [] lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
+public static final native int MultiByteToWideChar (int CodePage, int dwFlags, int lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 public static final native int OleInitialize (int pvReserved);
 public static final native void OleUninitialize ();
 public static final native boolean OpenClipboard (int hWndNewOwner);
@@ -2323,6 +2324,7 @@ public static final native short VkKeyScanA (short ch);
 public static final native int VtblCall (int ppVtbl, int fnNumber, int arg0);
 public static final native boolean WaitMessage ();
 public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, byte [] lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
+public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, int lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
 public static final native int WindowFromDC (int lpPoint);
 public static final native int WindowFromPoint (POINT lpPoint);
 }

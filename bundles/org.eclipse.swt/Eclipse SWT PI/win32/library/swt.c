@@ -4601,14 +4601,14 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveToEx
 }
 #endif // _WIN32_WCE
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MultiByteToWideChar
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MultiByteToWideChar__II_3BI_3CI
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jcharArray arg4, jint arg5)
 {
 	jbyte *lparg2=NULL;
 	jchar *lparg4=NULL;
 	jint rc;
 
-	DEBUG_CALL("MultiByteToWideChar\n")
+	DEBUG_CALL("MultiByteToWideChar__II_3BI_3CI\n")
 
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
@@ -4616,6 +4616,23 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MultiByteToWideCha
 	rc = (jint)MultiByteToWideChar(arg0, arg1, (LPCSTR)lparg2, arg3, (LPWSTR)lparg4, arg5);
 
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MultiByteToWideChar__IIII_3CI
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4, jint arg5)
+{
+	jchar *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("MultiByteToWideChar__IIII_3CI\n")
+	
+	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
+
+	rc = (jint)MultiByteToWideChar(arg0, arg1, (LPCSTR)arg2, arg3, (LPWSTR)lparg4, arg5);
+
 	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
 
 	return rc;
@@ -7043,7 +7060,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_WaitMessage
 }
 #endif // _WIN32_WCE
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WideCharToMultiByte
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WideCharToMultiByte__II_3CI_3BI_3B_3Z
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jbyteArray arg4, jint arg5, jbyteArray arg6, jbooleanArray arg7)
 {
 	jchar *lparg2=NULL;
@@ -7052,7 +7069,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WideCharToMultiByt
 	jboolean *lparg7=NULL;
 	jint rc;
 
-	DEBUG_CALL("WideCharToMultiByte\n")
+	DEBUG_CALL("WideCharToMultiByte__II_3CI_3BI_3B_3Z\n")
 
 	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
 	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
@@ -7063,6 +7080,30 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WideCharToMultiByt
 
 	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg7) (*env)->ReleaseBooleanArrayElements(env, arg7, lparg7, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WideCharToMultiByte__II_3CIII_3B_3Z
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jint arg4, jint arg5, jbyteArray arg6, jbooleanArray arg7)
+{
+	jchar *lparg2=NULL;
+	jbyte *lparg4=NULL;
+	jbyte *lparg6=NULL;
+	jboolean *lparg7=NULL;
+	jint rc;
+
+	DEBUG_CALL("WideCharToMultiByte__II_3CIII_3B_3Z\n")
+
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = (*env)->GetBooleanArrayElements(env, arg7, NULL);
+
+	rc = (jint)WideCharToMultiByte(arg0, arg1, (LPCWSTR)lparg2, arg3, (LPSTR)arg4, arg5, (LPCSTR)lparg6, (LPBOOL)lparg7);
+
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	if (arg7) (*env)->ReleaseBooleanArrayElements(env, arg7, lparg7, 0);
 
