@@ -229,8 +229,8 @@ public void layout (boolean changed) {
 	int oldStart = curveStart;
 	Rectangle leftRect = null;
 	Rectangle rightRect = null;
-	if(left != null) {
-		int height = Math.min(size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, leftSize.y);
+	if (left != null) {
+		int height = Math.max(size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, leftSize.y);
 		int y = BORDER_TOP + BORDER_STRIPE;
 		leftRect = new Rectangle(x, y, leftSize.x, height);
 		x += leftSize.x;
@@ -238,7 +238,7 @@ public void layout (boolean changed) {
 	curveStart = x - INDENT_LEFT;
 	x += CURVE_WIDTH - INDENT_LEFT - INDENT_RIGHT;
 	if (right != null) {
-		int height = size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE;
+		int height = Math.max(size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, rightSize.y);
 		int y = BORDER_TOP + BORDER_STRIPE;
 		rightRect = new Rectangle(x, y, rightSize.x, height);
 	}
@@ -248,12 +248,13 @@ public void layout (boolean changed) {
 	if (curveStart > oldStart) {
 		redraw(oldStart - CURVE_TAIL, 0, curveStart + CURVE_WIDTH - oldStart + CURVE_TAIL, size.y, false);
 	}
+	update();
 	curveRegion.dispose();
 	curveRegion = new Region();
 	curveRegion.add(new Rectangle(curveStart, 0, CURVE_WIDTH, size.y));
-	update();
 	if (leftRect != null) left.setBounds(leftRect);
 	if (rightRect != null) right.setBounds(rightRect);
+	getParent().layout();
 }
 void onDispose() {
 	resizeCursor.dispose();
