@@ -27,11 +27,10 @@ import org.eclipse.swt.graphics.*;
  */
 public class Caret extends Widget {
 	Canvas parent;
-	Image image;
 	int x, y, width, height;
-	boolean moved, resized;
 	boolean isVisible, isShowing;
 	int blinkRate = 500;
+	Image image;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
