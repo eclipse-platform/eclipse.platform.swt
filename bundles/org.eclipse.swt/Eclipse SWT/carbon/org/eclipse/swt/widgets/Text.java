@@ -1011,7 +1011,9 @@ void resetVisibleRegion (int control) {
 	super.resetVisibleRegion (control);
 	
 	/*
-	*
+	* Bug in the Macintosh.  For some reason, the TXN object draws when
+	* kTXNVisibilityTag is not set causing pixel corruption.  The fix is
+	* to make the TXN frame small so that nothing is drawn.
 	*/
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
@@ -1461,11 +1463,6 @@ public void setTopIndex (int index) {
 //	OS.TXNSetSelection (txnObject, oOffset [0], oOffset [0]);
 //	OS.TXNShowSelection (txnObject, false);
 //	OS.TXNSetSelection (txnObject, oStartOffset [0], oEndOffset [0]);
-}
-
-public void setVisible (boolean visible) {
-	super.setVisible (visible);
-	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int[] {OS.kTXNVisibilityTag}, new int[] {visible ? -1 : 0});
 }
 
 /**
