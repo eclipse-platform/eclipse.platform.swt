@@ -41,14 +41,14 @@ class ProgramLaunchDelegate implements LaunchDelegate {
 		ApplicationRunner runner = new ApplicationRunner(LauncherApplication.APPLICATION_ID, appArgs);
 		runner.setPluginsPath(ApplicationRunner.getCurrentPluginsPath());
 		runner.setStatePath(LauncherPlugin.getDefault().getStateLocation().toFile().getAbsolutePath());
-		VMRunnerResult result = runner.run();
+		ILaunch result = runner.run();
 		if (! ApplicationRunner.isResultOk(result)) return false;
 		
 		initWatch(result);
 		return true;
 	}
 
-	private void initWatch(VMRunnerResult result) {
+	private void initWatch(ILaunch result) {
 		final IProcess[] processes = result.getProcesses();
 		for (int i = 0; i < processes.length; ++i) {
 			final IProcess process = processes[i];
