@@ -313,7 +313,7 @@ public void setSelection (int value) {
 	if (selection < minimum) selection = minimum;
 	if (selection > maximum) selection = maximum;
 	setThumb(selection - minimum);
-	OS.XmUpdateDisplay (handle);
+	update ();
 }
 void setThumb (int sliderSize) {
 	int [] argList1 = new int [] {
