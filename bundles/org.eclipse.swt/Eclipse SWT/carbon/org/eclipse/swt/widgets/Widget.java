@@ -10,6 +10,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 public abstract class Widget {
@@ -108,7 +109,7 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int createCIcon (org.eclipse.swt.graphics.Image image) {
+int createCIcon (Image image) {
 	int imageHandle = image.handle;
 	int width = OS.CGImageGetWidth(imageHandle);
 	int height = OS.CGImageGetHeight(imageHandle);
