@@ -566,6 +566,7 @@ void releaseWidget () {
 	defaultButton = saveDefault = null;
 	if (hAccel != 0 && hAccel != -1) OS.DestroyAcceleratorTable (hAccel);
 	hAccel = -1;
+	hwndCB = 0;
 }
 
 void remove (Menu menu) {
@@ -824,7 +825,7 @@ public void setMenuBar (Menu menu) {
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}	
 	if (OS.IsWinCE) {
-		if (hwndCB != 0) {
+		if (menuBar != null) {
 			/*
 			* Because CommandBar_Destroy destroys the menu bar, it
 			* is necessary to move the current items into a new menu
@@ -835,7 +836,7 @@ public void setMenuBar (Menu menu) {
 				error (SWT.ERROR_CANNOT_SET_MENU);
 			}
 			menuBar.handle = hMenu;
-			OS.CommandBar_Destroy (hwndCB);
+			if (hwndCB != 0) OS.CommandBar_Destroy (hwndCB);
 			hwndCB = 0;
 		}
 		menuBar = menu;
