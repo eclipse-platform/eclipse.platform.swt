@@ -134,6 +134,7 @@ public class OS {
 	public static final int kControlStaticTextCFStringTag = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
 	public static final int kControlTabContentRectTag = ('r'<<24) + ('e'<<16) + ('c'<<8) + 't';
 	public static final int kControlTabDirectionNorth = 0;
+	public static final int kControlTabDirectionSouth = 1;
 	public static final int kControlTabImageContentTag = ('c'<<24) + ('o'<<16) + ('n'<<8) + 't';
 	public static final int kControlTabInfoVersionOne = 1;
 	public static final int kControlTabInfoTag = ('t'<<24) + ('a'<<16) + ('b'<<8) + 'i';

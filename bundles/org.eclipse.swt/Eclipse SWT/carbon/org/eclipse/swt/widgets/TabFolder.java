@@ -153,7 +153,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	Rect client = new Rect ();
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, client, null);
 	x -= Math.max (3, client.left - bounds.left);
-	y -= Math.max (34, client.top - bounds.top);
+	if ((style & SWT.BOTTOM) != 0) {
+		y -= client.top - bounds.top;
+	} else {
+		y -= Math.max (34, client.top - bounds.top);
+	}
 	width += Math.max (6, (bounds.right - bounds.left) - (client.right - client.left));
 	height += Math.max (37, (bounds.bottom - bounds.top) - (client.bottom - client.top));
 	Rect inset = getInset ();
@@ -167,7 +171,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle () {
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
-	OS.CreateTabsControl (window, new Rect (), (short)OS.kControlTabSizeLarge, (short)OS.kControlTabDirectionNorth, (short) 0, 0, outControl);
+	short direction = (style & SWT.BOTTOM) != 0 ? (short)OS.kControlTabDirectionSouth : (short)OS.kControlTabDirectionNorth;
+	OS.CreateTabsControl (window, new Rect (), (short)OS.kControlTabSizeLarge, direction, (short) 0, 0, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
 }
@@ -398,7 +403,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 }
 
 Rect getInset () {
-	return display.tabFolderInset;
+	return (style & SWT.BOTTOM) != 0 ? display.tabFolderSouthInset : display.tabFolderNorthInset;
 }
 
 int kEventControlApplyBackground (int nextHandler, int theEvent, int userData) {

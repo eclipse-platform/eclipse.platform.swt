@@ -163,7 +163,7 @@ public class Display extends Device {
 	boolean dragging = false;
 	
 	/* Insets */
-	Rect buttonInset, tabFolderInset, comboInset;
+	Rect buttonInset, tabFolderNorthInset, tabFolderSouthInset, comboInset;
 	
 	/* Focus */
 	boolean ignoreFocus;
@@ -1526,9 +1526,13 @@ void initializeInsets () {
 	OS.DisposeControl (outControl [0]);
 	
 	OS.CreateTabsControl (0, rect, (short)OS.kControlTabSizeLarge, (short)OS.kControlTabDirectionNorth, (short) 0, 0, outControl);
-	tabFolderInset = computeInset (outControl [0]);
+	tabFolderNorthInset = computeInset (outControl [0]);
 	OS.DisposeControl (outControl [0]);
 
+	OS.CreateTabsControl (0, rect, (short)OS.kControlTabSizeLarge, (short)OS.kControlTabDirectionSouth, (short) 0, 0, outControl);
+	tabFolderSouthInset = computeInset (outControl [0]);
+	OS.DisposeControl (outControl [0]);
+	
 	CGRect cgRect = new CGRect ();
 	cgRect.width = cgRect.height = 200;
 	int inAttributes = OS.kHIComboBoxAutoCompletionAttribute | OS.kHIComboBoxAutoSizeListAttribute;
