@@ -497,5 +497,8 @@ public boolean setFocus () {
 public void setTabList (Control [] tabList) {
 }
 
+protected void checkSubclass () {
+	/* Do nothing - Subclassing is allowed */
+}
 
 }
