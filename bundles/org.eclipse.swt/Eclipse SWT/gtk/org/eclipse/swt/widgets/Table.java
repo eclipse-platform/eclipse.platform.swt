@@ -425,6 +425,7 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 	if ((style & SWT.CHECK) != 0 && check) {
 		OS.gtk_tree_view_column_pack_start (columnHandle, checkRenderer, false);
 		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "active", CHECKED_COLUMN);
+		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "cell-background-gdk", BACKGROUND_COLUMN);
 		
 		/*
 		* Feature in GTK. The inconsistent property only exists in GTK 2.2.x.
