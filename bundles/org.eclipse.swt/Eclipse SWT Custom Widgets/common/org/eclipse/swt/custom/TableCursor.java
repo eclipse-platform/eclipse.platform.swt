@@ -134,7 +134,8 @@ import org.eclipse.swt.events.*;
  */
 public class TableCursor extends Canvas {
 	Table table;
-	int row = -1, column = -1;
+	TableItem row = null;
+	TableColumn column = null;
 	Listener tableListener, resizeListener, disposeItemListener, disposeColumnListener;
 	
 	// By default, invert the list selection colors
@@ -219,33 +220,16 @@ public TableCursor(Table parent, int style) {
 
 	disposeItemListener = new Listener() {
 		public void handleEvent(Event event) {
-			Display display = getDisplay();
-			display.asyncExec(new Runnable() {
-				public void run() {
-					if (table.isDisposed()) return;
-					int oldRow = row;
-					row = -1;
-					int count = table.getItemCount();
-					if (count == 0) {
-						resize();
-					} else {
-						setRowColumn(oldRow == 0 ? 0 : oldRow -1, column, true);
-					}
-				}
-			});
+			row = null;
+			column = null;
+			resize();
 		}
 	};
 	disposeColumnListener = new Listener() {
 		public void handleEvent(Event event) {
-			Display display = getDisplay();
-			display.asyncExec(new Runnable() {
-				public void run() {
-					if (table.isDisposed()) return;
-					int oldColumn = column;
-					column = -1;
-					setRowColumn(row, oldColumn == 0 ? 0 : oldColumn-1, true);
-				}
-			});
+			row = null;
+			column = null;
+			resize();
 		}
 	};
 	resizeListener = new Listener() {
@@ -300,71 +284,70 @@ public void addSelectionListener(SelectionListener listener) {
 }
 
 void dispose(Event event) {
-	Display display = getDisplay();
-	display.asyncExec(new Runnable() {
-		public void run() {
-			if (table.isDisposed()) return;
-			table.removeListener(SWT.FocusIn, tableListener);
-			table.removeListener(SWT.MouseDown, tableListener);
-			if (column != -1) {
-				TableColumn col = table.getColumn(column);
-				col.removeListener(SWT.Dispose, disposeColumnListener);
-				col.removeListener(SWT.Move, resizeListener);
-				col.removeListener(SWT.Resize, resizeListener);
-			}
-			if (row != -1) {
-				table.getItem(row).removeListener(SWT.Dispose, disposeItemListener);
-			}
-			ScrollBar hBar = table.getHorizontalBar();
-			if (hBar != null) {
-				hBar.removeListener(SWT.Selection, resizeListener);
-			}
-			ScrollBar vBar = table.getVerticalBar();
-			if (vBar != null) {
-				vBar.removeListener(SWT.Selection, resizeListener);
-			}
-		}
-	});
+	table.removeListener(SWT.FocusIn, tableListener);
+	table.removeListener(SWT.MouseDown, tableListener);
+	if (column != null) {
+		column.removeListener(SWT.Dispose, disposeColumnListener);
+		column.removeListener(SWT.Move, resizeListener);
+		column.removeListener(SWT.Resize, resizeListener);
+		column = null;
+	}
+	if (row != null) {
+		row.removeListener(SWT.Dispose, disposeItemListener);
+		row = null;
+	}
+	ScrollBar hBar = table.getHorizontalBar();
+	if (hBar != null) {
+		hBar.removeListener(SWT.Selection, resizeListener);
+	}
+	ScrollBar vBar = table.getVerticalBar();
+	if (vBar != null) {
+		vBar.removeListener(SWT.Selection, resizeListener);
+	}
 }
 
 void keyDown(Event event) {
-	if (table.getItemCount() == 0) return;
+	if (row == null) return;
 	switch (event.character) {
 		case SWT.CR :
 			notifyListeners(SWT.DefaultSelection, new Event());
 			return;
 	}
+	int rowIndex = table.indexOf(row);
+	int columnIndex = column == null ? 0 : table.indexOf(column);
 	switch (event.keyCode) {
 		case SWT.ARROW_UP :
-			setRowColumn(Math.max(0, row - 1), column, true);
+			setRowColumn(Math.max(0, rowIndex - 1), columnIndex, true);
 			break;
 		case SWT.ARROW_DOWN :
-			setRowColumn(Math.min(row + 1,table.getItemCount() - 1), column, true);
+			setRowColumn(Math.min(rowIndex + 1, table.getItemCount() - 1), columnIndex, true);
 			break;
         case SWT.ARROW_LEFT :
         case SWT.ARROW_RIGHT :
         	{	
+        		int columnCount = table.getColumnCount();
+        		if (columnCount == 0) break;
 		        int leadKey = (getStyle() & SWT.RIGHT_TO_LEFT) != 0 ? SWT.ARROW_RIGHT : SWT.ARROW_LEFT;
 		        if (event.keyCode == leadKey) {
-		           setRowColumn(row, Math.max(0, column - 1), true);
+		           setRowColumn(rowIndex, Math.max(0, columnIndex - 1), true);
 		        } else {
-		           setRowColumn(row, Math.min(table.getColumnCount() - 1, column + 1), true);
+		           setRowColumn(rowIndex, Math.min(columnCount - 1, columnIndex + 1), true);
 		        }
 		        break;
         	}
 		case SWT.HOME :
-			setRowColumn(0, column, true);
+			setRowColumn(0, columnIndex, true);
 			break;
 		case SWT.END :
 			{
 				int i = table.getItemCount() - 1;
-				setRowColumn(i, column, true);
+				setRowColumn(i, columnIndex, true);
 				break;
 			}
 		case SWT.PAGE_UP :
 			{
 				int index = table.getTopIndex();
-				if (index == row) {
+				if (index == rowIndex) {
 					Rectangle rect = table.getClientArea();
 					TableItem item = table.getItem(index);
 					Rectangle itemRect = item.getBounds(0);
@@ -373,7 +356,7 @@ void keyDown(Event event) {
 					int page = Math.max(1, rect.height / height);
 					index = Math.max(0, index - page + 1);
 				}
-				setRowColumn(index, column, true);
+				setRowColumn(index, columnIndex, true);
 				break;
 			}
 		case SWT.PAGE_DOWN :
@@ -387,44 +370,44 @@ void keyDown(Event event) {
 				int page = Math.max(1, rect.height / height);
 				int end = table.getItemCount() - 1;
 				index = Math.min(end, index + page - 1);
-				if (index == row) {
+				if (index == rowIndex) {
 					index = Math.min(end, index + page - 1);
 				}
-				setRowColumn(index, column, true);
+				setRowColumn(index, columnIndex, true);
 				break;
 			}
 	}
 }
 
 void paint(Event event) {
+	if (row == null) return;
+	int columnIndex = column == null ? 0 : table.indexOf(column);
 	GC gc = event.gc;
 	Display display = getDisplay();
 	gc.setBackground(getBackground());
 	gc.setForeground(getForeground());
 	gc.fillRectangle(event.x, event.y, event.width, event.height);
-	TableItem item = table.getItem(row);
 	int x = 0;
 	Point size = getSize();
-	Image image = item.getImage(column);
+	Image image = row.getImage(columnIndex);
 	if (image != null) {
 		Rectangle imageSize = image.getBounds();
 		int imageY = (size.y - imageSize.height) / 2;
 		gc.drawImage(image, x, imageY);
 		x += imageSize.width;
 	}
-	String text = item.getText(column);
+	String text = row.getText(columnIndex);
 	if (text != "") { //$NON-NLS-1$
-		Rectangle bounds = item.getBounds(column);
+		Rectangle bounds = row.getBounds(columnIndex);
 		Point extent = gc.stringExtent(text);
 		TableColumn[] columns = table.getColumns();
 		// Temporary code - need a better way to determine table trim
 		String platform = SWT.getPlatform();
 		if ("win32".equals(platform)) { //$NON-NLS-1$
-			if (table.getColumns().length == 0 || column == 0) {
+			if (table.getColumns().length == 0 || columnIndex == 0) {
 				x += 2; 
 			} else {
-				TableColumn tableColumn = columns[column];
-				int alignmnent = tableColumn.getAlignment();
+				int alignmnent = column.getAlignment();
 				switch (alignmnent) {
 					case SWT.LEFT:
 						x += 6;
@@ -441,7 +424,7 @@ void paint(Event event) {
 			if (table.getColumns().length == 0) {
 				x += 5; 
 			} else {
-				int alignmnent = columns[column].getAlignment();
+				int alignmnent = column.getAlignment();
 				switch (alignmnent) {
 					case SWT.LEFT:
 						x += 5;
@@ -473,19 +456,18 @@ void tableFocusIn(Event event) {
 }
 
 void tableMouseDown(Event event) {
-	if (isDisposed() || !isVisible())
-		return;
+	if (isDisposed() || !isVisible()) return;
 	Point pt = new Point(event.x, event.y);
 	Rectangle clientRect = table.getClientArea();
-	int columns = table.getColumnCount();
+	int columnCount = table.getColumnCount();
+	int maxColumnIndex =  columnCount == 0 ? 0 : columnCount - 1;
 	int start = table.getTopIndex();
 	int end = table.getItemCount();
 	for (int i = start; i < end; i++) {
 		TableItem item = table.getItem(i);
-		for (int j = 0; j < columns; j++) {
+		for (int j = 0; j <= maxColumnIndex; j++) {
 			Rectangle rect = item.getBounds(j);
-			if (rect.y > clientRect.y + clientRect.height)
-				return;
+			if (rect.y > clientRect.y + clientRect.height) 	return;
 			if (rect.contains(pt)) {
 				setRowColumn(i, j, true);
 				setFocus();
@@ -505,47 +487,43 @@ void traverse(Event event) {
 	}
 	event.doit = true;
 }
-
 void setRowColumn(int row, int column, boolean notify) {
+	TableItem item = row == -1 ? null : table.getItem(row);
+	TableColumn col = column == -1 || table.getColumnCount() == 0 ? null : table.getColumn(column);
+	setRowColumn(item, col, notify);
+}
+void setRowColumn(TableItem row, TableColumn column, boolean notify) {
 	if (this.row == row && this.column == column) {
 		return;
 	}
-	if (this.row != row && this.row != -1) {
-		table.getItem(this.row).removeListener(SWT.Dispose, disposeItemListener);
-		this.row = -1;
+	if (this.row != null && this.row != row) {
+		this.row.removeListener(SWT.Dispose, disposeItemListener);
+		this.row = null;
 	}
-	if (this.column != column && this.column != -1) {
-		TableColumn col = table.getColumn(this.column);
-		col.removeListener(SWT.Dispose, disposeColumnListener);
-		col.removeListener(SWT.Move, resizeListener);
-		col.removeListener(SWT.Resize, resizeListener);
-		this.column = -1;
+	if (this.column != null && this.column != column) {
+		this.column.removeListener(SWT.Dispose, disposeColumnListener);
+		this.column.removeListener(SWT.Move, resizeListener);
+		this.column.removeListener(SWT.Resize, resizeListener);
+		this.column = null;
 	}
-	int itemCount = table.getItemCount();
-	int columnCount = table.getColumnCount();
-	if (0 <= row && row < itemCount) {
-		if ((columnCount == 0 && column == 0) || (column < columnCount && column >= 0)) {
-			TableItem item = table.getItem(row);
-			if (this.row != row) {
-				item.addListener(SWT.Dispose, disposeItemListener);
-				this.row = row;
-				table.showItem(item);
-			}
-			if (this.column  != column) {
-				this.column = column;
-				if (columnCount > 0) {
-					TableColumn col = table.getColumn(column);
-					col.addListener(SWT.Dispose, disposeColumnListener);
-					col.addListener(SWT.Move, resizeListener);
-					col.addListener(SWT.Resize, resizeListener);
-					table.showColumn(col);
-				}
-			}
-			setBounds(item.getBounds(column));
-			redraw();
-			if (notify) {
-				notifyListeners(SWT.Selection, new Event());
-			}
+	if (row != null) {
+		if (this.row != row) {
+			this.row = row;
+			row.addListener(SWT.Dispose, disposeItemListener);
+			table.showItem(row);
+		}
+		if (this.column != column && column != null) {
+			this.column = column;
+			column.addListener(SWT.Dispose, disposeColumnListener);
+			column.addListener(SWT.Move, resizeListener);
+			column.addListener(SWT.Resize, resizeListener);
+			table.showColumn(column);
+		}
+		int columnIndex = column == null ? 0 : table.indexOf(column);
+		setBounds(row.getBounds(columnIndex));
+		redraw();
+		if (notify) {
+			notifyListeners(SWT.Selection, new Event());
 		}
 	}
 }
@@ -585,11 +563,11 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 void resize() {
-	if (row == -1) {
+	if (row == null) {
 		setBounds(-200, -200, 0, 0);
 	} else {
-		TableItem item = table.getItem(row);
-		setBounds(item.getBounds(column));
+		int columnIndex = column == null ? 0 : table.indexOf(column);
+		setBounds(row.getBounds(columnIndex));
 	}
 }
 /**
@@ -604,7 +582,7 @@ void resize() {
  */
 public int getColumn() {
 	checkWidget();
-	return column;
+	return column == null ? 0 : table.indexOf(column);
 }
 /**
  * Returns the row over which the TableCursor is positioned.
@@ -618,7 +596,7 @@ public int getColumn() {
  */
 public TableItem getRow() {
 	checkWidget();
-	return table.getItem(row);
+	return row;
 }
 public void setBackground (Color color) {
 	if (color == null) color = getDisplay().getSystemColor(BACKGROUND);
@@ -644,10 +622,12 @@ public void setForeground (Color color) {
  */
 public void setSelection(int row, int column) {
 	checkWidget();
+	int columnCount = table.getColumnCount();
+	int maxColumnIndex =  columnCount == 0 ? 0 : columnCount - 1;
 	if (row < 0
 	    || row >= table.getItemCount()
 		|| column < 0
-		|| column >= table.getColumnCount())
+		|| column > maxColumnIndex)
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	setRowColumn(row, column, false);
 }
@@ -665,10 +645,12 @@ public void setSelection(int row, int column) {
  */
 public void setSelection(TableItem row, int column) {
 	checkWidget();
+	int columnCount = table.getColumnCount();
+	int maxColumnIndex =  columnCount == 0 ? 0 : columnCount - 1;
 	if (row == null
 		|| row.isDisposed()
 		|| column < 0
-		|| column >= table.getColumnCount())
+		|| column > maxColumnIndex)
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	setRowColumn(table.indexOf(row), column, false);
 }
