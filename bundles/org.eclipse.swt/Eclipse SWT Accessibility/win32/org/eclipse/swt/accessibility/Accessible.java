@@ -217,15 +217,11 @@ public class Accessible {
 			listener.hitTest(event);
 		}
 		int childID = event.childID;
-//		if (childID == ACC.CHILDID_NONE) {
-//			COM.MoveMemory(pvarChild, new short[] { COM.VT_EMPTY }, 2);
-//			return COM.S_FALSE;
-//		}
 		if (childID == ACC.CHILDID_NONE) {
 			return iaccessible.accHitTest(xLeft, yTop, pvarChild);
 		}
 		COM.MoveMemory(pvarChild, new short[] { COM.VT_I4 }, 2);
-		COM.MoveMemory(pvarChild + 8, new int[] { childID }, 4);
+		COM.MoveMemory(pvarChild + 8, new int[] { childID + 1 }, 4);
 		return COM.S_OK;
 	}
 	
@@ -238,7 +234,7 @@ public class Accessible {
 
 		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = varChild_lVal;
+		event.childID = varChild_lVal - 1;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getLocation(event);
@@ -261,7 +257,7 @@ public class Accessible {
 		switch (navDir) {
 			case ACC.NAVDIR_FIRSTCHILD:
 			case ACC.NAVDIR_LASTCHILD:
-				if (varStart_lVal != ACC.CHILDID_SELF) return COM.E_INVALIDARG;
+				if (varStart_lVal != COM.CHILDID_SELF) return COM.E_INVALIDARG;
 			case ACC.NAVDIR_UP:
 			case ACC.NAVDIR_DOWN:
 			case ACC.NAVDIR_LEFT:
@@ -273,7 +269,7 @@ public class Accessible {
 		}
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.code = navDir;
-		event.childID = varStart_lVal;
+		event.childID = varStart_lVal - 1;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.navigate(event);
@@ -295,7 +291,7 @@ public class Accessible {
 			return COM.S_OK;
 		}
 		COM.MoveMemory(pvarEndUpAt, new short[] { COM.VT_I4 }, 2);
-		COM.MoveMemory(pvarEndUpAt + 8, new int[] { childID }, 4);
+		COM.MoveMemory(pvarEndUpAt + 8, new int[] { childID + 1 }, 4);
 		return COM.S_OK;
 	}
 	
@@ -315,7 +311,7 @@ public class Accessible {
 
 		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = varChild_lVal;
+		event.childID = varChild_lVal - 1;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getChild(event);
@@ -356,7 +352,7 @@ public class Accessible {
 
 		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = varChild_lVal;
+		event.childID = varChild_lVal - 1;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getDefaultAction(event);
@@ -377,7 +373,7 @@ public class Accessible {
 
 		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = varChild_lVal;
+		event.childID = varChild_lVal - 1;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
 			listener.getDescription(event);
@@ -419,7 +415,7 @@ public class Accessible {
 			return COM.S_OK;
 		}
 		COM.MoveMemory(pvarChild, new short[] { COM.VT_I4 }, 2);
-		COM.MoveMemory(pvarChild + 8, new int[] { childID }, 4);
+		COM.MoveMemory(pvarChild + 8, new int[] { childID + 1 }, 4);
 		return COM.S_OK;
 	}
 	
@@ -432,7 +428,7 @@ public class Accessible {
 
 		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = varChild_lVal;
+		event.childID = varChild_lVal - 1;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
 			listener.getHelp(event);
@@ -462,7 +458,7 @@ public class Accessible {
 
 		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = varChild_lVal;
+		event.childID = varChild_lVal - 1;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
 			listener.getKeyboardShortcut(event);
@@ -483,7 +479,7 @@ public class Accessible {
 
 		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = varChild_lVal;
+		event.childID = varChild_lVal - 1;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
 			listener.getName(event);
@@ -510,7 +506,7 @@ public class Accessible {
 
 		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = varChild_lVal;
+		event.childID = varChild_lVal - 1;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getRole(event);
@@ -561,7 +557,7 @@ public class Accessible {
 			return COM.S_OK;
 		}
 		COM.MoveMemory(pvarChildren, new short[] { COM.VT_I4 }, 2);
-		COM.MoveMemory(pvarChildren + 8, new int[] { childID }, 4);
+		COM.MoveMemory(pvarChildren + 8, new int[] { childID + 1 }, 4);
 		return COM.S_OK;
 	}
 	
@@ -574,7 +570,7 @@ public class Accessible {
 
 		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = varChild_lVal;
+		event.childID = varChild_lVal - 1;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getState(event);
@@ -595,7 +591,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = varChild_lVal;
+		event.childID = varChild_lVal - 1;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getValue(event);
@@ -649,7 +645,12 @@ public class Accessible {
 			if (enumIndex <= endIndex) {
 				nextItems = new Object[endIndex - enumIndex + 1];
 				for (int i = 0; i < nextItems.length; i++) {
-					nextItems[i] = variants[enumIndex];
+					Object child = variants[enumIndex];
+					if (child instanceof Integer) {
+						nextItems[i] = new Integer(((Integer)child).intValue() + 1);
+					} else {
+						nextItems[i] = child;
+					}
 					enumIndex++;
 				}
 			}

@@ -13,10 +13,10 @@ package org.eclipse.swt.accessibility;
  * extend this class and override only the methods that they are
  * interested in.
  * </p><p>
- * Accessibility clients use child identifiers to specify
+ * Note: Accessibility clients use child identifiers to specify
  * whether they want information about a control or one of its children.
- * Child identifiers are positive integers > 0.
- * The identifier CHILDID_SELF (0) represents the control.
+ * Child identifiers are increasing integers beginning with 0.
+ * The identifier CHILDID_SELF represents the control itself.
  * When returning a child identifier to a client, you may use CHILDID_NONE
  * to indicate that no child or control has the required information.
  * </p><p>

@@ -37,8 +37,7 @@ public AccessibleControlEvent(Object source) {
 }
 
 public String toString () {
-	return "AccessibleControlEvent {" + 
-		" childID=" + childID + 
+	return "AccessibleControlEvent {childID=" + childID + 
 		" accessible=" + accessible + 
 		" x=" + x + 
 		" y=" + y + 

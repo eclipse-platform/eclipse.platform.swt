@@ -9,6 +9,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.accessibility.*;
 
 /**
  * The CCombo class represents a selectable user interface object
@@ -96,6 +97,7 @@ public CCombo (Composite parent, int style) {
 	int [] arrowEvents = {SWT.MouseDown, SWT.FocusIn, SWT.FocusOut};
 	for (int i=0; i<arrowEvents.length; i++) arrow.addListener (arrowEvents [i], listener);
 	
+	initAccessible();
 }
 static int checkStyle (int style) {
 	int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT;
@@ -525,6 +527,48 @@ public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return list.indexOf (string, start);
+}
+
+void initAccessible() {
+	getAccessible().addAccessibleListener(new AccessibleAdapter() {
+		public void getHelp(AccessibleEvent e) {
+			e.result = getToolTipText();
+		}
+	});
+		
+	getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
+		public void hitTest(AccessibleControlEvent e) {
+			Point testPoint = toControl(new Point(e.x, e.y));
+			if (getBounds().contains(testPoint)) {
+				e.childID = ACC.CHILDID_SELF;
+			}
+		}
+		
+		public void getLocation(AccessibleControlEvent e) {
+			Rectangle location = getBounds();
+			Point pt = toDisplay(new Point(location.x, location.y));
+			e.x = pt.x;
+			e.y = pt.y;
+			e.width = location.width;
+			e.height = location.height;
+		}
+		
+		public void getChildCount(AccessibleControlEvent e) {
+			e.code = 0;
+		}
+		
+		public void getRole(AccessibleControlEvent e) {
+			e.code = ACC.ROLE_SYSTEM_COMBOBOX;
+		}
+		
+		public void getState(AccessibleControlEvent e) {
+			e.code = ACC.STATE_SYSTEM_NORMAL;
+		}
+
+		public void getValue(AccessibleEvent e) {
+			e.result = getText();
+		}
+	});
 }
 boolean isDropped () {
 	return popup.getVisible ();

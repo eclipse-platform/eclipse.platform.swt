@@ -19,10 +19,10 @@ import org.eclipse.swt.internal.SWTEventListener;
  * When a client requests information the appropriate method
  * will be invoked.
  * </p><p>
- * Accessibility clients use child identifiers to specify
+ * Note: Accessibility clients use child identifiers to specify
  * whether they want information about a control or one of its children.
- * Child identifiers are positive integers > 0.
- * The identifier CHILDID_SELF (0) represents the control.
+ * Child identifiers are increasing integers beginning with 0.
+ * The identifier CHILDID_SELF represents the control itself.
  * </p><p>
  * Note: This interface is typically used by implementors of
  * a custom control to provide very detailed information about

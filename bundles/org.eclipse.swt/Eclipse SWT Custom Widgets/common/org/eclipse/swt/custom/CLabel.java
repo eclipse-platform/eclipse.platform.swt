@@ -233,13 +233,11 @@ private void initAccessible() {
 	Accessible accessible = getAccessible();
 	accessible.addAccessibleListener(new AccessibleAdapter() {
 		public void getName(AccessibleEvent e) {
-			String text = getText();
-			e.result = (text == null) ? "" : text;
+			e.result = getText();
 		}
 		
 		public void getHelp(AccessibleEvent e) {
-			String tooltip = getToolTipText();
-			e.result = (tooltip == null) ? "" : tooltip;
+			e.result = getToolTipText();
 		}
 	});
 		
@@ -267,7 +265,7 @@ private void initAccessible() {
 		}
 		
 		public void getState(AccessibleControlEvent e) {
-			e.code = ACC.STATE_SYSTEM_NORMAL;
+			e.code = ACC.STATE_SYSTEM_READONLY;
 		}
 	});
 }

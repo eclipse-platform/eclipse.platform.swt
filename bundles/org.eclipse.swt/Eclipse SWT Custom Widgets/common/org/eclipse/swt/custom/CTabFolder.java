@@ -732,36 +732,34 @@ private void initAccessible() {
 	Accessible accessible = getAccessible();
 	accessible.addAccessibleListener(new AccessibleAdapter() {
 		public void getName(AccessibleEvent e) {
-			String name = "";
+			String name = null;
 			int childID = e.childID;
-			if (childID > 0 && childID <= items.length) {
-				String text = items[childID - 1].getText();
-				if (text != null) name = text;
+			if (childID >= 0 && childID < items.length) {
+				name = items[childID].getText();
+				int index = name.indexOf('&');
+				if (index > 0) {
+					name = name.substring(0, index) + name.substring(index + 1);
+				}
 			}
 			e.result = name;
 		}
 
 		public void getHelp(AccessibleEvent e) {
-			String help = "";
+			String help = null;
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_SELF) {
-				String tooltip = getToolTipText();
-				if (tooltip != null) help = tooltip;
-			}
-			if (childID > 0 && childID <= items.length) {
-				CTabItem childItem = items[childID - 1];
-				String tooltip = childItem.getToolTipText();
-				if (tooltip != null) help = tooltip;
+				help = getToolTipText();
+			} else if (childID >= 0 && childID < items.length) {
+				help = items[childID].getToolTipText();
 			}
 			e.result = help;
 		}
 		
 		public void getKeyboardShortcut(AccessibleEvent e) {
-			String shortcut = "";
+			String shortcut = null;
 			int childID = e.childID;
-			if (childID > 0 && childID <= items.length) {
-				CTabItem childItem = items[childID - 1];
-				String text = childItem.getText();
+			if (childID >= 0 && childID < items.length) {
+				String text = items[childID].getText();
 				if (text != null) {
 					char mnemonic = getMnemonic(text);	
 					if (mnemonic != '\0') {
@@ -776,16 +774,19 @@ private void initAccessible() {
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
 		public void hitTest(AccessibleControlEvent e) {
 			Point testPoint = toControl(new Point(e.x, e.y));
-			int childID = ACC.CHILDID_SELF;
+			int childID = ACC.CHILDID_NONE;
 			for (int i = 0; i < items.length; i++) {
-				Rectangle bounds = items[i].getBounds();
-				if (bounds.contains(testPoint)) {
-					childID = i + 1;
+				if (items[i].getBounds().contains(testPoint)) {
+					childID = i;
 					break;
 				}
 			}
-			if (childID == ACC.CHILDID_SELF && !getBounds().contains(testPoint)) {
-				e.childID = ACC.CHILDID_NONE;
+			if (childID == ACC.CHILDID_NONE) {
+				Rectangle location = getBounds();
+				location.height = location.height - getClientArea().height;
+				if (location.contains(testPoint)) {
+					childID = ACC.CHILDID_SELF;
+				}
 			}
 			e.childID = childID;
 		}
@@ -797,9 +798,8 @@ private void initAccessible() {
 			if (childID == ACC.CHILDID_SELF) {
 				location = getBounds();
 			}
-			if (childID > 0 && childID <= items.length) {
-				CTabItem childItem = items[childID - 1];
-				location = childItem.getBounds();
+			if (childID >= 0 && childID < items.length) {
+				location = items[childID].getBounds();
 			}
 			if (location != null) {
 				Point pt = toDisplay(new Point(location.x, location.y));
@@ -815,23 +815,23 @@ private void initAccessible() {
 			switch (e.code) {
 				case ACC.NAVDIR_UP:
 				case ACC.NAVDIR_DOWN:
-					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
+					if (e.childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
 					break;
 				case ACC.NAVDIR_FIRSTCHILD:
-					if (items.length > 0) childID = 1;
+					if (items.length > 0) childID = 0;
 					break;
 				case ACC.NAVDIR_LASTCHILD:
-					if (items.length > 0) childID = items.length;
+					if (items.length > 0) childID = items.length - 1;
 					break;
 				case ACC.NAVDIR_LEFT:
 				case ACC.NAVDIR_PREVIOUS:
-					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
-					if (items.length > 0 && childID > 1) childID = childID - 1;
+					if (e.childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
+					if (items.length > 0 && e.childID > 0) childID = e.childID - 1;
 					break;
 				case ACC.NAVDIR_RIGHT:
 				case ACC.NAVDIR_NEXT:
 					if (childID == ACC.CHILDID_SELF) childID = ACC.CHILDID_SELF;
-					if (items.length > 0 && childID < items.length) childID = childID + 1;
+					if (items.length > 0 && e.childID < items.length - 1) childID = e.childID + 1;
 					break;
 			}
 			e.childID = childID;
@@ -842,9 +842,9 @@ private void initAccessible() {
 		}
 		
 		public void getDefaultAction(AccessibleControlEvent e) {
-			String action = "";
+			String action = null;
 			int childID = e.childID;
-			if (childID > 0 && childID <= items.length) {
+			if (childID >= 0 && childID < items.length) {
 				action = "Switch";
 			}
 			e.result = action;
@@ -855,15 +855,14 @@ private void initAccessible() {
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_SELF) {
 				role = ACC.ROLE_SYSTEM_PAGETABLIST;
-			}
-			if (childID > 0 && childID <= items.length) {
+			} else if (childID >= 0 && childID < items.length) {
 				role = ACC.ROLE_SYSTEM_PAGETAB;
 			}
 			e.code = role;
 		}
 		
 		public void getSelection(AccessibleControlEvent e) {
-			e.childID = (selectedIndex == -1) ? ACC.CHILDID_NONE : selectedIndex + 1;
+			e.childID = (selectedIndex == -1) ? ACC.CHILDID_NONE : selectedIndex;
 		}
 		
 		public void getState(AccessibleControlEvent e) {
@@ -871,11 +870,16 @@ private void initAccessible() {
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_SELF) {
 				state = ACC.STATE_SYSTEM_NORMAL;
-			}
-			if (childID > 0 && childID <= items.length) {
+			} else if (childID >= 0 && childID < items.length) {
 				state = ACC.STATE_SYSTEM_SELECTABLE;
-				if (selectedIndex == childID - 1) {
+				if (isFocusControl()) {
+					state |= ACC.STATE_SYSTEM_FOCUSABLE;
+				}
+				if (selectedIndex == childID) {
 					state |= ACC.STATE_SYSTEM_SELECTED;
+					if (isFocusControl()) {
+						state |= ACC.STATE_SYSTEM_FOCUSED;
+					}
 				}
 			}
 			e.code = state;
@@ -884,7 +888,7 @@ private void initAccessible() {
 		public void getChildren(AccessibleControlEvent e) {
 			Object[] children = new Object[items.length];
 			for (int i = 0; i < items.length; i++) {
-				children[i] = new Integer(i + 1);
+				children[i] = new Integer(i);
 			}
 			e.children = children;
 		}

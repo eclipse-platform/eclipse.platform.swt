@@ -658,6 +658,9 @@ public static final int NAVDIR_NEXT = 0x5;
 public static final int NAVDIR_PREVIOUS = 0x6;
 public static final int NAVDIR_FIRSTCHILD = 0x7;
 public static final int NAVDIR_LASTCHILD = 0x8;
+
+public static final int CHILDID_SELF = 0;
+
 /* End ACCESSIBILITY */
 
 }
