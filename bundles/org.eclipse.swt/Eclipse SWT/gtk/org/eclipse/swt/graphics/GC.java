@@ -660,8 +660,58 @@ private int _getGCFont() {
  *   ===  Drawing operations proper  ===
  */
 
+/**
+ * Copies a rectangular area of the receiver at the specified
+ * position into the image, which must be of type <code>SWT.BITMAP</code>.
+ *
+ * @param x the x coordinate in the receiver of the area to be copied
+ * @param y the y coordinate in the receiver of the area to be copied
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image is not a bitmap or has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void copyArea(Image image, int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	Rectangle rect = image.getBounds();
+	int xGC = OS.gdk_gc_new(image.pixmap);
+	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	// is it possible/necessary to set the subwindow mode??
+	OS.gdk_window_copy_area (image.pixmap,  // dest window
+	                         xGC,
+	                         0, 0,          // dest coords
+	                         image.pixmap,  // src window
+	                         x, y,          // src coords
+	                         rect.width, rect.height);
+	OS.gdk_gc_destroy(xGC);
+}
+
+/**
+ * Copies a rectangular area of the receiver at the source
+ * position onto the receiver at the destination position.
+ *
+ * @param srcX the x coordinate in the receiver of the area to be copied
+ * @param srcY the y coordinate in the receiver of the area to be copied
+ * @param width the width of the area to copy
+ * @param height the height of the area to copy
+ * @param destX the x coordinate in the receiver of the area to copy to
+ * @param destY the y coordinate in the receiver of the area to copy to
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
-	OS.gdk_window_copy_area(data.drawable, handle, destX, destY, data.drawable, srcX, srcY, width, height);
+	OS.gdk_window_copy_area (data.drawable, handle,
+	                         destX, destY,
+	                         data.drawable,
+	                         srcX, srcY, width, height);
 }
 
 /**
