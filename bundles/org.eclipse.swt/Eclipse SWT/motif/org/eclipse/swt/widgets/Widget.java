@@ -726,27 +726,38 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 	if (xEvent.keycode != 0) {
 		byte [] buffer = new byte [1];
 		int [] keysym = new int [1];
-		if (OS.XLookupString (xEvent, buffer, buffer.length, keysym, null) == 0) {
-			/*
-			* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
-			* translated correctly by XLookupString().  They are mapped
-			* to 0x1005FF10 and 0x1005FF11 respectively.  The fix is to
-			* look for these values explicitly and correct them.
-			*/
-			if (OS.IsSunOS) {
-				if (keysym [0] == 0x1005FF10) keysym [0] = OS.XK_F11;
-				if (keysym [0] == 0x1005FF11) keysym [0] = OS.XK_F12;
-				/*
-				* Bug in MOTIF.  On Solaris only, there is garbage in the
-				* high 16-bits for Keysyms such as XK_Down.  Since Keysyms
-				* must be 16-bits to fit into a Character, mask away the
-				* high 16-bits on all platforms.
-				*/
-				keysym [0] &= 0xFFFF;
+		int lookupLength = OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
+		/*
+		* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
+		* translated correctly by XLookupString().  They are mapped
+		* to 0x1005FF10 and 0x1005FF11 respectively.  The fix is to
+		* look for these values explicitly and correct them.
+		*/
+		if (OS.IsSunOS && keysym [0] != 0) {
+			switch (keysym [0]) {
+				case 0x1005FF10: 
+					keysym [0] = OS.XK_F11;
+					lookupLength = 0;
+					break;
+				case 0x1005FF11:
+					keysym [0] = OS.XK_F12;
+					lookupLength = 0;
+					break;
 			}
+			/*
+			* Bug in MOTIF.  On Solaris only, there is garbage in the
+			* high 16-bits for Keysyms such as XK_Down.  Since Keysyms
+			* must be 16-bits to fit into a Character, mask away the
+			* high 16-bits on all platforms.
+			*/
+			keysym [0] &= 0xFFFF;
+		}
+		if (lookupLength == 0) {
 			event.keyCode = Display.translateKey (keysym [0]);
 			/*
-			* Handle known cases for which XLookupString fails.
+			* If translateKey () could not find a translation for the keysym
+			* then attempt some known keysyms for which we can provide the
+			* appropriate character.
 			*/
 			if (event.keyCode == 0) {
 				switch (keysym [0]) {
