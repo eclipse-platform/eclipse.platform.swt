@@ -42,6 +42,7 @@ public class List extends Scrollable {
 	int itemCount, anchorFirst, anchorLast;
 	boolean ignoreSelect;
 	static final int COLUMN_ID = 1024;
+	static final int EXTRA_WIDTH = 25;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -199,6 +200,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = Math.max (width, extent.x);
 		}
 		gc.dispose ();
+		width += EXTRA_WIDTH;
 	} else {
 		width = wHint;
 	}

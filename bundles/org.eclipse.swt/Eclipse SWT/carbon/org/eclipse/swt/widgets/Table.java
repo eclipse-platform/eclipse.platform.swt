@@ -787,7 +787,11 @@ public TableItem getItem (Point point) {
 	//TODO - optimize
 	for (int i=0; i<itemCount; i++) {
 		if (OS.GetDataBrowserItemPartBounds (handle, i + 1, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-			if (OS.PtInRect (pt, rect)) return items [i];
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				if (rect.top <= pt.v && pt.v < rect.bottom) return items [i];
+			} else {
+				if (OS.PtInRect (pt, rect)) return items [i];
+			}
 		}
 	}
 	return null;
