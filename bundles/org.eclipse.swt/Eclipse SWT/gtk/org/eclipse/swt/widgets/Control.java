@@ -2124,6 +2124,7 @@ void releaseWidget () {
 	toolTipText = null;
 	parent = null;
 	layoutData = null;
+	accessible = null;
 }
 
 void sendFocusEvent (int type) {

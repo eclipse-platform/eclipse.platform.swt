@@ -1173,17 +1173,6 @@ class AccessibleObject {
 		return 0;
 	}
 
-	void dispose () {
-		if (DEBUG) System.out.println("AccessibleObject.dispose: " + handle);
-		accessible = null;
-		Enumeration elements = children.elements ();
-		while (elements.hasMoreElements ()) {
-			AccessibleObject child = (AccessibleObject) elements.nextElement ();
-			if (child.isLightweight) OS.g_object_unref (child.handle);
-		}
-		if (parent != null) parent.removeChild (this, false);
-	}
-
 	AccessibleListener[] getAccessibleListeners () {
 		if (accessible == null) return new AccessibleListener [0];
 		return accessible.getAccessibleListeners ();
@@ -1267,7 +1256,7 @@ class AccessibleObject {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			AccessibleObjects.remove (new Integer (atkObject));
-			object.dispose ();
+			object.release ();
 		}
 		return 0;
 	}
@@ -1316,6 +1305,17 @@ class AccessibleObject {
 		return index;
 	}
 
+	void release () {
+		if (DEBUG) System.out.println("AccessibleObject.release: " + handle);
+		accessible = null;
+		Enumeration elements = children.elements ();
+		while (elements.hasMoreElements ()) {
+			AccessibleObject child = (AccessibleObject) elements.nextElement ();
+			if (child.isLightweight) OS.g_object_unref (child.handle);
+		}
+		if (parent != null) parent.removeChild (this, false);
+	}
+	
 	void removeChild (AccessibleObject child, boolean unref) {
 		children.remove (new Integer (child.handle));
 		if (unref && child.isLightweight) OS.g_object_unref (child.handle);
@@ -1385,6 +1385,7 @@ class AccessibleObject {
 				}
 			} else {
 				// an array of Accessible children was answered
+				int childIndex = 0;
 				for (int i = 0; i < event.children.length; i++) {
 					AccessibleObject object = null;
 					try {
@@ -1392,8 +1393,10 @@ class AccessibleObject {
 					} catch (ClassCastException e) {
 						// a non-Accessible value was given so nothing to do here 
 					}
-					object.index = i;
-					childrenCopy.remove (new Integer (object.handle));
+					if (object != null) {
+						object.index = childIndex++;
+						childrenCopy.remove (new Integer (object.handle));
+					}
 				}
 			}
 			// remove previous children of self which were not answered

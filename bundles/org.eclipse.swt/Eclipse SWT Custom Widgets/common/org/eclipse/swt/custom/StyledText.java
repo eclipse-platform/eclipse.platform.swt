@@ -5225,6 +5225,7 @@ void handleDispose() {
 	}
 	if (content != null) {
 		content.removeTextChangeListener(textChangeListener);
+		content = null;
 	}	
 	if (leftCaretBitmap != null) {
 		leftCaretBitmap.dispose();
@@ -5234,9 +5235,26 @@ void handleDispose() {
 		rightCaretBitmap.dispose();
 		rightCaretBitmap = null;
 	}
+	if (defaultLineStyler != null) {
+		defaultLineStyler.release();
+		defaultLineStyler = null;
+	}
 	if (isBidi()) {
 		StyledTextBidi.removeLanguageListener(this);
 	}
+	selectionBackground = null;
+	selectionForeground = null;
+	logicalContent = null;
+	textChangeListener = null;
+	lineCache = null;
+	ibeamCursor = null;
+	selection = null;
+	doubleClickSelection = null;
+	keyActionMap = null;
+	background = null;
+	foreground = null;
+	clipboard = null;
+	caretPalette = null;
 }
 /** 
  * Scrolls the widget horizontally.

@@ -682,4 +682,7 @@ StyleRange[] getStyleRangesFor(int offset, int length) {
 	}
 	return ranges;
 }
+void release () {
+	styles = null;
+}
 }

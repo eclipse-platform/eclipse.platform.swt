@@ -39,8 +39,7 @@ public class Accessible {
 		AccessibleFactory.registerAccessible (this);
 		control.addDisposeListener (new DisposeListener () {
 			public void widgetDisposed (DisposeEvent e) {
-				if (accessibleObject != null) accessibleObject.dispose ();
-				AccessibleFactory.unregisterAccessible (Accessible.this);
+				release ();
 			}
 		});
 	}	
@@ -187,6 +186,16 @@ public class Accessible {
 		return control.getDisplay ().getThread () == Thread.currentThread ();
 	}
 	
+	void release () {
+		AccessibleFactory.unregisterAccessible (Accessible.this);
+		if (accessibleObject != null) {
+			accessibleObject.release ();
+			accessibleObject = null;
+		}
+		accessibleListeners = null;
+		controlListeners = null;
+		textListeners = null;
+	}
 	/**
 	 * Removes the listener from the collection of listeners who will
 	 * be notifed when an accessible client asks for custom control
