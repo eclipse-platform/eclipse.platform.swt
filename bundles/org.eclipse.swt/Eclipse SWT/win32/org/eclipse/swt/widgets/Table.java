@@ -2719,7 +2719,8 @@ public void showColumn (TableColumn column) {
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (column.parent != this) return;
-	int index = indexOf (column);	
+	int index = indexOf (column);
+	if (index == -1) return;
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (count <= 1 || !(0 <= index && index < count)) return;
@@ -3083,7 +3084,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			case OS.HDN_BEGINTRACKW:
 			case OS.HDN_BEGINTRACKA:
 			case OS.HDN_DIVIDERDBLCLICKW:
-			case OS.HDN_DIVIDERDBLCLICKA:{
+			case OS.HDN_DIVIDERDBLCLICKA: {
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 				TableColumn column = columns [phdn.iItem];
