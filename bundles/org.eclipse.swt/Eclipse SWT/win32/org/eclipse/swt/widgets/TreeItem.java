@@ -795,8 +795,7 @@ public void removeAll () {
 	checkWidget ();
 	int hwnd = parent.handle;
 	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-	if (hItem == 0) return; 
-
+	if (hItem == 0) return;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	tvItem.hItem = hItem;
@@ -804,10 +803,8 @@ public void removeAll () {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 		TreeItem item = parent.items [tvItem.lParam];
 		tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, tvItem.hItem);
-		if (item != null) {
-			item.releaseChild ();
-			item.releaseWidget ();
-			item.destroyWidget ();
+		if (item != null && !item.isDisposed ()) {
+			item.dispose ();
 		}
 	}
 }
