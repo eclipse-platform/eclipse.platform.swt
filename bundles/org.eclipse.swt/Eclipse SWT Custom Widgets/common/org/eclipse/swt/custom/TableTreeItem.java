@@ -8,7 +8,6 @@ package org.eclipse.swt.custom;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -28,6 +27,7 @@ public class TableTreeItem extends Item {
 	Color foreground;
 	boolean expanded;
 	boolean checked;
+	boolean grayed;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -194,6 +194,7 @@ void addCheck() {
 	Table table = parent.getTable();
 	if ((table.getStyle() & SWT.CHECK) == 0) return;
 	tableItem.setChecked(checked);
+	tableItem.setGrayed(grayed);
 }
 void addItem(TableTreeItem item, int index) {
 	if (item == null) throw new SWTError(SWT.ERROR_NULL_ARGUMENT);
@@ -257,9 +258,8 @@ public Rectangle getBounds (int index) {
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
  * the <code>CHECK style, return false.
- * <p>
  *
- * @return the checked state
+ * @return the checked state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -268,11 +268,28 @@ public Rectangle getBounds (int index) {
  */
 public boolean getChecked () {
 	checkWidget();
-	if (tableItem == null) {
-		return checked;
-	}
+	if (tableItem == null) return checked;
 	return tableItem.getChecked();
 }
+
+/**
+ * Returns <code>true</code> if the receiver is grayed,
+ * and false otherwise. When the parent does not have
+ * the <code>CHECK</code> style, return false.
+ *
+ * @return the grayed state of the checkbox
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean getGrayed () {
+	checkWidget();
+	if (tableItem == null) return grayed;
+	return tableItem.getGrayed();
+}
+
 public Display getDisplay () {
 	TableTree parent = this.parent;
 	if (parent == null) throw new SWTError (SWT.ERROR_WIDGET_DISPOSED);
@@ -552,22 +569,47 @@ public void setBackground (Color color) {
 }
 
 /**
-* Sets the checked state.
-* <p>
-* @param checked the new checked state.
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-* </ul>
-*/
+ * Sets the checked state of the checkbox for this item.  This state change 
+ * only applies if the Table was created with the SWT.CHECK style.
+ *
+ * @param checked the new checked state of the checkbox
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setChecked (boolean checked) {
 	checkWidget();
+	Table table = parent.getTable();
+	if ((table.getStyle() & SWT.CHECK) == 0) return;
 	if (tableItem != null) {
 		tableItem.setChecked(checked);
 	}
 	this.checked = checked;
 }
+
+/**
+ * Sets the grayed state of the checkbox for this item.  This state change 
+ * only applies if the Table was created with the SWT.CHECK style.
+ *
+ * @param grayed the new grayed state of the checkbox; 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setGrayed (boolean grayed) {
+	checkWidget();
+	Table table = parent.getTable();
+	if ((table.getStyle() & SWT.CHECK) == 0) return;
+	if (tableItem != null) {
+		tableItem.setGrayed(grayed);
+	}
+	this.grayed = grayed;
+}
+
 /**
  * Sets the expanded state.
  * <p>
