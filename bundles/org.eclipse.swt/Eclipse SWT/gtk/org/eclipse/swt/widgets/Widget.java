@@ -535,8 +535,11 @@ void postEvent (int eventType, Event event) {
 
 int processEvent (int eventNumber, int int0, int int1, int int2) {
 	/*
-	* Fetuare in GTK.  Events will propagate up the hierarchy. The
-	* fix is to detect this and stop the propagation.
+	* Feature in GTK.  Events such as mouse move are propagate up
+	* the widget hierarchy and are seen by the parent.  This is the
+	* correct GTK behavior but not correct for SWT.  The fix is to
+	* hook a signal after and stop the propagation using a negative
+	* event number to distinguish this case.
 	*/
 	if (eventNumber < 0) return 1;
 	switch (eventNumber) {
