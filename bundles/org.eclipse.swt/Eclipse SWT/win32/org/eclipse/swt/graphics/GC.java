@@ -689,13 +689,13 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	if (!OS.IsWinCE) OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
 	OS.MoveMemory(dibBM.bmBits, srcData, sizeInBytes);
 	/* 
-	* Bug in WinCE.  StretchBlt does not correctly stretch when the
-	* source and destination HDCs are the same.  The workaround is to
+	* Bug in WinCE and Win98.  StretchBlt does not correctly stretch when
+	* the source and destination HDCs are the same.  The workaround is to
 	* stretch to a temporary HDC and blit back into the original HDC.
-	* Note that StretchBlt correctly compresses the image when the
+	* Note that on WinCE StretchBlt correctly compresses the image when the
 	* source and destination HDCs are the same.
 	*/
-	if (OS.IsWinCE && (destWidth > srcWidth || destHeight > srcHeight)) {
+	if ((OS.IsWinCE && (destWidth > srcWidth || destHeight > srcHeight)) || (!OS.IsWinNT && !OS.IsWinCE)) {
 		int tempHdc = OS.CreateCompatibleDC(handle);
 		int tempDib = createDIB(destWidth, destHeight);
 		int oldTempBitmap = OS.SelectObject(tempHdc, tempDib);
