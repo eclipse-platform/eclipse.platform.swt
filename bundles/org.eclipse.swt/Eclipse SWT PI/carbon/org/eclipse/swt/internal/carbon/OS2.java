@@ -38,20 +38,6 @@ public static int CFStringCreateWithCharacters(String string) {
 	string.getChars(0, chars.length, chars, 0);
 	return OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
 }
-public static void RGBBackColor(short red, short green, short blue) {
-	RGBColor color = new RGBColor();
-	color.red = red;
-	color.green = green;
-	color.blue = blue;
-	OS.RGBBackColor(color);
-}
-public static void RGBForeColor(short red, short green, short blue) {	
-	RGBColor color = new RGBColor();
-	color.red = red;
-	color.green = green;
-	color.blue = blue;
-	OS.RGBForeColor(color);
-}
 
 //////////////////////////////////////////
 //  added by AW while merging HIView stuff

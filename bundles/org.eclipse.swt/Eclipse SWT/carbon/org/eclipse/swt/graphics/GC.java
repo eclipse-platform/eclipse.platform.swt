@@ -11,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.widgets.MacUtil;
+import org.eclipse.swt.internal.carbon.RGBColor;
 
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are 
@@ -372,9 +373,16 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			Rect rect= new Rect();
 			rect.left= (short)destX; rect.top= (short)destY;
 			rect.right= (short)(destX + destWidth); rect.bottom= (short)(destY + destHeight);
-		
-			OS.RGBBackColor((short)0xFFFF, (short)0xFFFF, (short)0xFFFF);
-			OS.RGBForeColor((short)0x0000, (short)0x0000, (short)0x0000);
+			
+			RGBColor color = new RGBColor();
+			color.red = (short)0xFFFF;
+			color.green = (short)0xFFFF;
+			color.blue = (short)0xFFFF;
+			OS.RGBBackColor(color);
+			color.red = (short)0x0000;
+			color.green = (short)0x0000;
+			color.blue = (short)0x0000;
+			OS.RGBForeColor(color);
 
 			if (srcImage.alpha != -1 || srcImage.alphaData != null) {
 				

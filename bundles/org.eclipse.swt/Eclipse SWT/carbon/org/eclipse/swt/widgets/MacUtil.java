@@ -15,6 +15,7 @@ import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Point;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.RGBColor;
 
 public class MacUtil {
 
@@ -465,21 +466,33 @@ public class MacUtil {
 	
 	public static void RGBBackColor(int packed) {
 		if ((packed & 0xff000000) == 0) {
-			OS.RGBBackColor((short)(((packed >> 16) & 0xFF) * 257),
-							(short)(((packed >> 8) & 0xFF) * 257),
-							(short)(((packed) & 0xFF) * 257));
+			RGBColor color = new RGBColor();
+			color.red = (short)(((packed >> 16) & 0xFF) * 257);
+			color.green = (short)(((packed >> 8) & 0xFF) * 257);
+			color.blue = (short)(((packed) & 0xFF) * 257);
+			OS.RGBBackColor(color);			
 		} else {
-			OS.RGBBackColor((short)0xFFFF, (short)0xFFFF, (short)0xFFFF);
+			RGBColor color = new RGBColor();
+			color.red = (short)0xFFFF;
+			color.green = (short)0xFFFF;
+			color.blue = (short)0xFFFF;
+			OS.RGBBackColor(color);
 		}
 	}
 	
 	public static void RGBForeColor(int packed) {
 		if ((packed & 0xff000000) == 0) {
-			OS.RGBForeColor((short)(((packed >> 16) & 0xFF) * 257),
-							(short)(((packed >> 8) & 0xFF) * 257),
-							(short)(((packed) & 0xFF) * 257));
+			RGBColor color = new RGBColor();
+			color.red = (short)(((packed >> 16) & 0xFF) * 257);
+			color.green = (short)(((packed >> 8) & 0xFF) * 257);
+			color.blue = (short)(((packed) & 0xFF) * 257);
+			OS.RGBForeColor(color);
 		} else {
-			OS.RGBForeColor((short)0xFFFF, (short)0xFFFF, (short)0xFFFF);
+			RGBColor color = new RGBColor();
+			color.red = (short)0xFFFF;
+			color.green = (short)0xFFFF;
+			color.blue = (short)0xFFFF;
+			OS.RGBForeColor(color);
 		}
 	}
 	
