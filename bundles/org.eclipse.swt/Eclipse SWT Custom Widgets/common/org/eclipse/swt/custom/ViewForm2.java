@@ -17,6 +17,12 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
 /**
+* DO NOT USE - UNDER CONSTRUCTION
+*
+* @ since 3.0
+*/
+
+/**
  * Instances of this class implement a Composite that lays out three
  * children horizontally and allows programmatic control of layout and
  * border parameters. ViewForm is used in the workbench to implement a
