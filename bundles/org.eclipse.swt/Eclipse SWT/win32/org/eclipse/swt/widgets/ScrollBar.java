@@ -822,7 +822,6 @@ public void setThumb (int value) {
  */
 public void setValues (int selection, int minimum, int maximum, int thumb, int increment, int pageIncrement) {
 	checkWidget();
-	if (selection < 0) return;
 	if (minimum < 0) return;
 	if (maximum < 0) return;
 	if (thumb < 1) return;
