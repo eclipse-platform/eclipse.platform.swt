@@ -23,15 +23,17 @@ char* GTK_nativeFunctionNames[];
 #define GTK_NATIVE_EXIT(env, that, func) 
 #endif
 
-#define GTK_1WIDGET_1HEIGHT_FUNC 0
-#define GTK_1WIDGET_1WIDTH_FUNC 1
-#define g_1signal_1connect_FUNC 2
-#define gtk_1events_1pending_FUNC 3
-#define gtk_1init_1check_FUNC 4
-#define gtk_1main_FUNC 5
-#define gtk_1main_1iteration_FUNC 6
-#define gtk_1plug_1new_FUNC 7
-#define gtk_1widget_1destroy_FUNC 8
-#define gtk_1widget_1show_FUNC 9
-#define gtk_1widget_1show_1now_FUNC 10
-#define gtk_1window_1new_FUNC 11
+typedef enum {
+	GTK_1WIDGET_1HEIGHT_FUNC,
+	GTK_1WIDGET_1WIDTH_FUNC,
+	g_1signal_1connect_FUNC,
+	gtk_1events_1pending_FUNC,
+	gtk_1init_1check_FUNC,
+	gtk_1main_FUNC,
+	gtk_1main_1iteration_FUNC,
+	gtk_1plug_1new_FUNC,
+	gtk_1widget_1destroy_FUNC,
+	gtk_1widget_1show_FUNC,
+	gtk_1widget_1show_1now_FUNC,
+	gtk_1window_1new_FUNC,
+} GTK_FUNCS;
