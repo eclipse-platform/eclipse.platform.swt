@@ -303,8 +303,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 			} catch (IOException e) {}
 			fail("No exception thrown for invalid InputStream");
 		} catch (SWTException e) {
-// TODO: test if correct exception is thrown. See bug 70160			
-//			assertEquals("Incorrect exception thrown for invalid InputStream", SWT.ERROR_INVALID_IMAGE, e);
+			assertEquals("Incorrect exception thrown for invalid InputStream", SWT.ERROR_UNSUPPORTED_FORMAT, e);
 		}
 
 		int numFormats = SwtTestCase.imageFormats.length;
@@ -324,8 +323,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 					} catch (IOException e) {}
 					fail("No exception thrown for invalid InputStream");
 				} catch (SWTException e) {
-//					TODO: test if correct exception is thrown. See bug 70167					
-//					assertEquals("Incorrect exception thrown for invalid image InputStream", SWT.ERROR_INVALID_IMAGE, e);
+					assertEquals("Incorrect exception thrown for invalid image InputStream", SWT.ERROR_INVALID_IMAGE, e);
 				}
 			}
 		}
@@ -392,8 +390,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 			image.dispose();
 			fail("No exception thrown for invalid file name");
 		} catch (SWTException e) {
-	//TODO: test if correct exception is thrown. See bug 70160			
-	//		assertEquals("Incorrect exception thrown for invalid file name", SWT.ERROR_INVALID_IMAGE, e);
+			assertEquals("Incorrect exception thrown for invalid file name", SWT.ERROR_UNSUPPORTED_FORMAT, e);
 		}
 	
 		int numFormats = SwtTestCase.imageFormats.length;
@@ -410,8 +407,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 					image.dispose();
 					fail("No exception thrown for invalid file name");
 				} catch (SWTException e) {
-	//				TODO: test if correct exception is thrown. See bug 70167					
-	//				assertEquals("Incorrect exception thrown for invalid image file name", SWT.ERROR_INVALID_IMAGE, e);
+					assertEquals("Incorrect exception thrown for invalid image file name", SWT.ERROR_INVALID_IMAGE, e);
 				}
 			}
 		}
