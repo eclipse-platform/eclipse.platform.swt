@@ -378,7 +378,7 @@ public Color getBackground (int columnIndex) {
 	if (cellBackgrounds == null || cellBackgrounds [columnIndex] == null) return getBackground ();
 	return cellBackgrounds [columnIndex];
 }
-public Rectangle getBounds () {
+/*public*/ Rectangle getBounds () {
 	checkWidget ();
 	int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
 	return new Rectangle (getTextX (0), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
