@@ -535,7 +535,7 @@ public String getText (int index) {
 
 void redraw () {
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	if (parent.ignoreRedraw || parent.drawCount != 0) return;
+	if (parent.currentItem == this || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
 	int index = parent.indexOf (this);
@@ -545,7 +545,7 @@ void redraw () {
 
 void redraw (int column, boolean drawText, boolean drawImage) {
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	if (parent.ignoreRedraw || parent.drawCount != 0) return;
+	if (parent.currentItem == this || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
 	int index = parent.indexOf (this);

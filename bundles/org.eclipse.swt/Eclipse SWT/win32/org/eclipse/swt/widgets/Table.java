@@ -45,9 +45,10 @@ public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
 	ImageList imageList;
+	TableItem currentItem;
 	int lastIndexOf, lastWidth;
 	boolean customDraw, dragStarted, fixScrollWidth, mouseDown, tipRequested;
-	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreRedraw, ignoreResize;
+	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
 	static final int HEADER_MARGIN = 10;
@@ -190,10 +191,10 @@ boolean checkData (TableItem item, boolean redraw) {
 		item.cached = true;
 		Event event = new Event ();
 		event.item = item;
-		ignoreRedraw = true;
+		currentItem = item;
 		sendEvent (SWT.SetData, event);
 		//widget could be disposed at this point
-		ignoreRedraw = false;
+		currentItem = null;
 		if (isDisposed () || item.isDisposed ()) return false;
 		if (redraw) {
 			if (!setScrollWidth (item, false)) {
@@ -235,7 +236,7 @@ public void clear (int index) {
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 	TableItem item = items [index];
 	if (item != null) {
-		item.clear ();
+		if (item != currentItem) item.clear ();
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
 		* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -255,7 +256,7 @@ public void clear (int index) {
 			OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
 			item.cached = false;
 		}
-		if (!ignoreRedraw && drawCount == 0 && OS.IsWindowVisible (handle)) {
+		if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
 			OS.SendMessage (handle, OS.LVM_REDRAWITEMS, index, index);
 		}
 		setScrollWidth (item, false);
@@ -300,8 +301,10 @@ public void clear (int start, int end) {
 		for (int i=start; i<=end; i++) {
 			TableItem item = items [i];
 			if (item != null) {
-				cleared = true;
-				item.clear ();
+				if (item != currentItem) {
+					cleared = true;
+					item.clear ();
+				}
 				/*
 				* Bug in Windows.  Despite the fact that every item in the
 				* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -326,7 +329,7 @@ public void clear (int start, int end) {
 			}
 		}
 		if (cleared) {
-			if (!ignoreRedraw && drawCount == 0 && OS.IsWindowVisible (handle)) {
+			if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
 				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, start, end);
 			}
 			TableItem item = start == end ? items [start] : null; 
@@ -373,8 +376,10 @@ public void clear (int [] indices) {
 		int index = indices [i];
 		TableItem item = items [index];
 		if (item != null) {
-			cleared = true;
-			item.clear ();
+			if (item != currentItem) {
+				cleared = true;
+				item.clear ();
+			}
 			/*
 			* Bug in Windows.  Despite the fact that every item in the
 			* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -396,7 +401,7 @@ public void clear (int [] indices) {
 				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
 				item.cached = false;
 			}
-			if (!ignoreRedraw && drawCount == 0 && OS.IsWindowVisible (handle)) {
+			if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
 				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, index, index);
 			}
 		}
@@ -422,14 +427,16 @@ public void clear (int [] indices) {
  */
 public void clearAll () {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	LVITEM lvItem = null;
 	boolean cleared = false;
+	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<count; i++) {
 		TableItem item = items [i];
 		if (item != null) {
-			cleared = true;
-			item.clear ();
+			if (item != currentItem) {
+				cleared = true;
+				item.clear ();
+			}
 			/*
 			* Bug in Windows.  Despite the fact that every item in the
 			* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -454,7 +461,7 @@ public void clearAll () {
 		}
 	}
 	if (cleared) {
-		if (!ignoreRedraw && drawCount == 0 && OS.IsWindowVisible (handle)) {
+		if (currentItem == null && drawCount == 0 && OS.IsWindowVisible (handle)) {
 			OS.SendMessage (handle, OS.LVM_REDRAWITEMS, 0, count - 1);
 		}
 		setScrollWidth (null, false);
@@ -1610,6 +1617,7 @@ void releaseWidget () {
 		}
 	}
 	customDraw = false;
+	currentItem = null;
 	items = null;
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
@@ -2414,7 +2422,10 @@ public void setRedraw (boolean redraw) {
 }
 
 boolean setScrollWidth (TableItem item, boolean force) {
-	if (ignoreRedraw) return false;
+	if (currentItem != null) {
+		if (currentItem != item) fixScrollWidth = true;
+		return false;
+	}
 	if (!force && (drawCount != 0 || !OS.IsWindowVisible (handle))) {
 		fixScrollWidth = true;
 		return false;
@@ -3382,6 +3393,12 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
+		case OS.LVN_ODCACHEHINT:
+			if ((style & SWT.VIRTUAL) != 0) {
+				NMLVCACHEHINT pCachehint  = new NMLVCACHEHINT ();
+				OS.MoveMemory (pCachehint, lParam, NMLVCACHEHINT.sizeof);
+			}
+			break;
 		case OS.LVN_ODFINDITEMA:
 		case OS.LVN_ODFINDITEMW: {
 			if ((style & SWT.VIRTUAL) != 0) {

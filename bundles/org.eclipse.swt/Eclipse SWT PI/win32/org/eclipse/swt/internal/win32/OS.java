@@ -714,6 +714,7 @@ public class OS extends Platform {
 	public static final int LVN_ITEMACTIVATE = 0xffffff8e;
 	public static final int LVN_ITEMCHANGED = 0xffffff9b;
 	public static final int LVN_MARQUEEBEGIN = 0xffffff64;
+	public static final int LVN_ODCACHEHINT = LVN_FIRST - 13;
 	public static final int LVN_ODFINDITEMA = LVN_FIRST - 52;
 	public static final int LVN_ODFINDITEMW = LVN_FIRST - 79;
 	public static final int LVSCW_AUTOSIZE = 0xffffffff;
@@ -2734,6 +2735,7 @@ public static final native void MoveMemory (int Destination, NMTVDISPINFO Source
 public static final native void MoveMemory (NMLVDISPINFO Destination, int Source, int Length);
 public static final native void MoveMemory (NMTVDISPINFO Destination, int Source, int Length);
 public static final native void MoveMemory (NMLVFINDITEM Destination, int Source, int Length);
+public static final native void MoveMemory (NMLVCACHEHINT Destination, int Source, int Length);
 public static final native void MoveMemory (NMHEADER Destination, int Source, int Length);
 public static final native void MoveMemory (NMLISTVIEW Destination, int Source, int Length);
 public static final native void MoveMemory (NMREBARCHILDSIZE Destination, int Source, int Length);

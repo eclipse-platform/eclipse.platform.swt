@@ -599,6 +599,18 @@ void setNMLISTVIEWFields(JNIEnv *env, jobject lpObject, NMLISTVIEW *lpStruct);
 #define NMLISTVIEW_sizeof() 0
 #endif
 
+#ifndef NO_NMLVCACHEHINT
+void cacheNMLVCACHEHINTFields(JNIEnv *env, jobject lpObject);
+NMLVCACHEHINT *getNMLVCACHEHINTFields(JNIEnv *env, jobject lpObject, NMLVCACHEHINT *lpStruct);
+void setNMLVCACHEHINTFields(JNIEnv *env, jobject lpObject, NMLVCACHEHINT *lpStruct);
+#define NMLVCACHEHINT_sizeof() sizeof(NMLVCACHEHINT)
+#else
+#define cacheNMLVCACHEHINTFields(a,b)
+#define getNMLVCACHEHINTFields(a,b,c) NULL
+#define setNMLVCACHEHINTFields(a,b,c)
+#define NMLVCACHEHINT_sizeof() 0
+#endif
+
 #ifndef NO_NMLVCUSTOMDRAW
 void cacheNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject);
 NMLVCUSTOMDRAW *getNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTOMDRAW *lpStruct);
