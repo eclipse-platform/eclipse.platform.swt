@@ -429,7 +429,20 @@ Rect getInset () {
 	Display display = getDisplay ();
 	return display.comboInset;
 }
-	
+
+int kEventControlActivate (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlActivate (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	/*
+	* Feature in the Macintosh.  When a combo box gets
+	* kEventControlActivate, it starts the caret blinking.
+	* Because there is no clipping on the Macintosh, the
+	* caret may blink through a widget that is obscurred.
+	* The fix is to avoid running the default handler.
+	*/
+	return OS.noErr;
+}
+
 int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventProcessCommand (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
