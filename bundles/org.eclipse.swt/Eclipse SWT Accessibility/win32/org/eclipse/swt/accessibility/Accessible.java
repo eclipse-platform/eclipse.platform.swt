@@ -513,7 +513,7 @@ public class Accessible {
 		}
 		if (debug)
 			System.out.println("get_accRole returned: " + event);
-		int role = event.code;
+		int role = roleToOs(event.code);
 		COM.MoveMemory(pvarRole, new short[] { COM.VT_I4 }, 2);
 		COM.MoveMemory(pvarRole + 8, new int[] { role }, 4);
 		return COM.S_OK;
@@ -577,7 +577,7 @@ public class Accessible {
 		}
 		if (debug)
 			System.out.println("get_accState returned: " + event);
-		int state = event.code;
+		int state = stateToOs(event.code);
 		COM.MoveMemory(pvarState, new short[] { COM.VT_I4 }, 2);
 		COM.MoveMemory(pvarState + 8, new int[] { state }, 4);
 		return COM.S_OK;
@@ -699,5 +699,90 @@ public class Accessible {
 
 		enumIndex = 0;
 		return COM.S_OK;
+	}
+	
+	int stateToOs(int state) {
+		int osState = ACC.STATE_NORMAL;
+		if ((state & ACC.STATE_SELECTED) != 0){
+			osState |= COM.STATE_SYSTEM_SELECTED;
+		}
+		if ((state & ACC.STATE_SELECTABLE) != 0){
+			osState |= COM.STATE_SYSTEM_SELECTABLE;
+		}
+		if ((state & ACC.STATE_MULTISELECTABLE) != 0){
+			osState |= COM.STATE_SYSTEM_MULTISELECTABLE;
+		}
+		if ((state & ACC.STATE_FOCUSED) != 0){
+			osState |= COM.STATE_SYSTEM_FOCUSED;
+		}
+		if ((state & ACC.STATE_FOCUSABLE) != 0){
+			osState |= COM.STATE_SYSTEM_FOCUSABLE;
+		}
+		if ((state & ACC.STATE_PRESSED) != 0){
+			osState |= COM.STATE_SYSTEM_PRESSED;
+		}
+		if ((state & ACC.STATE_CHECKED) != 0){
+			osState |= COM.STATE_SYSTEM_CHECKED;
+		}
+		if ((state & ACC.STATE_EXPANDED) != 0){
+			osState |= COM.STATE_SYSTEM_EXPANDED;
+		}
+		if ((state & ACC.STATE_COLLAPSED) != 0){
+			osState |= COM.STATE_SYSTEM_COLLAPSED;
+		}
+		if ((state & ACC.STATE_HOTTRACKED) != 0){
+			osState |= COM.STATE_SYSTEM_HOTTRACKED;
+		}
+		if ((state & ACC.STATE_BUSY) != 0){
+			osState |= COM.STATE_SYSTEM_BUSY;
+		}
+		if ((state & ACC.STATE_READONLY) != 0){
+			osState |= COM.STATE_SYSTEM_READONLY;
+		}
+		if ((state & ACC.STATE_INVISIBLE) != 0){
+			osState |= COM.STATE_SYSTEM_INVISIBLE;
+		}
+		if ((state & ACC.STATE_OFFSCREEN) != 0){
+			osState |= COM.STATE_SYSTEM_OFFSCREEN;
+		}
+		if ((state & ACC.STATE_SIZEABLE) != 0){
+			osState |= COM.STATE_SYSTEM_SIZEABLE;
+		}
+		return osState;
+	}
+
+	int roleToOs(int role) {
+		switch (role) {
+			case ACC.ROLE_MENUBAR: return COM.ROLE_SYSTEM_MENUBAR;
+			case ACC.ROLE_SCROLLBAR: return COM.ROLE_SYSTEM_SCROLLBAR;
+			case ACC.ROLE_ALERT: return COM.ROLE_SYSTEM_ALERT;
+			case ACC.ROLE_WINDOW: return COM.ROLE_SYSTEM_WINDOW;
+			case ACC.ROLE_CLIENT: return COM.ROLE_SYSTEM_CLIENT;
+			case ACC.ROLE_MENUPOPUP: return COM.ROLE_SYSTEM_MENUPOPUP;
+			case ACC.ROLE_MENUITEM: return COM.ROLE_SYSTEM_MENUITEM;
+			case ACC.ROLE_TOOLTIP: return COM.ROLE_SYSTEM_TOOLTIP;
+			case ACC.ROLE_DIALOG: return COM.ROLE_SYSTEM_DIALOG;
+			case ACC.ROLE_SEPARATOR: return COM.ROLE_SYSTEM_SEPARATOR;
+			case ACC.ROLE_TOOLBAR: return COM.ROLE_SYSTEM_TOOLBAR;
+			case ACC.ROLE_TABLE: return COM.ROLE_SYSTEM_TABLE;
+			case ACC.ROLE_COLUMNHEADER: return COM.ROLE_SYSTEM_COLUMNHEADER;
+			case ACC.ROLE_ROWHEADER: return COM.ROLE_SYSTEM_ROWHEADER;
+			case ACC.ROLE_HELPBALLOON: return COM.ROLE_SYSTEM_HELPBALLOON;
+			case ACC.ROLE_LIST: return COM.ROLE_SYSTEM_LIST;
+			case ACC.ROLE_LISTITEM: return COM.ROLE_SYSTEM_LISTITEM;
+			case ACC.ROLE_OUTLINE: return COM.ROLE_SYSTEM_OUTLINE;
+			case ACC.ROLE_PAGETAB: return COM.ROLE_SYSTEM_PAGETAB;
+			case ACC.ROLE_GRAPHIC: return COM.ROLE_SYSTEM_GRAPHIC;
+			case ACC.ROLE_STATICTEXT: return COM.ROLE_SYSTEM_STATICTEXT;
+			case ACC.ROLE_TEXT: return COM.ROLE_SYSTEM_TEXT;
+			case ACC.ROLE_PUSHBUTTON: return COM.ROLE_SYSTEM_PUSHBUTTON;
+			case ACC.ROLE_CHECKBUTTON: return COM.ROLE_SYSTEM_CHECKBUTTON;
+			case ACC.ROLE_RADIOBUTTON: return COM.ROLE_SYSTEM_RADIOBUTTON;
+			case ACC.ROLE_COMBOBOX: return COM.ROLE_SYSTEM_COMBOBOX;
+			case ACC.ROLE_PROGRESSBAR: return COM.ROLE_SYSTEM_PROGRESSBAR;
+			case ACC.ROLE_SLIDER: return COM.ROLE_SYSTEM_SLIDER;
+			case ACC.ROLE_PAGETABLIST: return COM.ROLE_SYSTEM_PAGETABLIST;
+		}
+		return COM.ROLE_SYSTEM_CLIENT;
 	}
 }
