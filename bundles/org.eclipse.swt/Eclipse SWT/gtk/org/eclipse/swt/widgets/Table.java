@@ -1439,29 +1439,20 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 void resetCustomDraw () {
-	if (columnCount == 0) {
-		if (firstCustomDraw) {
-			int column = OS.gtk_tree_view_get_column (handle, 0);
+	int end = Math.max (1, columnCount);
+	for (int i=0; i<end; i++) {
+		boolean customDraw = columnCount != 0 ? columns [i].customDraw : firstCustomDraw;
+		if (customDraw) {
+			int column = OS.gtk_tree_view_get_column (handle, i);
 			int list = OS.gtk_tree_view_column_get_cell_renderers (column);
 			int length = OS.g_list_length (list);
 			int renderer = OS.g_list_nth_data (list, length - 1);
 			OS.g_list_free (list);
 			OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
-			firstCustomDraw = false;
-		}
-	} else {
-		for (int i = 0; i < columnCount; i++) {
-			if (columns [i].customDraw) {
-				int column = OS.gtk_tree_view_get_column (handle, i);
-				int list = OS.gtk_tree_view_column_get_cell_renderers (column);
-				int length = OS.g_list_length (list);
-				int renderer = OS.g_list_nth_data (list, length - 1);
-				OS.g_list_free (list);
-				OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
-				columns [i].customDraw = false;
-			}
+			if (columnCount != 0) columns [i].customDraw = false;
 		}
 	}
+	firstCustomDraw = false;
 }
 
 /**
