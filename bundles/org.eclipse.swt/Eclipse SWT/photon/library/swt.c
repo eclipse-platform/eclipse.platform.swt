@@ -6467,21 +6467,17 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgGetVideoMode
   (JNIEnv *env, jobject that, jobject settings)
 {
 	DECL_GLOB(pGlob)
-    PgDisplaySettings_t settings1, *lpSettings1=NULL;
+	PgDisplaySettings_t settings1 = {0}, *lpSettings1=&settings1;
 	jint result;
 	
 #ifdef DEBUG_CALL_PRINTS
     fprintf(stderr, "PgGetVideoMode\n");
 #endif
 
-	if (settings) {
-        lpSettings1 = &settings1;
-        cachePgDisplaySettings_tFids(env, settings, &PGLOB(PgDisplaySettings_tFc));
-        getPgDisplaySettings_tFields(env, settings, lpSettings1, &PGLOB(PgDisplaySettings_tFc));
-    }
     result = (jint)PgGetVideoMode(lpSettings1);
 
     if (settings) {
+        cachePgDisplaySettings_tFids(env, settings, &PGLOB(PgDisplaySettings_tFc));
         setPgDisplaySettings_tFields(env, settings, lpSettings1, &PGLOB(PgDisplaySettings_tFc));
     }
 	return result;
