@@ -488,7 +488,7 @@ ImageData colorMaskImage(int pixel) {
 	for (int y = 0; y < height; y++) {
 		getPixels(0, y, width, row, 0);
 		for (int i = 0; i < width; i++) {
-			if (pixel != -1 && row[i] == pixel) {
+			if (row[i] == pixel) {
 				row[i] = 0;
 			} else {
 				row[i] = 1;
