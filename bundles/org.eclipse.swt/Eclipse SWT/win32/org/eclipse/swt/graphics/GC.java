@@ -3103,7 +3103,7 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 		* Feature in Windows.  The default end caps is PS_ENDCAP_ROUND
 		* and the default line join is PS_JOIN_ROUND which are different
 		* from other platforms.  The fix is to change these values when
-		* line width is widen.
+		* line width is widened.
 		*/
 		if (width <= 1 && (newWidth > 1 || lineStyle == OS.PS_USERSTYLE)) {
 			if (capStyle == -1) capStyle = OS.PS_ENDCAP_FLAT;
@@ -3124,11 +3124,12 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 		width = logPen.elpWidth;
 		style = logPen.elpPenStyle;
 		extPen = true;
-		/*
-		* Feature in Windows. PS_GEOMETRIC pens cannot have
-		* zero width. 
-		*/
-		if (newWidth == 0) newWidth = 1;
+		if (newWidth == 0 || newWidth == 1) {
+			if (dashes == null && (style & OS.PS_ENDCAP_MASK) == OS.PS_ENDCAP_FLAT && (style & OS.PS_JOIN_MASK) == OS.PS_JOIN_MITER) {
+				style &= ~(OS.PS_ENDCAP_MASK | OS.PS_JOIN_MASK | OS.PS_TYPE_MASK);
+				extPen = false;
+			}
+		}
 	}
 	if (newColor != -1) {
 		if (newColor != color) {
@@ -3172,7 +3173,8 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 		LOGBRUSH logBrush = new LOGBRUSH();
 		logBrush.lbStyle = OS.BS_SOLID;
 		logBrush.lbColor = color;
-		newPen = OS.ExtCreatePen (style | OS.PS_GEOMETRIC, width, logBrush, dashes != null ? dashes.length : 0, dashes);
+		/* Feature in Windows. PS_GEOMETRIC pens cannot have zero width. */
+		newPen = OS.ExtCreatePen (style | OS.PS_GEOMETRIC, Math.max(1, width), logBrush, dashes != null ? dashes.length : 0, dashes);
 	} else {
 		newPen = OS.CreatePen(style, width, color);
 	}
