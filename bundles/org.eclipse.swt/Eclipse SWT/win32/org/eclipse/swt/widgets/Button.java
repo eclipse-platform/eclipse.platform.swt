@@ -326,6 +326,7 @@ public boolean getSelection () {
  */
 public String getText () {
 	checkWidget ();
+	if ((style & SWT.ARROW) != 0) return "";
 	int length = OS.GetWindowTextLength (handle);
 	if (length == 0) return "";
 	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
@@ -604,6 +605,7 @@ public void setSelection (boolean selected) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if ((style & SWT.ARROW) != 0) return;
 	int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	int oldBits = newBits;
 	newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
