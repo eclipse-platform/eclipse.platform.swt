@@ -1232,15 +1232,15 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 	boolean isNull = false;
 	event.keyCode = Display.translateKey (keyEvent.keyval);
 	switch (keyEvent.keyval) {
-		case OS.GDK_BackSpace:		event.character = '\b'; break;
-		case OS.GDK_Linefeed:		event.character = '\n'; break;
+		case OS.GDK_BackSpace:		event.character = SWT.BS; break;
+		case OS.GDK_Linefeed:		event.character = SWT.LF; break;
 		case OS.GDK_KP_Enter:
-		case OS.GDK_Return: 		event.character = '\r'; break;
+		case OS.GDK_Return: 		event.character = SWT.CR; break;
 		case OS.GDK_KP_Delete:
-		case OS.GDK_Delete:		event.character = 0x7F; break;
-		case OS.GDK_Escape:		event.character = 0x1B; break;
+		case OS.GDK_Delete:			event.character = SWT.DEL; break;
+		case OS.GDK_Escape:			event.character = SWT.ESC; break;
 		case OS.GDK_Tab:
-		case OS.GDK_ISO_Left_Tab: 	event.character = '\t'; break;
+		case OS.GDK_ISO_Left_Tab: 	event.character = SWT.TAB; break;
 		default: {
 			if (event.keyCode == 0) {
 				int [] keyval = new int [1], effective_group= new int [1], level = new int [1], consumed_modifiers = new int [1];
