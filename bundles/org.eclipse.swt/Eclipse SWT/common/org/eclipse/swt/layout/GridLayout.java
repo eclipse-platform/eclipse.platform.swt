@@ -698,13 +698,15 @@ String getName () {
 	return string.substring (index + 1, string.length ());
 }
 public String toString () {
- 	String string = getName ()+":"; //$NON-NLS-1$
- 	if (numColumns != 1) string += " numColumns = "+numColumns; //$NON-NLS-1$
- 	if (makeColumnsEqualWidth) string += " makeColumnsEqualWidth = "+makeColumnsEqualWidth; //$NON-NLS-1$
- 	if (marginWidth != 5) string += " marginWidth = "+marginWidth; //$NON-NLS-1$
- 	if (marginHeight != 5) string += " marginHeight = "+marginHeight; //$NON-NLS-1$
- 	if (horizontalSpacing != 5) string += " horizontalSpacing = "+horizontalSpacing; //$NON-NLS-1$
- 	if (verticalSpacing != 5) string += " verticalSpacing = "+verticalSpacing; //$NON-NLS-1$
+ 	String string = getName ()+" {";
+ 	if (numColumns != 1) string += "numColumns="+numColumns+" ";
+ 	if (makeColumnsEqualWidth) string += "makeColumnsEqualWidth="+makeColumnsEqualWidth+" ";
+ 	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
+ 	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
+ 	if (horizontalSpacing != 0) string += "horizontalSpacing="+horizontalSpacing+" ";
+ 	if (verticalSpacing != 0) string += "verticalSpacing="+verticalSpacing+" ";
+ 	string = string.trim();
+ 	string += "}";
  	return string;
 }
 }

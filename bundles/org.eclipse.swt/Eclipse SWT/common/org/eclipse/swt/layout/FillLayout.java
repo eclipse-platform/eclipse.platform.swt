@@ -172,11 +172,13 @@ String getName () {
 	return string.substring (index + 1, string.length ());
 }
 public String toString () {
- 	String string = getName ()+":"; //$NON-NLS-1$
- 	string += " type = "+((type == SWT.VERTICAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
- 	if (marginWidth != 0) string += " marginWidth = "+marginWidth; //$NON-NLS-1$
- 	if (marginHeight != 0) string += " marginHeight = "+marginHeight; //$NON-NLS-1$
- 	if (spacing != 0) string += " spacing = "+spacing; //$NON-NLS-1$
+ 	String string = getName ()+" {";
+ 	string += "type="+((type == SWT.VERTICAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL")+" ";
+ 	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
+ 	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
+ 	if (spacing != 0) string += "spacing="+spacing+" ";
+ 	string = string.trim();
+ 	string += "}";
  	return string;
 }
 }

@@ -61,9 +61,11 @@ String getName () {
 	return string.substring (index + 1, string.length ());
 }
 public String toString () {
-	String string = getName ()+":";
-	if (width != SWT.DEFAULT) string += " width = "+width;
-	if (height != SWT.DEFAULT) string += " height = "+height;
+	String string = getName ()+" {";
+	if (width != SWT.DEFAULT) string += "width="+width+" ";
+	if (height != SWT.DEFAULT) string += "height="+height+" ";
+	string = string.trim();
+	string += "}";
 	return string;
 }
 }

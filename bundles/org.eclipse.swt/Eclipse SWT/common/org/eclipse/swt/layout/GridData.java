@@ -394,40 +394,42 @@ String getName () {
 	return string.substring (index + 1, string.length ());
 }
 public String toString () {
-	String hAlign = ""; //$NON-NLS-1$
+	String hAlign = "";
 	switch (horizontalAlignment) {
-		case SWT.FILL: hAlign = "SWT.FILL"; break; //$NON-NLS-1$
-		case SWT.BEGINNING: hAlign = "SWT.BEGINNING"; break; //$NON-NLS-1$
-		case SWT.LEFT: hAlign = "SWT.LEFT"; break; //$NON-NLS-1$
-		case SWT.END: hAlign = "SWT.END"; break; //$NON-NLS-1$
-		case END: hAlign = "GridData.END"; break; //$NON-NLS-1$
-		case SWT.RIGHT: hAlign = "SWT.RIGHT"; break; //$NON-NLS-1$
-		case SWT.CENTER: hAlign = "SWT.CENTER"; break; //$NON-NLS-1$
-		case CENTER: hAlign = "GridData.CENTER"; break; //$NON-NLS-1$
-		default: hAlign = "Undefined "+horizontalAlignment; break; //$NON-NLS-1$
+		case SWT.FILL: hAlign = "SWT.FILL"; break;
+		case SWT.BEGINNING: hAlign = "SWT.BEGINNING"; break;
+		case SWT.LEFT: hAlign = "SWT.LEFT"; break;
+		case SWT.END: hAlign = "SWT.END"; break;
+		case END: hAlign = "GridData.END"; break;
+		case SWT.RIGHT: hAlign = "SWT.RIGHT"; break;
+		case SWT.CENTER: hAlign = "SWT.CENTER"; break;
+		case CENTER: hAlign = "GridData.CENTER"; break;
+		default: hAlign = "Undefined "+horizontalAlignment; break;
 	}
-	String vAlign = ""; //$NON-NLS-1$
+	String vAlign = "";
 	switch (verticalAlignment) {
-		case SWT.FILL: vAlign = "SWT.FILL"; break; //$NON-NLS-1$
-		case SWT.BEGINNING: vAlign = "SWT.BEGINNING"; break; //$NON-NLS-1$
-		case SWT.TOP: vAlign = "SWT.TOP"; break; //$NON-NLS-1$
-		case SWT.END: vAlign = "SWT.END"; break; //$NON-NLS-1$
-		case END: vAlign = "GridData.END"; break; //$NON-NLS-1$
-		case SWT.BOTTOM: vAlign = "SWT.BOTTOM"; break; //$NON-NLS-1$
-		case SWT.CENTER: vAlign = "SWT.CENTER"; break; //$NON-NLS-1$
-		case CENTER: vAlign = "GridData.CENTER"; break; //$NON-NLS-1$
-		default: vAlign = "Undefined "+verticalAlignment; break; //$NON-NLS-1$
+		case SWT.FILL: vAlign = "SWT.FILL"; break;
+		case SWT.BEGINNING: vAlign = "SWT.BEGINNING"; break;
+		case SWT.TOP: vAlign = "SWT.TOP"; break;
+		case SWT.END: vAlign = "SWT.END"; break;
+		case END: vAlign = "GridData.END"; break;
+		case SWT.BOTTOM: vAlign = "SWT.BOTTOM"; break;
+		case SWT.CENTER: vAlign = "SWT.CENTER"; break;
+		case CENTER: vAlign = "GridData.CENTER"; break;
+		default: vAlign = "Undefined "+verticalAlignment; break;
 	}
- 	String string = getName()+":"; //$NON-NLS-1$
- 	if (heightHint != SWT.DEFAULT) string += " heightHint = "+heightHint; //$NON-NLS-1$
- 	string += " horizontalAlignment = "+hAlign; //$NON-NLS-1$
- 	if (horizontalIndent != 0) string +=" horizontalIndent = "+horizontalIndent; //$NON-NLS-1$
- 	if (horizontalSpan != 1) string += " horizontalSpan = "+horizontalSpan; //$NON-NLS-1$
- 	if (grabExcessHorizontalSpace) string += " grabExcessHorizontalSpace = "+grabExcessHorizontalSpace; //$NON-NLS-1$
- 	if (widthHint != SWT.DEFAULT) string += " widthHint = "+widthHint; //$NON-NLS-1$
- 	string += " verticalAlignment = "+vAlign; //$NON-NLS-1$
- 	if (verticalSpan != 1) string += " verticalSpan = "+verticalSpan; //$NON-NLS-1$
- 	if (grabExcessVerticalSpace) string += " grabExcessVerticalSpace = "+grabExcessVerticalSpace; //$NON-NLS-1$
+ 	String string = getName()+" {";
+ 	string += "horizontalAlignment="+hAlign+" ";
+ 	if (horizontalIndent != 0) string += "horizontalIndent="+horizontalIndent+" ";
+ 	if (horizontalSpan != 1) string += "horizontalSpan="+horizontalSpan+" ";
+ 	if (grabExcessHorizontalSpace) string += "grabExcessHorizontalSpace="+grabExcessHorizontalSpace+" ";
+ 	if (widthHint != SWT.DEFAULT) string += "widthHint="+widthHint+" ";
+ 	string += "verticalAlignment="+vAlign+" ";
+	if (verticalSpan != 1) string += "verticalSpan="+verticalSpan+" ";
+ 	if (grabExcessVerticalSpace) string += "grabExcessVerticalSpace="+grabExcessVerticalSpace+" ";
+ 	if (heightHint != SWT.DEFAULT) string += "heightHint="+heightHint+" ";
+ 	string = string.trim();
+ 	string += "}";
 	return string;
 }
 }

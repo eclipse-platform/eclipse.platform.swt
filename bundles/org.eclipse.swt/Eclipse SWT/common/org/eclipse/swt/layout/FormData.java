@@ -228,13 +228,15 @@ String getName () {
 	return string.substring (index + 1, string.length ());
 }
 public String toString () {
- 	String string = getName()+":"; //$NON-NLS-1$
-	if (height != SWT.DEFAULT) string += " height = "+height; //$NON-NLS-1$
- 	if (width != SWT.DEFAULT) string += " width = "+width; //$NON-NLS-1$
- 	if (left != null) string += " left: "+left; //$NON-NLS-1$
- 	if (right != null) string += " right: "+right;  //$NON-NLS-1$
- 	if (top != null) string += " top: "+top;  //$NON-NLS-1$
- 	if (bottom != null) string += " bottom: "+bottom;  //$NON-NLS-1$
+ 	String string = getName()+" {";
+	if (height != SWT.DEFAULT) string += "height="+height+" ";
+ 	if (width != SWT.DEFAULT) string += "width="+width+" ";
+ 	if (left != null) string += "left="+left+" ";
+ 	if (right != null) string += "right="+right+" ";
+ 	if (top != null) string += "top="+top+" ";
+ 	if (bottom != null) string += "bottom="+bottom+" ";
+ 	string = string.trim();
+ 	string += "}";
 	return string;
 }
 }
