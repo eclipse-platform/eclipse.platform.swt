@@ -84,10 +84,10 @@ int defaultFont () {
 	int hwnd = parent.handle;
 	int hwndIME = OS.ImmGetDefaultIMEWnd (hwnd);
 	int hFont = 0;
-	if (hwndIME == 0) {
-		hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
-	} else {
+	if (hwndIME != 0) {
 		hFont = OS.SendMessage (hwndIME, OS.WM_GETFONT, 0, 0);
+	} else {
+		hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	}
 	if (hFont == 0) return parent.defaultFont ();
 	return hFont;
