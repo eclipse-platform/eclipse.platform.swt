@@ -78,7 +78,6 @@ public class OleControlSite extends OleClientSite
 public OleControlSite(Composite parent, int style, String progId) {
 	super(parent, style);
 	try {
-		createCOMInterfaces();
 	
 		// check for licensing
 		appClsid = getClassID(progId);
