@@ -3755,6 +3755,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetIndexedSubCont
 }
 #endif /* NO_GetIndexedSubControl */
 
+#ifndef NO_GetItemMark
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetItemMark
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshortArray arg2)
+{
+	jshort *lparg2=NULL;
+
+	DEBUG_CALL("GetItemMark\n")
+
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	GetItemMark((MenuRef)arg0, arg1, lparg2);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+}
+#endif
+
 #ifndef NO_GetKeyboardFocus
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetKeyboardFocus
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
@@ -6792,6 +6806,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetGWorld
 	SetGWorld((CGrafPtr)arg0, (GDHandle)arg1);
 }
 #endif /* NO_SetGWorld */
+
+#ifndef NO_SetItemMark
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetItemMark
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2)
+{
+	DEBUG_CALL("SetItemMark\n")
+
+	SetItemMark((MenuRef)arg0, arg1, arg2);
+}
+#endif
 
 #ifndef NO_SetKeyboardFocus
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetKeyboardFocus

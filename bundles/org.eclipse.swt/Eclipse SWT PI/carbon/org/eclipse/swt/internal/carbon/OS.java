@@ -278,6 +278,7 @@ public class OS {
 	public static final int kEventParamKeyMacCharCodes = ('k'<<24) + ('c'<<16) + ('h'<<8) + 'r';
 	public static final int kEventParamKeyModifiers = ('k'<<24) + ('m'<<16) + ('o'<<8) + 'd';
 	public static final int kEventParamMenuCommand = ('m'<<24) + ('c'<<16) + ('m'<<8) + 'd';
+	public static final int kEventParamMenuItemIndex = ('i'<<24) + ('t'<<16) + ('e'<<8) + 'm';
 	public static final int kEventParamMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int kEventParamMouseChord = ('c'<<24) + ('h'<<16) + ('o'<<8) + 'r';
 	public static final int kEventParamMouseLocation = ('m'<<24) + ('l'<<16) + ('o'<<8) + 'c';
@@ -558,6 +559,7 @@ public class OS {
 	public static final int typeHICommand = ('h'<<24) + ('c'<<16) + ('m'<<8) + 'd';
 	public static final int typeHIPoint = ('h'<<24) + ('i'<<16) + ('p'<<8) + 't';
 	public static final int typeMenuCommand = ('m'<<24) + ('c'<<16) + ('m'<<8) + 'd';
+	public static final int typeMenuItemIndex = ('m'<<24) + ('i'<<16) + ('d'<<8) + 'x';        
 	public static final int typeMenuRef = ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
 	public static final int typeMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int typeMouseWheelAxis = ('m'<<24) + ('w'<<16) + ('a'<<8) + 'x';
@@ -848,6 +850,7 @@ public static final native int GetHandleSize(int handle);
 public static final native int GetIconRef(short vRefNum, int creator, int iconType, int[] theIconRef);
 public static final native int GetIndMenuItemWithCommandID(int mHandle, int commandId, int index, int[] outMenu, short[] outIndex);
 public static final native int GetIndexedSubControl(int cHandle, short index, int[] outHandle);
+public static final native void GetItemMark (int theMenu, short item, short[] markChar);
 public static final native int GetKeyboardFocus(int wHandle, int[] cHandle);
 public static final native double GetLastUserEventTime();
 public static final native int GetMainDevice();
@@ -1089,6 +1092,7 @@ public static final native int SetEventParameter(int inEvent, int inName, int in
 public static final native int SetFontInfoForSelection(int iStyleType, int iNumStyles, int iStyles, int iFPEventTarget);
 public static final native int SetFrontProcess(int[] psn);
 public static final native void SetGWorld(int portHandle, int gdHandle);
+public static final native void SetItemMark(int theMenu, short item, short markChar);
 public static final native int SetKeyboardFocus(int wHandle, int cHandle, short inPart);
 public static final native int SetMenuCommandMark(int mHandle, int commandId, char mark);
 public static final native int SetMenuFont(int mHandle, short fontID, short size);
