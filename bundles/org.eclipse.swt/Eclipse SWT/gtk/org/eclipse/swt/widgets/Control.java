@@ -358,8 +358,6 @@ void moveHandle (int x, int y) {
 
 void resizeHandle (int width, int height) {
 	int topHandle = topHandle ();
-	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
-	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
 	OS.gtk_widget_set_size_request (topHandle, width, height);
 	if (topHandle != handle) {
 		OS.gtk_widget_set_size_request (handle, width, height);
@@ -381,32 +379,18 @@ void resizeHandle (int width, int height) {
 	*/
 	GtkRequisition requisition = new GtkRequisition ();
 	OS.gtk_widget_size_request (handle, requisition);
-
-	/*
-	* Force the container to allocate the size of its children.
-	*/
-	int parentHandle = parent.parentingHandle ();
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	OS.gtk_container_resize_children (parentHandle);
-	display.setWarnings (warnings);
-	if ((flags & OS.GTK_VISIBLE) == 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS(topHandle, OS.GTK_VISIBLE);	
-	}
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int topHandle = topHandle ();
+	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
+	OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
 	boolean sameOrigin = true, sameExtent = true;
 	if (move) {
 		int oldX = OS.GTK_WIDGET_X (topHandle);
 		int oldY = OS.GTK_WIDGET_Y (topHandle);
 		sameOrigin = x == oldX && y == oldY;
-		if (!sameOrigin) {
-			moveHandle (x, y);
-			sendEvent(SWT.Move);
-		}
+		if (!sameOrigin) moveHandle (x, y);
 	}
 	if (resize) {
 		width = Math.max (1, width);
@@ -414,11 +398,24 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		int oldWidth = OS.GTK_WIDGET_WIDTH (topHandle);
 		int oldHeight = OS.GTK_WIDGET_HEIGHT (topHandle);
 		sameExtent = width == oldWidth && height == oldHeight;
-		if (!sameExtent) {
-			resizeHandle (width, height);
-			sendEvent(SWT.Resize);
-		}
+		if (!sameExtent) resizeHandle (width, height);
 	}
+	if (!sameOrigin || !sameExtent) {
+		/*
+		* Force the container to allocate the size of its children.
+		*/
+		int parentHandle = parent.parentingHandle ();
+		Display display = getDisplay ();
+		boolean warnings = display.getWarnings ();
+		display.setWarnings (false);
+		OS.gtk_container_resize_children (parentHandle);
+		display.setWarnings (warnings);
+	}
+	if ((flags & OS.GTK_VISIBLE) == 0) {
+		OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);	
+	}
+	if (!sameOrigin) sendEvent (SWT.Move);
+	if (!sameExtent) sendEvent (SWT.Resize);
 	return !sameOrigin || !sameExtent;
 }
 
@@ -2106,6 +2103,15 @@ void setForegroundColor (GdkColor color) {
 
 void setInitialSize () {
 	resizeHandle (1, 1);
+	/*
+	* Force the container to allocate the size of its children.
+	*/
+	int parentHandle = parent.parentingHandle ();
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	OS.gtk_container_resize_children (parentHandle);
+	display.setWarnings (warnings);
 }
 
 void setInputState (Event event, int gdkEvent) {

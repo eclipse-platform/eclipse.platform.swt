@@ -226,9 +226,6 @@ void releaseWidget () {
 }
 
 void resizeHandle (int width, int height) {
-	int topHandle = topHandle ();
-	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
-	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
 	if (fixedHandle != 0) {
 		OS.gtk_widget_set_size_request (fixedHandle, width, height);
 	}
@@ -253,18 +250,6 @@ void resizeHandle (int width, int height) {
 	} else {
 		OS.gtk_widget_set_size_request (handle, width, height);
 		OS.gtk_widget_size_request (handle, requisition);
-	}
-	/*
-	* Force the container to allocate the size of its children.
-	*/
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	int parentHandle = parent.parentingHandle ();
-	OS.gtk_container_resize_children (parentHandle);
-	display.setWarnings (warnings);
-	if ((flags & OS.GTK_VISIBLE) == 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS(topHandle, OS.GTK_VISIBLE);	
 	}
 }
 

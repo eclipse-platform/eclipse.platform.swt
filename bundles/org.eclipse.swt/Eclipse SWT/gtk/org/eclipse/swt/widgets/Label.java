@@ -278,39 +278,8 @@ void releaseWidget () {
 }
 
 void resizeHandle (int width, int height) {
-	/*
-	* Bug in GTK.  For some reason, when the label is
-	* wrappable and its container is resized, it does not
-	* cause the label to be wrapped.  The fix is to
-	* determine the size that will wrap the label
-	* and expilictly set that size to force the label
-	* to wrap.
-	* 
-	* This part of the fix causes the label to be
-	* resized to the preferred size but it still
-	* won't draw properly.
-	*/
-	if (labelHandle != 0) OS.gtk_widget_set_size_request (labelHandle, -1, -1);
-
 	if (frameHandle != 0) OS.gtk_widget_set_size_request (frameHandle, width, height);
 	super.resizeHandle (width, height);
-	
-	/*
-	* Bug in GTK.  For some reason, when the label is
-	* wrappable and its container is resized, it does not
-	* cause the label to be wrapped.  The fix is to
-	* determine the size that will wrap the label
-	* and expilictly set that size to force the label
-	* to wrap.
-	* 
-	* This part of the fix forces the label to be
-	* resized so that it will draw wrapped.
-	*/
-	if (labelHandle != 0) {
-		int labelWidth = OS.GTK_WIDGET_WIDTH (labelHandle);
-		int labelHeight = OS.GTK_WIDGET_HEIGHT (labelHandle);
-		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
-	}
 }
 
 /**
@@ -357,6 +326,40 @@ void setBackgroundColor (GdkColor color) {
 	OS.gtk_widget_modify_bg (fixedHandle, 0, color);
 	if (labelHandle != 0) OS.gtk_widget_modify_bg (labelHandle, 0, color);
 	if (pixmapHandle != 0) OS.gtk_widget_modify_bg (pixmapHandle, 0, color);
+}
+
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	/*
+	* Bug in GTK.  For some reason, when the label is
+	* wrappable and its container is resized, it does not
+	* cause the label to be wrapped.  The fix is to
+	* determine the size that will wrap the label
+	* and expilictly set that size to force the label
+	* to wrap.
+	* 
+	* This part of the fix causes the label to be
+	* resized to the preferred size but it still
+	* won't draw properly.
+	*/
+	if (resize && labelHandle != 0) OS.gtk_widget_set_size_request (labelHandle, -1, -1);
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	/*
+	* Bug in GTK.  For some reason, when the label is
+	* wrappable and its container is resized, it does not
+	* cause the label to be wrapped.  The fix is to
+	* determine the size that will wrap the label
+	* and expilictly set that size to force the label
+	* to wrap.
+	* 
+	* This part of the fix forces the label to be
+	* resized so that it will draw wrapped.
+	*/
+	if (resize && labelHandle != 0) {
+		int labelWidth = OS.GTK_WIDGET_WIDTH (labelHandle);
+		int labelHeight = OS.GTK_WIDGET_HEIGHT (labelHandle);
+		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
+	}
+	return changed;
 }
 
 void setFontDescription (int font) {

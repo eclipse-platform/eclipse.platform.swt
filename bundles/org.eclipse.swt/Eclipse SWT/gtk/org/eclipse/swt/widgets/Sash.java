@@ -91,11 +91,11 @@ public Sash (Composite parent, int style) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
-	addListener (SWT.MouseDoubleClick,typedListener);
+	addListener (SWT.DefaultSelection,typedListener);
 }
 
 static int checkStyle (int style) {
@@ -277,7 +277,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.MouseDoubleClick,listener);	
+	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
 }
