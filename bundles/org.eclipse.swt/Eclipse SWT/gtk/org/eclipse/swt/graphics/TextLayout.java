@@ -1035,7 +1035,8 @@ public String getText () {
  */
 public int getWidth () {
 	checkLayout ();
-	return OS.PANGO_PIXELS(OS.pango_layout_get_width(layout));
+	int width = OS.pango_layout_get_width(layout);
+	return width != -1 ? OS.PANGO_PIXELS(width) : -1;
 }
 
 /**
