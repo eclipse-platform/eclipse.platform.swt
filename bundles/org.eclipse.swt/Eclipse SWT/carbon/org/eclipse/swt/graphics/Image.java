@@ -489,6 +489,7 @@ void createMask () {
 public void dispose () {
 	if (handle == 0) return;
 	if (device.isDisposed()) return;
+	if (memGC != null) memGC.dispose();
 	OS.CGImageRelease(handle);
 	OS.DisposePtr(data);
 	device = null;
