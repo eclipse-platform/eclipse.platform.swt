@@ -395,6 +395,65 @@ public void clearSelection () {
 	OS.PtTextSetSelection (handle, new int [] {0}, new int [] {0});
 }
 
+
+/**
+ * Copies the selected text.
+ * <p>
+ * The current selection is copied to the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void copy () {
+	checkWidget();
+	int [] start = new int [1], end = new int [1];
+	int length = OS.PtTextGetSelection (handle, start, end);
+	if (length <= 0) return;
+	int [] args = {OS.Pt_ARG_TEXT_STRING, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	byte[] buffer = new byte[length + 1];
+	OS.memmove (buffer, args [1] + start [0], length);
+	int ig = OS.PhInputGroup (0);
+	OS.PhClipboardCopyString((short)ig, buffer);
+}
+
+/**
+ * Cuts the selected text.
+ * <p>
+ * The current selection is first copied to the
+ * clipboard and then deleted from the widget.
+ * </p>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void cut () {
+	checkWidget();
+	int [] start = new int [1], end = new int [1];
+	int length = OS.PtTextGetSelection (handle, start, end);
+	if (length <= 0) return;
+	int [] args = {OS.Pt_ARG_TEXT_STRING, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	byte[] buffer = new byte[length + 1];
+	OS.memmove (buffer, args [1] + start [0], length);
+	int ig = OS.PhInputGroup (0);
+	OS.PhClipboardCopyString((short)ig, buffer);
+	buffer = new byte[0];
+	OS.PtTextModifyText (handle, start [0], end [0], start [0], buffer, buffer.length);
+}
+
 void deregister () {
 	super.deregister ();
 	int child = OS.PtWidgetChildBack (handle);
@@ -720,6 +779,37 @@ public int indexOf (String string, int start) {
 	
 	// NOT DONE - start is ignored
 	return indexOf (string);
+}
+
+/**
+ * Pastes text from clipboard.
+ * <p>
+ * The selected text is deleted from the widget
+ * and new text inserted from the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void paste () {
+	checkWidget();
+	int ig = OS.PhInputGroup (0);
+	int ptr = OS.PhClipboardPasteString((short)ig);
+	if (ptr == 0) return;
+	int length = OS.strlen (ptr);
+	int [] start = new int [1], end = new int [1];
+	OS.PtTextGetSelection (handle, start, end);
+	if (start [0] == -1) {
+		int [] args = {OS.Pt_ARG_CURSOR_POSITION, 0, 0};
+		OS.PtGetResources (handle, args.length / 3, args);
+		start [0] = end [0] = args [1];	
+	}
+	OS.PtTextModifyText (handle, start [0], end [0], end [0], ptr, length);
+	OS.free(ptr);
 }
 
 int processModify (int info) {
