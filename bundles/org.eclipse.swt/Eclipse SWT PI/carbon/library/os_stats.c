@@ -4,7 +4,7 @@
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
 * http://www.eclipse.org/legal/epl-v10.html
-* 
+*
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 800;
-int OS_nativeFunctionCallCount[800];
+int OS_nativeFunctionCount = 802;
+int OS_nativeFunctionCallCount[802];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -689,6 +689,8 @@ char * OS_nativeFunctionNames[] = {
 	"SetDragAllowableActions",
 	"SetDragDropAction",
 	"SetDragInputProc",
+	"SetDragItemFlavorData",
+	"SetDragSendProc",
 	"SetEventLoopTimerNextFireTime",
 	"SetEventParameter__IIII_3C",
 	"SetEventParameter__IIII_3I",

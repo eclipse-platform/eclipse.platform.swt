@@ -23,6 +23,7 @@ public class OS extends Platform {
 	/** Constants */
 	public static final int RGBDirect = 16;
 	public static final int alphaLock = 0x0400;
+	public static final int badDragFlavorErr = -1852;
 	public static final int bold = 1;
 	public static final int cantGetFlavorErr = -1854;
 	public static final int checkMark = 18;
@@ -1367,6 +1368,8 @@ public static final native int SetDataBrowserTarget(int cHandle, int rootID);
 public static final native int SetDragAllowableActions(int theDrag, int inActions, boolean isLocal);
 public static final native int SetDragDropAction(int theDrag, int inAction);
 public static final native int SetDragInputProc(int theDrag, int inputProc, int dragInputRefCon);
+public static final native int SetDragItemFlavorData (int theDrag, int theItemRef, int theType, byte[] dataPtr, int dataSize, int dataOffset);
+public static final native int SetDragSendProc(int theDrag, int sendProc, int dragSendRefCon);
 public static final native int SetEventLoopTimerNextFireTime(int inTimer, double inNextFire);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, char[] inDataPtr);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, short[] inDataPtr);

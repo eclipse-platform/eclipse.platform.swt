@@ -4,7 +4,7 @@
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
 * http://www.eclipse.org/legal/epl-v10.html
-* 
+*
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
@@ -9354,6 +9354,34 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetDragInputProc)
 	OS_NATIVE_ENTER(env, that, SetDragInputProc_FUNC);
 	rc = (jint)SetDragInputProc((DragRef)arg0, (DragInputUPP)arg1, (void *)arg2);
 	OS_NATIVE_EXIT(env, that, SetDragInputProc_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetDragItemFlavorData
+JNIEXPORT jint JNICALL OS_NATIVE(SetDragItemFlavorData)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4, jint arg5)
+{
+	jbyte *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetDragItemFlavorData_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)SetDragItemFlavorData((DragRef)arg0, (DragItemRef)arg1, (FlavorType)arg2, (const void *)lparg3, (Size)arg4, (UInt32)arg5);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, SetDragItemFlavorData_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetDragSendProc
+JNIEXPORT jint JNICALL OS_NATIVE(SetDragSendProc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetDragSendProc_FUNC);
+	rc = (jint)SetDragSendProc((DragRef)arg0, (DragSendDataUPP)arg1, (void *)arg2);
+	OS_NATIVE_EXIT(env, that, SetDragSendProc_FUNC);
 	return rc;
 }
 #endif
