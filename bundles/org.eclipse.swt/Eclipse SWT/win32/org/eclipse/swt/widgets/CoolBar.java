@@ -1076,14 +1076,14 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			* in WM_ERASEBKGND.
 			*/
 			if (OS.COMCTL32_MAJOR < 6) break;
-			if (background != -1) {
+			if (background != -1 || (style & SWT.FLAT) != 0) {
 				NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
 				OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
 				switch (nmcd.dwDrawStage) {
 					case OS.CDDS_PREERASE:
 						return new LRESULT (OS.CDRF_NOTIFYPOSTERASE);
 					case OS.CDDS_POSTERASE:
-						drawBackground(nmcd.hdc);
+						drawBackground (nmcd.hdc);
 						break;
 				}
 			}
