@@ -95,8 +95,8 @@ protected void drawLineSelectionBackground(String line, int lineOffset, StyleRan
 			selectionLength = lineLength - selectionStart;
 		}
 	}
-	gc.setBackground(getSelectionBackground());
-	gc.setForeground(getSelectionForeground());
+	gc.setBackground(parent.getSelectionBackground());
+	gc.setForeground(parent.getSelectionForeground());
 	if (selectionBackgroundWidth == -1) {
 		boolean isWrappedLine = false;
 
@@ -226,22 +226,6 @@ protected Point getSelection() {
 	return parent.internalGetSelection();
 }
 /**
- * Returns the background color to be used for rendering selected text.
- * <p>
- * @return background color to be used for rendering selected text
- */
-private Color getSelectionBackground() {
-	return getDevice().getSystemColor(SWT.COLOR_LIST_SELECTION);
-}
-/**
- * Returns the foreground color to be used for rendering selected text.
- * <p>
- * @return foreground color to be used for rendering selected text
- */
-private Color getSelectionForeground() {
-	return getDevice().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
-}
-/**
  * @see StyledTextRenderer#getSelectionLineStyles
  */
 /*
@@ -335,8 +319,8 @@ protected StyleRange[] mergeSelectionLineStyles(StyleRange[] styles) {
 	int selectionEnd = selection.y;
 	Vector newStyles = new Vector(styles.length);	
 	StyleRange selectionStyle = null;
-	Color foreground = getSelectionForeground();
-	Color background = getSelectionBackground();
+	Color foreground = parent.getSelectionForeground();
+	Color background = parent.getSelectionBackground();
 
 	// potential optimization: ignore styles if there is no bold style and the entire line is selected
 	for (int i = 0; i < styles.length; i++) {

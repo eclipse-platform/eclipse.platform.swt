@@ -1090,7 +1090,16 @@ public void test_getSelection(){
 	text.setSelection(new Point(3, 2));	
 	assertTrue(":c:", text.getSelection().equals(new Point(2, 3)));	
 }
-
+public void test_getSelectionBackground() {
+	assertTrue(":1:", text.getSelectionBackground() != null);
+	text.setSelectionBackground(getColor(YELLOW));
+	assertTrue(":1:", text.getSelectionBackground() ==  getColor(YELLOW));
+}
+public void test_getSelectionForeground() {
+	assertTrue(":1:", text.getSelectionForeground() != null);
+	text.setSelectionForeground(getColor(RED));
+	assertTrue(":1:", text.getSelectionForeground() ==  getColor(RED));
+}
 public void test_getSelectionRange() {
 	String testText = "Line1\r\nLine2";
 	int invalidRanges [][] = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {12, 1}, {11, 2}, {2, -3}, {50, -1}};
@@ -2970,6 +2979,18 @@ public void test_setSelectionII(){
 		assertTrue(exceptionThrown);
 	}	
 }
+public void test_setSelectionBackgroundLorg_eclipse_swt_graphics_Color(){
+	text.setSelectionBackground(getColor(YELLOW));
+	assertTrue(":1a:", text.getSelectionBackground() ==  getColor(YELLOW));
+	text.setSelectionBackground(null);
+	assertTrue(":1b:", text.getSelectionBackground().equals(text.getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION)));
+}
+public void test_setSelectionForegroundLorg_eclipse_swt_graphics_Color(){
+	text.setSelectionForeground(getColor(RED));
+	assertTrue(":1a:", text.getSelectionForeground() ==  getColor(RED));
+	text.setSelectionForeground(null);
+	assertTrue(":1b:", text.getSelectionForeground().equals(text.getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT)));
+}
 
 public void test_setSelectionRangeII(){
 	// setSelectionRange already tested in test_getSelectionRange
@@ -4032,6 +4053,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getOffsetAtLineI");	
 	methodNames.addElement("test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getSelection");
+	methodNames.addElement("test_getSelectionBackground");
+	methodNames.addElement("test_getSelectionForeground");
 	methodNames.addElement("test_getSelectionRange");
 	methodNames.addElement("test_getSelectionCount");
 	methodNames.addElement("test_getSelectionText");
@@ -4077,6 +4100,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setSelectionI");
 	methodNames.addElement("test_setSelectionLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_setSelectionII");
+	methodNames.addElement("test_setSelectionBackgroundLorg_eclipse_swt_graphics_Color");
+	methodNames.addElement("test_setSelectionForegroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setSelectionRangeII");
 	methodNames.addElement("test_setStyleRangeLorg_eclipse_swt_custom_StyleRange");
 	methodNames.addElement("test_setStyleRanges$Lorg_eclipse_swt_custom_StyleRange");
@@ -4123,6 +4148,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getOffsetAtLineI")) test_getOffsetAtLineI();	
 	else if (getName().equals("test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point")) test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getSelection")) test_getSelection();
+	else if (getName().equals("test_getSelectionBackground")) test_getSelectionBackground();
+	else if (getName().equals("test_getSelectionForeground")) test_getSelectionForeground();
 	else if (getName().equals("test_getSelectionRange")) test_getSelectionRange();
 	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
 	else if (getName().equals("test_getSelectionText")) test_getSelectionText();
@@ -4167,6 +4194,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setLineBackgroundIILorg_eclipse_swt_graphics_Color")) test_setLineBackgroundIILorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
 	else if (getName().equals("test_setSelectionLorg_eclipse_swt_graphics_Point")) test_setSelectionLorg_eclipse_swt_graphics_Point();
+	else if (getName().equals("test_setSelectionBackgroundLorg_eclipse_swt_graphics_Color")) test_setSelectionBackgroundLorg_eclipse_swt_graphics_Color();
+	else if (getName().equals("test_setSelectionForegroundLorg_eclipse_swt_graphics_Color")) test_setSelectionForegroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setSelectionII")) test_setSelectionII();
 	else if (getName().equals("test_setSelectionRangeII")) test_setSelectionRangeII();
 	else if (getName().equals("test_setStyleRangeLorg_eclipse_swt_custom_StyleRange")) test_setStyleRangeLorg_eclipse_swt_custom_StyleRange();

@@ -86,6 +86,8 @@ public class StyledText extends Canvas {
 	static final int TextChanged = 3006;
 	static final int LineGetSegments = 3007;
 	
+	Color selectionBackground;	// selection background color
+	Color selectionForeground;	// selection foreground color
 	StyledTextContent logicalContent;	// native content (default or user specified)
 	StyledTextContent content;			// line wrapping content, same as logicalContent if word wrap is off
 	DisplayRenderer renderer;
@@ -3862,6 +3864,24 @@ public Point getSelectionRange() {
 	return new Point(selection.x, selection.y - selection.x);
 }
 /**
+ * Returns the receiver's selection background color.
+ *
+ * @return the selection background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 2.1
+ */
+public Color getSelectionBackground() {
+	checkWidget();
+	if (selectionBackground == null) {
+		return getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
+	}
+	return selectionBackground;
+}
+/**
  * Gets the number of selected characters.
  * <p>
  *
@@ -3874,6 +3894,24 @@ public Point getSelectionRange() {
 public int getSelectionCount() {
 	checkWidget();
 	return getSelectionRange().y;
+}
+/**
+ * Returns the receiver's selection foreground color.
+ *
+ * @return the selection foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 2.1
+ */
+public Color getSelectionForeground() {
+	checkWidget();
+	if (selectionForeground == null) {
+		return getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
+	}
+	return selectionForeground;
 }
 /**
  * Returns the selected text.
@@ -6947,6 +6985,54 @@ public void setSelection(Point point) {
 	if (point == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	
 	setSelection(point.x, point.y);
 }
+/**
+ * Sets the receiver's selection background color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 2.1
+ */
+public void setSelectionBackground (Color color) {
+	checkWidget ();
+	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	selectionBackground = color;
+	redraw();
+}	
+/**
+ * Sets the receiver's selection foreground color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 2.1
+ */
+public void setSelectionForeground (Color color) {
+	checkWidget ();
+	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	selectionForeground = color;
+	redraw();
+}	
 /** 
  * Sets the selection and scrolls it into view.
  * <p>
