@@ -120,6 +120,9 @@ public class Display extends Device {
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
+	/* System Tray */
+	Tray tray;
+	
 	/* Drag origin */
 	int dragStartX, dragStartY;
 
