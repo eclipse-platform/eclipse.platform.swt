@@ -39,4 +39,8 @@ public final class GCData {
 	public int hwnd;
 	public PAINTSTRUCT ps;
 	public int layout = -1;
+	public int alpha = 0xFF;
+	public int gdipGraphics;
+	public int gdipPen;
+	public int gdipBrush;
 }

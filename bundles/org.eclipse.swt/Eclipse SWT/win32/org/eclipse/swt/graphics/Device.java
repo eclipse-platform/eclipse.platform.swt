@@ -12,6 +12,7 @@ package org.eclipse.swt.graphics;
 
  
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 
@@ -52,6 +53,9 @@ public abstract class Device implements Drawable {
 
 	/* Scripts */
 	int [] scripts;
+
+	/* Advanced Graphics */
+	int [] gdipToken;
 
 	boolean disposed;
 	
@@ -134,6 +138,20 @@ public Device(DeviceData data) {
  */
 protected void checkDevice () {
 	if (disposed) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+}
+
+void checkGDIP() {
+	if (gdipToken != null) return;
+	try {
+		int [] token = new int [1];
+		GdiplusStartupInput input = new GdiplusStartupInput ();
+		input.GdiplusVersion = 1;
+		if (Gdip.GdiplusStartup (token, input, 0) == 0) {
+			gdipToken = token;
+		}
+	} catch (Throwable t) {
+		SWT.error (SWT.ERROR_NO_GRAPHICS_LIBRARY, t);
+	}
 }
 
 /**
@@ -724,6 +742,10 @@ void new_Object (Object object) {
  * @see #destroy
  */
 protected void release () {
+	if (gdipToken != null) {
+		Gdip.GdiplusShutdown (gdipToken);
+	}
+	gdipToken = null;
 	scripts = null;
 	if (hPalette != 0) OS.DeleteObject (hPalette);
 	hPalette = 0;
