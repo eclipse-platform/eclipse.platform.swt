@@ -13,7 +13,6 @@ package org.eclipse.swt.dnd;
  
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.*;
 
 /**
  *
@@ -93,18 +92,12 @@ import org.eclipse.swt.internal.*;
  */
 public class DragSource extends Widget {
 
-	private Callback convertProc;
-	private Callback dragDropFinish;
-	private Callback dropFinish;
-
 	// info for registering as a drag source
 	private Control control;
 	private Listener controlListener;
 	private Transfer[] transferAgents = new Transfer[0];
 
-	private boolean myDrag;
-
-	int dragContext;
+	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -131,28 +124,31 @@ public class DragSource extends Widget {
  */
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
-	
 	this.control = control;
+	if (control.getData(DRAGSOURCEID) != null)
+		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
+	control.setData(DRAGSOURCEID, this);
 
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
 			if (event.type == SWT.Dispose) {
-				if (!DragSource.this.isDisposed()){
+				if (!DragSource.this.isDisposed()) {
 					DragSource.this.dispose();
 				}
 			}
-			if (event.type == SWT.DragDetect){
-//				DragSource.this.drag();
+			if (event.type == SWT.DragDetect) {
+				if (!DragSource.this.isDisposed()) {
+					//DragSource.this.drag(event);
+				}
 			}
-			
 		}
 	};
-	this.control.addListener (SWT.Dispose, controlListener);
-	this.control.addListener (SWT.DragDetect, controlListener);
+	control.addListener (SWT.Dispose, controlListener);
+	control.addListener (SWT.DragDetect, controlListener);
 	
-	this.addListener (SWT.Dispose, new Listener () {
-		public void handleEvent (Event event) {
-//			onDispose();
+	this.addListener(SWT.Dispose, new Listener() {
+		public void handleEvent(Event e) {
+			onDispose();
 		}
 	});
 }
@@ -193,14 +189,19 @@ public void addDragListener(DragSourceListener listener) {
 	addListener (DND.DragSetData, typedListener);
 	addListener (DND.DragEnd, typedListener);
 }
+
 static int checkStyle (int style) {
 	if (style == SWT.NONE) return DND.DROP_MOVE;
 	return style;
 }
 
-
-
-
+protected void checkSubclass () {
+	String name = getClass().getName ();
+	String validName = DragSource.class.getName();
+	if (!validName.equals(name)) {
+		DND.error (SWT.ERROR_INVALID_SUBCLASS);
+	}
+}
 
 /**
  * Returns the Control which is registered for this DragSource.  This is the control that the 
@@ -212,7 +213,6 @@ public Control getControl () {
 	return control;
 }
 public Display getDisplay () {
-
 	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	return control.getDisplay ();
 }
@@ -225,7 +225,18 @@ public Transfer[] getTransfer(){
 	return transferAgents;
 }
 
-
+private void onDispose() {
+	if (control == null)
+		return;
+	if (controlListener != null) {
+		control.removeListener(SWT.Dispose, controlListener);
+		control.removeListener(SWT.DragDetect, controlListener);
+	}
+	controlListener = null;
+	control.setData(DRAGSOURCEID, null);
+	control = null;
+	transferAgents = null;
+}
 
 /**
  * Removes the listener from the collection of listeners who will
@@ -262,12 +273,4 @@ public void setTransfer(Transfer[] transferAgents){
 	this.transferAgents = transferAgents;
 }
 
-
-protected void checkSubclass () {
-	String name = getClass().getName ();
-	String validName = DragSource.class.getName();
-	if (!validName.equals(name)) {
-		DND.error (SWT.ERROR_INVALID_SUBCLASS);
-	}
-}
 }

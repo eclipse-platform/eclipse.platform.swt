@@ -12,9 +12,9 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.photon.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * The <code>Clipboard</code> provides a mechanism for transferring data from one
@@ -26,7 +26,6 @@ public class Clipboard {
 	
 	private Display display;
 	private final int MAX_RETRIES = 10;
-
 
 /**
  * Constructs a new instance of this class.  Creating an instance of a Clipboard
@@ -91,6 +90,7 @@ protected void checkSubclass () {
 		DND.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
 }
+
 /**
  * Disposes of the operating system resources associated with the clipboard. 
  * The data will still be available on the system clipboard after the dispose 
@@ -102,6 +102,7 @@ protected void checkSubclass () {
 public void dispose () {
 	display = null;
 }
+
 /**
  * Retrieve the data of the specified type currently available on the system clipboard.  Refer to the 
  * specific subclass of <code>Tramsfer</code> to determine the type of object returned.
@@ -126,7 +127,9 @@ public void dispose () {
  * @return the data obtained from the clipboard or null if no data of this type is available
  */
 public Object getContents(Transfer transfer) {
-	if (display.isDisposed() ) return null;
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	
 	Object result = null;
 	
@@ -193,22 +196,22 @@ public Object getContents(Transfer transfer) {
  *         otherwise unavailable</li>
  * </ul>
  */
-public void setContents(Object[] data, Transfer[] transferAgents){
-	if (display.isDisposed() ) return;
-	
-	if (data == null || transferAgents == null || data.length != transferAgents.length) {
+public void setContents(Object[] data, Transfer[] dataTypes) {
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	
 	PhClipHeader[] clips = new PhClipHeader[0];
 	int count = 0;
-	for (int i = 0; i < transferAgents.length; i++) {
-		String[] names = transferAgents[i].getTypeNames();
-		int[] ids = transferAgents[i].getTypeIds();
+	for (int i = 0; i < dataTypes.length; i++) {
+		String[] names = dataTypes[i].getTypeNames();
+		int[] ids = dataTypes[i].getTypeIds();
 		for (int j = 0; j < names.length; j++) {
 			TransferData transferData = new TransferData();
 			transferData.type = ids[j];
-			transferAgents[i].javaToNative(data[i], transferData);
+			dataTypes[i].javaToNative(data[i], transferData);
 			PhClipHeader clip = new PhClipHeader();
 			clip.data = transferData.pData;
 			clip.length = (short)transferData.length;
@@ -261,6 +264,9 @@ public void setContents(Object[] data, Transfer[] transferAgents){
  * system clipboard
  */
 public String[] getAvailableTypeNames() {
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	
 	String[] types = new String[0];
 	int ig = OS.PhInputGroup(0);
 	int cbdata = OS.PhClipboardPasteStart((short)ig);
