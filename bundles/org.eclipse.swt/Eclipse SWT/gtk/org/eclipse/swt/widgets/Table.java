@@ -262,7 +262,7 @@ void createRenderers (int columnHandle, int modelIndex, boolean check) {
 }
 
 void createItem (TableColumn column, int index) {
-	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_ITEM_NOT_ADDED);
+	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (columnCount == 0) {
 		column.handle = OS.gtk_tree_view_get_column (handle, 0);
 		column.modelIndex = 3;
@@ -279,7 +279,7 @@ void createItem (TableColumn column, int index) {
 }
 
 void createItem (TableItem item, int index) {
-	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_ITEM_NOT_ADDED);
+	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (itemCount == items.length) {
 		TableItem [] newItems = new TableItem [items.length + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);

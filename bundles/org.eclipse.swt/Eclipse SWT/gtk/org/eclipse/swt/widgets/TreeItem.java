@@ -101,7 +101,7 @@ public TreeItem (Tree parent, int style, int index) {
 	super (parent, style);
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
-	if (!parent.createItem (this, 0, index)) error (SWT.ERROR_INVALID_RANGE);
+	parent.createItem (this, 0, index);
 }
 
 /**
@@ -175,7 +175,7 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 	super (checkNull (parentItem).parent, style);
 	if (index < 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	this.parent = parentItem.parent;
-	if (!parent.createItem (this, parentItem.handle, index)) error (SWT.ERROR_INVALID_RANGE);
+	parent.createItem (this, parentItem.handle, index);
 }
 
 static TreeItem checkNull (TreeItem item) {
@@ -329,7 +329,7 @@ public boolean getGrayed() {
  */
 public int getItemCount () {
 	checkWidget();
-	return  OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
+	return OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
 }
 
 /**
