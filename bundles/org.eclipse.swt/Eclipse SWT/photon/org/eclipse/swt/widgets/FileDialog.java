@@ -113,6 +113,7 @@ public String getFileName () {
  * @return the relative paths of the files
  */
 public String [] getFileNames () {
+	if (fileName.length () == 0) return new String [0];
 	return new String [] {fileName};
 }
 
