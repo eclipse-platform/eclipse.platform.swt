@@ -94,6 +94,9 @@ public final class FormLayout extends Layout {
 	 */
  	public int marginHeight = 0;
 	
+/**
+ * Constructs a new instance of this class.
+ */
 public FormLayout () {
 }
 
