@@ -91,6 +91,9 @@ public String getLine(int lineIndex) {
 		line = logicalContent.getLine(lineIndex);
 	}
 	else {
+		if (lineIndex >= visualLineCount || lineIndex < 0) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}		
 		line = logicalContent.getTextRange(visualLines[lineIndex][LINE_OFFSET], visualLines[lineIndex][LINE_LENGTH]);
 	}
     return line;
@@ -191,6 +194,9 @@ public int getOffsetAtLine(int lineIndex) {
 		offset = logicalContent.getOffsetAtLine(lineIndex);
 	}
 	else {
+		if (lineIndex >= visualLineCount || lineIndex < 0) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
 		offset = visualLines[lineIndex][LINE_OFFSET];
 	}
     return offset;
