@@ -325,6 +325,7 @@ public class OS {
 	public static final byte[] focus_in_event = signal("focus_in_event");
 	public static final byte[] focus_out_event = signal("focus_out_event");
 	public static final byte[] hide = signal("hide");
+	public static final byte[] input = signal("input");
 	public static final byte[] insert_text = signal("insert_text");
 	public static final byte[] key_press_event = signal("key_press_event");
 	public static final byte[] key_release_event = signal("key_release_event");
@@ -334,6 +335,7 @@ public class OS {
 	public static final byte[] mnemonic_activate = signal("mnemonic_activate");
 	public static final byte[] motion_notify_event = signal("motion_notify_event");
 	public static final byte[] move_focus = signal("move_focus");
+	public static final byte[] output = signal("output");
 	public static final byte[] popup_menu = signal("popup_menu");
 	public static final byte[] preedit_changed = signal("preedit_changed");
 	public static final byte[] realize = signal("realize");
@@ -1003,6 +1005,12 @@ public static final synchronized native int /*long*/ gtk_separator_menu_item_new
 public static final synchronized native int /*long*/ gtk_set_locale();
 public static final synchronized native int /*long*/ gtk_socket_get_id(int /*long*/ socket);
 public static final synchronized native int /*long*/ gtk_socket_new();
+public static final synchronized native int /*long*/ gtk_spin_button_new(int /*long*/ adjustment, double climb_rate, int digits);
+public static final synchronized native int /*long*/ gtk_spin_button_get_adjustment(int /*long*/ spin_button);
+public static final synchronized native void gtk_spin_button_set_increments(int /*long*/ spin_button, double step, double page);
+public static final synchronized native void gtk_spin_button_set_range(int /*long*/ spin_button, double max, double min);
+public static final synchronized native void gtk_spin_button_set_value(int /*long*/ spin_button, double value);
+public static final synchronized native void gtk_spin_button_set_wrap(int /*long*/ spin_button, boolean wrap);
 public static final synchronized native void gtk_style_get_base(int /*long*/ style, int index, GdkColor color);
 public static final synchronized native void gtk_style_get_black(int /*long*/ style, GdkColor color);
 public static final synchronized native void gtk_style_get_bg(int /*long*/ style, int index, GdkColor color);
@@ -1269,6 +1277,7 @@ public static final native void memmove(int /*long*/ dest, int[] src, int /*long
 public static final native void memmove(int /*long*/ dest, long[] src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, byte[] src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, char[] src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, double[] src, int /*long*/ size);
 public static final native void memmove(int[] dest, byte[] src, int /*long*/ size);
 public static final native void memmove(byte[] dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(char[] dest, int /*long*/ src, int /*long*/ size);

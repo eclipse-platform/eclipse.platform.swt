@@ -7344,6 +7344,70 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1socket_1new)
 }
 #endif
 
+#ifndef NO_gtk_1spin_1button_1get_1adjustment
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1spin_1button_1get_1adjustment)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1spin_1button_1get_1adjustment_FUNC);
+	rc = (jint)gtk_spin_button_get_adjustment((GtkSpinButton*)arg0);
+	OS_NATIVE_EXIT(env, that, gtk_1spin_1button_1get_1adjustment_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1spin_1button_1new
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1spin_1button_1new)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jint arg2)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1spin_1button_1new_FUNC);
+	rc = (jint)gtk_spin_button_new((GtkAdjustment *)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, gtk_1spin_1button_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1spin_1button_1set_1increments
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1spin_1button_1set_1increments)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2)
+{
+	OS_NATIVE_ENTER(env, that, gtk_1spin_1button_1set_1increments_FUNC);
+	gtk_spin_button_set_increments((GtkSpinButton*)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, gtk_1spin_1button_1set_1increments_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1spin_1button_1set_1range
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1spin_1button_1set_1range)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2)
+{
+	OS_NATIVE_ENTER(env, that, gtk_1spin_1button_1set_1range_FUNC);
+	gtk_spin_button_set_range((GtkSpinButton*)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, gtk_1spin_1button_1set_1range_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1spin_1button_1set_1value
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1spin_1button_1set_1value)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, gtk_1spin_1button_1set_1value_FUNC);
+	gtk_spin_button_set_value((GtkSpinButton*)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, gtk_1spin_1button_1set_1value_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1spin_1button_1set_1wrap
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1spin_1button_1set_1wrap)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, gtk_1spin_1button_1set_1wrap_FUNC);
+	gtk_spin_button_set_wrap((GtkSpinButton*)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, gtk_1spin_1button_1set_1wrap_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1style_1get_1base
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1base)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
@@ -10243,6 +10307,33 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3CI)
 		if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
 	}
 	OS_NATIVE_EXIT(env, that, memmove__I_3CI_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__I_3DI
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3DI)
+	(JNIEnv *env, jclass that, jint arg0, jdoubleArray arg1, jint arg2)
+{
+	jdouble *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__I_3DI_FUNC);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	} else
+#endif
+	{
+		if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
+	}
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, JNI_ABORT);
+	}
+	OS_NATIVE_EXIT(env, that, memmove__I_3DI_FUNC);
 }
 #endif
 

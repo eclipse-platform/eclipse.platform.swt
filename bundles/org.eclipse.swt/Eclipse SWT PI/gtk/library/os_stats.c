@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 928;
-int OS_nativeFunctionCallCount[928];
+int OS_nativeFunctionCount = 935;
+int OS_nativeFunctionCallCount[935];
 char * OS_nativeFunctionNames[] = {
 	"Call__III", 
 	"Call__IIII", 
@@ -591,6 +591,12 @@ char * OS_nativeFunctionNames[] = {
 	"gtk_1settings_1get_1default", 
 	"gtk_1socket_1get_1id", 
 	"gtk_1socket_1new", 
+	"gtk_1spin_1button_1get_1adjustment", 
+	"gtk_1spin_1button_1new", 
+	"gtk_1spin_1button_1set_1increments", 
+	"gtk_1spin_1button_1set_1range", 
+	"gtk_1spin_1button_1set_1value", 
+	"gtk_1spin_1button_1set_1wrap", 
 	"gtk_1style_1get_1base", 
 	"gtk_1style_1get_1bg", 
 	"gtk_1style_1get_1black", 
@@ -829,6 +835,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I", 
 	"memmove__I_3BI", 
 	"memmove__I_3CI", 
+	"memmove__I_3DI", 
 	"memmove__I_3II", 
 	"memmove__I_3JI", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2I", 
