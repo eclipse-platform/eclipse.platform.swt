@@ -223,10 +223,10 @@ public Shell (Display display) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Display display, int style) {
-	this (display, null, style);
+	this (display, null, style, 0);
 }
 
-Shell (Display display, Shell parent, int style) {
+Shell (Display display, Shell parent, int style, int handle) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -237,6 +237,7 @@ Shell (Display display, Shell parent, int style) {
 	this.style = checkStyle (style);
 	this.parent = parent;
 	this.display = display;
+	this.handle = handle;
 	createWidget (0);
 }
 
@@ -263,7 +264,7 @@ Shell (Display display, Shell parent, int style) {
  * </ul>
  */
 public Shell (Shell parent) {
-	this (parent, SWT.TITLE | SWT.CLOSE | SWT.BORDER);
+	this (parent, SWT.DIALOG_TRIM);
 }
 
 /**
@@ -309,7 +310,11 @@ public Shell (Shell parent) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
-	this (null, parent, style);
+	this (parent != null ? parent.display : null, parent, style, 0);
+}
+
+public static Shell gtk_new (Display display, int handle) {
+	return new Shell (display, null, SWT.NO_TRIM, handle);
 }
 
 static int checkStyle (int style) {
@@ -463,9 +468,13 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	int type = OS.GTK_WINDOW_TOPLEVEL;
-	if ((style & SWT.ON_TOP) != 0) type = OS.GTK_WINDOW_POPUP;
-	shellHandle = OS.gtk_window_new (type);
+	if (handle == 0) {
+		int type = OS.GTK_WINDOW_TOPLEVEL;
+		if ((style & SWT.ON_TOP) != 0) type = OS.GTK_WINDOW_POPUP;
+		shellHandle = OS.gtk_window_new (type);
+	} else {
+		shellHandle = OS.gtk_plug_new (handle);
+	}
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (parent != null) {
 		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());

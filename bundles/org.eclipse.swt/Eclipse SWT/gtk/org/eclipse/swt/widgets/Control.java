@@ -123,7 +123,7 @@ int fontHandle () {
 }
 
 boolean hasFocus () {
-	return OS.GTK_WIDGET_HAS_FOCUS (handle);
+	return OS.GTK_WIDGET_HAS_FOCUS (focusHandle ());
 }
 
 void hookEvents () {
@@ -1779,7 +1779,7 @@ int gtk_mnemonic_activate (int widget, int arg1) {
 		OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
 		if (keyEvent.type == OS.GDK_KEY_PRESS) {
 			Control focusControl = display.getFocusControl ();
-			int focusHandle = focusControl != null ? focusControl.eventHandle () : 0;
+			int focusHandle = focusControl != null ? focusControl.focusHandle () : 0;
 			if (focusHandle != 0) {
 				display.mnemonicControl = this;
 				OS.gtk_widget_event (focusHandle, eventPtr);

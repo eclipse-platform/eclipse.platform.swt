@@ -192,9 +192,11 @@ void createHandle (int index, int parentHandle, boolean scrolled) {
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (handle, true);
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
-	if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0) {
-		imHandle = OS.gtk_im_multicontext_new ();
-		if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	if ((style & SWT.EMBEDDED) == 0) {
+		if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0) {
+			imHandle = OS.gtk_im_multicontext_new ();
+			if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		}
 	}
 	if (scrolled) {
 		OS.gtk_container_add (parentHandle, fixedHandle);
@@ -238,6 +240,11 @@ void createHandle (int index, int parentHandle, boolean scrolled) {
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
 	}
+}
+
+void deregister () {
+	super.deregister ();
+	if (socketHandle != 0) display.removeWidget (socketHandle);
 }
 
 void enableWidget (boolean enabled) {
@@ -591,6 +598,11 @@ Point minimumSize () {
 int parentingHandle () {
 	if ((state & CANVAS) != 0) return handle;
 	return fixedHandle != 0 ? fixedHandle : handle;
+}
+
+void register () {
+	super.register ();
+	if (socketHandle != 0) display.addWidget (socketHandle, this);
 }
 
 void releaseChildren () {
