@@ -86,7 +86,7 @@ import org.eclipse.swt.events.*;
 
 public class Shell extends Decorations {
 	Display display;
-	int shellHandle, vboxHandle, eventBoxHandle;
+	int shellHandle, vboxHandle;
 	int modal;
 	int accelGroup;
 	Rectangle lastClientArea;
