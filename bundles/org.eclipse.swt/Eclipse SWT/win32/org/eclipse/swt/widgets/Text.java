@@ -855,9 +855,8 @@ public String getText () {
  * @return the range of text
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of characters minus 1 (inclusive)</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of characters minus 1 (inclusive), or if start is greater than end</li>
  * </ul>
- * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
