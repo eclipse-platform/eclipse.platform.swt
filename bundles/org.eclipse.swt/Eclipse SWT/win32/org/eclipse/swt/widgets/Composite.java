@@ -316,10 +316,10 @@ void releaseChildren () {
 void resizeChildren () {
 	if (lpwp == null) return;
 	do {
-		WINDOWPOS [] oldLpwp = lpwp;
+		WINDOWPOS [] currentLpwp = lpwp;
 		lpwp = null;
-		if (!resizeChildren (true, oldLpwp)) {
-			resizeChildren (false, oldLpwp);
+		if (!resizeChildren (true, currentLpwp)) {
+			resizeChildren (false, currentLpwp);
 		}
 	} while (lpwp != null);
 }
