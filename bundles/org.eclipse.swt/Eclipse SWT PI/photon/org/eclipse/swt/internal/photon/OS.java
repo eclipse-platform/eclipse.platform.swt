@@ -17,13 +17,12 @@ public class OS {
 /**** BEGIN MANUALLY ADDED/FIXED ***/
 	public static final int Pt_SET_DRAW_F										= 1507348;
 	public static final int Pt_ARG_ORIENTATION                                    = ( 21 * 1000 + 5 );
-	public static final int Pt_ARG_SCROLL_POSITION                                = ( 21 * 1000 + 4 );
 	public static final int Pt_ARG_MAXIMUM                                        = ( 21 * 1000 + 3 );
 	public static final int Pt_ARG_MINIMUM                                        = ( 21 * 1000 + 2 );
 	public static final int Pt_ARG_WIDTH                                        = ( 1 * 1000 + 23 );
 	public static final int Pt_ARG_HEIGHT                                        = ( 1 * 1000 + 24 );
 //	public static final int Pt_ARG_STYLE                                        = ( 2 * 1000 + 18 );
-//	public static final int Ph_USE_TRANSPARENCY                                   = 0x80;
+	public static final int Ph_USE_TRANSPARENCY                                   = 0x80;
 	public static final int Ph_RELEASE_IMAGE_ALL                                  = 0x1F;
 	
 	public static final int  Pt_TOP_ETCH				= 0x00000001;
@@ -42,7 +41,7 @@ public class OS {
 	public static final int  Pt_BOTTOM_INLINE			= 0x00002000;
 	public static final int  Pt_LEFT_INLINE				= 0x00004000;
 	public static final int  Pt_RIGHT_INLINE			= 0x00008000;
-//	public static final int  Pt_FLAT_FILL				= 0x00010000;
+	public static final int  Pt_FLAT_FILL				= 0x00010000;
 //	public static final int  Pt_FULL_BORDERS			= 0x00020000;
 //	public static final int  Pt_FULL_BEVELS				= 0x00020000;
 	public static final int  Pt_HORIZONTAL_GRADIENT		= 0x00040000;
@@ -66,7 +65,7 @@ public class OS {
 	public static final int  Pt_ALL_INLINES				= (Pt_TOP_INLINE | Pt_BOTTOM_INLINE | Pt_LEFT_INLINE | Pt_RIGHT_INLINE);
 //	public static final int  Pt_TOP_LEFT_BEVEL			= (Pt_TOP_BEVEL | Pt_LEFT_BEVEL);
 //	public static final int  Pt_BOTTOM_RIGHT_BEVEL 		= (Pt_BOTTOM_BEVEL | Pt_RIGHT_BEVEL );
-//	public static final int  Pt_ALL_BEVELS				= (Pt_TOP_BEVEL | Pt_BOTTOM_BEVEL | Pt_LEFT_BEVEL | Pt_RIGHT_BEVEL);
+	public static final int  Pt_ALL_BEVELS				= (Pt_TOP_BEVEL | Pt_BOTTOM_BEVEL | Pt_LEFT_BEVEL | Pt_RIGHT_BEVEL);
 //	public static final int  Pt_ALL_TOP					= (Pt_TOP_ETCH | Pt_TOP_OUTLINE | Pt_TOP_BEVEL | Pt_TOP_INLINE);
 //	public static final int  Pt_ALL_BOTTOM				= (Pt_BOTTOM_ETCH | Pt_BOTTOM_OUTLINE | Pt_BOTTOM_BEVEL | Pt_BOTTOM_INLINE);
 //	public static final int  Pt_ALL_LEFT				= (Pt_LEFT_ETCH | Pt_LEFT_OUTLINE | Pt_LEFT_BEVEL | Pt_LEFT_INLINE);
@@ -206,7 +205,6 @@ public class OS {
 	public static final int Pt_CB_TREE_SELECTION	                                     = ( 23 * 1000 + 22 );
 	public static final int Pt_TREE_COLLAPSING  = 0;
 	public static final int Pt_TREE_EXPANDING   = 1;
-	public static final int Pt_ARG_ARM_FILL                                    = ( 6 * 1000 + 2 );
 /*** END MANUALLY ADDED/FIXED ***/
 
 //public static final int Aw_ARG_ONOFF_STATE                                    = ( 5 * 1000 + 1 );
@@ -857,7 +855,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Ph_FEP_REGISTER                                       = 0;
 //public static final int Ph_FOCUS_BRANCH                                       = 0x0008;
 //public static final int Ph_FOLLOW_IG_SIZE                                     = 0x00200000;
-//public static final int Ph_FORCE_BOUNDARY                                     = 0x00400000;
+	public static final int Ph_FORCE_BOUNDARY                                     = 0x00400000;
 //public static final int Ph_FORCE_FRONT                                        = 0x00100000;
 //public static final int Ph_GCAP_BLIT                                          = 0x00000001;
 //public static final int Ph_GCAP_DIRECTCOLOR                                   = 0x00000100;
@@ -1328,9 +1326,9 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_ARG_ARC_START                                      = ( 26 * 1000 + 1 );
 //public static final int Pt_ARG_ARC_TYPE                                       = ( 26 * 1000 + 2 );
 	public static final int Pt_ARG_AREA                                           = ( 1 * 1000 + 0 );
-//public static final int Pt_ARG_ARM_COLOR                                      = ( 6 * 1000 + 0 );
+	public static final int Pt_ARG_ARM_COLOR                                      = ( 6 * 1000 + 0 );
 //public static final int Pt_ARG_ARM_DATA                                       = ( 6 * 1000 + 1 );
-//public static final int Pt_ARG_ARM_FILL                                       = ( 6 * 1000 + 2 );
+	public static final int Pt_ARG_ARM_FILL                                       = ( 6 * 1000 + 2 );
 	public static final int Pt_ARG_BALLOON_COLOR                                  = ( 3 * 1000 + 20 );
 	public static final int Pt_ARG_BALLOON_FILL_COLOR                             = ( 3 * 1000 + 19 );
 	public static final int Pt_ARG_BALLOON_POSITION                               = ( 3 * 1000 + 16 );
@@ -1672,7 +1670,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_ARG_REGION_CURSOR_COLOR                            = ( 1 * 1000 + 3 );
 //public static final int Pt_ARG_REGION_DATA                                    = ( 15 * 1000 + 9 );
 //public static final int Pt_ARG_REGION_FIELDS                                  = ( 15 * 1000 + 2 );
-//public static final int Pt_ARG_REGION_FLAGS                                   = ( 15 * 1000 + 3 );
+	public static final int Pt_ARG_REGION_FLAGS                                   = ( 15 * 1000 + 3 );
 //public static final int Pt_ARG_REGION_HANDLE                                  = ( 15 * 1000 + 4 );
 //public static final int Pt_ARG_REGION_INFRONT                                 = ( 15 * 1000 + 10 );
 //public static final int Pt_ARG_REGION_INPUT_GROUP                             = ( 15 * 1000 + 11 );
@@ -2837,6 +2835,7 @@ public static final native int PtWindowFocus (int widget);
 public static final native void PtWindowToBack (int widget);
 public static final native void PtWindowToFront (int widget);
 public static final native int PtFindDisjoint (int widget);
+//public static final native int PtFindGuardian( int widget, int superior_only );
 
 public static final native int PtBlockAllWindows(int skip, short cursor, int cursor_color);
 public static final native int PtBlockWindow(int window, short cursor, int cursor_color);
@@ -2976,6 +2975,8 @@ public static final native int PhClipboardPasteStart (short ig);
 public static final native int PhClipboardPasteType (int cbdata, byte[] type);
 public static final native int PhClipboardPasteTypeN (int cbdata, int n);
 public static final native void PhClipboardPasteFinish (int cbdata);
+public static final native int PtHold ();
+public static final native int PtRelease ();
 
 //public static final native void memmove (int dest, PtTreeCallback_t src, int size);
 public static final native void memmove (PtTreeCallback_t dest, int src, int size);

@@ -638,6 +638,19 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetMultiClip
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PgFindGuardain
+ * Signature: (II)I
+ */
+/*
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtFindGuardian
+  (JNIEnv *env, jobject that, jint widget, jint superior_only )
+{
+	return (jint)PtFindGuardian( (PtWidget_t*)widget, (int)superior_only );
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PgSetUserClip
  * Signature: (I)I
  */
@@ -6793,6 +6806,36 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove___ILorg_e
     }
     
     memmove((void *)dest, (void *)src1, count);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtHold
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtHold
+  (JNIEnv *env, jobject that)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PtHold\n");
+#endif
+	
+	return (jint)PtHold();
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtRelease
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtRelease
+  (JNIEnv *env, jobject that)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PtRelease\n");
+#endif
+	
+	return (jint)PtRelease();
 }
 
 /*
