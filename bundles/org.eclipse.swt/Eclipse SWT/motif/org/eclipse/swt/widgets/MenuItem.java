@@ -118,7 +118,7 @@ public MenuItem (Menu parent, int style, int index) {
 	createWidget (index);
 }
 void addAccelerator () {
-	if (accelerator == 0) return;
+	if (accelerator == 0 || !getEnabled ()) return;
 	/*
 	* Bug in Solaris.  When accelerators are set more
 	* than once in the same menu bar, the time it takes
@@ -643,8 +643,16 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
+	if (getEnabled () == enabled) return;
 	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
+	if (isAccelActive ()) {
+		if (enabled) {
+			addAccelerator ();
+		} else {
+			removeAccelerator ();
+		}
+	}
 }
 /**
  * Sets the receiver's pull down menu to the argument.

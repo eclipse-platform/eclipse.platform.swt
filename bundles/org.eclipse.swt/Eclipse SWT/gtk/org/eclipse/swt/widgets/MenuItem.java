@@ -306,7 +306,7 @@ int /*long*/ getAccelGroup () {
  */
 public boolean getEnabled () {
 	checkWidget();
-	return OS.GTK_WIDGET_SENSITIVE(handle);
+	return OS.GTK_WIDGET_SENSITIVE (handle);
 }
 
 /**
@@ -597,7 +597,11 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
+	if (OS.GTK_WIDGET_SENSITIVE (handle) == enabled) return;
+	int /*long*/ accelGroup = getAccelGroup ();
+	if (accelGroup != 0) removeAccelerator (accelGroup);
 	OS.gtk_widget_set_sensitive (handle, enabled);
+	if (accelGroup != 0) addAccelerator (accelGroup);
 }
 
 /**
@@ -775,7 +779,7 @@ public void setText (String string) {
 }
 
 void updateAccelerator (int /*long*/ accelGroup, boolean add) {
-	if (accelerator == 0) return;
+	if (accelerator == 0 || !getEnabled ()) return;
 	int mask = 0;
 	if ((accelerator & SWT.ALT) != 0) mask |= OS.GDK_MOD1_MASK;
 	if ((accelerator & SWT.SHIFT) != 0) mask |= OS.GDK_SHIFT_MASK;

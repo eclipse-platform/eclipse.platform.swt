@@ -222,7 +222,7 @@ static int checkStyle (int style) {
 void fillAccel (ACCEL accel) {
 	accel.fVirt = 0;
 	accel.cmd = accel.key = 0;
-	if (accelerator == 0) return;
+	if (accelerator == 0 || !getEnabled ()) return;
 	int fVirt = OS.FVIRTKEY;
 	int key = accelerator & SWT.KEY_MASK;
 	int vKey = Display.untranslateKey (key);
@@ -605,6 +605,7 @@ public void setEnabled (boolean enabled) {
 			if (!success) error (SWT.ERROR_CANNOT_SET_ENABLED);
 		}
 	}
+	parent.destroyAccelerators ();
 	parent.redraw ();
 }
 
