@@ -21,7 +21,7 @@ extern "C" {
 JNIEXPORT jint JNICALL KDE_NATIVE(KApplication_1new)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KApplication_1new_FUNC);
 	rc = (jint)new KApplication(arg0, (char **)arg1, *(QCString *)arg2, (bool)arg3, (bool)arg4);
 	KDE_NATIVE_EXIT(env, that, KApplication_1new_FUNC);
@@ -33,7 +33,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(KApplication_1new)
 JNIEXPORT jint JNICALL KDE_NATIVE(KGlobal_1iconLoader)
 	(JNIEnv *env, jclass that)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KGlobal_1iconLoader_FUNC);
 	rc = (jint)KGlobal::iconLoader();
 	KDE_NATIVE_EXIT(env, that, KGlobal_1iconLoader_FUNC);
@@ -45,7 +45,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(KGlobal_1iconLoader)
 JNIEXPORT jint JNICALL KDE_NATIVE(KIconLoader_1iconPath)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KIconLoader_1iconPath_FUNC);
 	QString temp = ((KIconLoader *)arg0)->iconPath(*(QString *)arg1, arg2, (bool)arg3);
 	{
@@ -72,7 +72,7 @@ JNIEXPORT void JNICALL KDE_NATIVE(KMimeTypeListIterator_1delete)
 JNIEXPORT jint JNICALL KDE_NATIVE(KMimeTypeListIterator_1dereference)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KMimeTypeListIterator_1dereference_FUNC);
 	KSharedPtr<KMimeType> temp = KMimeTypeListIterator_dereference(arg0);
 	{
@@ -89,7 +89,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(KMimeTypeListIterator_1dereference)
 JNIEXPORT jboolean JNICALL KDE_NATIVE(KMimeTypeListIterator_1equals)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	jboolean rc;
+	jboolean rc = 0;
 	KDE_NATIVE_ENTER(env, that, KMimeTypeListIterator_1equals_FUNC);
 	rc = (jboolean)KMimeTypeListIterator_equals(arg0, arg1);
 	KDE_NATIVE_EXIT(env, that, KMimeTypeListIterator_1equals_FUNC);
@@ -111,7 +111,7 @@ JNIEXPORT void JNICALL KDE_NATIVE(KMimeTypeListIterator_1increment)
 JNIEXPORT jint JNICALL KDE_NATIVE(KMimeTypeList_1begin)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KMimeTypeList_1begin_FUNC);
 	QValueListIterator<KMimeType::Ptr> temp = ((KMimeType::List *)arg0)->begin();
 	{
@@ -138,7 +138,7 @@ JNIEXPORT void JNICALL KDE_NATIVE(KMimeTypeList_1delete)
 JNIEXPORT jint JNICALL KDE_NATIVE(KMimeTypeList_1end)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KMimeTypeList_1end_FUNC);
 	QValueListIterator<KMimeType::Ptr> temp = ((KMimeType::List *)arg0)->end();
 	{
@@ -155,7 +155,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(KMimeTypeList_1end)
 JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1allMimeTypes)
 	(JNIEnv *env, jclass that)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KMimeType_1allMimeTypes_FUNC);
 	KMimeType::List temp = KMimeType::allMimeTypes();
 	{
@@ -182,7 +182,7 @@ JNIEXPORT void JNICALL KDE_NATIVE(KMimeType_1delete)
 JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1icon)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KMimeType_1icon_FUNC);
 	QString temp = (*(KSharedPtr<KMimeType> *)arg0)->icon((const QString&)arg1, (bool)arg2);
 	{
@@ -199,7 +199,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1icon)
 JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1mimeType)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KMimeType_1mimeType_FUNC);
 	KSharedPtr<KMimeType> temp = KMimeType::mimeType(*(QString *)arg0);
 	{
@@ -216,7 +216,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1mimeType)
 JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1name)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KMimeType_1name_FUNC);
 	QString temp = (*(KSharedPtr<KMimeType> *)arg0)->name();
 	{
@@ -233,7 +233,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1name)
 JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1offers)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KMimeType_1offers_FUNC);
 	KService::List temp = KMimeType::offers(*(QString *)arg0);
 	{
@@ -250,7 +250,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1offers)
 JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1patterns)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KMimeType_1patterns_FUNC);
 	QStringList temp = (*(KSharedPtr<KMimeType> *)arg0)->patterns();
 	{
@@ -267,7 +267,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1patterns)
 JNIEXPORT jint JNICALL KDE_NATIVE(KRun_1runURL)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KRun_1runURL_FUNC);
 	rc = (jint)KRun::runURL(*(KURL *)arg0, *(QString *)arg1);
 	KDE_NATIVE_EXIT(env, that, KRun_1runURL_FUNC);
@@ -299,7 +299,7 @@ JNIEXPORT void JNICALL KDE_NATIVE(KURL_1delete)
 JNIEXPORT jint JNICALL KDE_NATIVE(KURL_1new)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, KURL_1new_FUNC);
 	rc = (jint)new KURL(*(QString *)arg0);
 	KDE_NATIVE_EXIT(env, that, KURL_1new_FUNC);
@@ -311,7 +311,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(KURL_1new)
 JNIEXPORT jint JNICALL KDE_NATIVE(QCString_1data)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, QCString_1data_FUNC);
 	rc = (jint)((QCString *)arg0)->data();
 	KDE_NATIVE_EXIT(env, that, QCString_1data_FUNC);
@@ -334,11 +334,12 @@ JNIEXPORT jint JNICALL KDE_NATIVE(QCString_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
 	jbyte *lparg0=NULL;
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, QCString_1new_FUNC);
-	if (arg0) CHECK_NULL(lparg0 = env->GetByteArrayElements(arg0, NULL));
+	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto failTag;
 	rc = (jint)new QCString((char *)lparg0);
-	if (arg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
+failTag:
+	if (arg0 && lparg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
 	KDE_NATIVE_EXIT(env, that, QCString_1new_FUNC);
 	return rc;
 }
@@ -358,7 +359,7 @@ JNIEXPORT void JNICALL KDE_NATIVE(QStringListIterator_1delete)
 JNIEXPORT jint JNICALL KDE_NATIVE(QStringListIterator_1dereference)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, QStringListIterator_1dereference_FUNC);
 	QString temp = QStringListIterator_dereference(arg0);
 	{
@@ -375,7 +376,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(QStringListIterator_1dereference)
 JNIEXPORT jboolean JNICALL KDE_NATIVE(QStringListIterator_1equals)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	jboolean rc;
+	jboolean rc = 0;
 	KDE_NATIVE_ENTER(env, that, QStringListIterator_1equals_FUNC);
 	rc = (jboolean)QStringListIterator_equals(arg0, arg1);
 	KDE_NATIVE_EXIT(env, that, QStringListIterator_1equals_FUNC);
@@ -397,7 +398,7 @@ JNIEXPORT void JNICALL KDE_NATIVE(QStringListIterator_1increment)
 JNIEXPORT jint JNICALL KDE_NATIVE(QStringList_1begin)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, QStringList_1begin_FUNC);
 	QValueListIterator<QString> temp = ((QStringList *)arg0)->begin();
 	{
@@ -424,7 +425,7 @@ JNIEXPORT void JNICALL KDE_NATIVE(QStringList_1delete)
 JNIEXPORT jint JNICALL KDE_NATIVE(QStringList_1end)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, QStringList_1end_FUNC);
 	QValueListIterator<QString> temp = ((QStringList *)arg0)->end();
 	{
@@ -451,7 +452,7 @@ JNIEXPORT void JNICALL KDE_NATIVE(QString_1delete)
 JNIEXPORT jboolean JNICALL KDE_NATIVE(QString_1equals)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	jboolean rc;
+	jboolean rc = 0;
 	KDE_NATIVE_ENTER(env, that, QString_1equals_FUNC);
 	rc = (jboolean)QString_equals(arg0, arg1);
 	KDE_NATIVE_EXIT(env, that, QString_1equals_FUNC);
@@ -464,11 +465,12 @@ JNIEXPORT jint JNICALL KDE_NATIVE(QString_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
 	jbyte *lparg0=NULL;
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, QString_1new_FUNC);
-	if (arg0) CHECK_NULL(lparg0 = env->GetByteArrayElements(arg0, NULL));
+	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto failTag;
 	rc = (jint)new QString((char *)lparg0);
-	if (arg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
+failTag:
+	if (arg0 && lparg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
 	KDE_NATIVE_EXIT(env, that, QString_1new_FUNC);
 	return rc;
 }
@@ -478,7 +480,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(QString_1new)
 JNIEXPORT jint JNICALL KDE_NATIVE(QString_1utf8)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, QString_1utf8_FUNC);
 	QCString temp = ((QString *)arg0)->utf8();
 	{
@@ -508,11 +510,11 @@ JNIEXPORT jint JNICALL KDE_NATIVE(XpmReadFileToPixmap)
 	jbyte *lparg2=NULL;
 	jint *lparg3=NULL;
 	jint *lparg4=NULL;
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, XpmReadFileToPixmap_FUNC);
-	if (arg2) CHECK_NULL(lparg2 = env->GetByteArrayElements(arg2, NULL));
-	if (arg3) CHECK_NULL(lparg3 = env->GetIntArrayElements(arg3, NULL));
-	if (arg4) CHECK_NULL(lparg4 = env->GetIntArrayElements(arg4, NULL));
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto failTag;
+	if (arg3) if ((lparg3 = env->GetIntArrayElements(arg3, NULL)) == NULL) goto failTag;
+	if (arg4) if ((lparg4 = env->GetIntArrayElements(arg4, NULL)) == NULL) goto failTag;
 /*
 	rc = (jint)XpmReadFileToPixmap((Display *)arg0, (Window)arg1, (char *)lparg2, (Pixmap *)lparg3, (Pixmap *)lparg4, (XpmAttributes *)arg5);
 */
@@ -531,9 +533,10 @@ JNIEXPORT jint JNICALL KDE_NATIVE(XpmReadFileToPixmap)
 			rc = (jint)(*fptr)((Display *)arg0, (Window)arg1, (char *)lparg2, (Pixmap *)lparg3, (Pixmap *)lparg4, (XpmAttributes *)arg5);
 		}
 	}
-	if (arg4) env->ReleaseIntArrayElements(arg4, lparg4, 0);
-	if (arg3) env->ReleaseIntArrayElements(arg3, lparg3, 0);
-	if (arg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+failTag:
+	if (arg4 && lparg4) env->ReleaseIntArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseIntArrayElements(arg3, lparg3, 0);
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
 	KDE_NATIVE_EXIT(env, that, XpmReadFileToPixmap_FUNC);
 	return rc;
 }
@@ -553,7 +556,7 @@ JNIEXPORT void JNICALL KDE_NATIVE(free)
 JNIEXPORT jint JNICALL KDE_NATIVE(malloc)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, malloc_FUNC);
 	rc = (jint)malloc(arg0);
 	KDE_NATIVE_EXIT(env, that, malloc_FUNC);
@@ -567,13 +570,14 @@ JNIEXPORT jint JNICALL KDE_NATIVE(sigaction)
 {
 	jbyte *lparg1=NULL;
 	jbyte *lparg2=NULL;
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, sigaction_FUNC);
-	if (arg1) CHECK_NULL(lparg1 = env->GetByteArrayElements(arg1, NULL));
-	if (arg2) CHECK_NULL(lparg2 = env->GetByteArrayElements(arg2, NULL));
+	if (arg1) if ((lparg1 = env->GetByteArrayElements(arg1, NULL)) == NULL) goto failTag;
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto failTag;
 	rc = (jint)sigaction(arg0, (struct sigaction *)lparg1, (struct sigaction *)lparg2);
-	if (arg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
-	if (arg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
+failTag:
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	if (arg1 && lparg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
 	KDE_NATIVE_EXIT(env, that, sigaction_FUNC);
 	return rc;
 }
@@ -583,7 +587,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(sigaction)
 JNIEXPORT jint JNICALL KDE_NATIVE(sigaction_1sizeof)
 	(JNIEnv *env, jclass that)
 {
-	jint rc;
+	jint rc = 0;
 	KDE_NATIVE_ENTER(env, that, sigaction_1sizeof_FUNC);
 	rc = (jint)sigaction_sizeof();
 	KDE_NATIVE_EXIT(env, that, sigaction_1sizeof_FUNC);
