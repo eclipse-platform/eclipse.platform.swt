@@ -104,7 +104,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	if ((state & ZERO_SIZED) != 0) forceResize ();
+	forceResize ();
 	int clientX = OS.GTK_WIDGET_X (clientHandle);
 	int clientY = OS.GTK_WIDGET_Y (clientHandle);
 	x -= clientX;
@@ -158,25 +158,12 @@ int /*long*/ eventHandle () {
 	return fixedHandle;
 }
 
-void fixGroup () {
-	/*
-	* Force the container to allocate the size of its children.
-	*/
-	int flags = OS.GTK_WIDGET_FLAGS (handle);
-	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_VISIBLE);
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
-	OS.gtk_container_resize_children (handle);
-	if ((flags & OS.GTK_VISIBLE) == 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_VISIBLE);	
-	}
-}
-
 public Rectangle getClientArea () {
 	checkWidget();
 	if ((state & ZERO_SIZED) != 0) {
 		return new Rectangle (0, 0, 0, 0);
 	}
+	forceResize ();
 	int width = OS.GTK_WIDGET_WIDTH (clientHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (clientHandle);
 	return new Rectangle (0, 0, width, height);
@@ -304,7 +291,6 @@ public void setText (String string) {
 	} else {
 		OS.gtk_frame_set_label_widget (handle, 0);
 	}
-	fixGroup ();
 }
 
 void showWidget () {

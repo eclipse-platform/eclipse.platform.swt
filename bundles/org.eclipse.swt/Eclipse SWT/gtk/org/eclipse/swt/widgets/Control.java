@@ -369,20 +369,26 @@ Point computeNativeSize (int /*long*/ h, int wHint, int hHint, boolean changed) 
 }
 
 void forceResize () {
-	resizeHandle (1, 1);
 	/*
-	* Force the container to allocate the size of its children.
+	* Force size allocation on all children of this widget's
+	* topHandle.  Note that all calls to gtk_widget_size_allocate()
+	* must be preceded by a call to gtk_widget_size_request().
 	*/
 	int /*long*/ topHandle = topHandle ();
 	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
 	OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	OS.gtk_container_resize_children (parentHandle);
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (topHandle, requisition);
+	GtkAllocation allocation = new GtkAllocation ();
+	allocation.x = OS.GTK_WIDGET_X (topHandle);
+	allocation.y = OS.GTK_WIDGET_Y (topHandle);
+	allocation.width = OS.GTK_WIDGET_WIDTH (topHandle);
+	allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	OS.gtk_widget_size_allocate (topHandle, allocation);
 	if ((flags & OS.GTK_VISIBLE) == 0) {
 		OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);	
 	}
 }
-
 
 /**
  * Returns the accessible object for the receiver.
@@ -500,26 +506,7 @@ void moveHandle (int x, int y) {
 void resizeHandle (int width, int height) {
 	int /*long*/ topHandle = topHandle ();
 	OS.gtk_widget_set_size_request (topHandle, width, height);
-	if (topHandle != handle) {
-		OS.gtk_widget_set_size_request (handle, width, height);
-	}
-
-	/*
-	* Feature in GTK.  Some widgets do not allocate the size
-	* of their internal children in gtk_widget_size_allocate().
-	* Instead this is done in gtk_widget_size_request().  This
-	* means that the client area of the widget is not correct.
-	* The fix is to call gtk_widget_size_request() (and throw
-	* the results away).
-	*
-	* Note: The following widgets rely on this feature:
-	* 	GtkScrolledWindow
-	* 	GtkNotebook
-	* 	GtkFrame
-	* 	GtkCombo
-	*/
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
+	if (topHandle != handle) OS.gtk_widget_set_size_request (handle, width, height);
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -559,10 +546,28 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	}
 	if (!sameOrigin || !sameExtent) {
 		/*
-		* Force the container to allocate the size of its children.
+		* Cause a size allocation this widget's topHandle.  Note that
+		* all calls to gtk_widget_size_allocate() must be preceded by
+		* a call to gtk_widget_size_request().
 		*/
-		int /*long*/ parentHandle = parent.parentingHandle ();
-		OS.gtk_container_resize_children (parentHandle);
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (topHandle, requisition);
+		GtkAllocation allocation = new GtkAllocation ();
+		if (move) {
+			allocation.x = x;
+			allocation.y = y;
+		} else {
+			allocation.x = OS.GTK_WIDGET_X (topHandle);
+			allocation.y = OS.GTK_WIDGET_Y (topHandle);
+		}
+		if (resize) {
+			allocation.width = width;
+			allocation.height = height;
+		} else {
+			allocation.width = OS.GTK_WIDGET_WIDTH (topHandle);
+			allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);
+		}
+		OS.gtk_widget_size_allocate (topHandle, allocation);
 	}
 	if ((flags & OS.GTK_VISIBLE) == 0) {
 		OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);	
@@ -2292,6 +2297,7 @@ void register () {
 public void redraw () {
 	checkWidget();
 	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
+	forceResize ();
 	int /*long*/ paintHandle = paintHandle ();
 	int width = OS.GTK_WIDGET_WIDTH (paintHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (paintHandle);
@@ -2727,6 +2733,7 @@ void setInitialBounds () {
 		OS.GTK_WIDGET_SET_X (topHandle, 0);
 		OS.GTK_WIDGET_SET_Y (topHandle, 0);
 	} else {
+		resizeHandle (1, 1);
 		forceResize ();
 	}
 }

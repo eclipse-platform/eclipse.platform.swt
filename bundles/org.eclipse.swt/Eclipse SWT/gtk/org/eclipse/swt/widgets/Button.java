@@ -143,6 +143,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	* alignment to fail. The fix is to set the child size to the size
 	* of the button.
 	*/
+	forceResize ();
 	int width = OS.GTK_WIDGET_WIDTH (handle);
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		OS.gtk_widget_set_size_request (boxHandle, -1, -1);
@@ -482,6 +483,19 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void resizeHandle (int width, int height) {
+	super.resizeHandle (width, height);
+	/*
+	* Feature in GTK, GtkCheckButton and GtkRadioButton allocate
+	* only the minimum size necessary for its child. This causes the child
+	* alignment to fail. The fix is to set the child size to the size
+	* of the button.
+	*/
+	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		OS.gtk_widget_set_size_request (boxHandle, width, -1);
+	}
+}
+
 void selectRadio () {
 	/*
 	* This code is intentionally commented.  When two groups
@@ -570,20 +584,6 @@ void setBackgroundColor (GdkColor color) {
 	if (imageHandle != 0) setBackgroundColor(imageHandle, color);
 }
 
-int setBounds (int x, int y, int width, int height, boolean move, boolean resize) { 
-	int result = super.setBounds (x, y, width, height, move, resize);
-	/*
-	* Feature in GTK, GtkCheckButton and GtkRadioButton allocate
-	* only the minimum size necessary for its child. This causes the child
-	* alignment to fail. The fix is to set the child size to the size
-	* of the button.
-	*/
-	if ((result & RESIZED) != 0 && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		OS.gtk_widget_set_size_request (boxHandle, width, -1);
-	}
-	return result;
-}
-	
 void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
@@ -634,13 +634,6 @@ public void setImage (Image image) {
 		OS.gtk_widget_hide (imageHandle);
 	}
 	this.image = image;
-	/*
-	* Bug in GTK.  For some reason, the button does not allocate the size of its internal
-	* children if its bounds is set before the image is set.  The fix is to force this by calling
-	* gtk_widget_size_request() (and throw the results away).
-	*/
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
 }
 
 void setOrientation () {
@@ -719,13 +712,6 @@ public void setText (String string) {
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	OS.gtk_widget_hide (imageHandle);
 	OS.gtk_widget_show (labelHandle);
-	/*
-	* Bug in GTK.  For some reason, the button does not allocate the size of its internal
-	* children if its bounds is set before the text is set.  The fix is to force this by calling
-	* gtk_widget_size_request() (and throw the results away).
-	*/
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
 }
 
 void showWidget () {

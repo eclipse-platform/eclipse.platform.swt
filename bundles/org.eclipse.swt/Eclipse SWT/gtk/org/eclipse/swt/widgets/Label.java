@@ -105,6 +105,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 	}
 	boolean fixWrap = labelHandle != 0 && (style & SWT.WRAP) != 0;
+	if (fixWrap || frameHandle != 0) forceResize ();
 	int labelWidth = 0, labelHeight = 0;
 	if (fixWrap) {
 		labelWidth = OS.GTK_WIDGET_WIDTH (labelHandle);
@@ -319,25 +320,7 @@ void releaseWidget () {
 
 void resizeHandle (int width, int height) {
 	OS.gtk_widget_set_size_request (fixedHandle, width, height);
-	int /*long*/ widgetHandle = frameHandle != 0 ? frameHandle : handle;
-	OS.gtk_widget_set_size_request (widgetHandle, width, height);
-
-	/*
-	* Feature in GTK.  Some widgets do not allocate the size
-	* of their internal children in gtk_widget_size_allocate().
-	* Instead this is done in gtk_widget_size_request().  This
-	* means that the client area of the widget is not correct.
-	* The fix is to call gtk_widget_size_request() (and throw
-	* the results away).
-	*
-	* Note: The following widgets rely on this feature:
-	* 	GtkScrolledWindow
-	* 	GtkNotebook
-	* 	GtkFrame
-	* 	GtkCombo
-	*/
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (widgetHandle, requisition);
+	OS.gtk_widget_set_size_request (frameHandle != 0 ? frameHandle : handle, width, height);
 }
 
 /**
@@ -418,9 +401,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		int labelWidth = OS.GTK_WIDGET_WIDTH (handle);
 		int labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
-		int /*long*/ widgetHandle = frameHandle != 0 ? frameHandle : handle;
-		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (widgetHandle, requisition);
 	}
 	return result;
 }

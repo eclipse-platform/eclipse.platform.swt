@@ -149,7 +149,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	if ((state & ZERO_SIZED) != 0) forceResize ();
+	forceResize ();
 	int /*long*/ clientHandle = clientHandle ();
 	int clientX = OS.GTK_WIDGET_X (clientHandle);
 	int clientY = OS.GTK_WIDGET_Y (clientHandle);
@@ -225,33 +225,14 @@ void createItem (TabItem item, int index) {
 	item.setForegroundColor (getForegroundColor ());
 	item.setFontDescription (getFontDescription ());
 	if (itemCount == 1) {
-		fixPage ();
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
+		OS.gtk_notebook_set_current_page (handle, 0);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 		Event event = new Event();
 		event.item = items[0];
 		sendEvent (SWT.Selection, event);
 		// the widget could be destroyed at this point
 	}
-}
-
-void fixPage () {
-	/*
-	* Feature in GTK.  For some reason, the positioning of
-	* tab labels and pages become corrupted when when there
-	* is no current page.  The fix is to force the notebook
-	* to resize which causes the current page to be set.
-	*/
-//	int index = OS.gtk_notebook_get_current_page (handle);
-//	if (index != -1) return;
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
-	int flags = OS.GTK_WIDGET_FLAGS (handle);
-	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_VISIBLE);
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
-	OS.gtk_container_resize_children (handle);
-	if ((flags & OS.GTK_VISIBLE) == 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS(handle, OS.GTK_VISIBLE);	
-	}
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 }
 
 void destroyItem (TabItem item) {
@@ -271,7 +252,6 @@ void destroyItem (TabItem item) {
 	items [itemCount] = null;
 	item.handle = item.pageHandle = item.imageHandle = item.labelHandle = 0;
 	if (index == oldIndex) {
-		fixPage ();
 		int newIndex = OS.gtk_notebook_get_current_page (handle);
 		if (newIndex != -1) {
 			Control control = items [newIndex].getControl ();

@@ -182,18 +182,15 @@ public int getBorderWidth () {
  */
 public Rectangle getClientArea () {
 	checkWidget ();
-	//FIXME - List, Table, Tree, ...
+	forceResize ();
 	int /*long*/ clientHandle = clientHandle ();
+	int x = OS.GTK_WIDGET_X (clientHandle);
+	int y = OS.GTK_WIDGET_Y (clientHandle);
 	int width = 0, height = 0;
 	if ((state & ZERO_SIZED) == 0) {
 		width = OS.GTK_WIDGET_WIDTH (clientHandle);
-		height = OS.GTK_WIDGET_HEIGHT (clientHandle);
+		height = OS.GTK_WIDGET_HEIGHT (clientHandle);			
 	}
-	if ((state & CANVAS) != 0) {
-		return new Rectangle (0, 0, width, height);
-	}
-	int x = OS.GTK_WIDGET_X (clientHandle);
-	int y = OS.GTK_WIDGET_Y (clientHandle);
 	return new Rectangle (x, y, width, height);
 }
 /**
@@ -258,10 +255,6 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 		vsp [0] = policy;
 	}
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp [0], vsp [0]);
-	/*
-	* Force the container to allocate the size of its children.
-	*/
-	OS.gtk_container_resize_children (scrolledHandle);
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
 	sendEvent (SWT.Resize);
 	return true;
@@ -285,31 +278,8 @@ void releaseWidget () {
 }
 
 void resizeHandle (int width, int height) {
-	if (fixedHandle != 0) {
-		OS.gtk_widget_set_size_request (fixedHandle, width, height);
-	}
-	/*
-	* Feature in GTK.  Some widgets do not allocate the size
-	* of their internal children in gtk_widget_size_allocate().
-	* Instead this is done in gtk_widget_size_request().  This
-	* means that the client area of the widget is not correct.
-	* The fix is to call gtk_widget_size_request() (and throw
-	* the results away).
-	*
-	* Note: The following widgets rely on this feature:
-	* 	GtkScrolledWindow
-	* 	GtkNotebook
-	* 	GtkFrame
-	* 	GtkCombo
-	*/
-	GtkRequisition requisition = new GtkRequisition ();
-	if (scrolledHandle != 0) {
-		OS.gtk_widget_set_size_request (scrolledHandle, width, height);
-		OS.gtk_widget_size_request (scrolledHandle, requisition);
-	} else {
-		OS.gtk_widget_set_size_request (handle, width, height);
-		OS.gtk_widget_size_request (handle, requisition);
-	}
+	if (fixedHandle != 0) OS.gtk_widget_set_size_request (fixedHandle, width, height);
+	OS.gtk_widget_set_size_request (scrolledHandle != 0 ? scrolledHandle : handle, width, height);
 }
 
 void showWidget () {

@@ -487,16 +487,6 @@ public void setImage (Image image) {
 		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
 		OS.gtk_widget_hide (imageHandle);
 	}
-
-	/*
-	* Bug in GTK.  For some reason, the column button does not allocate the size 
-	* of its internal children if its bounds is set before the image is set.  The fix is to
-	* force this by calling gtk_widget_size_request() (and throw the results away).
-	*/
-	if (buttonHandle != 0) {
-		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (buttonHandle, requisition);
-	}
 }
 
 /**
@@ -551,16 +541,6 @@ public void setText (String string) {
 		OS.gtk_widget_show (labelHandle);
 	} else {
 		OS.gtk_widget_hide (labelHandle);
-	}
-
-	/*
-	* Bug in GTK.  For some reason, the column button does not allocate the size
-	* of its internal children if its bounds is set before the text is set.  The fix is to 
-	* force this by calling gtk_widget_size_request() (and throw the results away).
-	*/
-	if (buttonHandle != 0) {
-		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (buttonHandle, requisition);
 	}
 }
 

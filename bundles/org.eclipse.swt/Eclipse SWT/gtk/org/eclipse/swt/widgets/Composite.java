@@ -403,6 +403,21 @@ int getChildrenCount () {
 	return count;
 }
 
+public Rectangle getClientArea () {
+	checkWidget();
+	if ((state & CANVAS) != 0) {
+		if ((state & ZERO_SIZED) != 0) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+		forceResize ();
+		int /*long*/ clientHandle = clientHandle ();
+		int width = OS.GTK_WIDGET_WIDTH (clientHandle);
+		int height = OS.GTK_WIDGET_HEIGHT (clientHandle);
+		return new Rectangle (0, 0, width, height);
+	}
+	return super.getClientArea();
+}
+
 /**
  * Returns layout which is associated with the receiver, or
  * null if one has not been set.

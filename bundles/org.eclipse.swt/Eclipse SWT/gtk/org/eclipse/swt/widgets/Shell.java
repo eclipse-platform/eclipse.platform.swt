@@ -471,6 +471,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trim.x -= trimWidth / 2; trim.y -= trimHeight - (trimWidth / 2);
 	trim.width += trimWidth; trim.height += trimHeight;
 	if (menuBar != null) {
+		forceResize ();
 		int menuBarHeight = OS.GTK_WIDGET_HEIGHT (menuBar.handle);
 		trim.y -= menuBarHeight;
 		trim.height += menuBarHeight;
@@ -980,9 +981,9 @@ void resizeBounds (int width, int height, boolean notify) {
 	}
 	int border = OS.gtk_container_get_border_width (shellHandle);
 	int menuHeight = 0;
+	GtkRequisition requisition = new GtkRequisition ();
 	if (menuBar != null) {
 		int /*long*/ menuHandle = menuBar.handle;
-		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (menuHandle, requisition);
 		menuHeight = OS.GTK_WIDGET_REQUISITION_HEIGHT (menuHandle);
 		OS.gtk_widget_set_size_request (menuHandle, width - (border  * 2), menuHeight);
@@ -990,6 +991,7 @@ void resizeBounds (int width, int height, boolean notify) {
 	}
 	OS.gtk_fixed_move (fixedHandle, scrolledHandle, 0, menuHeight);
 	OS.gtk_widget_set_size_request (scrolledHandle, width - (border  * 2), height - (border  * 2));
+	OS.gtk_widget_size_request (fixedHandle, requisition);
 	OS.gtk_container_resize_children (fixedHandle);
 	if (notify) {
 		resized = true;
@@ -1131,6 +1133,8 @@ void setInitialBounds () {
 	int height = rect.height * 5 / 8;
 	OS.gtk_widget_set_size_request (scrolledHandle, width, height);
 	OS.gtk_window_resize (shellHandle, width, height);
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (fixedHandle, requisition);
 	OS.gtk_container_resize_children (fixedHandle);
 }
 

@@ -350,12 +350,11 @@ public int indexOf (ToolItem item) {
 
 void layoutItems () {
 	/*
-	* Force the container to allocate the size of its children.
+	* Force the toolbar to allocate the size of its children.
 	* This ensures that getBounds() returns accurate information for
 	* toolItems immediately.
 	*/
-	int /*long*/ parentHandle = parentingHandle ();
-	OS.gtk_container_resize_children (parentHandle);
+	forceResize ();
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];

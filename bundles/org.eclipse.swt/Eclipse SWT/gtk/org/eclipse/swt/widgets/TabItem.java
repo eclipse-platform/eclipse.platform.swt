@@ -266,7 +266,6 @@ public void setImage (Image image) {
 		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
 		OS.gtk_widget_hide (imageHandle);
 	}
-	parent.fixPage ();
 }
 
 /**
@@ -307,7 +306,6 @@ public void setText (String string) {
 	} else {
 		OS.gtk_widget_hide (labelHandle);
 	}
-	parent.fixPage ();
 }
 
 /**
