@@ -106,7 +106,7 @@ public class Display extends Device {
 	int windowProc, threadId, processId;
 	TCHAR windowClass;
 	static int WindowClassCount;
-	static final String WindowName = "SWT_Window";
+	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
 	EventTable eventTable, filterTable;
 
 	/* Widget Table */
@@ -279,7 +279,7 @@ public class Display extends Device {
 	static final int SWT_TRAYICONMSG	= OS.WM_APP + 5;
 	
 	/* Package Name */
-	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 	/*
 	* This code is intentionally commented.  In order
 	* to support CLDC, .class cannot be used because
@@ -994,8 +994,8 @@ static boolean isValidClass (Class clazz) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setData
- * @see #disposeExec
+ * @see #setData(String, Object)
+ * @see #disposeExec(Runnable)
  */
 public Object getData (String key) {
 	checkDevice ();
@@ -1027,8 +1027,8 @@ public Object getData (String key) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setData
- * @see #disposeExec
+ * @see #setData(Object)
+ * @see #disposeExec(Runnable)
  */
 public Object getData () {
 	checkDevice ();
@@ -1135,7 +1135,7 @@ public int getIconDepth () {
 	checkDevice ();
 
 	/* Use the character encoding for the default locale */
-	TCHAR buffer1 = new TCHAR (0, "Control Panel\\Desktop\\WindowMetrics", true);
+	TCHAR buffer1 = new TCHAR (0, "Control Panel\\Desktop\\WindowMetrics", true); //$NON-NLS-1$
 
 	int [] phkResult = new int [1];
 	int result = OS.RegOpenKeyEx (OS.HKEY_CURRENT_USER, buffer1, 0, OS.KEY_READ, phkResult);
@@ -1145,7 +1145,7 @@ public int getIconDepth () {
 	
 	/* Use the character encoding for the default locale */
 	TCHAR lpData = new TCHAR (0, lpcbData [0]);
-	TCHAR buffer2 = new TCHAR (0, "Shell Icon BPP", true);
+	TCHAR buffer2 = new TCHAR (0, "Shell Icon BPP", true); //$NON-NLS-1$
 	
 	result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, lpData, lpcbData);
 	if (result == 0) {
@@ -1323,7 +1323,7 @@ public Monitor [] getMonitors () {
 		return new Monitor [] {getPrimaryMonitor ()};
 	}
 	monitors = new Monitor [4];
-	Callback callback = new Callback (this, "monitorEnumProc", 4);
+	Callback callback = new Callback (this, "monitorEnumProc", 4); //$NON-NLS-1$
 	int lpfnEnum = callback.getAddress ();
 	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
 	callback.dispose ();
@@ -1346,7 +1346,7 @@ int getMsgProc (int code, int wParam, int lParam) {
 			0,
 			hInstance,
 			null);
-		embeddedCallback = new Callback (this, "embeddedProc", 4);
+		embeddedCallback = new Callback (this, "embeddedProc", 4); //$NON-NLS-1$
 		embeddedProc = embeddedCallback.getAddress ();
 		if (embeddedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.SetWindowLong (embeddedHwnd, OS.GWL_WNDPROC, embeddedProc);
@@ -1403,7 +1403,7 @@ public Monitor getPrimaryMonitor () {
 		return monitor;
 	}
 	monitors = new Monitor [4];
-	Callback callback = new Callback (this, "monitorEnumProc", 4);
+	Callback callback = new Callback (this, "monitorEnumProc", 4); //$NON-NLS-1$
 	int lpfnEnum = callback.getAddress ();
 	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
 	callback.dispose ();
@@ -1745,7 +1745,7 @@ protected void init () {
 	super.init ();
 		
 	/* Create the callbacks */
-	windowCallback = new Callback (this, "windowProc", 4);
+	windowCallback = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
@@ -1793,14 +1793,14 @@ protected void init () {
 		0,
 		hInstance,
 		null);
-	messageCallback = new Callback (this, "messageProc", 4);
+	messageCallback = new Callback (this, "messageProc", 4); //$NON-NLS-1$
 	messageProc = messageCallback.getAddress ();
 	if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.SetWindowLong (hwndMessage, OS.GWL_WNDPROC, messageProc);
 
 	/* Create the filter hook */
 	if (!OS.IsWinCE) {
-		msgFilterCallback = new Callback (this, "msgFilterProc", 3);
+		msgFilterCallback = new Callback (this, "msgFilterProc", 3); //$NON-NLS-1$
 		msgFilterProc = msgFilterCallback.getAddress ();
 		if (msgFilterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		filterHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, msgFilterProc, 0, threadId);
@@ -2840,8 +2840,8 @@ public void setCursorLocation (Point point) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setData
- * @see #disposeExec
+ * @see #getData(String)
+ * @see #disposeExec(Runnable)
  */
 public void setData (String key, Object value) {
 	checkDevice ();
@@ -2911,8 +2911,8 @@ public void setData (String key, Object value) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #getData
- * @see #disposeExec
+ * @see #getData()
+ * @see #disposeExec(Runnable)
  */
 public void setData (Object data) {
 	checkDevice ();
@@ -3179,7 +3179,7 @@ static int untranslateKey (int key) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see Control#update
+ * @see Control#update()
  */
 public void update() {
 	checkDevice ();
@@ -3323,7 +3323,7 @@ static String withCrLf (String string) {
 		if (j == -1) j = length;
 		result.append (string.substring (i, j));
 		if ((i = j) < length) {
-			result.append ("\r\n");
+			result.append ("\r\n"); //$NON-NLS-1$
 			i++;
 		}
 	}
