@@ -218,6 +218,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1default)
 }
 #endif
 
+#ifndef NO_gdk_1screen_1get_1monitor_1at_1window
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1monitor_1at_1window)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1screen_1get_1monitor_1at_1window\n")
+	//rc = (jint)gdk_1screen_1get_1monitor_1at_1window((GdkScreen *)arg0, (GkdWindow *)arg1);
+	{
+	void *handle = NULL;
+	gint (*fptr)(GdkScreen *, GdkWindow *);
+	rc = 0;
+	handle = dlopen("libgdk-x11-2.0.so", RTLD_LAZY);
+	if (handle != NULL) {
+		fptr = (gint (*)(GdkScreen *, GdkWindow *))dlsym(handle, "gdk_screen_get_monitor_at_window");
+		if (fptr != NULL) {
+			rc = (jint)(*fptr)((GdkScreen *)arg0, (GdkWindow *)arg1);
+		}
+	}
+	}
+	NATIVE_EXIT(env, that, "gdk_1screen_1get_1monitor_1at_1window\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1screen_1get_1monitor_1geometry
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1screen_1get_1monitor_1geometry)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)

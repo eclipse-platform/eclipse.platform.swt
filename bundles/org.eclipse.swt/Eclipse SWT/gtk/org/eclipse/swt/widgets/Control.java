@@ -1474,6 +1474,31 @@ public Menu getMenu () {
 	checkWidget();
 	return menu;
 }
+
+public Monitor getMonitor () {
+	checkWidget();
+	Monitor monitor = null;
+	int screen = OS.gdk_screen_get_default ();
+	if (screen != 0) {
+		int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, paintWindow ());
+		GdkRectangle dest = new GdkRectangle ();
+		OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
+		monitor = new Monitor ();
+		monitor.handle = monitorNumber;
+		monitor.x = dest.x;
+		monitor.y = dest.y;
+		monitor.width = dest.width;
+		monitor.height = dest.height;
+		monitor.clientX = monitor.x;
+		monitor.clientY = monitor.y;
+		monitor.clientWidth = monitor.width;
+		monitor.clientHeight = monitor.height;
+	} else {
+		monitor = display.getPrimaryMonitor ();
+	}
+	return monitor;
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Composite</code>
  * or null when the receiver is a shell that was created with null or
