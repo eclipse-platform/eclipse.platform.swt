@@ -1910,9 +1910,10 @@ String wrapText (String text, int fontList, int width) {
 			}
 			if (lineWidth > width) {
 				if (lastStart == wordStart) {
-					line = text.substring (lineStart, wordStart + 1);
-					lineWidth = textWidth (line, fontList);
-					while (wordStart < wordEnd && lineWidth < width) {
+					while (wordStart < wordEnd) {
+						line = text.substring (lineStart, wordStart + 1);
+						lineWidth = textWidth (line, font);
+						if (lineWidth >= width) break;
 						wordStart++;
 					}
 					if (wordStart == lastStart) wordStart++;
