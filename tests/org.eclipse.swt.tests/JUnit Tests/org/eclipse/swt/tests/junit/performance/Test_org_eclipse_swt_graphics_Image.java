@@ -42,21 +42,21 @@ protected void setUp() throws Exception {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
-	final int COUNT = 7000;	// 8000 causes No More Handles error
-	
-	Image[] images = new Image[COUNT];
+	final int COUNT = 60000;
 	
 	PerformanceMeter meter = createMeter("Image constr.(Device,II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		images[i] = new Image(display, 100, 100); 
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Images.  This is necessary because attempting to defer
+		* the image disposal until the timer has been stopped causes a No More
+		* Handles error.
+		*/
+		new Image(display, 100, 100).dispose(); 
 	}
 	meter.stop();
 
-	for (int i = 0; i < COUNT; i++) {
-		images[i].dispose(); 
-	}
-	
 	disposeMeter(meter);
 }
 
@@ -121,21 +121,22 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
-	final int COUNT = 6000;
+	final int COUNT = 60000;
 	
-	Image[] images = new Image[COUNT];
 	Rectangle rectangle = new Rectangle(0, 0, 100, 100);
 	
 	PerformanceMeter meter = createMeter("Image constr.(Device,Rectangle)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		images[i] = new Image(display, rectangle);
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Images.  This is necessary because attempting to defer
+		* the image disposal until the timer has been stopped causes a No More
+		* Handles error.
+		*/
+		new Image(display, rectangle).dispose();
 	}
 	meter.stop();
-
-	for (int i = 0; i < COUNT; i++) {
-		images[i].dispose();
-	}
 
 	disposeMeter(meter);
 }
