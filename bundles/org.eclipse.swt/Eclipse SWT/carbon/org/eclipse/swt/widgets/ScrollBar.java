@@ -590,8 +590,12 @@ public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
 	int minimum = OS.GetControl32BitMinimum (handle);
+	if (value <= minimum) return;
 	int viewSize = OS.GetControlViewSize (handle);
-	if (value - minimum - viewSize < 0) return;
+	if (value - minimum < viewSize) {
+		viewSize = value - minimum;
+		OS.SetControlViewSize (handle, viewSize);
+	}
 	OS.SetControl32BitMaximum (handle, value - viewSize);
 }
 
@@ -610,9 +614,14 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
-	int maximum = OS.GetControl32BitMaximum (handle);
 	int viewSize = OS.GetControlViewSize (handle);
-	if (maximum - value - viewSize < 0) return;
+	int maximum = OS.GetControl32BitMaximum (handle) + viewSize;
+	if (value >= maximum) return;
+	if (maximum - value < viewSize) {
+		viewSize = maximum - value;
+		OS.SetControl32BitMaximum (handle, maximum - viewSize);
+		OS.SetControlViewSize (handle, viewSize);
+	}
 	OS.SetControl32BitMinimum (handle, value);
 }
 
@@ -670,10 +679,10 @@ public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
 	int minimum = OS.GetControl32BitMinimum (handle);
-	int maximum = OS.GetControl32BitMaximum (handle);
 	int viewSize = OS.GetControlViewSize (handle);
-	if (value > maximum + viewSize - minimum) return;
-	OS.SetControl32BitMaximum (handle, maximum + viewSize - value);
+	int maximum = OS.GetControl32BitMaximum (handle) + viewSize;
+	if (value > maximum - minimum) return;
+	OS.SetControl32BitMaximum (handle, maximum - value);
     OS.SetControlViewSize (handle, value);
 }
 
