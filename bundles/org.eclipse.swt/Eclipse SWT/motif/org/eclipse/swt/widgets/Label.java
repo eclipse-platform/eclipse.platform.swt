@@ -239,15 +239,15 @@ boolean mnemonicMatch (char key) {
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
-void propagateHandle (boolean enabled, int widgetHandle) {
-	super.propagateHandle (enabled, widgetHandle);
+void propagateWidget (boolean enabled) {
+	super.propagateWidget (enabled);
 	/*
 	* Labels never participate in focus traversal when
 	* either enabled or disabled.
 	*/
 	if (enabled) {
 		int [] argList = {OS.XmNtraversalOn, 0};
-		OS.XtSetValues (widgetHandle, argList, argList.length / 2);
+		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
 }
 void releaseWidget () {

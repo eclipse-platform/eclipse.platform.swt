@@ -63,21 +63,35 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
-	int backgroundPixel = defaultBackground ();
-	int [] argList1 = {
+	int background = defaultBackground ();
+	int [] argList = {
 		OS.XmNshowArrows, 0,
 		OS.XmNsliderSize, 1,
 		OS.XmNtraversalOn, 0,
-		OS.XmNtroughColor, backgroundPixel,
-		OS.XmNtopShadowColor, backgroundPixel,
-		OS.XmNbottomShadowColor, backgroundPixel,
+		OS.XmNtroughColor, background,
+		OS.XmNtopShadowColor, background,
+		OS.XmNbottomShadowColor, background,
 		OS.XmNshadowThickness, 1,
 		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,
 		OS.XmNorientation, ((style & SWT.H_SCROLL) != 0) ? OS.XmHORIZONTAL : OS.XmVERTICAL,
 		OS.XmNprocessingDirection, ((style & SWT.H_SCROLL) != 0) ? OS.XmMAX_ON_RIGHT : OS.XmMAX_ON_TOP,
 	};
-	handle = OS.XmCreateScrollBar (parent.handle, null, argList1, argList1.length / 2);
+	handle = OS.XmCreateScrollBar (parent.handle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+}
+void disableButtonPress () {
+	int xWindow = OS.XtWindow (handle);
+	if (xWindow == 0) return;
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return;
+	int event_mask = OS.XtBuildEventMask (handle);
+	XSetWindowAttributes attributes = new XSetWindowAttributes ();
+	attributes.event_mask = event_mask & ~OS.ButtonPressMask;
+	OS.XChangeWindowAttributes (xDisplay, xWindow, OS.CWEventMask, attributes);
+}
+void disableTraversal () {
+	int [] argList = {OS.XmNtraversalOn, 0};
+	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
 * Gets the maximum.
@@ -132,22 +146,24 @@ public int getSelection () {
 		OS.XmNbackground, 0,
 	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int minimum = argList [1];
-	int sliderSize = argList [3];
-	int backGround = argList [5];
-	if (sliderSize == 1 && backGround == defaultBackground()) sliderSize = 0;
+	int minimum = argList [1], sliderSize = argList [3], background = argList [5];
+	if (sliderSize == 1 && background == defaultBackground()) sliderSize = 0;
 	return minimum + sliderSize;
+}
+void propagateWidget (boolean enabled) {
+	super.propagateWidget (enabled);
+	/*
+	* ProgressBars never participate in focus traversal when
+	* either enabled or disabled.  Also, when enabled
+	*/
+	if (enabled) {
+		disableTraversal ();
+		disableButtonPress ();
+	}
 }
 void realizeChildren () {
 	super.realizeChildren ();
-	int xWindow = OS.XtWindow (handle);
-	if (xWindow == 0) return;
-	int xDisplay = OS.XtDisplay (handle);
-	if (xDisplay == 0) return;
-	int event_mask = OS.XtBuildEventMask (handle);
-	XSetWindowAttributes attributes = new XSetWindowAttributes ();
-	attributes.event_mask = event_mask & ~OS.ButtonPressMask;
-	OS.XChangeWindowAttributes (xDisplay, xWindow, OS.CWEventMask, attributes);
+	disableButtonPress ();
 }
 /**
 * Sets the maximum.
