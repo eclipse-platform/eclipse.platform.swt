@@ -52,9 +52,17 @@ public final class TextLayout {
 				foreground = style.foreground;
 			}
 			if (font == null) font = defaultFont;
+			boolean synthesize = false;
 			if (font != null) {
 				length += 2;
 				ptrLength += 8;
+				short[] realStyle = new short[1];
+				OS.FMGetFontFromFontFamilyInstance(font.id, font.style, buffer, realStyle);
+				synthesize = font.style != realStyle[0];
+				if (synthesize) {
+					length += 2;
+					ptrLength += 8;
+				}
 			}
 			if (foreground != null) {
 				length += 1;
@@ -80,6 +88,25 @@ public final class TextLayout {
 				OS.memcpy(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
+
+				if (synthesize) {
+					byte[] buffer1 = new byte[1];
+					buffer1[0] = (font.style & OS.italic) != 0 ? (byte)1 : 0;
+					tags[index] = OS.kATSUQDItalicTag;
+					sizes[index] = 1;
+					values[index] = ptr1;
+					OS.memcpy(values[index], buffer1, sizes[index]);
+					ptr1 += sizes[index];
+					index++;	
+
+					buffer1[0] = (font.style & OS.bold) != 0 ? (byte)1 : 0;
+					tags[index] = OS.kATSUQDBoldfaceTag;
+					sizes[index] = 1;
+					values[index] = ptr1;
+					OS.memcpy(values[index], buffer1, sizes[index]);
+					ptr1 += sizes[index];
+					index++;
+				}
 			}
 			if (foreground != null) {
 				RGBColor rgb = new RGBColor ();

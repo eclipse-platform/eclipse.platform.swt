@@ -156,26 +156,27 @@ int createStyle () {
 	int[] buffer = new int[1];
 	OS.ATSUCreateStyle(buffer);
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	
-	/*
-	* This code is intentionaly commented, since it forces ATSUI to
-	* syntesize fonts.
-	*/ 
-//	int ptr = OS.NewPtr(16);
-//	OS.memcpy(ptr, new int[]{handle}, 4); 
-//	OS.memcpy(ptr + 4, new int[]{OS.X2Fix(size)}, 4);
-//	OS.memcpy(ptr + 8, new byte[]{(style & OS.bold) != 0 ? (byte)1 : 0}, 1); 
-//	OS.memcpy(ptr + 9, new byte[]{(style & OS.italic) != 0 ? (byte)1 : 0}, 1); 
-//	int[] tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag, OS.kATSUQDBoldfaceTag, OS.kATSUQDItalicTag};
-//	int[] sizes = new int[]{4, 4, 1, 1};
-//	int[] values = new int[]{ptr, ptr + 4, ptr + 8, ptr + 9};
-	int ptr = OS.NewPtr(16);
+	int atsuStyle = buffer[0];
+
+	short[] realStyle = new short[1];
+	OS.FMGetFontFromFontFamilyInstance(id, style, buffer, realStyle);
+	boolean synthesize = style != realStyle[0];
+	int ptr = OS.NewPtr(8 + (synthesize ? 8 : 0));
 	OS.memcpy(ptr, new int[]{handle}, 4); 
 	OS.memcpy(ptr + 4, new int[]{OS.X2Fix(size)}, 4);
-	int[] tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag};
-	int[] sizes = new int[]{4, 4};
-	int[] values = new int[]{ptr, ptr + 4};
-	OS.ATSUSetAttributes(buffer[0], tags.length, tags, sizes, values);
+	int[] tags, sizes, values;
+	if (synthesize) {
+		OS.memcpy(ptr + 8, new byte[]{(style & OS.bold) != 0 ? (byte)1 : 0}, 1); 
+		OS.memcpy(ptr + 9, new byte[]{(style & OS.italic) != 0 ? (byte)1 : 0}, 1);
+		tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag, OS.kATSUQDBoldfaceTag, OS.kATSUQDItalicTag};
+		sizes = new int[]{4, 4, 1, 1};
+		values = new int[]{ptr, ptr + 4, ptr + 8, ptr + 9};
+	} else {
+		tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag};
+		sizes = new int[]{4, 4};
+		values = new int[]{ptr, ptr + 4};
+	}
+	OS.ATSUSetAttributes(atsuStyle, tags.length, tags, sizes, values);
 	OS.DisposePtr(ptr);
 	
 	short[] types = {
@@ -199,8 +200,8 @@ int createStyle () {
 		(short)OS.kAbbrevSquaredLigaturesOffSelector,
 		(short)OS.kSymbolLigaturesOffSelector,
 	};
-	OS.ATSUSetFontFeatures(buffer[0], types.length, types, selectors);
-	return buffer [0];
+	OS.ATSUSetFontFeatures(atsuStyle, types.length, types, selectors);
+	return atsuStyle;
 }
 
 /**
