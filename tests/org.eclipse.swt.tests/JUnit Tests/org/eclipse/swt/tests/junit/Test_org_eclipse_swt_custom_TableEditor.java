@@ -49,24 +49,20 @@ public void test_getColumn() {
 	warnUnimpl("Test test_getColumn not written");
 }
 
-public void test_setColumnI() {
-	warnUnimpl("Test test_setColumnI not written");
-}
-
 public void test_getItem() {
 	warnUnimpl("Test test_getItem not written");
 }
 
-public void test_setItemLorg_eclipse_swt_widgets_TableItem() {
-	warnUnimpl("Test test_setItemLorg_eclipse_swt_widgets_TableItem not written");
-}
-
-public void test_setEditorLorg_eclipse_swt_widgets_Control() {
-	warnUnimpl("Test test_setEditorLorg_eclipse_swt_widgets_Control not written");
+public void test_setColumnI() {
+	warnUnimpl("Test test_setColumnI not written");
 }
 
 public void test_setEditorLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_TableItemI() {
 	warnUnimpl("Test test_setEditorLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_TableItemI not written");
+}
+
+public void test_setItemLorg_eclipse_swt_widgets_TableItem() {
+	warnUnimpl("Test test_setItemLorg_eclipse_swt_widgets_TableItem not written");
 }
 
 public static Test suite() {
@@ -83,11 +79,10 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Table");
 	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_getColumn");
-	methodNames.addElement("test_setColumnI");
 	methodNames.addElement("test_getItem");
-	methodNames.addElement("test_setItemLorg_eclipse_swt_widgets_TableItem");
-	methodNames.addElement("test_setEditorLorg_eclipse_swt_widgets_Control");
+	methodNames.addElement("test_setColumnI");
 	methodNames.addElement("test_setEditorLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_TableItemI");
+	methodNames.addElement("test_setItemLorg_eclipse_swt_widgets_TableItem");
 	methodNames.addAll(Test_org_eclipse_swt_custom_ControlEditor.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -95,11 +90,10 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Table")) test_ConstructorLorg_eclipse_swt_widgets_Table();
 	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_getColumn")) test_getColumn();
-	else if (getName().equals("test_setColumnI")) test_setColumnI();
 	else if (getName().equals("test_getItem")) test_getItem();
-	else if (getName().equals("test_setItemLorg_eclipse_swt_widgets_TableItem")) test_setItemLorg_eclipse_swt_widgets_TableItem();
-	else if (getName().equals("test_setEditorLorg_eclipse_swt_widgets_Control")) test_setEditorLorg_eclipse_swt_widgets_Control();
+	else if (getName().equals("test_setColumnI")) test_setColumnI();
 	else if (getName().equals("test_setEditorLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_TableItemI")) test_setEditorLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_TableItemI();
+	else if (getName().equals("test_setItemLorg_eclipse_swt_widgets_TableItem")) test_setItemLorg_eclipse_swt_widgets_TableItem();
 	else super.runTest();
 }
 }

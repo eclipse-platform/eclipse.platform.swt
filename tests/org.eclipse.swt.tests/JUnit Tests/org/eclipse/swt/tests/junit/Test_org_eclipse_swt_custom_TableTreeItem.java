@@ -60,6 +60,10 @@ public void test_ConstructorLorg_eclipse_swt_custom_TableTreeItemII() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_custom_TableTreeItemII not written");
 }
 
+public void test_getBackground() {
+	warnUnimpl("Test test_getBackground not written");
+}
+
 public void test_getBoundsI() {
 	warnUnimpl("Test test_getBoundsI not written");
 }
@@ -68,16 +72,16 @@ public void test_getChecked() {
 	warnUnimpl("Test test_getChecked not written");
 }
 
-public void test_getDisplay() {
-	warnUnimpl("Test test_getDisplay not written");
+public void test_getExpanded() {
+	warnUnimpl("Test test_getExpanded not written");
+}
+
+public void test_getForeground() {
+	warnUnimpl("Test test_getForeground not written");
 }
 
 public void test_getGrayed() {
 	warnUnimpl("Test test_getGrayed not written");
-}
-
-public void test_getExpanded() {
-	warnUnimpl("Test test_getExpanded not written");
 }
 
 public void test_getImage() {
@@ -116,8 +120,8 @@ public void test_indexOfLorg_eclipse_swt_custom_TableTreeItem() {
 	warnUnimpl("Test test_indexOfLorg_eclipse_swt_custom_TableTreeItem not written");
 }
 
-public void test_dispose() {
-	warnUnimpl("Test test_dispose not written");
+public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
+	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
 }
 
 public void test_setCheckedZ() {
@@ -126,6 +130,10 @@ public void test_setCheckedZ() {
 
 public void test_setExpandedZ() {
 	warnUnimpl("Test test_setExpandedZ not written");
+}
+
+public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
+	warnUnimpl("Test test_setForegroundLorg_eclipse_swt_graphics_Color not written");
 }
 
 public void test_setGrayedZ() {
@@ -163,10 +171,11 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_custom_TableTreeII");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_custom_TableTreeItemI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_custom_TableTreeItemII");
+	methodNames.addElement("test_getBackground");
 	methodNames.addElement("test_getBoundsI");
 	methodNames.addElement("test_getChecked");
-	methodNames.addElement("test_getDisplay");
 	methodNames.addElement("test_getExpanded");
+	methodNames.addElement("test_getForeground");
 	methodNames.addElement("test_getGrayed");
 	methodNames.addElement("test_getImage");
 	methodNames.addElement("test_getImageI");
@@ -177,9 +186,10 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getText");
 	methodNames.addElement("test_getTextI");
 	methodNames.addElement("test_indexOfLorg_eclipse_swt_custom_TableTreeItem");
-	methodNames.addElement("test_dispose");
+	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setCheckedZ");
 	methodNames.addElement("test_setExpandedZ");
+	methodNames.addElement("test_setForegroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setGrayedZ");
 	methodNames.addElement("test_setImageILorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
@@ -193,10 +203,11 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_custom_TableTreeII")) test_ConstructorLorg_eclipse_swt_custom_TableTreeII();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_custom_TableTreeItemI")) test_ConstructorLorg_eclipse_swt_custom_TableTreeItemI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_custom_TableTreeItemII")) test_ConstructorLorg_eclipse_swt_custom_TableTreeItemII();
+	else if (getName().equals("test_getBackground")) test_getBackground();
 	else if (getName().equals("test_getBoundsI")) test_getBoundsI();
 	else if (getName().equals("test_getChecked")) test_getChecked();
-	else if (getName().equals("test_getDisplay")) test_getDisplay();
 	else if (getName().equals("test_getExpanded")) test_getExpanded();
+	else if (getName().equals("test_getForeground")) test_getForeground();
 	else if (getName().equals("test_getGrayed")) test_getGrayed();
 	else if (getName().equals("test_getImage")) test_getImage();
 	else if (getName().equals("test_getImageI")) test_getImageI();
@@ -207,9 +218,10 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getText")) test_getText();
 	else if (getName().equals("test_getTextI")) test_getTextI();
 	else if (getName().equals("test_indexOfLorg_eclipse_swt_custom_TableTreeItem")) test_indexOfLorg_eclipse_swt_custom_TableTreeItem();
-	else if (getName().equals("test_dispose")) test_dispose();
+	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setCheckedZ")) test_setCheckedZ();
 	else if (getName().equals("test_setExpandedZ")) test_setExpandedZ();
+	else if (getName().equals("test_setForegroundLorg_eclipse_swt_graphics_Color")) test_setForegroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setGrayedZ")) test_setGrayedZ();
 	else if (getName().equals("test_setImageILorg_eclipse_swt_graphics_Image")) test_setImageILorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();

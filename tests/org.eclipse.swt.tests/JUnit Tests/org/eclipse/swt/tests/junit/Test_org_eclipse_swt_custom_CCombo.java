@@ -65,20 +65,16 @@ public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
-public void test_deselectI() {
-	warnUnimpl("Test test_deselectI not written");
-}
-
 public void test_deselectAll() {
 	warnUnimpl("Test test_deselectAll not written");
 }
 
-public void test_getChildren() {
-	warnUnimpl("Test test_getChildren not written");
+public void test_deselectI() {
+	warnUnimpl("Test test_deselectI not written");
 }
 
-public void test_getItemI() {
-	warnUnimpl("Test test_getItemI not written");
+public void test_getChildren() {
+	warnUnimpl("Test test_getChildren not written");
 }
 
 public void test_getItemCount() {
@@ -87,6 +83,10 @@ public void test_getItemCount() {
 
 public void test_getItemHeight() {
 	warnUnimpl("Test test_getItemHeight not written");
+}
+
+public void test_getItemI() {
+	warnUnimpl("Test test_getItemI not written");
 }
 
 public void test_getItems() {
@@ -129,6 +129,10 @@ public void test_redrawIIIIZ() {
 	warnUnimpl("Test test_redrawIIIIZ not written");
 }
 
+public void test_removeAll() {
+	warnUnimpl("Test test_removeAll not written");
+}
+
 public void test_removeI() {
 	warnUnimpl("Test test_removeI not written");
 }
@@ -139,10 +143,6 @@ public void test_removeII() {
 
 public void test_removeLjava_lang_String() {
 	warnUnimpl("Test test_removeLjava_lang_String not written");
-}
-
-public void test_removeAll() {
-	warnUnimpl("Test test_removeAll not written");
 }
 
 public void test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener() {
@@ -185,12 +185,12 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	warnUnimpl("Test test_setSelectionLorg_eclipse_swt_graphics_Point not written");
 }
 
-public void test_setTextLjava_lang_String() {
-	warnUnimpl("Test test_setTextLjava_lang_String not written");
-}
-
 public void test_setTextLimitI() {
 	warnUnimpl("Test test_setTextLimitI not written");
+}
+
+public void test_setTextLjava_lang_String() {
+	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
 
 public void test_setVisibleZ() {
@@ -215,12 +215,12 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_clearSelection");
 	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_deselectI");
 	methodNames.addElement("test_deselectAll");
+	methodNames.addElement("test_deselectI");
 	methodNames.addElement("test_getChildren");
-	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemHeight");
+	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionIndex");
@@ -231,10 +231,10 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_indexOfLjava_lang_StringI");
 	methodNames.addElement("test_isFocusControl");
 	methodNames.addElement("test_redrawIIIIZ");
+	methodNames.addElement("test_removeAll");
 	methodNames.addElement("test_removeI");
 	methodNames.addElement("test_removeII");
 	methodNames.addElement("test_removeLjava_lang_String");
-	methodNames.addElement("test_removeAll");
 	methodNames.addElement("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener");
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_selectI");
@@ -245,8 +245,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setItemILjava_lang_String");
 	methodNames.addElement("test_setItems$Ljava_lang_String");
 	methodNames.addElement("test_setSelectionLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setTextLimitI");
+	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setVisibleZ");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
@@ -259,12 +259,12 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_clearSelection")) test_clearSelection();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_deselectI")) test_deselectI();
 	else if (getName().equals("test_deselectAll")) test_deselectAll();
+	else if (getName().equals("test_deselectI")) test_deselectI();
 	else if (getName().equals("test_getChildren")) test_getChildren();
-	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
+	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionIndex")) test_getSelectionIndex();
@@ -275,10 +275,10 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_indexOfLjava_lang_StringI")) test_indexOfLjava_lang_StringI();
 	else if (getName().equals("test_isFocusControl")) test_isFocusControl();
 	else if (getName().equals("test_redrawIIIIZ")) test_redrawIIIIZ();
+	else if (getName().equals("test_removeAll")) test_removeAll();
 	else if (getName().equals("test_removeI")) test_removeI();
 	else if (getName().equals("test_removeII")) test_removeII();
 	else if (getName().equals("test_removeLjava_lang_String")) test_removeLjava_lang_String();
-	else if (getName().equals("test_removeAll")) test_removeAll();
 	else if (getName().equals("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener")) test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener();
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_selectI")) test_selectI();
@@ -289,8 +289,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setItemILjava_lang_String")) test_setItemILjava_lang_String();
 	else if (getName().equals("test_setItems$Ljava_lang_String")) test_setItems$Ljava_lang_String();
 	else if (getName().equals("test_setSelectionLorg_eclipse_swt_graphics_Point")) test_setSelectionLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setTextLimitI")) test_setTextLimitI();
+	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
 	else super.runTest();
 }

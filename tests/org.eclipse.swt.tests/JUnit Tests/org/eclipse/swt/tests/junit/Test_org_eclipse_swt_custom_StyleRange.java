@@ -88,6 +88,12 @@ public void test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_gr
 	assertTrue(":c:", styleRange.fontStyle == SWT.BOLD);
 }
 
+public void test_clone() {
+	StyleRange styleRangeA = new StyleRange(6, 10, null, getColor(BLUE), SWT.NORMAL);
+	StyleRange styleRangeB = (StyleRange)styleRangeA.clone();
+	assertTrue(":g:", styleRangeA.equals(styleRangeB));
+}
+
 public void test_equalsLjava_lang_Object() {
 	StyleRange styleRangeA = new StyleRange(5, 10, getColor(RED), getColor(BLUE), SWT.BOLD);
 	StyleRange styleRangeB = new StyleRange(5, 10, getColor(RED), getColor(BLUE), SWT.BOLD);
@@ -143,12 +149,6 @@ public void test_similarToLorg_eclipse_swt_custom_StyleRange() {
 	assertTrue(":f:", !styleRangeA.similarTo(styleRangeF));
 }
 
-public void test_clone() {
-	StyleRange styleRangeA = new StyleRange(6, 10, null, getColor(BLUE), SWT.NORMAL);
-	StyleRange styleRangeB = (StyleRange)styleRangeA.clone();
-	assertTrue(":g:", styleRangeA.equals(styleRangeB));
-}
-
 public void test_toString() {
 	StyleRange styleRange = new StyleRange(6, 10, null, getColor(BLUE), SWT.NORMAL);
 	styleRange.toString();
@@ -168,11 +168,11 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_Constructor");
 	methodNames.addElement("test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_ColorI");
+	methodNames.addElement("test_clone");
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_isUnstyled");
 	methodNames.addElement("test_similarToLorg_eclipse_swt_custom_StyleRange");
-	methodNames.addElement("test_clone");
 	methodNames.addElement("test_toString");
 	return methodNames;
 }
@@ -180,11 +180,11 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_Color")) test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_ColorI")) test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_ColorI();
+	else if (getName().equals("test_clone")) test_clone();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_isUnstyled")) test_isUnstyled();
 	else if (getName().equals("test_similarToLorg_eclipse_swt_custom_StyleRange")) test_similarToLorg_eclipse_swt_custom_StyleRange();
-	else if (getName().equals("test_clone")) test_clone();
 	else if (getName().equals("test_toString")) test_toString();
 }
 }

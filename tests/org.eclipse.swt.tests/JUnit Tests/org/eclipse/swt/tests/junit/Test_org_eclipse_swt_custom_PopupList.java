@@ -39,6 +39,10 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_Shell not written");
 }
 
+public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_ShellI not written");
+}
+
 public void test_getFont() {
 	warnUnimpl("Test test_getFont not written");
 }
@@ -83,6 +87,7 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Shell");
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_ShellI");
 	methodNames.addElement("test_getFont");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getMinimumWidth");
@@ -95,6 +100,7 @@ public static java.util.Vector methodNames() {
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Shell")) test_ConstructorLorg_eclipse_swt_widgets_Shell();
+	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_ShellI")) test_ConstructorLorg_eclipse_swt_widgets_ShellI();
 	else if (getName().equals("test_getFont")) test_getFont();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getMinimumWidth")) test_getMinimumWidth();

@@ -10,18 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
 import junit.framework.*;
 import junit.textui.*;
 
 /**
- * Automated Test Suite for class org.eclipse.swt.custom.StackLayout
+ * Automated Test Suite for class org.eclipse.swt.browser.ProgressAdapter
  *
- * @see org.eclipse.swt.custom.StackLayout
+ * @see org.eclipse.swt.browser.ProgressAdapter
  */
-public class Test_org_eclipse_swt_custom_StackLayout extends Test_org_eclipse_swt_widgets_Layout {
+public class Test_org_eclipse_swt_browser_ProgressAdapter extends SwtTestCase {
 
-public Test_org_eclipse_swt_custom_StackLayout(String name) {
+public Test_org_eclipse_swt_browser_ProgressAdapter(String name) {
 	super(name);
 }
 
@@ -30,34 +29,45 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
-	super.setUp();
 }
 
 protected void tearDown() {
-	super.tearDown();
 }
 
 public void test_Constructor() {
 	warnUnimpl("Test test_Constructor not written");
 }
 
+public void test_changedLorg_eclipse_swt_browser_ProgressEvent() {
+	warnUnimpl("Test test_changedLorg_eclipse_swt_browser_ProgressEvent not written");
+}
+
+public void test_completedLorg_eclipse_swt_browser_ProgressEvent() {
+	warnUnimpl("Test test_completedLorg_eclipse_swt_browser_ProgressEvent not written");
+}
+
+
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
 	java.util.Enumeration e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_StackLayout((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_browser_ProgressAdapter((String)e.nextElement()));
 	}
 	return suite;
 }
+
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_Constructor");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Layout.methodNames()); // add superclass method names
+	methodNames.addElement("test_changedLorg_eclipse_swt_browser_ProgressEvent");
+	methodNames.addElement("test_completedLorg_eclipse_swt_browser_ProgressEvent");
 	return methodNames;
 }
+
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
-	else super.runTest();
+	else if (getName().equals("test_changedLorg_eclipse_swt_browser_ProgressEvent")) test_changedLorg_eclipse_swt_browser_ProgressEvent();
+	else if (getName().equals("test_completedLorg_eclipse_swt_browser_ProgressEvent")) test_completedLorg_eclipse_swt_browser_ProgressEvent();
 }
 }

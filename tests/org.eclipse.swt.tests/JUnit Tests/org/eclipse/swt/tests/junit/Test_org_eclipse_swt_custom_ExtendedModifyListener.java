@@ -39,15 +39,10 @@ protected void setUp() {
 	styledText = new StyledText(shell, SWT.NULL);
 	shell.open();
 }
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_ExtendedModifyListener((String)e.nextElement()));
-	}
-	return suite;
+
+protected void tearDown() {
 }
+
 public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	ExtendedModifyListener listener = new ExtendedModifyListener() {
 		public void modifyText(ExtendedModifyEvent event) {
@@ -310,6 +305,15 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	styledText.removeExtendedModifyListener(listener);
 }
 
+public static Test suite() {
+	TestSuite suite = new TestSuite();
+	java.util.Vector methodNames = methodNames();
+	java.util.Enumeration e = methodNames.elements();
+	while (e.hasMoreElements()) {
+		suite.addTest(new Test_org_eclipse_swt_custom_ExtendedModifyListener((String)e.nextElement()));
+	}
+	return suite;
+}
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent");

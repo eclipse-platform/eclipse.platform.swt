@@ -53,10 +53,6 @@ public void test_getImage() {
 	warnUnimpl("Test test_getImage not written");
 }
 
-public void test_setToolTipTextLjava_lang_String() {
-	warnUnimpl("Test test_setToolTipTextLjava_lang_String not written");
-}
-
 public void test_getText() {
 	warnUnimpl("Test test_getText not written");
 }
@@ -93,8 +89,8 @@ public void test_setTextLjava_lang_String() {
 	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
 
-public void test_shortenTextLorg_eclipse_swt_graphics_GCLjava_lang_StringI() {
-	warnUnimpl("Test test_shortenTextLorg_eclipse_swt_graphics_GCLjava_lang_StringI not written");
+public void test_setToolTipTextLjava_lang_String() {
+	warnUnimpl("Test test_setToolTipTextLjava_lang_String not written");
 }
 
 public static Test suite() {
@@ -112,7 +108,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_getAlignment");
 	methodNames.addElement("test_getImage");
-	methodNames.addElement("test_setToolTipTextLjava_lang_String");
 	methodNames.addElement("test_getText");
 	methodNames.addElement("test_getToolTipText");
 	methodNames.addElement("test_setAlignmentI");
@@ -122,7 +117,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addElement("test_shortenTextLorg_eclipse_swt_graphics_GCLjava_lang_StringI");
+	methodNames.addElement("test_setToolTipTextLjava_lang_String");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -131,7 +126,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_getAlignment")) test_getAlignment();
 	else if (getName().equals("test_getImage")) test_getImage();
-	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();
 	else if (getName().equals("test_getText")) test_getText();
 	else if (getName().equals("test_getToolTipText")) test_getToolTipText();
 	else if (getName().equals("test_setAlignmentI")) test_setAlignmentI();
@@ -141,7 +135,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	else if (getName().equals("test_shortenTextLorg_eclipse_swt_graphics_GCLjava_lang_StringI")) test_shortenTextLorg_eclipse_swt_graphics_GCLjava_lang_StringI();
+	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();
 	else super.runTest();
 }
 }

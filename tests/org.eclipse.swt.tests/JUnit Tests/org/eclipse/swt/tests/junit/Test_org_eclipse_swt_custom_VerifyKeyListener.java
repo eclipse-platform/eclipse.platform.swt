@@ -39,15 +39,7 @@ protected void setUp() {
 	styledText = new StyledText(shell, SWT.NULL);
 	shell.open();
 }
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_VerifyKeyListener((String)e.nextElement()));
-	}
-	return suite;
-}
+
 protected void tearDown() {
 }
 
@@ -73,6 +65,15 @@ public void test_verifyKeyLorg_eclipse_swt_events_VerifyEvent() {
 	styledText.removeVerifyKeyListener(listener);
 }
 
+public static Test suite() {
+	TestSuite suite = new TestSuite();
+	java.util.Vector methodNames = methodNames();
+	java.util.Enumeration e = methodNames.elements();
+	while (e.hasMoreElements()) {
+		suite.addTest(new Test_org_eclipse_swt_custom_VerifyKeyListener((String)e.nextElement()));
+	}
+	return suite;
+}
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_verifyKeyLorg_eclipse_swt_events_VerifyEvent");

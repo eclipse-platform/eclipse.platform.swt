@@ -49,14 +49,6 @@ public void test_addTreeListenerLorg_eclipse_swt_events_TreeListener() {
 	warnUnimpl("Test test_addTreeListenerLorg_eclipse_swt_events_TreeListener not written");
 }
 
-public void test_computeSizeII() {
-	warnUnimpl("Test test_computeSizeII not written");
-}
-
-public void test_computeTrimIIII() {
-	warnUnimpl("Test test_computeTrimIIII not written");
-}
-
 public void test_deselectAll() {
 	warnUnimpl("Test test_deselectAll not written");
 }
@@ -67,6 +59,10 @@ public void test_getItemCount() {
 
 public void test_getItemHeight() {
 	warnUnimpl("Test test_getItemHeight not written");
+}
+
+public void test_getItemLorg_eclipse_swt_graphics_Point() {
+	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
 }
 
 public void test_getItems() {
@@ -87,10 +83,6 @@ public void test_getTable() {
 
 public void test_indexOfLorg_eclipse_swt_custom_TableTreeItem() {
 	warnUnimpl("Test test_indexOfLorg_eclipse_swt_custom_TableTreeItem not written");
-}
-
-public void test_getItemLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
 }
 
 public void test_removeAll() {
@@ -159,8 +151,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_addTreeListenerLorg_eclipse_swt_events_TreeListener");
-	methodNames.addElement("test_computeSizeII");
-	methodNames.addElement("test_computeTrimIIII");
 	methodNames.addElement("test_deselectAll");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemHeight");
@@ -168,8 +158,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionCount");
 	methodNames.addElement("test_getTable");
-	methodNames.addElement("test_indexOfLorg_eclipse_swt_custom_TableTreeItem");
 	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
+	methodNames.addElement("test_indexOfLorg_eclipse_swt_custom_TableTreeItem");
 	methodNames.addElement("test_removeAll");
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener");
@@ -190,8 +180,6 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_addTreeListenerLorg_eclipse_swt_events_TreeListener")) test_addTreeListenerLorg_eclipse_swt_events_TreeListener();
-	else if (getName().equals("test_computeSizeII")) test_computeSizeII();
-	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
 	else if (getName().equals("test_deselectAll")) test_deselectAll();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
@@ -199,8 +187,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
 	else if (getName().equals("test_getTable")) test_getTable();
-	else if (getName().equals("test_indexOfLorg_eclipse_swt_custom_TableTreeItem")) test_indexOfLorg_eclipse_swt_custom_TableTreeItem();
 	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
+	else if (getName().equals("test_indexOfLorg_eclipse_swt_custom_TableTreeItem")) test_indexOfLorg_eclipse_swt_custom_TableTreeItem();
 	else if (getName().equals("test_removeAll")) test_removeAll();
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener")) test_removeTreeListenerLorg_eclipse_swt_events_TreeListener();

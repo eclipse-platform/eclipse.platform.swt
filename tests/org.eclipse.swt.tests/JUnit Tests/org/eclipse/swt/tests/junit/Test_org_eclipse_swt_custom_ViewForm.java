@@ -69,6 +69,10 @@ public void test_layoutZ() {
 	warnUnimpl("Test test_layoutZ not written");
 }
 
+public void test_setBorderVisibleZ() {
+	warnUnimpl("Test test_setBorderVisibleZ not written");
+}
+
 public void test_setContentLorg_eclipse_swt_widgets_Control() {
 	warnUnimpl("Test test_setContentLorg_eclipse_swt_widgets_Control not written");
 }
@@ -85,6 +89,10 @@ public void test_setTopCenterLorg_eclipse_swt_widgets_Control() {
 	warnUnimpl("Test test_setTopCenterLorg_eclipse_swt_widgets_Control not written");
 }
 
+public void test_setTopCenterSeparateZ() {
+	warnUnimpl("Test test_setTopCenterSeparateZ not written");
+}
+
 public void test_setTopLeftLorg_eclipse_swt_widgets_Control() {
 	warnUnimpl("Test test_setTopLeftLorg_eclipse_swt_widgets_Control not written");
 }
@@ -93,13 +101,6 @@ public void test_setTopRightLorg_eclipse_swt_widgets_Control() {
 	warnUnimpl("Test test_setTopRightLorg_eclipse_swt_widgets_Control not written");
 }
 
-public void test_setBorderVisibleZ() {
-	warnUnimpl("Test test_setBorderVisibleZ not written");
-}
-
-public void test_setTopCenterSeparateZ() {
-	warnUnimpl("Test test_setTopCenterSeparateZ not written");
-}
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
@@ -120,14 +121,14 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getTopLeft");
 	methodNames.addElement("test_getTopRight");
 	methodNames.addElement("test_layoutZ");
+	methodNames.addElement("test_setBorderVisibleZ");
 	methodNames.addElement("test_setContentLorg_eclipse_swt_widgets_Control");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
 	methodNames.addElement("test_setLayoutLorg_eclipse_swt_widgets_Layout");
 	methodNames.addElement("test_setTopCenterLorg_eclipse_swt_widgets_Control");
+	methodNames.addElement("test_setTopCenterSeparateZ");
 	methodNames.addElement("test_setTopLeftLorg_eclipse_swt_widgets_Control");
 	methodNames.addElement("test_setTopRightLorg_eclipse_swt_widgets_Control");
-	methodNames.addElement("test_setBorderVisibleZ");
-	methodNames.addElement("test_setTopCenterSeparateZ");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -140,14 +141,14 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getTopLeft")) test_getTopLeft();
 	else if (getName().equals("test_getTopRight")) test_getTopRight();
 	else if (getName().equals("test_layoutZ")) test_layoutZ();
+	else if (getName().equals("test_setBorderVisibleZ")) test_setBorderVisibleZ();
 	else if (getName().equals("test_setContentLorg_eclipse_swt_widgets_Control")) test_setContentLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setLayoutLorg_eclipse_swt_widgets_Layout")) test_setLayoutLorg_eclipse_swt_widgets_Layout();
 	else if (getName().equals("test_setTopCenterLorg_eclipse_swt_widgets_Control")) test_setTopCenterLorg_eclipse_swt_widgets_Control();
+	else if (getName().equals("test_setTopCenterSeparateZ")) test_setTopCenterSeparateZ();
 	else if (getName().equals("test_setTopLeftLorg_eclipse_swt_widgets_Control")) test_setTopLeftLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_setTopRightLorg_eclipse_swt_widgets_Control")) test_setTopRightLorg_eclipse_swt_widgets_Control();
-	else if (getName().equals("test_setBorderVisibleZ")) test_setBorderVisibleZ();
-	else if (getName().equals("test_setTopCenterSeparateZ")) test_setTopCenterSeparateZ();
 	else super.runTest();
 }
 }

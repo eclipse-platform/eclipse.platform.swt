@@ -69,6 +69,11 @@ public class Test_org_eclipse_swt_custom_StyledTextContent extends SwtTestCase {
 public Test_org_eclipse_swt_custom_StyledTextContent(String name) {
 	super(name);
 }
+
+public static void main(String[] args) {
+	TestRunner.run(suite());
+}
+
 private boolean isBidi() {
 	return BidiUtil.isBidiPlatform();
 }
@@ -91,11 +96,6 @@ public void test_getCharCount() {
 	assertTrue(":a:", styledText.getCharCount() == 0);
 }
 
-public void test_getLineI() {
-	// will indirectly cause getLine to be called
-	assertTrue(":b:", styledText.getLocationAtOffset(0).equals(new Point(XINSET,0)));
-}
-
 public void test_getLineAtOffsetI() {
 	assertTrue(":c:", styledText.getLineAtOffset(0) == 0);
 }
@@ -106,6 +106,11 @@ public void test_getLineCount() {
 
 public void test_getLineDelimiter() {
 	assertTrue(":e:", styledText.getLineDelimiter().equals("getLineDelimiter"));
+}
+
+public void test_getLineI() {
+	// will indirectly cause getLine to be called
+	assertTrue(":b:", styledText.getLocationAtOffset(0).equals(new Point(XINSET,0)));
 }
 
 public void test_getOffsetAtLineI() {
@@ -130,24 +135,7 @@ public void test_setTextLjava_lang_String() {
 	styledText.replaceTextRange(0,0,"test2");
 	assertTrue(":i:", styledText.getText().equals("test2"));
 }
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("test_addTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener");
-	methodNames.addElement("test_getCharCount");
-	methodNames.addElement("test_getLineI");
-	methodNames.addElement("test_getLineAtOffsetI");
-	methodNames.addElement("test_getLineCount");
-	methodNames.addElement("test_getLineDelimiter");
-	methodNames.addElement("test_getOffsetAtLineI");
-	methodNames.addElement("test_getTextRangeII");
-	methodNames.addElement("test_removeTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener");
-	methodNames.addElement("test_replaceTextRangeIILjava_lang_String");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	return methodNames;
-}
+
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -157,13 +145,30 @@ public static Test suite() {
 	}
 	return suite;
 }
+
+public static java.util.Vector methodNames() {
+	java.util.Vector methodNames = new java.util.Vector();
+	methodNames.addElement("test_addTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener");
+	methodNames.addElement("test_getCharCount");
+	methodNames.addElement("test_getLineAtOffsetI");
+	methodNames.addElement("test_getLineCount");
+	methodNames.addElement("test_getLineDelimiter");
+	methodNames.addElement("test_getLineI");
+	methodNames.addElement("test_getOffsetAtLineI");
+	methodNames.addElement("test_getTextRangeII");
+	methodNames.addElement("test_removeTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener");
+	methodNames.addElement("test_replaceTextRangeIILjava_lang_String");
+	methodNames.addElement("test_setTextLjava_lang_String");
+	return methodNames;
+}
+
 protected void runTest() throws Throwable {
 	if (getName().equals("test_addTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener")) test_addTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener();
 	else if (getName().equals("test_getCharCount")) test_getCharCount();
-	else if (getName().equals("test_getLineI")) test_getLineI();
 	else if (getName().equals("test_getLineAtOffsetI")) test_getLineAtOffsetI();
 	else if (getName().equals("test_getLineCount")) test_getLineCount();
 	else if (getName().equals("test_getLineDelimiter")) test_getLineDelimiter();
+	else if (getName().equals("test_getLineI")) test_getLineI();
 	else if (getName().equals("test_getOffsetAtLineI")) test_getOffsetAtLineI();
 	else if (getName().equals("test_getTextRangeII")) test_getTextRangeII();
 	else if (getName().equals("test_removeTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener")) test_removeTextChangeListenerLorg_eclipse_swt_custom_TextChangeListener();

@@ -65,10 +65,6 @@ public void test_getControl() {
 	warnUnimpl("Test test_getControl not written");
 }
 
-public void test_getDisplay() {
-	warnUnimpl("Test test_getDisplay not written");
-}
-
 public void test_getDisabledImage() {
 	warnUnimpl("Test test_getDisabledImage not written");
 }
@@ -83,10 +79,6 @@ public void test_getToolTipText() {
 
 public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	warnUnimpl("Test test_setControlLorg_eclipse_swt_widgets_Control not written");
-}
-
-public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
 }
 
 public void test_setDisabledImageLorg_eclipse_swt_graphics_Image() {
@@ -117,12 +109,10 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_getControl");
-	methodNames.addElement("test_getDisplay");
 	methodNames.addElement("test_getDisabledImage");
 	methodNames.addElement("test_getParent");
 	methodNames.addElement("test_getToolTipText");
 	methodNames.addElement("test_setControlLorg_eclipse_swt_widgets_Control");
-	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setDisabledImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setToolTipTextLjava_lang_String");
@@ -135,12 +125,10 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getControl")) test_getControl();
-	else if (getName().equals("test_getDisplay")) test_getDisplay();
 	else if (getName().equals("test_getDisabledImage")) test_getDisabledImage();
 	else if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_getToolTipText")) test_getToolTipText();
 	else if (getName().equals("test_setControlLorg_eclipse_swt_widgets_Control")) test_setControlLorg_eclipse_swt_widgets_Control();
-	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setDisabledImageLorg_eclipse_swt_graphics_Image")) test_setDisabledImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();

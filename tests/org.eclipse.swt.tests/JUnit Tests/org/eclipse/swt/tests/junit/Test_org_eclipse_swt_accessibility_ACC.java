@@ -10,18 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
 import junit.framework.*;
 import junit.textui.*;
 
 /**
- * Automated Test Suite for class org.eclipse.swt.custom.StackLayout
+ * Automated Test Suite for class org.eclipse.swt.accessibility.ACC
  *
- * @see org.eclipse.swt.custom.StackLayout
+ * @see org.eclipse.swt.accessibility.ACC
  */
-public class Test_org_eclipse_swt_custom_StackLayout extends Test_org_eclipse_swt_widgets_Layout {
+public class Test_org_eclipse_swt_accessibility_ACC extends SwtTestCase {
 
-public Test_org_eclipse_swt_custom_StackLayout(String name) {
+public Test_org_eclipse_swt_accessibility_ACC(String name) {
 	super(name);
 }
 
@@ -30,34 +29,33 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
-	super.setUp();
 }
 
 protected void tearDown() {
-	super.tearDown();
 }
 
 public void test_Constructor() {
 	warnUnimpl("Test test_Constructor not written");
 }
 
+
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
 	java.util.Enumeration e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_custom_StackLayout((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_accessibility_ACC((String)e.nextElement()));
 	}
 	return suite;
 }
+
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_Constructor");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Layout.methodNames()); // add superclass method names
 	return methodNames;
 }
+
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
-	else super.runTest();
 }
 }
