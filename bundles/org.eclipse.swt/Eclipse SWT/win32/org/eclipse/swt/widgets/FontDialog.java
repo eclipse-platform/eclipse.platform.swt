@@ -153,8 +153,8 @@ public FontData open () {
 		int blue = (rgb.blue << 16) & 0xFF0000;
 		lpcf.rgbColors = red | green | blue;
 	}
-	fontData = null;
-	if (OS.ChooseFont (lpcf)) {
+	boolean success = OS.ChooseFont (lpcf);
+	if (success) {
 		LOGFONT logFont = new LOGFONT ();
 		OS.MoveMemory (logFont, lpLogFont, LOGFONT.sizeof);
 
@@ -205,6 +205,7 @@ public FontData open () {
 	*/
 //	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
 	
+	if (!success) return null;
 	return fontData;
 }
 
@@ -220,7 +221,7 @@ public void setFontData (FontData fontData) {
 }
 
 /**
- * Returns the receiver's selected color to be the argument.
+ * Sets the receiver's selected color to be the argument.
  *
  * @param rgb the new RGB value for the selected color, may be
  *        null to let the platform to select a default when
