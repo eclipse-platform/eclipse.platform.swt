@@ -164,6 +164,7 @@ public class OS {
 	public static final int GDK_PIXBUF_ALPHA_BILEVEL = 0x0;
 	public static final int GDK_POINTER_MOTION_HINT_MASK = 0x8;
 	public static final int GDK_POINTER_MOTION_MASK = 0x4;
+	public static final int GDK_PROPERTY_NOTIFY = 16;
 	public static final int GDK_Page_Down = 0xff56;
 	public static final int GDK_Page_Up = 0xff55;
 	public static final int GDK_Pause = 0xff13;
@@ -177,7 +178,9 @@ public class OS {
 	public static final int GDK_SB_H_DOUBLE_ARROW = 0x6c;
 	public static final int GDK_SB_UP_ARROW = 0x72;
 	public static final int GDK_SB_V_DOUBLE_ARROW = 0x74;
+	public static final int GDK_SELECTION_CLEAR = 17;
 	public static final int GDK_SELECTION_NOTIFY = 19;
+	public static final int GDK_SELECTION_REQUEST = 18;
 	public static final int GDK_SHIFT_MASK = 0x1;
 	public static final int GDK_SIZING = 0x78;
 	public static final int GDK_STIPPLED = 0x2;
