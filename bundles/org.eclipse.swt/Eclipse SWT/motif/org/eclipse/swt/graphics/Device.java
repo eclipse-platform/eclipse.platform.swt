@@ -473,6 +473,10 @@ public Font getSystemFont () {
  */
 public boolean getWarnings () {
 	checkDevice ();
+	return _getWarnings();
+}
+
+boolean _getWarnings () {
 	return warnings;
 }
 
@@ -737,6 +741,10 @@ protected void release () {
  */
 public void setWarnings (boolean warnings) {
 	checkDevice ();
+	_setWarnings(warnings);
+}
+
+synchronized void _setWarnings (boolean warnings) {
 	this.warnings = warnings;
 	if (debug) return;
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);

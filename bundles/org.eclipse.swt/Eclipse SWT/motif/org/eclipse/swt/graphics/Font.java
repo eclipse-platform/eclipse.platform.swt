@@ -428,11 +428,11 @@ void init (Device device, FontData[] fds) {
 	}
 	
 	/* Load font list entry */		 
-	boolean warnings = device.getWarnings ();
-	device.setWarnings (false);
+	boolean warnings = device._getWarnings ();
+	device._setWarnings (false);
 	byte[] buffer = Converter.wcsToMbcs(null, stringBuffer.toString() , true);
 	int fontListEntry = OS.XmFontListEntryLoad(device.xDisplay, buffer, OS.XmFONT_IS_FONTSET, OS.XmFONTLIST_DEFAULT_TAG);
-	device.setWarnings (warnings);
+	device._setWarnings (warnings);
 	if (fontListEntry != 0) {
 		handle = OS.XmFontListAppendEntry(0, fontListEntry);
 		OS.XmFontListEntryFree(new int[]{fontListEntry});
