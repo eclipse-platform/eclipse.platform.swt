@@ -1311,7 +1311,8 @@ boolean traverseMnemonic (Event event) {
 
 public void update () {
 	checkWidget();
-	if (!isVisible ()) return;
+//	if (getDrawCount () > 0) return;
+	if (!OS.IsControlVisible (handle)) return;
 	Display display = getDisplay ();
 	display.update ();
 }
