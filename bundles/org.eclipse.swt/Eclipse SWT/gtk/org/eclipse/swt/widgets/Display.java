@@ -182,6 +182,8 @@ public class Display extends Device {
 		/* Keyboard and Mouse Masks */
 		{OS.GDK_Alt_L,		SWT.ALT},
 		{OS.GDK_Alt_R,		SWT.ALT},
+		{OS.GDK_Meta_L,	SWT.ALT},
+		{OS.GDK_Meta_R,	SWT.ALT},
 		{OS.GDK_Shift_L,	SWT.SHIFT},
 		{OS.GDK_Shift_R,	SWT.SHIFT},
 		{OS.GDK_Control_L,	SWT.CONTROL},
