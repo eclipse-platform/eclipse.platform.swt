@@ -1585,9 +1585,9 @@ public StyledText(Composite parent, int style) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
 	}
-	leftMargin = BIDI_CARET_WIDTH - 1;
+	leftMargin = isBidi() ? BIDI_CARET_WIDTH - 1 : 0;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.BORDER) != 0) {
-		topMargin = rightMargin = bottomMargin = 2;
+		leftMargin = topMargin = rightMargin = bottomMargin = 2;
 	}
 	clipboard = new Clipboard(display);
 	installDefaultContent();
@@ -4618,8 +4618,14 @@ public boolean getWordWrap() {
  * @return x location of the character at the given offset in the line.
  */
 int getXAtOffset(String line, int lineIndex, int offsetInLine) {
-	int x  = 0;
+	int x = 0;
 	int lineLength = line.length();
+	if (lineIndex < content.getLineCount() - 1) {
+		int endLineOffset = content.getOffsetAtLine(lineIndex + 1) - 1;
+		if (lineLength < offsetInLine && offsetInLine <= endLineOffset) {
+			offsetInLine = lineLength;
+		}
+	}
 	if (lineLength != 0  && offsetInLine <= lineLength) {
 		int lineOffset = content.getOffsetAtLine(lineIndex);
 		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
@@ -6489,7 +6495,7 @@ public void setBidiColoring(boolean mode) {
 }
 void setCaretLocation(int newCaretX, int line, int direction) {
 	Caret caret = getCaret();
-	if ((direction & SWT.RIGHT) != 0) {
+	if (direction == SWT.RIGHT) {
 		newCaretX -= (getCaretWidth() - 1);
 	}
 	columnX = newCaretX;
