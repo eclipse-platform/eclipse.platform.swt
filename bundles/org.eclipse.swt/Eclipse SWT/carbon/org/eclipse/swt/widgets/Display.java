@@ -1831,6 +1831,7 @@ static String convertToLf(String text) {
 		int eventKind= OS.GetEventKind(eRefHandle);
 		
 		switch (eventClass) {
+			
 		case OS.kEventClassTextInput:
 			switch (eventKind) {
 			case OS.kEventTextInputUnicodeForKeyEvent:
@@ -1840,30 +1841,35 @@ static String convertToLf(String text) {
 				break;
 			}
 			break;
+			
 		case OS.kEventClassKeyboard:
-			Control focus= getFocusControl();	
+		
+			// decide whether a SWT control has the focus
+			Control focus= getFocusControl();
+			if (focus == null || focus.handle == 0)
+				return OS.eventNotHandledErr;
+
+			int w= OS.GetControlOwner(focus.handle);
+			if (w != OS.FrontWindow())	// its probably a standard dialog
+				return OS.eventNotHandledErr;
+						
 			switch (eventKind) {
 			case OS.kEventRawKeyDown:
-				if (MacEvent.getKeyCode(eRefHandle) == 122) {
-					int handle= 0;
-					if (focus != null)
-						handle= focus.handle;
-					windowProc(handle, SWT.Help, null);
+				if (MacEvent.getKeyCode(eRefHandle) == 122) {	// help key f1
+					windowProc(focus.handle, SWT.Help, null);
 					return OS.kNoErr;
 				}
+				// fall through!
 			case OS.kEventRawKeyRepeat:
-				if (focus != null)
-					return focus.sendKeyEvent(SWT.KeyDown, nextHandler, eRefHandle);
-				break;
+				return focus.sendKeyEvent(SWT.KeyDown, nextHandler, eRefHandle);
 			case OS.kEventRawKeyUp:
-				if (focus != null)
-					return focus.sendKeyEvent(SWT.KeyUp, nextHandler, eRefHandle);
-				break;
+				return focus.sendKeyEvent(SWT.KeyUp, nextHandler, eRefHandle);
 			default:
 				System.out.println("Display.handleTextCallback: kEventClassKeyboard: unexpected event kind");
 				break;
 			}
 			break;
+			
 		default:
 			System.out.println("Display.handleTextCallback: unexpected event class");
 			break;
@@ -1872,7 +1878,7 @@ static String convertToLf(String text) {
 	}
 	
 	private int handleWindowCallback(int nextHandler, int eRefHandle, int whichWindow) {
-		//whichWindow= getDirectObject(eRefHandle);
+		
 		int eventClass= OS.GetEventClass(eRefHandle);
 		int eventKind= OS.GetEventKind(eRefHandle);
 		
@@ -1921,6 +1927,9 @@ static String convertToLf(String text) {
 		return OS.eventNotHandledErr;
 	}
 	
+	/**
+	 * Tries to use the exit menu item for shutdown 
+	 */
 	private void quit() {
 		if (fMenuRootShell != null) {
 			MenuItem mi= fMenuRootShell.findMenuItem(fMenuRootShell.fExitMenuItemId);
@@ -1932,7 +1941,6 @@ static String convertToLf(String text) {
 	private int handleApplicationCallback(int nextHandler, int eRefHandle, int userData) {
 	
 		MacEvent mEvent= new MacEvent(eRefHandle);
-		
 		int eventClass= OS.GetEventClass(eRefHandle);
 		int eventKind= OS.GetEventKind(eRefHandle);
 		
@@ -1945,7 +1953,7 @@ static String convertToLf(String text) {
 				// System.out.println("kEventClassAppleEvent: " + MacUtil.toString(aeclass[0]));
 				int[] aetype= new int[1];
 				if (OS.GetEventParameter(eRefHandle, OS.kEventParamAEEventID, OS.typeType, null, null, aetype) == OS.kNoErr) {
-					System.out.println("kEventParamAEEventID: " + MacUtil.toString(aetype[0]));
+					//System.out.println("kEventParamAEEventID: " + MacUtil.toString(aetype[0]));
 					if (aetype[0] == OS.kAEQuitApplication)
 						quit();
 				}
