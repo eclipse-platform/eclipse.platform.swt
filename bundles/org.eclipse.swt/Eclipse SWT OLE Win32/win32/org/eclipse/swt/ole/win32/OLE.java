@@ -359,6 +359,7 @@ public static String findProgramID (String extension) {
 	
 	if (extension.charAt (0) != '.') extension = "." + extension;
 
+	/* Use the character encoding for the default locale */
 	byte[] extensionKey = Converter.wcsToMbcs(0, extension, true);
 	String result = getKeyValue(extensionKey);
 	if (result != null) {
@@ -385,6 +386,7 @@ private static String getKeyValue (byte [] key) {
 	if (OS.RegQueryValueEx (phkResult [0], null, 0, null, null, lpcbData) == 0) {
 		byte [] lpData = new byte [lpcbData [0]];
 		if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
+			/* Use the character encoding for the default locale */
 			char[] charArray  = Converter.mbcsToWcs (0, lpData);
 			result =  new String(charArray, 0, charArray.length - 1);
 		}

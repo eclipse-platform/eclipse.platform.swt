@@ -597,14 +597,27 @@ boolean isValidWidget () {
 }
 
 /*
- * Returns a single character, converted from the multi-byte
- * character set (MBCS) used by the operating system widgets
- * to a wide character set (WCS) used by Java.
+ * Returns a single character, converted from the default
+ * multi-byte character set (MBCS) used by the operating
+ * system widgets to a wide character set (WCS) used by Java.
  *
  * @param ch the MBCS character
  * @return the WCS character
  */
 char mbcsToWcs (char ch) {
+	return mbcsToWcs (ch, 0);
+}
+
+/*
+ * Returns a single character, converted from the specified
+ * multi-byte character set (MBCS) used by the operating
+ * system widgets to a wide character set (WCS) used by Java.
+ *
+ * @param ch the MBCS character
+ * @param codePage the code page used to convert the character
+ * @return the WCS character
+ */
+char mbcsToWcs (char ch, int codePage) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
 	byte [] buffer;
@@ -616,7 +629,7 @@ char mbcsToWcs (char ch) {
 		buffer [0] = (byte) ((key >> 8) & 0xFF);
 		buffer [1] = (byte) (key & 0xFF);
 	}
-	char [] result = Converter.mbcsToWcs (0, buffer);
+	char [] result = Converter.mbcsToWcs (codePage, buffer);
 	if (result.length == 0) return 0;
 	return result [0];
 }
@@ -954,16 +967,31 @@ public String toString () {
 }
 /*
  * Returns a single character, converted from the wide
- * character set (WCS) used by Java to the multi-byte
- * character set used by the operating system widgets.
+ * character set (WCS) used by Java to the default
+ * multi-byte character set used by the operating system
+ * widgets.
  *
  * @param ch the WCS character
  * @return the MBCS character
  */
 char wcsToMbcs (char ch) {
+	return wcsToMbcs (ch, 0);
+}
+
+/*
+ * Returns a single character, converted from the wide
+ * character set (WCS) used by Java to the specified
+ * multi-byte character set used by the operating system
+ * widgets.
+ *
+ * @param ch the WCS character
+ * @param codePage the code page used to convert the character
+ * @return the MBCS character
+ */
+char wcsToMbcs (char ch, int codePage) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
-	byte [] buffer = Converter.wcsToMbcs (0, new char [] {ch}, false);
+	byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
 	if (buffer.length == 1) return (char) buffer [0];
 	if (buffer.length == 2) {
 		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));

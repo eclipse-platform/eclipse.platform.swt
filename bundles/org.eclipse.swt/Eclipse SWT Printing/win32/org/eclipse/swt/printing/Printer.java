@@ -186,6 +186,7 @@ public Printer(PrinterData data) {
  */
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
+	/* Use the character encoding for the default locale */
 	byte[] driver = Converter.wcsToMbcs(0, data.driver, true);
 	byte[] device = Converter.wcsToMbcs(0, data.name, true);
 	int lpInitData = 0;
@@ -272,6 +273,7 @@ public boolean startJob(String jobName) {
 	int hHeap = OS.GetProcessHeap();
 	int lpszDocName = 0;
 	if (jobName != null && jobName.length() != 0) {
+		/* Use the character encoding for the default locale */
 		byte [] buffer = Converter.wcsToMbcs(0, jobName, true);
 		lpszDocName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
 		OS.MoveMemory(lpszDocName, buffer, buffer.length);
@@ -279,6 +281,7 @@ public boolean startJob(String jobName) {
 	}
 	int lpszOutput = 0;
 	if (data.printToFile && data.fileName != null) {
+		/* Use the character encoding for the default locale */
 		byte [] buffer = Converter.wcsToMbcs(0, data.fileName, true);
 		lpszOutput = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
 		OS.MoveMemory(lpszOutput, buffer, buffer.length);

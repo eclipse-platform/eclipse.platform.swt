@@ -42,7 +42,7 @@ public class Text extends Scrollable {
 	}
 	
 	static final int EditProc;
-	static final byte [] EditClass = Converter.wcsToMbcs (0, "EDIT\0", false);
+	static final byte [] EditClass = Converter.wcsToMbcs (0, "EDIT\0");
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -175,7 +175,7 @@ public void append (String string) {
 		if (string == null) return;
 	}
 	OS.SendMessage (handle, OS.EM_SETSEL, length, length);
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 }
@@ -217,7 +217,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		rect.right = wHint;
 	}
 	String text = getText ();
-	byte [] buffer = Converter.wcsToMbcs (0, text, false);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), text, false);
 	OS.DrawText (hDC, buffer, buffer.length, rect, flags);
 	width = rect.right - rect.left;
 	if ((style & SWT.WRAP) != 0 && hHint == SWT.DEFAULT) {
@@ -480,7 +480,7 @@ public boolean getDoubleClickEnabled () {
 public char getEchoChar () {
 	checkWidget ();
 	char echo = (char) OS.SendMessage (handle, OS.EM_GETPASSWORDCHAR, 0, 0);
-	if (echo != 0 && (echo = mbcsToWcs (echo)) == 0) echo = '*';
+	if (echo != 0 && (echo = mbcsToWcs (echo, getCodePage ())) == 0) echo = '*';
 	return echo;
 }
 
@@ -666,7 +666,7 @@ public String getText () {
 	if (length == 0) return "";
 	byte [] buffer1 = new byte [length + 1];
 	OS.GetWindowText (handle, buffer1, buffer1.length);
-	char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
+	char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
 	return new String (buffer2, 0, buffer2.length - 1);
 }
 
@@ -805,7 +805,7 @@ public void insert (String string) {
 		string = verifyText (string, start [0], end [0]);
 		if (string == null) return;
 	}
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 }
 
@@ -1037,7 +1037,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	if (newText == null) return false;
 	if (newText == oldText) return true;
 	newText = Display.withCrLf (newText);
-	byte [] buffer = Converter.wcsToMbcs (0, newText, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), newText, true);
 	OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	return false;
@@ -1080,7 +1080,9 @@ public void setDoubleClickEnabled (boolean doubleClick) {
  */
 public void setEchoChar (char echo) {
 	checkWidget ();
-	if (echo != 0 && (echo = wcsToMbcs (echo)) == 0) echo = '*';
+	if (echo != 0) {
+		if ((echo = wcsToMbcs (echo, getCodePage ())) == 0) echo = '*';
+	}
 	OS.SendMessage (handle, OS.EM_SETPASSWORDCHAR, echo, 0);
 	/*
 	* Bug in Windows.  When the password character is changed,
@@ -1289,7 +1291,7 @@ public void setText (String string) {
 		string = verifyText (string, 0, length);
 		if (string == null) return;
 	}
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 	/*
 	* Bug in Windows.  When the widget is multi line
@@ -1504,7 +1506,7 @@ LRESULT WM_CLEAR (int wParam, int lParam) {
 	if (newText.length () != 0) {
 		result = new LRESULT (callWindowProc (OS.WM_CLEAR, 0, 0));	
 		newText = Display.withCrLf (newText);
-		byte [] buffer = Converter.wcsToMbcs (0, newText, true);
+		byte [] buffer = Converter.wcsToMbcs (getCodePage (), newText, true);
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	}
 	return result;
@@ -1524,7 +1526,7 @@ LRESULT WM_CUT (int wParam, int lParam) {
 	if (newText.length () != 0) {
 		result = new LRESULT (callWindowProc (OS.WM_CUT, 0, 0));	
 		newText = Display.withCrLf (newText);
-		byte [] buffer = Converter.wcsToMbcs (0, newText, true);
+		byte [] buffer = Converter.wcsToMbcs (getCodePage (), newText, true);
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	}
 	return result;
@@ -1608,7 +1610,7 @@ LRESULT WM_PASTE (int wParam, int lParam) {
 	if (newText == null) return LRESULT.ZERO;
 	if (newText != oldText) {
 		newText = Display.withCrLf (newText);
-		byte [] buffer = Converter.wcsToMbcs (0, newText, true);
+		byte [] buffer = Converter.wcsToMbcs (getCodePage (), newText, true);
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 		return LRESULT.ZERO;
 	}
@@ -1674,7 +1676,7 @@ LRESULT WM_UNDO (int wParam, int lParam) {
 	if (newText == null) return LRESULT.ZERO;
 	if (newText != oldText) {
 		newText = Display.withCrLf (newText);
-		byte [] buffer = Converter.wcsToMbcs (0, newText, true);
+		byte [] buffer = Converter.wcsToMbcs (getCodePage (), newText, true);
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 		return LRESULT.ZERO;
 	}

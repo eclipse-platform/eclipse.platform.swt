@@ -43,6 +43,7 @@ public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
 	if (extension.charAt (0) != '.') extension = "." + extension;
+	/* Use the character encoding for the default locale */
 	byte [] key = Converter.wcsToMbcs (0, extension, true);
 	int [] phkResult = new int [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
@@ -71,6 +72,7 @@ public static String [] getExtensions () {
 			while (length < key.length && key [length] != 0) length++;
 			byte [] buffer = new byte [length];
 			System.arraycopy (key, 0, buffer, 0, length);
+			/* Use the character encoding for the default locale */
 			String extension = new String (Converter.mbcsToWcs (0, buffer));
 			if (count == extensions.length) {
 				String [] newExtensions = new String [extensions.length + 1024];
@@ -99,6 +101,7 @@ static String getKeyValue (byte [] key) {
 	if (OS.RegQueryValueEx (phkResult [0], null, 0, null, null, lpcbData) == 0) {
 		byte [] lpData = new byte [lpcbData [0]];
 		if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
+			/* Use the character encoding for the default locale */
 			char [] charArray = Converter.mbcsToWcs (0, lpData);
 			result = new String (charArray, 0, charArray.length - 1);
 		}
@@ -110,6 +113,7 @@ static String getKeyValue (byte [] key) {
 static Program getProgram (byte [] key) {
 
 	/* Command */
+	/* Use the character encoding for the default locale */
 	byte [] COMMAND = Converter.wcsToMbcs (0, "\\shell\\open\\command", true);
 	int length = 0;
 	while (length < key.length && key [length] != 0) length++;
@@ -124,6 +128,7 @@ static Program getProgram (byte [] key) {
 	if (name == null || name.length () == 0) return null;
 		
 	/* Icon */
+	/* Use the character encoding for the default locale */
 	byte [] DEFAULT_ICON = Converter.wcsToMbcs (0, "\\DefaultIcon", true);
 	for (int i=0; i<DEFAULT_ICON.length; i++) key [length + i] = DEFAULT_ICON [i];
 	key [length + DEFAULT_ICON.length] = 0;
@@ -180,6 +185,7 @@ public static Program [] getPrograms () {
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	/* Use the character encoding for the default locale */
 	byte [] OPEN = Converter.wcsToMbcs (0, "open", true);
 	byte [] lpFile = Converter.wcsToMbcs (0, fileName, true);
 	return OS.ShellExecute (0, OPEN, lpFile, null, null, OS.SW_SHOW) > 32;
@@ -241,6 +247,7 @@ public ImageData getImageData () {
 			nIconIndex = Integer.parseInt (iconIndex);
 		} catch (NumberFormatException e) {};
 	}
+	/* Use the character encoding for the default locale */
 	byte [] lpszFile = Converter.wcsToMbcs (0, fileName, true);
 	int [] phiconSmall = new int[1], phiconLarge = null;
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
