@@ -23,7 +23,7 @@ import org.eclipse.swt.events.*;
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>READ_ONLY</dd>
+ * <dd>READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, Modify</dd>
  * </dl>
