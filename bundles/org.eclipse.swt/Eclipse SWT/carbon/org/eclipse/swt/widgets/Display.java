@@ -123,8 +123,8 @@ public class Display extends Device {
 	int freeSlot;
 	int [] indexTable, property;
 	Widget [] widgetTable;
-	final static int GROW_SIZE = 1024;
-	final static int SWT0 = ('s'<<24) + ('w'<<16) + ('t'<<8) + '0';
+	static final int GROW_SIZE = 1024;
+	static final int SWT0 = ('s'<<24) + ('w'<<16) + ('t'<<8) + '0';
 	
 	/* Menus */
 	Menu menuBar;
@@ -1903,9 +1903,7 @@ protected void release () {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed ()) {
-			if (this == shell.display) shell.dispose ();
-		}
+		if (!shell.isDisposed ()) shell.dispose ();
 	}
 	while (readAndDispatch ()) {};
 	if (disposeList != null) {
