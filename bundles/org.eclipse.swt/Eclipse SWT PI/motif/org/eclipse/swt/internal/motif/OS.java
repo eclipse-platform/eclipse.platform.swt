@@ -1,6 +1,5 @@
 package org.eclipse.swt.internal.motif;
 
-import org.eclipse.swt.SWTError;
 import org.eclipse.swt.internal.*;
 
 /*
@@ -1231,10 +1230,13 @@ public static final native void XtUnmanageChild (int widget);
 public static final native void XtUnmapWidget (int widget);
 public static final native int XtWindow (int widget);
 public static final native int XtWindowToWidget (int display, int widget);
+
 static int malloc (String name, int length) {
 	int strLen = name.length ();
 	if (NextResourceStart + strLen + 2 > RESOURCE_START + RESOURCE_LENGTH) {
-		throw new SWTError ("OS resource overrun.  Increase OS.RESOURCE_LENGTH.");
+		System.out.println ("*** Warning : SWT - Resource overrun.  Increase OS.RESOURCE_LENGTH.");
+		System.out.println ("*** Warning : Exiting ...");
+		System.exit (0);
 	}
 	char [] unicode = new char [strLen];
 	name.getChars (0, strLen, unicode, 0);
@@ -1248,18 +1250,7 @@ static int malloc (String name, int length) {
 	NextResourceStart += strLen + 2;
 	return result;
 }
-static int malloc(String name) {
-	int length = name.length();
-	int ptr = OS.XtMalloc (length + 1);
-	char [] unicode = new char [length];
-	name.getChars (0, length, unicode, 0);
-	byte[] buffer = new byte [length + 1];
-	for (int i = 0; i < length; i++) {
-		buffer[i] = (byte) unicode[i];
-	}
-	OS.memmove (ptr, buffer, length + 1);
-	return ptr;
-}
+
 public static final native void memmove (int dest, XImage src, int count);
 public static final native void memmove (int dest, XmDragProcCallback src, int count);
 public static final native void memmove (int dest, XmTextBlockRec src, int count);
