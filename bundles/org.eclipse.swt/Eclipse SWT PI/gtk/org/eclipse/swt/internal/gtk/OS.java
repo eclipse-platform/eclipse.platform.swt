@@ -791,6 +791,7 @@ public static final native void memmove(GtkCListColumn dest, int src, int size);
 public static final native void memmove(GtkStyle dest, int src);
 public static final native void memmove(GtkCombo dest, int src);
 public static final native void memmove(GtkAdjustment dest, int src);
+public static final native void memmove(GdkColor dest, int src, int size);
 public static final native void memmove(GdkEvent dest, int src, int size);
 public static final native void memmove(GdkEventButton dest, int src, int size);
 public static final native void memmove(GdkEventCrossing dest, int src, int size);
@@ -874,7 +875,7 @@ public static final native void gtk_list_store_insert (int list_store, int iter,
 public static final native int  gtk_tree_model_get_path(int tree_model, int iter);
 public static final native void gtk_tree_model_get(int tree_model, int iter, int column, int[] ptr, int terminator);
 public static final native void gtk_tree_path_free(int path);
-public static final native int  gtk_tree_path_to_string(int path);
+public static final native int  gtk_tree_path_get_indices(int path);
 public static final native int gtk_tree_path_new_from_string(byte[] path);
 public static final native void    gtk_tree_selection_set_mode(int selection, int mode);
 public static final native void    gtk_tree_selection_select_iter(int selection, int iter);

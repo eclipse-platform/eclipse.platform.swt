@@ -5581,14 +5581,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1scr
 	gtk_tree_view_scroll_to_cell((GtkTreeView*)arg0, (GtkTreePath*)arg1, (GtkTreeViewColumn*)arg2, (gboolean)arg3, (gfloat)arg4, (gfloat)arg5);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1to_1string
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("gtk_1tree_1path_1to_1string\n")
-
-	return (jint) gtk_tree_path_to_string((GtkTreePath*)arg0);
-}
-
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1path_1at_1pos
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)
 {
@@ -5890,4 +5882,24 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1col
 	DEBUG_CALL("gtk_1tree_1view_1column_1set_1clickable\n")
 
 	gtk_tree_view_column_set_clickable((GtkTreeViewColumn*)arg0, (gboolean)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	GdkColor _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II\n")
+
+	if (arg0) lparg0 = getGdkColorFields(env, arg0, &_arg0);
+	memmove(lparg0, arg1, arg2);
+	if (arg0) setGdkColorFields(env, arg0, lparg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1get_1indices
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1path_1get_1indices\n")
+
+	return (jint)gtk_tree_path_get_indices((GtkTreePath*)arg0);
 }
