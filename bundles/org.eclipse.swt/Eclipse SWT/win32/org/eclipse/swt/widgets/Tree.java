@@ -2032,6 +2032,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	switch (code) {
 		case OS.NM_CUSTOMDRAW: {
 			if (!customDraw) break;
+			if (!OS.IsWindowEnabled (handle)) break;
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);		
 			switch (nmcd.dwDrawStage) {
