@@ -123,6 +123,11 @@ void createItem (MenuItem item, int index) {
 	}
 }
 
+void createWidget () {
+	checkOrientation (parent);
+	super.createWidget ();
+}
+
 void destroyItem (MenuItem item) {
 	short [] outIndex = new short [1];
 	if (OS.GetIndMenuItemWithCommandID (handle, item.id, 1, null, outIndex) != OS.noErr) {

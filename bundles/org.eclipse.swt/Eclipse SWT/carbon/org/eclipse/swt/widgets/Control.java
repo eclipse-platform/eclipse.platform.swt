@@ -160,6 +160,7 @@ Control computeTabRoot () {
 }
 
 void createWidget () {
+	checkOrientation (parent);
 	super.createWidget ();
 	setZOrder ();
 }
