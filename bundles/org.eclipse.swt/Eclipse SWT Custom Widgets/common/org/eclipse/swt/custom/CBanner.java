@@ -147,12 +147,9 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	}
 	Point leftSize = new Point(0, 0);
 	if (left != null) {
-		Point trim = left.computeSize(width, height);
+		Point trim = left.computeSize(width, SWT.DEFAULT);
 		trim.x = trim.x - width;
-		leftSize = left.computeSize(width == SWT.DEFAULT ? SWT.DEFAULT : width - trim.x, height);
-		if (height != SWT.DEFAULT) {
-			leftSize.y = Math.min(leftSize.y, height);
-		}
+		leftSize = left.computeSize(width == SWT.DEFAULT ? SWT.DEFAULT : width - trim.x, SWT.DEFAULT);
 	}
 	int w = 0, h = 0;
 	h += bottomSize.y;
@@ -241,22 +238,22 @@ public void layout (boolean changed) {
 	}
 	
 	if (showCurve) height -=  BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
+	height = Math.max(0, height);
 	Point rightSize = new Point(0,0);
 	if (right != null) {
 		Point trim = right.computeSize(rightWidth, height);
 		trim.x = trim.x - rightWidth;
 		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height);
 		rightSize.x = Math.min(rightSize.x, width);
-		width -= rightSize.x + curveWidth - 2* curveIndent;
+		width -= rightSize.x + curveWidth - 2*curveIndent;
 		width = Math.max(width, MIN_LEFT); 
 	}
 
 	Point leftSize = new Point(0, 0);
 	if (left != null) {
-		Point trim = left.computeSize(width, height);
+		Point trim = left.computeSize(width, SWT.DEFAULT);
 		trim.x = trim.x - width;
-		leftSize = left.computeSize(width - trim.x, height);
-		leftSize.y = Math.min(leftSize.y, height);
+		leftSize = left.computeSize(width - trim.x, SWT.DEFAULT);
 	}
 
 	int x = 0;
@@ -270,15 +267,9 @@ public void layout (boolean changed) {
 	}
 	if (showCurve) y += BORDER_TOP + BORDER_STRIPE;
 	if(left != null) {
-		if (leftSize.x > 0) {
-			leftRect = new Rectangle(x, y, leftSize.x, leftSize.y);
-			curveStart = x + leftSize.x - curveIndent;
-			x += leftSize.x + curveWidth - 2*curveIndent;
-		} else {
-			leftRect = new Rectangle(0, 0, 0, 0);
-			curveStart = 0;
-			x += curveWidth - curveIndent;
-		}
+		leftRect = new Rectangle(x, y, leftSize.x, leftSize.y);
+		curveStart = x + leftSize.x - curveIndent;
+		x += leftSize.x + curveWidth - 2*curveIndent;
 	}
 	if (right != null) {
 		rightRect = new Rectangle(x, y, rightSize.x, rightSize.y);
