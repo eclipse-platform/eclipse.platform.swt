@@ -155,11 +155,6 @@ abstract class Tab {
 	 * is typically the left hand column in the tab.
 	 */
 	void createExampleGroup () {	
-		/*
-		* Create the example group.  This is the
-		* group on the right half of each example
-		* tab.
-		*/	
 		exampleGroup = new Group (tabFolderPage, SWT.NONE);
 		GridLayout gridLayout = new GridLayout ();
 		exampleGroup.setLayout (gridLayout);
