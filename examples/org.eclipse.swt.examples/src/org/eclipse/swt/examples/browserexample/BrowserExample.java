@@ -67,7 +67,7 @@ public class BrowserExample {
 			}
 		});
 		if (top) {
-			browser.setUrl("/bluebird/teamswt/chrisx/workspace/java_chris/src/html/58103.html");
+			browser.setUrl(getResourceString("Startup"));
 			show(false, null, null, true, true, true, true);
 		} else {
 			browser.addVisibilityWindowListener(new VisibilityWindowListener() {
