@@ -10,7 +10,6 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 
-import java.text.Collator;
 import java.util.*;
 
 /**
@@ -21,7 +20,7 @@ import java.util.*;
  * within the SWT implementation.
  * </p>
  */
-public class FontDialog extends Dialog implements Listener {
+public class FontDialog extends Dialog {
 	/*
 	 * Table containing all available fonts as FontData objects.
 	 * The table is structured as a series of embedded Hashtables as follows:
@@ -51,9 +50,12 @@ public class FontDialog extends Dialog implements Listener {
 	private static final String DEFAULT_STYLE = "medium";
 	private static final Integer SCALABLE_KEY = new Integer (0);
 	
-	// busy cursor variables
-	static int nextBusyId = 1;
-	static final String BUSYID_NAME = "FontDialog BusyIndicator";
+	// more constants
+	// TEMPORARY CODE
+	private static final int ColumnOneWidth = 200;
+	private static final int ColumnTwoWidth = 150;
+	private static final int ColumnThreeWidth = 100;
+	private static final Integer NO_SELECTION = new Integer (-1);
 
 /**
  * Constructs a new instance of this class given only its
@@ -170,10 +172,6 @@ void createChildren () {
 	Label faceNameLabel = new Label (dialog, SWT.NULL);
 	Label extendedStyleLabel = new Label (dialog, SWT.NULL);	
 	GridLayout layout = new GridLayout ();
-	final int ColumnOneWidth = 200;
-	final int ColumnTwoWidth = 150;
-	final int ColumnThreeWidth = 100;
-	final Integer NO_SELECTION = new Integer (-1);
 	
 	layout.numColumns = 4;
 	layout.marginWidth = 15;
@@ -281,6 +279,7 @@ void createChildren () {
 	gridData.horizontalAlignment = GridData.FILL;	
 	sampleLabel.setLayoutData (gridData);
 
+	//TEMPORARY CODE
 	dialog.setSize (445, 410);
 }
 
@@ -548,7 +547,7 @@ String getTranslatedFaceName (FontData fontData) {
  * Combo selections cause the downstream combos to be initialized 
  * with font data and the sample text to be updated.
  */
-public void handleEvent (Event event) {
+void handleEvent (Event event) {
 	if (ignoreEvents) return;
 	if (event.widget instanceof Combo) {
 		Combo combo = (Combo) event.widget;
@@ -573,12 +572,12 @@ public void handleEvent (Event event) {
 	else
 	if (event.widget == okButton) {
 		okSelected = true;
-		shell.setVisible (false);
+		shell.close ();
 	}
 	else
 	if (event.widget == cancelButton) {
 		okSelected = false;
-		shell.setVisible (false);
+		shell.close ();
 	}	
 }
 
@@ -630,17 +629,10 @@ void initFaceNameCombo () {
  * the combo boxes.
  */
 void initializeWidgets () {
-	final Display display = shell.getDisplay ();
-	
-	showBusyWhile (display, new Runnable () {
-		public void run () {
-			addFonts (display.getFontList (null, false));		// get all fonts availabe on the current display
-			addFonts (display.getFontList (null, true));
-		}
-	});
-	
+	Display display = shell.getDisplay ();
+	addFonts (display.getFontList (null, false));		// get all fonts availabe on the current display
+	addFonts (display.getFontList (null, true));
 	setItemsSorted (charSetCombo, getFonts ());
-
 	if (initialFontData != null) {
 		Font initialFont = new Font (display, initialFontData);	// verify that the initial font data is a valid font
 		initialFontData = null;
@@ -745,14 +737,19 @@ void initStyleCombo () {
  * Register the receiver to receive events.
  */
 void installListeners () {
-	okButton.addListener (SWT.Selection, this);
-	cancelButton.addListener (SWT.Selection, this);
-	charSetCombo.addListener (SWT.Selection, this);
-	charSetCombo.addListener (SWT.Modify, this);
-	faceNameCombo.addListener (SWT.Modify, this);
-	fontStyleCombo.addListener (SWT.Modify, this);
-	extStyleCombo.addListener (SWT.Modify, this);
-	fontSizeCombo.addListener (SWT.Modify, this);
+	Listener listener = new Listener () {
+		public void handleEvent (Event event) {
+			FontDialog.this.handleEvent (event);
+		}
+	};
+	okButton.addListener (SWT.Selection, listener);
+	cancelButton.addListener (SWT.Selection, listener);
+	charSetCombo.addListener (SWT.Selection, listener);
+	charSetCombo.addListener (SWT.Modify, listener);
+	faceNameCombo.addListener (SWT.Modify, listener);
+	fontStyleCombo.addListener (SWT.Modify, listener);
+	extStyleCombo.addListener (SWT.Modify, listener);
+	fontSizeCombo.addListener (SWT.Modify, listener);
 }
 
 /**
@@ -773,16 +770,9 @@ public FontData open () {
 	createChildren ();
 	installListeners ();	
 	openModal ();
-	
 	FontData result = null;
 	if (okSelected) result = getFontData ();
-
-	// Fix for 1FRTJZV
 	if (sampleFont != null) sampleFont.dispose ();
-
-	// Fix for 1G5NLY7
-	if (!dialog.isDisposed ()) dialog.dispose ();
-
 	return result;
 }
 
@@ -794,14 +784,14 @@ void openDialog () {
 	Shell dialog = shell;
 		
 	// Start everything off by setting the shell size to its computed size.
-	Point pt = dialog.computeSize(-1, -1, false);
+	Point pt = dialog.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
 	
 	// Ensure that the width of the shell fits the display.
 	Rectangle displayRect = dialog.getDisplay().getBounds();
 	int widthLimit = displayRect.width * 7 / 8;
 	int heightLimit = displayRect.height * 7 / 8;
 	if (pt.x > widthLimit) {
-		pt = dialog.computeSize (widthLimit, -1, false);
+		pt = dialog.computeSize (widthLimit, SWT.DEFAULT, false);
 	}
 	
 	// centre the dialog on its parent, and ensure that the
@@ -826,15 +816,12 @@ void openDialog () {
  */
 void openModal () {
 	Shell dialog = shell;
-	Display display = dialog.getDisplay ();
-
 	initializeWidgets ();
 	setFontData (null);
 	openDialog ();
-	while (!dialog.isDisposed () && dialog.getVisible ()) {
-		if (!display.readAndDispatch ()) {
-			display.sleep ();
-		}
+	Display display = dialog.getDisplay ();
+	while (!dialog.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
 	}
 }
 
@@ -883,11 +870,16 @@ public void setFontData (FontData fontData) {
  */
 void setItemsSorted (Combo combo, Hashtable items) {
 	Enumeration itemKeys = items.keys ();
-	String item;
-	String sortedItems[] = new String[items.size ()];
+	String [] sortedItems = new String[items.size ()];
 	int index = 0;
 	while (itemKeys.hasMoreElements ()) {
-		sortedItems[index++] = (String) itemKeys.nextElement ();
+		String item = (String) itemKeys.nextElement ();
+		if (item.length () != 0) sortedItems[index++] = item;
+	}
+	if (index != sortedItems.length) {
+		String [] newItems = new String[index];
+		System.arraycopy (sortedItems, 0, newItems, 0, index);
+		sortedItems = newItems;
 	}
 	sort (sortedItems);
 	combo.setItems (sortedItems);
@@ -899,12 +891,11 @@ void setItemsSorted (Combo combo, Hashtable items) {
  * This font is set into the sampleLabel.
  */
 void setSampleFont (Font newSampleFont) {
-	// only dispose fonts we created. See 1FRTK1M for details.
+	sampleLabel.setFont (newSampleFont);
 	if (sampleFont != null) {
 		sampleFont.dispose ();
 	}		
 	sampleFont = newSampleFont;
-	sampleLabel.setFont (sampleFont);
 }
 
 /**
@@ -925,36 +916,6 @@ void setSizeItemsSorted (Enumeration itemsEnum) {
 		sortedItemStrings [i] = String.valueOf (sortedItems [i].intValue ());
 	}
 	fontSizeCombo.setItems (sortedItemStrings);
-}
-
-void showBusyWhile (Display display, Runnable runnable) {
-	Integer busyId = new Integer (nextBusyId);
-	nextBusyId++;
-	Cursor cursor = new Cursor (display, SWT.CURSOR_WAIT);
-	Shell[] shells = display.getShells ();
-	for (int i = 0; i < shells.length; i++) {
-		Integer id = (Integer) shells[i].getData (BUSYID_NAME);
-		if (id == null) {
-			shells[i].setCursor (cursor);
-			shells[i].setData (BUSYID_NAME, busyId);
-		}
-	}
-
-	try {
-		runnable.run();
-	} finally {
-		shells = display.getShells();
-		for (int i = 0; i < shells.length; i++) {
-			Integer id = (Integer) shells[i].getData (BUSYID_NAME);
-			if (id == busyId) {
-				shells[i].setCursor (null);
-				shells[i].setData (BUSYID_NAME, null);
-			}
-		}
-		if (cursor != null && !cursor.isDisposed ()) {
-			cursor.dispose ();
-		}
-	}
 }
 
 /**
@@ -980,14 +941,12 @@ void sort (Integer[] items) {
  * Sort 'items' in ascending order.
  */
 void sort (String items[]) {
-	Collator collator = Collator.getInstance ();
-	
 	/* Shell Sort from K&R, pg 108 */
 	int length = items.length;
 	for (int gap = length / 2; gap > 0; gap /= 2) {
 		for (int i = gap; i < length; i++) {
 			for (int j = i - gap; j >= 0; j -= gap) {
-		   		if (collator.compare (items [j], items [j + gap]) > 0) {
+		   		if (items [j].compareTo (items [j + gap]) > 0) {
 					String swap = items [j];
 					items [j] = items[j + gap];
 					items [j + gap] = swap;
