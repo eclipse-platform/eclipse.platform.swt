@@ -146,7 +146,7 @@ public class Browser3 {
 	
 	public static boolean test() {
 		int fail = 0;
-		String url = Browser3.class.getResource("browser3a.html").toString();
+		String url = Browser3.class.getResource("browser3.html").toString();
 		String[] urls = {url};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test1(urls[i]); 
