@@ -1940,6 +1940,17 @@ void removeColumnVisual(TableColumn column) {
 	redraw();
 	getHeader().redraw();
 }
+/**
+ * 'item' has been removed from the receiver. 
+ * Update the display and the scroll bars.
+ */
+void removedItem(SelectableItem item) {
+	int oldHeight = getItemHeight();
+	super.removedItem (item);
+	if (getItemCount() == 0 && drawGridLines && oldHeight != getItemHeight()) {
+		redraw();
+	}
+}
 /** 
  * Remove 'item' from the receiver. 
  * @param item - item that should be removed from the receiver
