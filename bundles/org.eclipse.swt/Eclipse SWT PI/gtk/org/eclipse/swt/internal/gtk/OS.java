@@ -278,10 +278,15 @@ public static final native int GTK_WIDGET_Y(int widget);
 public static final native int GTK_SCROLLED_WINDOW_HSCROLLBAR(int widget);
 public static final native int GTK_SCROLLED_WINDOW_VSCROLLBAR(int widget);
 public static final native int GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(int widget);
+public static final native int ROW_TOP_YPIXEL(int clist, int row);
+public static final native int GTK_CLIST_WINDOW_WIDTH(int clist);
+public static final native int GTK_CLIST_ROW_LIST(int clist);
 
 /** Native methods */
 public static final native int GDK_ROOT_PARENT();
 public static final native boolean GTK_CLIST_SHOW_TITLES(int clist);
+public static final native int GTK_CTREE_NODE_NEXT(int node);
+public static final native int GTK_CTREE_ROW(int clist, int node);
 public static final native int GTK_WIDGET_FLAGS(int wid);
 public static final native boolean GTK_WIDGET_HAS_DEFAULT(int wid);
 public static final native boolean GTK_WIDGET_HAS_FOCUS(int wid);
