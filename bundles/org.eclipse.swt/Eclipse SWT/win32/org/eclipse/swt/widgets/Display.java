@@ -238,7 +238,7 @@ public class Display extends Device {
 	static int monitorCount = 0;
 	
 	/* Modality */
-	Shell [] modalWidgets;
+	Shell [] modalShells;
 	static boolean TrimEnabled = false;
 
 	/* Package Name */
@@ -505,17 +505,17 @@ static synchronized void checkDisplay (Thread thread) {
 }
 
 void clearModal (Shell shell) {
-	if (modalWidgets == null) return;
-	int index = 0, length = modalWidgets.length;
+	if (modalShells == null) return;
+	int index = 0, length = modalShells.length;
 	while (index < length) {
-		if (modalWidgets [index] == shell) break;
-		if (modalWidgets [index] == null) return;
+		if (modalShells [index] == shell) break;
+		if (modalShells [index] == null) return;
 		index++;
 	}
 	if (index == length) return;
-	System.arraycopy (modalWidgets, index + 1, modalWidgets, index, --length - index);
-	modalWidgets [length] = null;
-	if (index == 0 && modalWidgets [0] == null) modalWidgets = null;
+	System.arraycopy (modalShells, index + 1, modalShells, index, --length - index);
+	modalShells [length] = null;
+	if (index == 0 && modalShells [0] == null) modalShells = null;
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
@@ -1165,10 +1165,10 @@ int getMessageCount () {
 }
 
 Shell getModalShell () {
-	if (modalWidgets == null) return null;
-	int index = modalWidgets.length;
+	if (modalShells == null) return null;
+	int index = modalShells.length;
 	while (--index >= 0) {
-		Shell shell = modalWidgets [index];
+		Shell shell = modalShells [index];
 		if (shell != null) return shell;
 	}
 	return null;
@@ -1970,7 +1970,7 @@ void releaseDisplay () {
 	thread = null;
 	msg = null;
 	keyboard = null;
-	modalWidgets = null;
+	modalShells = null;
 	data = null;
 	keys = null;
 	values = null;
@@ -2388,19 +2388,19 @@ public static void setAppName (String name) {
 }
 
 void setModalShell (Shell shell) {
-	if (modalWidgets == null) modalWidgets = new Shell [4];
-	int index = 0, length = modalWidgets.length;
+	if (modalShells == null) modalShells = new Shell [4];
+	int index = 0, length = modalShells.length;
 	while (index < length) {
-		if (modalWidgets [index] == shell) return;
-		if (modalWidgets [index] == null) break;
+		if (modalShells [index] == shell) return;
+		if (modalShells [index] == null) break;
 		index++;
 	}
 	if (index == length) {
-		Shell [] newModalWidgets = new Shell [length + 4];
-		System.arraycopy (modalWidgets, 0, newModalWidgets, 0, length);
-		modalWidgets = newModalWidgets;
+		Shell [] newModalShells = new Shell [length + 4];
+		System.arraycopy (modalShells, 0, newModalShells, 0, length);
+		modalShells = newModalShells;
 	}
-	modalWidgets [index] = shell;
+	modalShells [index] = shell;
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
