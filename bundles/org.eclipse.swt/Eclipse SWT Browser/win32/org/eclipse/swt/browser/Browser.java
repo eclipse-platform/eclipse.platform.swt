@@ -149,7 +149,7 @@ public class Browser extends Composite {
 public Browser(Composite parent, int style) {
 	super(parent, style &~ SWT.BORDER);
 	info = Browser.DOCHOSTUIFLAG_THEME;
-	if ((style & SWT.BORDER) == 0) info |= Browser.DOCHOSTUIFLAG_NO3DBORDER;
+	if ((style & SWT.BORDER) == 0) info |= Browser.DOCHOSTUIFLAG_NO3DOUTERBORDER;
 	frame = new OleFrame(this, SWT.NONE);
 	try {
 		site = new WebSite(frame, SWT.NONE, "Shell.Explorer"); //$NON-NLS-1$
