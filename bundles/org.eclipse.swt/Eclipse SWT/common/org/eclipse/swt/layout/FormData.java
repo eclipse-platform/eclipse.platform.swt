@@ -221,5 +221,20 @@ FormAttachment getTopAttachment (int spacing) {
 	isVisited = false;
 	return cacheTop;
 }
-
+String getName () {
+	String string = getClass ().getName ();
+	int index = string.lastIndexOf ('.');
+	if (index == -1) return string;
+	return string.substring (index + 1, string.length ());
+}
+public String toString () {
+ 	String string = getName()+":"; //$NON-NLS-1$
+	if (height != SWT.DEFAULT) string += " height = "+height; //$NON-NLS-1$
+ 	if (width != SWT.DEFAULT) string += " width = "+width; //$NON-NLS-1$
+ 	if (left != null) string += " left: "+left; //$NON-NLS-1$
+ 	if (right != null) string += " right: "+right;  //$NON-NLS-1$
+ 	if (top != null) string += " top: "+top;  //$NON-NLS-1$
+ 	if (bottom != null) string += " bottom: "+bottom;  //$NON-NLS-1$
+	return string;
+}
 }

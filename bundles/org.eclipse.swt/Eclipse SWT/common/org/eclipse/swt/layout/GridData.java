@@ -225,4 +225,39 @@ boolean isItemData() {
 boolean isSpacerData() {
 	return !isItemData;
 }
+String getName () {
+	String string = getClass ().getName ();
+	int index = string.lastIndexOf ('.');
+	if (index == -1) return string;
+	return string.substring (index + 1, string.length ());
+}
+public String toString () {
+	String hAlign = ""; //$NON-NLS-1$
+	switch (horizontalAlignment) {
+		case SWT.FILL: hAlign = "SWT.FILL"; break; //$NON-NLS-1$
+		case SWT.BEGINNING: hAlign = "SWT.BEGINNING"; break; //$NON-NLS-1$
+		case SWT.END: hAlign = "SWT.END"; break; //$NON-NLS-1$
+		case SWT.CENTER: hAlign = "SWT.CENTER"; break; //$NON-NLS-1$
+		default: hAlign = "Undefined "+horizontalAlignment; break;
+	}
+	String vAlign = ""; //$NON-NLS-1$
+	switch (verticalAlignment) {
+		case SWT.FILL: vAlign = "SWT.FILL"; break; //$NON-NLS-1$
+		case SWT.BEGINNING: vAlign = "SWT.BEGINNING"; break; //$NON-NLS-1$
+		case SWT.END: vAlign = "SWT.END"; break; //$NON-NLS-1$
+		case SWT.CENTER: vAlign = "SWT.CENTER"; break; //$NON-NLS-1$
+		default: vAlign = "Undefined "+verticalAlignment; break;
+	}
+ 	String string = getName()+":";
+ 	if (heightHint != SWT.DEFAULT) string += " heightHint = "+heightHint;
+ 	string += " horizontalAlignment = "+hAlign;
+ 	if (horizontalIndent != 0) string +=" horizontalIndent = "+horizontalIndent;
+ 	if (horizontalSpan != 1) string += " horizontalSpan = "+horizontalSpan;
+ 	if (grabExcessHorizontalSpace) string += " grabExcessHorizontalSpace = "+grabExcessHorizontalSpace;
+ 	if (widthHint != SWT.DEFAULT) string += " widthHint = "+widthHint;
+ 	string += " verticalAlignment = "+vAlign;
+ 	if (verticalSpan != 1) string += " verticalSpan = "+verticalSpan;
+ 	if (grabExcessVerticalSpace) string += " grabExcessVerticalSpace = "+grabExcessVerticalSpace;
+	return string;
+}
 }

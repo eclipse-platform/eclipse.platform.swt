@@ -274,5 +274,13 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	}
 	return move ? null : new Point (width, height);
 }
-	
+String getName () {
+	String string = getClass ().getName ();
+	int index = string.lastIndexOf ('.');
+	if (index == -1) return string;
+	return string.substring (index + 1, string.length ());
+}
+public String toString () {
+ 	return getName()+": marginWidth = "+marginWidth+" marginHeight = "+marginHeight+" spacing = "+spacing;  //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+}	
 }
