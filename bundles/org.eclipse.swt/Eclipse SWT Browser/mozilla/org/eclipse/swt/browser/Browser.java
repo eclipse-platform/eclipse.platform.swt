@@ -1734,6 +1734,14 @@ int SetTitle(int aTitle) {
 }
 
 int GetSiteWindow(int aSiteWindow) {
+	/*
+	* Note.  The handle is expected to be an HWND on Windows and
+	* a GtkWidget* on GTK.  This callback is invoked on Windows
+	* when the javascript window.print is invoked and the print
+	* dialog comes up. If no handle is returned, the print dialog
+	* does not come up on this platform.  
+	*/
+	XPCOM.memmove(aSiteWindow, new int[] {handle}, 4);
 	return XPCOM.NS_OK;     	
 }  
  
@@ -1786,6 +1794,7 @@ int OnStartURIOpen(int aURI, int retval) {
 }
 
 int DoContent(int aContentType, int aIsContentPreferred, int aRequest, int aContentHandler, int retval) {
+	System.out.println("DoContent");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -1795,6 +1804,7 @@ int IsPreferred(int aContentType, int aDesiredContentType, int retval) {
 }
 
 int CanHandleContent(int aContentType, int aIsContentPreferred, int aDesiredContentType, int retval) {
+	System.out.println("CanHandleContent");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
@@ -1807,6 +1817,7 @@ int SetLoadCookie(int aLoadCookie) {
 }
 
 int GetParentContentListener(int aParentContentListener) {
+	System.out.println("GetParentContentListener");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 	
