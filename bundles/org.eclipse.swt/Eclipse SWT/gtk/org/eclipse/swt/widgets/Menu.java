@@ -310,6 +310,21 @@ void fixMenus (Decorations newParent) {
 	this.parent = newParent;
 }
 
+/*public*/ Rectangle getBounds () {
+	checkWidget();
+	if (!OS.GTK_WIDGET_MAPPED (handle)) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
+	int [] origin_x = new int [1], origin_y = new int [1];
+	OS.gdk_window_get_origin (window, origin_x, origin_y);
+	int x = origin_x [0] + OS.GTK_WIDGET_X (handle);
+	int y = origin_y [0] + OS.GTK_WIDGET_Y (handle);
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	return new Rectangle (x, y, width, height);
+}
+
 /**
  * Returns the default menu item or null if none has
  * been previously set.
@@ -510,13 +525,6 @@ public Menu getParentMenu () {
 public Shell getShell () {
 	checkWidget();
 	return parent.getShell ();
-}
-
-/*public*/ Point getSize () {
-	checkWidget();
-	int width = OS.GTK_WIDGET_WIDTH (handle);
-	int height = OS.GTK_WIDGET_HEIGHT (handle);
-	return new Point (width, height);
 }
 
 /**

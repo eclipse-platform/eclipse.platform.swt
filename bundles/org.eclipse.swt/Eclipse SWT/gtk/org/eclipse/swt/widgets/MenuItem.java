@@ -304,6 +304,18 @@ int /*long*/ getAccelGroup () {
 	return shell.menuBar == menu ? shell.accelGroup : 0;
 }
 
+/*public*/ Rectangle getBounds () {
+	checkWidget();
+	if (!OS.GTK_WIDGET_MAPPED (handle)) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	int x = OS.GTK_WIDGET_X (handle);
+	int y = OS.GTK_WIDGET_Y (handle);
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	return new Rectangle (x, y, width, height);
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
