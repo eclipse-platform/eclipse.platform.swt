@@ -8,19 +8,19 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * Instances of this class are used to define where to attach 
- * the sides of controls in a <code>FormLayout</code>. 
+ * Instances of this class are used to define the edges of a control
+ * within a <code>FormLayout</code>. 
  * <p>
  * <code>FormAttachments</code> are set into the top, bottom, left,
  * and right fields of the <code>FormData</code> for a control.
  * For example:
  * <pre>
- * 		FormData formData = new FormData();
- * 		formData.top = new FormAttachment(0,5);
- * 		formData.bottom = new FormAttachment(100,-5);
- * 		formData.left = new FormAttachment(0,5);
- * 		formData.right = new FormAttachment(100,-5);
- * 		button.setLayoutData(formData);
+ * 		FormData data = new FormData();
+ * 		data.top = new FormAttachment(0,5);
+ * 		data.bottom = new FormAttachment(100,-5);
+ * 		data.left = new FormAttachment(0,5);
+ * 		data.right = new FormAttachment(100,-5);
+ * 		button.setLayoutData(data);
  * </pre>
  * </p>
  * <p>
@@ -50,6 +50,8 @@ import org.eclipse.swt.widgets.*;
  * 
  * @see FormLayout
  * @see FormData
+ * 
+ * @since 2.0
  */
 public final class FormAttachment {
 	/**
@@ -113,12 +115,12 @@ FormAttachment minus (FormAttachment attachment) {
 	return solution;
 }
 
-FormAttachment plusB (int value) {
-	return new FormAttachment (numerator, denominator, offset + value);
+FormAttachment minus (int value) {
+	return new FormAttachment (numerator, denominator, offset - value);
 }
 
-FormAttachment minusB (int value) {
-	return new FormAttachment (numerator, denominator, offset - value);
+FormAttachment plus (int value) {
+	return new FormAttachment (numerator, denominator, offset + value);
 }
 
 int solveX (int value) {
@@ -135,4 +137,5 @@ public String toString () {
  	String string = control != null ? control.toString () : numerator + "/" + denominator;
 	return "y = (" + string + (offset >= 0 ? ")x + " + offset: ")x - " + (-offset));
 }
+
 }

@@ -90,12 +90,100 @@ public final class FormLayout extends Layout {
 	
 public FormLayout () {
 }
-	
+
+/**
+ * Computes the preferred height of the form with
+ * respect to the preferred height of the control.
+ * 
+ * Given that the equations for top (T) and bottom (B)
+ * of the control in terms of the height of the form (X)
+ * are:
+ *		T = AX + B
+ *		B = CX + D
+ * 
+ * The equation for the height of the control (H)
+ * is bottom (B) minus top (T) or (H = B - T) or:
+ * 
+ *		H = (CX + D) - (AX + B)
+ * 
+ * Solving for (X), the height of the form, we get:
+ * 
+ *		X = (H + B - D) / (C - A)
+ * 
+ * When (A = C), (C - A = 0) and the equation has no
+ * solution for X.  This is a special case meaning that
+ * the control does not constrain the height of the
+ * form.  In this case, we need to arbitrarily define
+ * the height of the form (X):
+ * 
+ * Case 1: A = C, A = 0, C = 0
+ *
+ * 		Let X = D, the distance from the top of the form
+ * 		to the bottom edge of the control.  In this case,
+ * 		the control was attatched to the top of the form
+ * 		and the form needs to be large enough to show the
+ * 		bottom edge of the control.
+ * 
+ * Case 2: A = C, A = 1, C = 1
+ * 
+ * 		Let X = -B, the distance from the bottom of the
+ *		form to the top edge of the control.  In this case,
+ * 		the control was attached to the bottom of the form
+ * 		and the only way that the control would be visible
+ * 		is if the offset is negative.  If the offset is
+ * 		positive, there is no possible height for the form
+ * 		that will show the control as it will always be
+ * 		below the bottom edge of the form.
+ * 
+ * Case 3: A = C, A != 0, B != 0 and A != 1, C != 0
+ * 
+ * 		Let X = ... see comments in the code (work in progress)
+ * 
+ */
+int computeHeight (FormData data) {
+	FormAttachment top = data.getTopAttachment ();
+	FormAttachment bottom = data.getBottomAttachment ();
+	FormAttachment height = bottom.minus (top);
+	if (height.numerator == 0) {
+		if (bottom.numerator == 0) return bottom.offset;
+		if (top.numerator == top.denominator) return -top.offset;
+		/*
+		* Case 3: The top and bottom equations both begin with (num/den)X.
+		* The offset of the bottom equation represents the distance from (num/den)X
+		* to the bottom of the control. To find the height of the form, we add the 
+		* distance representing 1-(num/den)X:
+		* 	X=(1-(num/den))X+offset
+		* We solve this to get:
+		*	X=den*offset/(den-num)
+		*/
+		int divider = bottom.denominator - bottom.numerator; 
+		return bottom.denominator * bottom.offset / divider;
+	}
+	return height.solveY (data.cacheHeight);
+}
+
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
 	Point size = layout (composite, false, 0, 0, 0, 0, flushCache);
 	size.x += marginWidth * 2;
 	size.y += marginHeight * 2;
 	return size;
+}
+
+/**
+ * Computes the preferred height of the form with
+ * respect to the preferred height of the control.
+ */
+int computeWidth (FormData data) {
+	FormAttachment left = data.getLeftAttachment ();
+	FormAttachment right = data.getRightAttachment ();
+	FormAttachment width = right.minus (left);
+	if (width.numerator == 0) {
+		if (right.numerator == 0) return right.offset;
+		if (left.numerator == left.denominator) return -left.offset;
+		int divider = right.denominator - right.numerator; 
+		return right.denominator * right.offset / divider;
+	}
+	return width.solveY (data.cacheWidth);
 }
 
 Point getSize (Control control, boolean flushCache) {
@@ -144,36 +232,6 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		}
 	}
 	return move ? null : new Point (width, height);
-}
-
-int computeHeight (FormData data) {
-	FormAttachment top = data.getTopAttachment ();
-	FormAttachment bottom = data.getBottomAttachment ();
-	FormAttachment height = bottom.minus (top);
-	if (height.numerator == 0) {
-		if (bottom.numerator == 0) return bottom.offset;
-		if (top.numerator == top.denominator) {
-			return Math.abs (top.offset);
-		}
-		int divider = bottom.denominator - bottom.numerator; 
-		return bottom.denominator * bottom.offset / divider;
-	}
-	return height.solveY (data.cacheHeight);
-}
-
-int computeWidth (FormData data) {
-	FormAttachment left = data.getLeftAttachment ();
-	FormAttachment right = data.getRightAttachment ();
-	FormAttachment width = right.minus (left);
-	if (width.numerator == 0) {
-		if (right.numerator == 0) return right.offset;
-		if (left.numerator == left.denominator) {
-			return Math.abs (left.offset);
-		}
-		int divider = right.denominator - right.numerator; 
-		return right.denominator * right.offset / divider;
-	}
-	return width.solveY (data.cacheWidth);
 }
 	
 }

@@ -7,29 +7,31 @@ package org.eclipse.swt.layout;
 import org.eclipse.swt.*;
 
 /**
- * Instances of this class are used to set the attachments 
+ * Instances of this class are used to define the attachments 
  * of a control in a <code>FormLayout</code>. 
  * <p>
  * To set a <code>FormData</code> object into a control, you use the 
  * <code>setLayoutData ()</code> method. To define attachments for the 
- * <code>FormData</code>, you set the fields directly, like this:
+ * <code>FormData</code>, set the fields directly, like this:
  * <pre>
- * 		FormData formData = new FormData();
- * 		formData.left = new FormAttachment(0,5);
- * 		formData.right = new FormAttachment(100,-5);
+ * 		FormData data = new FormData();
+ * 		data.left = new FormAttachment(0,5);
+ * 		data.right = new FormAttachment(100,-5);
  * 		button.setLayoutData(formData);
  * </pre>
  * </p>
  * <p>
- * <code>FormData</code> takes the <code>FormAttachments</code> defined for 
- * each side of the control and computes an equation for them. These 
- * equations are used to determine the size and position of the control
- * within the parent composite. <code>FormData</code> objects also allow you 
- * to set the width and height of controls within a <code>FormLayout</code>. 
+ * <code>FormData</code> contains the <code>FormAttachments</code> for 
+ * each edge of the control that the <code>FormLayout</code> uses to
+ * determine the size and position of the control. <code>FormData</code>
+ * objects also allow you to set the width and height of controls within
+ * a <code>FormLayout</code>. 
  * </p>
  * 
  * @see FormLayout
  * @see FormAttachment
+ * 
+ * @since 2.0
  */
 public final class FormData {
 	/**
@@ -74,60 +76,60 @@ public FormData (int width, int height) {
 	this.height = height;
 }
 
-FormAttachment getLeftAttachment () {
-	if (isVisited) return new FormAttachment (0, 0);
-	if (left == null) {
-		if (right == null) return new FormAttachment (0, 0);
-		return getRightAttachment ().minusB (cacheWidth);
-	}
-	if (left.control == null) return left;
-	isVisited = true;
-	FormData leftData = (FormData) left.control.getLayoutData ();
-	FormAttachment rightAttachment = leftData.getRightAttachment ();
-	isVisited = false; 
-	return rightAttachment.plusB (left.offset); 
-}	
-
-FormAttachment getRightAttachment () {
-	if (isVisited) return new FormAttachment (0, cacheWidth);
-	if (right == null) {
-		if (left == null) return new FormAttachment (0, cacheWidth);
-		return getLeftAttachment ().plusB (cacheWidth);
-	}
-	if (right.control == null) return right;
-	isVisited = true;
-	FormData rightData = (FormData) right.control.getLayoutData ();
-	FormAttachment leftAttachment = rightData.getLeftAttachment ();
-	isVisited = false;
-	return leftAttachment.plusB (right.offset);
-}
-
-FormAttachment getTopAttachment () {
-	if (isVisited) return new FormAttachment (0, 0);
-	if (top == null) {
-		if (bottom == null) return new FormAttachment (0, 0);
-		return getBottomAttachment ().minusB (cacheHeight);
-	}
-	if (top.control == null) return top;
-	isVisited = true;
-	FormData topData = (FormData) top.control.getLayoutData ();
-	FormAttachment bottomAttachment = topData.getBottomAttachment ();
-	isVisited = false;
-	return bottomAttachment.plusB (top.offset);
-}
-
 FormAttachment getBottomAttachment () {
 	if (isVisited) return new FormAttachment (0, cacheHeight);
 	if (bottom == null) {
 		if (top == null) return new FormAttachment (0, cacheHeight);
-		return getTopAttachment ().plusB (cacheHeight);
+		return getTopAttachment ().plus (cacheHeight);
 	}
 	if (bottom.control == null) return bottom;
 	isVisited = true;
 	FormData bottomData = (FormData) bottom.control.getLayoutData ();
 	FormAttachment topAttachment = bottomData.getTopAttachment ();
 	isVisited = false;
-	return topAttachment.plusB (bottom.offset);	
+	return topAttachment.plus (bottom.offset);	
+}
+
+FormAttachment getLeftAttachment () {
+	if (isVisited) return new FormAttachment (0, 0);
+	if (left == null) {
+		if (right == null) return new FormAttachment (0, 0);
+		return getRightAttachment ().minus (cacheWidth);
+	}
+	if (left.control == null) return left;
+	isVisited = true;
+	FormData leftData = (FormData) left.control.getLayoutData ();
+	FormAttachment rightAttachment = leftData.getRightAttachment ();
+	isVisited = false; 
+	return rightAttachment.plus (left.offset); 
+}	
+
+FormAttachment getRightAttachment () {
+	if (isVisited) return new FormAttachment (0, cacheWidth);
+	if (right == null) {
+		if (left == null) return new FormAttachment (0, cacheWidth);
+		return getLeftAttachment ().plus (cacheWidth);
+	}
+	if (right.control == null) return right;
+	isVisited = true;
+	FormData rightData = (FormData) right.control.getLayoutData ();
+	FormAttachment leftAttachment = rightData.getLeftAttachment ();
+	isVisited = false;
+	return leftAttachment.plus (right.offset);
+}
+
+FormAttachment getTopAttachment () {
+	if (isVisited) return new FormAttachment (0, 0);
+	if (top == null) {
+		if (bottom == null) return new FormAttachment (0, 0);
+		return getBottomAttachment ().minus (cacheHeight);
+	}
+	if (top.control == null) return top;
+	isVisited = true;
+	FormData topData = (FormData) top.control.getLayoutData ();
+	FormAttachment bottomAttachment = topData.getBottomAttachment ();
+	isVisited = false;
+	return bottomAttachment.plus (top.offset);
 }
 
 }
