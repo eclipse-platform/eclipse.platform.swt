@@ -1226,6 +1226,51 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EqualRgn
 	return (jboolean)EqualRgn((HRGN)arg0, (HRGN)arg1);
 }
 
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ExpandEnvironmentStringsW
+	(JNIEnv *env, jclass that, jcharArray arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg0 =NULL;
+	jchar *lparg1 =NULL;
+	jint rc;
+
+	DEBUG_CALL("ExpandEnvironmentStringsW\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	
+	rc = (jint)ExpandEnvironmentStringsW(lparg0, lparg1, arg2);
+
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);	
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ExpandEnvironmentStringsA
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg0 =NULL;
+	jbyte *lparg1 =NULL;
+	jint rc;
+
+	DEBUG_CALL("ExpandEnvironmentStringsA\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	
+	rc = (jint)ExpandEnvironmentStringsA(lparg0, lparg1, arg2);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);	
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
 #ifndef _WIN32_WCE
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtTextOutA
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jbyteArray arg5, jint arg6, jintArray arg7)
@@ -7051,3 +7096,5 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WindowFromPoint
 
 	return rc;
 }
+
+

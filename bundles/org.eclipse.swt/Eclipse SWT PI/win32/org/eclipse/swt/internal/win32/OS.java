@@ -1251,6 +1251,19 @@ public static final boolean EnumSystemLocales (int lpLocaleEnumProc, int dwFlags
 	return EnumSystemLocalesA (lpLocaleEnumProc, dwFlags);
 }
 
+public static final int ExpandEnvironmentStrings (TCHAR lpSrc, TCHAR lpDst, int nSize) {
+	if (IsUnicode) {
+		char [] lpSrc1 = lpSrc == null ? null : lpSrc.chars;
+		char [] lpDst1 = lpDst == null ? null : lpDst.chars;
+		return ExpandEnvironmentStringsW (lpSrc1, lpDst1, nSize);
+	}
+	byte [] lpSrc1 = lpSrc == null ? null : lpSrc.bytes;
+	byte [] lpDst1 = lpDst == null ? null : lpDst.bytes;
+	return ExpandEnvironmentStringsA (lpSrc1, lpDst1, nSize);
+}
+
+
+
 public static final int ExtractIconEx (TCHAR lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons) {
 	if (IsUnicode) {
 		char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
@@ -1922,6 +1935,8 @@ public static final native int EndPaint (int hWnd, PAINTSTRUCT lpPaint);
 public static final native int EnumFontFamiliesW (int hdc, char [] lpszFamily, int lpEnumFontFamProc, int lParam);
 public static final native int EnumFontFamiliesA (int hdc, byte [] lpszFamily, int lpEnumFontFamProc, int lParam);
 public static final native boolean EqualRgn (int hSrcRgn1, int hSrcRgn2);
+public static final native int ExpandEnvironmentStringsW (char [] lpSrc, char [] lsDst, int nSize);
+public static final native int ExpandEnvironmentStringsA (byte [] lpSrc, byte [] lsDst, int nSize);
 public static final native boolean ExtTextOutW(int hdc, int X, int Y, int fuOptions, RECT lprc, char[] lpString, int cbCount, int[] lpDx);
 public static final native boolean ExtTextOutA(int hdc, int X, int Y, int fuOptions, RECT lprc, byte[] lpString, int cbCount, int[] lpDx);
 public static final native int ExtractIconExW (char [] lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons);

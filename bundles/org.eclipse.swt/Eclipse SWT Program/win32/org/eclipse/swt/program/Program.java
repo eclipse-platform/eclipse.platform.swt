@@ -90,7 +90,7 @@ public static String [] getExtensions () {
 	return extensions;
 }
 
-static String getKeyValue (String string) {
+static String getKeyValue (String string, boolean expand) {
 	/* Use the character encoding for the default locale */
 	TCHAR key = new TCHAR (0, string, true);
 	int [] phkResult = new int [1];
@@ -103,8 +103,15 @@ static String getKeyValue (String string) {
 		/* Use the character encoding for the default locale */
 		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
 		if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
-			int length = Math.max(0, lpData.length () - 1);
-			result = lpData.toString (0, length);
+			if (!OS.IsWinCE && expand) {
+				int nSize = OS.ExpandEnvironmentStrings (lpData, null, 0);
+				TCHAR lpDst = new TCHAR (0, nSize);
+				OS.ExpandEnvironmentStrings (lpData, lpDst, nSize);
+				result = lpDst.toString (0, Math.max (0, nSize - 1));
+			} else {
+				int length = Math.max (0, lpData.length () - 1);
+				result = lpData.toString (0, length);
+			}
 		}
 	}
 	if (phkResult [0] != 0) OS.RegCloseKey (phkResult [0]);
@@ -114,17 +121,17 @@ static String getKeyValue (String string) {
 static Program getProgram (String key) {
 	
 	/* Name */
-	String name = getKeyValue (key);
+	String name = getKeyValue (key, false);
 	if (name == null || name.length () == 0) return null;
 
 	/* Command */
 	String COMMAND = "\\shell\\open\\command";
-	String command = getKeyValue (key + COMMAND);
+	String command = getKeyValue (key + COMMAND, true);
 	if (command == null || command.length () == 0) return null;
-
+	
 	/* Icon */
 	String DEFAULT_ICON = "\\DefaultIcon";
-	String iconName = getKeyValue (key + DEFAULT_ICON);
+	String iconName = getKeyValue (key + DEFAULT_ICON, true);
 	if (iconName == null || iconName.length () == 0) return null;
 	
 	Program program = new Program ();
