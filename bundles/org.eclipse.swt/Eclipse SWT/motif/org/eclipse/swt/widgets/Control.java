@@ -555,8 +555,13 @@ public boolean forceFocus () {
 		int [] argList1 = {OS.XmNnumChildren, 0};
 		OS.XtGetValues (handle, argList1, argList1.length / 2);
 		if (argList1 [1] > 1) {
-			int [] argList2 = {OS.XmNtraversalOn, 1};
-			OS.XtSetValues (focusHandle, argList2, argList2.length / 2);
+			int [] argList = new int [] {OS.XmNtraversalOn, 0};
+			OS.XtGetValues (focusHandle, argList, argList.length / 2);
+			if (argList [1] == 0) {
+				argList [1] = 1;
+				OS.XtSetValues (focusHandle, argList, argList.length / 2);
+				overrideTranslations ();
+			}
 		} else {
 			focusHandle = handle;
 		}
