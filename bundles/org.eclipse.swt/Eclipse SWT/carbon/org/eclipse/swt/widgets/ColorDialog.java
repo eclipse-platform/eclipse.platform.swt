@@ -107,6 +107,10 @@ public RGB getRGB() {
  */
 public RGB open() {
 	short[] c= new short[3];
+	
+	if (rgb == null)
+		rgb= new RGB(255, 255, 255);
+		
 	c[0]= (short) (rgb.red * 257);
 	c[1]= (short) (rgb.green * 257);
 	c[2]= (short) (rgb.blue * 257);
