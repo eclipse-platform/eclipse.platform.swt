@@ -357,8 +357,17 @@ void createHandle () {
 	
 	if (!embedded) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
-		bits &= ~OS.WS_OVERLAPPED;
-		bits |= OS.WS_POPUP;
+		bits &= ~OS.WS_OVERLAPPED;	
+		/*
+		* Note:  On WinCE PPC, enforce WS_CAPTION if SWT.TITLE 
+		* is set.  Don't set WS_POPUP, this would cause the shell
+		* not to have a title in the navigation bar.
+		*/
+		if (OS.IsWinCE) {
+			if ((style & SWT.TITLE) != 0) bits |= OS.WS_CAPTION;
+		} else {
+			bits |= OS.WS_POPUP;
+		}
 		if ((style & (SWT.TITLE | SWT.CLOSE)) == 0) bits &= ~OS.WS_CAPTION;
 		if ((style & SWT.NO_TRIM) == 0) {
 			if ((style & (SWT.BORDER | SWT.RESIZE)) == 0) bits |= OS.WS_BORDER;
