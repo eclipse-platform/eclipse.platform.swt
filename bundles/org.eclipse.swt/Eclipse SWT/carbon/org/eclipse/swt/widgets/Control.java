@@ -1407,6 +1407,7 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
+	Display display = this.display;
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
 	int lastModifiers = display.lastModifiers;
