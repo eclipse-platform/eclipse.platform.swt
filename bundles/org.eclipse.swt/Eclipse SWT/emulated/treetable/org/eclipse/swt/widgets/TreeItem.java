@@ -805,8 +805,14 @@ Rectangle getExpanderBounds () {
  */
 Rectangle getFocusBounds () {
 	int x = getTextX (0);
-	int width;
 	TreeColumn[] columns = parent.columns;
+    if (columns.length > 0) {
+        /* ensure that the focus x does not start beyond the right bound of column 0 */
+        int rightX = columns [0].getX () + columns [0].width;
+        x = Math.min (x, rightX - 1);
+    }
+    
+    int width;
 	if (columns.length == 0) {
 		width = textWidths [0] + 2 * MARGIN_TEXT;
 	} else {
