@@ -606,7 +606,7 @@ void moveBelow (int /*long*/ child, int /*long*/ sibling) {
 	if (child == sibling) return;
 	int /*long*/ parentHandle = parentingHandle ();
 	if (sibling == 0 && parentHandle == fixedHandle) {
-		moveAbove (child, handle);
+		moveAbove (child, scrolledHandle != 0  ? scrolledHandle : handle);
 		return;
 	}
 	GtkFixed fixed = new GtkFixed ();
