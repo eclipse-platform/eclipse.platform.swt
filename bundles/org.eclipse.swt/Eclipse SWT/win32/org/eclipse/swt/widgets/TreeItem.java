@@ -607,12 +607,12 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int newFont = -1;
+	int hFont = -1;
 	if (font != null) {
 		parent.customDraw = true;
-		newFont = font.handle;
+		hFont = font.handle;
 	}
-	this.font = newFont;
+	this.font = hFont;
 	redraw ();
 }
 

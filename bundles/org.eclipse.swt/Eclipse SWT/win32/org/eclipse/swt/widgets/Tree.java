@@ -1887,15 +1887,14 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					tvItem.mask = OS.TVIF_STATE;
 					tvItem.hItem = item.handle;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-					if ((tvItem.state & OS.TVIS_SELECTED) != 0) break;
-					int font = item.font;
-					int clrText = item.foreground, clrTextBk = item.background;
-					if (font == -1 && clrText == -1 && clrTextBk == -1) break;
-					nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-					nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
+					int hFont = item.font, clrText = item.foreground, clrTextBk = item.background;
+					if (hFont == -1 && clrText == -1 && clrTextBk == -1) break;
+					if (hFont != -1) OS.SelectObject (nmcd.hdc, hFont);
+					if ((tvItem.state & OS.TVIS_SELECTED) == 0) {
+						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
+						nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
+					}
 					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
-					if (font == -1) font = getFont ().handle;
-					OS.SelectObject(nmcd.hdc, font);
 					return new LRESULT (OS.CDRF_NEWFONT);
 			}
 			break;
