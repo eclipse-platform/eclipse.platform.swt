@@ -151,7 +151,6 @@ void add (Menu menu) {
 }
 void createAccelerators () {
 	if (accelerators) return;
-	//??
 	if (menuBar == null) return;
 	menuBar.addAccelerators ();
 	accelerators = true;
@@ -216,6 +215,12 @@ void createHandle (int index) {
 void createWidget (int index) {
 	super.createWidget (index);
 	label = "";
+}
+void destroyAccelerators () {
+	if (!accelerators) return;
+	if (menuBar == null) return;
+	menuBar.removeAccelerators ();
+	accelerators = false;
 }
 int dialogHandle () {
 	if (dialogHandle != 0) return dialogHandle;
@@ -381,13 +386,6 @@ boolean restoreFocus () {
 //	}
 //	return false;
 	return restored;
-}
-void destroyAccelerators () {
-	if (!accelerators) return;
-	//??
-	if (menuBar == null) return;
-	menuBar.removeAccelerators ();
-	accelerators = false;
 }
 void remove (Menu menu) {
 	if (menus == null) return;
