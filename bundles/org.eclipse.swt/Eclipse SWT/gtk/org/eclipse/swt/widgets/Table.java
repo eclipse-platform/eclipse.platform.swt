@@ -754,10 +754,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	// FIXME
-	// I (bgs) am not sure what to do with this.
-	// In GTK2, rows may have different heights, so asking
-	// this question will only make sense given the item.
+	// FIXME - use font height when there is no item
 	if (itemCount == 0) return 15;
 	GdkRectangle rect = new GdkRectangle ();
 	int path = OS.gtk_tree_path_new_first ();

@@ -940,7 +940,6 @@ public void setTopItem (TreeItem item) {
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 	showItem (path, false);
-	int depth = OS.gtk_tree_path_get_depth (path);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0, 0);
 	OS.gtk_tree_path_free (path);
 }
@@ -979,19 +978,16 @@ void showItem (int path, boolean scroll) {
 	if (scroll) {
 		GdkRectangle rect = new GdkRectangle ();
 		OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
-		boolean isHidden = false;
-		if (rect.y == 0 && rect.height == 0) {
-			isHidden = true;
-		} else {
-			int [] tx = new int [1];
-			int [] ty = new int [1];
+		boolean isHidden = rect.y == 0 && rect.height == 0;
+		if (!isHidden) {
+			int [] tx = new int [1], ty = new int [1];
 			OS.gtk_tree_view_widget_to_tree_coords (handle, rect.x, rect.y, tx, ty);
 			rect.y = ty[0];
 			GdkRectangle visRect = new GdkRectangle ();
 			OS.gtk_tree_view_get_visible_rect (handle, visRect);
 			if (rect.y < visRect.y || rect.y + rect.height > visRect.y + visRect.height) {
 				isHidden = true;
-				} 
+			} 
 		}
 		if (isHidden) OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.0f);	
 	}
