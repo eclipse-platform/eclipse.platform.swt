@@ -312,29 +312,7 @@ public Display (DeviceData data) {
 	super (data);
 }
 
-/**
- * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs anywhere
- * in SWT. When the event does occur, the listener is notified
- * by sending it the <code>handleEvent()</code> message.
- *
- * @param eventType the type of event to listen for
- * @param listener the listener which should be notified when the event occurs
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see Listener
- * @see #removeFilter
- * @see #removeListener
- * 
- * @since 2.1 
- */
-void addFilter (int eventType, Listener listener) {
+public void addFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) filterTable = new EventTable ();
@@ -1626,27 +1604,7 @@ void releaseDisplay () {
 	values = null;
 }
 
-/**
- * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs anywhere in SWT.
- *
- * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see Listener
- * @see #addFilter
- * @see #addListener
- * 
- * @since 2.1 
- */
-void removeFilter (int eventType, Listener listener) {
+public void removeFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) return;

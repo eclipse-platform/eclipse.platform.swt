@@ -1432,8 +1432,10 @@ int Ph_EV_KEY (int widget, int info) {
 		if (event.keyCode == 0) event.keyCode = display.lastKey;
 		if (event.character == 0) event.character = (char) display.lastAscii;
 	}
-	postEvent (type, event);
-	return OS.Pt_PROCESS;
+	sendEvent (type, event);
+	// widget could be disposed at this point
+	if (isDisposed ()) return OS.Pt_CONSUME;
+	return event.doit ? OS.Pt_PROCESS :OS.Pt_CONSUME; 
 }
 
 int Ph_EV_PTR_MOTION (int widget, int info) {
