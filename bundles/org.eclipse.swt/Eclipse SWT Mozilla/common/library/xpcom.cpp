@@ -36,7 +36,6 @@
 #include "nsString.h"
 #include "nsEnumeratorUtils.h"
 #include "nsIInputStream.h"
-#include "nsRect.h"
 #include "jni.h"
 
 extern "C" {
@@ -200,18 +199,6 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCString_1new___3BI)
 	rc = (jint)new nsCString((const char *)lparg0, length);
 	if (arg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
 	return rc;
-}
-
-JNIEXPORT void JNICALL XPCOM_NATIVE(nsRect_1delete)
-	(JNIEnv *, jclass, jint arg0)
-{
-	delete (nsRect*)arg0;
-}
-
-JNIEXPORT jint JNICALL XPCOM_NATIVE(nsRect_1new)
-	(JNIEnv *env, jclass, int arg0, int arg1, int arg2, int arg3)
-{
-	return (jint)new nsRect(arg0, arg1, arg2, arg3);
 }
 
 JNIEXPORT void JNICALL XPCOM_NATIVE(nsString_1delete)

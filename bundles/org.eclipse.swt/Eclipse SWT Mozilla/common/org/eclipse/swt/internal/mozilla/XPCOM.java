@@ -114,8 +114,6 @@ public static final native void nsID_delete(int ptr);
 public static final native int nsID_new();
 public static final native boolean nsID_Parse(int ptr, String aIDStr);
 public static final native boolean nsID_Equals(int ptr, int other);
-public static final native int nsRect_new(int aX, int aY, int aWidth, int aHeight);
-public static final native void nsRect_delete(int ptr);
 public static final native int nsString_new();
 public static final native int nsString_new(char[] aString);
 public static final native void nsString_delete(int ptr);
