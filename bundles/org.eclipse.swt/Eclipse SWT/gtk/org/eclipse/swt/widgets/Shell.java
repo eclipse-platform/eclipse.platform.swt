@@ -446,14 +446,19 @@ public Rectangle _getClientArea () {
 }
 
 boolean _setSize(int width, int height) {
-	boolean differentExtent = UtilFuncs.setSize(topHandle, width,height);
-	Point clientSize = UtilFuncs.getSize(eventBoxHandle);
-	UtilFuncs.setSize(fixedHandle, clientSize.x, clientSize.y);
-	UtilFuncs.setSize(handle,      clientSize.x, clientSize.y);
-	return differentExtent;
+	/*
+	 * API deficiency in GTK 1.2 - lacking gtk_window_resize.
+	 * We work around this by directly resizing the X window.
+	 * 
+	 * First, we find out the GDK handle.
+	 */
+	GtkWidget gtkWidget = new GtkWidget();
+	OS.memmove(gtkWidget, topHandle, GtkWidget.sizeof);
+	OS.gdk_window_resize(gtkWidget.window, width, height);
+	return true;
 }
 
-// Unreliable
+// Unreliable FIXME
 boolean _setLocation (int x, int y) {
 	OS.gtk_widget_set_uposition (topHandle, x, y);
 	return true;
@@ -464,6 +469,22 @@ void setInitialSize() {
 	int height = OS.gdk_screen_height () * 5 / 8;
 	_setSize(width, height);
 	OS.gtk_window_set_policy (topHandle, 1,1,0);
+}
+
+/*
+ * We can't setInitialSize() before showHandle() in the case of Shell,
+ * because we operate on the actual X window, so the shell must be
+ * realized by that time.
+ * This is a workaround until gtk_window_resize().
+ */
+void createWidget (int index) {
+	createHandle    (index);
+	hookEvents      ();
+	configure       ();
+	setHandleStyle  ();
+	register        ();
+	showHandle      ();
+	setInitialSize  ();
 }
 
 public Display getDisplay () {

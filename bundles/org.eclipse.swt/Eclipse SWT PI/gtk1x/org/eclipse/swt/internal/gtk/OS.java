@@ -329,6 +329,7 @@ public static final native int gdk_string_width(int font, byte[] string);
 public static final native void gdk_window_copy_area(int window, int gc, int x, int y, int source_window, int source_x, int source_y, int width, int height);
 public static final native void gdk_window_clear_area(int window, int x, int y, int width, int height);
 public static final native void gdk_window_clear_area_e(int window, int x, int y, int width, int height);
+public static final native void gdk_window_resize(int window, int width, int height);
 public static final native int gdk_window_at_pointer(int[] win_x, int[] win_y);
 public static final native int gdk_time_get();
 public static final native int gdk_screen_width_mm();
