@@ -90,6 +90,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Decorations extends Canvas {
 	Image image;
+	Image [] images = new Image [0];
 	Menu menuBar;
 	String text = "";
 	boolean minimized, maximized;
@@ -209,6 +210,11 @@ public Image getImage () {
 	return image;
 }
 
+public Image [] getImages () {
+	checkWidget();
+	return images;
+}
+
 /**
  * Returns <code>true</code> if the receiver is currently
  * maximized, and false otherwise. 
@@ -320,6 +326,8 @@ void releaseWidget () {
 	}
 	menus = null;
 	super.releaseWidget ();
+	image = null;
+	images = null;
 	defaultButton = saveDefault = null;
 }
 
@@ -401,10 +409,17 @@ void setDefaultButton (Button button, boolean save) {
  */
 public void setImage (Image image) {
 	checkWidget();
-	if (image != null) {
-		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
+}
+
+public void setImages (Image [] images) {
+	checkWidget();
+	if (images == null) error(SWT.ERROR_INVALID_ARGUMENT);
+	for (int i = 0; i < images.length; i++) {
+		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	this.images = images;
 }
 
 /**

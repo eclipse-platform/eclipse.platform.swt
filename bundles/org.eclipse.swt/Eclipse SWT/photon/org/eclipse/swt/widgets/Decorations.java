@@ -92,6 +92,7 @@ public class Decorations extends Canvas {
 	Menu [] menus;
 	String text = "";
 	Image image;
+	Image [] images = new Image [0];
 	Button defaultButton, saveDefault;
 
 Decorations () {
@@ -221,6 +222,11 @@ public Image getImage () {
 	return image;
 }
 
+public Image [] getImages () {
+	checkWidget();
+	return images;
+}
+
 /**
  * Returns <code>true</code> if the receiver is currently
  * maximized, and false otherwise. 
@@ -323,6 +329,7 @@ void releaseWidget () {
 	menuBar = null;
 	menus = null;
 	image = null;
+	images = null;
 	super.releaseWidget ();
 	defaultButton = saveDefault = null;
 	text = null;
@@ -429,6 +436,15 @@ public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
+}
+
+public void setImages (Image [] images) {
+	checkWidget();
+	if (images == null) error(SWT.ERROR_INVALID_ARGUMENT);
+	for (int i = 0; i < images.length; i++) {
+		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	this.images = images;
 }
 
 /**
