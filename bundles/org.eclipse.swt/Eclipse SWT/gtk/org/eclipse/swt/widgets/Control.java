@@ -1630,9 +1630,11 @@ int processMouseDown (int callData, int arg1, int int2) {
 	Shell shell = _getShell ();
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
+	int button = gdkEvent.button;
 	int eventType = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
-	sendMouseEvent (eventType, gdkEvent.button, callData);
-
+	sendMouseEvent (eventType, button, callData);
+	if (button == 3 && menu != null) menu.setVisible (true);
+	
 	/*
 	* It is possible that the shell may be
 	* disposed at this point.  If this happens
@@ -1657,9 +1659,7 @@ int processMouseExit (int callData, int arg1, int int2) {
 int processMouseUp (int callData, int arg1, int int2) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
-	int button = gdkEvent.button;
 	sendMouseEvent (SWT.MouseUp, gdkEvent.button, callData);
-	if (button == 3 && menu != null) menu.setVisible (true);
 	return 0;
 }
 
