@@ -859,6 +859,7 @@ public static final synchronized native boolean gtk_window_activate_default(int 
 public static final synchronized native void gtk_window_add_accel_group(int window, int accel_group);
 public static final synchronized native void gtk_window_deiconify(int handle);
 public static final synchronized native int gtk_window_get_focus(int window);
+public static final synchronized native int gtk_window_get_mnemonic_modifier(int window);
 public static final synchronized native void gtk_window_get_position(int handle, int[] x, int[] y);
 public static final synchronized native void gtk_window_get_size(int handle, int[] x, int[] y);
 public static final synchronized native void gtk_window_iconify(int handle);

@@ -6473,6 +6473,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1window_1get_1focus)
 }
 #endif
 
+#ifndef NO_gtk_1window_1get_1mnemonic_1modifier
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1window_1get_1mnemonic_1modifier)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1window_1get_1mnemonic_1modifier\n")
+	rc = (jint)gtk_window_get_mnemonic_modifier((GtkWindow *)arg0);
+	NATIVE_EXIT(env, that, "gtk_1window_1get_1mnemonic_1modifier\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1window_1get_1position
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1window_1get_1position)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
