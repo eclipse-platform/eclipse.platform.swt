@@ -1,15 +1,24 @@
 package org.eclipse.swt.internal;
-
+
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.internal.win32.GCP_RESULTS;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.internal.win32.RECT;
 
+import java.util.Hashtable;
 /*
  * Wraps Win32 API used to bidi enable the StyledText widget.
  */
 public class BidiText {
+
+	// *** BUG need multiple oldProcs ***
+	// WM_INPUTLANGCHANGE constants
+	static int oldProc;
+	static Hashtable map = new Hashtable ();
+	static Callback callback = new Callback (BidiText.class, "windowProc", 4);
+
 	// Keyboard language ids
 	public static final int KEYBOARD_LATIN = 0;
 	public static final int KEYBOARD_HEBREW = 1;
@@ -47,7 +56,16 @@ public class BidiText {
 	static final int LANG_HEBREW = 0x0d;
 	// ActivateKeyboard constants
 	static final int HKL_NEXT = 1;
-	static final int HKL_PREV = 0;
+	static final int HKL_PREV = 0;
+
+/*
+ *
+ */
+public static void addLanguageListener (int hwnd, Runnable runnable) {
+	map.put (new Integer (hwnd), runnable);
+	oldProc = OS.GetWindowLong (hwnd, OS.GWL_WNDPROC);
+	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, callback.getAddress ());
+}
 /*
  * Wraps the ExtTextOut function.
  *
@@ -165,6 +183,13 @@ static int[] getKeyboardLanguageList() {
 /*
  * 
  */
+public static void removeLanguageListener (int hwnd) {
+	map.remove (new Integer (hwnd));
+	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, oldProc);
+}		
+/*
+ * 
+ */
 public static void setKeyboardLanguage(int language) {
 	// don't switch the keyboard if it doesn't need to be
 	if (language == getKeyboardLanguage()) return;
@@ -199,6 +224,15 @@ public static void setKeyboardLanguage(int language) {
 		}
 	}
 
+}
+static int windowProc (int hwnd, int msg, int wParam, int lParam) {
+	switch (msg) {
+		case 0x51 /*OS.WM_INPUTLANGCHANGE*/:
+			Runnable runnable = (Runnable) map.get (new Integer (hwnd));
+			if (runnable != null) runnable.run ();
+			break;
+		}
+	return OS.CallWindowProc (oldProc, hwnd, msg, wParam, lParam);
 }
 
 }
