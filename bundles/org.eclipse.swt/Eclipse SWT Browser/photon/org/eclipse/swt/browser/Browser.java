@@ -185,7 +185,7 @@ static int webProc(int handle, int data, int info) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -211,7 +211,7 @@ public void addCloseWindowListener(CloseWindowListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -237,7 +237,7 @@ public void addLocationListener(LocationListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -263,7 +263,7 @@ public void addOpenWindowListener(OpenWindowListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -289,7 +289,7 @@ public void addProgressListener(ProgressListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -315,7 +315,7 @@ public void addStatusTextListener(StatusTextListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -341,7 +341,7 @@ public void addTitleListener(TitleListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -362,7 +362,7 @@ public void addVisibilityWindowListener(VisibilityWindowListener listener) {
  *
  * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -412,7 +412,7 @@ protected void checkSubclass() {
  *
  * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -440,7 +440,7 @@ public boolean forward() {
  *
  * @return the current URL or an empty <code>String</code> if there is no current URL
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -745,7 +745,7 @@ int Pt_CB_WEB_URL(int info) {
 /**
  * Refresh the current page.
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -766,7 +766,7 @@ public void refresh() {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -804,7 +804,7 @@ public void removeCloseWindowListener(CloseWindowListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -842,7 +842,7 @@ public void removeLocationListener(LocationListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -880,7 +880,7 @@ public void removeOpenWindowListener(OpenWindowListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -918,7 +918,7 @@ public void removeProgressListener(ProgressListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -956,7 +956,7 @@ public void removeStatusTextListener(StatusTextListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -994,7 +994,7 @@ public void removeTitleListener(TitleListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -1034,7 +1034,7 @@ public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -1067,7 +1067,7 @@ public boolean setText(String html) {
  *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -1090,7 +1090,7 @@ public boolean setUrl(String url) {
 /**
  * Stop any loading and rendering activity.
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>

@@ -127,13 +127,17 @@ public class DragSource extends Widget {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_CANNOT_INIT_DRAG - unable to initiate drag source; this will occur if more than one
  *        drag source is created for a control or if the operating system will not allow the creation
  *        of the drag source</li>
  * </ul>
- *
- * @see DragSource#dispose
+ * 
+ * <p>NOTE: ERROR_CANNOT_INIT_DRAG should be an SWTException, since it is a
+ * recoverable error, but can not be changed due to backward compatability.</p>
+ * 
+ * @see Widget#dispose
  * @see DragSource#checkSubclass
  * @see DND#DROP_NONE
  * @see DND#DROP_COPY

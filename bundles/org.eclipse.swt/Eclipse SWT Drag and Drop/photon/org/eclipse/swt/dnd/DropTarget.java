@@ -89,11 +89,15 @@ public class DropTarget extends Widget {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_CANNOT_INIT_DROP - unable to initiate drop target; this will occur if more than one
  *        drop target is created for a control or if the operating system will not allow the creation
  *        of the drop target</li>
  * </ul>
+ *
+ * <p>NOTE: ERROR_CANNOT_INIT_DROP should be an SWTException, since it is a
+ * recoverable error, but can not be changed due to backward compatability.</p>
  * 
  * @see DropTarget#dispose
  * @see DropTarget#checkSubclass
