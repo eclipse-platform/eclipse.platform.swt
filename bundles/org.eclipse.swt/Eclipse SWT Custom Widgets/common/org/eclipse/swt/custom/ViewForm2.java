@@ -14,7 +14,6 @@ package org.eclipse.swt.custom;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 
 /**
 * DO NOT USE - UNDER CONSTRUCTION
@@ -93,14 +92,20 @@ public class ViewForm2 extends Composite {
 	private Control topRight;
 	private Control content;
 	
+	// collapse/expand arrow
+	private Rectangle minRect = new Rectangle(0, 0, 0, 0);
+	private int minImageState = NORMAL;
+	private boolean minimized = false;
+	private boolean showMin = false;
+	
 	// Configuration and state info
 	private boolean separateTopCenter = false;
 	private boolean showBorder = false;
 	
-	private int BORDER_TOP = 0;
-	private int BORDER_BOTTOM = 0;
-	private int BORDER_LEFT = 0;
-	private int BORDER_RIGHT = 0;
+	private int borderTop = 0;
+	private int borderBottom = 0;
+	private int borderLeft = 0;
+	private int borderRight = 0;
 	
 	private Color borderColor1;
 	private Color borderColor2;
@@ -108,6 +113,11 @@ public class ViewForm2 extends Composite {
 	
 	private Rectangle oldArea;
 	private static final int OFFSCREEN = -200;
+	
+	private static final int NORMAL = 1;
+	private static final int HOT = 2;
+	private static final int SELECTED = 3;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -142,23 +152,26 @@ public ViewForm2(Composite parent, int style) {
 	borderColor2 = new Color(getDisplay(), borderMiddleRGB);
 	borderColor3 = new Color(getDisplay(), borderOutsideRGB);
 	setBorderVisible((style & SWT.BORDER) != 0);
-
-	addPaintListener(new PaintListener() {
-		public void paintControl(PaintEvent event) {
-			onPaint(event.gc);
-		}
-	});
-	addControlListener(new ControlAdapter(){
-		public void controlResized(ControlEvent e) {
-			onResize();
-		}
-	});
 	
-	addListener(SWT.Dispose, new Listener() {
+	Listener listener = new Listener() {
 		public void handleEvent(Event e) {
-			onDispose();
+			switch (e.type) {
+				case SWT.Dispose: onDispose(); break;
+				case SWT.MouseDown: onMouseDown(e); break;
+				case SWT.MouseExit: onMouseExit(e); break;
+				case SWT.MouseMove: onMouseMove(e); break;
+				case SWT.MouseUp: onMouseUp(e); break;
+				case SWT.Paint: onPaint(e.gc); break;
+				case SWT.Resize: onResize(); break;
+			}
 		}
-	});	
+	};
+	
+	int[] events = new int[] {SWT.Dispose, SWT.MouseDown, SWT.MouseExit, SWT.MouseMove, SWT.MouseUp, SWT.Paint, SWT.Resize};
+	
+	for (int i = 0; i < events.length; i++) {
+		addListener(events[i], listener);
+	}
 }
 
 static int checkStyle (int style) {
@@ -230,19 +243,51 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	int trimX = x - BORDER_LEFT;
-	int trimY = y - BORDER_TOP;
-	int trimWidth = width + BORDER_LEFT + BORDER_RIGHT;
-	int trimHeight = height + BORDER_TOP + BORDER_BOTTOM;
+	int trimX = x - borderLeft;
+	int trimY = y - borderTop;
+	int trimWidth = width + borderLeft + borderRight;
+	int trimHeight = height + borderTop + borderBottom;
 	return new Rectangle(trimX, trimY, trimWidth, trimHeight);
+}
+void drawMinimize(GC gc) {
+	Color foreground = null;
+	Color background = null;
+	switch (minImageState) {
+		case NORMAL:
+			foreground = borderColor2;
+			background = borderColor3;
+			break;
+		case HOT:
+			foreground = getDisplay().getSystemColor(SWT.COLOR_BLACK);
+			background = borderColor2;
+			break;
+		case SELECTED:
+			foreground = getDisplay().getSystemColor(SWT.COLOR_TITLE_FOREGROUND);
+			background = getDisplay().getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT);
+			break;
+	}
+	
+	int x = minRect.x + (minRect.width - 10)/2;
+	gc.setBackground(background);
+	gc.fillRectangle(minRect);
+	if (minimized) {
+		gc.setBackground(foreground);
+		gc.fillPolygon(new int[] {x , minRect.y, x + 11, minRect.y,
+				                  x + 5, minRect.y + 6});
+		
+	} else {
+		gc.setBackground(foreground);
+		gc.fillPolygon(new int[] {x, minRect.y + 6, x + 12, minRect.y + 6,
+				                  x + 6, minRect.y - 1});
+	}
 }
 public Rectangle getClientArea() {
 	checkWidget();
 	Rectangle clientArea = super.getClientArea();
-	clientArea.x += BORDER_LEFT;
-	clientArea.y += BORDER_TOP;
-	clientArea.width -= BORDER_LEFT + BORDER_RIGHT;
-	clientArea.height -= BORDER_TOP + BORDER_BOTTOM;
+	clientArea.x += borderLeft;
+	clientArea.y += borderTop + 1;
+	clientArea.width -= borderLeft + borderRight;
+	clientArea.height -= borderTop + borderBottom;
 	return clientArea;
 }
 /**
@@ -253,6 +298,31 @@ public Rectangle getClientArea() {
 public Control getContent() {
 	//checkWidget();
 	return content;
+}
+/**
+ * Returns <code>true</code> if the receiver is minimized,
+ * and false otherwise.
+ * <p>
+ *
+ * @return the minimized state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public boolean getMinimized() {
+	checkWidget();
+	return minimized;
+}
+/**
+ * @since 3.0
+ */
+public boolean getMinimizeVisible() {
+	checkWidget();
+	return showMin;
 }
 /**
 * Returns Control that appears in the top center of the pane.
@@ -287,75 +357,93 @@ public Control getTopRight() {
 public void layout (boolean changed) {
 	checkWidget();
 	Rectangle rect = getClientArea();
-	
-	Point leftSize = new Point(0, 0);
-	if (topLeft != null && !topLeft.isDisposed()) {
-		leftSize = topLeft.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	}
-	Point centerSize = new Point(0, 0);
-	if (topCenter != null && !topCenter.isDisposed()) {
-		 centerSize = topCenter.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	}
-	Point rightSize = new Point(0, 0);
-	if (topRight != null && !topRight.isDisposed()) {
-		 rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	}
-	
-	int minTopWidth = leftSize.x + centerSize.x + rightSize.x + 2*marginWidth;
-	int count = -1;
-	if (leftSize.x > 0) count++;
-	if (centerSize.x > 0) count++;
-	if (rightSize.x > 0) count++;
-	if (count > 0) minTopWidth += count * horizontalSpacing;
-		
-	int x = rect.x + rect.width - marginWidth;
 	int y = rect.y + marginHeight;
-	
-	boolean top = false;
-	if (separateTopCenter || minTopWidth > rect.width) {
-		int topHeight = Math.max(rightSize.y, leftSize.y);
-		if (topRight != null && !topRight.isDisposed()) {
-			top = true;
-			x -= rightSize.x;
-			topRight.setBounds(x, y, rightSize.x, topHeight);
-			x -= horizontalSpacing;
-		}
+		
+	if (showMin && minimized) {
 		if (topLeft != null && !topLeft.isDisposed()) {
-			top = true;
-			leftSize = topLeft.computeSize(x - rect.x - marginWidth, SWT.DEFAULT);
-			topLeft.setBounds(rect.x + marginWidth, y, leftSize.x, topHeight);
+			topLeft.setBounds(OFFSCREEN, OFFSCREEN, 0,0);
 		}
-		if (top)y += topHeight + verticalSpacing;
 		if (topCenter != null && !topCenter.isDisposed()) {
-			top = true;
-			centerSize = topCenter.computeSize(rect.width - 2 * marginWidth, SWT.DEFAULT);
-			topCenter.setBounds(rect.x + rect.width - marginWidth - centerSize.x, y, centerSize.x, centerSize.y);
-			y += centerSize.y + verticalSpacing;
-		}		
+			 topCenter.setBounds(OFFSCREEN, OFFSCREEN, 0,0);
+		}
+		if (topRight != null && !topRight.isDisposed()) {
+			 topRight.setBounds(OFFSCREEN, OFFSCREEN, 0,0);
+		}
 	} else {
-		int topHeight = Math.max(rightSize.y, Math.max(centerSize.y, leftSize.y));
-		if (topRight != null && !topRight.isDisposed()) {
-			top = true;
-			x -= rightSize.x;
-			topRight.setBounds(x, y, rightSize.x, topHeight);
-			x -= horizontalSpacing;
-		}
-		if (topCenter != null && !topCenter.isDisposed()) {
-			top = true;
-			x -= centerSize.x;
-			topCenter.setBounds(x, y, centerSize.x, topHeight);
-			x -= horizontalSpacing;
-		}
+		Point leftSize = new Point(0, 0);
 		if (topLeft != null && !topLeft.isDisposed()) {
-			top = true;
-			leftSize = topLeft.computeSize(x - rect.x - marginWidth, topHeight);
-			topLeft.setBounds(rect.x + marginWidth, y, leftSize.x, topHeight);
+			leftSize = topLeft.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		}
-		if (top)y += topHeight + verticalSpacing;
+		Point centerSize = new Point(0, 0);
+		if (topCenter != null && !topCenter.isDisposed()) {
+			 centerSize = topCenter.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		}
+		Point rightSize = new Point(0, 0);
+		if (topRight != null && !topRight.isDisposed()) {
+			 rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		}
+		
+		int minTopWidth = leftSize.x + centerSize.x + rightSize.x + 2*marginWidth;
+		int count = -1;
+		if (leftSize.x > 0) count++;
+		if (centerSize.x > 0) count++;
+		if (rightSize.x > 0) count++;
+		if (count > 0) minTopWidth += count * horizontalSpacing;
+		
+		boolean top = false;
+		int x = rect.x + rect.width - marginWidth;
+		
+		if (separateTopCenter || minTopWidth > rect.width) {
+			int topHeight = Math.max(rightSize.y, leftSize.y);
+			if (topRight != null && !topRight.isDisposed()) {
+				top = true;
+				x -= rightSize.x;
+				topRight.setBounds(x, y, rightSize.x, topHeight);
+				x -= horizontalSpacing;
+			}
+			if (topLeft != null && !topLeft.isDisposed()) {
+				top = true;
+				leftSize = topLeft.computeSize(x - rect.x - marginWidth, SWT.DEFAULT);
+				topLeft.setBounds(rect.x + marginWidth, y, leftSize.x, topHeight);
+			}
+			if (top)y += topHeight + verticalSpacing;
+			if (topCenter != null && !topCenter.isDisposed()) {
+				top = true;
+				centerSize = topCenter.computeSize(rect.width - 2 * marginWidth, SWT.DEFAULT);
+				topCenter.setBounds(rect.x + rect.width - marginWidth - centerSize.x, y, centerSize.x, centerSize.y);
+				y += centerSize.y + verticalSpacing;
+			}		
+		} else {
+			int topHeight = Math.max(rightSize.y, Math.max(centerSize.y, leftSize.y));
+			if (topRight != null && !topRight.isDisposed()) {
+				top = true;
+				x -= rightSize.x;
+				topRight.setBounds(x, y, rightSize.x, topHeight);
+				x -= horizontalSpacing;
+			}
+			if (topCenter != null && !topCenter.isDisposed()) {
+				top = true;
+				x -= centerSize.x;
+				topCenter.setBounds(x, y, centerSize.x, topHeight);
+				x -= horizontalSpacing;
+			}
+			if (topLeft != null && !topLeft.isDisposed()) {
+				top = true;
+				leftSize = topLeft.computeSize(x - rect.x - marginWidth, topHeight);
+				topLeft.setBounds(rect.x + marginWidth, y, leftSize.x, topHeight);
+			}
+			if (top)y += topHeight + verticalSpacing;
+		}
 	}
 
+	minRect = new Rectangle(0, 0, 0, 0);
+	if (showMin && (topLeft != null || topRight != null || topCenter != null)) {
+		minRect = new Rectangle(borderLeft, y, rect.width - borderLeft - borderRight, 6);
+		y += 7;
+	}
+	
 	if (content != null && !content.isDisposed()) {
-		 content.setBounds(rect.x + marginWidth, y, rect.width - 2 * marginWidth, rect.y + rect.height - y - marginHeight);
+		content.setBounds(rect.x + marginWidth, y, rect.width - 2 * marginWidth, rect.y + rect.height - y - marginHeight);
 	}
 }
 void onDispose() {
@@ -380,30 +468,76 @@ void onDispose() {
 	content = null;
 	oldArea = null;
 }
-
+void onMouseDown(Event e) {
+	if (e.button != 1) return;
+	minImageState = SELECTED;
+	redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+	update();
+}
+void onMouseExit(Event e) {
+	if (!showMin) return;
+	if (minImageState != NORMAL) {
+		minImageState = NORMAL;
+		redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+		update();
+	}
+}
+void onMouseMove(Event e) {
+	if (minRect.contains(e.x, e.y)) {
+		if (minImageState != SELECTED && minImageState != HOT) {
+			minImageState = HOT;
+			redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+			update();
+		}
+	} else {
+		if (minImageState != NORMAL) {
+			minImageState = NORMAL;
+			redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+			update();
+		}
+	}
+}
+void onMouseUp(Event e) {
+	if (!showMin || e.button != 1) return;
+	if (!minRect.contains(e.x, e.y)) return;
+	boolean selected = minImageState == SELECTED;
+	minImageState = HOT;
+	redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+	update();
+	if (!selected) return;
+	minimized = !minimized;
+	layout();
+	redraw();
+}
 void onPaint(GC gc) {
-	Rectangle d = super.getClientArea();
+	Color gcForeground = gc.getForeground();
+	Color gcBackground = gc.getBackground();
+	Point size = getSize();
 	
 	if (showBorder) {
 		if ((getStyle() & SWT.FLAT) !=0) {
 			gc.setForeground(borderColor1);
-			gc.drawRectangle(d.x, d.y, d.x + d.width - 1, d.y + d.height - 1);
+			gc.drawRectangle(0, 0, size.x - 1, size.y - 1);
 		} else {
 			gc.setForeground(borderColor1);
-			gc.drawRectangle(d.x, d.y, d.x + d.width - 3, d.y + d.height - 3);
+			gc.drawRectangle(0, 0, size.x - 3, size.y - 3);
 		
 			gc.setForeground(borderColor2);
-			gc.drawLine(d.x + 1,           d.y + d.height - 2, d.x + d.width - 1, d.y + d.height - 2);
-			gc.drawLine(d.x + d.width - 2, d.y + 1,            d.x + d.width - 2, d.y + d.height - 1);
+			gc.drawLine(1, size.y - 2, size.x - 1, size.y - 2);
+			gc.drawLine(size.x - 2, 1, size.x - 2, size.y - 1);
 		
 			gc.setForeground(borderColor3);
-			gc.drawLine(d.x + 2,           d.y + d.height - 1, d.x + d.width - 2, d.y + d.height - 1);
-			gc.drawLine(d.x + d.width - 1, d.y + 2,            d.x + d.width - 1, d.y + d.height - 2);
+			gc.drawLine(2, size.y - 1, size.x - 2, size.y - 1);
+			gc.drawLine(size.x - 1, 2, size.x - 1, size.y - 2);
 		}
 	}
-	gc.setForeground(getForeground());
+	if (showMin) drawMinimize(gc);
+	
+	gc.setForeground(gcForeground);
+	gc.setBackground(gcBackground);
 }
 void onResize() {
+	Rectangle oldCollapseRect = new Rectangle(minRect.x, minRect.y, minRect.width, minRect.height);
 	layout();
 	
 	Rectangle area = super.getClientArea();
@@ -412,20 +546,27 @@ void onResize() {
 	} else {
 		int width = 0;
 		if (oldArea.width < area.width) {
-			width = area.width - oldArea.width + BORDER_RIGHT;
+			width = area.width - oldArea.width + borderRight;
 		} else if (oldArea.width > area.width) {
-			width = BORDER_RIGHT;			
+			width = borderRight;			
 		}
 		redraw(area.x + area.width - width, area.y, width, area.height, false);
 		
 		int height = 0;
 		if (oldArea.height < area.height) {
-			height = area.height - oldArea.height + BORDER_BOTTOM;		
+			height = area.height - oldArea.height + borderBottom;		
 		}
 		if (oldArea.height > area.height) {
-			height = BORDER_BOTTOM;		
+			height = borderBottom;		
 		}
 		redraw(area.x, area.y + area.height - height, area.width, height, false);
+	}
+	if (showMin && (oldCollapseRect.width != minRect.width || oldCollapseRect.y != minRect.y)) {
+		int left = Math.min(oldCollapseRect.x, minRect.x);
+		int top = Math.min(oldCollapseRect.y, minRect.y);
+		int right = Math.max(oldCollapseRect.x + oldCollapseRect.width, minRect.x + minRect.width);
+		int bottom = Math.max(oldCollapseRect.y + oldCollapseRect.height, minRect.y + minRect.height);
+		redraw(left, top, right - left, bottom - top, false);
 	}
 	oldArea = area;
 }
@@ -479,6 +620,30 @@ public void setFont(Font f) {
 public void setLayout (Layout layout) {
 	checkWidget();
 	return;
+}
+/**
+ * 
+ * @since 3.0
+ */
+public void setMinimizeVisible(boolean visible) {
+	checkWidget();
+	if (showMin == visible) return;
+	// display maximize button
+	showMin = visible;
+	layout();
+	redraw();
+}
+/**
+ * 
+ * @since 3.0
+ */
+public void setMinimized(boolean minimize) {
+	checkWidget ();
+	if (this.minimized == minimize) return;
+	this.minimized = minimize;
+	layout();
+	redraw();
+	update();
 }
 /**
 * Set the control that appears in the top center of the pane.
@@ -572,13 +737,13 @@ public void setBorderVisible(boolean show) {
 	showBorder = show;
 	if (showBorder) {
 		if ((getStyle() & SWT.FLAT)!= 0) {
-			BORDER_LEFT = BORDER_TOP = BORDER_RIGHT = BORDER_BOTTOM = 1;
+			borderLeft = borderTop = borderRight = borderBottom = 1;
 		} else {
-			BORDER_LEFT = BORDER_TOP = 1;
-			BORDER_RIGHT = BORDER_BOTTOM = 3;
+			borderLeft = borderTop = 1;
+			borderRight = borderBottom = 3;
 		}
 	} else {
-		BORDER_BOTTOM = BORDER_TOP = BORDER_LEFT = BORDER_RIGHT = 0;
+		borderBottom = borderTop = borderLeft = borderRight = 0;
 	}
 
 	layout();
