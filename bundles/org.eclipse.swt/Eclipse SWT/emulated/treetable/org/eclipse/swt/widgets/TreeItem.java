@@ -1008,6 +1008,17 @@ public void setExpanded (boolean value) {
 		TreeItem[] descendents = computeAvailableDescendents ();
 		expanded = value;
 		if (availableIndex == -1) return;
+		Rectangle clientArea = parent.getClientArea ();
+		int itemY = parent.getItemY (this);
+		int startY = itemY + descendents.length * parent.itemHeight;
+		int imageHeight = Math.max (0, clientArea.height - startY);
+		Image image = null;
+		GC gc = null;
+		if (imageHeight > 0) {
+			image = new Image (display, clientArea.width, imageHeight);
+			gc = new GC (parent);
+			gc.copyArea (image, 0, startY);
+		}
 		parent.makeDescendentsUnavailable (this, descendents);
 		/* move focus (and selection if SWT.SINGLE) to item if a descendent had focus */
 		TreeItem focusItem = parent.focusItem;
@@ -1023,7 +1034,14 @@ public void setExpanded (boolean value) {
 			if (isDisposed ()) return;
 			parent.showItem (this);
 		}
-		parent.redrawItems (availableIndex + 1, oldAvailableLength - 1, false);
+		itemY = parent.getItemY (this);
+		if (image != null) {
+			gc.drawImage (image, 0, itemY + parent.itemHeight);
+			image.dispose ();
+			gc.dispose ();
+		}
+		int drawY = itemY + parent.itemHeight;
+		parent.redraw (0, drawY, clientArea.width, clientArea.height - drawY, false);
 	}
 	/* redraw the receiver's expander box */
 	Rectangle bounds = getExpanderBounds ();
