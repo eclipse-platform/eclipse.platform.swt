@@ -34,7 +34,7 @@ public final class Color {
 	 * The device where this image was created.
 	 */
 	Device device;
-
+	
 Color() {
 }
 /**	 
@@ -98,7 +98,6 @@ public Color (Device device, RGB rgb) {
 public void dispose() {
 	if (device != null && device.isDisposed()) return;
 	device = null;
-	handle = -1;
 }
 /**
  * Compares the argument to the receiver, and returns true
@@ -203,23 +202,13 @@ void init(Device device, int red, int green, int blue) {
  * @return <code>true</code> when the color is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-	/*
-	if (handle == -1) {
-		System.out.println("Color.isDisposed: color seems to be disposed; setting to red");
-		handle= 0xff0000;
-	}
-	return handle == -1;
-	*/
-	return false;
+	return device == null;
 }
 public static Color carbon_new(Device device, int packed) {
 	if (device == null) device = Device.getDevice();
-	/*
 	if (packed == -1) {
 		System.out.println("Color.carbon_new: packed == -1");
-		packed= 0xFF00FF;
 	}
-	*/
 	Color color = new Color();
 	color.device = device;
 	color.handle = packed;
