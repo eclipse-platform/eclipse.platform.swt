@@ -360,6 +360,7 @@ public class OS {
 	public static final int kQDDontChangeFlags = 0xFFFFFFFF;
 	
 	public static native int QDSwapTextFlags(int flags);
+	public static native void QDSetPatternOrigin(short[] point);
 	public static native int GetQDGlobalsScreenBits(int bitmap);
 
 	public static native int GetPort();

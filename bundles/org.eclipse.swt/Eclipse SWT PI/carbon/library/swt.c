@@ -946,6 +946,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSwapTextFlags(J
 	return (jint) SwapQDTextFlags(flags);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSetPatternOrigin(JNIEnv *env, jclass zz,
+		jshortArray o) {
+	QDSetPatternOrigin(point(env, o));
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPort(JNIEnv *env, jclass zz) {
 	GrafPtr p;
 	GetPort(&p);
