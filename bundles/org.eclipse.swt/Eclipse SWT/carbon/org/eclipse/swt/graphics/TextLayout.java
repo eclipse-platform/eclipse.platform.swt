@@ -894,11 +894,14 @@ public int getSpacing () {
 }
 
 /**
- * Gets the style of the receiver at the specified offset.
+ * Gets the style of the receiver at the specified character offset.
  *
  * @param offset the text offset
  * @return the style or <code>null</code> if not set
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the character offset is out of range</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
