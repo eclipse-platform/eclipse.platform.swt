@@ -1089,7 +1089,7 @@ void updateLayout (boolean all) {
 	if ((state & LAYOUT_NEEDED) != 0) {
 		boolean changed = (state & LAYOUT_CHANGED) != 0;
 		state &= ~(LAYOUT_NEEDED | LAYOUT_CHANGED);
-		layout.layout (this, changed);;
+		layout.layout (this, changed);
 	}
 	if (all) {
 		Control [] children = _getChildren ();
