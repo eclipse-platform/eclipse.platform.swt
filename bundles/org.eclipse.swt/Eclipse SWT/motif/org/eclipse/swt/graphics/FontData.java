@@ -234,16 +234,8 @@ public FontData (String name, int height, int style) {
 		fontFamily = name;
 	}
 	points = height * 10;
-	if ((style & SWT.BOLD) != 0) {
-		weight = "bold";
-	} else {
-		weight = "medium";
-	}
-	if ((style & SWT.ITALIC) != 0) {
-		slant = "i";
-	} else {
-		slant = "r";
-	}
+	weight = (style & SWT.BOLD) != 0 ? "bold" : "medium"; 
+	slant = (style & SWT.ITALIC) != 0 ? "i" : "r"; 
 }
 /**
  * Compares the argument to the receiver, and returns true
@@ -440,16 +432,8 @@ public void setLocale(String locale) {
  * @see #getStyle
  */
 public void setStyle(int style) {
-	if ((style & SWT.BOLD) != 0) {
-		weight = "bold";
-	} else {
-		weight = "medium";
-	}
-	if ((style & SWT.ITALIC) != 0) {
-		slant = "i";
-	} else {
-		slant = "r";
-	}
+	weight = (style & SWT.BOLD) != 0 ? "bold" : "medium"; 
+	slant = (style & SWT.ITALIC) != 0 ? "i" : "r"; 
 	averageWidth = 0;
 }
 void setXlfd(String xlfd) {
