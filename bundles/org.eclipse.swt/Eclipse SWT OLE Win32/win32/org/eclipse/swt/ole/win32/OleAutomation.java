@@ -572,4 +572,27 @@ public boolean setProperty(int dispIdMember, Variant rgvarg) {
 	int result = invoke(dispIdMember, dwFlags, rgvarg2, rgdispidNamedArgs, pVarResult);
 	return (result == COM.S_OK);
 }
+/**
+ * Sets the property specified by the dispIdMember to a new value.
+ *
+ * @param dispIdMember the ID of the property as specified by the IDL of the ActiveX Control; the
+ *                     value for the ID can be obtained using OleAutomation.getIDsOfNames
+ * @param rgvarg an array of arguments for the method.  All arguments are considered to be
+ *                     read only unless the Variant is a By Reference Variant type.
+ *
+ * @return true if the operation was successful
+ *
+ * @since 2.0
+ */
+public boolean setProperty(int dispIdMember, Variant[] rgvarg) {
+	int[] rgdispidNamedArgs = new int[] {COM.DISPID_PROPERTYPUT};
+	int dwFlags = COM.DISPATCH_PROPERTYPUT;
+	for (int i = 0; i < rgvarg.length; i++) {
+		if ((rgvarg[i].getType() & COM.VT_BYREF) == COM.VT_BYREF)
+		dwFlags = COM.DISPATCH_PROPERTYPUTREF;
+	}
+	Variant pVarResult = new Variant();
+	int result = invoke(dispIdMember, dwFlags, rgvarg, rgdispidNamedArgs, pVarResult);
+	return (result == COM.S_OK);
+}
 }
