@@ -63,6 +63,16 @@ public class TabFolder extends Composite {
 		* register a new window class without these bits and
 		* implement special code that damages only the exposed
 		* area.
+		* 
+		* NOTE:  Screen readers look for the exact class name
+		* of the control in order to provide the correct kind
+		* of assistance.  Therefore, it is critical that the
+		* new window class have the same name.  It is possible
+		* to register a local window class with the same name
+		* as a global class.  Since bits that affect painting
+		* are being cleared, it is possible that other native
+		* code, other than SWT, could create a control with
+		* this class name, causing them to get pixel corruption.
 		*/
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		TCHAR WC_TABCONTROL = new TCHAR (0, OS.WC_TABCONTROL, true);
