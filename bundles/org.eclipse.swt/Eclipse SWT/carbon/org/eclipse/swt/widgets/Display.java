@@ -135,6 +135,9 @@ public class Display extends Device {
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
+	/* Focus */
+	Control focusControl;
+
 	/* System Tray */
 	Tray tray;
 	
@@ -1275,6 +1278,7 @@ public Control getFocusControl () {
 }
 
 Control getFocusControl (int window) {
+	if (focusControl != null) return focusControl;
 	int [] theControl = new int [1];
 	OS.GetKeyboardFocus (window, theControl);
 	if (theControl [0] == 0) return null;

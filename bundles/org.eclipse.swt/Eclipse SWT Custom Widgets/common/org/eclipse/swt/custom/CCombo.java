@@ -40,7 +40,7 @@ public final class CCombo extends Composite {
 	Shell popup;
 	Button arrow;
 	boolean hasFocus;
-	Listener listener;
+	Listener listener, filter;
 	Color foreground, background;
 	Font font;
 	
@@ -105,17 +105,27 @@ public CCombo (Composite parent, int style) {
 				comboEvent (event);
 				return;
 			}
-
+			if (getShell () == event.widget) {
+				handleFocus (SWT.FocusOut);
+			}
+		}
+	};
+	filter = new Listener() {
+		public void handleEvent(Event event) {
+			Shell shell = ((Control)event.widget).getShell ();
+			if (shell == CCombo.this.getShell ()) {
+				handleFocus (SWT.FocusOut);
+			}
 		}
 	};
 	
 	int [] comboEvents = {SWT.Dispose, SWT.Move, SWT.Resize};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 	
-	int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn, SWT.FocusOut};
+	int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn};
 	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
 	
-	int [] arrowEvents = {SWT.Selection, SWT.FocusIn, SWT.FocusOut};
+	int [] arrowEvents = {SWT.Selection, SWT.FocusIn};
 	for (int i=0; i<arrowEvents.length; i++) arrow.addListener (arrowEvents [i], listener);
 	
 	createPopup(null, -1);
@@ -215,25 +225,7 @@ public void addSelectionListener(SelectionListener listener) {
 void arrowEvent (Event event) {
 	switch (event.type) {
 		case SWT.FocusIn: {
-			if (hasFocus) return;
-			hasFocus = true;
-			if (getEditable ()) text.selectAll ();
-			Event e = new Event();
-			e.time = event.time;
-			notifyListeners(SWT.FocusIn, e);
-			break;
-		}
-		case SWT.FocusOut: {
-			event.display.asyncExec(new Runnable() {
-				public void run() {
-					if (CCombo.this.isDisposed()) return;
-					Control focusControl = getDisplay().getFocusControl();
-					if (focusControl == arrow || focusControl == list || focusControl == text) return;
-					hasFocus = false;
-					Event e = new Event();
-					notifyListeners(SWT.FocusOut, e);
-				}
-			});
+			handleFocus (SWT.FocusIn);
 			break;
 		}
 		case SWT.Selection: {
@@ -263,6 +255,10 @@ void comboEvent (Event event) {
 				list.removeListener(SWT.Dispose, listener);
 				popup.dispose ();
 			}
+			Shell shell = getShell ();
+			shell.removeListener(SWT.Deactivate, listener);
+			Display display = getDisplay();
+			display.removeFilter(SWT.FocusIn, filter);
 			popup = null;  
 			text = null;  
 			list = null;  
@@ -304,7 +300,7 @@ void createPopup(String[] items, int selectionIndex) {
 		
 		int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Deactivate};
 		for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
-		int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.FocusOut, SWT.Dispose};
+		int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.Dispose};
 		for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
 		
 		if (items != null) list.setItems(items);
@@ -591,6 +587,38 @@ public int getVisibleItemCount () {
 	checkWidget ();
 	return visibleItemCount;
 }
+void handleFocus (int type) {
+	if (isDisposed()) return;
+	switch (type) {
+		case SWT.FocusIn: {
+			if (hasFocus) return;
+			if (getEditable ()) text.selectAll ();
+			hasFocus = true;
+			Shell shell = getShell ();
+			shell.removeListener(SWT.Deactivate, listener);
+			shell.addListener(SWT.Deactivate, listener);
+			Display display = getDisplay();
+			display.removeFilter(SWT.FocusIn, filter);
+			display.addFilter(SWT.FocusIn, filter);
+			Event e = new Event();
+			notifyListeners(SWT.FocusIn, e);
+			break;
+		}
+		case SWT.FocusOut: {
+			if (!hasFocus) return;
+			Control focusControl = getDisplay().getFocusControl();
+			if (focusControl == arrow || focusControl == list || focusControl == text) return;
+			hasFocus = false;
+			Shell shell = getShell ();
+			shell.removeListener(SWT.Deactivate, listener);
+			Display display = getDisplay();
+			display.removeFilter(SWT.FocusIn, filter);
+			Event e = new Event();
+			notifyListeners(SWT.FocusOut, e);
+			break;
+		}
+	}
+}
 /**
 * Gets the index of an item.
 * <p>
@@ -718,25 +746,7 @@ void listEvent (Event event) {
 			}
 			break;
 		case SWT.FocusIn: {
-			if (hasFocus) return;
-			hasFocus = true;
-			if (getEditable ()) text.selectAll ();
-			Event e = new Event();
-			e.time = event.time;
-			notifyListeners(SWT.FocusIn, e);
-			break;
-		}
-		case SWT.FocusOut: {
-			event.display.asyncExec(new Runnable() {
-				public void run() {
-					if (CCombo.this.isDisposed()) return;
-					Control focusControl = getDisplay().getFocusControl();
-					if (focusControl == arrow || focusControl == list || focusControl == text) return;
-					hasFocus = false;
-					Event e = new Event();
-					notifyListeners(SWT.FocusOut, e);
-				}
-			});
+			handleFocus (SWT.FocusIn);
 			break;
 		}
 		case SWT.MouseUp: {
@@ -1179,25 +1189,7 @@ public void setVisibleItemCount (int count) {
 void textEvent (Event event) {
 	switch (event.type) {
 		case SWT.FocusIn: {
-			if (hasFocus) return;
-			hasFocus = true;
-			if (getEditable ()) text.selectAll ();
-			Event e = new Event();
-			e.time = event.time;
-			notifyListeners(SWT.FocusIn, e);
-			break;
-		}
-		case SWT.FocusOut: {
-			event.display.asyncExec(new Runnable() {
-				public void run() {
-					if (CCombo.this.isDisposed()) return;
-					Control focusControl = getDisplay().getFocusControl();
-					if (focusControl == arrow || focusControl == list || focusControl == text) return;
-					hasFocus = false;
-					Event e = new Event();
-					notifyListeners(SWT.FocusOut, e);
-				}
-			});
+			handleFocus (SWT.FocusIn);
 			break;
 		}
 		case SWT.KeyDown: {
