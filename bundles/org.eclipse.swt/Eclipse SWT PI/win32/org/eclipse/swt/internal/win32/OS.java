@@ -278,6 +278,7 @@ public class OS {
 	public static final int DISP_E_EXCEPTION = 0x80020009;
 	public static final int DI_NORMAL = 0x3;
 	public static final int DLGC_BUTTON = 0x2000;
+	public static final int DLGC_HASSETSEL = 0x8;
 	public static final int DLGC_STATIC = 0x100;
 	public static final int DLGC_WANTALLKEYS = 0x4;
 	public static final int DLGC_WANTARROWS = 0x1;
@@ -1401,7 +1402,15 @@ public static final int GetClipboardFormatName (int format, TCHAR lpszFormatName
 	}
 	byte [] lpszFormatName1 = lpszFormatName == null ? null : lpszFormatName.bytes;
 	return GetClipboardFormatNameA (format, lpszFormatName1, cchMaxCount);
-	
+}
+
+public static final int GetKeyNameText (int lParam, TCHAR lpString, int nSize) {
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return GetKeyNameTextW (lParam, lpString1, nSize);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return GetKeyNameTextA (lParam, lpString1, nSize);
 }
 
 public static final short GetFileTitle (TCHAR lpszFile, TCHAR lpszTitle, short cbBuf) {
@@ -2063,6 +2072,8 @@ public static final native boolean GetIconInfo (int hIcon, ICONINFO piconinfo);
 public static final native int GetKeyboardLayoutList(int nBuff, int[] lpList);
 public static final native int GetKeyboardLayout(int idThread);public static final native short GetKeyState (int nVirtKey);
 public static final native boolean GetKeyboardState (byte [] lpKeyState);
+public static final native int GetKeyNameTextW(int lParam, char [] lpString, int nSize);
+public static final native int GetKeyNameTextA(int lParam, byte [] lpString, int nSize);
 public static final native int GetLastActivePopup (int hWnd);
 public static final native int GetLastError ();
 /* returns the instance handle to the swt library */

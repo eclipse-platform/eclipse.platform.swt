@@ -2278,6 +2278,38 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetKeyboardState)
 }
 #endif /* NO_GetKeyboardState */
 
+#ifndef NO_GetKeyNameTextA
+JNIEXPORT jint JNICALL OS_NATIVE(GetKeyNameTextA)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetKeyNameTextA\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)GetKeyNameTextA(arg0, (LPSTR)lparg1, arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_GetKeyNameTextA */
+
+#ifndef NO_GetKeyNameTextW
+JNIEXPORT jint JNICALL OS_NATIVE(GetKeyNameTextW)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetKeyNameTextW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	rc = (jint)GetKeyNameTextW(arg0, (LPWSTR)lparg1, arg2);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_GetKeyNameTextW */
+
 #ifndef NO_GetLastActivePopup
 JNIEXPORT jint JNICALL OS_NATIVE(GetLastActivePopup)
 	(JNIEnv *env, jclass that, jint arg0)

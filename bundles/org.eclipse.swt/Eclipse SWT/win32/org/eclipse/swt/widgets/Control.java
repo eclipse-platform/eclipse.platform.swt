@@ -2373,7 +2373,16 @@ boolean translateTraversal (MSG msg) {
 			all = true;
 			lastAscii = 27;
 			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
-			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
+			if ((code & OS.DLGC_WANTALLKEYS) != 0) {
+				/*
+				* Use DLGC_HASSETSEL to determine that the control
+				* is a text widget.  A text widget normally wants
+				* all keys except VK_ESCAPE.  If this bit is not
+				* set, then assume the control wants all keys,
+				* including VK_ESCAPE.
+				*/
+				if ((code & OS.DLGC_HASSETSEL) == 0) doit = false;
+			}
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;
 		}
