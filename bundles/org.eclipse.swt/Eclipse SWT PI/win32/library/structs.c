@@ -54,9 +54,9 @@ TVINSERTSTRUCT_FID_CACHE TVINSERTSTRUCTFc;
 TVITEM_FID_CACHE TVITEMFc;
 WINDOWPOS_FID_CACHE WINDOWPOSFc;
 WNDCLASS_FID_CACHE WNDCLASSFc;
-#ifdef _WIN32_WCE
+#ifdef WIN32_PLATFORM_PSPC
 	SHMENUBARINFO_FID_CACHE SHMENUBARINFOFc;
-#endif // _WIN32_WCE
+#endif // WIN32_PLATFORM_PSPC
 #ifndef _WIN32_WCE
 	BROWSEINFO_FID_CACHE BROWSEINFOFc;
 	CHOOSEFONT_FID_CACHE CHOOSEFONTFc;
@@ -2388,7 +2388,7 @@ void setSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *
 	(*env)->SetIntField(env, lpObject, lpCache->hProcess, (jint)lpStruct->hProcess);
 }
 
-#ifdef _WIN32_WCE
+#ifdef WIN32_PLATFORM_PSPC
 void cacheSHMENUBARINFOFids(JNIEnv *env, jobject lpObject, PSHMENUBARINFO_FID_CACHE lpCache)
 {
 	if (lpCache->cached) return;
@@ -2430,7 +2430,7 @@ void setSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStru
 	(*env)->SetIntField(env, lpObject, lpCache->cBmpImages, (jint)lpStruct->cBmpImages);
 	(*env)->SetIntField(env, lpObject, lpCache->hwndMB, (jint)lpStruct->hwndMB);
 }
-#endif // _WIN32_WCE
+#endif // WIN32_PLATFORM_PSPC
 
 void cacheSIZEFids(JNIEnv *env, jobject lpObject, PSIZE_FID_CACHE lpCache)
 {

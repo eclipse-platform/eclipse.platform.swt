@@ -16,7 +16,7 @@ SWT_LIB     = $(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 
 LINK_LIBS =  aygshell.lib corelibc.lib coredll.lib commdlg.lib commctrl.lib ceshell.lib
 
-CFLAGS = /nologo /c /W3 -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -DJ9WINCE -D_WIN32_WCE=300 -D"MS Pocket PC" /DUNDER_CE=300 /D"UNICODE" /D"_MBCS" /Zm200 -DARM -D_ARM_ -DFIXUP_UNALIGNED /I. /I$(JAVA_HOME)\include $*.c
+CFLAGS = /nologo /c /W3 -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -DJ9WINCE -D_WIN32_WCE=300 -D"WIN32_PLATFORM_PSPC" /DUNDER_CE=300 /D"UNICODE" /D"_MBCS" /Zm200 -DARM -D_ARM_ -DFIXUP_UNALIGNED /I. /I$(JAVA_HOME)\include $*.c
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = $(dlllflags) /dll /entry:"_DllMainCRTStartup" /NODEFAULTLIB:libc.lib /nodefaultlib:oldnames.lib
 

@@ -31,9 +31,9 @@
 #include <shlwapi.h>
 #include <shellapi.h>
 
-#ifdef _WIN32_WCE
+#ifdef WIN32_PLATFORM_PSPC
 #include <aygshell.h>
-#endif // _WIN_32_WCE
+#endif // WIN32_PLATFORM_PSPC
 
 /** Structs */
 
@@ -602,7 +602,7 @@ void cacheSHELLEXECUTEINFOFids(JNIEnv *env, jobject lpObject, PSHELLEXECUTEINFO_
 SHELLEXECUTEINFO* getSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *lpStruct, PSHELLEXECUTEINFO_FID_CACHE lpCache);
 void setSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *lpStruct, PSHELLEXECUTEINFO_FID_CACHE lpCache);
 
-#ifdef _WIN32_WCE
+#ifdef WIN32_PLATFORM_PSPC
 /* SHMENUBARINFO struct */
 typedef struct SHMENUBARINFO_FID_CACHE {
 	int cached;
@@ -614,7 +614,7 @@ typedef SHMENUBARINFO_FID_CACHE *PSHMENUBARINFO_FID_CACHE;
 void cacheSHMENUBARINFOFids(JNIEnv *env, jobject lpObject, PSHMENUBARINFO_FID_CACHE lpCache);
 SHMENUBARINFO* getSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct, PSHMENUBARINFO_FID_CACHE lpCache);
 void setSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct, PSHMENUBARINFO_FID_CACHE lpCache);
-#endif // _WIN32_WCE
+#endif // WIN32_PLATFORM_PSPC
 
 /* SIZE struct */
 typedef struct SIZE_FID_CACHE {
@@ -1118,9 +1118,9 @@ extern TVINSERTSTRUCT_FID_CACHE TVINSERTSTRUCTFc;
 extern TVITEM_FID_CACHE TVITEMFc;
 extern WINDOWPOS_FID_CACHE WINDOWPOSFc;
 extern WNDCLASS_FID_CACHE WNDCLASSFc;
-#ifdef _WIN32_WCE
+#ifdef WIN32_PLATFORM_PSPC
 extern SHMENUBARINFO_FID_CACHE SHMENUBARINFOFc;
-#endif // _WIN32_WCE
+#endif // WIN32_PLATFORM_PSPC
 #ifndef _WIN32_WCE
 extern 	BROWSEINFO_FID_CACHE BROWSEINFOFc;
 extern 	CHOOSEFONT_FID_CACHE CHOOSEFONTFc;
