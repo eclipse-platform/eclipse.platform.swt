@@ -49,15 +49,43 @@ public final class Cursor {
 	Device device;
 	
 	/**
-	 * data used to create a Resize NS Cursor
+	 * data and mask used to create a Resize NS Cursor
 	 */
 	static final short [] SIZENS_SOURCE = new short[] {
-		(short)0x0100,(short)0x0380,(short)0x07C0,
-		(short)0x0100,(short)0x0100,(short)0x0000,
-	 	(short)0xFFFE,(short)0xFFFE,(short)0x0000,
-		(short)0x0100,(short)0x0100,(short)0x07C0,
-		(short)0x0380,(short)0x0100,(short)0x0000,
-		(short)0x0000
+		(short)0x0000,
+		(short)0x0180,
+		(short)0x03C0,
+		(short)0x07E0,
+		(short)0x0180,
+		(short)0x0180,
+		(short)0x0180,
+	 	(short)0x7FFE,
+	 	(short)0x7FFE,
+		(short)0x0180,
+		(short)0x0180,
+		(short)0x0180,
+		(short)0x07E0,
+		(short)0x03C0,
+		(short)0x0180,
+		(short)0x0000,
+	};
+	static final short [] SIZENS_MASK = new short[] {
+		(short)0x0180,
+		(short)0x03C0,
+		(short)0x07E0,
+		(short)0x0FF0,
+		(short)0x0FF0,
+		(short)0x03C0,
+		(short)0xFFFF,
+	 	(short)0xFFFF,
+	 	(short)0xFFFF,
+		(short)0xFFFF,
+		(short)0x03C0,
+		(short)0x0FF0,
+		(short)0x0FF0,
+		(short)0x07E0,
+		(short)0x03C0,
+		(short)0x0180,
 	};
 	
 /**
@@ -145,9 +173,9 @@ public Cursor(Device device, int style) {
 	 if (style == SWT.CURSOR_SIZENS) {
 		org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
 		cursor.data = SIZENS_SOURCE;
-		cursor.mask = SIZENS_SOURCE;
+		cursor.mask = SIZENS_MASK;
 		cursor.hotSpot_h = 7;
-		cursor.hotSpot_v = 6;
+		cursor.hotSpot_v = 7;
 		handle = OS.NewPtrClear(org.eclipse.swt.internal.carbon.Cursor.sizeof);
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);	
