@@ -59,7 +59,7 @@
 		<arg line="${basedir}/bin/library/build.sh"/>
 	</exec>
 	<copy todir="${dll_destdir}">
-		<fileset dir="${basedir}/bin/library/" includes="${lib_extension}"/>
+		<fileset dir="${basedir}/bin/library/" includes="*${lib_extension}"/>
 	</copy>
 </target>
 
