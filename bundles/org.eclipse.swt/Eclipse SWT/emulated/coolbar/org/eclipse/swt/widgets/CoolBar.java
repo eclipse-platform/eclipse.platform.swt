@@ -371,7 +371,7 @@ void destroyItem(CoolItem item) {
 	int row = findItem(item).y;
 	if (row == -1) return;
 	Rectangle bounds = item.getBounds();
-	removeItemFromRow(item, row);
+	removeItemFromRow(item, row, true);
 	redraw(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height, false);
 	relayout();
 
@@ -395,7 +395,7 @@ void moveDown(CoolItem item, int x_root) {
 		if (oldRowIndex == items.length - 1) return;
 	}
 	int newRowIndex = (items[oldRowIndex].length == 1) ? oldRowIndex : oldRowIndex + 1;
-	removeItemFromRow(item, oldRowIndex);
+	removeItemFromRow(item, oldRowIndex, false);
 	Rectangle old = item.getBounds();
 	redraw(old.x, old.y, CoolItem.MINIMUM_WIDTH, old.height, false);
 	if (newRowIndex == items.length) {
@@ -491,7 +491,7 @@ void moveUp(CoolItem item, int x_root) {
 		/* If this is the only item in the top row, don't move it. */
 		if (oldRowIndex == 0) return;
 	}
-	removeItemFromRow(item, oldRowIndex);
+	removeItemFromRow(item, oldRowIndex, false);
 	Rectangle old = item.getBounds();
 	redraw(old.x, old.y, CoolItem.MINIMUM_WIDTH, old.height, false);
 	int newRowIndex = Math.max(0, oldRowIndex - 1);
@@ -691,7 +691,7 @@ void onPaint(Event event) {
  * Remove the item from the row. Adjust the x and width values
  * appropriately.
  */
-void removeItemFromRow(CoolItem item, int rowIndex) {
+void removeItemFromRow(CoolItem item, int rowIndex, boolean disposed) {
 	int index = findItem(item).x;
 	int newLength = items[rowIndex].length - 1;
 	Rectangle itemBounds = item.getBounds();
@@ -708,19 +708,21 @@ void removeItemFromRow(CoolItem item, int rowIndex) {
 		items = newRows;
 		return;
 	}
-	if (index == 0) {
-		CoolItem first = items[rowIndex][0];
-		Rectangle bounds = first.getBounds();
-		int width = bounds.x + bounds.width;
-		first.setBounds(0, bounds.y, width, bounds.height);
-		first.requestedWidth = width;
-		redraw(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height, false);
-	} else {
-		CoolItem previous = items[rowIndex][index - 1];
-		Rectangle bounds = previous.getBounds();
-		int width = bounds.width + itemBounds.width;
-		previous.setBounds(bounds.x, bounds.y, width, bounds.height);
-		previous.requestedWidth = width;
+	if (!disposed) {
+		if (index == 0) {
+			CoolItem first = items[rowIndex][0];
+			Rectangle bounds = first.getBounds();
+			int width = bounds.x + bounds.width;
+			first.setBounds(0, bounds.y, width, bounds.height);
+			first.requestedWidth = width;
+			redraw(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height, false);
+		} else {
+			CoolItem previous = items[rowIndex][index - 1];
+			Rectangle bounds = previous.getBounds();
+			int width = bounds.width + itemBounds.width;
+			previous.setBounds(bounds.x, bounds.y, width, bounds.height);
+			previous.requestedWidth = width;
+		}
 	}
 }
 /**
