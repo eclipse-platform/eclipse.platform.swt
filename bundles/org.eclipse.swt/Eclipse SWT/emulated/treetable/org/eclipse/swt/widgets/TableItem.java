@@ -249,7 +249,11 @@ void clear () {
 }
 void computeDisplayText (int columnIndex, GC gc) {
 	int columnCount = parent.columns.length;
-	if (columnCount == 0) return;
+    if (columnCount == 0) {
+        String text = getText (0);
+        textWidths [columnIndex] = gc.stringExtent (text).x;
+        return;
+    }
 
 	TableColumn column = parent.columns [columnIndex];
 	int availableWidth = column.width - 2 * parent.getCellPadding () - 2 * MARGIN_TEXT;

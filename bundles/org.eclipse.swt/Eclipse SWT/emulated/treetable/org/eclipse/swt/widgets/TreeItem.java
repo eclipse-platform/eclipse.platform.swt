@@ -413,7 +413,11 @@ TreeItem[] computeAvailableDescendents () {
 }
 void computeDisplayText (int columnIndex, GC gc) {
 	int columnCount = parent.columns.length;
-	if (columnCount == 0) return;
+	if (columnCount == 0) {
+        String text = getText (0);
+        textWidths [columnIndex] = gc.stringExtent (text).x;
+        return;
+    }
 	
 	TreeColumn column = parent.columns [columnIndex];
 	int availableWidth;
