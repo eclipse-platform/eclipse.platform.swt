@@ -8898,3 +8898,13 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XCloseDisplay
 #endif
     XCloseDisplay((Display*)display);
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppSetFallbackResources 
+  (JNIEnv *env, jclass that, jint app_context, jint specification_list)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XtAppSetFallbackResources\n");
+#endif
+
+    XtAppSetFallbackResources((XtAppContext)app_context, (String *)specification_list);
+}

@@ -1420,4 +1420,6 @@ public static final synchronized native void XtInsertEventHandler (int w, int ev
 public static final synchronized native void _XmSetMenuTraversal (int menu, boolean traversal);
 public static final synchronized native int XEventsQueued (int display, int mode);
 public static final native void memmove (int dest, XExposeEvent src, int count);
+public static final synchronized native void XtAppSetFallbackResources (int app_context, int specification_list);
+
 }
