@@ -184,6 +184,18 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 }
 
 /**
+ * 
+ * @return array of TransferData
+ * 
+ * @since 3.0
+ */
+public TransferData[] getAvailableTypes() {
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	return new TransferData[0];
+}
+
+/**
  * Returns a platform specific list of the data types currently available on the 
  * system clipboard.
  * 
@@ -197,6 +209,6 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 public String[] getAvailableTypeNames() {
 	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
-	return null;
+	return new String[0];
 }
 }
