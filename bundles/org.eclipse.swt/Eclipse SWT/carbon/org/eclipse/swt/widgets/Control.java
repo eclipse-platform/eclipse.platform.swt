@@ -2647,19 +2647,4 @@ public void update () {
 	void internalGetControlBounds(int hndl, Rect bounds) {
 		OS.GetControlBounds(hndl, bounds);
 	}
-
-	/**
-	 * Hook (overwritten in Text and Combo)
-	 */
-	/*
-	final int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
-		
-		MacEvent mEvent= new MacEvent(eRefHandle);
-		if (translateTraversal(mEvent))
-			return 0;
-
-		processEvent (type, new MacEvent(eRefHandle));
-		return OS.kNoErr;
-	}
-	*/
 }
