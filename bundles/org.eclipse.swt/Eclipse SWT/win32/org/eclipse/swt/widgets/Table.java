@@ -2177,7 +2177,6 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
-	if (result != null) return result;
 	/*
 	* Bug in Windows.  For some reason, the table does
 	* not set the default focus rectangle to be the first

@@ -726,7 +726,7 @@ public void setVisible (boolean visible) {
 	}
 	/*
 	* Feature in Windows.  It is legal use TrackPopupMenu ()
-	* to display an empty menu as long menu items are added
+	* to display an empty menu as long as menu items are added
 	* inside of WM_INITPOPUPMENU.  If no items are added, then
 	* TrackPopupMenu () fails and does not send an indication
 	* that the menu has been closed.  This is not strictly a

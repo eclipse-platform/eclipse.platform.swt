@@ -1099,7 +1099,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
-	if (result != null) return result;
 	if ((style & SWT.SINGLE) != 0) return result;
 	/*
 	* Feature in Windows.  When multiple item have
@@ -1384,7 +1383,6 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
-	if (result != null) return result;
 	if ((style & SWT.SINGLE) != 0) return result;
 	/*
 	* Feature in Windows.  When multiple item have

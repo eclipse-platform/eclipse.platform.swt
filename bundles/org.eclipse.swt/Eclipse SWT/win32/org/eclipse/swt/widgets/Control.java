@@ -2244,29 +2244,17 @@ boolean translateAccelerator (MSG msg) {
 
 boolean translateMnemonic (char key) {
 	if (!isVisible () || !isEnabled ()) return false;
-	boolean doit = mnemonicMatch (key);
-	if (hooks (SWT.Traverse)) {
-		Event event = new Event ();
-		event.doit = doit;
-		event.detail = SWT.TRAVERSE_MNEMONIC;
-		Display display = getDisplay ();
-		display.lastKey = display.lastAscii = key;
-		display.lastVirtual = false;
-		if (!setKeyState (event, SWT.Traverse)) {
-			return false;
-		}
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the traverse
-		* event.  If this happens, return true to stop further
-		* event processing.
-		*/
-		sendEvent (SWT.Traverse, event);
-		if (isDisposed ()) return true;
-		doit = event.doit;
+	Event event = new Event ();
+	event.doit = mnemonicMatch (key);
+	event.detail = SWT.TRAVERSE_MNEMONIC;
+	Display display = getDisplay ();
+	display.lastVirtual = false;
+	display.lastKey = 0;
+	display.lastAscii = key;
+	if (!setKeyState (event, SWT.Traverse)) {
+		return false;
 	}
-	if (doit) return mnemonicHit (key);
-	return false;
+	return traverse (event);
 }
 
 boolean translateMnemonic (MSG msg) {
@@ -2286,7 +2274,7 @@ boolean translateMnemonic (MSG msg) {
 
 boolean translateTraversal (MSG msg) {
 	int hwnd = msg.hwnd;
-	int detail = 0;
+	int detail = SWT.TRAVERSE_NONE;
 	int key = msg.wParam;
 	boolean doit = true, all = false;
 	boolean lastVirtual = false;
@@ -2346,35 +2334,48 @@ boolean translateTraversal (MSG msg) {
 		default:
 			return false;
 	}
-	if (all || hooks (SWT.Traverse)) {
-		Event event = new Event ();
-		event.doit = doit;
-		event.detail = detail;
-		Display display = getDisplay ();
-		display.lastKey = lastKey;
-		display.lastAscii = lastAscii;
-		display.lastVirtual = lastVirtual;
-		if (!setKeyState (event, SWT.Traverse)) {
-			return false;
-		}
-		Shell shell = getShell ();
-		Control control = this;
-		do {
-			/*
-			* It is possible (but unlikely), that application
-			* code could have disposed the widget in the traverse
-			* event.  If this happens, return true to stop further
-			* event processing.
-			*/	
-			control.sendEvent (SWT.Traverse, event);
-			if (control.isDisposed ()) return true;
-			doit = event.doit;
-			detail = event.detail;
-			if (control == shell) break;
-			control = control.parent;
-		} while (all && doit);
+	Event event = new Event ();
+	event.doit = doit;
+	event.detail = detail;
+	Display display = getDisplay ();
+	display.lastKey = lastKey;
+	display.lastAscii = lastAscii;
+	display.lastVirtual = lastVirtual;
+	if (!setKeyState (event, SWT.Traverse)) {
+		return false;
 	}
-	if (doit) return traverse (detail);
+	Shell shell = getShell ();
+	Control control = this;
+	do {
+		if (control.traverse (event)) return true;
+		if (control == shell) return false;
+		control = control.parent;
+	} while (all && control != null);
+	return false;
+}
+
+boolean traverse (Event event) {
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the traverse
+	* event.  If this happens, return true to stop further
+	* event processing.
+	*/	
+	sendEvent (SWT.Traverse, event);
+	if (isDisposed ()) return false;
+	if (!event.doit) return false;
+	switch (event.detail) {
+		case SWT.TRAVERSE_NONE:				return true;
+		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
+		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
+		case SWT.TRAVERSE_TAB_NEXT:			return traverseGroup (true);
+		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
+		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
+		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
+		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (event.character);	
+		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
+		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
+	}
 	return false;
 }
 
@@ -2396,18 +2397,10 @@ boolean translateTraversal (MSG msg) {
 public boolean traverse (int traversal) {
 	checkWidget ();
 	if (!isFocusControl () && !setFocus ()) return false;
-	switch (traversal) {
-		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
-		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
-		case SWT.TRAVERSE_TAB_NEXT:			return traverseGroup (true);
-		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
-		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
-		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
-//		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (key);	
-		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
-		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
-	}
-	return false;
+	Event event = new Event ();
+	event.doit = true;
+	event.detail = traversal;
+	return traverse (event);
 }
 
 boolean traverseEscape () {
@@ -2471,12 +2464,11 @@ boolean traverseItem (boolean next) {
 }
 
 boolean traverseMnemonic (char key) {
-	if (!isVisible () || !isEnabled ()) return false;
 	return mnemonicHit (key);
 }
 
 boolean traversePage (boolean next) {
-	return parent.traversePage (next);
+	return false;
 }
 
 boolean traverseReturn () {
@@ -3104,6 +3096,7 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+	int code = callWindowProc (OS.WM_KILLFOCUS, wParam, lParam);
 	Display display = getDisplay ();
 	Shell shell = getShell ();
 	
@@ -3137,7 +3130,8 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	* zero as the result of the window proc.
 	*/
 	if (isDisposed ()) return LRESULT.ZERO;
-	return null;
+	if (code == 0) return LRESULT.ZERO;
+	return new LRESULT (code);
 }
 
 LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
@@ -3578,6 +3572,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 }
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
+	int code = callWindowProc (OS.WM_SETFOCUS, wParam, lParam);
 	Shell shell = getShell ();
 	
 	/*
@@ -3607,7 +3602,8 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	* zero as the result of the window proc.
 	*/
 	if (isDisposed ()) return LRESULT.ZERO;
-	return null;
+	if (code == 0) return LRESULT.ZERO;
+	return new LRESULT (code);
 }
 
 LRESULT WM_SETFONT (int wParam, int lParam) {

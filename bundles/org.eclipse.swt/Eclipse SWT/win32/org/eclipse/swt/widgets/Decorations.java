@@ -932,10 +932,6 @@ boolean traverseItem (boolean next) {
 	return false;
 }
 
-boolean traversePage (boolean next) {
-	return false;
-}
-
 int widgetExtStyle () {
 	int bits = 0;
 	if ((style & SWT.TOOL) != 0) bits |= OS.WS_EX_TOOLWINDOW;
@@ -1035,7 +1031,6 @@ LRESULT WM_CLOSE (int wParam, int lParam) {
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	LRESULT result  = super.WM_KILLFOCUS (wParam, lParam);
-	if (result != null) return result;
 	saveFocus ();
 	return result;
 }
@@ -1060,7 +1055,6 @@ LRESULT WM_QUERYOPEN (int wParam, int lParam) {
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
-	if (result != null) return result;
 	restoreFocus ();
 	return result;
 }

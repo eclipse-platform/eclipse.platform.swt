@@ -831,6 +831,7 @@ public void setVisible (boolean visible) {
 			display.setModal (this);
 			Control control = display.getFocusControl ();
 			if (control != null && !control.isActive ()) bringToTop ();
+			OS.ReleaseCapture ();
 		} else {
 			display.clearModal (this);
 		}
