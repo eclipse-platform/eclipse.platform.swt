@@ -922,6 +922,8 @@ void hookEvents () {
 	OS.XtAddEventHandler (handle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn);
 	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, SWT.Help);
     */
+    //Display display= getDisplay();		
+	//OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
 }
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
@@ -1312,7 +1314,7 @@ int processMouseUp (Object callData) {
 	return 0;
 }
 int processPaint (Object callData) {
-	if (!hooks (SWT.Paint)) return 0;
+	//if (!hooks (SWT.Paint)) return 0;
 	
 	/*
 	if (!fVisible || fDrawCount > 0) {
@@ -1329,20 +1331,23 @@ int processPaint (Object callData) {
 	MacControlEvent me= (MacControlEvent) callData;
 	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle());
 	if (r == null || !r.isEmpty()) {
-		Event event = new Event ();
-		event.gc = gc;
-		event.x = r.x;  event.y = r.y;
-		event.width = r.width;  event.height = r.height;
 				
 		// erase background
-		if ((state & CANVAS) != 0) {
+		//if ((state & CANVAS) != 0) {
 			if ((style & SWT.NO_BACKGROUND) == 0) {
+				//gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
 				gc.fillRectangle(r);
 			}
-		}
+		//}
 		
-		sendEvent (SWT.Paint, event);
-		event.gc = null;
+		if (hooks (SWT.Paint)) {
+			Event event = new Event();
+			event.gc = gc;
+			event.x = r.x;  event.y = r.y;
+			event.width = r.width;  event.height = r.height;
+			
+			sendEvent (SWT.Paint, event);
+		}
 	}
 	
 	gc.carbon_unfocus ();
