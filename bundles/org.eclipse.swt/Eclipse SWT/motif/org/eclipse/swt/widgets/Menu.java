@@ -353,7 +353,7 @@ public MenuItem getItem (int index) {
 		i++;
 	}
 	if (index != count) error (SWT.ERROR_INVALID_RANGE);
-	Widget widget = WidgetTable.get (handles [i]);
+	Widget widget = display.getWidget (handles [i]);
 	if (!(widget instanceof MenuItem)) error (SWT.ERROR_CANNOT_GET_ITEM);
 	return (MenuItem) widget;
 }
@@ -407,7 +407,7 @@ public MenuItem [] getItems () {
 	MenuItem [] items = new MenuItem [count];
 	int i = 0, j = 0;
 	while (i < count) {
-		Widget item = WidgetTable.get (handles [i]);
+		Widget item = display.getWidget (handles [i]);
 		if (item != null) items [j++] = (MenuItem) item;
 		i++;
 	}

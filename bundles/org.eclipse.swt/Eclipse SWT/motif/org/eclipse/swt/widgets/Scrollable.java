@@ -140,8 +140,8 @@ void createWidget (int index) {
 }
 void deregister () {
 	super.deregister ();
-	if (formHandle != 0) WidgetTable.remove (formHandle);
-	if (scrolledHandle != 0) WidgetTable.remove (scrolledHandle);
+	if (formHandle != 0) display.removeWidget (formHandle);
+	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
 }
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
@@ -276,8 +276,8 @@ void redrawWidget (int x, int y, int width, int height, boolean all) {
 }
 void register () {
 	super.register ();
-	if (formHandle != 0) WidgetTable.put (formHandle, this);
-	if (scrolledHandle != 0) WidgetTable.put (scrolledHandle, this);
+	if (formHandle != 0) display.addWidget (formHandle, this);
+	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
 }
 void releaseHandle () {
 	super.releaseHandle ();

@@ -296,7 +296,7 @@ void createWidget (int index) {
 }
 void deregister () {
 	if (handle == 0) return;
-	WidgetTable.remove (handle);
+	display.removeWidget (handle);
 }
 void destroyWidget () {
 	int topHandle = topHandle ();
@@ -588,7 +588,7 @@ void redrawHandle (int x, int y, int width, int height, int widgetHandle) {
 }
 void register () {
 	if (handle == 0) return;
-	WidgetTable.put (handle, this);
+	display.addWidget (handle, this);
 }
 void releaseChild () {
 	/* Do nothing */

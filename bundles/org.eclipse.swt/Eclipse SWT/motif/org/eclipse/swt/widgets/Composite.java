@@ -92,7 +92,7 @@ Control [] _getChildren () {
 	while (i < count) {
 		int handle = handles [i];
 		if (handle != 0) {
-			Widget widget = WidgetTable.get (handle);
+			Widget widget = display.getWidget (handle);
 			if (widget != null && widget != this) {
 				if (widget instanceof Control) {
 					children [j++] = (Control) widget;
@@ -229,7 +229,7 @@ int defaultForeground () {
 }
 void deregister () {
 	super.deregister ();
-	if (focusHandle != 0) WidgetTable.remove (focusHandle);
+	if (focusHandle != 0) display.removeWidget (focusHandle);
 }
 int focusHandle () {
 	if (focusHandle == 0) return super.focusHandle ();
@@ -487,7 +487,7 @@ void realizeChildren () {
 }
 void register () {
 	super.register ();
-	if (focusHandle != 0) WidgetTable.put (focusHandle, this);
+	if (focusHandle != 0) display.addWidget (focusHandle, this);
 }
 void redrawWidget (int x, int y, int width, int height, boolean all) {
 	super.redrawWidget (x, y, width, height, all);

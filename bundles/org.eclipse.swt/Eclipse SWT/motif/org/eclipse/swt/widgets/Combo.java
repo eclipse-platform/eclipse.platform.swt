@@ -919,7 +919,7 @@ void register () {
 	super.register ();
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	WidgetTable.put(argList[1], this);
+	display.addWidget (argList[1], this);
 }
 /**
  * Searches the receiver's list starting at the first item
@@ -1349,7 +1349,7 @@ void deregister () {
 	super.deregister ();
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	WidgetTable.remove (argList[1]);
+	display.removeWidget (argList[1]);
 }
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);

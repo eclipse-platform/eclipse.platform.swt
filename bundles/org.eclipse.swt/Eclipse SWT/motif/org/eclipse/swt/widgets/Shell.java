@@ -670,7 +670,7 @@ void createHandle (int index) {
 }
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (shellHandle);
+	display.removeWidget (shellHandle);
 }
 void destroyWidget () {
 	/*
@@ -965,7 +965,7 @@ void realizeWidget () {
 }
 void register () {
 	super.register ();
-	WidgetTable.put (shellHandle, this);
+	display.addWidget (shellHandle, this);
 }
 void releaseHandle () {
 	super.releaseHandle ();

@@ -109,6 +109,13 @@ public class Display extends Device {
 	EventTable eventTable, filterTable;
 	boolean postFocusOut;
 	
+	/* Widget Table */
+	int freeSlot = 0;
+	int [] indexTable, userData;
+	Shell [] shellTable;
+	Widget [] widgetTable;
+	static final int GROW_SIZE = 1024;
+	
 	/* Default Fonts, Colors, Insets, Widths and Heights. */
 	Font defaultFont;
 	Font listFont, textFont, buttonFont, labelFont;
@@ -357,6 +364,41 @@ void addMouseHoverTimeOut (int handle) {
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	mouseHoverID = OS.XtAppAddTimeOut (xtContext, 400, mouseHoverProc, handle);
 	mouseHoverHandle = handle;
+}
+void addWidget (int handle, Widget widget) {
+	if (handle == 0) return;
+	if (OS.XtIsSubclass (handle, OS.shellWidgetClass ())) {
+		for (int i=0; i<shellTable.length; i++) {
+			if (shellTable [i] == null) {
+				shellTable [i] = (Shell) widget;
+				return;
+			}
+		}
+		Shell [] newShells = new Shell [shellTable.length + GROW_SIZE / 8];
+		System.arraycopy (shellTable, 0, newShells, 0, shellTable.length);
+		newShells [shellTable.length] = (Shell) widget;
+		shellTable = newShells;
+		return;
+	}
+	if (freeSlot == -1) {
+		int length = (freeSlot = indexTable.length) + GROW_SIZE;
+		int [] newIndexTable = new int [length];
+		Widget [] newWidgetTable = new Widget [length];
+		System.arraycopy (indexTable, 0, newIndexTable, 0, freeSlot);
+		System.arraycopy (widgetTable, 0, newWidgetTable, 0, freeSlot);
+		for (int i=freeSlot; i<length-1; i++) {
+			newIndexTable [i] = i + 1;
+		}
+		newIndexTable [length - 1] = -1;
+		indexTable = newIndexTable;
+		widgetTable = newWidgetTable;
+	}
+	userData [1] = freeSlot + 1;
+	OS.XtSetValues (handle, userData, userData.length / 2);
+	int oldSlot = freeSlot;
+	freeSlot = indexTable [oldSlot];
+	indexTable [oldSlot] = -2;
+	widgetTable [oldSlot] = widget;
 }
 public void addFilter (int eventType, Listener listener) {
 	checkDevice ();
@@ -715,7 +757,7 @@ boolean filterEvent (int event) {
 	if (handle == 0) return false;
 	handle = OS.XmGetFocusWidget (handle);
 	if (handle == 0) return false;
-	Widget widget = WidgetTable.get (handle);
+	Widget widget = getWidget (handle);
 	if (widget == null) return false;
 
 	/* Get the unaffected character and keysym */
@@ -812,7 +854,7 @@ boolean filterEvent (int event) {
  */
 public Widget findWidget (int handle) {
 	checkDevice ();
-	return WidgetTable.get (handle);
+	return getWidget (handle);
 }
 /**
  * Returns the currently active <code>Shell</code>, or null
@@ -836,7 +878,7 @@ public Shell getActiveShell () {
 	if (handle == 0) return null;
 	do {
 		if (OS.XtIsSubclass (handle, OS.shellWidgetClass ())) {
-			Widget widget = WidgetTable.get (handle);
+			Widget widget = getWidget (handle);
 			if (widget instanceof Shell) return (Shell) widget;
 			return null;
 		}
@@ -895,7 +937,7 @@ public Control getCursorControl () {
 	int handle = OS.XtWindowToWidget (xDisplay, xParent);
 	if (handle == 0) return null;
 	do {
-		Widget widget = WidgetTable.get (handle);
+		Widget widget = getWidget (handle);
 		if (widget != null && widget instanceof Control) {
 			Control control = (Control) widget;
 			if (control.getEnabled ()) return control;
@@ -1054,7 +1096,7 @@ public Control getFocusControl () {
 	handle = OS.XmGetFocusWidget (handle);
 	if (handle == 0) return null;
 	do {
-		Widget widget = WidgetTable.get (handle);
+		Widget widget = getWidget (handle);
 		if (widget != null && widget instanceof Control) {
 			Control window = (Control) widget;
 			if (window.getEnabled ()) return window;
@@ -1200,28 +1242,15 @@ public Monitor getPrimaryMonitor () {
  */
 public Shell [] getShells () {
 	checkDevice ();
-	/*
-	* NOTE:  Need to check that the shells that belong
-	* to another display have not been disposed by the
-	* other display's thread as the shells list is being
-	* processed.
-	*/
-	int count = 0;
-	Shell [] shells = WidgetTable.shells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed () && this == shell.display) {
-			count++;
-		}
+	int length = 0;
+	for (int i=0; i<shellTable.length; i++) {
+		if (shellTable [i] != null) length++;
 	}
-	if (count == shells.length) return shells;
 	int index = 0;
-	Shell [] result = new Shell [count];
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed () && this == shell.display) {
-			result [index++] = shell;
-		}
+	Shell [] result = new Shell [length];
+	for (int i=0; i<shellTable.length; i++) {
+		Shell widget = shellTable [i];
+		if (widget != null) result [index++] = widget;
 	}
 	return result;
 }
@@ -1330,6 +1359,22 @@ public Thread getThread () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	return thread;
 }
+Widget getWidget (int handle) {
+	if (handle == 0) return null;
+	if (OS.XtIsSubclass (handle, OS.shellWidgetClass ())) {
+		for (int i=0; i<shellTable.length; i++) {
+			Widget shell = shellTable [i];
+			if (shell != null && shell.topHandle () == handle) return shell;
+		}
+		return null;
+	}
+	userData [1] = 0;
+	OS.XtGetValues (handle, userData, userData.length / 2);
+	if (userData [1] == 0) return null;
+	int index = userData [1] - 1;
+	if (0 <= index && index < widgetTable.length) return widgetTable [index];
+	return null;
+}
 void hideToolTip () {
 	if (toolTipHandle != 0) {
 		int shellHandle = OS.XtParent(toolTipHandle);
@@ -1359,6 +1404,7 @@ protected void init () {
 	initializeSystemColors ();
 	initializeDefaults ();
 	initializeTranslations ();
+	initializeWidgetTable ();
 }
 void initializeButton () {
 
@@ -1705,6 +1751,14 @@ void initializeTranslations () {
 	byte [] buffer3 = Converter.wcsToMbcs (null, "<Btn2Down>:\0");
 	dragTranslations = OS.XtParseTranslationTable (buffer3);
 }
+void initializeWidgetTable () {
+	userData = new int [] {OS.XmNuserData, 0};
+	indexTable = new int [GROW_SIZE];
+	shellTable = new Shell [GROW_SIZE / 8];
+	widgetTable = new Widget [GROW_SIZE];
+	for (int i=0; i<GROW_SIZE-1; i++) indexTable [i] = i + 1;
+	indexTable [GROW_SIZE - 1] = -1;	
+}
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -1795,7 +1849,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 }
 int mouseHoverProc (int handle, int id) {
 	mouseHoverID = mouseHoverHandle = 0;
-	Widget widget = WidgetTable.get (handle);
+	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.hoverProc (id);
 }
@@ -1906,12 +1960,10 @@ static synchronized void register (Display display) {
  */
 protected void release () {
 	sendEvent (SWT.Dispose, new Event ());
-	Shell [] shells = WidgetTable.shells ();
+	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed ()) {
-			if (this == shell.display) shell.dispose ();
-		}
+		if (!shell.isDisposed ()) shell.dispose ();
 	}
 	while (readAndDispatch ()) {};
 	if (disposeList != null) {
@@ -2022,6 +2074,32 @@ void releaseToolTipHandle (int handle) {
 void removeMouseHoverTimeOut () {
 	if (mouseHoverID != 0) OS.XtRemoveTimeOut (mouseHoverID);
 	mouseHoverID = mouseHoverHandle = 0;
+}
+Widget removeWidget (int handle) {
+	if (handle == 0) return null;
+	if (OS.XtIsSubclass (handle, OS.shellWidgetClass ())) {
+		for (int i=0; i<shellTable.length; i++) {
+			Widget shell = shellTable [i];
+			if (shell != null && shell.topHandle () == handle) {
+				shellTable [i] = null;
+				return shell;
+			}
+		}
+		return null;
+	}
+	userData [1] = 0;
+	Widget widget = null;
+	OS.XtGetValues (handle, userData, userData.length / 2);
+	int index = userData [1] - 1;
+	if (0 <= index && index < widgetTable.length) {
+		widget = widgetTable [index];
+		widgetTable [index] = null;
+		indexTable [index] = freeSlot;
+		freeSlot = index;
+		userData [1] = 0;
+		OS.XtSetValues (handle, userData, userData.length / 2);
+	}
+	return widget;
 }
 public void removeFilter (int eventType, Listener listener) {
 	checkDevice ();
@@ -2580,12 +2658,12 @@ int wakeProc (int closure, int source, int id) {
 	return 0;
 }
 int windowTimerProc (int handle, int id) {
-	Widget widget = WidgetTable.get (handle);
+	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.timerProc (id);
 }
 int windowProc (int w, int client_data, int call_data, int continue_to_dispatch) {
-	Widget widget = WidgetTable.get (w);
+	Widget widget = getWidget (w);
 	if (widget == null) return 0;
 	return widget.windowProc (w, client_data, call_data, continue_to_dispatch);
 }
