@@ -2013,9 +2013,9 @@ void clearMargin(GC gc, Color background, Rectangle clientArea, int y) {
 	// bottom margin
 	gc.fillRectangle(0, clientArea.height - bottomMargin - y, clientArea.width, bottomMargin);
 	// left margin
-	gc.fillRectangle(0, topMargin, leftMargin, clientArea.height - bottomMargin - topMargin);
+	gc.fillRectangle(0, 0, leftMargin, clientArea.height);
 	// right margin
-	gc.fillRectangle(clientArea.width - rightMargin, topMargin, rightMargin, clientArea.height - bottomMargin - topMargin);
+	gc.fillRectangle(clientArea.width - rightMargin, 0, rightMargin, clientArea.height);
 }
 /**
  * Removes the widget selection.
