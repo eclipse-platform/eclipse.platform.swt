@@ -66,6 +66,7 @@ CFLAGS = -O -Wall \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		-DLINUX -DGTK \
 		-I$(JAVA_HOME)/include \
+		-fpic \
 		${SWT_PTR_CFLAGS}
 LIBS = -shared -fpic
 
