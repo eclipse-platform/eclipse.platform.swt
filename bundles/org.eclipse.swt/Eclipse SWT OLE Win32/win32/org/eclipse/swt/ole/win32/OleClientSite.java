@@ -169,8 +169,11 @@ public OleClientSite(Composite parent, int style, File file) {
 		char[] fileName = (file.getAbsolutePath()+"\0").toCharArray();
 		int result = COM.GetClassFile(fileName, appClsid);
 		if (result != COM.S_OK)
-			OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
-		
+			OLE.error(OLE.ERROR_INVALID_CLASSID, result);
+		// associated CLSID may not be installed on this machine
+		if (getProgramID() == null)
+			OLE.error(OLE.ERROR_INVALID_CLASSID, result);
+			
 		// Open a temporary storage object
 		tempStorage = createTempStorage();
 
@@ -187,8 +190,8 @@ public OleClientSite(Composite parent, int style, File file) {
 		
 		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state = STATE_RUNNING;
 	} catch (SWTException e) {
+		dispose();
 		disposeCOMInterfaces();
-		frame.Release();
 		throw e;
 	}
 }
@@ -236,8 +239,8 @@ public OleClientSite(Composite parent, int style, String progId) {
 		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state = STATE_RUNNING;
 		
 	} catch (SWTException e) {
+		dispose();
 		disposeCOMInterfaces();
-		frame.Release();
 		throw e;
 	}
 }
@@ -350,8 +353,8 @@ public OleClientSite(Composite parent, int style, String progId, File file) {
 		
 		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state = STATE_RUNNING;
 	} catch (SWTException e) {
+		dispose();
 		disposeCOMInterfaces();
-		frame.Release();
 		throw e;
 	}
 }
@@ -766,7 +769,8 @@ private int OnDataChange(int pFormatetc, int pStgmed) {
 }
 private void onDispose(Event e) {
 	inDispose = true;
-	doVerb(OLE.OLEIVERB_DISCARDUNDOSTATE);
+	if (state != STATE_NONE)
+		doVerb(OLE.OLEIVERB_DISCARDUNDOSTATE);
 	deactivateInPlaceClient();
 	releaseObjectInterfaces(); // Note, must release object interfaces before releasing frame
 	deleteTempStorage();

@@ -75,68 +75,68 @@ public class OleControlSite extends OleClientSite
  */
 public OleControlSite(Composite parent, int style, String progId) {
 	super(parent, style);
-
-	createCOMInterfaces();
-
-	// check for licensing
-	appClsid = getClassID(progId);
-	if (appClsid == null) OLE.error(OLE.ERROR_INVALID_CLASSID);
-
-	int licinfo = getLicenseInfo(appClsid);
-	if (licinfo == 0) {
-		
-		// Open a storage object
-		tempStorage = createTempStorage();
-
-		// Create ole object with storage object
-		int[] address = new int[1];
-		int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, 0, tempStorage.getAddress(), address);
-		if (result != COM.S_OK)
-			OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
-
-		objIUnknown = new IUnknown(address[0]);
-		
-	} else {
-		// Prepare the ClassFactory
-		int[] ppvObject = new int[1];
-		try {
-			int result = COM.CoGetClassObject(appClsid, COM.CLSCTX_INPROC_HANDLER | COM.CLSCTX_INPROC_SERVER, 0, COM.IIDIClassFactory2, ppvObject);
-			if (result != COM.S_OK) {
-				OLE.error(OLE.ERROR_CANNOT_ACCESS_CLASSFACTORY, result);
-			}
-			IClassFactory2 classFactory = new IClassFactory2(ppvObject[0]);
-			// Create Com Object
-			ppvObject = new int[1];
-			result = classFactory.CreateInstanceLic(0, 0, COM.IIDIUnknown, licinfo, ppvObject);
-			classFactory.Release();
-			if (result != COM.S_OK)
-				OLE.error(OLE.ERROR_CANNOT_CREATE_LICENSED_OBJECT, result);
-		} finally {
-			COM.SysFreeString(licinfo);
-		}
-		
-		objIUnknown = new IUnknown(ppvObject[0]);
-
-		// Prepare a storage medium
-		ppvObject = new int[1];
-		if (objIUnknown.QueryInterface(COM.IIDIPersistStorage, ppvObject) == COM.S_OK) {
-			IPersistStorage persist = new IPersistStorage(ppvObject[0]);
-			tempStorage = createTempStorage();
-			persist.InitNew(tempStorage.getAddress());
-			persist.Release();
-		}
-	}
-
-	// Init sinks
 	try {
-		addObjectReferences();
-	} catch (SWTError e) {
-		disposeCOMInterfaces();
-		frame.Release();
-		throw e;
-	}
+		createCOMInterfaces();
+	
+		// check for licensing
+		appClsid = getClassID(progId);
+		if (appClsid == null) OLE.error(OLE.ERROR_INVALID_CLASSID);
+	
+		int licinfo = getLicenseInfo(appClsid);
+		if (licinfo == 0) {
 			
-	if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state= STATE_RUNNING;
+			// Open a storage object
+			tempStorage = createTempStorage();
+	
+			// Create ole object with storage object
+			int[] address = new int[1];
+			int result = COM.OleCreate(appClsid, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, 0, tempStorage.getAddress(), address);
+			if (result != COM.S_OK)
+				OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
+	
+			objIUnknown = new IUnknown(address[0]);
+			
+		} else {
+			// Prepare the ClassFactory
+			int[] ppvObject = new int[1];
+			try {
+				int result = COM.CoGetClassObject(appClsid, COM.CLSCTX_INPROC_HANDLER | COM.CLSCTX_INPROC_SERVER, 0, COM.IIDIClassFactory2, ppvObject);
+				if (result != COM.S_OK) {
+					OLE.error(OLE.ERROR_CANNOT_ACCESS_CLASSFACTORY, result);
+				}
+				IClassFactory2 classFactory = new IClassFactory2(ppvObject[0]);
+				// Create Com Object
+				ppvObject = new int[1];
+				result = classFactory.CreateInstanceLic(0, 0, COM.IIDIUnknown, licinfo, ppvObject);
+				classFactory.Release();
+				if (result != COM.S_OK)
+					OLE.error(OLE.ERROR_CANNOT_CREATE_LICENSED_OBJECT, result);
+			} finally {
+				COM.SysFreeString(licinfo);
+			}
+			
+			objIUnknown = new IUnknown(ppvObject[0]);
+	
+			// Prepare a storage medium
+			ppvObject = new int[1];
+			if (objIUnknown.QueryInterface(COM.IIDIPersistStorage, ppvObject) == COM.S_OK) {
+				IPersistStorage persist = new IPersistStorage(ppvObject[0]);
+				tempStorage = createTempStorage();
+				persist.InitNew(tempStorage.getAddress());
+				persist.Release();
+			}
+		}
+	
+		// Init sinks
+		addObjectReferences();
+			
+		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state= STATE_RUNNING;
+
+	} catch (SWTError e) {
+		dispose();
+		disposeCOMInterfaces();
+		throw e;
+	}			
 }
 /**	 
  * Adds the listener to receive events.
