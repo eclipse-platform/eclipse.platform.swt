@@ -183,6 +183,20 @@ static void addLanguageListener(Control control, Runnable runnable) {
 	BidiUtil.addLanguageListener(control.handle, runnable);
 }
 /**
+ * Adds a listener that is called when the widget orientation (writing order) 
+ * is changed by the user.
+ * <p>
+ *  
+ * @param control Control to add the keyboard language listener for.
+ * @param LTRRunnable the listener that is called when writing order is 
+ * 	switched to "left to right" (left oriented text).
+ * @param RTLRunnable the listener that is called when writing order is 
+ * 	switched to "right to left" (right oriented text).
+ */
+static void addOrientationListener(Control control, Runnable LTRRunnable, Runnable RTLRunnable) {
+	BidiUtil.addOrientationListener(control.handle, LTRRunnable, RTLRunnable);
+}
+/**
  * Answers the direction of the active keyboard language - either 
  * L2R or R2L.  The active keyboard language determines the direction 
  * of the caret and can be changed by the user (e.g., via Alt-Shift on
@@ -247,6 +261,15 @@ static boolean isLigated(GC gc) {
  */
 static void removeLanguageListener(Control control) {
 	BidiUtil.removeLanguageListener(control.handle);
+}
+/**
+ * Removes the orientation listener for the specified window.
+ * <p>
+ *  
+ * @param control window to remove the listener from.
+ */
+static void removeOrientationListener(Control control) {
+	BidiUtil.removeOrientationListener(control.handle);
 }
 /**
  * Calculates render positions using the glyph distance values in the dx array.
@@ -1047,6 +1070,16 @@ void setKeyboardLanguage(int logicalIndex) {
 		language = BidiUtil.KEYBOARD_NON_BIDI;
 	}
 	BidiUtil.setKeyboardLanguage(language);
+}
+/**
+ * Sets the orientation (writing order) of the specified control. Text will 
+ * be right aligned for right to left writing order.
+ * <p>
+ * 
+ * @param orientation one of SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
+ */
+static void setOrientation(Control control, int orientation) {
+	BidiUtil.setOrientation(control.handle, orientation);
 }
 /**
  * Returns a string representation of the receiver.

@@ -140,6 +140,7 @@ public class StyledText extends Canvas {
 	int lastTextChangeReplaceLineCount;	// text changed handler
 	int lastTextChangeReplaceCharCount;	
 	boolean isBidi;
+	boolean isMirrored;
 	boolean bidiColoring = false;		// apply the BIDI algorithm on text segments of the same color
 	Image leftCaretBitmap = null;
 	Image rightCaretBitmap = null;
@@ -1600,8 +1601,8 @@ public StyledText(Composite parent, int style) {
 	super.setForeground(getForeground());
 	super.setBackground(getBackground());
 	Display display = getDisplay();
-	boolean isRightOriented = (getStyle() & SWT.MIRRORED) != 0;
-	isBidi = StyledTextBidi.isBidiPlatform() || isRightOriented;
+	isMirrored = (getStyle() & SWT.MIRRORED) != 0;
+	isBidi = StyledTextBidi.isBidiPlatform() || isMirrored;
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
 	}
@@ -1623,7 +1624,7 @@ public StyledText(Composite parent, int style) {
 	} 
 	else {
 		createCaretBitmaps();
-		if (isRightOriented) {
+		if (isMirrored) {
 			BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_BIDI);
 		}
 		new Caret(this, SWT.NULL);			
@@ -1642,6 +1643,18 @@ public StyledText(Composite parent, int style) {
 	String platform= SWT.getPlatform();
 	isCarbon = "carbon".equals(platform);	
 	
+	StyledTextBidi.addOrientationListener(this,
+		new Runnable() {
+			public void run() {
+				setOrientation(SWT.LEFT_TO_RIGHT);
+			}
+		},
+		new Runnable() {
+			public void run() {
+				setOrientation(SWT.RIGHT_TO_LEFT);
+			}
+		}
+	);	
 	// set the caret width, the height of the caret will default to the line height
 	calculateScrollBars();
 	createKeyBindings();
@@ -2243,7 +2256,7 @@ void createKeyBindings() {
 	setKeyBinding(SWT.END | SWT.MOD1, ST.TEXT_END);
 	setKeyBinding(SWT.PAGE_UP | SWT.MOD1, ST.WINDOW_START);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1, ST.WINDOW_END);
-	if ((getStyle() & SWT.MIRRORED) == 0) {
+	if (isMirrored() == false) {
 		setKeyBinding(SWT.ARROW_LEFT, ST.COLUMN_PREVIOUS);
 		setKeyBinding(SWT.ARROW_RIGHT, ST.COLUMN_NEXT);
 		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD1, ST.WORD_PREVIOUS);
@@ -2267,7 +2280,7 @@ void createKeyBindings() {
 	setKeyBinding(SWT.END | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_END);
 	setKeyBinding(SWT.PAGE_UP | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_START);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_END);
-	if ((getStyle() & SWT.MIRRORED) == 0) {
+	if (isMirrored() == false) {
 		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD2, ST.SELECT_COLUMN_PREVIOUS);
 		setKeyBinding(SWT.ARROW_RIGHT | SWT.MOD2, ST.SELECT_COLUMN_NEXT);
 		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_PREVIOUS);
@@ -2306,7 +2319,7 @@ void createKeyBindings() {
  */
 void createCaretBitmaps() {
 	int caretWidth = BIDI_CARET_WIDTH;
-	int gcStyle = getStyle() & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+	int gcStyle = isMirrored() ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
 	
 	Display display = getDisplay();	
 	if (caretPalette == null) {
@@ -3252,7 +3265,7 @@ void doVisualPrevious() {
 		// check if caret location is at the visual beginning of the line
 		if (columnX <= XINSET && horizontalScrollOffset == 0) { 
 			return;
-		}
+		}		
 		String lineText = content.getLine(line);
 		int lineLength = lineText.length();
 		GC gc = getGC();
@@ -3274,7 +3287,7 @@ void doVisualPrevious() {
 			}
 			else
 			if (visualOffset == 0) {
-				boolean isRightOriented = (getStyle() & SWT.MIRRORED) != 0;
+				boolean isRightOriented = isMirrored();
 
 				//move to visual line end (i.e., behind L2R character/in front of R2L character at visual 0)
 				if ((isRightOriented && bidi.isRightToLeft(offsetInLine) == false) ||
@@ -3358,7 +3371,7 @@ void doVisualNext() {
 			visualOffset++;
 			offsetInLine = bidi.getLogicalOffset(visualOffset);
 			if (offsetInLine > 0 && offsetInLine < lineLength) {
-				boolean isRightOriented = (getStyle() & SWT.MIRRORED) != 0;
+				boolean isRightOriented = isMirrored();
 				if (isRightOriented) {
 					boolean leftToRightStart = bidi.isRightToLeft(offsetInLine) == false && bidi.isRightToLeft(offsetInLine - 1);
 					if (leftToRightStart) {
@@ -5118,6 +5131,7 @@ void handleDispose() {
 	if (isBidi()) {
 		StyledTextBidi.removeLanguageListener(this);
 	}
+	StyledTextBidi.removeOrientationListener(this);
 }
 /** 
  * Scrolls the widget horizontally.
@@ -5646,6 +5660,16 @@ boolean isLineDelimiter(int offset) {
 	return offsetInLine > content.getLine(line).length();
 }
 /**
+ * Returns whether the widget is mirrored (right oriented/right to left 
+ * writing order). 
+ * 
+ * @return isMirrored true=the widget is right oriented, false=the widget 
+ * 	is left oriented
+ */
+boolean isMirrored() {
+	return isMirrored;
+}
+/**
  * Returns whether or not the given lines are visible.
  * <p>
  *
@@ -5882,7 +5906,7 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 		Color foreground = getForeground();
 		int lineCount = content.getLineCount();
 		int paintY = 0;
-		int gcStyle = getStyle() & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+		int gcStyle = isMirrored() ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
 		
 		if (isSingleLine()) {
 			lineCount = 1;
@@ -6897,7 +6921,7 @@ void setBidiCaretLocation(StyledTextBidi bidi, int caretLine) {
 	int lineStartOffset = content.getOffsetAtLine(caretLine);
 	int offsetInLine = caretOffset - lineStartOffset;
 	GC gc = null;
-	boolean isRightOriented = (getStyle() & SWT.MIRRORED) != 0;
+	boolean isRightOriented = isMirrored();
 	
 	if (bidi == null) {
 		gc = getGC();
@@ -7403,6 +7427,44 @@ void setMouseWordSelectionAnchor() {
 	if (caretOffset > doubleClickSelection.y) {
 		selectionAnchor = doubleClickSelection.x;
 	}
+}
+/**
+ * Sets the widget orientation (writing order). Text will be right aligned  
+ * for right to left writing order.
+ * <p>
+ * 
+ * @param newOrientation one of SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
+ */
+void setOrientation(int orientation) {
+	if ((orientation & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)) == 0) { 
+		return;
+	}
+	if ((orientation & SWT.RIGHT_TO_LEFT) != 0 && (orientation & SWT.LEFT_TO_RIGHT) != 0) {
+		return;	
+	}
+	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
+		if (isMirrored()) {
+			return;	
+		}
+		isMirrored = true;
+	} else {
+		if (isMirrored() == false) {
+			return;
+		}
+		isMirrored = false;
+	}	
+	StyledTextBidi.setOrientation(this, orientation);
+	isBidi = StyledTextBidi.isBidiPlatform() || isMirrored();
+	initializeRenderer();
+	if (isBidi()) {
+		caretDirection = SWT.NULL;		
+		createCaretBitmaps();
+		setBidiCaretDirection();
+	}
+	setCaretLocation();
+	keyActionMap.clear();
+	createKeyBindings();
+	super.redraw();
 }
 /**
  * Adjusts the maximum and the page size of the scroll bars to 

@@ -37,7 +37,8 @@ public class BidiUtil {
 
 	// variables used for providing a listener mechanism for keyboard language 
 	// switching 
-	static Hashtable map = new Hashtable ();
+	static Hashtable languageMap = new Hashtable ();
+	static Hashtable keyMap = new Hashtable ();
 	static Hashtable oldProcMap = new Hashtable ();
 	/*
 	 * This code is intentionally commented.  In order
@@ -98,16 +99,30 @@ public class BidiUtil {
  * monitored.
  * <p>
  *
- * @param int the handle of the Control that is listening for keyboard language 
+ * @param hwnd the handle of the Control that is listening for keyboard language 
  *  changes
  * @param runnable the code that should be executed when a keyboard language change
  *  occurs
  */
-public static void addLanguageListener (int hwnd, Runnable runnable) {
-	map.put (new Integer (hwnd), runnable);
-	int oldProc = OS.GetWindowLong (hwnd, OS.GWL_WNDPROC);
-	oldProcMap.put (new Integer(hwnd), new Integer(oldProc));
-	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, callback.getAddress ());
+public static void addLanguageListener(int hwnd, Runnable runnable) {
+	languageMap.put(new Integer(hwnd), runnable);
+	subclass(hwnd);
+}
+/**
+ * Adds a widget orientation (writing order) listener. The listener will get notified 
+ * when the user switches the writing order using Ctrl-Shift.
+ * <p>
+ *
+ * @param hwnd the handle of the Control that is listening for widget orientation 
+ *  changes
+ * @param LTRRunnable the listener that is called when writing order is 
+ * 	switched to "left to right" (left oriented text).
+ * @param RTLRunnable the listener that is called when writing order is 
+ * 	switched to "right to left" (right oriented text).
+ */
+public static void addOrientationListener(int hwnd, Runnable LTRRunnable, Runnable RTLRunnable) {
+	keyMap.put(new Integer(hwnd), new Runnable[] {LTRRunnable, RTLRunnable});
+	subclass(hwnd);
 }
 /**
  * Proc used for OS.EnumSystemLanguageGroups call during isBidiPlatform test.
@@ -405,7 +420,7 @@ public static int getKeyboardLanguage() {
  *
  * @return integer array with an entry for each installed language
  */
-public static int[] getKeyboardLanguageList() {
+static int[] getKeyboardLanguageList() {
 	int maxSize = 10;
 	int[] tempList = new int[maxSize];
 	int size = OS.GetKeyboardLayoutList(maxSize, tempList);
@@ -479,12 +494,22 @@ public static boolean isKeyboardBidi() {
  *
  * @param hwnd the handle of the Control that is listening for keyboard language changes
  */
-public static void removeLanguageListener (int hwnd) {
-	map.remove (new Integer (hwnd));
-	Integer proc = (Integer)oldProcMap.remove (new Integer (hwnd));
-	if (proc == null) return;
-	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, proc.intValue());
+public static void removeLanguageListener(int hwnd) {
+	languageMap.remove(new Integer(hwnd));
+	unsubclass(hwnd);
 }		
+/**
+ * Removes the widget orientation (writing order) listener for the specified 
+ * control.  
+ * <p>
+ *
+ * @param hwnd the handle of the Control that is listening for widget  
+ *  orientation changes
+ */
+public static void removeOrientationListener(int hwnd) {
+	keyMap.remove(new Integer(hwnd));
+	unsubclass(hwnd);
+}
 /**
  * Switch the keyboard language to the specified language type.  We do
  * not distinguish between mulitple bidi or multiple non-bidi languages, so
@@ -521,6 +546,36 @@ public static void setKeyboardLanguage(int language) {
 				return;
 			}
 		}
+	}
+}
+/**
+ * Sets the orientation (writing order) of the specified control. Text will 
+ * be right aligned for right to left writing order.
+ * <p>
+ * 
+ * @param hwnd the handle of the Control to change the orientation of
+ * @param orientation one of SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
+ */
+public static void setOrientation (int hwnd, int orientation) {
+	int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
+		bits |= OS.WS_EX_LAYOUTRTL; 
+	} else {
+		bits &= ~OS.WS_EX_LAYOUTRTL;
+	} 
+	OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits);
+}
+/**
+ * Override the window proc.
+ * 
+ * @param hwnd control to override the window proc of
+ */
+static void subclass(int hwnd) {
+	Integer key = new Integer(hwnd);
+	if (oldProcMap.get(key) == null) {
+		int oldProc = OS.GetWindowLong(hwnd, OS.GWL_WNDPROC);
+		oldProcMap.put(key, new Integer(oldProc));
+		OS.SetWindowLong(hwnd, OS.GWL_WNDPROC, callback.getAddress());
 	}
 }
 /**
@@ -571,7 +626,21 @@ static void translateOrder(int[] orderArray, int glyphCount, boolean isRightOrie
 	}
 }
 /**
- * Window proc to intercept keyboard language switch event (WS_INPUTLANGCHANGE).
+ * Remove the overridden the window proc.
+ * 
+ * @param hwnd control to remove the window proc override for
+ */
+static void unsubclass(int hwnd) {
+	Integer key = new Integer(hwnd);
+	if (languageMap.get(key) == null && keyMap.get(key) == null) {
+		Integer proc = (Integer) oldProcMap.remove(key);
+		if (proc == null) return;
+		OS.SetWindowLong(hwnd, OS.GWL_WNDPROC, proc.intValue());
+	}	
+}
+/**
+ * Window proc to intercept keyboard language switch event (WS_INPUTLANGCHANGE)
+ * and widget orientation changes.
  * Run the Control's registered runnable when the keyboard language is switched.
  * 
  * @param hwnd handle of the control that is listening for the keyboard language
@@ -579,13 +648,27 @@ static void translateOrder(int[] orderArray, int glyphCount, boolean isRightOrie
  * @param msg window message
  */
 static int windowProc (int hwnd, int msg, int wParam, int lParam) {
+	Integer key = new Integer (hwnd);
 	switch (msg) {
 		case 0x51 /*OS.WM_INPUTLANGCHANGE*/:
-			Runnable runnable = (Runnable) map.get (new Integer (hwnd));
+			Runnable runnable = (Runnable) languageMap.get (key);
 			if (runnable != null) runnable.run ();
 			break;
-		}
-	Integer oldProc = (Integer)oldProcMap.get(new Integer(hwnd));
+		case OS.WM_KEYDOWN:
+			if (wParam == OS.VK_SHIFT) {
+				if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
+					Runnable[] runnables = (Runnable[]) keyMap.get (key);
+					if (runnables == null) break;					
+					if (OS.GetKeyState (0xA0 /* VK_LSHIFT */) < 0) {
+						if (runnables[0] != null) runnables[0].run ();
+					} else {
+						if (runnables[1] != null) runnables[1].run ();
+					}
+				}
+			}
+			break;
+	}
+	Integer oldProc = (Integer)oldProcMap.get(key);
 	return OS.CallWindowProc (oldProc.intValue(), hwnd, msg, wParam, lParam);
 }
 
