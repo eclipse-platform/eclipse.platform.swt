@@ -4236,18 +4236,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclip
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
-{
-	GtkTargetPair _arg0, *lparg0=NULL;
-
-	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II\n")
-
-	if (arg0) lparg0 = getGtkTargetPairFields(env, arg0, &_arg0);
-	memmove(lparg0, arg1, arg2);
-	if (arg0) setGtkTargetPairFields(env, arg0, lparg0);
-}
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
@@ -4270,6 +4258,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclip
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	GtkTargetPair _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II\n")
+
+	if (arg0) lparg0 = &_arg0;
+	memmove(lparg0, arg1, arg2);
+	if (arg0) setGtkTargetPairFields(env, arg0, lparg0);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -4289,7 +4289,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 
 	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II\n")
 
-	if (arg0) lparg0 = getGdkDragContextFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove(lparg0, arg1, arg2);
 	if (arg0) setGdkDragContextFields(env, arg0, lparg0);
 }
