@@ -55,11 +55,14 @@ static int getDesktop( Display display ) {
 	}
 	
 	// Obtain the atoms for the various window manager signature properties.
+	// On CDE, the atom below may exist without DTWM running. If the atom 
+	// below is defined, the CDE database exists and the available
+	// applications can be queried.
 	int desktop = DESKTOP_UNKNOWN;
 	int xDisplay = display.xDisplay;
 	/* Use the character encoding for the default locale */
 	byte[] gnomeName = Converter.wcsToMbcs (null, "GNOME_NAME_SERVER", true);
-	byte[] cdeName   = Converter.wcsToMbcs (null, "DTWM_IS_RUNNING", true);
+	byte[] cdeName   = Converter.wcsToMbcs (null, "_DT_SM_PREFERENCES", true);
 	byte[] kdeName   = Converter.wcsToMbcs (null, "KWIN_RUNNING", true);
 	int gnome = OS.XInternAtom( xDisplay, gnomeName, true );
 	int cde   = OS.XInternAtom( xDisplay, cdeName, true );
