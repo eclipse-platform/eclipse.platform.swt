@@ -134,13 +134,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 
 	/*
-	 * Feature in Motif. If a label's labelType is XmSTRING but it
-	 * has no label set into it yet, recomputing the size will
-	 * not take into account the height of the font, as we would
-	 * like it to. Take care of this case.
-	 */
+	* Feature in Motif. If a label's labelType is XmSTRING but 
+	* the label string is empty, recomputing the size will
+	* not take into account the height of the font, as we would
+	* like it to. Take care of this case.
+	* 
+	* Note:  When the label string is empty a single space is set
+	* into the widget. So the preferred height is computed properly.
+	* Just make sure the preferred width is zero.
+	*/
 	if (labelType == OS.XmSTRING && text.length () == 0) {
-		height += getFontHeight ();
 		width = 0;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
@@ -479,7 +482,14 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;
-	
+
+	/*
+	* Bug in Motif.  The widget will not receive mouse events, if the
+	* label string is empty.  The fix is to detect that and set a single
+	* space instead. 
+	*/
+	if (string.length () == 0) string = " ";
+
 	/* Strip out mnemonic marker symbols, and remember the mnemonic. */
 	char [] unicode = new char [string.length ()];
 	string.getChars (0, unicode.length, unicode, 0);
