@@ -241,12 +241,12 @@ public class Display extends Device {
 		{OS.GDK_F15,		SWT.F15},
 		
 		/* Numeric Keypad Keys */
-		{OS.GDK_KP_Add,			SWT.KEYPAD_PLUS},
-		{OS.GDK_KP_Subtract,	SWT.KEYPAD_MINUS},
 		{OS.GDK_KP_Multiply,		SWT.KEYPAD_TIMES},
-		{OS.GDK_KP_Divide,		SWT.KEYPAD_DIVIDE},
-		{OS.GDK_KP_Decimal,	SWT.KEYPAD_DECIMAL},
+		{OS.GDK_KP_Add,			SWT.KEYPAD_PLUS},
 		{OS.GDK_KP_Enter,			SWT.KEYPAD_CR},
+		{OS.GDK_KP_Subtract,	SWT.KEYPAD_MINUS},
+		{OS.GDK_KP_Decimal,	SWT.KEYPAD_DECIMAL},
+		{OS.GDK_KP_Divide,		SWT.KEYPAD_DIVIDE},
 		{OS.GDK_KP_0,		SWT.KEYPAD_0},
 		{OS.GDK_KP_1,		SWT.KEYPAD_1},
 		{OS.GDK_KP_2,		SWT.KEYPAD_2},
