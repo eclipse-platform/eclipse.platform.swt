@@ -936,11 +936,9 @@ public void test_getLineHeight() {
 
 public void test_getLocationAtOffsetI(){
 	// copy from StyledText, has to match value used by StyledText
-	final int XINSET;
-	if (isBidi()) XINSET = 3;
-	else XINSET = 0;
+	final int XINSET = isBidi() ? 2 : 0;
 	
-	assertTrue(":a:", text.getLocationAtOffset(0).equals(new Point(0, 0)));
+	assertTrue(":a:", text.getLocationAtOffset(0).equals(new Point(XINSET, 0)));
 	try {
 		text.getLocationAtOffset(-1);
 		fail("No exception thrown for offset == -1");
@@ -1545,8 +1543,10 @@ public void test_invokeActionI() {
 	text.invokeAction(ST.DELETE_PREVIOUS);
 	text.invokeAction(ST.DELETE_NEXT);
 	text.invokeAction(ST.TOGGLE_OVERWRITE);
-	
-	text.setText("Line1\r\nLine2");		
+
+	//Some platforms consider number a word start, other don't  
+//	text.setText("Line1\r\nLine2");		
+	text.setText("LineL\r\nLineW");
 	text.invokeAction(ST.LINE_DOWN);
 	assertEquals(7, text.getCaretOffset());
 	
@@ -1589,22 +1589,22 @@ public void test_invokeActionI() {
 	assertEquals(0, text.getCaretOffset());
 	
 	text.invokeAction(ST.SELECT_LINE_DOWN);	
-	assertEquals("Line1\r\n", text.getSelectionText());
+	assertEquals("LineL\r\n", text.getSelectionText());
 
 	text.invokeAction(ST.LINE_END);
 	text.invokeAction(ST.SELECT_LINE_UP);
-	assertEquals("\r\nLine2", text.getSelectionText());
+	assertEquals("\r\nLineW", text.getSelectionText());
 
 	text.invokeAction(ST.SELECT_LINE_START);
-	assertEquals("Line1\r\nLine2", text.getSelectionText());
+	assertEquals("LineL\r\nLineW", text.getSelectionText());
 
 	text.invokeAction(ST.LINE_START);
 	text.invokeAction(ST.SELECT_LINE_END);
-	assertEquals("Line1", text.getSelectionText());
+	assertEquals("LineL", text.getSelectionText());
 
 	text.invokeAction(ST.LINE_END);
 	text.invokeAction(ST.SELECT_COLUMN_PREVIOUS);
-	assertEquals("1", text.getSelectionText());
+	assertEquals("L", text.getSelectionText());
 
 	text.invokeAction(ST.SELECT_COLUMN_NEXT);
 	assertEquals("", text.getSelectionText());
@@ -1613,48 +1613,48 @@ public void test_invokeActionI() {
 	assertEquals("", text.getSelectionText());
 
 	text.invokeAction(ST.SELECT_PAGE_DOWN);
-	assertEquals("\r\nLine2", text.getSelectionText());
+	assertEquals("\r\nLineW", text.getSelectionText());
 
 	text.invokeAction(ST.LINE_END);
 	text.invokeAction(ST.SELECT_WORD_PREVIOUS);
-	assertEquals("Line2", text.getSelectionText());
+	assertEquals("LineW", text.getSelectionText());
 
 	text.invokeAction(ST.LINE_START);
 	text.invokeAction(ST.SELECT_WORD_NEXT);
-	assertEquals("Line2", text.getSelectionText());
+	assertEquals("LineW", text.getSelectionText());
 
 	text.invokeAction(ST.LINE_START);
 	text.invokeAction(ST.SELECT_TEXT_END);
-	assertEquals("Line2", text.getSelectionText());
+	assertEquals("LineW", text.getSelectionText());
 
 	text.invokeAction(ST.SELECT_TEXT_START);
-	assertEquals("Line1\r\n", text.getSelectionText());
+	assertEquals("LineL\r\n", text.getSelectionText());
 
 	text.invokeAction(ST.LINE_START);
 	text.invokeAction(ST.SELECT_WINDOW_START);
 	assertEquals("", text.getSelectionText());
 
 	text.invokeAction(ST.SELECT_WINDOW_END);
-	assertEquals("Line1", text.getSelectionText());
+	assertEquals("LineL", text.getSelectionText());
 
 	text.invokeAction(ST.SELECT_LINE_END);
 	text.invokeAction(ST.CUT);
-	assertEquals("\r\nLine2", text.getText());
+	assertEquals("\r\nLineW", text.getText());
 
 	text.invokeAction(ST.SELECT_LINE_DOWN);
 	text.invokeAction(ST.COPY);
-	assertEquals("\r\nLine2", text.getText());
+	assertEquals("\r\nLineW", text.getText());
 
 	text.invokeAction(ST.LINE_END);
 	text.invokeAction(ST.PASTE);
-	assertEquals("\r\nLine2" + PLATFORM_LINE_DELIMITER, text.getText());
+	assertEquals("\r\nLineW" + PLATFORM_LINE_DELIMITER, text.getText());
 
 	text.invokeAction(ST.DELETE_PREVIOUS);
-	assertEquals("\r\nLine2", text.getText());
+	assertEquals("\r\nLineW", text.getText());
 
 	text.invokeAction(ST.TEXT_START);
 	text.invokeAction(ST.DELETE_NEXT);
-	assertEquals("Line2", text.getText());
+	assertEquals("LineW", text.getText());
 
 	text.invokeAction(ST.TOGGLE_OVERWRITE);
 }
@@ -2567,15 +2567,8 @@ public void test_selectAll() {
 
 public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 	Caret caret = new Caret(text, SWT.NONE);
-	final int XINSET;
+	final int XINSET = isBidi() ? 2 : 0;
 	
-	if (isBidi()) {
-		XINSET = 3;
-	}
-	else {
-		XINSET = 0;
-	}
-
 	text.setCaret(caret);
 	assertEquals(XINSET, text.getCaret().getLocation().x);
 	assertEquals(0, text.getCaret().getLocation().y);

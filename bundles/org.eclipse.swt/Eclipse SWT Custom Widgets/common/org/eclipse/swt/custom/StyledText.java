@@ -3875,7 +3875,7 @@ public int getOffsetAtLocation(Point point) {
 	}
 	int[] trailing = new int[1];
 	offsetInLine = layout.getOffset(x, 0, trailing);
-	if ((trailing[0] & SWT.TRAIL) != 0) offsetInLine++;
+	if ((offsetInLine != lineText.length() - 1) && (trailing[0] & SWT.TRAIL) != 0) offsetInLine++;
 	renderer.disposeTextLayout(layout, event);
 	return lineOffset + offsetInLine;
 }
