@@ -807,11 +807,12 @@ LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 	if ((lpwp.flags & (OS.SWP_NOSIZE | OS.SWP_NOREDRAW)) != 0) {
 		return result;
 	}
+	// TEMPORARY CODE
+//	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+//		OS.InvalidateRect (handle, null, true);
+//		return result;
+//	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		OS.InvalidateRect (handle, null, true);
-		return result;
-	}
 	if ((bits & OS.TCS_MULTILINE) != 0) {
 		OS.InvalidateRect (handle, null, true);
 		return result;
