@@ -336,7 +336,9 @@ int[] getCaretOffsetAndDirectionAtX(int x) {
 
 	if (isRightToLeft(offset)) {
 		if (visualLeft) {
-			offset = getLigatureEndOffset(offset);
+			if (isLigated(gc)) {
+				offset = getLigatureEndOffset(offset);
+			}
 			offset++;
 			direction = ST.COLUMN_NEXT;
 		}
@@ -522,7 +524,6 @@ private Vector getDirectionRuns(int logicalStart, int length) {
  * @return the offset of the last character comprising a ligature.
  */
 int getLigatureEndOffset(int offset) {
-	if (!isLigated(gc)) return offset;
 	// assume only bidi languages support ligatures
 	if (!isRightToLeft(offset)) return offset;	
 	int newOffset = offset;
@@ -540,7 +541,6 @@ int getLigatureEndOffset(int offset) {
  * @return the offset of the first character comprising a ligature.
  */
 int getLigatureStartOffset(int offset) {
-	if (!isLigated(gc)) return offset;
 	// assume only bidi languages support ligatures
 	if (!isRightToLeft(offset)) return offset;	
 	int newOffset = offset;
