@@ -854,9 +854,9 @@ private void initAccessible() {
 			int role = 0;
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_SELF) {
-				role = ACC.ROLE_SYSTEM_PAGETABLIST;
+				role = ACC.ROLE_PAGETABLIST;
 			} else if (childID >= 0 && childID < items.length) {
-				role = ACC.ROLE_SYSTEM_PAGETAB;
+				role = ACC.ROLE_PAGETAB;
 			}
 			e.code = role;
 		}
@@ -869,16 +869,16 @@ private void initAccessible() {
 			int state = 0;
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_SELF) {
-				state = ACC.STATE_SYSTEM_NORMAL;
+				state = ACC.STATE_NORMAL;
 			} else if (childID >= 0 && childID < items.length) {
-				state = ACC.STATE_SYSTEM_SELECTABLE;
+				state = ACC.STATE_SELECTABLE;
 				if (isFocusControl()) {
-					state |= ACC.STATE_SYSTEM_FOCUSABLE;
+					state |= ACC.STATE_FOCUSABLE;
 				}
 				if (selectedIndex == childID) {
-					state |= ACC.STATE_SYSTEM_SELECTED;
+					state |= ACC.STATE_SELECTED;
 					if (isFocusControl()) {
-						state |= ACC.STATE_SYSTEM_FOCUSED;
+						state |= ACC.STATE_FOCUSED;
 					}
 				}
 			}

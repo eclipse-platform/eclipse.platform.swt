@@ -261,11 +261,11 @@ private void initAccessible() {
 		}
 		
 		public void getRole(AccessibleControlEvent e) {
-			e.code = ACC.ROLE_SYSTEM_STATICTEXT;
+			e.code = ACC.ROLE_STATICTEXT;
 		}
 		
 		public void getState(AccessibleControlEvent e) {
-			e.code = ACC.STATE_SYSTEM_READONLY;
+			e.code = ACC.STATE_READONLY;
 		}
 	});
 }

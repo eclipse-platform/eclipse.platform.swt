@@ -558,11 +558,11 @@ void initAccessible() {
 		}
 		
 		public void getRole(AccessibleControlEvent e) {
-			e.code = ACC.ROLE_SYSTEM_COMBOBOX;
+			e.code = ACC.ROLE_COMBOBOX;
 		}
 		
 		public void getState(AccessibleControlEvent e) {
-			e.code = ACC.STATE_SYSTEM_NORMAL;
+			e.code = ACC.STATE_NORMAL;
 		}
 
 		public void getValue(AccessibleEvent e) {
