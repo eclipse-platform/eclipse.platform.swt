@@ -180,7 +180,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (xmString != 0) OS.XmStringFree (xmString);
 	}
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {	
-		int [] argList4 = new int [] {OS.XmNmarginLeft, 0, OS.XmNmarginRight, 0, OS.XmNmarginTop, 0, OS.XmNmarginBottom, 0};
+		int [] argList4 = new int [] {
+			OS.XmNmarginLeft, 0,
+			OS.XmNmarginRight, 0,
+			OS.XmNmarginTop, 0,
+			OS.XmNmarginBottom, 0,
+		};
 		OS.XtGetValues (handle, argList4, argList4.length / 2);
 		if (wHint != SWT.DEFAULT) width = wHint + argList4 [1] + argList4 [3] + (border * 2);
 		if (hHint != SWT.DEFAULT) height = hHint + argList4 [5] + argList4 [7] + (border * 2);
