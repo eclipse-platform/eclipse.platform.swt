@@ -135,10 +135,10 @@ static int checkStyle (int style) {
 	return style;
 }
 void click () {
-    /* AW
-	OS.XtCallActionProc (handle, ARM_AND_ACTIVATE, new XAnyEvent (), null, 0);
-    */
-    System.out.println("Button.click: nyi");
+	short part= 10;
+	if ((style & SWT.CHECK) != 0 || (style & SWT.RADIO) != 0)
+		part= 11;
+    OS.HIViewSimulateClick(handle, part, 0, new short[1]);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
@@ -429,7 +429,6 @@ void hookEvents () {
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) != 0) callback = OS.XmNvalueChangedCallback;
 	OS.XtAddCallback (handle, callback, windowProc, SWT.Selection);
 }
-*/
 boolean mnemonicHit (char key) {
 	if (!setFocus ()) return false;
 	click ();
@@ -440,6 +439,7 @@ boolean mnemonicMatch (char key) {
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
+*/
 int processFocusIn () {
 	super.processFocusIn ();
 	// widget could be disposed at this point
@@ -639,6 +639,12 @@ public void setText (String string) {
 	}
 }
 
+int traversalCode () {
+	int code = super.traversalCode ();
+	if ((style & SWT.PUSH) != 0) return code;
+	return code | SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
+}
+
 ////////////////////////////////////////////////////////
 // Mac stuff
 ////////////////////////////////////////////////////////
@@ -689,28 +695,27 @@ private void setMode(int icon) {
 void handleResize(int hndl, MacRect bounds) {
 	fTopMargin= fBottomMargin= 0;
 	if ((style & SWT.PUSH) != 0 && image == null) {	// for push buttons
-		if (MacUtil.JAGUAR) {
-			Point result= MacUtil.computeSize(hndl);
-			int diff= bounds.getHeight()-result.y;
-			fTopMargin= diff/2;
-			fBottomMargin= diff-fTopMargin;
-		} else {
-			fTopMargin= MARGIN;
-			fBottomMargin= MARGIN;
-		}
+		Point result= MacUtil.computeSize(hndl);
+		int diff= bounds.getHeight()-result.y;
+		fTopMargin= diff/2;
+		fBottomMargin= diff-fTopMargin;
 		bounds.inset(MARGIN, fTopMargin, MARGIN, fBottomMargin);
 	}
 	super.handleResize(hndl, bounds);
 }
 
 void internalGetControlBounds(int hndl, MacRect bounds) {
-	OS.GetControlBounds(hndl, bounds.getData());
+	super.internalGetControlBounds(hndl, bounds);
 	if ((style & SWT.PUSH) != 0 && image == null)
 		bounds.inset(-MARGIN, -fTopMargin, -MARGIN, -fBottomMargin);
 }
 
 public void setFont (Font font) {
 	super.setFont(null);
+}
+
+int sendKeyEvent(int type, MacEvent mEvent, Event event) {
+	return OS.CallNextEventHandler(mEvent.getNextHandler(), mEvent.getEventRef());
 }
 
 }
