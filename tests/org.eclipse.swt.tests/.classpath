@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
-    <classpathentry kind="src" path="/org.eclipse.swt"/>
-    <classpathentry kind="src" path="JUnit Tests"/>
-    <classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.junit_3.8.1/junit.jar"/>
-    <classpathentry kind="output" path="bin"/>
+	<classpathentry sourcepath="JRE_SRC" kind="var" rootpath="JRE_SRCROOT" path="JRE_LIB"/>
+	<classpathentry kind="src" path="/org.eclipse.swt"/>
+	<classpathentry kind="src" path="JUnit Tests"/>
+	<classpathentry kind="var" path="ECLIPSE_HOME/plugins/org.junit_3.8.1/junit.jar"/>
+	<classpathentry kind="src" path="data"/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>

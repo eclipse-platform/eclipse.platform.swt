@@ -145,8 +145,15 @@ public class Browser3 {
 	}
 	
 	public static boolean test() {
-		int fail = 0;
-		String url = Browser3.class.getResource("browser3.html").toString();
+		int fail = 0;		
+		String url;
+		String pluginPath = System.getProperty("PLUGIN_PATH");
+		System.out.println("PLUGIN_PATH <"+pluginPath+">");
+		if (pluginPath == null) url = Browser3.class.getClassLoader().getResource("browser3.html").toString();
+		else {
+			pluginPath += "/";
+			url = pluginPath + "browser3.html";
+		}
 		String[] urls = {url};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test1(urls[i]); 
