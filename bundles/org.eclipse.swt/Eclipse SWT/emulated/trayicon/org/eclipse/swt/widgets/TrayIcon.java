@@ -69,6 +69,9 @@ public void setToolTipText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget ();
+	if (this.visible == visible) return;
+	if (visible) sendEvent (SWT.Show);
 	this.visible = visible;
+	if (!visible) sendEvent (SWT.Hide);
 }
 }
