@@ -228,7 +228,6 @@ public boolean open () {
 	boolean cancelled = false;
 	tracking = true;
 	drawRectangles ();
-	Event event = new Event ();
 	XAnyEvent xEvent = new XAnyEvent ();
 	int [] unused = new int [1];
 	int [] newX = new int [1], newY = new int [1], oldX = new int [1], oldY = new int [1];
@@ -247,7 +246,10 @@ public boolean open () {
 						rectangles [i].x += newX [0] - oldX [0];
 						rectangles [i].y += newY [0] - oldY [0];
 					}
-					sendEvent (SWT.Move);
+					Event event = new Event();
+					event.x = newX[0];
+					event.y = newY[0];
+					sendEvent (SWT.Move,event);
 					drawRectangles ();
 					oldX [0] = newX [0];  oldY [0] = newY [0];
 				}
