@@ -263,7 +263,7 @@ public void setForeground (Color color) {
  * the argument which may be null.
  * <p>
  * Note : No Layout can be set on this Control because it already
- * manages the size and position its children
+ * manages the size and position of its children.
  * </p>
  *
  * @param layout the receiver's new layout or null
