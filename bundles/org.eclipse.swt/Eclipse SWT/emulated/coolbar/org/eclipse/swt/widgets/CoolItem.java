@@ -116,8 +116,8 @@ protected void checkSubclass () {
 }
 void createWidget () {
 	composite = new Composite(parent, 0);
-	int pixel = parent.getBackgroundPixel ();
-	composite.setBackgroundPixel (pixel);
+	Color color = parent.getBackground ();
+	composite.setBackground (color);
 		
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
@@ -235,23 +235,13 @@ public Point getSize () {
 	checkWidget();
 	return composite.getSize();
 }
-int processMouseDown (Event event) {
+void processMouseDown (Event event) {
 	Shell shell = parent.getShell();
 	if (getGrabberArea().contains(event.x, event.y)) {
 		dragging = true;
 		mouseXOffset = event.x;
 		parent.setCursor(parent.dragCursor);
 	}
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-	if (!shell.isDisposed()) {
-		shell.setActiveControl(parent);
-	}
-	return 0;
 }
 void processMouseExit (Event event) {
 	if (!dragging) parent.setCursor(null);
