@@ -698,10 +698,4 @@ public void setText (String string) {
 	redraw ();
 }
 
-int traversalCode (int key, int theEvent) {
-	int code = super.traversalCode (key, theEvent);
-	if ((style & SWT.PUSH) != 0) return code;
-	return code | SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
-}
-
 }
