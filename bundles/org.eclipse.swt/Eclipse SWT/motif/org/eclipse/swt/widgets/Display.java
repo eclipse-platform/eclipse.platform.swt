@@ -137,6 +137,9 @@ public class Display extends Device {
 	int errorImage, infoImage, questionImage, warningImage, workingImage;
 	int errorMask, infoMask, questionMask, warningMask, workingMask;
 
+	/* System Cursors */
+	Cursor[] cursors = new Cursor [22];
+
 	/* Initial Guesses for Shell Trimmings. */
 	int leftBorderWidth = 2, rightBorderWidth = 2;
 	int topBorderHeight = 2, bottomBorderHeight = 2;
@@ -1535,6 +1538,14 @@ public Color getSystemColor (int id) {
 	if (xColor == null) return super.getSystemColor (SWT.COLOR_BLACK);
 	return Color.motif_new (this, xColor);
 }
+public Cursor getSystemCursor (int id) {
+	checkDevice ();
+	if (!(0 <= id && id < cursors.length)) return null;
+	if (cursors [id] == null) {
+		cursors [id] = new Cursor (this, id);
+	}
+	return cursors [id];
+}
 /**
  * Returns a reasonable font for applications to use.
  * On some platforms, this will match the "default font"
@@ -2366,6 +2377,14 @@ void releaseDisplay () {
 		OS.XmDestroyPixmap (screen, workingImage);
 		OS.XmDestroyPixmap (screen, workingMask);
 	}
+	errorImage = infoImage = questionImage = warningImage = 0;
+	errorMask = infoMask = questionMask = warningMask = 0;
+	
+	/* Release the System Cursors */
+	for (int i = 0; i < cursors.length; i++) {
+		if (cursors [i] != null) cursors [i].dispose ();
+	}
+	cursors = null;
 
 	/* Destroy the hidden Override shell parent */
 	if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);

@@ -163,7 +163,7 @@ public class Display extends Device {
 	/* System Images Cache */
 	int errorImage, infoImage, questionImage, warningImage;
 
-	/* System Cursors Cache*/
+	/* System Cursors Cache */
 	Cursor[] cursors = new Cursor [22];
 
 	/* ImageList Cache */	
