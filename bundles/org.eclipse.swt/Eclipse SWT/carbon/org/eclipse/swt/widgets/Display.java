@@ -1602,8 +1602,8 @@ public int internal_new_GC (GCData data) {
 		}
 		data.device = this;
 		data.window = window;
-		data.background = new float [] {1, 1, 1, 1};
-		data.foreground = new float [] {0, 0, 0, 1};
+		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
+		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
 	}
 	return context;

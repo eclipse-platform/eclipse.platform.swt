@@ -474,7 +474,7 @@ void createWidget () {
 }
 
 Color defaultBackground () {
-	return display.getSystemColor (SWT.COLOR_WHITE);
+	return display.getSystemColor (SWT.COLOR_WIDGET_BACKGROUND);
 }
 
 Font defaultFont () {
@@ -489,7 +489,7 @@ Font defaultFont () {
 }
 
 Color defaultForeground () {
-	return display.getSystemColor (SWT.COLOR_BLACK);
+	return display.getSystemColor (SWT.COLOR_WIDGET_FOREGROUND);
 }
 
 int defaultThemeFont () {	
@@ -1072,8 +1072,8 @@ public int internal_new_GC (GCData data) {
 		}
 		data.device = display;
 		data.thread = display.thread;
-		data.background = background != null ? background : new float [] {1, 1, 1, 1};
-		data.foreground = foreground != null ? foreground : new float [] {0, 0, 0, 1};
+		data.background = background != null ? background : defaultBackground ().handle;
+		data.foreground = foreground != null ? foreground : defaultForeground ().handle;
 		data.font = font != null ? font : defaultFont ();
 		data.visibleRgn = visibleRgn;
 		data.control = handle;
