@@ -93,6 +93,24 @@ public ToolBar (Composite parent, int style) {
 	OS.gtk_toolbar_set_orientation (handle, orientation);
 }
 
+Control [] _getChildren () {
+	Control [] children = super._getChildren ();
+	int count = 0;
+	ToolItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		if (items [i].control != null) count++;
+	}
+	if (count == 0) return children;
+	Control [] newChildren = new Control [children.length + count];
+	System.arraycopy (children, 0, newChildren, 0, children.length);
+	int index = children.length;
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item.control != null) newChildren [index++] = item.control;
+	}
+	return newChildren;
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.gtk_fixed_new ();
@@ -237,7 +255,8 @@ public ToolItem [] getItems () {
  */
 public int getRowCount () {
 	checkWidget();
-	return 1; /* On GTK, toolbars never wrap */
+	 /* On GTK, toolbars cannot wrap */
+	return 1;
 }
 
 /**
@@ -261,7 +280,6 @@ public int getRowCount () {
 public int indexOf (ToolItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-
 	// TEMPORARY CODE
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {

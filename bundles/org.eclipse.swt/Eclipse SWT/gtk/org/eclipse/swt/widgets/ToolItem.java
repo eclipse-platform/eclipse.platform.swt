@@ -634,7 +634,7 @@ public void setControl (Control control) {
 	if (oldControl == newControl) return;
 	this.control = newControl;
 	if (oldControl != null) {
-		OS.gtk_widget_reparent (oldControl.topHandle(), parent.handle);
+		OS.gtk_widget_reparent (oldControl.topHandle(), parent.parentingHandle ());
 	}
 	if (newControl != null) {
 		OS.gtk_widget_reparent (newControl.topHandle(), handle);
