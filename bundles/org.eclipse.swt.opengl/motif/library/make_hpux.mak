@@ -16,7 +16,7 @@ JAVA_HOME  = /opt/java1.3
 SWT_PREFIX   = gl
 WS_PREFIX    = motif
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX).sl
-SWT_OBJ      = gl.o glu.o structs.o glx.o
+SWT_OBJ      = swt.o gl.o glu.o structs.o glx.o
 SWT_LIB      = -L/usr/lib -L/opt/graphics/OpenGL/lib -G -lGL -lGLU -lc -ldld -lm
 
 #

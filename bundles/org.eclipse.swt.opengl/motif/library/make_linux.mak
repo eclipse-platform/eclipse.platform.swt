@@ -17,7 +17,7 @@ JAVA_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
 SWT_PREFIX   = gl
 WS_PREFIX    = motif
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX).so
-SWT_OBJ      = gl.o glu.o structs.o glx.o
+SWT_OBJ      = swt.o gl.o glu.o structs.o glx.o
 SWT_LIB      = -shared -L/usr/X11R6/lib -lGL -lGLU -lm
 
 #

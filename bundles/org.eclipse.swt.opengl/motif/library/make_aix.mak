@@ -17,7 +17,7 @@ JAVA_HOME   = /usr/java131
 SWT_PREFIX   = swt
 WS_PREFIX    = motif
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX).so
-SWT_OBJ      = gl.o glu.o structs.o glx.o
+SWT_OBJ      = swt.o gl.o glu.o structs.o glx.o
 SWT_LIB      = -G -bnoentry -lc_r -lC_r -lm -bexpall -lMrm -lX11 -lXext -liconv -lGL -lGLU
 
 #
