@@ -95,17 +95,19 @@ static Table checkNull(Table table) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
-/**
- * The receiver is destroyed. Remove it from its parent widget.
- */
-void disposeItem() {
-	getParent().removeItem(this);
+public void dispose() {
+	Table parent = getParent();
+	parent.removeItem(this);
+	super.dispose();
+}
+void doDispose() {
 	dataLabels = null;
 	trimmedLabels = null;
 	images = null;
 	selectionExtent = null;
-	super.disposeItem();
+	super.doDispose();
 }
+
 /**
  * Draw the image of the receiver for column 'index' at
  * 'destinationPosition' using 'gc'.

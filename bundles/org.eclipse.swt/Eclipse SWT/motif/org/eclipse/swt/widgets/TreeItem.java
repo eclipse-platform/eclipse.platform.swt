@@ -180,26 +180,7 @@ static TreeItem checkNull(TreeItem item) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
-/** 
- * Notify the parent that the receiver is being removed.
- * Reset cached data.
- */
-void doDispose() {
-	TreeItem parentItem = getParentItem();
-	
-	if (parentItem != null) {
-		parentItem.removeItem(this);
-	}
-	else {
-		getParent().removeItem(this);
-	}
-	setParentItem(null);
-	setImageExtent(null);
-	setItemExtent(null);	
-	setIndex(-1);
-	setPaintStartX(-1);
-	setTextYPosition(-1);
-}
+
 /**
  * Draw the hierarchy indicator at 'position'.
  *
@@ -1106,19 +1087,37 @@ public void setText(String newText) {
 void setTextYPosition(int yPosition) {
 	textYPosition = yPosition;
 }
-/** 
- * Destroy all children of the receiver	
- * Collapsing the item speeds up deleting the children.
- */
-void disposeItem() {
-	Tree parent = getParent();
+
+public void dispose() {
 	
 	// if the tree is being disposed don't bother collapsing the item since all 
 	// items in the tree will be deleted and redraws will not be processed anyway
+	Tree parent = getParent();
 	if (parent.isRemovingAll() == false) {
 		parent.collapseNoRedraw(this);
+	}	
+	
+	if (parentItem != null) {
+		parentItem.removeItem(this);
 	}
-	super.disposeItem();
+	else {
+		parent.removeItem(this);
+	}
+	
+	super.dispose();
+}
+
+void doDispose() {	
+	// Notify the parent that the receiver is being removed.
+	// Reset cached data.
+	setParentItem(null);
+	setImageExtent(null);
+	setItemExtent(null);	
+	setIndex(-1);
+	setPaintStartX(-1);
+	setTextYPosition(-1);
+	
+	super.doDispose();
 }
 /**
  * Returns <code>true</code> if the receiver is checked,

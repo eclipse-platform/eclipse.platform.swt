@@ -109,25 +109,19 @@ void deselectAll() {
 		treeItem.deselectAll();
 	}
 }
-/** 
- * Destroy all children of the receiver	
- */
-void disposeItem() {
+public void dispose() {
 	Vector children = getChildren();
 	AbstractTreeItem child;
 	while (children.size() > 0) {		// TreeItem objects are removed from vector during dispose
 		child = (AbstractTreeItem) children.firstElement();
 		child.dispose();
 	}
-	doDispose();
-	super.disposeItem();
+	super.dispose();
 }
-/**
- * Subclasses should free resources here
- */
 void doDispose() {
 	setChildren(null);
 	visibleItemCount = 0;
+	super.doDispose();
 }
 /**
  * Answer the Vector containing the child items of the receiver.

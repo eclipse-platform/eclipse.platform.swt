@@ -26,14 +26,13 @@ abstract class SelectableItem extends Item {
  */
 SelectableItem(SelectableItemWidget parent, int style) {
 	super(parent, style);
-	setParent(parent);
-	addListener(SWT.Dispose, new Listener() {
-		public void handleEvent(Event event) {disposeItem();}});	
+	setParent(parent);	
 }
-/**
- * Subclasses should free resources here
- */
-void disposeItem() {
+public void dispose() {
+	super.dispose();
+	doDispose();
+}
+void doDispose() {
 	setParent(null);
 }
 /**

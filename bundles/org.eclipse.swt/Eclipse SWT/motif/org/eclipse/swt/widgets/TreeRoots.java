@@ -41,16 +41,14 @@ void calculateVisibleItemCount() {
  * of this item.
  */
 void calculateVisibleItemCountParent() {}
-/** 
- * Destroy all children of the receiver	
- */
-void disposeItem() {
+
+public void dispose() {
 	Tree parent = (Tree) getSelectableParent();
 	
 	// all tree items are removed so we don't need to do
 	// time consuming screen updates for each removed item
 	parent.setRemovingAll(true);
-	super.disposeItem();
+	super.dispose();
 	parent.setRemovingAll(false);
 }
 /**
