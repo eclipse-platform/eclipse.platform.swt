@@ -466,9 +466,6 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 //			Cairo.cairo_new_path(cairo);
 //		}
 		//TODO - need 0.5 to draw at 0,0 with no transformation ???
-		System.out.println("filter="+ Cairo.cairo_surface_get_filter(srcImage.surface));
-		Cairo.cairo_surface_set_filter(srcImage.surface, 5);
-		System.out.println("\tfilter="+ Cairo.cairo_surface_get_filter(srcImage.surface));
 		Cairo.cairo_translate(cairo, destX - srcX + 0.5, destY - srcY);
 		if (srcWidth != destWidth || srcHeight != destHeight) {
 			Cairo.cairo_scale(cairo, destWidth / (float)srcWidth,  destHeight / (float)srcHeight);
