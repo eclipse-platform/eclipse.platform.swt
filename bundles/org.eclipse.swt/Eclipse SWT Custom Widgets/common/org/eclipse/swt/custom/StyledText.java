@@ -1664,6 +1664,37 @@ void calculateScrollBars() {
 	}
 }
 /**
+ * Calculates the top index based on the current vertical scroll offset.
+ * The top index is the index of the topmost fully visible line or the
+ * topmost partially visible line if no line is fully visible.
+ * The top index starts at 0.
+ */
+void calculateTopIndex() {
+	int oldTopIndex = topIndex;
+	int verticalIncrement = getVerticalIncrement();
+	int clientAreaHeight = getClientArea().height;
+	
+	if (verticalIncrement == 0) {
+		return;
+	}
+	topIndex = Compatibility.ceil(verticalScrollOffset, verticalIncrement);
+	// Set top index to partially visible top line if no line is fully 
+	// visible but at least some of the widget client area is visible.
+	// Fixes bug 15088.
+	if (topIndex > 0 && clientAreaHeight > 0) {
+		int bottomPixel = verticalScrollOffset + clientAreaHeight;
+		int fullLineTopPixel = topIndex * verticalIncrement;
+		int fullLineVisibleHeight = bottomPixel - fullLineTopPixel;
+		if (fullLineVisibleHeight < verticalIncrement) {
+			topIndex--;
+		}
+	}	
+	if (topIndex != oldTopIndex) {
+		lineCache.calculate(topIndex, getPartialBottomIndex() - topIndex + 1);
+		setHorizontalScrollBar();
+	}
+}
+/**
  * Hides the scroll bars if widget is created in single line mode.
  */
 static int checkStyle(int style) {
@@ -4755,6 +4786,7 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 void handleResize(Event event) {
 	int oldHeight = clientAreaHeight;
 	int oldWidth = clientAreaWidth;
+	
 	clientAreaHeight = getClientArea().height;
 	clientAreaWidth = getClientArea().width;
 	if (wordWrap) {
@@ -4772,6 +4804,9 @@ void handleResize(Event event) {
 		newItemCount = Math.min(newItemCount, lineCount - oldBottomIndex);
 		lineCache.calculate(oldBottomIndex, newItemCount);
 	}	
+	if (oldHeight != clientAreaHeight) {
+		calculateTopIndex();
+	}
 	setScrollBars();
 	claimBottomFreeSpace();
 	claimRightFreeSpace();	
@@ -7170,7 +7205,6 @@ public void setTopPixel(int pixel) {
 void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 	Rectangle clientArea;
 	ScrollBar verticalBar = getVerticalBar();
-	int verticalIncrement = getVerticalIncrement();
 	
 	if (pixelOffset == verticalScrollOffset) {
 		return;
@@ -7183,15 +7217,9 @@ void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 		0, 0, 									// destination x, y
 		0, pixelOffset - verticalScrollOffset,	// source x, y
 		clientArea.width, clientArea.height, true);
-	if (verticalIncrement != 0) {
-		int oldTopIndex = topIndex;		
-		topIndex = Compatibility.ceil(pixelOffset, verticalIncrement);
-		if (topIndex != oldTopIndex) {
-			lineCache.calculate(topIndex, getPartialBottomIndex() - topIndex + 1);
-			setHorizontalScrollBar();
-		}
-	}
-	verticalScrollOffset = pixelOffset;	
+
+	verticalScrollOffset = pixelOffset;
+	calculateTopIndex();
 	setCaretLocation();
 }
 /**
