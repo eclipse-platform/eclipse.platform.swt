@@ -516,6 +516,11 @@ protected void disposeCOMInterfaces() {
  *         success
  */
 public int doVerb(int verb) {
+	// Not all OLE clients (for example PowerPoint) can be set into the running state in the constructor.
+	// The fix is to ensure that the client is in the running state before invoking any verb on it.
+	if (state == STATE_NONE) {
+		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state = STATE_RUNNING;
+	}	
 	if (state == STATE_NONE || isStatic)
 		return COM.E_FAIL;
 	
