@@ -324,7 +324,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 	return result;
 }
 
-void drawRectangles (int window, boolean erase) {
+void drawRectangles (int window, Rectangle [] rects, boolean erase) {
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		Shell shell = parent.getShell ();
@@ -340,8 +340,8 @@ void drawRectangles (int window, boolean erase) {
 	OS.CGContextScaleCTM (context [0], 1, -1);
 	OS.CGContextTranslateCTM (context [0], 0, portRect.top - portRect.bottom);
 	CGRect cgRect = new CGRect ();
-	for (int i=0; i<rectangles.length; i++) {
-		Rectangle rect = rectangles [i];
+	for (int i=0; i<rects.length; i++) {
+		Rectangle rect = rects [i];
 		cgRect.x = rect.x;
 		cgRect.y = rect.y;
 		cgRect.width = rect.width;
@@ -397,6 +397,7 @@ void moveRectangles (int xChange, int yChange) {
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) return;
 	if (yChange < 0 && ((style & SWT.UP) == 0)) return;
 	if (yChange > 0 && ((style & SWT.DOWN) == 0)) return;
+	bounds.x += xChange;	bounds.y += yChange;
 	for (int i = 0; i < rectangles.length; i++) {
 		rectangles [i].x += xChange;
 		rectangles [i].y += yChange;
@@ -422,7 +423,7 @@ public boolean open () {
 	tracking = true;
 	int window = display.createOverlayWindow ();
 	OS.ShowWindow (window);
-	drawRectangles (window, false);
+	drawRectangles (window, rectangles, false);
 	
 	/*
 	* If exactly one of UP/DOWN is specified as a style then set the cursor
@@ -474,32 +475,102 @@ public boolean open () {
 						newX = where.h;
 						newY = where.v;	
 						if (newX != oldX || newY != oldY) {
-							drawRectangles (window, true);
+							Rectangle [] oldRectangles = rectangles;
+							Rectangle [] rectsToErase = new Rectangle [rectangles.length];
+							for (int i = 0; i < rectangles.length; i++) {
+								Rectangle current = rectangles [i];
+								rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
+							}
 							event.x = newX;
 							event.y = newY;
 							if ((style & SWT.RESIZE) != 0) {
 								resizeRectangles (newX - oldX, newY - oldY);
-								cursorPos = adjustResizeCursor ();
-								newX = cursorPos.x; newY = cursorPos.y;
 								inEvent = true;
 								sendEvent (SWT.Resize, event);
+								inEvent = false;
+								/*
+								* It is possible (but unlikely), that application
+								* code could have disposed the widget in the move
+								* event.  If this happens, return false to indicate
+								* that the tracking has failed.
+								*/
+								if (isDisposed ()) {
+									cancelled = true;
+									break;
+								}
+								boolean draw = false;
+								/*
+								 * It is possible that application code could have
+								 * changed the rectangles in the resize event.  If this
+								 * happens then only redraw the tracker if the rectangle
+								 * values have changed.
+								 */
+								if (rectangles != oldRectangles) {
+									int length = rectangles.length;
+									if (length != rectsToErase.length) {
+										draw = true;
+									} else {
+										for (int i = 0; i < length; i++) {
+											if (!rectangles [i].equals (rectsToErase [i])) {
+												draw = true;
+												break;
+											}
+										}
+									}
+								}
+								else {
+									draw = true;
+								}
+								if (draw) {
+									drawRectangles (window, rectsToErase, true);
+									drawRectangles (window, rectangles, false);
+								}
+								cursorPos = adjustResizeCursor ();
+								newX = cursorPos.x; newY = cursorPos.y;
 							} else {
 								moveRectangles (newX - oldX, newY - oldY);
 								inEvent = true;
 								sendEvent (SWT.Move, event);
+								inEvent = false;
+								/*
+								* It is possible (but unlikely), that application
+								* code could have disposed the widget in the move
+								* event.  If this happens, return false to indicate
+								* that the tracking has failed.
+								*/
+								if (isDisposed ()) {
+									cancelled = true;
+									break;
+								}
+								boolean draw = false;
+								/*
+								 * It is possible that application code could have
+								 * changed the rectangles in the move event.  If this
+								 * happens then only redraw the tracker if the rectangle
+								 * values have changed.
+								 */
+								if (rectangles != oldRectangles) {
+									int length = rectangles.length;
+									if (length != rectsToErase.length) {
+										draw = true;
+									} else {
+										for (int i = 0; i < length; i++) {
+											if (!rectangles [i].equals (rectsToErase [i])) {
+												draw = true;
+												break;
+											}
+										}
+									}
+									cursorPos = adjustMoveCursor ();
+									newX = cursorPos.x; newY = cursorPos.y;
+								} else {
+									draw = true;
+								}
+								if (draw) {
+									drawRectangles (window, rectsToErase, true);
+									drawRectangles (window, rectangles, false);
+								}
 							}
-							inEvent = false;
-							/*
-							* It is possible (but unlikely), that application
-							* code could have disposed the widget in the move
-							* event.  If this happens, return false to indicate
-							* that the tracking has failed.
-							*/
-							if (isDisposed ()) {
-								cancelled = true;
-								break;
-							}
-							drawRectangles (window, false);
 							oldX = newX;  oldY = newY;
 						}
 						tracking = eventKind != OS.kEventMouseUp;
@@ -540,34 +611,101 @@ public boolean open () {
 								break;
 						}
 						if (xChange != 0 || yChange != 0) {
-							drawRectangles (window, true);
+							Rectangle [] oldRectangles = rectangles;
+							Rectangle [] rectsToErase = new Rectangle [rectangles.length];
+							for (int i = 0; i < rectangles.length; i++) {
+								Rectangle current = rectangles [i];
+								rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
+							}
 							newX = oldX + xChange;
 							newY = oldY + yChange;
 							event.x = newX;
 							event.y = newY;
 							if ((style & SWT.RESIZE) != 0) {
 								resizeRectangles (xChange, yChange);
-								cursorPos = adjustResizeCursor ();
 								inEvent = true;
 								sendEvent (SWT.Resize, event);
+								inEvent = false;
+								/*
+								* It is possible (but unlikely) that application
+								* code could have disposed the widget in the move
+								* event.  If this happens return false to indicate
+								* that the tracking has failed.
+								*/
+								if (isDisposed ()) {
+									cancelled = true;
+									break;
+								}
+								boolean draw = false;
+								/*
+								 * It is possible that application code could have
+								 * changed the rectangles in the resize event.  If this
+								 * happens then only redraw the tracker if the rectangle
+								 * values have changed.
+								 */
+								if (rectangles != oldRectangles) {
+									int length = rectangles.length;
+									if (length != rectsToErase.length) {
+										draw = true;
+									} else {
+										for (int i = 0; i < length; i++) {
+											if (!rectangles [i].equals (rectsToErase [i])) {
+												draw = true;
+												break;
+											}
+										}
+									}
+								} else {
+									draw = true;
+								}
+								if (draw) {
+									drawRectangles (window, rectsToErase, true);
+									drawRectangles (window, rectangles, false);
+								}
+								cursorPos = adjustResizeCursor ();
 							} else {
 								moveRectangles (xChange, yChange);
-								cursorPos = adjustMoveCursor ();
 								inEvent = true;
 								sendEvent (SWT.Move, event);
+								inEvent = false;
+								/*
+								* It is possible (but unlikely) that application
+								* code could have disposed the widget in the move
+								* event.  If this happens return false to indicate
+								* that the tracking has failed.
+								*/
+								if (isDisposed ()) {
+									cancelled = true;
+									break;
+								}
+								boolean draw = false;
+								/*
+								 * It is possible that application code could have
+								 * changed the rectangles in the move event.  If this
+								 * happens then only redraw the tracker if the rectangle
+								 * values have changed.
+								 */
+								if (rectangles != oldRectangles) {
+									int length = rectangles.length;
+									if (length != rectsToErase.length) {
+										draw = true;
+									} else {
+										for (int i = 0; i < length; i++) {
+											if (!rectangles [i].equals (rectsToErase [i])) {
+												draw = true;
+												break;
+											}
+										}
+									}
+								} else {
+									draw = true;
+								}
+								if (draw) {
+									drawRectangles (window, rectsToErase, true);
+									drawRectangles (window, rectangles, false);
+								}
+								cursorPos = adjustMoveCursor ();
 							}
-							inEvent = false;
-							/*
-							* It is possible (but unlikely) that application
-							* code could have disposed the widget in the move
-							* event.  If this happens return false to indicate
-							* that the tracking has failed.
-							*/
-							if (isDisposed ()) {
-								cancelled = true;
-								break;
-							}
-							drawRectangles (window, false);
 							oldX = cursorPos.x;  oldY = cursorPos.y;
 						}
 						break;
@@ -590,7 +728,7 @@ public boolean open () {
 			display.setCursor (clientCursor.handle);
 		}
 	}
-	if (!isDisposed()) drawRectangles (window, true);
+	if (!isDisposed()) drawRectangles (window, rectangles, true);
 	OS.DisposeWindow (window);
 	tracking = false;
 	display.grabControl = null;
