@@ -2550,14 +2550,17 @@ public void setTopIndex(int index) {
 	checkWidget();
 	int itemCount = getItemCount();
 	int itemCountWhole = getItemCountWhole();
-	
-	if (index < 0 || itemCount == 0) {
-		return;
+	if (index < 0 || itemCount == 0) return;
+	if (index >= itemCount) index = itemCount - 1;		
+	if (itemCount > itemCountWhole) {
+		if (index + itemCountWhole <= itemCount) {
+			super.setTopIndex(index, true);
+		} else if (index > itemCount - itemCountWhole) {
+			super.setTopIndex(itemCount - itemCountWhole, true);
+		} else {
+			showItem(getItem(index));
+		}
 	}
-	if (index >= itemCount) {
-		index = itemCount - itemCountWhole;
-	}
-	super.setTopIndex(index, true);
 }
 /**
  * Set the index of the first visible item in the receiver's client 
