@@ -1103,7 +1103,7 @@ public Shell [] getShells () {
 				if (result [j] == widget) break;
 				j++;
 			}
-			if (j == index)	result [index++] = (Shell) widget;
+			if (j == index) result [index++] = (Shell) widget;
 		}
 	}
 	if (index == length) return result;
