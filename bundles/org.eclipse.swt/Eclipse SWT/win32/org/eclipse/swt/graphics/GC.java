@@ -1346,7 +1346,7 @@ public void drawText (String string, int x, int y, int flags) {
 	int length = buffer.length();
 	if (length == 0) return;
 	RECT rect = new RECT();
-	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
+	OS.SetRect(rect, x, y, 0x7FFFFFFF, 0x7FFFFFFF);
 	int uFormat = OS.DT_LEFT;
 	if ((flags & SWT.DRAW_DELIMITER) == 0) uFormat |= OS.DT_SINGLELINE;
 	if ((flags & SWT.DRAW_TAB) != 0) uFormat |= OS.DT_EXPANDTABS;
