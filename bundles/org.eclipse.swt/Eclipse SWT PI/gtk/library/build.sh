@@ -1,3 +1,4 @@
+#!/bin/sh
 #*******************************************************************************
 # Copyright (c) 2000, 2004 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials 
@@ -11,6 +12,75 @@
 #     Tom Tromey (Red Hat, Inc.)
 #*******************************************************************************
 
-#!/bin/sh
+cd `dirname $0`
 
-make -f make_gtk.mak ${1} ${2} ${3} ${4}
+if [ "${OS}" = "" ]; then
+	OS=`uname -s`
+fi
+if [ "${MODEL}" = "" ]; then
+	MODEL=`uname -m`
+fi
+QT_HOME=$QTDIR
+
+case $OS in
+	"Linux")
+		case $MODEL in
+			"x86_64")
+				CC=gcc
+				LD=gcc
+				if [ "${JAVA_HOME}" = "" ]; then
+					JAVA_HOME=/bluebird/teamswt/swt-builddir/jdk1.5.0
+				fi
+				AWT_LIB_PATH=$JAVA_HOME/jre/lib/amd64
+				XTEST_LIB_PATH=/usr/X11R6/lib64
+				SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
+				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/amd64
+				makefile="make_linux.mak"
+				echo "Building Linux GTK AMD64 version of SWT"
+				;;
+			i?86)
+				CC=gcc
+				LD=gcc
+				if [ "${JAVA_HOME}" = "" ]; then
+					JAVA_HOME=/bluebird/teamswt/swt-builddir/IBMJava2-141
+				fi
+				AWT_LIB_PATH=$JAVA_HOME/jre/bin
+				XTEST_LIB_PATH=/usr/X11R6/lib
+				if [ "${GECKO_SDK}" = "" ]; then
+					GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
+				fi
+				OUTPUT_DIR=../../../org.eclipse.swt.gtk/os/linux/x86
+				makefile="make_linux.mak"
+				echo "Building Linux GTK x86 version of SWT"
+				;;
+			*)
+				echo "*** Unknown MODEL <${MODEL}>"
+				;;	
+		esac
+		;;
+	"SunOS")
+		CC=gcc
+		LD=gcc
+		if [ "${JAVA_HOME}" = "" ]; then
+			JAVA_HOME=/usr/j2se
+		fi
+		AWT_LIB_PATH=$JAVA_HOME/jre/lib/sparc
+		PATH=/usr/ccs/bin:/usr/local/bin:$PATH
+		export PATH
+		XTEST_LIB_PATH=/usr/openwin/lib/
+#		if [ "${GECKO_SDK}" = "" ]; then
+#			GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
+#		fi
+		OUTPUT_DIR=../../../org.eclipse.swt.gtk/os/solaris/sparc
+		makefile="make_solaris.mak"
+		echo "Building Solaris GTK version of SWT"
+		;;
+	*)
+
+	echo "*** Unknown OS <${OS}>"
+	;;
+esac
+
+export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK SWT_PTR_CFLAGS OUTPUT_DIR
+
+make -f $makefile ${1} ${2} ${3} ${4}
