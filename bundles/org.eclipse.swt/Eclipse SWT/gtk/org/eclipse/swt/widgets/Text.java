@@ -742,13 +742,13 @@ public String getText () {
 public String getText (int start, int end) {
 	checkWidget ();
 	if (start > end) return "";
-	if (!(0 <= start && start <= end)) error (SWT.ERROR_INVALID_RANGE);
+	start = Math.max (0, start);
 	int address;
 	if ((style & SWT.SINGLE) != 0) {
 		address = OS.gtk_editable_get_chars (handle, start, end + 1);
 	} else {
 		int length = OS.gtk_text_buffer_get_char_count (bufferHandle);
-		if (end >= length) error (SWT.ERROR_INVALID_RANGE);
+		end = Math.min (end, length - 1);
 		byte [] startIter =  new byte [ITER_SIZEOF];
 		byte [] endIter =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
@@ -760,7 +760,6 @@ public String getText (int start, int end) {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, address, length);
 	OS.g_free (address);
-	if (end - start + 1 != length) error (SWT.ERROR_INVALID_RANGE);
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 

@@ -843,7 +843,8 @@ public String getText () {
 }
 
 /**
- * Gets a range of text.
+ * Gets a range of text.  Returns an empty string if the specified
+ * range's start is greater than its end.
  * <p>
  * Indexing is zero based.  The range of
  * a selection is from 0..N-1 where N is
