@@ -430,6 +430,7 @@ void hookEvents () {
 		int handle = handles [i];
 		if (handle != 0) {
 			OS.gtk_widget_add_events (handle, mask);
+			OS.g_signal_connect (handle, OS.popup_menu, windowProc2, POPUP_MENU);
 			OS.g_signal_connect (handle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
 			OS.g_signal_connect (handle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
 			OS.g_signal_connect (handle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);

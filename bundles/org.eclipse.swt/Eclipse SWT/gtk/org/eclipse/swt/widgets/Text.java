@@ -38,7 +38,7 @@ public class Text extends Scrollable {
 	
 	static final int INNER_BORDER = 2;
 	static final int ITER_SIZEOF = 56;
-		
+	
 	public final static int LIMIT;
 	public final static String DELIMITER;
 	/*
