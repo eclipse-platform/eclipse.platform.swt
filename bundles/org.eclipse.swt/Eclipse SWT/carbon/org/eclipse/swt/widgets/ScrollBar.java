@@ -508,10 +508,7 @@ public void setIncrement (int value) {
 public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
-	boolean notVisible= !isVisible();
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
     OS.SetControl32BitMaximum(handle, value-OS.GetControlViewSize(handle));
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
 }
 /**
  * Sets the minimum value which the receiver will allow
@@ -528,10 +525,7 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
-	boolean notVisible= !isVisible();
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
     OS.SetControl32BitMinimum(handle, value);
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
 }
 /**
  * Sets the amount that the receiver's value will be
@@ -566,10 +560,7 @@ public void setPageIncrement (int value) {
 public void setSelection (int selection) {
 	checkWidget();
 	if (selection < 0) return;
-	boolean notVisible= !isVisible();
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
     OS.SetControl32BitValue(handle, selection);
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
 }
 /**
  * Sets the size of the receiver's thumb relative to the
@@ -589,11 +580,8 @@ public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
 	int oldMaximum= OS.GetControl32BitMaximum(handle) + OS.GetControlViewSize(handle);
-	boolean notVisible= !isVisible();
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
     OS.SetControlViewSize(handle, value);
     OS.SetControl32BitMaximum(handle, oldMaximum-value);
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
 }
 /**
  * Sets the receiver's selection, minimum value, maximum
@@ -625,13 +613,10 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (maximum - minimum - thumb < 0) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
-	boolean notVisible= !isVisible();
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
 	OS.SetControl32BitMinimum(handle, minimum);
 	OS.SetControl32BitMaximum(handle, maximum-thumb);
 	OS.SetControlViewSize(handle, thumb);
 	OS.SetControl32BitValue(handle, selection);
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
 	this.increment= increment;
 	this.pageIncrement= pageIncrement;
 }
@@ -673,10 +658,7 @@ public void setVisible (boolean visible) {
 }
 
 void internalSetBounds(MacRect bounds) {
-	boolean notVisible= !isVisible();
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
 	OS.SetControlBounds(handle, bounds.getData());
-	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
 }
 
 }
