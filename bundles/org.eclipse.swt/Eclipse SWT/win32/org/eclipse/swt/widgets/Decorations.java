@@ -1220,6 +1220,13 @@ int windowProc (int msg, int wParam, int lParam) {
 LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
 	if (result != null) return result;
+	/*
+	* When the high word of lParam is non-zero, the activation
+	* state of the window is being changed while the widnow is
+	* minimized. If this is the case, do not report activation
+	* events or save and restore the focus.
+	*/
+	if ((wParam >> 16) != 0) return result;
 	if ((wParam & 0xFFFF) == 0) {
 		/*
 		* It is possible (but unlikely), that application
