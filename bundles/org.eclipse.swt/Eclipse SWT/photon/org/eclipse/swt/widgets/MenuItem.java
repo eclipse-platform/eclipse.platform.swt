@@ -165,7 +165,8 @@ public boolean isEnabled () {
 }
 
 int processActivate (int info) {
-	return processArm (info);
+	showMenu ();
+	return OS.Pt_CONTINUE;
 }
 
 int processSelection (int info) {
@@ -196,42 +197,8 @@ int processShow (int info) {
 }
 
 int processArm(int info) {
-	if (menu != null) {
-		int menuHandle = menu.handle;
-		if (!OS.PtWidgetIsRealized (menuHandle)) {
-			if ((parent.style & SWT.BAR) == 0) {
-				int [] args = {OS.Pt_ARG_MENU_FLAGS, OS.Pt_MENU_CHILD, OS.Pt_MENU_CHILD};
-				OS.PtSetResources (menuHandle, args.length / 3, args);
-			}
-			OS.PtReParentWidget (menuHandle, handle);
-			
-			/*
-			* Bug in Photon. PtPositionMenu does not position the menu
-			* properly when the menu is a direct child a menu bar item.
-			* The fix is to position the menu ourselfs.
-			*/
-			if ((parent.style & SWT.BAR) != 0) {
-				PhPoint_t pt = new PhPoint_t ();
-				short [] x = new short [1], y = new short [1];
-				OS.PtGetAbsPosition (handle, x, y);
-				pt.x = x [0];
-				pt.y = y [0];
-				int [] args = {OS.Pt_ARG_HEIGHT, 0, 0};
-				OS.PtGetResources (handle, args.length / 3, args);
-				pt.y += args [1];
-				int ptr = OS.malloc (PhPoint_t.sizeof);
-				OS.memmove (ptr, pt, PhPoint_t.sizeof);
-				args = new int [] {OS.Pt_ARG_POS, ptr, 0};
-				OS.PtSetResources (menuHandle, args.length / 3, args);
-				OS.free (ptr);
-			} else {
-				OS.PtPositionMenu (menuHandle, null);
-			}
-			
-			menu.sendEvent (SWT.Show);
-			OS.PtRealizeWidget (menuHandle);
-		}
-	}
+	postEvent (SWT.Arm);
+	showMenu ();
 	return OS.Pt_CONTINUE;
 }
 
@@ -448,6 +415,44 @@ public void setText (String string) {
 	* to recalculate the size.
 	*/
 	if (OS.PtWidgetIsRealized (handle)) OS.PtExtentWidget (handle);
+}
+
+void showMenu() {
+	if (menu == null)  return;
+	int menuHandle = menu.handle;
+	if (!OS.PtWidgetIsRealized (menuHandle)) {
+		if ((parent.style & SWT.BAR) == 0) {
+			int [] args = {OS.Pt_ARG_MENU_FLAGS, OS.Pt_MENU_CHILD, OS.Pt_MENU_CHILD};
+			OS.PtSetResources (menuHandle, args.length / 3, args);
+		}
+		OS.PtReParentWidget (menuHandle, handle);
+		
+		/*
+		* Bug in Photon. PtPositionMenu does not position the menu
+		* properly when the menu is a direct child a menu bar item.
+		* The fix is to position the menu ourselfs.
+		*/
+		if ((parent.style & SWT.BAR) != 0) {
+			PhPoint_t pt = new PhPoint_t ();
+			short [] x = new short [1], y = new short [1];
+			OS.PtGetAbsPosition (handle, x, y);
+			pt.x = x [0];
+			pt.y = y [0];
+			int [] args = {OS.Pt_ARG_HEIGHT, 0, 0};
+			OS.PtGetResources (handle, args.length / 3, args);
+			pt.y += args [1];
+			int ptr = OS.malloc (PhPoint_t.sizeof);
+			OS.memmove (ptr, pt, PhPoint_t.sizeof);
+			args = new int [] {OS.Pt_ARG_POS, ptr, 0};
+			OS.PtSetResources (menuHandle, args.length / 3, args);
+			OS.free (ptr);
+		} else {
+			OS.PtPositionMenu (menuHandle, null);
+		}
+		
+		menu.sendEvent (SWT.Show);
+		OS.PtRealizeWidget (menuHandle);
+	}
 }
 
 }
