@@ -722,8 +722,8 @@ public class OS {
 	public static final int XmNdefaultButtonShadowThickness = malloc ("defaultButtonShadowThickness", 4);
 	public static final int XmNdialogTitle = malloc ("dialogTitle", 4);
 	public static final int XmNdirectory = malloc ("directory", 4);
-	public static final int XmNdirSpec = malloc ("dirSpec", 4);
 	public static final int XmNdirMask = malloc ("dirMask", 4);
+	public static final int XmNdirSpec = malloc ("dirSpec", 4);
 	public static final int XmNdragCallback = malloc ("dragCallback", 4);
 	public static final int XmNdragDropFinishCallback = malloc ("dragDropFinishCallback", 4);
 	public static final int XmNdragProc = malloc ("dragProc", 4);
@@ -1147,13 +1147,13 @@ public static final synchronized native boolean XmStringCompare (int xmString1, 
 public static final synchronized native int XmStringComponentCreate (int type, int length, byte[] value);
 public static final synchronized native int XmStringCreate (byte [] string, byte [] charset);
 public static final synchronized native int XmStringCreateLocalized (byte [] string);
-public static final synchronized native int XmStringCreateLtoR (byte [] string, byte [] charset);
+//public static final synchronized native int XmStringCreateLtoR (byte [] string, byte [] charset);
 public static final synchronized native void XmStringDraw (int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);
 public static final synchronized native void XmStringDrawImage (int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);
 public static final synchronized native void XmStringDrawUnderline (int display, int window, int fontlist, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip, int xmStringUnderline);
 public static final synchronized native boolean XmStringEmpty (int s1);
 public static final synchronized native void XmStringFree (int xmString);
-public static final synchronized native boolean XmStringGetLtoR (int xmString, byte [] charset, int [] text);
+//public static final synchronized native boolean XmStringGetLtoR (int xmString, byte [] charset, int [] text);
 public static final synchronized native int XmStringGenerate(byte[] text, byte[] tag, int type, byte[] rendition);
 public static final synchronized native int XmStringHeight (int fontList, int xmString);
 public static final synchronized native int XmStringParseText (byte[] text, int textEnd, byte [] tag, int tagType, int [] parseTable, int parseCount, int callData);
