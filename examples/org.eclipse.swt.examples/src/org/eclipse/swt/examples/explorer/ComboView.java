@@ -7,6 +7,9 @@ package org.eclipse.swt.examples.explorer;
 
 import org.eclipse.swt.*;import org.eclipse.swt.events.*;import org.eclipse.swt.widgets.*;import java.io.*;
 
+/**
+ * A navigation bar
+ */
 public class ComboView {
 	/* package */ final Combo combo;
 	private final FileViewer viewer;

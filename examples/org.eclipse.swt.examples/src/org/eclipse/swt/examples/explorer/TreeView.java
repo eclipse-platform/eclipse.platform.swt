@@ -5,15 +5,15 @@ package org.eclipse.swt.examples.explorer;
  */
 import org.eclipse.swt.*;import org.eclipse.swt.dnd.*;import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.layout.*;import org.eclipse.swt.widgets.*;import java.io.*;import java.util.*;
 
-class TreeView {
+/** * A directory tree */class TreeView {
 	private static final String
 		TREEITEMDATA_FILE           = "TreeItem.file",
 			// File: File associated with tree item
 		TREEITEMDATA_IMAGEEXPANDED  = "TreeItem.imageExpanded",
 			// Image: shown when item is expanded
-		TREEITEMDATA_IMAGECOLLAPSED = "TreeItem.imageCollapsed";
+		TREEITEMDATA_IMAGECOLLAPSED = "TreeItem.imageCollapsed",
 			// Image: shown when item is collapsed
-
+		TREEITEMDATA_STUB           = "TreeItem.stub";			// Object: if not present or null then the item has not been populated
 	private final Tree tree;
 	private final Label scopeLabel;
 	private final Shell shell;
@@ -41,7 +41,7 @@ class TreeView {
 		composite.setLayout(gridLayout);
 
 		scopeLabel = new Label(composite, SWT.BORDER);
-		scopeLabel.setText(FileViewer.getResourceString("All_folders"));
+		scopeLabel.setText(FileViewer.getResourceString("details.AllFolders.text"));
 		scopeLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
 
 		tree = new Tree(composite, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE);
@@ -57,9 +57,7 @@ class TreeView {
 					viewer.notifySelectedDirectory(file);
 				}
 			}
-			public void widgetDefaultSelected(SelectionEvent event) {
-			}
-		});
+			public void widgetDefaultSelected(SelectionEvent event) {				final TreeItem[] selection = tree.getSelection();				if (selection != null && selection.length != 0) {					TreeItem item = selection[0];					item.setExpanded(true);					expandTreeItem(item);				}			}		});
 		tree.addTreeListener(new TreeAdapter() {
 			public void treeExpanded(TreeEvent event) {
 				final TreeItem item = (TreeItem) event.item;
@@ -143,15 +141,14 @@ class TreeView {
 	}
 
 	/**
-	 * Populate an item in the tree with a complete directory listing.
+	 * Handles expand events on a tree item.
 	 * 
 	 * @param item the TreeItem to fill in
 	 */
 	private void expandTreeItem(TreeItem item) {
-		final File file = (File) item.getData(TREEITEMDATA_FILE);
-
+		final File file = (File) item.getData(TREEITEMDATA_FILE);		final Object stub = item.getData(TREEITEMDATA_STUB);		if (stub == null) refreshTreeItem(item, file);	}		/**	 * Populates an item in the tree with a complete directory listing.	 * 	 * @param item the TreeItem to fill in	 * @param file the directory to use	 */	private void refreshTreeItem(TreeItem item, File file) {
 		/* Get directory listing */
-		shell.setCursor(Images.CursorWait);
+		shell.setCursor(IconCache.stockCursors[IconCache.cursorWait]);
 		File[] subFiles = null;
 		if (file != null) {
 			subFiles = FileViewer.getDirectoryList(file);
@@ -179,8 +176,7 @@ class TreeView {
 		} else {
 			/* Error or nothing found -- collapse the item */
 			item.setExpanded(false);
-		}			
-		shell.setCursor(null);
+		}				// Clear stub flag		item.setData(TREEITEMDATA_STUB, this);		shell.setCursor(IconCache.stockCursors[IconCache.cursorDefault]);
 	}
 
 	/**
@@ -201,15 +197,13 @@ class TreeView {
 		}
 		// Recursively expand the tree to get to the specified directory
 		TreeItem[] items = tree.getItems();
-		TreeItem lastItem = null;
-		for (int i = path.size() - 1; i >= 0; --i) {
+		TreeItem lastItem = null;		for (int i = path.size() - 1; i >= 0; --i) {
 			final File pathElement = (File) path.elementAt(i);
 			TreeItem item = searchItems(items, pathElement);
 			if (item == null) break;
 			lastItem = item;
-			if (! item.getExpanded()) expandTreeItem(item);
-			items = item.getItems();
-		}
+			if (i != 0 && !item.getExpanded()) {				item.setExpanded(true);				expandTreeItem(item);			}
+			items = item.getItems();		}
 		tree.setSelection((lastItem != null) ? new TreeItem[] { lastItem } : new TreeItem[0]);
 	}
 	
@@ -236,8 +230,7 @@ class TreeView {
 	/* package */ void refreshFiles(File[] files) {
 		if (files == null) {
 			File[] roots = viewer.getRoots();
-	
-			for (int i = 0; i < roots.length; ++i) {
+			tree.removeAll();			for (int i = 0; i < roots.length; ++i) {
 				final File file = roots[i];
 				TreeItem item = new TreeItem(tree, SWT.NULL);
 				initTreeItemVolume(item, file);
@@ -256,9 +249,9 @@ class TreeView {
 	 */
 	private void initTreeItemVolume(TreeItem item, File volume) {
 		item.setText(volume.getPath());
-		item.setImage(Images.Drive);
+		item.setImage(IconCache.stockImages[IconCache.iconClosedDrive]);
 		item.setData(TREEITEMDATA_FILE, volume);
-	}
+		item.setData(TREEITEMDATA_IMAGEEXPANDED, IconCache.stockImages[IconCache.iconOpenDrive]);		item.setData(TREEITEMDATA_IMAGECOLLAPSED, IconCache.stockImages[IconCache.iconClosedDrive]);	}
 
 	/**
 	 * Initializes a folder item.
@@ -268,9 +261,5 @@ class TreeView {
 	 */
 	private void initTreeItemFolder(TreeItem item, File folder) {
 		item.setText(folder.getName());
-		item.setImage(Images.Folder);
-		item.setData(TREEITEMDATA_FILE, folder);
-		item.setData(TREEITEMDATA_IMAGEEXPANDED, Images.FolderOpen);
-		item.setData(TREEITEMDATA_IMAGECOLLAPSED, Images.Folder);
-	}
+		item.setImage(IconCache.stockImages[IconCache.iconClosedFolder]);		item.setData(TREEITEMDATA_FILE, folder);		item.setData(TREEITEMDATA_IMAGEEXPANDED, IconCache.stockImages[IconCache.iconOpenFolder]);		item.setData(TREEITEMDATA_IMAGECOLLAPSED, IconCache.stockImages[IconCache.iconClosedFolder]);	}
 }

@@ -4,7 +4,7 @@ package org.eclipse.swt.examples.explorer;/*
  */
 
 import org.eclipse.swt.*;import org.eclipse.swt.dnd.*;import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.layout.*;import org.eclipse.swt.program.*;import org.eclipse.swt.widgets.*;import java.io.*;import java.text.*;import java.util.*;
-
+/** * A detailed directory listing */
 public class TableView {
 	private static final String TABLEITEMDATA_FILE = "TableItem.file";
 		// File: File associated with table row
@@ -21,10 +21,10 @@ public class TableView {
 	private UpdateWorker tableUpdateWorker = null;
 
 	final String[] titles = new String [] {
-		FileViewer.getResourceString("Name"),
-		FileViewer.getResourceString("Size"),
-		FileViewer.getResourceString("Type"),
-		FileViewer.getResourceString("Modified")
+		FileViewer.getResourceString("table.Name.title"),
+		FileViewer.getResourceString("table.Size.title"),
+		FileViewer.getResourceString("table.Type.title"),
+		FileViewer.getResourceString("table.Modified.title")
 	};
 	final int[] widths = new int[] {150, 60, 75, 150};
 
@@ -153,7 +153,7 @@ public class TableView {
 			display.syncExec(new Runnable() {
 				public void run() {
 					viewer.clearDetails();
-					contentsOfLabel.setText(FileViewer.getResourceString("Content_of",
+					contentsOfLabel.setText(FileViewer.getResourceString("details.ContentsOf.text",
 						new Object[] { currentDir.getPath() }));
 					table.removeAll();
 					table.setRedraw(false);
