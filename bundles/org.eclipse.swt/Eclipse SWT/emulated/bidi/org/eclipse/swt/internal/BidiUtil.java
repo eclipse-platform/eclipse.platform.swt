@@ -1,9 +1,10 @@
-package org.eclipse.swt.internal;
-
+package org.eclipse.swt.internal;
 import org.eclipse.swt.graphics.GC;
 
 /*
- * Used to bidi enable the StyledText widget.
+ * This class is supplied so that the StyledText code that supports bidi text (supported
+ * for win platforms) is not platform dependent.  Bidi text is not implemented on 
+ * emulated platforms.
  */
 public class BidiUtil {
 	// Keyboard language ids
@@ -11,17 +12,14 @@ public class BidiUtil {
 	public static final int KEYBOARD_HEBREW = 1;
 	public static final int KEYBOARD_ARABIC = 2;
 
-	// getRenderInfo flag
+	// bidi rendering input flag constants, not used
+	// on emulated platforms
 	public static final int CLASSIN = 1;
 	public static final int LINKBEFORE = 2;
 	public static final int LINKAFTER = 4;
 
-	/*
-	 * Public character class constants are the same as Windows 
-	 * platform constants. 
-	 * Saves conversion of class array in getRenderInfo to arbitrary 
-	 * constants for now.
-	 */
+	// bidi rendering/ordering constants, not used on 
+	// emulated platforms
 	public static final int CLASS_HEBREW = 2;
 	public static final int CLASS_ARABIC = 2;
 	public static final int CLASS_LOCALNUMBER = 4;
@@ -37,7 +35,6 @@ public static void addLanguageListener(int hwnd, Runnable runnable) {
 /*
  * Not implemented.
  *
- * gc, renderBuffer, x, y & renderDx are input parameters
  */
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 }
@@ -57,18 +54,12 @@ public static int getFontBidiAttributes(GC gc) {
 /*
  *  Not implemented.
  *
- *	gc, text & flags are input parameters
- *  classBuffer is input/output parameter
- *	order & dx are output parameters
  */
 public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuffer, int flags, int [] offsets) {
 }
 /*
  *  Not implemented. Returns null.
  *
- *	gc, text, flags, & offsets are input parameters
- *  classBuffer is input/output parameter
- *	order is output parameters
  */
 public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
 	return null;
@@ -76,9 +67,6 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 /*
  *  Not implemented. Returns null.
  *
- *	gc, text & flags are input parameters
- *  classBuffer is input/output parameter
- *	order & dx are output parameters
  */
 public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int[] offsets) {
 	return null;

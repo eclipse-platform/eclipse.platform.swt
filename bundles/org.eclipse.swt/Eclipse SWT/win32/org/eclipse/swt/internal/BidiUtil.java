@@ -13,20 +13,21 @@ import java.util.Hashtable;
  */
 public class BidiUtil {
 
-	// WM_INPUTLANGCHANGE constants
-	static Hashtable map = new Hashtable ();
-	static Hashtable oldProcMap = new Hashtable ();
-	static Callback callback = new Callback (BidiUtil.class, "windowProc", 4);
-
 	// Keyboard language ids
 	public static final int KEYBOARD_LATIN = 0;
 	public static final int KEYBOARD_HEBREW = 1;
 	public static final int KEYBOARD_ARABIC = 2;
 
-	// getRenderInfo flag
+	// getRenderInfo flag values
 	public static final int CLASSIN = 1;
 	public static final int LINKBEFORE = 2;
 	public static final int LINKAFTER = 4;
+
+	// variables used for providing a listener mechanism for keyboard language 
+	// switching 
+	static Hashtable map = new Hashtable ();
+	static Hashtable oldProcMap = new Hashtable ();
+	static Callback callback = new Callback (BidiUtil.class, "windowProc", 4);
 
 	// GetCharacterPlacement constants
 	static final int GCP_REORDER = 0x0002;
@@ -60,8 +61,17 @@ public class BidiUtil {
 	public static final int LIGATE = GCP_LIGATE;
 	public static final int GLYPHSHAPE = GCP_GLYPHSHAPE;
 
-/*
+/**
+ * Adds a language listener. The listener will get notified when the language of
+ * the keyboard changes (via Alt-Shift on Win platforms).  Do this by creating a 
+ * window proc for the Control so that the window messages for the Control can be
+ * monitored.
+ * <p>
  *
+ * @param int the handle of the Control that is listening for keyboard language 
+ *  changes
+ * @param runnable the code that should be executed when a keyboard language change
+ *  occurs
  */
 public static void addLanguageListener (int hwnd, Runnable runnable) {
 	map.put (new Integer (hwnd), runnable);
@@ -69,22 +79,39 @@ public static void addLanguageListener (int hwnd, Runnable runnable) {
 	oldProcMap.put (new Integer(hwnd), new Integer(oldProc));
 	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, callback.getAddress ());
 }
-/*
+/**
  * Wraps the ExtTextOut function.
+ * <p>
  *
- * gc, renderBuffer, x, y & renderDx are input parameters
+ * @param gc the gc to use for rendering
+ * @param renderBuffer the glyphs to render as an array of characters
+ * @param renderDx the width of each glyph in renderBuffer
+ * @param x x position to start rendering
+ * @param y y position to start rendering
+ * @param runnable the code that should be executed when a keyboard language change
+ *  occurs
  */
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 	RECT rect = null;
-
 	OS.ExtTextOutW(gc.handle, x, y, ETO_GLYPH_INDEX, rect, renderBuffer, renderBuffer.length, renderDx);
 }
-/*
- *  Wraps GetFontLanguageInfo and GetCharacterPlacement functions.
- *
- *	gc, text & flags are input parameters
- *  classBuffer is input/output parameter
- *	order & dx are output parameters
+/**
+ * Return ordering and rendering information for the given text.  Wraps the GetFontLanguageInfo
+ * and GetCharacterPlacement functions.
+ * <p>
+ * 
+ * @param gc the GC to use for rendering and measuring of this line, input parameter
+ * @param text text that bidi data should be calculated for, input parameter
+ * @param order an array of integers representing the visual position of each character in
+ *  the text array, output parameter
+ * @param classBuffer an array of integers representing the type (e.g., ARABIC, HEBREW, 
+ *  LOCALNUMBER) of each character in the text array, input/output parameter
+ * @param dx an array of integers representing the pixel width of each glyph in the returned
+ *  glyph buffer, output paramteter
+ * @param flags an integer representing rendering flag information, input parameter
+ * @param offsets text segments that should be measured and reordered separately, input 
+ *  parameter
+ * @return buffer with the glyphs that should be rendered for the given text
  */
 public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int [] offsets) {
 	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
@@ -194,15 +221,22 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	OS.HeapFree(hHeap, 0, lpOrder);
 	return glyphBuffer;
 }
-/*
- *  Wraps GetFontLanguageInfo and GetCharacterPlacement functions.  Just returns
- *  ordering information from GCP.  Does not return rendering information (e.g., glyphs,
- *  dx values).  Use this method when you only need ordering information.  Doing so
- *  will improve performance.
- *
- *	gc, text, flags, & offsets are input parameters
- *  classBuffer is input/output parameter
- *	order is output parameters
+/**
+ * Return bidi ordering information for the given text.  Does not return rendering 
+ * information (e.g., glyphs, x values).  Use this method when you only need ordering 
+ * information.  Doing so ill improve performance.  Wraps the GetFontLanguageInfo
+ * and GetCharacterPlacement functions.
+ * <p>
+ * 
+ * @param gc the GC to use for rendering and measuring of this line, input parameter
+ * @param text text that bidi data should be calculated for, input parameter
+ * @param order an array of integers representing the visual position of each character in
+ *  the text array, output parameter
+ * @param classBuffer an array of integers representing the type (e.g., ARABIC, HEBREW, 
+ *  LOCALNUMBER) of each character in the text array, input/output parameter
+ * @param flags an integer representing rendering flag information, input parameter
+ * @param offsets text segments that should be measured and reordered separately, input 
+ *  parameter
  */
 public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuffer, int flags, int [] offsets) {
 	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
@@ -219,7 +253,8 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	int lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
 	int lpClass = result.lpClass = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 
-	// set required dwFlags
+	// set required dwFlags, these values will affect how the text gets rendered and
+	// ordered
 	int dwFlags = 0;
 	if (((fontLanguageInfo & GCP_REORDER) == GCP_REORDER)) {
 		dwFlags |= GCP_REORDER;
@@ -228,7 +263,8 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 		dwFlags |= GCP_LIGATE;
 	}
 	if ((flags & CLASSIN) == CLASSIN) {
-		// set classification values for the substring
+		// set classification values for the substring, classification values
+		// can be specified on input
 		dwFlags |= GCP_CLASSIN;
 		OS.MoveMemory(result.lpClass, classBuffer, classBuffer.length);
 	}
@@ -237,7 +273,6 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	for (int i=0; i<offsets.length-1; i++) {
 		int offset = offsets [i];
 		int length = offsets [i+1] - offsets [i];
-
 		// The number of glyphs expected is <= length (segment length);
 		// the actual number returned may be less in case of Arabic ligatures.
 		result.nGlyphs = length;
@@ -272,17 +307,32 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	OS.HeapFree(hHeap, 0, lpClass);
 	OS.HeapFree(hHeap, 0, lpOrder);
 }
-
-/*
+/**
+ * Return rendering information for the given text.  Wraps the GetFontLanguageInfo
+ * and GetCharacterPlacement functions.
+ * <p>
  * 
+ * @param gc the GC to use for rendering and measuring of this line, input parameter
+ * @param text text that bidi data should be calculated for, input parameter
+ * @param order an array of integers representing the visual position of each character in
+ *  the text array, output parameter
+ * @param classBuffer an array of integers representing the type (e.g., ARABIC, HEBREW, 
+ *  LOCALNUMBER) of each character in the text array, input/output parameter
+ * @param dx an array of integers representing the pixel width of each glyph in the returned
+ *  glyph buffer, output paramteter
+ * @param flags an integer representing rendering flag information, input parameter
+ * @return buffer with the glyphs that should be rendered for the given text
  */
 public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
 	int[] offsets = new int[] {0, text.length()};
 	return getRenderInfo(gc, text, order, classBuffer, dx, flags, offsets);
 }
-
-/*
- * Return information about the font for the given GC.
+/**
+ * Return bidi attribute information for the font in the specified gc.  
+ * <p>
+ *
+ * @param gc the gc to query
+ * @return an integer representing the font information
  */
 public static int getFontBidiAttributes(GC gc) {
 	int fontStyle = 0;
@@ -298,8 +348,12 @@ public static int getFontBidiAttributes(GC gc) {
 	}
 	return fontStyle;	
 }
-/*
- * 
+/**
+ * Return the active keyboard language.  
+ * <p>
+ *
+ * @return an integer representing the active keyboard language (KEYBOARD_HEBREW,
+ *  KEYBOARD_ARABIC, KEYBOARD_LATIN)
  */
 public static int getKeyboardLanguage() {
 	int layout = OS.GetKeyboardLayout(0);
@@ -311,8 +365,11 @@ public static int getKeyboardLanguage() {
 	// return LATIN for all non-bidi languages
 	return KEYBOARD_LATIN;
 }
-/*
- * 
+/**
+ * Return the languages that are installed for the keyboard.  
+ * <p>
+ *
+ * @return integer array with an entry for each installed language
  */
 static int[] getKeyboardLanguageList() {
 	int maxSize = 10;
@@ -322,9 +379,12 @@ static int[] getKeyboardLanguageList() {
 	System.arraycopy(tempList, 0, list, 0, size);
 	return list;
 }
-/*
- * Checks the current keyboard language list to see if a bidi language is installed.
+/**
+ * Return whether or not the platform supports a bidi language.  Determine this
+ * by looking at the languages that are installed for the keyboard.  
+ * <p>
  *
+ * @return true if bidi is supported, false otherwise
  */
 public static boolean isBidiPlatform() {
 	int[] languages = getKeyboardLanguageList();
@@ -336,16 +396,22 @@ public static boolean isBidiPlatform() {
 	}
 	return false;
 }
-/*
- * 
+/**
+ * Removes the specified language listener.
+ * <p>
+ *
+ * @param hwnd the handle of the Control that is listening for keyboard language changes
  */
 public static void removeLanguageListener (int hwnd) {
 	map.remove (new Integer (hwnd));
 	Integer proc = (Integer)oldProcMap.remove (new Integer (hwnd));
 	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, proc.intValue());
 }		
-/*
- * 
+/**
+ * Switch the keyboard language to the specified language. 
+ * <p>
+ *
+ * @param language integer representing language
  */
 public static void setKeyboardLanguage(int language) {
 	// don't switch the keyboard if it doesn't need to be
@@ -382,6 +448,14 @@ public static void setKeyboardLanguage(int language) {
 	}
 
 }
+/**
+ * Window proc to intercept keyboard language switch event (WS_INPUTLANGCHANGE).
+ * Run the Control's registered runnable when the keyboard language is switched.
+ * 
+ * @param hwnd handle of the control that is listening for the keyboard language
+ *  change event
+ * @param msg window message
+ */
 static int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	switch (msg) {
 		case 0x51 /*OS.WM_INPUTLANGCHANGE*/:
