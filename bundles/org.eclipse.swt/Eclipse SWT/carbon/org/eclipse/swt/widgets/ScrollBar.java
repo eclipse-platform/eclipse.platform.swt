@@ -127,14 +127,14 @@ public int getIncrement () {
 
 public int getMaximum () {
 	checkWidget();
-	int maximum = OS.GetControl32BitMaximum (handle);
+	int maximum = OS.GetControl32BitMaximum (handle) & 0x7FFFFFFF;
 	int viewSize = OS.GetControlViewSize (handle);
     return maximum + viewSize;
 }
 
 public int getMinimum () {
 	checkWidget();
-    return OS.GetControl32BitMinimum (handle);
+    return OS.GetControl32BitMinimum (handle) & 0x7FFFFFFF;
 }
 
 public int getPageIncrement () {
@@ -149,7 +149,7 @@ public Scrollable getParent () {
 
 public int getSelection () {
 	checkWidget();
-    return OS.GetControl32BitValue (handle);
+    return OS.GetControl32BitValue (handle) & 0x7FFFFFFF;
 }
 
 public Point getSize () {
@@ -221,7 +221,9 @@ void register () {
 
 void releaseChild () {
 	super.releaseChild ();
-	//NOT DONE - layout parent
+	if (parent.horizontalBar == this) parent.horizontalBar = null;
+	if (parent.verticalBar == this) parent.verticalBar = null;
+	parent.layoutControl ();
 }
 
 void releaseHandle () {
