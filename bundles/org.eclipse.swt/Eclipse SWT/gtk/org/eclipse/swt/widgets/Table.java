@@ -597,6 +597,7 @@ public int getItemHeight () {
 	// In GTK2, rows may have different heights, so asking
 	// this question will only make sense given the item.
 	if (itemCount == 0) return 15;
+	OS.gtk_widget_realize(handle);
 	GdkRectangle rect = new GdkRectangle();
 	int path = OS.gtk_tree_path_new_from_string(Converter.wcsToMbcs(null, "0", true));
 	int columnPtr;
@@ -605,7 +606,7 @@ public int getItemHeight () {
 	} else {
 		columnPtr = columns[0].handle;
 	}
-	OS.gtk_tree_view_get_cell_area(parent.handle, path, columnPtr, rect);
+	OS.gtk_tree_view_get_cell_area(handle, path, columnPtr, rect);
 	return rect.height;
 }
 
