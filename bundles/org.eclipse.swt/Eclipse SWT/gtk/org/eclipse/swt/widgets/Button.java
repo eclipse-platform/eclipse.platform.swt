@@ -499,12 +499,13 @@ public void setImage (Image image) {
 	checkWidget ();
 	this.image = image;
 	if ((style & SWT.ARROW) != 0) return;
-	OS.gtk_widget_hide (labelHandle);
 	if (image != null) {
 		OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
+		OS.gtk_widget_hide (labelHandle);
 		OS.gtk_widget_show (imageHandle);
 	} else {
 		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
+		OS.gtk_widget_show (labelHandle);
 		OS.gtk_widget_hide (imageHandle);
 	}
 	/*
@@ -566,11 +567,7 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (null, chars, false);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	OS.gtk_widget_hide (imageHandle);
-	if (string.length () != 0) {
-		OS.gtk_widget_show (labelHandle);
-	} else {
-		OS.gtk_widget_hide (labelHandle);
-	}
+	OS.gtk_widget_show (labelHandle);
 	/*
 	* Bug in GTK.  For some reason, the button does not allocate the size of its internal
 	* children if its bounds is set before the image is set.  The fix is to force this by calling

@@ -116,9 +116,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	if (labelHandle != 0) {
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
-		if (text.length () == 0 && OS.GTK_WIDGET_VISIBLE (labelHandle))  {
-			requisition.height += fontHeight (getFontDescription (), labelHandle);
-		}
 	}
 	OS.gtk_widget_set_size_request (handle, width, height);
 	return new Point (requisition.width, requisition.height);	
@@ -442,12 +439,13 @@ public void setImage (Image image) {
 	checkWidget ();
 	this.image = image;
 	if ((style & SWT.SEPARATOR) != 0) return;
-	OS.gtk_widget_hide (labelHandle);
 	if (image != null) {
 		OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
+		OS.gtk_widget_hide (labelHandle);
 		OS.gtk_widget_show (imageHandle);
 	} else {
 		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
+		OS.gtk_widget_show (labelHandle);
 		OS.gtk_widget_hide (imageHandle);
 	}
 }
@@ -478,11 +476,7 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (null, chars, false);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	OS.gtk_widget_hide (imageHandle);
-	if (string.length () != 0) {
-		OS.gtk_widget_show (labelHandle);
-	} else {
-		OS.gtk_widget_hide (labelHandle);
-	}
+	OS.gtk_widget_show (labelHandle);
 }
 
 }
