@@ -1836,6 +1836,34 @@ boolean runDeferredEvents () {
 	eventQueue = null;
 	return true;
 }
+boolean runFocusOutEvents () {
+	if (eventQueue == null) return false;
+	Event [] focusQueue = null;
+	int index = 0, count = 0, length = eventQueue.length;
+	while (index < length) {
+		Event event = eventQueue [index];
+		if (event != null && event.type == SWT.FocusOut) {
+			if (focusQueue == null) focusQueue = new Event [length];
+			focusQueue [count++] = event;
+			System.arraycopy (eventQueue, index + 1, eventQueue, index, --length - index);
+			eventQueue [length] = null;
+		} else {
+			index++;
+		}
+	}
+	if (focusQueue == null) return false;
+	for (int i=0; i<count; i++) {
+		Event event = focusQueue [i];
+		Widget widget = event.widget;
+		if (widget != null && !widget.isDisposed ()) {
+			Widget item = event.item;
+			if (item == null || !item.isDisposed ()) {
+				widget.sendEvent (event);
+			}
+		}
+	}
+	return true;
+}
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null && filterTable == null) {
 		return;

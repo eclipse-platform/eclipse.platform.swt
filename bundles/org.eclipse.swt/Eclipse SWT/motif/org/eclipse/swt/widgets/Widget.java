@@ -965,7 +965,7 @@ boolean XmProcessTraversal (int widget, int direction) {
 	display.postFocusOut = true;
 	boolean result = OS.XmProcessTraversal (widget, direction);
 	display.postFocusOut = oldFocusOut;
-	if (!display.postFocusOut) display.runDeferredEvents ();
+	if (!display.postFocusOut) display.runFocusOutEvents ();
 	return result;
 }
 int wcsToMbcs (char ch) {

@@ -250,7 +250,7 @@ public boolean forceFocus () {
 		}
 	}
 	display.postFocusOut = oldFocusOut;
-	if (!display.postFocusOut) display.runDeferredEvents ();
+	if (!display.postFocusOut) display.runFocusOutEvents ();
 	return result;
 }
 /**
@@ -647,7 +647,7 @@ void setScrollbarVisible (int barHandle, boolean visible) {
 		}
 	}
 	display.postFocusOut = oldFocusOut;
-	if (!display.postFocusOut) display.runDeferredEvents ();
+	if (!display.postFocusOut) display.runFocusOutEvents ();
 }
 int traversalCode (int key, XKeyEvent xEvent) {
 	if ((state & CANVAS) != 0) {
