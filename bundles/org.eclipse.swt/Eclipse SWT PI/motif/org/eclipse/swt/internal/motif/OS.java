@@ -831,6 +831,7 @@ public class OS {
 //	public static final int XmRESIZE_IF_POSSIBLE = 0x2;
 	public static final int XmRESIZE_NONE = 0x0;
 	public static final int XmREVERSED_GROUND_COLORS = -2;
+	public static final int XmSET = 0x1;
 	public static final int XmSHADOW_ETCHED_IN = 0x5;
 //	public static final int XmSHADOW_ETCHED_IN_DASH = 0x7;
 	public static final int XmSHADOW_ETCHED_OUT = 0x6;
@@ -860,6 +861,7 @@ public class OS {
 //	public static final int XmTRAVERSE_RIGHT = 0x9;
 //	public static final int XmTRAVERSE_UP = 0x6;
 //	public static final int XmUNMAP = 0x1;
+	public static final int XmUNSET = 0x0;
 	public static final int XmUNSPECIFIED_PIXMAP = 0x2;
 	public static final int XmVARIABLE = 0x0;
 	public static final int XmVERTICAL = 0x1;

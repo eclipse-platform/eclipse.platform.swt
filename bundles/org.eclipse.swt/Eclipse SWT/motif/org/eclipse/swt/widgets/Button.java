@@ -672,7 +672,7 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-	int [] argList = {OS.XmNset, selected ? 1 : 0};
+	int [] argList = {OS.XmNset, selected ? OS.XmSET : OS.XmUNSET};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
