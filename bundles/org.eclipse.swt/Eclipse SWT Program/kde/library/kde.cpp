@@ -170,6 +170,16 @@ JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1allMimeTypes)
 }
 #endif
 
+#ifndef NO_KMimeType_1delete
+JNIEXPORT void JNICALL KDE_NATIVE(KMimeType_1delete)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	KDE_NATIVE_ENTER(env, that, KMimeType_1delete_FUNC);
+	delete (KSharedPtr<KMimeType> *)arg0;
+	KDE_NATIVE_EXIT(env, that, KMimeType_1delete_FUNC);
+}
+#endif
+
 #ifndef NO_KMimeType_1icon
 JNIEXPORT jint JNICALL KDE_NATIVE(KMimeType_1icon)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)

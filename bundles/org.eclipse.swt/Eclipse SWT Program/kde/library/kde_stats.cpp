@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int KDE_nativeFunctionCount = 36;
-int KDE_nativeFunctionCallCount[36];
+int KDE_nativeFunctionCount = 37;
+int KDE_nativeFunctionCallCount[37];
 char * KDE_nativeFunctionNames[] = {
 	"KApplication_1new", 
 	"KGlobal_1iconLoader", 
@@ -28,6 +28,7 @@ char * KDE_nativeFunctionNames[] = {
 	"KMimeTypeList_1delete", 
 	"KMimeTypeList_1end", 
 	"KMimeType_1allMimeTypes", 
+	"KMimeType_1delete", 
 	"KMimeType_1icon", 
 	"KMimeType_1mimeType", 
 	"KMimeType_1name", 

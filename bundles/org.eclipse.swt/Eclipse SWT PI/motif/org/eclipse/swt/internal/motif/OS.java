@@ -38,6 +38,11 @@ public class OS {
 	}
 	public static final int CODESET = CODESET ();
 	public static final int LC_CTYPE = LC_CTYPE ();
+
+	public static final int PTR_SIZEOF;
+	static {
+		PTR_SIZEOF = 4;
+	}
 	
 	static final int RESOURCE_LENGTH = 1024 * 3;
 	static final int RESOURCE_START = OS.XtMalloc (RESOURCE_LENGTH);

@@ -31,6 +31,7 @@ typedef enum {
 	KMimeTypeList_1delete_FUNC,
 	KMimeTypeList_1end_FUNC,
 	KMimeType_1allMimeTypes_FUNC,
+	KMimeType_1delete_FUNC,
 	KMimeType_1icon_FUNC,
 	KMimeType_1mimeType_FUNC,
 	KMimeType_1name_FUNC,

@@ -19,6 +19,7 @@ public class KDE {
 public static final synchronized native int /*long*/ KApplication_new(int argc, int /*long*/ [] argv, int /*long*/ rAppName, boolean allowStyles, boolean GUIenabled);
 public static final synchronized native int /*long*/ KGlobal_iconLoader();
 public static final synchronized native int /*long*/ KIconLoader_iconPath(int /*long*/ loader, int /*long*/ name, int group_or_size, boolean canReturnNull);
+public static final synchronized native void KMimeType_delete(int /*long*/ mimeType);
 public static final synchronized native int /*long*/ KMimeType_mimeType(int /*long*/ _name);
 public static final synchronized native int /*long*/ KMimeType_icon(int /*long*/ mimeType, int /*long*/ unused1, boolean unused2);
 public static final synchronized native int /*long*/ KMimeType_name(int /*long*/ mimeType);
