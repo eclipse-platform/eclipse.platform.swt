@@ -896,6 +896,11 @@ public class ImageAnalyzer {
 		if (printerData == null) return;
 		
 		Printer printer = new Printer(printerData);
+		
+		Point screenDPI = display.getDPI();
+		Point printerDPI = printer.getDPI();
+		int scaleFactor = printerDPI.x / screenDPI.x;
+		Rectangle trim = printer.computeTrim(0, 0, 0, 0);
 		if (printer.startJob(fileName)) {
 			GC gc = new GC(printer);
 			if (printer.startPage()) {
@@ -905,10 +910,10 @@ public class ImageAnalyzer {
 					0,
 					imageData.width,
 					imageData.height,
-					0,
-					0,
-					imageData.width,
-					imageData.height);
+					-trim.x,
+					-trim.y,
+					scaleFactor * imageData.width,
+					scaleFactor * imageData.height);
 				printer.endPage();
 			}
 			printer.endJob();
