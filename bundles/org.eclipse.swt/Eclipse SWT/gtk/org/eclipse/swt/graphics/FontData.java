@@ -232,8 +232,10 @@ public String getLocale () {
 	
 	String result = buffer.toString ();
 	int length = result.length ();
-	if (result.charAt (length - 1) == sep) {
-		result = result.substring (0, length - 1);
+	if (length > 0) {
+		if (result.charAt (length - 1) == sep) {
+			result = result.substring (0, length - 1);
+		}
 	} 
 	return result;
 }
