@@ -122,13 +122,25 @@ public String getMessage () {
  */
 public int open () {
 	String[] buttons = null;
-	if ((style & SWT.OK) == SWT.OK) buttons = new String[]{"&Ok"};
-	if ((style & (SWT.OK | SWT.CANCEL)) == (SWT.OK | SWT.CANCEL)) buttons = new String[]{"&Ok", "&Cancel"};
-	if ((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) buttons = new String[]{"&Yes", "&No"};
-	if ((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)) buttons = new String[]{"&Yes", "&No", "&Cancel"};
-	if ((style & (SWT.RETRY | SWT.CANCEL)) == (SWT.RETRY | SWT.CANCEL)) buttons = new String[]{"&Retry", "&Cancel"};
-	if ((style & (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) buttons = new String[]{"&Abort", "&Retry", "&Ignore"};
-	if (buttons == null) buttons = new String[]{"&Ok"};
+	if ((style & SWT.OK) == SWT.OK) {
+		buttons = new String[]{SWT.getMessage ("SWT_OK")};
+	}
+	if ((style & (SWT.OK | SWT.CANCEL)) == (SWT.OK | SWT.CANCEL)) {
+		buttons = new String[]{SWT.getMessage ("SWT_OK"), SWT.getMessage ("SWT_Cancel")};
+	}
+	if ((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) {
+		buttons = new String[]{SWT.getMessage ("SWT_Yes"), SWT.getMessage ("SWT_No")};
+	}
+	if ((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)){
+		buttons = new String[]{SWT.getMessage ("SWT_Yes"), SWT.getMessage ("SWT_No"), SWT.getMessage ("SWT_Cancel")};
+	}
+	if ((style & (SWT.RETRY | SWT.CANCEL)) == (SWT.RETRY | SWT.CANCEL)) {
+		buttons = new String[]{SWT.getMessage ("SWT_Retry"), SWT.getMessage ("SWT_Cancel")};
+	}
+	if ((style & (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) {
+		buttons = new String[]{SWT.getMessage ("SWT_Abort"), SWT.getMessage ("SWT_Retry"), SWT.getMessage ("SWT_Cancel")};
+	}
+	if (buttons == null) buttons = new String[]{SWT.getMessage ("SWT_OK")};
 	
 	int phImage = 0;
 //	int iconBits = 0;
