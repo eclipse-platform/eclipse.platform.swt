@@ -622,6 +622,17 @@ public void setSelection (Point selection) {
 public void setSelection (int start, int end) {
 	checkWidget();
 	OS.PtTextSetSelection (handle, new int [] {start}, new int [] {end});
+	
+	/*
+	* Feature in Photon. On a multi-line text, the caret position
+	* is not changed with the selection start and end values are
+	* the same. The fix is to detect this case and change the
+	* cursor position.
+	*/
+	if ((style & SWT.MULTI) != 0 && start == end) {
+		int [] args = {OS.Pt_ARG_CURSOR_POSITION, start, 0};
+		OS.PtSetResources (handle, args.length / 3, args);
+	}
 }
 
 public void setTabs (int tabs) {
