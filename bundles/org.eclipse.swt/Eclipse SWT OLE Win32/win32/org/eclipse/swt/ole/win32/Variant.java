@@ -286,7 +286,7 @@ void getData(int pData){
 			break;
 		case COM.VT_BOOL :
 			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new short[]{(short)((booleanData) ? 1 : 0)}, 2);
+			COM.MoveMemory(pData + 8, new int[]{(booleanData) ? 0xFFFF : 0}, 4);
 			break;
 		case COM.VT_R4 :
 			COM.MoveMemory(pData, new short[] {type}, 2);
@@ -525,9 +525,9 @@ void setData(int pData){
 		case COM.VT_EMPTY :
 			break;
 		case COM.VT_BOOL :
-			short[] newBooleanData = new short[1];
-			COM.MoveMemory(newBooleanData, pData + 8, 2);
-			booleanData = (newBooleanData[0] != 0);
+			int[] newBooleanData = new int[1];
+			COM.MoveMemory(newBooleanData, pData + 8, 4);
+			booleanData = (newBooleanData[0] == 0xFFFF);
 			break;
 		case COM.VT_R4 :
 			float[] newFloatData = new float[1];
