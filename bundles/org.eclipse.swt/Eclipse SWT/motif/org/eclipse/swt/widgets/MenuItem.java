@@ -114,19 +114,14 @@ public MenuItem (Menu parent, int style, int index) {
 	if (index == OS.XmLAST_POSITION) error (SWT.ERROR_INVALID_RANGE);
 	createWidget (index);
 }
-
 void addAccelerator () {
-	if (menu != null) {
-		menu.addAccelerators ();
-		return;
-	}
 	if (accelerator == 0) return;
 	/*
-	* Bug in Solaris.  When mnemonics and accelerators are
-	* set more than once in the same menu bar, the time it
-	* takes to set the accelerator or mnemonic increases
-	* exponentially.  The only fix for now is to avoid
-	* accelerators and mnemonics on Solaris.
+	* Bug in Solaris.  When accelerators are set more
+	* than once in the same menu bar, the time it takes
+	* to set the accelerator increases exponentially.
+	* The fix is to implement our own accelerator table
+	* on Solaris.
 	*/
 	if (OS.IsSunOS) return;
 	String ctrl, alt, shift;
@@ -158,7 +153,10 @@ void addAccelerator () {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	if (ptr != 0) OS.XtFree (ptr);
 }
-
+void addAccelerators () {
+	addAccelerator ();
+	if (menu != null) menu.addAccelerators ();
+}
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the arm events are generated for the control, by sending
@@ -424,6 +422,14 @@ void hookEvents () {
 		OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, SWT.Selection);
 	}
 }
+boolean isAccelActive () {
+	Menu menu = parent;
+	while (menu != null && menu.cascade != null) {
+		menu = menu.cascade.parent;
+	}
+	Decorations shell = menu.parent;
+	return shell.menuBar == menu;
+}
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
@@ -440,7 +446,7 @@ void hookEvents () {
  * @see #getEnabled
  */
 public boolean isEnabled () {
-	return getEnabled ();
+	return getEnabled () && parent.isEnabled ();
 }
 String keysymName (int keysym) {
 	switch (keysym) {
@@ -492,6 +498,7 @@ int processHelp (int callData) {
 	return 0;
 }
 int processSelection (int callData) {
+	if (!isEnabled ()) return 0;
 	XmAnyCallbackStruct struct = new XmAnyCallbackStruct ();
 	OS.memmove (struct, callData, XmAnyCallbackStruct.sizeof);
 	Event event = new Event ();
@@ -520,34 +527,29 @@ void releaseWidget () {
 	if (menu != null && !menu.isDisposed ()) menu.releaseResources ();
 	menu = null;
 	super.releaseWidget ();
-	if (accelerator != 0) {
-		parent.destroyAccelerators ();
-	}
 	accelerator = 0;
 	if (this == parent.defaultItem) {
 		parent.defaultItem = null;
 	}
 	parent = null;
 }
-
 void removeAccelerator () {
-	if (menu != null) {
-		menu.removeAccelerators ();
-		return;
-	}
 	if (accelerator == 0) return;
 	/*
-	* Bug in Solaris.  When mnemonics and accelerators are
-	* set more than once in the same menu bar, the time it
-	* takes to set the accelerator or mnemonic increases
-	* exponentially.  The only fix for now is to avoid
-	* accelerators and mnemonics on Solaris.
+	* Bug in Solaris.  When accelerators are set more
+	* than once in the same menu bar, the time it takes
+	* to set the accelerator increases exponentially.
+	* The fix is to implement our own accelerator table
+	* on Solaris.
 	*/
 	if (OS.IsSunOS) return;
 	int [] argList = {OS.XmNaccelerator, 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
-
+void removeAccelerators () {
+	removeAccelerator ();
+	if (menu != null) menu.removeAccelerators ();
+}
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the arm events are generated for the control.
@@ -635,7 +637,13 @@ public void setAccelerator (int accelerator) {
 	checkWidget();
 	if (this.accelerator == accelerator) return;
 	this.accelerator = accelerator;
-	parent.destroyAccelerators ();
+	if (isAccelActive ()) {
+		if (accelerator != 0) {
+			addAccelerator ();
+		} else {
+			removeAccelerator ();
+		}
+	}
 }
 /**
  * Enables the receiver if the argument is <code>true</code>,
@@ -694,7 +702,17 @@ public void setMenu (Menu menu) {
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
-	parent.destroyAccelerators ();
+	
+	/*
+	* Bug in Motif.  When XmNsubMenuId is set and the
+	* previous menu has accelerators, the time it takes
+	* to add any new accelerators increases exponentially.
+	* The fix is to remove the accelerators from the previous
+	* menu before setting the new one.
+	*/
+	boolean isActive = isAccelActive ();
+	if (isActive) removeAccelerators ();
+
 	if (oldMenu != null) oldMenu.cascade = null;
 	this.menu = menu;
 	
@@ -706,6 +724,8 @@ public void setMenu (Menu menu) {
 	}
 	int [] argList = {OS.XmNsubMenuId, menuHandle};
 	OS.XtSetValues (handle, argList, argList.length / 2);
+	
+	if (isActive) addAccelerators ();
 }
 /**
  * Sets the selection state of the receiver.
@@ -798,21 +818,26 @@ public void setText (String string) {
 		OS.XmNmnemonic, mnemonic,
 		OS.XmNacceleratorText, xmString2,
 	};
-	/*
-	* Bug in Solaris.  When mnemonics and accelerators are
-	* set more than once in the same menu bar, the time it
-	* takes to set the accelerator or mnemonic increases
-	* exponentially.  The only fix for now is to avoid
-	* accelerators and mnemonics on Solaris.
-	*/
-	if (OS.IsSunOS) {
-		argList = new int [] {
-			OS.XmNlabelType, OS.XmSTRING,
-			OS.XmNlabelString, xmString1,
-		};
-	}
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	if (xmString1 != 0) OS.XmStringFree (xmString1);
 	if (xmString2 != 0) OS.XmStringFree (xmString2);
+}
+boolean translateAccelerator (int accel) {
+	if (!getEnabled ()) return false;
+	if (menu != null) return menu.translateAccelerator (accel);
+	int accelerator = this.accelerator;
+	if ((accelerator & 0x1000000) == 0) {
+		int mods = accelerator & 0xFFFF0000;
+		int key = accelerator & 0xFFFF;
+		if ('A' <= key && key <= 'Z') {
+			key += 'a' - 'A';
+		}
+		accelerator = mods | key;
+	}
+	if (accelerator == accel) {
+		postEvent (SWT.Selection);
+		return true;
+	}
+	return false;
 }
 }

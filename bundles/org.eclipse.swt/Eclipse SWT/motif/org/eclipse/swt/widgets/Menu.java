@@ -138,7 +138,7 @@ void addAccelerators () {
 	MenuItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		MenuItem item = items[i];
-		item.addAccelerator ();
+		item.addAccelerators ();
 	}
 }
 /**
@@ -276,9 +276,6 @@ void createHandle (int index) {
 void createWidget (int index) {
 	super.createWidget (index);
 	parent.add (this);
-}
-void destroyAccelerators () {
-	parent.destroyAccelerators ();
 }
 /**
  * Returns the default menu item or null if none has
@@ -624,8 +621,8 @@ int processShow (int callData) {
 }
 void releaseChild () {
 	super.releaseChild ();
-	if (cascade != null) cascade.setMenu (null);
-	if (((style & SWT.BAR) != 0) && (this == parent.menuBar)) parent.setMenuBar (null);
+	if (cascade != null) cascade.menu = null;
+	if ((style & SWT.BAR) != 0 && this == parent.menuBar) parent.setMenuBar (null);
 }
 void releaseWidget () {
 	MenuItem [] items = getItems ();
@@ -642,7 +639,7 @@ void removeAccelerators () {
 	MenuItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		MenuItem item = items[i];
-		item.removeAccelerator ();
+		item.removeAccelerators ();
 	}
 }
 /**
@@ -824,5 +821,14 @@ public void setVisible (boolean visible) {
 	} else {
 		OS.XtUnmanageChild (handle);
 	}
+}
+boolean translateAccelerator (int accel) {
+	if (!getEnabled ()) return false;
+	MenuItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		MenuItem item = items [i];
+		if (item.translateAccelerator (accel)) return true;
+	}
+	return false;
 }
 }
