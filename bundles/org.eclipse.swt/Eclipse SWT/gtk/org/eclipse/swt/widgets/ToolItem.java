@@ -509,6 +509,7 @@ int processSelection  (int int0, int int1, int int2) {
 					break;
 				}
 			}
+			OS.gdk_event_free (eventPtr);
 		}
 	}
 	postEvent (SWT.Selection, event);
