@@ -67,6 +67,7 @@ public class Browser extends Composite {
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocProvider; 
+	static PromptService PromptService;
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
 	static boolean mozilla;
@@ -181,6 +182,33 @@ public Browser(Composite parent, int style) {
 		rc = windowWatcher.SetWindowCreator(WindowCreator.getAddress());
 		if (rc != XPCOM.NS_OK) error(rc);
 		windowWatcher.Release();
+		
+		PromptServiceFactory factory = new PromptServiceFactory();
+		factory.AddRef();
+		
+		rc = XPCOM.NS_GetComponentManager(result);
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+		
+		componentManager = new nsIComponentManager(result[0]);
+		result[0] = 0;
+		rc = componentManager.QueryInterface(nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
+		componentManager.Release();
+		
+		nsIComponentRegistrar componentRegistrar = new nsIComponentRegistrar(result[0]);
+		result[0] = 0;
+		buffer = XPCOM.NS_PROMPTSERVICE_CONTRACTID.getBytes();
+		aContractID = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		buffer = "Prompt Service".getBytes();
+		byte[] aClassName = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		rc = componentRegistrar.RegisterFactory(XPCOM.NS_PROMPTSERVICE_CID, aClassName, aContractID, factory.getAddress());
+		if (rc != XPCOM.NS_OK) error(rc);
+		factory.Release();
+		componentRegistrar.Release();
 		
 		mozilla = true;
 	}
@@ -764,6 +792,8 @@ void onDispose() {
 //		LocProvider = null;
 //		WindowCreator.Release();
 //		WindowCreator = null;
+//		PromptService.Release();
+//		PromptService = null;
 //		XPCOM.NS_TermEmbedding();
 //		mozilla = false;
 //	}
