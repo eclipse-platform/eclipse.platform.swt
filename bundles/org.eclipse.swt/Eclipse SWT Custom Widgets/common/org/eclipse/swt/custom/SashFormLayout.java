@@ -30,26 +30,8 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		if (hHint != SWT.DEFAULT) height = hHint;
 		return new Point(width, height);
 	}
-	
-	int sashwidth = sashForm.sashes.length > 0 ? sashForm.SASH_WIDTH + sashForm.sashes [0].getBorderWidth() * 2 : sashForm.SASH_WIDTH;
+	// determine control sizes
 	boolean vertical = (sashForm.orientation == SWT.VERTICAL);
-	if (vertical) {
-		height += (cArray.length - 1) * sashwidth;
-	} else {
-		width += (cArray.length - 1) * sashwidth;
-	}
-	// get the ratios
-	long[] ratios = new long[cArray.length];
-	long total = 0;
-	for (int i = 0; i < cArray.length; i++) {
-		Long ratio = (Long)cArray[i].getData(SashForm.LAYOUT_RATIO);
-		if (ratio != null) {
-			ratios[i] = ratio.longValue();
-		} else {
-			ratios[i] = ((200 << 16) + 999) / 1000;
-		}
-		total += ratios[i];
-	}
 	int maxIndex = 0;
 	int maxValue = 0;
 	for (int i = 0; i < cArray.length; i++) {
@@ -69,11 +51,26 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 			height = Math.max(height, size.y);
 		}
 	}
-	if (vertical) {
-		height = (int)(total * maxValue / ratios[maxIndex]);
-	} else {
-		width = (int)(total * maxValue / ratios[maxIndex]);
+	// get the ratios
+	long[] ratios = new long[cArray.length];
+	long total = 0;
+	for (int i = 0; i < cArray.length; i++) {
+		Long ratio = (Long)cArray[i].getData(SashForm.LAYOUT_RATIO);
+		if (ratio != null) {
+			ratios[i] = ratio.longValue();
+		} else {
+			ratios[i] = ((200 << 16) + 999) / 1000;
+		}
+		total += ratios[i];
 	}
+	int sashwidth = sashForm.sashes.length > 0 ? sashForm.SASH_WIDTH + sashForm.sashes [0].getBorderWidth() * 2 : sashForm.SASH_WIDTH;
+	if (vertical) {
+		height += (int)(total * maxValue / ratios[maxIndex]) + (cArray.length - 1) * sashwidth;
+	} else {
+		width += (int)(total * maxValue / ratios[maxIndex]) + (cArray.length - 1) * sashwidth;
+	}
+	width += sashForm.getBorderWidth()*2;
+	height += sashForm.getBorderWidth()*2;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point(width, height);
@@ -131,7 +128,6 @@ protected void layout(Composite composite, boolean flushCache) {
 	}
 	if (controls.length == 0) return;
 	Sash[] sashes = sashForm.sashes;
-	int sashwidth = sashes.length > 0 ? sashForm.SASH_WIDTH + sashes [0].getBorderWidth() * 2 : sashForm.SASH_WIDTH;
 	// get the ratios
 	long[] ratios = new long[controls.length];
 	long total = 0;
@@ -145,21 +141,16 @@ protected void layout(Composite composite, boolean flushCache) {
 		total += ratios[i];
 	}
 	
+	int sashwidth = sashes.length > 0 ? sashForm.SASH_WIDTH + sashes [0].getBorderWidth() * 2 : sashForm.SASH_WIDTH;
 	if (sashForm.orientation == SWT.HORIZONTAL) {
-		total += (((long)(sashes.length * sashwidth) << 16) + area.width - 1) / area.width;
-	} else {
-		total += (((long)(sashes.length * sashwidth) << 16) + area.height - 1) / area.height;
-	}
-
-	if (sashForm.orientation == SWT.HORIZONTAL) {
-		int width = (int)(ratios[0] * area.width / total);
+		int width = (int)(ratios[0] * (area.width - sashes.length * sashwidth) / total);
 		int x = area.x;
 		controls[0].setBounds(x, area.y, width, area.height);
 		x += width;
 		for (int i = 1; i < controls.length - 1; i++) {
 			sashes[i - 1].setBounds(x, area.y, sashwidth, area.height);
 			x += sashwidth;
-			width = (int)(ratios[i] * area.width / total);
+			width = (int)(ratios[i] * (area.width - sashes.length * sashwidth) / total);
 			controls[i].setBounds(x, area.y, width, area.height);
 			x += width;
 		}
@@ -170,14 +161,14 @@ protected void layout(Composite composite, boolean flushCache) {
 			controls[controls.length - 1].setBounds(x, area.y, width, area.height);
 		}
 	} else {
-		int height = (int)(ratios[0] * area.height / total);
+		int height = (int)(ratios[0] * (area.height - sashes.length * sashwidth) / total);
 		int y = area.y;
 		controls[0].setBounds(area.x, y, area.width, height);
 		y += height;
 		for (int i = 1; i < controls.length - 1; i++) {
 			sashes[i - 1].setBounds(area.x, y, area.width, sashwidth);
 			y += sashwidth;
-			height = (int)(ratios[i] * area.height / total);
+			height = (int)(ratios[i] * (area.height - sashes.length * sashwidth) / total);
 			controls[i].setBounds(area.x, y, area.width, height);
 			y += height;
 		}
