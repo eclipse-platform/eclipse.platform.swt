@@ -257,7 +257,10 @@ public String [] getItems () {
 		result [i] = new String (unicode);
 	}
 	return result;
+}
 
+String getNameText () {
+	return getText ();
 }
 
 public Point getSelection () {
@@ -533,6 +536,15 @@ int traversalCode (int key_sym, PhKeyEvent_t ke) {
 		}
 	}
 	return code;
+}
+
+boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
+	boolean translated = super.translateTraversal (key_sym, phEvent);
+	if (!translated && key_sym == OS.Pk_Return) {
+		postEvent (SWT.DefaultSelection);
+		return true;
+	}
+	return translated;
 }
 
 }

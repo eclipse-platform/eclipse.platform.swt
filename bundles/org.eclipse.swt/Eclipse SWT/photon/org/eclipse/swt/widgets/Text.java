@@ -712,4 +712,13 @@ int traversalCode (int key_sym, PhKeyEvent_t ke) {
 	return SWT.TRAVERSE_ESCAPE;
 }
 
+boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
+	boolean translated = super.translateTraversal (key_sym, phEvent);
+	if (!translated && key_sym == OS.Pk_Return) {
+		postEvent (SWT.DefaultSelection);
+		return true;
+	}
+	return translated;
+}
+
 }
