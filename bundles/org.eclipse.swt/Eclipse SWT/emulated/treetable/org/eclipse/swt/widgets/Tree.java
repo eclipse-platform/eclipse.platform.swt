@@ -1334,7 +1334,7 @@ void headerDoMouseMove (Event event) {
 void headerDoMouseUp (Event event) {
 	if (resizeColumn == null) return;
 	int newWidth = resizeColumnX - resizeColumn.getX ();
-	if (newWidth != resizeColumn.getWidth ()) {
+	if (newWidth != resizeColumn.width) {
 		setCursor (null);
 		updateColumnWidth (resizeColumn, newWidth);
 		Event newEvent = new Event ();
@@ -1656,7 +1656,7 @@ void redrawItems (int startIndex, int endIndex, boolean column0only) {
 			width = getClientArea ().width;
 		} else {
 			TreeColumn column = columns [0];
-			width = column.getWidth () - horizontalOffset;
+			width = column.width - horizontalOffset;
 			if (width <= 0) return;	/* first column not visible */
 		}
 		redraw (0, startY, width, height, false);
@@ -1905,7 +1905,7 @@ public void setTopItem (TreeItem item) {
 public void showColumn (TreeColumn column) {
 	checkWidget ();
 	int x = column.getX ();
-	int rightX = x + column.getWidth ();
+	int rightX = x + column.width;
 	Rectangle bounds = getClientArea ();
 	int boundsRight = bounds.x + bounds.width;
 	if (bounds.x <= x && rightX <= boundsRight) return;	 /* column is fully visible */
@@ -1949,7 +1949,7 @@ public void showSelection () {
 	showItem (selectedItems[0]);
 }
 void updateColumnWidth (TreeColumn column, int width) {
-	int oldWidth = column.getWidth ();
+	int oldWidth = column.width;
 	column.width = width;
 
 	Rectangle bounds = getClientArea ();

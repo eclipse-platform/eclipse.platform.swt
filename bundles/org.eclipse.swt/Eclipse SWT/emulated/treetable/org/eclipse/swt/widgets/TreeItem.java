@@ -397,7 +397,7 @@ public Rectangle getBounds () {
 	return new Rectangle (
 		focusX,
 		parent.getItemY (this),
-		lastColumn.getWidth () - parent.horizontalOffset - focusX,
+		lastColumn.width - parent.horizontalOffset - focusX,
 		parent.getItemHeight ());
 }
 public Rectangle getBounds (int columnIndex) {
@@ -418,7 +418,7 @@ public Rectangle getBounds (int columnIndex) {
 		return new Rectangle (x, parent.getItemY (this), width, parent.getItemHeight ());
 	}
 	TreeColumn column = parent.getColumn (columnIndex);
-	return new Rectangle (column.getX (), parent.getItemY (this), column.getWidth (), parent.getItemHeight ());
+	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.getItemHeight ());
 }
 Rectangle getCheckboxBounds () {
 	if ((parent.getStyle () & SWT.CHECK) == 0) return null;
@@ -452,9 +452,9 @@ int getContentX (int columnIndex) {
 		}
 		if ((column.style & SWT.RIGHT) != 0) {
 			int padding = parent.getCellPadding ();
-			contentX = Math.max (contentX, column.getX () + column.getWidth () - padding - contentWidth);	
+			contentX = Math.max (contentX, column.getX () + column.width - padding - contentWidth);	
 		} else {	/* SWT.CENTER */
-			contentX = Math.max (contentX, column.getX () + (column.getWidth () - contentWidth) / 2);
+			contentX = Math.max (contentX, column.getX () + (column.width - contentWidth) / 2);
 		}
 		return contentX;
 	}
@@ -498,7 +498,7 @@ Rectangle getFocusBounds () {
 	if (parent.getColumnCount () == 0) {
 		width = getTextPaintWidth (0) - 1;
 	} else {
-		width = parent.getColumn (0).getWidth () - parent.horizontalOffset - x - 2;
+		width = parent.getColumn (0).width - parent.horizontalOffset - x - 2;
 	}
 	return new Rectangle (x, parent.getItemY (this) + 1, width, parent.getItemHeight () - 1);
 }
@@ -578,7 +578,7 @@ Rectangle getHitBounds () {
 	if (parent.getColumnCount () == 0) {
 		width = getFocusX () + getTextPaintWidth (0) - contentX; 
 	} else {
-		width = parent.getColumn (0).getWidth () - parent.horizontalOffset - contentX;
+		width = parent.getColumn (0).width - parent.horizontalOffset - contentX;
 	}
 	return new Rectangle (contentX, parent.getItemY (this), width, parent.getItemHeight ());
 }
@@ -756,7 +756,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	Rectangle cellBounds = getBounds (columnIndex);
 	int cellRightX = 0;
 	if (column != null) {
-		cellRightX = column.getX () + column.getWidth ();
+		cellRightX = column.getX () + column.width;
 	} else {
 		cellRightX = cellBounds.x + cellBounds.width;
 	}
@@ -778,7 +778,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		gc.setBackground (background);
 		if (columnIndex == 0) {
 			int focusX = getFocusX ();
-			gc.fillRectangle (focusX, parent.getItemY (this) + 1, cellRightX - focusX - 1, itemHeight - 1);
+			gc.fillRectangle (focusX, y + 1, cellRightX - focusX - 1, itemHeight - 1);
 		} else {
 			gc.fillRectangle (cellBounds.x, cellBounds.y + 1, cellBounds.width - 1, cellBounds.height - 1);
 		}
@@ -1149,7 +1149,7 @@ public void setImage (int columnIndex, Image value) {
 		} else {
 			parent.redraw (
 				0, 0,
-				parent.getColumn (0).getWidth (),
+				parent.getColumn (0).width,
 				parent.getClientArea ().height,
 				true);
 		}

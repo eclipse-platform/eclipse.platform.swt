@@ -100,9 +100,11 @@ public int getWidth () {
 }
 int getX () {
 	int index = getIndex ();
-	if (index == 0) return -parent.horizontalOffset;
-	TreeColumn previousColumn = parent.getColumns ()[index - 1];
-	return previousColumn.getX () + previousColumn.width;
+	int result = -parent.horizontalOffset;
+	for (int i = 0; i < index; i++) {
+		result += parent.columns [i].width;
+	}
+	return result;
 }
 void paint (GC gc) {
 	int padding = parent.getHeaderPadding ();
