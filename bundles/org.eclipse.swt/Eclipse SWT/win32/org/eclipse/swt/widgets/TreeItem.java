@@ -345,7 +345,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 		}
 		rect.left = headerRect.left;
 		rect.right = headerRect.right;
-		if (getText != getImage) {
+		if (!getText || !getImage) {
 			if (images != null && images [index] != null) {
 				Point size = parent.getImageSize ();
 				if (getImage) {
