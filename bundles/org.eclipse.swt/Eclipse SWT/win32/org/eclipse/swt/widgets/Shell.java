@@ -1007,4 +1007,15 @@ LRESULT WM_SHOWWINDOW (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+	if (getDisplay ().lockActiveWindow) {
+		WINDOWPOS lpwp = new WINDOWPOS ();
+		OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
+		lpwp.flags |= OS.SWP_NOZORDER;
+		OS.MoveMemory (lParam, lpwp, WINDOWPOS.sizeof);
+	}
+
+	return super.WM_WINDOWPOSCHANGING (wParam,lParam);
+}
+
 }

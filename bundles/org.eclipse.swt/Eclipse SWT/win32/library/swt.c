@@ -3780,6 +3780,19 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_WINDOWPOS_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	WINDOWPOS _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = getWINDOWPOSFields(env, arg1, &_arg1, &PGLOB(WINDOWPOSFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {

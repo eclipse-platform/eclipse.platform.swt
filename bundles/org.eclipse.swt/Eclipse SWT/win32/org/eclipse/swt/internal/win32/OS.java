@@ -1980,6 +1980,7 @@ public static final native void MoveMemoryW (int Destination, NMTTDISPINFO Sourc
 public static final native void MoveMemoryA (int Destination, NMTTDISPINFO Source, int Length);
 public static final native void MoveMemory (int Destination, RECT Source, int Length);
 public static final native void MoveMemory (int Destination, TRIVERTEX Source, int Length);
+public static final native void MoveMemory (int Destination, WINDOWPOS Source, int Length);
 public static final native void MoveMemory (DRAWITEMSTRUCT Destination, int Source, int Length);
 public static final native void MoveMemory (HDITEM Destination, int Source, int Length);
 public static final native void MoveMemory (HELPINFO Destination, int Source, int Length);
