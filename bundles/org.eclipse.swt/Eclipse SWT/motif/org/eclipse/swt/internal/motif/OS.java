@@ -1249,4 +1249,15 @@ public static final native void XDestroyWindow(int display, int w);
 /*
  * ======== End of printing constants and functions ========
  */
+
+public static final native int pipe (int [] filedes);
+public static final native int read (int filedes, byte [] buf, int nbyte);
+public static final native int write (int filedes, byte [] buf, int nbyte);
+public static final native int close (int filedes);
+public static final native int XtAppAddInput (int app_context, int source, int condition, int proc, int client_data);
+public static final native void XtRemoveInput (int id);
+//	public static final int XtInputNoneMask = 0;
+	public static final int XtInputReadMask = 1;
+//	public static final int XtInputWriteMask = 2;
+//	public static final int XtInputExceptMask = 4;
 }

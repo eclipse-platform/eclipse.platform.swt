@@ -7897,3 +7897,117 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpQueryVersion
 /*
  * ======== End printing functions ========
  */
+ 
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    pipe
+ * Signature: ([I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_pipe
+  (JNIEnv *env, jclass that, jintArray filedes)
+{
+    jint *filedes1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "pipe\n");
+#endif
+
+    if (filedes) 
+        filedes1 = (*env)->GetIntArrayElements(env, filedes, NULL);
+    rc = (jint) pipe((int *)filedes1);
+    if (filedes)
+    	(*env)->ReleaseIntArrayElements(env, filedes, filedes1, 0);
+
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    read
+ * Signature: (I[BI)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_read
+  (JNIEnv *env, jclass that, int filedes, jbyteArray buf, int nbyte)
+{
+    jbyte *buf1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "read\n");
+#endif
+
+    if (buf) 
+        buf1 = (*env)->GetByteArrayElements(env, buf, NULL);
+    rc = (jint) read(filedes, (char *)buf, nbyte);
+    if (buf)
+    	(*env)->ReleaseByteArrayElements(env, buf, buf1, 0);
+
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    write
+ * Signature: (I[BI)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_write
+  (JNIEnv *env, jclass that, int filedes, jbyteArray buf, int nbyte)
+{
+    jbyte *buf1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "write\n");
+#endif
+
+    if (buf) 
+        buf1 = (*env)->GetByteArrayElements(env, buf, NULL);
+    rc = (jint) write(filedes, (char *)buf, nbyte);
+    if (buf)
+    	(*env)->ReleaseByteArrayElements(env, buf, buf1, 0);
+
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    close
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_close
+  (JNIEnv *env, jclass that, int filedes)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "close\n");
+#endif
+
+    return (jint) close(filedes);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XtAppAddInput
+ * Signature: (IIIII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppAddInput
+  (JNIEnv *env, jclass that, jint app_context, jint source, jint condition, jint proc, jint client_data)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XtAppAddInput\n");
+#endif
+
+    return (jint) XtAppAddInput((XtAppContext)app_context, source, (XtPointer)condition, (XtInputCallbackProc)proc, (XtPointer)client_data);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XtRemoveInput
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtRemoveInput
+  (JNIEnv *env, jclass that, jint id)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XtRemoveInput\n");
+#endif
+
+    XtRemoveInput((XtInputId)id);
+}

@@ -190,10 +190,10 @@ public class Display extends Device {
 	int checkExposeProc;
 	int exposeCount;
 	
-	/* Sleeping */
-	int sleepID;
-	Callback sleepCallback;
-	int sleepProc;
+	/* Wake */
+	Callback wakeCallback;
+	int wakeProc, read_fd, write_fd, inputID;
+	byte [] wake_buffer = new byte [1];
 	
 	/* Display Data */
 	Object data;
@@ -768,10 +768,17 @@ void initializeDisplay () {
 	checkExposeCallback = new Callback (this, "checkExposeProc", 3);
 	checkExposeProc = checkExposeCallback.getAddress ();
 	if (checkExposeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	sleepCallback = new Callback (this, "sleepProc", 2);
-	sleepProc = sleepCallback.getAddress ();
-	if (sleepProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-
+	wakeCallback = new Callback (this, "wakeProc", 3);
+	wakeProc = wakeCallback.getAddress ();
+	if (wakeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
+	/* Create and install the pipe used to wake up from sleep */
+	int [] filedes = new int [2];
+	if (OS.pipe (filedes) != 0) error (SWT.ERROR_NO_HANDLES);
+	read_fd = filedes [0];  write_fd = filedes [1];
+	int xtAppContext = OS.XtDisplayToApplicationContext (xDisplay);
+	inputID = OS.XtAppAddInput (xtAppContext, read_fd, OS.XtInputReadMask, wakeProc, 0);
+	
 	/*
 	* Use dynamic Drag and Drop Protocol styles.
 	* Preregistered protocol is not supported.
@@ -1017,10 +1024,10 @@ public boolean readAndDispatch () {
 	if (status != 0) {
 		if ((status & OS.XtIMTimer) != 0) {
 			OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
-			runAsyncMessages ();
 		}
 		if ((status & OS.XtIMAlternateInput) != 0) {
 			OS.XtAppProcessEvent (xtContext, OS.XtIMAlternateInput);
+//			runAsyncMessages ();
 		}
 		if ((status & OS.XtIMXEvent) != 0) {
 			OS.XtAppNextEvent (xtContext, xEvent);
@@ -1100,18 +1107,19 @@ void releaseDisplay () {
 	mouseHoverID = mouseHoverProc = mouseHoverHandle = toolTipHandle = 0;
 	mouseHoverCallback.dispose ();
 	mouseHoverCallback = null;
-	
-	/* Dispose the sleep callback */
-	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
-	sleepID = sleepProc = 0;
-	sleepCallback.dispose ();
-	sleepCallback = null;
-	
+
 	/* Dispose window and expose callbacks */
 	windowCallback.dispose (); windowCallback = null;
 	checkExposeCallback.dispose (); checkExposeCallback = null;
 	checkExposeProc = 0;
 	
+	/* Dispose the wake callback, id and pipe */
+	if (inputID != 0) OS.XtRemoveInput (inputID);
+	wakeCallback.dispose (); wakeCallback = null;
+	wakeProc = 0;
+	OS.close (read_fd);
+	OS.close (write_fd);
+		
 	/* Free the font lists */
 	if (buttonFont != 0) OS.XmFontListFree (buttonFont);
 	if (labelFont != 0) OS.XmFontListFree (labelFont);
@@ -1145,9 +1153,7 @@ void releaseToolTipHandle (int handle) {
 	if (toolTipHandle != 0) {
 		int shellHandle = OS.XtParent(toolTipHandle);
 		int shellParent = OS.XtParent(shellHandle);
-		if (handle == shellParent) {
-			toolTipHandle = 0;
-		}
+		if (handle == shellParent) toolTipHandle = 0;
 	}
 }
 void removeMouseHoverTimeOut () {
@@ -1314,22 +1320,7 @@ void showToolTip (int handle, String toolTipText) {
 public boolean sleep () {
 	checkDevice ();
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	/*
-	* Bug in Motif.  For some reason, when a time out
-	* is added from another thread while the display
-	* thread inside of a call-in, it fails to wake up
-	* the display event thread.  The fix is to limit
-	* the maximum time spent waiting for an event.
-	*/
-	sleepID = OS.XtAppAddTimeOut (xtContext, 50, sleepProc, 0);
-	boolean result = OS.XtAppPeekEvent (xtContext, xEvent);
-	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
-	sleepID = 0;
-	return result;
-}
-int sleepProc (int index, int id) {
-	sleepID = 0;
-	return 0;
+	return OS.XtAppPeekEvent (xtContext, xEvent);
 }
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
@@ -1392,8 +1383,13 @@ public void update () {
 }
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	if (OS.XtAppPending (xtContext) == 0) OS.XtAppAddTimeOut (xtContext, 0, 0, 0);
+	/* Write a single byte to the wake up pipe */
+	while (OS.write (write_fd, wake_buffer, 1) != 1);
+}
+int wakeProc (int closure, int source, int id) {
+	/* Read a single byte from the wake up pipe */
+	while (OS.read (read_fd, wake_buffer, 1) != 1);
+	return 0;
 }
 int windowProc (int handle, int clientData, int callData, int unused) {
 	Widget widget = WidgetTable.get (handle);
