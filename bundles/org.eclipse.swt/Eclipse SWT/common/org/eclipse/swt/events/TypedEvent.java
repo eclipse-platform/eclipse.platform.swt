@@ -52,7 +52,7 @@ public class TypedEvent extends SWTEventObject {
 /**
  * Constructs a new instance of this class.
  *
- * @param source the object that fired the event
+ * @param object the object that fired the event
  */
 public TypedEvent(Object object) {
 	super(object);
@@ -72,4 +72,30 @@ public TypedEvent(Event e) {
 	this.data = e.data;
 }
 
+/**
+ * Returns the name of the event. This is the name of
+ * the class without the package name.
+ *
+ * @return the name of the event
+ */
+String getName () {
+	String string = getClass ().getName ();
+	int index = string.lastIndexOf ('.');
+	if (index == -1) return string;
+	return string.substring (index + 1, string.length ());
+}
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
+public String toString() {
+	return getName ()
+		+ "{" + widget
+		+ " time=" + time
+		+ " data=" + data
+		+ "}";
+}
 }
