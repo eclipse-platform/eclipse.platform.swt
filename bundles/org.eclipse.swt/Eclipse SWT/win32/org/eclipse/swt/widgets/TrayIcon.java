@@ -81,6 +81,7 @@ public void addSelectionListener(SelectionListener listener) {
 
 void createWidget () {
 	visible = true;
+	if (OS.IsWinCE) return;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
@@ -91,6 +92,10 @@ void createWidget () {
 }
 
 void destroyWidget () {
+	if (OS.IsWinCE) {
+		super.destroyWidget ();
+		return;
+	}
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
@@ -217,6 +222,7 @@ public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
+	if (OS.IsWinCE) return;
 	if (image2 != null) image2.dispose ();
 	image2 = null;
 	int hIcon = 0;
@@ -257,6 +263,7 @@ public void setImage (Image image) {
 public void setToolTipText (String value) {
 	checkWidget ();
 	toolTipText = value;
+	if (OS.IsWinCE) return;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	TCHAR buffer = new TCHAR (0, toolTipText == null ? "" : toolTipText, true);
 	/*
@@ -304,25 +311,27 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 	}
 	this.visible = visible;
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-	iconData.cbSize = NOTIFYICONDATA.sizeof;
-	iconData.uID = id;
-	iconData.hWnd = display.hwndMessage;
-	if (OS.SHELL32_MAJOR < 5) {
-		if (visible) {
-			iconData.uFlags = OS.NIF_MESSAGE;
-			iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-			OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
-			setImage (image);
-			setToolTipText (toolTipText);
+	if (!OS.IsWinCE) {
+		NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+		iconData.cbSize = NOTIFYICONDATA.sizeof;
+		iconData.uID = id;
+		iconData.hWnd = display.hwndMessage;
+		if (OS.SHELL32_MAJOR < 5) {
+			if (visible) {
+				iconData.uFlags = OS.NIF_MESSAGE;
+				iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
+				OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
+				setImage (image);
+				setToolTipText (toolTipText);
+			} else {
+				OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
+			}
 		} else {
-			OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
+			iconData.uFlags = OS.NIF_STATE;
+			iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
+			iconData.dwStateMask = OS.NIS_HIDDEN;
+			OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
 		}
-	} else {
-		iconData.uFlags = OS.NIF_STATE;
-		iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
-		iconData.dwStateMask = OS.NIS_HIDDEN;
-		OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
 	}
 	if (!visible) sendEvent (SWT.Hide);
 }
