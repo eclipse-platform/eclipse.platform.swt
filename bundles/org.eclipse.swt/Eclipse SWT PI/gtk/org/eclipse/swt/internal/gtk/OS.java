@@ -562,7 +562,7 @@ public static final synchronized native int g_main_context_check(int /*long*/ co
 public static final synchronized native int /*long*/ g_main_context_default();
 public static final synchronized native boolean g_main_context_iteration(int /*long*/ context, boolean may_block);
 public static final synchronized native boolean g_main_context_pending(int /*long*/ context);
-public static final synchronized native int g_main_context_get_poll_func(int /*long*/ context);
+public static final synchronized native int /*long*/ g_main_context_get_poll_func(int /*long*/ context);
 public static final synchronized native boolean g_main_context_prepare(int /*long*/ context, int[] priority);
 public static final synchronized native int g_main_context_query(int /*long*/ context, int max_priority, int[] timeout_, int /*long*/ fds, int n_fds);
 public static final synchronized native void g_main_context_release(int /*long*/ context);
