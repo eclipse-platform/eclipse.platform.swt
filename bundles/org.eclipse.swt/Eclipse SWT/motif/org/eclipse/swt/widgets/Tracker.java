@@ -522,7 +522,6 @@ public boolean open () {
 		}
 	}
 	drawRectangles ();
-	tracking = false;
 	if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
 	if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);
 	return !cancelled;
