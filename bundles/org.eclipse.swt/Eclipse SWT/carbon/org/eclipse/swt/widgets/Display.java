@@ -7,10 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class are responsible for managing the
@@ -210,11 +209,11 @@ public class Display extends Device {
 	private static final int TOOLTIP_MARGIN= 3;
 	private static final int HOVER_TIMEOUT= 500;	// in milli seconds
 	private static final int SWT_USER_EVENT= ('S'<<24) + ('W'<<16) + ('T'<<8) + '1';
-	private static final boolean SMART_REFRESH= false;
 
+	int fMenuId= 5000;
+	
 	// callback procs
 	int fApplicationProc;
-	//int fMouseProc;
 	int fWindowProc;
 	int fMenuProc;
 	//int fControlProc;
@@ -224,6 +223,7 @@ public class Display extends Device {
 	int fDataBrowserDataProc;
 	int fDataBrowserItemNotificationProc;
 	
+	private boolean fMenuIsVisible;
 	private int fUpdateRegion;
 	private int fTrackedControl;
 	private int fFocusControl;
@@ -682,7 +682,7 @@ public Object getData () {
  */
 public int getDoubleClickTime () {
 	checkDevice ();
-	return Display.ticksToMS(OS.GetDblTime()); 
+	return (OS.GetDblTime() * 1000) / 60; 
 }
 /**
  * Returns the control which currently has keyboard focus,
@@ -887,21 +887,16 @@ protected void init () {
 		OS.kEventClassCommand, 1,
 		
 		OS.kEventClassAppleEvent, OS.kEventParamAEEventID,
-		
-		//OS.kEventClassMenu, OS.kEventMenuBeginTracking,
-		//OS.kEventClassMenu, OS.kEventMenuEndTracking,
-	
+			
 		// we track down events here because we need to know when the user 
-		//clicked in the menu bar
+		// clicked in the menu bar
 		OS.kEventClassMouse, OS.kEventMouseDown,
-		// we track up and dragged events because
+		// we track up, dragged, and moved events because
 		// we need to get these events even if the mouse is outside of the window.
 		OS.kEventClassMouse, OS.kEventMouseDragged,
 		OS.kEventClassMouse, OS.kEventMouseUp,
-		
-		//OS.kEventClassKeyboard, OS.kEventRawKeyDown,
-		//OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
-		
+		OS.kEventClassMouse, OS.kEventMouseMoved,
+				
 		SWT_USER_EVENT, 54321,
 		SWT_USER_EVENT, 54322,
 	};
@@ -952,14 +947,8 @@ protected void init () {
 	if (OS.InstallEventHandler(OS.GetUserFocusEventTarget(), textInputProc, mask, 0) != OS.kNoErr)
 		error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	/*
-	fMouseProc= OS.NewMouseMovedCallbackUPP(this, "handleMouseCallback");
-	if (fMouseProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	*/
-	
 	mouseHoverProc = OS.NewEventLoopTimerUPP3(this, "mouseHoverProc");
 	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 
 	buttonFont = Font.carbon_new (this, getThemeFont(OS.kThemeSmallSystemFont));
 	buttonShadowThickness= 1;
@@ -1154,7 +1143,6 @@ public boolean readAndDispatch () {
 		int event= evt[0];		
 		OS.SendEventToEventTarget(event, OS.GetEventDispatcherTarget());
 		OS.ReleaseEvent(event);
-		repairPending();
 		runDeferredEvents();
 		return true;
 		
@@ -1374,9 +1362,9 @@ public static void setAppName (String name) {
 public void setCursorLocation (Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	/* AW
 	int x = point.x;
 	int y = point.y;
-	/* AW
 	int xWindow = OS.XDefaultRootWindow (xDisplay);	
 	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
 	*/
@@ -1625,18 +1613,6 @@ public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.syncExec (runnable);
 }
-int textWidth2 (String string, GC gc) {
-	if (string.length () == 0) return 0;
-	/* AW
-	String codePage = Converter.getCodePage (xDisplay, fontList);
-	byte [] textBuffer = Converter.wcsToMbcs (codePage, string, true);
-	int xmString = OS.XmStringGenerate (textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
-	int width = OS.XmStringWidth (fontList, xmString);
-	OS.XmStringFree (xmString);
-	return width;
-	*/
-	return gc.stringExtent(string).x;
-}
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread after the specified
@@ -1705,88 +1681,6 @@ static int untranslateKey (int key) {
 	}
 	return 0;
 }
-
-static short keyGlyph(int key) {
-	switch (key) {
-	case ' ':
-		return OS.kMenuBlankGlyph;
-	case '\t':
-		return OS.kMenuTabRightGlyph;
-	case SWT.SHIFT:
-		return OS.kMenuShiftGlyph;
-	case SWT.CONTROL:
-		return OS.kMenuControlISOGlyph;
-		//return OS.kMenuControlGlyph;
-	case SWT.ALT:
-		return OS.kMenuOptionGlyph;
-	case SWT.ARROW_UP:
-		//return OS.kMenuUpArrowDashedGlyph;
-		return OS.kMenuUpArrowGlyph;
-	case SWT.ARROW_DOWN:
-		//return OS.kMenuDownwardArrowDashedGlyph;
-		return OS.kMenuDownArrowGlyph;
-	case SWT.ARROW_LEFT:
-		//return OS.kMenuLeftArrowDashedGlyph;
-		return OS.kMenuLeftArrowGlyph;
-	case SWT.ARROW_RIGHT:
-		//return OS.kMenuRightArrowDashedGlyph;
-		return OS.kMenuRightArrowGlyph;
-	case SWT.PAGE_UP:
-		return OS.kMenuPageUpGlyph;
-	case SWT.PAGE_DOWN:
-		return OS.kMenuPageDownGlyph;
-	case SWT.ESC:
-		return OS.kMenuEscapeGlyph;
-	case SWT.CR:
-		//return OS.kMenuEnterGlyph;
-		//return OS.kMenuNonmarkingReturnGlyph;
-		//return OS.kMenuReturnR2LGlyph;
-		//return OS.kMenuNonmarkingReturnGlyph;
-		return OS.kMenuReturnGlyph;
-	case SWT.BS:
-		return OS.kMenuDeleteLeftGlyph;
-	case SWT.DEL:
-		return OS.kMenuDeleteRightGlyph;
-	case SWT.F1:
-		return OS.kMenuF1Glyph;
-	case SWT.F2:
-		return OS.kMenuF2Glyph;
-	case SWT.F3:
-		return OS.kMenuF3Glyph;
-	case SWT.F4:
-		return OS.kMenuF4Glyph;
-	case SWT.F5:
-		return OS.kMenuF5Glyph;
-	case SWT.F6:
-		return OS.kMenuF6Glyph;
-	case SWT.F7:
-		return OS.kMenuF7Glyph;
-	case SWT.F8:
-		return OS.kMenuF8Glyph;
-	case SWT.F9:
-		return OS.kMenuF9Glyph;
-	case SWT.F10:
-		return OS.kMenuF10Glyph;
-	case SWT.F11:
-		return OS.kMenuF11Glyph;
-	case SWT.F12:
-		return OS.kMenuF12Glyph;
-	default:
-		/*
-		public static final short kMenuPencilGlyph = 15;
-		public static final short kMenuCommandGlyph = 17;
-		public static final short kMenuCheckmarkGlyph = 18;
-		public static final short kMenuDiamondGlyph = 19;
-		public static final short kMenuClearGlyph = 28;
-		public static final short kMenuCapsLockGlyph = 99;
-		public static final short kMenuHelpGlyph = 103;
-		public static final short kMenuContextualMenuGlyph = 109;
-		public static final short kMenuPowerGlyph = 110;
-		*/
-		return OS.kMenuNullGlyph;
-	}
-}
-
 /**
  * Forces all outstanding paint requests for the display
  * to be processed before this method returns.
@@ -1803,10 +1697,21 @@ public void update () {
 	OS.XSync (xDisplay, false); OS.XSync (xDisplay, false);
 	while (OS.XCheckMaskEvent (xDisplay, mask, event)) OS.XtDispatchEvent (event);
 	*/
+	int wHandle= 0;
+	int[] macEvent= new int[6];
+	while (OS.GetNextEvent(OS.updateMask, macEvent)) {
+		if (macEvent[0] == OS.updateEvt) {
+			wHandle= macEvent[1];
+			updateWindow(wHandle);
+		}
+	}
+	
 	/*
-	MacEvent event= new MacEvent();
-	while (OS.GetNextEvent(OS.updateMask, event.getData()))
-		dispatchEvent(event);
+	if (wHandle != 0) {
+		int port= OS.GetWindowPort(wHandle);
+		if (port != 0)
+			OS.QDFlushPortBuffer(port, 0);
+	}
 	*/
 }
 /**
@@ -1834,7 +1739,7 @@ static String convertToLf(String text) {
 	if (length == 0) return text;
 	
 	/* Check for an LF or CR/LF.  Assume the rest of the string 
-	 * is formated that way.  This will not work if the string 
+	 * is formatted that way.  This will not work if the string 
 	 * contains mixed delimiters. */
 	int i = text.indexOf (Lf, 0);
 	if (i == -1 || i == 0) return text;
@@ -1859,34 +1764,31 @@ static String convertToLf(String text) {
 // Some Mac helper functions
 ////////////////////////////////////////////////////////////////////////////
 
+	int nextMenuId() {
+		return fMenuId++;
+	}
+
+	void flush (int cHandle) {
+		int wHandle= OS.GetControlOwner(cHandle);
+		if (wHandle != 0) {
+			int port= OS.GetWindowPort(wHandle);
+			if (port != 0)
+				OS.QDFlushPortBuffer(port, 0);
+		}
+	}
+	
 	//---- callbacks
 	
 	private void handleControlAction(int cHandle, short partCode) {
-		// System.out.println("handleControlAction: " + WidgetTable.get (cHandle) + " " + partCode);
 		windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, partCode, true));
-		repairPending();
 	}
 
 	private void handleUserPaneDraw(int cHandle, short partCode) {
-		if (fUpdateRegion == 0) {
-			if (false) {
-				int updateRegion= OS.NewRgn();
-				int wHandle= OS.GetControlOwner(cHandle);
-				int portHandle= OS.GetWindowPort(wHandle);
-				OS.QDGetDirtyRegion(portHandle, updateRegion);		
-				windowProc(cHandle, SWT.Paint, new MacControlEvent(cHandle, updateRegion));
-				OS.DisposeRgn(updateRegion);
-			} else {	
-				windowProc(cHandle, SWT.Paint, new MacControlEvent(cHandle, fUpdateRegion));
-			}
-		} else {
-			windowProc(cHandle, SWT.Paint, new MacControlEvent(cHandle, fUpdateRegion));
-		}
+		windowProc(cHandle, SWT.Paint, new MacControlEvent(cHandle, fUpdateRegion));
 	}
 		
 	private int handleUserPaneHitTest(int cHandle, int x, int y) {
 		Widget w= WidgetTable.get(cHandle);
-		//System.out.println("handleControlHitTest: " + w);
 		if (w instanceof Text || w instanceof Combo)
 			return 112;
 		return 111;
@@ -1960,6 +1862,13 @@ static String convertToLf(String text) {
 			Control focus= getFocusControl();	
 			switch (eventKind) {
 			case OS.kEventRawKeyDown:
+				if (MacEvent.getKeyCode(eRefHandle) == 122) {
+					int handle= 0;
+					if (focus != null)
+						handle= focus.handle;
+					windowProc(handle, SWT.Help, null);
+					return OS.kNoErr;
+				}
 			case OS.kEventRawKeyRepeat:
 				if (focus != null)
 					return focus.sendKeyEvent(SWT.KeyDown, nextHandler, eRefHandle);
@@ -1988,7 +1897,7 @@ static String convertToLf(String text) {
 		switch (eventClass) {
 			
 		case OS.kEventClassMouse:
-			return handleMouseCallback(nextHandler, eRefHandle, whichWindow);
+			return handleMouseEvent(nextHandler, eRefHandle, eventKind, whichWindow);
 			
 		case OS.kEventClassWindow:
 			switch (eventKind) {
@@ -2061,18 +1970,8 @@ static String convertToLf(String text) {
 				// takes care of special menus like the Combo menu.
 			}
 			break;
-				
-		case OS.kEventClassMenu:
-			switch (eventKind) {
-			case OS.kEventMenuBeginTracking:
-				//System.out.println("kEventMenuBeginTracking");
-				break;
-			case OS.kEventMenuEndTracking:
-				//System.out.println("kEventMenuEndTracking");
-				break;
-			}
-			break;
 		
+		/*
 		case OS.kEventClassKeyboard:
 			System.out.println("  handleApplicationCallback: kEventClassKeyboard");	
 			switch (eventKind) {
@@ -2093,7 +1992,8 @@ static String convertToLf(String text) {
 			}
 			System.out.println("    end handleApplicationCallback: kEventClassKeyboard");	
 			break;
-			
+		*/
+				
 		case OS.kEventClassMouse:
 			switch (eventKind) {
 				
@@ -2113,17 +2013,16 @@ static String convertToLf(String text) {
 				OS.SetPort(oldPort);
 				
 				if (part == OS.inMenuBar) {
-					int id= OS.MenuSelect(mEvent.getWhere().getData());
+					OS.MenuSelect(mEvent.getWhere().getData());
 					//doMenuCommand(OS.MenuSelect(mEvent.getWhere().getData()));
 					return OS.kNoErr;
 				}
 				break;
 				
 			case OS.kEventMouseDragged:
-				return handleMouseCallback(nextHandler, eRefHandle, 0);
-				
 			case OS.kEventMouseUp:
-				return handleMouseCallback(nextHandler, eRefHandle, 0);
+			case OS.kEventMouseMoved:
+				return handleMouseEvent(nextHandler, eRefHandle, eventKind, 0);
 			}
 			return OS.eventNotHandledErr;
 						
@@ -2138,19 +2037,15 @@ static String convertToLf(String text) {
 		return OS.eventNotHandledErr;
 	}
 		
-	private int handleMouseCallback(int nextHandler, int eRefHandle, int whichWindow) {
+	private int handleMouseEvent(int nextHandler, int eRefHandle, int eventKind, int whichWindow) {
 		
-		int eventKind= OS.GetEventKind(eRefHandle);
-		
-		if (eventKind == OS.kEventMouseDown) {
+		if (eventKind == OS.kEventMouseDown)
 			fTrackedControl= 0;
-		}
 		
 		MacEvent me= new MacEvent(eRefHandle);
-		
-		short part= 0;
 		MacPoint where= me.getWhere();
 		
+		short part= 0;
 		if (whichWindow == 0) {
 			if (fTrackedControl != 0) {
 				whichWindow= OS.GetControlOwner(fTrackedControl);
@@ -2158,39 +2053,29 @@ static String convertToLf(String text) {
 				int[] w= new int[1];
 				part= OS.FindWindow(where.getData(), w);
 				whichWindow= w[0];
-				//part= getWindowDefPart(eRefHandle);
-				//whichWindow= getDirectObject(eRefHandle);
 			}
 		} else {
 			part= OS.FindWindow(where.getData(), new int[1]);
 		}
 		
 		if (whichWindow == 0) {
-			//System.out.println("Display.handleMouseCallback:  whichWindow == 0");
+			//System.out.println("Display.handleMouseEvent:  whichWindow == 0");
 			return OS.eventNotHandledErr;
 		}
 			
 		MacEvent.trackStateMask(eRefHandle, eventKind);
-		
-		int oldPort= OS.GetPort();
-		OS.SetPortWindowPort(whichWindow);
-		OS.GlobalToLocal(where.getData());
-		OS.SetPort(oldPort);
-		
+				
 		switch (eventKind) {
 		
 		case OS.kEventMouseDown:
 					
 			if (!OS.IsWindowActive(whichWindow)) {
 				// let the default handler activate the window
-				// (I had no success when calling SelectWindow)
 				return OS.eventNotHandledErr;
 			}
 		
 			hideToolTip ();
 		
-			fTrackedControl= 0;
-					
 			if (part == OS.inContent)
 				if (!handleContentClick(me, whichWindow))
 					return OS.kNoErr;
@@ -2216,8 +2101,12 @@ static String convertToLf(String text) {
 		
 			fTrackedControl= 0;
 		
-			short[] cpart= new short[1];
-			int whichControl= MacUtil.findControlUnderMouse(where, whichWindow, cpart);
+			int oldPort= OS.GetPort();
+			OS.SetPortWindowPort(whichWindow);
+			OS.GlobalToLocal(where.getData());
+			OS.SetPort(oldPort);
+			
+			int whichControl= MacUtil.findControlUnderMouse(where, whichWindow, null);
 		
 			if (fCurrentControl != whichControl) {
 			
@@ -2227,6 +2116,7 @@ static String convertToLf(String text) {
 				}
 				
 				fCurrentControl= whichControl;
+				windowProc(fCurrentControl, SWT.MouseMove, me);
 				
 				if (fCurrentControl != 0) {
 					windowProc(fCurrentControl, SWT.MouseEnter, me);
@@ -2246,19 +2136,6 @@ static String convertToLf(String text) {
 
 	boolean setMacFocusHandle(int wHandle, int focusHandle) {
 	
-		/*
-		int[] focusControl= new int[1];
-		OS.GetKeyboardFocus(wHandle, focusControl);
-		if (focusControl[0] == fFocusControl)
-			return false;
-			
-		int rc= OS.SetKeyboardFocus(wHandle, focusHandle, (short)-1);
-		if (rc != OS.kNoErr) {
-			System.out.println("Display.setMacFocusHandle: SetKeyboardFocus " + rc);
-			return false;
-		}
-		*/
-		
 		if (fFocusControl != focusHandle) {
 			int oldFocus= fFocusControl;
 			fFocusControl= focusHandle;
@@ -2271,7 +2148,7 @@ static String convertToLf(String text) {
 			int[] focusControl= new int[1];
 			OS.GetKeyboardFocus(wHandle, focusControl);
 			if (focusControl[0] != fFocusControl) {
-				int rc= OS.SetKeyboardFocus(wHandle, focusHandle, (short)-1);
+				OS.SetKeyboardFocus(wHandle, focusHandle, (short)-1);
 				//if (rc != OS.kNoErr)
 				//	System.out.println("Display.setMacFocusHandle: SetKeyboardFocus " + rc);
 			}
@@ -2295,31 +2172,25 @@ static String convertToLf(String text) {
 		short[] cpart= new short[1];
 		//int whichControl= OS.FindControlUnderMouse(where.getData(), whichWindow, cpart);
 		int whichControl= MacUtil.findControlUnderMouse(where, whichWindow, cpart);				
-		
-		Widget w= findWidget(whichControl);
-		//System.out.println("  front click: " + w);
-		
-		// activate control
-		/* AW already done in Control.processMouseDown
-		Widget w1= findWidget(whichControl);
-		Widget w2= findWidget(whichWindow);
-		if (w1 instanceof Control && w2 instanceof Shell) {
-			Shell shell= (Shell) w2;
-			shell.setActiveControl((Control) w1);
-		}
-		*/
-		
+						
 		// focus change
 		setMacFocusHandle(whichWindow, whichControl);
 								
 		if (whichControl != 0) {
 		
-			// process the context menu
+			// deal with the context menu
 			Widget wc= WidgetTable.get(whichControl);
 			if (wc instanceof Control) {
 				Menu cm= ((Control)wc).getMenu();	// is a context menu installed?
 				if (cm != null && me.isShowContextualMenuClick()) {
-					handleContextClick(cm, globalPos, me);
+					try {
+						fInContextMenu= true;
+						// AW: not ready for primetime
+						// OS.ContextualMenuSelect(cm.handle, globalPos.getData(), new short[1], new short[1]);
+						OS.PopUpMenuSelect(cm.handle, (short)globalPos.getY(), (short)globalPos.getX(), (short)1);
+					} finally {
+						fInContextMenu= false;
+					}
 					return false;
 				}
 			}
@@ -2342,69 +2213,13 @@ static String convertToLf(String text) {
 				int cpart2= OS.HandleControlClick(whichControl, where.getData(), me.getModifiers(), -1);
 				if (cpart2 != 0) {
 					windowProc(whichControl, SWT.Selection, new MacControlEvent(whichControl, cpart2, false));
-					repairPending();
 				}
 				break;
 			}
 		}
 		return false;
 	}
-	
-	/*
-	private int handleKeyEvent2(int type, MacEvent me) {
-		System.out.println("  handleKeyEvent: " + me.getKeyCode());	
-		int[] focusControl= new int[1];
-		int status= OS.GetKeyboardFocus(OS.FrontWindow(), focusControl);
-		//System.out.println("--------> focus(" + status + ") " + focusControl[0]);
-		if (status == OS.kNoErr && focusControl[0] != 0) {
-			windowProc(focusControl[0], type, me);
-			//return OS.kNoErr;
-		} else if (fFocusControl != 0) {
-			windowProc(fFocusControl, type, me);
-			//return OS.kNoErr;
-		}
-		return OS.eventNotHandledErr;
-	}
-	*/
-
-	private void handleContextClick(Menu cm, MacPoint globalPos, MacEvent me) {
 		
-		short menuId;
-		short index;
-		
-		try {
-			fInContextMenu= true;
-			if (true) {
-				int result= OS.PopUpMenuSelect(cm.handle, (short)globalPos.getY(), (short)globalPos.getX(), (short)1);
-				if (result == OS.kNoErr)
-					return;
-				menuId= OS.HiWord(result);
-				index= OS.LoWord(result);
-			} else {
-				// AW: not ready for primetime
-				short[] id= new short[1];
-				short[] ix= new short[1];
-				if (OS.ContextualMenuSelect(cm.handle, globalPos.getData(), id, ix) != OS.kNoErr)
-					return;
-				menuId= id[0];
-				index= ix[0];
-			}
-		} finally {
-			fInContextMenu= false;
-		}
-
-		if (menuId != 0) {
-			System.out.println("Display.handleContextClick: should not happen");
-			/*
-			Menu menu= cm.getShell().findMenu(menuId);
-			if (menu != null) {
-				//System.out.println("handleMenu: " + index);
-				menu.handleMenu(index);
-			}
-			*/
-		}
-	}
-	
 	public void updateWindow(int whichWindow) {
 	
 		int curPort= OS.GetPort();
@@ -2422,78 +2237,34 @@ static String convertToLf(String text) {
 			processPaintToolTip(whichWindow);
 		} else {
 			fUpdateRegion= OS.NewRgn();
-			OS.GetPortVisibleRegion(OS.GetPort(), fUpdateRegion);
+			OS.GetPortVisibleRegion(OS.GetWindowPort(whichWindow), fUpdateRegion);
 
 			OS.EraseRgn(fUpdateRegion);
 			OS.UpdateControls(whichWindow, fUpdateRegion);
-				
-			//OS.DrawGrowIcon(whichWindow);
-			
+							
 			OS.DisposeRgn(fUpdateRegion);
 			fUpdateRegion= 0;
 		}
 	}
-
-	private int fRepairCount= 0;
-	private int[] fRepairWindow= new int[40];
-	private int[] fRepairRegion= new int[40];
-	
-	private void repairPending() {
-		while (fRepairCount > 0) {
-			fRepairCount--;
-			repairRgn(fRepairWindow[fRepairCount], fRepairRegion[fRepairCount]);
-		}
-	}
-	
-	private void repairRgn(int wHandle, int rgn) {
-		OS.InvalWindowRgn(wHandle, rgn);
 		
-		fUpdateRegion= rgn;
-		OS.BeginUpdate(wHandle);
-		OS.UpdateControls(wHandle, rgn);
-		OS.EndUpdate(wHandle);
-
-		OS.DisposeRgn(rgn);
-		fUpdateRegion= 0;
-	}
-	
-	public void repairWindow(int wHandle, int rgn, short dx, short dy) {
-		if (SMART_REFRESH && fRepairCount < fRepairWindow.length) {
-			OS.OffsetRgn(rgn, dx, dy);
-			fRepairWindow[fRepairCount]= wHandle;
-			fRepairRegion[fRepairCount]= rgn;
-			fRepairCount++;
-		} else {
-			OS.InvalWindowRgn(wHandle, rgn);
-			OS.DisposeRgn(rgn);
-		}
-	}
-	
-	public static int ticksToMS(int ticks) {
-		return ticks * 17;		// 17 * 60 == 1000
-	}
-	
-	static void processAllUpdateEvents(int cHandle) {
-	
-		if (SMART_REFRESH)
-			return;
-			
+	/*
+	static void processAllUpdateEvents2(int cHandle) {
+		
 		if (true) {
 			int[] macEvent= new int[6];
 			while (OS.GetNextEvent(OS.updateMask, macEvent))
-				;
-				//if (me.getWhat() == OS.updateEvt)
-				//	getDefault().updateWindow(me.getMessage());
+				if (macEvent[0] == OS.updateEvt)
+					getDefault().updateWindow(macEvent[1]);
 		} else {
 			int[] mask= new int[] {
 				OS.kEventClassWindow, OS.kEventWindowDrawContent
 			};
 			int[] evt= new int[1];
-			while (OS.ReceiveNextEvent(mask, 0.2, true, evt) == OS.kNoErr) {
+			while (OS.ReceiveNextEvent(mask, 0.01, true, evt) == OS.kNoErr) {
 				//System.out.println("got update");
 				int rc= OS.SendEventToEventTarget(evt[0], OS.GetEventDispatcherTarget());
-                //if (rc != OS.kNoErr)
-				//	System.out.println("processAllUpdateEvents: " + rc);
+                if (rc != OS.kNoErr)
+					System.out.println("processAllUpdateEvents: " + rc);
 				OS.ReleaseEvent(evt[0]);
 			}
 		}
@@ -2501,19 +2272,14 @@ static String convertToLf(String text) {
 		int wHandle= OS.GetControlOwner(cHandle);
 		if (wHandle != 0) {
 			int port= OS.GetWindowPort(wHandle);
-			if (port != 0)
+			if (port != 0) {
 				OS.QDFlushPortBuffer(port, 0);
+				//System.out.println("QDFlushPortBuffer");
+			}
 		}
 	}
+	*/
 	
-	private void flush(int wHandle) {
-		if (wHandle != 0) {
-			int port= OS.GetWindowPort(wHandle);
-			if (port != 0)
-				OS.QDFlushPortBuffer(port, 0);
-		}
-	}
-
 	private void processPaintToolTip(int wHandle) {
 			
 		Color infoForeground = getSystemColor (SWT.COLOR_INFO_FOREGROUND);
@@ -2551,8 +2317,6 @@ static String convertToLf(String text) {
 		OS.GetThemeFont(themeFontId, OS.smSystemScript, fontName, fontSize, style);
 		return new MacFont(MacUtil.toString(fontName), fontSize[0], style[0]);
 	}
-	
-	private boolean fMenuIsVisible;
 	
 	void menuIsVisible(boolean menuIsVisible) {
 		fMenuIsVisible= menuIsVisible;
