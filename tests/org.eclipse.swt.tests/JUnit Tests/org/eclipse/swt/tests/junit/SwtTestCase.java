@@ -49,7 +49,12 @@ public class SwtTestCase extends TestCase {
 	// make dialog open calls, operator must then close them
 	public static boolean fTestDialogOpen = false;
 
+	// variable to keep track of the number of unimplemented methods
 	public static int unimplementedMethods;
+	
+	// used to specify verbose mode, if true unimplemented warning messages will 
+	// be written to System.out
+	public static boolean verbose = false;
 	
 public SwtTestCase(String name) {
 	super(name);
@@ -106,7 +111,9 @@ static private void failNotEquals(String message, Object expected, Object actual
 }
 
 protected void warnUnimpl(String message) {
-	//System.out.println(this.getClass() + ": " + message);
+	if (verbose) {
+		System.out.println(this.getClass() + ": " + message);
+	}
 	unimplementedMethods++;
 }
 }
