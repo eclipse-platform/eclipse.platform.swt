@@ -361,6 +361,7 @@ public static final synchronized native int GtkTreeIter_sizeof();
 public static final synchronized native int PangoAttribute_sizeof();
 public static final synchronized native int PangoRectangle_sizeof();
 public static final synchronized native int XWindowChanges_sizeof();
+public static final native int strlen(int /*long*/ str);
 
 /** Object private fields accessors */
 public static final synchronized native int GTK_WIDGET_HEIGHT(int /*long*/ widget);
@@ -373,8 +374,8 @@ public static final synchronized native int GTK_SCROLLED_WINDOW_VSCROLLBAR(int /
 public static final synchronized native int GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(int /*long*/ widget);
 public static final synchronized native void GTK_ACCEL_LABEL_ACCEL_STRING(int /*long*/ acce_label, int /*long*/ string);
 public static final synchronized native int GTK_ACCEL_LABEL_ACCEL_STRING(int /*long*/ acce_label);
-public static final synchronized native int GTK_ENTRY_IM_CONTEXT(int /*long*/ widget);
-public static final synchronized native int GTK_TEXTVIEW_IM_CONTEXT(int /*long*/ widget);
+public static final synchronized native int /*long*/ GTK_ENTRY_IM_CONTEXT(int /*long*/ widget);
+public static final synchronized native int /*long*/ GTK_TEXTVIEW_IM_CONTEXT(int /*long*/ widget);
 
 /** X11 Native methods and constants */
 public static final int Above = 0;
@@ -393,7 +394,7 @@ public static final synchronized native int gdk_x11_drawable_get_xid(int /*long*
 public static final synchronized native int /*long*/ GDK_ROOT_PARENT();
 public static final synchronized native int /*long*/ GDK_TYPE_COLOR();
 public static final synchronized native int /*long*/ GDK_TYPE_PIXBUF();
-public static final synchronized native boolean GTK_IS_BUTTON(int obj);
+public static final synchronized native boolean GTK_IS_BUTTON(int /*long*/ obj);
 public static final synchronized native boolean GTK_IS_CELL_RENDERER_PIXBUF(int /*long*/ obj);
 public static final synchronized native boolean GTK_IS_IMAGE_MENU_ITEM(int /*long*/ obj);
 public static final synchronized native int GTK_WIDGET_FLAGS(int /*long*/ wid);
@@ -457,12 +458,12 @@ public static final synchronized native void g_signal_stop_emission_by_name(int 
 public static final synchronized native void g_strfreev(int /*long*/ string_array);
 public static final synchronized native void g_thread_init(int /*long*/ vtable);
 public static final synchronized native boolean g_thread_supported();
-public static final synchronized native int /*long*/ g_utf16_to_utf8(char[] str, int /*long*/ len, int /*long*/[] items_read, int /*long*/[] items_written, int /*long*/[] error);
+public static final synchronized native int /*long*/ g_utf16_to_utf8(char[] str, int /*long*/ len, int[] items_read, int[] items_written, int /*long*/[] error);
 public static final synchronized native int /*long*/ g_utf8_offset_to_pointer(int /*long*/ str, long offset);
 public static final synchronized native long g_utf8_pointer_to_offset(int /*long*/ str, int /*long*/ pos);
 public static final synchronized native int /*long*/ g_utf8_strlen(int /*long*/ str, int /*long*/ max);
-public static final synchronized native int /*long*/ g_utf8_to_utf16(byte[] str, int /*long*/ len, int /*long*/[] items_read, int /*long*/[] items_written, int /*long*/[] error);
-public static final synchronized native int /*long*/ g_utf8_to_utf16(int /*long*/ str, int /*long*/ len, int /*long*/[] items_read, int /*long*/[] items_written, int /*long*/[] error);
+public static final synchronized native int /*long*/ g_utf8_to_utf16(byte[] str, int /*long*/ len, int[] items_read, int[] items_written, int /*long*/[] error);
+public static final synchronized native int /*long*/ g_utf8_to_utf16(int /*long*/ str, int /*long*/ len, int[] items_read, int[] items_written, int /*long*/[] error);
 public static final synchronized native int /*long*/ gdk_atom_intern(byte[] atom_name, boolean only_if_exists);
 public static final synchronized native int /*long*/ gdk_atom_name(int /*long*/ atom);
 public static final synchronized native void gdk_beep();
@@ -481,12 +482,12 @@ public static final synchronized native void gdk_draw_drawable(int /*long*/ draw
 public static final synchronized native void gdk_draw_layout(int /*long*/ drawable, int /*long*/ gc, int x, int y, int /*long*/ layout);
 public static final synchronized native void gdk_draw_layout_with_colors(int /*long*/ drawable, int /*long*/ gc, int x, int y, int /*long*/ layout, GdkColor foreground, GdkColor background);
 public static final synchronized native void gdk_draw_line(int /*long*/ drawable, int /*long*/ gc, int x1, int y1, int x2, int y2);
-public static final synchronized native void gdk_draw_lines(int /*long*/ drawable, int /*long*/ gc, int /*long*/[] points, int npoints);
+public static final synchronized native void gdk_draw_lines(int /*long*/ drawable, int /*long*/ gc, int[] points, int npoints);
 public static final synchronized native void gdk_draw_point(int /*long*/ drawable, int /*long*/ gc, int x, int y);
-public static final synchronized native void gdk_draw_polygon(int /*long*/ drawable, int /*long*/ gc, int filled, int /*long*/[] points, int npoints);
+public static final synchronized native void gdk_draw_polygon(int /*long*/ drawable, int /*long*/ gc, int filled, int[] points, int npoints);
 public static final synchronized native void gdk_draw_rectangle(int /*long*/ drawable, int /*long*/ gc, int filled, int x, int y, int width, int height);
 public static final synchronized native int /*long*/ gdk_drawable_get_image(int /*long*/ drawable, int x, int y, int width, int height);
-public static final synchronized native void gdk_drawable_get_size(int /*long*/ drawable, int /*long*/[] width, int /*long*/[] height);
+public static final synchronized native void gdk_drawable_get_size(int /*long*/ drawable, int[] width, int[] height);
 public static final synchronized native int /*long*/ gdk_drawable_get_visible_region(int /*long*/ drawable);
 public static final synchronized native int /*long*/ gdk_event_copy(int /*long*/ event);
 public static final synchronized native void gdk_event_free(int /*long*/ event);
@@ -494,7 +495,7 @@ public static final synchronized native int /*long*/ gdk_event_get();
 public static final synchronized native boolean gdk_event_get_root_coords(int /*long*/ event, double[] px, double[] py);
 public static final synchronized native boolean gdk_event_get_coords(int /*long*/ event, double[] px, double[] py);
 public static final synchronized native int /*long*/ gdk_event_get_graphics_expose(int /*long*/ window);
-public static final synchronized native boolean gdk_event_get_state(int /*long*/ event, int /*long*/[] pmod);
+public static final synchronized native boolean gdk_event_get_state(int /*long*/ event, int[] pmod);
 public static final synchronized native int gdk_event_get_time(int /*long*/ event);
 public static final synchronized native void gdk_event_handler_set(int /*long*/ func, int /*long*/ data, int /*long*/ notify);
 public static final synchronized native void gdk_error_trap_push();
@@ -520,8 +521,8 @@ public static final synchronized native void gdk_gc_set_values(int /*long*/ gc, 
 public static final synchronized native int /*long*/ gdk_image_get(int /*long*/ window, int x, int y, int width, int height);
 public static final synchronized native int /*long*/ gdk_image_get_pixel(int /*long*/ image, int x, int y);
 public static final synchronized native void gdk_keyboard_ungrab(int time);
-public static final synchronized native int gdk_keymap_get_default();
-public static final synchronized native boolean gdk_keymap_translate_keyboard_state (int /*long*/ keymap, int hardware_keycode, int state, int group, int /*long*/[] keyval, int /*long*/[] effective_group, int /*long*/[] level,  int /*long*/[] consumed_modifiers);
+public static final synchronized native int /*long*/ gdk_keymap_get_default();
+public static final synchronized native boolean gdk_keymap_translate_keyboard_state (int /*long*/ keymap, int hardware_keycode, int state, int group, int[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers);
 public static final synchronized native int gdk_keyval_to_lower(int keyval);
 public static final synchronized native int gdk_keyval_to_unicode(int keyval);
 public static final synchronized native int /*long*/ gdk_pango_context_get();
@@ -548,12 +549,12 @@ public static final synchronized native void gdk_region_intersect(int /*long*/ s
 public static final synchronized native int /*long*/ gdk_region_new();
 public static final synchronized native void gdk_region_offset(int /*long*/ region, int dx, int dy);
 public static final synchronized native boolean gdk_region_point_in(int /*long*/ region, int x, int y);
-public static final synchronized native int /*long*/ gdk_region_polygon(int /*long*/[] points, int npoints, int fill_rule);
+public static final synchronized native int /*long*/ gdk_region_polygon(int[] points, int npoints, int fill_rule);
 public static final synchronized native int /*long*/ gdk_region_rectangle(GdkRectangle rectangle);
-public static final synchronized native int /*long*/ gdk_region_rect_in(int region, GdkRectangle rect);
+public static final synchronized native int /*long*/ gdk_region_rect_in(int /*long*/ region, GdkRectangle rect);
 public static final synchronized native void gdk_region_subtract(int /*long*/ source1, int /*long*/ source2);
 public static final synchronized native void gdk_region_union(int /*long*/ source1, int /*long*/ source2);
-public static final synchronized native void gdk_region_union_with_rect(int region, GdkRectangle rect);
+public static final synchronized native void gdk_region_union_with_rect(int /*long*/ region, GdkRectangle rect);
 public static final synchronized native void gdk_rgb_init();
 public static final synchronized native int /*long*/ gdk_screen_get_default();
 public static final synchronized native int gdk_screen_get_monitor_at_window(int /*long*/ screen, int /*long*/ window);
@@ -621,7 +622,7 @@ public static final synchronized native void gtk_color_selection_set_current_col
 public static final synchronized native void gtk_combo_disable_activate(int /*long*/ combo);
 public static final synchronized native int /*long*/ gtk_combo_new();
 public static final synchronized native void gtk_combo_set_case_sensitive(int /*long*/ combo, boolean val);
-public static final synchronized native void gtk_combo_set_popdown_strings(int /*long*/ combo, int strings);
+public static final synchronized native void gtk_combo_set_popdown_strings(int /*long*/ combo, int /*long*/ strings);
 public static final synchronized native void gtk_container_add(int /*long*/ container, int /*long*/ widget);
 public static final synchronized native int gtk_container_get_border_width(int /*long*/ container);
 public static final synchronized native int gtk_container_get_children(int /*long*/ container);
@@ -700,7 +701,7 @@ public static final synchronized native int gtk_im_context_get_type();
 public static final synchronized native void gtk_im_context_reset(int /*long*/ context);
 public static final synchronized native void gtk_im_context_set_client_window(int /*long*/ context, int /*long*/ window);
 public static final synchronized native void gtk_im_context_set_cursor_location(int /*long*/ context, GdkRectangle area);
-public static final synchronized native void gtk_im_multicontext_append_menuitems (int /*long*/ context, int menushell);
+public static final synchronized native void gtk_im_multicontext_append_menuitems (int /*long*/ context, int /*long*/ menushell);
 public static final synchronized native int /*long*/ gtk_im_multicontext_new();
 public static final synchronized native int /*long*/ gtk_image_menu_item_new_with_label(byte[] label);
 public static final synchronized native void gtk_image_menu_item_set_image(int /*long*/ menu_item, int /*long*/ image);
@@ -714,7 +715,7 @@ public static final synchronized native int /*long*/ gtk_label_new_with_mnemonic
 public static final synchronized native void gtk_label_set_attributes(int /*long*/ label, int /*long*/ attrs);
 public static final synchronized native void gtk_label_set_justify(int /*long*/ label, int jtype);
 public static final synchronized native void gtk_label_set_line_wrap(int /*long*/ label, boolean wrap);
-public static final synchronized native void gtk_label_set_text(int /*long*/ label, int str);
+public static final synchronized native void gtk_label_set_text(int /*long*/ label, int /*long*/ str);
 public static final synchronized native void gtk_label_set_text_with_mnemonic(int /*long*/ label, byte[] str);
 public static final synchronized native void gtk_list_store_append(int /*long*/ list_store, int /*long*/ iter);
 public static final synchronized native void gtk_list_store_clear(int /*long*/ store);
@@ -723,6 +724,7 @@ public static final synchronized native int /*long*/ gtk_list_store_newv(int num
 public static final synchronized native void gtk_list_store_remove(int /*long*/ list_store, int /*long*/ iter);
 public static final synchronized native void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int terminator);
 public static final synchronized native void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int terminator);
+public static final synchronized native void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int terminator);
 public static final synchronized native void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int terminator);
 public static final synchronized native void gtk_list_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int terminator);
 public static final synchronized native int gtk_major_version();
@@ -752,7 +754,7 @@ public static final synchronized native void gtk_notebook_set_scrollable(int /*l
 public static final synchronized native void gtk_notebook_set_show_tabs(int /*long*/ notebook, boolean show_tabs);
 public static final synchronized native void gtk_notebook_set_tab_pos(int /*long*/ notebook, int pos);
 public static final synchronized native void gtk_object_sink(int /*long*/ object);
-public static final synchronized native int /*long*/ gtk_plug_new(int socket_id);
+public static final synchronized native int /*long*/ gtk_plug_new(int /*long*/ socket_id);
 public static final synchronized native int /*long*/ gtk_progress_bar_new();
 public static final synchronized native void gtk_progress_bar_pulse(int /*long*/ pbar);
 public static final synchronized native void gtk_progress_bar_set_bar_style(int /*long*/ pbar, int style);
@@ -815,7 +817,7 @@ public static final synchronized native int /*long*/ gtk_text_buffer_get_selecti
 public static final synchronized native boolean gtk_text_buffer_get_selection_bounds(int /*long*/ buffer, byte[] start, byte[] end);
 public static final synchronized native int /*long*/ gtk_text_buffer_get_text(int /*long*/ buffer, byte[] start, byte[] end, boolean include_hidden_chars);
 public static final synchronized native void gtk_text_buffer_insert(int /*long*/ buffer, byte[] iter, byte[] text, int len);
-public static final synchronized native void gtk_text_buffer_insert(int /*long*/ buffer, int iter, byte[] text, int len);
+public static final synchronized native void gtk_text_buffer_insert(int /*long*/ buffer, int /*long*/ iter, byte[] text, int len);
 public static final synchronized native void gtk_text_buffer_move_mark(int /*long*/ buffer, int /*long*/ mark, byte[] where);
 public static final synchronized native void gtk_text_buffer_paste_clipboard(int /*long*/ buffer, int /*long*/ clipboard, byte[] override_location, boolean default_editable);
 public static final synchronized native void gtk_text_buffer_place_cursor(int /*long*/ buffer, byte[] where);
@@ -881,6 +883,7 @@ public static final synchronized native int /*long*/ gtk_tree_store_newv(int num
 public static final synchronized native void gtk_tree_store_remove(int /*long*/ store, int /*long*/ iter);
 public static final synchronized native void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, byte[] value, int terminator);
 public static final synchronized native void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, int value, int terminator);
+public static final synchronized native void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, long value, int terminator);
 public static final synchronized native void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, GdkColor value, int terminator);
 public static final synchronized native void gtk_tree_store_set(int /*long*/ store, int /*long*/ iter, int column, boolean value, int terminator);
 public static final synchronized native boolean gtk_tree_view_collapse_row(int /*long*/ view, int /*long*/ path);
@@ -930,7 +933,7 @@ public static final synchronized native void gtk_tree_view_tree_to_widget_coords
 public static final synchronized native void gtk_tree_view_unset_rows_drag_dest(int /*long*/ tree_view);
 public static final synchronized native void gtk_tree_view_widget_to_tree_coords(int /*long*/ tree_view, int wx, int wy, int[] tx, int[] ty);
 public static final synchronized native int /*long*/ gtk_vbox_new(boolean homogeneous, int spacing);
-public static final synchronized native int /*long*/ gtk_vscale_new(int adjustment);
+public static final synchronized native int /*long*/ gtk_vscale_new(int /*long*/ adjustment);
 public static final synchronized native int /*long*/ gtk_vscrollbar_new(int /*long*/ adjustment);
 public static final synchronized native int /*long*/ gtk_vseparator_new();
 public static final synchronized native void gtk_widget_add_accelerator(int /*long*/ widget, byte[] accel_signal, int /*long*/ accel_group, int accel_key, int accel_mods, int accel_flags);
@@ -1021,6 +1024,7 @@ public static final native void memmove(GdkImage dest, int /*long*/ src);
 public static final native void memmove(GdkRectangle dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(PangoAttribute dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, int /*long*/[] src, int /*long*/ size);
+public static final native void memmove(long dest, int[] src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, byte[] src, int /*long*/ size);
 public static final native void memmove(int[] dest, byte[] src, int /*long*/ size);
 public static final native void memmove(byte[] dest, int /*long*/ src, int /*long*/ size);
@@ -1080,5 +1084,4 @@ public static final synchronized native boolean pango_layout_xy_to_index(int /*l
 public static final synchronized native void pango_tab_array_free(int /*long*/ tab_array);
 public static final synchronized native int /*long*/ pango_tab_array_new(int initial_size, boolean positions_in_pixels);
 public static final synchronized native void pango_tab_array_set_tab(int /*long*/ tab_array, int tab_index, int /*long*/ alignment, int location);
-public static final native int /*long*/ strlen(int /*long*/ str);
 }
