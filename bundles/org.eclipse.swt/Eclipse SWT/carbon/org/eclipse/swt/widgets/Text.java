@@ -304,7 +304,6 @@ void createHandle () {
 	if ((style & SWT.H_SCROLL) != 0) iFrameOptions |= OS.kTXNWantHScrollBarMask;
 	if ((style & SWT.V_SCROLL) != 0) iFrameOptions |= OS.kTXNWantVScrollBarMask;
 	if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
-	if ((style & SWT.READ_ONLY) != 0) iFrameOptions |= OS.kTXNReadOnlyMask;
 	if ((style & SWT.WRAP) != 0) iFrameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
 	int [] oTXNObject = new int [1], oTXNFrameID = new int[1];
 	OS.TXNNewObject (0, window, null, iFrameOptions, OS.kTXNTextEditStyleFrameType, OS.kTXNUnicodeTextFile, OS.kTXNSystemDefaultEncoding, oTXNObject, oTXNFrameID, 0);
@@ -322,16 +321,6 @@ void createHandle () {
 		OS.HIViewAddSubview (handle, scrollBar [0]);
 	}
 	
-	/* Configure the TXNOBject */
-	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNDisableDragAndDropTag}, new int [] {1});
-	OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
-	int ptr = OS.NewPtr (Rect.sizeof);
-	Rect rect = new Rect ();
-	OS.SetRect (rect, (short) 1, (short) 1, (short) 1, (short) 1);
-	OS.memcpy (ptr, rect, Rect.sizeof);
-	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNMarginsTag}, new int [] {ptr});
-	OS.DisposePtr (ptr);
-	
 	/*
 	* Bug in the Macintosh.  The caret height is too small until some text is set in the
 	* TXNObject.  The fix is to temporary change the text.
@@ -339,6 +328,25 @@ void createHandle () {
 	char [] buffer = new char [] {' '};
 	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 2, OS.kTXNStartOffset, OS.kTXNEndOffset);
 	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 0, OS.kTXNStartOffset, OS.kTXNEndOffset);
+	
+	/* Configure the TXNOBject */
+	int ptr = OS.NewPtr (Rect.sizeof);
+	Rect rect = new Rect ();
+	OS.SetRect (rect, (short) 1, (short) 1, (short) 1, (short) 1);
+	OS.memcpy (ptr, rect, Rect.sizeof);
+	int [] tags = new int [] {
+		OS.kTXNDisableDragAndDropTag,
+		OS.kTXNIOPrivilegesTag,
+		OS.kTXNMarginsTag,
+	};
+	int [] datas = new int [] {
+		1,
+		(style & SWT.READ_ONLY) != 0 ? 1 : 0,
+		ptr,
+	};
+	OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
+	OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
+	OS.DisposePtr (ptr);
 }
 
 ScrollBar createScrollBar (int type) {
@@ -915,7 +923,6 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 			}
 		}
 	}
-	if ((style & SWT.READ_ONLY) != 0) return OS.noErr;
 	return result;
 }
 
@@ -1159,12 +1166,10 @@ public void setEditable (boolean editable) {
 	} else {
 		style |= SWT.READ_ONLY;
 	}
+	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNIOPrivilegesTag}, new int [] {((style & SWT.READ_ONLY) != 0) ? 1 : 0});
 }
 
 void setForeground (float [] color) {
-	int [] attrib = new int [3];
-	attrib [0] = OS.kTXNQDFontColorAttribute;
-	attrib [1] = OS.kTXNQDFontColorAttributeSize;
 	int ptr2 = OS.NewPtr (OS.kTXNQDFontColorAttributeSize);
 	RGBColor rgb;
 	if (color == null) {	
@@ -1173,28 +1178,37 @@ void setForeground (float [] color) {
 		rgb = toRGBColor (foreground);
 	}
 	OS.memcpy (ptr2, rgb, RGBColor.sizeof);
-	attrib [2] = ptr2;
-	int ptr1 = OS.NewPtr (attrib.length * 4);
-	OS.memcpy (ptr1, attrib, attrib.length * 4);
-	OS.TXNSetTypeAttributes (txnObject, attrib.length / 3, ptr1, 0, 0);
+	int [] attribs = new int [] {
+		OS.kTXNQDFontColorAttribute,
+		OS.kTXNQDFontColorAttributeSize,
+		ptr2,
+	};
+	int ptr1 = OS.NewPtr (attribs.length * 4);
+	OS.memcpy (ptr1, attribs, attribs.length * 4);
+	OS.TXNSetTypeAttributes (txnObject, attribs.length / 3, ptr1, 0, 0);
 	OS.DisposePtr (ptr1);
 	OS.DisposePtr (ptr2);
 }
 
 void setFontStyle (Font font) {
-	int [] attrib = new int [9];
-	attrib [0] = OS.kTXNQDFontSizeAttribute;
-	attrib [1] = OS.kTXNQDFontSizeAttributeSize;
-	attrib [2] = font == null ? OS.kTXNDefaultFontSize : OS.X2Fix (font.size);
-	attrib [3] = OS.kTXNQDFontStyleAttribute;
-	attrib [4] = OS.kTXNQDFontStyleAttributeSize;
-	attrib [5] = font == null ? OS.kTXNDefaultFontStyle : font.style;
-	attrib [6] = OS.kTXNQDFontFamilyIDAttribute;
-	attrib [7] = OS.kTXNQDFontFamilyIDAttributeSize;
-	attrib [8] = font == null ? OS.kTXNDefaultFontName : font.id;
-	int ptr = OS.NewPtr (attrib.length * 4);
-	OS.memcpy (ptr, attrib, attrib.length * 4);
-	OS.TXNSetTypeAttributes (txnObject, attrib.length / 3, ptr, 0, 0);
+	int [] attribs = new int [] {
+		OS.kTXNQDFontSizeAttribute,
+		OS.kTXNQDFontSizeAttributeSize,
+		font == null ? OS.kTXNDefaultFontSize : OS.X2Fix (font.size),
+		OS.kTXNQDFontStyleAttribute,
+		OS.kTXNQDFontStyleAttributeSize,
+		font == null ? OS.kTXNDefaultFontStyle : font.style,
+		OS.kTXNQDFontFamilyIDAttribute,
+		OS.kTXNQDFontFamilyIDAttributeSize,
+		font == null ? OS.kTXNDefaultFontName : font.id,
+	};
+	int ptr = OS.NewPtr (attribs.length * 4);
+	OS.memcpy (ptr, attribs, attribs.length * 4);
+	boolean readOnly = (style & SWT.READ_ONLY) != 0;
+	int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
+	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
+	OS.TXNSetTypeAttributes (txnObject, attribs.length / 3, ptr, 0, 0);
+	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {1});
 	OS.DisposePtr (ptr);
 }
 
@@ -1379,8 +1393,12 @@ void setTXNBounds () {
 
 void setTXNText (int iStartOffset, int iEndOffset, String string) {
 	char [] buffer = new char [string.length ()];
-	string.getChars (0, buffer.length, buffer, 0);	
+	string.getChars (0, buffer.length, buffer, 0);
+	boolean readOnly = (style & SWT.READ_ONLY) != 0;
+	int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
+	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
 	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, buffer.length * 2, iStartOffset, iEndOffset);
+	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {1});
 }
 
 /**
