@@ -622,14 +622,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1font_1ref
 {
 	return (jint)gdk_font_ref((GdkFont*)font);
 }
-
+/*
 JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1font_1full_1name_1get
   (JNIEnv *env, jclass that, jint font)
 {
   gchar *name = (gchar *)gdk_font_full_name_get ((GdkFont*)font);
-  return (jstring)NewStringUTF (env, name);
+  return (*env)->NewStringUTF(env, name);
 }
-
+*/
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1font_1unref
   (JNIEnv *env, jclass that, jint font)
 {
