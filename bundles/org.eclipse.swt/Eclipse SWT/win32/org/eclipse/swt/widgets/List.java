@@ -985,12 +985,14 @@ public void select (int [] indices) {
 		}
 		return;
 	}
-	for (int i = indices.length - 1; i >= 0; i--) {
+	int focusIndex = getFocusIndex ();
+	for (int i=0; i<indices.length; i++) {
 		int index = indices [i];
 		if (index != -1) {
 			OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
 		}
 	}
+	if (focusIndex != -1) setFocusIndex (focusIndex);
 }
 
 /**
@@ -1016,6 +1018,7 @@ public void select (int index) {
 		OS.UpdateWindow (handle);
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
+	int focusIndex = -1;
 	if ((style & SWT.SINGLE) != 0) {
 		int oldIndex = OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
 		if (oldIndex != -1) {
@@ -1024,6 +1027,7 @@ public void select (int index) {
 		}
 		OS.SendMessage (handle, OS.LB_SETCURSEL, index, 0);
 	} else {
+		focusIndex = OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
 		OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
 	}
 	OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
@@ -1033,6 +1037,11 @@ public void select (int index) {
 		OS.InvalidateRect (handle, itemRect, true);
 		if (selectedRect != null) {
 			OS.InvalidateRect (handle, selectedRect, true);
+		}
+	}
+	if ((style & SWT.MULTI) != 0) {
+		if (focusIndex != -1) {
+			OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
 		}
 	}
 }
@@ -1056,8 +1065,8 @@ public void select (int start, int end) {
 	if (start > end) return;
 	if ((style & SWT.SINGLE) != 0) {
 		int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
-		int index = Math.min (count - 1, start);
-		if (index <= end) select (index);
+		int index = Math.min (count - 1, end);
+		if (index >= start) select (index);
 		return;
 	}
 	/*
@@ -1311,9 +1320,14 @@ void setScrollWidth (int newWidth, boolean grow) {
  * @see List#select(int[])
  */
 public void setSelection(int [] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (indices);
-	setFocusIndex(indices[0]);
+	if ((style & SWT.MULTI) != 0) {
+		int focusIndex = indices [0];
+		if (focusIndex != -1) setFocusIndex (focusIndex);
+	}
 }
 
 /**
@@ -1338,18 +1352,27 @@ public void setSelection (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.MULTI) != 0) deselectAll ();
+	int focusIndex = -1;
 	for (int i=items.length-1; i>=0; --i) {
-		int index = 0;
 		String string = items [i];
+		int index = 0;
 		if (string != null) {
+			int localFocus = -1;
 			while ((index = indexOf (string, index)) != -1) {
+				if (localFocus == -1) localFocus = index;
 				select (index);
-				if ((style & SWT.SINGLE) != 0 && isSelected (index)) return;
+				if ((style & SWT.SINGLE) != 0 && isSelected (index)) {
+					return;
+				}
 				index++;
 			}
+			if (localFocus != -1) focusIndex = localFocus;
 		}
 	}
 	if ((style & SWT.SINGLE) != 0) deselectAll ();
+	if ((style & SWT.MULTI) != 0) {
+		if (focusIndex != -1) setFocusIndex (focusIndex);
+	}
 }
 
 /**
@@ -1368,8 +1391,12 @@ public void setSelection (String [] items) {
  * @see List#select(int)
  */
 public void setSelection (int index) {
+	checkWidget ();
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index);
+	if ((style & SWT.MULTI) != 0) {
+		if (index != -1) setFocusIndex (index);
+	}
 }
 
 /**
@@ -1388,9 +1415,12 @@ public void setSelection (int index) {
  * @see Table#select(int,int)
  */
 public void setSelection (int start, int end) {
+	checkWidget ();
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
-	setFocusIndex(start);
+	if ((style & SWT.MULTI) != 0) {
+		if (start != -1) setFocusIndex (start);
+	}
 }
 
 /**

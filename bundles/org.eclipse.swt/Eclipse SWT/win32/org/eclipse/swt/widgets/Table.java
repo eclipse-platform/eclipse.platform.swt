@@ -1314,7 +1314,6 @@ public void select (int index) {
 	ignoreSelect = true;
 	OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
 	ignoreSelect = false;
-	setFocusIndex(index);
 }
 
 /**
@@ -1337,7 +1336,7 @@ public void select (int start, int end) {
 	lvItem.mask = OS.LVIF_STATE;
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
-	for (int i=end; i>= start;i--) {
+	for (int i=start; i<=end; i++) {
 		lvItem.iItem = i;
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
@@ -1730,9 +1729,12 @@ void setScrollWidth () {
  * @see Table#select(int[])
  */
 public void setSelection (int [] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	select (indices);
-	setFocusIndex(indices[0]);
+	int focusIndex = indices [0];
+	if (focusIndex != -1) setFocusIndex (focusIndex);
 }
 
 /**
@@ -1760,11 +1762,15 @@ public void setSelection (TableItem [] items) {
 	deselectAll ();
 	int length = items.length;
 	if (length == 0) return;
+	int focusIndex = -1;
 	if ((style & SWT.SINGLE) != 0) length = 1;
 	for (int i=length-1; i>=0; --i) {
 		int index = indexOf (items [i]);
-		if (index != -1) select (index);
+		if (index != -1) {
+			select (focusIndex = index);
+		}
 	}
+	if (focusIndex != -1) setFocusIndex (focusIndex);
 }
 
 boolean setTabGroupFocus () {
@@ -1787,8 +1793,10 @@ boolean setTabGroupFocus () {
  * @see Table#select(int)
  */
 public void setSelection (int index) {
+	checkWidget ();
 	deselectAll ();
 	select (index);
+	if (index != -1) setFocusIndex (index);
 }
 
 /**
@@ -1807,9 +1815,16 @@ public void setSelection (int index) {
  * @see Table#select(int,int)
  */
 public void setSelection (int start, int end) {
+	checkWidget ();
 	deselectAll ();
 	select (start, end);
-	setFocusIndex(start);
+	/*
+	* NOTE: This code relies on the select (int, int)
+	* selecting the last item in the range for a single
+	* selection table.
+	*/
+	int focusIndex = (style & SWT.SINGLE) != 0 ? end : start;
+	if (focusIndex != -1) setFocusIndex (focusIndex);
 }
 
 /**
