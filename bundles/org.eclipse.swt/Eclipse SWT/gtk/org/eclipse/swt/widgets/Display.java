@@ -527,6 +527,7 @@ synchronized void createDisplay (DeviceData data) {
 		SWT.error (SWT.ERROR_DEVICE_DISPOSED);
 		return;
 	}
+	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
 	OS.gdk_rgb_init ();
 	int ptr = OS.gtk_check_version (MAJOR, MINOR, MICRO);
 	if (ptr != 0) {
@@ -540,7 +541,7 @@ synchronized void createDisplay (DeviceData data) {
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
 	OS.gdk_set_program_class (buffer);
-	
+
 	/* Initialize the event callback */
 	eventCallback = new Callback (this, "eventProc", 2);
 	eventProc = eventCallback.getAddress ();
