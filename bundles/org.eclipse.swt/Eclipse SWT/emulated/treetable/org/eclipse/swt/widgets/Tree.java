@@ -1133,6 +1133,7 @@ void onDispose () {
 		columns [i].dispose (false);
 	}
 	connectorLineColor.dispose ();
+	topIndex = 0;
 	availableItems = items = selectedItems = null;
 	columns = null;
 	focusItem = anchorItem = insertMarkItem = lastClickedItem = null;
@@ -1983,6 +1984,7 @@ public void removeAll () {
 	for (int i = 0; i < items.length; i++) {
 		items [i].dispose (false);
 	}
+	topIndex = 0;
 	getVerticalBar ().setMaximum (1);
 	getHorizontalBar ().setMaximum (1);
 	redraw ();
