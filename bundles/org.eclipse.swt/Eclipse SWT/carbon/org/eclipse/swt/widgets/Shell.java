@@ -104,7 +104,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized, moved, drawing, reshape, update, activate;
+	boolean resized, moved, drawing, reshape, update, activate, disposed;
 	int invalRgn;
 	Control lastActive;
 	Region region;
@@ -496,6 +496,13 @@ void deregister () {
 
 void destroyWidget () {
 	int theWindow = shellHandle;
+	/*
+	* Bug in the Macintosh.  Under certain circumstances, yet to
+	* be determined, calling HideWindow() and then DisposeWindow()
+	* causes a segment fault when an application is exiting.  This
+	* seems to happen to large applications.  The fix is to avoid
+	* calling HideWindow() when a shell is about to be disposed.
+	*/
 //	OS.HideWindow (shellHandle);
 	releaseHandle ();
 	if (theWindow != 0) {
@@ -1075,6 +1082,7 @@ void releaseShells () {
 }
 
 void releaseWidget () {
+	disposed = true;
 	releaseShells ();
 	super.releaseWidget ();
 	if (windowGroup != 0) OS.ReleaseWindowGroup (windowGroup);
@@ -1411,7 +1419,14 @@ void setWindowVisible (boolean visible) {
 			}
 		}
 	} else {
-		OS.HideWindow (shellHandle);
+		/*
+		* Bug in the Macintosh.  Under certain circumstances, yet to
+		* be determined, calling HideWindow() and then DisposeWindow()
+		* causes a segment fault when an application is exiting.  This
+		* seems to happen to large applications.  The fix is to avoid
+		* calling HideWindow() when a shell is about to be disposed.
+		*/
+		if (!disposed) OS.HideWindow (shellHandle);
 		int topHandle = topHandle ();
 		OS.SetControlVisibility (topHandle, false, false);
 		invalidateVisibleRegion (topHandle);
