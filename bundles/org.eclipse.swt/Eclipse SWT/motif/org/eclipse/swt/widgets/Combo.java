@@ -1204,7 +1204,11 @@ public void setItems (String [] items) {
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetString (argList2[1], new byte[1]);
-	display.setWarnings(warnings);	
+	display.setWarnings(warnings);
+	int [] argList3 = {OS.XmNlist, 0};
+	OS.XtGetValues (handle, argList3, argList3.length / 2);
+	int [] argList4 = {OS.XmNselectedItemCount, 0, OS.XmNselectedItems, 0};
+	OS.XtSetValues (argList3 [1], argList4, argList4.length / 2);
 }
 /**
  * Sets the selection in the receiver's text field to the
