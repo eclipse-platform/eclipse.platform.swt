@@ -82,6 +82,15 @@ public void sendEvent (Event event) {
 	}
 }
 
+public int size () {
+	if (types == null) return 0;
+	int count = 0;
+	for (int i=0; i<types.length; i++) {
+		if (types [i] != 0) count++;
+	}
+	return count;
+}
+
 void remove (int index) {
 	if (level == 0) {
 		int end = types.length - 1;

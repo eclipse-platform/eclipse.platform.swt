@@ -3247,7 +3247,7 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	* If the key up is not hooked, reset last key
 	* and last ascii in case the key down is hooked.
 	*/
-	if (!hooks (SWT.KeyUp)) {
+	if (!hooks (SWT.KeyUp) && !display.filters (SWT.KeyUp)) {
 		display.lastKey = display.lastAscii = 0;
 		display.lastVirtual = display.lastNull = false;
 		return null;
@@ -3388,7 +3388,8 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	boolean dragging = false, mouseDown = true;
-	if (hooks (SWT.DragDetect)) {
+	boolean dragDetect = hooks (SWT.DragDetect);
+	if (dragDetect) {
 		POINT pt = new POINT ();
 		pt.x = (short) (lParam & 0xFFFF);
 		pt.y = (short) (lParam >> 16);
@@ -3413,7 +3414,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if (dragging) {
 		postEvent (SWT.DragDetect);
 	} else {
-		if (hooks (SWT.DragDetect)) {
+		if (dragDetect) {
 			/*
 			* Feature in Windows.  DragDetect() captures the mouse
 			* and tracks its movement until the user releases the
@@ -3640,8 +3641,11 @@ LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
 
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	if (!OS.IsWinCE) {
-		boolean hooksEnter = hooks (SWT.MouseEnter);
-		if (hooksEnter || hooks (SWT.MouseExit) || hooks (SWT.MouseHover)) {
+		Display display = getDisplay ();
+		boolean mouseEnter = hooks (SWT.MouseEnter) || display.filters (SWT.MouseEnter);
+		boolean mouseExit = hooks (SWT.MouseExit) || display.filters (SWT.MouseExit);
+		boolean mouseHover = hooks (SWT.MouseHover) || display.filters (SWT.MouseHover);
+		if (mouseEnter || mouseExit || mouseHover) {
 			TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
 			lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
 			lpEventTrack.dwFlags = OS.TME_QUERY;
@@ -3651,7 +3655,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 				lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
 				lpEventTrack.hwndTrack = handle;
 				OS.TrackMouseEvent (lpEventTrack);
-				if (hooksEnter) {
+				if (mouseEnter) {
 					Event event = new Event ();
 					event.x = (short) (lParam & 0xFFFF);
 					event.y = (short) (lParam >> 16);
@@ -3709,7 +3713,9 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 LRESULT WM_PAINT (int wParam, int lParam) {
 
 	/* Exit early - don't draw the background */
-	if (!hooks (SWT.Paint)) return null;
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
+		return null;
+	}
 
 	/* Get the damage */
 	int result = 0;
@@ -3898,7 +3904,9 @@ LRESULT WM_SYSCHAR (int wParam, int lParam) {
 	display.lastNull = false;
 
 	/* Do not issue a key down if a menu bar mnemonic was invoked */
-	if (!hooks (SWT.KeyDown)) return null;
+	if (!hooks (SWT.KeyDown) && !display.filters (SWT.KeyDown)) {
+		return null;
+	}
 	display.mnemonicKeyHit = true;
 	int result = callWindowProc (OS.WM_SYSCHAR, wParam, lParam);
 	if (!display.mnemonicKeyHit) {

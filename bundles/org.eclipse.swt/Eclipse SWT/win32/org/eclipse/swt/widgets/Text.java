@@ -204,7 +204,7 @@ public void append (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	string = Display.withCrLf (string);
 	int length = OS.GetWindowTextLength (handle);
-	if (hooks (SWT.Verify)) {
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		string = verifyText (string, length, length);
 		if (string == null) return;
 	}
@@ -846,7 +846,7 @@ public void insert (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	string = Display.withCrLf (string);
-	if (hooks (SWT.Verify)) {
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int [] start = new int [1], end = new int [1];
 		OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 		string = verifyText (string, start [0], end [0]);
@@ -1008,7 +1008,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 		return true;
 	}
 	if (event.character == 0) return true;
-	if (!hooks (SWT.Verify)) return true;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
 	char key = event.character;
 	int stateMask = event.stateMask;
 	
@@ -1340,7 +1340,7 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	string = Display.withCrLf (string);
-	if (hooks (SWT.Verify)) {
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int length = OS.GetWindowTextLength (handle);
 		string = verifyText (string, 0, length);
 		if (string == null) return;
@@ -1561,7 +1561,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 LRESULT WM_CLEAR (int wParam, int lParam) {
 	LRESULT result = super.WM_CLEAR (wParam, lParam);
 	if (result != null) return result;
-	if (!hooks (SWT.Verify)) return result;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.ES_READONLY) != 0) return result;
 	int [] start = new int [1], end = new int [1];
@@ -1581,7 +1581,7 @@ LRESULT WM_CLEAR (int wParam, int lParam) {
 LRESULT WM_CUT (int wParam, int lParam) {
 	LRESULT result = super.WM_CUT (wParam, lParam);
 	if (result != null) return result;
-	if (!hooks (SWT.Verify)) return result;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.ES_READONLY) != 0) return result;
 	int [] start = new int [1], end = new int [1];
@@ -1682,7 +1682,7 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 LRESULT WM_PASTE (int wParam, int lParam) {
 	LRESULT result = super.WM_PASTE (wParam, lParam);
 	if (result != null) return result;
-	if (!hooks (SWT.Verify)) return result;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.ES_READONLY) != 0) return result;
 	String oldText = getClipboardText ();
@@ -1740,7 +1740,9 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_UNDO (int wParam, int lParam) {
 	LRESULT result = super.WM_UNDO (wParam, lParam);
 	if (result != null) return result;
-	if (!hooks (SWT.Verify)) return result;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) {
+		return result;
+	}
 
 	/* Undo and then Redo to get the Undo text */
 	if (OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0) == 0) {
