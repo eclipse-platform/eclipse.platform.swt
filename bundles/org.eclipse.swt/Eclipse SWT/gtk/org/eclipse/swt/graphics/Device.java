@@ -380,7 +380,7 @@ public Font getSystemFont () {
  */
 public boolean getWarnings () {
 	checkDevice ();
-	return warningLevel != 0;
+	return warningLevel == 0;
 }
 
 protected void init () {
@@ -467,7 +467,7 @@ public boolean isDisposed () {
 }
 
 int logProc (int log_domain, int log_level, int message, int user_data) {
-	if (DEBUG || (debug && warningLevel != 0)) {
+	if (DEBUG || (debug && warningLevel == 0)) {
 		new Error ().printStackTrace ();
 		OS.g_log_default_handler (log_domain, log_level, message, 0);
 	}
@@ -553,6 +553,7 @@ public void setWarnings (boolean warnings) {
 		}
 	} else {
 		if (warningLevel++ == 0) {
+			if (debug) return;
 			int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
 			for (int i=0; i<log_domains.length; i++) {
 				byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
