@@ -863,8 +863,9 @@ private int OnInPlaceDeactivate() {
 	objIOleInPlaceObject = null;
 	state = STATE_RUNNING;
 	redraw();
-	if (getDisplay().getFocusControl() == null) {
-		getShell().traverse(SWT.TRAVERSE_TAB_NEXT);
+	Shell shell = getShell();
+	if (isFocusControl() || frame.isFocusControl()) {
+		shell.traverse(SWT.TRAVERSE_TAB_NEXT);
 	}
 	return COM.S_OK;
 }
@@ -921,10 +922,10 @@ private int OnUIDeactivate(int fUndoable) {
 	state = STATE_INPLACEACTIVE;
 	frame.SetActiveObject(0,0);
 	redraw();
-	if (getDisplay().getFocusControl() == frame) {
-		getShell().traverse(SWT.TRAVERSE_TAB_NEXT);
-	}
 	Shell shell = getShell();
+	if (isFocusControl() || frame.isFocusControl()) {
+		shell.traverse(SWT.TRAVERSE_TAB_NEXT);
+	}
 	Menu menubar = shell.getMenuBar();
 	if (menubar == null || menubar.isDisposed())
 		return COM.S_OK;
