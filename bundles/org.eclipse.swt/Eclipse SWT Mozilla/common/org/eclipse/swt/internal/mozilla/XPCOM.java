@@ -29,9 +29,9 @@ package org.eclipse.swt.internal.mozilla;
 
 public class XPCOM {
 	
-	/* Mozilla version */
+	/* Minimal Mozilla version */
 	static final int MAJOR = 1;
-	static final int MINOR = 6;
+	static final int MINOR = 4;
 	static final String SUPPORTED_VERSION = MAJOR + "." + MINOR; //$NON-NLS-1$
 
 	/* nsDirectoryServiceDefs constants */

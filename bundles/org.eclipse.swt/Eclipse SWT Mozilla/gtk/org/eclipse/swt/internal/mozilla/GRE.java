@@ -42,24 +42,34 @@ public class GRE {
 			file = new FileReader(gre);
 			reader = new BufferedReader(file);
 			String version = reader.readLine();
-			if (version == null || version.indexOf(XPCOM.SUPPORTED_VERSION) == -1) {
-				System.out.println("Warning: SWT Mozilla requires Mozilla "+XPCOM.SUPPORTED_VERSION+" to be installed"); //$NON-NLS-1$ //$NON-NLS-2$
-				System.out.println("Warning: The Mozilla configuration file "+gre+" indicates version "+version+" is installed"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$				
+			int major = -1, minor = -1;
+			try {
+				/* the version line is formatted as follow: [major.minor] */
+				int sep = version.indexOf('.'); //$NON-NLS-1$
+				String majorVersion = version.substring(version.indexOf('[') + 1, sep); //$NON-NLS-1$
+				String minorVersion = version.substring(sep + 1, version.indexOf(']')); //$NON-NLS-1$
+				major = Integer.parseInt(majorVersion);
+				minor = Integer.parseInt(minorVersion);
+			} catch (IndexOutOfBoundsException e) {
+			} catch (NumberFormatException e) {
 			}
-			if (version != null) {
+			if ((major == XPCOM.MAJOR && minor >= XPCOM.MINOR) || major > XPCOM.MAJOR) {
 				String string = reader.readLine();
+				/* the location line is formatted as follow: GRE_PATH=<path> */
 				String GRE_PATH = "GRE_PATH="; //$NON-NLS-1$
 				if (string.startsWith(GRE_PATH)) {
 					String path = string.substring(GRE_PATH.length());
 					grePath = path;
 				}
 				if (grePath == null) {
-					System.out.println("Warning: SWT Mozilla requires Mozilla "+XPCOM.SUPPORTED_VERSION+" to be installed"); //$NON-NLS-1$ //$NON-NLS-2$
+					System.out.println("Warning: SWT Mozilla requires Mozilla "+XPCOM.SUPPORTED_VERSION+" (or greater) to be installed"); //$NON-NLS-1$ //$NON-NLS-2$
 					System.out.println("Warning: The Mozilla configuration file "+gre+" does not contain the property "+GRE_PATH); //$NON-NLS-1$ //$NON-NLS-2$									
 				}
 				mozillaPath = grePath;
-			}
-			
+			} else {
+				System.out.println("Warning: SWT Mozilla requires Mozilla "+XPCOM.SUPPORTED_VERSION+" (or greater) to be installed"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				System.out.println("Warning: The Mozilla configuration file "+gre+" indicates version "+version+" is installed"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$				
+			}			
 		} catch (FileNotFoundException e) {
 			System.out.println("Warning: SWT Mozilla requires Mozilla "+XPCOM.SUPPORTED_VERSION+" to be installed"); //$NON-NLS-1$ //$NON-NLS-2$
 			System.out.println("Warning: The Mozilla configuration file "+gre+" was not found"); //$NON-NLS-1$ //$NON-NLS-2$
