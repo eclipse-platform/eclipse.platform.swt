@@ -1,32 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project default="build_dll" basedir="../../..">
+<project default="build_gtk_linux_lib" basedir="../../..">
 
 <target name="init">
 	<tstamp/>
     <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.gtk" />
     <property name="jar_destdir" value="${fragment_dir}/ws/linux" />
-    <property name="dll_destdir" value="${fragment_dir}/os/linux/x86" />
+    <property name="lib_destdir" value="${fragment_dir}/os/linux/x86" />
 	<property name="log_dir" value="${basedir}"/>
 	
     <mkdir dir="${jar_destdir}" />
-    <mkdir dir="${dll_destdir}" />
+    <mkdir dir="${lib_destdir}" />
 </target>
 
 <!-- Build swt.so for GTK -->
 <!-- Output .so for this platform into the org.eclipse.swt.gtk/os directory -->
 <!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
-<target name="build_dll" depends="init">
+<target name="build_gtk_linux_lib" depends="init">
+	<exec dir="./bin/library" executable="sh" output="${log_dir}/build_log.txt">
+		<arg line="${basedir}/bin/library/build.sh"/>
+	</exec>
+	<copy todir="${lib_destdir}">
+		<fileset dir="${basedir}/bin/library/" includes="*.so"/>
+	</copy>
+</target>
+
+<target name="clean"  depends="init">
+	<tstamp/>
 	<exec dir="./bin/library" executable="sh" output="${log_dir}/build_log.txt">
 		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="clean"/>
 	</exec>
-	<exec dir="./bin/library" executable="sh" output="${log_dir}/build_log.txt">
-		<arg line="${basedir}/bin/library/build.sh"/>
-	</exec>
-	<copy todir="${dll_destdir}">
-		<fileset dir="${basedir}/bin/library/" includes="*.so"/>
-	</copy>
 </target>
-	
+
 </project>
