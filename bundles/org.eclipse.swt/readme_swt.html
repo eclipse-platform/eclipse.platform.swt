@@ -31,27 +31,12 @@ is unable to allocate the default widget background color causing it to display 
 The functionality,  however, is not affected.
 
 <h4>
-99.1.2 XInitThreads and Linux</h4>
+99.1.2 Printing Support</h4>
 
-SWT makes use of the XInitThreads system function to allow graphics routines to
-be invoked from non-user-interface threads. However, the implementation of XInitThreads
-on Linux has several issues, which cause the following SWT problems:
-
-<dl>
-<dt><b>Printing Support</b></dt>
-<dd>The X printing extension implementation on Linux currently does not work for applications
-    which are XInitThreads enabled. This makes it impossible for us to provide printing
-    support on Linux. Until this is rectified, <code>Printer.getPrinterList()</code> will
-    always return an empty array on the Linux platform.</dd>
-<dt><b>Drag and Drop</b></dt>
-<dd>On Motif, SWT only supports dragging between windows running on the same system process.
-    In particular, dragging a file between Eclipse and another application will cause the
-    drop target application to hang. This is a result of a bug in the Motif libraries for
-    applications that are running XInitThreads.</dd>
-<dt><b>IME Support</b></dt>
-<dd>The Japanese IME support provided by Linux is currently incompatible with applications
-    which are XInitThreads enabled, and will cause them to hang.</dd>
-</dl>
+The X printing extension implementation on Linux is currently disabled because
+it can take up to 7 seconds to determine that the X print server is not running.
+Until this is rectified, <code>Printer.getPrinterList()</code> will always return
+an empty array on the Linux platform.</dd>
 
 <h4>
 99.1.3 Disposing in a Focus Event</h4>
@@ -102,6 +87,14 @@ This will be fixed in a future release.
 
 On Linux RedHat 6.2 only, you will not be able to display text that contains non
 ASCII characters. This limitation is not present on Linux RedHat 7.1 or higher.
+
+<h4>
+99.1.10  Using J9 VM on Photon and AIX</h4>
+
+On Photon and AIX, the SWT library will not be found when running with
+the J9 VM (version 1.5). This is a bug in the J9 classes library. You
+can workaround this problem by adding the SWT library directory to your
+load library path.
 
 <p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
