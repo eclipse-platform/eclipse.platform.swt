@@ -396,6 +396,7 @@ public class OS {
 	public static final int HKEY_CURRENT_USER = 0x80000001;
 	public static final int HORZRES = 0x8;
 	public static final int HTBORDER = 0x12;
+	public static final int HTCAPTION = 0x2;
 	public static final int HTCLIENT = 0x1;
 	public static final int HTERROR = -2;
 	public static final int HTHSCROLL = 0x6;
