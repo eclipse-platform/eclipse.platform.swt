@@ -292,11 +292,11 @@ public void setAlignment (int alignment) {
 		textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
 		graphicAlignment = OS.kControlBevelButtonAlignLeft;
 	}
-	if ((style & SWT.RIGHT) != 0) {
+	if ((style & SWT.CENTER) != 0) {
 		textAlignment = OS.kControlBevelButtonAlignTextCenter;
 		graphicAlignment = OS.kControlBevelButtonAlignCenter;
 	}
-	if ((style & SWT.CENTER) != 0) {
+	if ((style & SWT.RIGHT) != 0) {
 		textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
 		graphicAlignment = OS.kControlBevelButtonAlignRight;
 	}
