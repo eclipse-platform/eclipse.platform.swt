@@ -43,6 +43,7 @@ public class Browser extends Composite {
 	int totalProgress = 25;
 	
 	/* External Listener management */
+	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
 	LocationListener[] locationListeners = new LocationListener[0];
 	OpenWindowListener[] openWindowListeners = new OpenWindowListener[0];
 	ProgressListener[] progressListeners = new ProgressListener[0];
@@ -159,6 +160,32 @@ static int webProc(int handle, int data, int info) {
 		return browser.webProc(data, info);
 	}
 	return OS.Pt_CONTINUE;		
+}
+
+/**	 
+ * Adds the listener to receive events.
+ * <p>
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void addCloseWindowListener(CloseWindowListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);	
+	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length + 1];
+	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, closeWindowListeners.length);
+	closeWindowListeners = newCloseWindowListeners;
+	closeWindowListeners[closeWindowListeners.length - 1] = listener;
 }
 
 /**	 
@@ -534,6 +561,44 @@ int Pt_CB_WEB_URL(int info) {
 public void refresh() {
 	checkWidget();
 	OS.PtSetResource(webHandle, OS.Pt_ARG_WEB_RELOAD, 1, 0);
+}
+
+/**	 
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void removeCloseWindowListener(CloseWindowListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (closeWindowListeners.length == 0) return;
+	int index = -1;
+	for (int i = 0; i < closeWindowListeners.length; i++) {
+		if (listener == closeWindowListeners[i]){
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return;
+	if (closeWindowListeners.length == 1) {
+		closeWindowListeners = new CloseWindowListener[0];
+		return;
+	}
+	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length - 1];
+	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, index);
+	System.arraycopy(closeWindowListeners, index + 1, newCloseWindowListeners, index, closeWindowListeners.length - index - 1);
+	closeWindowListeners = newCloseWindowListeners;
 }
 
 /**	 
