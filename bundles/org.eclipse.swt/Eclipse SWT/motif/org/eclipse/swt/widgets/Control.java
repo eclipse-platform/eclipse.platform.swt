@@ -1305,7 +1305,7 @@ int processMouseDown (int callData) {
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
 	sendMouseEvent (SWT.MouseDown, xEvent.button, xEvent);
 	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
-		sendEvent (SWT.DragDetect);
+		postEvent (SWT.DragDetect);
 	}
 	if (xEvent.button == 3 && menu != null) {
 		OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
