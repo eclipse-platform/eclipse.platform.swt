@@ -754,6 +754,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1handlers_
 }
 #endif
 
+#ifndef NO_g_1signal_1lookup
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1lookup
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("g_1signal_1lookup\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)g_signal_lookup((const gchar *)lparg0, (GType)arg1);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1signal_1stop_1emission_1by_1name
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1stop_1emission_1by_1name
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
@@ -3364,6 +3380,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1context_1ge
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+}
+#endif
+
+#ifndef NO_gtk_1im_1context_1get_1type
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1context_1get_1type
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1im_1context_1get_1type\n")
+
+	return (jint)gtk_im_context_get_type();
 }
 #endif
 

@@ -20,6 +20,7 @@ public class OS {
 	
 	/** Constants */
 	public static final int G_SIGNAL_MATCH_DATA = 1 << 4;
+	public static final int G_SIGNAL_MATCH_ID = 1 << 0;
 	public static final int GDK_2BUTTON_PRESS = 0x5;
 	public static final int GDK_ACTION_COPY = 1 << 1;
 	public static final int GDK_ACTION_MOVE = 1 << 2;
@@ -352,6 +353,7 @@ public static final synchronized native void g_signal_handler_disconnect(int ins
 public static final synchronized native int g_signal_handlers_block_matched(int instance, int mask, int signal_id, int detail, int closure, int func, int data);
 public static final synchronized native int g_signal_handlers_disconnect_matched(int instance, int mask, int signal_id, int detail, int closure, int func, int data);
 public static final synchronized native int g_signal_handlers_unblock_matched(int instance, int mask, int signal_id, int detail, int closure, int func, int data);
+public static final synchronized native int g_signal_lookup (byte[] name, int itype);
 public static final synchronized native void g_signal_stop_emission_by_name(int instance, byte[] detailed_signal);
 public static final synchronized native void g_strfreev(int string_array);
 public static final synchronized native void g_thread_init(int vtable);
@@ -573,6 +575,7 @@ public static final synchronized native boolean gtk_im_context_filter_keypress(i
 public static final synchronized native void gtk_im_context_focus_in(int context);
 public static final synchronized native void gtk_im_context_focus_out(int context);
 public static final synchronized native void gtk_im_context_get_preedit_string(int context, int[] str, int[] attrs, int[] cursor_pos);
+public static final synchronized native int gtk_im_context_get_type();
 public static final synchronized native void gtk_im_context_reset(int context);
 public static final synchronized native void gtk_im_context_set_client_window(int context, int window);
 public static final synchronized native void gtk_im_context_set_cursor_location(int context, GdkRectangle area);

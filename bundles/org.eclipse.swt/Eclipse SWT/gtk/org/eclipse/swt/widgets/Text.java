@@ -34,7 +34,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Text extends Scrollable {
-	int bufferHandle, tabs = 8;
+	int bufferHandle, tabs = 8, lastEventTime = 0;
 	
 	static final int INNER_BORDER = 2;
 	static final int ITER_SIZEOF = 56;
@@ -829,7 +829,9 @@ int gtk_commit (int imcontext, int text) {
 	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
 	if (newChars == null) return 0;
 	OS.g_signal_handlers_block_matched (imcontext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
-	OS.g_signal_handlers_unblock_matched (imcontext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, handle);
+	int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
+	int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
+	OS.g_signal_handlers_unblock_matched (imcontext, mask, id, 0, 0, 0, handle);
 	if (newChars == chars) {
 		OS.g_signal_emit_by_name (imcontext, OS.commit, text);
 	} else {
@@ -837,7 +839,7 @@ int gtk_commit (int imcontext, int text) {
 		OS.g_signal_emit_by_name (imcontext, OS.commit, buffer);
 	}
 	OS.g_signal_handlers_unblock_matched (imcontext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
-	OS.g_signal_handlers_block_matched (imcontext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, handle);
+	OS.g_signal_handlers_block_matched (imcontext, mask, id, 0, 0, 0, handle);
 	return 0;
 }
 
@@ -914,11 +916,17 @@ int gtk_insert_text (int widget, int int0, int int1, int int2) {
 
 int gtk_key_press_event (int widget, int event) {
 	if (!hasFocus ()) return 0;
+	GdkEventKey gdkEvent = new GdkEventKey ();
+	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
+	if (gdkEvent.time == lastEventTime) return 0;
+	lastEventTime = gdkEvent.time;
 	int imHandle = imContext ();
 	if (imHandle != 0) {
-		OS.g_signal_handlers_block_matched (imHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, handle);
+		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
+		int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
+		OS.g_signal_handlers_block_matched (imHandle, mask, id, 0, 0, 0, handle);
 		boolean filtered = OS.gtk_im_context_filter_keypress (imHandle, event);
-		OS.g_signal_handlers_unblock_matched (imHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, handle);
+		OS.g_signal_handlers_unblock_matched (imHandle, mask, id, 0, 0, 0, handle);
 		if (filtered) return 1;
 	}
 	return super.gtk_key_press_event (widget, event);
