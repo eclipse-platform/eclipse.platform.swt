@@ -782,7 +782,7 @@ public void open () {
 	MSG msg = new MSG ();
 	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_SENDMESSAGE;
 	OS.PeekMessage (msg, 0, 0, 0, flags);
-	if (!restoreFocus ()) traverseGroup (true);
+	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
 void releaseChild () {
