@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.mozilla;
 
-import java.util.Hashtable;
-import org.eclipse.swt.internal.Callback;
-import org.eclipse.swt.internal.gtk.LONG;
-import org.eclipse.swt.internal.gtk.OS;
+import java.util.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 
 public class XPCOMObject {
 
@@ -31,6 +31,7 @@ public XPCOMObject(int[] argCounts) {
 			Callbacks[i][argCounts[i]] = new Callback(this.getClass(), "callback"+i, argCounts[i] + 1, true); //$NON-NLS-1$
 		}
 		callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress();
+		if (callbackAddresses[i] == 0)  SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}	
 
 	int /*long*/ pVtable = XPCOM.PR_Malloc(OS.PTR_SIZEOF * argCounts.length);
