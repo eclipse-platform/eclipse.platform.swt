@@ -7964,3 +7964,163 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
         setMsgFields(env, Destination, lpDestination1, &PGLOB(MsgFc));
     }
 }
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetCharacterPlacement
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCharacterPlacement
+  (JNIEnv *env, jclass that, jint hdc, jbyteArray lpString, jint nCount, jint nMaxExtent, jobject lpResults, jint dwFlags)
+{
+	DECL_GLOB(pGlob)
+    GCP_RESULTS results, *lpResults1=NULL;
+    LPCTSTR lpString1=NULL;
+    jint rc;
+    
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetCharacterPlacement\n");
+#endif
+
+    if (lpString)
+        lpString1 = (LPCTSTR)(*env)->GetByteArrayElements(env, lpString, NULL);
+    if (lpResults) {
+        lpResults1 = &results;
+        cacheGCP_RESULTSFids(env, lpResults, &PGLOB(GCP_RESULTSFc));
+        getGCP_RESULTSFields(env, lpResults, lpResults1, &PGLOB(GCP_RESULTSFc));
+    }
+    
+    rc = (jint) GetCharacterPlacement((HDC)hdc, lpString1, nCount, nMaxExtent, lpResults1, dwFlags);
+    
+    if (lpString)
+        (*env)->ReleaseByteArrayElements(env, lpString, (jbyte *)lpString1, 0);
+    if (lpResults) {
+        setGCP_RESULTSFields(env, lpResults, lpResults1, &PGLOB(GCP_RESULTSFc));
+    }
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    ExtTextOut
+ * Signature: 
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtTextOut
+  (JNIEnv *env, jclass that, jint hdc, jint X, jint Y, jint fuOptions, jobject lprc, jbyteArray lpString, jint cbCount, jintArray lpDx)
+{
+	DECL_GLOB(pGlob)
+    RECT rect, *lpRect1=NULL;
+    LPCTSTR lpString1=NULL;
+	CONST INT* lpDx1 = NULL;
+    jboolean rc;
+    
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "ExtTextOut\n");
+#endif
+
+    if (lpString)
+        lpString1 = (LPCTSTR)(*env)->GetByteArrayElements(env, lpString, NULL);
+    if (lprc) {
+        lpRect1 = &rect;
+        cacheRectFids(env, lprc, &PGLOB(RectFc));
+        getRectFields(env, lprc, lpRect1, &PGLOB(RectFc));
+    }
+    if (lpDx)
+        lpDx1 = (CONST INT*)(*env)->GetIntArrayElements(env, lpDx, NULL);
+    
+    rc = (jboolean) ExtTextOut((HDC)hdc, X, Y, fuOptions, lpRect1, lpString1, cbCount, lpDx1);
+    
+    if (lpString)
+        (*env)->ReleaseByteArrayElements(env, lpString, (jbyte *)lpString1, 0);
+    if (lprc) {
+        setRectFields(env, lprc, lpRect1, &PGLOB(RectFc));
+    }
+    if (lpDx)
+        (*env)->ReleaseIntArrayElements(env, lpDx, (jint *)lpDx1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetFontLanguageInfo
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetFontLanguageInfo
+  (JNIEnv *env, jclass that, jint hdc)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetFontLanguageInfo\n");
+#endif
+
+    return (jint) GetFontLanguageInfo((HDC)hdc);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetKeyboardLayoutList
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetKeyboardLayoutList
+  (JNIEnv *env, jclass that, jint nBuff, jintArray lpList)
+{
+	HKL FAR *lpList1;
+    jint rc;
+    
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetKeyboardLayoutList\n");
+#endif
+
+    if (lpList)
+        lpList1 = (HKL FAR *)(*env)->GetIntArrayElements(env, lpList, NULL);
+
+    rc = (jint) GetKeyboardLayoutList(nBuff, lpList1);
+    
+    if (lpList)
+        (*env)->ReleaseIntArrayElements(env, lpList, (jint *)lpList1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetKeyboardLayout
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetKeyboardLayout
+  (JNIEnv *env, jclass that, jint idThread)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetKeyboardLayout\n");
+#endif
+
+    return (jint) GetKeyboardLayout(idThread);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    ActivateKeyboardLayout
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ActivateKeyboardLayout
+  (JNIEnv *env, jclass that, jint hkl, jint Flags)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "ActivateKeyboardLayout\n");
+#endif
+
+    return (jint) ActivateKeyboardLayout((HKL)hkl, Flags);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    SetTextAlign
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetTextAlign
+  (JNIEnv *env, jclass that, jint hdc, jint fMode)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "SetTextAlign\n");
+#endif
+
+    return (jint) SetTextAlign((HDC)hdc, fMode);
+}

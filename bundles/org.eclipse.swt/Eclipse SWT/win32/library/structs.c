@@ -1505,6 +1505,22 @@ void cacheVardesc2Fids(JNIEnv *env, jobject lpVardesc, PVARDESC2_FID_CACHE lpCac
     lpCache->varkind = (*env)->GetFieldID(env,lpCache->vardescClass,"varkind","I");
     lpCache->cached = 1;
 }
+
+void cacheGCP_RESULTSFids(JNIEnv *env, jobject lpObject, PGCP_RESULTS_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->nMaxFit = (*env)->GetFieldID(env, lpCache->clazz, "nMaxFit", "I");
+	lpCache->nGlyphs = (*env)->GetFieldID(env, lpCache->clazz, "nGlyphs", "I");
+	lpCache->lpGlyphs = (*env)->GetFieldID(env, lpCache->clazz, "lpGlyphs", "I");
+	lpCache->lpClass = (*env)->GetFieldID(env, lpCache->clazz, "lpClass", "I");
+	lpCache->lpCaretPos = (*env)->GetFieldID(env, lpCache->clazz, "lpCaretPos", "I");
+	lpCache->lpDx = (*env)->GetFieldID(env, lpCache->clazz, "lpDx", "I");
+	lpCache->lpOrder = (*env)->GetFieldID(env, lpCache->clazz, "lpOrder", "I");
+	lpCache->lpOutString = (*env)->GetFieldID(env, lpCache->clazz, "lpOutString", "I");
+	lpCache->lStructSize = (*env)->GetFieldID(env, lpCache->clazz, "lStructSize", "I");
+	lpCache->cached = 1;
+}
     
 /* ----------- swt getters and setters  ----------- */
 /**
@@ -3978,4 +3994,30 @@ void setVardesc2Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDES
     (*env)->SetShortField(env,lpObject,lpVardescFc->elemdescVar_idldesc_wIDLFlags, (jshort)lpVardesc->elemdescVar.idldesc.wIDLFlags);
     (*env)->SetShortField(env,lpObject,lpVardescFc->wVarFlags, (jshort)lpVardesc->wVarFlags);
     (*env)->SetIntField(env,lpObject,lpVardescFc->varkind, (jint)lpVardesc->varkind);    
+}
+
+void getGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache)
+{
+	lpStruct->nMaxFit = (*env)->GetIntField(env, lpObject, lpCache->nMaxFit);
+	lpStruct->nGlyphs = (*env)->GetIntField(env, lpObject, lpCache->nGlyphs);
+	lpStruct->lpGlyphs = (LPWSTR)(*env)->GetIntField(env, lpObject, lpCache->lpGlyphs);
+	lpStruct->lpClass = (LPSTR)(*env)->GetIntField(env, lpObject, lpCache->lpClass);
+	lpStruct->lpCaretPos = (int  *)(*env)->GetIntField(env, lpObject, lpCache->lpCaretPos);
+	lpStruct->lpDx = (int  *)(*env)->GetIntField(env, lpObject, lpCache->lpDx);
+	lpStruct->lpOrder = (UINT  *)(*env)->GetIntField(env, lpObject, lpCache->lpOrder);
+	lpStruct->lpOutString = (LPTSTR)(*env)->GetIntField(env, lpObject, lpCache->lpOutString);
+	lpStruct->lStructSize = (*env)->GetIntField(env, lpObject, lpCache->lStructSize);
+}
+
+void setGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache)
+{
+	(*env)->SetIntField(env, lpObject, lpCache->nMaxFit, lpStruct->nMaxFit);
+	(*env)->SetIntField(env, lpObject, lpCache->nGlyphs, lpStruct->nGlyphs);
+	(*env)->SetIntField(env, lpObject, lpCache->lpGlyphs, (int)lpStruct->lpGlyphs);
+	(*env)->SetIntField(env, lpObject, lpCache->lpClass, (int)lpStruct->lpClass);
+	(*env)->SetIntField(env, lpObject, lpCache->lpCaretPos, (int)lpStruct->lpCaretPos);
+	(*env)->SetIntField(env, lpObject, lpCache->lpDx, (int)lpStruct->lpDx);
+	(*env)->SetIntField(env, lpObject, lpCache->lpOrder, (int)lpStruct->lpOrder);
+	(*env)->SetIntField(env, lpObject, lpCache->lpOutString, (int)lpStruct->lpOutString);
+	(*env)->SetIntField(env, lpObject, lpCache->lStructSize, lpStruct->lStructSize);
 }
