@@ -73,6 +73,7 @@ void generateSTRUCTS_C() {
 		String inc = 
 			"#include \"swt.h\"\n" +
 			"#include \"" + outputName + "_structs.h\"\n";
+		metaData.setMetaData("swt_includes", inc);
 		StructsGenerator gen = new StructsGenerator();
 		gen.setMetaData(metaData);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
