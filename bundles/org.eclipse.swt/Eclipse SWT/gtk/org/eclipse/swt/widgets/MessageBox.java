@@ -156,9 +156,9 @@ private void createButtons() {
 	if ((style & SWT.YES) != 0) OS.gtk_dialog_add_button(handle, "gtk-yes", SWT.YES);
 	if ((style & SWT.NO) != 0) OS.gtk_dialog_add_button(handle, "gtk-no", SWT.NO);
 
-	if ((style & SWT.ABORT) != 0) OS.gtk_dialog_add_button(handle, "Abort", SWT.ABORT);
-	if ((style & SWT.RETRY) != 0) OS.gtk_dialog_add_button(handle, "Retry", SWT.RETRY);
-	if ((style & SWT.IGNORE) != 0) OS.gtk_dialog_add_button(handle, "Ignore", SWT.IGNORE);
+	if ((style & SWT.ABORT) != 0) OS.gtk_dialog_add_button(handle, SWT.getMessage("SWT_Abort"), SWT.ABORT);
+	if ((style & SWT.RETRY) != 0) OS.gtk_dialog_add_button(handle, SWT.getMessage("SWT_Retry"), SWT.RETRY);
+	if ((style & SWT.IGNORE) != 0) OS.gtk_dialog_add_button(handle, SWT.getMessage("SWT_Ignore"), SWT.IGNORE);
 }
 private static int checkStyle (int style) {
 	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
