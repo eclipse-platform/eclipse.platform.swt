@@ -47,7 +47,7 @@ public class CLabel extends Canvas {
 	/** Left and right margins */
 	private static final int INDENT = 3;
 	/** a string inserted in the middle of text that has been shortened */
-	private static final String ellipsis = "..."; //$NON-NLS-1$
+	private static final String ELLIPSIS = "\u2026"; //$NON-NLS-1$
 	/** the alignment. Either CENTER, RIGHT, LEFT. Default is LEFT*/
 	private int align = SWT.LEFT;
 	private int hIndent = INDENT;
@@ -671,7 +671,7 @@ public void setText(String text) {
  */
 protected String shortenText(GC gc, String t, int width) {
 	if (t == null) return null;
-	int w = gc.textExtent(ellipsis).x;
+	int w = gc.textExtent(ELLIPSIS).x;
 	int l = t.length();
 	int pivot = l/2;
 	int s = pivot;
@@ -682,7 +682,7 @@ protected String shortenText(GC gc, String t, int width) {
 		int l1 = gc.textExtent(s1).x;
 		int l2 = gc.textExtent(s2).x;
 		if (l1+w+l2 < width) {
-			t = s1 + ellipsis + s2;
+			t = s1 + ELLIPSIS + s2;
 			break;
 		}
 		s--;
