@@ -39,21 +39,18 @@ public final class Printer extends Device {
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_UNSPECIFIED - if there are no valid printers
- * </ul>
- *
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
-	SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
+	return new PrinterData[0]; // printing on X is currently unimplemented
+	
 	/* Connect to the default X print server */
 	//byte [] buffer = Converter.wcsToMbcs(null, XDefaultPrintServer, true);
 	//int pdpy = OS.XOpenDisplay(buffer);
 	int pdpy = xPrinter;
 	if (pdpy == 0) {
 		/* no print server */
-		SWT.error(SWT.ERROR_IO);
+		return new PrinterData[0];
 	}
 
 	/* Get the list of printers */
@@ -63,7 +60,7 @@ public static PrinterData[] getPrinterList() {
 	if (plist == 0 || printerCount == 0) {
 		/* no printers */
 		//OS.XCloseDisplay(pdpy);
-		SWT.error(SWT.ERROR_IO);
+		return new PrinterData[0];
 	}
     
 	/* Copy the printer names into PrinterData objects */
@@ -87,6 +84,16 @@ public static PrinterData[] getPrinterList() {
 	return printerList;
 }
 
+/*
+ * Returns a <code>PrinterData</code> object representing
+ * the default printer.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NO_HANDLES - if there are no valid printers
+ * </ul>
+ *
+ * @return the default printer data
+ */
 static PrinterData getDefaultPrinterData() {
 	/* Use the first printer in the list as the default */
 	PrinterData[] list = getPrinterList();
