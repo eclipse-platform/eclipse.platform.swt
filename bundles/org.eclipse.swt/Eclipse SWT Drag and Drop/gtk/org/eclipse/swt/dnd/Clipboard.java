@@ -27,8 +27,18 @@ public class Clipboard {
 
 	private Display display;
 	
-	int pGtkClipboard;
-	int pGtkPrimary;
+	static int GTKCLIPBOARD;
+	static int GTKPRIMARYCLIPBOARD;
+	private static int TARGET;
+	
+	static {
+		GTKCLIPBOARD = OS.gtk_clipboard_get(OS.GDK_NONE);
+		byte[] buffer = Converter.wcsToMbcs(null, "PRIMARY", true);
+		int primary = OS.gdk_atom_intern(buffer, false);
+		GTKPRIMARYCLIPBOARD = OS.gtk_clipboard_get(primary);
+		buffer = Converter.wcsToMbcs(null, "TARGETS", true);
+		TARGET = OS.gdk_atom_intern(buffer, false);
+	}
 
 /**
  * Constructs a new instance of this class.  Creating an instance of a Clipboard
@@ -57,10 +67,6 @@ public Clipboard(Display display) {
 		SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 	this.display = display;
-	pGtkClipboard = OS.gtk_clipboard_get(OS.GDK_NONE);
-	byte[] buffer = Converter.wcsToMbcs(null, "PRIMARY", true);
-	int primary = OS.gdk_atom_intern(buffer, false);
-	pGtkPrimary = OS.gtk_clipboard_get(primary);
 }
 
 /**
@@ -107,9 +113,6 @@ protected void checkSubclass () {
  * has exited or the display has been disposed.</p>
  */
 public void dispose () {
-	if (pGtkClipboard == 0) return;
-	pGtkClipboard = 0;
-	pGtkPrimary = 0;
 	display = null;
 }
 
@@ -144,13 +147,13 @@ public Object getContents(Transfer transfer) {
 	int[] typeIds = transfer.getTypeIds();
 	for (int i = 0; i < typeIds.length; i++) {
 		// try the primary selection first
-		selection_data = OS.gtk_clipboard_wait_for_contents(pGtkPrimary, typeIds[i]);
+		selection_data = OS.gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, typeIds[i]);
 		if( selection_data != 0) break;
 	};
 	if (selection_data == 0) {
 		// try the clipboard selection second
 		for (int i = 0; i < typeIds.length; i++) {
-			selection_data = OS.gtk_clipboard_wait_for_contents(pGtkClipboard, typeIds[i]);
+			selection_data = OS.gtk_clipboard_wait_for_contents(GTKCLIPBOARD, typeIds[i]);
 			if( selection_data != 0) break;
 		};
 	}
@@ -220,6 +223,24 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 }
 
 /**
+ * 
+ * @return array of TransferData
+ * 
+ * @since 3.0
+ */
+public TransferData[] getAvailableTypes() {
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	int[] types = _getAvailableTypes();
+	TransferData[] result = new TransferData[types.length];
+	for (int i = 0; i < types.length; i++) {
+		result[i] = new TransferData();
+		result[i].type = types[i];
+	}
+	return result;
+}
+
+/**
  * Returns a platform specific list of the data types currently available on the 
  * system clipboard.
  * 
@@ -233,32 +254,51 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 public String[] getAvailableTypeNames() {
 	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
-	byte[] buffer = Converter.wcsToMbcs(null, "TARGETS", true);
-	int typeId = OS.gdk_atom_intern(buffer, false);
-	// first try the primary clipboard
-	int selection_data = OS.gtk_clipboard_wait_for_contents(pGtkPrimary, typeId);
-	if (selection_data == 0) {
-		// try the clipboard selection second
-		selection_data  = OS.gtk_clipboard_wait_for_contents(pGtkClipboard, typeId);
-	}
-	if (selection_data == 0) {
-		return new String[0]; // No types available
-	}
-	GtkSelectionData gtkSelectionData = new GtkSelectionData();
-	OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
-	if (gtkSelectionData.length == 0) return new String[0];
-	int[] atoms = new int[gtkSelectionData.length * 8 / gtkSelectionData.format];
-	OS.memmove(atoms, gtkSelectionData.data, gtkSelectionData.length);
-	String[] result = new String[atoms.length];
-	for (int i = 0; i < atoms.length; i++) {
-		int pName = OS.gdk_atom_name(atoms[i]);
-		buffer = new byte [OS.strlen(pName)];
+	int[] types = _getAvailableTypes();
+	String[] result = new String[types.length];
+	for (int i = 0; i < types.length; i++) {
+		int pName = OS.gdk_atom_name(types[i]);
+		byte[] buffer = new byte [OS.strlen(pName)];
 		OS.memmove (buffer, pName, buffer.length);
 		OS.g_free (pName);
 		result[i] = new String (Converter.mbcsToWcs (null, buffer));
 	}
-	OS.gtk_selection_data_free(selection_data);
 	return result;
+}
+
+private  int[] _getAvailableTypes() {
+	int[] types = new int[0];
+	// first try the primary clipboard
+	int selection_data = OS.gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, TARGET);
+	if (selection_data != 0) {
+		try {
+			GtkSelectionData gtkSelectionData = new GtkSelectionData();
+			OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
+			if (gtkSelectionData.length == 0) return types;
+			types = new int[gtkSelectionData.length * 8 / gtkSelectionData.format];
+			OS.memmove(types, gtkSelectionData.data, gtkSelectionData.length);
+		} finally {
+			OS.gtk_selection_data_free(selection_data);
+		}
+	}
+	// next try the selection clipboard
+	selection_data  = OS.gtk_clipboard_wait_for_contents(GTKCLIPBOARD, TARGET);
+	if (selection_data != 0) {
+		try {
+			GtkSelectionData gtkSelectionData = new GtkSelectionData();
+			OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
+			if (gtkSelectionData.length == 0) return types;
+			int[] temp = new int[gtkSelectionData.length * 8 / gtkSelectionData.format];
+			OS.memmove(temp, gtkSelectionData.data, gtkSelectionData.length);
+			int[] newTypes = new int[types.length + temp.length];
+			System.arraycopy(types, 0, newTypes, 0, types.length);
+			System.arraycopy(temp, 0, newTypes, types.length, temp.length);
+			types = newTypes;
+		} finally {
+			OS.gtk_selection_data_free(selection_data);
+		}
+	}
+	return types;
 }
 }
 

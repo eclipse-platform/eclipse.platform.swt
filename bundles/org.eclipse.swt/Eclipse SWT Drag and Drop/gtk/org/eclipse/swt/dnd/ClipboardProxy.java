@@ -29,8 +29,6 @@ class ClipboardProxy {
 	Transfer[] dataTypes;
 	
 	Display display;
-	int pGtkClipboard;
-	int pGtkPrimary;
 	boolean onPrimary = false;
 	boolean onClipboard = false;
 	Callback getFunc;
@@ -59,17 +57,13 @@ private ClipboardProxy(Display display) {
 	this.display = display;
 	getFunc = new Callback( this, "getFunc", 4);
 	clearFunc = new Callback( this, "clearFunc", 2);
-	pGtkClipboard = OS.gtk_clipboard_get(OS.GDK_NONE);
-	byte[] buffer = Converter.wcsToMbcs(null, "PRIMARY", true);
-	int primary = OS.gdk_atom_intern(buffer, false);
-	pGtkPrimary = OS.gtk_clipboard_get(primary);
 }
 
 private int clearFunc(int clipboard,int user_data_or_owner){
-	if (clipboard == pGtkClipboard) {
+	if (clipboard == Clipboard.GTKCLIPBOARD) {
 		onClipboard = false;
 	}
-	if (clipboard == pGtkPrimary) {
+	if (clipboard == Clipboard.GTKPRIMARYCLIPBOARD) {
 		onPrimary = false;
 	}
 	if (!onClipboard && !onPrimary) {	
@@ -79,11 +73,11 @@ private int clearFunc(int clipboard,int user_data_or_owner){
 	return 1;
 }
 private void dispose () {
-	if (pGtkClipboard == 0) return;
-	if (onPrimary) OS.gtk_clipboard_clear(pGtkPrimary);
-	if (onClipboard) OS.gtk_clipboard_clear(pGtkClipboard);
-	pGtkClipboard = 0;
-	pGtkPrimary = 0;
+	if (display == null) return;
+	if (onPrimary) OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
+	onPrimary = false;
+	if (onClipboard) OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
+	onClipboard = false;
 	display = null;
 	if (getFunc != null ) getFunc.dispose();
 	getFunc = null;
@@ -116,10 +110,10 @@ private int getFunc( int clipboard, int selection_data, int info, int user_data_
 }
 boolean setData(Object[] data, Transfer[] dataTypes) {
 	if (onClipboard) {	
-		OS.gtk_clipboard_clear(pGtkClipboard);
+		OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
 	}
 	if (onPrimary) {
-		OS.gtk_clipboard_clear(pGtkPrimary);
+		OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
 	}
 		
 	GtkTargetEntry[] entries = new  GtkTargetEntry [0];
@@ -151,8 +145,8 @@ boolean setData(Object[] data, Transfer[] dataTypes) {
 	this.data = data;
 	this.dataTypes = dataTypes;
 
-	onPrimary = OS.gtk_clipboard_set_with_data(pGtkPrimary, pTargetsList, entries.length, getFunc.getAddress(), clearFunc.getAddress(), 0);
-	onClipboard = OS.gtk_clipboard_set_with_data(pGtkClipboard, pTargetsList, entries.length, getFunc.getAddress(), clearFunc.getAddress(), 0);
+	onPrimary = OS.gtk_clipboard_set_with_data(Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFunc.getAddress(), clearFunc.getAddress(), 0);
+	onClipboard = OS.gtk_clipboard_set_with_data(Clipboard.GTKCLIPBOARD, pTargetsList, entries.length, getFunc.getAddress(), clearFunc.getAddress(), 0);
 	
 	for (int i = 0; i < entries.length; i++) {
 		GtkTargetEntry entry = entries[i];
