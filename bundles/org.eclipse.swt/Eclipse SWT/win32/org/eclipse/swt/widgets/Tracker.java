@@ -411,7 +411,7 @@ public boolean open () {
 	tracking = true;
 	Event event = new Event ();
 	MSG msg = new MSG ();
-	boolean isMirrored = parent != null && (parent.getStyle() & SWT.MIRRORED) != 0;
+	boolean isMirrored = parent != null && (parent.style & SWT.MIRRORED) != 0;
 	/*
 	* If this tracker is being created without a mouse drag then
 	* we need to create a transparent window that fills the screen
