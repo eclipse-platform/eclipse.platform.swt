@@ -2380,8 +2380,11 @@ boolean showMenu (int x, int y, boolean force) {
 		if (x != event.x || y != event.y) {
 			menu.setLocation (event.x, event.y);
 		}
-		if (force) menu._setVisible (true);
-		else menu.setVisible (true);
+		if (force) {
+			menu._setVisible (true);
+		} else {
+			menu.setVisible (true);
+		}
 		return true;
 	}
 	return false;
