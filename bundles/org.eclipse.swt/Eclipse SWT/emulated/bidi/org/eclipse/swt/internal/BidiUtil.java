@@ -25,6 +25,9 @@ public class BidiUtil {
 	public static final int CLASS_HEBREW = 2;
 	public static final int CLASS_ARABIC = 2;
 	public static final int CLASS_LOCALNUMBER = 4;
+	public static final int REORDER = 0;				
+	public static final int LIGATE = 0;
+	public static final int GLYPHSHAPE = 0;
 
 /*
  * Not implemented.
@@ -37,6 +40,12 @@ public static void addLanguageListener(int hwnd, Runnable runnable) {
  * gc, renderBuffer, x, y & renderDx are input parameters
  */
 public static void drawGlyphs(GC gc, byte[] renderBuffer, int[] renderDx, int x, int y) {
+}
+/*
+ * Not implemented.
+ */
+public static int getFontStyle(GC gc) {
+	return 0;	
 }
 /*
  *  Not implemented. Returns null.

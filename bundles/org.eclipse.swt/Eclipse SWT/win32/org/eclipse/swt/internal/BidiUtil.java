@@ -29,16 +29,6 @@ public class BidiUtil {
 	public static final int LINKBEFORE = 2;
 	public static final int LINKAFTER = 4;
 
-	/*
-	 * Public character class constants are the same as Windows 
-	 * platform constants. 
-	 * Saves conversion of class array in getRenderInfo to arbitrary 
-	 * constants for now.
-	 */
-	public static final int CLASS_HEBREW = 2;
-	public static final int CLASS_ARABIC = 2;
-	public static final int CLASS_LOCALNUMBER = 4;
-				
 	// GetCharacterPlacement constants
 	static final int GCP_REORDER = 0x0002;
 	static final int GCP_GLYPHSHAPE = 0x0010;
@@ -57,6 +47,19 @@ public class BidiUtil {
 	// ActivateKeyboard constants
 	static final int HKL_NEXT = 1;
 	static final int HKL_PREV = 0;
+
+	/*
+	 * Public character class constants are the same as Windows 
+	 * platform constants. 
+	 * Saves conversion of class array in getRenderInfo to arbitrary 
+	 * constants for now.
+	 */
+	public static final int CLASS_HEBREW = GCPCLASS_ARABIC;
+	public static final int CLASS_ARABIC = GCPCLASS_HEBREW;
+	public static final int CLASS_LOCALNUMBER = GCPCLASS_LOCALNUMBER;
+	public static final int REORDER = GCP_REORDER;				
+	public static final int LIGATE = GCP_LIGATE;
+	public static final int GLYPHSHAPE = GCP_GLYPHSHAPE;
 
 /*
  *
@@ -195,11 +198,31 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	return glyphBuffer;
 }
 
+/*
+ * 
+ */
 public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
 	int[] offsets = new int[] {0, text.length()};
 	return getRenderInfo(gc, text, order, classBuffer, dx, flags, offsets);
 }
 
+/*
+ * Return information about the font for the given GC.
+ */
+public static int getFontStyle(GC gc) {
+	int fontStyle = 0;
+	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
+	if (((fontLanguageInfo & GCP_REORDER) != 0)) {
+		fontStyle |= REORDER;
+	}
+	if (((fontLanguageInfo & GCP_LIGATE) != 0)) {
+		fontStyle |= LIGATE;
+	}
+	if (((fontLanguageInfo & GCP_GLYPHSHAPE) != 0)) {
+		fontStyle |= GLYPHSHAPE;
+	}
+	return fontStyle;	
+}
 /*
  * 
  */
