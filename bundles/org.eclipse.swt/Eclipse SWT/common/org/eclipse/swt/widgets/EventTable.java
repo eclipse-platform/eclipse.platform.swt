@@ -68,13 +68,16 @@ public boolean hooks (int eventType) {
 public void sendEvent (Event event) {
 	if (types == null) return;
 	level++;
-	for (int i=0; i<types.length; i++) {
-		if (types [i] == event.type) {
-			Listener listener = listeners [i];
-			if (listener != null) listener.handleEvent (event);
+	try {
+		for (int i=0; i<types.length; i++) {
+			if (types [i] == event.type) {
+				Listener listener = listeners [i];
+				if (listener != null) listener.handleEvent (event);
+			}
 		}
+	} finally {
+		--level;
 	}
-	--level;
 }
 
 void remove (int index) {
