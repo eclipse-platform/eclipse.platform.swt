@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
@@ -163,8 +164,10 @@ int ResizeBorder(int prcBorder, int pUIWindow, int fFrameWindow) {
 }
 
 int ShowContextMenu(int dwID, int ppt, int pcmdtReserved, int pdispReserved) {
-	/* disable default popup menu */
-	return COM.S_OK;
+	Event event = new Event();
+	Browser browser = (Browser)getParent().getParent();
+	browser.notifyListeners(SWT.MenuDetect, event);
+	return event.doit ? COM.S_FALSE : COM.S_OK;
 }
 
 int ShowUI(int dwID, int pActiveObject, int pCommandTarget, int pFrame, int pDoc) {
