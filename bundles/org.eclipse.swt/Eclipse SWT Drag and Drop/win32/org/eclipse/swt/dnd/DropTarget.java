@@ -312,6 +312,7 @@ private int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 	
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(event, iDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
+		keyOperation = -1;
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 		return COM.S_OK;
 	}
@@ -372,9 +373,11 @@ private int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEf
 	
 	event = new DNDEvent();
 	if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
+		keyOperation = -1;
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 		return COM.S_OK;
 	}
+	keyOperation = -1;
 	
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
