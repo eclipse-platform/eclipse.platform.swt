@@ -110,6 +110,7 @@ public class OS {
 	public static final int GDK_Left = 0xff51;
 	public static final int GDK_MOD1_MASK = 0x8;
 	public static final int GDK_MOTION_NOTIFY = 0x3;
+	public static final int GDK_NONE = 0;
 	public static final int GDK_OVERLAP_RECTANGLE_OUT = 0x1;
 	public static final int GDK_PIXBUF_ALPHA_BILEVEL = 0x0;
 	public static final int GDK_POINTER_MOTION_HINT_MASK = 0x8;
@@ -349,6 +350,10 @@ public static final native int gtk_check_menu_item_new_with_label(byte[] label);
 public static final native void gtk_check_menu_item_set_active(int wid, boolean active);
 public static final native void gtk_check_menu_item_set_show_toggle(int menu_item, boolean always);
 public static final native int gtk_check_version(int required_major, int required_minor, int required_micro);
+public static final native void gtk_clipboard_clear(int clipboard);
+public static final native int gtk_clipboard_get(int selection);
+public static final native boolean gtk_clipboard_set_with_data(int clipboard, int target, int n_targets, int get_func, int clear_func, int user_data);
+public static final native int gtk_clipboard_wait_for_contents(int clipboard, int target);
 public static final native int gtk_clist_append(int clist, int[] text);
 public static final native void gtk_clist_clear(int clist);
 public static final native void gtk_clist_column_titles_hide(int clist);
@@ -505,6 +510,8 @@ public static final native void gtk_scale_set_draw_value(int scale, boolean draw
 public static final native int gtk_scrolled_window_get_hadjustment(int scrolled_window);
 public static final native int gtk_scrolled_window_get_vadjustment(int scrolled_window);
 public static final native int gtk_scrolled_window_new(int hadjustment, int vadjustment);
+public static final native void gtk_selection_data_free(int selection_data);
+public static final native void gtk_selection_data_set(int selection_data, int type, int format, byte[] data, int length);
 public static final native void gtk_scrolled_window_set_policy(int scrolled_window, int hscrollbar_policy, int vscrollbar_policy);
 public static final native void gtk_scrolled_window_set_shadow_type(int scrolled_window, int type);
 public static final native int gtk_set_locale();
