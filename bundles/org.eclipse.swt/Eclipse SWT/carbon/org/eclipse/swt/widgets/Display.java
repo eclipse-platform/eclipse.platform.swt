@@ -21,8 +21,8 @@ public class Display extends Device {
 
 	/* Windows and Events */
 	Event [] eventQueue;
-	Callback windowCallback;
-	int windowProc;
+	Callback actionCallback, windowCallback;
+	int actionProc, windowProc;
 	EventTable eventTable, filterTable;
 	int lastModifiers;
 	
@@ -133,6 +133,12 @@ static int untranslateKey (int key) {
 	for (int i=0; i<KeyTable.length; i++) {
 		if (KeyTable [i] [1] == key) return KeyTable [i] [0];
 	}
+	return 0;
+}
+
+int actionProc (int theControl, int partCode) {
+	Control control = WidgetTable.get (theControl);
+	if (control != null) return control.actionProc (theControl, partCode);
 	return 0;
 }
 
@@ -484,7 +490,10 @@ protected void init () {
 	windowCallback = new Callback (this, "windowProc", 3);
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+	actionCallback = new Callback (this, "actionProc", 2);
+	actionProc = actionCallback.getAddress ();
+	if (actionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		
 	/* Install Application Event Handlers */
 	int[] mask1 = new int[] {
 		OS.kEventClassCommand, OS.kEventProcessCommand,
@@ -634,10 +643,10 @@ protected void release () {
 }
 
 void releaseDisplay () {
-	/* Dispose callbacks */
+	actionCallback.dispose ();
 	windowCallback.dispose ();
-	windowCallback = null;
-	windowProc = 0;
+	actionCallback = windowCallback = null;
+	actionProc = windowProc = 0;
 }
 
 public void removeFilter (int eventType, Listener listener) {
@@ -886,7 +895,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 							MenuItem item = findMenuItem (outCommandID [0]);
 							return item.kEventProcessCommand (nextHandler, theEvent, userData);
 						}
-						OS.HiliteMenu ((short)0);
+						OS.HiliteMenu ((short) 0);
 					}
 				}
 			}

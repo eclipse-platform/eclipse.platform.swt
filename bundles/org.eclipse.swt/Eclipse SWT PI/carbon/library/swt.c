@@ -1188,6 +1188,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateStandardAle
 }
 #endif /* NO_CreateStandardAlert */
 
+#ifndef NO_CreateSliderControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateSliderControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jint arg4, jint arg5, short arg6, jboolean arg7, jint arg8, jintArray arg9)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg9=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateSliderControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg9) lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL);
+	rc = (jint)CreateSliderControl((WindowRef)arg0, (const Rect *)lparg1, (SInt32)arg2, (SInt32)arg3, (SInt32) arg4, (ControlSliderOrientation)arg5, (UInt16)arg6, (Boolean)arg7, (ControlActionUPP)arg8, (ControlRef *)lparg9);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
+	return rc;
+}
+#endif NO_CreateSliderControl
+
 #ifndef NO_CreateUserPaneControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateUserPaneControl
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)

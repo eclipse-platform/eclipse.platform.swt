@@ -291,6 +291,7 @@ public class OS {
 	public static final int kQDUseCGTextRendering = (1 << 1);
 	public static final boolean kScrollBarsSyncWithFocus = false;
 	public static final int kSheetWindowClass = 11;
+	public static final int kControlSliderDoesNotPoint = 2;
 	public static final int kTXNAlwaysWrapAtViewEdgeMask = 1 << 11;
 	public static final int kTXNDoFontSubstitution = ('f'<<24) + ('s'<<16) + ('u'<<8) + 'b';
 	public static final int kTXNDontDrawCaretWhenInactiveMask = 1 << 12;
@@ -472,6 +473,7 @@ public static final native int CreateProgressBarControl(int window, Rect boundsR
 public static final native int CreatePushButtonControl(int window, Rect boundsRect, int title, int[] outControl);
 public static final native int CreateRadioButtonControl(int window, Rect boundsRect, int title, int initialValue, boolean autoToggle, int[] outControl);
 public static final native int CreateRootControl(int windowHandle, int[] cHandle);
+public static final native int CreateSliderControl(int window, Rect boundsRect, int value, int minimum, int maximum, int orientation, short numTickMarks, boolean liveTracking, int liveTrackingProc, int [] outControl);
 public static final native int CreateStandardAlert(short alertType, int errorSHandle, int explanationSHandle, int alertParamHandle, int[] dialogHandle);
 public static final native int CreateUserPaneControl(int window, Rect boundsRect, int features, int [] outControl);
 public static final native void DeleteMenu(short menuID);

@@ -38,6 +38,10 @@ public Control (Composite parent, int style) {
 	createWidget ();
 }
 
+int actionProc (int theControl, int partCode) {
+	return 0;
+}
+
 public void addControlListener(ControlListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
