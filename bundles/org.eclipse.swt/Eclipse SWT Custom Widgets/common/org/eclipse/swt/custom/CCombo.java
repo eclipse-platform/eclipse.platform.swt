@@ -565,7 +565,7 @@ void initAccessible() {
 			e.detail = ACC.STATE_NORMAL;
 		}
 
-		public void getValue(AccessibleEvent e) {
+		public void getValue(AccessibleControlEvent e) {
 			e.result = getText();
 		}
 	});
