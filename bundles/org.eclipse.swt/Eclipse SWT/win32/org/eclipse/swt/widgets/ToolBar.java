@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>FLAT, WRAP, RIGHT, HORIZONTAL, VERTICAL</dd>
+ * <dd>FLAT, WRAP, RIGHT, HORIZONTAL, VERTICAL, SHADOW_OUT</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
@@ -85,6 +85,7 @@ public class ToolBar extends Composite {
  * @see SWT#WRAP
  * @see SWT#RIGHT
  * @see SWT#HORIZONTAL
+ * @see SWT#SHADOW_OUT
  * @see SWT#VERTICAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
@@ -170,6 +171,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (newWidth == SWT.DEFAULT) newWidth = 0x3FFF;
 	if (newHeight == SWT.DEFAULT) newHeight = 0x3FFF;
 	ignoreResize = true;
+	OS.UpdateWindow (handle);
 	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
 	OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
 	int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
@@ -180,6 +182,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = Math.max (height, rect.bottom);
 	}
 	OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
+	OS.ValidateRect (handle, null);
 	ignoreResize = false;
 	/*
 	* From the Windows SDK for TB_SETBUTTONSIZE:
@@ -209,6 +212,16 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
+	
+	/*
+	* Feature in Windows.  When TBSTYLE_FLAT is used to create
+	* a flat toolbar, for some reason TBSTYLE_TRANSPARENT is
+	* also set.  This causes the toolbar to flicker when it is
+	* moved or resized.  The fix is to clear TBSTYLE_TRANSPARENT.
+	*/
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	bits &= ~OS.TBSTYLE_TRANSPARENT;
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 
 	/*
 	* Feature in Windows.  Despite the fact that the
@@ -267,8 +280,7 @@ void createHandle () {
 	OS.SendMessage (handle, OS.TB_SETBUTTONSIZE, 0, 0);
 
 	/* Set the extended style bits */
-	int bits = OS.TBSTYLE_EX_DRAWDDARROWS;
-	OS.SendMessage (handle, OS.TB_SETEXTENDEDSTYLE, 0, bits);
+	OS.SendMessage (handle, OS.TB_SETEXTENDEDSTYLE, 0, OS.TBSTYLE_EX_DRAWDDARROWS);
 }
 
 void createItem (ToolItem item, int index) {
@@ -666,7 +678,8 @@ String toolTipText (NMTTDISPINFO hdr) {
 }
 
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.CCS_NODIVIDER | OS.CCS_NORESIZE | OS.TBSTYLE_TOOLTIPS;
+	int bits = super.widgetStyle () | OS.CCS_NORESIZE | OS.TBSTYLE_TOOLTIPS;
+	if ((style & SWT.SHADOW_OUT) == 0) bits |= OS.CCS_NODIVIDER;
 	if ((style & SWT.WRAP) != 0) bits |= OS.TBSTYLE_WRAPABLE;
 	if ((style & SWT.FLAT) != 0) bits |= OS.TBSTYLE_FLAT;
 	if ((style & SWT.RIGHT) != 0) bits |= OS.TBSTYLE_LIST;
@@ -782,6 +795,34 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		if (code == 0) return LRESULT.ZERO;
 		return new LRESULT (code);
 	}
+	/*
+	* Feature in Windows.  When a tool bar that contains
+	* separators is wrapped, under certain circumstances,
+	* Windows redraws the entire tool bar unnecessarily
+	* when resized no item is moves.  Whether the entire
+	* toolbar is damaged or not seems to depend on the
+	* size of the tool bar and the position of the separators.
+	* The fix is to ensure that the newly exposed areas are
+	* always damaged, and avoid the redraw when no tool item
+	* moves.
+	*/
+	RECT [] rects = null;
+	int rgn = 0, oldCount = 0;
+	boolean fixRedraw = drawCount == 0 &&
+		(style & SWT.WRAP) != 0 &&
+		OS.IsWindowVisible (handle) &&
+		OS.SendMessage (handle, OS.TB_GETROWS, 0, 0) != 1;
+	if (fixRedraw) {
+		rgn = OS.CreateRectRgn (0, 0, 0, 0);
+		OS.GetUpdateRgn (handle, rgn, false);
+		oldCount = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
+		rects = new RECT [oldCount];
+		for (int i=0; i<oldCount; i++) {
+			rects [i] = new RECT ();
+			OS.SendMessage (handle, OS.TB_GETITEMRECT, i, rects [i]);
+		}
+	}
+	
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	/*
 	* It is possible (but unlikely), that application
@@ -791,6 +832,25 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* WM_SIZE message.
 	*/
 	if (isDisposed ()) return result;
+	
+	if (fixRedraw) {
+		int newCount = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
+		if (newCount == oldCount) {
+			int index = 0;
+			RECT rect = new RECT ();
+			while (index < newCount) {
+				OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
+				if (!OS.EqualRect (rects [index], rect)) break;
+				index++;
+			}
+			if (index == newCount) {
+				OS.ValidateRect (handle, null);
+				OS.InvalidateRgn (handle, rgn, false);
+			}
+		}
+		OS.DeleteObject (rgn);
+	}
+
 	layoutItems ();
 	return result;
 }
@@ -799,15 +859,15 @@ LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
 	/*
-	* Bug in Windows.  When a flat tool bar is wrapped,
-	* Windows draws a horizontal separator between the
-	* rows.  The tool bar does not draw the first or
-	* the last two pixels of this separator.  When the
-	* toolbar is resized to be bigger, only the new
-	* area is drawn and the last two pixels, which are
-	* blank are drawn over by separator.  This leaves
-	* garbage on the screen.  The fix is to damage the
-	* pixels.
+	* Feature in Windows.  When a tool bar that contains
+	* separators is wrapped, under certain circumstances,
+	* Windows redraws the entire tool bar unnecessarily
+	* when resized no item is moves.  Whether the entire
+	* toolbar is damaged or not seems to depend on the
+	* size of the tool bar and the position of the separators.
+	* The fix is to ensure that the newly exposed areas are
+	* always damaged, and avoid the redraw when no tool item
+	* moves.
 	*/
 	if (drawCount != 0) return result;
 	if ((style & SWT.WRAP) == 0) return result;
@@ -826,13 +886,31 @@ LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 	OS.SetRect (newRect, 0, 0, lpwp.cx, lpwp.cy);
 	OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, newRect);
 	int oldWidth = oldRect.right - oldRect.left;
+	int oldHeight = oldRect.bottom - oldRect.top;
 	int newWidth = newRect.right - newRect.left;
+	int newHeight = newRect.bottom - newRect.top;
 	if (newWidth > oldWidth) {
+		/*
+		* Bug in Windows.  When a flat tool bar is wrapped,
+		* Windows draws a horizontal separator between the
+		* rows.  The tool bar does not draw the first or
+		* the last two pixels of this separator.  When the
+		* toolbar is resized to be bigger, only the new
+		* area is drawn and the last two pixels, which are
+		* blank are drawn over by separator.  This leaves
+		* garbage on the screen.  The fix is to damage the
+		* pixels.
+		*/
 		RECT rect = new RECT ();
-		rect.left = oldWidth - 2;
-		rect.right = oldWidth;
-		rect.bottom = newRect.bottom - newRect.top;
+		OS.SetRect (rect, oldWidth - 2, 0, oldWidth, newHeight);
 		OS.InvalidateRect (handle, rect, false);
+		OS.SetRect (rect, oldRect.right, newRect.top, newRect.right, newRect.bottom);
+		OS.InvalidateRect (handle, rect, true);
+	}
+	if (newHeight > oldHeight) {
+		RECT rect = new RECT ();
+		OS.SetRect (rect, newRect.left, oldRect.bottom, newRect.right, newRect.bottom);
+		OS.InvalidateRect (handle, rect, true);
 	}
 	return result;
 }
