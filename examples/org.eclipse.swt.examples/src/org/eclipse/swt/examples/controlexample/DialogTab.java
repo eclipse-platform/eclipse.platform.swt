@@ -34,10 +34,11 @@ class DialogTab extends Tab {
 	Button modelessButton, primaryModalButton, applicationModalButton, systemModalButton;
 	Button saveButton, openButton, multiButton;
 
-	static String [] FilterExtensions	= {"*.txt", "*.bat", "*.doc"};
+	static String [] FilterExtensions	= {"*.txt", "*.bat", "*.doc", "*"};
 	static String [] FilterNames		= {ControlExample.getResourceString("FilterName_0"),
 										   ControlExample.getResourceString("FilterName_1"),
-										   ControlExample.getResourceString("FilterName_2")};
+										   ControlExample.getResourceString("FilterName_2"),
+										   ControlExample.getResourceString("FilterName_3")};
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -335,17 +336,17 @@ class DialogTab extends Tab {
 		dialogCombo.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				dialogSelected (event);
-			};
+			}
 		});
 		createButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				createButtonSelected (event);
-			};
+			}
 		});
 		SelectionListener buttonStyleListener = new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				buttonStyleSelected (event);
-			};
+			}
 		};
 		okButton.addSelectionListener (buttonStyleListener);
 		cancelButton.addSelectionListener (buttonStyleListener);
