@@ -308,6 +308,21 @@ public int indexOf (ToolItem item) {
 	return -1;
 }
 
+int processMouseEnter (int info) {
+	if (info == 0) return OS.Pt_END;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.event == 0) return OS.Pt_END;
+	PhEvent_t ev = new PhEvent_t ();
+	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+	switch (ev.subtype) {
+		case OS.Ph_EV_PTR_ENTER_FROM_CHILD:
+		case OS.Ph_EV_PTR_LEAVE_TO_CHILD:
+			return OS.Pt_CONTINUE;
+	}
+	return super.processMouseEnter (info);
+}
+
 void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
