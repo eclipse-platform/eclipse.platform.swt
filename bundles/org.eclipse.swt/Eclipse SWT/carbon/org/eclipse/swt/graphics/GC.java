@@ -340,11 +340,12 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}	
 	OS.CGContextBeginPath(handle);
-    OS.CGContextSaveGState(handle);
-    OS.CGContextTranslateCTM(handle, x + 0.5f + width / 2f, y + 0.5f + height / 2f);
-    OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
-    OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Math.PI / 180,  -endAngle * (float)Math.PI / 180, true);
-    OS.CGContextRestoreGState(handle);
+	OS.CGContextSaveGState(handle);
+	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	OS.CGContextTranslateCTM(handle, x + offset + width / 2f, y + offset + height / 2f);
+	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
+	OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Math.PI / 180,  -endAngle * (float)Math.PI / 180, true);
+	OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
 	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
@@ -562,12 +563,13 @@ public void drawOval(int x, int y, int width, int height) {
 		height = -height;
 	}
 	OS.CGContextBeginPath(handle);
-    OS.CGContextSaveGState(handle);
-    OS.CGContextTranslateCTM(handle, x + 0.5f + width / 2f, y + 0.5f + height / 2f);
-    OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
-    OS.CGContextMoveToPoint(handle, 1, 0);
-    OS.CGContextAddArc(handle, 0, 0, 1, 0, (float)(2 *Math.PI), true);
-    OS.CGContextRestoreGState(handle);
+	OS.CGContextSaveGState(handle);
+	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	OS.CGContextTranslateCTM(handle, x + offset + width / 2f, y + offset + height / 2f);
+	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
+	OS.CGContextMoveToPoint(handle, 1, 0);
+	OS.CGContextAddArc(handle, 0, 0, 1, 0, (float)(2 *Math.PI), true);
+	OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
 	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
@@ -718,17 +720,38 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 		drawRectangle(x, y, width, height);
     	return;
 	}
+	int nx = x;
+	int ny = y;
+	int nw = width;
+	int nh = height;
+	int naw = arcWidth;
+	int nah = arcHeight;	
+	if (nw < 0) {
+		nw = 0 - nw;
+		nx = nx - nw;
+	}
+	if (nh < 0) {
+		nh = 0 - nh;
+		ny = ny - nh;
+	}
+	if (naw < 0) naw = 0 - naw;
+	if (nah < 0) nah = 0 - nah;
+	if (naw > nw) naw = nw;
+	if (nah > nh) nah = nh;	
+	float naw2 = naw / 2f;
+	float nah2 = nah / 2f;
+	float fw = nw / naw2;
+	float fh = nh / nah2;
 	OS.CGContextBeginPath(handle);
 	OS.CGContextSaveGState(handle);
-	OS.CGContextTranslateCTM(handle, x, y);
-	OS.CGContextScaleCTM(handle, arcWidth, arcHeight);
-    float fw = width / (float)arcWidth;
-	float fh = height / (float)arcHeight;
-	OS.CGContextMoveToPoint(handle, fw, fh/2);
-	OS.CGContextAddArcToPoint(handle, fw, fh, fw/2, fh, 1);
-	OS.CGContextAddArcToPoint(handle, 0, fh, 0, fh/2, 1);
-	OS.CGContextAddArcToPoint(handle, 0, 0, fw/2, 0, 1);
-	OS.CGContextAddArcToPoint(handle, fw, 0, fw, fh/2, 1);
+	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	OS.CGContextTranslateCTM(handle, nx + offset, ny + offset);
+	OS.CGContextScaleCTM(handle, naw2, nah2);
+	OS.CGContextMoveToPoint(handle, fw - 1, 0);
+	OS.CGContextAddArcToPoint(handle, 0, 0, 0, 1, 1);
+	OS.CGContextAddArcToPoint(handle, 0, fh, 1, fh, 1);
+	OS.CGContextAddArcToPoint(handle, fw, fh, fw, fh - 1, 1);
+	OS.CGContextAddArcToPoint(handle, fw, 0, fw - 1, 0, 1);
 	OS.CGContextClosePath(handle);
 	OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
@@ -1183,17 +1206,37 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 		fillRectangle(x, y, width, height);
     	return;
 	}
+	int nx = x;
+	int ny = y;
+	int nw = width;
+	int nh = height;
+	int naw = arcWidth;
+	int nah = arcHeight;	
+	if (nw < 0) {
+		nw = 0 - nw;
+		nx = nx - nw;
+	}
+	if (nh < 0) {
+		nh = 0 - nh;
+		ny = ny - nh;
+	}
+	if (naw < 0) naw = 0 - naw;
+	if (nah < 0) nah = 0 - nah;
+	if (naw > nw) naw = nw;
+	if (nah > nh) nah = nh;	
+	float naw2 = naw / 2f;
+	float nah2 = nah / 2f;
+	float fw = nw / naw2;
+	float fh = nh / nah2;
 	OS.CGContextBeginPath(handle);
 	OS.CGContextSaveGState(handle);
-	OS.CGContextTranslateCTM(handle, x, y);
-	OS.CGContextScaleCTM(handle, arcWidth, arcHeight);
-    float fw = width / (float)arcWidth;
-	float fh = height / (float)arcHeight;
-	OS.CGContextMoveToPoint(handle, fw, fh/2);
-	OS.CGContextAddArcToPoint(handle, fw, fh, fw/2, fh, 1);
-	OS.CGContextAddArcToPoint(handle, 0, fh, 0, fh/2, 1);
-	OS.CGContextAddArcToPoint(handle, 0, 0, fw/2, 0, 1);
-	OS.CGContextAddArcToPoint(handle, fw, 0, fw, fh/2, 1);
+	OS.CGContextTranslateCTM(handle, nx, ny);
+	OS.CGContextScaleCTM(handle, naw2, nah2);
+	OS.CGContextMoveToPoint(handle, fw - 1, 0);
+	OS.CGContextAddArcToPoint(handle, 0, 0, 0, 1, 1);
+	OS.CGContextAddArcToPoint(handle, 0, fh, 1, fh, 1);
+	OS.CGContextAddArcToPoint(handle, fw, fh, fw, fh - 1, 1);
+	OS.CGContextAddArcToPoint(handle, fw, 0, fw - 1, 0, 1);
 	OS.CGContextClosePath(handle);
 	OS.CGContextRestoreGState(handle);
 	OS.CGContextFillPath(handle);
