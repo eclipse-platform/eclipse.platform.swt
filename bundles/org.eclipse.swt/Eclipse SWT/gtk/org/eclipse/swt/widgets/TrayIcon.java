@@ -89,24 +89,20 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
-int gtk_button_press_event (int widget, int event) {
+int gtk_button_press_event (int widget, int eventPtr) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
+	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 	if (gdkEvent.button == 3) {
-		if (menu != null) menu.setVisible (true);
+		Event event = new Event ();
+//		event.x = (int) gdkEvent.x_root;
+//		event.y = (int) gdkEvent.y_root;
+		sendEvent (SWT.MenuDetect, event);
 		return 0;
 	}
-	double [] x = new double [1];
-	double [] y = new double [1];
-	OS.gdk_event_get_root_coords (event, x, y);
-	Event ev = new Event ();		
-	ev.x = (int) x [0];
-	ev.y = (int) y [0];
 	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
-		sendEvent (SWT.DefaultSelection, ev);
+		postEvent (SWT.DefaultSelection);
 	} else {
-		sendEvent (SWT.Selection, ev);
+		postEvent (SWT.Selection);
 	}
 	return 0;
 }
