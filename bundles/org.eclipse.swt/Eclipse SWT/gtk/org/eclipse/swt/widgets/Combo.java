@@ -1012,6 +1012,10 @@ public void setSelection (Point selection) {
 	OS.gtk_editable_select_region (entry, selection.x, selection.y);
 }
 
+protected boolean setTabGroupFocus () {
+	return setFocus ();
+}
+
 /**
  * Sets the contents of the receiver's text field to the
  * given string.
