@@ -1075,3 +1075,33 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GDK_1CURRENT_1TIME
 {
   return (jint) GDK_CURRENT_TIME;
 }
+
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1frame_1extents
+  (JNIEnv *env, jclass that, jint window, jobject rectangle)
+{
+	DECL_GLOB(pGlob)
+	GdkRectangle rectangle_struct, *rectangle1 = NULL;
+	if (rectangle) {
+		rectangle1 = &rectangle_struct;
+		cacheGdkRectangleFids(env, rectangle, &PGLOB(GdkRectangleFc));
+		getGdkRectangleFields(env, rectangle, rectangle1, &PGLOB(GdkRectangleFc));
+	}
+	gdk_window_get_frame_extents((GdkWindow*)window, rectangle1);
+	if (rectangle) {
+		setGdkRectangleFields(env, rectangle, rectangle1, &PGLOB(GdkRectangleFc));
+	}
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1process_1all_1updates
+  (JNIEnv *env, jclass that)
+{
+  gdk_window_process_all_updates();
+}
+
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1process_1updates
+  (JNIEnv *env, jclass that, jint window, jboolean update_children)
+{
+  gdk_window_process_updates((GdkWindow*)window, (gboolean)update_children);
+}

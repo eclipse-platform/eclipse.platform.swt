@@ -262,7 +262,15 @@ public Shell (Shell parent, int style) {
 	this (null, parent, style);
 }
 
-
+static int checkStyle (int style) {
+	style = Decorations.checkStyle (style);
+	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
+	int bits = style & ~mask;
+	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
+	if ((style & SWT.APPLICATION_MODAL) != 0) return bits | SWT.APPLICATION_MODAL;
+	if ((style & SWT.PRIMARY_MODAL) != 0) return bits | SWT.PRIMARY_MODAL;
+	return bits;
+}
 
 /**
  * Adds the listener to the collection of listeners who will
@@ -292,6 +300,47 @@ public void addShellListener (ShellListener listener) {
 	addListener (SWT.Deiconify,typedListener);
 	addListener (SWT.Activate, typedListener);
 	addListener (SWT.Deactivate, typedListener);
+}
+
+void adjustTrim () {
+	int [] width = new int [1], height = new int [1];
+	OS.gtk_window_get_size (shellHandle, width, height);
+	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	GdkRectangle rect = new GdkRectangle ();
+	OS.gdk_window_get_frame_extents (window, rect);
+	int trimWidth = Math.max (0, rect.width - width [0]);
+	int trimHeight = Math.max (0, rect.height - height [0]);
+	boolean hasTitle = false, hasResize = false, hasBorder = false;
+	if ((style & SWT.NO_TRIM) == 0) {
+		hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
+		hasResize = (style & SWT.RESIZE) != 0;
+		hasBorder = (style & SWT.BORDER) != 0;
+	}
+	if (hasTitle) {
+		if (hasResize)  {
+			display.titleResizeTrimWidth = trimWidth;
+			display.titleResizeTrimHeight = trimHeight;
+			return;
+		}
+		if (hasBorder) {
+			display.titleBorderTrimWidth = trimWidth;
+			display.titleBorderTrimHeight = trimHeight;
+			return;
+		}
+		display.titleTrimWidth = trimWidth;
+		display.titleTrimHeight = trimHeight;
+		return;
+	}
+	if (hasResize) {
+		display.resizeTrimWidth = trimWidth;
+		display.resizeTrimHeight = trimHeight;
+		return;
+	}
+	if (hasBorder) {
+		display.borderTrimWidth = trimWidth;
+		display.borderTrimHeight = trimHeight;
+		return;
+	}
 }
 
 /**
@@ -426,9 +475,9 @@ Point _getLocation() {
 }
 
 Point _getSize() {
-	int[] x = new int[1]; int[] y = new int[1];
-	OS.gtk_window_get_size(shellHandle, x, y);
-	return new Point(x[0], y[0]);
+	int [] width = new int [1], height = new int [1];
+	OS.gtk_window_get_size (shellHandle, width, height);
+	return new Point (width [0] + trimWidth (), height [0] + trimHeight ());
 }
 
 public Rectangle getClientArea () {
@@ -440,13 +489,7 @@ public Rectangle getClientArea () {
 
 void _setSize(int width, int height) {
 	OS.gtk_signal_handler_block_by_data (shellHandle, SWT.Resize);
-	OS.gtk_window_resize(shellHandle, width, height);
-	boolean done = false;
-	Point s = _getSize();
-	while ((s.x!=width) || (s.y!=height)) {
-		OS.gtk_main_iteration();
-		s = _getSize();
-	}
+	OS.gtk_window_resize (shellHandle, width - trimWidth (), height - trimHeight ());
 	OS.gtk_signal_handler_unblock_by_data (shellHandle, SWT.Resize);
 }
 
@@ -742,15 +785,47 @@ public void setText (String string) {
 public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible) {
+		sendEvent (SWT.Show);
 		OS.gtk_widget_show_now (shellHandle);
 		display.update();
-		sendEvent (SWT.Show);
+		adjustTrim ();
 	} else {	
 		OS.gtk_widget_hide (shellHandle);
 		sendEvent (SWT.Hide);
 	}
 }
 
+int trimHeight () {
+	if ((style & SWT.NO_TRIM) != 0) return 0;
+	boolean hasTitle = false, hasResize = false, hasBorder = false;
+	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
+	hasResize = (style & SWT.RESIZE) != 0;
+	hasBorder = (style & SWT.BORDER) != 0;
+	if (hasTitle) {
+		if (hasResize) return display.titleResizeTrimHeight;
+		if (hasBorder) return display.titleBorderTrimHeight;
+		return display.titleTrimHeight;
+	}
+	if (hasResize) return display.resizeTrimHeight;
+	if (hasBorder) return display.borderTrimHeight;
+	return 0;
+}
+
+int trimWidth () {
+	if ((style & SWT.NO_TRIM) != 0) return 0;
+	boolean hasTitle = false, hasResize = false, hasBorder = false;
+	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
+	hasResize = (style & SWT.RESIZE) != 0;
+	hasBorder = (style & SWT.BORDER) != 0;
+	if (hasTitle) {
+		if (hasResize) return display.titleResizeTrimWidth;
+		if (hasBorder) return display.titleBorderTrimWidth;
+		return display.titleTrimWidth;
+	}
+	if (hasResize) return display.resizeTrimWidth;
+	if (hasBorder) return display.borderTrimWidth;
+	return 0;
+}
 
 /*
  *   ===  DESTRUCTION  ===

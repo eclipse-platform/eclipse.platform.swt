@@ -594,13 +594,13 @@ public void setLayoutData (Object layoutData) {
  * </ul>
  */
 public Point toControl (Point point) {
-	checkWidget();
-/*	int[] x = new int[1], y = new int[1];
-	OS.gdk_window_get_origin(_gdkWindow(), x,y);
-	int ctlX = point.x - x[0];
-	int ctlY = point.y - y[0];*/
-	/* FIXME */
-	return new Point (0, 0);
+	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int eventHandle = eventHandle ();
+	int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+	int [] x = new int [1], y = new int [1];
+	OS.gdk_window_get_origin (window, x, y);
+	return new Point (point.x - x[0], point.y - y[0]);
 }
 /**
  * Returns a point which is the result of converting the
@@ -618,12 +618,13 @@ public Point toControl (Point point) {
  * </ul>
  */
 public Point toDisplay (Point point) {
-	checkWidget();/*
-	int[] x = new int[1], y = new int[1];
-	OS.gdk_window_get_origin(_gdkWindow(), x,y);
-	return new Point (x[0]+point.x, y[0]+point.y);*/
-	/* FIXME */
-	return new Point (0,0);
+	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int eventHandle = eventHandle ();
+	int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+	int [] x = new int [1], y = new int [1];
+	OS.gdk_window_get_origin (window, x, y);
+	return new Point (x [0] + point.x, y[0] + point.y);
 }
 
 //   ===  End of GEOMETRY Category  ===

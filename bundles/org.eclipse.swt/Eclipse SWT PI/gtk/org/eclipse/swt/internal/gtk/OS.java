@@ -767,4 +767,9 @@ public static final native void memmove(int dest, GtkStyle src, int size);
 public static final native void memmove(int dest, GtkAdjustment src); // sure needed
 public static final native void memmove(int dest, GtkCListColumn src, int size);
 
+public static final native void gdk_window_get_frame_extents(int window, GdkRectangle rect);
+public static final native void gdk_window_process_all_updates();
+public static final native void gdk_window_process_updates(int window, boolean update_children);
+//public static final native boolean gtk_widget_translate_coordinates(int src_widget, int dest_widget, int src_x, int src_y, int [] dest_x, int [] dest_y);
+
 }

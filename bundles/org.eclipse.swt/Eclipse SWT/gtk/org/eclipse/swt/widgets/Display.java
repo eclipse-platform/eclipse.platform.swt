@@ -202,6 +202,13 @@ public class Display extends Device {
 	String [] keys;
 	Object [] values;
 	
+	/* Initial Guesses for Shell Trimmings. */
+	int borderTrimWidth = 4, borderTrimHeight = 4;
+	int resizeTrimWidth = 6, resizeTrimHeight = 6;
+	int titleBorderTrimWidth = 5, titleBorderTrimHeight = 28;
+	int titleResizeTrimWidth = 6, titleResizeTrimHeight = 29;
+	int titleTrimWidth = 0, titleTrimHeight = 23;
+	
 	/*
 	* TEMPORARY CODE.  Install the runnable that
 	* gets the current display. This code will
