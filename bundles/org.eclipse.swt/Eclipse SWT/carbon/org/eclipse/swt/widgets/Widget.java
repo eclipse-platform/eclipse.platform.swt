@@ -1235,7 +1235,7 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 		result |= MOVED;
 	}
 	if (resize && !sameExtent) {
-		if (events) sendEvent (SWT.Move);
+		if (events) sendEvent (SWT.Resize);
 		result |= RESIZED;
 	}
 	return result;
