@@ -8,7 +8,6 @@ package org.eclipse.swt.program;
  */
  
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -48,7 +47,6 @@ Program () {
 public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
-	System.out.println("Program.findProgram("+extension+"): nyi");
 	if (extension.charAt (0) != '.') extension = "." + extension;
 	/* Use the character encoding for the default locale */
 	/* AW
@@ -75,7 +73,6 @@ public static Program findProgram (String extension) {
 public static String [] getExtensions () {
 	String [] extensions = new String [1024];
 	/* Use the character encoding for the default locale */
-	System.out.println("Program.getExtensions: nyi");
 	/* AW
 	TCHAR lpName = new TCHAR (0, 1024);
 	int [] lpcName = new int [] {lpName.length ()};
@@ -113,8 +110,6 @@ public static String [] getExtensions () {
 }
 
 static Program getProgram (String key) {
-	
-	System.out.println("Program.getProgram("+key+"): nyi");
 	/* Name */
 	/* AW
 	String name = getKeyValue (key);
@@ -151,7 +146,6 @@ static Program getProgram (String key) {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	System.out.println("Program.getPrograms(): nyi");
 	Program [] programs = new Program [1024];
 	/* Use the character encoding for the default locale */
 	/*
@@ -210,7 +204,6 @@ public static boolean launch (String fileName) {
 		Compatibility.exec(args);
 		return true;
 	} catch(IOException ex) {
-		System.out.println("Program.launch: " + ex);
 	}
 	
 	return false;
@@ -231,7 +224,6 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	System.out.println("Program.execute: nyi");
 	boolean quote = true;
 	String prefix = command, suffix = "";
 	int index = command.indexOf ("%1");
