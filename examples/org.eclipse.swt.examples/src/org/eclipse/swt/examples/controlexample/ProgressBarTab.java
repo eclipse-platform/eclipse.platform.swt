@@ -34,7 +34,7 @@ class ProgressBarTab extends RangeTab {
 		super.createExampleGroup ();
 
 		/* Create a group for the progress bar */
-		progressBarGroup = new Group (exampleGroup, SWT.NULL);
+		progressBarGroup = new Group (exampleGroup, SWT.NONE);
 		progressBarGroup.setLayout (new GridLayout ());
 		progressBarGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		progressBarGroup.setText ("ProgressBar");

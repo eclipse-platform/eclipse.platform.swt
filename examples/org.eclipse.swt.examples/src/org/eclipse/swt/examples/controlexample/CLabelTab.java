@@ -35,7 +35,7 @@ class CLabelTab extends AlignableTab {
 		super.createExampleGroup ();
 		
 		/* Create a group for the text labels */
-		textLabelGroup = new Group(exampleGroup, SWT.NULL);
+		textLabelGroup = new Group(exampleGroup, SWT.NONE);
 		GridLayout gridLayout = new GridLayout ();
 		textLabelGroup.setLayout (gridLayout);
 		gridLayout.numColumns = 3;

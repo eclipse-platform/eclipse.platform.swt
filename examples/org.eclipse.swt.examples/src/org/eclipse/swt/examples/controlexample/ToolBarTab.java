@@ -35,13 +35,13 @@ class ToolBarTab extends Tab {
 		super.createExampleGroup ();
 		
 		/* Create a group for the image tool bar */
-		imageToolBarGroup = new Group (exampleGroup, SWT.NULL);
+		imageToolBarGroup = new Group (exampleGroup, SWT.NONE);
 		imageToolBarGroup.setLayout (new GridLayout ());
 		imageToolBarGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		imageToolBarGroup.setText (ControlExample.getResourceString("Image_ToolBar"));
 	
 		/* Create a group for the text tool bar */
-		textToolBarGroup = new Group (exampleGroup, SWT.NULL);
+		textToolBarGroup = new Group (exampleGroup, SWT.NONE);
 		textToolBarGroup.setLayout (new GridLayout ());
 		textToolBarGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		textToolBarGroup.setText (ControlExample.getResourceString("Text_ToolBar"));

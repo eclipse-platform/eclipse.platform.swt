@@ -45,13 +45,13 @@ class SliderTab extends RangeTab {
 		super.createExampleGroup ();
 		
 		/* Create a group for the slider */
-		sliderGroup = new Group (exampleGroup, SWT.NULL);
+		sliderGroup = new Group (exampleGroup, SWT.NONE);
 		sliderGroup.setLayout (new GridLayout ());
 		sliderGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		sliderGroup.setText ("Slider");
 	
 		/* Create a group for the scale */
-		scaleGroup = new Group (exampleGroup, SWT.NULL);
+		scaleGroup = new Group (exampleGroup, SWT.NONE);
 		scaleGroup.setLayout (new GridLayout ());
 		scaleGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		scaleGroup.setText ("Scale");
@@ -90,13 +90,13 @@ class SliderTab extends RangeTab {
 	void createIncrementGroup() {
 	
 		/* Create the group */
-		Group incrementGroup = new Group (controlGroup, SWT.NULL);
+		Group incrementGroup = new Group (controlGroup, SWT.NONE);
 		incrementGroup.setLayout (new GridLayout ());
 		incrementGroup.setText (ControlExample.getResourceString("Increment"));
 		incrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	
 		/* Create the scale widget */
-		incrementScale = new Scale (incrementGroup, SWT.NULL);
+		incrementScale = new Scale (incrementGroup, SWT.NONE);
 		incrementScale.setMaximum (100);
 		incrementScale.setSelection (5);
 		incrementScale.setPageIncrement (10);
@@ -121,13 +121,13 @@ class SliderTab extends RangeTab {
 	void createPageIncrementGroup() {
 	
 		/* Create the group */
-		Group pageIncrementGroup = new Group (controlGroup, SWT.NULL);
+		Group pageIncrementGroup = new Group (controlGroup, SWT.NONE);
 		pageIncrementGroup.setLayout (new GridLayout ());
 		pageIncrementGroup.setText (ControlExample.getResourceString("Page_Increment"));
 		pageIncrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 			
 		/* Create the scale widget */
-		pageIncrementScale = new Scale (pageIncrementGroup, SWT.NULL);
+		pageIncrementScale = new Scale (pageIncrementGroup, SWT.NONE);
 		pageIncrementScale.setMaximum (100);
 		pageIncrementScale.setSelection (10);
 		pageIncrementScale.setPageIncrement (10);
@@ -152,13 +152,13 @@ class SliderTab extends RangeTab {
 	void createThumbGroup() {
 	
 		/* Create the group */
-		Group thumbGroup = new Group (controlGroup, SWT.NULL);
+		Group thumbGroup = new Group (controlGroup, SWT.NONE);
 		thumbGroup.setLayout (new GridLayout ());
 		thumbGroup.setText (ControlExample.getResourceString("Thumb"));
 		thumbGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 		
 		/* Create the scale widget */
-		thumbScale = new Scale (thumbGroup, SWT.NULL);
+		thumbScale = new Scale (thumbGroup, SWT.NONE);
 		thumbScale.setMaximum (100);
 		thumbScale.setSelection (10);
 		thumbScale.setPageIncrement (10);

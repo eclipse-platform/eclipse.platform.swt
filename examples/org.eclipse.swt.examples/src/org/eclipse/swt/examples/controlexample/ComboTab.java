@@ -44,7 +44,7 @@ class ComboTab extends Tab {
 		super.createExampleGroup ();
 		
 		/* Create a group for the combo box */
-		comboGroup = new Group (exampleGroup, SWT.NULL);
+		comboGroup = new Group (exampleGroup, SWT.NONE);
 		comboGroup.setLayout (new GridLayout ());
 		comboGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		comboGroup.setText ("Combo");

@@ -41,7 +41,7 @@ class ListTab extends ScrollableTab {
 		super.createExampleGroup ();
 		
 		/* Create a group for the list */
-		listGroup = new Group (exampleGroup, SWT.NULL);
+		listGroup = new Group (exampleGroup, SWT.NONE);
 		listGroup.setLayout (new GridLayout ());
 		listGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		listGroup.setText ("List");

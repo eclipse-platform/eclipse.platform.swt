@@ -60,13 +60,13 @@ class TextTab extends ScrollableTab {
 		super.createExampleGroup ();
 		
 		/* Create a group for the text widget */
-		textGroup = new Group (exampleGroup, SWT.NULL);
+		textGroup = new Group (exampleGroup, SWT.NONE);
 		textGroup.setLayout (new GridLayout ());
 		textGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		textGroup.setText ("Text");
 	
 		/* Create a group for the styled text widget */
-		styledTextGroup = new Group (exampleGroup, SWT.NULL);
+		styledTextGroup = new Group (exampleGroup, SWT.NONE);
 		styledTextGroup.setLayout (new GridLayout ());
 		styledTextGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		styledTextGroup.setText ("StyledText");

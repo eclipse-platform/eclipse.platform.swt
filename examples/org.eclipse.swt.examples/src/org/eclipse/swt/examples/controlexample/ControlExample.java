@@ -57,10 +57,10 @@ public class ControlExample {
 	public ControlExample(Composite parent) {
 		initResources();
 		form = new SashForm (parent,SWT.VERTICAL);
-		tabFolder = new TabFolder (form, SWT.NULL);
+		tabFolder = new TabFolder (form, SWT.NONE);
 		Tab [] tabs = createTabs();
 		for (int i=0; i<tabs.length; i++) {
-			TabItem item = new TabItem (tabFolder, SWT.NULL);
+			TabItem item = new TabItem (tabFolder, SWT.NONE);
 		    item.setText (tabs [i].getTabText ());
 		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
 		    item.setData (tabs [i]);

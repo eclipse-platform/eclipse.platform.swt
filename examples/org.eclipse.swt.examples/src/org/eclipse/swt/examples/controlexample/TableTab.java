@@ -148,7 +148,7 @@ class TableTab extends ScrollableTab {
 		super.createExampleGroup ();
 		
 		/* Create a group for the table */
-		tableGroup = new Group (exampleGroup, SWT.NULL);
+		tableGroup = new Group (exampleGroup, SWT.NONE);
 		tableGroup.setLayout (new GridLayout ());
 		tableGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		tableGroup.setText ("Table");
@@ -173,11 +173,11 @@ class TableTab extends ScrollableTab {
 	
 		/* Fill the table with data */
 		for (int i = 0; i < columnTitles.length; i++) {
-			TableColumn tableColumn = new TableColumn(table1, SWT.NULL);
+			TableColumn tableColumn = new TableColumn(table1, SWT.NONE);
 			tableColumn.setText(columnTitles[i]);
 		}	
 		for (int i=0; i<16; i++) {
-			TableItem item = new TableItem (table1, SWT.NULL);
+			TableItem item = new TableItem (table1, SWT.NONE);
 			item.setImage (instance.images [i % 3]);
 			switch (i % 3) {
 				case 0:

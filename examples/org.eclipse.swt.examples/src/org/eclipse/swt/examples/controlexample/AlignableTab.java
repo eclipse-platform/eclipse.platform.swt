@@ -39,7 +39,7 @@ abstract class AlignableTab extends Tab {
 		super.createControlGroup ();
 		
 		/* Create the group */
-		allignmentGroup = new Group (controlGroup, SWT.NULL);
+		allignmentGroup = new Group (controlGroup, SWT.NONE);
 		allignmentGroup.setLayout (new GridLayout ());
 		allignmentGroup.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_FILL |
 			GridData.VERTICAL_ALIGN_FILL));

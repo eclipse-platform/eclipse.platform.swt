@@ -43,13 +43,13 @@ abstract class RangeTab extends Tab {
 	void createMaximumGroup() {
 	
 		/* Create the group */
-		Group maximumGroup = new Group (controlGroup, SWT.NULL);
+		Group maximumGroup = new Group (controlGroup, SWT.NONE);
 		maximumGroup.setLayout (new GridLayout ());
 		maximumGroup.setText (ControlExample.getResourceString("Maximum"));
 		maximumGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	
 		/* Create a scale widget */
-		maximumScale = new Scale (maximumGroup, SWT.NULL);
+		maximumScale = new Scale (maximumGroup, SWT.NONE);
 		maximumScale.setMaximum (100);
 		maximumScale.setSelection (100);
 		maximumScale.setPageIncrement (10);
@@ -74,13 +74,13 @@ abstract class RangeTab extends Tab {
 	void createMinimumGroup() {
 	
 		/* Create the group */
-		Group minimumGroup = new Group (controlGroup, SWT.NULL);
+		Group minimumGroup = new Group (controlGroup, SWT.NONE);
 		minimumGroup.setLayout (new GridLayout ());
 		minimumGroup.setText (ControlExample.getResourceString("Minimum"));
 		minimumGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	
 		/* Create a scale widget */
-		minimumScale = new Scale (minimumGroup, SWT.NULL);
+		minimumScale = new Scale (minimumGroup, SWT.NONE);
 		minimumScale.setMaximum (100);
 		minimumScale.setPageIncrement (10);
 		minimumScale.setIncrement (5);
@@ -105,14 +105,14 @@ abstract class RangeTab extends Tab {
 	void createSelectionGroup() {
 	
 		/* Create the group */
-		Group selectionGroup = new Group(controlGroup, SWT.NULL);
+		Group selectionGroup = new Group(controlGroup, SWT.NONE);
 		selectionGroup.setLayout(new GridLayout());
 		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
 		selectionGroup.setLayoutData(gridData);
 		selectionGroup.setText(ControlExample.getResourceString("Selection"));
 	
 		/* Create a scale widget */
-		selectionScale = new Scale (selectionGroup, SWT.NULL);
+		selectionScale = new Scale (selectionGroup, SWT.NONE);
 		selectionScale.setMaximum (100);
 		selectionScale.setSelection (50);
 		selectionScale.setPageIncrement (10);

@@ -86,4 +86,11 @@ class SashFormTab extends Tab {
 	String getTabText () {
 		return "SashForm";
 	}
+	
+	/**
+	 * Recreates the "Example" widgets.
+	 */
+	void recreateExampleWidgets () {
+		// this tab does not use this framework mechanism
+	}
 }

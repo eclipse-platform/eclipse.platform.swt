@@ -34,7 +34,7 @@ class LabelTab extends AlignableTab {
 		super.createExampleGroup ();
 		
 		/* Create a group for the text labels */
-		textLabelGroup = new Group(exampleGroup, SWT.NULL);
+		textLabelGroup = new Group(exampleGroup, SWT.NONE);
 		GridLayout gridLayout = new GridLayout ();
 		textLabelGroup.setLayout (gridLayout);
 		gridLayout.numColumns = 3;
@@ -99,7 +99,7 @@ class LabelTab extends AlignableTab {
 		horizontalButton.setText ("SWT.HORIZONTAL");
 		verticalButton = new Button (styleGroup, SWT.RADIO);
 		verticalButton.setText ("SWT.VERTICAL");
-		Group styleSubGroup = new Group (styleGroup, SWT.NULL);
+		Group styleSubGroup = new Group (styleGroup, SWT.NONE);
 		styleSubGroup.setLayout (new GridLayout ());
 		shadowInButton = new Button (styleSubGroup, SWT.RADIO);
 		shadowInButton.setText ("SWT.SHADOW_IN");

@@ -129,7 +129,7 @@ abstract class Tab {
 	 */
 	void createColorGroup () {
 		/* Create the group */
-		colorGroup = new Group(controlGroup, SWT.NULL);
+		colorGroup = new Group(controlGroup, SWT.NONE);
 		colorGroup.setLayout (new GridLayout (2, false));
 		colorGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		colorGroup.setText (ControlExample.getResourceString ("Colors"));

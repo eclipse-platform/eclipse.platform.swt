@@ -83,7 +83,7 @@ class DialogTab extends Tab {
 	void createButtonSelected(SelectionEvent event) {
 	
 		/* Compute the appropriate dialog style */
-		int style = SWT.NULL;
+		int style = SWT.NONE;
 		if (okButton.getEnabled () && okButton.getSelection ()) style |= SWT.OK;
 		if (cancelButton.getEnabled () && cancelButton.getSelection ()) style |= SWT.CANCEL;
 		if (yesButton.getEnabled () && yesButton.getSelection ()) style |= SWT.YES;
@@ -205,7 +205,7 @@ class DialogTab extends Tab {
 		 * left half of each example tab.  It consists of the
 		 * style group, the display group and the size group.
 		 */			
-		controlGroup = new Group (tabFolderPage, SWT.NULL);
+		controlGroup = new Group (tabFolderPage, SWT.NONE);
 		GridLayout gridLayout= new GridLayout ();
 		controlGroup.setLayout(gridLayout);
 		gridLayout.numColumns = 2;
@@ -217,7 +217,7 @@ class DialogTab extends Tab {
 		 * Create a group to hold the dialog style combo box and
 		 * create dialog button.
 		 */
-		dialogStyleGroup = new Group (controlGroup, SWT.NULL);
+		dialogStyleGroup = new Group (controlGroup, SWT.NONE);
 		dialogStyleGroup.setLayout (new GridLayout ());
 		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_CENTER);
 		gridData.horizontalSpan = 2;
@@ -244,12 +244,12 @@ class DialogTab extends Tab {
 		dialogCombo.setText (strings [0]);
 	
 		/* Create the create dialog button */
-		Button createButton = new Button(dialogStyleGroup, SWT.NULL);
+		Button createButton = new Button(dialogStyleGroup, SWT.NONE);
 		createButton.setText (ControlExample.getResourceString("Create_Dialog"));
 		createButton.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 	
 		/* Create a group for the various dialog button style controls */
-		Group buttonStyleGroup = new Group (controlGroup, SWT.NULL);
+		Group buttonStyleGroup = new Group (controlGroup, SWT.NONE);
 		buttonStyleGroup.setLayout (new GridLayout ());
 		buttonStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		buttonStyleGroup.setText (ControlExample.getResourceString("Button_Styles"));
@@ -271,7 +271,7 @@ class DialogTab extends Tab {
 		ignoreButton.setText ("SWT.IGNORE");
 	
 		/* Create a group for the icon style controls */
-		Group iconStyleGroup = new Group (controlGroup, SWT.NULL);
+		Group iconStyleGroup = new Group (controlGroup, SWT.NONE);
 		iconStyleGroup.setLayout (new GridLayout ());
 		iconStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		iconStyleGroup.setText (ControlExample.getResourceString("Icon_Styles"));
@@ -289,7 +289,7 @@ class DialogTab extends Tab {
 		iconWorkingButton.setText ("SWT.ICON_WORKING");
 	
 		/* Create a group for the modal style controls */
-		Group modalStyleGroup = new Group (controlGroup, SWT.NULL);
+		Group modalStyleGroup = new Group (controlGroup, SWT.NONE);
 		modalStyleGroup.setLayout (new GridLayout ());
 		modalStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		modalStyleGroup.setText (ControlExample.getResourceString("Modal_Styles"));
@@ -305,7 +305,7 @@ class DialogTab extends Tab {
 		systemModalButton.setText ("SWT.SYSTEM_MODAL");
 	
 		/* Create a group for the file dialog style controls */
-		Group fileDialogStyleGroup = new Group (controlGroup, SWT.NULL);
+		Group fileDialogStyleGroup = new Group (controlGroup, SWT.NONE);
 		fileDialogStyleGroup.setLayout (new GridLayout ());
 		fileDialogStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		fileDialogStyleGroup.setText (ControlExample.getResourceString("File_Dialog_Styles"));
@@ -370,7 +370,7 @@ class DialogTab extends Tab {
 		 * Create a group for the text widget to display
 		 * the results returned by the example dialogs.
 		 */
-		resultGroup = new Group (exampleGroup, SWT.NULL);
+		resultGroup = new Group (exampleGroup, SWT.NONE);
 		resultGroup.setLayout (new GridLayout ());
 		resultGroup.setLayoutData (new GridData (GridData.FILL_BOTH));
 		resultGroup.setText (ControlExample.getResourceString("Dialog_Result"));
