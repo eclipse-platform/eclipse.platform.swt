@@ -10,7 +10,7 @@ public class TreeItem2 extends Item {
 	TreeItem2[] items = new TreeItem2[0];
 	/* index in parent's flat list of available (though not necessarily visible) items */
 	int availableIndex = -1;
-	boolean checked, grayed, expanded, selected;
+	boolean checked, grayed, expanded;
 
 	String[] texts = new String [0];
 	int[] textWidths = new int [0];		/* cached string measurements */
@@ -116,6 +116,28 @@ static Tree2 checkNull(Tree2 tree) {
 static TreeItem2 checkNull(TreeItem2 item) {
 	if (item == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return item;
+}
+/*
+ * Returns a collection of all tree items descending from the receiver, including
+ * the receiver.  The order of the items in this collection are receiver, child0tree,
+ * child1tree, ..., childNtree. 
+ */
+TreeItem2[] computeAllDescendents() {
+	int childCount = items.length;
+	TreeItem2[][] childResults = new TreeItem2[childCount][];
+	int count = 1;	/* self */
+	for (int i = 0; i < childCount; i++) {
+		childResults[i] = items[i].computeAllDescendents();
+		count += childResults[i].length;
+	}
+	TreeItem2[] result = new TreeItem2[count];
+	int index = 0;
+	result[index++] = this;
+	for (int i = 0; i < childCount; i++) {
+		System.arraycopy(childResults[i], 0, result, index, childResults[i].length);
+		index += childResults[i].length;
+	}
+	return result;
 }
 /*
  * Returns the number of tree items descending from the receiver (including the
@@ -540,6 +562,9 @@ boolean isLastChild() {
 boolean isRoot() {
 	return parentItem == null;
 }
+boolean isSelected() {
+	return parent.getSelectionIndex(this) != -1;
+}
 /*
  * The paintCellContent argument indicates whether the item should paint
  * its cell contents (ie.- its text, image, check and hierarchy) in addition
@@ -576,7 +601,7 @@ void paint(GC gc, TreeColumn column, boolean paintCellContent) {
 	}
 
 	/* draw the selection bar if the receiver is selected */
-	if (selected && columnIndex == 0) {
+	if (isSelected() && columnIndex == 0) {
 		Color oldBackground = gc.getBackground();
 		gc.setBackground(SelectionBackgroundColor);
 		int startX = getFocusX() + 1;
@@ -721,7 +746,7 @@ void paint(GC gc, TreeColumn column, boolean paintCellContent) {
 			fontHeight = parent.fontHeight;
 		}
 		Color oldForeground = null;
-		if (selected && columnIndex == 0) {
+		if (isSelected() && columnIndex == 0) {
 			oldForeground = gc.getForeground();
 			gc.setForeground(SelectionForegroundColor);
 		} else {
@@ -804,7 +829,7 @@ public void setExpanded(boolean value) {
 		if (focusItem != null && focusItem != this && focusItem.hasAncestor(this)) {
 			parent.setFocusItem(this, true);
 			if ((style & SWT.SINGLE) != 0) {
-				parent.internalSetSelection(new TreeItem2[] {this});
+				parent.selectedItems = new TreeItem2[] {this};
 			}
 			/* Fire an event since the selection is being changed automatically */
 			Event newEvent = new Event();

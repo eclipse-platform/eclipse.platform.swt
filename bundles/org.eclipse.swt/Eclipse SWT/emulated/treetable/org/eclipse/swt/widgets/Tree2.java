@@ -159,7 +159,7 @@ int computeColumnIntersect(int x, int startColumn) {
 public void deselectAll() {
 	checkWidget();
 	TreeItem2[] oldSelection = selectedItems;
-	internalSetSelection(new TreeItem2[0]);
+	selectedItems = new TreeItem2[0];
 	for (int i = 0; i < oldSelection.length; i++) {
 		redrawItem(oldSelection[i].availableIndex);
 	}
@@ -469,18 +469,25 @@ void doEnd(int stateMask) {
 }
 void doFocusIn() {
 	if (getItemCount() == 0) return;
-	if (focusItem == null) {
-		TreeItem2 item = availableItems[0];
-		selectItem(item, false);
-		setFocusItem(item, false);
+	if (focusItem != null) {
 		redrawItem(focusItem.availableIndex);
-		showItem(item);
-		Event newEvent = new Event();
-		newEvent.item = item;
-		sendEvent(SWT.Selection, newEvent);
 		return;
 	}
-	redrawItem(focusItem.availableIndex);
+	/* an initial focus item must be selected */
+	TreeItem2 initialFocus;
+	if (selectedItems.length > 0) {
+		initialFocus = selectedItems[0];
+	} else {
+		initialFocus = availableItems[0];
+		selectItem(initialFocus, false);
+	}
+	setFocusItem(initialFocus, false);
+	redrawItem(initialFocus.availableIndex);
+	showItem(initialFocus);
+	Event newEvent = new Event();
+	newEvent.item = initialFocus;
+	sendEvent(SWT.Selection, newEvent);
+	return;
 }
 void doFocusOut() {
 	if (focusItem != null) {
@@ -621,8 +628,8 @@ void doMouseDown(Event event) {
 			sendEvent(SWT.Expand, newEvent);
 			inExpand = false;
 			if (isDisposed()) return;
-			if (focusItem != null && focusItem.getItemCount() == 0) {
-				focusItem.expanded = false;
+			if (selectedItem.getItemCount() == 0) {
+				selectedItem.expanded = false;
 			}
 		} else {
 			sendEvent(SWT.Collapse, newEvent);
@@ -645,7 +652,7 @@ void doMouseDown(Event event) {
 	if ((event.stateMask & SWT.SHIFT) == 0 && event.keyCode != SWT.SHIFT) anchorItem = null;
 
 	if ((style & SWT.SINGLE) != 0) {
-		if (!selectedItem.selected) {
+		if (!selectedItem.isSelected()) {
 			if (event.button == 1) {
 				selectItem(selectedItem, false);
 				setFocusItem(selectedItem, true);
@@ -675,7 +682,7 @@ void doMouseDown(Event event) {
 		}
 	}
 	/* SWT.MULTI */
-	if (!selectedItem.selected) {
+	if (!selectedItem.isSelected()) {
 		if (event.button == 1) {
 			if ((event.stateMask & (SWT.CTRL | SWT.SHIFT)) == SWT.SHIFT) {
 				if (anchorItem == null) anchorItem = focusItem;
@@ -1015,7 +1022,7 @@ void doScrollVertical(Event event) {
 void doSpace() {
 	if (focusItem == null) return;
 	boolean redrawItem = false;
-	if (!focusItem.selected) {
+	if (!focusItem.isSelected()) {
 		selectItem(focusItem, (style & SWT.MULTI) != 0);
 		redrawItem = true;
 	}
@@ -1036,6 +1043,22 @@ void doSpace() {
 	event.item = focusItem;
 	event.detail = SWT.CHECK;
 	sendEvent(SWT.Selection, event);
+}
+TreeItem2[] getAllItems() {
+	int childCount = items.length;
+	TreeItem2[][] childResults = new TreeItem2[childCount][];
+	int count = 0;
+	for (int i = 0; i < childCount; i++) {
+		childResults[i] = items[i].computeAllDescendents();
+		count += childResults[i].length;
+	}
+	TreeItem2[] result = new TreeItem2[count];
+	int index = 0;
+	for (int i = 0; i < childCount; i++) {
+		System.arraycopy(childResults[i], 0, result, index, childResults[i].length);
+		index += childResults[i].length;
+	}
+	return result;
 }
 int getCellPadding() {
 	return MARGIN_CELL + WIDTH_CELL_HIGHLIGHT; 
@@ -1360,21 +1383,6 @@ void headerPaintShadow(GC gc, Rectangle bounds, boolean paintHorizontalLines, bo
 	gc.setForeground(oldForeground);
 }
 /*
- * Sets the collection of selected items in the receiver.  Clients should typically
- * change the selection through #selectItem(...) unless they know that the previous
- * selected items do not need to be visually updated right now.
- */
-void internalSetSelection(TreeItem2[] items) {
-	for (int i = 0; i < selectedItems.length; i++) {
-		selectedItems[i].selected = false;
-	}
-	for (int i = 0; i < items.length; i++) {
-		items[i].selected = true;
-	}
-	selectedItems = items;
-
-}
-/*
  * Allows the Tree to update internal structures it has that may contain the
  * item that is about to be disposed.  The argument is not necessarily a root-level
  * item.
@@ -1399,7 +1407,7 @@ void itemDisposing(TreeItem2 item) {
 		updateVerticalBar();
 		updateHorizontalBar();
 	}
-	if (item.selected) {
+	if (item.isSelected()) {
 		int selectionIndex = getSelectionIndex(item);
 		TreeItem2[] newSelectedItems = new TreeItem2[selectedItems.length - 1];
 		System.arraycopy(selectedItems, 0, newSelectedItems, 0, selectionIndex);
@@ -1410,7 +1418,6 @@ void itemDisposing(TreeItem2 item) {
 			selectionIndex,
 			newSelectedItems.length - selectionIndex);
 		selectedItems = newSelectedItems;
-		item.selected = false;
 	}
 	if (item.isRoot()) {
 		int index = item.getIndex();
@@ -1618,7 +1625,6 @@ void removeColumn(TreeColumn column) {
 	getHorizontalBar().setMaximum(columns[columns.length - 1].getRightmostX());
 }
 void removeSelectedItem(int index) {
-	selectedItems[index].selected = false;
 	TreeItem2[] newSelectedItems = new TreeItem2[selectedItems.length - 1];
 	System.arraycopy(selectedItems, 0, newSelectedItems, 0, index);
 	System.arraycopy(selectedItems, index + 1, newSelectedItems, index, newSelectedItems.length - index);
@@ -1638,9 +1644,11 @@ public void removeTreeListener(TreeListener listener) {
 }
 public void selectAll() {
 	checkWidget();
-	for (int i = 0; i < availableItems.length; i++) {
-		availableItems[i].selected = true;
-	}
+	if ((style & SWT.SINGLE) != 0) return;
+	
+	TreeItem2[] items = getAllItems();
+	selectedItems = new TreeItem2[items.length];
+	System.arraycopy(items, 0, selectedItems, 0, items.length);
 	redraw();
 }
 void selectItem(TreeItem2 item, boolean addToSelection) {
@@ -1649,16 +1657,13 @@ void selectItem(TreeItem2 item, boolean addToSelection) {
 		selectedItems = new TreeItem2[] {item};
 		for (int i = 0; i < oldSelectedItems.length; i++) {
 			if (oldSelectedItems[i] != item) {
-				oldSelectedItems[i].selected = false;
 				redrawItem(oldSelectedItems[i].availableIndex);
 			}
 		}
-		item.selected = true;
 	} else {
 		selectedItems = new TreeItem2[selectedItems.length + 1];
 		System.arraycopy(oldSelectedItems, 0, selectedItems, 0, oldSelectedItems.length);
 		selectedItems[selectedItems.length - 1] = item;
-		item.selected = true;
 	}
 }
 void setFocusItem(TreeItem2 item, boolean redrawOldFocus) {
@@ -1671,13 +1676,12 @@ void setFocusItem(TreeItem2 item, boolean redrawOldFocus) {
 }
 public void setFont (Font value) {
 	checkWidget();
-	Font font = getFont();
-	if (font == value) return;
-	if (font != null && value.equals (font)) return;
+	Font oldFont = getFont();
 	super.setFont(value);
-	
+	Font font = getFont();
+	if (font.equals (oldFont)) return;
+		
 	GC gc = new GC(this);
-	gc.setFont(getFont());
 	
 	/* recompute the receiver's cached font height and item height values */
 	fontHeight = gc.getFontMetrics().getHeight();
@@ -1747,15 +1751,42 @@ public void setLinesVisible (boolean value) {
 }
 public void setSelection(TreeItem2[] items) {
 	checkWidget();
+	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (items.length == 0 || ((style & SWT.SINGLE) != 0 && items.length > 1)) {
+		deselectAll();
+		return;
+	}
 	TreeItem2[] oldSelection = selectedItems;
-	internalSetSelection(items);
-	for (int i = 0; i < oldSelection.length; i++) {
-		if (!oldSelection[i].selected) {
-			redrawItem(oldSelection[i].availableIndex);
+	
+	/* remove null and duplicate items */
+	int index = 0;
+	selectedItems = new TreeItem2[items.length];	/* assume all valid items initially */
+	for (int i = 0; i < items.length; i++) {
+		TreeItem2 item = items[i];
+		if (item != null && !item.isSelected()) {
+			selectedItems[index++] = item;
 		}
 	}
-	for (int i = 0; i < items.length; i++) {
-		redrawItem(items[i].availableIndex);
+	if (index != items.length) {
+		/* an invalid item was provided, so resize the array accordingly */
+		TreeItem2[] temp = new TreeItem2[index];
+		System.arraycopy(selectedItems, 0, temp, 0, index);
+		selectedItems = temp;
+	}
+
+	for (int i = 0; i < oldSelection.length; i++) {
+		if (!oldSelection[i].isSelected()) {
+			int availableIndex = oldSelection[i].availableIndex;
+			if (availableIndex != -1) {
+				redrawItem(availableIndex);
+			}
+		}
+	}
+	for (int i = 0; i < selectedItems.length; i++) {
+		int availableIndex = selectedItems[i].availableIndex;
+		if (availableIndex != -1) {
+			redrawItem(availableIndex);
+		}
 	}
 }
 public void setTopItem(TreeItem2 item) {
@@ -1786,12 +1817,12 @@ public void showItem(TreeItem2 item) {
 	/* determine if item is already visible */
 	if (topIndex <= index && index < topIndex + visibleItemCount) return;
 	
-	if (index < topIndex) {
-		/* item is above current viewport, so show on top*/
+	if (index <= topIndex) {
+		/* item is above current viewport, so show on top */
 		setTopItem(item);
 	} else {
 		/* item is below current viewport, so show on bottom */
-		setTopItem(availableItems[index - visibleItemCount + 1]);
+		setTopItem(availableItems[Math.min(index - visibleItemCount + 1, availableItems.length - 1)]);
 	}
 }
 public void showSelection() {
