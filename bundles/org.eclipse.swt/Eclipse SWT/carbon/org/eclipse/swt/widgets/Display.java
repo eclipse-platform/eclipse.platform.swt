@@ -586,7 +586,7 @@ public static synchronized Display findDisplay (Thread thread) {
  */
 public Control getCursorControl () {
 	checkDevice ();
-	System.out.println("Display.getCursorControl");
+	System.out.println("Display.getCursorControl: nyi");
 	
 	/* AW
 	int [] unused = new int [1], buffer = new int [1];
@@ -2054,7 +2054,7 @@ static String convertToLf(String text) {
 				case OS.kEventRawKeyRepeat:
 					int cmd= OS.MenuEvent(mEvent.getData());
 					if (OS.HiWord(cmd) != 0) {
-						System.out.println("doMenuCommand: " + cmd);
+						//System.out.println("doMenuCommand: " + cmd);
 						doMenuCommand(cmd);
 						break;
 					}
@@ -2070,7 +2070,7 @@ static String convertToLf(String text) {
 					break;
 					
 				case OS.kEventHotKeyPressed:
-					System.out.println("HOT KEY PRESSED");
+					//System.out.println("HOT KEY PRESSED");
 					break;
 				}
 			}
@@ -2081,9 +2081,6 @@ static String convertToLf(String text) {
 				
 			case OS.kEventMouseDown:
 			
-				System.out.println("handleApplicationCallback: kEventMouseDown");
-				
-				
 				fTrackedControl= 0;
 				
 				hideToolTip();
@@ -2154,7 +2151,7 @@ static String convertToLf(String text) {
 		}
 		
 		if (whichWindow == 0) {
-			System.out.println("Display.handleMouseCallback:  whichWindow == 0");
+			//System.out.println("Display.handleMouseCallback:  whichWindow == 0");
 			return OS.eventNotHandledErr;
 		}
 			
@@ -2257,8 +2254,8 @@ static String convertToLf(String text) {
 			OS.GetKeyboardFocus(wHandle, focusControl);
 			if (focusControl[0] != fFocusControl) {
 				int rc= OS.SetKeyboardFocus(wHandle, focusHandle, (short)-1);
-				if (rc != OS.kNoErr)
-					System.out.println("Display.setMacFocusHandle: SetKeyboardFocus " + rc);
+				//if (rc != OS.kNoErr)
+				//	System.out.println("Display.setMacFocusHandle: SetKeyboardFocus " + rc);
 			}
 
 			if (fFocusControl != 0)
@@ -2489,10 +2486,10 @@ static String convertToLf(String text) {
 			};
 			int[] evt= new int[1];
 			while (OS.ReceiveNextEvent(mask, 0.2, true, evt) == OS.kNoErr) {
-				System.out.println("got update");
+				//System.out.println("got update");
 				int rc= OS.SendEventToEventTarget(evt[0], OS.GetEventDispatcherTarget());
-                                if (rc != OS.kNoErr)
-                                    System.out.println("processAllUpdateEvents: " + rc);
+                //if (rc != OS.kNoErr)
+				//	System.out.println("processAllUpdateEvents: " + rc);
 				OS.ReleaseEvent(evt[0]);
 			}
 		}

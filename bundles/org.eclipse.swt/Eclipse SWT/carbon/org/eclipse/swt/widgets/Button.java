@@ -172,7 +172,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point size= MacUtil.computeSize(handle);
 	
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-		size.x += 6;
+		size.x -= 14;
 		size.y += 6;
 	}
 		

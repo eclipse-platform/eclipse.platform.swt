@@ -95,7 +95,7 @@ public static synchronized int size () {
 		}
 		if (OS.IsValidWindowPtr(handle))
 			return OS.GetWRefCon(handle);
-		System.out.println("WidgetTable.getUserData: unknown handle type");
+		//System.out.println("WidgetTable.getUserData: unknown handle type");
 		return -1;
 	}
 	

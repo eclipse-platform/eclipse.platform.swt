@@ -268,7 +268,7 @@ public class MacUtil {
         
 		int wHandle= OS.GetControlOwner(cHandle);
 		if (wHandle == 0) {
-			System.out.println("MacUtil.getSuperControl: GetControlOwner error");
+			//System.out.println("MacUtil.getSuperControl: GetControlOwner error");
 			return 0;
 		}
 		int[] rootHandle= new int[1];
