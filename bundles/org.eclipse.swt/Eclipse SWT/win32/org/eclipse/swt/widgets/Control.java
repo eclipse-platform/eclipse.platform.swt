@@ -2226,7 +2226,8 @@ boolean setRadioSelection (boolean value) {
  * can occur in the receiver until the flag is set to true.
  * Graphics operations that occurred while the flag was
  * <code>false</code> are lost. When the flag is set to <code>true</code>,
- * the entire widget is marked as needing to be redrawn.
+ * the entire widget is marked as needing to be redrawn.  Nested calls
+ * to this method are stacked.
  * <p>
  * Note: This operation is a hint and may not be supported on some
  * platforms or for some widgets.
