@@ -809,7 +809,7 @@ public int internal_new_GC (GCData data) {
 		data.device = device;
 		data.background = device.COLOR_WHITE.handle;
 		data.foreground = device.COLOR_BLACK.handle;
-		data.font = device.getSystemFont ();
+		data.font = device.systemFont;
 		data.image = this;
 	}
 	return context;
