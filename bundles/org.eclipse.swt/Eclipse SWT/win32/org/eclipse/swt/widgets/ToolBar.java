@@ -657,6 +657,13 @@ void setImageList (ImageList imageList) {
 	OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
 }
 
+public boolean setParent (Composite parent) {
+	checkWidget ();
+	if (!super.setParent (parent)) return false;
+	OS.SendMessage (handle, OS.TB_SETPARENT, parent.handle, 0);
+	return true;
+}
+
 void setRows (int count) {
 	if ((style & SWT.VERTICAL) != 0) {
 		/*

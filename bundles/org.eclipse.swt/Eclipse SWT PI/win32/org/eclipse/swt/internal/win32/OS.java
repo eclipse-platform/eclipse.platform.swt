@@ -1051,6 +1051,7 @@ public class OS {
 	public static final int TB_SETHOTIMAGELIST = 0x434;
 	public static final int TB_SETHOTITEM =  0x0400 + 72;
 	public static final int TB_SETIMAGELIST = 0x430;
+	public static final int TB_SETPARENT = 0x400 + 37;
 	public static final int TB_SETROWS = 0x427;
 	public static final int TB_SETSTATE = 0x411;
 	public static final int TCIF_IMAGE = 0x2;

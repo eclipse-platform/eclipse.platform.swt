@@ -26,7 +26,8 @@ import org.eclipse.swt.accessibility.*;
  * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b>
  * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
- *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse</dd>
+ *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse,
+ *     DragDetect, MenuDetect</dd>
  * </dl>
  * <p>
  * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
@@ -2929,8 +2930,8 @@ public boolean setParent (Composite parent) {
 	releaseChild ();
 	Shell newShell = parent.getShell (), oldShell = getShell ();
 	Decorations newDecorations = parent.menuShell (), oldDecorations = menuShell ();
-	Menu [] menus = oldShell.findMenus (this);
 	if (oldShell != newShell || oldDecorations != newDecorations) {
+		Menu [] menus = oldShell.findMenus (this);
 		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	}
 	if (OS.SetParent (handle, parent.handle) == 0) return false;
