@@ -69,29 +69,30 @@ public static Frame new_Frame (final Composite parent) {
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
-	final Frame frame = (Frame) value;	
-	parent.addListener (SWT.Activate, new Listener () {
-		public void handleEvent (Event e) {
-			/* Needed to fix focus for lightweights in JDK 1.3.1 */
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
-					frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
-				}
-			});
-		}
-	});
-	parent.addListener (SWT.Deactivate, new Listener () {
-		public void handleEvent (Event e) {
-			/* Needed to fix focus for lightweights in JDK 1.3.1 */
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
-					frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
-				}
-			});
-		}
-	});
+	final Frame frame = (Frame) value;
+	/* Needed to fix focus for lightweights in JDK 1.3.1 */
+	if ("1.3".equals(System.getProperty("java.specification.version"))) {
+		parent.addListener (SWT.Activate, new Listener () {
+			public void handleEvent (Event e) {
+				EventQueue.invokeLater(new Runnable () {
+					public void run () {
+						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
+						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
+					}
+				});
+			}
+		});
+		parent.addListener (SWT.Deactivate, new Listener () {
+			public void handleEvent (Event e) {
+				EventQueue.invokeLater(new Runnable () {
+					public void run () {
+						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
+						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
+					}
+				});
+			}
+		});
+	}
 	parent.getShell ().addListener (SWT.Move, new Listener () {
 		public void handleEvent (Event e) {
 			EventQueue.invokeLater(new Runnable () {
