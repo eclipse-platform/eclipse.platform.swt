@@ -37,7 +37,7 @@ public class CTabItem2 extends Item {
 	boolean showClose = false;
 	
 	// internal constants
-	static final int LEFT_MARGIN = 6;
+	static final int LEFT_MARGIN = 7;
 	static final int RIGHT_MARGIN = 6;
 	static final int TOP_MARGIN = 2;
 	static final int BOTTOM_MARGIN = 2;
@@ -188,8 +188,8 @@ void drawClose(GC gc) {
 			break;
 		}
 		case CTabFolder2.NONE: {
-			gc.setBackground(parent.getBackground());
-			gc.fillRectangle(x, y, 10, 10);
+			int[] shape = new int[] {x,y, x+10,y, x+10,y+10, x,y+10};
+			parent.drawBackground(gc, shape, false);
 			break;
 		}
 	}
@@ -202,7 +202,7 @@ void drawSelected(GC gc ) {
 	int parentWidth = size.x - parent.borderLeft - parent.borderRight;
 	int parentHeight = CTabFolder2.HIGHLIGHT_HEADER - 1;
 	int[] shape = new int[] {parentX,parentY, parentX+parentWidth,parentY, parentX+parentWidth,parentY+parentHeight, parentX,parentY+parentHeight};
-	parent.drawSelectionBackground(gc, shape);
+	parent.drawBackground(gc, shape, true);
 
 	// if selected tab scrolled out of view or partially out of view
 	// draw line and clean up partial tab area
@@ -227,10 +227,14 @@ void drawSelected(GC gc ) {
 		gc.setForeground(CTabFolder2.borderColor1);
 		gc.drawPolyline(shape);
 		// if tab partially visible, fill in background for tab
-		gc.setBackground(parent.getParent().getBackground());
-		gc.fillRectangle(x, y - 1, size.x - x, height + 1);
+		shape = new int[] {x,y-1, x,y+height, size.x,y+height, size.x,y-1};
+		parent.drawBackground(gc, shape, false);
 		return;
 	}
+
+	// fill in background for non-rectangular shape
+	shape = new int[] {x,y, x+width,y, x+width,y+height, x,y+height};
+	parent.drawBackground(gc, shape, false);
 	
 	// draw selected tab background and outline
 	int extra = CTabFolder2.CURVE_WIDTH/2 + 4; // +4 to avoid overlapping with text in next tab
@@ -302,25 +306,13 @@ void drawSelected(GC gc ) {
 		shape[index++] = x + width + extra;
 		shape[index++] = y + height + 1;
 	}
-	parent.drawSelectionBackground(gc, shape);
+	parent.drawBackground(gc, shape, true);
 	
-	// Shape is non-rectangular
+	// Limit drawing area of tab
 	Region r = new Region();
-	r.add(new Rectangle(x, y, width, height));
-	r.subtract(shape);
-	if (parent.single) {
-		// for a single tab,  fill in gaps with background colour
-		gc.setBackground(parent.getBackground());
-	} else {
-		// for mutliple tabs, fill in gaps with parent colours
-		gc.setBackground(parent.getParent().getBackground());
-	}
-	CTabFolder2.fillRegion(gc, r);
-
-	// Limit drawing area of tab	
+	r.subtract(r); //clear
 	Region clipping = new Region();
 	gc.getClipping(clipping);
-	r.subtract(r); //clear
 	r.add(clipping);
 	r.intersect(new Rectangle(x, y, Math.min(width, rightTabEdge-x), height));
 	gc.setClipping(r);
@@ -362,7 +354,7 @@ void drawSelected(GC gc ) {
 		Display display = getDisplay();
 		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 		gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-		gc.drawFocus(xDraw-2, textY-2, extent.x+3, extent.y+4);
+		gc.drawFocus(xDraw-3, textY-2, extent.x+6, extent.y+4);
 	}
 	
 	gc.setClipping(clipping);
@@ -371,122 +363,87 @@ void drawSelected(GC gc ) {
 	
 	// draw outline
 	shape[0] = Math.max(0, parent.borderLeft - 1);
-	shape[shape.length - 2] = size.x - parent.borderRight;
-	if (parent.onBottom) {
-		for (int i = 0; i < shape.length/2; i++) {
-			if (shape[2*i + 1] == y + height + 1) shape[2*i + 1] -= 1;
-		}
-	} else {
-		for (int i = 0; i < shape.length/2; i++) {
-			if (shape[2*i + 1] == y + height + 1) shape[2*i + 1] -= 1;
-		}
+	shape[shape.length - 2] = size.x - parent.borderRight + 1;
+	for (int i = 0; i < shape.length/2; i++) {
+		if (shape[2*i + 1] == y + height + 1) shape[2*i + 1] -= 1;
 	}
 	RGB inside = parent.selectionBackground.getRGB();
-	if (parent.backgroundImage != null || (parent.gradientColors != null && parent.gradientColors.length > 1)) inside = null;
-	RGB outside = parent.single ? parent.getBackground().getRGB() : parent.getParent().getBackground().getRGB();		
+	if (parent.selectionBgImage != null || (parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1 && !parent.selectionGradientVertical)) inside = null;
+	RGB outside = parent.getBackground().getRGB();		
+	if (parent.bgImage != null || (parent.gradientColors != null && parent.gradientColors.length > 1 && !parent.gradientVertical)) outside = null;
 	parent.antialias(shape, CTabFolder2.borderColor1.getRGB(), inside, outside, gc);
 	gc.setForeground(CTabFolder2.borderColor1);
 	gc.drawPolyline(shape);
 }
 void drawUnselected(GC gc) {
 	int rightTabEdge = parent.getRightItemEdge();
-	if (x >= rightTabEdge) return;
+	if (x >= parent.getSize().x) return;
 	// Do not draw partial items
 	if (parent.items[parent.topTabIndex] != this && x + width >= rightTabEdge){
-		gc.setBackground(parent.getParent().getBackground());
-		gc.fillRectangle(x, y - 1, parent.getSize().x - x, height + 1);
+		int x1 = x, y1 = y-1;
+		int x2 = parent.getSize().x, y2 = y + height;
+		int[] shape = new int[]{x1,y1, x1,y2, x2,y2, x2,y1};
+		parent.drawBackground(gc, shape, false);
 		return;
 	}
 	// draw background
 	int[] shape = null;
-	if (this.parent.onBottom) {
-		int[] left = CTabFolder2.BOTTOM_LEFT_CORNER;
-		int[] right = CTabFolder2.BOTTOM_RIGHT_CORNER;
-		shape = new int[left.length + right.length + 4];
-		int index = 0;
-		shape[index++]=x;
-		shape[index++]=y;
-		for(int i = 0; i < left.length/2; i++) {
-			shape[index++] = x + left[2*i]; 
-			shape[index++] = y + height - 1 + left[2*i+1];
+	if (parent.indexOf(this) == parent.topTabIndex) {
+		if (this.parent.onBottom) {
+			int[] left = CTabFolder2.BOTTOM_LEFT_CORNER;
+			shape = new int[left.length + 6];
+			int index = 0;
+			shape[index++] = x;
+			shape[index++] = y;
+			for(int i = 0; i < left.length/2; i++) {
+				shape[index++] = x + left[2*i]; 
+				shape[index++] = y + height + left[2*i+1];
+			}
+			shape[index++]= x + width;
+			shape[index++]= y + height;
+			shape[index++]= x + width;
+			shape[index++]= y;
+		} else {		
+			int[] left = CTabFolder2.TOP_LEFT_CORNER;
+			shape = new int[left.length + 6];
+			int index = 0;
+			shape[index++] = x;
+			shape[index++] = y + height;
+			for(int i = 0; i < left.length/2; i++) {
+				shape[index++] = x + left[2*i];
+				shape[index++] = y + left[2*i+1];
+			}
+			shape[index++] = x + width;
+			shape[index++] = y;
+			shape[index++] = x + width;
+			shape[index++] = y + height;
 		}
-		for(int i = 0; i < right.length/2; i++) {
-			shape[index++] = x + width - 3 + right[2*i]; // -3 = 2 pixel gap between tabs, gap on right side
-			shape[index++] = y + height - 1 + right[2*i+1];
-		}
-		shape[index++]= x + width - 3; // -3 = 2 pixel gap between tabs, gap on right side + 1 pixel for border
-		shape[index++]= y;
+		parent.drawBackground(gc, shape, false);
+		// Shape is non-rectangular, fill in gaps with parent colours
+		Region r = new Region();
+		r.add(new Rectangle(x, y, width, height));
+		r.subtract(shape);
+		gc.setBackground(parent.getParent().getBackground());
+		CTabFolder2.fillRegion(gc, r);
+		r.dispose();
 	} else {
-		int[] left = CTabFolder2.TOP_LEFT_CORNER;
-		int[] right = CTabFolder2.TOP_RIGHT_CORNER;
-		shape = new int[left.length + right.length + 4];
-		int index = 0;
-		shape[index++]=x;
-		shape[index++]=y+height;
-		for(int i = 0; i < left.length/2; i++) {
-			shape[index++] = x + left[2*i];
-			shape[index++] = y + 1 + left[2*i+1]; // +1 = unselected tab 1 pixel shorter than selected tab
-		}
-		for(int i = 0; i < right.length/2; i++) {
-			shape[index++] = x + width - 2 + right[2*i]; // -2 = 2 pixel gap between tabs, gap on right side
-			shape[index++] = y + 1 + right[2*i+1]; // +1 = unselected tab 1 pixel shorter than selected tab
-		}
-		shape[index++]=x + width - 2; // -2 = 2 pixel gap between tabs, gap on right side
-		shape[index++]=y + height;
+		shape = new int[8];
+		shape[0] = x;
+		shape[1] = y;
+		shape[2] = x;
+		shape[3] = y + height;
+		shape[4] = x + width;
+		shape[5] = y + height;
+		shape[6] = x + width;
+		shape[7] = y;
+		parent.drawBackground(gc, shape, false);
 	}
-	gc.setBackground(parent.getBackground());
-	gc.fillPolygon(shape);
-	
-	// Shape is non-rectangular, fill in gaps with parent colours
-	Region r = new Region();
-	r.add(new Rectangle(x, y, width, height));
-	r.subtract(shape);
-	gc.setBackground(parent.getParent().getBackground());
-	CTabFolder2.fillRegion(gc, r);
-	r.dispose();
 	
 	// draw border
-	shape = null;
-	if (this.parent.onBottom) {
-		int[] left = CTabFolder2.BOTTOM_LEFT_CORNER;
-		int[] right = CTabFolder2.BOTTOM_RIGHT_CORNER;
-		shape = new int[left.length + right.length + 4];
-		int index = 0;
-		shape[index++] = x;
-		shape[index++] = y;
-		for(int i = 0; i < left.length/2; i++) {
-			shape[index++] = x + left[2*i]; 
-			shape[index++] = y + height - 2 + left[2*i+1]; // -1 = unselected tab 1 pixel shorter than selected tab
-		}
-		for(int i = 0; i < right.length/2; i++) {
-			shape[index++] = x + width - 3 + right[2*i]; // -3 = 2 pixel gap between tabs, gap on right side
-			shape[index++] = y + height - 2 + right[2*i+1]; // -2 = unselected tab 1 pixel shorter than selected tab
-		}
-		shape[index++] = x + width - 3; // -3 = 2 pixel gap between tabs, gap on right side
-		shape[index++] = y - 1;
-	} else {
-		int[] left = CTabFolder2.TOP_LEFT_CORNER;
-		int[] right = CTabFolder2.TOP_RIGHT_CORNER;
-		shape = new int[left.length + right.length + 4];
-		int index = 0;
-		shape[index++] = x;
-		shape[index++] = y + height - 1;
-		for(int i = 0; i < left.length/2; i++) {
-			shape[index++] = x+left[2*i];
-			shape[index++] = y+1+left[2*i+1]; // +1 = unselected tab 1 pixel shorter than selected tab
-		}
-		for(int i = 0; i < right.length/2; i++) {
-			shape[index++] = x+width-3+right[2*i]; // -3 = 2 pixel gap between tabs, gap on right side
-			shape[index++] = y+1+right[2*i+1]; // +1 = unselected tab 1 pixel shorter than selected tab
-		}
-		shape[index++] = x + width - 3; // -3 = 2 pixel gap between tabs, gap on right side
-		shape[index++] = y + height;
+	if (parent.indexOf(this) != parent.selectedIndex - 1) {
+		gc.setForeground(CTabFolder2.borderColor1);
+		gc.drawLine(x + width - 1, y, x + width - 1, y + height);
 	}
-
-	// Draw line	
-	parent.antialias(shape, CTabFolder2.borderColor1.getRGB(), parent.getBackground().getRGB(), parent.getParent().getBackground().getRGB(), gc);
-	gc.setForeground(CTabFolder2.borderColor1);
-	gc.drawPolyline(shape);
 	
 	// draw Text
 	int textWidth = width - LEFT_MARGIN - RIGHT_MARGIN;
