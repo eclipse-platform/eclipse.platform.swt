@@ -1129,7 +1129,7 @@ boolean runEnterExit () {
 	}
 	boolean eventSent = false;
 	if (control != currentControl) {
-		int x = 0, y = 0, chord = 0, modifiers = 0;
+		int chord = 0, modifiers = 0;
 		if (currentControl != null && !currentControl.isDisposed ()) {
 			eventSent = true;
 			chord = OS.GetCurrentEventButtonState ();
@@ -1145,18 +1145,18 @@ boolean runEnterExit () {
 			}
 			Rect controlRect = new Rect ();
 			OS.GetControlBounds (controlHandle, controlRect);
-			x = (int) inPoint.x - controlRect.left;
-			y = (int) inPoint.y - controlRect.top;
+			int x = (int) inPoint.x - controlRect.left;
+			int y = (int) inPoint.y - controlRect.top;
 			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)x, (short)y, modifiers);
 			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
 			mouseHoverID = 0;
 		}
 		if ((currentControl = control) != null) {
+			int controlHandle = currentControl.handle;
 			if (!eventSent) {
 				eventSent = true;
 				chord = OS.GetCurrentEventButtonState ();
 				modifiers = OS.GetCurrentEventKeyModifiers ();
-				int controlHandle = currentControl.handle;
 				if (inPoint == null) {
 					inPoint = new CGPoint ();
 					Rect windowRect = new Rect ();
@@ -1165,12 +1165,11 @@ boolean runEnterExit () {
 					inPoint.x = where.h - windowRect.left;
 					inPoint.y = where.v - windowRect.top;
 				}
-				Rect controlRect = new Rect ();
-				OS.GetControlBounds (controlHandle, controlRect);
-				x = (int) inPoint.x - controlRect.left;
-				y = (int) inPoint.y - controlRect.top;
-
 			}
+			Rect controlRect = new Rect ();
+			OS.GetControlBounds (controlHandle, controlRect);
+			int x = (int) inPoint.x - controlRect.left;
+			int y = (int) inPoint.y - controlRect.top;
 			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)x, (short)y, modifiers);
 			org.eclipse.swt.internal.carbon.Point localPoint = new org.eclipse.swt.internal.carbon.Point ();
 			OS.SetPt (localPoint, (short) inPoint.x, (short) inPoint.y);
