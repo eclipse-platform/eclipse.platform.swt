@@ -591,7 +591,6 @@ public TableItem getItem (Point pt) {
 	checkWidget();
 	int clientX = pt.x;
 	int clientY = pt.y - OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT (handle);
-	if (clientY <= 0) return null;
 	int [] row = new int [1], column = new int [1];
 	if (OS.gtk_clist_get_selection_info (handle, clientX, clientY, row, column) == 0) {
 		return null;
@@ -890,7 +889,20 @@ int processKeyDown (int callData, int arg1, int int2) {
 }
 
 int processMouseDown (int int0, int int1, int int2) {
-	int result = super.processMouseDown (int0, int1, int2);
+	int result = 0;
+	int headerHeight = OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT (handle);
+	if (headerHeight <= 0) {
+		result = super.processMouseDown (int0, int1, int2);
+	} else {
+		GdkEventButton e = new GdkEventButton ();
+		OS.memmove (e, int0, GdkEventButton.sizeof);
+		double y_back = e.y;  
+		e.y += headerHeight;
+		OS.memmove (int0, e, GdkEventButton.sizeof);
+		result = super.processMouseDown (int0, int1, int2);
+		e.y = y_back;
+		OS.memmove (int0, e, GdkEventButton.sizeof);
+	}
 	if ((style & SWT.MULTI) != 0) selected = true;
 	if ((style & SWT.CHECK) != 0) {
 		double [] px = new double [1], py = new double [1];
@@ -921,6 +933,24 @@ int processMouseDown (int int0, int int1, int int2) {
 				}
 			}
 		}
+	}
+	return result;
+}
+
+int processMouseUp (int int0, int int1, int int2) {
+	int result = 0;
+	int headerHeight = OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT (handle);
+	if (headerHeight <= 0) {
+		result = super.processMouseUp (int0, int1, int2);
+	} else { 
+		GdkEventButton e = new GdkEventButton ();
+		OS.memmove (e, int0, GdkEventButton.sizeof);
+		double y_back = e.y;  
+		e.y += headerHeight;
+		OS.memmove (int0, e, GdkEventButton.sizeof);
+		result = super.processMouseUp (int0, int1, int2);
+		e.y = y_back;
+		OS.memmove (int0, e, GdkEventButton.sizeof);
 	}
 	return result;
 }

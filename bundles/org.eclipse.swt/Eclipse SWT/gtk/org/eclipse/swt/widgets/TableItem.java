@@ -133,19 +133,18 @@ public Color getBackground () {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
-	int CELL_SPACING=1;
+	int CELL_SPACING = 1;
 	int clist = parent.handle;
 	int columnHandle = OS.GTK_CLIST_COLUMN (clist);
-	columnHandle= columnHandle+index*GtkCListColumn.sizeof;
-	GtkCListColumn column=new GtkCListColumn();
-	OS.memmove(column, columnHandle, GtkCListColumn.sizeof);
-	double haj = OS.gtk_adjustment_get_value(OS.GTK_CLIST_HADJUSTMENT (clist));
-	double vaj = OS.gtk_adjustment_get_value(OS.GTK_CLIST_VADJUSTMENT (clist));
-	int x=(short)column.area_x+OS.GTK_CLIST_HOFFSET(clist);
-	int width=(short)column.area_width;
-	int height=parent.getItemHeight();
-	int row=parent.indexOf(this);
-	int y=OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT(clist)+height*row+(row+2)*CELL_SPACING-(int)vaj;
+	columnHandle= columnHandle + index * GtkCListColumn.sizeof;
+	GtkCListColumn column = new GtkCListColumn ();
+	OS.memmove (column, columnHandle, GtkCListColumn.sizeof);
+	int x = column.area_x + OS.GTK_CLIST_HOFFSET (clist);
+	int width = column.area_width;
+	int height = OS.GTK_CLIST_ROW_HEIGHT (clist);
+	int row = parent.indexOf (this);
+	int headerHeight = OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT (clist);
+	int y = headerHeight + OS.GTK_CLIST_VOFFSET (clist) + (height + CELL_SPACING) * row + 3;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -255,8 +254,28 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
-	//NOT IMPLEMENTED
-	return new Rectangle (0, 0, 0, 0);
+	int CELL_SPACING = 1;
+	int clist = parent.handle;
+	int columnHandle = OS.GTK_CLIST_COLUMN (clist);
+	columnHandle= columnHandle + index * GtkCListColumn.sizeof;
+	GtkCListColumn column = new GtkCListColumn ();
+	OS.memmove (column, columnHandle, GtkCListColumn.sizeof);
+	int x = column.area_x + OS.GTK_CLIST_HOFFSET (clist) + 1;
+	int height = OS.GTK_CLIST_ROW_HEIGHT (clist);
+	int row = parent.indexOf (this);
+	int headerHeight = OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT (clist);
+	int y = headerHeight + OS.GTK_CLIST_VOFFSET (clist) + (height + CELL_SPACING) * row + 3;
+	int width = 0;
+	if (!(index == 0 && (parent.style & SWT.CHECK) != 0)) {
+		int [] pixmap = new int [1];
+		OS.gtk_clist_get_pixtext (clist, row, index, null, null, pixmap, null);
+		if (pixmap [0] != 0) {
+			int [] w = new int [1], h = new int [1];
+			OS.gdk_drawable_get_size (pixmap [0], w, h);
+			width = w [0];
+		}
+	}
+	return new Rectangle (x, y, width, height);
 }
 
 /**
