@@ -337,12 +337,14 @@ public void setImage (Image image) {
 		setText (text);
 		return;
 	}
-	
-	char [] buffer = new char [1];
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	OS.SetControlTitleWithCFString (handle, ptr);
-	OS.CFRelease (ptr);
+
+	if (text.length () > 0) {
+		char [] buffer = new char [] {' '};
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+		OS.SetControlTitleWithCFString (handle, ptr);
+		OS.CFRelease (ptr);
+	}
 	
 	cIcon = createCIcon (image);
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
@@ -378,17 +380,25 @@ public void setText (String string) {
 		OS.SetBevelButtonContentInfo(handle, inContent);
 	}
 	isImage = false;
-	char [] buffer = new char [text.length ()];
-	text.getChars (0, buffer.length, buffer, 0);
-	int i=0, j=0;
-	while (i < buffer.length) {
-		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
-			if (i == buffer.length) {continue;}
-			if (buffer [i] == Mnemonic) {i++; continue;}
-			j--;
+	char [] buffer;
+	int length = text.length ();
+	if (length == 0) {
+		buffer = new char [] {' '};
+		length = 1;
+	} else {
+		buffer = new char [length];
+		text.getChars (0, buffer.length, buffer, 0);
+		int i=0, j=0;
+		while (i < buffer.length) {
+			if ((buffer [j++] = buffer [i++]) == Mnemonic) {
+				if (i == buffer.length) {continue;}
+				if (buffer [i] == Mnemonic) {i++; continue;}
+				j--;
+			}
 		}
+		length = j;
 	}
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlTitleWithCFString (handle, ptr);
 	OS.CFRelease (ptr);
