@@ -19,6 +19,12 @@ public final class Program {
 	String name = "", extension = "", command = "";
 
 /**
+ * Prevents uninitialized instances from being created outside the package.
+ */
+Program () {
+}
+	
+/**
  * Finds the program that is associated with an extension.
  * The extension may or may not begin with a '.'.
  *

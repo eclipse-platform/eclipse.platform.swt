@@ -27,6 +27,10 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class TreeItem extends Item {
+	/**
+	 * the handle to the OS resource 
+	 * (Warning: This field is platform dependent)
+	 */	
 	public int handle;
 	Tree parent;
 	int background, foreground;
