@@ -134,8 +134,8 @@ public int open () {
 	
 	int error = 0;
 	int explanation = 0;
-	String errorString = (title != "") ? title : ((message != "") ? message : null);
-	String explanationString = (title == "") ? null : ((message != "") ? message : null);
+	String errorString = title;
+	String explanationString = message;
 	if (errorString != null) {
 		char [] buffer = new char [errorString.length ()];
 		errorString.getChars (0, buffer.length, buffer, 0);
