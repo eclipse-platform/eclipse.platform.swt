@@ -73,6 +73,12 @@ Applications should not dispose widgets in focus changing events.  Doing so  on 
 since Motif accesses the disposed widget within their internal focus change event handler.
 Similar but less serious issues exist on Windows such that occasionally an SWT exception can be thrown.
 
+<h4>
+99.1.7  List and ComboBox on Windows NT</h4>
+
+On Windows NT only, you should avoid creating items in a List or ComboBox with strings longer than 1000 characters.
+Doing so may result in a General Protection Fault.  This has been fixed in more recent versions of Windows.
+
 <p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
 </html>
