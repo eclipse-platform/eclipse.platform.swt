@@ -156,8 +156,9 @@ class AccessibleFactory {
 		}
 	}
 	
-	void addAccessible (Accessible accessible, int widgetHandle) {
-		accessibles.put (new Integer (widgetHandle), accessible);
+	void addAccessible (Accessible accessible) {
+		int controlHandle = accessible.getControlHandle ();
+		accessibles.put (new Integer (controlHandle), accessible);
 	}
 
 	int atkObjectFactory_create_accessible (int widget) {
@@ -280,13 +281,27 @@ class AccessibleFactory {
 		return 0;
 	}
 
-	static void registerAccessible (Accessible accessible, int widgetHandle) {
-		int widgetType = ATK.G_TYPE_FROM_INSTANCE (widgetHandle);
+	static void registerAccessible (Accessible accessible) {
+		int controlHandle = accessible.getControlHandle ();
+		int widgetType = ATK.G_TYPE_FROM_INSTANCE (controlHandle);
 		AccessibleFactory factory = (AccessibleFactory) Factories.get (new Integer (widgetType));
 		if (factory == null) {
 			factory = new AccessibleFactory (widgetType);
 			Factories.put (new Integer (widgetType), factory);
 		}
-		factory.addAccessible (accessible, widgetHandle);
+		factory.addAccessible (accessible);
+	}
+	
+	void removeAccessible (Accessible accessible) {
+		accessibles.remove (new Integer (accessible.getControlHandle ()));
+	}
+	
+	static void unregisterAccessible (Accessible accessible) {
+		int controlHandle = accessible.getControlHandle ();
+		int widgetType = ATK.G_TYPE_FROM_INSTANCE (controlHandle);
+		AccessibleFactory factory = (AccessibleFactory) Factories.get (new Integer (widgetType));
+		if (factory != null) {
+			factory.removeAccessible (accessible);
+		}
 	}
 }

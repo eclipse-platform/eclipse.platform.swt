@@ -13,6 +13,7 @@ package org.eclipse.swt.accessibility;
 
 import java.util.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -32,10 +33,16 @@ public class Accessible {
 	AccessibleObject accessibleObject;
 	Control control;
 	
-	Accessible (Control control, int widgetHandle) {
+	Accessible (Control control) {
 		super ();
 		this.control = control;
-		AccessibleFactory.registerAccessible (this, widgetHandle);
+		AccessibleFactory.registerAccessible (this);
+		control.addDisposeListener (new DisposeListener () {
+			public void widgetDisposed (DisposeEvent e) {
+				if (accessibleObject != null) accessibleObject.dispose ();
+				AccessibleFactory.unregisterAccessible (Accessible.this);
+			}
+		});
 	}	
 	
 	/**
@@ -133,6 +140,10 @@ public class Accessible {
 		return result;
 	}
 
+	int getControlHandle () {
+		return control.handle;
+	}
+	
 	AccessibleControlListener[] getControlListeners () {
 		AccessibleControlListener[] result = new AccessibleControlListener [controlListeners.size ()];
 		controlListeners.copyInto (result);
@@ -159,7 +170,7 @@ public class Accessible {
 	 * @return the platform specific accessible object
 	 */
 	public static Accessible internal_new_Accessible (Control control) {
-		return new Accessible (control, control.handle);
+		return new Accessible (control);
 	}
 
 	/* isValidThread was copied from Widget, and rewritten to work in this package */
