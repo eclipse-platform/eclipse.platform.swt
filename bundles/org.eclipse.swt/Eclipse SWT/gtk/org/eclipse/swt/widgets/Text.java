@@ -911,21 +911,31 @@ int gtk_delete_text (int widget, int start_pos, int end_pos) {
 	String newText = verifyText ("", start_pos, end_pos);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (handle, OS.delete_text);
+		return 0;
+	}
+	if (newText != "") {
+		int [] pos = new int [1];
+		pos [0] = end_pos;
+		byte [] buffer = Converter.wcsToMbcs (null, newText, false);
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+		OS.gtk_editable_insert_text (handle, buffer, buffer.length, pos);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+		OS.gtk_editable_set_position (handle, pos [0]);
 	}
 	return 0;
 }
 
-int gtk_insert_text (int widget, int int0, int int1, int int2) {
+int gtk_insert_text (int widget, int new_text, int new_text_length, int position) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if ((style & SWT.SINGLE) != 0) {
-		if (int0 == 0 || int1==0) return 0;
-		byte [] buffer = new byte [int1];
-		OS.memmove (buffer, int0, buffer.length);
+		if (new_text == 0 || new_text_length == 0) return 0;
+		byte [] buffer = new byte [new_text_length];
+		OS.memmove (buffer, new_text, buffer.length);
 		String oldText = new String (Converter.mbcsToWcs (null, buffer));
-		int [] position = new int [1];
-		OS.memmove (position, int2, 4);
-		if (position [0] == -1) position [0] = getCharCount ();
-		String newText = verifyText (oldText, position [0], position [0]); //WRONG POSITION
+		int [] pos = new int [1];
+		OS.memmove (pos, position, 4);
+		if (pos [0] == -1) pos [0] = getCharCount ();
+		String newText = verifyText (oldText, pos [0], pos [0]); //WRONG POSITION
 		if (newText == null) {
 			OS.g_signal_stop_emission_by_name (handle, OS.insert_text);
 			return 0;
@@ -933,17 +943,18 @@ int gtk_insert_text (int widget, int int0, int int1, int int2) {
 		if (newText != oldText) {
 			byte [] buffer3 = Converter.wcsToMbcs (null, newText, false);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			OS.gtk_editable_insert_text (handle, buffer3, buffer3.length, position);
+			OS.gtk_editable_insert_text (handle, buffer3, buffer3.length, pos);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.g_signal_stop_emission_by_name (handle, OS.insert_text);
+			OS.memmove (position, pos, 4);
 			return 0;
 		}
 	} else {
 		byte [] iter = new byte [ITER_SIZEOF];
-		OS.memmove (iter, int0, iter.length);
+		OS.memmove (iter, new_text, iter.length);
 		int start = OS.gtk_text_iter_get_offset (iter);
-		byte [] buffer = new byte [int2];
-		OS.memmove (buffer, int1, buffer.length);
+		byte [] buffer = new byte [position];
+		OS.memmove (buffer, new_text_length, buffer.length);
 		String oldText = new String (Converter.mbcsToWcs (null, buffer));
 		String newText = verifyText (oldText, start, start);
 		if (newText == null) {
@@ -953,7 +964,7 @@ int gtk_insert_text (int widget, int int0, int int1, int int2) {
 		if (newText != oldText) {
 			byte [] buffer1 = Converter.wcsToMbcs (null, newText, false);
 			OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			OS.gtk_text_buffer_insert (bufferHandle, int0, buffer1, buffer1.length);
+			OS.gtk_text_buffer_insert (bufferHandle, new_text, buffer1, buffer1.length);
 			OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.g_signal_stop_emission_by_name (bufferHandle, OS.insert_text);
 			return 0;
