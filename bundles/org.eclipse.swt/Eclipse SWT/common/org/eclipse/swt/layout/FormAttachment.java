@@ -81,6 +81,7 @@ public final class FormAttachment {
 	 * equation, y = ax + b, which defines the attachment.
 	 */
 	public int numerator;
+	
 	/**
 	 * denominator specifies the denominator of the "a" term in the
 	 * equation, y = ax + b, which defines the attachment.
@@ -88,6 +89,7 @@ public final class FormAttachment {
 	 * The default value is 100.
 	 */
 	public int denominator = 100;
+	
 	/**
 	 * offset specifies the offset, in pixels, of the control side
 	 * from the attachment position.
@@ -100,11 +102,13 @@ public final class FormAttachment {
 	 * The default value is 0.
 	 */
 	public int offset;
+	
 	/**
 	 * control specifies the control to which the control side is
 	 * attached.
 	 */
 	public Control control;
+	
 	/**
 	 * alignment specifies the alignment of the control side that is
 	 * attached to a control.

@@ -118,7 +118,7 @@ public final class FormLayout extends Layout {
 public FormLayout () {
 }
 
-/**
+/*
  * Computes the preferred height of the form with
  * respect to the preferred height of the control.
  * 
@@ -208,7 +208,7 @@ String getName () {
 	return string.substring (index + 1, string.length ());
 }
 
-/**
+/*
  * Computes the preferred height of the form with
  * respect to the preferred height of the control.
  */
