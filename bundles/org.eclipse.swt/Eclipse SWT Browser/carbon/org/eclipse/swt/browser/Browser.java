@@ -991,6 +991,8 @@ void didFinishLoadForFrame(int frame) {
 	if (frame == WebKit.objc_msgSend(webView, WebKit.S_mainFrame)) {
 		final Display display= getDisplay();
 		final ProgressEvent progress = new ProgressEvent(this);
+		progress.display = getDisplay();
+		progress.widget = this;
 		progress.current = MAX_PROGRESS;
 		progress.total = MAX_PROGRESS;
 		for (int i = 0; i < progressListeners.length; i++) {
