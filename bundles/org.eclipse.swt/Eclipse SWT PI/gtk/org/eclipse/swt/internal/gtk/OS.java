@@ -46,6 +46,7 @@ public class OS {
 	public static final int GDK_BUTTON_RELEASE = 0x7;
 	public static final int GDK_BUTTON_RELEASE_MASK = 0x200;
 	public static final int GDK_CAP_BUTT = 0x1;
+	public static final int GDK_CAP_PROJECTING = 3;
 	public static final int GDK_CAP_ROUND = 0x2;
 	public static final int GDK_COLORSPACE_RGB = 0;
 	public static final int GDK_CONFIGURE = 13;
@@ -108,6 +109,8 @@ public class OS {
 	public static final int GDK_Insert = 0xff63;
 	public static final int GDK_ISO_Left_Tab = 0xfe20;
 	public static final int GDK_JOIN_MITER = 0x0;
+	public static final int GDK_JOIN_ROUND = 0x1;
+	public static final int GDK_JOIN_BEVEL = 0x2;
 	public static final int GDK_KEY_PRESS = 0x8;
 	public static final int GDK_KEY_PRESS_MASK = 0x400;
 	public static final int GDK_KEY_RELEASE = 0x9;
