@@ -133,8 +133,8 @@ public class StyledText extends Canvas {
 	Color background = null;			// workaround for bug 4791
 	Color foreground = null;			//
 	Clipboard clipboard;
-	boolean mouseDoubleClick = false;	// true=a double click ocurred. Don't do mouse swipe selection.
 	boolean mouseDown = false;
+	boolean mouseDoubleClick = false;	// true=a double click ocurred. Don't do mouse swipe selection.
 	int autoScrollDirection = SWT.NULL;	// the direction of autoscrolling (up, down, right, left)
 	int lastTextChangeStart;			// cache data of the 
 	int lastTextChangeNewLineCount;		// last text changing 
@@ -5025,8 +5025,8 @@ void handleMouseDoubleClick(Event event) {
  * pressed.
  */
 void handleMouseDown(Event event) {
-	mouseDoubleClick = false;
 	mouseDown = true;
+	mouseDoubleClick = false;
 	if ((event.button != 1) || (IS_CARBON && (event.stateMask & SWT.MOD4) != 0)) {
 		return;	
 	}
@@ -5039,10 +5039,10 @@ void handleMouseDown(Event event) {
  * during the mouse move.
  */
 void handleMouseMove(Event event) {
+	if (!mouseDown) return;
 	if ((event.stateMask & SWT.BUTTON1) == 0) {
 		return;
 	}
-	if (!mouseDown) return;
 	event.y -= topMargin;
 	doMouseLocationChange(event.x, event.y, true);
 	doAutoScroll(event);
@@ -5051,8 +5051,8 @@ void handleMouseMove(Event event) {
  * Autoscrolling ends when the mouse button is released.
  */
 void handleMouseUp(Event event) {
-	mouseDoubleClick = false;
 	mouseDown = false;
+	mouseDoubleClick = false;
 	event.y -= topMargin;
 	endAutoScroll();
 }
