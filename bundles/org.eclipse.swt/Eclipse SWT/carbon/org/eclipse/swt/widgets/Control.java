@@ -1340,9 +1340,9 @@ public void update () {
 	checkWidget();
 	if (getDrawCount () > 0) return;
 	if (!OS.IsControlVisible (handle)) return;
-	int updateRgn = OS.NewRgn ();
 	int window = OS.GetControlOwner (handle);
 	int port = OS.GetWindowPort (window);
+	int updateRgn = OS.NewRgn ();
 	OS.GetPortVisibleRegion (port, updateRgn);
 	if (!OS.EmptyRgn (updateRgn)) {
 		int [] currentPort = new int[1];
