@@ -1440,7 +1440,7 @@ public int getStyle() {
  */
 public int getTabHeight(){
 	checkWidget();
-	return tabHeight - 1; // -1 for line drawn across top of tab
+	return tabHeight == 0 ? 0 : tabHeight - 1; // -1 for line drawn across top of tab
 }
 /**
  * Returns the position of the tab.  Possible values are SWT.TOP or SWT.BOTTOM.
@@ -2613,8 +2613,7 @@ boolean setItemLocation() {
 			CTabItem item = items[selectedIndex];
 			int oldX = item.x, oldY = item.y;
 			int tabWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width - chevronRect.width;
-			int indent = Math.max(0, (tabWidth-item.width)/2);
-			item.x = borderLeft + indent; 
+			item.x = borderLeft;
 			item.y = y;
 			if (showClose || item.showClose) {
 				int rightEdge = Math.min(item.x + item.width, getRightItemEdge());
@@ -2664,27 +2663,46 @@ boolean setItemLocation() {
 	return changed;
 }
 boolean setItemSize() {
-	if (isDisposed()) return false;
+	boolean changed = false;
+	if (isDisposed()) return changed;
 	Point size = getSize();
-	int[] widths = new int[items.length];
-	widths = new int[items.length];
-	if (size.x <= 0 || size.y <= 0 || items.length == 0) return false;
+	if (size.x <= 0 || size.y <= 0 || items.length == 0) return changed;
 	xClient = borderLeft + marginWidth + highlight_margin;
 	if (onBottom) {
 		yClient = borderTop + highlight_margin + marginHeight;
 	} else {
 		yClient = borderTop + tabHeight + highlight_header + marginHeight; 
 	}
+	if (single) {
+		showChevron = true;
+		if (selectedIndex != -1) {
+			CTabItem tab = items[selectedIndex];
+			int width = getRightItemEdge() - borderLeft;
+			if (tab.height != tabHeight || tab.width != width) {
+				changed = true;
+				tab.shortenedText = null;
+				tab.shortenedTextWidth = 0;
+				tab.height = tabHeight;
+				tab.width = width;
+				tab.closeRect.width = tab.closeRect.height = 0;
+				if (showClose || tab.showClose) {
+					tab.closeRect.width = BUTTON_SIZE;
+					tab.closeRect.height = BUTTON_SIZE;
+				}
+			}
+		}
+		return changed;
+	}
 	
+	int[] widths = new int[items.length];
+	widths = new int[items.length];
 	GC gc = new GC(this);
 	for (int i = 0; i < items.length; i++) {
 		widths[i] = items[i].preferredWidth(gc, i == selectedIndex);
 	}
 	gc.dispose();
-	
-	showChevron = single ? true : false;
-	
-	if (!single && items.length > 1) {
+	showChevron = false;
+	if (items.length > 1) {
 		int totalWidth = 0;
 		int tabAreaWidth = size.x - borderLeft - borderRight - 3;
 		if (showMin) tabAreaWidth -= BUTTON_SIZE;
@@ -2736,26 +2754,24 @@ boolean setItemSize() {
 			}
 		}
 	}
-	int totalWidth = 0;
-	boolean changed = false;
+	
 	for (int i = 0; i < items.length; i++) {
-		if (!simple && !single && i == selectedIndex) widths[i] += curveWidth - curveIndent;
+		if (!simple && i == selectedIndex) widths[i] += curveWidth - curveIndent;
 		CTabItem tab = items[i];
 		if (tab.height != tabHeight || tab.width != widths[i]) {
 			changed = true;
 			tab.shortenedText = null;
 			tab.shortenedTextWidth = 0;
-		}
-		tab.height = tabHeight;
-		tab.width = widths[i];
-		tab.closeRect.width = tab.closeRect.height = 0;
-		if (showClose || tab.showClose) {
-			if (i == selectedIndex || showUnselectedClose) {
-				tab.closeRect.width = BUTTON_SIZE;
-				tab.closeRect.height = BUTTON_SIZE;
+			tab.height = tabHeight;
+			tab.width = widths[i];
+			tab.closeRect.width = tab.closeRect.height = 0;
+			if (showClose || tab.showClose) {
+				if (i == selectedIndex || showUnselectedClose) {
+					tab.closeRect.width = BUTTON_SIZE;
+					tab.closeRect.height = BUTTON_SIZE;
+				}
 			}
 		}
-		totalWidth += widths[i];
 	}
 	return changed;
 }
@@ -3139,7 +3155,7 @@ public void setTabHeight(int height) {
 	}
 	fixedTabHeight = height > -1;
 	int oldHeight = tabHeight;
-	tabHeight = height + 1; // +1 for line drawn across top of tab
+	tabHeight = height == 0 ? 0 : height + 1; // +1 for line drawn across top of tab
 	updateTabHeight(oldHeight, false);
 }
 /**

@@ -201,17 +201,18 @@ void drawSelected(GC gc ) {
 	Point size = parent.getSize();
 	int deadspace = parent.simple || parent.single ? 0 : parent.curveWidth - parent.curveIndent;
 	int rightEdge = Math.min (x + width - deadspace, parent.getRightItemEdge());
+	
+	//	 Draw selection border across all tabs
+	int xx = parent.borderLeft;
+	int yy = parent.onBottom ? size.y - parent.borderBottom - parent.tabHeight - parent.highlight_header : parent.borderTop + parent.tabHeight + 1;
+	int ww = size.x - parent.borderLeft - parent.borderRight;
+	int hh = parent.highlight_header - 1;
+	int[] shape = new int[] {xx,yy, xx+ww,yy, xx+ww,yy+hh, xx,yy+hh};
+	parent.drawBackground(gc, shape, true);
+	
 	if (parent.single) {
 		if (!isShowing()) return;
 	} else {
-		// Draw selection border across all tabs
-		int xx = parent.borderLeft;
-		int yy = parent.onBottom ? size.y - parent.borderBottom - parent.tabHeight - parent.highlight_header : parent.borderTop + parent.tabHeight + 1;
-		int ww = size.x - parent.borderLeft - parent.borderRight;
-		int hh = parent.highlight_header - 1;
-		int[] shape = new int[] {xx,yy, xx+ww,yy, xx+ww,yy+hh, xx,yy+hh};
-		parent.drawBackground(gc, shape, true);
-	
 		// if selected tab scrolled out of view or partially out of view
 		// just draw bottom line
 		if (!isShowing()){
