@@ -1,18 +1,18 @@
 package org.eclipse.swt.internal;
-/**
+
+/**
  * This class is the cross-platform version of the
  * java.util.EventObject class.
  * <p>
  * It is part of our effort to provide support for both J2SE
  * and J2ME platforms. Under this scheme, classes need to 
- * extend EventObjectCompatibility instead of
- * java.util.EventObject.
+ * extend SWTEventObject instead of java.util.EventObject.
  * </p>
  * <p>
  * Note: java.util.EventObject is not part of CDC and CLDC.
  * </p>
  */
-public class EventObjectCompatibility implements SerializableCompatibility {
+public class SWTEventObject implements SerializableCompatibility {
 	
 	/**
 	 * The event source.
@@ -24,7 +24,7 @@ public class EventObjectCompatibility implements SerializableCompatibility {
  *
  * @param source the object which fired the event
  */
-public EventObjectCompatibility(Object source) {
+public SWTEventObject(Object source) {
 	if (source != null) this.source = source;
 	else throw new IllegalArgumentException();
 }
@@ -39,9 +39,9 @@ public Object getSource() {
 }
 
 /**
- * Answers the string representation of this EventObjectCompatibility.
+ * Answers the string representation of this SWTEventObject.
  *
- * @return the string representation of this EventObjectCompatibility
+ * @return the string representation of this SWTEventObject
  */
 public String toString() {
 	return getClass().getName() + "[source=" + String.valueOf(source) + ']';

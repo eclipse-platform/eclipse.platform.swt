@@ -4,9 +4,9 @@ package org.eclipse.swt.custom;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.internal.EventListenerCompatibility;
+import org.eclipse.swt.internal.SWTEventListener;
 
-public interface LineBackgroundListener extends EventListenerCompatibility {
+public interface LineBackgroundListener extends SWTEventListener {
 	
 /**
  * This method is called when a line is about to be drawn in order to get its

@@ -5,9 +5,9 @@ package org.eclipse.swt.custom;
  */
 
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.EventListenerCompatibility;
+import org.eclipse.swt.internal.SWTEventListener;
 
-public interface VerifyKeyListener extends EventListenerCompatibility {
+public interface VerifyKeyListener extends SWTEventListener {
 /**
  * @param event.character the character that was typed (input)	
  * @param event.keyCode the key code that was typed (input)

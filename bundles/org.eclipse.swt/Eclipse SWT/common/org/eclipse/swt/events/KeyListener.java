@@ -5,7 +5,7 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.internal.EventListenerCompatibility;
+import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * Classes which implement this interface provide methods
@@ -23,7 +23,7 @@ import org.eclipse.swt.internal.EventListenerCompatibility;
  * @see KeyAdapter
  * @see KeyEvent
  */
-public interface KeyListener extends EventListenerCompatibility {
+public interface KeyListener extends SWTEventListener {
 
 /**
  * Sent when a key is pressed on the system keyboard.

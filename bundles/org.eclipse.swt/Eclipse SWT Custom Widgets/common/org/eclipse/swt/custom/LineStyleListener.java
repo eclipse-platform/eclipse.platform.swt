@@ -4,9 +4,9 @@ package org.eclipse.swt.custom;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.internal.EventListenerCompatibility;
+import org.eclipse.swt.internal.SWTEventListener;
 
-public interface LineStyleListener extends EventListenerCompatibility {
+public interface LineStyleListener extends SWTEventListener {
 /**
  * This method is called when a line is about to be drawn in order to get the
  * line's style information.

@@ -5,15 +5,15 @@ package org.eclipse.swt.dnd;
  * All Rights Reserved
  */
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.internal.EventListenerCompatibility;
+import org.eclipse.swt.internal.SWTEventListener;
 
 
 class DNDListener extends org.eclipse.swt.widgets.TypedListener {
 /**
  * DNDListener constructor comment.
- * @param listener org.eclipse.swt.internal.EventListenerCompatibility
+ * @param listener org.eclipse.swt.internal.SWTEventListener
  */
-DNDListener(EventListenerCompatibility listener) {
+DNDListener(SWTEventListener listener) {
 	super(listener);
 }
 public void handleEvent (Event e) {

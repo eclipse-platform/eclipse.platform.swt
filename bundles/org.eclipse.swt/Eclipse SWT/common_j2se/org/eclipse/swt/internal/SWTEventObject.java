@@ -8,21 +8,20 @@ import java.util.EventObject;
  * <p>
  * It is part of our effort to provide support for both J2SE
  * and J2ME platforms. Under this scheme, classes need to 
- * extend EventObjectCompatibility instead of
- * java.util.EventObject.
+ * extend SWTEventObject instead of java.util.EventObject.
  * </p>
  * <p>
  * Note: java.util.EventObject is not part of CDC and CLDC.
  * </p>
  */
-public class EventObjectCompatibility extends EventObject {
+public class SWTEventObject extends EventObject {
 
 /**
  * Constructs a new instance of this class.
  *
  * @param source the object which fired the event
  */
-public EventObjectCompatibility(Object source) {
+public SWTEventObject(Object source) {
 	super(source);
 }
 }

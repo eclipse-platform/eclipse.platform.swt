@@ -794,7 +794,7 @@ public void removeListener (int eventType, Listener listener) {
  * @see Listener
  * @see #addListener
  */
-protected void removeListener (int eventType, EventListenerCompatibility listener) {
+protected void removeListener (int eventType, SWTEventListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;

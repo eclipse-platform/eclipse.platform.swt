@@ -6,12 +6,12 @@ package org.eclipse.swt.custom;
 
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.EventListenerCompatibility;
+import org.eclipse.swt.internal.SWTEventListener;
 
 class StyledTextListener extends TypedListener {
 /**
  */
-StyledTextListener(EventListenerCompatibility listener) {
+StyledTextListener(SWTEventListener listener) {
 	super(listener);
 }
 /**

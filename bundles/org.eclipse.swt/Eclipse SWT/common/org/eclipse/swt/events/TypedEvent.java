@@ -6,7 +6,7 @@ package org.eclipse.swt.events;
  */
 
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.EventObjectCompatibility;
+import org.eclipse.swt.internal.SWTEventObject;
 
 /**
  * This is the super class for all typed event classes provided
@@ -15,7 +15,7 @@ import org.eclipse.swt.internal.EventObjectCompatibility;
  *
  * @see org.eclipse.swt.widgets.Event
  */
-public class TypedEvent extends EventObjectCompatibility {
+public class TypedEvent extends SWTEventObject {
 	
 	/**
 	 * the widget that issued the event

@@ -5,7 +5,7 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.internal.EventListenerCompatibility;
+import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * Classes which implement this interface provide a method
@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.EventListenerCompatibility;
  *
  * @see VerifyEvent
  */
-public interface VerifyListener extends EventListenerCompatibility {
+public interface VerifyListener extends SWTEventListener {
 
 /**
  * Sent when the text is about to be modified.

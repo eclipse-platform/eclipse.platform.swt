@@ -5,7 +5,7 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.internal.EventListenerCompatibility;
+import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * Classes which implement this interface provide methods
@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.EventListenerCompatibility;
  *
  * @see PaintEvent
  */
-public interface PaintListener extends EventListenerCompatibility {
+public interface PaintListener extends SWTEventListener {
 
 /**
  * Sent when a paint event occurs for the control.

@@ -5,7 +5,7 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.internal.EventListenerCompatibility;
+import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * Classes which implement this interface provide methods
@@ -23,7 +23,7 @@ import org.eclipse.swt.internal.EventListenerCompatibility;
  * @see SelectionAdapter
  * @see SelectionEvent
  */
-public interface SelectionListener extends EventListenerCompatibility {
+public interface SelectionListener extends SWTEventListener {
 
 /**
  * Sent when selection occurs in the control.

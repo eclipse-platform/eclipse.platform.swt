@@ -681,7 +681,7 @@ public void removeListener (int eventType, Listener handler) {
 /**
 * Warning: API under construction.
 */
-protected void removeListener (int eventType, EventListenerCompatibility handler) {
+protected void removeListener (int eventType, SWTEventListener handler) {
 	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;

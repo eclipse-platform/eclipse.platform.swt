@@ -5,7 +5,7 @@ package org.eclipse.swt.dnd;
  * All Rights Reserved
  */
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.EventListenerCompatibility;
+import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * The <code>DropTargetListener</code> class provides event notification to the application for DropTarget events.
@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.EventListenerCompatibility;
  * operation that is performed but the data type is fixed.</p>
  *
  */
-public interface DropTargetListener extends EventListenerCompatibility {
+public interface DropTargetListener extends SWTEventListener {
 /**
  * The cursor has entered the drop target boundaries.
  *

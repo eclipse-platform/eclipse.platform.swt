@@ -5,7 +5,7 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.internal.EventListenerCompatibility;
+import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * Classes which implement this interface provide a method
@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.EventListenerCompatibility;
  *
  * @see ModifyEvent
  */
-public interface ModifyListener extends EventListenerCompatibility {
+public interface ModifyListener extends SWTEventListener {
 
 /**
  * Sent when the text is modified.
