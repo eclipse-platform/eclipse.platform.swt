@@ -504,9 +504,7 @@ static boolean kde_init() {
 	* fault.  The fix is to avoid running KDE C++ code
 	* for those JVMs.
 	*/
-	String version = System.getProperty("java.version");
-	if ("1.4.0".equals(version)) return false;
-	if ("1.4.1_01".equals(version)) return false;
+	if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 2)) return false;
 
 	try {
 		Library.loadLibrary("swt-kde");
