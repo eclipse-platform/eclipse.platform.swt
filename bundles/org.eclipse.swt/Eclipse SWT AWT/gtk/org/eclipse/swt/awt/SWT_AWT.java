@@ -31,9 +31,6 @@ import java.awt.Frame;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
-/* Swing Imports */
-import javax.swing.MenuSelectionManager;
-import javax.swing.UIManager;
 
 /**
  * This class provides a bridge between SWT and AWT, so that it
@@ -49,7 +46,9 @@ public class SWT_AWT {
 	 */
 	public static String embeddedFrameClass;
 
-static boolean loaded;
+static boolean loaded, swingInitialized;
+static Object menuSelectionManager;
+static Method clearSelectionPath;
 
 static native final int /*long*/ getAWTHandle (Canvas canvas);
 
@@ -58,6 +57,27 @@ static synchronized void loadLibrary () {
 	loaded = true;
 	System.loadLibrary("jawt");
 	Library.loadLibrary("swt-awt");
+}
+
+static synchronized void initializeSwing() {
+	if (swingInitialized) return;
+	swingInitialized = true;
+	try {
+		/* Initialize the default focus traversal policy */
+		Class[] emptyClass = new Class[0];
+		Object[] emptyObject = new Object[0];
+		Class clazz = Class.forName("javax.swing.UIManager");
+		Method method = clazz.getMethod("getDefaults", emptyClass);
+		if (method != null) method.invoke(clazz, emptyObject);
+
+		/* Get the swing menu selection manager to dismiss swing popups properly */
+		clazz = Class.forName("javax.swing.MenuSelectionManager");
+		method = clazz.getMethod("defaultManager", emptyClass);
+		if (method == null) return;
+		menuSelectionManager = method.invoke(clazz, emptyObject);
+		if (menuSelectionManager == null) return;
+		clearSelectionPath = menuSelectionManager.getClass().getMethod("clearSelectedPath", emptyClass);
+	} catch (Throwable e) {}
 }
 
 /**
@@ -101,7 +121,7 @@ public static Frame new_Frame (final Composite parent) {
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);		
 	}
-	UIManager.getDefaults();
+	initializeSwing ();
 	Object value = null;
 	Constructor constructor = null;
 	try {
@@ -123,8 +143,15 @@ public static Frame new_Frame (final Composite parent) {
 	} catch (Throwable e) {}
 	parent.addListener (SWT.Deactivate, new Listener () {
 		public void handleEvent (Event event) {
-			MenuSelectionManager manager = MenuSelectionManager.defaultManager();
-			manager.clearSelectedPath();
+			EventQueue.invokeLater(new Runnable () {
+				public void run () {
+					if (menuSelectionManager != null && clearSelectionPath != null) {
+						try {
+							clearSelectionPath.invoke(menuSelectionManager, new Object[0]);
+						} catch (Throwable e) {}
+					}
+				}
+			});
 		}
 	});
 	parent.addListener (SWT.Dispose, new Listener () {
