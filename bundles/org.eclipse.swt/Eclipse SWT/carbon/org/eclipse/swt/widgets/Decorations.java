@@ -243,8 +243,11 @@ public Image getImage () {
  * @since 3.0
  */
 public Image [] getImages () {
-	checkWidget();
-	return images;
+	checkWidget ();
+	if (images == null) return new Image [0];
+	Image [] result = new Image [images.length];
+	System.arraycopy (images, 0, result, 0, images.length);
+	return result;
 }
 
 /**

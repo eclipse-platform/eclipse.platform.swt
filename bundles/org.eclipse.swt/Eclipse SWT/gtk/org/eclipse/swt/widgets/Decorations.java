@@ -350,7 +350,10 @@ public Image getImage () {
  */
 public Image [] getImages () {
 	checkWidget ();
-	return images;
+	if (images == null) return new Image [0];
+	Image [] result = new Image [images.length];
+	System.arraycopy (images, 0, result, 0, images.length);
+	return result;
 }
 
 /**
