@@ -580,11 +580,11 @@ public void test_copy() {
 	text.setSelectionRange(0, text.getCharCount());
 	text.copy();		
 	clipboardText = (String) clipboard.getContents(transfer);
-	if (SwtJunit.isLinux) {
-		convertedText = "\nLine1\nLine2\nLine3\n\nLine4\n";
+	if (SwtJunit.isWindows) {
+		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n";
 	}
 	else {
-		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n";
+		convertedText = "\nLine1\nLine2\nLine3\n\nLine4\n";
 	}
 	assertTrue(":f:", clipboardText != null && clipboardText.equals(convertedText));
 	
@@ -593,11 +593,11 @@ public void test_copy() {
 	text.setSelectionRange(0, text.getCharCount());
 	text.copy();		
 	clipboardText = (String) clipboard.getContents(transfer);
-	if (SwtJunit.isLinux) {
-		convertedText = "Line1\nLine2";
+	if (SwtJunit.isWindows) {
+		convertedText = "Line1\r\nLine2";
 	}
 	else {
-		convertedText = "Line1\r\nLine2";
+		convertedText = "Line1\nLine2";
 	}
 	assertTrue(":g:", clipboardText != null && clipboardText.equals(convertedText));
 
@@ -639,11 +639,11 @@ public void test_cut() {
 	text.setSelectionRange(0, text.getCharCount());
 	text.cut();		
 	clipboardText = (String) clipboard.getContents(transfer);
-	if (SwtJunit.isLinux) {
-		convertedText = "\nLine1\nLine2\nLine3\n\nLine4\n";
+	if (SwtJunit.isWindows) {
+		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n";
 	}
 	else {
-		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n";
+		convertedText = "\nLine1\nLine2\nLine3\n\nLine4\n";
 	}
 	assertTrue(":f:", clipboardText != null && clipboardText.equals(convertedText));
 	
@@ -652,11 +652,11 @@ public void test_cut() {
 	text.setSelectionRange(0, text.getCharCount());
 	text.cut();		
 	clipboardText = (String) clipboard.getContents(transfer);
-	if (SwtJunit.isLinux) {
-		convertedText = "Line1\nLine2";
+	if (SwtJunit.isWindows) {
+		convertedText = "Line1\r\nLine2";
 	}
 	else {
-		convertedText = "Line1\r\nLine2";
+		convertedText = "Line1\nLine2";
 	}
 	assertTrue(":g:", clipboardText != null && clipboardText.equals(convertedText));
 
@@ -1664,16 +1664,16 @@ public void test_paste(){
 	TextTransfer transfer = TextTransfer.getInstance();
 	String convertedText;
 
-	clipboard.setContents(new String[]{""}, new Transfer[]{transfer});
+	clipboard.setContents(new String[]{"x"}, new Transfer[]{transfer});
 	
 	text.copy();	
 	text.paste();	
-	assertTrue(":a:", text.getCharCount() == 0);
+	assertTrue(":a:", text.getCharCount() == 1);
 	
 	text.setSelectionRange(0, 0);
 	text.copy();	
 	text.paste();	
-	assertTrue(":b:", text.getCharCount() == 0);
+	assertTrue(":b:", text.getCharCount() == 2);
 
 	text.setText("0123456789");
 	text.setSelectionRange(0, 1);
@@ -1691,11 +1691,11 @@ public void test_paste(){
 	// test line delimiter conversion
 	clipboard.setContents(new String[]{"\rLine1\nLine2\r\nLine3\n\rLine4\n"}, new Transfer[]{transfer});
 	text.paste();
-	if (SwtJunit.isLinux) {
-		convertedText = "\nLine1\nLine2\nLine3\n\nLine4\n";
+	if (SwtJunit.isWindows) {
+		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n";
 	}
 	else {
-		convertedText = "\r\nLine1\r\nLine2\r\nLine3\r\n\r\nLine4\r\n";
+		convertedText = "\nLine1\nLine2\nLine3\n\nLine4\n";
 	}
 	assertTrue(":f:", text.getText() != null && text.getText().equals(convertedText));
 	text.setText("");
@@ -1703,11 +1703,11 @@ public void test_paste(){
 	// test line delimiter conversion
 	clipboard.setContents(new String[]{"Line1\r\nLine2"}, new Transfer[]{transfer});
 	text.paste();
-	if (SwtJunit.isLinux) {
-		convertedText = "Line1\nLine2";
+	if (SwtJunit.isWindows) {
+		convertedText = "Line1\r\nLine2";
 	}
 	else {
-		convertedText = "Line1\r\nLine2";
+		convertedText = "Line1\nLine2";
 	}
 	assertTrue(":g:", text.getText() != null && text.getText().equals(convertedText));
 	text.setText("");
@@ -1715,11 +1715,11 @@ public void test_paste(){
 	// test line delimiter conversion
 	clipboard.setContents(new String[]{"Line1\rLine2"}, new Transfer[]{transfer});
 	text.paste();
-	if (SwtJunit.isLinux) {
-		convertedText = "Line1\nLine2";
+	if (SwtJunit.isWindows) {
+		convertedText = "Line1\r\nLine2";
 	}
 	else {
-		convertedText = "Line1\r\nLine2";
+		convertedText = "Line1\nLine2";
 	}
 	assertTrue(":h:", text.getText() != null && text.getText().equals(convertedText));
 	text.setText("");
@@ -1728,11 +1728,11 @@ public void test_paste(){
 	// test line delimiter conversion
 	clipboard.setContents(new String[]{"Line1\nLine2"}, new Transfer[]{transfer});
 	text.paste();
-	if (SwtJunit.isLinux) {
-		convertedText = "Line1\nLine2";
+	if (SwtJunit.isWindows) {
+		convertedText = "Line1\r\nLine2";
 	}
 	else {
-		convertedText = "Line1\r\nLine2";
+		convertedText = "Line1\nLine2";
 	}
 	assertTrue(":i:", text.getText() != null && text.getText().equals(convertedText));
 	text.setText("");
