@@ -706,6 +706,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextBeginPat
 }
 #endif /* NO_CGContextBeginPath */
 
+#ifndef NO_CGContextClearRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextClearRect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("CGContextClearRect\n")
+
+	if (arg1) lparg1 = getCGRectFields(env, arg1, &_arg1);
+	CGContextClearRect((CGContextRef)arg0, *lparg1);
+	if (arg1) setCGRectFields(env, arg1, lparg1);
+}
+#endif
+
 #ifndef NO_CGContextClip
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextClip
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1231,6 +1245,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGImageRelease
 	CGImageRelease((CGImageRef)arg0);
 }
 #endif /* NO_CGImageRelease */
+
+#ifndef NO_CGWarpMouseCursorPosition
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGWarpMouseCursorPosition
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	CGPoint _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("CGWarpMouseCursorPosition\n")
+
+	if (arg0) lparg0 = getCGPointFields(env, arg0, &_arg0);
+	rc = (jint)CGWarpMouseCursorPosition(*lparg0);
+	if (arg0) setCGPointFields(env, arg0, lparg0);
+	return rc;
+}
+#endif
 
 #ifndef NO_CallNextEventHandler
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CallNextEventHandler

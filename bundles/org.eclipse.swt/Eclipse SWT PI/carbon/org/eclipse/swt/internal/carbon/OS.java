@@ -414,6 +414,7 @@ public class OS {
 	public static final int kNavUserActionChoose = 4;
 	public static final int kNavUserActionOpen = 2;
 	public static final int kNavUserActionSaveAs = 3;
+	public static final int kOverlayWindowClass = 14;
 	public static final int kQDUseCGTextMetrics = (1 << 2);
 	public static final int kQDUseCGTextRendering = (1 << 1);
 	public static final int kScrapFlavorTypeUnicode = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
@@ -633,6 +634,7 @@ public static final native void CGContextAddLineToPoint (int ctx, float x, float
 public static final native void CGContextAddLines (int ctx, float[] points, int count);
 public static final native void CGContextBeginPath (int ctx);
 public static final native void CGContextClip (int ctx);
+public static final native void CGContextClearRect (int ctx, CGRect rect);
 public static final native void CGContextClosePath (int ctx);
 public static final native void CGContextDrawImage (int ctx, CGRect rect, int image);
 public static final native void CGContextFillPath (int ctx);
@@ -677,6 +679,7 @@ public static final native int CGImageGetColorSpace (int image);
 public static final native int CGImageGetHeight (int image);
 public static final native int CGImageGetWidth (int image);
 public static final native void CGImageRelease (int image);
+public static final native int CGWarpMouseCursorPosition (CGPoint newCursorPosition);
 public static final native int CallNextEventHandler(int nextHandler, int eventRefHandle);
 public static final native short CharWidth(short c);
 public static final native int ClearCurrentScrap();
