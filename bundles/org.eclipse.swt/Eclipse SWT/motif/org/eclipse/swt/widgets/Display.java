@@ -1324,10 +1324,11 @@ void initializeLabel () {
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
 		
 	/* 
-	 * Bug in Motif. When running on UTF-8 Motif  becomes unstable 
-	 * (causing GPs) if the first label widget is create without a XmString.
-	 * The fix is to create the Label with a non-empty XmString.
-	 */
+	* Bug in Motif. When running on UTF-8, Motif becomes unstable 
+	* and GP's some time later when a label widget is created with
+	* empty text and no XmNlabelType.  The fix is to create the
+	* label with a non-empty XmString and set the XmNlabelType.
+	*/
 	byte [] buffer = Converter.wcsToMbcs(null, "string", true);
 	int xmString = OS.XmStringCreateLocalized(buffer);
 	int [] argList1 = {OS.XmNlabelType, OS.XmSTRING, OS.XmNlabelString, xmString};
