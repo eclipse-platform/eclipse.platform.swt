@@ -57,7 +57,7 @@ public class Menu extends Widget {
  * @see Widget#getStyle
  */
 public Menu (Control parent) {
-	this (checkNull(parent).getShell (), SWT.POP_UP);
+	this (checkNull(parent).menuShell (), SWT.POP_UP);
 }
 /**
  * Constructs a new instance of this class given its parent

@@ -61,7 +61,7 @@ public class Menu extends Widget {
  * @see Widget#getStyle
  */
 public Menu (Control parent) {
-	this (parent.getShell (), SWT.POP_UP);
+	this (parent.menuShell (), SWT.POP_UP);
 }
 
 /**
