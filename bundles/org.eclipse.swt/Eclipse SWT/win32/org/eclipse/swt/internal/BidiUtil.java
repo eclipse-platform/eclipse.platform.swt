@@ -412,18 +412,26 @@ static int[] getKeyboardLanguageList() {
  */
 public static boolean isBidiPlatform() {
 	if (OS.IsWinCE) return false;
-	if (isBidiPlatform == - 1) {
-		isBidiPlatform = 0;
-		Callback callback;
-		try {
-			callback = new Callback (Class.forName (CLASS_NAME), "EnumCodePagesProc", 1);
-			int lpEnumCodePagesProc = callback.getAddress ();	
-			if (lpEnumCodePagesProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-			OS.EnumSystemCodePages(lpEnumCodePagesProc, OS.CP_INSTALLED);
-			callback.dispose ();
-		} catch (ClassNotFoundException e) {}
+	int[] languages = getKeyboardLanguageList();
+	for (int i=0; i<languages.length; i++) {
+		int language = languages[i] & 0x000000FF;;
+		if ((language == LANG_ARABIC) || (language == LANG_HEBREW)) {
+			return true;
+		}
 	}
-	return isBidiPlatform == 1;
+	return false;
+//	if (isBidiPlatform == - 1) {
+//		isBidiPlatform = 0;
+//		Callback callback;
+//		try {
+//			callback = new Callback (Class.forName (CLASS_NAME), "EnumCodePagesProc", 1);
+//			int lpEnumCodePagesProc = callback.getAddress ();	
+//			if (lpEnumCodePagesProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+//			OS.EnumSystemCodePages(lpEnumCodePagesProc, OS.CP_INSTALLED);
+//			callback.dispose ();
+//		} catch (ClassNotFoundException e) {}
+//	}
+//	return isBidiPlatform == 1;
 }
 /**
  * Return whether or not the keyboard supports input of a bidi language.  Determine this
