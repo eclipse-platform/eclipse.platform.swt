@@ -21,7 +21,8 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 #    QT_HOME    - identifier namespace package (used by KDE)
 JAVA_HOME   = /bluebird/teamswt/swt-builddir/IBMJava2-141
 MOTIF_HOME = /bluebird/teamswt/swt-builddir/motif21
-QT_HOME    = /usr/lib/qt3
+QT_HOME    = /usr/lib/qt-3.1 # Redhat 9
+#QT_HOME    = /usr/lib/qt3 # SuSE 8.2
 
 # Define the various DLL (shared) libraries to be made.
 
@@ -35,15 +36,14 @@ SWT_LIB      = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 GNOME_PREFIX = swt-gnome
 GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_OBJ    = gnome.o 
-
 GNOME_CFLAGS = `pkg-config --cflags gnome-vfs-2.0`
-GNOME_LIB = -x -shared `pkg-config --libs gnome-vfs-2.0`
+GNOME_LIB = -x -shared `pkg-config --libs-only-l --libs-only-L gnome-vfs-2.0`
 
 KDE_PREFIX   = swt-kde
 KDE_DLL      = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 KDE_OBJ      = kde.o
-KDE_LIB      = -L/usr/lib  -L$(QT_HOME)/lib \
-	           -shared  -lkdecore -lqt
+KDE_LIB      = -L/usr/lib  -L$(QT_HOME)/lib -shared  -lkdecore -lqt
+KDE_CFLAGS   = -fno-rtti -c -O -I/usr/include/kde -I$(QT_HOME)/include -I$(JAVA_HOME)/include
 
 AWT_PREFIX   = swt-awt
 AWT_DLL      = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -54,7 +54,7 @@ GTK_PREFIX  = swt-gtk
 GTK_DLL     = lib$(GTK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GTK_OBJ     = gtk.o
 GTK_CFLAGS  = `pkg-config --cflags gtk+-2.0`
-GTK_LIB     = -x -shared `pkg-config --libs gtk+-2.0`
+GTK_LIB     = -x -shared `pkg-config --libs-only-l --libs-only-L gtk+-2.0`
 	
 #
 # The following CFLAGS are for compiling both the SWT library and the GNOME
@@ -92,8 +92,7 @@ $(KDE_DLL): $(KDE_OBJ)
 	ld -o $@ $(KDE_OBJ) $(KDE_LIB)
 
 $(KDE_OBJ): kde.cc
-	g++  -c -O -I/usr/include/kde -I$(QT_HOME)/include -I./   \
-	     -I../ -I$(JAVA_HOME)/include -fno-rtti -o kde.o kde.cc
+	g++ $(KDE_CFLAGS) -o kde.o kde.cc
 
 make_awt: $(AWT_DLL)
 
