@@ -515,6 +515,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextFillRect
 }
 #endif /* NO_CGContextFillRect */
 
+#ifndef NO_CGContextFlush
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextFlush
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
+{
+	DEBUG_CALL("CGContextFlush\n")
+
+	CGContextFlush((CGContextRef)arg0);
+}
+#endif /* NO_CGContextFlush */
+
 #ifndef NO_CGContextGetTextPosition
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextGetTextPosition
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -1148,6 +1158,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateCheckBoxCon
 	rc = (jint)CreateCheckBoxControl((WindowRef)arg0, (const Rect *)lparg1, (CFStringRef)arg2, (SInt32)arg3, (Boolean)arg4, (ControlRef *)lparg5);
 	if (arg1) setRectFields(env, arg1, lparg1);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_CreateCGContextForPort
+JNIEXPORT jint JNICALL OS_NATIVE(CreateCGContextForPort)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateCGContextForPort\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)CreateCGContextForPort((CGrafPtr)arg0, (CGContextRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	return rc;
 }
 #endif
@@ -5425,6 +5451,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPort
 }
 #endif /* NO_SetPort */
 
+#ifndef NO_SetPortBounds
+JNIEXPORT void JNICALL OS_NATIVE(SetPortBounds)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("SetPortBounds\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	SetPortBounds((CGrafPtr)arg0, (const Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
+}
+#endif
+
 #ifndef NO_SetPortWindowPort
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPortWindowPort
 	(JNIEnv *env, jclass that, jint arg0)
@@ -5636,6 +5676,16 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_StillDown
 	return (jboolean)StillDown();
 }
 #endif /* NO_StillDown */
+
+#ifndef NO_SyncCGContextOriginWithPort
+JNIEXPORT jint JNICALL OS_NATIVE(SyncCGContextOriginWithPort)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SyncCGContextOriginWithPort\n")
+
+	return (jint)SyncCGContextOriginWithPort((CGContextRef)arg0, (CGrafPtr)arg1);
+}
+#endif
 
 #ifndef NO_SysBeep
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SysBeep
