@@ -523,6 +523,10 @@ void drawBackground (int hDC, RECT rect) {
 	OS.FillRect (hDC, rect, hBrush);
 }
 
+void enableWidget (boolean enabled) {
+	OS.EnableWindow (handle, enabled);
+}
+
 int findBrush (int pixel) {
 	return parent.findBrush (pixel);
 }
@@ -554,12 +558,14 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 	oldDecorations.fixDecorations (newDecorations, this, menus);
 }
 
-void fixFocus () {
+void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
 	while ((control = control.parent) != null) {
-		if (control.setFocus () || control == shell) return;
+		if (control.setFocus ()) return;
+		if (control == shell) break;
 	}
+	shell.setSavedFocus (focusControl);
 	OS.SetFocus (0);
 }
 
@@ -1153,8 +1159,7 @@ public boolean isFocusControl () {
 	return hasFocus ();
 }
 
-boolean isFocusAncestor () {
-	Control control = display.getFocusControl ();
+boolean isFocusAncestor (Control control) {
 	while (control != null && control != this) {
 		control = control.parent;
 	}
@@ -2019,9 +2024,14 @@ public void setEnabled (boolean enabled) {
 	* focus.  If no window will take focus, set focus to the
 	* desktop.
 	*/
-	boolean fixFocus = !enabled && isFocusAncestor ();
-	OS.EnableWindow (handle, enabled);
-	if (fixFocus) fixFocus ();
+	Control control = null;
+	boolean fixFocus = false;
+	if (!enabled) {
+		control = display.getFocusControl ();
+		fixFocus = isFocusAncestor (control);
+	}
+	enableWidget (enabled);
+	if (fixFocus) fixFocus (control);
 }
 
 /**
@@ -2382,8 +2392,12 @@ public void setVisible (boolean visible) {
 	* focus.  If no window will take focus, set focus to the
 	* desktop.
 	*/
+	Control control = null;
 	boolean fixFocus = false;
-	if (!visible) fixFocus = isFocusAncestor ();
+	if (!visible) {
+		control = display.getFocusControl ();
+		fixFocus = isFocusAncestor (control);
+	}
 	if (drawCount != 0) {
 		state = visible ? state & ~HIDDEN : state | HIDDEN;
 	} else {
@@ -2405,7 +2419,7 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Hide);
 		if (isDisposed ()) return;
 	}
-	if (fixFocus) fixFocus ();
+	if (fixFocus) fixFocus (control);
 }
 
 boolean showMenu (int x, int y) {

@@ -211,6 +211,17 @@ int defaultForeground () {
 	return OS.GetSysColor (OS.COLOR_BTNFACE);
 }
 
+void enableWidget (boolean enabled) {
+	if (OS.IsWinCE) {
+		super.enableWidget (enabled);
+	} else {
+		int flags = enabled ? OS.ESB_ENABLE_BOTH : OS.ESB_DISABLE_BOTH;
+		OS.EnableScrollBar (handle, OS.SB_CTL, flags);
+	}
+	state &= ~DISABLED;
+	if (!enabled) state |= DISABLED;
+}
+
 public boolean getEnabled () {
 	checkWidget ();
 	return (state & DISABLED) == 0;
@@ -364,18 +375,6 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	if (OS.GetFocus () == handle) {
 		OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
 	}
-}
-
-public void setEnabled (boolean enabled) {
-	checkWidget ();
-	if (OS.IsWinCE) {
-		super.setEnabled (enabled);
-	} else {
-		int flags = enabled ? OS.ESB_ENABLE_BOTH : OS.ESB_DISABLE_BOTH;
-		OS.EnableScrollBar (handle, OS.SB_CTL, flags);
-	}
-	state &= ~DISABLED;
-	if (!enabled) state |= DISABLED;
 }
 
 /**

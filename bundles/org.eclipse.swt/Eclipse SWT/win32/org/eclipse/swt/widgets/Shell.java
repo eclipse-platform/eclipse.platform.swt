@@ -489,6 +489,19 @@ public void dispose () {
 //	if (oldDisplay != null) oldDisplay.update ();
 }
 
+void enableWidget (boolean enabled) {
+	if (enabled) {
+		state &= ~DISABLED;
+	} else {
+		state |= DISABLED;
+	}
+	if (Display.TrimEnabled) {
+		if (isActive ()) setItemEnabled (OS.SC_CLOSE, enabled);
+	} else {
+		OS.EnableWindow (handle, enabled);
+	}
+}
+
 int findBrush (int pixel) {
 	if (pixel == OS.GetSysColor (OS.COLOR_BTNFACE)) {
 		return OS.GetSysColorBrush (OS.COLOR_BTNFACE);
@@ -938,15 +951,10 @@ void setBounds (int x, int y, int width, int height, int flags) {
 
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	if (enabled) {
-		state &= ~DISABLED;
-	} else {
-		state |= DISABLED;
-	}
-	if (Display.TrimEnabled) {
-		if (isActive ()) setItemEnabled (OS.SC_CLOSE, enabled);
-	} else {
-		OS.EnableWindow (handle, enabled);
+	if (((state & DISABLED) == 0) == enabled) return;
+	super.setEnabled (enabled);
+	if (enabled && handle == OS.GetActiveWindow ()) {
+		if (!restoreFocus ()) traverseGroup (true);
 	}
 }
 
