@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1log_1default_1han
 	fprintf(stderr, "g_log_default_handler");
 #endif
 
-	g_log_default_handler((gchar *)log_domain, (GLogLevelFlags)log_levels, (gchar *) message, (gpointer) unused_data);
+	g_log_default_handler((gchar *)log_domain, (GLogLevelFlags)log_levels, (gchar *)message, (gpointer)unused_data);
 }
 
 /*
@@ -45,13 +45,23 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1log_1default_1han
  * Signature:	
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1log_1set_1handler
-  (JNIEnv *env, jclass that, jint log_domain, jint log_levels, jint log_func, jint user_data)
+  (JNIEnv *env, jclass that, jbyteArray log_domain, jint log_levels, jint log_func, jint user_data)
 {
+	jint rc;
+	jbyte *log_domain1 = NULL;
+	
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "g_log_set_handler");
 #endif
 
-	return g_log_set_handler((gchar *)log_domain, (GLogLevelFlags)log_levels, (GLogFunc) log_func, (gpointer) user_data);
+	if (log_domain) {
+		log_domain1 = (*env)->GetByteArrayElements(env, log_domain, NULL);
+	}
+	rc = (jint) g_log_set_handler((gchar *)log_domain1, (GLogLevelFlags)log_levels, (GLogFunc) log_func, (gpointer) user_data);
+	if (log_domain) {
+		(*env)->ReleaseByteArrayElements(env, log_domain, log_domain1, 0);
+	}
+	return rc;
 }
 
 /*
@@ -60,13 +70,21 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1log_1set_1handler
  * Signature:	
  */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1log_1remove_1handler
-  (JNIEnv *env, jclass that, jint log_domain, jint handler_id)
+  (JNIEnv *env, jclass that, jbyteArray log_domain, jint handler_id)
 {
+	jbyte *log_domain1 = NULL;
+	
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "g_log_remove_handler");
 #endif
 
-	g_log_remove_handler((gchar *)log_domain, handler_id);
+	if (log_domain) {
+		log_domain1 = (*env)->GetByteArrayElements(env, log_domain, NULL);
+	}
+	g_log_remove_handler((gchar *)log_domain1, handler_id);
+	if (log_domain) {
+		(*env)->ReleaseByteArrayElements(env, log_domain, log_domain1, 0);
+	}
 }
 
 /*

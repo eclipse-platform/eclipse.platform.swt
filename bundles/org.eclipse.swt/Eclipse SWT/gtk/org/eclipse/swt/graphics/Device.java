@@ -12,7 +12,7 @@ import org.eclipse.swt.internal.gtk.*;
 public abstract class Device implements Drawable {
 	
 	/* Debugging */
-	public static boolean DEBUG = true;
+	public static boolean DEBUG;
 	boolean debug = DEBUG;
 	boolean tracking = DEBUG;
 	Error [] errors;
@@ -371,12 +371,8 @@ protected void init () {
 	
 	/* Set GTK warning and error handlers */
 	if (debug) {
-		int domain = OS.g_malloc(4);
-		byte[] domainb = Converter.wcsToMbcs(null, "Gtk");
-		OS.memmove(domain, domainb, 3);
-		byte[] term = new byte[] { 0 };
-		OS.memmove(domain+3, term, 1);
-		handler_id = OS.g_log_set_handler (domain, OS.G_LOG_LEVEL_CRITICAL | OS.G_LOG_LEVEL_WARNING, logProc, 0);
+		byte [] log_domain = Converter.wcsToMbcs (null, "Gtk", true);
+		handler_id = OS.g_log_set_handler (log_domain, 0xFF, logProc, 0);
 	}
 	
 	/* Create the standard colors */
@@ -447,7 +443,7 @@ public boolean isDisposed () {
 }
 
 int logProc (int log_domain, int log_level, int message, int user_data) {
-	if (debug && warnings) {
+	if (DEBUG || (debug && warnings)) {
 		new Error ().printStackTrace ();
 		OS.g_log_default_handler (log_domain, log_level, message, 0);
 	}
@@ -493,12 +489,10 @@ protected void release () {
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
 		
 	/* Free the GTK error and warning handler */
-	int domain = OS.g_malloc(4);
-	byte[] domainb = Converter.wcsToMbcs(null, "Gtk");
-	OS.memmove(domain, domainb, 3);
-	byte[] term = new byte[] { 0 };
-	OS.memmove(domain+3, term, 1);
-	if (handler_id != 0) OS.g_log_remove_handler (domain, handler_id);
+	if (handler_id != 0) {
+		byte [] log_domain = Converter.wcsToMbcs (null, "Gtk", true);
+		OS.g_log_remove_handler (log_domain, handler_id);
+	}
 	logCallback.dispose ();  logCallback = null;
 	handler_id = logProc = 0;
 }
@@ -519,9 +513,15 @@ public void setWarnings (boolean warnings) {
 	checkDevice ();
 	this.warnings = warnings;
 	if (debug) return;
-	if (handler_id != 0) OS.g_log_remove_handler (0, handler_id);
+	if (handler_id != 0) {
+		byte [] log_domain = Converter.wcsToMbcs (null, "Gtk", true);
+		OS.g_log_remove_handler (log_domain, handler_id);
+	}
 	handler_id = 0;
-	if (warnings) handler_id = OS.g_log_set_handler (0, -1, logProc, 0);
+	if (warnings) {
+		byte [] log_domain = Converter.wcsToMbcs (null, "Gtk", true);
+		handler_id = OS.g_log_set_handler (log_domain, 0xFF, logProc, 0);
+	}
 }
 
 }
