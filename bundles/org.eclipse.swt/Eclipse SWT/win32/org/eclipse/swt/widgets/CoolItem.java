@@ -29,6 +29,7 @@ public class CoolItem extends Item {
 	CoolBar parent;
 	Control control;
 	int id;
+	boolean ideal;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -342,6 +343,7 @@ public void setPreferredSize (int width, int height) {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
+	ideal = true;
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
@@ -394,7 +396,7 @@ public void setSize (int width, int height) {
 	/* Set the size fields we are currently modifying. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
 	rbBand.cx = width;
-	rbBand.cxIdeal = width - rect.left - rect.right;
+	if (!ideal) rbBand.cxIdeal = width - rect.left - rect.right;
 	rbBand.cyChild = rbBand.cyMinChild = rbBand.cyMaxChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
