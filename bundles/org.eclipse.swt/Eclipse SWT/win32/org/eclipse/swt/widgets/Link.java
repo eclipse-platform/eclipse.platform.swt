@@ -274,6 +274,16 @@ void onPaint (GC gc, RECT rect) {
 			gc.drawFocus (rectangle.x, rectangle.y, rectangle.width, rectangle.height);					
 		}
 	}
+	if (hooks (SWT.Paint) || filters (SWT.Paint)) {
+		Event event = new Event ();
+		event.gc = gc;
+		event.x = rect.left;
+		event.y = rect.top;
+		event.width = rect.right - rect.left;
+		event.height = rect.bottom - rect.top;
+		sendEvent (SWT.Paint, event);
+		event.gc = null;
+	}
 }
 
 String parse (String string) {
@@ -724,16 +734,6 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
 			onPaint (gc, rect);
-			if (hooks (SWT.Paint) || filters (SWT.Paint)) {
-				Event event = new Event ();
-				event.gc = gc;
-				event.x = ps.left;
-				event.y = ps.top;
-				event.width = width;
-				event.height = height;
-				sendEvent (SWT.Paint, event);
-				event.gc = null;
-			}
 		}
 		gc.dispose ();
 	}
