@@ -313,7 +313,7 @@ public boolean getVisible () {
 }
 
 boolean hasFocus () {
-	return (this == getDisplay ().getFocusControl ());
+	return this == getDisplay ().getFocusControl ();
 }
 
 int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
@@ -539,10 +539,6 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 	return OS.eventNotHandledErr;
 }
 
-int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	Shell shell = getShell ();
 	int result = super.kEventControlHit (nextHandler, theEvent, userData);
@@ -604,37 +600,14 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	Shell shell = getShell ();
 	Display display = getDisplay ();
-	short [] part = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-	if (part [0] != 0) {
-		sendEvent (SWT.FocusIn);
-	} else {
-		sendEvent (SWT.FocusOut);
+	if (!display.ignoreFocus) {
+		short [] part = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+		sendFocusEvent (part [0] != 0);
 	}
-	
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/
-	if (part [0] != 0) {
-		if (!shell.isDisposed ()) {
-			shell.setActiveControl (this);
-		}
-	} else {
-		if (!shell.isDisposed ()) {
-			Control control = display.getFocusControl ();
-			if (control == null || shell != control.getShell () ) {
-				shell.setActiveControl (null);
-			}
-		}
-	}	
- 
 	return OS.eventNotHandledErr;
-}
+}	
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if ((state & GRAB) != 0) {
@@ -842,6 +815,35 @@ public void removeTraverseListener(TraverseListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Traverse, listener);
+}
+	
+void sendFocusEvent (boolean focusIn) {
+	Shell shell = getShell ();
+	if (focusIn) {
+		sendEvent (SWT.FocusIn);
+	} else {
+		sendEvent (SWT.FocusOut);
+	}
+	
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/
+	if (focusIn) {
+		if (!shell.isDisposed ()) {
+			shell.setActiveControl (this);
+		}
+	} else {
+		if (!shell.isDisposed ()) {
+			Display display = shell.getDisplay ();
+			Control control = display.getFocusControl ();
+			if (control == null || shell != control.getShell () ) {
+				shell.setActiveControl (null);
+			}
+		}
+	}
 }
 
 boolean sendKeyEvent (int type, int theEvent) {

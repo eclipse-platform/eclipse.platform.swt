@@ -72,7 +72,11 @@ public class Display extends Device {
 	MenuItem [] items;
 	static final int ID_START = 1000;
 	
+	/* Insets */
 	Rect buttonInset, tabFolderInset, comboInset;
+	
+	/* Focus */
+	boolean ignoreFocus;
 	
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
@@ -451,6 +455,7 @@ public Shell getActiveShell () {
 	checkDevice ();
 	int theWindow = OS.FrontWindow ();
 	if (theWindow == 0) return null;
+	if (!OS.IsWindowActive (theWindow)) return null;
 	int [] theControl = new int [1];
 	OS.GetRootControl (theWindow, theControl);
 	Widget widget = WidgetTable.get (theControl [0]);
@@ -533,8 +538,14 @@ public Control getFocusControl () {
 	checkDevice ();
 	int theWindow = OS.FrontWindow ();
 	if (theWindow == 0) return null;
+	if (!OS.IsWindowActive (theWindow)) return null;
+	return getFocusControl (theWindow);
+}
+
+Control getFocusControl (int window) {
 	int [] theControl = new int [1];
-	OS.GetKeyboardFocus (theWindow, theControl);
+	OS.GetKeyboardFocus (window, theControl);
+	if (theControl [0] == 0) return null;
 	do {
 		Widget widget = WidgetTable.get (theControl [0]);
 		if (widget != null && widget instanceof Control) {

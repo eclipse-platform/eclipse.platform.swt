@@ -291,75 +291,6 @@ public boolean getVisible () {
     return OS.IsWindowVisible (shellHandle);
 }
 
-int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventWindowActivated (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	//NOT DONE
-	Display display = getDisplay ();
-	display.setMenuBar (menuBar);
-	sendEvent (SWT.Activate);
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventWindowBoundsChanged (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	int [] attributes = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
-	if ((attributes [0] & OS.kWindowBoundsChangeOriginChanged) != 0) {
-		sendEvent (SWT.Move);
-	}
-	if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
-		resized = true;
-		layoutControl ();
-		sendEvent (SWT.Resize);
-		if (layout != null) layout.layout (this, false);
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventWindowCollapsed (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	sendEvent (SWT.Iconify);
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	sendEvent (SWT.Deactivate);
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventWindowExpanded (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	sendEvent (SWT.Deiconify);
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowClose (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventWindowClose (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	closeWidget ();
-	return OS.noErr;
-}
-
-int kEventWindowFocusAcquired (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventWindowFocusAcquired (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	restoreFocus ();
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowFocusRelinquish (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventWindowFocusRelinquish (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	saveFocus ();
-	return OS.eventNotHandledErr;
-}
-
 void hookEvents () {
 	super.hookEvents ();
 	int mouseProc = display.mouseProc;
@@ -371,8 +302,6 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowCollapsed,
 		OS.kEventClassWindow, OS.kEventWindowDeactivated,
 		OS.kEventClassWindow, OS.kEventWindowExpanded,
-		OS.kEventClassWindow, OS.kEventWindowFocusAcquired,
-		OS.kEventClassWindow, OS.kEventWindowFocusRelinquish,
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
 	OS.InstallEventHandler (windowTarget, windowProc, mask1.length / 2, mask1, shellHandle, null);
@@ -390,6 +319,74 @@ public boolean isEnabled () {
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
+}
+
+int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowActivated (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	//NOT DONE
+	Display display = getDisplay ();
+	display.setMenuBar (menuBar);
+	sendEvent (SWT.Activate);
+	restoreFocus ();
+	return result;
+}
+
+int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowBoundsChanged (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	int [] attributes = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
+	if ((attributes [0] & OS.kWindowBoundsChangeOriginChanged) != 0) {
+		sendEvent (SWT.Move);
+	}
+	if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
+		resized = true;
+		layoutControl ();
+		sendEvent (SWT.Resize);
+		if (layout != null) layout.layout (this, false);
+	}
+	return result;
+}
+
+int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowCollapsed (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	sendEvent (SWT.Iconify);
+	return result;
+}
+
+int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	sendEvent (SWT.Deactivate);
+	saveFocus ();
+	if (savedFocus != null) {
+		/*
+		* Bug in the Macintosh.  When ClearKeyboardFocus() is called,
+		* the control that has focus gets two kEventControlSetFocus
+		* events indicating that focus was lost.  The fix is to ignore
+		* both of these and send the focus lost event explicitly.		*/
+		display.ignoreFocus = true;
+		OS.ClearKeyboardFocus (shellHandle);
+		display.ignoreFocus = false;
+		savedFocus.sendFocusEvent (false);
+	}
+	return result;
+}
+
+int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowExpanded (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	sendEvent (SWT.Deiconify);
+	return result;
+}
+
+int kEventWindowClose (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowClose (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	closeWidget ();
+	return OS.noErr;
 }
 
 void layoutControl () {

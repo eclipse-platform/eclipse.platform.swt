@@ -7,6 +7,8 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.internal.carbon.OS;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -103,7 +105,8 @@ boolean restoreFocus () {
 }
 
 void saveFocus () {
-	Control control = getDisplay ().getFocusControl ();
+	int window = OS.GetControlOwner (handle);
+	Control control = getDisplay ().getFocusControl (window);
 	if (control != null) savedFocus = control;
 }
 

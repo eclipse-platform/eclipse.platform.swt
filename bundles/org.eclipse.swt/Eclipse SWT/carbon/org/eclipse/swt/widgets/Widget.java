@@ -521,14 +521,6 @@ int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int kEventWindowFocusAcquired (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowFocusRelinquish (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
 int keyboardProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
@@ -872,8 +864,6 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventWindowCollapsed:			return kEventWindowCollapsed (nextHandler, theEvent, userData);
 		case OS.kEventWindowDeactivated:		return kEventWindowDeactivated (nextHandler, theEvent, userData);
 		case OS.kEventWindowExpanded:			return kEventWindowExpanded (nextHandler, theEvent, userData);
-		case OS.kEventWindowFocusAcquired:		return kEventWindowFocusAcquired (nextHandler, theEvent, userData);
-		case OS.kEventWindowFocusRelinquish:	return kEventWindowFocusRelinquish (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }

@@ -408,6 +408,7 @@ int kEventControlActivate (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlActivate (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncAlwaysActive);
+	OS.TXNFocus (txnObject, hasFocus ());
 	return result;
 }
 
@@ -444,6 +445,7 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlActivate (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncWithFocus);
+	OS.TXNFocus (txnObject, hasFocus());
 	return result;
 }
 
