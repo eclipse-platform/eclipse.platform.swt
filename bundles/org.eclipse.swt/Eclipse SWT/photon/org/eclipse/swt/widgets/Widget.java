@@ -446,7 +446,7 @@ boolean filters (int eventType) {
  */
 public Object getData () {
 	checkWidget();
-	return ((state & KEYED_DATA) != 0) ? ((Object []) data) [0] : data;
+	return (state & KEYED_DATA) != 0 ? ((Object []) data) [0] : data;
 }
 
 /**

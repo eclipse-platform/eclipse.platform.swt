@@ -395,7 +395,7 @@ void error (int code) {
  */
 public Object getData () {
 	checkWidget();
-	return ((state & KEYED_DATA) != 0) ? ((Object []) data) [0] : data;
+	return (state & KEYED_DATA) != 0 ? ((Object []) data) [0] : data;
 }
 /**
  * Returns the application defined property of the receiver
