@@ -45,6 +45,7 @@ public class ControlExample {
 			new ComboTab (this),
 			new CComboTab (this),
 			new CoolBarTab (this),
+			new CTabFolderTab (this),
 			new DialogTab (this),
 			new LabelTab (this),
 			new CLabelTab (this),
