@@ -1807,7 +1807,7 @@ public static String getPlatform () {
  * @return the SWT version number
  */
 public static int getVersion () {
-	return Callback.getVersion ();
+	return Library.getVersion ();
 }
 
 /**

@@ -12,5 +12,7 @@
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/motif"/>
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/common"/>
     <classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
+    <classpathentry kind="src" path="Eclipse SWT PI/motif"/>
+    <classpathentry kind="src" path="Eclipse SWT PI/common_j2me"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

@@ -6,8 +6,23 @@
 /**
  * Callback implementation.
  */
-#include "globals.h"
+#include "swt.h"
 #include "callback.h"
+
+/* --------------- callback globals ----------------- */
+
+SWT_CALLBACKINFO dllCallbackInfo[MAX_CALLBACKS];
+jfieldID objectID;
+jfieldID addressID;
+jfieldID methodID;
+jfieldID signatureID;
+jfieldID isStaticID;
+jfieldID argCountID;
+jfieldID isArrayBasedID;
+int callbackCached;
+int initialized;
+int counter;
+int CallbacksEnabled = 1;
 
 /* --------------- callback functions --------------- */
 
@@ -205,13 +220,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_unbind
     }
 }
 
-/* 
- * Indicates wheter callbacks should be fired.
- *
- * WARNING - This var has to be a global. Do not multidata enable it.
- */  
-static int CallbacksEnabled = 1;
-
 /*
  * Class:     org_eclipse_swt_internal_Callback
  * Method:    setEnabled
@@ -330,5 +338,3 @@ JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_Callback_getPlatform
 }
 
 /* ------------- callback class calls end --------------- */
-
-

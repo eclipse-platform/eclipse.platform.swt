@@ -129,27 +129,6 @@ public static int pow2(int n) {
 }
 
 /**
- * Loads a library if the underlying platform supports this.
- * If not, it is assumed that the library in question was 
- * properly made available in some other fashion.
- *
- * @param name the name of the library to load
- *
- * @exception SecurityException
- *   if the library was not allowed to be loaded
- * @exception SWTError <ul>
- *    <li>ERROR_FAILED_LOAD_LIBRARY - if the library could not be loaded</li>
- * </ul>
- */
-public static void loadLibrary(String name) {
-	try {
-		System.loadLibrary (name);
-	} catch (UnsatisfiedLinkError e) {
-		SWT.error(SWT.ERROR_FAILED_LOAD_LIBRARY,e);
-	}
-}
-
-/**
  * Open a file if such things are supported.
  * 
  * @param filename the name of the file to open

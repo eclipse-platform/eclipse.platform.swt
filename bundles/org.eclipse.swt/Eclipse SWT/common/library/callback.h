@@ -12,6 +12,7 @@
 int callback(int index, ...);
 
 #ifdef WIN32
+#include "windows.h"
 #define PLATFORM "win32"
 #define RETURN_TYPE LRESULT CALLBACK
 #define RETURN_CAST (LRESULT)

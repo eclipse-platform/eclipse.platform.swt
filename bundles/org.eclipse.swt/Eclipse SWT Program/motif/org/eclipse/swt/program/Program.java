@@ -527,8 +527,8 @@ static boolean kde_init () {
 	/* TEMPORARY CODE */
 	if (true) return false;
 	try {
-		Callback.loadLibrary("swt-kde");
-	} catch (SWTError e) {
+		Library.loadLibrary("swt-kde");
+	} catch (Throwable e) {
 		return false;
 	}
 
@@ -864,8 +864,8 @@ public String toString () {
 }
 static boolean gnome_init () {
 	try {
-		Callback.loadLibrary("swt-gnome");
-	} catch (SWTError e) {
+		Library.loadLibrary("swt-gnome");
+	} catch (Throwable e) {
 		return false;
 	}
 	return true;
@@ -1034,8 +1034,8 @@ ImageData cde_getImageData() {
  */
 static boolean cde_init( Display display ) {
 	try {
-		Callback.loadLibrary("swt-cde");
-	} catch (SWTError e) {
+		Library.loadLibrary("swt-cde");
+	} catch (Throwable e) {
 		return false;
 	}
 
