@@ -1036,6 +1036,7 @@ public class OS {
 	public static final int TBSTATE_ENABLED = 0x4;
 	public static final int TBSTYLE_AUTOSIZE = 0x10;
 	public static final int TBSTYLE_EX_DRAWDDARROWS = 0x1;
+	public static final int TBSTYLE_EX_HIDECLIPPEDBUTTONS = 0x10;
 	public static final int TBSTYLE_EX_MIXEDBUTTONS = 0x8;
 	public static final int TBSTYLE_FLAT = 0x800;
 	public static final int TBSTYLE_LIST = 0x1000;

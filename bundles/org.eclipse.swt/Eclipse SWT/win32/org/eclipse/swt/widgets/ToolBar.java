@@ -256,7 +256,7 @@ void createHandle () {
 	OS.SendMessage (handle, OS.TB_SETBUTTONSIZE, 0, 0);
 
 	/* Set the extended style bits */
-	int bits = OS.TBSTYLE_EX_DRAWDDARROWS | OS.TBSTYLE_EX_MIXEDBUTTONS;
+	int bits = OS.TBSTYLE_EX_DRAWDDARROWS | OS.TBSTYLE_EX_MIXEDBUTTONS | OS.TBSTYLE_EX_HIDECLIPPEDBUTTONS;
 	OS.SendMessage (handle, OS.TB_SETEXTENDEDSTYLE, 0, bits);
 }
 
@@ -1021,9 +1021,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			        	int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lpnmhi.idNew, 0);
 			        	RECT rect = new RECT ();
 			        	OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
-			            if (rect.left >= client.right || rect.top >= client.bottom) {
-		                	return LRESULT.ONE;
-		                }
+						if (rect.right > client.right || rect.bottom > client.bottom) {
+							return LRESULT.ONE;
+						}
 					break;
 				}
 			}
