@@ -1178,7 +1178,7 @@ public void setDoubleClickEnabled (boolean doubleClick) {
  */
 public void setEchoChar (char echo) {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) return;
+	if ((style & SWT.MULTI) != 0) return;
 	if (echo != 0) {
 		if ((echo = (char) wcsToMbcs (echo, getCodePage ())) == 0) echo = '*';
 	}
