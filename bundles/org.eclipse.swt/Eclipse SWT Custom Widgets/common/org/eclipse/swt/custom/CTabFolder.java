@@ -1740,7 +1740,7 @@ private void setSelection(int index, boolean notify) {
 }
 
 private void updateCloseBar() {
-	int imageHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN - 2;
+	int imageHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN - 4;
 	if (imageHeight < 8) return;
 	
 	if (closeImage != null && closeImage.getBounds().height == imageHeight) return;
@@ -1785,7 +1785,7 @@ private void updateCloseBar() {
 }
 private void updateArrowBar() {
 	
-	int imageHeight = tabHeight - 2;
+	int imageHeight = tabHeight - 6;
 	if (imageHeight < 10) return;
 	
 	if (arrowLeftImage != null && arrowLeftImage.getBounds().height == imageHeight) return;	
@@ -1815,7 +1815,7 @@ private void updateArrowBar() {
 	gc.setBackground(black);
 	//draw a 10x5 '<' centered vertically in image
 	int h = (imageHeight / 2 )* 2;
-	int midpoint = h / 2;
+	int midpoint = h / 2 - 1;
 	int[] pointArr = new int[] {6, midpoint - 5,
                                          1, midpoint, 
 		                                 6,  midpoint + 5,};
