@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 
@@ -22,13 +23,79 @@ public class TextLayout {
 	static class StyleItem {
 		TextStyle style;
 		int start;
+		int atsuStyle;
+
+		void createStyle(Font defaultFont) {
+			if (atsuStyle != 0) return;
+			int[] buffer = new int[1];
+			OS.ATSUCreateStyle(buffer);
+			atsuStyle = buffer[0];
+			if (atsuStyle == 0) SWT.error(SWT.ERROR_NO_HANDLES);	
+			int length = 0, ptrLength = 0, index = 0;
+			Font font = null;
+			Color foreground = null;
+			if (style != null) {
+				font = style.font;
+				foreground = style.foreground;
+			}
+			if (font == null) font = defaultFont;
+			if (font != null) {
+				length += 2;
+				ptrLength += 8;
+			}
+			if (foreground != null) {
+				length += 1;
+				ptrLength += RGBColor.sizeof;
+			}
+			int[] tags = new int[length];
+			int[] sizes = new int[length];
+			int[] values = new int[length];
+			int ptr = OS.NewPtr(ptrLength), ptr1 = ptr;
+			if (font != null) {
+				buffer[0] = font.handle;
+				tags[index] = OS.kATSUFontTag;
+				sizes[index] = 4;
+				values[index] = ptr1;
+				OS.memcpy(values[index], buffer, sizes[index]);
+				ptr1 += sizes[index];
+				index++;
+
+				buffer[0] = OS.X2Fix(font.size);
+				tags[index] = OS.kATSUSizeTag;
+				sizes[index] = 4;
+				values[index] = ptr1;
+				OS.memcpy(values[index], buffer, sizes[index]);
+				ptr1 += sizes[index];
+				index++;
+			}
+			if (foreground != null) {
+				RGBColor rgb = new RGBColor ();
+				float[] color = foreground.handle;
+				rgb.red = (short) (color [0] * 0xffff);
+				rgb.green = (short) (color [1] * 0xffff);
+				rgb.blue = (short) (color [2] * 0xffff);		
+				tags[index] = OS.kATSUColorTag;
+				sizes[index] = RGBColor.sizeof;
+				values[index] = ptr1;
+				OS.memcpy(values[index], rgb, sizes[index]);
+				ptr1 += sizes[index];
+				index++;
+			}
+			OS.ATSUSetAttributes(atsuStyle, tags.length, tags, sizes, values);
+			OS.DisposePtr(ptr);	
+		}
+
+		void freeStyle() {
+			if (atsuStyle == 0) return;
+			OS.ATSUDisposeStyle(atsuStyle);
+			atsuStyle = 0;
+		}
 	}
 	
 	Device device;
 	Font font;
 	String text;
 	int textPtr;
-	TextStyle style;
 	StyleItem[] styles;
 	int layout;
 	int spacing;	
@@ -69,22 +136,11 @@ void computeRuns() {
 	if (breaks != null) return;
 	int length = text.length();
 	if (length != 0) {
-		if (style != null) style.dispose();
-		style = new TextStyle(device, font, null, null);
-		style.createStyle();
-		OS.ATSUSetRunStyle(layout, style.style, 0, length);	
 		for (int i = 0; i < styles.length - 1; i++) {
 			StyleItem run = styles[i];
-			TextStyle style = run.style;
-			if (style != null) {
-				//TODO - find better solution
-				boolean isNull = style.font == null;
-				if (isNull) style.font = font;
-				style.createStyle();
-				if (isNull) style.font = null;
-				int runLength = styles[i + 1].start - run.start;
-				OS.ATSUSetRunStyle(layout, style.style, run.start, runLength);
-			}
+			run.createStyle(font);
+			int runLength = styles[i + 1].start - run.start;
+			OS.ATSUSetRunStyle(layout, run.atsuStyle, run.start, runLength);
 		}
 		int[] buffer = new int[1];
 		OS.ATSUGetLayoutControl(layout, OS.kATSULineWidthTag, 4, buffer, null);
@@ -122,11 +178,10 @@ void computeRuns() {
 
 public void dispose() {
 	if (layout == 0) return;
+	freeRuns();
 	font = null;
 	text = null;
 	styles = null;
-	if (style != null) style.dispose();
-	style = null;
 	if (layout != 0) OS.ATSUDisposeTextLayout(layout);
 	layout = 0;
 	if (textPtr != 0) OS.DisposePtr(textPtr);
@@ -185,6 +240,10 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 
 void freeRuns() {
 	if (breaks == null) return;
+	for (int i = 0; i < styles.length; i++) {
+		StyleItem run = styles[i];
+		run.freeStyle();
+	}
 	breaks = lineX = lineWidth = lineHeight = lineAscent = null;
 }
 
@@ -363,8 +422,18 @@ int _getOffset (int offset, int movement, boolean forward) {
 	}
 	if (forward) {
 		OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
+		if (movement == MOVEMENT_WORD) {
+			while (newOffset[0] < length && Compatibility.isWhitespace(text.charAt(newOffset[0]))) {
+				newOffset[0]++;
+			}
+		}
 	} else {
 		OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
+		if (movement == MOVEMENT_WORD) {
+			while (newOffset[0] > 1 && Compatibility.isWhitespace(text.charAt(newOffset[0] - 1))) {
+				newOffset[0]--;
+			}
+		}
 	}
 	return newOffset[0];
 }
@@ -454,6 +523,7 @@ public void setAlignment (int alignment) {
 	int mask = SWT.LEFT | SWT.CENTER | SWT.RIGHT;
 	alignment &= mask;
 	if (alignment == 0) return;
+	if (alignment == getAlignment()) return;
 	freeRuns();
 	if ((alignment & SWT.LEFT) != 0) alignment = SWT.LEFT; 
 	if ((alignment & SWT.RIGHT) != 0) alignment = SWT.RIGHT; 
@@ -480,6 +550,8 @@ void setLayoutControl(int tag, int value, int size) {
 public void setFont (Font font) {
 	checkLayout ();
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.font == font) return;
+	if (font != null && font.equals(this.font)) return;
 	freeRuns();
 	this.font = font;
 }
@@ -489,8 +561,9 @@ public void setOrientation(int orientation) {
 	int mask = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
 	orientation &= mask;
 	if (orientation == 0) return;
-	freeRuns();
 	if ((orientation & SWT.LEFT_TO_RIGHT) != 0) orientation = SWT.LEFT_TO_RIGHT;
+	if (orientation == getOrientation()) return;
+	freeRuns();
 	int lineDir = OS.kATSULeftToRightBaseDirection;
 	if (orientation == SWT.RIGHT_TO_LEFT) lineDir = OS.kATSURightToLeftBaseDirection;
 	setLayoutControl(OS.kATSULineDirectionTag, lineDir, 1);
@@ -499,6 +572,7 @@ public void setOrientation(int orientation) {
 public void setSpacing (int spacing) {
 	checkLayout();
 	if (spacing < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.spacing == spacing) return;
 	this.spacing = spacing;
 }
 
@@ -507,9 +581,26 @@ public void setStyle (TextStyle style, int start, int end) {
 	int length = text.length();
 	if (length == 0) return;
 	if (start > end) return;
-	freeRuns();
 	start = Math.min(Math.max(0, start), length - 1);
-	end = Math.min(Math.max(0, end), length - 1);	
+	end = Math.min(Math.max(0, end), length - 1);
+	int low = -1;
+	int high = styles.length;
+	while (high - low > 1) {
+		int index = (high + low) / 2;
+		if (start <= styles[index].start) {
+			high = index;
+		} else {
+			low = index;
+		}
+	}
+	if (0 <= high && high < styles.length) {
+		StyleItem item = styles[high];
+		if (item.start == start && styles[high + 1].start - 1 == end) {
+			if (style == item.style) return;
+			if (style != null && style.equals(item.style)) return;
+		}
+	}
+	freeRuns();
 	int count = 0, i;
 	StyleItem[] newStyles = new StyleItem[styles.length + 2];
 	for (i = 0; i < styles.length; i++) {
@@ -521,14 +612,21 @@ public void setStyle (TextStyle style, int start, int end) {
 	newItem.start = start;
 	newItem.style = style;
 	newStyles[count++] = newItem;
-	for (; i<styles.length; i++) {
-		StyleItem item = styles[i];
-		if (item.start >= end) break;
+	if (styles[i].start > end) {
+		newItem = new StyleItem();
+		newItem.start = end + 1;
+		newItem.style = styles[i -1].style;
+		newStyles[count++] = newItem;
+	} else {
+		for (; i<styles.length; i++) {
+			StyleItem item = styles[i];
+			if (item.start > end) break;
+		}
+		if (end != styles[i].start - 1) {
+			i--;
+			styles[i].start = end + 1;
+		}
 	}
-	newItem = new StyleItem();
-	newItem.style = styles[Math.max(0, i - 1)].style;
-	newItem.start = end + 1;
-	newStyles[count++] = newItem;
 	for (; i<styles.length; i++) {
 		StyleItem item = styles[i];
 		if (item.start > end) newStyles[count++] = item;
@@ -543,6 +641,16 @@ public void setStyle (TextStyle style, int start, int end) {
 
 public void setTabs(int[] tabs) {
 	checkLayout();
+	if (this.tabs == null && tabs == null) return;
+	if (this.tabs != null && tabs !=null) {
+		if (this.tabs.length == tabs.length) {
+			int i;
+			for (i = 0; i <tabs.length; i++) {
+				if (this.tabs[i] != tabs[i]) break;
+			}
+			if (i == tabs.length) return;
+		}
+	}
 	freeRuns();
 	this.tabs = tabs;
 	if (tabsPtr != 0) OS.DisposePtr(tabsPtr);
@@ -574,6 +682,7 @@ public void setTabs(int[] tabs) {
 public void setText (String text) {
 	checkLayout ();
 	if (text == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (text.equals(this.text)) return;
 	freeRuns();
 	this.text = text;
 	int length = text.length();
@@ -594,6 +703,7 @@ public void setText (String text) {
 public void setWidth (int width) {
 	checkLayout ();
 	if (width < -1 || width == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (width == getWidth()) return;
 	freeRuns();
 	setLayoutControl(OS.kATSULineWidthTag, OS.Long2Fix(width), 4);
 }
