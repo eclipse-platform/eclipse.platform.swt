@@ -27,15 +27,15 @@ public class TreeItem extends Item {
 	static final int MARGIN_TEXT = 3;			/* the left and right margins within the text's space */
 
 public TreeItem (Tree parent, int style) {
-	this (parent, style, checkNull (parent).getItemCount ());
+	this (parent, style, checkNull (parent).items.length);
 }
 public TreeItem (Tree parent, int style, int index) {
 	super (parent, style);
-	int validItemIndex = parent.getItemCount ();
+	int validItemIndex = parent.items.length;
 	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
 	parent.createItem (this, index);
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (validColumnCount > 1) {
 		texts = new String [validColumnCount];
 		textWidths = new int [validColumnCount];
@@ -43,17 +43,17 @@ public TreeItem (Tree parent, int style, int index) {
 	}
 }
 public TreeItem (TreeItem parentItem, int style) {
-	this (parentItem, style, checkNull (parentItem).getItemCount ());
+	this (parentItem, style, checkNull (parentItem).items.length);
 }
 public TreeItem (TreeItem parentItem, int style, int index) {
 	super (checkNull (parentItem).parent, style);
 	this.parentItem = parentItem;
-	parent = parentItem.getParent ();
+	parent = parentItem.parent;
 	depth = parentItem.depth + 1;
-	int validItemIndex = parentItem.getItemCount ();
+	int validItemIndex = parentItem.items.length;
 	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
 	parentItem.addItem (this, index);
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (validColumnCount > 1) {
 		texts = new String [validColumnCount];
 		textWidths = new int [validColumnCount];
@@ -62,7 +62,7 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 }
 void addColumn (TreeColumn column) {
 	int index = column.getIndex ();
-	int columnCount = parent.getColumnCount ();
+	int columnCount = parent.columns.length;
 
 	/*
 	 * The texts, textWidths and images arrays always maintain at least one index, representing
@@ -270,13 +270,13 @@ public Color getBackground () {
 }
 public Color getBackground (int columnIndex) {
 	checkWidget ();
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return getBackground ();
 	if (cellBackgrounds == null || cellBackgrounds [columnIndex] == null) return getBackground ();
 	return cellBackgrounds [columnIndex];
 }
 public Rectangle getBounds () {
-	int columnCount = parent.getColumnCount ();
+	int columnCount = parent.columns.length;
 	int focusX = getFocusX ();
 	
 	/*
@@ -287,7 +287,7 @@ public Rectangle getBounds () {
 			focusX,
 			parent.getItemY (this),
 			getTextPaintWidth (0),
-			parent.getItemHeight ());
+			parent.itemHeight);
 	}
 	
 	/*
@@ -299,12 +299,12 @@ public Rectangle getBounds () {
 		focusX,
 		parent.getItemY (this),
 		lastColumn.width - parent.horizontalOffset - focusX,
-		parent.getItemHeight ());
+		parent.itemHeight);
 }
 public Rectangle getBounds (int columnIndex) {
 	checkWidget ();
-	int columnCount = parent.getColumnCount ();
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int columnCount = parent.columns.length;
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) {
 		return new Rectangle (0, 0, 0, 0);
 	}
@@ -316,14 +316,14 @@ public Rectangle getBounds (int columnIndex) {
 	if (columnCount == 0) {
 		int x = getExpanderBounds ().x;
 		int width = getFocusX () + getTextPaintWidth (0) - x;
-		return new Rectangle (x, parent.getItemY (this), width, parent.getItemHeight ());
+		return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight);
 	}
 	TreeColumn column = parent.getColumn (columnIndex);
-	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.getItemHeight ());
+	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.itemHeight);
 }
 Rectangle getCheckboxBounds () {
 	if ((parent.getStyle () & SWT.CHECK) == 0) return null;
-	int itemHeight = parent.getItemHeight ();
+	int itemHeight = parent.itemHeight;
 	Rectangle result = parent.uncheckedImage.getBounds ();
 	Point[] hLinePoints = getHconnectorEndpoints ();
 	result.x = hLinePoints [1].x;
@@ -386,7 +386,7 @@ public boolean getExpanded () {
  * receiver currently has children or not.
  */ 
 Rectangle getExpanderBounds () {
-	int itemHeight = parent.getItemHeight ();
+	int itemHeight = parent.itemHeight;
 	int x = parent.getCellPadding () - parent.horizontalOffset;
 	int y = parent.getItemY (this);
 	if (parentItem != null) {
@@ -403,12 +403,12 @@ Rectangle getExpanderBounds () {
 Rectangle getFocusBounds () {
 	int x = getFocusX ();
 	int width;
-	if (parent.getColumnCount () == 0) {
+	if (parent.columns.length == 0) {
 		width = getTextPaintWidth (0) - 1;
 	} else {
 		width = parent.getColumn (0).width - parent.horizontalOffset - x - 2;
 	}
-	return new Rectangle (x, parent.getItemY (this) + 1, width, parent.getItemHeight () - 1);
+	return new Rectangle (x, parent.getItemY (this) + 1, width, parent.itemHeight - 1);
 }
 /*
  * Returns the x value of the receiver's focus rectangle.
@@ -428,7 +428,7 @@ public Font getFont () {
 }
 public Font getFont (int columnIndex) {
 	checkWidget ();
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return getFont ();
 	if (cellFonts == null || cellFonts [columnIndex] == null) return getFont ();
 	return cellFonts [columnIndex];
@@ -448,7 +448,7 @@ public Color getForeground () {
 }
 public Color getForeground (int columnIndex) {
 	checkWidget ();
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return getForeground ();
 	if (cellForegrounds == null || cellForegrounds [columnIndex] == null) return getForeground ();
 	return cellForegrounds [columnIndex];
@@ -464,7 +464,7 @@ public boolean getGrayed () {
 Point[] getHconnectorEndpoints () {
 	Rectangle expanderBounds = getExpanderBounds ();
 	int x, width;
-	if (getItemCount () == 0) {
+	if (items.length == 0) {
 		x = expanderBounds.x + Compatibility.ceil (expanderBounds.width, 2);
 		width = Compatibility.floor (expanderBounds.width, 2) + INDENT_HIERARCHY;
 	} else {
@@ -483,12 +483,12 @@ Point[] getHconnectorEndpoints () {
 Rectangle getHitBounds () {
 	int contentX = getContentX (0);
 	int width = 0;
-	if (parent.getColumnCount () == 0) {
+	if (parent.columns.length == 0) {
 		width = getFocusX () + getTextPaintWidth (0) - contentX; 
 	} else {
 		width = parent.getColumn (0).width - parent.horizontalOffset - contentX;
 	}
-	return new Rectangle (contentX, parent.getItemY (this), width, parent.getItemHeight ());
+	return new Rectangle (contentX, parent.getItemY (this), width, parent.itemHeight);
 }
 public Image getImage () {
 	checkWidget ();
@@ -496,18 +496,18 @@ public Image getImage () {
 }
 public Image getImage (int columnIndex) {
 	checkWidget ();
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return null;
 	return images [columnIndex];
 }
 public Rectangle getImageBounds (int columnIndex) {
 	checkWidget ();
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return new Rectangle (0,0,0,0);
 
 	int padding = parent.getCellPadding ();
 	int startX = getContentX (columnIndex);
-	int itemHeight = parent.getItemHeight ();
+	int itemHeight = parent.itemHeight;
 	int y = parent.getItemY (this);
 	Image image = images [columnIndex]; 
 	if (image == null) {
@@ -574,7 +574,7 @@ public String getText () {
 }
 public String getText (int columnIndex) {
 	checkWidget ();
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return "";
 	if (texts [columnIndex] == null) return "";
 	return texts [columnIndex];
@@ -622,9 +622,9 @@ boolean isAvailable () {
  */
 boolean isLastChild () {
 	if (parentItem != null) {
-		return getIndex () == parentItem.getItemCount () - 1;
+		return getIndex () == parentItem.items.length - 1;
 	}
-	return getIndex () == parent.getItemCount () - 1;
+	return getIndex () == parent.items.length - 1;
 }
 boolean isSelected () {
 	return parent.getSelectionIndex (this) != -1;
@@ -660,7 +660,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	
 	int y = parent.getItemY (this);
 	int padding = parent.getCellPadding ();
-	int itemHeight = parent.getItemHeight ();
+	int itemHeight = parent.itemHeight;
 
 	/* draw the background color if this item has a custom color set */
 	Color background = getBackground (columnIndex);
@@ -724,14 +724,14 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		 * Draw hierarchy lines that are needed by other items that are shown below
 		 * this item but whose parents are shown above.
 		 */
-		TreeItem item = getParentItem ();
+		TreeItem item = parentItem;
 		while (item != null) {
 			if (!item.isLastChild ()) {
 				Rectangle itemExpanderBounds = item.getExpanderBounds ();
 				lineX = itemExpanderBounds.x + itemExpanderBounds.width / 2;
 				gc.drawLine (lineX, y, lineX, y + itemHeight);
 			}
-			item = item.getParentItem ();
+			item = item.parentItem;
 		}
 		gc.setForeground (oldForeground);
 		
@@ -823,10 +823,10 @@ void recomputeTextWidths (GC gc) {
 	}
 }
 void redrawItem () {
-	parent.redraw (0, parent.getItemY (this), parent.getClientArea ().width, parent.getItemHeight (), false);
+	parent.redraw (0, parent.getItemY (this), parent.getClientArea ().width, parent.itemHeight, false);
 }
 void removeColumn (TreeColumn column, int index) {
-	int columnCount = parent.getColumnCount ();
+	int columnCount = parent.columns.length;
 	if (columnCount == 0) {
 		/* reverts to normal tree when last column disposed */
 		cellBackgrounds = cellForegrounds = null;
@@ -919,7 +919,7 @@ public void setBackground (int columnIndex, Color value) {
 	if (value != null && value.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (cellBackgrounds == null) {
 		cellBackgrounds = new Color [validColumnCount];
@@ -995,7 +995,7 @@ public void setFont (int columnIndex, Font value) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (cellFonts == null) cellFonts = new Font [validColumnCount];
 	if (cellFonts [columnIndex] == value) return;
@@ -1030,7 +1030,7 @@ public void setForeground (int columnIndex, Color value) {
 	if (value != null && value.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (cellForegrounds == null) {
 		cellForegrounds = new Color [validColumnCount];
@@ -1065,7 +1065,7 @@ public void setImage (int columnIndex, Image value) {
 	if (value != null && value.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (value == images [columnIndex]) return;
 	if (value != null && value.equals (images [columnIndex])) return;
@@ -1080,9 +1080,9 @@ public void setImage (int columnIndex, Image value) {
 	 * may be adjusted, in which case a full redraw is needed.
 	 */
 	if (parent.imageHeight == 0) {
-		int oldItemHeight = parent.getItemHeight ();
+		int oldItemHeight = parent.itemHeight;
 		parent.setImageHeight (value.getBounds ().height);
-		if (oldItemHeight != parent.getItemHeight ()) {
+		if (oldItemHeight != parent.itemHeight) {
 			if (columnIndex == 0) {
 				parent.col0ImageWidth = value.getBounds ().width;
 			}
@@ -1098,7 +1098,7 @@ public void setImage (int columnIndex, Image value) {
 	if (columnIndex == 0 && parent.col0ImageWidth == 0) {
 		parent.col0ImageWidth = value.getBounds ().width;
 		/* redraw the column */
-		if (parent.getColumnCount () == 0) {
+		if (parent.columns.length == 0) {
 			parent.redraw ();
 		} else {
 			parent.redraw (
@@ -1129,7 +1129,7 @@ public void setText (String[] value) {
 public void setText (int columnIndex, String value) {
 	checkWidget ();
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int validColumnCount = Math.max (1, parent.getColumnCount ());
+	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
 	if (value.equals (getText (columnIndex))) return;
 	texts [columnIndex] = value;

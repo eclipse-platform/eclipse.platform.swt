@@ -163,8 +163,7 @@ static int checkStyle (int style) {
  * -1 if the x lies to the right of the last column.
  */
 int computeColumnIntersect (int x, int startColumn) {
-	int numColumns = getColumnCount ();
-	for (int i = startColumn; i < numColumns; i++) {
+	for (int i = startColumn; i < columns.length; i++) {
 		int endX = columns [i].getX () + columns [i].width;
 		if (x <= endX) return i;
 	}
@@ -184,7 +183,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) {
 		height = hHint;
 	} else {
-		height = getHeaderHeight () + items.length * getItemHeight ();
+		height = getHeaderHeight () + items.length * itemHeight;
 	}
 	Rectangle result = computeTrim (0, 0, width, height);
 	return new Point (result.width, result.height);
@@ -247,7 +246,7 @@ public void deselectAll () {
 	}
 }
 void destroyItem (TreeColumn column) {
-	int numColumns = getColumnCount ();
+	int numColumns = columns.length;
 	int index = column.getIndex ();
 
 	TreeColumn[] newColumns = new TreeColumn [columns.length - 1];
@@ -433,14 +432,14 @@ void doArrowLeft (int stateMask) {
 		getHorizontalBar ().setSelection (horizontalOffset);
 		return;
 	}
-	if (focusItem.getExpanded ()) {
+	if (focusItem.expanded) {
 		focusItem.setExpanded (false);
 		Event newEvent = new Event ();
 		newEvent.item = focusItem;
 		sendEvent (SWT.Collapse, newEvent);
 		return;
 	}
-	TreeItem parentItem = focusItem.getParentItem ();
+	TreeItem parentItem = focusItem.parentItem;
 	if (parentItem == null) return;
 	
 	selectItem (parentItem, false);
@@ -482,7 +481,7 @@ void doArrowRight (int stateMask) {
 	}
 	TreeItem[] children = focusItem.items;
 	if (children.length == 0) return;
-	if (!focusItem.getExpanded ()) {
+	if (!focusItem.expanded) {
 		focusItem.setExpanded (true);
 		Event newEvent = new Event ();
 		newEvent.item = focusItem;
@@ -490,7 +489,7 @@ void doArrowRight (int stateMask) {
 		sendEvent (SWT.Expand, newEvent);
 		inExpand = false;
 		if (isDisposed ()) return;
-		if (focusItem.getItemCount () == 0) {
+		if (focusItem.items.length == 0) {
 			focusItem.expanded = false;
 		}
 		return;
@@ -675,7 +674,7 @@ void doEnd (int stateMask) {
 	sendEvent (SWT.Selection, newEvent);
 }
 void doFocusIn () {
-	if (getItemCount () == 0) return;
+	if (items.length == 0) return;
 	if (focusItem != null) {
 		redrawItem (focusItem.availableIndex, true);
 		return;
@@ -806,7 +805,7 @@ void doMouseDoubleClick (Event event) {
 	if (selectedItem != lastClickedItem) return;
 
 	/* if click was in expander box then don't fire event */
-	if (selectedItem.getItemCount () > 0 && selectedItem.getExpanderBounds ().contains (event.x, event.y)) {
+	if (selectedItem.items.length > 0 && selectedItem.getExpanderBounds ().contains (event.x, event.y)) {
 		return;
 	}
 	
@@ -823,9 +822,9 @@ void doMouseDown (Event event) {
 	TreeItem selectedItem = availableItems [index];
 	
 	/* if click was in expander box */
-	if (selectedItem.getItemCount () > 0 && selectedItem.getExpanderBounds ().contains (event.x, event.y)) {
+	if (selectedItem.items.length > 0 && selectedItem.getExpanderBounds ().contains (event.x, event.y)) {
 		if (event.button != 1) return;
-		boolean expand = !selectedItem.getExpanded ();
+		boolean expand = !selectedItem.expanded;
 		selectedItem.setExpanded (expand);
 		Event newEvent = new Event ();
 		newEvent.item = selectedItem;
@@ -834,7 +833,7 @@ void doMouseDown (Event event) {
 			sendEvent (SWT.Expand, newEvent);
 			inExpand = false;
 			if (isDisposed ()) return;
-			if (selectedItem.getItemCount () == 0) {
+			if (selectedItem.items.length == 0) {
 				selectedItem.expanded = false;
 			}
 		} else {
@@ -845,7 +844,7 @@ void doMouseDown (Event event) {
 	/* if click was in checkbox */
 	if ((style & SWT.CHECK) != 0 && selectedItem.getCheckboxBounds ().contains (event.x, event.y)) {
 		if (event.button != 1) return;
-		selectedItem.setChecked (!selectedItem.getChecked ());
+		selectedItem.setChecked (!selectedItem.checked);
 		Event newEvent = new Event ();
 		newEvent.item = selectedItem;
 		newEvent.detail = SWT.CHECK;
@@ -1113,7 +1112,7 @@ void doPageUp (int stateMask) {
 void doPaint (Event event) {
 	GC gc = event.gc;
 	Rectangle clipping = gc.getClipping ();
-	int numColumns = getColumnCount ();
+	int numColumns = columns.length;
 	int startColumn = -1, endColumn = -1;
 	if (numColumns > 0) {
 		startColumn = computeColumnIntersect (clipping.x, 0);
@@ -1455,7 +1454,7 @@ void headerDoMouseDown (Event event) {
 		int x = column.getX () + column.width;
 		/* if close to a column separator line then prepare for column resize */
 		if (Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
-			if (!column.getResizable ()) return;
+			if (!column.resizable) return;
 			resizeColumn = column;
 			resizeColumnX = x;
 			return;
@@ -1480,7 +1479,7 @@ void headerDoMouseMove (Event event) {
 			TreeColumn column = columns [i]; 
 			int x = column.getX () + column.width;
 			if (Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
-				if (column.getResizable ()) {
+				if (column.resizable) {
 					setCursor (resizeCursor);
 				} else {
 					setCursor (null);
@@ -1526,7 +1525,7 @@ void headerDoMouseUp (Event event) {
 	resizeColumn = null;
 }
 void headerDoPaint (Event event) {
-	int numColumns = getColumnCount ();
+	int numColumns = columns.length;
 	GC gc = event.gc;
 	Rectangle clipping = gc.getClipping ();
 	int startColumn = -1, endColumn = -1;
@@ -1616,7 +1615,7 @@ int indexOf (TreeColumn column) {
  * or the parent item was expanded) and the parent is available.
  */
 void makeAvailable (TreeItem item) {
-	TreeItem parentItem = item.getParentItem ();
+	TreeItem parentItem = item.parentItem;
 	int parentAvailableIndex = parentItem.availableIndex;
 	TreeItem[] parentAvailableDescendents = parentItem.computeAvailableDescendents ();
 	TreeItem[] newAvailableItems = new TreeItem [availableItems.length + 1];
@@ -1719,7 +1718,7 @@ void reassignFocus () {
 	
 	/* reassign to current focus' parent item if it has one */
 	if (focusItem.parentItem != null) {
-		TreeItem item = focusItem.getParentItem ();
+		TreeItem item = focusItem.parentItem;
 		setFocusItem (item, false);
 		showItem (item);
 		if ((style & SWT.MULTI) != 0) return;
@@ -1916,7 +1915,7 @@ void setImageHeight (int value) {
 public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
 	if (item != null && item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (item != null && item.getParent () != this) return;
+	if (item != null && item.parent != this) return;
 	if (item == insertMarkItem && before == insertMarkPrecedes) return;	/* no change */
 	
 	TreeItem oldInsertItem = insertMarkItem;
@@ -1975,7 +1974,7 @@ public void setTopItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (item.getParent () != this) return;
+	if (item.parent != this) return;
 
 	if (!item.isAvailable ()) item.expandAncestors ();
 	
@@ -2016,9 +2015,9 @@ public void showItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (item.getParent () != this) return;
+	if (item.parent != this) return;
 	
-	if (!item.isAvailable ()) item.getParentItem ().expandAncestors ();
+	if (!item.isAvailable ()) item.parentItem.expandAncestors ();
 	
 	int index = item.availableIndex;
 	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
@@ -2062,7 +2061,7 @@ void updateHorizontalBar () {
 	// TODO revisit
 	
 	/* the horizontal range is never affected by an item change if there are columns */
-	if (getColumnCount () > 0) return;
+	if (columns.length > 0) return;
 	
 	ScrollBar hBar = getHorizontalBar ();
 	int maxX = 0;
