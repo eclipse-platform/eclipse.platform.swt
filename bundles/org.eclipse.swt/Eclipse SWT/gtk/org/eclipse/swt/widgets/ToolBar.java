@@ -98,7 +98,8 @@ Control [] _getChildren () {
 	int count = 0;
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
-		if (items [i].control != null) count++;
+		ToolItem item = items [i];
+		if (item != null && item.control != null) count++;
 	}
 	if (count == 0) return children;
 	Control [] newChildren = new Control [children.length + count];
@@ -106,7 +107,7 @@ Control [] _getChildren () {
 	int index = children.length;
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
-		if (item.control != null) newChildren [index++] = item.control;
+		if (item != null && item.control != null) newChildren [index++] = item.control;
 	}
 	return newChildren;
 }
@@ -234,8 +235,6 @@ public ToolItem [] getItems () {
 	for (int i=0; i<count; i++) {
 		int data = OS.g_list_nth_data (list, i);
 		Widget widget = WidgetTable.get (data);
-		//TEMORARY CODE
-		if (widget == null) return new ToolItem [0];
 		result [i] = (ToolItem) widget;
 	}
 	OS.g_list_free (list);
