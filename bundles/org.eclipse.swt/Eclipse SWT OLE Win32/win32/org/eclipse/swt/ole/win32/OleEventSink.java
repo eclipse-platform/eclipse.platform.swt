@@ -116,11 +116,7 @@ private int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispP
 		
 	OleEvent event = new OleEvent();
 	event.arguments = eventInfo;
-	try {
-		notifyListener(dispIdMember,event);
-	} catch (Throwable t) {
-	}
-
+	notifyListener(dispIdMember,event);
 	return COM.S_OK;
 }
 /**

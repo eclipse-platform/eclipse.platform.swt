@@ -261,14 +261,7 @@ private int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int 
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
-	
-	try {
-		notifyListeners(DND.DragEnter,event);
-	} catch (Throwable e) {	
-		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
-		return COM.S_OK;
-	}
-	
+	notifyListeners(DND.DragEnter,event);
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
@@ -304,10 +297,7 @@ private int DragLeave() {
 	event.widget = this;
 	event.time = OS.GetMessageTime();
 	event.detail = DND.DROP_NONE;
-	try {
-		notifyListeners(DND.DragLeave, event);
-	} catch (Throwable e) {}
-
+	notifyListeners(DND.DragLeave, event);
 	return COM.S_OK;
 }
 
@@ -333,14 +323,7 @@ private int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 		event.type = DND.DragOperationChanged;
 		event.dataType = selectedDataType;
 	}
-	
-	try {
-		notifyListeners(event.type, event);
-	} catch (Throwable e) {
-		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
-		return COM.S_OK;
-	}
-
+	notifyListeners(event.type, event);
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
@@ -371,10 +354,7 @@ private int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEf
 	event.widget = this;
 	event.time = OS.GetMessageTime();
 	event.detail = DND.DROP_NONE;
-	try {
-		notifyListeners(DND.DragLeave, event);
-	} catch (Throwable e) {}
-	
+	notifyListeners(DND.DragLeave, event);
 	event = new DNDEvent();
 	if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
 		keyOperation = -1;
@@ -389,13 +369,7 @@ private int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEf
 	
 	event.dataType = selectedDataType;		
 	event.detail = selectedOperation;
-	try {
-		notifyListeners(DND.DropAccept,event);
-	} catch (Throwable e) {
-		event.detail = DND.DROP_NONE;
-		event.dataType = null;
-	}
-
+	notifyListeners(DND.DropAccept,event);
 	selectedDataType = null;
 	for (int i = 0; i < allowedDataTypes.length; i++) {
 		if (TransferData.sameType(allowedDataTypes[i], event.dataType)){
@@ -428,16 +402,11 @@ private int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEf
 	event.detail = selectedOperation;
 	event.dataType = selectedDataType;
 	event.data = object;
-	try {
-		notifyListeners(DND.Drop,event);
-		selectedOperation = DND.DROP_NONE;
-		if ((allowedOperations & event.detail) == event.detail) {
-			selectedOperation = event.detail;
-		}
-	} catch (Throwable e) {
-		selectedOperation = DND.DROP_NONE;
+	notifyListeners(DND.Drop,event);
+	selectedOperation = DND.DROP_NONE;
+	if ((allowedOperations & event.detail) == event.detail) {
+		selectedOperation = event.detail;
 	}
-	
 	//notify source of action taken		
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);	
 	return COM.S_OK;

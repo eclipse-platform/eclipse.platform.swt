@@ -95,15 +95,10 @@ void disconnect(IUnknown objIUnknown) {
 	}
 }
 private void disposeCOMInterfaces() {
-
-	if (iUnknown != null)
-		iUnknown.dispose();
+	if (iUnknown != null) iUnknown.dispose();
 	iUnknown = null;
-
-	if (iPropertyNotifySink != null)
-		iPropertyNotifySink.dispose();
+	if (iPropertyNotifySink != null) iPropertyNotifySink.dispose();
 	iPropertyNotifySink = null;
-	
 }
 /**
 * Notify listeners of an event.
@@ -130,34 +125,19 @@ private void notifyListener (int eventType, OleEvent event) {
 	eventTable.sendEvent (event);
 }
 private int OnChanged(int dispID) {
-
 	if (eventTable == null || !eventTable.hooks(dispID)) return COM.S_OK;
-	
 	OleEvent event = new OleEvent();
 	event.detail = OLE.PROPERTY_CHANGED;
-	try {
-		notifyListener(dispID,event);
-	} catch (Throwable e) {
-	}
-	
+	notifyListener(dispID,event);
 	return COM.S_OK;
 }
 private int OnRequestEdit(int dispID) {
-
 	if (eventTable == null || !eventTable.hooks(dispID)) return COM.S_OK;
-	
 	OleEvent event = new OleEvent();
 	event.doit = true;
 	event.detail = OLE.PROPERTY_CHANGING;
-	
-	try {
-		notifyListener(dispID,event);
-	} catch (Throwable e) {
-	}
-	
-	if (event.doit) return COM.S_OK;
-
-	return COM.S_FALSE;
+	notifyListener(dispID,event);
+	return (event.doit) ? COM.S_OK : COM.S_FALSE;
 }
 private int QueryInterface(int riid, int ppvObject) {
 	if (riid == 0 || ppvObject == 0)
@@ -182,7 +162,6 @@ int Release() {
 	if (refCount == 0) {
 		disposeCOMInterfaces();
 	}
-	
 	return refCount;
 }
 void removeListener(int propertyID, OleListener listener) {

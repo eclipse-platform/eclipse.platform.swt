@@ -269,11 +269,7 @@ private void drag() {
 	event.widget = this;
 	event.time = OS.GetMessageTime();
 	event.doit = true;
-	try {
-		notifyListeners(DND.DragStart,event);
-	} catch (Throwable e) {
-		return;
-	}
+	notifyListeners(DND.DragStart,event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
 	
 	int[] pdwEffect = new int[1];
@@ -292,10 +288,7 @@ private void drag() {
 	event.time = OS.GetMessageTime();
 	event.doit = (result == COM.DRAGDROP_S_DROP);
 	event.detail = operation;
-
-	try {
-		notifyListeners(DND.DragEnd,event);
-	} catch (Throwable e) {}
+	notifyListeners(DND.DragEnd,event);
 	dataEffect = DND.DROP_NONE;
 }
 
@@ -356,11 +349,7 @@ private int GetData(int pFormatetc, int pmedium) {
 	event.widget = this;
 	event.time = OS.GetMessageTime();
 	event.dataType = transferData;
-	try {
-		notifyListeners(DND.DragSetData,event);
-	} catch (Throwable e) {
-		return COM.E_FAIL;
-	}
+	notifyListeners(DND.DragSetData,event);
 	
 	if (event.data == null) return COM.DV_E_FORMATETC;
 	
