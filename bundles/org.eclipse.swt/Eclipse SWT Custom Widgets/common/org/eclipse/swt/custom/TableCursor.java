@@ -136,6 +136,10 @@ public class TableCursor extends Canvas {
 	Table table;
 	int row, column;
 	Listener tableListener, resizeListener;
+	
+	// By default, invert the list selection colors
+	static final int BACKGROUND = SWT.COLOR_LIST_SELECTION_TEXT;
+	static final int FOREGROUND = SWT.COLOR_LIST_SELECTION;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -162,12 +166,15 @@ public class TableCursor extends Canvas {
  * </ul>
  *
  * @see SWT#BORDER
- * @see Widget#checkSubclass
- * @see Widget#getStyle
+ * @see Widget#checkSubclass()
+ * @see Widget#getStyle()
  */
 public TableCursor(Table parent, int style) {
 	super(parent, style);
 	table = parent;
+	setBackground(null);
+	setForeground(null);
+	
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
@@ -219,8 +226,8 @@ public TableCursor(Table parent, int style) {
 	};
 	int columns = table.getColumnCount();
 	for (int i = 0; i < columns; i++) {
-		TableColumn column = table.getColumn(i);
-		column.addListener(SWT.Resize, resizeListener);
+		TableColumn col = table.getColumn(i);
+		col.addListener(SWT.Resize, resizeListener);
 	}
 	ScrollBar hBar = table.getHorizontalBar();
 	if (hBar != null) {
@@ -276,8 +283,8 @@ void dispose(Event event) {
 			table.removeListener(SWT.MouseDown, tableListener);
 			int columns = table.getColumnCount();
 			for (int i = 0; i < columns; i++) {
-				TableColumn column = table.getColumn(i);
-				column.removeListener(SWT.Resize, resizeListener);
+				TableColumn col = table.getColumn(i);
+				col.removeListener(SWT.Resize, resizeListener);
 			}
 			ScrollBar hBar = table.getHorizontalBar();
 			if (hBar != null) {
@@ -320,8 +327,8 @@ void keyDown(Event event) {
 			break;
 		case SWT.END :
 			{
-				int row = table.getItemCount() - 1;
-				setRowColumn(row, column, true);
+				int i = table.getItemCount() - 1;
+				setRowColumn(i, column, true);
 				break;
 			}
 		case SWT.PAGE_UP :
@@ -362,8 +369,8 @@ void keyDown(Event event) {
 void paint(Event event) {
 	GC gc = event.gc;
 	Display display = getDisplay();
-	gc.setBackground(display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
-	gc.setForeground(display.getSystemColor(SWT.COLOR_LIST_SELECTION));
+	gc.setBackground(getBackground());
+	gc.setForeground(getForeground());
 	gc.fillRectangle(event.x, event.y, event.width, event.height);
 	TableItem item = table.getItem(row);
 	int x = 0, y = 0;
@@ -401,14 +408,14 @@ void tableMouseDown(Event event) {
 	int columns = table.getColumnCount();
 	int start = table.getTopIndex();
 	int end = table.getItemCount();
-	for (int row = start; row < end; row++) {
-		TableItem item = table.getItem(row);
-		for (int column = 0; column < columns; column++) {
-			Rectangle rect = item.getBounds(column);
+	for (int i = start; i < end; i++) {
+		TableItem item = table.getItem(i);
+		for (int j = 0; j < columns; j++) {
+			Rectangle rect = item.getBounds(j);
 			if (rect.y > clientRect.y + clientRect.height)
 				return;
 			if (rect.contains(pt)) {
-				setRowColumn(row, column, true);
+				setRowColumn(i, j, true);
 				setFocus();
 				return;
 			}
@@ -445,8 +452,7 @@ void setRowColumn(int row, int column, boolean notify) {
 
 public void setVisible(boolean visible) {
 	checkWidget();
-	if (visible)
-		resize();
+	if (visible) resize();
 	super.setVisible(visible);
 }
 
@@ -481,6 +487,16 @@ public int getColumn() {
 public TableItem getRow() {
 	checkWidget();
 	return table.getItem(row);
+}
+public void setBackground (Color color) {
+	if (color == null) color = getDisplay().getSystemColor(BACKGROUND);
+	super.setBackground(color);
+	redraw();
+}
+public void setForeground (Color color) {
+	if (color == null) color = getDisplay().getSystemColor(FOREGROUND);
+	super.setForeground(color);
+	redraw();
 }
 /**
  * Positions the TableCursor over the cell at the given row and column in the parent table. 
