@@ -25,23 +25,23 @@ public class Tree extends Composite {
 	int resizeColumnX = -1;
 	boolean inExpand = false;	/* for item creation within Expand callback */
 
-	Color connectorLineColor, gridLineColor, highlightShadowColor, normalShadowColor;
+	Color gridLineColor, highlightShadowColor, normalShadowColor;
 	Color selectionBackgroundColor, selectionForegroundColor;
 	Rectangle expanderBounds, checkboxBounds;
-	Cursor resizeCursor;
-	
+
 	static final int MARGIN_IMAGE = 3;
 	static final int MARGIN_CELL = 1;
 	static final int SIZE_HORIZONTALSCROLL = 5;
 	static final int TOLLERANCE_COLUMNRESIZE = 2;
 	static final int WIDTH_HEADER_SHADOW = 2;
 	static final int WIDTH_CELL_HIGHLIGHT = 1;
-	static final String ELLIPSIS = "...";					//$NON-NLS-1$
-	static final String ID_EXPANDED = "EXPANDED";		//$NON-NLS-1$
-	static final String ID_COLLAPSED = "COLLAPSED";	//$NON-NLS-1$
-	static final String ID_UNCHECKED = "UNCHECKED";	//$NON-NLS-1$
+	static final String ELLIPSIS = "...";						//$NON-NLS-1$
+	static final String ID_EXPANDED = "EXPANDED";				//$NON-NLS-1$
+	static final String ID_COLLAPSED = "COLLAPSED";			//$NON-NLS-1$
+	static final String ID_UNCHECKED = "UNCHECKED";			//$NON-NLS-1$
 	static final String ID_GRAYUNCHECKED = "GRAYUNCHECKED";	//$NON-NLS-1$
-	static final String ID_CHECKMARK = "CHECKMARK";	//$NON-NLS-1$
+	static final String ID_CHECKMARK = "CHECKMARK";			//$NON-NLS-1$
+	static final String ID_CONNECTOR_COLOR = "CONNECTOR_COLOR";	//$NON-NLS-1$
 
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE));
@@ -56,8 +56,6 @@ public Tree (Composite parent, int style) {
 	normalShadowColor = display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
 	selectionBackgroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
 	selectionForegroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
-	resizeCursor = display.getSystemCursor (SWT.CURSOR_SIZEWE);
-	connectorLineColor = new Color (display, 170, 170, 170);
 	initImages (display);
 	expanderBounds = getExpandedImage ().getBounds ();
 	checkboxBounds = getUncheckedImage ().getBounds ();
@@ -374,6 +372,9 @@ public TreeColumn[] getColumns () {
 	System.arraycopy (columns, 0, result, 0, columns.length);
 	return result;
 }
+Color getConnectorColor () {
+	return (Color) display.getData (ID_CONNECTOR_COLOR);
+}
 Image getExpandedImage () {
 	return (Image) display.getData (ID_EXPANDED);
 }
@@ -555,7 +556,7 @@ void headerOnMouseMove (Event event) {
 			int x = column.getX () + column.width;
 			if (Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
 				if (column.resizable) {
-					setCursor (resizeCursor);
+					setCursor (display.getSystemCursor (SWT.CURSOR_SIZEWE));
 				} else {
 					setCursor (null);
 				}
@@ -730,6 +731,7 @@ static void initImages (final Display display) {
 	display.setData (ID_UNCHECKED, new Image (display, unchecked));
 	display.setData (ID_GRAYUNCHECKED, new Image (display, grayUnchecked));
 	display.setData (ID_CHECKMARK, new Image (display, checkmark));
+	display.setData (ID_CONNECTOR_COLOR, new Color (display, 170, 170, 170));
 	
 	display.disposeExec (new Runnable () {
 		public void run() {
@@ -743,11 +745,15 @@ static void initImages (final Display display) {
 			if (grayUnchecked != null) grayUnchecked.dispose ();
 			Image checkmark = (Image) display.getData (ID_CHECKMARK);
 			if (checkmark != null) checkmark.dispose ();
+			Color connectorColor = (Color) display.getData (ID_CONNECTOR_COLOR);
+			if (connectorColor != null) connectorColor.dispose ();
+
 			display.setData (ID_EXPANDED, null);
 			display.setData (ID_COLLAPSED, null);
 			display.setData (ID_UNCHECKED, null);
 			display.setData (ID_GRAYUNCHECKED, null);
 			display.setData (ID_CHECKMARK, null);
+			display.setData (ID_CONNECTOR_COLOR, null);
 		}
 	});
 }
@@ -1133,7 +1139,6 @@ void onDispose () {
 	for (int i = 0; i < columns.length; i++) {
 		columns [i].dispose (false);
 	}
-	connectorLineColor.dispose ();
 	topIndex = 0;
 	availableItems = items = selectedItems = null;
 	columns = null;
@@ -1141,9 +1146,8 @@ void onDispose () {
 	header = null;
 	resizeColumn = null;
 	expanderBounds = null;
-	gridLineColor = highlightShadowColor = normalShadowColor = connectorLineColor = null;
+	gridLineColor = highlightShadowColor = normalShadowColor = null;
 	selectionBackgroundColor = selectionForegroundColor = null;
-	resizeCursor = null;
 }
 void onEnd (int stateMask) {
 	int lastAvailableIndex = availableItems.length - 1;
@@ -1800,10 +1804,14 @@ void onPaint (Event event) {
 			if (focusItem == item) {
 				Rectangle focusBounds = item.getFocusBounds ();
 				gc.setClipping (focusBounds);
-				int oldStyle = gc.getLineStyle ();
-				gc.setLineStyle (SWT.LINE_DOT);
+				int[] oldLineDash = gc.getLineDash ();
+				if (item.isSelected ()) {
+					gc.setLineDash (new int[] {2, 2});
+				} else {
+					gc.setLineDash (new int[] {1, 1});
+				}
 				gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
-				gc.setLineStyle (oldStyle);
+				gc.setLineDash (oldLineDash);
 			}
 			if (insertMarkItem == item) {
 				Rectangle focusBounds = item.getFocusBounds ();

@@ -871,7 +871,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		/* Draw hierarchy connector lines */
 		Rectangle expanderBounds = getExpanderBounds ();
 		Color oldForeground = gc.getForeground ();
-		gc.setForeground (parent.connectorLineColor);
+		gc.setForeground (parent.getConnectorColor ());
 
 		/* Draw vertical line above expander */
 		int lineX = expanderBounds.x + expanderBounds.width / 2;
