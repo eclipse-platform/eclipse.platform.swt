@@ -100,25 +100,24 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			int length = OS.strlen (args [4]);
 			byte [] font = new byte [length + 1];
 			OS.memmove (font, args [4], length);
-			Display display = getDisplay ();
-			PhRect_t rect = new PhRect_t ();
 			String string = text;
 			if (wHint != SWT.DEFAULT) {
+				Display display = getDisplay ();
 				string = display.wrapText (text, font, wHint);
 			}
-			if (hHint != SWT.DEFAULT) {
-				rect.ul_y = 0;
-				rect.lr_y = (short)(hHint - 1);
-			} else {
+			int width = wHint, height = hHint;
+			if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 				byte [] buffer = Converter.wcsToMbcs (null, string, false);
+				PhRect_t rect = new PhRect_t ();
 				OS.PgExtentMultiText (rect, null, font, buffer, buffer.length, args [7]);
+				if (wHint == SWT.DEFAULT) width = rect.lr_x - rect.ul_x + 1;
+				if (hHint == SWT.DEFAULT) height = rect.lr_y - rect.ul_y + 1;
 			}
 			PhArea_t area = new PhArea_t ();
+			PhRect_t rect = new PhRect_t (); 
 			OS.PtSetAreaFromWidgetCanvas (handle, rect, area);
-			int width = area.size_w;
-			int height = area.size_h;
-			width += (args [10] * 2) + args [16] + args [19];
-			height += (args [13] * 2) + args [22] + args [25];
+			width += (area.size_w - 1) + (args [10] * 2) + args [16] + args [19];
+			height += (area.size_h - 1) + (args [13] * 2) + args [22] + args [25];
 			return new Point (width, height);
 		}
 	}
