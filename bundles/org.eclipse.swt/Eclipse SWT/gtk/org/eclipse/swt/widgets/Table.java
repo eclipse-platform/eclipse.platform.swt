@@ -177,10 +177,10 @@ public void addSelectionListener (SelectionListener listener) {
 int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 	/*
-	 * Bug in GTK.  The width calculated by gtk_tree_view_column_cell_get_size()
-	 * always grows in size regardless of the text or images in the table.
-	 * The fix is to determine the column width from the cell renderers.
-	 */
+	* Bug in GTK.  The width calculated by gtk_tree_view_column_cell_get_size()
+	* always grows in size regardless of the text or images in the table.
+	* The fix is to determine the column width from the cell renderers.
+	*/
 	// Code intentionally commented
 	//int [] width = new int [1];
 	//OS.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);

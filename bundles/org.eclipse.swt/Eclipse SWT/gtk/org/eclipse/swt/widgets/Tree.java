@@ -195,10 +195,10 @@ public void addTreeListener(TreeListener listener) {
 int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 	/*
-	 * Bug in GTK.  The width calculated by gtk_tree_view_column_cell_get_size 
-	 * always grows in size regardless of the text or images in the table.
-	 * The fix is to determine the column width from the cell renderers.
-	 */
+	* Bug in GTK.  The width calculated by gtk_tree_view_column_cell_get_size 
+	* always grows in size regardless of the text or images in the table.
+	* The fix is to determine the column width from the cell renderers.
+	*/
 	// Code intentionally commented
 	//int [] width = new int [1];
 	//OS.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
@@ -207,8 +207,8 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	int width = 0;
 	int [] w = new int [1];
 	if (OS.gtk_tree_view_get_expander_column (handle) == column) {		
-			OS.gtk_widget_style_get (handle, OS.expander_size, w, 0);
-			width += w [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+		OS.gtk_widget_style_get (handle, OS.expander_size, w, 0);
+		width += w [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 	}
 	OS.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
 	width += 2 * w [0];
