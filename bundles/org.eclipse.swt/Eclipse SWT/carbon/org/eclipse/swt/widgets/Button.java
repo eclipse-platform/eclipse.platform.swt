@@ -238,7 +238,7 @@ void createHandle (int index) {
 		//handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)OS.kControlPopupArrowEastProc, 0);
 		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)OS.kControlPushButtonProc, 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		MacUtil.addControl(handle, parentHandle);
+		MacUtil.insertControl(handle, parentHandle, -1);
 		OS.HIViewSetVisible(handle, true);
         /* AW
 		if ((style & SWT.FLAT) != 0) {
@@ -279,7 +279,7 @@ void createHandle (int index) {
         */
 		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)OS.kControlBehaviorToggles, (short)0, (short)OS.kControlBevelButtonNormalBevelProc, 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		MacUtil.addControl(handle, parentHandle);
+		MacUtil.insertControl(handle, parentHandle, -1);
 		OS.HIViewSetVisible(handle, true);
 		setFont(defaultFont());
 		return;
@@ -311,7 +311,7 @@ void createHandle (int index) {
 					: OS.kControlRadioButtonAutoToggleProc;
 		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, (short)type, 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		MacUtil.addControl(handle, parentHandle);
+		MacUtil.insertControl(handle, parentHandle, -1);
 		OS.HIViewSetVisible(handle, true);
 		setFont(defaultFont());
 		return;
@@ -330,7 +330,7 @@ void createHandle (int index) {
 					: OS.kControlPushButtonProc;
 	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)type, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.addControl(handle, parentHandle);
+	MacUtil.insertControl(handle, parentHandle, -1);
 	OS.HIViewSetVisible(handle, true);
 	setFont(defaultFont());
 	/* AW

@@ -144,7 +144,7 @@ void createHandle (int index) {
 	else
 	    handle= OS.NewControl(0, new Rect(), null, false, (short)(OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick), (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.addControl(handle, parent.handle);
+	MacUtil.insertControl(handle, parent.handle, -1);
 	if ((style & SWT.SEPARATOR) != 0) {
 		if ((style & SWT.HORIZONTAL) != 0)
 			OS.SizeControl(handle, (short) 20, (short) 1);

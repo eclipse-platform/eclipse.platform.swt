@@ -130,7 +130,7 @@ void createHandle (int index) {
  	short procID= (short)(OS.kControlSliderProc + OS.kControlSliderLiveFeedback + OS.kControlSliderNonDirectional);
     handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, procID, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.addControl(handle, parent.handle);
+	MacUtil.insertControl(handle, parent.handle, -1);
 	OS.HIViewSetVisible(handle, true);
 }
 

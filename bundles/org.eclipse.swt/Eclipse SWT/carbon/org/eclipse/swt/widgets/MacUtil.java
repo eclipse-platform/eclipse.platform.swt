@@ -65,12 +65,6 @@ public class MacUtil {
 	}
 	
 	/**
-	 * A shortcut for insertControl(..., -1).	 */
-	static void addControl(int controlHandle, int parentHandle) {
-		insertControl(controlHandle, parentHandle, -1);
-	}
-		
-	/**
 	 * Inserts the given child at position in the parent.
 	 * If pos is out of range the child is added at the end (below all other).
 	 */

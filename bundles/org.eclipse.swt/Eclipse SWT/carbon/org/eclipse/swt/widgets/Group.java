@@ -134,7 +134,7 @@ void createHandle (int index) {
     */
 	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)OS.kControlGroupBoxTextTitleProc, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
- 	MacUtil.addControl(handle, parent.handle);
+ 	MacUtil.insertControl(handle, parent.handle, -1);
 	OS.HIViewSetVisible(handle, true);
 	setFont(defaultFont());
 }

@@ -7,12 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.MacUtil;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * This class is the abstract superclass of all classes which
@@ -323,69 +320,37 @@ int topHandle () {
 // Mac Stuff
 ////////////////////////////
 
-	int createScrollView(int parentControlHandle, int style) {
-	
-		Display display= getDisplay();
+	int createScrollView(int parentHandle, int style) {
 		
-		int pos= -1;
-	
-		if (OS.IsValidControlHandle(parentControlHandle)) {
-		} else if (OS.IsValidWindowPtr(parentControlHandle)) {
-			int[] root= new int[1];
-			if (OS.CreateRootControl(parentControlHandle, root) == OS.noErr) {
-				//OS.GetRootControl(parentControlHandle, root);
-				parentControlHandle= root[0];
-			} else {
-				OS.HIViewFindByID(OS.HIViewGetRoot(parentControlHandle), OS.kHIViewWindowContentID (), root);
-				parentControlHandle= root[0];
-				pos= -1;	// below growbox
-			}
-		} else
-			System.out.println("createScrollView: shouldn't happen");
-	
-		int controlHandle = MacUtil.createDrawingArea(parentControlHandle, pos, true, 0, 0, 0);
+		int features= OS.kControlSupportsEmbedding;
+		//features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick
+        int controlHandle = OS.NewControl(0, new Rect(), null, false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
+ 		MacUtil.insertControl(controlHandle, parentHandle, -1);
+		OS.HIViewSetVisible(controlHandle, true);
 		
-		/*
-		OS.InstallEventHandler(OS.GetControlEventTarget(controlHandle), display.fControlProc, 
-			new int[] {
-				OS.kEventClassControl, OS.kEventControlBoundsChanged
-			},
-			controlHandle
-		);
-		*/
-	
 		if ((style & SWT.H_SCROLL) != 0) {
-			int hs= MacUtil.newControl(controlHandle, (short)0, (short)0, (short)100, OS.kControlScrollBarLiveProc);
-			OS.SetControlAction(hs, display.fControlActionProc);
-			hScrollBar= hs;
+			hScrollBar= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, (short)OS.kControlScrollBarLiveProc, 0);
+ 			MacUtil.insertControl(hScrollBar, controlHandle, -1);
+			OS.HIViewSetVisible(hScrollBar, true);
+			OS.SetControlAction(hScrollBar, getDisplay().fControlActionProc);
 		}
 
 		if ((style & SWT.V_SCROLL) != 0) {
-			int vs= MacUtil.newControl(controlHandle, (short)0, (short)0, (short)100, OS.kControlScrollBarLiveProc);
-			OS.SetControlAction(vs, display.fControlActionProc);
-			vScrollBar= vs;
+			vScrollBar= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, (short)OS.kControlScrollBarLiveProc, 0);
+ 			MacUtil.insertControl(vScrollBar, controlHandle, -1);
+			OS.HIViewSetVisible(vScrollBar, true);
+			OS.SetControlAction(vScrollBar, getDisplay().fControlActionProc);
 		}
 				
 		return controlHandle;
 	}
 
-	/**
-	 * Overridden from Control.
-	 * x and y are relative to window!
-	 */
 	void handleResize(int handle, Rect bounds) {
 		super.handleResize(handle, bounds);
-		relayout123();
+		relayout();
 	}
 	
-	void relayout123() {
-		if (MacUtil.HIVIEW)
-			newRelayout();
-		else
-			oldRelayout();
-	}
-	
-	private void newRelayout() {
+	void relayout() {
 		
 		int hndl= scrolledHandle;
 		if (hndl == 0)
@@ -396,8 +361,8 @@ int topHandle () {
 		
 		boolean visible= OS.IsControlVisible(hndl);
 		
-		int x= 0; // bounds.left;
-		int y= 0; // bounds.top;
+		int x= 0;
+		int y= 0;
 		int w= bounds.right-bounds.left;
 		int h= bounds.bottom-bounds.top;
 	
@@ -406,11 +371,6 @@ int topHandle () {
 		int hh= h;
 		int style= getStyle();
 
-		if (ww < 0 || hh < 0) {
-			System.out.println("******* Scrollable.newRelayout: " + ww + " " + hh);
-			return;
-		}
-		
 		ScrollBar hsb= null;
 		if ((style & SWT.H_SCROLL) != 0) {
 			hsb= getHorizontalBar();
@@ -434,6 +394,12 @@ int topHandle () {
 		}
 
 		CGRect rect = new CGRect();
+		rect.x = x;
+		rect.y = y;
+		rect.width = ww;
+		rect.height = hh;
+		OS.HIViewSetFrame(handle, rect);
+
 		if (hsb != null) {
 			rect.x = x;
 			rect.y = y+h-s;
@@ -448,83 +414,6 @@ int topHandle () {
 			rect.width = s;
 			rect.height = hh;
 			OS.HIViewSetFrame(vsb.handle, rect);
-		}
-		
-		rect.x = x;
-		rect.y = y;
-		rect.width = ww;
-		rect.height = hh;
-		OS.HIViewSetFrame(handle,rect);
-		
-		//if (ww != w && hh != h)
-		//	OS.InvalWindowRect(OS.GetControlOwner(handle), new MacRect(x+w-s, y+h-s, s, s).getData());
-	}
-	
-	private void oldRelayout() {
-		
-		int hndl= scrolledHandle;
-		if (hndl == 0)
-			return;
-		
-		Rect bounds= new Rect();
-		OS.GetControlBounds(hndl, bounds);
-		
-		boolean visible= OS.IsControlVisible(hndl);
-		
-		int x= bounds.left;
-		int y= bounds.top;
-		int w= bounds.right-bounds.left;
-		int h= bounds.bottom-bounds.top;
-	
-		int s= 15;
-		int ww= w;
-		int hh= h;
-		int style= getStyle();
-
-		if (ww < 0 || hh < 0) {
-			System.out.println("******* Scrollable.oldRelayout: " + ww + " " + hh);
-			return;
-		}
-		
-		ScrollBar hsb= null;
-		if ((style & SWT.H_SCROLL) != 0) {
-			hsb= getHorizontalBar();
-			if (hsb != null) {
-				if (visible && !OS.IsControlVisible(hsb.handle))
-					;
-				else
-					hh-= s;
-			}
-		}
-
-		ScrollBar vsb= null;
-		if ((style & SWT.V_SCROLL) != 0) {
-			vsb= getVerticalBar();
-			if (vsb != null) {
-				if (visible && !OS.IsControlVisible(vsb.handle))
-					;
-				else
-					ww-= s;
-			}
-		}
-
-		Rect rect = new Rect();
-		if (hsb != null) {
-			OS.SetRect(rect, (short)x, (short)(y+h-s), (short)(x+ww), (short)(y+h));
-			hsb.internalSetBounds(rect);
-		}
-			
-		if (vsb != null) {
-			OS.SetRect(rect, (short)(x+w-s), (short)y, (short)(x+w), (short)(y+hh));
-			vsb.internalSetBounds(rect);
-		}
-		
-		OS.SetRect(rect, (short)x, (short)y, (short)(x+ww), (short)(y+hh));
-		OS.SetControlBounds(handle, rect);
-		
-		if (ww != w && hh != h) {
-			OS.SetRect(rect, (short)(x+w-s), (short)(y+h-s), (short)(x+w), (short)(y+h));
-			OS.InvalWindowRect(OS.GetControlOwner(handle), rect);
 		}
 	}
 }

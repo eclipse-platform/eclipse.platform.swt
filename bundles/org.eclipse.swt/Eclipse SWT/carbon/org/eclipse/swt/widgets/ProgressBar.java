@@ -93,7 +93,7 @@ void createHandle (int index) {
 	int parentHandle = parent.handle;
 	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, (short)OS.kControlProgressBarProc, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
- 	MacUtil.addControl(handle, parentHandle);
+ 	MacUtil.insertControl(handle, parentHandle, -1);
 	if ((style & SWT.INDETERMINATE) != 0)
 		OS.SetControlData(handle, (short)0, OS.kControlProgressBarIndeterminateTag, 4, new int[]{-1});
 	OS.HIViewSetVisible(handle, true);

@@ -336,7 +336,7 @@ void createHandle (int index) {
 	int parentHandle= parent.handle;
     handle= OS.NewControl(0, new Rect(), null, false, (short)(OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick), (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.addControl(handle, parentHandle);
+	MacUtil.insertControl(handle, parentHandle, -1);
 	OS.HIViewSetVisible(handle, true);
 	
 	/*

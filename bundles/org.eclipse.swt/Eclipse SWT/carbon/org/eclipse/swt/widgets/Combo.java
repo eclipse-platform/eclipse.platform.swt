@@ -387,7 +387,7 @@ void createHandle (int index) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)-12345, (short)-1, (short)(OS.kControlPopupButtonProc+1), 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		MacUtil.addControl(handle, parent.handle);
+		MacUtil.insertControl(handle, parent.handle, -1);
 		int[] menuRef= new int[1];
 		OS.CreateNewMenu(20000, 0, menuRef);
 		menuHandle= menuRef[0];
@@ -398,7 +398,7 @@ void createHandle (int index) {
 	    OS.HIComboBoxCreate(new CGRect(), 0, null, 0, OS.kHIComboBoxAutoSizeListAttribute, outComboBox);
 		handle= outComboBox[0];
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		MacUtil.addControl(handle, parent.handle);
+		MacUtil.insertControl(handle, parent.handle, -1);
 	}
 	OS.HIViewSetVisible(handle, true);
 }
