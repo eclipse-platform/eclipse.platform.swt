@@ -206,11 +206,11 @@ Point computeSize () {
 		Display display = getDisplay ();
 		shadowThickness = Math.min (2, display.buttonShadowThickness);
 	}
-	final String plainText = stripMnemonicCodes(this.text);
 	int textWidth = 0, textHeight = 0;
-	if (plainText.length () != 0) {
+	if (text.length () != 0) {
 		GC gc = new GC (parent);
-		Point textExtent = gc.textExtent (plainText);
+		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
+		Point textExtent = gc.textExtent (text, flags);
 		textWidth = textExtent.x;
 		textHeight = textExtent.y;
 		gc.dispose ();
@@ -976,10 +976,10 @@ int processPaint (int callData) {
 	}
 	gc.setBackground (parent.getBackground ());
 	
-	final String plainText = stripMnemonicCodes(this.text);
 	int textX = 0, textY = 0, textWidth = 0, textHeight = 0;
-	if (plainText.length () != 0) {
-		Point textExtent = gc.textExtent (plainText);
+	if (text.length () != 0) {
+		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
+		Point textExtent = gc.textExtent (text, flags);
 		textWidth = textExtent.x;
 		textHeight = textExtent.y;
 	}	
@@ -1008,8 +1008,8 @@ int processPaint (int callData) {
 		textX -= 6;  imageX -=6;
 	}
 	if (textWidth > 0) {
-		/* To display the mnemonic underscore we'll want to use XmStringDrawUnderline here */
-		gc.drawText(plainText, textX, textY, false);
+		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
+		gc.drawText(text, textX, textY, flags);
 	}
 	if (imageWidth > 0) gc.drawImage(currentImage, imageX, imageY);
 	if ((style & SWT.DROP_DOWN) != 0) {
@@ -1038,23 +1038,5 @@ void propagateWidget (boolean enabled) {
 			OS.XtSetValues (handle, argList, argList.length / 2);
 		}
 	}
-}
-/**
- * Returns the provided string without mnemonic indicators.
- * 
- * @param string the string to demangle
- */
-static String stripMnemonicCodes(String string) {
-	char [] text = new char[string.length ()];
-	string.getChars(0, text.length, text, 0);
-	int j = 0;
-	for (int i = 0; i < text.length;) {
-		if ((text[j++] = text[i++]) == Mnemonic) {
-			if (i != text.length) {
-				if (text[i] == Mnemonic) i++; else j--;
-			}
-		}
-	}
-	return new String(text, 0, j);
 }
 }
