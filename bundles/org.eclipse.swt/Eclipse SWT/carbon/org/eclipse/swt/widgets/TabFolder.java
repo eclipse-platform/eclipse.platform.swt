@@ -41,6 +41,7 @@ public class TabFolder extends Composite {
 	// AW
 	private static final int TAB_HEIGHT= 32;
 	private static final int MARGIN= 6;
+	private int fOldValue;
 	// AW
 	/* AW
 	ImageList imageList;
@@ -221,15 +222,6 @@ void createHandle (int index) {
 	
 	Display display= getDisplay();
 	OS.SetControlAction(handle, display.fControlActionProc);
-
-	/*
-	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, 
-		new int[] {
-			OS.kEventClassControl, OS.kEventControlBoundsChanged
-		},
-		handle
-	);
-	*/
 }
 
 void createWidget (int index) {
@@ -245,6 +237,7 @@ void destroyItem (TabItem item) {
 		index++;
 	}
 	if (index == count) return;	// not found
+	//System.out.println("removing tab item: " + index + " count: " + count);
 	/* AW
 	int selectionIndex = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
 	*/
@@ -255,7 +248,7 @@ void destroyItem (TabItem item) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	*/
-	OS.SetControl32BitValue(handle, count-1);
+	OS.SetControl32BitMaximum(handle, count-1);
 	
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
@@ -270,6 +263,9 @@ void destroyItem (TabItem item) {
 		*/
 		items = new TabItem [4];
 	}
+	
+	updateCarbon(index);
+	
 	if (count > 0 && index == selectionIndex) {
 		setSelection (Math.max (0, selectionIndex - 1));
 		selectionIndex = getSelectionIndex ();
@@ -365,8 +361,17 @@ public int getItemCount () {
 public TabItem [] getItems () {
 	checkWidget ();
 	int count = OS.GetControl32BitMaximum(handle);
-	TabItem [] result = new TabItem [count];
-	System.arraycopy (items, 0, result, 0, count);
+	int n= 0;
+	for (int i=0; i < count; i++) 
+		if (items[i] != null)
+			n++;
+	if (n < count)
+		System.out.println("TabFolder.getItems: found null slots");
+	TabItem [] result = new TabItem [n];
+	for (int i=0; i < n; i++) 
+		if (items[i] != null)
+			result[i]= items[i];
+	//System.arraycopy (items, 0, result, 0, count);
 	return result;
 }
 
@@ -408,25 +413,6 @@ public int getSelectionIndex () {
 	checkWidget ();
 	return OS.GetControl32BitValue(handle)-1;
 }
-
-/* AW
-int imageIndex (Image image) {
-	if (image == null) return OS.I_IMAGENONE;
-	if (imageList == null) {
-		Rectangle bounds = image.getBounds ();
-		imageList = getDisplay ().getImageList (new Point (bounds.width, bounds.height));
-		int index = imageList.indexOf (image);
-		if (index == -1) index = imageList.add (image);
-		int hImageList = imageList.getHandle ();
-		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
-		return index;
-	}
-	int index = imageList.indexOf (image);
-	if (index != -1) return index;
-	return imageList.add (image);
-}
-*/
-
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -487,7 +473,7 @@ void releaseWidget () {
 	int count = OS.GetControl32BitMaximum(handle);
 	for (int i=0; i<count; i++) {
 		TabItem item = items [i];
-		if (!item.isDisposed ()) item.releaseWidget ();
+		if (item != null && !item.isDisposed ()) item.releaseWidget ();
 	}
 	items = null;
 	/* AW
@@ -574,9 +560,11 @@ void setSelection (int index, boolean notify) {
 	int oldIndex = OS.GetControl32BitValue(handle) - 1;
 	if (oldIndex != -1) {
 		TabItem item = items [oldIndex];
-		Control control = item.control;
-		if (control != null && !control.isDisposed ()) {
-			control.setVisible (false);
+		if (item != null) {
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setVisible (false);
+			}
 		}
 	}
 	OS.SetControl32BitValue(handle, index+1);
@@ -584,16 +572,18 @@ void setSelection (int index, boolean notify) {
 	int newIndex = OS.GetControl32BitValue(handle) - 1;
 	if (newIndex != -1) {
 		TabItem item = items [newIndex];
-		Control control = item.control;
-		if (control != null && !control.isDisposed ()) {
-			control.setBounds (getClientArea ());
-			control.setVisible (true);
-		}
-		if (notify) {
-			Event event = new Event ();
-			event.item = item;
-			sendEvent (SWT.Selection, event);
-		}
+		if (item != null) {
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea ());
+				control.setVisible (true);
+			}
+			if (notify) {
+				Event event = new Event ();
+				event.item = item;
+				sendEvent (SWT.Selection, event);
+			}
+		}	
 	}
 }
 
@@ -617,14 +607,19 @@ boolean traversePage (boolean next) {
 
 int processSelection (Object callData) {
 	MacControlEvent macEvent= (MacControlEvent) callData;
-	handleSelectionChange(macEvent.getPartCode()-1);
+	//System.out.println("mouseDown: " + macEvent.isMouseDown() + " " + (macEvent.getPartCode()-1));
+	if (!macEvent.isMouseDown())
+		handleSelectionChange(macEvent.getPartCode()-1);
+	else
+		fOldValue= OS.GetControl32BitValue(handle)-1;
 	return 0;
 }
 
-private void handleSelectionChange2(int newValue)  {
+private void handleSelectionChange(int newValue)  {
 
 	TabItem item = null;
-	int index= OS.GetControl32BitValue(handle)-1;	
+	//int index= OS.GetControl32BitValue(handle)-1;
+	int index= fOldValue;
 
 	if (index != -1) item = items [index];
 	if (item != null) {
@@ -633,9 +628,7 @@ private void handleSelectionChange2(int newValue)  {
 			control.setVisible (false);
 		}
 	}
-	
-	//////////////////////////////////////////////
-	
+		
 	index= newValue;
 	if (index != -1) item = items [index];
 	if (item != null) {
@@ -651,37 +644,17 @@ private void handleSelectionChange2(int newValue)  {
 	postEvent (SWT.Selection, event);
 }
 
-private void handleSelectionChange(int newValue)  {
-
-	TabItem item = null;
-	int index= OS.GetControl32BitValue(handle)-1;	
-	boolean show= newValue == index;
-
-	if (index != -1) item = items [index];
-	if (item != null) {
-		Control control = item.control;
-		if (control != null && !control.isDisposed ()) {
-			if (show) {
-				control.setBounds (getClientArea ());
-			}
-			control.setVisible (show);
-		}
-	}
-	if (show) {
-		Event event = new Event ();
-		event.item = item;
-		postEvent (SWT.Selection, event);
-	}
-}
-
 void updateCarbon(int startIndex) {
+	//System.out.println("updateCarbon: " + startIndex);
 	int n= OS.GetControl32BitMaximum(handle);
 	for (int i= startIndex; i < n; i++) {
 		TabItem item= items[i];
 		if (item != null) {
 			int sHandle= 0;
 			try {
-				sHandle= OS.CFStringCreateWithCharacters(removeMnemonics(item.getText()));
+				String t= removeMnemonics(item.getText());
+				//System.out.println("  "+i+": " + t);
+				sHandle= OS.CFStringCreateWithCharacters(t);
 				OS.setTabText(handle, i+1, sHandle);
 			} finally {
 				if (sHandle != 0)
@@ -689,6 +662,7 @@ void updateCarbon(int startIndex) {
 			}
 		}
 	}
+	redraw();
 }
 
 /**
