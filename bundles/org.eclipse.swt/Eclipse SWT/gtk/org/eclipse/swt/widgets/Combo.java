@@ -51,7 +51,6 @@ import org.eclipse.swt.events.*;
 public class Combo extends Composite {
 	int entryHandle, listHandle;
 	int glist;
-	int textLimit = LIMIT;
 	public final static int LIMIT;
 	
 	/*
@@ -267,8 +266,7 @@ static int checkStyle (int style) {
  */
 public void clearSelection () {
 	checkWidget();
-	/*int position = OS.gtk_editable_get_position (entryHandle);
-	OS.gtk_editable_set_position (entryHandle, position);*/
+	OS.gtk_editable_delete_selection (handle);
 }
 
 void createHandle (int index) {
@@ -477,8 +475,14 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	/* FIXME */
-	return 0;
+	int context = OS.gtk_widget_get_pango_context (listHandle != 0 ? listHandle : handle);
+	int lang = OS.pango_context_get_language (context);
+	int font = OS.pango_context_get_font_description (context);
+	int metrics = OS.pango_context_get_metrics (context, font, lang);
+	int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
+	int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
+	OS.pango_font_metrics_unref (metrics);
+	return ascent + descent;
 }
 
 /**
@@ -604,8 +608,14 @@ String getText (int start, int stop) {
  */
 public int getTextHeight () {
 	checkWidget();
-	//FIXME
-	return 20;
+	int context = OS.gtk_widget_get_pango_context (entryHandle != 0 ? entryHandle : handle);
+	int lang = OS.pango_context_get_language (context);
+	int font = OS.pango_context_get_font_description (context);
+	int metrics = OS.pango_context_get_metrics (context, font, lang);
+	int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
+	int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
+	OS.pango_font_metrics_unref (metrics);
+	return 8 + ascent + descent;
 }
 
 /**
@@ -623,7 +633,8 @@ public int getTextHeight () {
  */
 public int getTextLimit () {
 	checkWidget();
-	return textLimit;
+	int limit = OS.gtk_entry_get_max_length (handle);
+	return limit == 0 ? LIMIT : limit;
 }
 
 /**
@@ -1069,7 +1080,6 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	this.textLimit = limit;
 	OS.gtk_entry_set_max_length (entryHandle, limit);
 }
 
