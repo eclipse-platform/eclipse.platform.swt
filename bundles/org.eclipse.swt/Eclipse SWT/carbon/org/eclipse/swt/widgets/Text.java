@@ -1459,6 +1459,9 @@ public void setText (String string) {
 }
 
 void setTXNBounds () {
+	Rect viewRect = new Rect ();
+	OS.TXNGetViewRect (txnObject, viewRect);
+
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	Rect inset = inset ();
@@ -1488,13 +1491,14 @@ void setTXNBounds () {
 	* is resized when it is visible, this is fine because
 	* the user has already seen that the text is scrolled.
 	*/
-	if (OS.IsControlVisible (handle)) return;
-	int [] oStartOffset = new int [1], oEndOffset = new int [1];
-	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-	OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
-	OS.TXNShowSelection (txnObject, false);
-	OS.TXNSetSelection (txnObject, oStartOffset [0], oEndOffset [0]);
-	OS.TXNShowSelection (txnObject, false);
+	if ((viewRect.left  - viewRect.right) <= 0 && (viewRect.bottom  - viewRect.top) <= 0) {
+		int [] oStartOffset = new int [1], oEndOffset = new int [1];
+		OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
+		OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
+		OS.TXNShowSelection (txnObject, false);
+		OS.TXNSetSelection (txnObject, oStartOffset [0], oEndOffset [0]);
+		OS.TXNShowSelection (txnObject, false);
+	}
 }
 
 void setTXNText (int iStartOffset, int iEndOffset, String string) {
