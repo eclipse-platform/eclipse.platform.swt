@@ -19,7 +19,6 @@ class Header extends Canvas {
 	private static final int VERTICAL_MARGIN = 6;		// space added to the height of the header label		
 	private static final int DEFAULT_ITEM_WIDTH = 9;	// default width of a header item
 	private static final int HORIZONTAL_MARGIN = 6;		// space in front and behind header text
-	private static final int SHADOW_WIDTH = 2;			// width of the right side header shadow
 	
 	Table parent;
 /**
