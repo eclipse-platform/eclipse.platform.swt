@@ -148,6 +148,7 @@ public class StyledText extends Canvas {
 	int caretDirection = SWT.NULL;
 	boolean advancing = true;
 	Caret defaultCaret = null;
+	boolean updateCaretDirection = true;
 
 	final static boolean IS_CARBON;
 	final static boolean DOUBLE_BUFFERED;	
@@ -1626,6 +1627,7 @@ public StyledText(Composite parent, int style) {
 		};
 		BidiUtil.addLanguageListener(handle, runnable);
 	}
+	setCaret(defaultCaret);	
 	calculateScrollBars();
 	createKeyBindings();
 	ibeamCursor = new Cursor(display, SWT.CURSOR_IBEAM);
@@ -2738,6 +2740,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	int newCaretOffset;
 	int newCaretLine;
 
+	updateCaretDirection = true;
 	if (line > lineCount - 1) {
 		line = lineCount - 1;
 	}	
@@ -4459,6 +4462,8 @@ int getVerticalIncrement() {
 }
 int getCaretDirection() {
 	if (!isBidi()) return SWT.DEFAULT;
+	if (!updateCaretDirection && caretDirection != SWT.NULL) return caretDirection;
+	updateCaretDirection = false;
 	int caretLine = getCaretLine();
 	int lineOffset = content.getOffsetAtLine(caretLine);
 	String line = content.getLine(caretLine);
@@ -5317,7 +5322,8 @@ public void invokeAction(int action) {
 	int oldColumnX, oldHScrollOffset, hScrollChange;
 	int caretLine;
 	
-	checkWidget();	
+	checkWidget();
+	updateCaretDirection = true;
 	switch (action) {
 		// Navigation
 		case ST.LINE_UP:
@@ -6484,21 +6490,6 @@ public void setBackground(Color color) {
 	redraw();
 }
 /**
- * Set the image of the caret
- */
-void setCaretImage(int direction) {
-	if (defaultCaret != null) {
-		if (direction == SWT.DEFAULT) {
-			defaultCaret.setImage(null);
-			defaultCaret.setSize(defaultCaret.getSize().x, lineHeight);
-		} else if (caretDirection == SWT.LEFT) {
-			defaultCaret.setImage(leftCaretBitmap);
-		} else if (caretDirection == SWT.RIGHT) {
-			defaultCaret.setImage(rightCaretBitmap);
-		}
-	}
-}
-/**
  * Sets the BIDI coloring mode.  When true the BIDI text display
  * algorithm is applied to segments of text that are the same
  * color.
@@ -6529,10 +6520,15 @@ void setCaretLocation(int newCaretX, int line, int direction) {
 		if (direction != caretDirection) {
 			caretDirection = direction;
 			if (updateImage) {
-				setCaretImage(direction);
-			} else {
-				caret.setSize(caret.getSize().x, lineHeight);
+				if (caretDirection == SWT.DEFAULT) {
+					defaultCaret.setImage(null);
+				} else if (caretDirection == SWT.LEFT) {
+					defaultCaret.setImage(leftCaretBitmap);
+				} else if (caretDirection == SWT.RIGHT) {
+					defaultCaret.setImage(rightCaretBitmap);
+				}
 			}
+			caret.setSize(caret.getSize().x, lineHeight);
 			if (caretDirection == SWT.LEFT) {
 				BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_NON_BIDI);
 			} else if (caretDirection == SWT.RIGHT) {
