@@ -110,6 +110,12 @@ void createHandle (int index) {
 		OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 		OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
 		OS.gtk_entry_set_visibility (handle, (style & SWT.PASSWORD) == 0);
+		float alignment = 0.0f;
+		if ((style & SWT.CENTER) != 0) alignment = 0.5f;
+		if ((style & SWT.RIGHT) != 0) alignment = 1.0f;
+		if (alignment > 0.0f) {
+			OS.gtk_entry_set_alignment (handle, alignment);
+		}
 	} else {
 		fixedHandle = OS.gtk_fixed_new ();
 		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);

@@ -20,6 +20,7 @@
 
 /* Libraries for dynamic loaded functions */
 #define gtk_tree_view_column_cell_get_position_LIB "libgtk-x11-2.0.so"
+#define gtk_entry_set_alignment_LIB "libgtk-x11-2.0.so"
 #define gdk_screen_get_default_LIB "libgdk-x11-2.0.so"
 #define gdk_screen_get_monitor_at_window_LIB "libgdk-x11-2.0.so"
 #define gdk_screen_get_monitor_geometry_LIB "libgdk-x11-2.0.so"

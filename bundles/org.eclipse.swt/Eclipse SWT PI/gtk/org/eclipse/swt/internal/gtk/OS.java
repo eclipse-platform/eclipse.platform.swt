@@ -698,6 +698,7 @@ public static final synchronized native int /*long*/ gtk_entry_get_text(int /*lo
 public static final synchronized native boolean gtk_entry_get_visibility(int /*long*/ entry);
 public static final synchronized native int /*long*/ gtk_entry_new();
 public static final synchronized native void gtk_entry_set_activates_default(int /*long*/ entry, boolean setting);
+public static final synchronized native void gtk_entry_set_alignment(int /*long*/ entry, float xalign);
 public static final synchronized native void gtk_entry_set_has_frame(int /*long*/ entry, boolean setting);
 public static final synchronized native void gtk_entry_set_invisible_char(int /*long*/ entry, char ch);
 public static final synchronized native void gtk_entry_set_max_length(int /*long*/ entry, int max);
