@@ -41,7 +41,7 @@
 
 	<target name="properties">
 		<property name="plugin" value="org.eclipse.swt"/>
-		<property name="version" value="2.0.0"/>
+		<property name="version" value="1.9.0"/>
 		<property name="bin.includes" value="plugin.xml,plugin.properties,about.html"/>
 		<property name="bin.excludes" value=""/>
 	</target>
