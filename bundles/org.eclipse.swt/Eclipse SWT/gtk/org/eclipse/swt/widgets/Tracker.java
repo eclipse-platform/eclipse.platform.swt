@@ -27,9 +27,10 @@ import org.eclipse.swt.events.*;
 public class Tracker extends Widget {
 	Composite parent;
 	Display display;
-	int cursor;
+	int cursor, lastCursor;
 	boolean tracking, stippled;
 	Rectangle [] rectangles = new Rectangle [0];
+	int xWindow;
 	
 
 /**
@@ -64,6 +65,7 @@ public Tracker (Composite parent, int style) {
 	super (parent, checkStyle(style));
 	this.parent = parent;
 	display = parent.getDisplay ();
+	xWindow = calculateWindow();
 }
 
 /**
@@ -260,7 +262,6 @@ public void close () {
  */
 public boolean open () {
 	checkWidget();
-	int xWindow = calculateWindow();
 	boolean cancelled=false;
 	tracking = true;
 	drawRectangles ();
@@ -277,6 +278,7 @@ public boolean open () {
 	                                        xWindow,
 	                                        cursor,
 	                                        OS.GDK_CURRENT_TIME());
+	lastCursor = cursor;
 
 	/*
 	 *  Tracker behaves like a Dialog with its own OS event loop.
@@ -287,6 +289,7 @@ public boolean open () {
 		switch (eventType) {
 			case OS.GDK_BUTTON_RELEASE:
 			case OS.GDK_MOTION_NOTIFY:
+				if (cursor != lastCursor) {}
 				OS.gdk_window_get_pointer(xWindow, newX,newY, 0);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
 					drawRectangles ();
