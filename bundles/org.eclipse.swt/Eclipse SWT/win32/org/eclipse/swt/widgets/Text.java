@@ -425,6 +425,14 @@ void fixAlignment () {
 	int bits0 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((style & SWT.LEFT_TO_RIGHT) != 0) {
+		/*
+		* Bug in Windows 98. When the edit control is created
+		* with the style ES_RIGHT it automatically sets the 
+		* WS_EX_LEFTSCROLLBAR bit.  The fix is to clear the
+		* bit when the orientation of the control is left
+		* to right.
+		*/
+		bits0 &= ~OS.WS_EX_LEFTSCROLLBAR;
 		if ((style & SWT.RIGHT) != 0) {
 			bits0 |= OS.WS_EX_RIGHT;
 			bits1 |= OS.ES_RIGHT;
