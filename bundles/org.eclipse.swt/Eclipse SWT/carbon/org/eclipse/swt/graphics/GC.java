@@ -1122,7 +1122,7 @@ public void fillPolygon(int[] pointArray) {
 	OS.CGContextBeginPath(handle);
 	OS.CGContextAddLines(handle, points, points.length / 2);
 	OS.CGContextClosePath(handle);
-	OS.CGContextFillPath(handle);
+	OS.CGContextEOFillPath(handle);
 	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 

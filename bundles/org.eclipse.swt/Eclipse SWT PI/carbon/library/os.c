@@ -775,6 +775,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextDrawImage)
 }
 #endif
 
+#ifndef NO_CGContextEOFillPath
+JNIEXPORT void JNICALL OS_NATIVE(CGContextEOFillPath)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "CGContextEOFillPath\n")
+	CGContextEOFillPath((CGContextRef)arg0);
+	NATIVE_EXIT(env, that, "CGContextEOFillPath\n")
+}
+#endif
+
 #ifndef NO_CGContextFillPath
 JNIEXPORT void JNICALL OS_NATIVE(CGContextFillPath)
 	(JNIEnv *env, jclass that, jint arg0)
