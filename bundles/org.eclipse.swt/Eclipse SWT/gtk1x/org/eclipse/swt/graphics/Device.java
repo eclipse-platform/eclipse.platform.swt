@@ -364,6 +364,22 @@ public Font getSystemFont () {
 	return null;
 }
 
+/**
+ * Returns <code>true</code> if the underlying window system prints out
+ * warning messages on the console, and <code>setWarnings</code>
+ * had previously been called with <code>true</code>.
+ *
+ * @return <code>true</code>if warnings are being handled, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public boolean getWarnings () {
+	checkDevice ();
+	return this.warnings;
+}
+
 protected void init () {
 	
 	/* Create GTK warnings and error callbacks */
