@@ -96,7 +96,7 @@ import org.eclipse.swt.events.*;
 public class Shell extends Decorations {
 	Display display;
 	int shellHandle;
-	boolean reparented, realized;
+	boolean reparented, realized, configured;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
 
@@ -843,6 +843,7 @@ int processResize (int callData) {
 		}
 		case OS.ConfigureNotify:
 			if (!reparented) return 0;
+			configured = false;
 			if (oldX != xEvent.x || oldY != xEvent.y) sendEvent (SWT.Move);
 			if (oldWidth != xEvent.width || oldHeight != xEvent.height) {
 				XAnyEvent event = new XAnyEvent ();
@@ -963,7 +964,6 @@ public void removeShellListener(ShellListener listener) {
 	eventTable.unhook(SWT.Deiconify,listener);
 }
 void saveBounds () {
-	if (!reparented) return;
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
 	if (realized) {
@@ -1065,13 +1065,14 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		* to have a zero width or zero height.  The fix is
 		* to ensure these values are never zero.
 		*/
-		saveBounds ();
 		width = Math.max (width - trimWidth (), 1);
 		height = Math.max (height - trimHeight (), 1);
 	}
 	if (!reparented) {
 		return super.setBounds (x, y, width, height, move, resize);
 	}
+	if (!configured) saveBounds ();
+	configured = true;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	if (move && resize) {
