@@ -226,9 +226,13 @@ private static Program[] getPrograms(Display display) {
 }
 
 private static boolean isGnomeDesktop(Display display) {
+	/* disabled */
+	return false;
+	/*
 	byte[] name = Converter.wcsToMbcs(null, "_WIN_SUPPORTING_WM_CHECK", true);
 	int atome_set = OS.gdk_atom_intern(name, true);
 	return atome_set != 0;
+	*/
 }
 
 /*
