@@ -1292,8 +1292,7 @@ void headerOnPaint (Event event) {
 	}
 
 	/* paint the column header shadow that spans the full header width */
-	Rectangle paintBounds = new Rectangle (clipping.x, 0, clipping.width, header.getSize ().y);
-	headerPaintShadow (gc, paintBounds, true, false);
+	headerPaintShadow (gc, clipping.x, 0, clipping.width, header.getSize ().y, true, false);
 
 	/* if all damage is to the right of the last column then finished */
 	if (startColumn == -1) return;
@@ -1301,28 +1300,27 @@ void headerOnPaint (Event event) {
 	/* paint each of the column headers */
 	if (numColumns == 0) return;	/* no headers to paint */
 	for (int i = startColumn; i <= endColumn; i++) {
-		Rectangle bounds = new Rectangle (orderedColumns [i].getX (), 0, orderedColumns [i].width, getClientArea ().height);
-		headerPaintShadow (gc, bounds, false, true);
+		headerPaintShadow (gc, orderedColumns [i].getX (), 0, orderedColumns [i].width, getClientArea ().height, false, true);
 		orderedColumns [i].paint (gc);
 	}
 }
-void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHLines, boolean paintVLines) {
-	gc.setClipping (bounds.x, bounds.y, bounds.width, getHeaderHeight ());
+void headerPaintShadow (GC gc, int x, int y, int width, int height, boolean paintHLines, boolean paintVLines) {
+	gc.setClipping (x, y, width, getHeaderHeight ());
 	Color oldForeground = gc.getForeground ();
 	
 	/* draw highlight shadow */
 	gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
 	if (paintHLines) {
-		int endX = bounds.x + bounds.width;
-		gc.drawLine (bounds.x, bounds.y, endX, bounds.y);
+		int endX = x + width;
+		gc.drawLine (x, y, endX, y);
 	}
 	if (paintVLines) {
-		gc.drawLine (bounds.x, bounds.y, bounds.x, bounds.y + bounds.height - 1);
+		gc.drawLine (x, y, x, y + height - 1);
 	}
 	
 	/* draw lowlight shadow */
-	Point bottomShadowStart = new Point (bounds.x + 1, bounds.height - 2);
-	Point bottomShadowStop = new Point (bottomShadowStart.x + bounds.width - 2, bottomShadowStart.y);	
+	Point bottomShadowStart = new Point (x + 1, height - 2);
+	Point bottomShadowStop = new Point (bottomShadowStart.x + width - 2, bottomShadowStart.y);	
 
 	/* light inner shadow */
 	gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW));
@@ -1331,8 +1329,8 @@ void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHLines, boolean pa
 			bottomShadowStart.x, bottomShadowStart.y,
 			bottomShadowStop.x, bottomShadowStop.y);
 	}
-	Point rightShadowStart = new Point (bounds.x + bounds.width - 2, bounds.y + 1);
-	Point rightShadowStop = new Point (rightShadowStart.x, bounds.height - 2);
+	Point rightShadowStart = new Point (x + width - 2, y + 1);
+	Point rightShadowStop = new Point (rightShadowStart.x, height - 2);
 	if (paintVLines) {
 		gc.drawLine (
 			rightShadowStart.x, rightShadowStart.y,
