@@ -484,7 +484,7 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	if (data.clipRgn != 0)	 {
 		int newWidth =  srcX + srcWidth;
 		int newHeight = srcY + srcHeight;
-		int bytesPerLine = (((newWidth + 7) / 8) + 1) / 2 * 2;
+		int bytesPerLine = (newWidth + 7) / 8;
 		byte[] maskData = new byte[bytesPerLine * newHeight];
 		int /*long*/ mask = OS.gdk_bitmap_create_from_data(0, maskData, newWidth, newHeight);
 		if (mask != 0) {
