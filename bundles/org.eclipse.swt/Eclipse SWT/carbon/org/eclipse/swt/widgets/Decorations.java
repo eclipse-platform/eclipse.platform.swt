@@ -94,6 +94,28 @@ Decorations menuShell () {
 }
 
 void releaseWidget () {
+	if (menuBar != null) menuBar.dispose ();
+	menuBar = null;
+	Display display = getDisplay ();
+	Menu [] menus = display.getMenus (this);
+	if (menus != null) {
+		do {
+			int index = 0;
+			while (index < menus.length) {
+				Menu menu = menus [index];
+				if (menu != null && !menu.isDisposed ()) {
+					while (menu.getParentMenu () != null) {
+						menu = menu.getParentMenu ();
+					}
+					menu.dispose ();
+					break;
+				}
+				index++;
+			}
+			if (index == menus.length) break;
+		} while (true);
+	}
+	menus = null;
 	super.releaseWidget ();
 	defaultButton = saveDefault = null;
 }

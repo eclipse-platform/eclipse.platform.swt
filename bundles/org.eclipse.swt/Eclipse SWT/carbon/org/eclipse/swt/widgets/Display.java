@@ -576,6 +576,24 @@ int getLastEventTime () {
 	return (int) System.currentTimeMillis ();
 }
 
+Menu [] getMenus (Decorations shell) {
+	if (menus == null) return new Menu [0];
+	int count = 0;
+	for (int i = 0; i < menus.length; i++) {
+		Menu menu = menus[i];
+		if (menu != null && menu.parent == shell) count++;
+	}
+	int index = 0;
+	Menu[] result = new Menu[count];
+	for (int i = 0; i < menus.length; i++) {
+		Menu menu = menus[i];
+		if (menu != null && menu.parent == shell) {
+			result[index++] = menu;
+		}
+	}
+	return result;
+}
+
 Menu getMenuBar () {
 	return menuBar;
 }
