@@ -99,9 +99,6 @@ import org.eclipse.swt.graphics.*;
  * @see #dispose
  */
 public class Display extends Device {
-
-	//TEMPORARY
-	int textHighlightThickness = 4;
 	
 	/* Windows and Events */
 	static final int WAKE_CLASS = 0;
