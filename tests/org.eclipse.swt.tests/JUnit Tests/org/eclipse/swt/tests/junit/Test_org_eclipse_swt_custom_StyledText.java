@@ -1744,9 +1744,12 @@ public void test_print() {
 	// if there aren't any printers, don't do this test
 	if (Printer.getDefaultPrinterData() == null) return;
 	
-	text.print();
-	text.setText("Line1");
-	text.print();
+	/* We don't really want to run this test, because it wastes paper.
+	 * Almost all of the print() method is tested in print(Printer), below.
+	 */
+//	text.print();
+//	text.setText("Line1");
+//	text.print();
 }
 
 public void test_printLorg_eclipse_swt_printing_Printer() {
@@ -1762,9 +1765,9 @@ public void test_printLorg_eclipse_swt_printing_Printer() {
 	assertTrue("no exception thrown for print(null)", exceptionThrown);
 	
 	Printer printer = new Printer();
-	text.print(printer);
+	text.print(printer); // don't run the runnable, to save paper
 	text.setText("Line1");
-	text.print(printer);
+	text.print(printer); // don't run the runnable, to save paper
 	printer.dispose();
 }
 
