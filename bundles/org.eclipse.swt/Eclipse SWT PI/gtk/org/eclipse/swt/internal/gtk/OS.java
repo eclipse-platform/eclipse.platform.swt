@@ -196,17 +196,17 @@ public class OS {
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
 
 /* Object private fields accessors */
-public static final native int GTK_CLIST_FOCUS_ROW(int clist);
-public static final native int GTK_CLIST_ROWS(int clist);
-public static final native int GTK_CLIST_COLUMN(int clist);
-public static final native int GTK_CLIST_ROW_HEIGHT(int clist);
-public static final native int GTK_CLIST_SELECTION(int clist);
-public static final native int GTK_CLIST_VOFFSET(int clist);
-public static final native int GTK_CLIST_HOFFSET(int clist);
 public static final native int GTK_CLIST_CLIST_WINDOW(int clist);
+public static final native int GTK_CLIST_COLUMN(int clist);
 public static final native int GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT(int clist);
-public static final native int GTK_CLIST_VADJUSTMENT(int clist);
+public static final native int GTK_CLIST_FOCUS_ROW(int clist);
 public static final native int GTK_CLIST_HADJUSTMENT(int clist);
+public static final native int GTK_CLIST_HOFFSET(int clist);
+public static final native int GTK_CLIST_ROW_HEIGHT(int clist);
+public static final native int GTK_CLIST_ROWS(int clist);
+public static final native int GTK_CLIST_SELECTION(int clist);
+public static final native int GTK_CLIST_VADJUSTMENT(int clist);
+public static final native int GTK_CLIST_VOFFSET(int clist);
 public static final native int GTK_CTREE_TREE_INDENT(int ctree);
 public static final native int GTK_WIDGET_HEIGHT(int widget);
 public static final native int GTK_WIDGET_WIDTH(int widget);
