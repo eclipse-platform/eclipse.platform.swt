@@ -239,13 +239,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 
 	data = new ImageData(10, 10, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	data1 = new ImageData(10, 10, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	try {
-		image = new Image(display, data, data1);
-		image.dispose();
-		fail("No exception thrown for ImageData mask color depth != 1");
-	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for ImageData mask color depth != 1", SWT.ERROR_INVALID_ARGUMENT, e);
-	}
+	image = new Image(display, data, data1); // Image now accepts masks where depth != 1
+	image.dispose();
 
 	data = new ImageData(10, 10, 8, new PaletteData(0x30, 0x0C, 0x03));
 	// set opaque red pixel at x=9, y=9
