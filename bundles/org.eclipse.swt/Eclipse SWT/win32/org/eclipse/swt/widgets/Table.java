@@ -1092,7 +1092,14 @@ int getFocusIndex () {
 }
 
 int getForegroundPixel () {
-	return OS.SendMessage (handle, OS.LVM_GETTEXTCOLOR, 0, 0);
+	int pixel = OS.SendMessage (handle, OS.LVM_GETTEXTCOLOR, 0, 0);
+	/*
+	* The Windows table control uses CLR_DEFAULT to indicate
+	* that it is using the default foreground color.  This
+	* is undocumented.
+	*/
+	if (pixel == OS.CLR_DEFAULT) return OS.GetSysColor (OS.COLOR_WINDOWTEXT);
+	return pixel;
 }
 
 /**
