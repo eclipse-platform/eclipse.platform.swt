@@ -467,18 +467,12 @@ public void setText (String string) {
 	* Bug in Windows.  When a column header contains a
 	* mnemonic character, Windows does not measure the
 	* text properly.  This causes '...' to always appear
-	* at the end of the text.  The fix is to replace all
-	* mnemonic characters with spaces.
+	* at the end of the text.  The fix is to remove
+	* mnemonic characters and replace doubled mnemonics
+	* with spaces.
 	*/
-	char [] chars = new char [string.length ()];
-	string.getChars (0, string.length (), chars, 0);
-	int i = 0;
-	while (i < chars.length) {
-		if (chars [i] == '&') chars [i] = ' ';
-		i++;
-	}
 	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), chars, true);
+	TCHAR buffer = new TCHAR (parent.getCodePage (), fixMnemonic (string), true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);

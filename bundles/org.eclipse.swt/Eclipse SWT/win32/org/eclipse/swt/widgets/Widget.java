@@ -392,6 +392,25 @@ boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
+char [] fixMnemonic (String string) {
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, string.length (), buffer, 0);
+	int i = 0, j = 0;
+	while (i < buffer.length) {
+		if (buffer [i] == '&') {
+			if (i + 1 < buffer.length && buffer [i + 1] == '&') {
+				buffer [j++] = ' ';
+				i++;
+			}
+			i++;
+		} else {
+			buffer [j++] = buffer [i++];
+		}
+	}
+	while (j < buffer.length) buffer [j++] = 0;
+	return buffer;
+}
+
 /**
  * Returns the application defined widget data associated
  * with the receiver, or null if it has not been set. The
