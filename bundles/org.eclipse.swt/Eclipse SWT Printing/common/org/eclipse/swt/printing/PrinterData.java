@@ -129,9 +129,6 @@ public final class PrinterData extends DeviceData {
 	 * </ul>
 	 */
 	public PrinterData() {
-		PrinterData data = Printer.getDefaultPrinterData();
-		this.driver = data.driver;
-		this.name = data.name;
 	}
 
 	/**

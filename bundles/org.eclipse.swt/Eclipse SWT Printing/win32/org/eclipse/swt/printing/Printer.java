@@ -140,6 +140,16 @@ static PrinterData getDefaultPrinterData() {
 	return new PrinterData(driver, deviceName);
 }
 
+static DeviceData checkNull (PrinterData data) {
+	if (data == null) data = new PrinterData();
+	if (data.driver == null || data.name == null) {
+		PrinterData defaultPrinter = getDefaultPrinterData();
+		data.driver = defaultPrinter.driver;
+		data.name = defaultPrinter.name;		
+	}
+	return data;
+}
+
 /**
  * Constructs a new printer representing the default printer.
  * <p>
@@ -153,7 +163,7 @@ static PrinterData getDefaultPrinterData() {
  * @see #dispose
  */
 public Printer() {
-	this(getDefaultPrinterData());
+	this(null);
 }
 
 /**
@@ -173,7 +183,7 @@ public Printer() {
  * @see #dispose
  */
 public Printer(PrinterData data) {
-	super(data);
+	super(checkNull(data));
 }
 
 /**	 
