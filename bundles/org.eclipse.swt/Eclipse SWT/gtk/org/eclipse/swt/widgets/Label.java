@@ -410,7 +410,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* This part of the fix forces the label to be
 	* resized so that it will draw wrapped.
 	*/
-	if (fixWrap && (result & RESIZED) != 0) {
+	if (fixWrap) {
 		int labelWidth = OS.GTK_WIDGET_WIDTH (handle);
 		int labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
