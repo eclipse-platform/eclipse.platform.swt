@@ -632,6 +632,9 @@ boolean filterEvent (XAnyEvent event) {
 	int keysym = buffer2 [0] & 0xFFFF;
 	keyEvent.state = oldState;
 	
+	/* Check for an accelerator key */
+	if (widget.translateAccelerator (key, keyEvent)) return true;
+	
 	/* Check for a mnemonic key */
 	if (key != 0) {
 		if (widget.translateMnemonic (key, keyEvent)) return true;

@@ -87,7 +87,7 @@ public class Decorations extends Canvas {
 	String label;
 	Image image;
 	int dialogHandle;
-	boolean minimized, maximized;
+	boolean minimized, maximized, accelerators;
 	Menu menuBar;
 	Menu [] menus;
 	Control savedFocus;
@@ -148,6 +148,13 @@ void add (Menu menu) {
 	newMenus [menus.length] = menu;
 	System.arraycopy (menus, 0, newMenus, 0, menus.length);
 	menus = newMenus;
+}
+void createAccelerators () {
+	if (accelerators) return;
+	//??
+	if (menuBar == null) return;
+	menuBar.addAccelerators ();
+	accelerators = true;
 }
 void bringToTop (boolean force) {
 	/*
@@ -375,6 +382,13 @@ boolean restoreFocus () {
 //	return false;
 	return restored;
 }
+void destroyAccelerators () {
+	if (!accelerators) return;
+	//??
+	if (menuBar == null) return;
+	menuBar.removeAccelerators ();
+	accelerators = false;
+}
 void remove (Menu menu) {
 	if (menus == null) return;
 	for (int i=0; i<menus.length; i++) {
@@ -527,13 +541,12 @@ public void setMenuBar (Menu menu) {
 		if (!isEnabled () && menuBar.getEnabled ()) {
 			propagateHandle (true, menuBar.handle); 
 		}
-		menuBar.removeAccelerators ();
+		destroyAccelerators ();
 	}
 	if (menu != null) {
 		if (!isEnabled ()) {
 			propagateHandle (false, menu.handle); 
 		}
-		menu.addAccelerators ();
 	}
 		
 	/*
@@ -622,6 +635,10 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	label = string;
+}
+boolean translateAccelerator (int key, XKeyEvent xEvent) {
+	createAccelerators ();
+	return false;
 }
 boolean traverseItem (boolean next) {
 	return false;

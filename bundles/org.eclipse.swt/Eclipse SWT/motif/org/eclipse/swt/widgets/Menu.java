@@ -277,6 +277,9 @@ void createWidget (int index) {
 	super.createWidget (index);
 	parent.add (this);
 }
+void destroyAccelerators () {
+	parent.destroyAccelerators ();
+}
 /**
  * Returns the default menu item or null if none has
  * been previously set.

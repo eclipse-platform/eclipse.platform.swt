@@ -424,14 +424,6 @@ void hookEvents () {
 		OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, SWT.Selection);
 	}
 }
-boolean isAccelActive() {
-	Menu menu = parent;
-	while (menu != null && menu.cascade != null) {
-		menu = menu.cascade.parent;
-	}
-	Decorations shell = menu.parent;
-	return shell.menuBar == menu;
-}
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
@@ -528,10 +520,10 @@ void releaseWidget () {
 	if (menu != null && !menu.isDisposed ()) menu.releaseResources ();
 	menu = null;
 	super.releaseWidget ();
-	if (accelerator != 0 && isAccelActive ()) {
-		removeAccelerator ();
-		accelerator = 0;
+	if (accelerator != 0) {
+		parent.destroyAccelerators ();
 	}
+	accelerator = 0;
 	if (this == parent.defaultItem) {
 		parent.defaultItem = null;
 	}
@@ -642,13 +634,7 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setAccelerator (int accelerator) {
 	checkWidget();
 	this.accelerator = accelerator;
-	if (isAccelActive ()) {
-		if (accelerator == 0) {
-			removeAccelerator ();
-		} else {
-			addAccelerator ();
-		}
-	}
+	parent.destroyAccelerators ();
 }
 /**
  * Enables the receiver if the argument is <code>true</code>,
@@ -707,12 +693,13 @@ public void setMenu (Menu menu) {
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
-	boolean accelActive = isAccelActive ();
-	if (accelActive) removeAccelerator ();
 	if (oldMenu != null) oldMenu.cascade = null;
 	this.menu = menu;
 	int menuHandle = 0;
 
+	/* Destroy accelerators */
+	parent.destroyAccelerators ();
+	
 	/* Set the new menu in the OS */
 	if (menu != null) {
 		menu.cascade = this;
@@ -720,7 +707,6 @@ public void setMenu (Menu menu) {
 	}
 	int [] argList = {OS.XmNsubMenuId, menuHandle};
 	OS.XtSetValues (handle, argList, argList.length / 2);
-	if (accelActive) addAccelerator ();
 }
 /**
  * Sets the selection state of the receiver.

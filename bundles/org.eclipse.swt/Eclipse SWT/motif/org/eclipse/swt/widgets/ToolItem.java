@@ -881,6 +881,9 @@ int processMouseExit (int callData) {
 	else if ((parent.style & SWT.FLAT) != 0) redraw ();
 	return 0;
 }
+boolean translateAccelerator (int key, XKeyEvent xEvent) {
+	return parent.translateAccelerator (key, xEvent);
+}
 boolean translateMnemonic (int key, XKeyEvent xEvent) {
 	return parent.translateMnemonic (key, xEvent);
 }

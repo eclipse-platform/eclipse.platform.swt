@@ -2548,6 +2548,9 @@ public Point toDisplay (Point point) {
 	OS.XtTranslateCoords (handle, (short) point.x, (short) point.y, root_x, root_y);
 	return new Point (root_x [0], root_y [0]);
 }
+boolean translateAccelerator (int key, XKeyEvent xEvent) {
+	return menuShell ().translateAccelerator (key, xEvent);
+}
 boolean translateMnemonic (char key, XKeyEvent xEvent) {
 	if (!isVisible () || !isEnabled ()) return false;
 	Event event = new Event();
