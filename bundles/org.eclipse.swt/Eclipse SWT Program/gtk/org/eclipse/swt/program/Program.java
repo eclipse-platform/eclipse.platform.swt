@@ -40,7 +40,7 @@ public final class Program {
 	 */
 	boolean gnomeExpectUri;
 	
-	static int cdeShell;
+	static int /*long*/ cdeShell;
 
 	static final String[] CDE_ICON_EXT = { ".m.pm",   ".l.pm",   ".s.pm",   ".t.pm" };
 	static final String[] CDE_MASK_EXT = { ".m_m.bm", ".l_m.bm", ".s_m.bm", ".t_m.bm" };
