@@ -319,6 +319,30 @@ void hookEvents () {
 	OS.gtk_signal_connect (handle, OS.clicked, windowProc2, SWT.Selection);
 }
 
+int processFocusIn(int int0, int int1, int int2) {
+	int result = super.processFocusIn (int0, int1, int2);
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if ((style & SWT.PUSH) != 0 && OS.GTK_WIDGET_HAS_DEFAULT (handle)) {
+		Decorations menuShell = menuShell ();
+		menuShell.currentDefault = this;
+	}
+	return result;
+}
+
+int processFocusOut (int int0, int int1, int int2) {
+	int result = super.processFocusOut (int0, int1, int2);
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if ((style & SWT.PUSH) != 0 && !OS.GTK_WIDGET_HAS_DEFAULT (handle)) {
+		Decorations menuShell = menuShell ();
+		if (menuShell.currentDefault == this) {
+			menuShell.currentDefault = null;
+		}
+	}
+	return result;
+}
+
 int processSelection (int int0, int int1, int int2) {
 	postEvent(SWT.Selection);
 	return 0;

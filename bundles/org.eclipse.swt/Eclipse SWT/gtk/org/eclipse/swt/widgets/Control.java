@@ -101,7 +101,7 @@ int fontHandle () {
 }
 
 boolean hasFocus () {
-	return OS.GTK_WIDGET_HAS_FOCUS(handle);
+	return OS.GTK_WIDGET_HAS_FOCUS (handle);
 }
 
 void hookEvents () {

@@ -90,6 +90,7 @@ public class Decorations extends Canvas {
 	boolean minimized, maximized;
 	Menu menuBar;
 	Menu [] menus;
+	Button defaultButton, currentDefault;
 	int accelGroup;	
 	
 Decorations () {
@@ -192,12 +193,7 @@ void destroyAccelGroup () {
  */
 public Button getDefaultButton () {
 	checkWidget();
-//	int buttonHandle = OS.gtk_window_get_default(topHandle());
-//	if (buttonHandle==0) return null;
-//	Widget button = WidgetTable.get(buttonHandle);
-//	if (!(button instanceof Button)) return null;
-//	return (Button)button;
-	return null;
+	return currentDefault != null ? currentDefault : defaultButton;
 }
 
 /**
@@ -365,12 +361,13 @@ void releaseWidget () {
  */
 public void setDefaultButton (Button button) {
 	checkWidget();
-	int buttonHandle= 0;
+	int buttonHandle = 0;
 	if (button != null) {
-		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (button.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		buttonHandle = button.handle;
 	}
-	OS.gtk_window_set_default(topHandle(), buttonHandle);
+	this.defaultButton = button;
+	OS.gtk_window_set_default (topHandle (), buttonHandle);
 }
 
 /**

@@ -136,6 +136,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1FLAGS
 	return (jint)GTK_WIDGET_FLAGS(arg0);
 }
 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1HAS_1DEFAULT
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1WIDGET_1HAS_1DEFAULT\n")
+
+	return (jboolean)GTK_WIDGET_HAS_DEFAULT(arg0);
+}
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1HAS_1FOCUS
 	(JNIEnv *env, jclass that, jint arg0)
 {

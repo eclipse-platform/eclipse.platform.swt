@@ -265,6 +265,7 @@ public static final native int GTK_WIDGET_Y(int widget);
 public static final native int GDK_ROOT_PARENT();
 public static final native boolean GTK_CLIST_SHOW_TITLES(int clist);
 public static final native int GTK_WIDGET_FLAGS(int wid);
+public static final native boolean GTK_WIDGET_HAS_DEFAULT(int wid);
 public static final native boolean GTK_WIDGET_HAS_FOCUS(int wid);
 public static final native boolean GTK_WIDGET_IS_SENSITIVE(int wid);
 public static final native boolean GTK_WIDGET_MAPPED(int wid);
