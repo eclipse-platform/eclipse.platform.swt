@@ -890,15 +890,9 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int end
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
 	color.pixel = values.background_pixel;
-	color.red = values.background_red;
-	color.green = values.background_green;
-	color.blue = values.background_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 	OS.gdk_draw_arc(data.drawable, handle, 1, x, y, width, height, startAngle * 64, endAngle * 64);
 	color.pixel = values.foreground_pixel;
-	color.red = values.foreground_red;
-	color.green = values.foreground_green;
-	color.blue = values.foreground_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 }
 
@@ -990,15 +984,9 @@ public void fillOval(int x, int y, int width, int height) {
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
 	color.pixel = values.background_pixel;
-	color.red = values.background_red;
-	color.green = values.background_green;
-	color.blue = values.background_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 	OS.gdk_draw_arc(data.drawable, handle, 1, x, y, width, height, 0, 23040);
 	color.pixel = values.foreground_pixel;
-	color.red = values.foreground_red;
-	color.green = values.foreground_green;
-	color.blue = values.foreground_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 }
 
@@ -1028,15 +1016,9 @@ public void fillPolygon(int[] pointArray) {
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
 	color.pixel = values.background_pixel;
-	color.red = values.background_red;
-	color.green = values.background_green;
-	color.blue = values.background_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 	OS.gdk_draw_polygon(data.drawable, handle, 1, pointArray, pointArray.length / 2);
 	color.pixel = values.foreground_pixel;
-	color.red = values.foreground_red;
-	color.green = values.foreground_green;
-	color.blue = values.foreground_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 }
 
@@ -1069,15 +1051,9 @@ public void fillRectangle(int x, int y, int width, int height) {
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
 	color.pixel = values.background_pixel;
-	color.red = values.background_red;
-	color.green = values.background_green;
-	color.blue = values.background_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 	OS.gdk_draw_rectangle(data.drawable, handle, 1, x, y, width, height);
 	color.pixel = values.foreground_pixel;
-	color.red = values.foreground_red;
-	color.green = values.foreground_green;
-	color.blue = values.foreground_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 }
 
@@ -1148,9 +1124,6 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
 	color.pixel = values.background_pixel;
-	color.red = values.background_red;
-	color.green = values.background_green;
-	color.blue = values.background_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 	
 	int drawable = data.drawable;
@@ -1179,9 +1152,6 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	}
 
 	color.pixel = values.foreground_pixel;
-	color.red = values.foreground_red;
-	color.green = values.foreground_green;
-	color.blue = values.foreground_blue;
 	OS.gdk_gc_set_foreground(handle, color);
 }
 
