@@ -673,6 +673,7 @@ void drawBackground(GC gc, int[] shape, boolean selected) {
 	gc.getClipping(clipping);
 	Region region = new Region();
 	region.add(shape);
+	region.intersect(clipping);
 	gc.setClipping(region);
 	
 	Color defaultBackground = selected ? selectionBackground : getBackground();
@@ -1183,7 +1184,7 @@ void drawTabArea(Event event) {
 		shape = new int[TOP_LEFT_CORNER.length + TOP_RIGHT_CORNER.length + 4];
 		int index = 0;
 		shape[index++] = x;
-		shape[index++] = y+height;
+		shape[index++] = y+height+1;
 		for (int i = 0; i < TOP_LEFT_CORNER.length/2; i++) {
 			shape[index++] = x+TOP_LEFT_CORNER[2*i];
 			shape[index++] = y+TOP_LEFT_CORNER[2*i+1];
@@ -1820,7 +1821,7 @@ void onMouse(Event event) {
 			boolean close = false, minimize = false, maximize = false, chevron = false;
 			if (minRect.contains(x, y)) {
 				minimize = true;
-				if (minImageState != HOT) {
+				if (minImageState != SELECTED && minImageState != HOT) {
 					minImageState = HOT;
 					redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
 					update();
@@ -1828,7 +1829,7 @@ void onMouse(Event event) {
 			}
 			if (maxRect.contains(x, y)) {
 				maximize = true;
-				if (maxImageState != HOT) {
+				if (maxImageState != SELECTED && maxImageState != HOT) {
 					maxImageState = HOT;
 					redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 					update();
@@ -1836,23 +1837,23 @@ void onMouse(Event event) {
 			}
 			if (chevronRect.contains(x, y)) {
 				chevron = true;
-				if (chevronImageState != HOT) {
+				if (chevronImageState != SELECTED && chevronImageState != HOT) {
 					chevronImageState = HOT;
 					redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 					update();
 				}
 			}
-			if (minImageState == HOT && !minimize) {
+			if (minImageState != NORMAL && !minimize) {
 				minImageState = NORMAL;
 				redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
 				update();
 			}
-			if (maxImageState == HOT && !maximize) {
+			if (maxImageState != NORMAL && !maximize) {
 				maxImageState = NORMAL;
 				redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 				update();
 			}
-			if (chevronImageState == HOT && !chevron) {
+			if (chevronImageState != NORMAL && !chevron) {
 				chevronImageState = NORMAL;
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 				update();
@@ -1863,7 +1864,7 @@ void onMouse(Event event) {
 				if (item.getBounds().contains(x, y)) {
 					close = true;
 					if (item.closeRect.contains(x, y)) {
-						if (item.closeImageState != HOT) {
+						if (item.closeImageState != SELECTED && item.closeImageState != HOT) {
 							item.closeImageState = HOT;
 							redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
 							update();
@@ -3331,22 +3332,22 @@ boolean updateTabHeight(int oldHeight, boolean force){
 	} else {
 		curve = bezier(0, 0,
 		               CURVE_LEFT, 0, 
-		               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 2,
-		               CURVE_WIDTH, tabHeight + 2,
+		               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 1,
+		               CURVE_WIDTH, tabHeight + 1,
 		               CURVE_WIDTH);
 		// workaround to get rid of blip at end of bezier
-		int index = -1;
-		for (int i = 0; i < curve.length/2; i++) {
-			if (curve[2*i+1] > tabHeight) {
-				index = i;
-				break;
-			}
-		}
-		if (index > 0) {
-			int[] newCurve = new int[2*(index-1)];
-			System.arraycopy(curve, 0, newCurve, 0, newCurve.length);
-			curve = newCurve;
-		}
+//		int index = -1;
+//		for (int i = 0; i < curve.length/2; i++) {
+//			if (curve[2*i+1] > tabHeight+1) {
+//				index = i;
+//				break;
+//			}
+//		}
+//		if (index > 0) {
+//			int[] newCurve = new int[2*(index-1)];
+//			System.arraycopy(curve, 0, newCurve, 0, newCurve.length);
+//			curve = newCurve;
+//		}
 	}
 	notifyListeners(SWT.Resize, new Event());
 	return true;
