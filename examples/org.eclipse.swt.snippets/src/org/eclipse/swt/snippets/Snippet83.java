@@ -38,7 +38,7 @@ public static void main(String[] args) {
 	target.setTransfer(new Transfer[] {Snippet83.getInstance()});
 	target.addDropListener(new DropTargetAdapter() {
 		public void dragEnter(DropTargetEvent event) {			
-			String ops = null;
+			String ops = "";
 			if ((event.operations & DND.DROP_COPY) != 0) ops += "Copy;";
 			if ((event.operations & DND.DROP_MOVE) != 0) ops += "Move;";
 			if ((event.operations & DND.DROP_LINK) != 0) ops += "Link;";
