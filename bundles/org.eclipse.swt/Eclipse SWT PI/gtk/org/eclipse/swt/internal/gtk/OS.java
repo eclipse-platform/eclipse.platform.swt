@@ -21,6 +21,9 @@ public class OS {
 	
 	/** Constants */
 	public static final int GDK_2BUTTON_PRESS = 0x5;
+	public static final int GDK_ACTION_COPY    = 1 << 1;
+	public static final int GDK_ACTION_MOVE    = 1 << 2;
+	public static final int GDK_ACTION_LINK    = 1 << 3;
 	public static final int GDK_Alt_L = 0xffe9;
 	public static final int GDK_Alt_R = 0xffea;
 	public static final int GDK_BackSpace = 0xff08;
@@ -338,6 +341,7 @@ public static final native void gdk_colormap_query_color(int colormap, int pixel
 public static final native void gdk_cursor_destroy(int cursor);
 public static final native int gdk_cursor_new(int cursor_type);
 public static final native int gdk_cursor_new_from_pixmap(int source, int mask, GdkColor fg, GdkColor bg, int x, int y);
+public static final native void gdk_drag_status(int context, int action, int time);
 public static final native void gdk_draw_arc(int drawable, int gc, int filled, int x, int y, int width, int height, int angle1, int angle2);
 public static final native void gdk_draw_drawable(int drawable, int gc, int src, int xsrc, int ysrc, int xdest, int ydest, int width, int height);
 public static final native void gdk_draw_layout(int drawable, int gc, int x, int y, int layout);
@@ -514,6 +518,13 @@ public static final native void gtk_ctree_unselect_recursive(int ctree, int node
 public static final native int gtk_dialog_add_button(int dialog, String button_text, int response_id);
 public static final native int gtk_dialog_new();
 public static final native int gtk_dialog_run(int dialog);
+public static final native int gtk_drag_begin(int widget, int targets, int actions, int button, int event);
+public static final native boolean gtk_drag_check_threshold (int widget, int start_x, int start_y, int current_x, int current_y);
+public static final native int gtk_drag_dest_find_target (int widget, int context, int target_list);
+public static final native void gtk_drag_dest_set(int widget, int flags, int targets, int n_targets, int  actions);
+public static final native void gtk_drag_dest_unset(int widget);
+public static final native void gtk_drag_finish(int context, boolean success, boolean delete, int time);
+public static final native void gtk_drag_get_data(int widget, int context, int target, int time);
 public static final native int gtk_drawing_area_new();
 public static final native void gtk_editable_copy_clipboard(int editable);
 public static final native void gtk_editable_cut_clipboard(int editable);
@@ -638,6 +649,8 @@ public static final native void gtk_signal_handler_block_by_func(int object, int
 public static final native void gtk_signal_handler_unblock_by_data(int object, int data);
 public static final native void gtk_signal_handler_unblock_by_func(int object, int func, int data);
 public static final native int gtk_style_copy(int style);
+public static final native int gtk_target_list_new(int targets, int ntargets);
+public static final native void gtk_target_list_unref(int list);
 public static final native int gtk_text_get_length(int text);
 public static final native int gtk_text_new(int hadj, int vadj);
 public static final native void gtk_text_set_editable(int editable, boolean is_editable);
@@ -718,7 +731,9 @@ public static final native void memmove(int dest, GtkAdjustment src);
 public static final native void memmove(int dest, GtkStyle src);
 public static final native void memmove(int dest, GdkEventButton src, int size);
 public static final native void memmove(GtkColorSelectionDialog dest, int src);
+public static final native void memmove(GdkDragContext dest, int src, int size);
 public static final native void memmove(GtkSelectionData dest, int src, int size);
+public static final native void memmove(GtkTargetPair dest, int src, int size);
 public static final native void memmove(GtkCTreeRow dest, int src, int size);
 public static final native void memmove(GtkCListColumn dest, int src, int size);
 public static final native void memmove(GtkStyle dest, int src);

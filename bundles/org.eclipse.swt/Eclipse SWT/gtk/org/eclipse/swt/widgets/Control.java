@@ -1681,6 +1681,10 @@ int processMouseDown (int callData, int arg1, int int2) {
 	Shell shell = _getShell ();
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
+	Display display = getDisplay ();
+	display.dragStartX = (int) gdkEvent.x;
+	display.dragStartY = (int) gdkEvent.y;
+	display.dragging = false;
 	int button = gdkEvent.button;
 	int type = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
 	sendMouseEvent (type, button, callData);
@@ -1743,8 +1747,23 @@ int processMouseUp (int callData, int arg1, int int2) {
 }
 
 int processMouseMove (int callData, int arg1, int int2) {
+	Display display = getDisplay ();
+	if (hooks (SWT.DragDetect)) {
+		if (!display.dragging) {
+			int []  state = new int [1];
+			OS.gdk_event_get_state (callData, state);
+			if ((state [0] & OS.GDK_BUTTON1_MASK) != 0) {
+				double [] px = new double [1], py = new double [1];
+				OS.gdk_event_get_coords (callData, px, py);
+				if (OS.gtk_drag_check_threshold (handle, display.dragStartX, display.dragStartY, (int) px [0], (int) py [0])){
+					display.dragging = true;
+					postEvent (SWT.DragDetect);
+				}
+			}
+		}
+	}
+	
 	if (hooks (SWT.MouseHover)) {
-		Display display = getDisplay ();
 		display.addMouseHoverTimeout (handle);
 	}
 	sendMouseEvent (SWT.MouseMove, 0, callData);

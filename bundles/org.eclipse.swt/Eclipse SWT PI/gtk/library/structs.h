@@ -20,6 +20,9 @@
 GdkColor *getGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct);
 void setGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct);
 
+GdkDragContext *getGdkDragContextFields(JNIEnv *env, jobject lpObject, GdkDragContext *lpStruct);
+void setGdkDragContextFields(JNIEnv *env, jobject lpObject, GdkDragContext *lpStruct);
+
 GdkEvent *getGdkEventFields(JNIEnv *env, jobject lpObject, GdkEvent *lpStruct);
 void setGdkEventFields(JNIEnv *env, jobject lpObject, GdkEvent *lpStruct);
 
@@ -79,6 +82,9 @@ void setGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpStruct);
 
 GtkTargetEntry *getGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct);
 void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct);
+
+GtkTargetPair *getGtkTargetPairFields(JNIEnv *env, jobject lpObject, GtkTargetPair *lpStruct);
+void setGtkTargetPairFields(JNIEnv *env, jobject lpObject, GtkTargetPair *lpStruct);
 
 GtkFixed *getGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct);
 void setGtkFixedFields(JNIEnv *env, jobject lpObject, GtkFixed *lpStruct);

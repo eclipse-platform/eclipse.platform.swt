@@ -122,6 +122,10 @@ public class Display extends Device {
 	int mouseHoverId, mouseHoverHandle, mouseHoverProc;
 	Callback mouseHoverCallback;
 	
+	/* Drag Detect */
+	int dragStartX,dragStartY;
+	boolean dragging;
+	
 	/* Fonts */
 	int defaultFont;
 	
