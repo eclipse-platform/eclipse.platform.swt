@@ -80,6 +80,15 @@ Menu createEditMenu() {
  */
 void bold(boolean bold) {
 	isBold = bold;
+	Point sel = text.getSelectionRange();
+	if ((sel != null) && (sel.y != 0)) {
+		StyleRange style;
+		int fontStyle = SWT.NORMAL;
+		if (isBold) fontStyle = SWT.BOLD;
+		style = new StyleRange(sel.x, sel.y, null, null, fontStyle);
+		text.setStyleRange(style);
+	}
+	text.setSelectionRange(sel.x + sel.y, 0);
 }
 /*
  * Clear all style data for the selected text.
