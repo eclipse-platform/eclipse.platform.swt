@@ -163,15 +163,15 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	
-	update ();
+//	update ();
 //	GC gc = new GC (this);
 //	gc.copyArea (x, y, width, height, destX, destY);
 //	gc.dispose ();
 
-//	OS.gdk_flush ();
-//	while ((OS.gtk_events_pending()) != 0) {
-//		OS.gtk_main_iteration ();
-//	}
+	OS.gdk_flush ();
+	while ((OS.gtk_events_pending()) != 0) {
+		OS.gtk_main_iteration ();
+	}
 	
 	int window = paintWindow ();
 	int visibleRegion = OS.gdk_drawable_get_visible_region (window);
