@@ -48,6 +48,7 @@
          name="%launchitem.LauncherExample.name"
          description="%launchitem.LauncherExample.description"
          category="org.eclipse.swt.examples.launchcategory"
+         source="launchersrc.zip"
          id="org.eclipse.swt.examples.launcher.launcher">
    </viewItem>
 </extension>
