@@ -318,7 +318,8 @@ public Display getDisplay () {
 }
 
 /**
- * Returns the bounds of the Rectangles being drawn.
+ * Returns the bounds that are being drawn, expressed relative to the parent
+ * widget.  If the parent is a Display then these are screen coordinates.
  *
  * @return the bounds of the Rectangles being drawn
  * 
@@ -673,7 +674,8 @@ void setCursor (int cursorHandle) {
 }
 
 /**
- * Specify the rectangles that should be drawn.
+ * Specify the rectangles that should be drawn, expressed relative to the parent
+ * widget.  If the parent is a Display then these are screen coordinates.
  *
  * @param rectangles the bounds of the rectangles to be drawn
  *
