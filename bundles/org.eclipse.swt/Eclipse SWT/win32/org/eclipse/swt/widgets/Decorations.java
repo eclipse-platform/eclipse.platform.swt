@@ -1151,7 +1151,11 @@ boolean translateAccelerator (MSG msg) {
 	if (menuBar != null && !menuBar.isEnabled ()) return false;
 	if (hAccel == -1) createAccelerators ();
 	if (hAccel == 0) return false;
-	return OS.TranslateAccelerator (handle, hAccel, msg) != 0;
+	if (OS.TranslateAccelerator (handle, hAccel, msg) == 0) return false;
+	Display display = getDisplay ();
+	display.lastAscii = display.lastKey = 0;
+	display.lastVirtual = display.lastNull = false;
+	return true;
 }
 
 boolean traverseItem (boolean next) {
