@@ -153,14 +153,14 @@ public void deselect (int start, int end) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (start > end) return;
 	if ((style & SWT.SINGLE) != 0) {
-		int [] args = new int [] {OS.Pt_ARG_LIST_SEL_COUNT, 0, 0};
+		int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
 		OS.PtGetResources (handle, args.length / 3, args);
 		int count = args [1];
 		int index = Math.min (count - 1, end);
 		if (index >= start) deselect (index);
 		return;
 	}
-	for (int i=start; i<end; i++) {
+	for (int i=start; i<=end; i++) {
 		OS.PtListUnselectPos (handle, i + 1);
 	}
 }
@@ -318,7 +318,7 @@ public int getTopIndex () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = new int [] {OS.Pt_ARG_TOP_ITEM_POS, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
-	return args [1];
+	return args [1] - 1;
 }
 
 void hookEvents () {
@@ -331,7 +331,8 @@ void hookEvents () {
 public int indexOf (String string) {
 	if (!isValidThread ()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error(SWT.ERROR_WIDGET_DISPOSED);
-	return indexOf (string, 0);
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	return OS.PtListItemPos(handle, buffer) - 1;
 }
 
 public int indexOf (String string, int start) {
@@ -340,8 +341,7 @@ public int indexOf (String string, int start) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	
 	// NOT DONE - start is ignored
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	return OS.PtListItemPos(handle, buffer) - 1;
+	return indexOf (string);
 }
 
 public boolean isSelected (int index) {
@@ -403,10 +403,19 @@ public void remove (int [] indices) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-
-	//NOT DONE
+	int [] newIndices = new int [indices.length];
+	System.arraycopy (indices, 0, newIndices, 0, indices.length);
+	sort (newIndices);
+	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	int count = args [1];
+	for (int i=0; i<newIndices.length; i++ ) {
+		int index = newIndices [i];
+		if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+		int result = OS.PtListDeleteItemPos (handle, 1, index + 1);
+		if (result != 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	}
 }
-
 
 public void remove (int start, int end) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -427,7 +436,6 @@ public void removeAll () {
 	OS.PtListDeleteAllItems (handle);
 }
 
-
 public void removeSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -441,18 +449,22 @@ public void select (int start, int end) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (start > end) return;
+	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	int count = args [1];
 	if ((style & SWT.SINGLE) != 0) {
-		int [] args = new int [] {OS.Pt_ARG_LIST_SEL_COUNT, 0, 0};
-		OS.PtGetResources (handle, args.length / 3, args);
-		int count = args [1];
 		int index = Math.min (count - 1, end);
 		if (index >= start) select (index);
 		return;
 	}
-	for (int i=start; i<end; i++) {
-		OS.PtListSelectPos (handle, start + 1);
+	int gotoIndex = -1;
+	for (int index=end; index>=start; index--) {
+		if (0 <= index && index < count) {
+			gotoIndex = index;
+			OS.PtListSelectPos (handle, index + 1);
+		}
 	}
-	OS.PtListGotoPos (handle, start + 1);
+	if (gotoIndex != -1) OS.PtListGotoPos (handle, gotoIndex + 1);
 }
 
 public void select (int [] indices) {
@@ -460,27 +472,37 @@ public void select (int [] indices) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (indices.length == 0) return;
+	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	int count = args [1];
+	int gotoIndex = -1;
 	for (int i=0; i<indices.length; i++) {
-		if (indices [i] >= 0) {
-			OS.PtListSelectPos (handle, indices [i] + 1);
+		int index = indices [i];
+		if (0 <= index && index < count) {
+			gotoIndex = index;
+			OS.PtListSelectPos (handle, index + 1);
 		}
 	}
-	OS.PtListGotoPos (handle, indices [0] + 1);
+	if (gotoIndex != -1) OS.PtListGotoPos (handle, gotoIndex + 1);
 }
 
 public void select (int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index < 0) return;
-	OS.PtListSelectPos (handle, index + 1);
-	OS.PtListGotoPos (handle, index + 1);
+	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	if (index < args [1]) {
+		OS.PtListSelectPos (handle, index + 1);
+		OS.PtListGotoPos (handle, index + 1);
+	}
 }
 
 public void selectAll () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SINGLE) != 0) return;
-	int [] args = new int [] {OS.Pt_ARG_LIST_SEL_COUNT, 0, 0};
+	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int count = args [1];
 	for (int i=0; i<count; i++) {
