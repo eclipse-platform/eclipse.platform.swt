@@ -1094,26 +1094,33 @@ public void setTextLimit (int limit) {
 }
 
 boolean translateAccelerator (MSG msg) {
+	if (super.translateAccelerator (msg)) return true;
+	
 	/*
 	* In order to see key events for the text widget in a combo box,
 	* filter the key events before they are dispatched to the text
 	* widget and invoke the cooresponding key handler for the combo
 	* box as if the key was sent directly to the combo box, not the
 	* text field.  The key is still dispatched to the text widget, 
-	* in the normal fashion.
+	* in the normal fashion.  Note that we must call TranslateMessage
+	* in order to process accented keys properly.
 	*/
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (msg.hwnd == hwndText) {
+		OS.TranslateMessage (msg);
 		switch (msg.message) {
 			case OS.WM_CHAR:		WM_CHAR (msg.wParam, msg.lParam); break;
+			case OS.WM_IME_CHAR:	WM_IME_CHAR (msg.wParam, msg.lParam); break;
 			case OS.WM_KEYDOWN:	WM_KEYDOWN (msg.wParam, msg.lParam); break;
 			case OS.WM_KEYUP:		WM_KEYUP (msg.wParam, msg.lParam); break;
 			case OS.WM_SYSCHAR:	WM_SYSCHAR (msg.wParam, msg.lParam); break;
 			case OS.WM_SYSKEYDOWN:	WM_SYSKEYDOWN (msg.wParam, msg.lParam); break;
 			case OS.WM_SYSKEYUP:	WM_SYSKEYUP (msg.wParam, msg.lParam); break;
 		}
+		OS.DispatchMessage (msg);
+		return true;
 	}
-	return super.translateAccelerator (msg);
+	return false;
 }
 
 boolean translateTraversal (MSG msg) {
