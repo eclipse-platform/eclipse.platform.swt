@@ -310,16 +310,19 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 		if (bounds.width != 0) {
 			x = (rects [i].x - bounds.x) * 100 / bounds.width;
 			width = rects [i].width * 100 / bounds.width;
+		} else {
+			width = 100;
 		}
 		if (bounds.height != 0) {
 			y = (rects [i].y - bounds.y) * 100 / bounds.height;
 			height = rects [i].height * 100 / bounds.height;
+		} else {
+			height = 100;
 		}
 		result [i] = new Rectangle (x, y, width, height);			
 	}
 	return result;
 }
-
 
 void drawRectangles (int window, boolean erase) {
 	if (parent != null) {
