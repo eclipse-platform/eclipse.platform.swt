@@ -529,7 +529,7 @@ int preferredHeight(GC gc) {
 	}
 	return h + TOP_MARGIN + BOTTOM_MARGIN;
 }
-int preferredWidth(GC gc, boolean isSelected) {
+int preferredWidth(GC gc, boolean isSelected, boolean minimum) {
 	// NOTE: preferred width does not include the "dead space" caused
 	// by the curve.
 	if (isDisposed()) return 0;
@@ -538,7 +538,18 @@ int preferredWidth(GC gc, boolean isSelected) {
 	if (image != null && (isSelected || parent.showUnselectedImage)) {
 		w += image.getBounds().width;
 	}
-	String text = getText();
+	String text = null;
+	if (minimum) {
+		int minChars = parent.minChars;
+		text = minChars == 0 ? null : getText();
+		if (text != null && text.length() > minChars) {
+			int end = minChars < ELLIPSIS.length() + 1 ? minChars : minChars - ELLIPSIS.length();
+			text = text.substring(0, end);
+			if (minChars > ELLIPSIS.length() + 1) text += ELLIPSIS;
+		}
+	} else {
+		text = getText();
+	}
 	if (text != null) {
 		if (w > 0) w += INTERNAL_SPACING;
 		if (font == null) {
