@@ -159,7 +159,6 @@ void hookEvents () {
 	int imHandle = imHandle ();
 	if (imHandle != 0) {
 		int topHandle = topHandle ();
-		OS.g_signal_connect (handle, OS.map_event, windowProc3, MAP_EVENT);
 		OS.g_signal_connect (handle, OS.unrealize, windowProc2, UNREALIZE);
 		OS.g_signal_connect (topHandle, OS.hide, windowProc2, HIDE);
 		OS.g_signal_connect (imHandle, OS.commit, windowProc3, COMMIT);
@@ -1742,12 +1741,6 @@ int gtk_leave_notify_event (int widget, int event) {
 	return 0;
 }
 
-int gtk_map_event (int widget, int event) {
-	int imHandle = imHandle ();
-	if (imHandle != 0) OS.gtk_im_context_set_client_window (imHandle, paintWindow ());
-	return 0;	
-}
-
 int gtk_motion_notify_event (int widget, int event) {
 	if (hooks (SWT.DragDetect)) {
 		if (!display.dragging) {
@@ -1783,8 +1776,10 @@ int gtk_preedit_changed (int imcontext) {
 }
 
 int gtk_realize (int widget) {
-	if (cursor != null && cursor.isDisposed()) return 0;
 	int window = OS.GTK_WIDGET_WINDOW (paintHandle());
+	int imHandle = imHandle();
+	if (imHandle != 0) OS.gtk_im_context_set_client_window (imHandle, window);
+	if (cursor != null && cursor.isDisposed()) return 0;
 	int gdkCursor = cursor != null ? cursor.handle : 0;
 	OS.gdk_window_set_cursor (window, gdkCursor);
 	return 0;
@@ -2062,6 +2057,11 @@ void releaseHandle () {
 void releaseWidget () {
 	display.removeMouseHoverTimeout (handle);
 	super.releaseWidget ();
+	int imHandle = imHandle ();
+	if (imHandle != 0) {
+		OS.gtk_im_context_reset (imHandle);
+		OS.gtk_im_context_set_client_window (imHandle, 0);
+	}
 	cursor = null;
 	toolTipText = null;
 	parent = null;

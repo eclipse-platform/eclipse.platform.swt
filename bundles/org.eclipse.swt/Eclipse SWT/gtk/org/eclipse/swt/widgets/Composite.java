@@ -221,6 +221,12 @@ void createScrolledHandle (int parentHandle) {
 		OS.gtk_container_add (parentHandle, handle);		
 	}
 	OS.gtk_widget_show (handle);
+	if (imHandle != 0) {
+		int window = OS.GTK_WIDGET_WINDOW (handle);
+		if (window != 0) {
+			OS.gtk_im_context_set_client_window (imHandle, window);
+		}
+	}
 	
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
@@ -554,7 +560,6 @@ void releaseHandle () {
 
 void releaseWidget () {
 	releaseChildren ();
-	if (imHandle != 0) OS.gtk_im_context_reset (imHandle);
 	super.releaseWidget ();
 	if (imHandle != 0) OS.g_object_unref (imHandle);
 	imHandle = 0;
