@@ -977,6 +977,11 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 	return 0;
 }
 
+int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
+	if (cursor != null) setCursor (cursor.handle);
+	return super.gtk_event_after (widget, gdkEvent);
+}
+
 int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if ((style & SWT.SINGLE) != 0) {
@@ -1110,7 +1115,13 @@ public void insert (String string) {
 }
 
 int /*long*/ paintWindow () {
-	if ((style & SWT.SINGLE) != 0) return super.paintWindow ();
+	if ((style & SWT.SINGLE) != 0) {
+		int /*long*/ window = super.paintWindow ();
+		int /*long*/ children = OS.gdk_window_get_children (window);
+		if (children != 0) window = OS.g_list_data (children);
+		OS.g_list_free (children);
+		return window;
+	}
 	OS.gtk_widget_realize (handle);
 	return OS.gtk_text_view_get_window (handle, OS.GTK_TEXT_WINDOW_TEXT);
 }
@@ -1244,6 +1255,13 @@ public void selectAll () {
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	OS.gtk_widget_modify_base (handle, 0, color);
+}
+
+void setCursor (int /*long*/ cursor) {
+	int /*long*/ defaultCursor = 0;
+	if (cursor == 0) defaultCursor = OS.gdk_cursor_new (OS.GDK_XTERM);
+	super.setCursor (cursor != 0 ? cursor : defaultCursor);
+	if (cursor == 0) OS.gdk_cursor_destroy (defaultCursor);
 }
 
 /**

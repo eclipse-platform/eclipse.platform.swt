@@ -3407,6 +3407,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1freeze_1updates)
 }
 #endif
 
+#ifndef NO_gdk_1window_1get_1children
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1get_1children)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gdk_1window_1get_1children_FUNC);
+	rc = (jint)gdk_window_get_children((GdkWindow *)arg0);
+	OS_NATIVE_EXIT(env, that, gdk_1window_1get_1children_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1window_1get_1events
 JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1get_1events)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -362,9 +362,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 }
 
 int /*long*/ gtk_realize (int /*long*/ widget) {
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle());
-	int /*long*/ gdkCursor = cursor != null && !cursor.isDisposed() ? cursor.handle : defaultCursor;
-	OS.gdk_window_set_cursor (window, gdkCursor);
+	setCursor (cursor != null ? cursor.handle : 0);
 	return 0;
 }
 
@@ -404,15 +402,8 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-public void setCursor (Cursor cursor) {
-	checkWidget();
-	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	this.cursor = cursor;
-	int /*long*/ gdkCursor = cursor != null ? cursor.handle : defaultCursor;
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
-	if (window != 0) {
-		OS.gdk_window_set_cursor (window, gdkCursor);
-		OS.gdk_flush ();
-	}
+void setCursor (int /*long*/ cursor) {
+	super.setCursor (cursor != 0 ? cursor : defaultCursor);
 }
+
 }

@@ -637,6 +637,7 @@ public static final synchronized native int /*long*/ gdk_window_at_pointer(int[]
 public static final synchronized native void gdk_window_begin_paint_rect(int /*long*/ window, GdkRectangle rectangle);
 public static final synchronized native void gdk_window_destroy(int /*long*/ window);
 public static final synchronized native void gdk_window_end_paint(int /*long*/ window);
+public static final synchronized native int /*long*/ gdk_window_get_children(int /*long*/ window);
 public static final synchronized native int gdk_window_get_events(int /*long*/ window);
 public static final synchronized native void gdk_window_focus(int /*long*/ window, int timestamp);
 public static final synchronized native void gdk_window_freeze_updates(int /*long*/ window);

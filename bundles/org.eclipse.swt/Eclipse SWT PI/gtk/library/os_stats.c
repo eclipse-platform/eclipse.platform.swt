@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 825;
-int OS_nativeFunctionCallCount[825];
+int OS_nativeFunctionCount = 826;
+int OS_nativeFunctionCallCount[826];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -277,6 +277,7 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1window_1end_1paint", 
 	"gdk_1window_1focus", 
 	"gdk_1window_1freeze_1updates", 
+	"gdk_1window_1get_1children", 
 	"gdk_1window_1get_1events", 
 	"gdk_1window_1get_1frame_1extents", 
 	"gdk_1window_1get_1origin", 

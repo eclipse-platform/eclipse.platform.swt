@@ -944,6 +944,14 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	return move || resize;
 }
 
+void setCursor (int /*long*/ cursor) {
+	if (enableWindow != 0) {
+		OS.gdk_window_set_cursor (enableWindow, cursor);
+		OS.gdk_flush ();
+	}
+	super.setCursor (cursor);
+}
+
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (((state & DISABLED) == 0) == enabled) return;

@@ -99,6 +99,7 @@ public class Display extends Device {
 	public int [] dispatchEvents;
 
 	/* Events Dispatching and Callback */
+	boolean wake;
 	int gdkEventCount;
 	int /*long*/ [] gdkEvents;
 	Widget [] gdkEventWidgets;
@@ -2782,7 +2783,8 @@ public boolean sleep () {
 		} catch (Exception e) {
 			return false;
 		}
-	} while (true);
+	} while (!wake);
+	wake = false;
 	return true;
 }
 
@@ -2983,6 +2985,7 @@ public void wake () {
 }
 
 void wakeThread () {
+	wake = true;
 	// NOT IMPLEMENTED - need to wake up the event loop
 }
 

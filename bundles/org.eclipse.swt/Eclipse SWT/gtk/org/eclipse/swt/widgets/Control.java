@@ -1881,12 +1881,11 @@ int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
 }
 
 int /*long*/ gtk_realize (int /*long*/ widget) {
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle());
-	int /*long*/ imHandle = imHandle();
-	if (imHandle != 0) OS.gtk_im_context_set_client_window (imHandle, window);
-	if (cursor != null && cursor.isDisposed()) return 0;
-	int /*long*/ gdkCursor = cursor != null ? cursor.handle : 0;
-	OS.gdk_window_set_cursor (window, gdkCursor);
+	int /*long*/ imHandle = imHandle ();
+	if (imHandle != 0) {
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+		OS.gtk_im_context_set_client_window (imHandle, window);
+	}
 	return 0;
 }
 
@@ -2151,6 +2150,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 }
 
 void redrawWidget (int x, int y, int width, int height, boolean all) {
+	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
 	int /*long*/ window = paintWindow ();
 	GdkRectangle rect = new GdkRectangle ();
 	rect.x = x;
@@ -2436,10 +2436,13 @@ public void setCursor (Cursor cursor) {
 	checkWidget();
 	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
-	int /*long*/ gdkCursor = cursor != null ? cursor.handle : 0;
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+	setCursor (cursor != null ? cursor.handle : 0);
+}
+
+void setCursor (int /*long*/ cursor) {
+	int /*long*/ window = paintWindow ();
 	if (window != 0) {
-		OS.gdk_window_set_cursor (window, gdkCursor);
+		OS.gdk_window_set_cursor (window, cursor);
 		OS.gdk_flush ();
 	}
 }
