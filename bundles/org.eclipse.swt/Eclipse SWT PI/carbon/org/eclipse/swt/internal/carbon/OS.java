@@ -278,6 +278,9 @@ public class OS extends OS2 {
 	public static final int kThemeSystemFont = 0;
 	public static final int kThemeWatchCursor = 7;
 	public static final int kUtilityWindowClass = 8;
+    public static final int kWindowActivationScopeNone = 0;
+    public static final int kWindowActivationScopeIndependent = 1;
+    public static final int kWindowActivationScopeAll = 2;
 	public static final int kWindowCloseBoxAttribute = (1 << 0);
 	public static final int kWindowCollapseBoxAttribute = (1 << 3);
 	public static final int kWindowCompositingAttribute = (1 << 19);
@@ -394,6 +397,7 @@ public static final native void FrameRect(Rect bounds);
 public static final native void FrameRoundRect(Rect bounds, short ovalWidth, short ovalHeight);
 public static final native int FrontWindow();
 public static final native int GetApplicationEventTarget();
+public static final native int GetAvailableWindowAttributes(int windowClass);
 public static final native int GetAvailableWindowPositioningBounds(int inDevice, Rect outAvailableRect);
 public static final native int GetBestControlRect(int inControl, Rect outRect, short[] outBaseLineOffset);
 public static final native int GetCaretTime();
@@ -641,6 +645,7 @@ public static final native int SetThemeDrawingState(int state, boolean disposeNo
 public static final native int SetThemeWindowBackground(int wHandle, short brush, boolean update);
 public static final native int SetUpControlBackground(int cHandle, short depth, boolean isColorDevice);
 public static final native void SetWRefCon(int wHandle, int data);
+public static final native int SetWindowActivationScope(int wHandle, int scope);
 public static final native int SetWindowDefaultButton(int wHandle, int cHandle);
 public static final native int SetWindowModality(int wHandle, int modalityKind, int unavailableWindowHandle);
 public static final native int SetWindowTitleWithCFString(int wHandle, int sHandle);

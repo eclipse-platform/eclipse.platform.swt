@@ -983,6 +983,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetApplicationEve
 }
 #endif /* NO_GetApplicationEventTarget */
 
+#ifndef NO_GetAvailableWindowAttributes
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetAvailableWindowAttributes
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetAvailableWindowAttributes\n")
+
+	return (jint)GetAvailableWindowAttributes((WindowClass)arg0);
+}
+#endif /* NO_GetAvailableWindowAttributes */
+
 #ifndef NO_GetAvailableWindowPositioningBounds
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetAvailableWindowPositioningBounds
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -4089,6 +4099,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWRefCon
 	SetWRefCon((WindowRef)arg0, (long)arg1);
 }
 #endif /* NO_SetWRefCon */
+
+#ifndef NO_SetWindowActivationScope
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowActivationScope
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetWindowActivationScope\n")
+
+	return (jint)SetWindowActivationScope((WindowRef)arg0, (WindowActivationScope)arg1);
+}
+#endif /* NO_SetWindowActivationScope */
 
 #ifndef NO_SetWindowDefaultButton
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowDefaultButton
