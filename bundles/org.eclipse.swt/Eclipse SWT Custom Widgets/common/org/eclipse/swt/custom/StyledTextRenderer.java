@@ -60,29 +60,19 @@ void calculateLineHeight() {
 	disposeGC(gc);
 	
 	// clear the font cache
-	boldFont.dispose();
-	boldFont = null;
-	italicFont.dispose();
-	italicFont = null;
-	boldItalicFont.dispose();
-	boldItalicFont = null;
+	if (boldFont != null) boldFont.dispose();
+	if (italicFont != null) italicFont.dispose();
+	if (boldItalicFont != null) boldItalicFont.dispose();
+	boldFont = italicFont = boldItalicFont = null;
 }
 /**
  * Disposes the resource created by the receiver.
  */
 void dispose() {
-	if (boldFont != null) {
-		boldFont.dispose();
-		boldFont = null;
-	}
-	if (italicFont != null) {
-		italicFont.dispose();
-		italicFont = null;
-	}
-	if (boldItalicFont != null) {
-		boldItalicFont.dispose();
-		boldItalicFont = null;
-	}
+	if (boldFont != null) boldFont.dispose();
+	if (italicFont != null) italicFont.dispose();
+	if (boldItalicFont != null) boldItalicFont.dispose();
+	boldFont = italicFont = boldItalicFont = null;
 }
 /**
  * Dispose the specified GC.
