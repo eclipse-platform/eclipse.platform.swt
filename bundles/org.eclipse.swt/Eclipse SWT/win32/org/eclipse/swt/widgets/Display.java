@@ -104,11 +104,6 @@ public class Display extends Device {
 	static int windowClassCount = 0;
 	static final String WindowName = "SWT_Window";
 	EventTable eventTable;
-
-	/* Widnows Message Filter */
-	Callback messageCallback;
-	int messageProc, hHook;
-	MSG hookMsg = new MSG ();
 	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
@@ -129,8 +124,9 @@ public class Display extends Device {
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
 	
-	/* System Fonts */
-	int hwndShell;
+	/* Message Only Window */
+	int hwndMessage, messageProc;
+	Callback messageCallback;
 	int [] systemFonts;
 	
 	/* Image list cache */	
@@ -1189,7 +1185,7 @@ protected void init () {
 	if (systemFont != 0) systemFonts = new int [] {systemFont};
 	
 	/* Create the message only HWND */
-	hwndShell = OS.CreateWindowEx (0,
+	hwndMessage = OS.CreateWindowEx (0,
 		windowClass,
 		null,
 		OS.WS_OVERLAPPED,
@@ -1198,14 +1194,10 @@ protected void init () {
 		0,
 		hInstance,
 		null);
-	
-	/* Hook the message hook */
-	if (!OS.IsWinCE) {
-		messageCallback = new Callback (this, "messageProc", 3);
-		messageProc = messageCallback.getAddress ();
-		if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		hHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, messageProc, 0, threadId);
-	}
+	messageCallback = new Callback (this, "messageProc", 4);
+	messageProc = messageCallback.getAddress ();
+	if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	OS.SetWindowLong (hwndMessage, OS.GWL_WNDPROC, messageProc);
 }
 
 /**	 
@@ -1227,6 +1219,10 @@ public void internal_dispose_GC (int hDC, GCData data) {
 	OS.ReleaseDC (0, hDC);
 }
 
+boolean isWakeMessage (MSG msg) {
+	return msg.hwnd == hwndMessage && msg.message == OS.WM_NULL;
+}
+
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
@@ -1246,14 +1242,27 @@ boolean isVirtualKey (int key) {
 	return false;
 }
 
-int messageProc (int code, int wParam, int lParam) {
-	if (code >= 0) {
-		OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
-		if (hookMsg.message == OS.WM_NULL) {
+int messageProc (int hwnd, int msg, int wParam, int lParam) {
+	switch (msg) {
+		case OS.WM_ENDSESSION:
+			if (wParam != 0) dispose ();
+			break;
+		case OS.WM_NULL:
 			runAsyncMessages ();
-		}
+			break;
+		case OS.WM_QUERYENDSESSION:
+			Event event = new Event ();
+			sendEvent (SWT.Close, event);
+			if (!event.doit) return 0;
+			break;
+		case OS.WM_SETTINGCHANGE:
+			updateFont ();
+			break;
+		case OS.WM_TIMER:
+			runTimer (wParam);
+			break;
 	}
-	return OS.CallNextHookEx (hHook, code, wParam, lParam);
+	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
 void postEvent (Event event) {
@@ -1304,12 +1313,14 @@ public boolean readAndDispatch () {
 	checkDevice ();
 	runPopups ();
 	if (OS.PeekMessage (msg, 0, 0, 0, OS.PM_REMOVE)) {
-		if (!filterMessage (msg)) {
-			OS.TranslateMessage (msg);
-			OS.DispatchMessage (msg);
+		if (!isWakeMessage (msg)) {
+			if (!filterMessage (msg)) {
+				OS.TranslateMessage (msg);
+				OS.DispatchMessage (msg);
+			}
+			runDeferredEvents ();
+			return true;
 		}
-		runDeferredEvents ();
-		return true;
 	}
 	return runAsyncMessages ();
 }
@@ -1375,17 +1386,11 @@ protected void release () {
 
 void releaseDisplay () {
 	
-	/* Unhook the message hook */
-	if (!OS.IsWinCE) {
-		if (hHook != 0) OS.UnhookWindowsHookEx (hHook);
-		hHook = 0;
-		messageCallback.dispose ();
-		messageCallback = null;
-	}
-	
 	/* Destroy the message only HWND */
-	if (hwndShell != 0) OS.DestroyWindow (hwndShell);
-	hwndShell = 0;
+	if (hwndMessage != 0) OS.DestroyWindow (hwndMessage);
+	hwndMessage = 0;
+	messageCallback.dispose ();
+	messageCallback = null;
 	
 	/* Unregister the SWT Window class */
 	int hHeap = OS.GetProcessHeap ();
@@ -1589,7 +1594,7 @@ void runTimer (int id) {
 		int index = 0;
 		while (index <timerIds.length) {
 			if (timerIds [index] == id) {
-				OS.KillTimer (hwndShell, timerIds [index]);
+				OS.KillTimer (hwndMessage, timerIds [index]);
 				timerIds [index] = 0;
 				Runnable runnable = timerList [index];
 				timerList [index] = null;
@@ -1892,7 +1897,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	if (index != timerList.length) {
 		timerId = timerIds [index];
 		if (milliseconds < 0) {			
-			OS.KillTimer (hwndShell, timerId);
+			OS.KillTimer (hwndMessage, timerId);
 			timerList [index] = null;
 			timerIds [index] = 0;
 			return;
@@ -1915,7 +1920,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 			timerIds = newTimerIds;
 		}
 	}
-	int newTimerID = OS.SetTimer (hwndShell, timerId, milliseconds, 0);
+	int newTimerID = OS.SetTimer (hwndMessage, timerId, milliseconds, 0);
 	if (newTimerID != 0) {
 		timerList [index] = runnable;
 		timerIds [index] = newTimerID;
@@ -2034,31 +2039,17 @@ void updateFont () {
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
-	OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
+	OS.PostMessage (hwndMessage, OS.WM_NULL, 0, 0);
+	/*
+	* This code is intentionally commented.
+	*/
+//	OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
 }
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	Control control = WidgetTable.get (hwnd);
 	if (control != null) {
 		return control.windowProc (msg, wParam, lParam);
-	}
-	if (hwnd == hwndShell) {
-		switch (msg) {
-			case OS.WM_ENDSESSION:
-				if (wParam != 0) dispose ();
-				break;
-			case OS.WM_QUERYENDSESSION:
-				Event event = new Event ();
-				sendEvent (SWT.Close, event);
-				if (!event.doit) return 0;
-				break;
-			case OS.WM_SETTINGCHANGE:
-				updateFont ();
-				break;
-			case OS.WM_TIMER:
-				runTimer (wParam);
-				break;
-		}
 	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
