@@ -1221,7 +1221,7 @@ public void setText (String string) {
 
 	/* 
 	* GTK bug 82013.  For some reason, if the title string
-	* is less that 7 bytes long and is not terminated by
+	* is less than 7 bytes long and is not terminated by
 	* a space, some window managers occasionally draw
 	* garbage after the last character in  the title.
 	* The fix is to pad the title.
