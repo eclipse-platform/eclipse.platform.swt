@@ -645,14 +645,7 @@ void createItem (TableItem item, int index) {
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	if (count == items.length) {
-		/*
-		* Grow the array faster when redraw is off or the
-		* table is not visible.  When the table is painted,
-		* the items array is resized to be smaller to reduce
-		* memory usage.
-		*/
-		boolean small = drawCount == 0 && OS.IsWindowVisible (handle);
-		int length = small ? items.length + 4 : items.length * 3 / 2;
+		int length = drawCount == 0 ? items.length + 4 : items.length * 3 / 2;
 		TableItem [] newItems = new TableItem [length];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
@@ -1525,10 +1518,10 @@ void releaseWidget () {
 		/* Turn off redraw and leave it off */
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		for (int i=itemCount-1; i>=0; --i) {
+			TableItem item = items [i];
 			ignoreSelect = true;
 			OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
 			ignoreSelect = false;
-			TableItem item = items [i];
 			if (item != null && !item.isDisposed ()) item.releaseResources ();
 		}
 	} else {	
@@ -1584,11 +1577,12 @@ public void remove (int [] indices) {
 	for (int i=0; i<newIndices.length; i++) {
 		int index = newIndices [i];
 		if (index != last) {
+			TableItem item = items [index];
 			ignoreSelect = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = false;
 			if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-			if (items [index] != null) items [index].releaseResources ();
+			if (item != null && !item.isDisposed ()) item.releaseResources ();
 			System.arraycopy (items, index + 1, items, index, --count - index);
 			items [count] = null;
 			last = index;
@@ -1616,20 +1610,15 @@ public void remove (int [] indices) {
 public void remove (int index) {
 	checkWidget ();
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+	TableItem item = items [index];
 	ignoreSelect = true;
 	int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 	ignoreSelect = false;
-	if (code == 0) {
-		if (0 <= index && index < count) {
-			error (SWT.ERROR_ITEM_NOT_REMOVED);
-		} else {
-			error (SWT.ERROR_INVALID_RANGE);
-		}
-	}
-	TableItem item = items [index];
+	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
-	if (item != null) item.releaseResources ();
+	if (item != null && !item.isDisposed ()) item.releaseResources ();
 }
 
 /**
@@ -1663,11 +1652,12 @@ public void remove (int start, int end) {
 	} else {
 		int index = start;
 		while (index <= end) {
+			TableItem item = items [index];
 			ignoreSelect = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
 			ignoreSelect = false;
 			if (code == 0) break;
-			if (items [index] != null) items [index].releaseResources ();
+			if (item != null && !item.isDisposed ()) item.releaseResources ();
 			index++;
 		}
 		System.arraycopy (items, index, items, start, count - index);
@@ -1710,13 +1700,12 @@ public void removeAll () {
 		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		int index = itemCount - 1;
 		while (index >= 0) {
+			TableItem item = items [index];
 			ignoreSelect = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = false;
 			if (code == 0) break;
-			
-			// BUG - disposed callback could remove an item
-			if (items [index] != null) items [index].releaseResources ();
+			if (item != null && !item.isDisposed ()) item.releaseResources ();
 			--index;
 		}
 		if (redraw) {
@@ -2198,13 +2187,14 @@ public void setItemCount (int count) {
 	if (!isVirtual) setRedraw (false);
 	int index = count;
 	while (index < itemCount) {
+		TableItem item = items [index];
 		if (!isVirtual) {
 			ignoreSelect = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, count, 0);
 			ignoreSelect = false;
 			if (code == 0) break;
 		}
-		if (items [index] != null) items [index].releaseResources ();
+		if (item != null && !item.isDisposed ()) item.releaseResources ();
 		index++;
 	}
 	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
@@ -2279,6 +2269,14 @@ public void setRedraw (boolean redraw) {
 			* This code is intentionally commented. 
 			*/
 //			subclass ();
+
+			/* Resize the item array to match the item count */
+			int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+			if (items.length > 4 && items.length - count > 3) {
+				TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
+				System.arraycopy (items, 0, newItems, 0, count);
+				items = newItems;
+			}
 			
 			/* Set the width of the horizontal scroll bar */
 			setScrollWidth (null, true);
@@ -2956,13 +2954,6 @@ LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
 }
 
 LRESULT WM_PAINT (int wParam, int lParam) {
-	/* Resize the item array to match the item count */
-	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	if (items.length > 4 && items.length - count > 3) {
-		TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
-		System.arraycopy (items, 0, newItems, 0, count);
-		items = newItems;
-	}
 	if (fixScrollWidth) setScrollWidth (null, true);
 	return super.WM_PAINT (wParam, lParam);
 }
