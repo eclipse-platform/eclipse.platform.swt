@@ -851,7 +851,7 @@ public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i=start; i<itemCount; i++) {
-		if (items [i] == string) return i;
+		if (items [i].equals (string)) return i;
 	}
 	return -1;
 }
