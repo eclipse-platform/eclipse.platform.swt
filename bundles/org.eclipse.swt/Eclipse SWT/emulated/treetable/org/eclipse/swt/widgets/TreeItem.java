@@ -1035,6 +1035,7 @@ public void setExpanded (boolean value) {
 			parent.sendEvent (SWT.Selection, newEvent);
 			if (isDisposed ()) return;
 			parent.showItem (this);
+			parent.redrawItem (availableIndex, true);
 		}
 		itemY = parent.getItemY (this);
 		if (image != null) {

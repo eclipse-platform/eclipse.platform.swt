@@ -1063,16 +1063,31 @@ void doPageDown (int stateMask) {
 		/* CTRL+PageDown */
 		int bottomIndex = Math.min (topIndex + visibleItemCount - 1, availableItems.length - 1);
 		if (focusItem.availableIndex != bottomIndex) {
+			/* move focus to bottom item in viewport */
 			setFocusItem (availableItems [bottomIndex], true);
 			redrawItem (bottomIndex, true);
-			return;
+		} else {
+			/* at bottom of viewport, so set focus to bottom item one page down */
+			int newFocusIndex = Math.min (availableItems.length - 1, bottomIndex + visibleItemCount);
+			if (newFocusIndex == focusItem.availableIndex) return;
+			setFocusItem (availableItems [newFocusIndex], true);
+			showItem (availableItems [newFocusIndex]);
+			redrawItem (newFocusIndex, true);
 		}
+		return;
 	}
 	/* Shift+PageDown */
 	if (anchorItem == null) anchorItem = focusItem;
 	int anchorIndex = anchorItem.availableIndex;
-	int selectIndex = focusItem.availableIndex + visibleItemCount - 1;
-	selectIndex = Math.min (selectIndex, availableItems.length - 1);
+	int bottomIndex = Math.min (topIndex + visibleItemCount - 1, availableItems.length - 1);
+	int selectIndex;
+	if (focusItem.availableIndex != bottomIndex) {
+		/* select from focus to bottom item in viewport */
+		selectIndex = bottomIndex;
+	} else {
+		/* already at bottom of viewport, so select to bottom of one page down */
+		selectIndex = Math.min (availableItems.length - 1, bottomIndex + visibleItemCount);
+	}
 	TreeItem selectedItem = availableItems [selectIndex];
 	TreeItem[] newSelection = new TreeItem [Math.abs (anchorIndex - selectIndex) + 1];
 	int step = anchorIndex < selectIndex ? 1 : -1;
@@ -1130,15 +1145,30 @@ void doPageUp (int stateMask) {
 	if ((stateMask & SWT.CTRL) != 0) {
 		/* CTRL+PageUp */
 		if (focusItem.availableIndex != topIndex) {
+			/* move focus to top item in viewport */
 			setFocusItem (availableItems [topIndex], true);
 			redrawItem (topIndex, true);
-			return;
+		} else {
+			/* at top of viewport, so set focus to top item one page up */
+			int newFocusIndex = Math.max (0, focusItem.availableIndex - visibleItemCount);
+			if (newFocusIndex == focusItem.availableIndex) return;
+			setFocusItem (availableItems [newFocusIndex], true);
+			showItem (availableItems [newFocusIndex]);
+			redrawItem (newFocusIndex, true);
 		}
+		return;
 	}
 	/* Shift+PageUp */
 	if (anchorItem == null) anchorItem = focusItem;
 	int anchorIndex = anchorItem.availableIndex;
-	int selectIndex = Math.max (0,focusItem.availableIndex - visibleItemCount + 1);
+	int selectIndex;
+	if (focusItem.availableIndex != topIndex) {
+		/* select from focus to top item in viewport */
+		selectIndex = topIndex;
+	} else {
+		/* already at top of viewport, so select to top of one page up */
+		selectIndex = Math.max (0, topIndex - visibleItemCount);
+	}
 	TreeItem selectedItem = availableItems [selectIndex];
 	TreeItem[] newSelection = new TreeItem [Math.abs (anchorIndex - selectIndex) + 1];
 	int step = anchorIndex < selectIndex ? 1 : -1;
@@ -1768,7 +1798,7 @@ void makeDescendentsUnavailable (TreeItem item, TreeItem[] removedDescendents) {
 	}
 	
 	/* remove the selection from all descendents */
-	for (int i = 0; i < selectedItems.length; i++) {
+	for (int i = selectedItems.length - 1; i >= 0; i--) {
 		if (selectedItems [i] != item && selectedItems [i].hasAncestor (item)) {
 			removeSelectedItem (i);
 		}
