@@ -1456,8 +1456,22 @@ int imageIndex (Image image) {
 		int index = imageList.indexOf (image);
 		if (index == -1) index = imageList.add (image);
 		int hImageList = imageList.getHandle ();
+		/*
+		* Bug in Windows.  Making any change to an item that
+		* changes the item height of a table while the table
+		* is scrolled can cause the lines to draw incorrectly.
+		* This happens even when the lines are not currently
+		* visible and are shown afterwards.  The fix is to
+		* save the top index, scroll to the top of the table
+		* and then restore the original top index.
+		*/
+		int topIndex = getTopIndex ();
+		setRedraw (false);
+		setTopIndex (0);
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+		setTopIndex (topIndex);
 		fixCheckboxImageList ();
+		setRedraw (true);
 		return index;
 	}
 	int index = imageList.indexOf (image);
@@ -2138,12 +2152,27 @@ void setFocusIndex (int index) {
 
 public void setFont (Font font) {
 	checkWidget ();
-	super.setFont (font);
-	setScrollWidth (null, true);
 	/*
-	* Bug in Windows.  Setting the font will cause the 
-	* table area to be redrawn but not the column headers.
-	* Fix is to force a redraw on the column headers.
+	* Bug in Windows.  Making any change to an item that
+	* changes the item height of a table while the table
+	* is scrolled can cause the lines to draw incorrectly.
+	* This happens even when the lines are not currently
+	* visible and are shown afterwards.  The fix is to
+	* save the top index, scroll to the top of the table
+	* and then restore the original top index.
+	*/
+	int topIndex = getTopIndex ();
+	setRedraw (false);
+	setTopIndex (0);
+	super.setFont (font);
+	setTopIndex (topIndex);
+	setScrollWidth (null, true);
+	setRedraw (true);
+	
+	/*
+	* Bug in Windows.  Setting the font will cause the table
+	* to be redrawn but not the column headers.  The fix is
+	* to force a redraw of the column headers.
 	*/
 	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);		 
 	OS.InvalidateRect (hwndHeader, null, true);
@@ -2197,11 +2226,12 @@ public void setHeaderVisible (boolean show) {
 	/*
 	* Feature in Windows.  Setting or clearing LVS_NOCOLUMNHEADER
 	* causes the table to scroll to the beginning.  The fix is to
-	* save and restore the top index.
+	* save and restore the top index causing the table to scroll
+	* to the new location.
 	*/
 	int topIndex = getTopIndex ();
 	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-	if (topIndex != 0) setTopIndex (topIndex);
+	setTopIndex (topIndex);
 	if (show) {
 		int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 		if ((bits & OS.LVS_EX_GRIDLINES) != 0) setItemHeight ();
@@ -2655,15 +2685,16 @@ public void setTopIndex (int index) {
 	* Bug in Windows.  For some reason, LVM_SCROLL refuses to
 	* scroll a table vertically when the width and height of
 	* the table is smaller than a certain size.  The values
-	* that the author is seeing are width=68 and height=6
-	* but there is no guarantee that these values are absolute.
-	* They may depend on the font and any number of other
-	* factors.  In fact, the author has observed that setting
-	* the font to anything but the default seems to sometimes
-	* fix the problem.  The fix is to use LVM_GETCOUNTPERPAGE
-	* to detect the case when the number of visible items is
-	* zero and use LVM_ENSUREVISIBLE to scroll the table to
-	* make the index visible.
+	* that seem to cause the problem are width=68 and height=6
+	* but there is no guarantee that these values cause the
+	* failure on different machines or on different versions
+	* of Windows.  It may depend on the font and any number
+	* of other factors.  For example, setting the font to
+	* anything but the default seems to sometimes fixes the
+	* problem.  The fix is to use LVM_GETCOUNTPERPAGE to detect
+	* the case when the number of visible items is zero and
+	* use LVM_ENSUREVISIBLE to scroll the table to make the
+	* index visible.
 	*/
 
 	/*
@@ -2673,7 +2704,6 @@ public void setTopIndex (int index) {
 	* of zero.  The fix is to test for negative or zero.
 	*/
 	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0) {
-		
 		/*
 		* Bug in Windows.  For some reason, LVM_ENSUREVISIBLE can
 		* scroll one item more or one item less when there is not
@@ -2768,8 +2798,8 @@ void showItem (int index) {
 	* inserted at the top of the widget.  A call to LVM_GETTOPINDEX will
 	* return a negative number (this is an impossible result).  The fix 
 	* is to use LVM_GETCOUNTPERPAGE to detect the case when the number 
-	* of visible items is zero and use LVM_ENSUREVISIBLE with the fPartialOK
-	* flag to scroll the table.
+	* of visible items is zero and use LVM_ENSUREVISIBLE with the
+	* fPartialOK flag set to true to scroll the table.
 	*/
 	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0) {
 		/*
@@ -3266,6 +3296,55 @@ LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_VSCROLL (int wParam, int lParam) {
+	LRESULT result = super.WM_VSCROLL (wParam, lParam);
+	/*
+	* Bug in Windows.  When a table is drawing grid lines and the
+	* user scrolls vertically up or down by a line or a page, the
+	* table does not redraw the grid lines for newly exposed items.
+	* The fix is to invalidate the items.
+	*/
+	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+		int code = wParam & 0xFFFF;
+		switch (code) {
+			case OS.SB_THUMBPOSITION:
+			case OS.SB_ENDSCROLL:
+			case OS.SB_THUMBTRACK:
+			case OS.SB_TOP:
+			case OS.SB_BOTTOM:
+				break;
+			case OS.SB_LINEDOWN:
+			case OS.SB_LINEUP:
+				int headerHeight = 0;
+				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+				if (hwndHeader != 0) {
+					RECT rect = new RECT ();					
+					OS.GetWindowRect (hwndHeader, rect);
+					headerHeight = rect.bottom - rect.top;
+				}
+				RECT rect = new RECT ();
+				OS.GetClientRect (handle, rect);
+				rect.top += headerHeight;
+				int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
+				int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
+				int itemHeight = (oneItem >> 16) - (empty >> 16);
+				if (code == OS.SB_LINEDOWN) {
+					rect.top = rect.bottom - itemHeight - GRID_WIDTH;
+				} else {
+					rect.bottom = rect.top + itemHeight + GRID_WIDTH;
+				}
+				OS.InvalidateRect (handle, rect, true);
+				break;
+			case OS.SB_PAGEDOWN:
+			case OS.SB_PAGEUP:
+				OS.InvalidateRect (handle, null, true);
+				break;
+		}
+	}
+	return result;
+}
+
 LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGED (wParam, lParam);
 	if (result != null) return result;
@@ -3275,7 +3354,6 @@ LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
 		setResizeChildren (false);
 		int code = callWindowProc (handle, OS.WM_WINDOWPOSCHANGED, wParam, lParam);
 		sendEvent (SWT.Resize);
-		// widget may be disposed at this point
 		if (isDisposed ()) return new LRESULT (code);
 		if (layout != null) {
 			markLayout (false, false);
