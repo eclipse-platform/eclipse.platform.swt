@@ -69,6 +69,12 @@ public class CTabFolder2 extends Composite {
 	 */
  	public int marginHeight = 0;
 	
+ 	/**
+	 * A multiple of the tab height that specifies the minimum width to which a tab 
+	 * will be compressed before scrolling arrows are used to navigate the tabs.
+	 */
+	public int MIN_TAB_WIDTH = 3;
+	
 	/**
 	 * Color of innermost line of drop shadow border.
 	 * @deprecated
@@ -84,19 +90,6 @@ public class CTabFolder2 extends Composite {
 	 * @deprecated
 	 */
 	public static RGB borderOutsideRGB = new RGB (171, 168, 165); 
-	
-	/**
-	 * Color of border.
-	 * 
-	 * @since 3.0
-	 */
-	public static RGB borderRGB = Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION).getRGB(); 
-	
-	/**
-	 * A multiple of the tab height that specifies the minimum width to which a tab 
-	 * will be compressed before scrolling arrows are used to navigate the tabs.
-	 */
-	public int MIN_TAB_WIDTH = 3;
 
 	/* sizing, positioning, appearance */
 	int xClient, yClient;
@@ -121,6 +114,7 @@ public class CTabFolder2 extends Composite {
 	int[] gradientPercents;
 	Color selectionForeground;
 	Color selectionBackground;
+	Color borderColor;
 	
 	// close and chevron buttons
 	boolean showClose = false;
@@ -204,13 +198,14 @@ public class CTabFolder2 extends Composite {
 public CTabFolder2(Composite parent, int style) {
 	super(parent, checkStyle (style));
 	onBottom = (getStyle() & SWT.BOTTOM) != 0;
-	border = (style & SWT.BORDER) != 0 ? 3 : 0;
+	border = (style & SWT.BORDER) != 0 ? ((style & SWT.FLAT) != 0 ? 1 : 3) : 0;
 	single = (style & SWT.SINGLE) != 0;
 	
 	//set up default colors
 	Display display = getDisplay();
 	selectionForeground = display.getSystemColor(SWT.COLOR_TITLE_FOREGROUND);
 	selectionBackground = display.getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
+	borderColor = display.getSystemColor(SWT.COLOR_LIST_SELECTION);
 	setForeground(display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
 	setBackground(display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND));
 	
@@ -320,16 +315,17 @@ static void fillRegion(GC gc, Region region) {
 public void addCTabFolderCloseListener(CTabFolderCloseListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (closeListeners.length == 0) {
+		// display close button
+		showClose = true;
+		setButtonBounds();
+		redrawTabArea();
+	}
 	// add to array
 	CTabFolderCloseListener[] newListeners = new CTabFolderCloseListener[closeListeners.length + 1];
 	System.arraycopy(closeListeners, 0, newListeners, 0, closeListeners.length);
 	closeListeners = newListeners;
 	closeListeners[closeListeners.length - 1] = listener;
-	
-	// display close button
-	showClose = true;
-	setButtonBounds();
-	redrawTabArea();
 }
 /**
  * 
@@ -350,16 +346,6 @@ public void addCTabFolderExpandListener(CTabFolderExpandListener listener) {
 	if (expandListeners.length == 0) {
 		// display expand button
 		showExpand = true;
-		if (onBottom) {
-			expandRect.x = border;
-			expandRect.y = getSize().y - border - tabHeight + SELECTION_BORDER;
-			expandRect.width = decoratorWidth;
-			expandRect.height = tabHeight - SELECTION_BORDER;
-		} else {
-			expandRect.x = expandRect.y = border;
-			expandRect.width = decoratorWidth;
-			expandRect.height = tabHeight - SELECTION_BORDER;
-		}
 		updateItems();
 		redrawTabArea();
 	}
@@ -576,7 +562,7 @@ void drawBorder(GC gc) {
 	Point size = getSize();
 	
 	//draw heavy border around outside
-	if (!showBorder) {
+	if (!showBorder || border == 1) {
 		// draw parent colors where border would be
 		gc.setForeground(getParent().getBackground());
 		for (int i = 0; i < border; i++) {
@@ -649,10 +635,8 @@ void drawBorder(GC gc) {
 		Region r = new Region();
 		r.add(outside);
 		r.subtract(inside);
-		Color c = new Color(getDisplay(), borderRGB);
-		gc.setBackground(c);
+		gc.setBackground(borderColor);
 		fillRegion(gc, r);
-		c.dispose();
 		r.dispose();
 		// Shape is non-rectangular, fill in gaps with parent colours
 		r = new Region();
@@ -672,14 +656,13 @@ void drawBorder(GC gc) {
 		gc.setBackground(getBackground());
 		gc.fillRectangle(x, y, width, height);
 		if (border > 0) {
-			Color c = new Color(getDisplay(), borderRGB);
 			x = border - 1;
 			y = (onBottom) ? border - 1 : border + tabHeight - SELECTION_BORDER;
 			width += 1;
 			height = size.y - border - tabHeight + 1;
-			gc.setForeground(c);
+			if (border == 1) height += 2;
+			gc.setForeground(borderColor);
 			gc.drawRectangle(x, y, width, height);
-			c.dispose();
 		}
 	} else { //selected item
 		int x = border;
@@ -792,10 +775,8 @@ void drawBorder(GC gc) {
 				shape[index++] = itemY + itemH - SELECTION_BORDER;
 			}
 	
-			Color c = new Color(getDisplay(), borderRGB);
-			gc.setForeground(c);
+			gc.setForeground(borderColor);
 			gc.drawPolyline(shape);
-			c.dispose();
 		}
 	}
 }
@@ -1424,6 +1405,7 @@ void onDispose() {
 
 	selectionBackground = null;
 	selectionForeground = null;
+	borderColor = null;
 }
 void onFocus(Event event) {
 	checkWidget();
@@ -1860,6 +1842,15 @@ public void setBackground (Color color) {
 }
 
 /**
+ * @since 3.0
+ */
+public void setBorderColor(Color color) {
+	checkWidget();
+	borderColor = color;
+	redraw();
+}
+
+/**
  * Toggle the visibility of the border
  * 
  * @param show true if the border should be displayed
@@ -1880,18 +1871,23 @@ boolean setButtonBounds() {
 	Point size = getSize();
 	
 	int oldX = closeRect.x;
+	int oldY = closeRect.y;
 	int oldWidth = closeRect.width;
+	int oldHeight = closeRect.height;
 	closeRect.x = closeRect.y = closeRect.height = closeRect.width = 0;
 	if (showClose && selectedIndex != -1) {
 		closeRect.x = size.x - border - decoratorWidth;
 		closeRect.y = onBottom ? size.y - border - tabHeight + SELECTION_BORDER : border;
-		closeRect.height = tabHeight - SELECTION_BORDER;
 		closeRect.width = decoratorWidth;
+		closeRect.height = tabHeight - SELECTION_BORDER;
 	}
-	if (oldX != closeRect.x || oldWidth != closeRect.width) changed = true;
+	if (oldX != closeRect.x || oldWidth != closeRect.width ||
+	    oldY != closeRect.y || oldHeight != closeRect.height) changed = true;
 	
 	oldX = chevronRect.x;
+	oldY = chevronRect.y;
 	oldWidth = chevronRect.width;
+	oldHeight = chevronRect.height;
 	chevronRect.x = chevronRect.y = chevronRect.height = chevronRect.width = 0;
 	if (items.length > 1) {
 		CTabItem2 item = items[items.length-1];
@@ -1899,20 +1895,25 @@ boolean setButtonBounds() {
 		if (single || topTabIndex > 0 || item.x + item.width > rightEdge) {
 			chevronRect.x = size.x - border - closeRect.width - decoratorWidth;
 			chevronRect.y = onBottom ? size.y - border - tabHeight + SELECTION_BORDER: border;
-			chevronRect.height = tabHeight - SELECTION_BORDER;
 			chevronRect.width = decoratorWidth;
+			chevronRect.height = tabHeight - SELECTION_BORDER;
 		}
 	}
-	if (oldX != chevronRect.x || oldWidth != chevronRect.width) changed = true;
+	if (oldX != chevronRect.x || oldWidth != chevronRect.width ||
+	    oldY != chevronRect.y || oldHeight != chevronRect.height) changed = true;
 
-	int oldY = expandRect.y;
-	if (showExpand && onBottom) {
+	oldX = expandRect.x;
+	oldY = expandRect.y;
+	oldWidth = expandRect.width;
+	oldHeight = expandRect.height;
+	if (showExpand) {
 		expandRect.x = border;
-		expandRect.y = size.y - border - tabHeight + SELECTION_BORDER;
+		expandRect.y = onBottom ? size.y - border - tabHeight + SELECTION_BORDER : border;
 		expandRect.width = decoratorWidth;
 		expandRect.height = tabHeight - SELECTION_BORDER;
 	}
-	if (oldY != expandRect.y) changed = true;
+	if (oldX != expandRect.x || oldWidth != expandRect.width ||
+	    oldY != expandRect.y || oldHeight != expandRect.height) changed = true;
 	return changed;
 }
 /**
