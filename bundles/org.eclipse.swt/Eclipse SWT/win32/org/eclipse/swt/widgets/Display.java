@@ -1925,6 +1925,12 @@ static int untranslateKey (int key) {
 	return 0;
 }
 
+/**
+ * Forces all outstanding paint requests for the display
+ * to be processed before this method returns.
+ *
+ * @see Control#update
+ */
 public void update() {
 	checkDevice ();
 	Shell[] shells = WidgetTable.shells ();
