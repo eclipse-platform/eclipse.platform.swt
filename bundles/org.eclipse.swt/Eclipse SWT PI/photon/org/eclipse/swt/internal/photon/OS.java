@@ -339,6 +339,8 @@ public class OS {
 	public static final int Pt_ARG_MAX_LENGTH = 0xfa5;
 	public static final int Pt_ARG_MENU_FLAGS = 0x4a38;
 	public static final int Pt_ARG_MINIMUM = 0x520a;
+	public static final int Pt_ARG_MIN_HEIGHT = 1000 * 18 + 6;
+	public static final int Pt_ARG_MIN_WIDTH = 1000 * 18 + 7;
 	public static final int Pt_ARG_MODIFIER_KEYS = 0x1b5c;
 	public static final int Pt_ARG_MULTITEXT_LINE_SPACING = 0x138b;
 	public static final int Pt_ARG_MULTITEXT_NUM_LINES = 0x138e;

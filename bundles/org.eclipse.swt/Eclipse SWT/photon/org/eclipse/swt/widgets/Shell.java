@@ -483,7 +483,12 @@ void createHandle (int index) {
 		};
 		OS.PtSetResources (scrolledHandle, args.length / 3, args);
 	}
-	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
+	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+	if (!((style & SWT.NO_TRIM) == 0 && (style & trim) != 0)) {
+		OS.PtSetResource (shellHandle, OS.Pt_ARG_MIN_WIDTH, 0, 0);
+	}
+	OS.PtSetResource (shellHandle, OS.Pt_ARG_MIN_HEIGHT, 0, 0);
+	int [] args = new int [] {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	resizeBounds (args [1], args [4]);
 }
@@ -584,6 +589,22 @@ public boolean getMinimized () {
 	int [] args = {OS.Pt_ARG_WINDOW_STATE, 0, OS.Ph_WM_STATE_ISICONIFIED};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	return (args [1] & OS.Ph_WM_STATE_ISICONIFIED) != 0;
+}
+
+public Point getMinimumSize () {
+	checkWidget();
+	int [] args = {OS.Pt_ARG_WINDOW_RENDER_FLAGS, 0, 0};
+	OS.PtGetResources (shellHandle, args.length / 3, args);
+	int flags = args [1];
+	int [] left = new int [1], top = new int [1];
+	int [] right = new int [1], bottom = new int [1];
+	OS.PtFrameSize (flags, 0, left, top, right, bottom);
+	args = new int [] {
+		OS.Pt_ARG_MIN_WIDTH, 0, 0,
+		OS.Pt_ARG_MIN_HEIGHT, 0, 0,
+	};
+	OS.PtGetResources (shellHandle, args.length / 3, args);
+	return new Point (args [1] + left [0] + right [0], args [4] + top [0] + bottom [0]);
 }
 
 /** 
@@ -1066,6 +1087,29 @@ public void setRegion (Region region) {
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	// TODO implement setRegion
 	this.region = region;
+}
+
+public void setMinimumSize (int width, int height) {
+	checkWidget();
+	int [] args = {OS.Pt_ARG_WINDOW_RENDER_FLAGS, 0, 0};
+	OS.PtGetResources (shellHandle, args.length / 3, args);
+	int flags = args [1];
+	int [] left = new int [1], top = new int [1];
+	int [] right = new int [1], bottom = new int [1];
+	OS.PtFrameSize (flags, 0, left, top, right, bottom);
+	width = Math.max (width - left [0] - right [0], 0);
+	height = Math.max (height - top [0] - bottom [0], 0);
+	args = new int [] {
+		OS.Pt_ARG_MIN_WIDTH, width, 0,
+		OS.Pt_ARG_MIN_HEIGHT, height, 0,
+	};
+	OS.PtSetResources (shellHandle, args.length / 3, args);
+}
+
+public void setMinimumSize (Point size) {
+	checkWidget();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setMinimumSize (size.x, size.y);
 }
 
 public void setText (String string) {
