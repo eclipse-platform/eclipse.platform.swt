@@ -1091,7 +1091,9 @@ public void moveAbove (Control control) {
 		* this case and return because the window is already the
 		* first child in the z-order.
 		*/
-		if (hwndAfter == 0 || hwndAfter == handle) return;
+		if (hwndAfter == 0 || hwndAfter == handle) {
+			hwndAfter = OS.HWND_TOP;
+		}
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 	OS.SetWindowPos (handle, hwndAfter, 0, 0, 0, 0, flags);
