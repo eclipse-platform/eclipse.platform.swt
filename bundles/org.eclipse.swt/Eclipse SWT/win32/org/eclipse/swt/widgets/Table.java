@@ -373,6 +373,7 @@ public void clearAll () {
 	for (int i=0; i<count; i++) {
 		TableItem item = items [i];
 		if (item != null) {
+			cleared = true;
 			item.clear ();
 			/*
 			* Bug in Windows.  Despite the fact that every item in the
