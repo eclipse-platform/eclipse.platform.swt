@@ -100,10 +100,9 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	Menu activeMenu;
-	int hIMC, hwndMDIClient;
+	int hIMC, hwndMDIClient, toolTipHandle, lpstrTip;
 	int [] brushes;
 	boolean showWithParent;
-	int toolTipHandle, lpstrTip;
 	Control lastActive;
 	SHACTIVATEINFO psai;
 	Region region;
