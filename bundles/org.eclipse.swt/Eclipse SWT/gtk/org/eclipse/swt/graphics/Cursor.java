@@ -100,72 +100,28 @@ public Cursor(Device device, int style) {
 	this.device = device;
 	int osFlag = 0;
 	switch (style) {
-		case SWT.CURSOR_ARROW:
-			osFlag = OS.GDK_LEFT_PTR;
-			break;
-		case SWT.CURSOR_WAIT:
-			osFlag = OS.GDK_WATCH;
-			break;
-		case SWT.CURSOR_CROSS:
-			osFlag = OS.GDK_CROSS;
-			break;
-		case SWT.CURSOR_APPSTARTING:
-			osFlag = OS.GDK_WATCH;
-			break;
-		case SWT.CURSOR_HAND:
-			osFlag = OS.GDK_HAND1;
-			break;
-		case SWT.CURSOR_HELP:
-			osFlag = OS.GDK_QUESTION_ARROW;
-			break;
-		case SWT.CURSOR_SIZEALL:
-			osFlag = OS.GDK_DIAMOND_CROSS;
-			break;
-		case SWT.CURSOR_SIZENESW:
-			osFlag = OS.GDK_SIZING;
-			break;
-		case SWT.CURSOR_SIZENS:
-			osFlag = OS.GDK_DOUBLE_ARROW;
-			break;
-		case SWT.CURSOR_SIZENWSE:
-			osFlag = OS.GDK_SIZING;
-			break;
-		case SWT.CURSOR_SIZEWE:
-			osFlag = OS.GDK_SB_H_DOUBLE_ARROW;
-			break;
-		case SWT.CURSOR_SIZEN:
-			osFlag = OS.GDK_TOP_SIDE;
-			break;
-		case SWT.CURSOR_SIZES:
-			osFlag = OS.GDK_BOTTOM_SIDE;
-			break;
-		case SWT.CURSOR_SIZEE:
-			osFlag = OS.GDK_RIGHT_SIDE;
-			break;
-		case SWT.CURSOR_SIZEW:
-			osFlag = OS.GDK_LEFT_SIDE;
-			break;
-		case SWT.CURSOR_SIZENE:
-			osFlag = OS.GDK_TOP_RIGHT_CORNER;
-			break;
-		case SWT.CURSOR_SIZESE:
-			osFlag = OS.GDK_BOTTOM_RIGHT_CORNER;
-			break;
-		case SWT.CURSOR_SIZESW:
-			osFlag = OS.GDK_BOTTOM_LEFT_CORNER;
-			break;
-		case SWT.CURSOR_SIZENW:
-			osFlag = OS.GDK_TOP_LEFT_CORNER;
-			break;
-		case SWT.CURSOR_UPARROW:
-			osFlag = OS.GDK_SB_UP_ARROW;
-			break;
-		case SWT.CURSOR_IBEAM:
-			osFlag = OS.GDK_XTERM;
-			break;
-		case SWT.CURSOR_NO:
-			osFlag = OS.GDK_X_CURSOR;
-			break;
+		case SWT.CURSOR_ARROW:				osFlag = OS.GDK_LEFT_PTR; break;
+		case SWT.CURSOR_WAIT:						osFlag = OS.GDK_WATCH; break;
+		case SWT.CURSOR_CROSS:				osFlag = OS.GDK_CROSS; break;
+		case SWT.CURSOR_APPSTARTING:	osFlag = OS.GDK_LEFT_PTR; break;
+		case SWT.CURSOR_HAND:					osFlag = OS.GDK_HAND1; break;
+		case SWT.CURSOR_HELP:					osFlag = OS.GDK_QUESTION_ARROW; break;
+		case SWT.CURSOR_SIZEALL:				osFlag = OS.GDK_DIAMOND_CROSS; break;
+		case SWT.CURSOR_SIZENESW:			osFlag = OS.GDK_SIZING; break;
+		case SWT.CURSOR_SIZENS:				osFlag = OS.GDK_DOUBLE_ARROW; break;
+		case SWT.CURSOR_SIZENWSE:			osFlag = OS.GDK_SIZING; break;
+		case SWT.CURSOR_SIZEWE:				osFlag = OS.GDK_SB_H_DOUBLE_ARROW; break;
+		case SWT.CURSOR_SIZEN:					osFlag = OS.GDK_TOP_SIDE; break;
+		case SWT.CURSOR_SIZES:					osFlag = OS.GDK_BOTTOM_SIDE; break;
+		case SWT.CURSOR_SIZEE:					osFlag = OS.GDK_RIGHT_SIDE; break;
+		case SWT.CURSOR_SIZEW:					osFlag = OS.GDK_LEFT_SIDE; break;
+		case SWT.CURSOR_SIZENE:				osFlag = OS.GDK_TOP_RIGHT_CORNER; break;
+		case SWT.CURSOR_SIZESE:					osFlag = OS.GDK_BOTTOM_RIGHT_CORNER; break;
+		case SWT.CURSOR_SIZESW:				osFlag = OS.GDK_BOTTOM_LEFT_CORNER; break;
+		case SWT.CURSOR_SIZENW:				osFlag = OS.GDK_TOP_LEFT_CORNER; break;
+		case SWT.CURSOR_UPARROW:			osFlag = OS.GDK_SB_UP_ARROW; break;
+		case SWT.CURSOR_IBEAM:					osFlag = OS.GDK_XTERM; break;
+		case SWT.CURSOR_NO:						osFlag = OS.GDK_X_CURSOR; break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
