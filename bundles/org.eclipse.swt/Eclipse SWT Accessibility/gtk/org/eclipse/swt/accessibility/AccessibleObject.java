@@ -46,9 +46,6 @@ class AccessibleObject {
 		super ();
 		handle = ATK.g_object_new (type, 0);
 		this.parentType = parentType;
-		if (widget == 0) {
-			System.out.println("stop");
-		}
 		ATK.atk_object_initialize (handle, widget);
 		this.accessible = accessible;
 		this.isLightweight = isLightweight;
