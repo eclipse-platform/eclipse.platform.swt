@@ -689,7 +689,22 @@ void releaseWidget () {
 public void removeAll () {
 	checkWidget ();
 	ignoreDeselect = ignoreSelect = true;
+	if (drawCount == 0) {
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+		/*
+		* This code is intentionally commented.
+		*/
+//		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+	}
 	int result = OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, OS.TVI_ROOT);
+	if (drawCount == 0) {
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);	
+		/*
+		* This code is intentionally commented.
+		*/
+//		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+		OS.InvalidateRect (handle, null, true);
+	}
 	ignoreDeselect = ignoreSelect = false;
 	if (result == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	for (int i=0; i<items.length; i++) {
