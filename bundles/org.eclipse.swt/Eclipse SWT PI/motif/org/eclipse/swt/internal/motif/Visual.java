@@ -15,7 +15,9 @@ public class Visual {
 	public int ext_data;
 	public int visualid;
 	public int c_class;
-	public int red_mask, green_mask, blue_mask;
+	public int red_mask;
+	public int green_mask;
+	public int blue_mask;
 	public int bits_per_rgb;
 	public int map_entries;
 	public static final int sizeof = 32;

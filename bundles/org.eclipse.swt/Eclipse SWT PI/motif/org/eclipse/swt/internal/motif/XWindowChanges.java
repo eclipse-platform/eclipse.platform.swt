@@ -12,8 +12,10 @@ package org.eclipse.swt.internal.motif;
 
  
 public class XWindowChanges {
-	public int x, y;
-	public int width, height;
+	public int x;
+	public int y;
+	public int width;
+	public int height;
 	public int border_width;
 	public int sibling;
 	public int stack_mode;
