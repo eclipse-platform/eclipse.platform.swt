@@ -1241,6 +1241,7 @@ public void setItem (int index, String string) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1253,6 +1254,9 @@ public void setItem (int index, String string) {
 public void setItems (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<items.length; i++) {
+		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_list_store_clear (modelHandle);
@@ -1261,10 +1265,6 @@ public void setItems (String [] items) {
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	for (int i=0; i<items.length; i++) {
 		String string = items [i];
-		if (string == null) {
-			OS.g_free (iter);
-			error (SWT.ERROR_ITEM_NOT_ADDED);
-		}
 		byte [] buffer = Converter.wcsToMbcs (null, string, true);
 		OS.gtk_list_store_append (modelHandle, iter);
 		OS.gtk_list_store_set (modelHandle, iter, TEXT_COLUMN, buffer, -1);

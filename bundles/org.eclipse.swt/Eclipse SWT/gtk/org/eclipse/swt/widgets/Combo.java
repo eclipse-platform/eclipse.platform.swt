@@ -1361,6 +1361,7 @@ public void setItem (int index, String string) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1373,6 +1374,9 @@ public void setItem (int index, String string) {
 public void setItems (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<items.length; i++) {
+		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 	lockText = ignoreSelect = true;
 	OS.gtk_list_clear_items (listHandle, 0, -1);
 	int /*long*/ font = getFontDescription ();
@@ -1380,7 +1384,6 @@ public void setItems (String [] items) {
 	int i = 0;
 	while (i < items.length) {
 		String string = items [i];
-		if (string == null) break;
 		byte [] buffer = Converter.wcsToMbcs (null, string, true);
 		int /*long*/ item = OS.gtk_list_item_new_with_label (buffer);
 		int /*long*/ label = OS.gtk_bin_get_child (item); 
