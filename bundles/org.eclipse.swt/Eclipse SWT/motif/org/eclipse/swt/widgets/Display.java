@@ -99,7 +99,7 @@ public class Display extends Device {
 	int buttonBackground, buttonForeground, buttonShadowThickness;
 	int compositeBackground, compositeForeground;
 	int compositeTopShadow, compositeBottomShadow, compositeBorder;
-	int listBackground, listForeground, textBackground, textForeground;
+	int listBackground, listForeground, listSelect, textBackground, textForeground;
 	int labelBackground, labelForeground, scrollBarBackground, scrollBarForeground;
 	int scrolledInsetX, scrolledInsetY, scrolledMarginX, scrolledMarginY;
 	int defaultBackground, defaultForeground;
@@ -1139,10 +1139,11 @@ void initializeList () {
 	OS.XtManageChild (widgetHandle);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtRealizeWidget (shellHandle);
-	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNfontList, 0};
+	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNfontList, 0, OS.XmNhighlightColor, 0};
 	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
 	listForeground = argList [1];
 	listBackground = argList [3];
+	listSelect = argList [7];
 	/**
 	 * Feature in Motif. Querying the font list from the widget and
 	 * then destroying the shell (and the widget) could cause the
@@ -1230,7 +1231,7 @@ void initializeSystemColors () {
 	OS.XQueryColor (xDisplay, colormap, COLOR_LIST_BACKGROUND);
 	
 	COLOR_LIST_SELECTION = new XColor();
-	COLOR_LIST_SELECTION.pixel = listForeground;
+	COLOR_LIST_SELECTION.pixel = listSelect;
 	OS.XQueryColor (xDisplay, colormap, COLOR_LIST_SELECTION);
 	
 	COLOR_LIST_SELECTION_TEXT = new XColor();
