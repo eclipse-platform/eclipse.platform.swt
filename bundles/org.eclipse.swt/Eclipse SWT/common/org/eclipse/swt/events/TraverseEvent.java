@@ -77,7 +77,7 @@ import org.eclipse.swt.widgets.*;
  * @see TraverseListener
  */
 
-public class TraverseEvent extends KeyEvent {
+public final class TraverseEvent extends KeyEvent {
 	
 	/**
 	 * The traversal type.
