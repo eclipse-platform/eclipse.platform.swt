@@ -50,9 +50,14 @@ public final class Font {
 	public short size;
 
 	/**
-	 * The device where this image was created.
+	 * The device where this font was created.
 	 */
 	Device device;
+	
+	/**
+	 * The ATSUI style for the font.
+	 */
+	int atsuiStyle;
 	
 Font() {
 }
@@ -140,14 +145,34 @@ public Font(Device display, String name, int height, int style) {
 	init(device, name, height, style);
 }
 
+int createStyle () {
+	int[] buffer = new int[1];
+	OS.ATSUCreateStyle(buffer);
+	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int ptr = OS.NewPtr(16);
+	OS.memcpy(ptr, new int[]{handle}, 4); 
+	OS.memcpy(ptr + 4, new int[]{size << 16}, 4); 
+	OS.memcpy(ptr + 8, new byte[]{(style & OS.bold) != 0 ? (byte)1 : 0}, 1); 
+	OS.memcpy(ptr + 9, new byte[]{(style & OS.italic) != 0 ? (byte)1 : 0}, 1); 
+	int[] tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag, OS.kATSUQDBoldfaceTag, OS.kATSUQDItalicTag};
+	int[] sizes = new int[]{4, 4, 1, 1};
+	int[] values = new int[]{ptr, ptr + 4, ptr + 8, ptr + 9};
+	OS.ATSUSetAttributes(buffer[0], tags.length, tags, sizes, values);
+	OS.DisposePtr(ptr);
+	return buffer [0];
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the font. Applications must dispose of all fonts which
  * they allocate.
  */
 public void dispose() {
+	if (handle == 0) return;
 	handle = 0;
 	id = -1;
+	if (atsuiStyle != 0) OS.ATSUDisposeStyle(atsuiStyle);
+	atsuiStyle = 0;
 	device = null;
 }
 
@@ -256,7 +281,9 @@ void init(Device device, String name, int height, int style) {
 	if (OS.FMGetFontFromFontFamilyInstance(id, this.style, font, null) != 0) {
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
+	if (font[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	this.handle = font[0];
+	this.atsuiStyle = createStyle();
 }
 
 /**

@@ -35,7 +35,7 @@ public final class GCData {
 	public int fontAscent;
 	public int fontDescent;
 	public int layout;
-	public int style;
+	public int atsuiStyle;
 	
 	public int paintEvent;
 	public int visibleRgn;

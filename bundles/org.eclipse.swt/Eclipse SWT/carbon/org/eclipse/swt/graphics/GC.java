@@ -243,13 +243,13 @@ public void dispose() {
 	}
 	int layout = data.layout;
 	if (layout != 0) OS.ATSUDisposeTextLayout(layout);
-	int style = data.style;
-	if (style != 0) OS.ATSUDisposeTextLayout(style);
+	int atsuiStyle = data.atsuiStyle;
+	if (atsuiStyle != 0) OS.ATSUDisposeStyle(atsuiStyle);
 
 	/* Dispose the GC */
 	drawable.internal_dispose_GC(handle, data);
 
-	data.clipRgn = data.style = data.layout = 0;
+	data.clipRgn = data.atsuiStyle = data.layout = 0;
 	drawable = null;
 	data.image = null;
 	data = null;
@@ -734,7 +734,9 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 	int ptr = OS.NewPtr(length * 2);
 	OS.memcpy(ptr, buffer, length * 2);
 	OS.ATSUSetTextPointerLocation(data.layout, ptr, 0, length, length);
-	OS.ATSUSetRunStyle(data.layout, data.style, 0, length);
+	Font font = data.font;
+	int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
+	OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
 	OS.ATSUDrawText(data.layout, 0, length, x << 16, -y << 16);
 	OS.DisposePtr(ptr);
 	OS.CGContextRestoreGState(handle);
@@ -1390,9 +1392,6 @@ void init(Drawable drawable, GCData data, int context) {
 	OS.ATSUCreateTextLayout(buffer);
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.layout = buffer[0];
-	OS.ATSUCreateStyle(buffer);
-	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	data.style = buffer[0];
 	
 	int ptr = OS.NewPtr(4);
 	buffer[0] = context;
@@ -1602,22 +1601,17 @@ public void setFont(Font font) {
 	data.font = font;
 	setGCFont ();
 }
+
 void setGCFont() {
 	Font font = data.font;
-	int ptr = OS.NewPtr(16);
-	OS.memcpy(ptr, new int[]{font.handle}, 4); 
-	OS.memcpy(ptr + 4, new int[]{font.size << 16}, 4); 
-	OS.memcpy(ptr + 8, new byte[]{(font.style & OS.bold) != 0 ? (byte)1 : 0}, 1); 
-	OS.memcpy(ptr + 9, new byte[]{(font.style & OS.italic) != 0 ? (byte)1 : 0}, 1); 
-	int[] tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag, OS.kATSUQDBoldfaceTag, OS.kATSUQDItalicTag};
-	int[] sizes = new int[]{4, 4, 1, 1};
-	int[] values = new int[]{ptr, ptr + 4, ptr + 8, ptr + 9};
-	OS.ATSUSetAttributes(data.style, tags.length, tags, sizes, values);
-	OS.DisposePtr(ptr);
 	FontInfo info = new FontInfo();
 	OS.FetchFontInfo(font.id, font.size, font.style, info);
 	data.fontAscent = info.ascent;
 	data.fontDescent = info.descent;
+	if (font.atsuiStyle == 0) {
+		if (data.atsuiStyle != 0) OS.ATSUDisposeStyle(data.atsuiStyle);
+		data.atsuiStyle = font.createStyle();
+	}
 }
 
 /**
@@ -1745,7 +1739,9 @@ public Point stringExtent(String string) {
 	int ptr1 = OS.NewPtr(length * 2);
 	OS.memcpy(ptr1, buffer, length * 2);
 	OS.ATSUSetTextPointerLocation(data.layout, ptr1, 0, length, length);
-	OS.ATSUSetRunStyle(data.layout, data.style, 0, length);
+	Font font = data.font;
+	int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
+	OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
 	int ptr2 = OS.NewPtr(ATSTrapezoid.sizeof);
 	OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, ptr2, null);
 	OS.DisposePtr(ptr1);
