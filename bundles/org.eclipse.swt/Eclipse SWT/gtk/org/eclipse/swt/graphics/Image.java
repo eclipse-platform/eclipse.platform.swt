@@ -247,6 +247,16 @@ public Image(Device device, Image srcImage, int flag) {
 	/* Apply transformation */
 	switch (flag) {
 		case SWT.IMAGE_DISABLE: {
+			Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+			RGB zeroRGB = zeroColor.getRGB();
+			byte zeroRed = (byte)zeroRGB.red;
+			byte zeroGreen = (byte)zeroRGB.green;
+			byte zeroBlue = (byte)zeroRGB.blue;
+			Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+			RGB oneRGB = oneColor.getRGB();
+			byte oneRed = (byte)oneRGB.red;
+			byte oneGreen = (byte)oneRGB.green;
+			byte oneBlue = (byte)oneRGB.blue;
 			byte[] line = new byte[stride];
 			for (int y=0; y<height; y++) {
 				OS.memmove(line, pixels + (y * stride), stride);
@@ -256,8 +266,15 @@ public Image(Device device, Image srcImage, int flag) {
 					int green = line[offset+1] & 0xFF;
 					int blue = line[offset+2] & 0xFF;
 					int intensity = red * red + green * green + blue * blue;
-					byte value = (intensity < 9000) ? (byte)0 : (byte) 255;
-					line[offset] = line[offset+1] = line[offset+2] = value;
+					if (intensity < 98304) {
+						line[offset] = zeroRed;
+						line[offset+1] = zeroGreen;
+						line[offset+2] = zeroBlue;
+					} else {
+						line[offset] = oneRed;
+						line[offset+1] = oneGreen;
+						line[offset+2] = oneBlue;
+					}
 				}
 				OS.memmove(pixels + (y * stride), line, stride);
 			}
