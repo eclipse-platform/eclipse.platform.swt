@@ -503,7 +503,10 @@ void openDialog() {
 	originY = Math.min (originY, heightLimit - pt.y);
 	dialog.setBounds (originX, originY, pt.x, pt.y);
 
-	dialog.setText(getText());
+	String title = getText ();
+	if (title.length () == 0) title = SWT.getMessage ("SWT_ColorDialog_Title");
+	shell.setText(title);
+	
 	// Open the window.
 	dialog.open();
 }
