@@ -1298,6 +1298,10 @@ boolean traverseEscape () {
 	return super.traverseEscape ();
 }
 
+int widgetExtStyle () {
+	return super.widgetExtStyle () & ~OS.WS_EX_NOINHERITLAYOUT;
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CBS_AUTOHSCROLL | OS.CBS_NOINTEGRALHEIGHT | OS.WS_VSCROLL;
 	if ((style & SWT.SIMPLE) != 0) return bits | OS.CBS_SIMPLE;

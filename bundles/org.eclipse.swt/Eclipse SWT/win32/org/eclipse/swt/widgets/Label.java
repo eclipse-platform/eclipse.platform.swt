@@ -441,8 +441,9 @@ void setWrap (boolean wrap) {
 }
 
 int widgetExtStyle () {
-	if ((style & SWT.BORDER) != 0) return OS.WS_EX_STATICEDGE;
-	return super.widgetExtStyle ();
+	int bits = super.widgetExtStyle () & ~OS.WS_EX_CLIENTEDGE;
+	if ((style & SWT.BORDER) != 0) return bits | OS.WS_EX_STATICEDGE;
+	return bits;
 }
 
 int widgetStyle () {

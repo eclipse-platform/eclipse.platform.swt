@@ -19,14 +19,19 @@ import org.eclipse.swt.accessibility.*;
  * <dl>
  * <dt><b>Styles:</b>
  * <dd>BORDER</dd>
+ * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b>
  * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
  *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize</dd>
  * </dl>
  * <p>
+ * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * Note: Only one of LEFT_TO_RIGHT and RIGHT_TO_LEFT may be specified.
  */
 
 public abstract class Control extends Widget implements Drawable {
@@ -329,6 +334,11 @@ public void addTraverseListener (TraverseListener listener) {
 
 abstract int callWindowProc (int msg, int wParam, int lParam);
 
+void checkOrientation (Widget parent) {
+	super.checkOrientation (parent);
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.MIRRORED;
+}
+
 /**
  * Returns the preferred size of the receiver.
  * <p>
@@ -466,6 +476,7 @@ void createHandle () {
 
 void createWidget () {
 	foreground = background = -1;
+	checkOrientation (parent);
 	createHandle ();
 	register ();
 	subclass ();
@@ -2631,8 +2642,10 @@ void updateFont (Font oldFont, Font newFont) {
 }
 
 int widgetExtStyle () {
-	if ((style & SWT.BORDER) != 0) return OS.WS_EX_CLIENTEDGE;
-	return 0;
+	int bits = OS.WS_EX_NOINHERITLAYOUT;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
+	if ((style & SWT.BORDER) != 0) bits |= OS.WS_EX_CLIENTEDGE;
+	return bits;
 }
 
 int widgetStyle () {

@@ -723,6 +723,8 @@ public class SWT {
 	 * <li><code>Dialog</code></li>
 	 * <li><code>Menu</code></li>
 	 * </ul></p>
+	 * 
+	 * @since 2.1
 	 */
 	public static final int LEFT_TO_RIGHT = 1 << 25;
 	
@@ -733,6 +735,8 @@ public class SWT {
 	 * <li><code>Dialog</code></li>
 	 * <li><code>Menu</code></li>
 	 * </ul></p>
+	 * 
+	 * @since 2.1
 	 */
 	public static final int RIGHT_TO_LEFT = 1 << 26;
 	
@@ -743,6 +747,8 @@ public class SWT {
 	 * <li><code>Dialog</code></li>
 	 * <li><code>Menu</code></li>
 	 * </ul></p>
+	 * 
+	 * @since 2.1
 	 */
 	public static final int MIRRORED = 1 << 27;
 

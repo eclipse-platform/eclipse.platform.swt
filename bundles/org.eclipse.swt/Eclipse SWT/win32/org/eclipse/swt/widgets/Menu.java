@@ -17,11 +17,13 @@ import org.eclipse.swt.events.*;
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>BAR, DROP_DOWN, POP_UP, NO_RADIO_GROUP</dd>
+ * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Help, Hide, Show </dd>
  * </dl>
  * <p>
  * Note: Only one of BAR, DROP_DOWN and POP_UP may be specified.
+ * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
@@ -163,7 +165,12 @@ public void _setVisible (boolean visible) {
 		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
 		return;
 	}
-	int flags = OS.TPM_LEFTBUTTON | OS.TPM_RIGHTBUTTON | OS.TPM_LEFTALIGN;
+	int flags = OS.TPM_LEFTBUTTON | OS.TPM_RIGHTBUTTON;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.TPM_RIGHTALIGN;
+	if ((parent.style & SWT.MIRRORED) != 0) {
+		flags &= ~OS.TPM_RIGHTALIGN;
+		if ((style & SWT.LEFT_TO_RIGHT) != 0) flags |= OS.TPM_RIGHTALIGN;
+	}
 	int nX = x, nY = y;
 	if (!hasLocation) {
 		int pos = OS.GetMessagePos ();
@@ -435,6 +442,7 @@ void createItem (MenuItem item, int index) {
 }
 
 void createWidget () {
+	checkOrientation (parent);
 	createHandle ();
 	parent.add (this);
 }

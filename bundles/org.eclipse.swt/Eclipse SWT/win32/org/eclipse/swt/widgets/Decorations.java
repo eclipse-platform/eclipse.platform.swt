@@ -1159,7 +1159,7 @@ boolean traverseReturn () {
 }
 
 int widgetExtStyle () {
-	int bits = 0;
+	int bits = super.widgetExtStyle () & ~OS.WS_EX_CLIENTEDGE;
 	if ((style & SWT.NO_TRIM) != 0) return bits;
 	if (OS.IsPPC) {
 		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_EX_CAPTIONOKBTN;
