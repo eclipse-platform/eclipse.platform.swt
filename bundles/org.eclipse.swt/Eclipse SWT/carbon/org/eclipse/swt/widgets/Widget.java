@@ -388,7 +388,7 @@ String getNameText () {
 	return "";
 }
 
-public Point getSize (int control) {
+Point getSize (int control) {
 	Rect rect = new Rect ();
 	OS.GetControlBounds (control, rect);
 	Rect inset = getInset ();
