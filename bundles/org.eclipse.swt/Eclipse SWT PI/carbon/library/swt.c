@@ -1431,7 +1431,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getRGB(JNIEnv *en
 	if ((src->rowBytes & 0x8000) != 0) {
 		if (src->pmTable != NULL) {
 			ColorTable *ct= *src->pmTable;
-			ColorSpec *cs= &ct->ctTable[i];
+			ColorSpec *cs= &ct->ctTable[pixel];
 			
 			int red= (cs->rgb.red >> 8);
 			int green= (cs->rgb.green >> 8);
@@ -2919,7 +2919,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogDispose(
 //---- Misc
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_Init(JNIEnv *env, jclass zz) {
-	fprintf(stderr, "swt.c: Mon 3.6.2002\n");
+	fprintf(stderr, "swt.c: Mon 06/28/2002\n");
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitCursor(JNIEnv *env, jclass zz) {
