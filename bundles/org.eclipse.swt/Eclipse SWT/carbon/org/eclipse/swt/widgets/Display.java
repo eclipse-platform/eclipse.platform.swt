@@ -870,7 +870,14 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 	switch (part) {
 		case OS.inMenuBar: {
 			if (eventKind == OS.kEventMouseDown) {
-				OS.MenuSelect (where);
+				boolean modal = false;
+				int activeWindow = OS.ActiveNonFloatingWindow ();
+				if (activeWindow != 0) {
+					int [] outModalityKind = new int [1], outUnavailableWindow = new int [1];
+					OS.GetWindowModality (activeWindow, outModalityKind, outUnavailableWindow);
+					modal = outModalityKind [0] != OS.kWindowModalityNone;
+				}
+				if (!modal) OS.MenuSelect (where);
 				return OS.noErr;
 			}
 			break;
