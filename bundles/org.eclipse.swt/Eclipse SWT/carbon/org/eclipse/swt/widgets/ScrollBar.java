@@ -413,10 +413,19 @@ int processSelection (Object callData) {
     }
 		
 	sendEvent (SWT.Selection, event);
-
 	getDisplay().update();
 
-	return 0;
+	return OS.kNoErr;
+}
+int processWheel(int eRefHandle) {
+	int[] t= new int[1];
+	OS.GetEventParameter(eRefHandle, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, null, t);
+	OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) - (fIncrement * t[0]));
+	Event event= new Event ();
+    event.detail= t[0] > 0 ? SWT.ARROW_UP : SWT.ARROW_DOWN;	
+	sendEvent (SWT.Selection, event);
+	getDisplay().update();
+	return OS.kNoErr;
 }
 void releaseChild () {
 	super.releaseChild ();
