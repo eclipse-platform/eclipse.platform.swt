@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 
 /**
@@ -65,10 +65,10 @@ public static FileTransfer getInstance () {
  */
 public void javaToNative(Object object, TransferData transferData) {
 	transferData.result = 0;
-	if (object == null || !(object instanceof String[])) return;
+		if (!validate(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
 	String[] files = (String[])object;
-	if (files.length == 0) return;
-
 	StringBuffer sb = new StringBuffer();
 	for (int i = 0, length = files.length; i < length; i++){
 		sb.append(URI_LIST_PREFIX);
@@ -130,5 +130,14 @@ protected int[] getTypeIds(){
 
 protected String[] getTypeNames(){
 	return new String[]{URI_LIST};
+}
+
+protected boolean validate(Object object) {
+	if (object == null || !(object instanceof String[]) || ((String[])object).length == 0) return false;
+	String[] strings = (String[])object;
+	for (int i = 0; i < strings.length; i++) {
+		if (strings[i] == null || strings[i].length() == 0) return false;
+	}
+	return true;
 }
 }

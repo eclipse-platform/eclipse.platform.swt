@@ -58,10 +58,10 @@ public static TextTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData) {
 	transferData.result = 0;
-	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
+	if (!validate(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
 	String string = (String)object;
-	if (string.length() == 0) return;
-	
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	if (transferData.type ==  COMPOUND_TEXT_ID) {
 		Display display = Display.getCurrent();
@@ -153,5 +153,9 @@ protected int[] getTypeIds() {
 
 protected String[] getTypeNames() {
 	return new String[] {COMPOUND_TEXT, STRING};
+}
+
+protected boolean validate(Object object) {
+	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
 }
