@@ -524,6 +524,8 @@ private Vector getDirectionRuns(int logicalStart, int length) {
  */
 int getLigatureEndOffset(int offset) {
 	if (!isLigated(gc)) return offset;
+	// assume only bidi languages support ligatures
+	if (!isRightToLeft(offset)) return offset;	
 	int newOffset = offset;
 	int i = offset + 1;
 	while (i<order.length && (order[i] == order[offset])) {
@@ -540,6 +542,8 @@ int getLigatureEndOffset(int offset) {
  */
 int getLigatureStartOffset(int offset) {
 	if (!isLigated(gc)) return offset;
+	// assume only bidi languages support ligatures
+	if (!isRightToLeft(offset)) return offset;	
 	int newOffset = offset;
 	int i = offset - 1;
 	while (i>=0 && (order[i] == order[offset])) {
