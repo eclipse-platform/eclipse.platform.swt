@@ -35,7 +35,7 @@ AWT_OBJS   = swt_awt.obj
 
 MOZILLA_PREFIX	= swt-mozilla
 MOZILLA_LIB     = $(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
-MOZILLA_LIBS	= nspr4.lib xpcom.lib embed_base_s.lib
+MOZILLA_LIBS	= embedstring.lib embed_base_s.lib xpcomglue_s.lib xpcom.lib nspr4.lib plds4.lib plc4.lib
 MOZILLA_OBJS	= xpcom.obj
 
 # note: thoroughly test all examples after changing any optimization flags
@@ -48,14 +48,15 @@ LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMai
 # Uncomment for native stats
 #CFLAGS = $(CFLAGS) -DNATIVE_STATS
 
-MOZILLA_INCLUDES = -I$(MOZILLA_HOME)\include \
-	-I$(MOZILLA_HOME)\include\xpcom \
-	-I$(MOZILLA_HOME)\include\string \
-	-I$(MOZILLA_HOME)\include\nspr \
-	-I$(MOZILLA_HOME)\include\embed_base \
-	-I$(MOZILLA_HOME)\include\gfx
-MOZILLACFLAGS = $(CFLAGS) -DXP_WIN -DXP_WIN32 $(MOZILLA_INCLUDES)
-MOZILLALFLAGS = $(LFLAGS) /NODEFAULTLIB:MSVCRT.lib /libpath:"$(MOZILLA_HOME)\lib"
+MOZILLA_INCLUDES = -I$(GECKO_SDK) \
+	-I$(GECKO_SDK)\nspr\include \
+	-I$(GECKO_SDK)\xpcom\include \
+	-I$(GECKO_SDK)\string\include \
+	-I$(GECKO_SDK)\embed_base\include \
+	-I$(GECKO_SDK)\embedstring\include
+MOZILLACFLAGS = -c -W3 -O1 -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32 /I. \
+				 -DXPCOM_GLUE=1 -DMOZILLA_STRICT_API=1 -DXP_WIN -DXP_WIN32 $(MOZILLA_INCLUDES)
+MOZILLALFLAGS = $(LFLAGS) /NODEFAULTLIB:LIBC.lib /libpath:"$(GECKO_SDK)\embed_base\bin" /libpath:"$(GECKO_SDK)\xpcom\bin" /libpath:"$(GECKO_SDK)\nspr\bin" /libpath:"$(GECKO_SDK)\embedstring\bin"
 
 all: $(SWT_LIB) $(AWT_LIB) #$(MOZILLA_LIB)
 
