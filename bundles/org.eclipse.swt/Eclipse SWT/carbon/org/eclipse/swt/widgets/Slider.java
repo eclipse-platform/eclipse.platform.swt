@@ -19,7 +19,6 @@ public class Slider extends Control {
 	int increment = 1;
 	int pageIncrement = 10;
 
-
 public Slider (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
