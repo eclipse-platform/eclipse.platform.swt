@@ -1961,7 +1961,7 @@ public void setCursor (Cursor cursor) {
 		cursor= null;
 	} else {
 		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		cursor= cursor;
+		this.cursor= cursor;
 	}
 }
 /**
@@ -2335,8 +2335,6 @@ public void setToolTipText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	if (visible == false)
-		visible= visible;
     if (this.visible != visible) {
 	    this.visible= visible;
 		int topHandle = topHandle ();
