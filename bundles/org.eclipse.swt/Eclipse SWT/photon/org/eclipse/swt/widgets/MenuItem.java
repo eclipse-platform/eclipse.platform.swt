@@ -571,6 +571,7 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setAccelerator (int accelerator) {
 	checkWidget();
+	if (this.accelerator == accelerator) return;
 	removeAccelerator ();
 	this.accelerator = accelerator;		
 	addAccelerator ();
