@@ -279,11 +279,25 @@ public ImageData getImageData () {
 	Image image = Image.win32_new (null, SWT.ICON, phiconSmall[0]);
 	*/
 	
-	Image image = new Image(null, 16, 16);
-	ImageData imageData = image.getImageData ();
-	image.dispose ();
+	ImageData id= new ImageData(16, 16, 2, 
+		new PaletteData(
+			new RGB[] {
+				new RGB(0, 0, 0), 
+				new RGB(128, 128, 128)
+			}
+		)
+	);
+	id.transparentPixel= 0;			// use black for transparency
+	
+	for (int y= 2; y < 14; y++) 
+		for (int x= 2; x < 14; x++)
+			if (x == 2 || x == 13 || y == 2 || y == 13)
+				id.setPixel(x, y, 1);
+				
+	//Image im= new Image(null, id);
+	//id= im.getImageData();
 
-	return imageData;
+	return id;
 }
 
 /**
