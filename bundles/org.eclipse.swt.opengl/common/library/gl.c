@@ -42,7 +42,7 @@ JNIEXPORT jboolean JNICALL GL_NATIVE(glAreTexturesResident)
 		if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 		if (arg2) lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL);
 	}
-	rc = (jboolean)glAreTexturesResident(arg0, lparg1, lparg2);
+	rc = (jboolean)glAreTexturesResident(arg0, (const GLuint *)lparg1, lparg2);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
@@ -102,7 +102,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glBitmap)
 	{
 		if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
 	}
-	glBitmap(arg0, arg1, arg2, arg3, arg4, arg5, lparg6);
+	glBitmap(arg0, arg1, arg2, arg3, arg4, arg5, (const GLubyte *)lparg6);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg6) (*env)->ReleasePrimitiveArrayCritical(env, arg6, lparg6, 0);
@@ -512,7 +512,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glColor3ubv)
 	{
 		if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	}
-	glColor3ubv(lparg0);
+	glColor3ubv((const GLubyte *)lparg0);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -549,7 +549,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glColor3uiv)
 	{
 		if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
 	}
-	glColor3uiv(lparg0);
+	glColor3uiv((const GLuint *)lparg0);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -586,7 +586,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glColor3usv)
 	{
 		if (arg0) lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL);
 	}
-	glColor3usv(lparg0);
+	glColor3usv((const GLushort *)lparg0);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -774,7 +774,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glColor4ubv)
 	jbyte *lparg0=NULL;
 	GL_NATIVE_ENTER(env, that, glColor4ubv_FUNC);
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	glColor4ubv(lparg0);
+	glColor4ubv((const GLubyte *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	GL_NATIVE_EXIT(env, that, glColor4ubv_FUNC);
 }
@@ -804,7 +804,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glColor4uiv)
 	{
 		if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
 	}
-	glColor4uiv(lparg0);
+	glColor4uiv((const GLuint *)lparg0);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -841,7 +841,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glColor4usv)
 	{
 		if (arg0) lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL);
 	}
-	glColor4usv(lparg0);
+	glColor4usv((const GLushort *)lparg0);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -985,7 +985,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glDeleteTextures)
 	{
 		if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	}
-	glDeleteTextures(arg0, lparg1);
+	glDeleteTextures(arg0, (const GLuint *)lparg1);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
@@ -1581,7 +1581,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glGenTextures)
 	{
 		if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	}
-	glGenTextures(arg0, lparg1);
+	glGenTextures(arg0, (GLuint *)lparg1);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
@@ -1971,7 +1971,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glGetPixelMapuiv)
 	{
 		if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	}
-	glGetPixelMapuiv(arg0, lparg1);
+	glGetPixelMapuiv(arg0, (GLuint *)lparg1);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
@@ -1998,7 +1998,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glGetPixelMapusv)
 	{
 		if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
 	}
-	glGetPixelMapusv(arg0, lparg1);
+	glGetPixelMapusv(arg0, (GLushort *)lparg1);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
@@ -3432,7 +3432,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glPixelMapuiv)
 	{
 		if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	}
-	glPixelMapuiv(arg0, arg1, lparg2);
+	glPixelMapuiv(arg0, arg1, (const GLuint *)lparg2);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
@@ -3459,7 +3459,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glPixelMapusv)
 	{
 		if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
 	}
-	glPixelMapusv(arg0, arg1, lparg2);
+	glPixelMapusv(arg0, arg1, (const GLushort *)lparg2);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
@@ -3566,7 +3566,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glPolygonStipple)
 	{
 		if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	}
-	glPolygonStipple(lparg0);
+	glPolygonStipple((GLubyte *)lparg0);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
@@ -3636,7 +3636,7 @@ JNIEXPORT void JNICALL GL_NATIVE(glPrioritizeTextures)
 		if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 		if (arg2) lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL);
 	}
-	glPrioritizeTextures(arg0, lparg1, lparg2);
+	glPrioritizeTextures(arg0, (const GLuint *)lparg1, lparg2);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, 0);
