@@ -357,6 +357,9 @@ public String open () {
 		0,
 		0);
 
+	fullPath = null;
+	fileNames = null;
+	
 	/* Compute the filter */
 	String mask = FILTER;
 	if (filterExtensions == null) filterExtensions = new String [0];
