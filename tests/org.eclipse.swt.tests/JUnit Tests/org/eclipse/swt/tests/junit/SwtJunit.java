@@ -17,7 +17,7 @@ package org.eclipse.swt.tests.junit;
 
 	static {
 		if (isMotif) {
-			testFontName = "misc-fixed";
+			testFontName = "adobe-courier";//"misc-fixed";
 		}
 		else {
 			testFontName = "Helvetica";
