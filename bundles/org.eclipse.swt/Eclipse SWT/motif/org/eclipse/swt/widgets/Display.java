@@ -670,9 +670,6 @@ boolean filterEvent (XAnyEvent event) {
 
 	/* Check the event and find the widget */
 	if (event.type != OS.KeyPress) return false;
-	if (!OS.IsLinux && OS.XFilterEvent (event, OS.None)) return true;
-	
-	/* Move the any event into the key event */
 	OS.memmove (keyEvent, event, XKeyEvent.sizeof);
 	if (keyEvent.keycode == 0) return false;
 	int xWindow = keyEvent.window;
@@ -696,6 +693,15 @@ boolean filterEvent (XAnyEvent event) {
 	int keysym = buffer2 [0] & 0xFFFF;
 	keyEvent.state = oldState;
 	
+	/*
+	* Bug in Motif. On Linux Japanese only,	If XFilter() is called for every key
+	* press, it loops forever. The fix is to call XFilter() only for XK_Return
+	* and XK_KP_Enter when running on Linux.
+	*/
+	if (!OS.IsLinux || keysym == OS.XK_Return || keysym == OS.XK_KP_Enter) { 
+		if (OS.XFilterEvent (event, OS.XtWindow (handle))) return true;
+	}
+				
 	/* Check for an accelerator key */
 	if (widget.translateAccelerator (key, keysym, keyEvent)) return true;
 	
