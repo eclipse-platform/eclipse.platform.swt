@@ -119,8 +119,7 @@ public TableColumn (Table parent, int style, int index) {
  * @see #removeControlListener
  */
 public void addControlListener(ControlListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Resize,typedListener);
@@ -151,8 +150,7 @@ public void addControlListener(ControlListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
@@ -178,8 +176,7 @@ void createWidget (int index) {
  * </ul>
  */
 public int getAlignment () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.LEFT) != 0) return SWT.LEFT;
 	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
@@ -201,8 +198,7 @@ public Display getDisplay () {
  * </ul>
  */
 public Table getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 /**
@@ -218,8 +214,7 @@ public Table getParent () {
  * </ul>
  */
 public boolean getResizable () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int index = parent.indexOf (this);
 	if (index == -1) return false;
 	int chandle=OS.GTK_CLIST_COLUMN (parent.handle);
@@ -238,8 +233,7 @@ public boolean getResizable () {
  * </ul>
  */
 public int getWidth () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int index = parent.indexOf (this);
 	if (index == -1) return 0;
 	int chandle=OS.GTK_CLIST_COLUMN (parent.handle);
@@ -259,8 +253,7 @@ public int getWidth () {
  *
  */
 public void pack () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
 void releaseChild () {
 	super.releaseChild ();
@@ -289,8 +282,7 @@ void releaseWidget () {
  * @see #addControlListener
  */
 public void removeControlListener (ControlListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
@@ -314,8 +306,7 @@ public void removeControlListener (ControlListener listener) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -334,8 +325,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * </ul>
  */
 public void setAlignment (int alignment) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	int index = parent.indexOf (this);
 	if (index == -1 || index == 0) return;
@@ -361,8 +351,7 @@ public void setAlignment (int alignment) {
  * </ul>
  */
 public void setResizable (boolean resizable) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	int table = parent.handle;
@@ -390,8 +379,7 @@ public void setText (String string) {
  * </ul>
  */
 public void setWidth (int width) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	int table = parent.handle;
