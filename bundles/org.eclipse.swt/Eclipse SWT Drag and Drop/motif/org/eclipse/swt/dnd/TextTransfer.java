@@ -5,18 +5,21 @@ package org.eclipse.swt.dnd;
  * All Rights Reserved
  */
 
+import org.eclipse.swt.internal.Converter;
 /**
  * The <code>TextTransfer</code> class is used to transfer text in a drag and drop operation.
  */
 public class TextTransfer extends ByteArrayTransfer {
 
 	private static TextTransfer _instance = new TextTransfer();
-	private static final String TYPENAME1 = "STRING\0";
+	private static final String TYPENAME1 = "STRING";
 	private static final int TYPEID1 = registerType(TYPENAME1);
-	private static final String TYPENAME2 = "text/plain\0";
+	private static final String TYPENAME2 = "text/plain";
 	private static final int TYPEID2 = registerType(TYPENAME2);
-	private static final String TYPENAME3 = "text/text\0";
+	private static final String TYPENAME3 = "text/text";
 	private static final int TYPEID3 = registerType(TYPENAME3);
+	private static final String TYPENAME4 = "TEXT";
+	private static final int TYPEID4 = registerType(TYPENAME3);
 
 private TextTransfer() {
 }
@@ -49,9 +52,8 @@ public static TextTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData){
 	if (object == null || !(object instanceof String)) return;
-
-	String text = (String)object;
-	super.javaToNative(text.getBytes(), transferData);
+	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
+	super.javaToNative(buffer, transferData);
 }
 /**
  * Converts a platform specific representation of a string to a Java String.
@@ -65,12 +67,13 @@ public Object nativeToJava(TransferData transferData){
 	byte[] buffer = (byte[])super.nativeToJava(transferData);
 	if (buffer == null) return null;
 	// convert byte array to a string
-	return new String(buffer);
+	char [] unicode = Converter.mbcsToWcs (null, buffer);
+	return new String (unicode);
 }
 protected String[] getTypeNames(){
-	return new String[]{TYPENAME1, TYPENAME2, TYPENAME3};
+	return new String[]{TYPENAME1, TYPENAME2, TYPENAME3, TYPENAME4};
 }
 protected int[] getTypeIds(){
-	return new int[]{TYPEID1, TYPEID2, TYPEID3};
+	return new int[]{TYPEID1, TYPEID2, TYPEID3, TYPEID4};
 }
 }

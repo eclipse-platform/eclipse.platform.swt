@@ -4,6 +4,7 @@ package org.eclipse.swt.dnd;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
+import org.eclipse.swt.internal.Converter;
 
 /**
  * The <code>FileTransfer</code> class is used to transfer files in a drag and drop operation.
@@ -11,7 +12,7 @@ package org.eclipse.swt.dnd;
 public class FileTransfer extends ByteArrayTransfer {
 	
 	private static FileTransfer _instance = new FileTransfer();
-	private static final String TYPENAME = "text/uri-list\0";
+	private static final String TYPENAME = "text/uri-list";
 	private static final int TYPEID = registerType(TYPENAME);
 
 private FileTransfer() {}
@@ -43,9 +44,7 @@ public static FileTransfer getInstance () {
  *        with the platform specific format of the data
  */
 public void javaToNative(Object object, TransferData transferData) {
-
 	if (object == null || !(object instanceof String[])) return;
-		
 	// build a byte array from data
 	String[] files = (String[])object;
 	
@@ -54,9 +53,9 @@ public void javaToNative(Object object, TransferData transferData) {
 	for (int i = 0, length = files.length; i < length; i++){
 		nativeFormat += files[i]+"\r";
 	}
-	nativeFormat += "\0";
+	byte[] buffer = Converter.wcsToMbcs(null, nativeFormat, true);
 	// pass byte array on to super to convert to native
-	super.javaToNative(nativeFormat.getBytes(), transferData);
+	super.javaToNative(buffer, transferData);
 }
 /**
  * Converts a platform specific representation of a list of file names to a Java array of String.
@@ -69,25 +68,24 @@ public Object nativeToJava(TransferData transferData) {
 
 	byte[] data = (byte[])super.nativeToJava(transferData);
 	if (data == null) return null;
-	String string  = new String(data);
+	char[] unicode = Converter.mbcsToWcs(null, data);
+	String string  = new String(unicode);
 	// parse data and convert string to array of files
 	int start = string.indexOf("file:");
 	if (start == -1) return null;
 	start += 5;
 	String[] fileNames = new String[0];
-	while (start < string.length()) { 
+	while (start < string.length() - 1) { 
 		int end = string.indexOf("\r", start);
 		if (end == -1) end = string.length() - 1;
-		
 		String fileName = string.substring(start, end);
+		
 		String[] newFileNames = new String[fileNames.length + 1];
 		System.arraycopy(fileNames, 0, newFileNames, 0, fileNames.length);
 		newFileNames[fileNames.length] = fileName;
 		fileNames = newFileNames;
 
-		start = string.indexOf("file:", end);
-		if (start == -1) break;
-		start += 5;
+		start = end + 1;
 	}
 	return fileNames;
 }

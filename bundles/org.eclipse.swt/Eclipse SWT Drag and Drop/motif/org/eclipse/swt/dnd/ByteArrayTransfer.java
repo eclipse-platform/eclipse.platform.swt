@@ -5,7 +5,7 @@ package org.eclipse.swt.dnd;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.internal.motif.*;
+import org.eclipse.swt.internal.motif.OS;
 
 /**
  * The class <code>ByteArrayTransfer</code> provides a platform specific mechanism for transforming
@@ -41,14 +41,14 @@ protected void javaToNative (Object object, TransferData transferData){
 		return;
 	}
 	byte[] buffer = (byte[])object;	
-	transferData.pValue = OS.XtMalloc(buffer.length + 1);
+	transferData.pValue = OS.XtMalloc(buffer.length);
 	OS.memmove(transferData.pValue, buffer, buffer.length);
 	transferData.length = buffer.length;
 	transferData.format = 8;
 	transferData.result = 1;
 }
 protected Object nativeToJava(TransferData transferData){
-	if (transferData == null || transferData.pValue == 0 || !(isSupportedType(transferData))) return null;
+	if ( !(isSupportedType(transferData) || transferData.pValue == 0)) return null;
 	int size = transferData.format * transferData.length / 8;
 	byte[] buffer = new byte[size];
 	OS.memmove(buffer, transferData.pValue, size);

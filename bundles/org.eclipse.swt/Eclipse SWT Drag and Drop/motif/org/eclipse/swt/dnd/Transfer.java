@@ -49,13 +49,13 @@ abstract protected Object nativeToJava(TransferData transferData);
  *
  * @param formatName the name of a data type
  *
- * @return the unique identifier associated with htis data type
+ * @return the unique identifier associated with this data type
  */
 public static int registerType(String formatName){
-
-	int xDisplay = Display.getDefault().xDisplay; // using default because we don't have a particular widget
-	/* Use the character encoding for the default locale */
-	byte[] bName = Converter.wcsToMbcs (null, formatName, false);
+	// Use default display because we don't have a particular widget
+	int xDisplay = Display.getDefault().xDisplay;
+	// Use the character encoding for the default locale
+	byte[] bName = Converter.wcsToMbcs (null, formatName, true);
 	int atom = OS.XmInternAtom (xDisplay, bName, false); 
 	return atom;
 }

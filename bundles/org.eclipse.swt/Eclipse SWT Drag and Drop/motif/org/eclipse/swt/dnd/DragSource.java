@@ -100,9 +100,7 @@ public class DragSource extends Widget {
  */
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
-	
 	this.control = control;
-
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
 			if (event.type == SWT.Dispose) {
@@ -156,14 +154,14 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 		pFormat_return - [out] size in bits of each element in the array
 		
 	*/
-
-	if (pSelection == 0 )
-		return 0;
+	if (pSelection == 0 ) return 0;
 		
 	// is this a drop?
 	int[] selection = new int[1];
 	OS.memmove(selection, pSelection, 4);
-	int motifDropAtom = Transfer.registerType("_MOTIF_DROP\0");
+	int xDisplay = getDisplay().xDisplay;
+	byte[] bName = Converter.wcsToMbcs (null, "_MOTIF_DROP", true);
+	int motifDropAtom = OS.XmInternAtom (xDisplay, bName, true);
 	if (selection[0] != motifDropAtom) return 0;
 
 	// get the target value from pTarget
@@ -171,9 +169,13 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 	OS.memmove(target, pTarget, 4);
 
 	//  handle the "Move" case
-	if (target[0] == Transfer.registerType("DELETE\0")) { // DELETE corresponds to a Move request
+	bName = Converter.wcsToMbcs (null, "DELETE", true); // DELETE corresponds to a Move request
+	int deleteAtom = OS.XmInternAtom (xDisplay, bName, true);
+	if (target[0] == deleteAtom) { 
 		moveRequested = true;
-		OS.memmove(pType_return,new int[]{Transfer.registerType("NULL\0")}, 4);
+		bName = Converter.wcsToMbcs (null, "NULL", true);
+		int nullAtom = OS.XmInternAtom (xDisplay, bName, true);
+		OS.memmove(pType_return,new int[]{nullAtom}, 4);
 		OS.memmove(ppValue_return, new int[]{0}, 4);
 		OS.memmove(pLength_return, new int[]{0}, 4);
 		OS.memmove(pFormat_return, new int[]{8}, 4);

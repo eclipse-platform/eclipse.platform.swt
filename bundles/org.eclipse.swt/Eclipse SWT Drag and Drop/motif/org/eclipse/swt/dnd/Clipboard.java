@@ -67,12 +67,13 @@ public Object getContents(Transfer transfer) {
 	if (status != OS.XmClipboardSuccess) return null;
 	
 	// Does Clipboard have data in required format?
-	String type = null;
+	byte[] type = null;
 	int[] length = new int[1];
 	String[] supportedTypes = transfer.getTypeNames();
 	for (int i = 0; i < supportedTypes.length; i++) {
-		if (OS.XmClipboardInquireLength(xDisplay, xWindow, supportedTypes[i].getBytes(), length) == 1 /*OS.XmClipboardSuccess*/ ) {
-			type = supportedTypes[i];
+		byte[] bName = Converter.wcsToMbcs(null, supportedTypes[i], true);
+		if (OS.XmClipboardInquireLength(xDisplay, xWindow, bName, length) == 1 /*OS.XmClipboardSuccess*/ ) {
+			type = bName;
 			break;
 		}
 	}
@@ -81,7 +82,7 @@ public Object getContents(Transfer transfer) {
 	byte[] data = null;
 	if (type != null) {
 		data = new byte[length[0]];
-		status = OS.XmClipboardRetrieve(xDisplay, xWindow, type.getBytes(), data, length[0], new int[1], new int[1]);
+		status = OS.XmClipboardRetrieve(xDisplay, xWindow, type, data, length[0], new int[1], new int[1]);
 		if (status != OS.XmClipboardSuccess) {
 			data = null;
 		}
@@ -96,8 +97,7 @@ public Object getContents(Transfer transfer) {
 	// Memory is allocated here to emulate the way Drag and Drop transfers data.
 	TransferData transferData = new TransferData();
 	/* Use the character encoding for the default locale */
-	byte[] bName = Converter.wcsToMbcs (null, type, false);
-	transferData.type = OS.XmInternAtom (xDisplay, bName, false);
+	transferData.type = OS.XmInternAtom (xDisplay, type, true);
 	transferData.pValue = OS.XtMalloc(data.length);
 	OS.memmove(transferData.pValue, data, data.length);
 	transferData.length = data.length;
@@ -111,12 +111,9 @@ public Object getContents(Transfer transfer) {
 	
 	return result;
 }
-public void setContents(Object[] data, Transfer[] transferAgents){
+public void setContents(Object[] data, Transfer[] dataTypes){
 	
-	if (data == null) {
-		DND.error(SWT.ERROR_NOT_IMPLEMENTED);
-	}
-	if (transferAgents == null || data.length != transferAgents.length) {
+	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	
@@ -141,20 +138,22 @@ public void setContents(Object[] data, Transfer[] transferAgents){
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	
 	// copy data directly over to System clipboard (not deferred)
-	for (int i = 0; i < transferAgents.length; i++) {
-		String[] names = transferAgents[i].getTypeNames();
+	for (int i = 0; i < dataTypes.length; i++) {
+		int[] ids = dataTypes[i].getTypeIds();
+		String[] names = dataTypes[i].getTypeNames();
 		for (int j = 0; j < names.length; j++) {
-		
 			TransferData transferData = new TransferData();
 			/* Use the character encoding for the default locale */
-			byte[] bName = Converter.wcsToMbcs (null, names[j], false);
-			transferData.type    = OS.XmInternAtom (xDisplay, bName, false);
-			transferAgents[i].javaToNative(data[i], transferData);
+			transferData.type = ids[j];
+			dataTypes[i].javaToNative(data[i], transferData);
 			status = OS.XmClipboardFail;
-			if (transferData.result == 1 && transferData.format == 8){
-				byte[] buffer = new byte[transferData.length];
-				OS.memmove(buffer, transferData.pValue, transferData.length);
-				status = OS.XmClipboardCopy(xDisplay, xWindow, item_id[0], bName, buffer, transferData.length, 0, null);
+			if (transferData.result == 1) {
+				if (transferData.format == 8){
+					byte[] buffer = new byte[transferData.length];
+					OS.memmove(buffer, transferData.pValue, transferData.length);
+					byte[] bName = Converter.wcsToMbcs(null, names[j], true);
+					status = OS.XmClipboardCopy(xDisplay, xWindow, item_id[0], bName, buffer, transferData.length, 0, null);
+				}
 			}
 			// Clean up allocated memory
 			if (transferData.pValue != 0) {
@@ -199,7 +198,8 @@ public String[] getAvailableTypeNames() {
 			DND.error(SWT.ERROR_UNSPECIFIED);
 		byte[] buffer2 = new byte[copied_length[0]];
 		System.arraycopy(buffer, 0, buffer2, 0, copied_length[0]);
-		types[i] = new String(buffer2);
+		char [] unicode = Converter.mbcsToWcs (null, buffer2);
+		types[i] = new String (unicode);
 	}
 	return types;
 }

@@ -4,6 +4,8 @@ package org.eclipse.swt.dnd;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
+
+import org.eclipse.swt.internal.Converter;
  
 /**
  * The <code>RTFTransfer</code> class is used to transfer text with the RTF format
@@ -12,11 +14,11 @@ package org.eclipse.swt.dnd;
 public class RTFTransfer extends ByteArrayTransfer {
 
 	private static RTFTransfer _instance = new RTFTransfer();
-	private static final String TYPENAME1 = "text/rtf\0";
+	private static final String TYPENAME1 = "text/rtf";
 	private static final int TYPEID1 = registerType(TYPENAME1);
-	private static final String TYPENAME2 = "TEXT/RTF\0";
+	private static final String TYPENAME2 = "TEXT/RTF";
 	private static final int TYPEID2 = registerType(TYPENAME2);
-	private static final String TYPENAME3 = "application/rtf\0";
+	private static final String TYPENAME3 = "application/rtf";
 	private static final int TYPEID3 = registerType(TYPENAME3);
 
 private RTFTransfer() {
@@ -50,9 +52,8 @@ public static RTFTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData){
 	if (object == null || !(object instanceof String)) return;
-
-	String text = (String)object;
-	super.javaToNative(text.getBytes(), transferData);
+	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
+	super.javaToNative(buffer, transferData);
 }
 /**
  * Converts a platform specific representation of a string to a Java String.
@@ -66,7 +67,8 @@ public Object nativeToJava(TransferData transferData){
 	byte[] buffer = (byte[])super.nativeToJava(transferData);
 	if (buffer == null) return null;
 	// convert byte array to a string
-	return new String(buffer);
+	char [] unicode = Converter.mbcsToWcs (null, buffer);
+	return new String (unicode);
 }
 protected String[] getTypeNames(){
 	return new String[]{TYPENAME1, TYPENAME2, TYPENAME3};
