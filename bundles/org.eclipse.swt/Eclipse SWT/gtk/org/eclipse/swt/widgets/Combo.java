@@ -55,7 +55,7 @@ import org.eclipse.swt.events.*;
  */
 public class Combo extends Composite {
 	int arrowHandle, entryHandle, listHandle;
-	int lastEventTime, lastSelectedItem;
+	int lastEventTime;
 	String [] items = new String [0];
 
 	static final int INNER_BORDER = 2;
@@ -438,8 +438,6 @@ void hookEvents () {
 	super.hookEvents ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
-	// TODO - fix multiple selection events for one user action
-	OS.g_signal_connect (listHandle, OS.select_child, windowProc3, SELECT_CHILD);
 	OS.g_signal_connect_after (entryHandle, OS.changed, windowProc2, CHANGED);
 	OS.g_signal_connect (entryHandle, OS.activate, windowProc2, ACTIVATE);
 	int mask =
@@ -737,6 +735,17 @@ int gtk_activate (int widget) {
 }
 
 int gtk_changed (int widget) {
+	int ptr = OS.gtk_entry_get_text (entryHandle);
+	int length = OS.strlen (ptr);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, ptr, length);
+	String text = new String (Converter.mbcsToWcs (null, buffer));
+	for (int i = 0; i < items.length; i++) {
+		if (items [i].equals (text)) {
+			sendEvent (SWT.Selection);
+			break;
+		}
+	}
 	sendEvent (SWT.Modify);
 	return 0;
 }
@@ -786,24 +795,6 @@ int gtk_popup_menu (int widget) {
 	int [] x = new int [1], y = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, null);
 	return showMenu (x [0], y [0]) ? 1 : 0;
-}
-
-int gtk_select_child (int list, int widget) {
-	if (lastSelectedItem == widget) return 0;
-	int event = OS.gtk_get_current_event ();	
-	if (event != 0) {
-			GdkEvent gdkEvent = new GdkEvent ();
-			OS.memmove (gdkEvent, event, GdkEvent.sizeof);
-			switch (gdkEvent.type) {
-				case OS.GDK_KEY_PRESS:
-				case OS.GDK_BUTTON_RELEASE: 
-					postEvent (SWT.Selection);
-					lastSelectedItem = widget;
-					break;
-			}	
-			OS.gdk_event_free (event);
-	}
-	return 0;
 }
 
 /**
