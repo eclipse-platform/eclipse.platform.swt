@@ -43,8 +43,13 @@ public final class Printer extends Device {
 	boolean inPage;
 	int context;
 	int colorspace;
-	
+
 	static final String DRIVER = "Mac";
+	static final String PRINTER_DRIVER = "Printer";
+	static final String FILE_DRIVER = "File";
+	static final String PREVIEW_DRIVER = "Preview";
+	static final String FAX_DRIVER = "Fax";
+
 /**
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.
@@ -264,6 +269,9 @@ protected void create(DeviceData deviceData) {
 		OS.PMSessionDefaultPageFormat(printSession, pageFormat);
 	}
 	
+	if (PREVIEW_DRIVER.equals(data.driver)) {
+		OS.PMSessionSetDestination(printSession, printSettings, (short) OS.kPMDestinationPreview, 0, 0);
+	}
 	String name = data.name;
 	char[] buffer1 = new char[name.length ()];
 	name.getChars(0, buffer1.length, buffer1, 0);

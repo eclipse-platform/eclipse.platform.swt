@@ -437,7 +437,9 @@ public class OS {
 	public static final int kNavUserActionSaveAs = 3;
 	public static final int kOverlayWindowClass = 14;
 	public static final int kPMCancel = 0x0080;
+	public static final int kPMDestinationFax = 3;
 	public static final int kPMDestinationFile = 2;
+	public static final int kPMDestinationPreview = 4;
 	public static final int kPMDestinationPrinter = 1;
 	public static final int kPMPrintAllPages = 2147483647;
 	public static final int kQDUseCGTextMetrics = (1 << 2);

@@ -116,11 +116,18 @@ public PrinterData open() {
 				if (accepted[0]) {		
 					OS.PMSessionPrintDialog(printSession, printSettings, pageFormat, accepted);
 					if (accepted[0]) {
-						String name = Printer.getCurrentPrinterName(printSession);
-						PrinterData data = new PrinterData(Printer.DRIVER, name);
 						short[] destType = new short[1];
 						OS.PMSessionGetDestinationType(printSession, printSettings, destType);
-						if (destType [0] == OS.kPMDestinationFile) {
+						String name = Printer.getCurrentPrinterName(printSession);
+						String driver = Printer.DRIVER;
+						switch (destType[0]) {
+							case OS.kPMDestinationFax: driver = Printer.FAX_DRIVER; break;
+							case OS.kPMDestinationFile: driver = Printer.FILE_DRIVER; break;
+							case OS.kPMDestinationPreview: driver = Printer.PREVIEW_DRIVER; break;
+							case OS.kPMDestinationPrinter: driver = Printer.PRINTER_DRIVER; break;
+						}
+						PrinterData data = new PrinterData(driver, name);
+						if (destType[0] == OS.kPMDestinationFile) {
 							data.printToFile = true;
 							OS.PMSessionCopyDestinationLocation(printSession, printSettings, buffer);
 							int fileName = OS.CFURLCopyFileSystemPath(buffer[0],OS.kCFURLPOSIXPathStyle);
