@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -164,12 +163,11 @@ public Browser(Composite parent, int style) {
 					Variant varResult = event.arguments[0];
 					IDispatch dispatch = varResult.getDispatch();
 					if (html != null) {
-						byte[] buffer = null;
-						try {
-							buffer = html.getBytes("UTF-8"); //$NON-NLS-1$
-						} catch (UnsupportedEncodingException e) {
-						}
+						int charCount = html.length();
+						char[] chars = new char[charCount];
+						html.getChars(0, charCount, chars, 0);
 						html = null;
+						int byteCount = OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, null, 0, null, null);
 						/*
 						* Note. Internet Explorer appears to treat the data loaded with 
 						* nsIPersistStreamInit.Load as if it were encoded using the default
@@ -178,10 +176,10 @@ public Browser(Composite parent, int style) {
 						* prepend the UTF-8 Byte Order Mark signature to the data.
 						*/
 						byte[] UTF8BOM = {(byte)0xEF, (byte)0xBB, (byte)0xBF};
-						int	hGlobal = buffer != null ? OS.GlobalAlloc(OS.GMEM_FIXED, UTF8BOM.length + buffer.length) : 0;
+						int	hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED, UTF8BOM.length + byteCount);
 						if (hGlobal != 0) {
 							OS.MoveMemory(hGlobal, UTF8BOM, UTF8BOM.length);
-							OS.MoveMemory(hGlobal + UTF8BOM.length, buffer, buffer.length);
+							OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, hGlobal + UTF8BOM.length, byteCount, null, null);							
 							int[] ppstm = new int[1];
 							/* 
 							* Note.  CreateStreamOnHGlobal is called with the flag fDeleteOnRelease.
