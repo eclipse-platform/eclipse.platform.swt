@@ -141,6 +141,10 @@ public class Display extends Device {
 	int mouseHoverId, mouseHoverHandle, mouseHoverProc;
 	Callback mouseHoverCallback;
 	
+	/* Menu position callback */
+	int menuPositionProc;
+	Callback menuPositionCallback;
+
 	/* Shell map callback */
 	int shellMapProc;
 	Callback shellMapCallback;
@@ -1433,6 +1437,10 @@ void initializeCallbacks () {
 	caretProc = caretCallback.getAddress();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
+	menuPositionCallback = new Callback(this, "menuPositionProc", 5);
+	menuPositionProc = menuPositionCallback.getAddress();
+	if (menuPositionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
 	shellMapCallback = new Callback(this, "shellMapProc", 3);
 	shellMapProc = shellMapCallback.getAddress();
 	if (shellMapProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1543,6 +1551,12 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+}
+
+int menuPositionProc (int menu, int x, int y, int push_in, int user_data) {
+	Widget widget = getWidget (menu);
+	if (widget == null) return 0;
+	return widget.menuPositionProc (menu, x, y, push_in, user_data);	
 }
 
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
@@ -1701,11 +1715,15 @@ void releaseDisplay () {
 	if (preeditWindow != 0) OS.gtk_widget_destroy (preeditWindow);
 	imControl = null;
 
-	/* Dispose the shell map callbacks */
+	/* Dispose the menu callback */
+	menuPositionCallback.dispose (); menuPositionCallback = null;
+	menuPositionProc = 0;
+
+	/* Dispose the shell map callback */
 	shellMapCallback.dispose (); shellMapCallback = null;
 	shellMapProc = 0;
 	
-	/* Dispose GtkTreeView callbacks */
+	/* Dispose GtkTreeView callback */
 	treeSelectionCallback.dispose (); treeSelectionCallback = null;
 	treeSelectionProc = 0;
 

@@ -801,6 +801,10 @@ char mbcsToWcs (char ch) {
 	return result [0];
 }
 
+int menuPositionProc (int menu, int x, int y, int push_in, int user_data) {
+	return 0;
+}
+
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by

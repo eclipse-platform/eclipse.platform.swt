@@ -159,13 +159,8 @@ public void _setVisible (boolean visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
 			int address = 0;
-			Callback GtkMenuPositionFunc = null;
-			if (hasLocation) {
-				GtkMenuPositionFunc = new Callback (this, "GtkMenuPositionFunc", 5);
-				address = GtkMenuPositionFunc.getAddress ();
-			}
+			if (hasLocation) address = display.menuPositionProc;
 			OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, display.popupTime);
-			if (GtkMenuPositionFunc != null) GtkMenuPositionFunc.dispose ();
 		} else {
 			sendEvent (SWT.Hide);
 		}
@@ -516,12 +511,6 @@ public boolean getVisible () {
 	return OS.GTK_WIDGET_MAPPED (handle);
 }
 
-int GtkMenuPositionFunc (int menu, int x, int y, int push_in, int user_data) {
-	if (x != 0) OS.memmove (x, new int [] {this.x}, 4);
-	if (y != 0) OS.memmove (y, new int [] {this.y}, 4);
-	return 0;
-}
-
 int gtk_hide (int widget) {
 	if ((style & SWT.POP_UP) != 0) {
 		Shell shell = getShell ();
@@ -622,6 +611,12 @@ public boolean isEnabled () {
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
+}
+
+int menuPositionProc (int menu, int x, int y, int push_in, int user_data) {
+	if (x != 0) OS.memmove (x, new int [] {this.x}, 4);
+	if (y != 0) OS.memmove (y, new int [] {this.y}, 4);
+	return 0;
 }
 
 void releaseChild () {
