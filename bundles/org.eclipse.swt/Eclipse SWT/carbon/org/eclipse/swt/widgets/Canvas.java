@@ -31,7 +31,7 @@ public Caret getCaret () {
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
 	if (isFocus) caret.setFocus ();
 	return result;
 }
