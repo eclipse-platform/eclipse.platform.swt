@@ -155,21 +155,16 @@ public Control getMaximizedControl(){
 public int[] getWeights() {
 	checkWidget();
 	Control[] cArray = getControls(false);
-	float[] ratios = new float[cArray.length];
+	int[] ratios = new int[cArray.length];
 	for (int i = 0; i < cArray.length; i++) {
-		Float ratio = (Float)cArray[i].getData(LAYOUT_RATIO);
+		Long ratio = (Long)cArray[i].getData(LAYOUT_RATIO);
 		if (ratio != null) {
-			ratios[i] = ratio.floatValue();
+			ratios[i] = (int)(ratio.longValue() * 1000 >> 16);
 		} else {
-			ratios[i] = (float)0.2;
+			ratios[i] = 200;
 		}
 	}
-	
-	int[] weights = new int[cArray.length];
-	for (int i = 0; i < weights.length; i++) {
-		weights[i] = (int)(ratios[i] * 1000);
-	}
-	return weights;
+	return ratios;
 }
 private Control[] getControls(boolean onlyVisible) {
 	Control[] children = getChildren();
@@ -235,33 +230,33 @@ public void layout(boolean changed) {
 	if (controls.length == 0) return;
 	
 	// get the ratios
-	float[] ratios = new float[controls.length];
-	float total = 0;
+	long[] ratios = new long[controls.length];
+	long total = 0;
 	for (int i = 0; i < controls.length; i++) {
-		Float ratio = (Float)controls[i].getData(LAYOUT_RATIO);
+		Long ratio = (Long)controls[i].getData(LAYOUT_RATIO);
 		if (ratio != null) {
-			ratios[i] = ratio.floatValue();
+			ratios[i] = ratio.longValue();
 		} else {
-			ratios[i] = (float)0.2;
+			ratios[i] = ((200 << 16) + 999) / 1000;
 		}
 		total += ratios[i];
 	}
 	
 	if (orientation == SWT.HORIZONTAL) {
-		total += (float)sashes.length * ((float)SASH_WIDTH / (float)area.width);
+		total += (((long)(sashes.length * SASH_WIDTH) << 16) + area.width - 1) / area.width;
 	} else {
-		total += (float)sashes.length * ((float)SASH_WIDTH / (float)area.height);
+		total += (((long)(sashes.length * SASH_WIDTH) << 16) + area.height - 1) / area.height;
 	}
-	
+
 	if (orientation == SWT.HORIZONTAL) {
-		int width = (int)((ratios[0] / total) * (float)area.width);
+		int width = (int)(ratios[0] * area.width / total);
 		int x = area.x;
 		controls[0].setBounds(x, area.y, width, area.height);
 		x += width;
 		for (int i = 1; i < controls.length - 1; i++) {
 			sashes[i - 1].setBounds(x, area.y, SASH_WIDTH, area.height);
 			x += SASH_WIDTH;
-			width = (int)((ratios[i] / total) * (float)area.width);
+			width = (int)(ratios[i] * area.width / total);
 			controls[i].setBounds(x, area.y, width, area.height);
 			x += width;
 		}
@@ -272,14 +267,14 @@ public void layout(boolean changed) {
 			controls[controls.length - 1].setBounds(x, area.y, width, area.height);
 		}
 	} else {
-		int height = (int)((ratios[0] / total) * (float)area.height);
+		int height = (int)(ratios[0] * area.height / total);
 		int y = area.y;
 		controls[0].setBounds(area.x, y, area.width, height);
 		y += height;
 		for (int i = 1; i < controls.length - 1; i++) {
 			sashes[i - 1].setBounds(area.x, y, area.width, SASH_WIDTH);
 			y += SASH_WIDTH;
-			height = (int)((ratios[i] / total) * (float)area.height);
+			height = (int)(ratios[i] * area.height / total);
 			controls[i].setBounds(area.x, y, area.width, height);
 			y += height;
 		}
@@ -329,8 +324,8 @@ private void onDragSash(Event event) {
 		if (b1.width < DRAG_MINIMUM || b2.width < DRAG_MINIMUM) {
 			return;
 		}
-		c1.setData(LAYOUT_RATIO, new Float((float)b1.width / (float)area.width));
-		c2.setData(LAYOUT_RATIO, new Float((float)b2.width / (float)area.width));
+		c1.setData(LAYOUT_RATIO, new Long((((long)b1.width << 16) + area.width - 1) / area.width));
+		c2.setData(LAYOUT_RATIO, new Long((((long)b2.width << 16) + area.width - 1) / area.width));		
 	} else {
 		int shift = event.y - sashBounds.y;
 		b1.height += shift;
@@ -339,8 +334,8 @@ private void onDragSash(Event event) {
 		if (b1.height < DRAG_MINIMUM || b2.height < DRAG_MINIMUM) {
 			return;
 		}
-		c1.setData(LAYOUT_RATIO, new Float((float)b1.height / (float)area.height));
-		c2.setData(LAYOUT_RATIO, new Float((float)b2.height / (float)area.height));
+		c1.setData(LAYOUT_RATIO, new Long((((long)b1.height << 16) + area.height - 1) / area.height));
+		c2.setData(LAYOUT_RATIO, new Long((((long)b2.height << 16) + area.height - 1) / area.height));
 	}
 	
 	c1.setBounds(b1);
@@ -446,9 +441,9 @@ public void setWeights(int[] weights) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	for (int i = 0; i < cArray.length; i++) {
-		cArray[i].setData(LAYOUT_RATIO, new Float((float)weights[i] / (float)total));
+		cArray[i].setData(LAYOUT_RATIO, new Long((((long)weights[i] << 16) + total - 1) / total));
 	}
-	
+
 	layout();
 }
 }
