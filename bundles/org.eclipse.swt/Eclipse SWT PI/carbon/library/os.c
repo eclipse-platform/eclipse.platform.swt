@@ -8660,6 +8660,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter__IIII_3C)
 }
 #endif
 
+#ifndef NO_SetEventParameter__IIII_3I
+JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter__IIII_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	jint *lparg4=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, SetEventParameter__IIII_3I_FUNC);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)SetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (UInt32)arg3, lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, SetEventParameter__IIII_3I_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetEventParameter__IIII_3S
 JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter__IIII_3S)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jshortArray arg4)

@@ -1308,6 +1308,7 @@ public static final native int SetDragInputProc(int theDrag, int inputProc, int 
 public static final native int SetEventLoopTimerNextFireTime(int inTimer, double inNextFire);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, char[] inDataPtr);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, short[] inDataPtr);
+public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, int[] inDataPtr);
 public static final native int SetFontInfoForSelection(int iStyleType, int iNumStyles, int iStyles, int iFPEventTarget);
 public static final native int SetFrontProcess(int[] psn);
 public static final native int SetFrontProcessWithOptions(int[] psn, int inOptions);

@@ -654,6 +654,7 @@ typedef enum {
 	SetDragInputProc_FUNC,
 	SetEventLoopTimerNextFireTime_FUNC,
 	SetEventParameter__IIII_3C_FUNC,
+	SetEventParameter__IIII_3I_FUNC,
 	SetEventParameter__IIII_3S_FUNC,
 	SetFontInfoForSelection_FUNC,
 	SetFrontProcess_FUNC,
