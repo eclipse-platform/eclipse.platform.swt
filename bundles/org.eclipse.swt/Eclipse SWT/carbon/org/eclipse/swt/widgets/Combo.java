@@ -866,8 +866,11 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 	* event.  If this happens, end the processing of the
 	* Windows message by returning zero as the result of
 	* the window proc.
+	* 
+	* Note: this should be a send event, but selection is updated
+	* right way.
 	*/
-	sendEvent (SWT.Modify);
+	postEvent (SWT.Modify);
 	if (isDisposed ()) return OS.eventNotHandledErr;
 	postEvent (SWT.Selection);
 	return OS.eventNotHandledErr;
