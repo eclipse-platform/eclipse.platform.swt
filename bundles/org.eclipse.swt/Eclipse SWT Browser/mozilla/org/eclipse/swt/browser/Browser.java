@@ -283,7 +283,24 @@ public Browser(Composite parent, int style) {
 				case SWT.Resize: onResize(); break;
 				case SWT.FocusIn: onFocusGained(); break;
 				case SWT.Deactivate: {
-					if (Browser.this == getDisplay().getFocusControl()) onFocusLost();
+					Display display = event.display;
+					if (Browser.this == display.getFocusControl()) onFocusLost();
+					break;
+				}
+				case SWT.Show: {
+					/*
+					* Feature on GTK Mozilla.  Mozilla does not show up when
+					* its container (a GTK fixed handle) is made visible
+					* after having been hidden.  The workaround is to reset
+					* its size after the container has been made visible. 
+					*/
+					Display display = event.display;
+					display.asyncExec(new Runnable() {
+						public void run() {
+							if (Browser.this.isDisposed()) return;
+							onResize();
+						}
+					});
 					break;
 				}
 			}
@@ -294,7 +311,8 @@ public Browser(Composite parent, int style) {
 		SWT.Resize,  
 		SWT.FocusIn, 
 		SWT.KeyDown,
-		SWT.Deactivate
+		SWT.Deactivate,
+		SWT.Show
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
