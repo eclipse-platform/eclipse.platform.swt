@@ -411,7 +411,7 @@ synchronized void createDisplay (DeviceData data) {
 		return;
 	}
 	OS.gdk_rgb_init ();
-	int ptr = OS.gtk_check_version (2, 0, 0);
+	int ptr = OS.gtk_check_version (2, 0, 1);
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
 		byte [] buffer = new byte [length];
