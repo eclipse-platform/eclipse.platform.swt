@@ -440,7 +440,10 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.DisposeRgn (clip);
 	Color background = item.getBackground ();
 	gc.setBackground (background);
-	gc.fillRectangle (x, y, width, height);
+	Rect itemRect = new Rect();
+	OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, itemRect);
+	OS.OffsetRect (itemRect, (short) -controlRect.left, (short) -controlRect.top);
+	gc.fillRectangle (x - 1, y, itemRect.right - x + 2, itemRect.bottom - y);
 	Image image = item.image;
 	if (image != null) {
 		Rectangle bounds = image.getBounds ();
@@ -458,7 +461,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		Color foreground = item.getForeground ();
 		gc.setForeground (foreground);
 	}
-	gc.drawString (item.text, x, y + (height - extent.y) / 2);
+	gc.drawString (item.text, x, y + (height - extent.y) / 2, true);
 	if (gc != paintGC) gc.dispose ();
 	return OS.noErr;
 }

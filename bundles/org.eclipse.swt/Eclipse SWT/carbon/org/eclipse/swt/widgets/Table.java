@@ -895,7 +895,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		Color foreground = item.getForeground (columnIndex);
 		gc.setForeground (foreground);
 	}
-	gc.drawString (text, x, y + (height - extent.y) / 2);
+	gc.drawString (text, x, y + (height - extent.y) / 2, true);
 	if (gc != paintGC) gc.dispose ();
 	return OS.noErr;
 }
