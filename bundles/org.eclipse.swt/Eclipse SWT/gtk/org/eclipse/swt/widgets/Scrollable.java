@@ -193,7 +193,8 @@ int hScrollBarWidth() {
 	if (hBarHandle==0) return 0;
 	GtkRequisition requisition = new GtkRequisition();
 	OS.gtk_widget_size_request(hBarHandle, requisition);
-	return requisition.height;
+	int spacing = OS.GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(scrolledHandle);
+	return requisition.height + spacing;
 }
 
 boolean isTabGroup() {
@@ -279,6 +280,7 @@ int vScrollBarWidth() {
 	if (vBarHandle==0) return 0;
 	GtkRequisition requisition = new GtkRequisition();
 	OS.gtk_widget_size_request(vBarHandle, requisition);
-	return requisition.width;
+	int spacing = OS.GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(scrolledHandle);
+	return requisition.width + spacing;
 }
 }

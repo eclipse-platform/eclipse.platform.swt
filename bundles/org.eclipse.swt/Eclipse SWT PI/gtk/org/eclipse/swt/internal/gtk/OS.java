@@ -269,6 +269,7 @@ public static final native int GTK_WIDGET_X(int widget);
 public static final native int GTK_WIDGET_Y(int widget);
 public static final native int GTK_SCROLLED_WINDOW_HSCROLLBAR(int widget);
 public static final native int GTK_SCROLLED_WINDOW_VSCROLLBAR(int widget);
+public static final native int GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(int widget);
 
 /** Native methods */
 public static final native int GDK_ROOT_PARENT();
