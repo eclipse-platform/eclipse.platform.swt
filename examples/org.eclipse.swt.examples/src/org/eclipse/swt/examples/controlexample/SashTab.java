@@ -62,6 +62,7 @@ class SashTab extends Tab {
 	 */
 	void createExampleGroup () {
 		super.createExampleGroup ();
+		exampleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		exampleGroup.setLayout(new FillLayout());
 		
 		/* Create a group for the sash widgets */

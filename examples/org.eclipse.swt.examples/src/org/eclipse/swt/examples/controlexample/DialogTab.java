@@ -382,6 +382,7 @@ class DialogTab extends Tab {
 	 */
 	void createExampleGroup () {
 		super.createExampleGroup ();
+		exampleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		
 		/*
 		 * Create a group for the text widget to display

@@ -275,6 +275,44 @@ class TableTab extends ScrollableTab {
 	}
 	
 	/**
+	 * Returns a list of set/get API method names (without the set/get prefix)
+	 * that can be used to set/get values in the example control(s).
+	 */
+	String[] getMethodNames() {
+		return new String[] {"ItemCount", "Selection", "SelectionIndex", "TopIndex"};
+	}
+
+	String setMethodName(String methodRoot) {
+		/* Override to handle special case of int getSelectionIndex()/setSelection(int) */
+		return (methodRoot.equals("SelectionIndex")) ? "setSelection" : "set" + methodRoot;
+	}
+
+	Object[] parameterForType(String typeName, String value, Control control) {
+		if (value.equals("")) return new Object[] {new TableItem[0]}; // bug in Table?
+		if (typeName.equals("org.eclipse.swt.widgets.TableItem")) {
+			TableItem item = findItem(value, ((Table) control).getItems());
+			if (item != null) return new Object[] {item};
+		}
+		if (typeName.equals("[Lorg.eclipse.swt.widgets.TableItem;")) {
+			String[] values = value.split(",");
+			TableItem[] items = new TableItem[values.length];
+			for (int i = 0; i < values.length; i++) {
+				items[i] = findItem(values[i], ((Table) control).getItems());
+			}
+			return new Object[] {items};
+		}
+		return super.parameterForType(typeName, value, control);
+	}
+
+	TableItem findItem(String value, TableItem[] items) {
+		for (int i = 0; i < items.length; i++) {
+			TableItem item = items[i];
+			if (item.getText().equals(value)) return item;
+		}
+		return null;
+	}
+
+	/**
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {

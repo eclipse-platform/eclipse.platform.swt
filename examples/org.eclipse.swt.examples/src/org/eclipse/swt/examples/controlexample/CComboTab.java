@@ -97,6 +97,14 @@ class CComboTab extends Tab {
 	}
 	
 	/**
+	 * Returns a list of set/get API method names (without the set/get prefix)
+	 * that can be used to set/get values in the example control(s).
+	 */
+	String[] getMethodNames() {
+		return new String[] {"Editable", "Items", "Selection", "Text", "TextLimit", "VisibleItemCount"};
+	}
+
+	/**
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
