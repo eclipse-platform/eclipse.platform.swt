@@ -259,7 +259,7 @@ public Font getFont (int index) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getFont ();
 	int hFont = (cellFont != null) ? cellFont [index] : font;
-	return (hFont == -1) ? parent.getFont () : Font.win32_new (display, font);
+	return (hFont == -1) ? getFont () : Font.win32_new (display, hFont);
 }
 
 /**
