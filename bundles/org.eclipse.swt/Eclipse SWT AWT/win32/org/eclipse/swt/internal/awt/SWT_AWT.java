@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.Library;
 
 /* AWT Imports */
@@ -102,33 +101,10 @@ public static Frame new_Frame (final Composite parent) {
 			});
 		}
 	});
-	parent.addListener (SWT.Resize, new Listener () {
-		public void handleEvent (Event e) {
-			final Rectangle rect = parent.getClientArea ();
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					frame.setSize (rect.width, rect.height);
-					frame.validate ();
-				}
-			});
-		}
-	});
 	parent.addListener (SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
 			parent.setVisible(false);
 			frame.dispose ();
-		}
-	});
-	parent.getDisplay().asyncExec(new Runnable() {
-		public void run () {
-			if (parent.isDisposed()) return;
-			final Rectangle rect = parent.getClientArea ();
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					frame.setSize (rect.width, rect.height);
-					frame.validate ();
-				}
-			});
 		}
 	});
 	return frame;

@@ -1267,7 +1267,7 @@ int getMsgProc (int code, int wParam, int lParam) {
 		switch (msg.message) {
 			case OS.WM_APP + 4: {
 				if (msg.hwnd == 0 && msg.wParam != 0) {
-					OS.PostMessage (embeddedHwnd, OS.WM_APP + 4, msg.wParam, lParam);
+					OS.PostMessage (embeddedHwnd, OS.WM_APP + 4, msg.wParam, msg.lParam);
 					msg.message = OS.WM_NULL;
 					OS.MoveMemory (lParam, msg, MSG.sizeof);
 				}
