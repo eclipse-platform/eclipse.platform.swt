@@ -5,11 +5,11 @@ package org.eclipse.swt.dnd;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.motif.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  *
@@ -85,6 +85,9 @@ public class DropTarget extends Widget {
 	private long dragOverStart;
 	private Runnable dragOverHeartbeat;
 	private DNDEvent dragOverEvent;
+	
+	int lastOperation;
+
 	
 /**
  * Creates a new <code>DropTarget</code> to handle dropping on the specified <code>Control</code>.
@@ -253,53 +256,48 @@ private int dragProcCallback(int widget, int client_data, int call_data) {
 	event.y          = root_y[0];
 	event.dataTypes  = dataTypes;
 	event.feedback = DND.FEEDBACK_SELECT;
-	event.operations = osOpToOp(callbackData.operations);
+	int allowedOperations = osOpToOp(callbackData.operations);
+	event.operations = allowedOperations;
 	event.dataType  = selectedDataType;
-	event.detail  = osOpToOp(callbackData.operation);
-
+	
 	try {
 		switch (callbackData.reason) {
 			case OS.XmCR_DROP_SITE_ENTER_MESSAGE :
-				dragOverHeartbeat = new Runnable() {
-					public void run() {
-						if (control.isDisposed() || dragOverStart == 0) return;
-						long time = System.currentTimeMillis();
-						int delay = DRAGOVER_HYSTERESIS;
-						if (time >= dragOverStart) {
-							if (selectedDataType == null) {
-								selectedDataType = dragOverEvent.dataTypes[0];
-							}
-							DNDEvent event = new DNDEvent();
-							event.widget = control;
-							event.time = (int)time;
-							event.x = dragOverEvent.x;
-							event.y = dragOverEvent.y;
-							event.dataTypes  = dragOverEvent.dataTypes;
-							event.feedback = DND.FEEDBACK_SELECT;
-							event.operations = dragOverEvent.operations;
-							event.dataType  = selectedDataType;
-							event.detail  = dragOverEvent.detail;
-							notifyListeners(DND.DragOver, event);
-							effect.show(event.feedback, event.x, event.y);
-						} else {
-							delay = (int)(dragOverStart - time);
-						}
-						control.getDisplay().timerExec(delay, dragOverHeartbeat);
+				event.detail = osOpToOp(callbackData.operation);
+				if ((getStyle() & DND.DROP_DEFAULT) != 0) {
+					int xDisplay = getDisplay().xDisplay;
+					int xWindow = OS.XDefaultRootWindow (xDisplay);
+					int [] unused = new int [1];
+					int[] mask_return = new int[1];
+					OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, unused, unused, mask_return);
+					int mask = mask_return[0];
+					if ((mask & OS.ShiftMask) == 0 && (mask & OS.ControlMask) == 0) {
+						event.detail = DND.DROP_DEFAULT;
 					}
-				};
+				}
 				updateDragOverHover(DRAGOVER_HYSTERESIS, event);
-				
 				notifyListeners(DND.DragEnter, event);
 				effect.show(event.feedback, event.x, event.y);
-				dragOverHeartbeat.run();
 				break;
-			
 			case OS.XmCR_DROP_SITE_MOTION_MESSAGE :
+				event.detail = lastOperation;
 				updateDragOverHover(DRAGOVER_HYSTERESIS, event);
 				notifyListeners(DND.DragOver, event);
 				effect.show(event.feedback, event.x, event.y);
 				break;
 			case OS.XmCR_OPERATION_CHANGED :
+				event.detail = osOpToOp(callbackData.operation);
+				if ((getStyle() & DND.DROP_DEFAULT) != 0) {
+					int xDisplay = getDisplay().xDisplay;
+					int xWindow = OS.XDefaultRootWindow (xDisplay);
+					int [] unused = new int [1];
+					int[] mask_return = new int[1];
+					OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, unused, unused, mask_return);
+					int mask = mask_return[0];
+					if ((mask & OS.ShiftMask) == 0 && (mask & OS.ControlMask) == 0) {
+						event.detail = DND.DROP_DEFAULT;
+					}
+				}
 				updateDragOverHover(DRAGOVER_HYSTERESIS, event);
 				notifyListeners(DND.DragOperationChanged, event);
 				effect.show(event.feedback, event.x, event.y);
@@ -318,6 +316,9 @@ private int dragProcCallback(int widget, int client_data, int call_data) {
 		return 0;
 	}
 	
+	if (event.detail == DND.DROP_DEFAULT) {
+		event.detail = DND.DROP_MOVE;
+	}
 	selectedDataType = null;
 	for (int i = 0; i < dataTypes.length; i++) {
 		if (dataTypes[i].equals(event.dataType)) {
@@ -325,15 +326,57 @@ private int dragProcCallback(int widget, int client_data, int call_data) {
 			break;
 		}
 	}
-	int lastOperation = DND.DROP_NONE;
-	if (selectedDataType != null && ((event.detail & osOpToOp(callbackData.operations)) == event.detail)) {
+	lastOperation = DND.DROP_NONE;
+	if (selectedDataType != null && (event.detail & allowedOperations) != 0) {
 		lastOperation = event.detail;
 	}
-	
 	callbackData.dropSiteStatus = OS.XmDROP_SITE_VALID;
 	callbackData.operation = opToOsOp(lastOperation);
 	OS.memmove(call_data, callbackData, XmDragProcCallback.sizeof);
-
+	
+	if (dragOverHeartbeat == null) {
+		dragOverHeartbeat = new Runnable() {
+					public void run() {
+						if (control.isDisposed() || dragOverStart == 0) return;
+						long time = System.currentTimeMillis();
+						int delay = DRAGOVER_HYSTERESIS;
+						if (time >= dragOverStart) {
+							if (selectedDataType == null) {
+								selectedDataType = dragOverEvent.dataTypes[0];
+							}
+							DNDEvent event = new DNDEvent();
+							event.widget = control;
+							event.time = (int)time;
+							event.x = dragOverEvent.x;
+							event.y = dragOverEvent.y;
+							event.dataTypes  = dragOverEvent.dataTypes;
+							event.feedback = DND.FEEDBACK_SELECT;
+							int allowedOperations = dragOverEvent.operations;
+							event.operations = allowedOperations;
+							event.dataType  = selectedDataType;
+							event.detail  = lastOperation;
+							notifyListeners(DND.DragOver, event);
+							effect.show(event.feedback, event.x, event.y);
+							selectedDataType = null;
+							for (int i = 0; i < dataTypes.length; i++) {
+								if (dataTypes[i].equals(event.dataType)) {
+									selectedDataType = event.dataType;
+									break;
+								}
+							}
+							lastOperation = DND.DROP_NONE;
+							if (selectedDataType != null && ((event.detail & allowedOperations) == event.detail)) {
+								lastOperation = event.detail;
+							}
+						} else {
+							delay = (int)(dragOverStart - time);
+						}
+						control.getDisplay().timerExec(delay, dragOverHeartbeat);
+					}
+				};
+				dragOverHeartbeat.run();
+	}
+	
 	return 0;
 }
 private int dropProcCallback(int widget, int client_data, int call_data) {
@@ -352,9 +395,10 @@ private int dropProcCallback(int widget, int client_data, int call_data) {
 	event.x          = root_x[0];
 	event.y          = root_y[0];
 	event.dataTypes  = dataTypes;
-	event.operations = osOpToOp(droppedEventData.operations);
+	int allowedOperations = osOpToOp(droppedEventData.operations);
+	event.operations = allowedOperations;
 	event.dataType   = selectedDataType;
-	event.detail     = osOpToOp(droppedEventData.operation);
+	event.detail = lastOperation;
 
 	try {
 		notifyListeners(DND.DropAccept,event);
@@ -370,8 +414,8 @@ private int dropProcCallback(int widget, int client_data, int call_data) {
 			break;
 		}
 	}
-	int lastOperation = DND.DROP_NONE;
-	if (selectedDataType != null && ((event.detail & osOpToOp(droppedEventData.operations)) == event.detail)) {
+	lastOperation = DND.DROP_NONE;
+	if (selectedDataType != null && ((event.detail & allowedOperations) == event.detail)) {
 		lastOperation = event.detail;
 	}
 	
@@ -588,7 +632,7 @@ private int transferProcCallback(int widget, int client_data, int pSelection, in
 		event.dataTypes  = dataTypes;
 		event.operations = osOpToOp(droppedEventData.operations);
 		event.dataType = transferData;
-		event.detail     = osOpToOp(droppedEventData.operation);
+		event.detail = lastOperation;
 		event.data       = data;
 
 		try {
