@@ -5363,3 +5363,530 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_strlen
 
 	return (jint)strlen((const char *)arg0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1newv
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("gtk_1list_1store_1newv\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)gtk_list_store_newv(arg0,  (GType*)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1model
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1view_1get_1model\n")
+
+	return (jint)gtk_tree_view_get_model((GtkTreeView*)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1new_1with_1model
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1view_1new_1with_1model\n")
+
+	return (jint)gtk_tree_view_new_with_model((GtkTreeModel*)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GtkTreeIter_1sizeof
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GtkTreeIter_1sizeof\n")
+
+	return (jint) sizeof (GtkTreeIter);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GValue_1sizeof
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GValue_1sizeof\n")
+
+	return (jint) sizeof (GValue);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_malloc
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("malloc\n")
+
+	return (jint)malloc(arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_free
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("free\n")
+
+	free((void*)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1set__IIIZI
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jint arg4)
+{
+	DEBUG_CALL("gtk_1list_1store_1set__IIIZI\n")
+
+	gtk_list_store_set((GtkListStore*)arg0, (GtkTreeIter*)arg1, arg2, arg3, arg4);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1set__IIIII
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("gtk_1list_1store_1set__IIIII\n")
+
+	gtk_list_store_set((GtkListStore*)arg0, (GtkTreeIter*)arg1, arg2, arg3, arg4);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1set__IIILjava_lang_String_2I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
+{
+	const jbyte *lparg3= NULL;
+
+	DEBUG_CALL("gtk_1list_1store_1set__IIILjava_lang_String_2I\n")
+
+	if (arg3) lparg3 = (*env)->GetStringUTFChars(env, arg3, NULL);
+	gtk_list_store_set((GtkListStore*)arg0, (GtkTreeIter*)arg1, arg2, lparg3, arg4);
+	if (arg3) (*env)->ReleaseStringUTFChars(env, arg3, lparg3);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1cell_1renderer_1text_1new
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1cell_1renderer_1text_1new\n")
+
+	return (jint)gtk_cell_renderer_text_new();
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1cell_1renderer_1pixbuf_1new
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1cell_1renderer_1pixbuf_1new\n")
+
+	return (jint)gtk_cell_renderer_pixbuf_new();
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1cell_1renderer_1toggle_1new
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1cell_1renderer_1toggle_1new\n")
+
+	return (jint)gtk_cell_renderer_toggle_new();
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1insert
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("gtk_1list_1store_1insert\n")
+
+	gtk_list_store_insert((GtkListStore*)arg0, (GtkTreeIter*)arg1, (gint)arg2);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1new
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1new\n")
+
+	return (jint)gtk_tree_view_column_new();
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1insert_1column
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("gtk_1tree_1view_1insert_1column\n")
+
+	return (jint)gtk_tree_view_insert_column((GtkTreeView*)arg0, (GtkTreeViewColumn*)arg1, arg2);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1set_1title
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	const jbyte *lparg1= NULL;
+
+	DEBUG_CALL("gtk_1tree_1view_1column_1set_1title\n")
+
+	if (arg1) lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL);
+	gtk_tree_view_column_set_title((GtkTreeViewColumn*)arg0, lparg1);
+	if (arg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1headers_1visible
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1view_1get_1headers_1visible\n")
+
+	return (jboolean)gtk_tree_view_get_headers_visible((GtkTreeView*)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1set_1headers_1visible
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("gtk_1tree_1view_1set_1headers_1visible\n")
+
+	gtk_tree_view_set_headers_visible((GtkTreeView*)arg0, (gboolean)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1model_1get_1path
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1model_1get_1path\n")
+
+	return (jint)gtk_tree_model_get_path((GtkTreeModel*)arg0, (GtkTreeIter*)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1free
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1path_1free\n")
+
+	gtk_tree_path_free((GtkTreePath*)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1scroll_1to_1cell
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jfloat arg4, jfloat arg5)
+{
+	DEBUG_CALL("gtk_1tree_1view_1scroll_1to_1cell\n")
+
+	gtk_tree_view_scroll_to_cell((GtkTreeView*)arg0, (GtkTreePath*)arg1, (GtkTreeViewColumn*)arg2, (gboolean)arg3, (gfloat)arg4, (gfloat)arg5);
+}
+
+JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1to_1string
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1path_1to_1string\n")
+
+	return (*env)->NewStringUTF(env, gtk_tree_path_to_string((GtkTreePath*)arg0));
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1path_1at_1pos
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("gtk_1tree_1view_1get_1path_1at_1pos\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	rc = (jboolean)gtk_tree_view_get_path_at_pos((GtkTreeView*)arg0, (gint)arg1, (gint)arg2, (GtkTreePath**)lparg3, (GtkTreeViewColumn**)lparg4, (gint*)lparg5, (gint*)lparg6);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1selection
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1view_1get_1selection\n")
+
+	return (jint)gtk_tree_view_get_selection((GtkTreeView*)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1selection_1set_1mode
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1selection_1set_1mode\n")
+
+	gtk_tree_selection_set_mode((GtkTreeSelection*)arg0, (GtkSelectionMode)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1selection_1select_1iter
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1selection_1select_1iter\n")
+
+	gtk_tree_selection_select_iter((GtkTreeSelection*)arg0, (GtkTreeIter*)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1selection_1unselect_1iter
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1selection_1unselect_1iter\n")
+
+	gtk_tree_selection_unselect_iter((GtkTreeSelection*)arg0, (GtkTreeIter*)arg1);
+}
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1selection_1select_1all
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1selection_1select_1all\n")
+
+	gtk_tree_selection_select_all((GtkTreeSelection*)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1selection_1unselect_1all
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1selection_1unselect_1all\n")
+
+	gtk_tree_selection_unselect_all((GtkTreeSelection*)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1selection_1selected_1foreach
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("gtk_1tree_1selection_1selected_1foreach\n")
+
+	gtk_tree_selection_selected_foreach((GtkTreeSelection*)arg0, (GtkTreeSelectionForeachFunc)arg1, (gpointer)arg2);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1new_1from_1string
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	const jbyte *lparg0= NULL;
+	jint rc;
+
+	DEBUG_CALL("gtk_1tree_1path_1new_1from_1string\n")
+
+	if (arg0) lparg0 = (*env)->GetStringUTFChars(env, arg0, NULL);
+	rc = (jint)gtk_tree_path_new_from_string(lparg0);
+	if (arg0) (*env)->ReleaseStringUTFChars(env, arg0, lparg0);
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1selection_1path_1is_1selected
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1selection_1path_1is_1selected\n")
+
+	return (jboolean)gtk_tree_selection_path_is_selected((GtkTreeSelection*)arg0, (GtkTreePath*)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1get_1data
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	const jbyte *lparg1= NULL;
+	jint rc;
+
+	DEBUG_CALL("g_1object_1get_1data\n")
+
+	if (arg1) lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL);
+	rc = (jint)g_object_get_data((GObject*)arg0, (const gchar*)lparg1);
+	if (arg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+	return rc;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1set_1data
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	const jbyte *lparg1= NULL;
+
+	DEBUG_CALL("g_1object_1set_1data\n")
+
+	if (arg1) lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL);
+	g_object_set_data((GObject*)arg0, (const gchar*)lparg1, (gpointer)arg2);
+	if (arg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1cell_1area
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	GdkRectangle _arg3, *lparg3=NULL;
+
+	DEBUG_CALL("gtk_1tree_1view_1get_1cell_1area\n")
+
+	if (arg3) lparg3 = getGdkRectangleFields(env, arg3, &_arg3);
+	gtk_tree_view_get_cell_area((GtkTreeView*)arg0, (GtkTreePath*)arg1, (GtkTreeViewColumn*)arg2, (GdkRectangle*)lparg3);
+	if (arg3) setGdkRectangleFields(env, arg3, lparg3);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1get_1resizable
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1get_1resizable\n")
+
+	return (jboolean)gtk_tree_view_column_get_resizable((GtkTreeViewColumn*)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1value_1get_1boolean
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	gboolean answer; 
+	DEBUG_CALL("g_1value_1get_1boolean\n")
+	answer = g_value_get_boolean((GValue*)arg0);
+	printf("Checked? %d\n", answer);
+	return (jboolean)answer;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1set_1resizable
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1set_1resizable\n")
+
+	gtk_tree_view_column_set_resizable((GtkTreeViewColumn*)arg0, (gboolean)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_G_1TYPE_1BOOLEAN
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("G_1TYPE_1BOOLEAN\n")
+
+	return (jint)G_TYPE_BOOLEAN;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_G_1TYPE_1STRING
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("G_1TYPE_1STRING\n")
+
+	return (jint)G_TYPE_STRING;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GDK_1TYPE_1COLOR
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GDK_1TYPE_1COLOR\n")
+
+	return (jint)GDK_TYPE_COLOR;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1get_1type
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gdk_1pixbuf_1get_1type\n")
+
+	return (jint) gdk_pixbuf_get_type();
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1pack_1end
+(JNIEnv *env, jclass that, int tree_column, int cell_renderer, jboolean expand)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1pack_1end\n");
+	gtk_tree_view_column_pack_end ((GtkTreeViewColumn*)tree_column, (GtkCellRenderer*)cell_renderer, expand);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1clear
+(JNIEnv *env, jclass that, int store)
+{
+	DEBUG_CALL("gtk_1list_1store_1clear\n");
+	gtk_list_store_clear((GtkListStore*)store);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1remove
+(JNIEnv *env, jclass that, int store, int iter)
+{
+	DEBUG_CALL("gtk_1list_1store_1remove\n");
+	gtk_list_store_remove((GtkListStore*)store, (GtkTreeIter*)iter);
+}
+
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1model_1get
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4)
+{
+	jint *lparg3=NULL;
+
+	DEBUG_CALL("gtk_1tree_1model_1get\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	gtk_tree_model_get((GtkTreeModel*)arg0, (GtkTreeIter*)arg1, arg2, lparg3, arg4);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+}
+
+
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1add_1attribute
+  (JNIEnv *env, jclass that, jint tree_view_column, jint cell_renderer, jstring attribute_string, jint column)
+{
+  const jbyte *lparg1 = NULL;
+  DEBUG_CALL("gtk_1tree_1view_1column_1add_1attribute\n");
+
+  if (attribute_string) lparg1 = (*env)->GetStringUTFChars(env, attribute_string, NULL);
+  gtk_tree_view_column_add_attribute ((GtkTreeViewColumn*)tree_view_column, (GtkCellRenderer*)cell_renderer, (const char *)lparg1, column);
+  if (attribute_string) (*env)->ReleaseStringUTFChars(env, attribute_string, lparg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1get_1width
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1get_1width\n")
+
+	return (jint)gtk_tree_view_column_get_width((GtkTreeViewColumn*)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1columns_1autosize
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1view_1columns_1autosize\n")
+
+	gtk_tree_view_columns_autosize((GtkTreeView*)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1set_1sizing
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1set_1sizing\n")
+
+	gtk_tree_view_column_set_sizing((GtkTreeViewColumn*)arg0, (GtkTreeViewColumnSizing)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1set_1fixed_1width
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1fixed_1width\n")
+
+	gtk_tree_view_column_set_fixed_width((GtkTreeViewColumn*)arg0, arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
+{
+	GdkColor _arg3, *lparg3=NULL;
+
+	DEBUG_CALL("gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I\n")
+
+	if (arg3) lparg3 = getGdkColorFields(env, arg3, &_arg3);
+	gtk_list_store_set((GtkListStore*)arg0, (GtkTreeIter*)arg1, arg2, lparg3, arg4);
+	if (arg3) setGdkColorFields(env, arg3, lparg3);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1bin_1window
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1view_1get_1bin_1window\n")
+
+	return (jint)gtk_tree_view_get_bin_window((GtkTreeView*)arg0);
+}
+
+/*
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_TREE_1VIEW_1HEADER_1HEIGHT
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("TREE_1VIEW_1HEADER_1HEIGHT\n")
+
+	return (jint) TREE_VIEW_HEADER_HEIGHT( ((GtkTreeView*)arg0) );
+}
+*/
+
+
+
