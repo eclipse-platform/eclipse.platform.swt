@@ -864,13 +864,15 @@ public Point getSize () {
 	} else {
 		int count = GetMenuItemCount (handle);
 		if (count != 0) {
-			RECT rect = new RECT ();
+			RECT rect1 = new RECT ();
 			int hwndParent = parent.handle;
-			if (OS.GetMenuItemRect (hwndParent, handle, count - 1, rect)) {
-				OS.MapWindowPoints (0, hwndParent, rect, 2);
-				int width = rect.right + 4;
-				int height = rect.bottom + 4;
-				return new Point (width, height);
+			if (OS.GetMenuItemRect (hwndParent, handle, 0, rect1)) {
+				RECT rect2 = new RECT ();
+				if (OS.GetMenuItemRect (hwndParent, handle, count - 1, rect2)) {
+					int width = (rect2.right - rect2.left) + 4;
+					int height = (rect2.bottom - rect1.top) + 4;
+					return new Point (width, height);
+				}
 			}
 		}
 	}
