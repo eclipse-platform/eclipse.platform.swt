@@ -717,8 +717,7 @@ public static synchronized Display findDisplay (Thread thread) {
 public Shell getActiveShell () {
 	checkDevice ();
 	Control control = findControl (OS.GetActiveWindow ());
-	if (control instanceof Shell) return (Shell) control;
-	return null;
+	return control != null ? control.getShell () : null;
 }
 
 /**
