@@ -166,14 +166,15 @@ void dispose_Object (Object object) {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	/* AW
-	int screen = OS.XDefaultScreen (xDisplay);
-	int width = OS.XDisplayWidth (xDisplay, screen);
-	int height = OS.XDisplayHeight (xDisplay, screen);
-	*/
-	int width= 1024;
-	int height= 796;
-	return new Rectangle (0, 0, width, height);
+	
+	MacRect bounds= new MacRect();
+	int bitmapHandle= OS.NewBitMap((short)0, (short)0, (short)0);
+	int bitmap= OS.DerefHandle(bitmapHandle);
+	OS.GetQDGlobalsScreenBits(bitmap);
+	System.out.println("rowbytes: " + Integer.toHexString(OS.getRowBytes(bitmapHandle)));
+	OS.GetPixBounds(bitmapHandle, bounds.getData());
+	Image.disposeBitmapOrPixmap(bitmapHandle);
+	return bounds.toRectangle();
 }
 
 /**
@@ -189,7 +190,12 @@ public Rectangle getBounds () {
  * @see #getBounds
  */
 public Rectangle getClientArea () {
-	return getBounds ();
+	checkDevice ();
+	
+	MacRect bounds= new MacRect();
+	int gdh= OS.GetMainDevice();
+	OS.GetAvailableWindowPositioningBounds(gdh, bounds.getData());
+	return bounds.toRectangle();
 }
 
 /**
@@ -210,7 +216,7 @@ public int getDepth () {
 	int xScreenPtr = OS.XDefaultScreenOfDisplay (xDisplay);
 	return OS.XDefaultDepthOfScreen (xScreenPtr);
 	*/
-	return 32;
+	return fScreenDepth;
 }
 
 /**
@@ -368,15 +374,15 @@ public Color getSystemColor (int id) {
 		case SWT.COLOR_BLACK: 				return COLOR_BLACK;
 		case SWT.COLOR_DARK_RED: 			return COLOR_DARK_RED;
 		case SWT.COLOR_DARK_GREEN:	 		return COLOR_DARK_GREEN;
-		case SWT.COLOR_DARK_YELLOW: 			return COLOR_DARK_YELLOW;
+		case SWT.COLOR_DARK_YELLOW: 		return COLOR_DARK_YELLOW;
 		case SWT.COLOR_DARK_BLUE: 			return COLOR_DARK_BLUE;
-		case SWT.COLOR_DARK_MAGENTA: 			return COLOR_DARK_MAGENTA;
+		case SWT.COLOR_DARK_MAGENTA: 		return COLOR_DARK_MAGENTA;
 		case SWT.COLOR_DARK_CYAN: 			return COLOR_DARK_CYAN;
 		case SWT.COLOR_GRAY: 				return COLOR_GRAY;
 		case SWT.COLOR_DARK_GRAY: 			return COLOR_DARK_GRAY;
 		case SWT.COLOR_RED: 				return COLOR_RED;
 		case SWT.COLOR_GREEN: 				return COLOR_GREEN;
-		case SWT.COLOR_YELLOW: 				return COLOR_YELLOW;
+		case SWT.COLOR_YELLOW: 			return COLOR_YELLOW;
 		case SWT.COLOR_BLUE: 				return COLOR_BLUE;
 		case SWT.COLOR_MAGENTA: 			return COLOR_MAGENTA;
 		case SWT.COLOR_CYAN: 				return COLOR_CYAN;
@@ -453,22 +459,22 @@ protected void init () {
 	* Programmer's Reference as the colors in the default
 	* palette.
 	*/
-	COLOR_BLACK = new Color (this, 0,0,0);
-	COLOR_DARK_RED = new Color (this, 0x80,0,0);
-	COLOR_DARK_GREEN = new Color (this, 0,0x80,0);
-	COLOR_DARK_YELLOW = new Color (this, 0x80,0x80,0);
-	COLOR_DARK_BLUE = new Color (this, 0,0,0x80);
-	COLOR_DARK_MAGENTA = new Color (this, 0x80,0,0x80);
-	COLOR_DARK_CYAN = new Color (this, 0,0x80,0x80);
-	COLOR_GRAY = new Color (this, 0xC0,0xC0,0xC0);
-	COLOR_DARK_GRAY = new Color (this, 0x80,0x80,0x80);
-	COLOR_RED = new Color (this, 0xFF,0,0);
-	COLOR_GREEN = new Color (this, 0,0xFF,0);
-	COLOR_YELLOW = new Color (this, 0xFF,0xFF,0);
-	COLOR_BLUE = new Color (this, 0,0,0xFF);
-	COLOR_MAGENTA = new Color (this, 0xFF,0,0xFF);
-	COLOR_CYAN = new Color (this, 0,0xFF,0xFF);
-	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
+	COLOR_BLACK = 		Color.carbon_new(this, 0x000000);
+	COLOR_DARK_RED = 	Color.carbon_new(this, 0x800000);
+	COLOR_DARK_GREEN = 	Color.carbon_new(this, 0x008000);
+	COLOR_DARK_YELLOW = Color.carbon_new(this, 0x808000);
+	COLOR_DARK_BLUE = 	Color.carbon_new(this, 0x000080);
+	COLOR_DARK_MAGENTA =Color.carbon_new(this, 0x800080);
+	COLOR_DARK_CYAN = 	Color.carbon_new(this, 0x008080);
+	COLOR_GRAY = 		Color.carbon_new(this, 0xC0C0C0);
+	COLOR_DARK_GRAY = 	Color.carbon_new(this, 0x808080);
+	COLOR_RED = 		Color.carbon_new(this, 0xFF0000);
+	COLOR_GREEN = 		Color.carbon_new(this, 0x00FF00);
+	COLOR_YELLOW = 		Color.carbon_new(this, 0xFFFF00);
+	COLOR_BLUE = 		Color.carbon_new(this, 0x0000FF);
+	COLOR_MAGENTA = 	Color.carbon_new(this, 0xFF00FF);
+	COLOR_CYAN = 		Color.carbon_new(this, 0x00FFFF);
+	COLOR_WHITE = 		Color.carbon_new(this, 0xFFFFFF);
 }
 
 /**	 
