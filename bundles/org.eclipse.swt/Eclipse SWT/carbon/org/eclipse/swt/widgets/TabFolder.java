@@ -128,9 +128,9 @@ protected void checkSubclass () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	int width = 0, height = 0;
-	if (wHint == SWT.DEFAULT) {
+	Point size = super.computeSize (wHint, hHint, changed);
+	if (wHint == SWT.DEFAULT && items.length > 0) {
+		int width = 0;
 		GC gc = new GC (this);
 		for (int i = 0; i < items.length; i++) {
 			if (items [i] != null) {
@@ -138,22 +138,25 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			}
 		}
 		gc.dispose ();
+		Rect bounds, oldBounds = new Rect ();
+		OS.GetControlBounds (handle, oldBounds);
+		boolean fixBounds = (oldBounds.right - oldBounds.left) < 100 || (oldBounds.bottom - oldBounds.top) < 100;
+		if (fixBounds) {
+			bounds = new Rect ();
+			bounds.right = bounds.bottom = 100;
+			OS.SetControlBounds (handle, bounds);
+		} else {
+			bounds = oldBounds;
+		}
+		Rect client = new Rect ();
+		OS.GetTabContentRect (handle, client);
+		if (fixBounds) OS.SetControlBounds (handle, oldBounds);
+		width += (bounds.right - bounds.left) - (client.right - client.left);
+		Rect inset = getInset ();
+		width += inset.left + inset.right;
+		size.x = Math.max (width, size.x);	
 	}
-	Point size;
-	if (layout != null) {
-		size = layout.computeSize (this, wHint, hHint, changed);
-	} else {
-		size = minimumSize (wHint, hHint, changed);
-	}
-	if (size.x == 0) size.x = DEFAULT_WIDTH;
-	if (size.y == 0) size.y = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) size.x = wHint;
-	if (hHint != SWT.DEFAULT) size.y = hHint;
-	width = Math.max (width, size.x);
-	height = Math.max (height, size.y);
-	Rectangle trim = computeTrim (0, 0, width, height);
-	width = trim.width;  height = trim.height;
-	return new Point (width, height);
+	return size;
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
