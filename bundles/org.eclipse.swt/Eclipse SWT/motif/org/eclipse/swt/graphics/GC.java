@@ -603,53 +603,19 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			xImagePtr = OS.XCreateImage(display, visual, 8, OS.ZPixmap, 0, bufPtr, destWidth, destHeight, 32, bplX);
 			break;
 		}
-		case 16: {
-			xImagePtr = OS.XCreateImage(display, visual, 16, OS.ZPixmap, 0, 0, destWidth, destHeight, 32, 0);
-			if (xImagePtr == 0) break;
-			XImage xImage = new XImage();
-			OS.memmove(xImage, xImagePtr, XImage.sizeof);
-			int bufSize = xImage.bytes_per_line * destHeight;
-			byte[] buf = new byte[bufSize];
-			ImageData.blit(ImageData.BLIT_SRC,
-				srcData, 16, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
-				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-				buf, 16, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
-				flipX, flipY);
-			int bufPtr = OS.XtMalloc(bufSize);
-			OS.memmove(bufPtr, buf, bufSize);
-			xImage.data = bufPtr;
-			OS.memmove(xImagePtr, xImage, XImage.sizeof);
-			break;
-		}
-		case 24: {
-			xImagePtr = OS.XCreateImage(display, visual, 24, OS.ZPixmap, 0, 0, destWidth, destHeight, 32, 0);
-			if (xImagePtr == 0) break;
-			XImage xImage = new XImage();
-			OS.memmove(xImage, xImagePtr, XImage.sizeof);
-			int bufSize = xImage.bytes_per_line * destHeight;
-			byte[] buf = new byte[bufSize];
-			ImageData.blit(ImageData.BLIT_SRC,
-				srcData, 24, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
-				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-				buf, 24, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
-				flipX, flipY);
-			int bufPtr = OS.XtMalloc(bufSize);
-			OS.memmove(bufPtr, buf, bufSize);
-			xImage.data = bufPtr;
-			OS.memmove(xImagePtr, xImage, XImage.sizeof);
-			break;
-		}
+		case 16:
+		case 24:
 		case 32: {
-			xImagePtr = OS.XCreateImage(display, visual, 24, OS.ZPixmap, 0, 0, destWidth, destHeight, 32, 0);
+			xImagePtr = OS.XCreateImage(display, visual, xSrcImage.depth, OS.ZPixmap, 0, 0, destWidth, destHeight, 32, 0);
 			if (xImagePtr == 0) break;
 			XImage xImage = new XImage();
 			OS.memmove(xImage, xImagePtr, XImage.sizeof);
 			int bufSize = xImage.bytes_per_line * destHeight;
 			byte[] buf = new byte[bufSize];
 			ImageData.blit(ImageData.BLIT_SRC,
-				srcData, 32, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
+				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-				buf, 32, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
 				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
 			OS.memmove(bufPtr, buf, bufSize);
