@@ -54,6 +54,16 @@ switch ($OS )
         endif
         breaksw
 
+    case HP-UX:
+        if ( "$1" == "clean" ) then
+            make -f make_hpux.mak clean
+        else
+            echo "Building HP-UX version of SWT and CDE DLLs."
+            make -f make_hpux.mak make_swt
+            make -f make_hpux.mak make_cde
+        endif
+        breaksw
+
     default:
        echo "Unknown OS -- build aborted"
        breaksw

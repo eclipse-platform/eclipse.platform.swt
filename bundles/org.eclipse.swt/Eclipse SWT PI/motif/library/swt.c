@@ -18,7 +18,11 @@
 #include <langinfo.h>
 #include <iconv.h>
 #include <stdlib.h>
+#ifdef	_HPUX
+#include <sys/time.h>
+#else
 #include <sys/select.h>
+#endif
 
 static int RESOURCES_START;
 static int RESOURCES_END;
