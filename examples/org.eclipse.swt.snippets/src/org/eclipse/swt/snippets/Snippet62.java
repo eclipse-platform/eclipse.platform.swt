@@ -37,6 +37,8 @@ public static void main (String [] args) {
 			if ((e.stateMask & SWT.BUTTON1) != 0) string += " BUTTON1";
 			if ((e.stateMask & SWT.BUTTON2) != 0) string += " BUTTON2";
 			if ((e.stateMask & SWT.BUTTON3) != 0) string += " BUTTON3";
+			if ((e.stateMask & SWT.BUTTON4) != 0) string += " BUTTON4";
+			if ((e.stateMask & SWT.BUTTON5) != 0) string += " BUTTON5";
 			System.out.println (string);
 		}
 	};
