@@ -338,18 +338,18 @@ void initializeColors() {
 }
 boolean isCopy(int input) {
 
-	if (input == (SWT.INSERT | SWT.CTRL)) return true;
+	if (input == (SWT.INSERT | SWT.MOD1)) return true;
 
-	if (input == ('\u0003' | SWT.CTRL)) return true;
+	if (input == ('\u0003' | SWT.MOD1)) return true;
 
 	return false;
 
 }
 boolean isCut(int input) {
 
-	if (input == (SWT.DEL | SWT.SHIFT)) return true;
+	if (input == (SWT.DEL | SWT.MOD2)) return true;
 
-	if (input == ('\u0018' | SWT.CTRL)) return true;
+	if (input == ('\u0018' | SWT.MOD1)) return true;
 
 	return false;
 
