@@ -138,16 +138,14 @@ int fontProc (int nextHandler, int theEvent, int userData) {
 			break;
 		case OS.kEventFontSelection:
 			if (fontData == null) fontData = new FontData();
-			short [] fontFamily = new short [1];
-			if (OS.GetEventParameter (theEvent, OS.kEventParamFMFontFamily, OS.typeSInt16, null, 2, null, fontFamily) == OS.noErr) {
-				byte[] buffer = new byte[256];
-				OS.FMGetFontFamilyName(fontFamily [0], buffer);
-				int length = buffer[0] & 0xFF;
-				char[] chars = new char[length];
-				for (int i=0; i<length; i++) {
-					chars[i]= (char)buffer[i+1];
-				}
-				fontData.setName (new String(chars));
+			int [] fontID = new int [1];
+			if (OS.GetEventParameter (theEvent, OS.kEventParamATSUFontID, OS.typeUInt32, null, 4, null, fontID) == OS.noErr) {
+				int [] actualLength = new int [1];
+				OS.ATSUFindFontName (fontID [0], OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null);
+				byte [] buffer = new byte [actualLength [0]];
+				OS.ATSUFindFontName (fontID [0], OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, buffer.length, buffer, actualLength, null);
+				String name = new String(buffer);
+				fontData.setName (name);
 			}
 			short [] fontStyle = new short [1];
 			if (OS.GetEventParameter (theEvent, OS.kEventParamFMFontStyle, OS.typeSInt16, null, 2, null, fontStyle) == OS.noErr) {

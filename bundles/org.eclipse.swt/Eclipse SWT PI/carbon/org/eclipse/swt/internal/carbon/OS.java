@@ -264,6 +264,7 @@ public class OS {
 	public static final int kEventMouseWheelMoved = 10;
 	public static final int kEventParamAEEventClass = ('e'<<24) + ('v'<<16) + ('c'<<8) + 'l';
 	public static final int kEventParamAEEventID = ('e'<<24) + ('v'<<16) + ('t'<<8) + 'i';
+	public static final int kEventParamATSUFontID = ('a'<<24) + ('u'<<16) + ('i'<<8) + 'd';
 	public static final int kEventParamAttributes = ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r';
 	public static final int kEventParamCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
 	public static final int kEventParamClickCount = ('c'<<24) + ('c'<<16) + ('n'<<8) + 't';
@@ -314,6 +315,10 @@ public class OS {
 	public static final int kEventWindowUpdate = 1;
 	public static final int kFMIterationCompleted = -980;
 	public static final int kFloatingWindowClass = 5;
+	public static final int kFontFamilyName = 1;
+	public static final int kFontNoPlatformCode = -1;
+	public static final int kFontNoScriptCode = -1;
+	public static final int kFontNoLanguageCode = -1;
 	public static final int kFontSelectionQDStyleVersionZero = 0;
 	public static final int kFontSelectionQDType = ('q'<<24) + ('s'<<16) + ('t'<<8) + 'l';
 	public static final int kHIComboBoxAutoCompletionAttribute = (1 << 0);	
@@ -599,6 +604,8 @@ public static final native int ATSUCreateTextLayoutWithTextPtr(int iText, int iT
 public static final native int ATSUDisposeStyle(int iStyle);
 public static final native int ATSUDisposeTextLayout(int iTextLayout);
 public static final native int ATSUDrawText(int iTextLayout, int iLineOffset, int iLineLength, int iLocationX, int iLocationY);
+public static final native int ATSUFindFontName(int iFontID, int iFontNameCode, int iFontNamePlatform, int iFontNameScript, int iFontNameLanguage, int iMaximumNameLength, byte[] oName, int[] oActualNameLength, int[] oFontNameIndex);
+public static final native int ATSUGetFontIDs(int[] oFontIDs, int iArraySize, int[] oFontCount);
 public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iBoundsCharStart, int iBoundsCharLength, short iTypeOfBounds, int iMaxNumberOfBounds, int oGlyphBounds, int[] oActualNumberOfBounds);
 public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iBoundsCharStart, int iBoundsCharLength, short iTypeOfBounds, int iMaxNumberOfBounds, ATSTrapezoid oGlyphBounds, int[] oActualNumberOfBounds);
 public static final native int ATSUGetSoftLineBreaks(int iTextLayout, int iRangeStart, int iRangeLength, int iMaximumBreaks, int[] oBreaks, int[] oBreakCount);
@@ -777,6 +784,7 @@ public static final native int FMDisposeFontFamilyInstanceIterator(int ioIterato
 public static final native int FMGetATSFontRefFromFont(int iFont);
 public static final native int FMGetFontFamilyName(short id, byte[] name);
 public static final native short FMGetFontFamilyFromName(byte[] name);
+public static final native int FMGetFontFamilyInstanceFromFont(int iFont, short[] oFontFamily, short[] oStyle);
 public static final native int FMGetFontFromFontFamilyInstance(short iFontFamily, short iStyle, int[] oFont, short[] oIntrinsicStyle);
 public static final native int FMGetNextFontFamily(int ioIterator, short[] oFontFamily);
 public static final native int FMGetNextFontFamilyInstance(int ioIterator, int[] oFont, short[] oStyle, short[] oSize);

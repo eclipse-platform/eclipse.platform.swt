@@ -248,14 +248,11 @@ public boolean equals(Object object) {
  */
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte[] buffer = new byte[256];
-	OS.FMGetFontFamilyName(id, buffer);
-	int length = buffer[0] & 0xFF;
-	char[] chars = new char[length];
-	for (int i=0; i<length; i++) {
-		chars[i]= (char)buffer[i+1];
-	}
-	String name = new String(chars);
+	int [] actualLength = new int [1];
+	OS.ATSUFindFontName (handle, OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null);
+	byte[] buffer = new byte[actualLength[0]];
+	OS.ATSUFindFontName (handle, OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, buffer.length, buffer, actualLength, null);
+	String name = new String(buffer);
 	int style = SWT.NORMAL;
 	if ((this.style & OS.italic) != 0) style |= SWT.ITALIC;
 	if ((this.style & OS.bold) != 0) style |= SWT.BOLD;

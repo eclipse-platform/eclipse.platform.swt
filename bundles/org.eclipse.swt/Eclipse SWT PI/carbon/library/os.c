@@ -188,6 +188,45 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUDrawText)
 }
 #endif
 
+#ifndef NO_ATSUFindFontName
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUFindFontName)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jbyteArray arg6, jintArray arg7, jintArray arg8)
+{
+	jbyte *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUFindFontName\n")
+	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	rc = (jint)ATSUFindFontName((ATSUFontID)arg0, arg1, arg2, arg3, arg4, arg5, (Ptr)lparg6, lparg7, lparg8);
+	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	NATIVE_EXIT(env, that, "ATSUFindFontName\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUGetFontIDs
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetFontIDs)
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg0=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUGetFontIDs\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)ATSUGetFontIDs((ATSUFontID *)lparg0, arg1, lparg2);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "ATSUGetFontIDs\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSUGetGlyphBounds__IIIIISII_3I
 JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetGlyphBounds__IIIIISII_3I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jshort arg5, jint arg6, jint arg7, jintArray arg8)
@@ -2483,6 +2522,24 @@ JNIEXPORT jshort JNICALL OS_NATIVE(FMGetFontFamilyFromName)
 	rc = (jshort)FMGetFontFamilyFromName((ConstStr255Param)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "FMGetFontFamilyFromName\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_FMGetFontFamilyInstanceFromFont
+JNIEXPORT jint JNICALL OS_NATIVE(FMGetFontFamilyInstanceFromFont)
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1, jshortArray arg2)
+{
+	jshort *lparg1=NULL;
+	jshort *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "FMGetFontFamilyInstanceFromFont\n")
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	rc = (jint)FMGetFontFamilyInstanceFromFont((FMFont)arg0, (FMFontFamily *)lparg1, (FMFontStyle *)lparg2);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "FMGetFontFamilyInstanceFromFont\n")
 	return rc;
 }
 #endif
