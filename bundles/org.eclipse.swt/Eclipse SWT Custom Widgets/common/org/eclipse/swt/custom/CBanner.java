@@ -53,7 +53,7 @@ public class CBanner extends Composite {
 	static final int CURVE_LEFT = 30;
 	static final int LEFT_MIDDLE_GAP = 8;
 	static final int BORDER_BOTTOM = 2;
-	static final int BORDER_TOP = 2;
+	static final int BORDER_TOP = 3;
 	static final int BORDER_LEFT = 2;
 	static final int BORDER_RIGHT = 2;
 	static final int BORDER_STRIPE = 2;

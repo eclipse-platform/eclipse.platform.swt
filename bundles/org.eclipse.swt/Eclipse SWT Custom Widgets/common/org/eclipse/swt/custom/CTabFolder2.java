@@ -2332,7 +2332,7 @@ boolean setButtonBounds() {
 		closeRect.x = size.x - borderRight - decoratorWidth;
 		if (borderRight > 0) closeRect.x += 1; // align with first line of trim
 		if (single) closeRect.x -= 3;
-		closeRect.y = onBottom ? size.y - borderBottom - tabHeight : borderTop;
+		closeRect.y = onBottom ? size.y - borderBottom - tabHeight : borderTop + 1;
 		closeRect.width = decoratorWidth;
 		closeRect.height = tabHeight;
 	}
@@ -2347,7 +2347,7 @@ boolean setButtonBounds() {
 		expandRect.x = size.x - borderRight - closeRect.width - decoratorWidth;
 		if (borderRight > 0) expandRect.x += 1;
 		if (single) expandRect.x -= 3;
-		expandRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop;
+		expandRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
 		expandRect.width = decoratorWidth;
 		expandRect.height = tabHeight;
 	}
@@ -2366,7 +2366,7 @@ boolean setButtonBounds() {
 			chevronRect.x = size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth;
 			if (borderRight > 0) chevronRect.x += 1;
 			if (single) chevronRect.x -= 3;
-			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop;
+			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
 			chevronRect.width = decoratorWidth;
 			chevronRect.height = tabHeight;
 		}
