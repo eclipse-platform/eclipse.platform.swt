@@ -289,6 +289,49 @@ public int getRowCount () {
 	return 1;
 }
 
+int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	if (!hasFocus ()) return 0;
+	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
+	if (result != 0) return result;
+	ToolItem [] items = getItems ();
+	int length = items.length;
+	int index = 0;
+	while (index < length) {
+		if (items [index].hasFocus ()) break;
+		index++;
+	}
+	GdkEventKey gdkEvent = new GdkEventKey ();
+	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+	boolean next = false;
+	switch (gdkEvent.keyval) {
+		case OS.GDK_Up:
+		case OS.GDK_Left: next = false; break;
+		case OS.GDK_Down: {
+			if (0 <= index && index < length) {
+				ToolItem item = items [index];
+				if ((item.style & SWT.DROP_DOWN) != 0) {
+					Event event = new Event ();
+					event.detail = SWT.ARROW;
+					int /*long*/ topHandle = item.topHandle ();
+					event.x = OS.GTK_WIDGET_X (topHandle);
+					event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
+					item.postEvent (SWT.Selection, event);
+					return result;
+				}
+			}
+			//FALL THROUGH
+		}
+		case OS.GDK_Right: next = true; break;
+		default: return result;
+	}
+	int start = index, offset = next ? 1 : -1;
+	while ((index = (index + offset + length) % length) != start) {
+		ToolItem item = items [index];
+		if (item.setFocus ()) return result;
+	}
+	return result;
+}
+
 boolean hasFocus () {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
