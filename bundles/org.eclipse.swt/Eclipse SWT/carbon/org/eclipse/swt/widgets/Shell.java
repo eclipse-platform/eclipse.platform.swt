@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.*;
 public class Shell extends Decorations {
 	Display display;
 	int shellHandle;
+	boolean resized;
 
 public Shell () {
 	this ((Display) null);
@@ -306,6 +307,7 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 		sendEvent (SWT.Move);
 	}
 	if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
+		resized = true;
 		layoutControl ();
 		sendEvent (SWT.Resize);
 		if (layout != null) layout.layout (this, false);
@@ -389,7 +391,7 @@ public boolean isVisible () {
 
 public void open () {
 	checkWidget();
-	OS.ShowWindow (shellHandle);
+	setVisible (true);
 	OS.BringToFront (shellHandle);
 	if (!restoreFocus ()) traverseGroup (true);
 }
@@ -471,7 +473,12 @@ public void setText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget();
+	if (OS.IsWindowVisible (shellHandle) == visible) return;
 	if (visible) {
+		if (!resized) {
+			sendEvent (SWT.Resize);
+			if (layout != null) layout.layout (this, false);
+		}
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 		OS.ShowWindow (shellHandle);
