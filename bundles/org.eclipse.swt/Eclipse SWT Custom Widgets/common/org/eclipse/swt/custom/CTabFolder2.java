@@ -133,7 +133,7 @@ public class CTabFolder2 extends Composite {
 	Rectangle topRightRect = new Rectangle(0, 0, 0, 0);
 	
 	boolean tipShowing;
-	int upCount = 0;
+	int upTime = 0;
 	
 	// borders and shapes
 	boolean showHighlight =  false;
@@ -1752,7 +1752,10 @@ void onMouse(Event event) {
 		}
 		case SWT.MouseUp: {
 			if (event.button != 1) return;
-			if (upCount > 0) upCount++;
+			Display display = getDisplay();
+			boolean doubleClick = (event.time - upTime) <= display.getDoubleClickTime();
+			upTime = event.time;
+			if (doubleClick) return;
 			if (closeRect.contains(x, y)) {
 				closeImageState = HOT;
 				redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
@@ -1810,30 +1813,26 @@ void onMouse(Event event) {
 				redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
 				return;
 			}
-			if (upCount == 0 && single && selectedIndex != -1) {
+			if (single && selectedIndex != -1) {
 				Rectangle bounds = items[selectedIndex].getBounds();
 				if (bounds.contains(x, y)) {
-					upCount = 1;
-					Display display = getDisplay();
-					int time = 3 * display.getDoubleClickTime() / 2;
+					final CTabFolderEvent e = new CTabFolderEvent(CTabFolder2.this);
+					e.widget = this;
+					e.time = event.time;
+					int time = display.getDoubleClickTime() + 10;
 					display.timerExec (time, new Runnable() {
 						public void run () {
-							if (!isDisposed() && upCount == 1 && selectedIndex != -1) {
-								Rectangle rect = items[selectedIndex].getBounds();
-								rect.y += onBottom ? -HIGHLIGHT_HEADER :HIGHLIGHT_HEADER;
-								CTabFolderEvent e = new CTabFolderEvent(CTabFolder2.this);
-								e.widget = CTabFolder2.this;
-								e.time = (int)System.currentTimeMillis();
-								e.rect = rect;
-								if (listListeners.length == 0) {
-									showList(e.rect, SWT.LEFT);
-								} else {
-									for (int j = 0; j < listListeners.length; j++) {
-										listListeners[j].showList(e);
-									}
+							if (isDisposed() || selectedIndex == -1 || e.time < upTime) return;
+							Rectangle rect = items[selectedIndex].getBounds();
+							rect.y += onBottom ? -HIGHLIGHT_HEADER :HIGHLIGHT_HEADER;
+							e.rect = rect;
+							if (listListeners.length == 0) {
+								showList(e.rect, SWT.LEFT);
+							} else {
+								for (int j = 0; j < listListeners.length; j++) {
+									listListeners[j].showList(e);
 								}
 							}
-							upCount = 0;
 						}
 					});
 				}
