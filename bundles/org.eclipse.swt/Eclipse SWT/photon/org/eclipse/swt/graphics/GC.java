@@ -535,7 +535,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
  * Draws a rectangle, based on the specified arguments, which has
  * the appearance of the platform's <em>focus rectangle</em> if the
  * platform supports such a notion, and otherwise draws a simple
- * rectangle in the receiver's forground color.
+ * rectangle in the receiver's foreground color.
  *
  * @param x the x coordinate of the rectangle
  * @param y the y coordinate of the rectangle
