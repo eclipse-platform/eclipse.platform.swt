@@ -36,12 +36,6 @@
    <extension
          id="application"
          point="org.eclipse.core.runtime.applications">
-      <application>
-         <run
-               name="%launchitem.LauncherApplication.name"
-               class="org.eclipse.swt.examples.launcher.LauncherApplication">
-         </run>
-      </application>
    </extension>
    <extension
          point="org.eclipse.ui.views">

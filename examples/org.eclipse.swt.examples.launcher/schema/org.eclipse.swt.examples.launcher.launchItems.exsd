@@ -2,21 +2,26 @@
 <!-- Schema file written by PDE -->
 <schema targetNamespace="org.eclipse.swt.examples.launcher">
 <annotation>
-   <appInfo>
-      <meta.schema plugin="org.eclipse.swt.examples.launcher" id="launchItems" name="Launch Items"/>
-   </appInfo>
-   <documentation>
-      This extension point is used to add 'standalone program' and
-'Workbench view'
+      <appInfo>
+         <meta.schema plugin="org.eclipse.swt.examples.launcher" id="launchItems" name="Launch Items"/>
+      </appInfo>
+      <documentation>
+         This extension point is used to add &apos;standalone program&apos; and
+&apos;Workbench view&apos;
 launch items to the Launcher, optionally grouping them into
 categories so as to form a multi-tiered hierarchy.
-Standalone programs are executed using the platform's event loop.
+Standalone programs are executed using the platform&apos;s event loop.
 Workbench views are created within the active Workbench Perspective.
-   </documentation>
-</annotation>
+      </documentation>
+   </annotation>
 
    <element name="extension">
       <complexType>
+         <choice minOccurs="0" maxOccurs="unbounded">
+            <element ref="category"/>
+            <element ref="item"/>
+            <element ref="view"/>
+         </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
@@ -44,7 +49,7 @@ Workbench views are created within the active Workbench Perspective.
    <element name="program">
       <annotation>
          <documentation>
-            Specifies a "Standalone Program" for a launch item to run.
+            Specifies a &quot;Standalone Program&quot; for a launch item to run.
          </documentation>
       </annotation>
       <complexType>
@@ -68,7 +73,7 @@ Workbench views are created within the active Workbench Perspective.
    <element name="view">
       <annotation>
          <documentation>
-            Specifies a "Workbench View" for a launch item to activate.
+            Specifies a &quot;Workbench View&quot; for a launch item to activate.
          </documentation>
       </annotation>
       <complexType>
@@ -99,7 +104,7 @@ Workbench views are created within the active Workbench Perspective.
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  The unique id of this category.  Categories with duplicate id's will be discarded.
+                  The unique id of this category.  Categories with duplicate id&apos;s will be discarded.
                </documentation>
             </annotation>
          </attribute>
@@ -107,6 +112,13 @@ Workbench views are created within the active Workbench Perspective.
             <annotation>
                <documentation>
                   The unique id of the parent category.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  Specifies a launch item category description.
                </documentation>
             </annotation>
          </attribute>
@@ -120,6 +132,10 @@ Workbench views are created within the active Workbench Perspective.
          </documentation>
       </annotation>
       <complexType>
+         <choice>
+            <element ref="view"/>
+            <element ref="program"/>
+         </choice>
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
@@ -130,7 +146,7 @@ Workbench views are created within the active Workbench Perspective.
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  The unique id of this launch item. Launch items with duplicate id's will be discarded.
+                  The unique id of this launch item. Launch items with duplicate id&apos;s will be discarded.
                </documentation>
             </annotation>
          </attribute>
@@ -151,7 +167,7 @@ Workbench views are created within the active Workbench Perspective.
          <attribute name="enabled" type="boolean" use="default" value="true">
             <annotation>
                <documentation>
-                  Set to "false" to disable this launch item, or to "true" to enable it (default).
+                  Set to &quot;false&quot; to disable this launch item, or to &quot;true&quot; to enable it (default).
                </documentation>
             </annotation>
          </attribute>
