@@ -65,7 +65,7 @@ public class CBanner extends Composite {
 	static final int BEZIER_RIGHT = 30;
 	static final int BEZIER_LEFT = 30;
 	static final int MIN_LEFT = 10;
-	static final int MIN_RIGHT = 180;
+	static final int MIN_RIGHT = 160;
 	
 	static int BORDER1 = SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW;
 	
