@@ -18,6 +18,7 @@
 #include <langinfo.h>
 #include <iconv.h>
 #include <stdlib.h>
+#include <sys/select.h>
 
 static int RESOURCES_START;
 static int RESOURCES_END;
