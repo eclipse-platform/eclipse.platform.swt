@@ -1813,11 +1813,11 @@ private void onMouseExit(Event event) {
 	
 	showToolTip = false;
 	toolTipItem = null;
-	if (!tip.isDisposed() && tip.isVisible()) tip.setVisible(false);
+	if (tip != null && !tip.isDisposed() && tip.isVisible()) tip.setVisible(false);
 }
 
 private void onMouseHover(Event event) {
-	if (tip.isDisposed()) return;
+	if (tip == null || tip.isDisposed()) return;
 	showToolTip = true;
 	showToolTip(event.x, event.y);
 }
@@ -1848,7 +1848,7 @@ private void showToolTip (int x, int y) {
 	}
 	
 	toolTipItem = null;
-	tip.setVisible(false);
+	if (tip != null && !tip.isDisposed() && tip.isVisible()) tip.setVisible(false);
 }
 private void onMouseMove(Event event) {
 	if (showToolTip) {
