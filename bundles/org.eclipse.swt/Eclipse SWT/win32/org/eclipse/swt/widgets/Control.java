@@ -3494,11 +3494,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			shrg.ptDown_x = x;
 			shrg.ptDown_y = y; 
 			shrg.dwFlags = OS.SHRG_RETURNCMD;
-			/* 
-			* Feature in WinCE PPC.  WM_CONTEXTMENU is not supported on
-			* this platform.  The workaround is to activate the popup
-			* menu when the 'tap and hold' gesture is detected. 
-			*/
 			int type = OS.SHRecognizeGesture (shrg);
 			if (type == OS.GN_CONTEXTMENU) {
 				menu.setVisible (true);
