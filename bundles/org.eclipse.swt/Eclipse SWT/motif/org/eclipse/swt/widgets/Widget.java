@@ -692,9 +692,6 @@ void setInputState (Event event, int state) {
 	if ((state & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;	
 }
-void setInputState (Event event, XInputEvent xEvent) {
-	setInputState (event, xEvent.state);	
-}
 void setKeyState (Event event, XKeyEvent xEvent) {
 	if (xEvent.keycode != 0) {
 		byte [] buffer = new byte [5];
@@ -797,7 +794,7 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			if (result.length != 0) event.character = result [0];
 		}
 	}
-	setInputState (event, xEvent);
+	setInputState (event, xEvent.state);
 }
 void sendEvent (Event event) {
 	Display display = event.display;

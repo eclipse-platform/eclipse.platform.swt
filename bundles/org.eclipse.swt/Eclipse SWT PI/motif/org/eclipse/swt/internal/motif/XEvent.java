@@ -13,9 +13,5 @@ package org.eclipse.swt.internal.motif;
  
 public abstract class XEvent {
 	public int type;
-	public int serial;
-	public int send_event;
-	public int display;
-	public int window;
 	public static final int sizeof = 96;
 }

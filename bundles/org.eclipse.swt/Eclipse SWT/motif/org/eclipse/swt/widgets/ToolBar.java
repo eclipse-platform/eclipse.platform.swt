@@ -345,7 +345,7 @@ boolean mnemonicHit (char key) {
 			if (mnemonic != '\0') {
 				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
 					XmProcessTraversal (item.handle, OS.XmTRAVERSE_CURRENT);
-					item.click (false, null);
+					item.click (false, 0);
 					return true;
 				}
 			}

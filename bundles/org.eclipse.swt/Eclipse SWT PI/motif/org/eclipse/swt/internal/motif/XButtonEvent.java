@@ -11,8 +11,16 @@
 package org.eclipse.swt.internal.motif;
 
  
-public class XButtonEvent extends XInputEvent {
+public class XButtonEvent extends XAnyEvent {
+	public int root;
+	public int subwindow;
+	public int time;
+	public int x;
+	public int y;
+	public int x_root;
+	public int y_root;
+	public int state;
 	public int button;
 	public int same_screen;
-	public int pad0, pad1, pad2, pad3, pad4, pad5, pad6, pad7, pad8;
+	public static final int sizeof = 60;
 }

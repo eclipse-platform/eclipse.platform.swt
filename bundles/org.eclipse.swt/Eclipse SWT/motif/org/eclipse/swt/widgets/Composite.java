@@ -677,10 +677,10 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	int exposeCount = xEvent.count;
 	if (exposeCount == 0) {
 		if (OS.XEventsQueued (xEvent.display, OS.QueuedAfterReading) != 0) {
-			XAnyEvent xAnyEvent = new XAnyEvent ();
+			int xEvent1 = OS.XtMalloc (XEvent.sizeof);
 			display.exposeCount = display.lastExpose = 0;
 			int checkExposeProc = display.checkExposeProc;
-			OS.XCheckIfEvent (xEvent.display, xAnyEvent, checkExposeProc, xEvent.window);
+			OS.XCheckIfEvent (xEvent.display, xEvent1, checkExposeProc, xEvent.window);
 			exposeCount = display.exposeCount;
 			int lastExpose = display.lastExpose;
 			if (exposeCount != 0 && lastExpose != 0) {
@@ -689,6 +689,7 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 				xExposeEvent.count = 0;
 				OS.memmove (lastExpose, xExposeEvent, XExposeEvent.sizeof);
 			}
+			OS.XtFree (xEvent1);
 		}
 	}
 	if (exposeCount == 0 && damagedRegion == 0) {
@@ -716,8 +717,8 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 }
 int XNonMaskable (int w, int client_data, int call_data, int continue_to_dispatch) {
 	if ((state & CANVAS) != 0) {
-		XExposeEvent xEvent = new XExposeEvent ();
-		OS.memmove (xEvent, call_data, XExposeEvent.sizeof);
+		XAnyEvent xEvent = new XAnyEvent ();
+		OS.memmove (xEvent, call_data, XAnyEvent.sizeof);
 		if (xEvent.type == OS.GraphicsExpose) return XExposure (w, client_data, call_data, continue_to_dispatch);
 	}
 	return 0;

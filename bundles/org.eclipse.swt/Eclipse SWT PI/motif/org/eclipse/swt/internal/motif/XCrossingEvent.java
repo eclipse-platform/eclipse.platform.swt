@@ -11,11 +11,18 @@
 package org.eclipse.swt.internal.motif;
 
  
-public class XCrossingEvent extends XWindowEvent {
+public class XCrossingEvent extends XAnyEvent {
+	public int root;
+	public int subwindow;
+	public int time;
+	public int x;
+	public int y;
+	public int x_root;
+	public int y_root;
 	public int mode;
 	public int detail;
 	public int same_screen;
 	public int focus;
 	public int state;
-	public int pad0, pad1, pad2, pad3, pad4, pad5, pad6, pad7;
+	public static final int sizeof = 68;
 }

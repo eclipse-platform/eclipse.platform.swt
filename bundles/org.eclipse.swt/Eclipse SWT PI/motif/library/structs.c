@@ -1,1471 +1,1587 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
-
-/**
- * JNI SWT object field getters and setters declarations for Motif structs.
- */
+* Copyright (c) 2000, 2003 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 
 #include "swt.h"
 #include "structs.h"
 
-/* Globals */
-VISUAL_FID_CACHE VisualFc;
-XANYEVENT_FID_CACHE XanyeventFc;
-XBUTTONEVENT_FID_CACHE XbuttoneventFc;
-XCHARSTRUCT_FID_CACHE XcharstructFc;
-XCOLOR_FID_CACHE XcolorFc;
-XCONFIGUREEVENT_FID_CACHE XconfigureeventFc;
-XCROSSINGEVENT_FID_CACHE XcrossingeventFc;
-XEXPOSEEVENT_FID_CACHE XexposeeventFc;
-XFOCUSCHANGEEVENT_FID_CACHE XfocuschangeeventFc;
-XFONTSTRUCT_FID_CACHE XfontstructFc;
-XGCVALUES_FID_CACHE XgcvaluesFc;
-XIMAGE_FID_CACHE XimageFc;
-XKEYEVENT_FID_CACHE XkeyeventFc;
-XMANYCALLBACKSTRUCT_FID_CACHE XmanycallbackstructFc;
-XMDRAGPROCCALLBACK_FID_CACHE XmdragproccallbackFc;
-XMDROPFINISHCALLBACK_FID_CACHE XmdropfinishcallbackFc;
-XMDROPPROCCALLBACK_FID_CACHE XmdropproccallbackFc;
-XMOTIONEVENT_FID_CACHE XmotioneventFc;
-XMTEXTBLOCKREC_FID_CACHE XmtextblockrecFc;
-XMTEXTVERIFYCALLBACKSTRUCT_FID_CACHE XmtextverifycallbackstructFc;
-XRECTANGLE_FID_CACHE XrectangleFc;
-XSETWINDOWATTRIBUTES_FID_CACHE XsetwindowattributesFc;
-XTEXTPROPERTY_FID_CACHE XtextpropertyFc;
-XTWIDGETGEOMETRY_FID_CACHE XtwidgetgeometryFc;
-XWINDOWATTRIBUTES_FID_CACHE XwindowattributesFc;
-XWINDOWCHANGES_FID_CACHE XwindowchangesFc;
-
-#ifndef NO_XINERAMA_EXTENSIONS
-XINERAMASCREENINFO_FID_CACHE XineramascreeninfoFc;
-#endif /* NO_XINERAMA_EXTENSIONS */
-
-/* ----------- fid and class caches  ----------- */
-/*
- * Used for Java objects passed into JNI that are
- * declared like:
- *
- * 	nativeFunction (Rectangle p1, Rectangle p2, Rectangle p3)
- *
- * and not like this
- *
- * 	nativeFunction (Object p1, Object p2, Object p3)
- *
- *
- */
-
-void cacheXimageFids(JNIEnv *env, jobject lpXimage, PXIMAGE_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->ximageClass = (*env)->GetObjectClass(env,lpXimage);
-
-    lpCache->width = (*env)->GetFieldID(env,lpCache->ximageClass,"width","I");
-    lpCache->height = (*env)->GetFieldID(env,lpCache->ximageClass,"height","I");
-    lpCache->xoffset = (*env)->GetFieldID(env,lpCache->ximageClass,"xoffset","I");
-    lpCache->format = (*env)->GetFieldID(env,lpCache->ximageClass,"format","I");
-    lpCache->data = (*env)->GetFieldID(env,lpCache->ximageClass,"data","I");
-    lpCache->byte_order = (*env)->GetFieldID(env,lpCache->ximageClass,"byte_order","I");
-    lpCache->bitmap_unit = (*env)->GetFieldID(env,lpCache->ximageClass,"bitmap_unit","I");
-    lpCache->bitmap_bit_order = (*env)->GetFieldID(env,lpCache->ximageClass,"bitmap_bit_order","I");
-    lpCache->bitmap_pad = (*env)->GetFieldID(env,lpCache->ximageClass,"bitmap_pad","I");
-    lpCache->depth = (*env)->GetFieldID(env,lpCache->ximageClass,"depth","I");
-    lpCache->bytes_per_line = (*env)->GetFieldID(env,lpCache->ximageClass,"bytes_per_line","I");
-    lpCache->bits_per_pixel = (*env)->GetFieldID(env,lpCache->ximageClass,"bits_per_pixel","I");
-    lpCache->red_mask = (*env)->GetFieldID(env,lpCache->ximageClass,"red_mask","I");
-    lpCache->green_mask = (*env)->GetFieldID(env,lpCache->ximageClass,"green_mask","I");
-    lpCache->blue_mask = (*env)->GetFieldID(env,lpCache->ximageClass,"blue_mask","I");
-    lpCache->obdata = (*env)->GetFieldID(env,lpCache->ximageClass,"obdata","I");
-    lpCache->create_image = (*env)->GetFieldID(env,lpCache->ximageClass,"create_image","I");
-    lpCache->destroy_image = (*env)->GetFieldID(env,lpCache->ximageClass,"destroy_image","I");
-    lpCache->get_pixel = (*env)->GetFieldID(env,lpCache->ximageClass,"get_pixel","I");
-    lpCache->put_pixel = (*env)->GetFieldID(env,lpCache->ximageClass,"put_pixel","I");
-    lpCache->sub_image = (*env)->GetFieldID(env,lpCache->ximageClass,"sub_image","I");
-    lpCache->add_pixel = (*env)->GetFieldID(env,lpCache->ximageClass,"add_pixel","I");
-    lpCache->cached = 1;
-}
-
-void cacheVisualFids(JNIEnv *env, jobject lpVisual, PVISUAL_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->visualClass = (*env)->GetObjectClass(env,lpVisual);
-
-    lpCache->ext_data = (*env)->GetFieldID(env,lpCache->visualClass,"ext_data","I");
-    lpCache->visualid = (*env)->GetFieldID(env,lpCache->visualClass,"visualid","I");
-    lpCache->c_class = (*env)->GetFieldID(env,lpCache->visualClass,"c_class","I");
-    lpCache->red_mask = (*env)->GetFieldID(env,lpCache->visualClass,"red_mask","I");
-    lpCache->green_mask = (*env)->GetFieldID(env,lpCache->visualClass,"green_mask","I");
-    lpCache->blue_mask = (*env)->GetFieldID(env,lpCache->visualClass,"blue_mask","I");
-    lpCache->bits_per_rgb = (*env)->GetFieldID(env,lpCache->visualClass,"bits_per_rgb","I");
-    lpCache->map_entries = (*env)->GetFieldID(env,lpCache->visualClass,"map_entries","I");
-    lpCache->cached = 1;
-}
-
-void cacheXanyeventFids(JNIEnv *env, jobject lpXevent, PXANYEVENT_FID_CACHE lpCache)
-{
-    int i;
-
-    if (lpCache->cached) return;
-
-    lpCache->xeventClass = (*env)->GetObjectClass(env,lpXevent);
-
-    lpCache->type = (*env)->GetFieldID(env,lpCache->xeventClass,"type","I");
-    lpCache->serial = (*env)->GetFieldID(env,lpCache->xeventClass,"serial","I");
-    lpCache->send_event = (*env)->GetFieldID(env,lpCache->xeventClass,"send_event","I");
-    lpCache->display = (*env)->GetFieldID(env,lpCache->xeventClass,"display","I");
-    lpCache->window = (*env)->GetFieldID(env,lpCache->xeventClass,"window","I");
-    for (i=0; i<19; i++) {
-        char buffer [8];
-        sprintf(buffer, "pad%d", i);
-    	lpCache->pad[i] = (*env)->GetFieldID(env,lpCache->xeventClass,buffer,"I");
-    }
-    lpCache->cached = 1;
-}
-
-void cacheXbuttoneventFids(JNIEnv *env, jobject lpXevent, PXBUTTONEVENT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xeventClass = (*env)->GetObjectClass(env,lpXevent);
-
-    lpCache->type = (*env)->GetFieldID(env,lpCache->xeventClass,"type","I");
-    lpCache->serial = (*env)->GetFieldID(env,lpCache->xeventClass,"serial","I");
-    lpCache->send_event = (*env)->GetFieldID(env,lpCache->xeventClass,"send_event","I");
-    lpCache->display = (*env)->GetFieldID(env,lpCache->xeventClass,"display","I");
-    lpCache->window = (*env)->GetFieldID(env,lpCache->xeventClass,"window","I");
-    lpCache->root = (*env)->GetFieldID(env,lpCache->xeventClass,"root","I");
-    lpCache->subwindow = (*env)->GetFieldID(env,lpCache->xeventClass,"subwindow","I");
-    lpCache->time = (*env)->GetFieldID(env,lpCache->xeventClass,"time","I");
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xeventClass,"x","I");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xeventClass,"y","I");
-    lpCache->x_root = (*env)->GetFieldID(env,lpCache->xeventClass,"x_root","I");
-    lpCache->y_root = (*env)->GetFieldID(env,lpCache->xeventClass,"y_root","I");
-    lpCache->state = (*env)->GetFieldID(env,lpCache->xeventClass,"state","I");
-    lpCache->button = (*env)->GetFieldID(env,lpCache->xeventClass,"button","I");
-    lpCache->same_screen = (*env)->GetFieldID(env,lpCache->xeventClass,"same_screen","I");
-    lpCache->cached = 1;
-}
-
-void cacheXcharstructFids(JNIEnv *env, jobject lpXcharstruct, PXCHARSTRUCT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xcharstructClass = (*env)->GetObjectClass(env,lpXcharstruct);
-
-    lpCache->lbearing = (*env)->GetFieldID(env,lpCache->xcharstructClass,"lbearing","S");
-    lpCache->rbearing = (*env)->GetFieldID(env,lpCache->xcharstructClass,"rbearing","S");
-    lpCache->width = (*env)->GetFieldID(env,lpCache->xcharstructClass,"width","S");
-    lpCache->ascent = (*env)->GetFieldID(env,lpCache->xcharstructClass,"ascent","S");
-    lpCache->descent = (*env)->GetFieldID(env,lpCache->xcharstructClass,"descent","S");
-    lpCache->attributes = (*env)->GetFieldID(env,lpCache->xcharstructClass,"attributes","S");
-    lpCache->cached = 1;
-}
-
-void cacheXconfigureeventFids(JNIEnv *env, jobject lpXevent, PXCONFIGUREEVENT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xeventClass = (*env)->GetObjectClass(env,lpXevent);
-
-    lpCache->type = (*env)->GetFieldID(env,lpCache->xeventClass,"type","I");
-    lpCache->serial = (*env)->GetFieldID(env,lpCache->xeventClass,"serial","I");
-    lpCache->send_event = (*env)->GetFieldID(env,lpCache->xeventClass,"send_event","I");
-    lpCache->display = (*env)->GetFieldID(env,lpCache->xeventClass,"display","I");
-    lpCache->window = (*env)->GetFieldID(env,lpCache->xeventClass,"window","I");
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xeventClass,"x","I");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xeventClass,"y","I");
-    lpCache->width = (*env)->GetFieldID(env,lpCache->xeventClass,"width","I");
-    lpCache->height = (*env)->GetFieldID(env,lpCache->xeventClass,"height","I");
-    lpCache->border_width = (*env)->GetFieldID(env,lpCache->xeventClass,"border_width","I");
-    lpCache->above = (*env)->GetFieldID(env,lpCache->xeventClass,"above","I");
-    lpCache->override_redirect = (*env)->GetFieldID(env,lpCache->xeventClass,"override_redirect","I");
-    lpCache->cached = 1;
-}
-
-void cacheXcrossingeventFids(JNIEnv *env, jobject lpXcrossingevent, PXCROSSINGEVENT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xcrossingeventClass = (*env)->GetObjectClass(env,lpXcrossingevent);
-
-    lpCache->type = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"type","I");
-    lpCache->serial = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"serial","I");
-    lpCache->send_event = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"send_event","I");
-    lpCache->display = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"display","I");
-    lpCache->window = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"window","I");
-    lpCache->root = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"root","I");
-    lpCache->subwindow = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"subwindow","I");
-    lpCache->time = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"time","I");
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"x","I");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"y","I");
-    lpCache->x_root = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"x_root","I");
-    lpCache->y_root = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"y_root","I");
-    lpCache->mode = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"mode","I");
-    lpCache->detail = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"detail","I");
-    lpCache->same_screen = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"same_screen","I");
-    lpCache->focus = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"focus","I");
-    lpCache->state = (*env)->GetFieldID(env,lpCache->xcrossingeventClass,"state","I");
-    lpCache->cached = 1;
-}
-
-void cacheXexposeeventFids(JNIEnv *env, jobject lpXevent, PXEXPOSEEVENT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xeventClass = (*env)->GetObjectClass(env,lpXevent);
-
-    lpCache->type = (*env)->GetFieldID(env,lpCache->xeventClass,"type","I");
-    lpCache->serial = (*env)->GetFieldID(env,lpCache->xeventClass,"serial","I");
-    lpCache->send_event = (*env)->GetFieldID(env,lpCache->xeventClass,"send_event","I");
-    lpCache->display = (*env)->GetFieldID(env,lpCache->xeventClass,"display","I");
-    lpCache->window = (*env)->GetFieldID(env,lpCache->xeventClass,"window","I");
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xeventClass,"x","I");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xeventClass,"y","I");
-    lpCache->width = (*env)->GetFieldID(env,lpCache->xeventClass,"width","I");
-    lpCache->height = (*env)->GetFieldID(env,lpCache->xeventClass,"height","I");
-    lpCache->count = (*env)->GetFieldID(env,lpCache->xeventClass,"count","I");
-    lpCache->cached = 1;
-}
-
-void cacheXfocuschangeeventFids(JNIEnv *env, jobject lpXevent, PXFOCUSCHANGEEVENT_FID_CACHE lpCache)
-{
-    int i;
-    if (lpCache->cached) return;
-
-    lpCache->xeventClass = (*env)->GetObjectClass(env,lpXevent);
-
-    lpCache->type = (*env)->GetFieldID(env,lpCache->xeventClass,"type","I");
-    lpCache->serial = (*env)->GetFieldID(env,lpCache->xeventClass,"serial","I");
-    lpCache->send_event = (*env)->GetFieldID(env,lpCache->xeventClass,"send_event","I");
-    lpCache->display = (*env)->GetFieldID(env,lpCache->xeventClass,"display","I");
-    lpCache->window = (*env)->GetFieldID(env,lpCache->xeventClass,"window","I");
-    lpCache->mode = (*env)->GetFieldID(env,lpCache->xeventClass,"mode","I");
-    lpCache->detail = (*env)->GetFieldID(env,lpCache->xeventClass,"detail","I");
-    for (i=0; i<17; i++) {
-        char buffer [8];
-        sprintf(buffer, "pad%d", i);
-    	lpCache->pad[i] = (*env)->GetFieldID(env,lpCache->xeventClass,buffer,"I");
-    }
-    lpCache->cached = 1;
-}
-
-void cacheXfontstructFids(JNIEnv *env, jobject lpXfontstruct, PXFONTSTRUCT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xfontstructClass = (*env)->GetObjectClass(env,lpXfontstruct);
-
-    lpCache->ext_data = (*env)->GetFieldID(env,lpCache->xfontstructClass,"ext_data","I");
-    lpCache->fid = (*env)->GetFieldID(env,lpCache->xfontstructClass,"fid","I");
-    lpCache->direction = (*env)->GetFieldID(env,lpCache->xfontstructClass,"direction","I");
-    lpCache->min_char_or_byte2 = (*env)->GetFieldID(env,lpCache->xfontstructClass,"min_char_or_byte2","I");
-    lpCache->max_char_or_byte2 = (*env)->GetFieldID(env,lpCache->xfontstructClass,"max_char_or_byte2","I");
-    lpCache->min_byte1 = (*env)->GetFieldID(env,lpCache->xfontstructClass,"min_byte1","I");
-    lpCache->max_byte1 = (*env)->GetFieldID(env,lpCache->xfontstructClass,"max_byte1","I");
-    lpCache->all_chars_exist = (*env)->GetFieldID(env,lpCache->xfontstructClass,"all_chars_exist","I");
-    lpCache->default_char = (*env)->GetFieldID(env,lpCache->xfontstructClass,"default_char","I");
-    lpCache->n_properties = (*env)->GetFieldID(env,lpCache->xfontstructClass,"n_properties","I");
-    lpCache->properties = (*env)->GetFieldID(env,lpCache->xfontstructClass,"properties","I");
-    lpCache->min_bounds_lbearing = (*env)->GetFieldID(env,lpCache->xfontstructClass,"min_bounds_lbearing","S");
-    lpCache->min_bounds_rbearing = (*env)->GetFieldID(env,lpCache->xfontstructClass,"min_bounds_rbearing","S");
-    lpCache->min_bounds_width = (*env)->GetFieldID(env,lpCache->xfontstructClass,"min_bounds_width","S");
-    lpCache->min_bounds_ascent = (*env)->GetFieldID(env,lpCache->xfontstructClass,"min_bounds_ascent","S");
-    lpCache->min_bounds_descent = (*env)->GetFieldID(env,lpCache->xfontstructClass,"min_bounds_descent","S");
-    lpCache->min_bounds_attributes = (*env)->GetFieldID(env,lpCache->xfontstructClass,"min_bounds_attributes","S");
-    lpCache->max_bounds_lbearing = (*env)->GetFieldID(env,lpCache->xfontstructClass,"max_bounds_lbearing","S");
-    lpCache->max_bounds_rbearing = (*env)->GetFieldID(env,lpCache->xfontstructClass,"max_bounds_rbearing","S");
-    lpCache->max_bounds_width = (*env)->GetFieldID(env,lpCache->xfontstructClass,"max_bounds_width","S");
-    lpCache->max_bounds_ascent = (*env)->GetFieldID(env,lpCache->xfontstructClass,"max_bounds_ascent","S");
-    lpCache->max_bounds_descent = (*env)->GetFieldID(env,lpCache->xfontstructClass,"max_bounds_descent","S");
-    lpCache->max_bounds_attributes = (*env)->GetFieldID(env,lpCache->xfontstructClass,"max_bounds_attributes","S");
-    lpCache->per_char = (*env)->GetFieldID(env,lpCache->xfontstructClass,"per_char","I");
-    lpCache->ascent = (*env)->GetFieldID(env,lpCache->xfontstructClass,"ascent","I");
-    lpCache->descent = (*env)->GetFieldID(env,lpCache->xfontstructClass,"descent","I");
-    lpCache->cached = 1;
-}
-
-#ifndef NO_XINERAMA_EXTENSIONS
-void cacheXineramascreeninfoFids(JNIEnv *env, jobject lpObject, PXINERAMASCREENINFO_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->height = (*env)->GetFieldID(env, lpCache->clazz, "height", "S");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->clazz, "width", "S");
-	lpCache->y_org = (*env)->GetFieldID(env, lpCache->clazz, "y_org", "S");
-	lpCache->x_org = (*env)->GetFieldID(env, lpCache->clazz, "x_org", "S");
-	lpCache->screen_number = (*env)->GetFieldID(env, lpCache->clazz, "screen_number", "I");
-	lpCache->cached = 1;
-}
-#endif /* NO_XINERAMA_EXTENSIONS */
-
-void cacheXkeyeventFids(JNIEnv *env, jobject lpXevent, PXKEYEVENT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xeventClass = (*env)->GetObjectClass(env,lpXevent);
-
-    lpCache->type = (*env)->GetFieldID(env,lpCache->xeventClass,"type","I");
-    lpCache->serial = (*env)->GetFieldID(env,lpCache->xeventClass,"serial","I");
-    lpCache->send_event = (*env)->GetFieldID(env,lpCache->xeventClass,"send_event","I");
-    lpCache->display = (*env)->GetFieldID(env,lpCache->xeventClass,"display","I");
-    lpCache->window = (*env)->GetFieldID(env,lpCache->xeventClass,"window","I");
-    lpCache->root = (*env)->GetFieldID(env,lpCache->xeventClass,"root","I");
-    lpCache->subwindow = (*env)->GetFieldID(env,lpCache->xeventClass,"subwindow","I");
-    lpCache->time = (*env)->GetFieldID(env,lpCache->xeventClass,"time","I");
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xeventClass,"x","I");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xeventClass,"y","I");
-    lpCache->x_root = (*env)->GetFieldID(env,lpCache->xeventClass,"x_root","I");
-    lpCache->y_root = (*env)->GetFieldID(env,lpCache->xeventClass,"y_root","I");
-    lpCache->state = (*env)->GetFieldID(env,lpCache->xeventClass,"state","I");
-    lpCache->keycode = (*env)->GetFieldID(env,lpCache->xeventClass,"keycode","I");
-    lpCache->same_screen = (*env)->GetFieldID(env,lpCache->xeventClass,"same_screen","I");
-    lpCache->cached = 1;
-}
-
-void cacheXmotioneventFids(JNIEnv *env, jobject lpXevent, PXMOTIONEVENT_FID_CACHE lpCache)
-{
-    int i;
-    if (lpCache->cached) return;
-
-    lpCache->xeventClass = (*env)->GetObjectClass(env,lpXevent);
-
-    lpCache->type = (*env)->GetFieldID(env,lpCache->xeventClass,"type","I");
-    lpCache->serial = (*env)->GetFieldID(env,lpCache->xeventClass,"serial","I");
-    lpCache->send_event = (*env)->GetFieldID(env,lpCache->xeventClass,"send_event","I");
-    lpCache->display = (*env)->GetFieldID(env,lpCache->xeventClass,"display","I");
-    lpCache->window = (*env)->GetFieldID(env,lpCache->xeventClass,"window","I");
-    lpCache->root = (*env)->GetFieldID(env,lpCache->xeventClass,"root","I");
-    lpCache->subwindow = (*env)->GetFieldID(env,lpCache->xeventClass,"subwindow","I");
-    lpCache->time = (*env)->GetFieldID(env,lpCache->xeventClass,"time","I");
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xeventClass,"x","I");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xeventClass,"y","I");
-    lpCache->x_root = (*env)->GetFieldID(env,lpCache->xeventClass,"x_root","I");
-    lpCache->y_root = (*env)->GetFieldID(env,lpCache->xeventClass,"y_root","I");
-    lpCache->state = (*env)->GetFieldID(env,lpCache->xeventClass,"state","I");
-    lpCache->is_hint = (*env)->GetFieldID(env,lpCache->xeventClass,"is_hint","I");
-    lpCache->same_screen = (*env)->GetFieldID(env,lpCache->xeventClass,"same_screen","I");
-    for (i=0; i<10; i++) {
-        char buffer [8];
-        sprintf(buffer, "pad%d", i);
-    	lpCache->pad[i] = (*env)->GetFieldID(env,lpCache->xeventClass,buffer,"I");
-    }
-    lpCache->cached = 1;
-}
-
-void cacheXcolorFids(JNIEnv *env, jobject lpXcolor, PXCOLOR_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xcolorClass = (*env)->GetObjectClass(env,lpXcolor);
-
-    lpCache->pixel = (*env)->GetFieldID(env,lpCache->xcolorClass,"pixel","I");
-    lpCache->red = (*env)->GetFieldID(env,lpCache->xcolorClass,"red","S");
-    lpCache->green = (*env)->GetFieldID(env,lpCache->xcolorClass,"green","S");
-    lpCache->blue = (*env)->GetFieldID(env,lpCache->xcolorClass,"blue","S");
-    lpCache->flags = (*env)->GetFieldID(env,lpCache->xcolorClass,"flags","B");
-    lpCache->pad = (*env)->GetFieldID(env,lpCache->xcolorClass,"pad","B");
-    lpCache->cached = 1;
-}
-
-void cacheXgcvaluesFids(JNIEnv *env, jobject lpXgcvalues, PXGCVALUES_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xgcvaluesClass = (*env)->GetObjectClass(env,lpXgcvalues);
-
-    lpCache->function = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"function","I");
-    lpCache->plane_mask = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"plane_mask","I");
-    lpCache->foreground = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"foreground","I");
-    lpCache->background = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"background","I");
-    lpCache->line_width = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"line_width","I");
-    lpCache->line_style = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"line_style","I");
-    lpCache->cap_style = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"cap_style","I");
-    lpCache->join_style = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"join_style","I");
-    lpCache->fill_style = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"fill_style","I");
-    lpCache->fill_rule = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"fill_rule","I");
-    lpCache->arc_mode = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"arc_mode","I");
-    lpCache->tile = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"tile","I");
-    lpCache->stipple = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"stipple","I");
-    lpCache->ts_x_origin = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"ts_x_origin","I");
-    lpCache->ts_y_origin = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"ts_y_origin","I");
-    lpCache->font = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"font","I");
-    lpCache->subwindow_mode = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"subwindow_mode","I");
-    lpCache->graphics_exposures = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"graphics_exposures","I");
-    lpCache->clip_x_origin = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"clip_x_origin","I");
-    lpCache->clip_y_origin = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"clip_y_origin","I");
-    lpCache->clip_mask = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"clip_mask","I");
-    lpCache->dash_offset = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"dash_offset","I");
-
-    lpCache->dashes = (*env)->GetFieldID(env,lpCache->xgcvaluesClass,"dashes","B");
-    lpCache->cached = 1;
-}
-
-void cacheXmanycallbackstructFids(JNIEnv *env, jobject lpXmanycallback, PXMANYCALLBACKSTRUCT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xmanycallbackstructClass = (*env)->GetObjectClass(env,lpXmanycallback);
-
-    lpCache->reason = (*env)->GetFieldID(env,lpCache->xmanycallbackstructClass,"reason","I");
-    lpCache->event = (*env)->GetFieldID(env,lpCache->xmanycallbackstructClass,"event","I");
-    lpCache->cached = 1;
-}
-
-void cacheXmdragproccallbackFids(JNIEnv *env, jobject lpXmdragproccallback, PXMDRAGPROCCALLBACK_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xmdragproccallbackClass = (*env)->GetObjectClass(env,lpXmdragproccallback);
-
-    lpCache->reason = (*env)->GetFieldID(env,lpCache->xmdragproccallbackClass,"reason","I");
-    lpCache->event = (*env)->GetFieldID(env,lpCache->xmdragproccallbackClass,"event","I");
-    lpCache->timeStamp = (*env)->GetFieldID(env,lpCache->xmdragproccallbackClass,"timeStamp","I");
-    lpCache->dragContext = (*env)->GetFieldID(env,lpCache->xmdragproccallbackClass,"dragContext","I");
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xmdragproccallbackClass,"x","S");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xmdragproccallbackClass,"y","S");
-    lpCache->dropSiteStatus = (*env)->GetFieldID(env,lpCache->xmdragproccallbackClass,"dropSiteStatus","B");
-    lpCache->operation = (*env)->GetFieldID(env,lpCache->xmdragproccallbackClass,"operation","B");
-    lpCache->operations = (*env)->GetFieldID(env,lpCache->xmdragproccallbackClass,"operations","B");
-    lpCache->animate = (*env)->GetFieldID(env,lpCache->xmdragproccallbackClass,"animate","B");
-    lpCache->cached = 1;
-}
-
-void cacheXmdropproccallbackFids(JNIEnv *env, jobject lpXmdropproccallback, PXMDROPPROCCALLBACK_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xmdropproccallbackClass = (*env)->GetObjectClass(env,lpXmdropproccallback);
-
-    lpCache->reason = (*env)->GetFieldID(env,lpCache->xmdropproccallbackClass,"reason","I");
-    lpCache->event = (*env)->GetFieldID(env,lpCache->xmdropproccallbackClass,"event","I");
-    lpCache->timeStamp = (*env)->GetFieldID(env,lpCache->xmdropproccallbackClass,"timeStamp","I");
-    lpCache->dragContext = (*env)->GetFieldID(env,lpCache->xmdropproccallbackClass,"dragContext","I");
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xmdropproccallbackClass,"x","S");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xmdropproccallbackClass,"y","S");
-    lpCache->dropSiteStatus = (*env)->GetFieldID(env,lpCache->xmdropproccallbackClass,"dropSiteStatus","B");
-    lpCache->operation = (*env)->GetFieldID(env,lpCache->xmdropproccallbackClass,"operation","B");
-    lpCache->operations = (*env)->GetFieldID(env,lpCache->xmdropproccallbackClass,"operations","B");
-    lpCache->dropAction = (*env)->GetFieldID(env,lpCache->xmdropproccallbackClass,"dropAction","B");
-    lpCache->cached = 1;
-}
-
-void cacheXmdropfinishcallbackFids(JNIEnv *env, jobject lpXmdropfinishcallback, PXMDROPFINISHCALLBACK_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xmdropfinishcallbackClass = (*env)->GetObjectClass(env,lpXmdropfinishcallback);
-
-    lpCache->reason = (*env)->GetFieldID(env,lpCache->xmdropfinishcallbackClass,"reason","I");
-    lpCache->event = (*env)->GetFieldID(env,lpCache->xmdropfinishcallbackClass,"event","I");
-    lpCache->timeStamp = (*env)->GetFieldID(env,lpCache->xmdropfinishcallbackClass,"timeStamp","I");
-    lpCache->operation = (*env)->GetFieldID(env,lpCache->xmdropfinishcallbackClass,"operation","B");
-    lpCache->operations = (*env)->GetFieldID(env,lpCache->xmdropfinishcallbackClass,"operations","B");
-    lpCache->dropSiteStatus = (*env)->GetFieldID(env,lpCache->xmdropfinishcallbackClass,"dropSiteStatus","B");
-    lpCache->dropAction = (*env)->GetFieldID(env,lpCache->xmdropfinishcallbackClass,"dropAction","B");
-    lpCache->completionStatus = (*env)->GetFieldID(env,lpCache->xmdropfinishcallbackClass,"completionStatus","B");
-    lpCache->cached = 1;
-}
-
-void cacheXmtextblockrecFids(JNIEnv *env, jobject lpXmtextblockrec, PXMTEXTBLOCKREC_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xmtextblockrecClass = (*env)->GetObjectClass(env,lpXmtextblockrec);
-
-    lpCache->ptr = (*env)->GetFieldID(env,lpCache->xmtextblockrecClass,"ptr","I");
-    lpCache->length = (*env)->GetFieldID(env,lpCache->xmtextblockrecClass,"length","I");
-    lpCache->format = (*env)->GetFieldID(env,lpCache->xmtextblockrecClass,"format","I");
-    lpCache->cached = 1;
-}
-
-void cacheXmtextverifycallbackstructFids(JNIEnv *env, jobject lpXmtextverifycallback, PXMTEXTVERIFYCALLBACKSTRUCT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xmtextverifycallbackstructClass = (*env)->GetObjectClass(env,lpXmtextverifycallback);
-
-    lpCache->reason = (*env)->GetFieldID(env,lpCache->xmtextverifycallbackstructClass,"reason","I");
-    lpCache->event = (*env)->GetFieldID(env,lpCache->xmtextverifycallbackstructClass,"event","I");
-    lpCache->doit = (*env)->GetFieldID(env,lpCache->xmtextverifycallbackstructClass,"doit","B");
-    lpCache->currInsert = (*env)->GetFieldID(env,lpCache->xmtextverifycallbackstructClass,"currInsert","I");
-    lpCache->newInsert = (*env)->GetFieldID(env,lpCache->xmtextverifycallbackstructClass,"newInsert","I");
-    lpCache->startPos = (*env)->GetFieldID(env,lpCache->xmtextverifycallbackstructClass,"startPos","I");
-    lpCache->endPos = (*env)->GetFieldID(env,lpCache->xmtextverifycallbackstructClass,"endPos","I");
-    lpCache->text = (*env)->GetFieldID(env,lpCache->xmtextverifycallbackstructClass,"text","I");
-    lpCache->cached = 1;
-}
-
-void cacheXrectangleFids(JNIEnv *env, jobject lpXrect, PXRECTANGLE_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xrectClass = (*env)->GetObjectClass(env,lpXrect);
-
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xrectClass,"x","S");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xrectClass,"y","S");
-    lpCache->width = (*env)->GetFieldID(env,lpCache->xrectClass,"width","S");
-    lpCache->height = (*env)->GetFieldID(env,lpCache->xrectClass,"height","S");
-    lpCache->cached = 1;
-}
-
-void cacheXsetwindowattributesFids(JNIEnv *env, jobject lpXsetwindowattributes, PXSETWINDOWATTRIBUTES_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xsetwindowattributesClass = (*env)->GetObjectClass(env,lpXsetwindowattributes);
-
-    lpCache->background_pixmap = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"background_pixmap","I");
-    lpCache->background_pixel = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"background_pixel","I");
-    lpCache->border_pixmap = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"border_pixmap","I");
-    lpCache->border_pixel = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"border_pixel","I");
-    lpCache->bit_gravity = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"bit_gravity","I");
-    lpCache->win_gravity = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"win_gravity","I");
-    lpCache->backing_store = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"backing_store","I");
-    lpCache->backing_planes = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"backing_planes","I");
-    lpCache->backing_pixel = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"backing_pixel","I");
-    lpCache->save_under = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"save_under","I");
-    lpCache->event_mask = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"event_mask","I");
-    lpCache->do_not_propagate_mask = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"do_not_propagate_mask","I");
-    lpCache->override_redirect = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"override_redirect","I");
-    lpCache->colormap = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"colormap","I");
-    lpCache->cursor = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"cursor","I");
-    lpCache->cached = 1;
-}
-
-void cacheXtextpropertyFids(JNIEnv *env, jobject lpXtextproperty, PXTEXTPROPERTY_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xtextpropertyClass = (*env)->GetObjectClass(env,lpXtextproperty);
-
-    lpCache->value = (*env)->GetFieldID(env,lpCache->xtextpropertyClass,"value","I");
-    lpCache->encoding = (*env)->GetFieldID(env,lpCache->xtextpropertyClass,"encoding","I");
-    lpCache->format = (*env)->GetFieldID(env,lpCache->xtextpropertyClass,"format","I");
-    lpCache->nitems = (*env)->GetFieldID(env,lpCache->xtextpropertyClass,"nitems","I");
-    lpCache->cached = 1;
-}
-
-void cacheXwindowattributesFids(JNIEnv *env, jobject lpXwindowattributes, PXWINDOWATTRIBUTES_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xwindowattributesClass = (*env)->GetObjectClass(env,lpXwindowattributes);
-
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"x","I");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"y","I");
-    lpCache->width = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"width","I");
-    lpCache->height = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"height","I");
-    lpCache->border_width = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"border_width","I");
-    lpCache->depth = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"depth","I");
-    lpCache->visual = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"visual","I");
-    lpCache->root = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"root","I");
-    lpCache->class = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"c_class","I");
-    lpCache->bit_gravity = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"bit_gravity","I");
-    lpCache->win_gravity = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"win_gravity","I");
-    lpCache->backing_store = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"backing_store","I");
-    lpCache->backing_planes = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"backing_planes","I");
-    lpCache->backing_pixel = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"backing_pixel","I");
-    lpCache->save_under = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"save_under","I");
-    lpCache->colormap = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"colormap","I");
-    lpCache->map_installed = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"map_installed","I");
-    lpCache->map_state = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"map_state","I");
-    lpCache->all_event_masks = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"all_event_masks","I");
-    lpCache->your_event_mask = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"your_event_mask","I");
-    lpCache->do_not_propagate_mask = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"do_not_propagate_mask","I");
-    lpCache->override_redirect = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"override_redirect","I");
-    lpCache->screen = (*env)->GetFieldID(env,lpCache->xwindowattributesClass,"screen","I");
-    lpCache->cached = 1;
-}
-
-void cacheXwindowchangesFids(JNIEnv *env, jobject lpXwindowchanges, PXWINDOWCHANGES_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xwindowchangesClass = (*env)->GetObjectClass(env,lpXwindowchanges);
-
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xwindowchangesClass,"x","I");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xwindowchangesClass,"y","I");
-    lpCache->width = (*env)->GetFieldID(env,lpCache->xwindowchangesClass,"width","I");
-    lpCache->height = (*env)->GetFieldID(env,lpCache->xwindowchangesClass,"height","I");
-    lpCache->border_width = (*env)->GetFieldID(env,lpCache->xwindowchangesClass,"border_width","I");
-    lpCache->sibling = (*env)->GetFieldID(env,lpCache->xwindowchangesClass,"sibling","I");
-    lpCache->stack_mode = (*env)->GetFieldID(env,lpCache->xwindowchangesClass,"stack_mode","I");
-    lpCache->cached = 1;
-}
-
-void cacheXtwidgetgeometryFids(JNIEnv *env, jobject lpXtwidgetgeometry, PXTWIDGETGEOMETRY_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-
-    lpCache->xtwidgetgeometryClass = (*env)->GetObjectClass(env,lpXtwidgetgeometry);
-
-    lpCache->request_mode = (*env)->GetFieldID(env,lpCache->xtwidgetgeometryClass,"request_mode","I");
-    lpCache->x = (*env)->GetFieldID(env,lpCache->xtwidgetgeometryClass,"x","I");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->xtwidgetgeometryClass,"y","I");
-    lpCache->width = (*env)->GetFieldID(env,lpCache->xtwidgetgeometryClass,"width","I");
-    lpCache->height = (*env)->GetFieldID(env,lpCache->xtwidgetgeometryClass,"height","I");
-    lpCache->border_width = (*env)->GetFieldID(env,lpCache->xtwidgetgeometryClass,"border_width","I");
-    lpCache->sibling = (*env)->GetFieldID(env,lpCache->xtwidgetgeometryClass,"sibling","I");
-    lpCache->stack_mode = (*env)->GetFieldID(env,lpCache->xtwidgetgeometryClass,"stack_mode","I");
-    lpCache->cached = 1;
-}
-
-/* ----------- getters and setters  ----------- */
-/**
- * These functions get or set object field ids assuming that the
- * fids for these objects have already been cached.
- *
- */
-
-void getVisualFields(JNIEnv *env, jobject lpObject, Visual *lpVisual, VISUAL_FID_CACHE *lpVisualFc)
-{
-    lpVisual->ext_data = (XExtData *)(*env)->GetIntField(env,lpObject,lpVisualFc->ext_data);
-    lpVisual->visualid = (*env)->GetIntField(env,lpObject,lpVisualFc->visualid);
-    lpVisual->class = (*env)->GetIntField(env,lpObject,lpVisualFc->c_class);
-    lpVisual->red_mask = (*env)->GetIntField(env,lpObject,lpVisualFc->red_mask);
-    lpVisual->green_mask = (*env)->GetIntField(env,lpObject,lpVisualFc->green_mask);
-    lpVisual->blue_mask = (*env)->GetIntField(env,lpObject,lpVisualFc->blue_mask);
-    lpVisual->bits_per_rgb = (*env)->GetIntField(env,lpObject,lpVisualFc->bits_per_rgb);
-    lpVisual->map_entries = (*env)->GetIntField(env,lpObject,lpVisualFc->map_entries);
-}
-
-void setVisualFields(JNIEnv *env, jobject lpObject, Visual *lpVisual, VISUAL_FID_CACHE *lpVisualFc)
-{
-    (*env)->SetIntField(env,lpObject,lpVisualFc->ext_data, (jint)lpVisual->ext_data);
-    (*env)->SetIntField(env,lpObject,lpVisualFc->visualid, lpVisual->visualid);
-    (*env)->SetIntField(env,lpObject,lpVisualFc->c_class, lpVisual->class);
-    (*env)->SetIntField(env,lpObject,lpVisualFc->red_mask, (int)lpVisual->red_mask);
-    (*env)->SetIntField(env,lpObject,lpVisualFc->green_mask, lpVisual->green_mask);
-    (*env)->SetIntField(env,lpObject,lpVisualFc->blue_mask, lpVisual->blue_mask);
-    (*env)->SetIntField(env,lpObject,lpVisualFc->bits_per_rgb, (int)lpVisual->bits_per_rgb);
-    (*env)->SetIntField(env,lpObject,lpVisualFc->map_entries, lpVisual->map_entries);
-}
-
-void getXanyeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XANYEVENT_FID_CACHE *lpXanyeventFc)
-{
-    int i;
-
-    lpXevent->type = (*env)->GetIntField(env,lpObject,lpXanyeventFc->type);
-    lpXevent->xany.serial = (*env)->GetIntField(env,lpObject,lpXanyeventFc->serial);
-    lpXevent->xany.send_event = (*env)->GetIntField(env,lpObject,lpXanyeventFc->send_event);
-    lpXevent->xany.display = (Display *)(*env)->GetIntField(env,lpObject,lpXanyeventFc->display);
-    lpXevent->xany.window = (*env)->GetIntField(env,lpObject,lpXanyeventFc->window);
-    for (i=0; i<19; i++) {
-    	lpXevent->pad[i+5] = (*env)->GetIntField(env,lpObject,lpXanyeventFc->pad[i]);
-    }
-}
-
-void setXanyeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XANYEVENT_FID_CACHE *lpXanyeventFc)
-{
-    int i;
-
-    (*env)->SetIntField(env,lpObject,lpXanyeventFc->type, lpXevent->type);
-    (*env)->SetIntField(env,lpObject,lpXanyeventFc->serial, lpXevent->xany.serial);
-    (*env)->SetIntField(env,lpObject,lpXanyeventFc->send_event, lpXevent->xany.send_event);
-    (*env)->SetIntField(env,lpObject,lpXanyeventFc->display, (int)lpXevent->xany.display);
-    (*env)->SetIntField(env,lpObject,lpXanyeventFc->window, lpXevent->xany.window);
-    for (i=0; i<19; i++) {
-	    (*env)->SetIntField(env,lpObject,lpXanyeventFc->pad[i],lpXevent->pad[i+5]);
-    }
-}
-
-void getXbuttoneventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XBUTTONEVENT_FID_CACHE *lpXbuttoneventFc)
-{
-    lpXevent->type = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->type);
-    lpXevent->xbutton.serial = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->serial);
-    lpXevent->xbutton.send_event = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->send_event);
-    lpXevent->xbutton.display = (Display *)(*env)->GetIntField(env,lpObject,lpXbuttoneventFc->display);
-    lpXevent->xbutton.window = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->window);
-    lpXevent->xbutton.root = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->root);
-    lpXevent->xbutton.subwindow = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->subwindow);
-    lpXevent->xbutton.time = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->time);
-    lpXevent->xbutton.x = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->x);
-    lpXevent->xbutton.y = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->y);
-    lpXevent->xbutton.x_root = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->x_root);
-    lpXevent->xbutton.y_root = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->y_root);
-    lpXevent->xbutton.state = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->state);
-    lpXevent->xbutton.button = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->button);
-    lpXevent->xbutton.same_screen = (*env)->GetIntField(env,lpObject,lpXbuttoneventFc->same_screen);
-}
-
-void setXbuttoneventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XBUTTONEVENT_FID_CACHE *lpXbuttoneventFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->type, lpXevent->type);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->serial, lpXevent->xbutton.serial);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->send_event, lpXevent->xbutton.send_event);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->display, (int)lpXevent->xbutton.display);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->window, lpXevent->xbutton.window);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->root, lpXevent->xbutton.root);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->subwindow, lpXevent->xbutton.subwindow);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->time, lpXevent->xbutton.time);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->x, lpXevent->xbutton.x);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->y, lpXevent->xbutton.y);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->x_root, lpXevent->xbutton.x_root);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->y_root, lpXevent->xbutton.y_root);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->state, lpXevent->xbutton.state);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->button, lpXevent->xbutton.button);
-    (*env)->SetIntField(env,lpObject,lpXbuttoneventFc->same_screen, lpXevent->xbutton.same_screen);
-}
-
-void getXconfigureeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XCONFIGUREEVENT_FID_CACHE *lpXconfigureeventFc)
-{
-    lpXevent->type = (*env)->GetIntField(env,lpObject,lpXconfigureeventFc->type);
-    lpXevent->xconfigure.serial = (*env)->GetIntField(env,lpObject,lpXconfigureeventFc->serial);
-    lpXevent->xconfigure.send_event = (*env)->GetIntField(env,lpObject,lpXconfigureeventFc->send_event);
-    lpXevent->xconfigure.display = (Display *)(*env)->GetIntField(env,lpObject,lpXconfigureeventFc->display);
-    lpXevent->xconfigure.window = (*env)->GetIntField(env,lpObject,lpXconfigureeventFc->window);
-    lpXevent->xconfigure.x = (*env)->GetIntField(env,lpObject,lpXconfigureeventFc->x);
-    lpXevent->xconfigure.y = (*env)->GetIntField(env,lpObject,lpXconfigureeventFc->y);
-    lpXevent->xconfigure.width = (*env)->GetIntField(env,lpObject,lpXconfigureeventFc->width);
-    lpXevent->xconfigure.height = (*env)->GetIntField(env,lpObject,lpXconfigureeventFc->height);
-    lpXevent->xconfigure.border_width = (*env)->GetIntField(env,lpObject,lpXconfigureeventFc->border_width);
-    lpXevent->xconfigure.above = (*env)->GetIntField(env,lpObject,lpXconfigureeventFc->above);
-    lpXevent->xconfigure.override_redirect = (*env)->GetIntField(env,lpObject,lpXconfigureeventFc->override_redirect);
-}
-
-void setXconfigureeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XCONFIGUREEVENT_FID_CACHE *lpXconfigureeventFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->type, lpXevent->type);
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->serial, lpXevent->xconfigure.serial);
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->send_event, lpXevent->xconfigure.send_event);
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->display, (int)lpXevent->xconfigure.display);
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->window, lpXevent->xconfigure.window);
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->x, lpXevent->xconfigure.x);
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->y, lpXevent->xconfigure.y);
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->width, lpXevent->xconfigure.width);
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->height, lpXevent->xconfigure.height);
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->border_width, lpXevent->xconfigure.border_width);
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->above, lpXevent->xconfigure.above);
-    (*env)->SetIntField(env,lpObject,lpXconfigureeventFc->override_redirect, lpXevent->xconfigure.override_redirect);
-}
-
-void getXcharstructFields(JNIEnv *env, jobject lpObject, XCharStruct *lpXcharstruct, XCHARSTRUCT_FID_CACHE *lpXcharstructFc)
-{
-    lpXcharstruct->lbearing = (*env)->GetShortField(env,lpObject,lpXcharstructFc->lbearing);
-    lpXcharstruct->rbearing = (*env)->GetShortField(env,lpObject,lpXcharstructFc->rbearing);
-    lpXcharstruct->width = (*env)->GetShortField(env,lpObject,lpXcharstructFc->width);
-    lpXcharstruct->ascent = (*env)->GetShortField(env,lpObject,lpXcharstructFc->ascent);
-    lpXcharstruct->descent = (*env)->GetShortField(env,lpObject,lpXcharstructFc->descent);
-    lpXcharstruct->attributes = (*env)->GetShortField(env,lpObject,lpXcharstructFc->attributes);
-}
-
-void setXcharstructFields(JNIEnv *env, jobject lpObject, XCharStruct *lpXcharstruct, XCHARSTRUCT_FID_CACHE *lpXcharstructFc)
-{
-    (*env)->SetShortField(env,lpObject,lpXcharstructFc->lbearing, lpXcharstruct->lbearing);
-    (*env)->SetShortField(env,lpObject,lpXcharstructFc->rbearing, lpXcharstruct->rbearing);
-    (*env)->SetShortField(env,lpObject,lpXcharstructFc->width, lpXcharstruct->width);
-    (*env)->SetShortField(env,lpObject,lpXcharstructFc->ascent, lpXcharstruct->ascent);
-    (*env)->SetShortField(env,lpObject,lpXcharstructFc->descent, lpXcharstruct->descent);
-    (*env)->SetShortField(env,lpObject,lpXcharstructFc->attributes, lpXcharstruct->attributes);
-
-}
-
-void getXcrossingeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXcrossingevent, XCROSSINGEVENT_FID_CACHE *lpXcrossingeventFc)
-{
-    int i;
-
-    lpXcrossingevent->type = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->type);
-    lpXcrossingevent->xcrossing.serial = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->serial);
-    lpXcrossingevent->xcrossing.send_event = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->send_event);
-    lpXcrossingevent->xcrossing.display = (Display *)(*env)->GetIntField(env,lpObject,lpXcrossingeventFc->display);
-    lpXcrossingevent->xcrossing.window = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->window);
-    lpXcrossingevent->xcrossing.root = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->root);
-    lpXcrossingevent->xcrossing.subwindow = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->subwindow);
-    lpXcrossingevent->xcrossing.time = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->time);
-    lpXcrossingevent->xcrossing.x = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->x);
-    lpXcrossingevent->xcrossing.y = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->y);
-    lpXcrossingevent->xcrossing.x_root = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->x_root);
-    lpXcrossingevent->xcrossing.y_root = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->y_root);
-    lpXcrossingevent->xcrossing.mode = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->mode);
-    lpXcrossingevent->xcrossing.detail = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->detail);
-    lpXcrossingevent->xcrossing.same_screen = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->same_screen);
-    lpXcrossingevent->xcrossing.focus = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->focus);
-    lpXcrossingevent->xcrossing.state = (*env)->GetIntField(env,lpObject,lpXcrossingeventFc->state);
-}
-
-void setXcrossingeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXcrossingevent, XCROSSINGEVENT_FID_CACHE *lpXcrossingeventFc)
-{
-    int i;
-
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->type, lpXcrossingevent->type);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->serial, lpXcrossingevent->xcrossing.serial);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->send_event, lpXcrossingevent->xcrossing.send_event);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->display, (int)lpXcrossingevent->xcrossing.display);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->window, lpXcrossingevent->xcrossing.window);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->root, lpXcrossingevent->xcrossing.root);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->subwindow, lpXcrossingevent->xcrossing.subwindow);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->time, lpXcrossingevent->xcrossing.time);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->x, lpXcrossingevent->xcrossing.x);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->y, lpXcrossingevent->xcrossing.y);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->x_root, lpXcrossingevent->xcrossing.x_root);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->y_root, lpXcrossingevent->xcrossing.y_root);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->mode, lpXcrossingevent->xcrossing.mode);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->detail, lpXcrossingevent->xcrossing.detail);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->same_screen, lpXcrossingevent->xcrossing.same_screen);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->focus, lpXcrossingevent->xcrossing.focus);
-    (*env)->SetIntField(env,lpObject,lpXcrossingeventFc->state, lpXcrossingevent->xcrossing.state);
-}
-
-void getXexposeeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XEXPOSEEVENT_FID_CACHE *lpXexposeeventFc)
-{
-    lpXevent->type = (*env)->GetIntField(env,lpObject,lpXexposeeventFc->type);
-    lpXevent->xexpose.serial = (*env)->GetIntField(env,lpObject,lpXexposeeventFc->serial);
-    lpXevent->xexpose.send_event = (*env)->GetIntField(env,lpObject,lpXexposeeventFc->send_event);
-    lpXevent->xexpose.display = (Display *)(*env)->GetIntField(env,lpObject,lpXexposeeventFc->display);
-    lpXevent->xexpose.window = (*env)->GetIntField(env,lpObject,lpXexposeeventFc->window);
-    lpXevent->xexpose.x = (*env)->GetIntField(env,lpObject,lpXexposeeventFc->x);
-    lpXevent->xexpose.y = (*env)->GetIntField(env,lpObject,lpXexposeeventFc->y);
-    lpXevent->xexpose.width = (*env)->GetIntField(env,lpObject,lpXexposeeventFc->width);
-    lpXevent->xexpose.height = (*env)->GetIntField(env,lpObject,lpXexposeeventFc->height);
-    lpXevent->xexpose.count = (*env)->GetIntField(env,lpObject,lpXexposeeventFc->count);
-}
-
-void setXexposeeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XEXPOSEEVENT_FID_CACHE *lpXexposeeventFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXexposeeventFc->type, lpXevent->type);
-    (*env)->SetIntField(env,lpObject,lpXexposeeventFc->serial, lpXevent->xexpose.serial);
-    (*env)->SetIntField(env,lpObject,lpXexposeeventFc->send_event, lpXevent->xexpose.send_event);
-    (*env)->SetIntField(env,lpObject,lpXexposeeventFc->display, (int)lpXevent->xexpose.display);
-    (*env)->SetIntField(env,lpObject,lpXexposeeventFc->window, lpXevent->xexpose.window);
-    (*env)->SetIntField(env,lpObject,lpXexposeeventFc->x, lpXevent->xexpose.x);
-    (*env)->SetIntField(env,lpObject,lpXexposeeventFc->y, lpXevent->xexpose.y);
-    (*env)->SetIntField(env,lpObject,lpXexposeeventFc->width, lpXevent->xexpose.width);
-    (*env)->SetIntField(env,lpObject,lpXexposeeventFc->height, lpXevent->xexpose.height);
-    (*env)->SetIntField(env,lpObject,lpXexposeeventFc->count, lpXevent->xexpose.count);
-}
-
-void getXfontstructFields(JNIEnv *env, jobject lpObject, XFontStruct *lpXfontstruct, XFONTSTRUCT_FID_CACHE *lpXfontstructFc)
-{
-    lpXfontstruct->ext_data = (XExtData *)(*env)->GetIntField(env,lpObject,lpXfontstructFc->ext_data);
-    lpXfontstruct->fid = (Font)(*env)->GetIntField(env,lpObject,lpXfontstructFc->fid);
-    lpXfontstruct->direction = (unsigned)(*env)->GetIntField(env,lpObject,lpXfontstructFc->direction);
-    lpXfontstruct->min_char_or_byte2 = (unsigned)(*env)->GetIntField(env,lpObject,lpXfontstructFc->min_char_or_byte2);
-    lpXfontstruct->max_char_or_byte2 = (unsigned)(*env)->GetIntField(env,lpObject,lpXfontstructFc->max_char_or_byte2);
-    lpXfontstruct->min_byte1 = (unsigned)(*env)->GetIntField(env,lpObject,lpXfontstructFc->min_byte1);
-    lpXfontstruct->max_byte1 = (unsigned)(*env)->GetIntField(env,lpObject,lpXfontstructFc->max_byte1);
-    lpXfontstruct->all_chars_exist = (Bool)(*env)->GetIntField(env,lpObject,lpXfontstructFc->all_chars_exist);
-    lpXfontstruct->default_char = (unsigned)(*env)->GetIntField(env,lpObject,lpXfontstructFc->default_char);
-    lpXfontstruct->n_properties = (*env)->GetIntField(env,lpObject,lpXfontstructFc->n_properties);
-    lpXfontstruct->properties = (XFontProp *)(*env)->GetIntField(env,lpObject,lpXfontstructFc->properties);
-    lpXfontstruct->min_bounds.lbearing = (*env)->GetShortField(env,lpObject,lpXfontstructFc->min_bounds_lbearing);
-    lpXfontstruct->min_bounds.rbearing = (*env)->GetShortField(env,lpObject,lpXfontstructFc->min_bounds_rbearing);
-    lpXfontstruct->min_bounds.width = (*env)->GetShortField(env,lpObject,lpXfontstructFc->min_bounds_lbearing);
-    lpXfontstruct->min_bounds.ascent = (*env)->GetShortField(env,lpObject,lpXfontstructFc->min_bounds_lbearing);
-    lpXfontstruct->min_bounds.descent = (*env)->GetShortField(env,lpObject,lpXfontstructFc->min_bounds_lbearing);
-    lpXfontstruct->min_bounds.attributes = (*env)->GetShortField(env,lpObject,lpXfontstructFc->min_bounds_lbearing);
-    lpXfontstruct->max_bounds.lbearing = (*env)->GetShortField(env,lpObject,lpXfontstructFc->max_bounds_lbearing);
-    lpXfontstruct->max_bounds.rbearing = (*env)->GetShortField(env,lpObject,lpXfontstructFc->max_bounds_rbearing);
-    lpXfontstruct->max_bounds.width = (*env)->GetShortField(env,lpObject,lpXfontstructFc->max_bounds_width);
-    lpXfontstruct->max_bounds.ascent = (*env)->GetShortField(env,lpObject,lpXfontstructFc->max_bounds_ascent);
-    lpXfontstruct->max_bounds.descent = (*env)->GetShortField(env,lpObject,lpXfontstructFc->max_bounds_descent);
-    lpXfontstruct->max_bounds.attributes = (*env)->GetShortField(env,lpObject,lpXfontstructFc->max_bounds_attributes);
-    lpXfontstruct->per_char = (XCharStruct *)(*env)->GetIntField(env,lpObject,lpXfontstructFc->per_char);
-    lpXfontstruct->ascent = (*env)->GetIntField(env,lpObject,lpXfontstructFc->ascent);
-    lpXfontstruct->descent = (*env)->GetIntField(env,lpObject,lpXfontstructFc->descent);
-}
-
-void setXfontstructFields(JNIEnv *env, jobject lpObject, XFontStruct *lpXfontstruct, XFONTSTRUCT_FID_CACHE *lpXfontstructFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->ext_data, (jint)lpXfontstruct->ext_data);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->fid, (jint)lpXfontstruct->fid);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->direction, (jint)lpXfontstruct->direction);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->min_char_or_byte2, (jint)lpXfontstruct->min_char_or_byte2);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->max_char_or_byte2, (jint)lpXfontstruct->max_char_or_byte2);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->min_byte1, (jint)lpXfontstruct->min_byte1);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->max_byte1, (jint)lpXfontstruct->max_byte1);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->all_chars_exist, (jint)lpXfontstruct->all_chars_exist);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->default_char, (jint)lpXfontstruct->default_char);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->n_properties, (jint)lpXfontstruct->n_properties);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->properties, (jint)lpXfontstruct->properties);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->min_bounds_lbearing, (jint)lpXfontstruct->min_bounds.lbearing);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->min_bounds_rbearing, (jint)lpXfontstruct->min_bounds.rbearing);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->min_bounds_width, (jint)lpXfontstruct->min_bounds.width);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->min_bounds_ascent, (jint)lpXfontstruct->min_bounds.ascent);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->min_bounds_descent, (jint)lpXfontstruct->min_bounds.descent);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->min_bounds_attributes, (jint)lpXfontstruct->min_bounds.attributes);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->max_bounds_lbearing, (jint)lpXfontstruct->max_bounds.lbearing);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->max_bounds_rbearing, (jint)lpXfontstruct->max_bounds.rbearing);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->max_bounds_width, (jint)lpXfontstruct->max_bounds.width);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->max_bounds_ascent, (jint)lpXfontstruct->max_bounds.ascent);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->max_bounds_descent, (jint)lpXfontstruct->max_bounds.descent);
-    (*env)->SetShortField(env,lpObject,lpXfontstructFc->max_bounds_attributes, (jint)lpXfontstruct->max_bounds.attributes);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->per_char, (jint)lpXfontstruct->per_char);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->ascent, (jint)lpXfontstruct->ascent);
-    (*env)->SetIntField(env,lpObject,lpXfontstructFc->descent, (jint)lpXfontstruct->descent);
-}
-
-
-void getXfocuschangeeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XFOCUSCHANGEEVENT_FID_CACHE *lpXfocuschangeeventFc)
-{
-    int i;
-
-    lpXevent->type = (*env)->GetIntField(env,lpObject,lpXfocuschangeeventFc->type);
-    lpXevent->xfocus.serial = (*env)->GetIntField(env,lpObject,lpXfocuschangeeventFc->serial);
-    lpXevent->xfocus.send_event = (*env)->GetIntField(env,lpObject,lpXfocuschangeeventFc->send_event);
-    lpXevent->xfocus.display = (Display *)(*env)->GetIntField(env,lpObject,lpXfocuschangeeventFc->display);
-    lpXevent->xfocus.window = (*env)->GetIntField(env,lpObject,lpXfocuschangeeventFc->window);
-    lpXevent->xfocus.mode = (*env)->GetIntField(env,lpObject,lpXfocuschangeeventFc->mode);
-    lpXevent->xfocus.detail = (*env)->GetIntField(env,lpObject,lpXfocuschangeeventFc->detail);
-    for (i=0; i<17; i++) {
-    	lpXevent->pad[i+7] = (*env)->GetIntField(env,lpObject,lpXfocuschangeeventFc->pad[i]);
-    }
-}
-
-void setXfocuschangeeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XFOCUSCHANGEEVENT_FID_CACHE *lpXfocuschangeeventFc)
-{
-    int i;
-
-    (*env)->SetIntField(env,lpObject,lpXfocuschangeeventFc->type, lpXevent->type);
-    (*env)->SetIntField(env,lpObject,lpXfocuschangeeventFc->serial, lpXevent->xfocus.serial);
-    (*env)->SetIntField(env,lpObject,lpXfocuschangeeventFc->send_event, lpXevent->xfocus.send_event);
-    (*env)->SetIntField(env,lpObject,lpXfocuschangeeventFc->display, (int)lpXevent->xfocus.display);
-    (*env)->SetIntField(env,lpObject,lpXfocuschangeeventFc->window, lpXevent->xfocus.window);
-    (*env)->SetIntField(env,lpObject,lpXfocuschangeeventFc->mode, lpXevent->xfocus.mode);
-    (*env)->SetIntField(env,lpObject,lpXfocuschangeeventFc->detail, lpXevent->xfocus.detail);
-    for (i=0; i<17; i++) {
-	    (*env)->SetIntField(env,lpObject,lpXfocuschangeeventFc->pad[i],lpXevent->pad[i+7]);
-    }
-}
-
-void getXimageFields(JNIEnv *env, jobject lpObject, XImage *lpXimage, XIMAGE_FID_CACHE *lpXimageFc)
-{
-    lpXimage->width = (*env)->GetIntField(env,lpObject,lpXimageFc->width);
-    lpXimage->height = (*env)->GetIntField(env,lpObject,lpXimageFc->height);
-    lpXimage->xoffset = (*env)->GetIntField(env,lpObject,lpXimageFc->xoffset);
-    lpXimage->format = (*env)->GetIntField(env,lpObject,lpXimageFc->format);
-    lpXimage->data = (char *)(*env)->GetIntField(env,lpObject,lpXimageFc->data);
-    lpXimage->byte_order = (*env)->GetIntField(env,lpObject,lpXimageFc->byte_order);
-    lpXimage->bitmap_unit = (*env)->GetIntField(env,lpObject,lpXimageFc->bitmap_unit);
-    lpXimage->bitmap_bit_order = (*env)->GetIntField(env,lpObject,lpXimageFc->bitmap_bit_order);
-    lpXimage-> bitmap_pad= (*env)->GetIntField(env,lpObject,lpXimageFc->bitmap_pad);
-    lpXimage->depth = (*env)->GetIntField(env,lpObject,lpXimageFc->depth);
-    lpXimage->bytes_per_line = (*env)->GetIntField(env,lpObject,lpXimageFc->bytes_per_line);
-    lpXimage->bits_per_pixel = (*env)->GetIntField(env,lpObject,lpXimageFc->bits_per_pixel);
-    lpXimage->red_mask = (*env)->GetIntField(env,lpObject,lpXimageFc->red_mask);
-    lpXimage->green_mask = (*env)->GetIntField(env,lpObject,lpXimageFc->green_mask);
-    lpXimage->blue_mask = (*env)->GetIntField(env,lpObject,lpXimageFc->blue_mask);
-    lpXimage->obdata = (char *)(*env)->GetIntField(env,lpObject,lpXimageFc->obdata);
-    lpXimage->f.create_image = (struct _XImage *(*)())(*env)->GetIntField(env,lpObject,lpXimageFc->create_image);
-    lpXimage->f.destroy_image = (int (*)(struct _XImage *))(*env)->GetIntField(env,lpObject,lpXimageFc->destroy_image);
-    lpXimage->f.get_pixel = (unsigned long (*)(struct _XImage *, int, int))(*env)->GetIntField(env,lpObject,lpXimageFc->get_pixel);
-    lpXimage->f.put_pixel = (int (*)(struct _XImage *, int, int, unsigned long))(*env)->GetIntField(env,lpObject,lpXimageFc->put_pixel);
-    lpXimage->f.sub_image = (struct _XImage *(*)(struct _XImage *, int, int, unsigned int, unsigned int))(*env)->GetIntField(env,lpObject,lpXimageFc->sub_image);
-    lpXimage->f.add_pixel = (int (*)(struct _XImage *, long))(*env)->GetIntField(env,lpObject,lpXimageFc->add_pixel);
-}
-
-void setXimageFields(JNIEnv *env, jobject lpObject, XImage *lpXimage, XIMAGE_FID_CACHE *lpXimageFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXimageFc->width, lpXimage->width);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->height, lpXimage->height);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->xoffset, lpXimage->xoffset);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->format, lpXimage->format);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->data, (jint)lpXimage->data);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->byte_order, lpXimage->byte_order);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->bitmap_unit, lpXimage->bitmap_unit);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->bitmap_bit_order, lpXimage->bitmap_bit_order);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->bitmap_pad, lpXimage->bitmap_pad);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->depth, lpXimage->depth);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->bytes_per_line, lpXimage->bytes_per_line);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->bits_per_pixel, lpXimage->bits_per_pixel);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->red_mask, lpXimage->red_mask);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->green_mask, lpXimage->green_mask);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->blue_mask, lpXimage->blue_mask);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->obdata, (jint)lpXimage->obdata);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->create_image, (jint)lpXimage->f.create_image);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->destroy_image, (jint)lpXimage->f.destroy_image);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->get_pixel, (jint)lpXimage->f.get_pixel);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->put_pixel, (jint)lpXimage->f.put_pixel);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->sub_image, (jint)lpXimage->f.sub_image);
-    (*env)->SetIntField(env,lpObject,lpXimageFc->add_pixel, (jint)lpXimage->f.add_pixel);
-}
-
-void getXkeyeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XKEYEVENT_FID_CACHE *lpXkeyeventFc)
-{
-    lpXevent->type = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->type);
-    lpXevent->xkey.serial = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->serial);
-    lpXevent->xkey.send_event = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->send_event);
-    lpXevent->xkey.display = (Display *)(*env)->GetIntField(env,lpObject,lpXkeyeventFc->display);
-    lpXevent->xkey.window = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->window);
-    lpXevent->xkey.root = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->root);
-    lpXevent->xkey.subwindow = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->subwindow);
-    lpXevent->xkey.time = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->time);
-    lpXevent->xkey.x = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->x);
-    lpXevent->xkey.y = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->y);
-    lpXevent->xkey.x_root = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->x_root);
-    lpXevent->xkey.y_root = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->y_root);
-    lpXevent->xkey.state = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->state);
-    lpXevent->xkey.keycode = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->keycode);
-    lpXevent->xkey.same_screen = (*env)->GetIntField(env,lpObject,lpXkeyeventFc->same_screen);
-}
-
-void setXkeyeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XKEYEVENT_FID_CACHE *lpXkeyeventFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->type, lpXevent->type);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->serial, lpXevent->xkey.serial);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->send_event, lpXevent->xkey.send_event);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->display, (int)lpXevent->xkey.display);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->window, lpXevent->xkey.window);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->root, lpXevent->xkey.root);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->subwindow, lpXevent->xkey.subwindow);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->time, lpXevent->xkey.time);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->x, lpXevent->xkey.x);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->y, lpXevent->xkey.y);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->x_root, lpXevent->xkey.x_root);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->y_root, lpXevent->xkey.y_root);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->state, lpXevent->xkey.state);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->keycode, lpXevent->xkey.keycode);
-    (*env)->SetIntField(env,lpObject,lpXkeyeventFc->same_screen, lpXevent->xkey.same_screen);
-}
-
-void getXmotioneventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XMOTIONEVENT_FID_CACHE *lpXmotioneventFc)
-{
-    int i;
-
-    lpXevent->type = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->type);
-    lpXevent->xmotion.serial = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->serial);
-    lpXevent->xmotion.send_event = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->send_event);
-    lpXevent->xmotion.display = (Display *)(*env)->GetIntField(env,lpObject,lpXmotioneventFc->display);
-    lpXevent->xmotion.window = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->window);
-    lpXevent->xmotion.root = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->root);
-    lpXevent->xmotion.subwindow = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->subwindow);
-    lpXevent->xmotion.time = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->time);
-    lpXevent->xmotion.x = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->x);
-    lpXevent->xmotion.y = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->y);
-    lpXevent->xmotion.x_root = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->x_root);
-    lpXevent->xmotion.y_root = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->y_root);
-    lpXevent->xmotion.state = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->state);
-    lpXevent->xmotion.is_hint = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->is_hint);
-    lpXevent->xmotion.same_screen = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->same_screen);
-    for (i=0; i<10; i++) {
-    	lpXevent->pad[i+15] = (*env)->GetIntField(env,lpObject,lpXmotioneventFc->pad[i]);
-    }
-}
-
-void setXmotioneventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XMOTIONEVENT_FID_CACHE *lpXmotioneventFc)
-{
-    int i;
-
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->type, lpXevent->type);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->serial, lpXevent->xmotion.serial);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->send_event, lpXevent->xmotion.send_event);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->display, (int)lpXevent->xmotion.display);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->window, lpXevent->xmotion.window);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->root, lpXevent->xmotion.root);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->subwindow, lpXevent->xmotion.subwindow);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->time, lpXevent->xmotion.time);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->x, lpXevent->xmotion.x);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->y, lpXevent->xmotion.y);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->x_root, lpXevent->xmotion.x_root);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->y_root, lpXevent->xmotion.y_root);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->state, lpXevent->xmotion.state);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->is_hint, lpXevent->xmotion.is_hint);
-    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->same_screen, lpXevent->xmotion.same_screen);
-    for (i=0; i<10; i++) {
-	    (*env)->SetIntField(env,lpObject,lpXmotioneventFc->pad[i],lpXevent->pad[i+15]);
-    }
-}
-
-void getXcolorFields(JNIEnv *env, jobject lpObject, XColor *lpXcolor, PXCOLOR_FID_CACHE lpXcolorFc)
-{
-    lpXcolor->pixel = (*env)->GetIntField(env,lpObject,lpXcolorFc->pixel);
-    lpXcolor->red = (*env)->GetShortField(env,lpObject,lpXcolorFc->red);
-    lpXcolor->green = (*env)->GetShortField(env,lpObject,lpXcolorFc->green);
-    lpXcolor->blue = (*env)->GetShortField(env,lpObject,lpXcolorFc->blue);
-    lpXcolor->flags = (*env)->GetByteField(env,lpObject,lpXcolorFc->flags);
-    lpXcolor->pad = (*env)->GetByteField(env,lpObject,lpXcolorFc->pad);
-}
-
-void setXcolorFields(JNIEnv *env, jobject lpObject, XColor *lpXcolor, PXCOLOR_FID_CACHE lpXcolorFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXcolorFc->pixel, lpXcolor->pixel);
-    (*env)->SetShortField(env,lpObject,lpXcolorFc->red, lpXcolor->red);
-    (*env)->SetShortField(env,lpObject,lpXcolorFc->green, lpXcolor->green);
-    (*env)->SetShortField(env,lpObject,lpXcolorFc->blue, lpXcolor->blue);
-    (*env)->SetByteField(env,lpObject,lpXcolorFc->flags, lpXcolor->flags);
-    (*env)->SetByteField(env,lpObject,lpXcolorFc->pad, lpXcolor->pad);
-}
-
-void getXgcvaluesFields(JNIEnv *env, jobject lpObject, XGCValues *lpXgcvalues, PXGCVALUES_FID_CACHE lpXgcvaluesFc)
-{
-    lpXgcvalues->function = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->function);
-    lpXgcvalues->plane_mask = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->plane_mask);
-    lpXgcvalues->foreground = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->foreground);
-    lpXgcvalues->background = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->background);
-    lpXgcvalues->line_width = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->line_width);
-    lpXgcvalues->line_style = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->line_style);
-    lpXgcvalues->cap_style = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->cap_style);
-    lpXgcvalues->join_style = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->join_style);
-    lpXgcvalues->fill_style = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->fill_style);
-    lpXgcvalues->fill_rule = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->fill_rule);
-    lpXgcvalues->arc_mode = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->arc_mode);
-    lpXgcvalues->tile = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->tile);
-    lpXgcvalues->stipple = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->stipple);
-    lpXgcvalues->ts_x_origin = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->ts_x_origin);
-    lpXgcvalues->ts_y_origin = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->ts_y_origin);
-    lpXgcvalues->font = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->font);
-    lpXgcvalues->subwindow_mode = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->subwindow_mode);
-    lpXgcvalues->graphics_exposures = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->graphics_exposures);
-    lpXgcvalues->clip_x_origin = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->clip_x_origin);
-    lpXgcvalues->clip_y_origin = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->clip_y_origin);
-    lpXgcvalues->clip_mask = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->clip_mask);
-    lpXgcvalues->dash_offset = (*env)->GetIntField(env,lpObject,lpXgcvaluesFc->dash_offset);
-    lpXgcvalues->dashes = (*env)->GetByteField(env,lpObject,lpXgcvaluesFc->dashes);
-}
-
-void setXgcvaluesFields(JNIEnv *env, jobject lpObject, XGCValues *lpXgcvalues, PXGCVALUES_FID_CACHE lpXgcvaluesFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->function, lpXgcvalues->function);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->plane_mask, lpXgcvalues->plane_mask);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->foreground, lpXgcvalues->foreground);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->background, lpXgcvalues->background);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->line_width, lpXgcvalues->line_width);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->line_style, lpXgcvalues->line_style);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->cap_style, lpXgcvalues->cap_style);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->join_style, lpXgcvalues->join_style);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->fill_style, lpXgcvalues->fill_style);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->fill_rule, lpXgcvalues->fill_rule);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->arc_mode, lpXgcvalues->arc_mode);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->tile, lpXgcvalues->tile);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->stipple, lpXgcvalues->stipple);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->ts_x_origin, lpXgcvalues->ts_x_origin);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->ts_y_origin, lpXgcvalues->ts_y_origin);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->font, lpXgcvalues->font);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->subwindow_mode, lpXgcvalues->subwindow_mode);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->graphics_exposures, lpXgcvalues->graphics_exposures);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->clip_x_origin, lpXgcvalues->clip_x_origin);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->clip_y_origin, lpXgcvalues->clip_y_origin);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->clip_mask, lpXgcvalues->clip_mask);
-    (*env)->SetIntField(env,lpObject,lpXgcvaluesFc->dash_offset, lpXgcvalues->dash_offset);
-
-    (*env)->SetByteField(env,lpObject,lpXgcvaluesFc->dashes, lpXgcvalues->dashes);
-}
-
-#ifndef NO_XINERAMA_EXTENSIONS
-void getXineramascreeninfoFields(JNIEnv *env, jobject lpObject, XineramaScreenInfo *lpStruct, PXINERAMASCREENINFO_FID_CACHE lpCache)
-{
-	lpStruct->height = (*env)->GetShortField(env, lpObject, lpCache->height);
-	lpStruct->width = (*env)->GetShortField(env, lpObject, lpCache->width);
-	lpStruct->y_org = (*env)->GetShortField(env, lpObject, lpCache->y_org);
-	lpStruct->x_org = (*env)->GetShortField(env, lpObject, lpCache->x_org);
-	lpStruct->screen_number = (*env)->GetIntField(env, lpObject, lpCache->screen_number);
-}
-
-void setXineramascreeninfoFields(JNIEnv *env, jobject lpObject, XineramaScreenInfo *lpStruct, PXINERAMASCREENINFO_FID_CACHE lpCache)
-{
-	(*env)->SetShortField(env, lpObject, lpCache->height, (jshort)lpStruct->height);
-	(*env)->SetShortField(env, lpObject, lpCache->width, (jshort)lpStruct->width);
-	(*env)->SetShortField(env, lpObject, lpCache->y_org, (jshort)lpStruct->y_org);
-	(*env)->SetShortField(env, lpObject, lpCache->x_org, (jshort)lpStruct->x_org);
-	(*env)->SetIntField(env, lpObject, lpCache->screen_number, (jint)lpStruct->screen_number);
-}
-#endif /* NO_XINERAMA_EXTENSIONS */
-
-void getXmanycallbackstructFields(JNIEnv *env, jobject lpObject, XmAnyCallbackStruct *lpXmanycallbackstruct, PXMANYCALLBACKSTRUCT_FID_CACHE lpXmanycallbackstructFc)
-{
-    lpXmanycallbackstruct->reason = (*env)->GetIntField(env,lpObject,lpXmanycallbackstructFc->reason);
-    lpXmanycallbackstruct->event = (XEvent *)(*env)->GetIntField(env,lpObject,lpXmanycallbackstructFc->event);
-}
-
-void setXmanycallbackstructFields(JNIEnv *env, jobject lpObject, XmAnyCallbackStruct *lpXmanycallbackstruct, PXMANYCALLBACKSTRUCT_FID_CACHE lpXmanycallbackstructFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXmanycallbackstructFc->reason, lpXmanycallbackstruct->reason);
-    (*env)->SetIntField(env,lpObject,lpXmanycallbackstructFc->event, (jint)lpXmanycallbackstruct->event);
-}
-
-void getXmdragproccallbackFields(JNIEnv *env, jobject lpObject, XmDragProcCallbackStruct *lpXmdragproccallback, PXMDRAGPROCCALLBACK_FID_CACHE lpXmdragproccallbackFc)
-{
-    lpXmdragproccallback->reason = (*env)->GetIntField(env,lpObject,lpXmdragproccallbackFc->reason);
-    lpXmdragproccallback->event = (XEvent *)(*env)->GetIntField(env,lpObject,lpXmdragproccallbackFc->event);
-    lpXmdragproccallback->timeStamp = (*env)->GetIntField(env,lpObject,lpXmdragproccallbackFc->timeStamp);
-    lpXmdragproccallback->dragContext = (Widget)(*env)->GetIntField(env,lpObject,lpXmdragproccallbackFc->dragContext);
-    lpXmdragproccallback->x = (*env)->GetShortField(env,lpObject,lpXmdragproccallbackFc->x);
-    lpXmdragproccallback->y = (*env)->GetShortField(env,lpObject,lpXmdragproccallbackFc->y);
-    lpXmdragproccallback->dropSiteStatus = (*env)->GetByteField(env,lpObject,lpXmdragproccallbackFc->dropSiteStatus);
-    lpXmdragproccallback->operation = (*env)->GetByteField(env,lpObject,lpXmdragproccallbackFc->operation);
-    lpXmdragproccallback->operations = (*env)->GetByteField(env,lpObject,lpXmdragproccallbackFc->operations);
-    lpXmdragproccallback->animate = (*env)->GetByteField(env,lpObject,lpXmdragproccallbackFc->animate);
-}
-
-void setXmdragproccallbackFields(JNIEnv *env, jobject lpObject, XmDragProcCallbackStruct *lpXmdragproccallback, PXMDRAGPROCCALLBACK_FID_CACHE lpXmdragproccallbackFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXmdragproccallbackFc->reason, lpXmdragproccallback->reason);
-    (*env)->SetIntField(env,lpObject,lpXmdragproccallbackFc->event, (jint)lpXmdragproccallback->event);
-    (*env)->SetIntField(env,lpObject,lpXmdragproccallbackFc->timeStamp, lpXmdragproccallback->timeStamp);
-    (*env)->SetIntField(env,lpObject,lpXmdragproccallbackFc->dragContext, (jint)lpXmdragproccallback->dragContext);
-    (*env)->SetShortField(env,lpObject,lpXmdragproccallbackFc->x, lpXmdragproccallback->x);
-    (*env)->SetShortField(env,lpObject,lpXmdragproccallbackFc->y, lpXmdragproccallback->y);
-    (*env)->SetByteField(env,lpObject,lpXmdragproccallbackFc->dropSiteStatus, lpXmdragproccallback->dropSiteStatus);
-    (*env)->SetByteField(env,lpObject,lpXmdragproccallbackFc->operation, lpXmdragproccallback->operation);
-    (*env)->SetByteField(env,lpObject,lpXmdragproccallbackFc->operations, lpXmdragproccallback->operations);
-    (*env)->SetByteField(env,lpObject,lpXmdragproccallbackFc->animate, lpXmdragproccallback->animate);
-}
-
-void getXmdropproccallbackFields(JNIEnv *env, jobject lpObject, XmDropProcCallbackStruct *lpXmdropproccallback, PXMDROPPROCCALLBACK_FID_CACHE lpXmdropproccallbackFc)
-{
-    lpXmdropproccallback->reason = (*env)->GetIntField(env,lpObject,lpXmdropproccallbackFc->reason);
-    lpXmdropproccallback->event = (XEvent *)(*env)->GetIntField(env,lpObject,lpXmdropproccallbackFc->event);
-    lpXmdropproccallback->timeStamp = (*env)->GetIntField(env,lpObject,lpXmdropproccallbackFc->timeStamp);
-    lpXmdropproccallback->dragContext = (Widget)(*env)->GetIntField(env,lpObject,lpXmdropproccallbackFc->dragContext);
-    lpXmdropproccallback->x = (*env)->GetShortField(env,lpObject,lpXmdropproccallbackFc->x);
-    lpXmdropproccallback->y = (*env)->GetShortField(env,lpObject,lpXmdropproccallbackFc->y);
-    lpXmdropproccallback->dropSiteStatus = (*env)->GetByteField(env,lpObject,lpXmdropproccallbackFc->dropSiteStatus);
-    lpXmdropproccallback->operation = (*env)->GetByteField(env,lpObject,lpXmdropproccallbackFc->operation);
-    lpXmdropproccallback->operations = (*env)->GetByteField(env,lpObject,lpXmdropproccallbackFc->operations);
-    lpXmdropproccallback->dropAction = (*env)->GetByteField(env,lpObject,lpXmdropproccallbackFc->dropAction);
-}
-
-void setXmdropproccallbackFields(JNIEnv *env, jobject lpObject, XmDropProcCallbackStruct *lpXmdropproccallback, PXMDROPPROCCALLBACK_FID_CACHE lpXmdropproccallbackFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXmdropproccallbackFc->reason, lpXmdropproccallback->reason);
-    (*env)->SetIntField(env,lpObject,lpXmdropproccallbackFc->event, (jint)lpXmdropproccallback->event);
-    (*env)->SetIntField(env,lpObject,lpXmdropproccallbackFc->timeStamp, lpXmdropproccallback->timeStamp);
-    (*env)->SetIntField(env,lpObject,lpXmdropproccallbackFc->dragContext, (jint)lpXmdropproccallback->dragContext);
-    (*env)->SetShortField(env,lpObject,lpXmdropproccallbackFc->x, lpXmdropproccallback->x);
-    (*env)->SetShortField(env,lpObject,lpXmdropproccallbackFc->y, lpXmdropproccallback->y);
-    (*env)->SetByteField(env,lpObject,lpXmdropproccallbackFc->dropSiteStatus, lpXmdropproccallback->dropSiteStatus);
-    (*env)->SetByteField(env,lpObject,lpXmdropproccallbackFc->operation, lpXmdropproccallback->operation);
-    (*env)->SetByteField(env,lpObject,lpXmdropproccallbackFc->operations, lpXmdropproccallback->operations);
-    (*env)->SetByteField(env,lpObject,lpXmdropproccallbackFc->dropAction, lpXmdropproccallback->dropAction);
-}
-
-void getXmdropfinishcallbackFields(JNIEnv *env, jobject lpObject, XmDropFinishCallbackStruct *lpXmdropfinishcallback, PXMDROPFINISHCALLBACK_FID_CACHE lpXmdropfinishcallbackFc)
-{
-    lpXmdropfinishcallback->reason = (*env)->GetIntField(env,lpObject,lpXmdropfinishcallbackFc->reason);
-    lpXmdropfinishcallback->event = (XEvent *)(*env)->GetIntField(env,lpObject,lpXmdropfinishcallbackFc->event);
-    lpXmdropfinishcallback->timeStamp = (*env)->GetIntField(env,lpObject,lpXmdropfinishcallbackFc->timeStamp);
-    lpXmdropfinishcallback->operation = (*env)->GetByteField(env,lpObject,lpXmdropfinishcallbackFc->operation);
-    lpXmdropfinishcallback->operations = (*env)->GetByteField(env,lpObject,lpXmdropfinishcallbackFc->operations);
-    lpXmdropfinishcallback->dropSiteStatus = (*env)->GetByteField(env,lpObject,lpXmdropfinishcallbackFc->dropSiteStatus);
-    lpXmdropfinishcallback->dropAction = (*env)->GetByteField(env,lpObject,lpXmdropfinishcallbackFc->dropAction);
-    lpXmdropfinishcallback->completionStatus = (*env)->GetByteField(env,lpObject,lpXmdropfinishcallbackFc->completionStatus);
-}
-
-void setXmdropfinishcallbackFields(JNIEnv *env, jobject lpObject, XmDropFinishCallbackStruct *lpXmdropfinishcallback, PXMDROPFINISHCALLBACK_FID_CACHE lpXmdropfinishcallbackFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXmdropfinishcallbackFc->reason, lpXmdropfinishcallback->reason);
-    (*env)->SetIntField(env,lpObject,lpXmdropfinishcallbackFc->event, (jint)lpXmdropfinishcallback->event);
-    (*env)->SetIntField(env,lpObject,lpXmdropfinishcallbackFc->timeStamp, lpXmdropfinishcallback->timeStamp);
-    (*env)->SetByteField(env,lpObject,lpXmdropfinishcallbackFc->operation, lpXmdropfinishcallback->operation);
-    (*env)->SetByteField(env,lpObject,lpXmdropfinishcallbackFc->operations, lpXmdropfinishcallback->operations);
-    (*env)->SetByteField(env,lpObject,lpXmdropfinishcallbackFc->dropSiteStatus, lpXmdropfinishcallback->dropSiteStatus);
-    (*env)->SetByteField(env,lpObject,lpXmdropfinishcallbackFc->dropAction, lpXmdropfinishcallback->dropAction);    
-    (*env)->SetByteField(env,lpObject,lpXmdropfinishcallbackFc->completionStatus, lpXmdropfinishcallback->completionStatus);
-}
-
-void getXmtextblockrecFields(JNIEnv *env, jobject lpObject, XmTextBlockRec *lpXmtextblockrec, PXMTEXTBLOCKREC_FID_CACHE lpXmtextblockrecFc)
-{
-    lpXmtextblockrec->ptr = (char *)(*env)->GetIntField(env,lpObject,lpXmtextblockrecFc->ptr);
-    lpXmtextblockrec->length = (*env)->GetIntField(env,lpObject,lpXmtextblockrecFc->length);
-    lpXmtextblockrec->format = (XmTextFormat)(*env)->GetIntField(env,lpObject,lpXmtextblockrecFc->format);
-}
-
-void setXmtextblockrecFields(JNIEnv *env, jobject lpObject, XmTextBlockRec *lpXmtextblockrec, PXMTEXTBLOCKREC_FID_CACHE lpXmtextblockrecFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXmtextblockrecFc->ptr, (jint)lpXmtextblockrec->ptr);
-    (*env)->SetIntField(env,lpObject,lpXmtextblockrecFc->length, lpXmtextblockrec->length);
-    (*env)->SetIntField(env,lpObject,lpXmtextblockrecFc->format, (jint)lpXmtextblockrec->format);
-}
-
-void getXmtextverifycallbackstructFields(JNIEnv *env, jobject lpObject, XmTextVerifyCallbackStruct *lpXmtextverifycallbackstruct, PXMTEXTVERIFYCALLBACKSTRUCT_FID_CACHE lpXmtextverifycallbackstructFc)
-{
-    lpXmtextverifycallbackstruct->reason = (*env)->GetIntField(env,lpObject,lpXmtextverifycallbackstructFc->reason);
-    lpXmtextverifycallbackstruct->event = (XEvent *)(*env)->GetIntField(env,lpObject,lpXmtextverifycallbackstructFc->event);
-    lpXmtextverifycallbackstruct->doit = (Boolean)(*env)->GetByteField(env,lpObject,lpXmtextverifycallbackstructFc->doit);
-    lpXmtextverifycallbackstruct->currInsert = (*env)->GetIntField(env,lpObject,lpXmtextverifycallbackstructFc->currInsert);
-    lpXmtextverifycallbackstruct->newInsert = (*env)->GetIntField(env,lpObject,lpXmtextverifycallbackstructFc->newInsert);
-    lpXmtextverifycallbackstruct->startPos = (*env)->GetIntField(env,lpObject,lpXmtextverifycallbackstructFc->startPos);
-    lpXmtextverifycallbackstruct->endPos = (*env)->GetIntField(env,lpObject,lpXmtextverifycallbackstructFc->endPos);
-    lpXmtextverifycallbackstruct->text = (XmTextBlock)(*env)->GetIntField(env,lpObject,lpXmtextverifycallbackstructFc->text);
-}
-
-void setXmtextverifycallbackstructFields(JNIEnv *env, jobject lpObject, XmTextVerifyCallbackStruct *lpXmtextverifycallbackstruct, PXMTEXTVERIFYCALLBACKSTRUCT_FID_CACHE lpXmtextverifycallbackstructFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXmtextverifycallbackstructFc->reason, lpXmtextverifycallbackstruct->reason);
-    (*env)->SetIntField(env,lpObject,lpXmtextverifycallbackstructFc->event, (jint)lpXmtextverifycallbackstruct->event);
-    (*env)->SetByteField(env,lpObject,lpXmtextverifycallbackstructFc->doit, (jint)lpXmtextverifycallbackstruct->doit);
-    (*env)->SetIntField(env,lpObject,lpXmtextverifycallbackstructFc->currInsert, lpXmtextverifycallbackstruct->currInsert);
-    (*env)->SetIntField(env,lpObject,lpXmtextverifycallbackstructFc->newInsert, lpXmtextverifycallbackstruct->newInsert);
-    (*env)->SetIntField(env,lpObject,lpXmtextverifycallbackstructFc->startPos, lpXmtextverifycallbackstruct->startPos);
-    (*env)->SetIntField(env,lpObject,lpXmtextverifycallbackstructFc->endPos, lpXmtextverifycallbackstruct->endPos);
-    (*env)->SetIntField(env,lpObject,lpXmtextverifycallbackstructFc->text, (jint)lpXmtextverifycallbackstruct->text);
-}
-
-void getXrectangleFields(JNIEnv *env, jobject lpObject, XRectangle *lpXrect, PXRECTANGLE_FID_CACHE lpXrectFc)
-{
-    lpXrect->x = (*env)->GetShortField(env,lpObject,lpXrectFc->x);
-    lpXrect->y = (*env)->GetShortField(env,lpObject,lpXrectFc->y);
-    lpXrect->width = (*env)->GetShortField(env,lpObject,lpXrectFc->width);
-    lpXrect->height = (*env)->GetShortField(env,lpObject,lpXrectFc->height);
-}
-
-void setXrectangleFields(JNIEnv *env, jobject lpObject, XRectangle *lpXrect, PXRECTANGLE_FID_CACHE lpXrectFc)
-{
-    (*env)->SetShortField(env,lpObject,lpXrectFc->x, lpXrect->x);
-    (*env)->SetShortField(env,lpObject,lpXrectFc->y, lpXrect->y);
-    (*env)->SetShortField(env,lpObject,lpXrectFc->width, lpXrect->width);
-    (*env)->SetShortField(env,lpObject,lpXrectFc->height, lpXrect->height);
-}
-
-void getXsetwindowattributesFields(JNIEnv *env, jobject lpObject, XSetWindowAttributes *lpXsetwindowattributes, PXSETWINDOWATTRIBUTES_FID_CACHE lpXsetwindowattributesFc)
-{
-    lpXsetwindowattributes->background_pixmap = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->background_pixmap);
-    lpXsetwindowattributes->background_pixel = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->background_pixel);
-    lpXsetwindowattributes->border_pixmap = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->border_pixmap);
-    lpXsetwindowattributes->border_pixel = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->border_pixel);
-    lpXsetwindowattributes->bit_gravity = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->bit_gravity);
-    lpXsetwindowattributes->win_gravity = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->win_gravity);
-    lpXsetwindowattributes->backing_store = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->backing_store);
-    lpXsetwindowattributes->backing_planes = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->backing_planes);
-    lpXsetwindowattributes->backing_pixel = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->backing_pixel);
-    lpXsetwindowattributes->save_under = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->save_under);
-    lpXsetwindowattributes->event_mask = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->event_mask);
-    lpXsetwindowattributes->do_not_propagate_mask = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->do_not_propagate_mask);
-    lpXsetwindowattributes->override_redirect = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->override_redirect);
-    lpXsetwindowattributes->colormap = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->colormap);
-    lpXsetwindowattributes->cursor = (*env)->GetIntField(env,lpObject,lpXsetwindowattributesFc->cursor);
-}
-
-void setXsetwindowattributesFields(JNIEnv *env, jobject lpObject, XSetWindowAttributes *lpXsetwindowattributes, PXSETWINDOWATTRIBUTES_FID_CACHE lpXsetwindowattributesFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->background_pixmap, lpXsetwindowattributes->background_pixmap);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->background_pixel, lpXsetwindowattributes->background_pixel);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->border_pixmap, lpXsetwindowattributes->border_pixmap);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->border_pixel, lpXsetwindowattributes->border_pixel);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->bit_gravity, lpXsetwindowattributes->bit_gravity);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->win_gravity, lpXsetwindowattributes->win_gravity);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->backing_store, lpXsetwindowattributes->backing_store);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->backing_planes, lpXsetwindowattributes->backing_planes);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->backing_pixel, lpXsetwindowattributes->backing_pixel);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->save_under, lpXsetwindowattributes->save_under);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->event_mask, lpXsetwindowattributes->event_mask);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->do_not_propagate_mask, lpXsetwindowattributes->do_not_propagate_mask);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->override_redirect, lpXsetwindowattributes->override_redirect);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->colormap, lpXsetwindowattributes->colormap);
-    (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->cursor, lpXsetwindowattributes->cursor);
-}
-
-void getXtextpropertyFields(JNIEnv *env, jobject lpObject, XTextProperty *lpXtextproperty, PXTEXTPROPERTY_FID_CACHE lpXtextpropertyFc)
-{
-    lpXtextproperty->value = (unsigned char *)(*env)->GetIntField(env,lpObject,lpXtextpropertyFc->value);
-    lpXtextproperty->encoding = (Atom)(*env)->GetIntField(env,lpObject,lpXtextpropertyFc->encoding);
-    lpXtextproperty->format = (*env)->GetIntField(env,lpObject,lpXtextpropertyFc->format);
-    lpXtextproperty->nitems = (unsigned long)(*env)->GetIntField(env,lpObject,lpXtextpropertyFc->nitems);
-}
-
-void setXtextpropertyFields(JNIEnv *env, jobject lpObject, XTextProperty *lpXtextproperty, PXTEXTPROPERTY_FID_CACHE lpXtextpropertyFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXtextpropertyFc->value, (int)lpXtextproperty->value);
-    (*env)->SetIntField(env,lpObject,lpXtextpropertyFc->encoding, (int)lpXtextproperty->encoding);
-    (*env)->SetIntField(env,lpObject,lpXtextpropertyFc->format, lpXtextproperty->format);
-    (*env)->SetIntField(env,lpObject,lpXtextpropertyFc->nitems, lpXtextproperty->nitems);
-}
-
-void getXwindowattributesFields(JNIEnv *env, jobject lpObject, XWindowAttributes *lpXwindowattributes, PXWINDOWATTRIBUTES_FID_CACHE lpXwindowattributesFc)
-{
-    lpXwindowattributes->x = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->x);
-    lpXwindowattributes->y = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->y);
-    lpXwindowattributes->width = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->width);
-    lpXwindowattributes->height = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->height);
-    lpXwindowattributes->border_width = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->border_width);
-    lpXwindowattributes->depth = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->depth);
-    lpXwindowattributes->visual = (Visual *)(*env)->GetIntField(env,lpObject,lpXwindowattributesFc->visual);
-    lpXwindowattributes->root = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->root);
-    lpXwindowattributes->class = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->class);
-    lpXwindowattributes->bit_gravity = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->bit_gravity);
-    lpXwindowattributes->win_gravity = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->win_gravity);
-    lpXwindowattributes->backing_store = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->backing_store);
-    lpXwindowattributes->backing_planes = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->backing_planes);
-    lpXwindowattributes->backing_pixel = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->backing_pixel);
-    lpXwindowattributes->save_under = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->save_under);
-    lpXwindowattributes->colormap = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->colormap);
-    lpXwindowattributes->map_installed = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->map_installed);
-    lpXwindowattributes->map_state = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->map_state);
-    lpXwindowattributes->all_event_masks = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->all_event_masks);
-    lpXwindowattributes->your_event_mask = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->your_event_mask);
-    lpXwindowattributes->do_not_propagate_mask = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->do_not_propagate_mask);
-    lpXwindowattributes->override_redirect = (*env)->GetIntField(env,lpObject,lpXwindowattributesFc->override_redirect);
-    lpXwindowattributes->screen = (Screen *)(*env)->GetIntField(env,lpObject,lpXwindowattributesFc->screen);
-}
-
-void setXwindowattributesFields(JNIEnv *env, jobject lpObject, XWindowAttributes *lpXwindowattributes, PXWINDOWATTRIBUTES_FID_CACHE lpXwindowattributesFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->x, lpXwindowattributes->x);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->y, lpXwindowattributes->y);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->width, lpXwindowattributes->width);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->height, lpXwindowattributes->height);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->border_width, lpXwindowattributes->border_width);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->depth, lpXwindowattributes->depth);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->visual, (int)lpXwindowattributes->visual);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->root, lpXwindowattributes->root);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->class, lpXwindowattributes->class);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->bit_gravity, lpXwindowattributes->bit_gravity);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->win_gravity, lpXwindowattributes->win_gravity);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->backing_store, lpXwindowattributes->backing_store);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->backing_planes, lpXwindowattributes->backing_planes);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->backing_pixel, lpXwindowattributes->backing_pixel);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->save_under, lpXwindowattributes->save_under);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->colormap, lpXwindowattributes->colormap);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->map_installed, lpXwindowattributes->map_installed);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->map_state, lpXwindowattributes->map_state);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->all_event_masks, lpXwindowattributes->all_event_masks);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->your_event_mask, lpXwindowattributes->your_event_mask);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->do_not_propagate_mask, lpXwindowattributes->do_not_propagate_mask);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->override_redirect, lpXwindowattributes->override_redirect);
-    (*env)->SetIntField(env,lpObject,lpXwindowattributesFc->screen, (int)lpXwindowattributes->screen);
-}
-
-void getXwindowchangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpXwindowchanges, PXWINDOWCHANGES_FID_CACHE lpXwindowchangesFc)
-{
-    lpXwindowchanges->x = (*env)->GetIntField(env,lpObject,lpXwindowchangesFc->x);
-    lpXwindowchanges->y = (*env)->GetIntField(env,lpObject,lpXwindowchangesFc->y);
-    lpXwindowchanges->width = (*env)->GetIntField(env,lpObject,lpXwindowchangesFc->width);
-    lpXwindowchanges->height = (*env)->GetIntField(env,lpObject,lpXwindowchangesFc->height);
-    lpXwindowchanges->border_width = (*env)->GetIntField(env,lpObject,lpXwindowchangesFc->border_width);
-    lpXwindowchanges->sibling = (*env)->GetIntField(env,lpObject,lpXwindowchangesFc->sibling);
-    lpXwindowchanges->stack_mode = (*env)->GetIntField(env,lpObject,lpXwindowchangesFc->stack_mode);
-}
-
-void setXwindowchangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpXwindowchanges, PXWINDOWCHANGES_FID_CACHE lpXwindowchangesFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXwindowchangesFc->x, lpXwindowchanges->x);
-    (*env)->SetIntField(env,lpObject,lpXwindowchangesFc->y, lpXwindowchanges->y);
-    (*env)->SetIntField(env,lpObject,lpXwindowchangesFc->width, lpXwindowchanges->width);
-    (*env)->SetIntField(env,lpObject,lpXwindowchangesFc->height, lpXwindowchanges->height);
-    (*env)->SetIntField(env,lpObject,lpXwindowchangesFc->border_width, lpXwindowchanges->border_width);
-    (*env)->SetIntField(env,lpObject,lpXwindowchangesFc->sibling, lpXwindowchanges->sibling);
-    (*env)->SetIntField(env,lpObject,lpXwindowchangesFc->stack_mode, lpXwindowchanges->stack_mode);
-}
-
-void getXtwidgetgeometryFields(JNIEnv *env, jobject lpObject, XtWidgetGeometry *lpXtwidgetgeometry, PXTWIDGETGEOMETRY_FID_CACHE lpXtwidgetgeometryFc)
-{    
-    lpXtwidgetgeometry->request_mode = (*env)->GetIntField(env,lpObject,lpXtwidgetgeometryFc->request_mode);
-    lpXtwidgetgeometry->x = (*env)->GetIntField(env,lpObject,lpXtwidgetgeometryFc->x);
-    lpXtwidgetgeometry->y = (*env)->GetIntField(env,lpObject,lpXtwidgetgeometryFc->y);
-    lpXtwidgetgeometry->width = (*env)->GetIntField(env,lpObject,lpXtwidgetgeometryFc->width);
-    lpXtwidgetgeometry->height = (*env)->GetIntField(env,lpObject,lpXtwidgetgeometryFc->height);
-    lpXtwidgetgeometry->border_width = (*env)->GetIntField(env,lpObject,lpXtwidgetgeometryFc->border_width);
-    lpXtwidgetgeometry->sibling = (Widget)(*env)->GetIntField(env,lpObject,lpXtwidgetgeometryFc->sibling);
-    lpXtwidgetgeometry->stack_mode = (*env)->GetIntField(env,lpObject,lpXtwidgetgeometryFc->stack_mode);
-}
-
-void setXtwidgetgeometryFields(JNIEnv *env, jobject lpObject, XtWidgetGeometry *lpXtwidgetgeometry, PXTWIDGETGEOMETRY_FID_CACHE lpXtwidgetgeometryFc)
-{
-    (*env)->SetIntField(env,lpObject,lpXtwidgetgeometryFc->request_mode, lpXtwidgetgeometry->request_mode);
-    (*env)->SetIntField(env,lpObject,lpXtwidgetgeometryFc->x, lpXtwidgetgeometry->x);
-    (*env)->SetIntField(env,lpObject,lpXtwidgetgeometryFc->y, lpXtwidgetgeometry->y);
-    (*env)->SetIntField(env,lpObject,lpXtwidgetgeometryFc->width, lpXtwidgetgeometry->width);
-    (*env)->SetIntField(env,lpObject,lpXtwidgetgeometryFc->height, lpXtwidgetgeometry->height);
-    (*env)->SetIntField(env,lpObject,lpXtwidgetgeometryFc->border_width, lpXtwidgetgeometry->border_width);
-    (*env)->SetIntField(env,lpObject,lpXtwidgetgeometryFc->sibling, (int)lpXtwidgetgeometry->sibling);
-    (*env)->SetIntField(env,lpObject,lpXtwidgetgeometryFc->stack_mode, lpXtwidgetgeometry->stack_mode);
+#ifndef NO_Visual
+typedef struct Visual_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID ext_data, visualid, c_class, red_mask, green_mask, blue_mask, bits_per_rgb, map_entries;
+} Visual_FID_CACHE;
+
+Visual_FID_CACHE VisualFc;
+
+void cacheVisualFields(JNIEnv *env, jobject lpObject)
+{
+	if (VisualFc.cached) return;
+	VisualFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	VisualFc.ext_data = (*env)->GetFieldID(env, VisualFc.clazz, "ext_data", "I");
+	VisualFc.visualid = (*env)->GetFieldID(env, VisualFc.clazz, "visualid", "I");
+	VisualFc.c_class = (*env)->GetFieldID(env, VisualFc.clazz, "c_class", "I");
+	VisualFc.red_mask = (*env)->GetFieldID(env, VisualFc.clazz, "red_mask", "I");
+	VisualFc.green_mask = (*env)->GetFieldID(env, VisualFc.clazz, "green_mask", "I");
+	VisualFc.blue_mask = (*env)->GetFieldID(env, VisualFc.clazz, "blue_mask", "I");
+	VisualFc.bits_per_rgb = (*env)->GetFieldID(env, VisualFc.clazz, "bits_per_rgb", "I");
+	VisualFc.map_entries = (*env)->GetFieldID(env, VisualFc.clazz, "map_entries", "I");
+	VisualFc.cached = 1;
+}
+
+Visual *getVisualFields(JNIEnv *env, jobject lpObject, Visual *lpStruct)
+{
+	if (!VisualFc.cached) cacheVisualFields(env, lpObject);
+	lpStruct->ext_data = (XExtData *)(*env)->GetIntField(env, lpObject, VisualFc.ext_data);
+	lpStruct->visualid = (*env)->GetIntField(env, lpObject, VisualFc.visualid);
+	lpStruct->class = (*env)->GetIntField(env, lpObject, VisualFc.c_class);
+	lpStruct->red_mask = (*env)->GetIntField(env, lpObject, VisualFc.red_mask);
+	lpStruct->green_mask = (*env)->GetIntField(env, lpObject, VisualFc.green_mask);
+	lpStruct->blue_mask = (*env)->GetIntField(env, lpObject, VisualFc.blue_mask);
+	lpStruct->bits_per_rgb = (*env)->GetIntField(env, lpObject, VisualFc.bits_per_rgb);
+	lpStruct->map_entries = (*env)->GetIntField(env, lpObject, VisualFc.map_entries);
+	return lpStruct;
 }
+
+void setVisualFields(JNIEnv *env, jobject lpObject, Visual *lpStruct)
+{
+	if (!VisualFc.cached) cacheVisualFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, VisualFc.ext_data, (jint)lpStruct->ext_data);
+	(*env)->SetIntField(env, lpObject, VisualFc.visualid, (jint)lpStruct->visualid);
+	(*env)->SetIntField(env, lpObject, VisualFc.c_class, (jint)lpStruct->class);
+	(*env)->SetIntField(env, lpObject, VisualFc.red_mask, (jint)lpStruct->red_mask);
+	(*env)->SetIntField(env, lpObject, VisualFc.green_mask, (jint)lpStruct->green_mask);
+	(*env)->SetIntField(env, lpObject, VisualFc.blue_mask, (jint)lpStruct->blue_mask);
+	(*env)->SetIntField(env, lpObject, VisualFc.bits_per_rgb, (jint)lpStruct->bits_per_rgb);
+	(*env)->SetIntField(env, lpObject, VisualFc.map_entries, (jint)lpStruct->map_entries);
+}
+#endif
+
+#ifndef NO_XEvent
+typedef struct XEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type;
+} XEvent_FID_CACHE;
+
+XEvent_FID_CACHE XEventFc;
+
+void cacheXEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XEventFc.cached) return;
+	XEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XEventFc.type = (*env)->GetFieldID(env, XEventFc.clazz, "type", "I");
+	XEventFc.cached = 1;
+}
+
+XEvent *getXEventFields(JNIEnv *env, jobject lpObject, XEvent *lpStruct)
+{
+	if (!XEventFc.cached) cacheXEventFields(env, lpObject);
+	lpStruct->type = (*env)->GetIntField(env, lpObject, XEventFc.type);
+	return lpStruct;
+}
+
+void setXEventFields(JNIEnv *env, jobject lpObject, XEvent *lpStruct)
+{
+	if (!XEventFc.cached) cacheXEventFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XEventFc.type, (jint)lpStruct->type);
+}
+#endif
+
+#ifndef NO_XAnyEvent
+typedef struct XAnyEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID serial, send_event, display, window;
+} XAnyEvent_FID_CACHE;
+
+XAnyEvent_FID_CACHE XAnyEventFc;
+
+void cacheXAnyEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XAnyEventFc.cached) return;
+	cacheXEventFields(env, lpObject);
+	XAnyEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XAnyEventFc.serial = (*env)->GetFieldID(env, XAnyEventFc.clazz, "serial", "I");
+	XAnyEventFc.send_event = (*env)->GetFieldID(env, XAnyEventFc.clazz, "send_event", "I");
+	XAnyEventFc.display = (*env)->GetFieldID(env, XAnyEventFc.clazz, "display", "I");
+	XAnyEventFc.window = (*env)->GetFieldID(env, XAnyEventFc.clazz, "window", "I");
+	XAnyEventFc.cached = 1;
+}
+
+XAnyEvent *getXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct)
+{
+	if (!XAnyEventFc.cached) cacheXAnyEventFields(env, lpObject);
+	getXEventFields(env, lpObject, (XEvent *)lpStruct);
+	lpStruct->serial = (*env)->GetIntField(env, lpObject, XAnyEventFc.serial);
+	lpStruct->send_event = (*env)->GetIntField(env, lpObject, XAnyEventFc.send_event);
+	lpStruct->display = (Display *)(*env)->GetIntField(env, lpObject, XAnyEventFc.display);
+	lpStruct->window = (*env)->GetIntField(env, lpObject, XAnyEventFc.window);
+	return lpStruct;
+}
+
+void setXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct)
+{
+	if (!XAnyEventFc.cached) cacheXAnyEventFields(env, lpObject);
+	setXEventFields(env, lpObject, (XEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XAnyEventFc.serial, (jint)lpStruct->serial);
+	(*env)->SetIntField(env, lpObject, XAnyEventFc.send_event, (jint)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, XAnyEventFc.display, (jint)lpStruct->display);
+	(*env)->SetIntField(env, lpObject, XAnyEventFc.window, (jint)lpStruct->window);
+}
+#endif
+
+#ifndef NO_XButtonEvent
+typedef struct XButtonEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID root, subwindow, time, x, y, x_root, y_root, state, button, same_screen;
+} XButtonEvent_FID_CACHE;
+
+XButtonEvent_FID_CACHE XButtonEventFc;
+
+void cacheXButtonEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XButtonEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XButtonEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XButtonEventFc.root = (*env)->GetFieldID(env, XButtonEventFc.clazz, "root", "I");
+	XButtonEventFc.subwindow = (*env)->GetFieldID(env, XButtonEventFc.clazz, "subwindow", "I");
+	XButtonEventFc.time = (*env)->GetFieldID(env, XButtonEventFc.clazz, "time", "I");
+	XButtonEventFc.x = (*env)->GetFieldID(env, XButtonEventFc.clazz, "x", "I");
+	XButtonEventFc.y = (*env)->GetFieldID(env, XButtonEventFc.clazz, "y", "I");
+	XButtonEventFc.x_root = (*env)->GetFieldID(env, XButtonEventFc.clazz, "x_root", "I");
+	XButtonEventFc.y_root = (*env)->GetFieldID(env, XButtonEventFc.clazz, "y_root", "I");
+	XButtonEventFc.state = (*env)->GetFieldID(env, XButtonEventFc.clazz, "state", "I");
+	XButtonEventFc.button = (*env)->GetFieldID(env, XButtonEventFc.clazz, "button", "I");
+	XButtonEventFc.same_screen = (*env)->GetFieldID(env, XButtonEventFc.clazz, "same_screen", "I");
+	XButtonEventFc.cached = 1;
+}
+
+XButtonEvent *getXButtonEventFields(JNIEnv *env, jobject lpObject, XButtonEvent *lpStruct)
+{
+	if (!XButtonEventFc.cached) cacheXButtonEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->root = (*env)->GetIntField(env, lpObject, XButtonEventFc.root);
+	lpStruct->subwindow = (*env)->GetIntField(env, lpObject, XButtonEventFc.subwindow);
+	lpStruct->time = (*env)->GetIntField(env, lpObject, XButtonEventFc.time);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XButtonEventFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XButtonEventFc.y);
+	lpStruct->x_root = (*env)->GetIntField(env, lpObject, XButtonEventFc.x_root);
+	lpStruct->y_root = (*env)->GetIntField(env, lpObject, XButtonEventFc.y_root);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, XButtonEventFc.state);
+	lpStruct->button = (*env)->GetIntField(env, lpObject, XButtonEventFc.button);
+	lpStruct->same_screen = (*env)->GetIntField(env, lpObject, XButtonEventFc.same_screen);
+	return lpStruct;
+}
+
+void setXButtonEventFields(JNIEnv *env, jobject lpObject, XButtonEvent *lpStruct)
+{
+	if (!XButtonEventFc.cached) cacheXButtonEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.root, (jint)lpStruct->root);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.subwindow, (jint)lpStruct->subwindow);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.time, (jint)lpStruct->time);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.x_root, (jint)lpStruct->x_root);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.y_root, (jint)lpStruct->y_root);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.button, (jint)lpStruct->button);
+	(*env)->SetIntField(env, lpObject, XButtonEventFc.same_screen, (jint)lpStruct->same_screen);
+}
+#endif
+
+#ifndef NO_XCharStruct
+typedef struct XCharStruct_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID lbearing, rbearing, width, ascent, descent, attributes;
+} XCharStruct_FID_CACHE;
+
+XCharStruct_FID_CACHE XCharStructFc;
+
+void cacheXCharStructFields(JNIEnv *env, jobject lpObject)
+{
+	if (XCharStructFc.cached) return;
+	XCharStructFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XCharStructFc.lbearing = (*env)->GetFieldID(env, XCharStructFc.clazz, "lbearing", "S");
+	XCharStructFc.rbearing = (*env)->GetFieldID(env, XCharStructFc.clazz, "rbearing", "S");
+	XCharStructFc.width = (*env)->GetFieldID(env, XCharStructFc.clazz, "width", "S");
+	XCharStructFc.ascent = (*env)->GetFieldID(env, XCharStructFc.clazz, "ascent", "S");
+	XCharStructFc.descent = (*env)->GetFieldID(env, XCharStructFc.clazz, "descent", "S");
+	XCharStructFc.attributes = (*env)->GetFieldID(env, XCharStructFc.clazz, "attributes", "S");
+	XCharStructFc.cached = 1;
+}
+
+XCharStruct *getXCharStructFields(JNIEnv *env, jobject lpObject, XCharStruct *lpStruct)
+{
+	if (!XCharStructFc.cached) cacheXCharStructFields(env, lpObject);
+	lpStruct->lbearing = (*env)->GetShortField(env, lpObject, XCharStructFc.lbearing);
+	lpStruct->rbearing = (*env)->GetShortField(env, lpObject, XCharStructFc.rbearing);
+	lpStruct->width = (*env)->GetShortField(env, lpObject, XCharStructFc.width);
+	lpStruct->ascent = (*env)->GetShortField(env, lpObject, XCharStructFc.ascent);
+	lpStruct->descent = (*env)->GetShortField(env, lpObject, XCharStructFc.descent);
+	lpStruct->attributes = (*env)->GetShortField(env, lpObject, XCharStructFc.attributes);
+	return lpStruct;
+}
+
+void setXCharStructFields(JNIEnv *env, jobject lpObject, XCharStruct *lpStruct)
+{
+	if (!XCharStructFc.cached) cacheXCharStructFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, XCharStructFc.lbearing, (jshort)lpStruct->lbearing);
+	(*env)->SetShortField(env, lpObject, XCharStructFc.rbearing, (jshort)lpStruct->rbearing);
+	(*env)->SetShortField(env, lpObject, XCharStructFc.width, (jshort)lpStruct->width);
+	(*env)->SetShortField(env, lpObject, XCharStructFc.ascent, (jshort)lpStruct->ascent);
+	(*env)->SetShortField(env, lpObject, XCharStructFc.descent, (jshort)lpStruct->descent);
+	(*env)->SetShortField(env, lpObject, XCharStructFc.attributes, (jshort)lpStruct->attributes);
+}
+#endif
+
+#ifndef NO_XColor
+typedef struct XColor_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID pixel, red, green, blue, flags, pad;
+} XColor_FID_CACHE;
+
+XColor_FID_CACHE XColorFc;
+
+void cacheXColorFields(JNIEnv *env, jobject lpObject)
+{
+	if (XColorFc.cached) return;
+	XColorFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XColorFc.pixel = (*env)->GetFieldID(env, XColorFc.clazz, "pixel", "I");
+	XColorFc.red = (*env)->GetFieldID(env, XColorFc.clazz, "red", "S");
+	XColorFc.green = (*env)->GetFieldID(env, XColorFc.clazz, "green", "S");
+	XColorFc.blue = (*env)->GetFieldID(env, XColorFc.clazz, "blue", "S");
+	XColorFc.flags = (*env)->GetFieldID(env, XColorFc.clazz, "flags", "B");
+	XColorFc.pad = (*env)->GetFieldID(env, XColorFc.clazz, "pad", "B");
+	XColorFc.cached = 1;
+}
+
+XColor *getXColorFields(JNIEnv *env, jobject lpObject, XColor *lpStruct)
+{
+	if (!XColorFc.cached) cacheXColorFields(env, lpObject);
+	lpStruct->pixel = (*env)->GetIntField(env, lpObject, XColorFc.pixel);
+	lpStruct->red = (*env)->GetShortField(env, lpObject, XColorFc.red);
+	lpStruct->green = (*env)->GetShortField(env, lpObject, XColorFc.green);
+	lpStruct->blue = (*env)->GetShortField(env, lpObject, XColorFc.blue);
+	lpStruct->flags = (*env)->GetByteField(env, lpObject, XColorFc.flags);
+	lpStruct->pad = (*env)->GetByteField(env, lpObject, XColorFc.pad);
+	return lpStruct;
+}
+
+void setXColorFields(JNIEnv *env, jobject lpObject, XColor *lpStruct)
+{
+	if (!XColorFc.cached) cacheXColorFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XColorFc.pixel, (jint)lpStruct->pixel);
+	(*env)->SetShortField(env, lpObject, XColorFc.red, (jshort)lpStruct->red);
+	(*env)->SetShortField(env, lpObject, XColorFc.green, (jshort)lpStruct->green);
+	(*env)->SetShortField(env, lpObject, XColorFc.blue, (jshort)lpStruct->blue);
+	(*env)->SetByteField(env, lpObject, XColorFc.flags, (jbyte)lpStruct->flags);
+	(*env)->SetByteField(env, lpObject, XColorFc.pad, (jbyte)lpStruct->pad);
+}
+#endif
+
+#ifndef NO_XConfigureEvent
+typedef struct XConfigureEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height, border_width, above, override_redirect;
+} XConfigureEvent_FID_CACHE;
+
+XConfigureEvent_FID_CACHE XConfigureEventFc;
+
+void cacheXConfigureEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XConfigureEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XConfigureEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XConfigureEventFc.x = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "x", "I");
+	XConfigureEventFc.y = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "y", "I");
+	XConfigureEventFc.width = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "width", "I");
+	XConfigureEventFc.height = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "height", "I");
+	XConfigureEventFc.border_width = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "border_width", "I");
+	XConfigureEventFc.above = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "above", "I");
+	XConfigureEventFc.override_redirect = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "override_redirect", "I");
+	XConfigureEventFc.cached = 1;
+}
+
+XConfigureEvent *getXConfigureEventFields(JNIEnv *env, jobject lpObject, XConfigureEvent *lpStruct)
+{
+	if (!XConfigureEventFc.cached) cacheXConfigureEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XConfigureEventFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XConfigureEventFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, XConfigureEventFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, XConfigureEventFc.height);
+	lpStruct->border_width = (*env)->GetIntField(env, lpObject, XConfigureEventFc.border_width);
+	lpStruct->above = (*env)->GetIntField(env, lpObject, XConfigureEventFc.above);
+	lpStruct->override_redirect = (*env)->GetIntField(env, lpObject, XConfigureEventFc.override_redirect);
+	return lpStruct;
+}
+
+void setXConfigureEventFields(JNIEnv *env, jobject lpObject, XConfigureEvent *lpStruct)
+{
+	if (!XConfigureEventFc.cached) cacheXConfigureEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.height, (jint)lpStruct->height);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.border_width, (jint)lpStruct->border_width);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.above, (jint)lpStruct->above);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.override_redirect, (jint)lpStruct->override_redirect);
+}
+#endif
+
+#ifndef NO_XCrossingEvent
+typedef struct XCrossingEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID root, subwindow, time, x, y, x_root, y_root, mode, detail, same_screen, focus, state;
+} XCrossingEvent_FID_CACHE;
+
+XCrossingEvent_FID_CACHE XCrossingEventFc;
+
+void cacheXCrossingEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XCrossingEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XCrossingEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XCrossingEventFc.root = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "root", "I");
+	XCrossingEventFc.subwindow = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "subwindow", "I");
+	XCrossingEventFc.time = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "time", "I");
+	XCrossingEventFc.x = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "x", "I");
+	XCrossingEventFc.y = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "y", "I");
+	XCrossingEventFc.x_root = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "x_root", "I");
+	XCrossingEventFc.y_root = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "y_root", "I");
+	XCrossingEventFc.mode = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "mode", "I");
+	XCrossingEventFc.detail = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "detail", "I");
+	XCrossingEventFc.same_screen = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "same_screen", "I");
+	XCrossingEventFc.focus = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "focus", "I");
+	XCrossingEventFc.state = (*env)->GetFieldID(env, XCrossingEventFc.clazz, "state", "I");
+	XCrossingEventFc.cached = 1;
+}
+
+XCrossingEvent *getXCrossingEventFields(JNIEnv *env, jobject lpObject, XCrossingEvent *lpStruct)
+{
+	if (!XCrossingEventFc.cached) cacheXCrossingEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->root = (*env)->GetIntField(env, lpObject, XCrossingEventFc.root);
+	lpStruct->subwindow = (*env)->GetIntField(env, lpObject, XCrossingEventFc.subwindow);
+	lpStruct->time = (*env)->GetIntField(env, lpObject, XCrossingEventFc.time);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XCrossingEventFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XCrossingEventFc.y);
+	lpStruct->x_root = (*env)->GetIntField(env, lpObject, XCrossingEventFc.x_root);
+	lpStruct->y_root = (*env)->GetIntField(env, lpObject, XCrossingEventFc.y_root);
+	lpStruct->mode = (*env)->GetIntField(env, lpObject, XCrossingEventFc.mode);
+	lpStruct->detail = (*env)->GetIntField(env, lpObject, XCrossingEventFc.detail);
+	lpStruct->same_screen = (*env)->GetIntField(env, lpObject, XCrossingEventFc.same_screen);
+	lpStruct->focus = (*env)->GetIntField(env, lpObject, XCrossingEventFc.focus);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, XCrossingEventFc.state);
+	return lpStruct;
+}
+
+void setXCrossingEventFields(JNIEnv *env, jobject lpObject, XCrossingEvent *lpStruct)
+{
+	if (!XCrossingEventFc.cached) cacheXCrossingEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.root, (jint)lpStruct->root);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.subwindow, (jint)lpStruct->subwindow);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.time, (jint)lpStruct->time);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.x_root, (jint)lpStruct->x_root);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.y_root, (jint)lpStruct->y_root);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.mode, (jint)lpStruct->mode);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.detail, (jint)lpStruct->detail);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.same_screen, (jint)lpStruct->same_screen);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.focus, (jint)lpStruct->focus);
+	(*env)->SetIntField(env, lpObject, XCrossingEventFc.state, (jint)lpStruct->state);
+}
+#endif
+
+#ifndef NO_XExposeEvent
+typedef struct XExposeEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height, count;
+} XExposeEvent_FID_CACHE;
+
+XExposeEvent_FID_CACHE XExposeEventFc;
+
+void cacheXExposeEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XExposeEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XExposeEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XExposeEventFc.x = (*env)->GetFieldID(env, XExposeEventFc.clazz, "x", "I");
+	XExposeEventFc.y = (*env)->GetFieldID(env, XExposeEventFc.clazz, "y", "I");
+	XExposeEventFc.width = (*env)->GetFieldID(env, XExposeEventFc.clazz, "width", "I");
+	XExposeEventFc.height = (*env)->GetFieldID(env, XExposeEventFc.clazz, "height", "I");
+	XExposeEventFc.count = (*env)->GetFieldID(env, XExposeEventFc.clazz, "count", "I");
+	XExposeEventFc.cached = 1;
+}
+
+XExposeEvent *getXExposeEventFields(JNIEnv *env, jobject lpObject, XExposeEvent *lpStruct)
+{
+	if (!XExposeEventFc.cached) cacheXExposeEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XExposeEventFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XExposeEventFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, XExposeEventFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, XExposeEventFc.height);
+	lpStruct->count = (*env)->GetIntField(env, lpObject, XExposeEventFc.count);
+	return lpStruct;
+}
+
+void setXExposeEventFields(JNIEnv *env, jobject lpObject, XExposeEvent *lpStruct)
+{
+	if (!XExposeEventFc.cached) cacheXExposeEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XExposeEventFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XExposeEventFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XExposeEventFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, XExposeEventFc.height, (jint)lpStruct->height);
+	(*env)->SetIntField(env, lpObject, XExposeEventFc.count, (jint)lpStruct->count);
+}
+#endif
+
+#ifndef NO_XFocusChangeEvent
+typedef struct XFocusChangeEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID mode, detail;
+} XFocusChangeEvent_FID_CACHE;
+
+XFocusChangeEvent_FID_CACHE XFocusChangeEventFc;
+
+void cacheXFocusChangeEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XFocusChangeEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XFocusChangeEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XFocusChangeEventFc.mode = (*env)->GetFieldID(env, XFocusChangeEventFc.clazz, "mode", "I");
+	XFocusChangeEventFc.detail = (*env)->GetFieldID(env, XFocusChangeEventFc.clazz, "detail", "I");
+	XFocusChangeEventFc.cached = 1;
+}
+
+XFocusChangeEvent *getXFocusChangeEventFields(JNIEnv *env, jobject lpObject, XFocusChangeEvent *lpStruct)
+{
+	if (!XFocusChangeEventFc.cached) cacheXFocusChangeEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->mode = (*env)->GetIntField(env, lpObject, XFocusChangeEventFc.mode);
+	lpStruct->detail = (*env)->GetIntField(env, lpObject, XFocusChangeEventFc.detail);
+	return lpStruct;
+}
+
+void setXFocusChangeEventFields(JNIEnv *env, jobject lpObject, XFocusChangeEvent *lpStruct)
+{
+	if (!XFocusChangeEventFc.cached) cacheXFocusChangeEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XFocusChangeEventFc.mode, (jint)lpStruct->mode);
+	(*env)->SetIntField(env, lpObject, XFocusChangeEventFc.detail, (jint)lpStruct->detail);
+}
+#endif
+
+#ifndef NO_XFontStruct
+typedef struct XFontStruct_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID ext_data, fid, direction, min_char_or_byte2, max_char_or_byte2, min_byte1, max_byte1, all_chars_exist, default_char, n_properties, properties, min_bounds_lbearing, min_bounds_rbearing, min_bounds_width, min_bounds_ascent, min_bounds_descent, min_bounds_attributes, max_bounds_lbearing, max_bounds_rbearing, max_bounds_width, max_bounds_ascent, max_bounds_descent, max_bounds_attributes, per_char, ascent, descent;
+} XFontStruct_FID_CACHE;
+
+XFontStruct_FID_CACHE XFontStructFc;
+
+void cacheXFontStructFields(JNIEnv *env, jobject lpObject)
+{
+	if (XFontStructFc.cached) return;
+	XFontStructFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XFontStructFc.ext_data = (*env)->GetFieldID(env, XFontStructFc.clazz, "ext_data", "I");
+	XFontStructFc.fid = (*env)->GetFieldID(env, XFontStructFc.clazz, "fid", "I");
+	XFontStructFc.direction = (*env)->GetFieldID(env, XFontStructFc.clazz, "direction", "I");
+	XFontStructFc.min_char_or_byte2 = (*env)->GetFieldID(env, XFontStructFc.clazz, "min_char_or_byte2", "I");
+	XFontStructFc.max_char_or_byte2 = (*env)->GetFieldID(env, XFontStructFc.clazz, "max_char_or_byte2", "I");
+	XFontStructFc.min_byte1 = (*env)->GetFieldID(env, XFontStructFc.clazz, "min_byte1", "I");
+	XFontStructFc.max_byte1 = (*env)->GetFieldID(env, XFontStructFc.clazz, "max_byte1", "I");
+	XFontStructFc.all_chars_exist = (*env)->GetFieldID(env, XFontStructFc.clazz, "all_chars_exist", "I");
+	XFontStructFc.default_char = (*env)->GetFieldID(env, XFontStructFc.clazz, "default_char", "I");
+	XFontStructFc.n_properties = (*env)->GetFieldID(env, XFontStructFc.clazz, "n_properties", "I");
+	XFontStructFc.properties = (*env)->GetFieldID(env, XFontStructFc.clazz, "properties", "I");
+	XFontStructFc.min_bounds_lbearing = (*env)->GetFieldID(env, XFontStructFc.clazz, "min_bounds_lbearing", "S");
+	XFontStructFc.min_bounds_rbearing = (*env)->GetFieldID(env, XFontStructFc.clazz, "min_bounds_rbearing", "S");
+	XFontStructFc.min_bounds_width = (*env)->GetFieldID(env, XFontStructFc.clazz, "min_bounds_width", "S");
+	XFontStructFc.min_bounds_ascent = (*env)->GetFieldID(env, XFontStructFc.clazz, "min_bounds_ascent", "S");
+	XFontStructFc.min_bounds_descent = (*env)->GetFieldID(env, XFontStructFc.clazz, "min_bounds_descent", "S");
+	XFontStructFc.min_bounds_attributes = (*env)->GetFieldID(env, XFontStructFc.clazz, "min_bounds_attributes", "S");
+	XFontStructFc.max_bounds_lbearing = (*env)->GetFieldID(env, XFontStructFc.clazz, "max_bounds_lbearing", "S");
+	XFontStructFc.max_bounds_rbearing = (*env)->GetFieldID(env, XFontStructFc.clazz, "max_bounds_rbearing", "S");
+	XFontStructFc.max_bounds_width = (*env)->GetFieldID(env, XFontStructFc.clazz, "max_bounds_width", "S");
+	XFontStructFc.max_bounds_ascent = (*env)->GetFieldID(env, XFontStructFc.clazz, "max_bounds_ascent", "S");
+	XFontStructFc.max_bounds_descent = (*env)->GetFieldID(env, XFontStructFc.clazz, "max_bounds_descent", "S");
+	XFontStructFc.max_bounds_attributes = (*env)->GetFieldID(env, XFontStructFc.clazz, "max_bounds_attributes", "S");
+	XFontStructFc.per_char = (*env)->GetFieldID(env, XFontStructFc.clazz, "per_char", "I");
+	XFontStructFc.ascent = (*env)->GetFieldID(env, XFontStructFc.clazz, "ascent", "I");
+	XFontStructFc.descent = (*env)->GetFieldID(env, XFontStructFc.clazz, "descent", "I");
+	XFontStructFc.cached = 1;
+}
+
+XFontStruct *getXFontStructFields(JNIEnv *env, jobject lpObject, XFontStruct *lpStruct)
+{
+	if (!XFontStructFc.cached) cacheXFontStructFields(env, lpObject);
+	lpStruct->ext_data = (XExtData *)(*env)->GetIntField(env, lpObject, XFontStructFc.ext_data);
+	lpStruct->fid = (*env)->GetIntField(env, lpObject, XFontStructFc.fid);
+	lpStruct->direction = (*env)->GetIntField(env, lpObject, XFontStructFc.direction);
+	lpStruct->min_char_or_byte2 = (*env)->GetIntField(env, lpObject, XFontStructFc.min_char_or_byte2);
+	lpStruct->max_char_or_byte2 = (*env)->GetIntField(env, lpObject, XFontStructFc.max_char_or_byte2);
+	lpStruct->min_byte1 = (*env)->GetIntField(env, lpObject, XFontStructFc.min_byte1);
+	lpStruct->max_byte1 = (*env)->GetIntField(env, lpObject, XFontStructFc.max_byte1);
+	lpStruct->all_chars_exist = (*env)->GetIntField(env, lpObject, XFontStructFc.all_chars_exist);
+	lpStruct->default_char = (*env)->GetIntField(env, lpObject, XFontStructFc.default_char);
+	lpStruct->n_properties = (*env)->GetIntField(env, lpObject, XFontStructFc.n_properties);
+	lpStruct->properties = (XFontProp *)(*env)->GetIntField(env, lpObject, XFontStructFc.properties);
+	lpStruct->min_bounds.lbearing = (*env)->GetShortField(env, lpObject, XFontStructFc.min_bounds_lbearing);
+	lpStruct->min_bounds.rbearing = (*env)->GetShortField(env, lpObject, XFontStructFc.min_bounds_rbearing);
+	lpStruct->min_bounds.width = (*env)->GetShortField(env, lpObject, XFontStructFc.min_bounds_width);
+	lpStruct->min_bounds.ascent = (*env)->GetShortField(env, lpObject, XFontStructFc.min_bounds_ascent);
+	lpStruct->min_bounds.descent = (*env)->GetShortField(env, lpObject, XFontStructFc.min_bounds_descent);
+	lpStruct->min_bounds.attributes = (*env)->GetShortField(env, lpObject, XFontStructFc.min_bounds_attributes);
+	lpStruct->max_bounds.lbearing = (*env)->GetShortField(env, lpObject, XFontStructFc.max_bounds_lbearing);
+	lpStruct->max_bounds.rbearing = (*env)->GetShortField(env, lpObject, XFontStructFc.max_bounds_rbearing);
+	lpStruct->max_bounds.width = (*env)->GetShortField(env, lpObject, XFontStructFc.max_bounds_width);
+	lpStruct->max_bounds.ascent = (*env)->GetShortField(env, lpObject, XFontStructFc.max_bounds_ascent);
+	lpStruct->max_bounds.descent = (*env)->GetShortField(env, lpObject, XFontStructFc.max_bounds_descent);
+	lpStruct->max_bounds.attributes = (*env)->GetShortField(env, lpObject, XFontStructFc.max_bounds_attributes);
+	lpStruct->per_char = (XCharStruct *)(*env)->GetIntField(env, lpObject, XFontStructFc.per_char);
+	lpStruct->ascent = (*env)->GetIntField(env, lpObject, XFontStructFc.ascent);
+	lpStruct->descent = (*env)->GetIntField(env, lpObject, XFontStructFc.descent);
+	return lpStruct;
+}
+
+void setXFontStructFields(JNIEnv *env, jobject lpObject, XFontStruct *lpStruct)
+{
+	if (!XFontStructFc.cached) cacheXFontStructFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.ext_data, (jint)lpStruct->ext_data);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.fid, (jint)lpStruct->fid);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.direction, (jint)lpStruct->direction);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.min_char_or_byte2, (jint)lpStruct->min_char_or_byte2);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.max_char_or_byte2, (jint)lpStruct->max_char_or_byte2);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.min_byte1, (jint)lpStruct->min_byte1);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.max_byte1, (jint)lpStruct->max_byte1);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.all_chars_exist, (jint)lpStruct->all_chars_exist);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.default_char, (jint)lpStruct->default_char);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.n_properties, (jint)lpStruct->n_properties);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.properties, (jint)lpStruct->properties);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.min_bounds_lbearing, (jshort)lpStruct->min_bounds.lbearing);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.min_bounds_rbearing, (jshort)lpStruct->min_bounds.rbearing);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.min_bounds_width, (jshort)lpStruct->min_bounds.width);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.min_bounds_ascent, (jshort)lpStruct->min_bounds.ascent);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.min_bounds_descent, (jshort)lpStruct->min_bounds.descent);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.min_bounds_attributes, (jshort)lpStruct->min_bounds.attributes);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.max_bounds_lbearing, (jshort)lpStruct->max_bounds.lbearing);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.max_bounds_rbearing, (jshort)lpStruct->max_bounds.rbearing);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.max_bounds_width, (jshort)lpStruct->max_bounds.width);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.max_bounds_ascent, (jshort)lpStruct->max_bounds.ascent);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.max_bounds_descent, (jshort)lpStruct->max_bounds.descent);
+	(*env)->SetShortField(env, lpObject, XFontStructFc.max_bounds_attributes, (jshort)lpStruct->max_bounds.attributes);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.per_char, (jint)lpStruct->per_char);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.ascent, (jint)lpStruct->ascent);
+	(*env)->SetIntField(env, lpObject, XFontStructFc.descent, (jint)lpStruct->descent);
+}
+#endif
+
+#ifndef NO_XGCValues
+typedef struct XGCValues_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID function, plane_mask, foreground, background, line_width, line_style, cap_style, join_style, fill_style, fill_rule, arc_mode, tile, stipple, ts_x_origin, ts_y_origin, font, subwindow_mode, graphics_exposures, clip_x_origin, clip_y_origin, clip_mask, dash_offset, dashes;
+} XGCValues_FID_CACHE;
+
+XGCValues_FID_CACHE XGCValuesFc;
+
+void cacheXGCValuesFields(JNIEnv *env, jobject lpObject)
+{
+	if (XGCValuesFc.cached) return;
+	XGCValuesFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XGCValuesFc.function = (*env)->GetFieldID(env, XGCValuesFc.clazz, "function", "I");
+	XGCValuesFc.plane_mask = (*env)->GetFieldID(env, XGCValuesFc.clazz, "plane_mask", "I");
+	XGCValuesFc.foreground = (*env)->GetFieldID(env, XGCValuesFc.clazz, "foreground", "I");
+	XGCValuesFc.background = (*env)->GetFieldID(env, XGCValuesFc.clazz, "background", "I");
+	XGCValuesFc.line_width = (*env)->GetFieldID(env, XGCValuesFc.clazz, "line_width", "I");
+	XGCValuesFc.line_style = (*env)->GetFieldID(env, XGCValuesFc.clazz, "line_style", "I");
+	XGCValuesFc.cap_style = (*env)->GetFieldID(env, XGCValuesFc.clazz, "cap_style", "I");
+	XGCValuesFc.join_style = (*env)->GetFieldID(env, XGCValuesFc.clazz, "join_style", "I");
+	XGCValuesFc.fill_style = (*env)->GetFieldID(env, XGCValuesFc.clazz, "fill_style", "I");
+	XGCValuesFc.fill_rule = (*env)->GetFieldID(env, XGCValuesFc.clazz, "fill_rule", "I");
+	XGCValuesFc.arc_mode = (*env)->GetFieldID(env, XGCValuesFc.clazz, "arc_mode", "I");
+	XGCValuesFc.tile = (*env)->GetFieldID(env, XGCValuesFc.clazz, "tile", "I");
+	XGCValuesFc.stipple = (*env)->GetFieldID(env, XGCValuesFc.clazz, "stipple", "I");
+	XGCValuesFc.ts_x_origin = (*env)->GetFieldID(env, XGCValuesFc.clazz, "ts_x_origin", "I");
+	XGCValuesFc.ts_y_origin = (*env)->GetFieldID(env, XGCValuesFc.clazz, "ts_y_origin", "I");
+	XGCValuesFc.font = (*env)->GetFieldID(env, XGCValuesFc.clazz, "font", "I");
+	XGCValuesFc.subwindow_mode = (*env)->GetFieldID(env, XGCValuesFc.clazz, "subwindow_mode", "I");
+	XGCValuesFc.graphics_exposures = (*env)->GetFieldID(env, XGCValuesFc.clazz, "graphics_exposures", "I");
+	XGCValuesFc.clip_x_origin = (*env)->GetFieldID(env, XGCValuesFc.clazz, "clip_x_origin", "I");
+	XGCValuesFc.clip_y_origin = (*env)->GetFieldID(env, XGCValuesFc.clazz, "clip_y_origin", "I");
+	XGCValuesFc.clip_mask = (*env)->GetFieldID(env, XGCValuesFc.clazz, "clip_mask", "I");
+	XGCValuesFc.dash_offset = (*env)->GetFieldID(env, XGCValuesFc.clazz, "dash_offset", "I");
+	XGCValuesFc.dashes = (*env)->GetFieldID(env, XGCValuesFc.clazz, "dashes", "B");
+	XGCValuesFc.cached = 1;
+}
+
+XGCValues *getXGCValuesFields(JNIEnv *env, jobject lpObject, XGCValues *lpStruct)
+{
+	if (!XGCValuesFc.cached) cacheXGCValuesFields(env, lpObject);
+	lpStruct->function = (*env)->GetIntField(env, lpObject, XGCValuesFc.function);
+	lpStruct->plane_mask = (*env)->GetIntField(env, lpObject, XGCValuesFc.plane_mask);
+	lpStruct->foreground = (*env)->GetIntField(env, lpObject, XGCValuesFc.foreground);
+	lpStruct->background = (*env)->GetIntField(env, lpObject, XGCValuesFc.background);
+	lpStruct->line_width = (*env)->GetIntField(env, lpObject, XGCValuesFc.line_width);
+	lpStruct->line_style = (*env)->GetIntField(env, lpObject, XGCValuesFc.line_style);
+	lpStruct->cap_style = (*env)->GetIntField(env, lpObject, XGCValuesFc.cap_style);
+	lpStruct->join_style = (*env)->GetIntField(env, lpObject, XGCValuesFc.join_style);
+	lpStruct->fill_style = (*env)->GetIntField(env, lpObject, XGCValuesFc.fill_style);
+	lpStruct->fill_rule = (*env)->GetIntField(env, lpObject, XGCValuesFc.fill_rule);
+	lpStruct->arc_mode = (*env)->GetIntField(env, lpObject, XGCValuesFc.arc_mode);
+	lpStruct->tile = (*env)->GetIntField(env, lpObject, XGCValuesFc.tile);
+	lpStruct->stipple = (*env)->GetIntField(env, lpObject, XGCValuesFc.stipple);
+	lpStruct->ts_x_origin = (*env)->GetIntField(env, lpObject, XGCValuesFc.ts_x_origin);
+	lpStruct->ts_y_origin = (*env)->GetIntField(env, lpObject, XGCValuesFc.ts_y_origin);
+	lpStruct->font = (*env)->GetIntField(env, lpObject, XGCValuesFc.font);
+	lpStruct->subwindow_mode = (*env)->GetIntField(env, lpObject, XGCValuesFc.subwindow_mode);
+	lpStruct->graphics_exposures = (*env)->GetIntField(env, lpObject, XGCValuesFc.graphics_exposures);
+	lpStruct->clip_x_origin = (*env)->GetIntField(env, lpObject, XGCValuesFc.clip_x_origin);
+	lpStruct->clip_y_origin = (*env)->GetIntField(env, lpObject, XGCValuesFc.clip_y_origin);
+	lpStruct->clip_mask = (*env)->GetIntField(env, lpObject, XGCValuesFc.clip_mask);
+	lpStruct->dash_offset = (*env)->GetIntField(env, lpObject, XGCValuesFc.dash_offset);
+	lpStruct->dashes = (*env)->GetByteField(env, lpObject, XGCValuesFc.dashes);
+	return lpStruct;
+}
+
+void setXGCValuesFields(JNIEnv *env, jobject lpObject, XGCValues *lpStruct)
+{
+	if (!XGCValuesFc.cached) cacheXGCValuesFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.function, (jint)lpStruct->function);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.plane_mask, (jint)lpStruct->plane_mask);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.foreground, (jint)lpStruct->foreground);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.background, (jint)lpStruct->background);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.line_width, (jint)lpStruct->line_width);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.line_style, (jint)lpStruct->line_style);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.cap_style, (jint)lpStruct->cap_style);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.join_style, (jint)lpStruct->join_style);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.fill_style, (jint)lpStruct->fill_style);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.fill_rule, (jint)lpStruct->fill_rule);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.arc_mode, (jint)lpStruct->arc_mode);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.tile, (jint)lpStruct->tile);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.stipple, (jint)lpStruct->stipple);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.ts_x_origin, (jint)lpStruct->ts_x_origin);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.ts_y_origin, (jint)lpStruct->ts_y_origin);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.font, (jint)lpStruct->font);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.subwindow_mode, (jint)lpStruct->subwindow_mode);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.graphics_exposures, (jint)lpStruct->graphics_exposures);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.clip_x_origin, (jint)lpStruct->clip_x_origin);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.clip_y_origin, (jint)lpStruct->clip_y_origin);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.clip_mask, (jint)lpStruct->clip_mask);
+	(*env)->SetIntField(env, lpObject, XGCValuesFc.dash_offset, (jint)lpStruct->dash_offset);
+	(*env)->SetByteField(env, lpObject, XGCValuesFc.dashes, (jbyte)lpStruct->dashes);
+}
+#endif
+
+#ifndef NO_XImage
+typedef struct XImage_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID width, height, xoffset, format, data, byte_order, bitmap_unit, bitmap_bit_order, bitmap_pad, depth, bytes_per_line, bits_per_pixel, red_mask, green_mask, blue_mask, obdata, create_image, destroy_image, get_pixel, put_pixel, sub_image, add_pixel;
+} XImage_FID_CACHE;
+
+XImage_FID_CACHE XImageFc;
+
+void cacheXImageFields(JNIEnv *env, jobject lpObject)
+{
+	if (XImageFc.cached) return;
+	XImageFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XImageFc.width = (*env)->GetFieldID(env, XImageFc.clazz, "width", "I");
+	XImageFc.height = (*env)->GetFieldID(env, XImageFc.clazz, "height", "I");
+	XImageFc.xoffset = (*env)->GetFieldID(env, XImageFc.clazz, "xoffset", "I");
+	XImageFc.format = (*env)->GetFieldID(env, XImageFc.clazz, "format", "I");
+	XImageFc.data = (*env)->GetFieldID(env, XImageFc.clazz, "data", "I");
+	XImageFc.byte_order = (*env)->GetFieldID(env, XImageFc.clazz, "byte_order", "I");
+	XImageFc.bitmap_unit = (*env)->GetFieldID(env, XImageFc.clazz, "bitmap_unit", "I");
+	XImageFc.bitmap_bit_order = (*env)->GetFieldID(env, XImageFc.clazz, "bitmap_bit_order", "I");
+	XImageFc.bitmap_pad = (*env)->GetFieldID(env, XImageFc.clazz, "bitmap_pad", "I");
+	XImageFc.depth = (*env)->GetFieldID(env, XImageFc.clazz, "depth", "I");
+	XImageFc.bytes_per_line = (*env)->GetFieldID(env, XImageFc.clazz, "bytes_per_line", "I");
+	XImageFc.bits_per_pixel = (*env)->GetFieldID(env, XImageFc.clazz, "bits_per_pixel", "I");
+	XImageFc.red_mask = (*env)->GetFieldID(env, XImageFc.clazz, "red_mask", "I");
+	XImageFc.green_mask = (*env)->GetFieldID(env, XImageFc.clazz, "green_mask", "I");
+	XImageFc.blue_mask = (*env)->GetFieldID(env, XImageFc.clazz, "blue_mask", "I");
+	XImageFc.obdata = (*env)->GetFieldID(env, XImageFc.clazz, "obdata", "I");
+	XImageFc.create_image = (*env)->GetFieldID(env, XImageFc.clazz, "create_image", "I");
+	XImageFc.destroy_image = (*env)->GetFieldID(env, XImageFc.clazz, "destroy_image", "I");
+	XImageFc.get_pixel = (*env)->GetFieldID(env, XImageFc.clazz, "get_pixel", "I");
+	XImageFc.put_pixel = (*env)->GetFieldID(env, XImageFc.clazz, "put_pixel", "I");
+	XImageFc.sub_image = (*env)->GetFieldID(env, XImageFc.clazz, "sub_image", "I");
+	XImageFc.add_pixel = (*env)->GetFieldID(env, XImageFc.clazz, "add_pixel", "I");
+	XImageFc.cached = 1;
+}
+
+XImage *getXImageFields(JNIEnv *env, jobject lpObject, XImage *lpStruct)
+{
+	if (!XImageFc.cached) cacheXImageFields(env, lpObject);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, XImageFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, XImageFc.height);
+	lpStruct->xoffset = (*env)->GetIntField(env, lpObject, XImageFc.xoffset);
+	lpStruct->format = (*env)->GetIntField(env, lpObject, XImageFc.format);
+	lpStruct->data = (char *)(*env)->GetIntField(env, lpObject, XImageFc.data);
+	lpStruct->byte_order = (*env)->GetIntField(env, lpObject, XImageFc.byte_order);
+	lpStruct->bitmap_unit = (*env)->GetIntField(env, lpObject, XImageFc.bitmap_unit);
+	lpStruct->bitmap_bit_order = (*env)->GetIntField(env, lpObject, XImageFc.bitmap_bit_order);
+	lpStruct->bitmap_pad = (*env)->GetIntField(env, lpObject, XImageFc.bitmap_pad);
+	lpStruct->depth = (*env)->GetIntField(env, lpObject, XImageFc.depth);
+	lpStruct->bytes_per_line = (*env)->GetIntField(env, lpObject, XImageFc.bytes_per_line);
+	lpStruct->bits_per_pixel = (*env)->GetIntField(env, lpObject, XImageFc.bits_per_pixel);
+	lpStruct->red_mask = (*env)->GetIntField(env, lpObject, XImageFc.red_mask);
+	lpStruct->green_mask = (*env)->GetIntField(env, lpObject, XImageFc.green_mask);
+	lpStruct->blue_mask = (*env)->GetIntField(env, lpObject, XImageFc.blue_mask);
+	lpStruct->obdata = (XPointer)(*env)->GetIntField(env, lpObject, XImageFc.obdata);
+	lpStruct->f.create_image = (void *)(*env)->GetIntField(env, lpObject, XImageFc.create_image);
+	lpStruct->f.destroy_image = (void *)(*env)->GetIntField(env, lpObject, XImageFc.destroy_image);
+	lpStruct->f.get_pixel = (void *)(*env)->GetIntField(env, lpObject, XImageFc.get_pixel);
+	lpStruct->f.put_pixel = (void *)(*env)->GetIntField(env, lpObject, XImageFc.put_pixel);
+	lpStruct->f.sub_image = (void *)(*env)->GetIntField(env, lpObject, XImageFc.sub_image);
+	lpStruct->f.add_pixel = (void *)(*env)->GetIntField(env, lpObject, XImageFc.add_pixel);
+	return lpStruct;
+}
+
+void setXImageFields(JNIEnv *env, jobject lpObject, XImage *lpStruct)
+{
+	if (!XImageFc.cached) cacheXImageFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XImageFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, XImageFc.height, (jint)lpStruct->height);
+	(*env)->SetIntField(env, lpObject, XImageFc.xoffset, (jint)lpStruct->xoffset);
+	(*env)->SetIntField(env, lpObject, XImageFc.format, (jint)lpStruct->format);
+	(*env)->SetIntField(env, lpObject, XImageFc.data, (jint)lpStruct->data);
+	(*env)->SetIntField(env, lpObject, XImageFc.byte_order, (jint)lpStruct->byte_order);
+	(*env)->SetIntField(env, lpObject, XImageFc.bitmap_unit, (jint)lpStruct->bitmap_unit);
+	(*env)->SetIntField(env, lpObject, XImageFc.bitmap_bit_order, (jint)lpStruct->bitmap_bit_order);
+	(*env)->SetIntField(env, lpObject, XImageFc.bitmap_pad, (jint)lpStruct->bitmap_pad);
+	(*env)->SetIntField(env, lpObject, XImageFc.depth, (jint)lpStruct->depth);
+	(*env)->SetIntField(env, lpObject, XImageFc.bytes_per_line, (jint)lpStruct->bytes_per_line);
+	(*env)->SetIntField(env, lpObject, XImageFc.bits_per_pixel, (jint)lpStruct->bits_per_pixel);
+	(*env)->SetIntField(env, lpObject, XImageFc.red_mask, (jint)lpStruct->red_mask);
+	(*env)->SetIntField(env, lpObject, XImageFc.green_mask, (jint)lpStruct->green_mask);
+	(*env)->SetIntField(env, lpObject, XImageFc.blue_mask, (jint)lpStruct->blue_mask);
+	(*env)->SetIntField(env, lpObject, XImageFc.obdata, (jint)lpStruct->obdata);
+	(*env)->SetIntField(env, lpObject, XImageFc.create_image, (jint)lpStruct->f.create_image);
+	(*env)->SetIntField(env, lpObject, XImageFc.destroy_image, (jint)lpStruct->f.destroy_image);
+	(*env)->SetIntField(env, lpObject, XImageFc.get_pixel, (jint)lpStruct->f.get_pixel);
+	(*env)->SetIntField(env, lpObject, XImageFc.put_pixel, (jint)lpStruct->f.put_pixel);
+	(*env)->SetIntField(env, lpObject, XImageFc.sub_image, (jint)lpStruct->f.sub_image);
+	(*env)->SetIntField(env, lpObject, XImageFc.add_pixel, (jint)lpStruct->f.add_pixel);
+}
+#endif
+
+#ifndef NO_XKeyEvent
+typedef struct XKeyEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID root, subwindow, time, x, y, x_root, y_root, state, keycode, same_screen;
+} XKeyEvent_FID_CACHE;
+
+XKeyEvent_FID_CACHE XKeyEventFc;
+
+void cacheXKeyEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XKeyEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XKeyEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XKeyEventFc.root = (*env)->GetFieldID(env, XKeyEventFc.clazz, "root", "I");
+	XKeyEventFc.subwindow = (*env)->GetFieldID(env, XKeyEventFc.clazz, "subwindow", "I");
+	XKeyEventFc.time = (*env)->GetFieldID(env, XKeyEventFc.clazz, "time", "I");
+	XKeyEventFc.x = (*env)->GetFieldID(env, XKeyEventFc.clazz, "x", "I");
+	XKeyEventFc.y = (*env)->GetFieldID(env, XKeyEventFc.clazz, "y", "I");
+	XKeyEventFc.x_root = (*env)->GetFieldID(env, XKeyEventFc.clazz, "x_root", "I");
+	XKeyEventFc.y_root = (*env)->GetFieldID(env, XKeyEventFc.clazz, "y_root", "I");
+	XKeyEventFc.state = (*env)->GetFieldID(env, XKeyEventFc.clazz, "state", "I");
+	XKeyEventFc.keycode = (*env)->GetFieldID(env, XKeyEventFc.clazz, "keycode", "I");
+	XKeyEventFc.same_screen = (*env)->GetFieldID(env, XKeyEventFc.clazz, "same_screen", "I");
+	XKeyEventFc.cached = 1;
+}
+
+XKeyEvent *getXKeyEventFields(JNIEnv *env, jobject lpObject, XKeyEvent *lpStruct)
+{
+	if (!XKeyEventFc.cached) cacheXKeyEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->root = (*env)->GetIntField(env, lpObject, XKeyEventFc.root);
+	lpStruct->subwindow = (*env)->GetIntField(env, lpObject, XKeyEventFc.subwindow);
+	lpStruct->time = (*env)->GetIntField(env, lpObject, XKeyEventFc.time);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XKeyEventFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XKeyEventFc.y);
+	lpStruct->x_root = (*env)->GetIntField(env, lpObject, XKeyEventFc.x_root);
+	lpStruct->y_root = (*env)->GetIntField(env, lpObject, XKeyEventFc.y_root);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, XKeyEventFc.state);
+	lpStruct->keycode = (*env)->GetIntField(env, lpObject, XKeyEventFc.keycode);
+	lpStruct->same_screen = (*env)->GetIntField(env, lpObject, XKeyEventFc.same_screen);
+	return lpStruct;
+}
+
+void setXKeyEventFields(JNIEnv *env, jobject lpObject, XKeyEvent *lpStruct)
+{
+	if (!XKeyEventFc.cached) cacheXKeyEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XKeyEventFc.root, (jint)lpStruct->root);
+	(*env)->SetIntField(env, lpObject, XKeyEventFc.subwindow, (jint)lpStruct->subwindow);
+	(*env)->SetIntField(env, lpObject, XKeyEventFc.time, (jint)lpStruct->time);
+	(*env)->SetIntField(env, lpObject, XKeyEventFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XKeyEventFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XKeyEventFc.x_root, (jint)lpStruct->x_root);
+	(*env)->SetIntField(env, lpObject, XKeyEventFc.y_root, (jint)lpStruct->y_root);
+	(*env)->SetIntField(env, lpObject, XKeyEventFc.state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, XKeyEventFc.keycode, (jint)lpStruct->keycode);
+	(*env)->SetIntField(env, lpObject, XKeyEventFc.same_screen, (jint)lpStruct->same_screen);
+}
+#endif
+
+#ifndef NO_XMotionEvent
+typedef struct XMotionEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID root, subwindow, time, x, y, x_root, y_root, state, is_hint, same_screen;
+} XMotionEvent_FID_CACHE;
+
+XMotionEvent_FID_CACHE XMotionEventFc;
+
+void cacheXMotionEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XMotionEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XMotionEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XMotionEventFc.root = (*env)->GetFieldID(env, XMotionEventFc.clazz, "root", "I");
+	XMotionEventFc.subwindow = (*env)->GetFieldID(env, XMotionEventFc.clazz, "subwindow", "I");
+	XMotionEventFc.time = (*env)->GetFieldID(env, XMotionEventFc.clazz, "time", "I");
+	XMotionEventFc.x = (*env)->GetFieldID(env, XMotionEventFc.clazz, "x", "I");
+	XMotionEventFc.y = (*env)->GetFieldID(env, XMotionEventFc.clazz, "y", "I");
+	XMotionEventFc.x_root = (*env)->GetFieldID(env, XMotionEventFc.clazz, "x_root", "I");
+	XMotionEventFc.y_root = (*env)->GetFieldID(env, XMotionEventFc.clazz, "y_root", "I");
+	XMotionEventFc.state = (*env)->GetFieldID(env, XMotionEventFc.clazz, "state", "I");
+	XMotionEventFc.is_hint = (*env)->GetFieldID(env, XMotionEventFc.clazz, "is_hint", "I");
+	XMotionEventFc.same_screen = (*env)->GetFieldID(env, XMotionEventFc.clazz, "same_screen", "I");
+	XMotionEventFc.cached = 1;
+}
+
+XMotionEvent *getXMotionEventFields(JNIEnv *env, jobject lpObject, XMotionEvent *lpStruct)
+{
+	if (!XMotionEventFc.cached) cacheXMotionEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->root = (*env)->GetIntField(env, lpObject, XMotionEventFc.root);
+	lpStruct->subwindow = (*env)->GetIntField(env, lpObject, XMotionEventFc.subwindow);
+	lpStruct->time = (*env)->GetIntField(env, lpObject, XMotionEventFc.time);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XMotionEventFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XMotionEventFc.y);
+	lpStruct->x_root = (*env)->GetIntField(env, lpObject, XMotionEventFc.x_root);
+	lpStruct->y_root = (*env)->GetIntField(env, lpObject, XMotionEventFc.y_root);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, XMotionEventFc.state);
+	lpStruct->is_hint = (*env)->GetIntField(env, lpObject, XMotionEventFc.is_hint);
+	lpStruct->same_screen = (*env)->GetIntField(env, lpObject, XMotionEventFc.same_screen);
+	return lpStruct;
+}
+
+void setXMotionEventFields(JNIEnv *env, jobject lpObject, XMotionEvent *lpStruct)
+{
+	if (!XMotionEventFc.cached) cacheXMotionEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XMotionEventFc.root, (jint)lpStruct->root);
+	(*env)->SetIntField(env, lpObject, XMotionEventFc.subwindow, (jint)lpStruct->subwindow);
+	(*env)->SetIntField(env, lpObject, XMotionEventFc.time, (jint)lpStruct->time);
+	(*env)->SetIntField(env, lpObject, XMotionEventFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XMotionEventFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XMotionEventFc.x_root, (jint)lpStruct->x_root);
+	(*env)->SetIntField(env, lpObject, XMotionEventFc.y_root, (jint)lpStruct->y_root);
+	(*env)->SetIntField(env, lpObject, XMotionEventFc.state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, XMotionEventFc.is_hint, (jint)lpStruct->is_hint);
+	(*env)->SetIntField(env, lpObject, XMotionEventFc.same_screen, (jint)lpStruct->same_screen);
+}
+#endif
+
+#ifndef NO_XRectangle
+typedef struct XRectangle_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height;
+} XRectangle_FID_CACHE;
+
+XRectangle_FID_CACHE XRectangleFc;
+
+void cacheXRectangleFields(JNIEnv *env, jobject lpObject)
+{
+	if (XRectangleFc.cached) return;
+	XRectangleFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XRectangleFc.x = (*env)->GetFieldID(env, XRectangleFc.clazz, "x", "S");
+	XRectangleFc.y = (*env)->GetFieldID(env, XRectangleFc.clazz, "y", "S");
+	XRectangleFc.width = (*env)->GetFieldID(env, XRectangleFc.clazz, "width", "S");
+	XRectangleFc.height = (*env)->GetFieldID(env, XRectangleFc.clazz, "height", "S");
+	XRectangleFc.cached = 1;
+}
+
+XRectangle *getXRectangleFields(JNIEnv *env, jobject lpObject, XRectangle *lpStruct)
+{
+	if (!XRectangleFc.cached) cacheXRectangleFields(env, lpObject);
+	lpStruct->x = (*env)->GetShortField(env, lpObject, XRectangleFc.x);
+	lpStruct->y = (*env)->GetShortField(env, lpObject, XRectangleFc.y);
+	lpStruct->width = (*env)->GetShortField(env, lpObject, XRectangleFc.width);
+	lpStruct->height = (*env)->GetShortField(env, lpObject, XRectangleFc.height);
+	return lpStruct;
+}
+
+void setXRectangleFields(JNIEnv *env, jobject lpObject, XRectangle *lpStruct)
+{
+	if (!XRectangleFc.cached) cacheXRectangleFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, XRectangleFc.x, (jshort)lpStruct->x);
+	(*env)->SetShortField(env, lpObject, XRectangleFc.y, (jshort)lpStruct->y);
+	(*env)->SetShortField(env, lpObject, XRectangleFc.width, (jshort)lpStruct->width);
+	(*env)->SetShortField(env, lpObject, XRectangleFc.height, (jshort)lpStruct->height);
+}
+#endif
+
+#ifndef NO_XSetWindowAttributes
+typedef struct XSetWindowAttributes_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID background_pixmap, background_pixel, border_pixmap, border_pixel, bit_gravity, win_gravity, backing_store, backing_planes, backing_pixel, save_under, event_mask, do_not_propagate_mask, override_redirect, colormap, cursor;
+} XSetWindowAttributes_FID_CACHE;
+
+XSetWindowAttributes_FID_CACHE XSetWindowAttributesFc;
+
+void cacheXSetWindowAttributesFields(JNIEnv *env, jobject lpObject)
+{
+	if (XSetWindowAttributesFc.cached) return;
+	XSetWindowAttributesFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XSetWindowAttributesFc.background_pixmap = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "background_pixmap", "I");
+	XSetWindowAttributesFc.background_pixel = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "background_pixel", "I");
+	XSetWindowAttributesFc.border_pixmap = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "border_pixmap", "I");
+	XSetWindowAttributesFc.border_pixel = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "border_pixel", "I");
+	XSetWindowAttributesFc.bit_gravity = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "bit_gravity", "I");
+	XSetWindowAttributesFc.win_gravity = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "win_gravity", "I");
+	XSetWindowAttributesFc.backing_store = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "backing_store", "I");
+	XSetWindowAttributesFc.backing_planes = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "backing_planes", "I");
+	XSetWindowAttributesFc.backing_pixel = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "backing_pixel", "I");
+	XSetWindowAttributesFc.save_under = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "save_under", "I");
+	XSetWindowAttributesFc.event_mask = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "event_mask", "I");
+	XSetWindowAttributesFc.do_not_propagate_mask = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "do_not_propagate_mask", "I");
+	XSetWindowAttributesFc.override_redirect = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "override_redirect", "I");
+	XSetWindowAttributesFc.colormap = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "colormap", "I");
+	XSetWindowAttributesFc.cursor = (*env)->GetFieldID(env, XSetWindowAttributesFc.clazz, "cursor", "I");
+	XSetWindowAttributesFc.cached = 1;
+}
+
+XSetWindowAttributes *getXSetWindowAttributesFields(JNIEnv *env, jobject lpObject, XSetWindowAttributes *lpStruct)
+{
+	if (!XSetWindowAttributesFc.cached) cacheXSetWindowAttributesFields(env, lpObject);
+	lpStruct->background_pixmap = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.background_pixmap);
+	lpStruct->background_pixel = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.background_pixel);
+	lpStruct->border_pixmap = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.border_pixmap);
+	lpStruct->border_pixel = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.border_pixel);
+	lpStruct->bit_gravity = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.bit_gravity);
+	lpStruct->win_gravity = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.win_gravity);
+	lpStruct->backing_store = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.backing_store);
+	lpStruct->backing_planes = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.backing_planes);
+	lpStruct->backing_pixel = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.backing_pixel);
+	lpStruct->save_under = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.save_under);
+	lpStruct->event_mask = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.event_mask);
+	lpStruct->do_not_propagate_mask = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.do_not_propagate_mask);
+	lpStruct->override_redirect = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.override_redirect);
+	lpStruct->colormap = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.colormap);
+	lpStruct->cursor = (*env)->GetIntField(env, lpObject, XSetWindowAttributesFc.cursor);
+	return lpStruct;
+}
+
+void setXSetWindowAttributesFields(JNIEnv *env, jobject lpObject, XSetWindowAttributes *lpStruct)
+{
+	if (!XSetWindowAttributesFc.cached) cacheXSetWindowAttributesFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.background_pixmap, (jint)lpStruct->background_pixmap);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.background_pixel, (jint)lpStruct->background_pixel);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.border_pixmap, (jint)lpStruct->border_pixmap);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.border_pixel, (jint)lpStruct->border_pixel);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.bit_gravity, (jint)lpStruct->bit_gravity);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.win_gravity, (jint)lpStruct->win_gravity);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.backing_store, (jint)lpStruct->backing_store);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.backing_planes, (jint)lpStruct->backing_planes);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.backing_pixel, (jint)lpStruct->backing_pixel);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.save_under, (jint)lpStruct->save_under);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.event_mask, (jint)lpStruct->event_mask);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.do_not_propagate_mask, (jint)lpStruct->do_not_propagate_mask);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.override_redirect, (jint)lpStruct->override_redirect);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.colormap, (jint)lpStruct->colormap);
+	(*env)->SetIntField(env, lpObject, XSetWindowAttributesFc.cursor, (jint)lpStruct->cursor);
+}
+#endif
+
+#ifndef NO_XTextProperty
+typedef struct XTextProperty_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID value, encoding, format, nitems;
+} XTextProperty_FID_CACHE;
+
+XTextProperty_FID_CACHE XTextPropertyFc;
+
+void cacheXTextPropertyFields(JNIEnv *env, jobject lpObject)
+{
+	if (XTextPropertyFc.cached) return;
+	XTextPropertyFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XTextPropertyFc.value = (*env)->GetFieldID(env, XTextPropertyFc.clazz, "value", "I");
+	XTextPropertyFc.encoding = (*env)->GetFieldID(env, XTextPropertyFc.clazz, "encoding", "I");
+	XTextPropertyFc.format = (*env)->GetFieldID(env, XTextPropertyFc.clazz, "format", "I");
+	XTextPropertyFc.nitems = (*env)->GetFieldID(env, XTextPropertyFc.clazz, "nitems", "I");
+	XTextPropertyFc.cached = 1;
+}
+
+XTextProperty *getXTextPropertyFields(JNIEnv *env, jobject lpObject, XTextProperty *lpStruct)
+{
+	if (!XTextPropertyFc.cached) cacheXTextPropertyFields(env, lpObject);
+	lpStruct->value = (char *)(*env)->GetIntField(env, lpObject, XTextPropertyFc.value);
+	lpStruct->encoding = (*env)->GetIntField(env, lpObject, XTextPropertyFc.encoding);
+	lpStruct->format = (*env)->GetIntField(env, lpObject, XTextPropertyFc.format);
+	lpStruct->nitems = (*env)->GetIntField(env, lpObject, XTextPropertyFc.nitems);
+	return lpStruct;
+}
+
+void setXTextPropertyFields(JNIEnv *env, jobject lpObject, XTextProperty *lpStruct)
+{
+	if (!XTextPropertyFc.cached) cacheXTextPropertyFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XTextPropertyFc.value, (jint)lpStruct->value);
+	(*env)->SetIntField(env, lpObject, XTextPropertyFc.encoding, (jint)lpStruct->encoding);
+	(*env)->SetIntField(env, lpObject, XTextPropertyFc.format, (jint)lpStruct->format);
+	(*env)->SetIntField(env, lpObject, XTextPropertyFc.nitems, (jint)lpStruct->nitems);
+}
+#endif
+
+#ifndef NO_XWindowAttributes
+typedef struct XWindowAttributes_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height, border_width, depth, visual, root, c_class, bit_gravity, win_gravity, backing_store, backing_planes, backing_pixel, save_under, colormap, map_installed, map_state, all_event_masks, your_event_mask, do_not_propagate_mask, override_redirect, screen;
+} XWindowAttributes_FID_CACHE;
+
+XWindowAttributes_FID_CACHE XWindowAttributesFc;
+
+void cacheXWindowAttributesFields(JNIEnv *env, jobject lpObject)
+{
+	if (XWindowAttributesFc.cached) return;
+	XWindowAttributesFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XWindowAttributesFc.x = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "x", "I");
+	XWindowAttributesFc.y = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "y", "I");
+	XWindowAttributesFc.width = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "width", "I");
+	XWindowAttributesFc.height = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "height", "I");
+	XWindowAttributesFc.border_width = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "border_width", "I");
+	XWindowAttributesFc.depth = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "depth", "I");
+	XWindowAttributesFc.visual = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "visual", "I");
+	XWindowAttributesFc.root = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "root", "I");
+	XWindowAttributesFc.c_class = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "c_class", "I");
+	XWindowAttributesFc.bit_gravity = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "bit_gravity", "I");
+	XWindowAttributesFc.win_gravity = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "win_gravity", "I");
+	XWindowAttributesFc.backing_store = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "backing_store", "I");
+	XWindowAttributesFc.backing_planes = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "backing_planes", "I");
+	XWindowAttributesFc.backing_pixel = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "backing_pixel", "I");
+	XWindowAttributesFc.save_under = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "save_under", "I");
+	XWindowAttributesFc.colormap = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "colormap", "I");
+	XWindowAttributesFc.map_installed = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "map_installed", "I");
+	XWindowAttributesFc.map_state = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "map_state", "I");
+	XWindowAttributesFc.all_event_masks = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "all_event_masks", "I");
+	XWindowAttributesFc.your_event_mask = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "your_event_mask", "I");
+	XWindowAttributesFc.do_not_propagate_mask = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "do_not_propagate_mask", "I");
+	XWindowAttributesFc.override_redirect = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "override_redirect", "I");
+	XWindowAttributesFc.screen = (*env)->GetFieldID(env, XWindowAttributesFc.clazz, "screen", "I");
+	XWindowAttributesFc.cached = 1;
+}
+
+XWindowAttributes *getXWindowAttributesFields(JNIEnv *env, jobject lpObject, XWindowAttributes *lpStruct)
+{
+	if (!XWindowAttributesFc.cached) cacheXWindowAttributesFields(env, lpObject);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.height);
+	lpStruct->border_width = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.border_width);
+	lpStruct->depth = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.depth);
+	lpStruct->visual = (Visual *)(*env)->GetIntField(env, lpObject, XWindowAttributesFc.visual);
+	lpStruct->root = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.root);
+	lpStruct->class = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.c_class);
+	lpStruct->bit_gravity = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.bit_gravity);
+	lpStruct->win_gravity = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.win_gravity);
+	lpStruct->backing_store = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.backing_store);
+	lpStruct->backing_planes = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.backing_planes);
+	lpStruct->backing_pixel = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.backing_pixel);
+	lpStruct->save_under = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.save_under);
+	lpStruct->colormap = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.colormap);
+	lpStruct->map_installed = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.map_installed);
+	lpStruct->map_state = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.map_state);
+	lpStruct->all_event_masks = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.all_event_masks);
+	lpStruct->your_event_mask = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.your_event_mask);
+	lpStruct->do_not_propagate_mask = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.do_not_propagate_mask);
+	lpStruct->override_redirect = (*env)->GetIntField(env, lpObject, XWindowAttributesFc.override_redirect);
+	lpStruct->screen = (Screen *)(*env)->GetIntField(env, lpObject, XWindowAttributesFc.screen);
+	return lpStruct;
+}
+
+void setXWindowAttributesFields(JNIEnv *env, jobject lpObject, XWindowAttributes *lpStruct)
+{
+	if (!XWindowAttributesFc.cached) cacheXWindowAttributesFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.height, (jint)lpStruct->height);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.border_width, (jint)lpStruct->border_width);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.depth, (jint)lpStruct->depth);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.visual, (jint)lpStruct->visual);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.root, (jint)lpStruct->root);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.c_class, (jint)lpStruct->class);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.bit_gravity, (jint)lpStruct->bit_gravity);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.win_gravity, (jint)lpStruct->win_gravity);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.backing_store, (jint)lpStruct->backing_store);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.backing_planes, (jint)lpStruct->backing_planes);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.backing_pixel, (jint)lpStruct->backing_pixel);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.save_under, (jint)lpStruct->save_under);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.colormap, (jint)lpStruct->colormap);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.map_installed, (jint)lpStruct->map_installed);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.map_state, (jint)lpStruct->map_state);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.all_event_masks, (jint)lpStruct->all_event_masks);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.your_event_mask, (jint)lpStruct->your_event_mask);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.do_not_propagate_mask, (jint)lpStruct->do_not_propagate_mask);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.override_redirect, (jint)lpStruct->override_redirect);
+	(*env)->SetIntField(env, lpObject, XWindowAttributesFc.screen, (jint)lpStruct->screen);
+}
+#endif
+
+#ifndef NO_XWindowChanges
+typedef struct XWindowChanges_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height, border_width, sibling, stack_mode;
+} XWindowChanges_FID_CACHE;
+
+XWindowChanges_FID_CACHE XWindowChangesFc;
+
+void cacheXWindowChangesFields(JNIEnv *env, jobject lpObject)
+{
+	if (XWindowChangesFc.cached) return;
+	XWindowChangesFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XWindowChangesFc.x = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "x", "I");
+	XWindowChangesFc.y = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "y", "I");
+	XWindowChangesFc.width = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "width", "I");
+	XWindowChangesFc.height = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "height", "I");
+	XWindowChangesFc.border_width = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "border_width", "I");
+	XWindowChangesFc.sibling = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "sibling", "I");
+	XWindowChangesFc.stack_mode = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "stack_mode", "I");
+	XWindowChangesFc.cached = 1;
+}
+
+XWindowChanges *getXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct)
+{
+	if (!XWindowChangesFc.cached) cacheXWindowChangesFields(env, lpObject);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XWindowChangesFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XWindowChangesFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, XWindowChangesFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, XWindowChangesFc.height);
+	lpStruct->border_width = (*env)->GetIntField(env, lpObject, XWindowChangesFc.border_width);
+	lpStruct->sibling = (*env)->GetIntField(env, lpObject, XWindowChangesFc.sibling);
+	lpStruct->stack_mode = (*env)->GetIntField(env, lpObject, XWindowChangesFc.stack_mode);
+	return lpStruct;
+}
+
+void setXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct)
+{
+	if (!XWindowChangesFc.cached) cacheXWindowChangesFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.height, (jint)lpStruct->height);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.border_width, (jint)lpStruct->border_width);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.sibling, (jint)lpStruct->sibling);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.stack_mode, (jint)lpStruct->stack_mode);
+}
+#endif
+
+#ifndef NO_XineramaScreenInfo
+typedef struct XineramaScreenInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID screen_number, x_org, y_org, width, height;
+} XineramaScreenInfo_FID_CACHE;
+
+XineramaScreenInfo_FID_CACHE XineramaScreenInfoFc;
+
+void cacheXineramaScreenInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (XineramaScreenInfoFc.cached) return;
+	XineramaScreenInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XineramaScreenInfoFc.screen_number = (*env)->GetFieldID(env, XineramaScreenInfoFc.clazz, "screen_number", "I");
+	XineramaScreenInfoFc.x_org = (*env)->GetFieldID(env, XineramaScreenInfoFc.clazz, "x_org", "S");
+	XineramaScreenInfoFc.y_org = (*env)->GetFieldID(env, XineramaScreenInfoFc.clazz, "y_org", "S");
+	XineramaScreenInfoFc.width = (*env)->GetFieldID(env, XineramaScreenInfoFc.clazz, "width", "S");
+	XineramaScreenInfoFc.height = (*env)->GetFieldID(env, XineramaScreenInfoFc.clazz, "height", "S");
+	XineramaScreenInfoFc.cached = 1;
+}
+
+XineramaScreenInfo *getXineramaScreenInfoFields(JNIEnv *env, jobject lpObject, XineramaScreenInfo *lpStruct)
+{
+	if (!XineramaScreenInfoFc.cached) cacheXineramaScreenInfoFields(env, lpObject);
+	lpStruct->screen_number = (*env)->GetIntField(env, lpObject, XineramaScreenInfoFc.screen_number);
+	lpStruct->x_org = (*env)->GetShortField(env, lpObject, XineramaScreenInfoFc.x_org);
+	lpStruct->y_org = (*env)->GetShortField(env, lpObject, XineramaScreenInfoFc.y_org);
+	lpStruct->width = (*env)->GetShortField(env, lpObject, XineramaScreenInfoFc.width);
+	lpStruct->height = (*env)->GetShortField(env, lpObject, XineramaScreenInfoFc.height);
+	return lpStruct;
+}
+
+void setXineramaScreenInfoFields(JNIEnv *env, jobject lpObject, XineramaScreenInfo *lpStruct)
+{
+	if (!XineramaScreenInfoFc.cached) cacheXineramaScreenInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XineramaScreenInfoFc.screen_number, (jint)lpStruct->screen_number);
+	(*env)->SetShortField(env, lpObject, XineramaScreenInfoFc.x_org, (jshort)lpStruct->x_org);
+	(*env)->SetShortField(env, lpObject, XineramaScreenInfoFc.y_org, (jshort)lpStruct->y_org);
+	(*env)->SetShortField(env, lpObject, XineramaScreenInfoFc.width, (jshort)lpStruct->width);
+	(*env)->SetShortField(env, lpObject, XineramaScreenInfoFc.height, (jshort)lpStruct->height);
+}
+#endif
+
+#ifndef NO_XmAnyCallbackStruct
+typedef struct XmAnyCallbackStruct_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID reason, event;
+} XmAnyCallbackStruct_FID_CACHE;
+
+XmAnyCallbackStruct_FID_CACHE XmAnyCallbackStructFc;
+
+void cacheXmAnyCallbackStructFields(JNIEnv *env, jobject lpObject)
+{
+	if (XmAnyCallbackStructFc.cached) return;
+	XmAnyCallbackStructFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XmAnyCallbackStructFc.reason = (*env)->GetFieldID(env, XmAnyCallbackStructFc.clazz, "reason", "I");
+	XmAnyCallbackStructFc.event = (*env)->GetFieldID(env, XmAnyCallbackStructFc.clazz, "event", "I");
+	XmAnyCallbackStructFc.cached = 1;
+}
+
+XmAnyCallbackStruct *getXmAnyCallbackStructFields(JNIEnv *env, jobject lpObject, XmAnyCallbackStruct *lpStruct)
+{
+	if (!XmAnyCallbackStructFc.cached) cacheXmAnyCallbackStructFields(env, lpObject);
+	lpStruct->reason = (*env)->GetIntField(env, lpObject, XmAnyCallbackStructFc.reason);
+	lpStruct->event = (XEvent *)(*env)->GetIntField(env, lpObject, XmAnyCallbackStructFc.event);
+	return lpStruct;
+}
+
+void setXmAnyCallbackStructFields(JNIEnv *env, jobject lpObject, XmAnyCallbackStruct *lpStruct)
+{
+	if (!XmAnyCallbackStructFc.cached) cacheXmAnyCallbackStructFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XmAnyCallbackStructFc.reason, (jint)lpStruct->reason);
+	(*env)->SetIntField(env, lpObject, XmAnyCallbackStructFc.event, (jint)lpStruct->event);
+}
+#endif
+
+#ifndef NO_XmDragProcCallbackStruct
+typedef struct XmDragProcCallbackStruct_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID timeStamp, dragContext, x, y, dropSiteStatus, operation, operations, animate;
+} XmDragProcCallbackStruct_FID_CACHE;
+
+XmDragProcCallbackStruct_FID_CACHE XmDragProcCallbackStructFc;
+
+void cacheXmDragProcCallbackStructFields(JNIEnv *env, jobject lpObject)
+{
+	if (XmDragProcCallbackStructFc.cached) return;
+	cacheXmAnyCallbackStructFields(env, lpObject);
+	XmDragProcCallbackStructFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XmDragProcCallbackStructFc.timeStamp = (*env)->GetFieldID(env, XmDragProcCallbackStructFc.clazz, "timeStamp", "I");
+	XmDragProcCallbackStructFc.dragContext = (*env)->GetFieldID(env, XmDragProcCallbackStructFc.clazz, "dragContext", "I");
+	XmDragProcCallbackStructFc.x = (*env)->GetFieldID(env, XmDragProcCallbackStructFc.clazz, "x", "S");
+	XmDragProcCallbackStructFc.y = (*env)->GetFieldID(env, XmDragProcCallbackStructFc.clazz, "y", "S");
+	XmDragProcCallbackStructFc.dropSiteStatus = (*env)->GetFieldID(env, XmDragProcCallbackStructFc.clazz, "dropSiteStatus", "B");
+	XmDragProcCallbackStructFc.operation = (*env)->GetFieldID(env, XmDragProcCallbackStructFc.clazz, "operation", "B");
+	XmDragProcCallbackStructFc.operations = (*env)->GetFieldID(env, XmDragProcCallbackStructFc.clazz, "operations", "B");
+	XmDragProcCallbackStructFc.animate = (*env)->GetFieldID(env, XmDragProcCallbackStructFc.clazz, "animate", "B");
+	XmDragProcCallbackStructFc.cached = 1;
+}
+
+XmDragProcCallbackStruct *getXmDragProcCallbackStructFields(JNIEnv *env, jobject lpObject, XmDragProcCallbackStruct *lpStruct)
+{
+	if (!XmDragProcCallbackStructFc.cached) cacheXmDragProcCallbackStructFields(env, lpObject);
+	getXmAnyCallbackStructFields(env, lpObject, (XmAnyCallbackStruct *)lpStruct);
+	lpStruct->timeStamp = (*env)->GetIntField(env, lpObject, XmDragProcCallbackStructFc.timeStamp);
+	lpStruct->dragContext = (Widget)(*env)->GetIntField(env, lpObject, XmDragProcCallbackStructFc.dragContext);
+	lpStruct->x = (*env)->GetShortField(env, lpObject, XmDragProcCallbackStructFc.x);
+	lpStruct->y = (*env)->GetShortField(env, lpObject, XmDragProcCallbackStructFc.y);
+	lpStruct->dropSiteStatus = (*env)->GetByteField(env, lpObject, XmDragProcCallbackStructFc.dropSiteStatus);
+	lpStruct->operation = (*env)->GetByteField(env, lpObject, XmDragProcCallbackStructFc.operation);
+	lpStruct->operations = (*env)->GetByteField(env, lpObject, XmDragProcCallbackStructFc.operations);
+	lpStruct->animate = (*env)->GetByteField(env, lpObject, XmDragProcCallbackStructFc.animate);
+	return lpStruct;
+}
+
+void setXmDragProcCallbackStructFields(JNIEnv *env, jobject lpObject, XmDragProcCallbackStruct *lpStruct)
+{
+	if (!XmDragProcCallbackStructFc.cached) cacheXmDragProcCallbackStructFields(env, lpObject);
+	setXmAnyCallbackStructFields(env, lpObject, (XmAnyCallbackStruct *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XmDragProcCallbackStructFc.timeStamp, (jint)lpStruct->timeStamp);
+	(*env)->SetIntField(env, lpObject, XmDragProcCallbackStructFc.dragContext, (jint)lpStruct->dragContext);
+	(*env)->SetShortField(env, lpObject, XmDragProcCallbackStructFc.x, (jshort)lpStruct->x);
+	(*env)->SetShortField(env, lpObject, XmDragProcCallbackStructFc.y, (jshort)lpStruct->y);
+	(*env)->SetByteField(env, lpObject, XmDragProcCallbackStructFc.dropSiteStatus, (jbyte)lpStruct->dropSiteStatus);
+	(*env)->SetByteField(env, lpObject, XmDragProcCallbackStructFc.operation, (jbyte)lpStruct->operation);
+	(*env)->SetByteField(env, lpObject, XmDragProcCallbackStructFc.operations, (jbyte)lpStruct->operations);
+	(*env)->SetByteField(env, lpObject, XmDragProcCallbackStructFc.animate, (jbyte)lpStruct->animate);
+}
+#endif
+
+#ifndef NO_XmDropFinishCallbackStruct
+typedef struct XmDropFinishCallbackStruct_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID timeStamp, operation, operations, dropSiteStatus, dropAction, completionStatus;
+} XmDropFinishCallbackStruct_FID_CACHE;
+
+XmDropFinishCallbackStruct_FID_CACHE XmDropFinishCallbackStructFc;
+
+void cacheXmDropFinishCallbackStructFields(JNIEnv *env, jobject lpObject)
+{
+	if (XmDropFinishCallbackStructFc.cached) return;
+	cacheXmAnyCallbackStructFields(env, lpObject);
+	XmDropFinishCallbackStructFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XmDropFinishCallbackStructFc.timeStamp = (*env)->GetFieldID(env, XmDropFinishCallbackStructFc.clazz, "timeStamp", "I");
+	XmDropFinishCallbackStructFc.operation = (*env)->GetFieldID(env, XmDropFinishCallbackStructFc.clazz, "operation", "B");
+	XmDropFinishCallbackStructFc.operations = (*env)->GetFieldID(env, XmDropFinishCallbackStructFc.clazz, "operations", "B");
+	XmDropFinishCallbackStructFc.dropSiteStatus = (*env)->GetFieldID(env, XmDropFinishCallbackStructFc.clazz, "dropSiteStatus", "B");
+	XmDropFinishCallbackStructFc.dropAction = (*env)->GetFieldID(env, XmDropFinishCallbackStructFc.clazz, "dropAction", "B");
+	XmDropFinishCallbackStructFc.completionStatus = (*env)->GetFieldID(env, XmDropFinishCallbackStructFc.clazz, "completionStatus", "B");
+	XmDropFinishCallbackStructFc.cached = 1;
+}
+
+XmDropFinishCallbackStruct *getXmDropFinishCallbackStructFields(JNIEnv *env, jobject lpObject, XmDropFinishCallbackStruct *lpStruct)
+{
+	if (!XmDropFinishCallbackStructFc.cached) cacheXmDropFinishCallbackStructFields(env, lpObject);
+	getXmAnyCallbackStructFields(env, lpObject, (XmAnyCallbackStruct *)lpStruct);
+	lpStruct->timeStamp = (*env)->GetIntField(env, lpObject, XmDropFinishCallbackStructFc.timeStamp);
+	lpStruct->operation = (*env)->GetByteField(env, lpObject, XmDropFinishCallbackStructFc.operation);
+	lpStruct->operations = (*env)->GetByteField(env, lpObject, XmDropFinishCallbackStructFc.operations);
+	lpStruct->dropSiteStatus = (*env)->GetByteField(env, lpObject, XmDropFinishCallbackStructFc.dropSiteStatus);
+	lpStruct->dropAction = (*env)->GetByteField(env, lpObject, XmDropFinishCallbackStructFc.dropAction);
+	lpStruct->completionStatus = (*env)->GetByteField(env, lpObject, XmDropFinishCallbackStructFc.completionStatus);
+	return lpStruct;
+}
+
+void setXmDropFinishCallbackStructFields(JNIEnv *env, jobject lpObject, XmDropFinishCallbackStruct *lpStruct)
+{
+	if (!XmDropFinishCallbackStructFc.cached) cacheXmDropFinishCallbackStructFields(env, lpObject);
+	setXmAnyCallbackStructFields(env, lpObject, (XmAnyCallbackStruct *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XmDropFinishCallbackStructFc.timeStamp, (jint)lpStruct->timeStamp);
+	(*env)->SetByteField(env, lpObject, XmDropFinishCallbackStructFc.operation, (jbyte)lpStruct->operation);
+	(*env)->SetByteField(env, lpObject, XmDropFinishCallbackStructFc.operations, (jbyte)lpStruct->operations);
+	(*env)->SetByteField(env, lpObject, XmDropFinishCallbackStructFc.dropSiteStatus, (jbyte)lpStruct->dropSiteStatus);
+	(*env)->SetByteField(env, lpObject, XmDropFinishCallbackStructFc.dropAction, (jbyte)lpStruct->dropAction);
+	(*env)->SetByteField(env, lpObject, XmDropFinishCallbackStructFc.completionStatus, (jbyte)lpStruct->completionStatus);
+}
+#endif
+
+#ifndef NO_XmDropProcCallbackStruct
+typedef struct XmDropProcCallbackStruct_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID timeStamp, dragContext, x, y, dropSiteStatus, operation, operations, dropAction;
+} XmDropProcCallbackStruct_FID_CACHE;
+
+XmDropProcCallbackStruct_FID_CACHE XmDropProcCallbackStructFc;
+
+void cacheXmDropProcCallbackStructFields(JNIEnv *env, jobject lpObject)
+{
+	if (XmDropProcCallbackStructFc.cached) return;
+	cacheXmAnyCallbackStructFields(env, lpObject);
+	XmDropProcCallbackStructFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XmDropProcCallbackStructFc.timeStamp = (*env)->GetFieldID(env, XmDropProcCallbackStructFc.clazz, "timeStamp", "I");
+	XmDropProcCallbackStructFc.dragContext = (*env)->GetFieldID(env, XmDropProcCallbackStructFc.clazz, "dragContext", "I");
+	XmDropProcCallbackStructFc.x = (*env)->GetFieldID(env, XmDropProcCallbackStructFc.clazz, "x", "S");
+	XmDropProcCallbackStructFc.y = (*env)->GetFieldID(env, XmDropProcCallbackStructFc.clazz, "y", "S");
+	XmDropProcCallbackStructFc.dropSiteStatus = (*env)->GetFieldID(env, XmDropProcCallbackStructFc.clazz, "dropSiteStatus", "B");
+	XmDropProcCallbackStructFc.operation = (*env)->GetFieldID(env, XmDropProcCallbackStructFc.clazz, "operation", "B");
+	XmDropProcCallbackStructFc.operations = (*env)->GetFieldID(env, XmDropProcCallbackStructFc.clazz, "operations", "B");
+	XmDropProcCallbackStructFc.dropAction = (*env)->GetFieldID(env, XmDropProcCallbackStructFc.clazz, "dropAction", "B");
+	XmDropProcCallbackStructFc.cached = 1;
+}
+
+XmDropProcCallbackStruct *getXmDropProcCallbackStructFields(JNIEnv *env, jobject lpObject, XmDropProcCallbackStruct *lpStruct)
+{
+	if (!XmDropProcCallbackStructFc.cached) cacheXmDropProcCallbackStructFields(env, lpObject);
+	getXmAnyCallbackStructFields(env, lpObject, (XmAnyCallbackStruct *)lpStruct);
+	lpStruct->timeStamp = (*env)->GetIntField(env, lpObject, XmDropProcCallbackStructFc.timeStamp);
+	lpStruct->dragContext = (Widget)(*env)->GetIntField(env, lpObject, XmDropProcCallbackStructFc.dragContext);
+	lpStruct->x = (*env)->GetShortField(env, lpObject, XmDropProcCallbackStructFc.x);
+	lpStruct->y = (*env)->GetShortField(env, lpObject, XmDropProcCallbackStructFc.y);
+	lpStruct->dropSiteStatus = (*env)->GetByteField(env, lpObject, XmDropProcCallbackStructFc.dropSiteStatus);
+	lpStruct->operation = (*env)->GetByteField(env, lpObject, XmDropProcCallbackStructFc.operation);
+	lpStruct->operations = (*env)->GetByteField(env, lpObject, XmDropProcCallbackStructFc.operations);
+	lpStruct->dropAction = (*env)->GetByteField(env, lpObject, XmDropProcCallbackStructFc.dropAction);
+	return lpStruct;
+}
+
+void setXmDropProcCallbackStructFields(JNIEnv *env, jobject lpObject, XmDropProcCallbackStruct *lpStruct)
+{
+	if (!XmDropProcCallbackStructFc.cached) cacheXmDropProcCallbackStructFields(env, lpObject);
+	setXmAnyCallbackStructFields(env, lpObject, (XmAnyCallbackStruct *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XmDropProcCallbackStructFc.timeStamp, (jint)lpStruct->timeStamp);
+	(*env)->SetIntField(env, lpObject, XmDropProcCallbackStructFc.dragContext, (jint)lpStruct->dragContext);
+	(*env)->SetShortField(env, lpObject, XmDropProcCallbackStructFc.x, (jshort)lpStruct->x);
+	(*env)->SetShortField(env, lpObject, XmDropProcCallbackStructFc.y, (jshort)lpStruct->y);
+	(*env)->SetByteField(env, lpObject, XmDropProcCallbackStructFc.dropSiteStatus, (jbyte)lpStruct->dropSiteStatus);
+	(*env)->SetByteField(env, lpObject, XmDropProcCallbackStructFc.operation, (jbyte)lpStruct->operation);
+	(*env)->SetByteField(env, lpObject, XmDropProcCallbackStructFc.operations, (jbyte)lpStruct->operations);
+	(*env)->SetByteField(env, lpObject, XmDropProcCallbackStructFc.dropAction, (jbyte)lpStruct->dropAction);
+}
+#endif
+
+#ifndef NO_XmTextBlockRec
+typedef struct XmTextBlockRec_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID ptr, length, format;
+} XmTextBlockRec_FID_CACHE;
+
+XmTextBlockRec_FID_CACHE XmTextBlockRecFc;
+
+void cacheXmTextBlockRecFields(JNIEnv *env, jobject lpObject)
+{
+	if (XmTextBlockRecFc.cached) return;
+	XmTextBlockRecFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XmTextBlockRecFc.ptr = (*env)->GetFieldID(env, XmTextBlockRecFc.clazz, "ptr", "I");
+	XmTextBlockRecFc.length = (*env)->GetFieldID(env, XmTextBlockRecFc.clazz, "length", "I");
+	XmTextBlockRecFc.format = (*env)->GetFieldID(env, XmTextBlockRecFc.clazz, "format", "I");
+	XmTextBlockRecFc.cached = 1;
+}
+
+XmTextBlockRec *getXmTextBlockRecFields(JNIEnv *env, jobject lpObject, XmTextBlockRec *lpStruct)
+{
+	if (!XmTextBlockRecFc.cached) cacheXmTextBlockRecFields(env, lpObject);
+	lpStruct->ptr = (char *)(*env)->GetIntField(env, lpObject, XmTextBlockRecFc.ptr);
+	lpStruct->length = (*env)->GetIntField(env, lpObject, XmTextBlockRecFc.length);
+	lpStruct->format = (XmTextFormat)(*env)->GetIntField(env, lpObject, XmTextBlockRecFc.format);
+	return lpStruct;
+}
+
+void setXmTextBlockRecFields(JNIEnv *env, jobject lpObject, XmTextBlockRec *lpStruct)
+{
+	if (!XmTextBlockRecFc.cached) cacheXmTextBlockRecFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XmTextBlockRecFc.ptr, (jint)lpStruct->ptr);
+	(*env)->SetIntField(env, lpObject, XmTextBlockRecFc.length, (jint)lpStruct->length);
+	(*env)->SetIntField(env, lpObject, XmTextBlockRecFc.format, (jint)lpStruct->format);
+}
+#endif
+
+#ifndef NO_XmTextVerifyCallbackStruct
+typedef struct XmTextVerifyCallbackStruct_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID doit, currInsert, newInsert, startPos, endPos, text;
+} XmTextVerifyCallbackStruct_FID_CACHE;
+
+XmTextVerifyCallbackStruct_FID_CACHE XmTextVerifyCallbackStructFc;
+
+void cacheXmTextVerifyCallbackStructFields(JNIEnv *env, jobject lpObject)
+{
+	if (XmTextVerifyCallbackStructFc.cached) return;
+	cacheXmAnyCallbackStructFields(env, lpObject);
+	XmTextVerifyCallbackStructFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XmTextVerifyCallbackStructFc.doit = (*env)->GetFieldID(env, XmTextVerifyCallbackStructFc.clazz, "doit", "B");
+	XmTextVerifyCallbackStructFc.currInsert = (*env)->GetFieldID(env, XmTextVerifyCallbackStructFc.clazz, "currInsert", "I");
+	XmTextVerifyCallbackStructFc.newInsert = (*env)->GetFieldID(env, XmTextVerifyCallbackStructFc.clazz, "newInsert", "I");
+	XmTextVerifyCallbackStructFc.startPos = (*env)->GetFieldID(env, XmTextVerifyCallbackStructFc.clazz, "startPos", "I");
+	XmTextVerifyCallbackStructFc.endPos = (*env)->GetFieldID(env, XmTextVerifyCallbackStructFc.clazz, "endPos", "I");
+	XmTextVerifyCallbackStructFc.text = (*env)->GetFieldID(env, XmTextVerifyCallbackStructFc.clazz, "text", "I");
+	XmTextVerifyCallbackStructFc.cached = 1;
+}
+
+XmTextVerifyCallbackStruct *getXmTextVerifyCallbackStructFields(JNIEnv *env, jobject lpObject, XmTextVerifyCallbackStruct *lpStruct)
+{
+	if (!XmTextVerifyCallbackStructFc.cached) cacheXmTextVerifyCallbackStructFields(env, lpObject);
+	getXmAnyCallbackStructFields(env, lpObject, (XmAnyCallbackStruct *)lpStruct);
+	lpStruct->doit = (*env)->GetByteField(env, lpObject, XmTextVerifyCallbackStructFc.doit);
+	lpStruct->currInsert = (*env)->GetIntField(env, lpObject, XmTextVerifyCallbackStructFc.currInsert);
+	lpStruct->newInsert = (*env)->GetIntField(env, lpObject, XmTextVerifyCallbackStructFc.newInsert);
+	lpStruct->startPos = (*env)->GetIntField(env, lpObject, XmTextVerifyCallbackStructFc.startPos);
+	lpStruct->endPos = (*env)->GetIntField(env, lpObject, XmTextVerifyCallbackStructFc.endPos);
+	lpStruct->text = (XmTextBlock)(*env)->GetIntField(env, lpObject, XmTextVerifyCallbackStructFc.text);
+	return lpStruct;
+}
+
+void setXmTextVerifyCallbackStructFields(JNIEnv *env, jobject lpObject, XmTextVerifyCallbackStruct *lpStruct)
+{
+	if (!XmTextVerifyCallbackStructFc.cached) cacheXmTextVerifyCallbackStructFields(env, lpObject);
+	setXmAnyCallbackStructFields(env, lpObject, (XmAnyCallbackStruct *)lpStruct);
+	(*env)->SetByteField(env, lpObject, XmTextVerifyCallbackStructFc.doit, (jbyte)lpStruct->doit);
+	(*env)->SetIntField(env, lpObject, XmTextVerifyCallbackStructFc.currInsert, (jint)lpStruct->currInsert);
+	(*env)->SetIntField(env, lpObject, XmTextVerifyCallbackStructFc.newInsert, (jint)lpStruct->newInsert);
+	(*env)->SetIntField(env, lpObject, XmTextVerifyCallbackStructFc.startPos, (jint)lpStruct->startPos);
+	(*env)->SetIntField(env, lpObject, XmTextVerifyCallbackStructFc.endPos, (jint)lpStruct->endPos);
+	(*env)->SetIntField(env, lpObject, XmTextVerifyCallbackStructFc.text, (jint)lpStruct->text);
+}
+#endif
+
+#ifndef NO_XtWidgetGeometry
+typedef struct XtWidgetGeometry_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID request_mode, x, y, width, height, border_width, sibling, stack_mode;
+} XtWidgetGeometry_FID_CACHE;
+
+XtWidgetGeometry_FID_CACHE XtWidgetGeometryFc;
+
+void cacheXtWidgetGeometryFields(JNIEnv *env, jobject lpObject)
+{
+	if (XtWidgetGeometryFc.cached) return;
+	XtWidgetGeometryFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XtWidgetGeometryFc.request_mode = (*env)->GetFieldID(env, XtWidgetGeometryFc.clazz, "request_mode", "I");
+	XtWidgetGeometryFc.x = (*env)->GetFieldID(env, XtWidgetGeometryFc.clazz, "x", "I");
+	XtWidgetGeometryFc.y = (*env)->GetFieldID(env, XtWidgetGeometryFc.clazz, "y", "I");
+	XtWidgetGeometryFc.width = (*env)->GetFieldID(env, XtWidgetGeometryFc.clazz, "width", "I");
+	XtWidgetGeometryFc.height = (*env)->GetFieldID(env, XtWidgetGeometryFc.clazz, "height", "I");
+	XtWidgetGeometryFc.border_width = (*env)->GetFieldID(env, XtWidgetGeometryFc.clazz, "border_width", "I");
+	XtWidgetGeometryFc.sibling = (*env)->GetFieldID(env, XtWidgetGeometryFc.clazz, "sibling", "I");
+	XtWidgetGeometryFc.stack_mode = (*env)->GetFieldID(env, XtWidgetGeometryFc.clazz, "stack_mode", "I");
+	XtWidgetGeometryFc.cached = 1;
+}
+
+XtWidgetGeometry *getXtWidgetGeometryFields(JNIEnv *env, jobject lpObject, XtWidgetGeometry *lpStruct)
+{
+	if (!XtWidgetGeometryFc.cached) cacheXtWidgetGeometryFields(env, lpObject);
+	lpStruct->request_mode = (*env)->GetIntField(env, lpObject, XtWidgetGeometryFc.request_mode);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XtWidgetGeometryFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XtWidgetGeometryFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, XtWidgetGeometryFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, XtWidgetGeometryFc.height);
+	lpStruct->border_width = (*env)->GetIntField(env, lpObject, XtWidgetGeometryFc.border_width);
+	lpStruct->sibling = (Widget)(*env)->GetIntField(env, lpObject, XtWidgetGeometryFc.sibling);
+	lpStruct->stack_mode = (*env)->GetIntField(env, lpObject, XtWidgetGeometryFc.stack_mode);
+	return lpStruct;
+}
+
+void setXtWidgetGeometryFields(JNIEnv *env, jobject lpObject, XtWidgetGeometry *lpStruct)
+{
+	if (!XtWidgetGeometryFc.cached) cacheXtWidgetGeometryFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XtWidgetGeometryFc.request_mode, (jint)lpStruct->request_mode);
+	(*env)->SetIntField(env, lpObject, XtWidgetGeometryFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XtWidgetGeometryFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XtWidgetGeometryFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, XtWidgetGeometryFc.height, (jint)lpStruct->height);
+	(*env)->SetIntField(env, lpObject, XtWidgetGeometryFc.border_width, (jint)lpStruct->border_width);
+	(*env)->SetIntField(env, lpObject, XtWidgetGeometryFc.sibling, (jint)lpStruct->sibling);
+	(*env)->SetIntField(env, lpObject, XtWidgetGeometryFc.stack_mode, (jint)lpStruct->stack_mode);
+}
+#endif
+

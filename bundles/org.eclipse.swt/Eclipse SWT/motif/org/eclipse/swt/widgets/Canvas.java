@@ -147,11 +147,12 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (xDisplay == 0) return;
 	int xWindow = OS.XtWindow (handle);
 	if (xWindow == 0) return;
-	XAnyEvent xEvent = new XAnyEvent ();
+	int xEvent = OS.XtMalloc (XEvent.sizeof);
 	OS.XSync (xDisplay, false);  OS.XSync (xDisplay, false);
 	while (OS.XCheckWindowEvent (xDisplay, xWindow, OS.ExposureMask, xEvent)) {
 		OS.XtDispatchEvent (xEvent);
 	}
+	OS.XtFree (xEvent);
 
 	/* Scroll the window */
 	int xGC = OS.XCreateGC (xDisplay, xWindow, 0, null);

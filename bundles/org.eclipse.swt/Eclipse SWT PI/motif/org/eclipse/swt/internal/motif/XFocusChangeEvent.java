@@ -11,9 +11,8 @@
 package org.eclipse.swt.internal.motif;
 
  
-public class XFocusChangeEvent extends XEvent {
+public class XFocusChangeEvent extends XAnyEvent {
 	public int mode;
 	public int detail;
-	public int pad0, pad1, pad2, pad3, pad4, pad5, pad6, pad7, pad8, pad9;
-	public int pad10, pad11, pad12, pad13, pad14, pad15, pad16;
+	public static final int sizeof = 28;
 }

@@ -320,11 +320,13 @@ private void drag() {
 
 	// Current event must be a Button Press event
 	Display display = control.getDisplay ();
-	if (display.xEvent.type != OS.ButtonPress) return;
+	XButtonEvent xEvent = new XButtonEvent();
+	OS.memmove(xEvent, display.xEvent, XButtonEvent.sizeof);
+	if (xEvent.type != OS.ButtonPress) return;
 
 	DNDEvent event = new DNDEvent();
 	event.widget = this;	
-	event.time = display.xEvent.pad2;
+	event.time = xEvent.time;
 	event.doit = true;
 	
 	try {
@@ -334,7 +336,7 @@ private void drag() {
 	}
 
 	if (!event.doit || transferAgents == null || transferAgents.length == 0) { 
-		int time = display.xEvent.pad2; // corresponds to time field in XButtonEvent	
+		int time = xEvent.time;
 		int dc = OS.XmGetDragContext(control.handle, time);
 		if (dc != 0){
 			OS.XmDragCancel(dc);
@@ -377,7 +379,7 @@ private void drag() {
 	};	
 
 	// look for existing drag contexts
-	int time = display.xEvent.pad2; // corresponds to time field in XButtonEvent
+	int time = xEvent.time;
 	dragContext = OS.XmGetDragContext(control.handle, time);
 	if (dragContext != 0){
 		OS.XtSetValues(dragContext, args, args.length /2);

@@ -1,9107 +1,5126 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
-
-/**
- * SWT OS natives implementation.
- */ 
-
-/* #define PRINT_FAILED_RCODES */
-#define NDEBUG 
+* Copyright (c) 2000, 2003 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 
 #include "swt.h"
 #include "structs.h"
 
-#include <stdio.h>
-#include <assert.h>
-#include <langinfo.h>
-#include <iconv.h>
-#include <stdlib.h>
-#ifdef	_HPUX
-#include <sys/time.h>
-#else
-#include <sys/select.h>
-#endif
+#define OS_NATIVE(func) Java_org_eclipse_swt_internal_motif_OS_##func
 
-static int RESOURCES_START;
-static int RESOURCES_END;
-
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_getSharedLibraryMajorVersionNumber
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "getSharedLibraryMajorVersionNumber\n");
-#endif
-    return SWT_VERSION / 1000;
-}
-
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_getSharedLibraryMinorVersionNumber
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "getSharedLibraryMinorVersionNumber\n");
-#endif
-    return SWT_VERSION % 1000;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_setResourceMem
-  (JNIEnv *env, jclass that, jint start, jint end)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "setResourceMem\n");
-#endif
-    RESOURCES_START = start;
-    RESOURCES_END = end;
-}
-
-/*************************************************************************
-
-   Name     :  sleep_ms( unsigned int nmsecs)
-
-   Purpose  :  sleep for a given number of milli seconds
-   Parms    :  the number of milli seconds to sleep
-   Returns  :  
-
-*************************************************************************/
-/*
-void sleep_ms( unsigned int nmsecs)
-{
-    struct timeval tval;
-    tval.tv_sec = (nmsecs * 1000) / 1000000;
-    tval.tv_usec = (nmsecs * 1000) % 1000000;
-    select(0, NULL, NULL, NULL, &tval);
-}
-*/
-
-/* ------------------------------------- */
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XInitThreads
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XInitThreads
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XInitThreads\n");
-#endif
-    
-	return (jint) XInitThreads();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    OverrideShellWidgetClass
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_OverrideShellWidgetClass
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "OverrideShellWidgetClass\n");
-#endif
-    return (jint) (overrideShellWidgetClass);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    ShellWidgetClass
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_ShellWidgetClass
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "ShellWidgetClass\n");
-#endif
-    return (jint) (shellWidgetClass);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_TopLevelShellWidgetClass
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "TopLevelShellWidgetClass\n");
-#endif
-    return (jint) (topLevelShellWidgetClass);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    TransientShellWidgetClass
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_TransientShellWidgetClass
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "TransientShellWidgetClass\n");
-#endif
-    
-    return (jint) (transientShellWidgetClass);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/motif/XButtonEvent;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I
-  (JNIEnv *env, jclass that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XEvent xEvent, *src1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I\n");
-#endif
-    if (src) {
-        src1=&xEvent;
-        cacheXbuttoneventFids(env, src, &PGLOB(XbuttoneventFc));
-        getXbuttoneventFields(env, src, src1, &PGLOB(XbuttoneventFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/motif/XImage;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__ILorg_eclipse_swt_internal_motif_XImage_2I
-  (JNIEnv *env, jclass that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XImage image, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_motif_XImage_2I\n");
-#endif
-
-    if (src) {
-        src1=&image;
-        cacheXimageFids(env, src, &PGLOB(XimageFc));
-        getXimageFields(env, src, src1, &PGLOB(XimageFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/motif/XmTextBlockRec;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__ILorg_eclipse_swt_internal_motif_XmTextBlockRec_2I
-  (JNIEnv *env, jclass that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XmTextBlockRec xmtextblockrec, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_motif_XmTextBlockRec_2I\n");
-#endif
-
-    if (src) {
-        src1=&xmtextblockrec;
-        cacheXmtextblockrecFids(env, src, &PGLOB(XmtextblockrecFc));
-        getXmtextblockrecFields(env, src, src1, &PGLOB(XmtextblockrecFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/motif/XmTextVerifyCallbackStruct;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__ILorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2I
-  (JNIEnv *env, jclass that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XmTextVerifyCallbackStruct xmtextverifycallbackstruct, *src1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2I\n");
-#endif
-
-    if (src) {
-        src1=&xmtextverifycallbackstruct;
-        cacheXmtextverifycallbackstructFids(env, src, &PGLOB(XmtextverifycallbackstructFc));
-        getXmtextverifycallbackstructFields(env, src, src1, &PGLOB(XmtextverifycallbackstructFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__I_3BI
-  (JNIEnv *env, jclass that, jint dest, jbyteArray src, jint count)
-{
-    jbyte *src1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__I_3BI\n");
-#endif
-
-    /* don't do anything if src pointer is NULL */
-    if (src) {
-        src1 = (*env)->GetByteArrayElements(env, src, NULL);
-        memmove((void *)dest, (void *)src1, count);
-        (*env)->ReleaseByteArrayElements(env, src, src1, 0);
-    }
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__I_3CI
-  (JNIEnv *env, jclass that, jint dest, jcharArray src, jint count)
-{
-    jchar *src1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__I_3CI\n");
-#endif
-
-    /* don't do anything if src pointer is NULL */
-    if (src) {
-        src1 = (*env)->GetCharArrayElements(env, src, NULL);
-        memmove((void *)dest, (void *)src1, count);
-        (*env)->ReleaseCharArrayElements(env, src, src1, 0);
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__I_3II
-  (JNIEnv *env, jclass that, jint dest, jintArray src, jint count)
-{
-    jint *src1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__I_3II\n");
-#endif
-
-    /* don't do anything if src pointer is NULL */
-    if (src) {
-        src1 = (*env)->GetIntArrayElements(env, src, NULL);
-        memmove((void *)dest, (void *)src1, count);
-        (*env)->ReleaseIntArrayElements(env, src, src1, 0);
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/Visual;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_Visual_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	Visual visual, *lpxVisual=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_Visual_2II\n");
-#endif
-
-    memmove((void *)&visual, (void *)src, count);
-    if (dest) {
-        lpxVisual=&visual;
-        cacheVisualFids(env, dest, &PGLOB(VisualFc));
-        setVisualFields(env, dest, lpxVisual, &PGLOB(VisualFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XButtonEvent;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II\n");
-#endif
-
-    memmove((void *)&xEvent, (void *)src, count);
-    if (dest) {
-        lpxEvent=&xEvent;
-        cacheXbuttoneventFids(env, dest, &PGLOB(XbuttoneventFc));
-        setXbuttoneventFields(env, dest, lpxEvent, &PGLOB(XbuttoneventFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XCharStruct;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XCharStruct_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	XCharStruct xCharstruct, *lpxCharstruct=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XCharStruct_2II\n");
-#endif
-
-    memmove((void *)&xCharstruct, (void *)src, count);
-    if (dest) {
-        lpxCharstruct=&xCharstruct;
-        cacheXcharstructFids(env, dest, &PGLOB(XcharstructFc));
-        setXcharstructFields(env, dest, lpxCharstruct, &PGLOB(XcharstructFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XConfigureEvent;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XConfigureEvent_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XConfigureEvent_2II\n");
-#endif
- 
-    memmove((void *)&xEvent, (void *)src, count);
-    if (dest) {
-        lpxEvent=&xEvent;
-        cacheXconfigureeventFids(env, dest, &PGLOB(XconfigureeventFc));
-        setXconfigureeventFields(env, dest, lpxEvent, &PGLOB(XconfigureeventFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XCrossingEvent;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XCrossingEvent_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-        XEvent xEvent, *lpxEvent=NULL;
-#ifdef DEBUG_CALL_PRINTS
-        fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XCrossingEvent_2II\n");
-#endif
-
-    memmove((void *)&xEvent, (void *)src, count);
-    if (dest) {
-        lpxEvent=&xEvent;
-        cacheXcrossingeventFids(env, dest, &PGLOB(XcrossingeventFc));
-        setXcrossingeventFields(env, dest, lpxEvent, &PGLOB(XcrossingeventFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XExposeEvent;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XExposeEvent_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XExposeEvent_2II\n");
-#endif
-    
-    memmove((void *)&xEvent, (void *)src, count);
-    if (dest) {
-        lpxEvent=&xEvent;
-        cacheXexposeeventFids(env, dest, &PGLOB(XexposeeventFc));
-        setXexposeeventFields(env, dest, lpxEvent, &PGLOB(XexposeeventFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XFocusChangeEvent;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XFocusChangeEvent_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XEvent xEvent, *lpxEvent=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XFocusChangeEvent_2II\n");
-#endif
-
-    assert(count <= sizeof(XEvent));
-    memmove((void *)&xEvent, (void *)src, count);
-    if (dest) {
-        lpxEvent=&xEvent;
-        cacheXfocuschangeeventFids(env, dest, &PGLOB(XfocuschangeeventFc));
-        setXfocuschangeeventFields(env, dest, lpxEvent, &PGLOB(XfocuschangeeventFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XFontStruct;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XFontStruct_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XFontStruct fontStruct, *lpxFontStruct=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XFontStruct_2II\n");
-#endif
-
-    memmove((void *)&fontStruct, (void *)src, count);
-    if (dest) {
-        lpxFontStruct=&fontStruct;
-        cacheXfontstructFids(env, dest, &PGLOB(XfontstructFc));
-        setXfontstructFields(env, dest, lpxFontStruct, &PGLOB(XfontstructFc));
-    }
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XImage;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XImage_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XImage image, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XImage_2II\n");
-#endif
-
-    memmove((void *)&image, (void *)src, count);
-    if (dest) {
-        dest1=&image;
-        cacheXimageFids(env, dest, &PGLOB(XimageFc));
-        setXimageFields(env, dest, dest1, &PGLOB(XimageFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XKeyEvent;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XKeyEvent_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XKeyEvent_2II\n");
-#endif
-    
-    memmove((void *)&xEvent, (void *)src, count);
-    if (dest) {
-        lpxEvent=&xEvent;
-        cacheXkeyeventFids(env, dest, &PGLOB(XkeyeventFc));
-        setXkeyeventFields(env, dest, lpxEvent, &PGLOB(XkeyeventFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XKeyEvent;Lorg/eclipse/swt/internal/motif/XAnyEvent;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XKeyEvent_2Lorg_eclipse_swt_internal_motif_XAnyEvent_2I
-  (JNIEnv *env, jclass that, jobject dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent1, *src1=NULL, xEvent2, *dest1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XKeyEvent_2Lorg_eclipse_swt_internal_motif_XAnyEvent_2I\n");
-#endif
-    if (src) {
-        src1=&xEvent1;
-        cacheXanyeventFids(env, src, &PGLOB(XanyeventFc));
-        getXanyeventFields(env, src, src1, &PGLOB(XanyeventFc));
-    }
-  
-    memmove((void *)&xEvent2, (void *)src1, count);
-    if (dest) {
-        dest1=&xEvent2;
-        cacheXkeyeventFids(env, dest, &PGLOB(XkeyeventFc));
-        setXkeyeventFields(env, dest, dest1, &PGLOB(XkeyeventFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XMotionEvent;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XMotionEvent_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XMotionEvent_2II\n");
-#endif
-    
-    memmove((void *)&xEvent, (void *)src, count);
-    if (dest) {
-        lpxEvent=&xEvent;
-        cacheXmotioneventFids(env, dest, &PGLOB(XmotioneventFc));
-        setXmotioneventFields(env, dest, lpxEvent, &PGLOB(XmotioneventFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XmAnyCallbackStruct;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XmAnyCallbackStruct_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-        XmAnyCallbackStruct xmanycallbackstruct, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-        fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XmAnyCallbackStruct_2II\n");
-#endif
-
-    memmove((void *)&xmanycallbackstruct, (void *)src, count);
-    if (dest) {
-        dest1=&xmanycallbackstruct;
-        cacheXmanycallbackstructFids(env, dest, &PGLOB(XmanycallbackstructFc));
-        setXmanycallbackstructFields(env, dest, dest1, &PGLOB(XmanycallbackstructFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/motif/XmDragProcCallback;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__ILorg_eclipse_swt_internal_motif_XmDragProcCallback_2I
-  (JNIEnv *env, jclass that, jint dest, jobject src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XmDragProcCallbackStruct xmdragproccallback, *src1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_motif_XmDragProcCallback_2I\n");
-#endif
-
-    if (src) {
-        src1=&xmdragproccallback;
-        cacheXmdragproccallbackFids(env, src, &PGLOB(XmdragproccallbackFc));
-        getXmdragproccallbackFields(env, src, src1, &PGLOB(XmdragproccallbackFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XmDragProcCallback;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XmDragProcCallback_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XmDragProcCallbackStruct xmdragproccallback, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XmDragProcCallback_2II\n");
-#endif
-
-    memmove((void *)&xmdragproccallback, (void *)src, count);
-    if (dest) {
-        dest1=&xmdragproccallback;
-        cacheXmdragproccallbackFids(env, dest, &PGLOB(XmdragproccallbackFc));
-        setXmdragproccallbackFields(env, dest, dest1, &PGLOB(XmdragproccallbackFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XmDropProcCallback;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XmDropProcCallback_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XmDropProcCallbackStruct xmdropproccallback, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XmDropProcCallback_2II\n");
-#endif
-
-    memmove((void *)&xmdropproccallback, (void *)src, count);
-    if (dest) {
-        dest1=&xmdropproccallback;
-        cacheXmdropproccallbackFids(env, dest, &PGLOB(XmdropproccallbackFc));
-        setXmdropproccallbackFields(env, dest, dest1, &PGLOB(XmdropproccallbackFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XmDropFinishCallback;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XmDropFinishCallback_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-    XmDropFinishCallbackStruct xmdropfinishcallback, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XmDropFinishCallback_2II\n");
-#endif
-
-    memmove((void *)&xmdropfinishcallback, (void *)src, count);
-    if (dest) {
-        dest1=&xmdropfinishcallback;
-        cacheXmdropfinishcallbackFids(env, dest, &PGLOB(XmdropfinishcallbackFc));
-        setXmdropfinishcallbackFields(env, dest, dest1, &PGLOB(XmdropfinishcallbackFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XmTextBlockRec;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XmTextBlockRec_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	XmTextBlockRec xmTextBlockRec, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XmTextBlockRec_2II\n");    
-#endif
-
-    memmove((void *)&xmTextBlockRec, (void *)src, count);
-    if (dest) {
-        dest1=&xmTextBlockRec;
-        cacheXmtextblockrecFids(env, dest, &PGLOB(XmtextblockrecFc));
-        setXmtextblockrecFields(env, dest, dest1, &PGLOB(XmtextblockrecFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XmTextVerifyCallbackStruct;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2II
-  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
-{
-	DECL_GLOB(pGlob)
-	XmTextVerifyCallbackStruct xmtextverifycallbackstruct, *dest1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2II\n");
-#endif
-
-    memmove((void *)&xmtextverifycallbackstruct, (void *)src, count);
-    if (dest) {
-        dest1=&xmtextverifycallbackstruct;
-        cacheXmtextverifycallbackstructFids(env, dest, &PGLOB(XmtextverifycallbackstructFc));
-        setXmtextverifycallbackstructFields(env, dest, dest1, &PGLOB(XmtextverifycallbackstructFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: ([BII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove___3BII
-  (JNIEnv *env, jclass that, jbyteArray dest, jint src, jint count)
-{
-    jbyte *dest1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove___3BII\n");
-#endif
-
-    /* don't do anything if dest pointer is NULL */
-    if (dest) {
-        dest1 = (*env)->GetByteArrayElements(env, dest, NULL);
-        memmove((void *)dest1, (void *)src, count);
-        (*env)->ReleaseByteArrayElements(env, dest, dest1, 0);
-    }
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove___3CII
-  (JNIEnv *env, jclass that, jcharArray dest, jint src, jint count)
-{
-    jchar *dest1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove___3CII\n");
-#endif
-
-    /* don't do anything if dest pointer is NULL */
-    if (dest) {
-        dest1 = (*env)->GetCharArrayElements(env, dest, NULL);
-        memmove((void *)dest1, (void *)src, count);
-        (*env)->ReleaseCharArrayElements(env, dest, dest1, 0);
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: ([III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove___3III
-  (JNIEnv *env, jclass that, jintArray dest, jint src, jint count)
-{
-    jint *dest1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove___3III\n");
-#endif
-
-    /* don't do anything if dest pointer is NULL */
-    if (dest) {
-        dest1 = (*env)->GetIntArrayElements(env, dest, NULL);
-        memmove((void *)dest1, (void *)src, count);
-        (*env)->ReleaseIntArrayElements(env, dest, dest1, 0);    
-    }
-}
-
-/* end of custom built crap */
-
-/* ------------------------------------------------------------------------- */
-
-/* the following map directly to X calls */
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XAllocColor
- * Signature: (IILorg/eclipse/swt/internal/motif/XColor;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XAllocColor
-  (JNIEnv *env, jclass that, jint display, jint colormap, jobject color)
-{
-	DECL_GLOB(pGlob)
-	XColor xColor, *lpColor=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XAllocColor\n");
-#endif
-
-    assert (color != 0);
-    if (color) {
-        lpColor = &xColor;
-        cacheXcolorFids(env, color, &PGLOB(XcolorFc));
-        getXcolorFields(env, color, lpColor, &PGLOB(XcolorFc));
-    }
-    rc = (jint) XAllocColor ((Display *)display, colormap, lpColor);
-
-#ifdef PRINT_FAILED_RCODES
-    
-    if (rc == 0)
-        fprintf(stderr, "XAllocColor: call failed rc = %d\n", rc);
-#endif
-
-    if (color) {
-        setXcolorFields(env, color, lpColor, &PGLOB(XcolorFc));
-    }
-
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XBell
- * Signature: (II)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XBell
-  (JNIEnv *env, jclass that, jint display, jint ms)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XBell\n");
-#endif
-    XBell ((Display *)display, ms);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XBitmapBitOrder
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XBitmapBitOrder
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XBitmapBitOrder\n");
-#endif
-    return (jint) XBitmapBitOrder((Display *) display);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XBlackPixel
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XBlackPixel
-  (JNIEnv *env, jclass that, jint display, jint screen_number)
-{
-    
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XBlackPixel\n");
-#endif
-    return (jint) XBlackPixel((Display *)display, screen_number);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XChangeGC
- * Signature: (IIILorg/eclipse/swt/internal/motif/XGCValues;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XChangeGC
-  (JNIEnv *env, jclass that, jint display, jint gc, jint valuemask, jobject values)
-{
-	DECL_GLOB(pGlob)
-    XGCValues xgcValues, *lpxgcValues=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XChangeGC\n");
-#endif
-
-    if (values) {
-        lpxgcValues = &xgcValues;
-        cacheXgcvaluesFids(env, values, &PGLOB(XgcvaluesFc));
-        getXgcvaluesFields(env, values, lpxgcValues, &PGLOB(XgcvaluesFc));
-    }
-    rc  = (jint) XChangeGC((Display *)display, (GC)gc, valuemask, lpxgcValues);
-
-    if (values) {
-        setXgcvaluesFields(env, values, lpxgcValues, &PGLOB(XgcvaluesFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XChangeWindowAttributes
- * Signature: (IIILorg/eclipse/swt/internal/motif/XSetWindowAttributes;)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XChangeWindowAttributes
-  (JNIEnv *env, jclass that, jint display, jint window, jint mask, jobject attributes)
-{
-	DECL_GLOB(pGlob)
-	XSetWindowAttributes xSetWindowAttributes, *lpxSetWindowAttributes;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XChangeWindowAttributes\n");
-#endif
-
-    if (attributes) {
-        lpxSetWindowAttributes = &xSetWindowAttributes;
-        cacheXsetwindowattributesFids(env, attributes, &PGLOB(XsetwindowattributesFc));
-        getXsetwindowattributesFields(env, attributes, lpxSetWindowAttributes, &PGLOB(XsetwindowattributesFc));
-    }
-
-    XChangeWindowAttributes((Display *)display, window, mask, lpxSetWindowAttributes);
-    if (attributes) {
-        setXsetwindowattributesFields(env, attributes, lpxSetWindowAttributes, &PGLOB(XsetwindowattributesFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCheckMaskEvent
- * Signature: (IILorg/eclipse/swt/internal/motif/XAnyEvent;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XCheckMaskEvent
-  (JNIEnv *env, jclass that, jint display, jint mask, jobject event)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-    jboolean rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCheckMaskEvent\n");
-#endif
-
-    if (event) {
-        lpxEvent = &xEvent;
-        cacheXanyeventFids(env, event, &PGLOB(XanyeventFc));
-        getXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-    rc = (jboolean) XCheckMaskEvent((Display *)display, mask, lpxEvent);
-
-#ifdef PRINT_FAILED_RCODES
-    
-    if (rc != True && rc != False)
-        fprintf(stderr, "XCheckMaskEvent: call failed rc = %d\n", rc);
-#endif
-
-    if (event) {
-        setXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCheckWindowEvent
- * Signature: (IIILorg/eclipse/swt/internal/motif/XAnyEvent;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XCheckWindowEvent
-  (JNIEnv *env, jclass that, jint display, jint window, jint mask, jobject event)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-    jboolean rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCheckWindowEvent\n");
-#endif
-
-    if (event) {
-        lpxEvent = &xEvent;
-        cacheXanyeventFids(env, event, &PGLOB(XanyeventFc));
-        getXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-    rc = (jboolean)XCheckWindowEvent((Display *)display, window, mask, lpxEvent);
-
-#ifdef PRINT_FAILED_RCODES
-    
-    if (rc != True && rc != False)
-        fprintf(stderr, "XCheckWindowEvent: call failed rc = %d\n", rc);
-#endif
-
-    if (event) {
-        setXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XClearArea
- * Signature: (IIIIIIZ)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XClearArea
-  (JNIEnv *env, jclass that, jint display, jint window, jint x, jint y, jint width, jint height, jboolean exposures)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XClearArea\n");
-#endif
-    XClearArea((Display *)display, window, x, y, width, height, exposures);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XClipBox
- * Signature: (ILorg/eclipse/swt/internal/motif/XRectangle;)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XClipBox
-  (JNIEnv *env, jclass that, jint region, jobject rectangle)
-{
-	DECL_GLOB(pGlob)
-	XRectangle xRect, *lpxRect=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XClipBox\n");
-#endif
-
-    if (rectangle) {
-        lpxRect = &xRect;
-        cacheXrectangleFids(env, rectangle, &PGLOB(XrectangleFc));
-        getXrectangleFields(env, rectangle, lpxRect, &PGLOB(XrectangleFc));
-    }
-    XClipBox((Region)region, (XRectangle *)lpxRect);
-    if (rectangle) {
-        setXrectangleFields(env, rectangle, lpxRect, &PGLOB(XrectangleFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCopyArea
- * Signature: (IIIIIIIIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XCopyArea
-  (JNIEnv *env, jclass that, jint display, jint src, jint dest, jint gc, jint src_x, jint src_y, jint width, jint height, jint dest_x, jint dest_y)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCopyArea\n");
-#endif
-	XCopyArea((Display *)display, src, dest, (GC)gc, src_x, src_y, width, height, dest_x, dest_y);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCopyPlane
- * Signature: (IIIIIIIIIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XCopyPlane
-  (JNIEnv *env, jclass that, jint display, jint src, jint dest, jint gc, jint src_x, jint src_y, jint width, jint height, jint dest_x, jint dest_y, jint plane)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCopyPlane\n");
-#endif
-	XCopyPlane((Display *)display, src, dest, (GC)gc, src_x, src_y, width, height, dest_x, dest_y, plane);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCreateBitmapFromData
- * Signature: (II[BII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XCreateBitmapFromData
-  (JNIEnv *env, jclass that, jint display, jint drawable, jbyteArray data, jint width, jint height)
-{
-    jbyte *data1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCreateBitmapFromData\n");
-#endif
-
-    if (data)
-        data1 = (*env)->GetByteArrayElements(env, data, NULL);
-
-    rc = (jint) XCreateBitmapFromData((Display *)display, drawable, (char *)data1, width, height);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XCreateBitmapFromData: call failed rc = %d\n", rc);
-#endif
-
-    if (data)
-        (*env)->ReleaseByteArrayElements(env, data, data1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCreateFontCursor
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XCreateFontCursor
-  (JNIEnv *env, jclass that, jint display, jint shape)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCreateFontCursor\n");
-#endif
-	return (jint) XCreateFontCursor((Display *)display, shape);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCreateGC
- * Signature: (IIILorg/eclipse/swt/internal/motif/XGCValues;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XCreateGC
-  (JNIEnv *env, jclass that, jint display, jint window, jint mask, jobject values)
-{
-	DECL_GLOB(pGlob)
-	XGCValues xgcValues, *lpxgcValues=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCreateGC\n");
-#endif
-
-    if (values) {
-        lpxgcValues = &xgcValues;
-        cacheXgcvaluesFids(env, values, &PGLOB(XgcvaluesFc));
-        getXgcvaluesFields(env, values, lpxgcValues, &PGLOB(XgcvaluesFc));
-    }
-    rc  = (jint) XCreateGC((Display *)display, window, mask, lpxgcValues);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XCreateGC: call failed rc = %d\n", rc);
-#endif
-
-    if (values) {
-        setXgcvaluesFields(env, values, lpxgcValues, &PGLOB(XgcvaluesFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCreateImage
- * Signature: (IIIIIIIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XCreateImage
-  (JNIEnv *env, jclass that, jint display, jint visual, jint depth, jint format, jint offset, jint data, jint width, jint height, jint bitmap_pad, jint bytes_per_line)
-{
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCreateImage\n");
-#endif
-
-    rc = (jint) XCreateImage((Display *)display, (Visual *)visual, depth, format, offset, (char *)data, width, height, bitmap_pad, bytes_per_line);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XCreateImage: call failed rc = %d\n", rc);
-#endif
-
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCreatePixmap
- * Signature: (IIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XCreatePixmap
-  (JNIEnv *env, jclass that, jint display, jint drawable, jint width, jint height, jint depth)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCreatePixmap\n");
-#endif
-	return (jint) XCreatePixmap((Display *)display, drawable, width, height, depth);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCreatePixmapCursor
- * Signature: (IIILorg/eclipse/swt/internal/motif/XColor;Lorg/eclipse/swt/internal/motif/XColor;II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XCreatePixmapCursor
-  (JNIEnv *env, jclass that, jint display, jint source, jint mask, jobject foreground_color, jobject background_color, jint x, jint y)
-{
-	DECL_GLOB(pGlob)
-    XColor background_color1, foreground_color1;
-    XColor *lp_background_color = NULL, *lp_foreground_color = NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCreatePixmapCursor\n");
-#endif
-
-    assert(foreground_color != 0);
-    if (foreground_color) {
-        lp_foreground_color = &foreground_color1;
-        cacheXcolorFids(env, foreground_color, &PGLOB(XcolorFc));
-        getXcolorFields(env, foreground_color, lp_foreground_color, &PGLOB(XcolorFc));
-    }
-    if (background_color) {
-        lp_background_color = &background_color1;
-        cacheXcolorFids(env, background_color, &PGLOB(XcolorFc));
-        getXcolorFields(env, background_color, lp_background_color, &PGLOB(XcolorFc));
-    }
-        
-    return (jint) XCreatePixmapCursor((Display *)display, (Pixmap)source, (Pixmap)mask, lp_foreground_color, lp_background_color, x, y);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCreateRegion
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XCreateRegion
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCreateRegion\n");
-#endif
-	return (jint) XCreateRegion();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDefaultColormap
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDefaultColormap
-  (JNIEnv *env, jclass that, jint display, jint screen_number)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDefaultColormap\n");
-#endif
-    return (jint) XDefaultColormap((Display *)display, screen_number);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDefaultDepthOfScreen
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDefaultDepthOfScreen
-  (JNIEnv *env, jclass that, jint screen)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDefaultDepthOfScreen\n");
-#endif
-	return (jint) XDefaultDepthOfScreen((Screen *)screen);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDefaultRootWindow
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDefaultRootWindow
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDefaultRootWindow\n");
-#endif
-    return (jint) XDefaultRootWindow((Display *)display);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDefaultScreen
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDefaultScreen
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDefaultScreen\n");
-#endif
-    return (jint) XDefaultScreen((Display *)display);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDefaultScreenOfDisplay
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDefaultScreenOfDisplay
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDefaultScreenOfDisplay\n");
-#endif
-	return (jint) XDefaultScreenOfDisplay((Display *)display);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDefaultVisual
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDefaultVisual
-  (JNIEnv *env, jclass that, jint display, jint screen_number)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDefaultVisual\n");
-#endif
-    return (jint) XDefaultVisual((Display *)display, screen_number);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDefineCursor
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XDefineCursor
-  (JNIEnv *env, jclass that, jint display, jint window, jint cursor)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDefineCursor\n");
-#endif
-	XDefineCursor((Display *)display, window, cursor);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDestroyImage
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDestroyImage
-  (JNIEnv *env, jclass that, jint ximage)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDestroyImage\n");
-#endif
-    return (jint) XDestroyImage((XImage *)ximage);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDestroyRegion
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XDestroyRegion
-  (JNIEnv *env, jclass that, jint region)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDestroyRegion\n");
-#endif
-	XDestroyRegion((Region)region);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDisplayHeight
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDisplayHeight
-  (JNIEnv *env, jclass that, jint display, jint screen)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDisplayHeight\n");
-#endif
-    return (jint) XDisplayHeight((Display *)display, screen);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDisplayHeightMM
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDisplayHeightMM
-  (JNIEnv *env, jclass that, jint display, jint screen)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDisplayHeightMM\n");
-#endif
-    return (jint) XDisplayHeightMM((Display *)display, screen);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDisplayWidth
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDisplayWidth
-  (JNIEnv *env, jclass that, jint display, jint screen)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDisplayWidth\n");
-#endif
-    return (jint) XDisplayWidth((Display *)display, screen);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDisplayWidthMM
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDisplayWidthMM
-  (JNIEnv *env, jclass that, jint display, jint screen)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDisplayWidthMM\n");
-#endif
-    return (jint) XDisplayWidthMM((Display *)display, screen);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDrawArc
- * Signature: (IIIIIIIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XDrawArc
-  (JNIEnv *env, jclass that, jint display, jint drawable, jint gc, jint x1, jint y1, jint x2, jint y2, jint a1, jint a2)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDrawArc\n");
-#endif
-    XDrawArc((Display *)display, drawable, (GC)gc, x1, y1, x2, y2, a1, a2);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDrawLine
- * Signature: (IIIIIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XDrawLine
-  (JNIEnv *env, jclass that, jint display, jint drawable, jint gc, jint x1, jint y1, jint x2, jint y2)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDrawLine\n");
-#endif
-	XDrawLine((Display *)display, drawable, (GC)gc, x1, y1, x2, y2);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDrawLines
- * Signature: (III[SII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XDrawLines
-  (JNIEnv *env, jclass that, jint display, jint drawable, jint gc, jshortArray xPoints, jint nPoints, jint mode)
-{
-    jshort *xPoints1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDrawLines\n");
-#endif
-
-    if (xPoints)
-        xPoints1 = (*env)->GetShortArrayElements(env, xPoints, NULL);
-    XDrawLines((Display *)display, drawable, (GC)gc, (XPoint *)xPoints1, nPoints, mode);
-    if (xPoints)
-        (*env)->ReleaseShortArrayElements(env, xPoints, xPoints1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDrawRectangle
- * Signature: (IIIIIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XDrawRectangle
-  (JNIEnv *env, jclass that, jint display, jint drawable, jint gc, jint x, jint y, jint width, jint height)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "\n");
-#endif
-	XDrawRectangle((Display *)display, drawable, (GC)gc, x, y, width, height);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XEmptyRegion
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XEmptyRegion
-  (JNIEnv *env, jclass that, jint region)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XEmptyRegion\n");
-#endif
-	return (jboolean) XEmptyRegion((Region)region);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XEqualRegion
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XEqualRegion
-  (JNIEnv *env, jclass that, jint region1, jint region2)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XEqualRegion\n");
-#endif
-	return (jboolean) XEqualRegion((Region)region1, (Region)region2);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFillArc
- * Signature: (IIIIIIIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFillArc
-  (JNIEnv *env, jclass that, jint display, jint drawable, jint gc, jint x1, jint y1, jint x2, jint y2, jint a1, jint a2)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFillArc\n");
-#endif
-    XFillArc((Display *)display, drawable, (GC)gc, x1, y1, x2, y2, a1, a2);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFillPolygon
- * Signature: (III[SIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XFillPolygon
-  (JNIEnv *env, jclass that, jint display, jint drawable, jint gc, jshortArray xPoints, jint nPoints, jint mode, jint style)
-{
-    jshort *xPoints1=NULL;
-	jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFillPolygon\n");
-#endif
-    if (xPoints)
-        xPoints1 = (*env)->GetShortArrayElements(env, xPoints, NULL);
-    rc = XFillPolygon((Display *)display, drawable, (GC)gc, (XPoint *)xPoints1, nPoints, mode, style);
-    if (xPoints)
-        (*env)->ReleaseShortArrayElements(env, xPoints, xPoints1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFillRectangle
- * Signature: (IIIIIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFillRectangle
-  (JNIEnv *env, jclass that, jint display, jint drawable, jint gc, jint x, jint y, jint width, jint height)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFillRectangle\n");
-#endif
-    XFillRectangle((Display *)display, drawable, (GC)gc, x, y, width, height);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFilterEvent
- * Signature: (Lorg/eclipse/swt/internal/motif/XAnyEvent;I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XFilterEvent
-  (JNIEnv *env, jclass that, jobject event, jint window)
-{
-	DECL_GLOB(pGlob)
-	XEvent xanyevent, *event1;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFilterEvent\n");
-#endif
-    if (event) {
-        event1=&xanyevent;
-        cacheXanyeventFids(env, event, &PGLOB(XanyeventFc));
-        getXanyeventFields(env, event, event1, &PGLOB(XanyeventFc));
-    }
-    rc = (jboolean) XFilterEvent(event1, (Window)window);
-    if (event) {
-        setXanyeventFields(env, event, event1, &PGLOB(XanyeventFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFlush
- * Signature: (I)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFlush
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFlush\n");
-#endif
-    XFlush((Display *)display);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFontsOfFontSet
- * Signature: (I[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XFontsOfFontSet
-  (JNIEnv *env, jclass that, jint fontSet, jintArray fontStructs, jintArray fontNames)
-{
-    jint *fontStructs1=NULL,*fontNames1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFontsOfFontSet\n");
-#endif
-    if (fontStructs)
-        fontStructs1 = (*env)->GetIntArrayElements(env, fontStructs, NULL);
-    if (fontNames)
-        fontNames1 = (*env)->GetIntArrayElements(env, fontNames, NULL);
-
-    rc = (jint) XFontsOfFontSet((XFontSet)fontSet, (XFontStruct ***)fontStructs1, (char ***)fontNames1);
-
-    if (fontStructs)
-        (*env)->ReleaseIntArrayElements(env, fontStructs, fontStructs1, 0);
-    if (fontNames)
-        (*env)->ReleaseIntArrayElements(env, fontNames, fontNames1, 0);
-
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFree
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XFree
-  (JNIEnv *env, jclass that, jint address)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFree\n");
-#endif
-    return (jint) XFree((char *)address);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFreeColors
- * Signature: (II[III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeColors
-  (JNIEnv *env, jclass that, jint display, jint colormap, jintArray pixels, jint npixels, jint planes)
-{
-    jint *pixels1=NULL;
-    jint rc;
-    jint intArr[2]={250, 250};
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFreeColors\n");
-#endif
-    
-    assert(pixels != 0);
-    assert(npixels > 0);
-    assert(npixels < 20);
-
-    if (pixels) {
-	pixels1 = (jint *)&intArr;
-        (*env)->GetIntArrayRegion(env, pixels, 0, npixels, pixels1);
-    }
-
-    assert(*pixels1 >= 0);
-    assert(*pixels1 < 65536);
-    assert(*(pixels1+1) >= 0);
-    assert(*(pixels1+1) < 65536);
-    
-    rc = (jint) XFreeColors((Display *)display, colormap, (unsigned long *)pixels1, npixels, planes);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XCreateGC: call failed rc = %d\n", rc);
-#endif
-
-    assert(rc > 0);
-
-    if (pixels) {
-        (*env)->SetIntArrayRegion(env, pixels, 0, npixels, pixels1);
-    }
-
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFreeCursor
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeCursor
-  (JNIEnv *env, jclass that, jint display, jint pixmap)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFreeCursor\n");
-#endif
-	XFreeCursor((Display *)display, pixmap);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFreeFont
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeFont
-  (JNIEnv *env, jclass that, jint display, jint font_struct)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFreeFont\n");
-#endif
-	XFreeFont((Display *)display, (XFontStruct *)font_struct);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFreeFontSet
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeFontSet
-  (JNIEnv *env, jclass that, jint display, jint font_set)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFreeFontSet\n");
-#endif
-	XFreeFontSet((Display *)display, (XFontSet)font_set);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFreeFontNames
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeFontNames
-  (JNIEnv *env, jclass that, jint list)
-{
-    XFreeFontNames((char **)list);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFreeGC
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeGC
-  (JNIEnv *env, jclass that, jint display, jint gc)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFreeGC\n");
-#endif
-	XFreeGC((Display *)display, (GC)gc);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XFreePixmap
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreePixmap
-  (JNIEnv *env, jclass that, jint display, jint pixmap)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFreePixmap\n");
-#endif
-	XFreePixmap((Display *)display, pixmap);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XGetGCValues
- * Signature: (IIILorg/eclipse/swt/internal/motif/XGCValues;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XGetGCValues
-  (JNIEnv *env, jclass that, jint display, jint gc, jint valuemask, jobject values)
-{
-	DECL_GLOB(pGlob)
-    XGCValues xgcValues, *lpxgcValues=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XGetGCValues\n");
-#endif
-
-    if (values) {
-        lpxgcValues = &xgcValues;
-        cacheXgcvaluesFids(env, values, &PGLOB(XgcvaluesFc));
-        getXgcvaluesFields(env, values, lpxgcValues, &PGLOB(XgcvaluesFc));
-    }
-    rc  = (jint) XGetGCValues((Display *)display, (GC)gc, valuemask, lpxgcValues);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XGetGCValues: call failed rc = %d\n", rc);
-#endif
-
-    if (values) {
-        setXgcvaluesFields(env, values, lpxgcValues, &PGLOB(XgcvaluesFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XGetGeometry
- * Signature: (II[I[I[I[I[I[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XGetGeometry
-  (JNIEnv *env, jclass that, jint display, jint drawable, jintArray root_return, jintArray x_return, jintArray y_return, jintArray width_return, jintArray height_return, jintArray border_width_return, jintArray depth_return)
-{
-    jint *root_return1=NULL, *x_return1=NULL, *y_return1=NULL, *width_return1=NULL, *height_return1=NULL, *border_width_return1=NULL, *depth_return1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XGetGeometry\n");
-#endif
-
-    if (root_return)
-        root_return1 = (*env)->GetIntArrayElements(env, root_return, NULL);    
-    if (x_return)
-        x_return1 = (*env)->GetIntArrayElements(env, x_return, NULL);    
-    if (y_return)
-        y_return1 = (*env)->GetIntArrayElements(env, y_return, NULL);    
-    if (width_return)
-        width_return1 = (*env)->GetIntArrayElements(env, width_return, NULL);    
-    if (height_return)
-        height_return1 = (*env)->GetIntArrayElements(env, height_return, NULL);    
-    if (border_width_return)
-        border_width_return1 = (*env)->GetIntArrayElements(env, border_width_return, NULL);    
-    if (depth_return)
-        depth_return1 = (*env)->GetIntArrayElements(env, depth_return, NULL);    
-
-    rc = (jint) XGetGeometry((Display *)display, drawable, (Window *)root_return1, (int *)x_return1, (int *)y_return1, (unsigned int *)width_return1, (unsigned int *)height_return1, (unsigned int *)border_width_return1, (unsigned int *)depth_return1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XGetGeometry: call failed rc = %d\n", rc);
-#endif
-
-    if (root_return)
-        (*env)->ReleaseIntArrayElements(env, root_return, root_return1, 0);
-    if (x_return)
-        (*env)->ReleaseIntArrayElements(env, x_return, x_return1, 0);
-    if (y_return)
-        (*env)->ReleaseIntArrayElements(env, y_return, y_return1, 0);
-    if (width_return)
-        (*env)->ReleaseIntArrayElements(env, width_return, width_return1, 0);
-    if (height_return)
-        (*env)->ReleaseIntArrayElements(env, height_return, height_return1, 0);
-    if (border_width_return)
-        (*env)->ReleaseIntArrayElements(env, border_width_return, border_width_return1, 0);
-    if (depth_return)
-        (*env)->ReleaseIntArrayElements(env, depth_return, depth_return1, 0);
-        
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XGetImage
- * Signature: (IIIIIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XGetImage
-  (JNIEnv *env, jclass that, jint display, jint drawable, jint x, jint y, jint width, jint height, jint plane_mask, jint format)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XGetImage\n");
-#endif
-    return (jint) XGetImage((Display *)display, (Drawable)drawable, x, y, width, height, plane_mask, format);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XGetInputFocus
- * Signature: (I[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XGetInputFocus
-  (JNIEnv *env, jclass that, jint display, jintArray window, jintArray revert)
-{
-    jint *window1, *revert1;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XGetInputFocus\n");
-#endif
-
-    if (window)
-        window1 = (*env)->GetIntArrayElements(env, window, NULL);    
-    if (revert)
-        revert1 = (*env)->GetIntArrayElements(env, revert, NULL);    
-    rc = (jint) XGetInputFocus((Display *)display, (Window *)window1, (int *)revert1);
-    
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XGetInputFocus: call failed rc = %d\n", rc);
-#endif
-
-    if (window)
-        (*env)->ReleaseIntArrayElements(env, window, window1, 0);
-    if (revert)
-        (*env)->ReleaseIntArrayElements(env, revert, revert1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XGetWindowAttributes
- * Signature: (IILorg/eclipse/swt/internal/motif/XWindowAttributes;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XGetWindowAttributes
-  (JNIEnv *env, jclass that, jint display, jint window, jobject attributes)
-{
-	DECL_GLOB(pGlob)
-	XWindowAttributes xWindowAttributes, *lpxWindowAttributes;
-    jboolean rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XGetWindowAttributes\n");
-#endif
-
-    if (attributes) {
-        lpxWindowAttributes = &xWindowAttributes;
-        cacheXwindowattributesFids(env, attributes, &PGLOB(XwindowattributesFc));
-        getXwindowattributesFields(env, attributes, lpxWindowAttributes, &PGLOB(XwindowattributesFc));
-    }
-    
-    rc = (jboolean) XGetWindowAttributes((Display *)display, window, lpxWindowAttributes);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XGetWindowAttributes: call failed rc = %d\n", rc);
-#endif
-
-    if (attributes) {
-        setXwindowattributesFields(env, attributes, lpxWindowAttributes, &PGLOB(XwindowattributesFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XGrabKeyboard
- * Signature: (IIIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XGrabKeyboard
-  (JNIEnv *env, jclass that, jint display, jint grabWindow, jint ownerEvents, jint PointerMode,
-        jint KeyboardMode, jint time)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XGrabKeyboard\n");
-#endif
-    return (jint) XGrabKeyboard((Display *)display, grabWindow, ownerEvents, PointerMode, KeyboardMode, time);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XGrabPointer
- * Signature: (IIIIIIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XGrabPointer
-  (JNIEnv *env, jclass that, jint display, jint grabWindow, jint ownerEvents, jint eventMask,
-        jint PointerMode, jint KeyboardMode, jint confineToWindow, jint cursor, jint time)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XGrabPointer\n");
-#endif
-    return (jint) XGrabPointer((Display *)display, grabWindow, ownerEvents, eventMask, PointerMode, 
-                        KeyboardMode, confineToWindow, cursor, time);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XInternAtom
- * Signature: (I[BZ)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XInternAtom
-  (JNIEnv *env, jclass that, jint display, jbyteArray name, jboolean ifExists)
-{
-    jbyte *name1 = NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XInternAtom\n");
-#endif
-    if (name)    
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    
-    rc = (jint) XInternAtom((Display *)display, (char *)name1, ifExists);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XInternAtom: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XKeysymToString
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XKeysymToString
-  (JNIEnv *env, jclass that, jint keysym)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XKeysymToString\n");
-#endif
-    return (jint) XKeysymToString(keysym);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XListFonts
- * Signature: (I[BI[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XListFonts
-  (JNIEnv *env, jclass that, jint display, jbyteArray pattern, jint maxnames, jintArray actual_count_return)
-{
-    jbyte *pattern1 = NULL;
-    jint *actual_count_return1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XListFonts\n");
-#endif
-    if (pattern)    
-        pattern1 = (*env)->GetByteArrayElements(env, pattern, NULL);
-    if (actual_count_return)    
-        actual_count_return1 = (*env)->GetIntArrayElements(env, actual_count_return, NULL);
-    
-    rc = (jint) XListFonts((Display *)display, (char *)pattern1, maxnames, (int *)actual_count_return1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XListFonts: call failed rc = %d\n", rc);
-#endif
-
-    if (pattern)
-        (*env)->ReleaseByteArrayElements(env, pattern, pattern1, 0);
-    if (actual_count_return)
-        (*env)->ReleaseIntArrayElements(env, actual_count_return, actual_count_return1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XListProperties
- * Signature: (II[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XListProperties
-  (JNIEnv *env, jclass that, jint display, jint window, jintArray num_prop_return)
-{
-    jint *num_prop_return1=NULL;
-    jint  rc;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XListProperties\n");
-#endif
-    if (num_prop_return)    
-        num_prop_return1 = (*env)->GetIntArrayElements(env, num_prop_return, NULL);
-    
-    rc = (jint) XListProperties((Display *)display, (Window)window, (int *)num_prop_return1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XListProperties: call failed rc = %d\n", rc);
-#endif
-
-    if (num_prop_return)
-        (*env)->ReleaseIntArrayElements(env, num_prop_return, num_prop_return1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XLookupString
- * Signature: (Lorg/eclipse/swt/internal/motif/XKeyEvent;[BI[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XLookupString
-  (JNIEnv *env, jclass that, jobject keyEvent, jbyteArray string, jint size, jintArray keysym, jintArray status)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-    jint *keysym1=NULL, *status1=NULL;
-    jbyte *string1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XLookupString\n");
-#endif
-
-    if (keyEvent) {
-        lpxEvent = &xEvent;
-        cacheXkeyeventFids(env, keyEvent, &PGLOB(XkeyeventFc));
-        getXkeyeventFields(env, keyEvent, lpxEvent, &PGLOB(XkeyeventFc));
-    }
-
-    if (string)
-        string1 = (*env)->GetByteArrayElements(env, string, NULL);    
-    if (keysym)
-        keysym1 = (*env)->GetIntArrayElements(env, keysym, NULL);    
-    if (status)
-        status1 = (*env)->GetIntArrayElements(env, status, NULL);    
-    rc  = (jint) XLookupString((XKeyEvent *)lpxEvent, (char *)string1, size, (KeySym *)keysym1, (XComposeStatus *)status1);
-	
-#ifdef PRINT_FAILED_RCODES
-    if (rc < 0)
-        fprintf(stderr, "XLookupString: call failed rc = %d\n", rc);
-#endif
-
-    if (string)
-        (*env)->ReleaseByteArrayElements(env, string, string1, 0);
-    if (keysym)
-        (*env)->ReleaseIntArrayElements(env, keysym, keysym1, 0);
-    if (status)
-        (*env)->ReleaseIntArrayElements(env, status, status1, 0);
-
-    if (keyEvent) {
-        setXkeyeventFields(env, keyEvent, lpxEvent, &PGLOB(XkeyeventFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XLowerWindow
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XLowerWindow
-  (JNIEnv *env, jclass that, jint display, jint window)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XLowerWindow\n");
-#endif
-    return (jint) XLowerWindow((Display *)display, window);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XPointInRegion
- * Signature: (III)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XPointInRegion
-  (JNIEnv *env, jclass that, jint region, jint x, jint y)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XPointInRegion\n");
-#endif
-	return (jboolean) XPointInRegion((Region)region, x, y);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XPutImage
- * Signature: (IIIIIIIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XPutImage
-  (JNIEnv *env, jclass that, jint display, jint drawable, jint gc, jint image, jint srcX, jint srcY, jint destX, jint destY, jint width, jint height)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XPutImage\n");
-#endif
-    return (jint) XPutImage((Display *)display, drawable, (GC)gc, (XImage *)image, srcX, srcY, destX, destY, width, height);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XQueryColor
- * Signature: (IILorg/eclipse/swt/internal/motif/XColor;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XQueryColor
-  (JNIEnv *env, jclass that, jint display, jint colormap, jobject color)
-{
-	DECL_GLOB(pGlob)
-	XColor xColor, *lpColor=NULL;
-	jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XQueryColor\n");
-#endif
-
-    if (color) {
-        lpColor = &xColor;
-        cacheXcolorFids(env, color, &PGLOB(XcolorFc));
-        getXcolorFields(env, color, lpColor, &PGLOB(XcolorFc));
-    }
-
-    rc = (jint) XQueryColor((Display *)display, colormap, lpColor);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XQueryColor: call failed rc = %d\n", rc);
-#endif
-
-    if (color) {
-        setXcolorFields(env, color, lpColor, &PGLOB(XcolorFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XQueryPointer
- * Signature: (II[I[I[I[I[I[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XQueryPointer
-  (JNIEnv *env, jclass that, jint display, jint window, jintArray root, jintArray child,
-             jintArray rootX, jintArray rootY, jintArray windowX, jintArray windowY, jintArray mask)
-{
-    jint *root1=NULL, *child1=NULL, *rootX1=NULL, *rootY1=NULL, *windowX1=NULL, *windowY1=NULL, *mask1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XQueryPointer\n");
-#endif
-
-    if (root)
-        root1 = (*env)->GetIntArrayElements(env, root, NULL);    
-    if (child)
-        child1 = (*env)->GetIntArrayElements(env, child, NULL);    
-    if (rootX)
-        rootX1 = (*env)->GetIntArrayElements(env, rootX, NULL);    
-    if (rootY)
-        rootY1 = (*env)->GetIntArrayElements(env, rootY, NULL);    
-    if (windowX)
-        windowX1 = (*env)->GetIntArrayElements(env, windowX, NULL);    
-    if (windowY)
-        windowY1 = (*env)->GetIntArrayElements(env, windowY, NULL);    
-    if (mask)
-        mask1 = (*env)->GetIntArrayElements(env, mask, NULL);    
-
-    rc = (jint) XQueryPointer((Display *)display, window, (Window *)root1, (Window *)child1, (int *)rootX1, (int *)rootY1, (int *)windowX1, (int *)windowY1, (unsigned int *)mask1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XQueryPointer: call failed rc = %d\n", rc);
-#endif
-
-    if (root)
-        (*env)->ReleaseIntArrayElements(env, root, root1, 0);
-    if (child)
-        (*env)->ReleaseIntArrayElements(env, child, child1, 0);
-    if (rootX)
-        (*env)->ReleaseIntArrayElements(env, rootX, rootX1, 0);
-    if (rootY)
-        (*env)->ReleaseIntArrayElements(env, rootY, rootY1, 0);
-    if (windowX)
-        (*env)->ReleaseIntArrayElements(env, windowX, windowX1, 0);
-    if (windowY)
-        (*env)->ReleaseIntArrayElements(env, windowY, windowY1, 0);
-    if (mask)
-        (*env)->ReleaseIntArrayElements(env, mask, mask1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XQueryTree
- * Signature: (II[I[I[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XQueryTree
-  (JNIEnv *env, jclass that, jint display, jint window, jintArray root_return, jintArray parent_return, jintArray children_return, jintArray nChildren_return)
-{
-    jint *root_return1=NULL, *parent_return1=NULL, *children_return1=NULL, *nChildren_return1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XQueryTree\n");
-#endif
-
-    if (root_return)
-        root_return1 = (*env)->GetIntArrayElements(env, root_return, NULL);    
-    if (parent_return)
-        parent_return1 = (*env)->GetIntArrayElements(env, parent_return, NULL);    
-    if (children_return)
-        children_return1 = (*env)->GetIntArrayElements(env, children_return, NULL);    
-    if (nChildren_return)
-        nChildren_return1 = (*env)->GetIntArrayElements(env, nChildren_return, NULL);    
-
-    rc = (jint) XQueryTree((Display *)display, window, (Window *)root_return1, (Window *)parent_return1, (Window **)children_return1, (unsigned int *)nChildren_return1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XQueryTree: call failed rc = %d\n", rc);
-#endif
-
-    if (root_return)
-        (*env)->ReleaseIntArrayElements(env, root_return, root_return1, 0);
-    if (parent_return)
-        (*env)->ReleaseIntArrayElements(env, parent_return, parent_return1, 0);
-    if (children_return)
-        (*env)->ReleaseIntArrayElements(env, children_return, children_return1, 0);
-    if (nChildren_return)
-        (*env)->ReleaseIntArrayElements(env, nChildren_return, nChildren_return1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XRaiseWindow
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XRaiseWindow
-  (JNIEnv *env, jclass that, jint display, jint window)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XRaiseWindow\n");
-#endif
-    return (jint) XRaiseWindow((Display *)display, window);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XReconfigureWMWindow
- * Signature: (IIIILorg/eclipse/swt/internal/motif/XWindowChanges;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XReconfigureWMWindow
-  (JNIEnv *env, jclass that, jint display, jint window, jint screen, jint valueMask, jobject values)
-{
-	DECL_GLOB(pGlob)
-	XWindowChanges xWindowChanges, *lpWindowChanges1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XReconfigureWMWindow\n");
-#endif
-
-    if (values) {
-        lpWindowChanges1 = &xWindowChanges;
-        cacheXwindowchangesFids(env, values, &PGLOB(XwindowchangesFc));
-        getXwindowchangesFields(env, values, lpWindowChanges1, &PGLOB(XwindowchangesFc));
-    }
-    rc = (jint) XReconfigureWMWindow((Display *)display, window, screen, valueMask, lpWindowChanges1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XReconfigureWMWindow: call failed rc = %d\n", rc);
-#endif
-
-    if (values) {
-        setXwindowchangesFields(env, values, lpWindowChanges1, &PGLOB(XwindowchangesFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XRectInRegion
- * Signature: (IIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XRectInRegion
-  (JNIEnv *env, jclass that, jint region, jint x, jint y, jint width, jint height)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XRectInRegion\n");
-#endif
-	return (jint) XRectInRegion((Region)region, x, y, width, height);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetBackground
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetBackground
-  (JNIEnv *env, jclass that, jint display, jint gc, jint background)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetBackground\n");
-#endif
-	XSetBackground((Display *)display, (GC)gc, background);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetClipMask
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetClipMask
-  (JNIEnv *env, jclass that, jint display, jint gc, jint pixmap)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetClipMask\n");
-#endif
-	XSetClipMask((Display *)display, (GC)gc, pixmap);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetClipRectangles
- * Signature: (IIIILorg/eclipse/swt/internal/motif/XRectangle;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetClipRectangles
-  (JNIEnv *env, jclass that, jint display, jint gc, jint clip_x_origin, jint clip_y_origin, jobject rectangle, jint n, jint ordering)
-{
-	DECL_GLOB(pGlob)
-	XRectangle xRect, *lpxRect=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetClipRectangles\n");
-#endif
-
-    if (rectangle) {
-        lpxRect = &xRect;
-        cacheXrectangleFids(env, rectangle, &PGLOB(XrectangleFc));
-        getXrectangleFields(env, rectangle, lpxRect, &PGLOB(XrectangleFc));
-    }
-    XSetClipRectangles((Display *)display, (GC)gc, clip_x_origin, clip_y_origin, lpxRect, n, ordering);
-    if (rectangle) {
-        setXrectangleFields(env, rectangle, lpxRect, &PGLOB(XrectangleFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetDashes
- * Signature: (III[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetDashes
-  (JNIEnv *env, jclass that, jint display, jint gc, jint dash_offset, jbyteArray dash_list, jint n)
-{
-    jbyte *dash_list1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetDashes\n");
-#endif
-
-    if (dash_list)
-        dash_list1 = (*env)->GetByteArrayElements(env, dash_list, NULL);
-    rc = (jint) XSetDashes((Display *)display, (GC)gc, dash_offset, (char *)dash_list1, n);
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XSetDashes: call failed rc = %d\n", rc);
-#endif
-    if (dash_list)
-        (*env)->ReleaseByteArrayElements(env, dash_list, dash_list1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetErrorHandler
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetErrorHandler
-  (JNIEnv *env, jclass that, jint handler)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetErrorHandler\n");
-#endif
-    return (jint) XSetErrorHandler((XErrorHandler)handler);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetFillStyle
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetFillStyle
-  (JNIEnv *env, jclass that, jint display, jint gc, jint fill_style)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetFillStyle\n");
-#endif
-    XSetFillStyle((Display*)display, (GC)gc, fill_style);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetFont
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetFont
-  (JNIEnv *env, jclass that, jint display, jint gc, jint font)
-{
-    return (jint) XSetFont((Display *)display, (GC)gc, (Font)font);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetForeground
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetForeground
-  (JNIEnv *env, jclass that, jint display, jint gc, jint foreground)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetForeground\n");
-#endif
-	XSetForeground((Display *)display, (GC)gc, foreground);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetFunction
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetFunction
-  (JNIEnv *env, jclass that, jint display, jint gc, jint function)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetFunction\n");
-#endif
-	XSetFunction((Display *)display, (GC)gc, function);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetGraphicsExposures
- * Signature: (IIZ)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetGraphicsExposures
-  (JNIEnv *env, jclass that, jint display, jint gc, jboolean graphics_exposures)
-{
-    XSetGraphicsExposures((Display *)display, (GC)gc, (Bool) graphics_exposures);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetInputFocus
- * Signature: (IIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetInputFocus
-  (JNIEnv *env, jclass that, jint display, jint window, jint revert, jint time)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetInputFocus\n");
-#endif
-	
-    return (jint) XSetInputFocus((Display *)display, window, revert, time);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetLineAttributes
- * Signature: (IIIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetLineAttributes
-  (JNIEnv *env, jclass that, jint display, jint gc, jint lineWidth, jint lineStyle, jint capStyle, jint joinStyle)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetLineAttributes\n");
-#endif
-    return (jint) XSetLineAttributes((Display *)display, (GC)gc, lineWidth, lineStyle, capStyle, joinStyle);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetRegion
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetRegion
-  (JNIEnv *env, jclass that, jint display, jint gc, jint region)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetRegion\n");
-#endif
-	XSetRegion((Display *)display, (GC)gc, (Region)region);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetStipple
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetStipple
-  (JNIEnv *env, jclass that, jint display, jint gc, jint pixmap)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetStipple\n");
-#endif
-    XSetStipple((Display*)display, (GC)gc, pixmap);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetSubwindowMode
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetSubwindowMode
-  (JNIEnv *env, jclass that, jint display, jint gc, jint subwindow_mode)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetSubwindowMode\n");
-#endif
-    XSetSubwindowMode((Display*)display, (GC)gc, subwindow_mode);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetWindowBorderWidth
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetWindowBorderWidth
-  (JNIEnv *env, jclass that, jint display, jint window, jint width)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetWindowBorderWidth\n");
-#endif
-    XSetWindowBorderWidth((Display *)display, window, width);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSubtractRegion
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSubtractRegion
-  (JNIEnv *env, jclass that, jint sra, jint srb, jint da_return)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSubtractRegion\n");
-#endif
-    XSubtractRegion((Region)sra, (Region)srb, (Region)da_return);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSync
- * Signature: (IZ)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSync
-  (JNIEnv *env, jclass that, jint display, jboolean discard)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSync\n");
-#endif
-	XSync((Display *)display, (Bool)discard);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSynchronize
- * Signature: (IZ)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XSynchronize
-  (JNIEnv *env, jclass that, jint display, jboolean onoff)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSynchronize\n");
-#endif
-    return (jint) XSynchronize((Display *)display, (Bool)onoff);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XUndefineCursor
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XUndefineCursor
-  (JNIEnv *env, jclass that, jint display, jint window)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XUndefineCursor\n");
-#endif
-	XUndefineCursor((Display *)display, window);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XUngrabKeyboard
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XUngrabKeyboard
-  (JNIEnv *env, jclass that, jint display, jint time)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XUngrabKeyboard\n");
-#endif
-    return (jint) XUngrabKeyboard((Display *)display, time);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XUngrabPointer
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XUngrabPointer
-  (JNIEnv *env, jclass that, jint display, jint time)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XUngrabPointer\n");
-#endif
-    return (jint) XUngrabPointer((Display *)display, time);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XUnionRectWithRegion
- * Signature: (Lorg/eclipse/swt/internal/motif/XRectangle;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XUnionRectWithRegion
-  (JNIEnv *env, jclass that, jobject rectangle, jint src_region, jint dest_region)
-{
-	DECL_GLOB(pGlob)
-	XRectangle xRect, *lpxRect=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XUnionRectWithRegion\n");
-#endif
-
-    if (rectangle) {
-        lpxRect = &xRect;
-        cacheXrectangleFids(env, rectangle, &PGLOB(XrectangleFc));
-        getXrectangleFields(env, rectangle, lpxRect, &PGLOB(XrectangleFc));
-    }
-    XUnionRectWithRegion(lpxRect, (Region)src_region, (Region)dest_region);
-    if (rectangle) {
-        setXrectangleFields(env, rectangle, lpxRect, &PGLOB(XrectangleFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XUnionRegion
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XUnionRegion
-  (JNIEnv *env, jclass that, jint sra, jint srb, jint dr_return)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XUnionRegion\n");
-#endif
-	XUnionRegion((Region)sra, (Region)srb, (Region)dr_return);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XWarpPointer
- * Signature: (IIIIIIIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XWarpPointer
-  (JNIEnv *env, jclass that, jint display, jint src_w, jint dest_w, jint src_x, jint src_y, jint src_width, jint src_height, jint dest_x, jint dest_y)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XWarpPointer\n");
-#endif
-	XWarpPointer((Display *)display, src_w, dest_w, src_x, src_y, src_width, src_height, dest_x, dest_y);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XWhitePixel
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XWhitePixel
-  (JNIEnv *env, jclass that, jint display, jint screenNum)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XWhitePixel\n");
-#endif
-    return (jint) XWhitePixel((Display *)display, screenNum);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XWithdrawWindow
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XWithdrawWindow
-  (JNIEnv *env, jclass that, jint display, jint window, jint screen)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XWithdrawWindow\n");
-#endif
-    XWithdrawWindow((Display *)display, (Window)window, screen);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmAddWMProtocolCallback
- * Signature: (IIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmAddWMProtocolCallback
-  (JNIEnv *env, jclass that, jint shell, jint protocol, jint callback, jint closure)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmAddWMProtocolCallback\n");
-#endif
-    XmAddWMProtocolCallback((Widget)shell, (Atom)protocol, (XtCallbackProc)callback, (XtPointer)closure);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmChangeColor
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmChangeColor
-  (JNIEnv *env, jclass that, jint widget, jint pixel)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmChangeColor\n");
-#endif
-    XmChangeColor((Widget)widget, pixel);
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmComboBoxAddItem
- * Signature: (IIIZ)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmComboBoxAddItem
-  (JNIEnv *env, jclass that, jint combo, jint xmString, jint position, jboolean unique)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmComboBoxAddItem\n");
-#endif
-	XmComboBoxAddItem((Widget)combo, (XmString) xmString, position, unique);
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmComboBoxDeletePos
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmComboBoxDeletePos
-  (JNIEnv *env, jclass that, jint combo, jint position)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmComboBoxDeletePos\n");
-#endif
-	XmComboBoxDeletePos((Widget)combo, position);
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmComboBoxSelectItem
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmComboBoxSelectItem
-  (JNIEnv *env, jclass that, jint combo, jint xmString)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmComboBoxSelectItem\n");
-#endif
-	XmComboBoxSelectItem((Widget)combo, (XmString) xmString);
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateArrowButton
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateArrowButton
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jint *name1=NULL, *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateArrowButton\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetIntArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateArrowButton((Widget)parent, (char *)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateArrowButton: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseIntArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateCascadeButtonGadget
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateCascadeButtonGadget
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateCascadeButtonGadget\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateCascadeButtonGadget((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-    
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateCascadeButtonGadget: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateComboBox
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateComboBox
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateComboBox\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateComboBox((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateComboBox: call failed rc = %d\n", rc);
-#endif
-
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateDialogShell
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateDialogShell
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateDialogShell\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateDialogShell((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateDialogShell: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateDrawingArea
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateDrawingArea
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateDrawingArea\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateDrawingArea((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-    
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateDrawingArea: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateErrorDialog
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateErrorDialog
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateErrorDialog\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateErrorDialog((struct _WidgetRec*)parent, (String)name1, (ArgList)arglist1, argcount);
-    
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateErrorDialog: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateFileSelectionDialog
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateFileSelectionDialog
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateFileSelectionDialog\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateFileSelectionDialog((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateFileSelectionDialog: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateForm
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateForm
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateForm\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateForm((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateForm: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateFrame
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateFrame
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateFrame\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateFrame((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateFrame: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateInformationDialog
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateInformationDialog
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateInformationDialog\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-
-    rc = (jint)XmCreateInformationDialog((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateInformationDialog: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateLabel
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateLabel
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateLabel\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateLabel((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateLabel: call failed rc = %d\n", rc);
-#endif
-
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateList
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateList
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *arglist1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateList\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);    
-    rc = (jint) XmCreateList((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-   
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateList: call failed rc = %d\n", rc);
-#endif
-    
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateMainWindow
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateMainWindow
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateMainWindow\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateMainWindow((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-   
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateMainWindow: call failed rc = %d\n", rc);
-#endif
-    
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateMenuBar
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateMenuBar
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateMenuBar\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateMenuBar((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-    
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateMenuBar: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateMessageDialog
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateMessageDialog
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateMessageDialog\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateMessageDialog((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateMessageDialog: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreatePopupMenu
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreatePopupMenu
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreatePopupMenu\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreatePopupMenu((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreatePopupMenu: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreatePulldownMenu
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreatePulldownMenu\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreatePulldownMenu((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreatePulldownMenu: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreatePushButton
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreatePushButton
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1 = NULL;
-    jint *argList1 = NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreatePushButton\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);
-
-    rc = (jint) XmCreatePushButton((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-    
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreatePushButton: call failed rc = %d\n", rc);
-#endif
-
-     if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreatePushButtonGadget
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreatePushButtonGadget
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreatePushButtonGadget\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreatePushButtonGadget((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreatePushButtonGadget: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateQuestionDialog
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateQuestionDialog
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateQuestionDialog\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateQuestionDialog((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateQuestionDialog: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateScale
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateScale
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-	jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateScale\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-
-    rc = (jint) XmCreateScale((Widget)parent, (String)name1, (ArgList) arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateScale: call failed rc = %d\n", rc);
-#endif
-
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateScrollBar
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateScrollBar
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateScrollBar\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateScrollBar((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateScrollBar: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateScrolledList
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateScrolledList
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateScrolledList\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateScrolledList((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateScrolledList: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateScrolledText
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateScrolledText
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateScrolledText\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateScrolledText((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateScrolledText: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateSeparator
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateSeparator
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateSeparator\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateSeparator((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateSeparator: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateSeparatorGadget
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateSeparatorGadget
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateSeparatorGadget\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateSeparatorGadget((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateSeparatorGadget: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateTextField
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateTextField
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateTextField\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateTextField((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateTextField: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateToggleButton
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateToggleButton
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateToggleButton\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateToggleButton((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateToggleButton: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateToggleButtonGadget
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateToggleButtonGadget
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateToggleButtonGadget\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateToggleButtonGadget((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateToggleButtonGadget: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateWarningDialog
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateWarningDialog
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateWarningDialog\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    rc = (jint)XmCreateWarningDialog((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateWarningDialog: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmDragCancel
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmDragCancel
-  (JNIEnv *env, jclass that, jint dragcontext)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmDragCancel\n");
-#endif
-
-    XmDragCancel((Widget)dragcontext);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmDragStart
- * Signature: (II[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmDragStart
-  (JNIEnv *env, jclass that, jint widget, jobject event, jintArray arglist, jint argcount)
-{
-	DECL_GLOB(pGlob)
-    XEvent xEvent, *lpxEvent=NULL;
-    jint *arglist1;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmDragStart\n");
-#endif
-
-    if (event) {
-        lpxEvent = &xEvent;
-        cacheXanyeventFids(env, event, &PGLOB(XanyeventFc));
-        getXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-    if (arglist) {
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    }
-    rc = (jint) XmDragStart((Widget)widget, (XEvent *)lpxEvent, (ArgList)arglist1, (Cardinal)argcount);
-    if (event) {
-        setXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-    if (arglist) {
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmDropSiteRegister
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmDropSiteRegister
-  (JNIEnv *env, jclass that, jint widget, jintArray arglist, jint argcount)
-{
-    jint *arglist1;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmDropSiteRegister\n");
-#endif
-
-    if (arglist) {
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    }
-    XmDropSiteRegister((Widget)widget, (ArgList)arglist1, (Cardinal)argcount);
-    if (arglist) {
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmDropSiteRetrieve
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmDropSiteRetrieve
-  (JNIEnv *env, jclass that, jint widget, jintArray arglist, jint argcount)
-{
-    jint *arglist1;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmDropSiteRetrieve\n");
-#endif
-
-    if (arglist) {
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    }
-    XmDropSiteRetrieve((Widget)widget, (ArgList)arglist1, (Cardinal)argcount);
-    if (arglist) {
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmDropSiteUnregister
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmDropSiteUnregister
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmDropSiteUnregister\n");
-#endif
-    XmDropSiteUnregister((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmDropSiteUpdate
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmDropSiteUpdate
-  (JNIEnv *env, jclass that, jint widget, jintArray arglist, jint argcount)
-{
-    jint *arglist1;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmDropSiteUpdate\n");
-#endif
-
-    if (arglist) {
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    }
-    XmDropSiteUpdate((Widget)widget, (ArgList)arglist1, (Cardinal)argcount);
-    if (arglist) {
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmDropTransferAdd
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmDropTransferAdd
-  (JNIEnv *env, jclass that, jint drop_transfer, jintArray transfers, jint num_transfers)
-{
-    jint *transfers1;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmDropTransferAdd\n");
-#endif
-
-    if (transfers) {
-        transfers1 = (*env)->GetIntArrayElements(env, transfers, NULL);
-    }
-    XmDropTransferAdd((Widget)drop_transfer, (XmDropTransferEntryRec *)transfers1, (Cardinal)num_transfers);
-    if (transfers) {
-        (*env)->ReleaseIntArrayElements(env, transfers, transfers1, 0);
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmDropTransferStart
- * Signature: (I[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmDropTransferStart
-  (JNIEnv *env, jclass that, jint widget, jintArray arglist, jint argcount)
-{
-    jint *arglist1;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmDropTransferStart\n");
-#endif
-
-    if (arglist) {
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-    }
-    rc = (jint) XmDropTransferStart((Widget)widget, (ArgList)arglist1, (Cardinal)argcount);
-    if (arglist) {
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmFileSelectionBoxGetChild
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFileSelectionBoxGetChild
-  (JNIEnv *env, jclass that, jint widget, jint child)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmFileSelectionBoxGetChild\n");
-#endif
-	return (jint) XmFileSelectionBoxGetChild((Widget)widget, child);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmFontListAppendEntry
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListAppendEntry
-  (JNIEnv *env, jclass that, jint oldlist,  jint entry)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmFontListAppendEntry\n");
-#endif
-	return (jint) XmFontListAppendEntry((XmFontList)oldlist, (XmFontListEntry)entry);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmFontListEntryFree
- * Signature: ([I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListEntryFree
-  (JNIEnv *env, jclass that, jintArray entry)
-{
-    jint *entry1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmFontListEntryFree\n");
-#endif
-
-    if (entry)
-        entry1 = (*env)->GetIntArrayElements(env, entry, NULL);
-    XmFontListEntryFree((XmFontListEntry *)entry1);
-    if (entry)
-        (*env)->ReleaseIntArrayElements(env, entry, entry1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmFontListEntryGetFont
- * Signature: (I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListEntryGetFont
-  (JNIEnv *env, jclass that, jint entry, jintArray type_return)
-{
-    jint *type_return1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmFontListEntryGetFont\n");
-#endif
-
-    if (type_return)
-        type_return1 = (*env)->GetIntArrayElements(env, type_return, NULL);
-    rc = (jint) XmFontListEntryGetFont((XmFontListEntry)entry, (XmFontType *)type_return1);
-    if (type_return)
-        (*env)->ReleaseIntArrayElements(env, type_return, type_return1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmFontListEntryCreate
- * Signature: ([BII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListEntryCreate
-  (JNIEnv *env, jclass that, jbyteArray tag, jint type, int font)
-{
-    char *tag1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmFontListEntryCreate\n");
-#endif
-
-    if (tag)
-        tag1 = (char *)(*env)->GetByteArrayElements(env, tag, NULL);
-    rc = (jint)XmFontListEntryCreate(tag1, (XmFontType)type, (XtPointer)font);
-    if (tag)
-        (*env)->ReleaseByteArrayElements(env, tag, (jbyte *)tag1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XLoadQueryFont
- * Signature: (I[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XLoadQueryFont
-  (JNIEnv *env, jclass that, jint display, jbyteArray fontName)
-{
-    char *fontName1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XLoadQueryFont\n");
-#endif
-
-    if (fontName)
-        fontName1 = (char *)(*env)->GetByteArrayElements(env, fontName, NULL);
-    rc = (jint)XLoadQueryFont((Display *)display, fontName1);
-    if (fontName)
-        (*env)->ReleaseByteArrayElements(env, fontName, (jbyte *)fontName1, 0);
-    
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmFontListEntryLoad
- * Signature: (I[BI[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListEntryLoad
-  (JNIEnv *env, jclass that, jint display, jbyteArray fontName, jint type, jbyteArray tag)
-{
-    char *fontName1=NULL, *tag1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmFontListEntryLoad\n");
-#endif
-
-    if (fontName)
-        fontName1 = (char *)(*env)->GetByteArrayElements(env, fontName, NULL);
-    if (tag)
-        tag1 = (char *)(*env)->GetByteArrayElements(env, tag, NULL);
-    rc = (jint)XmFontListEntryLoad((Display *)display, fontName1, type, tag1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmFontListEntryLoad: call failed rc = %d\n", rc);
-#endif
-
-    if (fontName)
-        (*env)->ReleaseByteArrayElements(env, fontName, (jbyte *)fontName1, 0);
-    if (tag)
-        (*env)->ReleaseByteArrayElements(env, tag, (jbyte *)tag1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmFontListFree
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListFree
-  (JNIEnv *env, jclass that, jint list)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmFontListFree\n");
-#endif
-	XmFontListFree((XmFontList)list);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmFontListFreeFontContext
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListFreeFontContext
-  (JNIEnv *env, jclass that, jint context)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmFontListFreeFontContext\n");
-#endif
-    XmFontListFreeFontContext((XmFontContext)context);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmFontListInitFontContext
- * Signature: ([II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListInitFontContext
-  (JNIEnv *env, jclass that, jintArray context, jint fontlist)
-{
-    jint *context1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmFontListInitFontContext\n");
-#endif
-
-    if (context)
-        context1 = (*env)->GetIntArrayElements(env, context, NULL);
-    rc = XmFontListInitFontContext((XmFontContext *)context1, (XmFontList)fontlist);
-    if (context)
-        (*env)->ReleaseIntArrayElements(env, context, context1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmFontListNextEntry
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListNextEntry
-  (JNIEnv *env, jclass that, jint context)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmFontListNextEntry\n");
-#endif
-    return (jint) XmFontListNextEntry((XmFontContext) context);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmFontListCopy
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListCopy
-  (JNIEnv *env, jclass that, jint fontlist)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmFontListCopy\n");
-#endif
-    return (jint) XmFontListCopy((XmFontList) fontlist);
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmGetAtomName
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetAtomName
-  (JNIEnv *env, jclass that, jint display, jint atom)
-{
-    return (jint) XmGetAtomName((Display *)display, (Atom)atom);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmGetFocusWidget
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetFocusWidget
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmGetFocusWidget\n");
-#endif
-    return (jint) XmGetFocusWidget((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmGetPixmap
- * Signature: (I[BII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetPixmap
-  (JNIEnv *env, jclass that, jint screen, jbyteArray name, jint fgPixel, jint bgPixel)
-{
-    jbyte* name1 = NULL;
- 	jint   pixmap;
- 	
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmGetPixmap\n");
-#endif
-
-    if (name) name1 = (*env)->GetByteArrayElements(env, name, NULL); 
-    pixmap = (jint) XmGetPixmap((Screen*)screen, (char*)name1, (Pixel)fgPixel, (Pixel)bgPixel);
-    if (name) (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    return pixmap;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmGetXmDisplay
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetXmDisplay
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-        fprintf(stderr, "XmGetXmDisplay\n");
-#endif
-    return (jint) XmGetXmDisplay((Display *)display);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmGetDragContext
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetDragContext
-  (JNIEnv *env, jclass that, jint widget, jint timestamp)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmGetDragContext\n");
-#endif
-    return (jint) XmGetDragContext((Widget)widget, (Time)timestamp);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmImMbLookupString
- * Signature: (ILorg/eclipse/swt/internal/motif/XKeyEvent;[BI[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImMbLookupString
-  (JNIEnv *env, jclass that, jint widget, jobject keyEvent, jbyteArray string, jint size, jintArray keysym, jintArray status)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-	jint *keysym1=NULL, *status1=NULL;
-    jbyte *string1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmImMbLookupString\n");
-#endif
-
-    if (keyEvent) {
-        lpxEvent = &xEvent;
-        cacheXkeyeventFids(env, keyEvent, &PGLOB(XkeyeventFc));
-        getXkeyeventFields(env, keyEvent, lpxEvent, &PGLOB(XkeyeventFc));
-    }
-    if (string)
-        string1 = (*env)->GetByteArrayElements(env, string, NULL);
-    if (keysym)
-        keysym1 = (*env)->GetIntArrayElements(env, keysym, NULL);
-    if (status)
-        status1 = (*env)->GetIntArrayElements(env, status, NULL);
-
-    rc = (jint)XmImMbLookupString((Widget)widget, (XKeyPressedEvent *)lpxEvent, (char *)string1, size, (KeySym *)keysym1, (int *)status1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmImMbLookupString: call failed rc = %d\n", rc);
-#endif
-
-    if (keyEvent) {
-        setXkeyeventFields(env, keyEvent, lpxEvent, &PGLOB(XkeyeventFc));
-    }
-    if (string)
-        (*env)->ReleaseByteArrayElements(env, string, string1, 0);
-    if (keysym)
-        keysym1 = (*env)->GetIntArrayElements(env, keysym, NULL);
-    if (status)
-        (*env)->ReleaseIntArrayElements(env, status, status1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmInternAtom
- * Signature: (I[BZ)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmInternAtom
-  (JNIEnv *env, jclass that, jint display, jbyteArray name, jboolean only_if_exists)
-{
-    jbyte *name1;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmInternAtom\n");
-#endif
-    
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    rc = (jint) XmInternAtom((Display *)display, (String)name1, only_if_exists);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmInternAtom: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListAddItemUnselected
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListAddItemUnselected
-  (JNIEnv *env, jclass that, jint list, jint xmString, jint position)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListAddItemUnselected\n");
-#endif
-	XmListAddItemUnselected((Widget)list, (XmString)xmString, position);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListDeleteAllItems
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListDeleteAllItems
-  (JNIEnv *env, jclass that, jint list)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListDeleteAllItems\n");
-#endif
-	XmListDeleteAllItems((Widget)list);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListDeleteItemsPos
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListDeleteItemsPos
-  (JNIEnv *env, jclass that, jint list, jint item_count, jint position)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListDeleteItemsPos\n");
-#endif
-	XmListDeleteItemsPos((Widget)list, item_count, position);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListDeletePos
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListDeletePos
-  (JNIEnv *env, jclass that, jint list, jint position)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListDeletePos\n");
-#endif
-	XmListDeletePos((Widget)list, position);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListDeletePositions
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListDeletePositions
-  (JNIEnv *env, jclass that, jint list, jintArray position_list, jint position_count)
-{
-    jint *position_list1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListDeletePositions\n");
-#endif
-
-    if (position_list)
-        position_list1 = (*env)->GetIntArrayElements(env, position_list, NULL);
-    XmListDeletePositions((Widget)list, (int *)position_list1, position_count);
-    if (position_list)
-        (*env)->ReleaseIntArrayElements(env, position_list, position_list1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListDeselectAllItems
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListDeselectAllItems
-  (JNIEnv *env, jclass that, jint list)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListDeselectAllItems\n");
-#endif
-	XmListDeselectAllItems((Widget)list);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListDeselectPos
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListDeselectPos
-  (JNIEnv *env, jclass that, jint list, jint position)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListDeselectPos\n");
-#endif
-	XmListDeselectPos((Widget)list, position);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListGetKbdItemPos
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListGetKbdItemPos
-  (JNIEnv *env, jclass that, jint list)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListGetKbdItemPos\n");
-#endif
-	return (jint)XmListGetKbdItemPos((Widget)list);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListGetSelectedPos
- * Signature: (I[I[I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListGetSelectedPos
-  (JNIEnv *env, jclass that, jint list, jintArray positions, jintArray count)
-{
-    jint *positions1=NULL, *count1=NULL;
-    jboolean rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListGetSelectedPos\n");
-#endif
-
-    if (positions)
-        positions1 = (*env)->GetIntArrayElements(env, positions, NULL);
-    if (count)
-        count1 = (*env)->GetIntArrayElements(env, count, NULL);
-    rc = (jboolean)XmListGetSelectedPos((Widget)list, (int **)positions1, (int *)count1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc != True && rc != False)
-        fprintf(stderr, "XmListGetSelectedPos: call failed rc = %d\n", rc);
-#endif
-
-    if (positions)
-        (*env)->ReleaseIntArrayElements(env, positions, positions1, 0);
-    if (count)
-        (*env)->ReleaseIntArrayElements(env, count, count1, 0);
-    return rc;	
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListItemPos
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListItemPos
-  (JNIEnv *env, jclass that, jint list, jint xmString)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListItemPos\n");
-#endif
-	return (jint)XmListItemPos((Widget)list, (XmString)xmString);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListPosSelected
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListPosSelected
-  (JNIEnv *env, jclass that, jint list, jint position)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListPosSelected\n");
-#endif
-	return (jboolean)XmListPosSelected((Widget)list, position);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListReplaceItemsPosUnselected
- * Signature: (I[III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListReplaceItemsPosUnselected
-  (JNIEnv *env, jclass that, jint list, jintArray newItems, jint item_count, jint position)
-{
-    jint *newItems1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListReplaceItemsPosUnselected\n");
-#endif
-
-    if (newItems)
-        newItems1 = (*env)->GetIntArrayElements(env, newItems, NULL);
-    XmListReplaceItemsPosUnselected((Widget)list, (XmString *)newItems1, item_count, position);
-    if (newItems)
-        (*env)->ReleaseIntArrayElements(env, newItems, newItems1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListSelectPos
- * Signature: (IIZ)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListSelectPos
-  (JNIEnv *env, jclass that, jint list, jint position, jboolean notify)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListSelectPos\n");
-#endif
-	XmListSelectPos((Widget)list, position, notify);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListSetKbdItemPos
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListSetKbdItemPos
-  (JNIEnv *env, jclass that, jint list, jint position)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListSetKbdItemPos\n");
-#endif
-	return (jboolean)XmListSetKbdItemPos((Widget)list, position);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListSetPos
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListSetPos
-  (JNIEnv *env, jclass that, jint list, jint position)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListSetPos\n");
-#endif
-	XmListSetPos((Widget)list, position);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListUpdateSelectedList
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListUpdateSelectedList
-  (JNIEnv *env, jclass that, jint list)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListUpdateSelectedList\n");
-#endif
-	XmListUpdateSelectedList((Widget)list);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmMainWindowSetAreas
- * Signature: (IIIIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmMainWindowSetAreas
-  (JNIEnv *env, jclass that, jint widget, jint menu, jint command, jint hscroll, jint vscroll, jint wregion)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmMainWindowSetAreas\n");
-#endif
-    XmMainWindowSetAreas((Widget)widget, (Widget)menu, (Widget)command, (Widget)hscroll, (Widget)vscroll, (Widget)wregion);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmMenuShellWidgetClass
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmMenuShellWidgetClass
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmMenuShellWidgetClass\n");
-#endif
-	return (jint)xmMenuShellWidgetClass;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmMessageBoxGetChild
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmMessageBoxGetChild
-  (JNIEnv *env, jclass that, jint widget, jint child)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmMessageBoxGetChild\n");
-#endif
-	return (jint)XmMessageBoxGetChild((Widget)widget, child);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmProcessTraversal
- * Signature: (II)
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmProcessTraversal
-  (JNIEnv *env, jclass that, jint widget, jint dir)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmProcessTraversal\n");
-#endif
-    return (jboolean) XmProcessTraversal((Widget)widget, dir);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmPushButtonWidgetClass
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmPushButtonWidgetClass
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmPushButtonWidgetClass\n");
-#endif
-	return (jint)xmPushButtonWidgetClass;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringCompare
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringCompare
-  (JNIEnv *env, jclass that, jint xmString1, jint xmString2)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringCompare\n");
-#endif
-    return (jboolean) XmStringCompare((XmString)xmString1, (XmString)xmString2);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringCreate
- * Signature: ([B[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringCreate
-  (JNIEnv *env, jclass that, jbyteArray string, jbyteArray charset)
-{
-    jbyte *string1=NULL, *charset1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringCreate\n");
-#endif
-
-    if (string)
-        string1 = (*env)->GetByteArrayElements(env, string, NULL);
-    if (charset)
-        charset1 = (*env)->GetByteArrayElements(env, charset, NULL);
-    rc = (jint) XmStringCreate((char *)string1, (char *)charset1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmStringCreate: call failed rc = %d\n", rc);
-#endif
-
-    if (string)
-        (*env)->ReleaseByteArrayElements(env, string, string1, 0);
-    if (charset)
-        (*env)->ReleaseByteArrayElements(env, charset, charset1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringCreateLocalized
- * Signature: ([B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringCreateLocalized
-  (JNIEnv *env, jclass that, jbyteArray string)
-{
-    jbyte *string1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringCreateLocalized\n");
-#endif
-
-    if (string)
-        string1 = (*env)->GetByteArrayElements(env, string, NULL);
-    rc = (jint)XmStringCreateLocalized((char *)string1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmStringCreateLocalized: call failed rc = %d\n", rc);
-#endif
-
-    if (string)
-        (*env)->ReleaseByteArrayElements(env, string, string1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringDraw
- * Signature: (IIIIIIIIIILorg/eclipse/swt/internal/motif/XRectangle;)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringDraw
-  (JNIEnv *env, jclass that, jint display, jint window, jint fontlist, jint xmString, jint gc, jint x, jint y, jint width, jint align, jint lay_dir, jobject clip)
-{
-	DECL_GLOB(pGlob)
-	XRectangle xRect, *lpxRect=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "\n");
-#endif
-
-    if (clip) {
-        lpxRect = &xRect;
-        cacheXrectangleFids(env, clip, &PGLOB(XrectangleFc));
-        getXrectangleFields(env, clip, lpxRect, &PGLOB(XrectangleFc));
-    }
-    XmStringDraw((Display *)display, (Window)window, (XmFontList)fontlist, (XmString)xmString, (GC)gc, x, y, width, align, lay_dir, lpxRect);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringDrawImage
- * Signature: (IIIIIIIIIILorg/eclipse/swt/internal/motif/XRectangle;)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringDrawImage
-  (JNIEnv *env, jclass that, jint display, jint window, jint fontlist, jint xmString, jint gc, jint x, jint y, jint width, jint align, jint lay_dir, jobject clip)
-{
-	DECL_GLOB(pGlob)
-	XRectangle xRect, *lpxRect=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringDrawImage\n");
-#endif
-
-    if (clip) {
-        lpxRect = &xRect;
-        cacheXrectangleFids(env, clip, &PGLOB(XrectangleFc));
-        getXrectangleFields(env, clip, lpxRect, &PGLOB(XrectangleFc));
-    }
-    XmStringDrawImage((Display *)display, window, (XmFontList)fontlist, (XmString)xmString, (GC)gc, x, y, width, align, lay_dir, lpxRect);
-    if (clip) {
-        setXrectangleFields(env, clip, lpxRect, &PGLOB(XrectangleFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringEmpty
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringEmpty
-  (JNIEnv *env, jclass that, jint s1)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringEmpty\n");
-#endif
-    return (jboolean) XmStringEmpty((XmString)s1);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringFree
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringFree
-  (JNIEnv *env, jclass that, jint xmString)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringFree\n");
-#endif
-    XmStringFree((XmString)xmString);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringHeight
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringHeight
-  (JNIEnv *env, jclass that, jint fontlist, jint xmString)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringHeight\n");
-#endif
-	return (jint) XmStringHeight((XmFontList)fontlist, (XmString)xmString);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringWidth
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringWidth
-  (JNIEnv *env, jclass that, jint fontlist, jint xmString)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringWidth\n");
-#endif
-	return (jint) XmStringWidth((XmFontList)fontlist, (XmString)xmString);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextClearSelection
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextClearSelection
-  (JNIEnv *env, jclass that, jint widget, jint time)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextClearSelection\n");
-#endif
-	XmTextClearSelection((Widget)widget, time);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextCopy
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextCopy
-  (JNIEnv *env, jclass that, jint widget, jint time)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextCopy\n");
-#endif
-	return (jboolean)XmTextCopy((Widget)widget, time);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextCut
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextCut
-  (JNIEnv *env, jclass that, jint widget, jint time)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextCut\n");
-#endif
-	return (jboolean)XmTextCut((Widget)widget, time);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextDisableRedisplay
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextDisableRedisplay
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextDisableRedisplay\n");
-#endif
-	XmTextDisableRedisplay((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextEnableRedisplay
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextEnableRedisplay
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextEnableRedisplay\n");
-#endif
-	XmTextEnableRedisplay((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextGetInsertionPosition
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextGetInsertionPosition
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextGetInsertionPosition\n");
-#endif
-	return (jint) XmTextGetInsertionPosition((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextGetLastPosition
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextGetLastPosition
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextGetLastPosition\n");
-#endif
-	return (jint) XmTextGetLastPosition((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextGetMaxLength
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextGetMaxLength
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextGetMaxLength\n");
-#endif
-	return (jint) XmTextGetMaxLength((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextGetSelection
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextGetSelection
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextGetSelection\n");
-#endif
-	return (jint) XmTextGetSelection((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextGetSelectionPosition
- * Signature: (I[I[I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextGetSelectionPosition
-  (JNIEnv *env, jclass that, jint widget, jintArray left, jintArray right)
-{
-    jint *left1=NULL,*right1=NULL;
-    jboolean rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextGetSelectionPosition\n");
-#endif
-
-    if (left)
-        left1 = (*env)->GetIntArrayElements(env, left, NULL);
-    if (right)
-        right1 = (*env)->GetIntArrayElements(env, right, NULL);
-    rc = (jboolean) XmTextGetSelectionPosition((Widget)widget, (XmTextPosition *)left1, (XmTextPosition *)right1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc != True && rc != False)
-        fprintf(stderr, "XmTextGetSelectionPosition: call failed rc = %d\n", rc);
-#endif
-
-    if (left)
-        (*env)->ReleaseIntArrayElements(env, left, left1, 0);
-    if (right)
-        (*env)->ReleaseIntArrayElements(env, right, right1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextGetString
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextGetString
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextGetString\n");
-#endif
-	return (jint) XmTextGetString((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextGetSubstring
- * Signature: (IIII[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextGetSubstring
-  (JNIEnv *env, jclass that, jint widget, jint start, jint num_chars, jint buffer_size, jbyteArray buffer)
-{
-    jbyte *buffer1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextGetSubstring\n");
-#endif
-
-    if (buffer)
-        buffer1 = (*env)->GetByteArrayElements(env, buffer, NULL);
-    rc = (jint)XmTextGetSubstring((Widget)widget, start, num_chars, buffer_size, (char *)buffer1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmTextGetSubstring: call failed rc = %d\n", rc);
-#endif
-
-    if (buffer)
-        (*env)->ReleaseByteArrayElements(env, buffer, buffer1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextGetSubstringWcs
- * Signature: (IIII[C)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextGetSubstringWcs
-  (JNIEnv *env, jclass that, jint widget, jint start, jint num_chars, jint buffer_size, jcharArray buffer)
-{
-   jchar *buffer1=NULL;
-   jint rc;
-#ifdef DEBUG_CALL_PRINTS
-        fprintf(stderr, "XmTextGetSubstringWcs\n");
-#endif
-
-    if (buffer)
-        buffer1 = (*env)->GetCharArrayElements(env, buffer, NULL);
-
-   rc = (jint)XmTextGetSubstringWcs((Widget) widget, (XmTextPosition) start, num_chars, buffer_size, (wchar_t *) buffer1);
-
-    if (buffer)
-        (*env)->ReleaseCharArrayElements(env, buffer, buffer1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextInsert
- * Signature: (II[B)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextInsert
-  (JNIEnv *env, jclass that, jint widget, jint position, jbyteArray value)
-{
-    jbyte *value1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextInsert\n");
-#endif
-
-    if (value)
-        value1 = (*env)->GetByteArrayElements(env, value, NULL);
-    XmTextInsert((Widget)widget, position, (char *)value1);
-    if (value)
-        (*env)->ReleaseByteArrayElements(env, value, value1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextPaste
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextPaste
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextPaste\n");
-#endif
-	(jboolean) XmTextPaste((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextFieldPaste
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextFieldPaste
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextFieldPaste\n");
-#endif
-	(jboolean) XmTextFieldPaste((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextRemove
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextRemove
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextRemove\n");
-#endif
-	return (jboolean) XmTextRemove((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextPosToXY
- * Signature: (II[S[S)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextPosToXY
-  (JNIEnv *env, jclass that, jint widget, jint position, jshortArray x, jshortArray y)
-{
-    jshort *x1=NULL, *y1=NULL;
-    jboolean rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextPosToXY\n");
-#endif
-
-    if (x)
-        x1 = (*env)->GetShortArrayElements(env, x, NULL);
-    if (y)
-        y1 = (*env)->GetShortArrayElements(env, y, NULL);
-    rc = (jboolean) XmTextPosToXY((Widget)widget, (XmTextPosition)position, (Position *)x1, (Position *)y1);
-    if (y)
-        (*env)->ReleaseShortArrayElements(env, y, y1, 0);
-    if (x)
-        (*env)->ReleaseShortArrayElements(env, x, x1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextReplace
- * Signature: (III[B)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextReplace
-  (JNIEnv *env, jclass that, jint widget, jint from_pos, jint to_pos, jbyteArray value)
-{
-    jbyte *value1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextReplace\n");
-#endif
-
-    if (value)
-        value1 = (*env)->GetByteArrayElements(env, value, NULL);
-
-    XmTextReplace((Widget)widget, from_pos, to_pos, (char *)value1);
-
-    if (value)
-        (*env)->ReleaseByteArrayElements(env, value, value1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextScroll
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextScroll
-  (JNIEnv *env, jclass that, jint widget, jint lines)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextScroll\n");
-#endif
-	XmTextScroll((Widget)widget, lines);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextSetEditable
- * Signature: (IZ)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextSetEditable
-  (JNIEnv *env, jclass that, jint widget, jboolean editable)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextSetEditable\n");
-#endif
-	XmTextSetEditable((Widget)widget, editable);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextSetHighlight
- * Signature: (IIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextSetHighlight
-  (JNIEnv *env, jclass that, jint widget, jint left, jint right, jint mode)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextSetHighlight\n");
-#endif
-	XmTextSetHighlight((Widget)widget, left, right, mode);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextSetInsertionPosition
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextSetInsertionPosition
-  (JNIEnv *env, jclass that, jint widget, jint position)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextSetInsertionPosition\n");
-#endif
-	XmTextSetInsertionPosition((Widget)widget, position);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextSetMaxLength
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextSetMaxLength
-  (JNIEnv *env, jclass that, jint widget, jint max_length)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextSetMaxLength\n");
-#endif
-	XmTextSetMaxLength((Widget)widget, max_length);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextSetSelection
- * Signature: (IIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextSetSelection
-  (JNIEnv *env, jclass that, jint widget, jint first, jint last, jint time)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextSetSelection\n");
-#endif
-	XmTextSetSelection((Widget)widget, first, last, time);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextSetString
- * Signature: (I[B)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextSetString
-  (JNIEnv *env, jclass that, jint widget, jbyteArray value)
-{
-    jbyte *value1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextSetString\n");
-#endif
-
-    if (value)
-        value1 = (*env)->GetByteArrayElements(env, value, NULL);
-    XmTextSetString((Widget)widget, (char *)value1);
-    if (value)
-        (*env)->ReleaseByteArrayElements(env, value, value1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextShowPosition
-  (JNIEnv *env, jclass that, jint widget, jint position)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextShowPosition\n");
-#endif
-	XmTextShowPosition((Widget)widget, position);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmUpdateDisplay
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmUpdateDisplay
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmUpdateDisplay\n");
-#endif
-    XmUpdateDisplay((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmWidgetGetDisplayRect
- * Signature: (ILorg/eclipse/swt/internal/motif/XRectangle;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmWidgetGetDisplayRect
-  (JNIEnv *env, jclass that, jint region, jobject rectangle)
-{
-	DECL_GLOB(pGlob)
-	XRectangle xRect, *lpxRect=NULL;
-    jboolean rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmWidgetGetDisplayRect\n");
-#endif
-
-    if (rectangle) {
-        lpxRect = &xRect;
-        cacheXrectangleFids(env, rectangle, &PGLOB(XrectangleFc));
-        getXrectangleFields(env, rectangle, lpxRect, &PGLOB(XrectangleFc));
-    }
-    rc = (jboolean) XmWidgetGetDisplayRect((Widget)region, (XRectangle *)lpxRect);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmWidgetGetDisplayRect: call failed rc = %d\n", rc);
-#endif
-
-    if (rectangle) {
-        setXrectangleFields(env, rectangle, lpxRect, &PGLOB(XrectangleFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmbLookupString
- * Signature: (ILorg/eclipse/swt/internal/motif/XInputEvent;[BI[I[I)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmbLookupString
-  (JNIEnv *env, jclass that, jint ic, jobject event, jbyteArray string, jint size, jintArray keysym, jintArray status)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-    jint *keysym1=NULL, *status1=NULL;
-    jbyte *string1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmbLookupString\n");
-#endif
-
-    if (event) {
-        lpxEvent = &xEvent;
-        cacheXkeyeventFids(env, event, &PGLOB(XkeyeventFc));
-        getXkeyeventFields(env, event, lpxEvent, &PGLOB(XkeyeventFc));
-    }
-    if (string)
-        string1 = (*env)->GetByteArrayElements(env, string, NULL);
-    if (keysym)
-        keysym1 = (*env)->GetIntArrayElements(env, keysym, NULL);
-    if (status)
-        status1 = (*env)->GetIntArrayElements(env, status, NULL);
-
-    rc = (jint)XmbLookupString((XIC)ic, (XKeyPressedEvent *)lpxEvent, (char *)string1, size, (KeySym *)keysym1, (int *)status1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmbLookupString: call failed rc = %d\n", rc);
-#endif
-
-    if (event) {
-        setXkeyeventFields(env, event, lpxEvent, &PGLOB(XkeyeventFc));
-    }
-    if (string)
-        (*env)->ReleaseByteArrayElements(env, string, string1, 0);
-    if (keysym)
-        keysym1 = (*env)->GetIntArrayElements(env, keysym, NULL);
-    if (status)
-        (*env)->ReleaseIntArrayElements(env, status, status1, 0);
-	return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmbTextListToTextProperty
- * Signature: (IIIILorg/eclipse/swt/internal/motif/XTextProperty;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmbTextListToTextProperty
-  (JNIEnv *env, jclass that, jint display, jint list, jint count, jint style, jobject text_prop_return)
-{
-	DECL_GLOB(pGlob)
-	XTextProperty xTextProperty, *lpxTextProperty=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmbTextListToTextProperty\n");
-#endif
-
-    if (text_prop_return) {
-        lpxTextProperty = &xTextProperty;
-        cacheXtextpropertyFids(env, text_prop_return, &PGLOB(XtextpropertyFc));
-        getXtextpropertyFields(env, text_prop_return, lpxTextProperty, &PGLOB(XtextpropertyFc));
-    }
-
-    rc = (jint)XmbTextListToTextProperty((Display *)display, (char **)list, count, (XICCEncodingStyle)style, lpxTextProperty);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmbTextListToTextProperty: call failed rc = %d\n", rc);
-#endif
-
-    if (text_prop_return) {
-        setXtextpropertyFields(env, text_prop_return, lpxTextProperty, &PGLOB(XtextpropertyFc));
-    }
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmbTextPropertyToTextList
- * Signature: (ILorg/eclipse/swt/internal/motif/XTextProperty;[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmbTextPropertyToTextList
-  (JNIEnv *env, jclass that, jint display, jobject text_prop, jintArray list_return, jintArray count_return)
-{
-	DECL_GLOB(pGlob)
-	XTextProperty xTextProperty, *lpxTextProperty=NULL;
-	jint *list_return1=NULL, *count_return1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmbTextPropertyToTextList\n");
-#endif
-
-    if (text_prop) {
-        lpxTextProperty = &xTextProperty;
-        cacheXtextpropertyFids(env, text_prop, &PGLOB(XtextpropertyFc));
-        getXtextpropertyFields(env, text_prop, lpxTextProperty, &PGLOB(XtextpropertyFc));
-    }
-    
-	if (list_return)
-        list_return1 = (*env)->GetIntArrayElements(env, list_return, NULL);
-        
-	if (count_return)
-        count_return1 = (*env)->GetIntArrayElements(env, count_return, NULL);
-        
-    rc = (jint)XmbTextPropertyToTextList((Display *)display, lpxTextProperty, (char ***)list_return1, (int *)count_return1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmbTextPropertyToTextList: call failed rc = %d\n", rc);
-#endif
-
-    if (text_prop) {
-        setXtextpropertyFields(env, text_prop, lpxTextProperty, &PGLOB(XtextpropertyFc));
-    }
-    
-    if (list_return)
-        (*env)->ReleaseIntArrayElements(env, list_return, list_return1, 0);
-
-    if (count_return)
-        (*env)->ReleaseIntArrayElements(env, count_return, count_return1, 0);
-                
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAddCallback
- * Signature: (IIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAddCallback
-  (JNIEnv *env, jclass that, jint widget, jint callback_name, jint callback, jint client_data)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAddCallback\n");
-#endif
-    XtAddCallback((Widget)widget, (String)callback_name, (XtCallbackProc)callback, (XtPointer)client_data);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAddEventHandler
- * Signature: (IIZII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAddEventHandler
-  (JNIEnv *env, jclass that, jint widget, jint event_mask, jboolean nonmaskable, jint proc, jint client_data)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAddEventHandler\n");
-#endif
-    XtAddEventHandler((Widget)widget, event_mask, nonmaskable, (XtEventHandler)proc, (XtPointer)client_data);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAddExposureToRegion
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAddExposureToRegion
-  (JNIEnv *env, jclass that, jint event, jint region)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAddExposureToRegion\n");
-#endif
-	XtAddExposureToRegion((XEvent *)event, (Region)region);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAppAddTimeOut
- * Signature: (IIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppAddTimeOut
-  (JNIEnv *env, jclass that, jint applicationContext, jint interval, jint procedure, jint clientData)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppAddTimeOut\n");
-#endif
-    return (jint) XtAppAddTimeOut((XtAppContext)applicationContext, interval, (XtTimerCallbackProc)procedure, (XtPointer)clientData);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAppCreateShell
- * Signature: ([B[BII[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppCreateShell
-  (JNIEnv *env, jclass that, jbyteArray appName, jbyteArray appClass, jint widgetClass,
-                jint display, jintArray argList, jint argCount)
-{
-    jbyte *appName1 = NULL;
-    jbyte *appClass1 = NULL;
-    jint *argList1 = NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppCreateShell\n");
-#endif
-
-    if (appName)
-        appName1 = (*env)->GetByteArrayElements(env, appName, NULL);
-    if (appClass)
-        appClass1 = (*env)->GetByteArrayElements(env, appClass, NULL);
-    if (argList)    
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);
-
-/*    fprintf(stderr, "XtAppCreateShell: appName1=%d appClass1=%d widgetClass=%d display=%d arglist1=%d argCount=%d\n",
-                                appName1, appClass1, widgetClass, display, argList1, argCount);
-*/    
-    rc = (jint) XtAppCreateShell((String)appName1, (String)appClass1, (WidgetClass)widgetClass, (Display *)display, (ArgList)argList1, argCount);
-
-/* fprintf(stderr, "After XtAppCreateShell: rc=%d\n", rc); */
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XtAppCreateShell: call failed rc = %d\n", rc);
-#endif
-
-    if (appName)
-        (*env)->ReleaseByteArrayElements(env, appName, appName1, 0);
-    if (appClass)
-        (*env)->ReleaseByteArrayElements(env, appClass, appClass1, 0);
-    if (argList)    
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAppGetSelectionTimeout
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppGetSelectionTimeout
-  (JNIEnv *env, jclass that, jint appContext)
-{
-	DECL_GLOB(pGlob)
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppGetSelectionTimeout\n");
-#endif
-
-    return (jint)XtAppGetSelectionTimeout((XtAppContext)appContext);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAppNextEvent
- * Signature: (ILorg/eclipse/swt/internal/motif/XAnyEvent;)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppNextEvent
-  (JNIEnv *env, jclass that, jint appContext, jobject event)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppNextEvent\n");
-#endif
-
-    if (event) {
-        lpxEvent = &xEvent;
-        cacheXanyeventFids(env, event, &PGLOB(XanyeventFc));
-        getXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-    XtAppNextEvent((XtAppContext)appContext, lpxEvent);
-
-#ifdef EVENT_TRACE
-    fprintf(stderr, "type = %d, serial = %d, send_event = %d, display = %x, window = %x \n",
-     xEvent.type, xEvent.xany.serial, xEvent.xany.send_event, xEvent.xany.display, xEvent.xany.window);
-#endif
-
-    if (event) {
-        setXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAppPeekEvent
- * Signature: (ILorg/eclipse/swt/internal/motif/XAnyEvent)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppPeekEvent
-  (JNIEnv *env, jclass that, jint appContext, jobject event)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-    jboolean rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppPeekEvent\n");
-#endif
-
-    rc = (jboolean) XtAppPeekEvent((XtAppContext)appContext, &xEvent);
-    if (event) {
-        lpxEvent = &xEvent;
-        cacheXanyeventFids(env, event, &PGLOB(XanyeventFc));
-        setXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAppPending
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppPending
-  (JNIEnv *env, jclass that, jint appContext)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppPending\n");
-#endif
-    return (jint) XtAppPending((XtAppContext)appContext);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAppProcessEvent
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppProcessEvent
-  (JNIEnv *env, jclass that, jint appContext, jint inputMask)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppProcessEvent\n");
-#endif
-    XtAppProcessEvent((XtAppContext)appContext, inputMask);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAppSetErrorHandler
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppSetErrorHandler
-  (JNIEnv *env, jclass that, jint app_context, jint handler)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppSetErrorHandler\n");
-#endif
-    return (jint) XtAppSetErrorHandler((XtAppContext)app_context, (XtErrorHandler)handler);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAppSetSelectionTimeout
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppSetSelectionTimeout
-  (JNIEnv *env, jclass that, jint appContext, jint timeout)
-{
-	DECL_GLOB(pGlob)
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppSetSelectionTimeout\n");
-#endif
-
-    XtAppSetSelectionTimeout((XtAppContext)appContext, (unsigned long)timeout);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAppSetWarningHandler
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppSetWarningHandler
-  (JNIEnv *env, jclass that, jint app_context, jint handler)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppSetWarningHandler\n");
-#endif
-    return (jint) XtAppSetWarningHandler((XtAppContext)app_context, (XtErrorHandler)handler);
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtBuildEventMask
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtBuildEventMask
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtBuildEventMask\n");
-#endif
-    return (jint) XtBuildEventMask((Widget) widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtCallActionProc
- * Signature: (I[BLorg/eclipse/swt/internal/motif/XAnyEvent;[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtCallActionProc
-  (JNIEnv *env, jclass that, jint widget, jbyteArray action, jobject event, jintArray params, jint num_params)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-    jbyte *action1=NULL;
-    jint *params1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtCallActionProc\n");
-#endif
-    if (action)
-        action1 = (*env)->GetByteArrayElements(env, action, NULL);
-    if (params)
-        params1 = (*env)->GetIntArrayElements(env, params, NULL);    
-
-    XtCallActionProc((Widget)widget, (String)action1, lpxEvent, (String *)params1, num_params);
-    if (event) {
-        lpxEvent = &xEvent;
-        cacheXanyeventFids(env, event, &PGLOB(XanyeventFc));
-        setXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-
-    if (action)
-        (*env)->ReleaseByteArrayElements(env, action, action1, 0);
-    if (params)
-        (*env)->ReleaseIntArrayElements(env, params, params1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtClass
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtClass
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtClass\n");
-#endif
-    return (jint) XtClass((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtConfigureWidget
- * Signature: (IIIIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtConfigureWidget
-  (JNIEnv *env, jclass that, jint widget, jint x, jint y, jint width, jint height, jint borderWidth)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtConfigureWidget\n");
-#endif
-    XtConfigureWidget((Widget)widget, x, y, width, height, borderWidth);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtCreateApplicationContext
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtCreateApplicationContext
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtCreateApplicationContext\n");
-#endif
-    return (jint) XtCreateApplicationContext();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtCreatePopupShell
- * Signature: ([BII[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtCreatePopupShell
-  (JNIEnv *env, jclass that, jbyteArray name, jint widgetClass, jint parent, jintArray argList, jint argCount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtCreatePopupShell\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-
-    rc = (jint) XtCreatePopupShell((String)name1, (WidgetClass)widgetClass, (Widget)parent, (ArgList)argList1, argCount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XtCreatePopupShell: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtDestroyApplicationContext
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtDestroyApplicationContext
-  (JNIEnv *env, jclass that, jint appContext)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtDestroyApplicationContext\n");
-#endif
-    XtDestroyApplicationContext((XtAppContext)appContext);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtDestroyWidget
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtDestroyWidget
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtDestroyWidget\n");
-#endif
-    XtDestroyWidget((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtDispatchEvent
- * Signature: (Lorg/eclipse/swt/internal/motif/XAnyEvent;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XtDispatchEvent
-  (JNIEnv *env, jclass that, jobject event)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtDispatchEvent\n");
-#endif
-
-    if (event) {
-        lpxEvent = &xEvent;
-        cacheXanyeventFids(env, event, &PGLOB(XanyeventFc));
-        getXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    #ifdef EVENT_TRACE
-    	    fprintf(stderr, "type = %d, serial = %d, send_event = %d, display = %x, window = %x \n",
-         xEvent.type, xEvent.xany.serial, xEvent.xany.send_event, xEvent.xany.display, xEvent.xany.window);
-    #endif
-    }
-    return (jboolean) XtDispatchEvent(lpxEvent);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtDisplay
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtDisplay
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtDisplay\n");
-#endif
-    return (jint) XtDisplay((Widget)widget);
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtDisplayToApplicationContext
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtDisplayToApplicationContext
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtDisplayToApplicationContext\n");
-#endif
-    return (jint) XtDisplayToApplicationContext((Display *)display);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtFree
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtFree
-  (JNIEnv *env, jclass that, jint ptr)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtFree\n");
-#endif
-    XtFree((char *)ptr);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtGetMultiClickTime
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtGetMultiClickTime
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtGetMultiClickTime\n");
-#endif
-    return (jint) XtGetMultiClickTime((Display *)display);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtGetValues
- * Signature: (I[II)V
- */
-#define MAX_ARGS 32
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtGetValues
-  (JNIEnv *env, jclass that, jint widget, jintArray argList, jint numArgs)
-{
-    jint *argList1=NULL;
-
-    int valueBuff[MAX_ARGS];
-    int zeroBuff[MAX_ARGS];
-    int *values = valueBuff;
-    int *zeros = zeroBuff;
-    int i;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtGetValues\n");
-#endif
-
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-
-#ifndef SOLARIS
-	if (numArgs > MAX_ARGS) {
-		values = (int *) XtMalloc (numArgs * sizeof(int));
-		zeros = (int *) XtMalloc (numArgs * sizeof(int));
-	}
-    for (i = 0; i < numArgs; i++) {   
-        zeros[i] = values[i] = 0;
-        if (argList1[i * 2 + 1] == 0) {
-        	if ((RESOURCES_START <= argList1[i*2]) && (argList1[i*2] <= RESOURCES_END)) {
-	            zeros[i] = 1;
-    	        argList1[i * 2 + 1] = (int)&values[i];
-            }
-        }
-    }
-#endif
-    XtGetValues((Widget)widget, (ArgList)argList1, numArgs);
-#ifndef SOLARIS
-    for (i = 0; i < numArgs; i++) {   
-        if (zeros[i]) {
-           char* charPtr = (char *)(argList1[i*2] - 1);
-           switch ((int)*charPtr) {
-              case 1: argList1[i * 2 + 1] = *(char *)(&values[i]); break;
-              case 2: argList1[i * 2 + 1] = *(short *)(&values[i]); break;
-              default:
-                 argList1[i * 2 + 1] = values[i];
-           }
-        }
-    }
-	if (numArgs > MAX_ARGS) {
-		XtFree((char *)values);
-		XtFree((char *)zeros);
-	}
-#endif
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtIsManaged
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XtIsManaged
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtIsManaged\n");
-#endif
-    return (jboolean) XtIsManaged((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtIsRealized
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XtIsRealized
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtIsRealized\n");
-#endif
-    return (jboolean) XtIsRealized((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtIsSubclass
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XtIsSubclass
-  (JNIEnv *env, jclass that, jint widget, jint widgetClass)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtIsSubclass\n");
-#endif
-    return (jboolean) XtIsSubclass((Widget)widget, (WidgetClass)widgetClass);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtIsTopLevelShell
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XtIsTopLevelShell
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtIsTopLevelShell\n");
-#endif
-    return (jboolean) XtIsTopLevelShell((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtIsWidget
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XtIsWidget
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtIsWidget\n");
-#endif
-    return (jboolean)XtIsWidget((Widget)widget);
-    
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtLastTimestampProcessed
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtLastTimestampProcessed
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtLastTimestampProcessed\n");
-#endif
-	return (jint)XtLastTimestampProcessed((Display *)display);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtMalloc
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtMalloc
-  (JNIEnv *env, jclass that, jint size)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtMalloc\n");
-#endif
-    return (jint) XtMalloc(size);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtManageChild
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtManageChild
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtManageChild\n");
-#endif
-    XtManageChild((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtMapWidget
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtMapWidget
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtMapWidget\n");
-#endif
-    XtMapWidget((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtMoveWidget
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtMoveWidget
-  (JNIEnv *env, jclass that, jint widget, jint x, jint y)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtMoveWidget\n");
-#endif
-    XtMoveWidget((Widget)widget, x, y);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtOpenDisplay
- * Signature: (I[B[B[BII[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtOpenDisplay
-  (JNIEnv *env, jclass that, jint xtAppContext, jbyteArray displayName, jbyteArray applicationName,
-     jbyteArray applicationClass, jint options, jint numOptions, jintArray argc, jint argv)
-{
-    jbyte *displayName1 = NULL;
-    jbyte *applicationName1 = NULL;
-    jbyte *applicationClass1 = NULL;
-    jint *argc1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtOpenDisplay\n");
-#endif
-	if (displayName)
-        displayName1 = (*env)->GetByteArrayElements(env, displayName, NULL);
-    if (applicationName)
-        applicationName1 = (*env)->GetByteArrayElements(env, applicationName, NULL);
-    if (applicationClass)    
-        applicationClass1 = (*env)->GetByteArrayElements(env, applicationClass, NULL);
-    if (argc)    
-        argc1 = (*env)->GetIntArrayElements(env, argc, NULL);
-    
-
-    rc = (jint) XtOpenDisplay((XtAppContext)xtAppContext, (String)displayName1, (String)applicationName1, (String)applicationClass1,
-                    (XrmOptionDescRec *)options, numOptions, (int *)argc1, (char **)argv);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XtOpenDisplay: call failed rc = %d\n", rc);
-#endif
-
-    if (displayName)
-        (*env)->ReleaseByteArrayElements(env, displayName, displayName1, 0);
-    if (applicationName)
-        (*env)->ReleaseByteArrayElements(env, applicationName, applicationName1, 0);
-    if (applicationClass)
-        (*env)->ReleaseByteArrayElements(env, applicationClass, applicationClass1, 0);
-    if (argc)
-        (*env)->ReleaseIntArrayElements(env, argc, argc1, 0);
-        
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtParent
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtParent
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtParent\n");
-#endif
-    return (jint) XtParent((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtPopdown
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtPopdown
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtPopdown\n");
-#endif
-    XtPopdown((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtPopup
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtPopup
-  (JNIEnv *env, jclass that, jint widget, jint flags)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtPopup\n");
-#endif
-    XtPopup((Widget)widget, flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtQueryGeometry
- * Signature: (ILorg/eclipse/swt/internal/motif/XtWidgetGeometryLorg/eclipse/swt/internal/motif/XtWidgetGeometry;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtQueryGeometry
-  (JNIEnv *env, jclass that, jint widget, jobject intended, jobject preferred_return)
-{
-	DECL_GLOB(pGlob)
-
-	XtWidgetGeometry intended1, preferred_return1, *lpIntended=NULL, *lpPreferred_return=NULL;
-    jint rc;
-   
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtQueryGeometry\n");
-#endif
-	lpPreferred_return = &preferred_return1;
-
-    /* The objects passed in here are both XtWidgetGeometry structures
-    ** If either or both are passed in, we only want to cache the fids once.
-    */
-    if (intended)
-        cacheXtwidgetgeometryFids(env, intended, &PGLOB(XtwidgetgeometryFc));
-    else if (preferred_return)
-        cacheXtwidgetgeometryFids(env, preferred_return, &PGLOB(XtwidgetgeometryFc));
-    
-    if (intended) {
-    	lpIntended = &intended1;
-        /* intended and preferred_return are the same class XtWidgetGeometry */
-        getXtwidgetgeometryFields(env, intended, lpIntended, &PGLOB(XtwidgetgeometryFc));
-    }
-    rc = (jint)XtQueryGeometry((Widget)widget, lpIntended, &preferred_return1);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XtQueryGeometry: call failed rc = %d\n", rc);
-#endif
-    
-    if (preferred_return) {
-        setXtwidgetgeometryFields(env, preferred_return, &preferred_return1, &PGLOB(XtwidgetgeometryFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtRealizeWidget
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtRealizeWidget
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtRealizeWidget\n");
-#endif
-    XtRealizeWidget((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtRemoveTimeOut
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtRemoveTimeOut
-  (JNIEnv *env, jclass that, jint id)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtRemoveTimeOut\n");
-#endif
-    XtRemoveTimeOut(id);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtResizeWidget
- * Signature: (IIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtResizeWidget
-  (JNIEnv *env, jclass that, jint widget, jint width, jint height, jint borderWidth)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtResizeWidget\n");
-#endif
-    XtResizeWidget((Widget)widget, width, height, borderWidth);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtResizeWindow
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtResizeWindow
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtResizeWindow\n");
-#endif
-	XtResizeWindow((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtSetLanguageProc
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtSetLanguageProc
-  (JNIEnv *env, jclass that, jint appContext, jint languageProc, jint pointer)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtSetLanguageProc\n");
-#endif
-    return (jint) XtSetLanguageProc((XtAppContext)appContext, (XtLanguageProc)languageProc, (XtPointer)pointer);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtSetMappedWhenManaged
- * Signature: (IZ)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtSetMappedWhenManaged
-  (JNIEnv *env, jclass that, jint widget, jboolean flag)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtSetMappedWhenManaged\n");
-#endif
-    XtSetMappedWhenManaged((Widget)widget, flag);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtSetValues
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtSetValues
-  (JNIEnv *env, jclass that, jint widget, jintArray argList, jint numArgs)
-{
-    jint *argList1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtSetValues\n");
-#endif
-
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    XtSetValues((Widget)widget, (ArgList)argList1, numArgs);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtToolkitInitialize
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtToolkitInitialize
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtToolkitInitialize\n");
-#endif
-    XtToolkitInitialize();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtTranslateCoords
- * Signature: (ISS[S[S)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtTranslateCoords
-  (JNIEnv *env, jclass that, jint widget, jshort x, jshort y, jshortArray root_x, jshortArray root_y)
-{
-    jshort *root_x1=NULL,*root_y1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtTranslateCoords\n");
-#endif
-    if (root_x)
-        root_x1 = (*env)->GetShortArrayElements(env, root_x, NULL);
-    if (root_y)
-        root_y1 = (*env)->GetShortArrayElements(env, root_y, NULL);
-    XtTranslateCoords((Widget)widget, x, y, root_x1, root_y1);
-    if (root_x)
-        (*env)->ReleaseShortArrayElements(env, root_x, root_x1, 0);
-    if (root_y)
-        (*env)->ReleaseShortArrayElements(env, root_y, root_y1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtUnmanageChild
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtUnmanageChild
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtUnmanageChild\n");
-#endif
-    XtUnmanageChild((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtUnmapWidget
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtUnmapWidget
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtUnmapWidget\n");
-#endif
-    XtUnmapWidget((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtWindow
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtWindow
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtWindow\n");
-#endif
-    return (jint) XtWindow((Widget)widget);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtWindowToWidget
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtWindowToWidget
-  (JNIEnv *env, jclass that, jint display, jint window)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtWindowToWidget\n");
-#endif
-    return (jint) XtWindowToWidget((Display *)display, window);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    strlen
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_strlen
-  (JNIEnv *env, jclass that, jint string)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "strlen\n");
-#endif
-    return (jint) strlen((char *)string);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmClipboardCopy
- * Signature: (III[B[BII[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmClipboardCopy
-  (JNIEnv *env, jclass that, jint display, jint window, jint item_id, jbyteArray format_name, jbyteArray buffer, jint length, jint private_id, jintArray data_id)
-{
-    jbyte *format_name1 = NULL;
-    jbyte *buffer1 = NULL;
-    jint  *data_id1 = NULL;
-    jint   rc;
-    
-    if (format_name)
-       format_name1 = (*env)->GetByteArrayElements(env, format_name, NULL);
-       
-    if (buffer)
-       buffer1 = (*env)->GetByteArrayElements(env, buffer, NULL);
-    	
-    if (data_id)
-    	data_id1 = (*env)->GetIntArrayElements(env, data_id, NULL);
-        	
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmClipboardCopy\n");
-#endif
-
-    rc = (jint) XmClipboardCopy((Display *)display, (Window)window, (long)item_id, (char *)format_name1, (char *)buffer1, (unsigned long)length, private_id, (void *)data_id1);
-
-    if (format_name)
-        (*env)->ReleaseByteArrayElements(env, format_name, format_name1, 0);
-        
-    if (buffer)
-        (*env)->ReleaseByteArrayElements(env, buffer, buffer1, 0); 
-    
-    if (data_id)
-        (*env)->ReleaseIntArrayElements(env, data_id, data_id1, 0);
-        
-    return rc;
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmClipboardEndCopy
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmClipboardEndCopy
-  (JNIEnv *env, jclass that, jint display, jint window, jint item_id)
-{
-        	
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmClipboardEndCopy\n");
-#endif
-
-    return (jint) XmClipboardEndCopy((Display *)display, (Window)window, (long)item_id );
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmClipboardStartCopy
- * Signature: (IIIIII[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmClipboardStartCopy
-  (JNIEnv *env, jclass that, jint display, jint window, jint clip_label, jint timestamp, jint widget, jint callback, jintArray item_id)
-{
-    jint  *item_id1 = NULL;
-    jint   rc;
-       
-    if (item_id)
-       item_id1 = (*env)->GetIntArrayElements(env, item_id, NULL);
-        	
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmClipboardStartCopy\n");
-#endif
-
-    rc = (jint) XmClipboardStartCopy((Display *)display, (Window)window, (XmString)clip_label, timestamp, (Widget)widget, (XmCutPasteProc)callback, (long *)item_id1);
-   
-    if (item_id)
-        (*env)->ReleaseIntArrayElements(env, item_id, item_id1, 0);
-        
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmClipboardInquireLength
- * Signature: (II[B[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmClipboardInquireLength
-  (JNIEnv *env, jclass that, jint display, jint window, jbyteArray format_name, jintArray length)
-{
-    jbyte *format_name1 = NULL;
-    jint  *length1 = NULL;
-    jint   rc;
-    
-    if (format_name)
-       format_name1 = (*env)->GetByteArrayElements(env, format_name, NULL);
-         
-    if (length)
-    	length1 = (*env)->GetIntArrayElements(env, length, NULL);
-    	
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmClipboardInquireLength\n");
-#endif
-    rc = (jint) XmClipboardInquireLength((Display *)display, (Window)window, (char *)format_name1, (unsigned long *)length1);
-
-    if (format_name)
-        (*env)->ReleaseByteArrayElements(env, format_name, format_name1, 0);
-        
-    if (length)
-        (*env)->ReleaseIntArrayElements(env, length, length1, 0); 
-        
-    return rc;
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmClipboardInquireFormat
- * Signature: (III[BI[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmClipboardInquireFormat
-  (JNIEnv *env, jclass that, jint display, jint window, int index, jbyteArray format_name_buf, int buffer_len, jintArray copied_len)
-{
-    jbyte *format_name_buf1 = NULL;
-    jint  *copied_len1 = NULL;
-    jint   rc;
-    
-    if (format_name_buf)
-       format_name_buf1 = (*env)->GetByteArrayElements(env, format_name_buf, NULL);
-         
-    if (copied_len)
-    	copied_len1 = (*env)->GetIntArrayElements(env, copied_len, NULL);
-    	
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmClipboardInquireFormat\n");
-#endif
-    rc = (jint) XmClipboardInquireFormat((Display *)display, (Window)window, index, (char *)format_name_buf1, buffer_len, (unsigned long *)copied_len1);
-
-    if (format_name_buf)
-        (*env)->ReleaseByteArrayElements(env, format_name_buf, format_name_buf1, 0);
-        
-    if (copied_len)
-        (*env)->ReleaseIntArrayElements(env, copied_len, copied_len1, 0); 
-        
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmClipboardInquireCount
- * Signature: (II[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmClipboardInquireCount
-  (JNIEnv *env, jclass that, jint display, jint window, jintArray count, jintArray max_format_name_length)
-{
-    jint  *count1 = NULL;
-    jint  *max_format_name_length1 = NULL;
-    jint   rc;
-    
-    if (count)
-    	count1 = (*env)->GetIntArrayElements(env, count, NULL);
-         
-    if (max_format_name_length)
-    	max_format_name_length1 = (*env)->GetIntArrayElements(env, max_format_name_length, NULL);
-    	
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmClipboardInquireCount\n");
-#endif
-    rc = (jint) XmClipboardInquireCount((Display *)display, (Window)window, (int *)count1, (unsigned long *)max_format_name_length1);
-
-    if (count)
-        (*env)->ReleaseIntArrayElements(env, count, count1, 0);
-        
-    if (max_format_name_length)
-        (*env)->ReleaseIntArrayElements(env, max_format_name_length, max_format_name_length1, 0); 
-        
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmClipboardStartRetrieve
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmClipboardStartRetrieve
-  (JNIEnv *env, jclass that, jint display, jint window, jint timestamp)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmClipboardStartRetrieve\n");
-#endif
-    return (jint) XmClipboardStartRetrieve((Display *)display, (Window)window, timestamp);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmClipboardRetrieve
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmClipboardRetrieve
-  (JNIEnv *env, jclass that, jint display, jint window, jbyteArray format_name, jbyteArray buffer, jint length, jintArray num_bytes, jintArray private_id)
-{
-    jbyte *format_name1 = NULL;
-    jbyte *buffer1 = NULL;
-    jint  *num_bytes1 = NULL;
-    jint  *private_id1 = NULL;
-    jint   rc;
-    
-    if (format_name)
-       format_name1 = (*env)->GetByteArrayElements(env, format_name, NULL);
-       
-    if (buffer)
-       buffer1 = (*env)->GetByteArrayElements(env, buffer, NULL);
-       
-    if (num_bytes)
-    	num_bytes1 = (*env)->GetIntArrayElements(env, num_bytes, NULL);
-    	
-    if (private_id)
-    	private_id1 = (*env)->GetIntArrayElements(env, private_id, NULL);
-        	
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmClipboardRetrieve\n");
-#endif
-
-    rc = (jint) XmClipboardRetrieve((Display *)display, (Window)window, (char *)format_name1, (char *)buffer1, (unsigned long)length, (unsigned long *)num_bytes1, (void *)private_id1);
-   
-    if (format_name)
-        (*env)->ReleaseByteArrayElements(env, format_name, format_name1, 0);
-        
-    if (buffer)
-        (*env)->ReleaseByteArrayElements(env, buffer, buffer1, 0);
-        
-    if (num_bytes)
-        (*env)->ReleaseIntArrayElements(env, num_bytes, num_bytes1, 0); 
-    
-    if (private_id)
-        (*env)->ReleaseIntArrayElements(env, private_id, private_id1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmClipboardEndRetrieve
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmClipboardEndRetrieve
-  (JNIEnv *env, jclass that, jint display, jint window)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmClipboardEndRetrieve\n");
-#endif
-    return (jint) XmClipboardEndRetrieve((Display *)display, (Window)window);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateDrawnButton
- * Signature: (I[B[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateDrawnButton
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-    jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateDrawnButton\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-
-    rc = (jint)XmCreateDrawnButton((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateDrawnButton: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringGenerate
- * Signature: ([B[BI[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringGenerate
-  (JNIEnv *env, jclass that, jbyteArray text, jbyteArray tag, jint type, jbyteArray rendition)
-{
-    jbyte *text1 = NULL;
-    jbyte *tag1 = NULL;
-    jbyte *rendition1 = NULL;
-    jint rc = 0;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringGenerate\n");
-#endif
-    if (text) text1 = (*env)->GetByteArrayElements(env, text, NULL);
-    if (tag) tag1 = (*env)->GetByteArrayElements(env, tag, NULL);    
-    if (rendition) rendition1 = (*env)->GetByteArrayElements(env, rendition, NULL);
-    	
-    rc = (jint) XmStringGenerate((XtPointer) text1, (XmStringTag) tag1, type, (XmStringTag) rendition1);
-
-    if (text) (*env)->ReleaseByteArrayElements(env, text, text1, 0);
-    if (tag) (*env)->ReleaseByteArrayElements(env, tag, tag1, 0);
-    if (rendition) (*env)->ReleaseByteArrayElements(env, rendition, rendition1, 0);
-    return rc;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmRenderTableAddRenditions
- * Signature: (I[III)I
- */
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_XmRenderTableAddRenditions
-  (JNIEnv *env, jclass that, jint oldTable, jintArray renditions, jint renditionCount, jint mergeMode)
-{
-	jint *renditionArray = NULL;
-	jint renderTable = 0;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmRenderTableAddRenditions\n");
-#endif
-	if (renditions) renditionArray = (*env)->GetIntArrayElements(env, renditions, NULL);    
-	renderTable = (int) XmRenderTableAddRenditions((XmRenderTable) oldTable, (XmRendition*) renditionArray, renditionCount, mergeMode);
-	if (renditions) (*env)->ReleaseIntArrayElements(env, renditions, renditionArray, 0);
-	return renderTable;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmRenderTableFree
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmRenderTableFree
-  (JNIEnv *env, jclass that, jint renderTable)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmRenderTableFree\n");
-#endif
-	XmRenderTableFree((XmRenderTable) renderTable);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmRenditionCreate
- * Signature: (I[B[II)I
- */
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_XmRenditionCreate
-  (JNIEnv *env, jclass that, jint widget, jbyteArray renditionTag, jintArray argList, jint argCount)
-{
-	jbyte *renditionTag1 = NULL;
-	jint *argList1 = NULL;
-	jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmRenditionCreate\n");
-#endif
-	if (renditionTag) renditionTag1 = (*env)->GetByteArrayElements(env, renditionTag, NULL);
-	if (argList) argList1 = (*env)->GetIntArrayElements(env, argList, NULL); 
-	rc = (jint) XmRenditionCreate((Widget) widget, (XmStringTag) renditionTag1, (ArgList) argList1, argCount);
-	if (renditionTag) (*env)->ReleaseByteArrayElements(env, renditionTag, renditionTag1, 0);
-	if (argList) (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmRenditionFree
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmRenditionFree
-  (JNIEnv *env, jclass that, jint rendition)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmRenditionFree\n");
-#endif
-	XmRenditionFree((XmRendition) rendition);
-}
- 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTabCreate
- * Signature: (IBBB[B)I
- */
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTabCreate
-  (JNIEnv *env, jclass that, jint value, jbyte units, jbyte offsetModel, jbyte alignment, jbyteArray decimal)
-{
-	jbyte *decimal1 = NULL;
-	jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTabCreate\n");
-#endif
-	if (decimal) decimal1 = (*env)->GetByteArrayElements(env, decimal, NULL);
-	rc = (jint) XmTabCreate(value, units, offsetModel, alignment, (char*) decimal1);
-	if (decimal) (*env)->ReleaseByteArrayElements(env, decimal, decimal1, 0);	
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTabFree
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTabFree
-  (JNIEnv *env, jclass that, jint tab)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTabFree\n");
-#endif
-	XmTabFree((XmTab) tab);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTabListFree
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTabListFree
-  (JNIEnv *env, jclass that, jint tabList)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTabListFree\n");
-#endif
-	XmTabListFree((XmTabList) tabList);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTabListInsertTabs
- * Signature: (I[III)I
- */
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTabListInsertTabs
-  (JNIEnv *env, jclass that, jint oldList, jintArray tabs, jint tab_count, jint position)
-{
-	jint *tabs1 = NULL;
-	jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTabListInsertTabs\n");
-#endif
-	if (tabs) tabs1 = (*env)->GetIntArrayElements(env, tabs, NULL); 
-	rc = (jint) XmTabListInsertTabs((XmTabList) oldList, (XmTab*) tabs1, tab_count, position);
-	if (tabs) (*env)->ReleaseIntArrayElements(env, tabs, tabs1, 0);
-	return rc;
-}
- 
-
-/* ---- unused OS calls, kept here in case we use them later ---- */
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XBlackPixel
- * Signature: (II)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XBlackPixel
-  (JNIEnv *env, jclass that, jint display, jint screenNum)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XBlackPixel\n");
-#endif
-    return (jint) XBlackPixel((Display *)display, screenNum);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XChangeActivePointerGrab
- * Signature: (IIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XChangeActivePointerGrab
-  (JNIEnv *env, jclass that, jint display, jint eventMask, jint cursor, jint time)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XChangeActivePointerGrab\n");
-#endif
-    XChangeActivePointerGrab((Display *)display, eventMask, (Cursor)cursor, (Time)time);
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDefaultGC
- * Signature: (II)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDefaultGC
-  (JNIEnv *env, jclass that, jint display, jint screen_number)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDefaultGC\n");
-#endif
-	return (jint) XDefaultGC((Display *)display, screen_number);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XNoOp
- * Signature: (I)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XNoOp
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XNoOp\n");
-#endif
-    XNoOp((Display *)display);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XRootWindowOfScreen
- * Signature: (I)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XRootWindowOfScreen
-  (JNIEnv *env, jclass that, jint screen)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XRootWindowOfScreen\n");
-#endif
-    return (jint) XRootWindowOfScreen((Screen *)screen);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSendEvent
- * Signature: (Lorg/eclipse/swt/internal/motif/XAnyEvent;)Z
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XSendEvent
-  (JNIEnv *env, jclass that, jint display, jint w, jboolean propagate, jint event_mask, jobject event)
-{
-    XEvent xEvent, *lpxEvent=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSendEvent\n");
-#endif
-
-    if (event) {
-        lpxEvent = &xEvent;
-        cacheXanyeventFids(env, event, &XanyeventFc);
-        getXanyeventFields(env, event, lpxEvent, &XanyeventFc);
-    }
-    return (jint) XSendEvent((Display *)display, w, propagate, event_mask, lpxEvent);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateCascadeButton
- * Signature: (I[B[II)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateCascadeButton
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateCascadeButton\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XmCreateCascadeButton((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateCascadeButton: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateDrawnButton
- * Signature: (I[B[II)I
- */
-/*JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateDrawnButton
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-	jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateDrawnButton\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-
-    rc = (jint)XmCreateDrawnButton((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateDrawnButton: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}*/
-
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateRowColumn
- * Signature: (I[B[II)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateRowColumn
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray arglist, jint argcount)
-{
-	jint *arglist1=NULL;
-    jbyte *name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateRowColumn\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (arglist)
-        arglist1 = (*env)->GetIntArrayElements(env, arglist, NULL);
-
-    rc = (jint)XmCreateRowColumn((Widget)parent, (String)name1, (ArgList)arglist1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateRowColumn: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (arglist)
-        (*env)->ReleaseIntArrayElements(env, arglist, arglist1, 0);
-	return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmCreateScrolledWindow
- * Signature: (I[B[II)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmCreateScrolledWindow
-  (JNIEnv *env, jclass that, jint parent, jbyteArray name, jintArray argList, jint argcount)
-{
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmCreateScrolledWindow\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);
-    rc = (jint) XmCreateScrolledWindow((Widget)parent, (String)name1, (ArgList)argList1, argcount);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmCreateScrolledWindow: call failed rc = %d\n", rc);
-#endif
-
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmDestroyPixmap
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmDestroyPixmap
-  (JNIEnv *env, jclass that, jint screen, jint pixmap)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmDestroyPixmap\n");
-#endif
-	return (jboolean) XmDestroyPixmap((Screen *)screen, pixmap);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmGetPixmapByDepth
- * Signature: (I[BIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetPixmapByDepth
-  (JNIEnv *env, jclass that, jint screen, jbyteArray image_name, jint foreground, jint background, jint depth)
-{
-    jbyte *image_name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmGetPixmapByDepth\n");
-#endif
-
-    if (image_name)
-        image_name1 = (*env)->GetByteArrayElements(env, image_name, NULL);
-
-    rc = (jint)XmGetPixmapByDepth((Screen *)screen, (char *)image_name1, foreground, background, depth);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XmGetPixmapByDepth: call failed rc = %d\n", rc);
-#endif
-
-    if (image_name)
-        (*env)->ReleaseByteArrayElements(env, image_name, image_name1, 0);
-	return rc;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListAddItemsUnselected
- * Signature: (IIII)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListAddItemsUnselected
-  (JNIEnv *env, jclass that, jint list, jint xmStringTable, jint item_count, jint position)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListAddItemsUnselected\n");
-#endif
-    XmListAddItemsUnselected((Widget)list, (XmString *)xmStringTable, item_count, position);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListDeleteItem
- * Signature: (II)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListDeleteItem
-  (JNIEnv *env, jclass that, jint list, jint item)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListDeleteItem\n");
-#endif
-    XmListDeleteItem((Widget)list, (XmString)item);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListDeselectItem
- * Signature: (II)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListDeselectItem
-  (JNIEnv *env, jclass that, jint list, jint xmString)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListDeselectItem\n");
-#endif
-	XmListDeselectItem((Widget)list, (XmString)xmString);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmListSelectItem
- * Signature: (IIZ)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmListSelectItem
-  (JNIEnv *env, jclass that, jint list, jint xmString, jboolean notify)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmListSelectItem\n");
-#endif
-	XmListSelectItem((Widget)list, (XmString)xmString, notify);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringDrawUnderline
- * Signature: (IIIIIIIIIILorg/eclipse/swt/internal/motif/XRectangle;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringDrawUnderline
-  (JNIEnv *env, jclass that, jint display, jint window, jint fontlist, jint xmString, jint gc, jint x, jint y, jint width, jint align, jint lay_dir, jobject clip, jint xmStringUnderline)
-{
-	DECL_GLOB(pGlob)
-	XRectangle xRect, *lpxRect=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringDrawUnderline\n");
-#endif
-
-    if (clip) {
-        lpxRect = &xRect;
-        cacheXrectangleFids(env, clip, &PGLOB(XrectangleFc));
-        getXrectangleFields(env, clip, lpxRect, &PGLOB(XrectangleFc));
-    }
-    XmStringDrawUnderline((Display *)display, window, (XmFontList)fontlist, (XmString)xmString, (GC)gc, x, y, width, align, lay_dir, lpxRect, (XmString)xmStringUnderline);
-    if (clip) {
-        setXrectangleFields(env, clip, lpxRect, &PGLOB(XrectangleFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringLineCount
- * Signature: (I)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringLineCount
-  (JNIEnv *env, jclass that, jint xmString)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringLineCount\n");
-#endif
-    return (jint) XmStringLineCount((XmString)xmString);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmTextRemove
- * Signature: (I)Z
- */
-/* JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextRemove
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmTextRemove\n");
-#endif
-	return (jboolean) XmTextRemove((Widget)widget);
-}
-*/
-
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtCloseDisplay
- * Signature: (I)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtCloseDisplay
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtCloseDisplay\n");
-#endif
-    XtCloseDisplay((Display *)display);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtCallActionProc
- * Signature: (I[BLorg/eclipse/swt/internal/motif/XAnyEvent;[BI)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtCallActionProc
-  (JNIEnv *env, jclass that, jint widget, jbyteArray action, jobject event, jbyteArray params, jint num_params)
-{
-	XEvent xEvent, *lpxEvent=NULL;
-    jbyte *action1, *params1;
-
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtCallActionProc\n");
-#endif
-    if (action)
-        action1 = (*env)->GetByteArrayElements(env, action, NULL);
-    if (params)
-        params1 = (*env)->GetByteArrayElements(env, params, NULL);    
-
-    XtCallActionProc((Widget)widget, (String)action1, lpxEvent, (String *)params1, num_params);
-    if (event) {
-        lpxEvent = &xEvent;
-        cacheXanyeventFids(env, event, &XanyeventFc);
-        setXanyeventFields(env, event, lpxEvent, &XanyeventFc);
-    }
-
-    if (action)
-        (*env)->ReleaseByteArrayElements(env, action, action1, 0);
-    if (params)
-        (*env)->ReleaseByteArrayElements(env, params, params1, 0);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtCloseDisplay
- * Signature: (I)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtCloseDisplay
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtCloseDisplay\n");
-#endif
-    XtCloseDisplay((Display *)display);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtCreateWidget
- * Signature: ([BII[II)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtCreateWidget
-  (JNIEnv *env, jclass that, jbyteArray name, jint widgetClass, jint parent, jintArray argList, jint argCount)
-{
-
-    jbyte *name1=NULL;
-    jint *argList1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtCreateWidget\n");
-#endif
-
-    if (name)
-        name1 = (*env)->GetByteArrayElements(env, name, NULL);
-    if (argList)
-        argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-    rc = (jint) XtCreateWidget((String)name1, (WidgetClass)widgetClass, (Widget)parent, (ArgList)argList1, argCount);
-#ifdef PRINT_FAILED_RCODES
-    if (rc == 0)
-        fprintf(stderr, "XtCreateWidget: call failed rc = %d\n", rc);
-#endif
-    if (name)
-        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
-    if (argList)
-        (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-    return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtRemoveCallback
- * Signature: (IIII)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtRemoveCallback
-  (JNIEnv *env, jclass that, jint widget, jint callback_name, jint callback, jint client_data)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtRemoveCallback\n");
-#endif
-    XtRemoveCallback((Widget)widget, (char *)callback_name, (XtCallbackProc)callback, (XtPointer)client_data);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtRemoveEventHandler
- * Signature: (IIZII)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtRemoveEventHandler
-  (JNIEnv *env, jclass that, jint widget, jint event_mask, jboolean nonmaskable, jint proc, jint client_data)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtRemoveEventHandler\n");
-#endif
-    XtRemoveEventHandler((Widget)widget, event_mask, nonmaskable, (XtEventHandler)proc, (XtPointer)client_data);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtScreen
- * Signature: (I)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtScreen
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtScreen\n");
-#endif
-    return (jint) XtScreen((Widget)widget);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSelectInput
- * Signature: (III)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSelectInput
-  (JNIEnv *env, jclass that, jint display, jint window, jint mask)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSelectInput\n");
-#endif
-    XSelectInput((Display *)display, (Window)window, mask);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtIsSensitive
- * Signature: (I)Z
- */
-/* JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XtIsSensitive
-  (JNIEnv *env, jclass that, jint widget)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtIsSensitive\n");
-#endif
-    return (jboolean) XtIsSensitive((Widget)widget);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtSetSensitive
- * Signature: (IZ)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtSetSensitive
-  (JNIEnv *env, jclass that, jint widget, jboolean sensitive)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtSetSensitive\n");
-#endif
-    XtSetSensitive((Widget)widget, sensitive);
-}
-*/
-
-/* ---- unused OS calls end here ---- */
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmParseMappingCreate
- * Signature: ([II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmParseMappingCreate
-  (JNIEnv *env, jclass that, jintArray argList, jint numArgs)
-{
-	jint *argList1 = NULL;
-	jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmParseMappingCreate\n");
-#endif
-	if (argList) argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
-	rc = (jint) XmParseMappingCreate((ArgList)argList1, numArgs);
-	if (argList) (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-	return rc;
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmParseMappingFree
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmParseMappingFree
-  (JNIEnv *env, jclass that, jint parseMapping)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmParseMappingFree\n");
-#endif
-	XmParseMappingFree((XmParseMapping) parseMapping);
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringComponentCreate
- * Signature: (II[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringComponentCreate
-  (JNIEnv *env, jclass that, jint type, jint length, jbyteArray value)
-{
-	jbyte* value1 = NULL;
-	jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringComponentCreate\n");
-#endif
-	if (value) value1 = (*env)->GetByteArrayElements(env, value, NULL);    
-	rc = (jint) XmStringComponentCreate(type, length, (XtPointer) value1);
-	if (value) (*env)->ReleaseByteArrayElements(env, value, value1, 0);
-	
-	return rc;
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringParseText
- * Signature: ([BI[BI[III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringParseText
-  (JNIEnv *env, jclass that, jbyteArray text, jint textEnd, jbyteArray tag, jint tagType, jintArray parseTable, jint parseCount, jint callData)
-{
-	jbyte* text1 = NULL;
-	jbyte* tag1 = NULL;
-	jint* parseTable1 = NULL;
-	jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringParseText\n");
-#endif
-	if (text) text1 = (*env)->GetByteArrayElements(env, text, NULL);    	
-	if (tag) tag1 = (*env)->GetByteArrayElements(env, tag, NULL);    
-	if (parseTable) parseTable1 = (*env)->GetIntArrayElements(env, parseTable, NULL);
-	rc = (jint) XmStringParseText(
-		(XtPointer) text1, 
-		(XtPointer*) textEnd, 
-		(XmStringTag) tag1, 
-		tagType, 
-		(XmParseTable) parseTable1, 
-		parseCount, 
-		(XtPointer) callData);
-	if (text) (*env)->ReleaseByteArrayElements(env, text, text1, 0);	
-	if (tag) (*env)->ReleaseByteArrayElements(env, tag, tag1, 0);
-	if (parseTable) (*env)->ReleaseIntArrayElements(env, parseTable, parseTable1, 0);
-	return rc;
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmStringUnparse
- * Signature: (I[BII[III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringUnparse
-  (JNIEnv *env, jclass that, jint xmString, jbyteArray tag, jint tagType, jint outputType, jintArray parseTable, jint parseCount, jint parseModel)
-{
-	jbyte* tag1 = NULL;
-	jint* parseTable1 = NULL;
-	jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmStringUnparse\n");
-#endif
-	if (tag) tag1 = (*env)->GetByteArrayElements(env, tag, NULL);    
-	if (parseTable) parseTable1 = (*env)->GetIntArrayElements(env, parseTable, NULL);
-	rc = (jint) XmStringUnparse((XmString) xmString, 
-		(XmStringTag) tag1, 
-		tagType, 
-		outputType, 
-		(XmParseTable) parseTable1, 
-		parseCount, 
-		parseModel);
-	if (tag) (*env)->ReleaseByteArrayElements(env, tag, tag1, 0);
-	if (parseTable) (*env)->ReleaseIntArrayElements(env, parseTable, parseTable1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtParseTranslationTable
- * Signature: ([B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtParseTranslationTable
-  (JNIEnv *env, jclass that, jbyteArray string)
-{
-	jint rc;
-	jbyte *string1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtParseTranslationTable\n");
-#endif
-	if (string) string1 = (*env)->GetByteArrayElements(env, string, NULL);    
-	rc = (jint) XtParseTranslationTable((String) string1);
-	if (string) (*env)->ReleaseByteArrayElements(env, string, string1, 0);
-	return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtOverrideTranslations
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtOverrideTranslations
-  (JNIEnv *env, jclass that, jint w, jint translations)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtOverrideTranslations\n");
-#endif
-	XtOverrideTranslations((Widget) w, (XtTranslations) translations);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCheckIfEvent
- * Signature: (ILorg/eclipse/swt/internal/motif/XAnyEvent;II)Z
- */
-typedef Bool (*PredicateFunc)();
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XCheckIfEvent
-  (JNIEnv *env, jclass that, jint display, jobject event, jint predicate, jint arg)
-{
-	DECL_GLOB(pGlob)
-	XEvent xEvent, *lpxEvent=NULL;
-	jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCheckIfEvent\n");
-#endif
-
-    if (event) {
-        lpxEvent = &xEvent;
-        cacheXanyeventFids(env, event, &PGLOB(XanyeventFc));
-        getXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-    rc = (jboolean)XCheckIfEvent((Display *)display, lpxEvent, (PredicateFunc) predicate, (void *) arg);
-
-#ifdef PRINT_FAILED_RCODES
-    if (rc != True && rc != False)
-        fprintf(stderr, "XCheckIfEvent: call failed rc = %d\n", rc);
-#endif
-
-    if (event) {
-        setXanyeventFields(env, event, lpxEvent, &PGLOB(XanyeventFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtToolkitThreadInitialize
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XtToolkitThreadInitialize
-  (JNIEnv *env, jclass that)
-{
-   DECL_GLOB(pGlob)
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtToolkitThreadInitialize\n");
-#endif
-   return (jboolean) XtToolkitThreadInitialize ();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    Call
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_Call
-  (JNIEnv *env, jclass that, jint proc, jint arg0, jint arg1)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "Call\n");
-#endif
-   return (*((jint (*)(jint, jint))proc)) (arg0, arg1);
-}
-
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XGetErrorText
-  (JNIEnv *env, jclass that, jint display, jint code, jbyteArray buffer_return, jint length)
-{
-	jint rc;
-	jbyte *buffer_return1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtParseTranslationTable\n");
-#endif
-	if (buffer_return) buffer_return1 = (*env)->GetByteArrayElements(env, buffer_return, NULL);    
-	XGetErrorText ((Display *)display, code, buffer_return1, length);
-	if (buffer_return) (*env)->ReleaseByteArrayElements(env, buffer_return, buffer_return1, 0);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetIOErrorHandler
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetIOErrorHandler
-  (JNIEnv *env, jclass that, jint handler)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetIOErrorHandler\n");
-#endif
-    return (jint) XSetIOErrorHandler((XIOErrorHandler)handler);
-}
-
-/*
- * ======== Start xinerama functions ========
- */
- 
-#ifndef NO_XINERAMA_EXTENSIONS
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (Lorg/eclipse/swt/internal/motif/XineramaScreenInfo;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
-{
-	XineramaScreenInfo _arg0, *lparg0=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II\n");
-#endif
-	memmove(&_arg0, (void *)arg1, arg2);
-	if (arg0) {
-		lparg0 = &_arg0;
-		cacheXineramascreeninfoFids(env, arg0, &XineramascreeninfoFc);
-		setXineramascreeninfoFields(env, arg0, lparg0, &XineramascreeninfoFc);
-	}
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XineramaIsActive
- * Signature: (I)B
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XineramaIsActive
+#ifndef NO_ConnectionNumber
+JNIEXPORT jint JNICALL OS_NATIVE(ConnectionNumber)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XineramaIsActive\n");
-#endif
-	return (jboolean)XineramaIsActive((Display *)arg0);
+	jint rc;
+	NATIVE_ENTER(env, that, "ConnectionNumber\n")
+	rc = (jint)ConnectionNumber(arg0);
+	NATIVE_EXIT(env, that, "ConnectionNumber\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XineramaQueryScreens
- * Signature: (I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XineramaQueryScreens
+#ifndef NO_FD_1ISSET
+JNIEXPORT jboolean JNICALL OS_NATIVE(FD_1ISSET)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "FD_1ISSET\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jboolean)FD_ISSET(arg0, (fd_set *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "FD_1ISSET\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_FD_1SET
+JNIEXPORT void JNICALL OS_NATIVE(FD_1SET)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	NATIVE_ENTER(env, that, "FD_1SET\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	FD_SET(arg0, (fd_set *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "FD_1SET\n")
+}
+#endif
+
+#ifndef NO_FD_1ZERO
+JNIEXPORT void JNICALL OS_NATIVE(FD_1ZERO)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	NATIVE_ENTER(env, that, "FD_1ZERO\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	FD_ZERO((fd_set *)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "FD_1ZERO\n")
+}
+#endif
+
+#ifndef NO_MB_1CUR_1MAX
+JNIEXPORT jint JNICALL OS_NATIVE(MB_1CUR_1MAX)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "MB_1CUR_1MAX\n")
+	rc = (jint)MB_CUR_MAX;
+	NATIVE_EXIT(env, that, "MB_1CUR_1MAX\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XAllocColor
+JNIEXPORT jint JNICALL OS_NATIVE(XAllocColor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	XColor _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XAllocColor\n")
+	if (arg2) lparg2 = getXColorFields(env, arg2, &_arg2);
+	rc = (jint)XAllocColor((Display *)arg0, arg1, lparg2);
+	if (arg2) setXColorFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "XAllocColor\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XBell
+JNIEXPORT void JNICALL OS_NATIVE(XBell)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XBell\n")
+	XBell((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XBell\n")
+}
+#endif
+
+#ifndef NO_XBlackPixel
+JNIEXPORT jint JNICALL OS_NATIVE(XBlackPixel)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XBlackPixel\n")
+	rc = (jint)XBlackPixel((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XBlackPixel\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XChangeActivePointerGrab
+JNIEXPORT jint JNICALL OS_NATIVE(XChangeActivePointerGrab)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XChangeActivePointerGrab\n")
+	rc = (jint)XChangeActivePointerGrab((Display *)arg0, arg1, (Cursor)arg2, (Time)arg3);
+	NATIVE_EXIT(env, that, "XChangeActivePointerGrab\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XChangeWindowAttributes
+JNIEXPORT void JNICALL OS_NATIVE(XChangeWindowAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	XSetWindowAttributes _arg3, *lparg3=NULL;
+	NATIVE_ENTER(env, that, "XChangeWindowAttributes\n")
+	if (arg3) lparg3 = getXSetWindowAttributesFields(env, arg3, &_arg3);
+	XChangeWindowAttributes((Display *)arg0, arg1, arg2, lparg3);
+	if (arg3) setXSetWindowAttributesFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "XChangeWindowAttributes\n")
+}
+#endif
+
+#ifndef NO_XCheckIfEvent
+JNIEXPORT jint JNICALL OS_NATIVE(XCheckIfEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XCheckIfEvent\n")
+	rc = (jint)XCheckIfEvent((Display *)arg0, (XEvent *)arg1, (void *)arg2, (XPointer)arg3);
+	NATIVE_EXIT(env, that, "XCheckIfEvent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XCheckMaskEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(XCheckMaskEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XCheckMaskEvent\n")
+	rc = (jboolean)XCheckMaskEvent((Display *)arg0, arg1, (XEvent *)arg2);
+	NATIVE_EXIT(env, that, "XCheckMaskEvent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XCheckWindowEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(XCheckWindowEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XCheckWindowEvent\n")
+	rc = (jboolean)XCheckWindowEvent((Display *)arg0, (Window)arg1, arg2, (XEvent *)arg3);
+	NATIVE_EXIT(env, that, "XCheckWindowEvent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XClearArea
+JNIEXPORT void JNICALL OS_NATIVE(XClearArea)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jboolean arg6)
+{
+	NATIVE_ENTER(env, that, "XClearArea\n")
+	XClearArea((Display *)arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+	NATIVE_EXIT(env, that, "XClearArea\n")
+}
+#endif
+
+#ifndef NO_XClipBox
+JNIEXPORT void JNICALL OS_NATIVE(XClipBox)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	XRectangle _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "XClipBox\n")
+	if (arg1) lparg1 = getXRectangleFields(env, arg1, &_arg1);
+	XClipBox((Region)arg0, (XRectangle *)lparg1);
+	if (arg1) setXRectangleFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "XClipBox\n")
+}
+#endif
+
+#ifndef NO_XCloseDisplay
+JNIEXPORT void JNICALL OS_NATIVE(XCloseDisplay)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XCloseDisplay\n")
+	XCloseDisplay((Display *)arg0);
+	NATIVE_EXIT(env, that, "XCloseDisplay\n")
+}
+#endif
+
+#ifndef NO_XCopyArea
+JNIEXPORT void JNICALL OS_NATIVE(XCopyArea)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9)
+{
+	NATIVE_ENTER(env, that, "XCopyArea\n")
+	XCopyArea((Display *)arg0, arg1, arg2, (GC)arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+	NATIVE_EXIT(env, that, "XCopyArea\n")
+}
+#endif
+
+#ifndef NO_XCopyPlane
+JNIEXPORT void JNICALL OS_NATIVE(XCopyPlane)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10)
+{
+	NATIVE_ENTER(env, that, "XCopyPlane\n")
+	XCopyPlane((Display *)arg0, arg1, arg2, (GC)arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+	NATIVE_EXIT(env, that, "XCopyPlane\n")
+}
+#endif
+
+#ifndef NO_XCreateBitmapFromData
+JNIEXPORT jint JNICALL OS_NATIVE(XCreateBitmapFromData)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jint arg4)
+{
+	jbyte *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XCreateBitmapFromData\n")
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	rc = (jint)XCreateBitmapFromData((Display *)arg0, arg1, (char *)lparg2, arg3, arg4);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XCreateBitmapFromData\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XCreateFontCursor
+JNIEXPORT jint JNICALL OS_NATIVE(XCreateFontCursor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XCreateFontCursor\n")
+	rc = (jint)XCreateFontCursor((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XCreateFontCursor\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XCreateGC
+JNIEXPORT jint JNICALL OS_NATIVE(XCreateGC)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	XGCValues _arg3, *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XCreateGC\n")
+	if (arg3) lparg3 = getXGCValuesFields(env, arg3, &_arg3);
+	rc = (jint)XCreateGC((Display *)arg0, arg1, arg2, lparg3);
+	if (arg3) setXGCValuesFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "XCreateGC\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XCreateImage
+JNIEXPORT jint JNICALL OS_NATIVE(XCreateImage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XCreateImage\n")
+	rc = (jint)XCreateImage((Display *)arg0, (Visual *)arg1, arg2, arg3, arg4, (char *)arg5, arg6, arg7, arg8, arg9);
+	NATIVE_EXIT(env, that, "XCreateImage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XCreatePixmap
+JNIEXPORT jint JNICALL OS_NATIVE(XCreatePixmap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XCreatePixmap\n")
+	rc = (jint)XCreatePixmap((Display *)arg0, arg1, arg2, arg3, arg4);
+	NATIVE_EXIT(env, that, "XCreatePixmap\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XCreatePixmapCursor
+JNIEXPORT jint JNICALL OS_NATIVE(XCreatePixmapCursor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jobject arg4, jint arg5, jint arg6)
+{
+	XColor _arg3, *lparg3=NULL;
+	XColor _arg4, *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XCreatePixmapCursor\n")
+	if (arg3) lparg3 = getXColorFields(env, arg3, &_arg3);
+	if (arg4) lparg4 = getXColorFields(env, arg4, &_arg4);
+	rc = (jint)XCreatePixmapCursor((Display *)arg0, (Pixmap)arg1, (Pixmap)arg2, lparg3, lparg4, arg5, arg6);
+	if (arg3) setXColorFields(env, arg3, lparg3);
+	if (arg4) setXColorFields(env, arg4, lparg4);
+	NATIVE_EXIT(env, that, "XCreatePixmapCursor\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XCreateRegion
+JNIEXPORT jint JNICALL OS_NATIVE(XCreateRegion)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XCreateRegion\n")
+	rc = (jint)XCreateRegion();
+	NATIVE_EXIT(env, that, "XCreateRegion\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XCreateWindow
+JNIEXPORT jint JNICALL OS_NATIVE(XCreateWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jlong arg10, jint arg11)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XCreateWindow\n")
+	rc = (jint)XCreateWindow((Display *)arg0, (Window)arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, (Visual *)arg9, arg10, (XSetWindowAttributes *)arg11);
+	NATIVE_EXIT(env, that, "XCreateWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDefaultColormap
+JNIEXPORT jint JNICALL OS_NATIVE(XDefaultColormap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDefaultColormap\n")
+	rc = (jint)XDefaultColormap((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XDefaultColormap\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDefaultColormapOfScreen
+JNIEXPORT jint JNICALL OS_NATIVE(XDefaultColormapOfScreen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDefaultColormapOfScreen\n")
+	rc = (jint)XDefaultColormapOfScreen((Screen *)arg0);
+	NATIVE_EXIT(env, that, "XDefaultColormapOfScreen\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDefaultDepthOfScreen
+JNIEXPORT jint JNICALL OS_NATIVE(XDefaultDepthOfScreen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDefaultDepthOfScreen\n")
+	rc = (jint)XDefaultDepthOfScreen((Screen *)arg0);
+	NATIVE_EXIT(env, that, "XDefaultDepthOfScreen\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDefaultGCOfScreen
+JNIEXPORT jint JNICALL OS_NATIVE(XDefaultGCOfScreen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDefaultGCOfScreen\n")
+	rc = (jint)XDefaultGCOfScreen((Screen *)arg0);
+	NATIVE_EXIT(env, that, "XDefaultGCOfScreen\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDefaultRootWindow
+JNIEXPORT jint JNICALL OS_NATIVE(XDefaultRootWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDefaultRootWindow\n")
+	rc = (jint)XDefaultRootWindow((Display *)arg0);
+	NATIVE_EXIT(env, that, "XDefaultRootWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDefaultScreen
+JNIEXPORT jint JNICALL OS_NATIVE(XDefaultScreen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDefaultScreen\n")
+	rc = (jint)XDefaultScreen((Display *)arg0);
+	NATIVE_EXIT(env, that, "XDefaultScreen\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDefaultScreenOfDisplay
+JNIEXPORT jint JNICALL OS_NATIVE(XDefaultScreenOfDisplay)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDefaultScreenOfDisplay\n")
+	rc = (jint)XDefaultScreenOfDisplay((Display *)arg0);
+	NATIVE_EXIT(env, that, "XDefaultScreenOfDisplay\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDefaultVisual
+JNIEXPORT jint JNICALL OS_NATIVE(XDefaultVisual)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDefaultVisual\n")
+	rc = (jint)XDefaultVisual((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XDefaultVisual\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDefineCursor
+JNIEXPORT void JNICALL OS_NATIVE(XDefineCursor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XDefineCursor\n")
+	XDefineCursor((Display *)arg0, arg1, arg2);
+	NATIVE_EXIT(env, that, "XDefineCursor\n")
+}
+#endif
+
+#ifndef NO_XDestroyImage
+JNIEXPORT jint JNICALL OS_NATIVE(XDestroyImage)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDestroyImage\n")
+	rc = (jint)XDestroyImage((XImage *)arg0);
+	NATIVE_EXIT(env, that, "XDestroyImage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDestroyRegion
+JNIEXPORT void JNICALL OS_NATIVE(XDestroyRegion)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XDestroyRegion\n")
+	XDestroyRegion((Region)arg0);
+	NATIVE_EXIT(env, that, "XDestroyRegion\n")
+}
+#endif
+
+#ifndef NO_XDestroyWindow
+JNIEXPORT void JNICALL OS_NATIVE(XDestroyWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XDestroyWindow\n")
+	XDestroyWindow((Display *)arg0, (Window)arg1);
+	NATIVE_EXIT(env, that, "XDestroyWindow\n")
+}
+#endif
+
+#ifndef NO_XDisplayHeight
+JNIEXPORT jint JNICALL OS_NATIVE(XDisplayHeight)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDisplayHeight\n")
+	rc = (jint)XDisplayHeight((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XDisplayHeight\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDisplayHeightMM
+JNIEXPORT jint JNICALL OS_NATIVE(XDisplayHeightMM)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDisplayHeightMM\n")
+	rc = (jint)XDisplayHeightMM((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XDisplayHeightMM\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDisplayWidth
+JNIEXPORT jint JNICALL OS_NATIVE(XDisplayWidth)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDisplayWidth\n")
+	rc = (jint)XDisplayWidth((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XDisplayWidth\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDisplayWidthMM
+JNIEXPORT jint JNICALL OS_NATIVE(XDisplayWidthMM)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDisplayWidthMM\n")
+	rc = (jint)XDisplayWidthMM((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XDisplayWidthMM\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XDrawArc
+JNIEXPORT void JNICALL OS_NATIVE(XDrawArc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
+{
+	NATIVE_ENTER(env, that, "XDrawArc\n")
+	XDrawArc((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	NATIVE_EXIT(env, that, "XDrawArc\n")
+}
+#endif
+
+#ifndef NO_XDrawLine
+JNIEXPORT void JNICALL OS_NATIVE(XDrawLine)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	NATIVE_ENTER(env, that, "XDrawLine\n")
+	XDrawLine((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4, arg5, arg6);
+	NATIVE_EXIT(env, that, "XDrawLine\n")
+}
+#endif
+
+#ifndef NO_XDrawLines
+JNIEXPORT void JNICALL OS_NATIVE(XDrawLines)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jshortArray arg3, jint arg4, jint arg5)
+{
+	jshort *lparg3=NULL;
+	NATIVE_ENTER(env, that, "XDrawLines\n")
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+	XDrawLines((Display *)arg0, (Drawable)arg1, (GC)arg2, (XPoint *)lparg3, arg4, arg5);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XDrawLines\n")
+}
+#endif
+
+#ifndef NO_XDrawRectangle
+JNIEXPORT void JNICALL OS_NATIVE(XDrawRectangle)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	NATIVE_ENTER(env, that, "XDrawRectangle\n")
+	XDrawRectangle((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4, arg5, arg6);
+	NATIVE_EXIT(env, that, "XDrawRectangle\n")
+}
+#endif
+
+#ifndef NO_XEmptyRegion
+JNIEXPORT jboolean JNICALL OS_NATIVE(XEmptyRegion)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XEmptyRegion\n")
+	rc = (jboolean)XEmptyRegion((Region)arg0);
+	NATIVE_EXIT(env, that, "XEmptyRegion\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XEventsQueued
+JNIEXPORT jint JNICALL OS_NATIVE(XEventsQueued)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XEventsQueued\n")
+	rc = (jint)XEventsQueued((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XEventsQueued\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XFillArc
+JNIEXPORT void JNICALL OS_NATIVE(XFillArc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
+{
+	NATIVE_ENTER(env, that, "XFillArc\n")
+	XFillArc((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	NATIVE_EXIT(env, that, "XFillArc\n")
+}
+#endif
+
+#ifndef NO_XFillPolygon
+JNIEXPORT jint JNICALL OS_NATIVE(XFillPolygon)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jshortArray arg3, jint arg4, jint arg5, jint arg6)
+{
+	jshort *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XFillPolygon\n")
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+	rc = (jint)XFillPolygon((Display *)arg0, (Drawable)arg1, (GC)arg2, (XPoint *)lparg3, arg4, arg5, arg6);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XFillPolygon\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XFillRectangle
+JNIEXPORT void JNICALL OS_NATIVE(XFillRectangle)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	NATIVE_ENTER(env, that, "XFillRectangle\n")
+	XFillRectangle((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4, arg5, arg6);
+	NATIVE_EXIT(env, that, "XFillRectangle\n")
+}
+#endif
+
+#ifndef NO_XFilterEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(XFilterEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XFilterEvent\n")
+	rc = (jboolean)XFilterEvent((XEvent *)arg0, (Window)arg1);
+	NATIVE_EXIT(env, that, "XFilterEvent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XFlush
+JNIEXPORT void JNICALL OS_NATIVE(XFlush)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XFlush\n")
+	XFlush((Display *)arg0);
+	NATIVE_EXIT(env, that, "XFlush\n")
+}
+#endif
+
+#ifndef NO_XFontsOfFontSet
+JNIEXPORT jint JNICALL OS_NATIVE(XFontsOfFontSet)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XFontsOfFontSet\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XFontsOfFontSet((XFontSet)arg0, (XFontStruct ***)lparg1, (char ***)lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XFontsOfFontSet\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XFree
+JNIEXPORT jint JNICALL OS_NATIVE(XFree)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XFree\n")
+	rc = (jint)XFree((char *)arg0);
+	NATIVE_EXIT(env, that, "XFree\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XFreeColors
+JNIEXPORT jint JNICALL OS_NATIVE(XFreeColors)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3, jint arg4)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XFreeColors\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XFreeColors((Display *)arg0, arg1, (unsigned long *)lparg2, arg3, arg4);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XFreeColors\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XFreeCursor
+JNIEXPORT void JNICALL OS_NATIVE(XFreeCursor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XFreeCursor\n")
+	XFreeCursor((Display *)arg0, (Cursor)arg1);
+	NATIVE_EXIT(env, that, "XFreeCursor\n")
+}
+#endif
+
+#ifndef NO_XFreeFont
+JNIEXPORT void JNICALL OS_NATIVE(XFreeFont)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XFreeFont\n")
+	XFreeFont((Display *)arg0, (XFontStruct *)arg1);
+	NATIVE_EXIT(env, that, "XFreeFont\n")
+}
+#endif
+
+#ifndef NO_XFreeFontNames
+JNIEXPORT void JNICALL OS_NATIVE(XFreeFontNames)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XFreeFontNames\n")
+	XFreeFontNames((char **)arg0);
+	NATIVE_EXIT(env, that, "XFreeFontNames\n")
+}
+#endif
+
+#ifndef NO_XFreeGC
+JNIEXPORT void JNICALL OS_NATIVE(XFreeGC)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XFreeGC\n")
+	XFreeGC((Display *)arg0, (GC)arg1);
+	NATIVE_EXIT(env, that, "XFreeGC\n")
+}
+#endif
+
+#ifndef NO_XFreePixmap
+JNIEXPORT void JNICALL OS_NATIVE(XFreePixmap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XFreePixmap\n")
+	XFreePixmap((Display *)arg0, (Pixmap)arg1);
+	NATIVE_EXIT(env, that, "XFreePixmap\n")
+}
+#endif
+
+#ifndef NO_XFreeStringList
+JNIEXPORT void JNICALL OS_NATIVE(XFreeStringList)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XFreeStringList\n")
+	XFreeStringList((char **)arg0);
+	NATIVE_EXIT(env, that, "XFreeStringList\n")
+}
+#endif
+
+#ifndef NO_XGetGCValues
+JNIEXPORT jint JNICALL OS_NATIVE(XGetGCValues)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	XGCValues _arg3, *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XGetGCValues\n")
+	if (arg3) lparg3 = getXGCValuesFields(env, arg3, &_arg3);
+	rc = (jint)XGetGCValues((Display *)arg0, (GC)arg1, arg2, lparg3);
+	if (arg3) setXGCValuesFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "XGetGCValues\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XGetGeometry
+JNIEXPORT jint JNICALL OS_NATIVE(XGetGeometry)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7, jintArray arg8)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XGetGeometry\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	rc = (jint)XGetGeometry((Display *)arg0, (Drawable)arg1, (Window *)lparg2, (int *)lparg3, (int *)lparg4, (unsigned int *)lparg5, (unsigned int *)lparg6, (unsigned int *)lparg7, (unsigned int *)lparg8);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	NATIVE_EXIT(env, that, "XGetGeometry\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XGetImage
+JNIEXPORT jint JNICALL OS_NATIVE(XGetImage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XGetImage\n")
+	rc = (jint)XGetImage((Display *)arg0, (Drawable)arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+	NATIVE_EXIT(env, that, "XGetImage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XGetInputFocus
+JNIEXPORT jint JNICALL OS_NATIVE(XGetInputFocus)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XGetInputFocus\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XGetInputFocus((Display *)arg0, (Window *)lparg1, (int *)lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XGetInputFocus\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XGetWindowAttributes
+JNIEXPORT jboolean JNICALL OS_NATIVE(XGetWindowAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	XWindowAttributes _arg2, *lparg2=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XGetWindowAttributes\n")
+	if (arg2) lparg2 = getXWindowAttributesFields(env, arg2, &_arg2);
+	rc = (jboolean)XGetWindowAttributes((Display *)arg0, arg1, lparg2);
+	if (arg2) setXWindowAttributesFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "XGetWindowAttributes\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XGrabKeyboard
+JNIEXPORT jint JNICALL OS_NATIVE(XGrabKeyboard)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XGrabKeyboard\n")
+	rc = (jint)XGrabKeyboard((Display *)arg0, arg1, arg2, arg3, arg4, arg5);
+	NATIVE_EXIT(env, that, "XGrabKeyboard\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XGrabPointer
+JNIEXPORT jint JNICALL OS_NATIVE(XGrabPointer)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XGrabPointer\n")
+	rc = (jint)XGrabPointer((Display *)arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	NATIVE_EXIT(env, that, "XGrabPointer\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XInitThreads
+JNIEXPORT jint JNICALL OS_NATIVE(XInitThreads)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XInitThreads\n")
+	rc = (jint)XInitThreads();
+	NATIVE_EXIT(env, that, "XInitThreads\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XInternAtom
+JNIEXPORT jint JNICALL OS_NATIVE(XInternAtom)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jboolean arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XInternAtom\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)XInternAtom((Display *)arg0, (char *)lparg1, arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XInternAtom\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XKeysymToString
+JNIEXPORT jint JNICALL OS_NATIVE(XKeysymToString)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XKeysymToString\n")
+	rc = (jint)XKeysymToString(arg0);
+	NATIVE_EXIT(env, that, "XKeysymToString\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XListFonts
+JNIEXPORT jint JNICALL OS_NATIVE(XListFonts)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XListFonts\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)XListFonts((Display *)arg0, (char *)lparg1, arg2, (int *)lparg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XListFonts\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XListProperties
+JNIEXPORT jint JNICALL OS_NATIVE(XListProperties)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XListProperties\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XListProperties((Display *)arg0, (Window)arg1, (int *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XListProperties\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XLocaleOfFontSet
+JNIEXPORT jint JNICALL OS_NATIVE(XLocaleOfFontSet)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XLocaleOfFontSet\n")
+	rc = (jint)XLocaleOfFontSet((XFontSet)arg0);
+	NATIVE_EXIT(env, that, "XLocaleOfFontSet\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XLookupString
+JNIEXPORT jint JNICALL OS_NATIVE(XLookupString)
+	(JNIEnv *env, jclass that, jobject arg0, jbyteArray arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	XKeyEvent _arg0, *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XLookupString\n")
+	if (arg0) lparg0 = getXKeyEventFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)XLookupString((XKeyEvent *)lparg0, (char *)lparg1, arg2, (KeySym *)lparg3, (XComposeStatus *)lparg4);
+	if (arg0) setXKeyEventFields(env, arg0, lparg0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "XLookupString\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XLowerWindow
+JNIEXPORT jint JNICALL OS_NATIVE(XLowerWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XLowerWindow\n")
+	rc = (jint)XLowerWindow((Display *)arg0, (Window)arg1);
+	NATIVE_EXIT(env, that, "XLowerWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XOpenDisplay
+JNIEXPORT jint JNICALL OS_NATIVE(XOpenDisplay)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XOpenDisplay\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)XOpenDisplay(lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "XOpenDisplay\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XPointInRegion
+JNIEXPORT jboolean JNICALL OS_NATIVE(XPointInRegion)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XPointInRegion\n")
+	rc = (jboolean)XPointInRegion((Region)arg0, arg1, arg2);
+	NATIVE_EXIT(env, that, "XPointInRegion\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XPutImage
+JNIEXPORT jint JNICALL OS_NATIVE(XPutImage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XPutImage\n")
+	rc = (jint)XPutImage((Display *)arg0, (Drawable)arg1, (GC)arg2, (XImage *)arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+	NATIVE_EXIT(env, that, "XPutImage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XQueryColor
+JNIEXPORT jint JNICALL OS_NATIVE(XQueryColor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	XColor _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XQueryColor\n")
+	if (arg2) lparg2 = getXColorFields(env, arg2, &_arg2);
+	rc = (jint)XQueryColor((Display *)arg0, arg1, lparg2);
+	if (arg2) setXColorFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "XQueryColor\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XQueryPointer
+JNIEXPORT jint JNICALL OS_NATIVE(XQueryPointer)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7, jintArray arg8)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XQueryPointer\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	rc = (jint)XQueryPointer((Display *)arg0, (Window)arg1, (Window *)lparg2, (Window *)lparg3, lparg4, lparg5, lparg6, lparg7, lparg8);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	NATIVE_EXIT(env, that, "XQueryPointer\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XQueryTree
+JNIEXPORT jint JNICALL OS_NATIVE(XQueryTree)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XQueryTree\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)XQueryTree((Display *)arg0, (Window)arg1, (Window *)lparg2, (Window *)lparg3, (Window **)lparg4, lparg5);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	NATIVE_EXIT(env, that, "XQueryTree\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XRaiseWindow
+JNIEXPORT jint JNICALL OS_NATIVE(XRaiseWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XRaiseWindow\n")
+	rc = (jint)XRaiseWindow((Display *)arg0, (Window)arg1);
+	NATIVE_EXIT(env, that, "XRaiseWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XReconfigureWMWindow
+JNIEXPORT jint JNICALL OS_NATIVE(XReconfigureWMWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	XWindowChanges _arg4, *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XReconfigureWMWindow\n")
+	if (arg4) lparg4 = getXWindowChangesFields(env, arg4, &_arg4);
+	rc = (jint)XReconfigureWMWindow((Display *)arg0, (Window)arg1, arg2, arg3, lparg4);
+	if (arg4) setXWindowChangesFields(env, arg4, lparg4);
+	NATIVE_EXIT(env, that, "XReconfigureWMWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XRectInRegion
+JNIEXPORT jint JNICALL OS_NATIVE(XRectInRegion)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XRectInRegion\n")
+	rc = (jint)XRectInRegion((Region)arg0, arg1, arg2, arg3, arg4);
+	NATIVE_EXIT(env, that, "XRectInRegion\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XReparentWindow
+JNIEXPORT jint JNICALL OS_NATIVE(XReparentWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XReparentWindow\n")
+	rc = (jint)XReparentWindow((Display *)arg0, (Window)arg1, (Window)arg2, arg3, arg4);
+	NATIVE_EXIT(env, that, "XReparentWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XRootWindowOfScreen
+JNIEXPORT jint JNICALL OS_NATIVE(XRootWindowOfScreen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XRootWindowOfScreen\n")
+	rc = (jint)XRootWindowOfScreen((Screen *)arg0);
+	NATIVE_EXIT(env, that, "XRootWindowOfScreen\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XSetBackground
+JNIEXPORT void JNICALL OS_NATIVE(XSetBackground)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XSetBackground\n")
+	XSetBackground((Display *)arg0, (GC)arg1, arg2);
+	NATIVE_EXIT(env, that, "XSetBackground\n")
+}
+#endif
+
+#ifndef NO_XSetClipMask
+JNIEXPORT void JNICALL OS_NATIVE(XSetClipMask)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XSetClipMask\n")
+	XSetClipMask((Display *)arg0, (GC)arg1, (Pixmap)arg2);
+	NATIVE_EXIT(env, that, "XSetClipMask\n")
+}
+#endif
+
+#ifndef NO_XSetClipRectangles
+JNIEXPORT void JNICALL OS_NATIVE(XSetClipRectangles)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jint arg6)
+{
+	XRectangle _arg4, *lparg4=NULL;
+	NATIVE_ENTER(env, that, "XSetClipRectangles\n")
+	if (arg4) lparg4 = getXRectangleFields(env, arg4, &_arg4);
+	XSetClipRectangles((Display *)arg0, (GC)arg1, arg2, arg3, (XRectangle *)lparg4, arg5, arg6);
+	if (arg4) setXRectangleFields(env, arg4, lparg4);
+	NATIVE_EXIT(env, that, "XSetClipRectangles\n")
+}
+#endif
+
+#ifndef NO_XSetDashes
+JNIEXPORT jint JNICALL OS_NATIVE(XSetDashes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4)
+{
+	jbyte *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XSetDashes\n")
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	rc = (jint)XSetDashes((Display *)arg0, (GC)arg1, arg2, (char *)lparg3, arg4);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XSetDashes\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XSetErrorHandler
+JNIEXPORT jint JNICALL OS_NATIVE(XSetErrorHandler)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XSetErrorHandler\n")
+	rc = (jint)XSetErrorHandler((XErrorHandler)arg0);
+	NATIVE_EXIT(env, that, "XSetErrorHandler\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XSetFillStyle
+JNIEXPORT void JNICALL OS_NATIVE(XSetFillStyle)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XSetFillStyle\n")
+	XSetFillStyle((Display *)arg0, (GC)arg1, arg2);
+	NATIVE_EXIT(env, that, "XSetFillStyle\n")
+}
+#endif
+
+#ifndef NO_XSetForeground
+JNIEXPORT void JNICALL OS_NATIVE(XSetForeground)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XSetForeground\n")
+	XSetForeground((Display *)arg0, (GC)arg1, arg2);
+	NATIVE_EXIT(env, that, "XSetForeground\n")
+}
+#endif
+
+#ifndef NO_XSetFunction
+JNIEXPORT void JNICALL OS_NATIVE(XSetFunction)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XSetFunction\n")
+	XSetFunction((Display *)arg0, (GC)arg1, arg2);
+	NATIVE_EXIT(env, that, "XSetFunction\n")
+}
+#endif
+
+#ifndef NO_XSetGraphicsExposures
+JNIEXPORT void JNICALL OS_NATIVE(XSetGraphicsExposures)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	NATIVE_ENTER(env, that, "XSetGraphicsExposures\n")
+	XSetGraphicsExposures((Display *)arg0, (GC)arg1, (Bool)arg2);
+	NATIVE_EXIT(env, that, "XSetGraphicsExposures\n")
+}
+#endif
+
+#ifndef NO_XSetIOErrorHandler
+JNIEXPORT jint JNICALL OS_NATIVE(XSetIOErrorHandler)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XSetIOErrorHandler\n")
+	rc = (jint)XSetIOErrorHandler((XIOErrorHandler)arg0);
+	NATIVE_EXIT(env, that, "XSetIOErrorHandler\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XSetInputFocus
+JNIEXPORT jint JNICALL OS_NATIVE(XSetInputFocus)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XSetInputFocus\n")
+	rc = (jint)XSetInputFocus((Display *)arg0, (Window)arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "XSetInputFocus\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XSetLineAttributes
+JNIEXPORT jint JNICALL OS_NATIVE(XSetLineAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XSetLineAttributes\n")
+	rc = (jint)XSetLineAttributes((Display *)arg0, (GC)arg1, arg2, arg3, arg4, arg5);
+	NATIVE_EXIT(env, that, "XSetLineAttributes\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XSetRegion
+JNIEXPORT void JNICALL OS_NATIVE(XSetRegion)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XSetRegion\n")
+	XSetRegion((Display *)arg0, (GC)arg1, (Region)arg2);
+	NATIVE_EXIT(env, that, "XSetRegion\n")
+}
+#endif
+
+#ifndef NO_XSetStipple
+JNIEXPORT void JNICALL OS_NATIVE(XSetStipple)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XSetStipple\n")
+	XSetStipple((Display *)arg0, (GC)arg1, (Pixmap)arg2);
+	NATIVE_EXIT(env, that, "XSetStipple\n")
+}
+#endif
+
+#ifndef NO_XSetSubwindowMode
+JNIEXPORT void JNICALL OS_NATIVE(XSetSubwindowMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XSetSubwindowMode\n")
+	XSetSubwindowMode((Display *)arg0, (GC)arg1, arg2);
+	NATIVE_EXIT(env, that, "XSetSubwindowMode\n")
+}
+#endif
+
+#ifndef NO_XSubtractRegion
+JNIEXPORT void JNICALL OS_NATIVE(XSubtractRegion)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XSubtractRegion\n")
+	XSubtractRegion((Region)arg0, (Region)arg1, (Region)arg2);
+	NATIVE_EXIT(env, that, "XSubtractRegion\n")
+}
+#endif
+
+#ifndef NO_XSync
+JNIEXPORT void JNICALL OS_NATIVE(XSync)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	NATIVE_ENTER(env, that, "XSync\n")
+	XSync((Display *)arg0, (Bool)arg1);
+	NATIVE_EXIT(env, that, "XSync\n")
+}
+#endif
+
+#ifndef NO_XSynchronize
+JNIEXPORT jint JNICALL OS_NATIVE(XSynchronize)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XSynchronize\n")
+	rc = (jint)XSynchronize((Display *)arg0, (Bool)arg1);
+	NATIVE_EXIT(env, that, "XSynchronize\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XUndefineCursor
+JNIEXPORT void JNICALL OS_NATIVE(XUndefineCursor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XUndefineCursor\n")
+	XUndefineCursor((Display *)arg0, (Window)arg1);
+	NATIVE_EXIT(env, that, "XUndefineCursor\n")
+}
+#endif
+
+#ifndef NO_XUngrabKeyboard
+JNIEXPORT jint JNICALL OS_NATIVE(XUngrabKeyboard)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XUngrabKeyboard\n")
+	rc = (jint)XUngrabKeyboard((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XUngrabKeyboard\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XUngrabPointer
+JNIEXPORT jint JNICALL OS_NATIVE(XUngrabPointer)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XUngrabPointer\n")
+	rc = (jint)XUngrabPointer((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XUngrabPointer\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XUnionRectWithRegion
+JNIEXPORT void JNICALL OS_NATIVE(XUnionRectWithRegion)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XRectangle _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "XUnionRectWithRegion\n")
+	if (arg0) lparg0 = getXRectangleFields(env, arg0, &_arg0);
+	XUnionRectWithRegion((XRectangle *)lparg0, (Region)arg1, (Region)arg2);
+	if (arg0) setXRectangleFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "XUnionRectWithRegion\n")
+}
+#endif
+
+#ifndef NO_XUnionRegion
+JNIEXPORT void JNICALL OS_NATIVE(XUnionRegion)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XUnionRegion\n")
+	XUnionRegion((Region)arg0, (Region)arg1, (Region)arg2);
+	NATIVE_EXIT(env, that, "XUnionRegion\n")
+}
+#endif
+
+#ifndef NO_XWarpPointer
+JNIEXPORT jint JNICALL OS_NATIVE(XWarpPointer)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XWarpPointer\n")
+	rc = (jint)XWarpPointer((Display *)arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	NATIVE_EXIT(env, that, "XWarpPointer\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XWhitePixel
+JNIEXPORT jint JNICALL OS_NATIVE(XWhitePixel)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XWhitePixel\n")
+	rc = (jint)XWhitePixel((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XWhitePixel\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XWithdrawWindow
+JNIEXPORT void JNICALL OS_NATIVE(XWithdrawWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XWithdrawWindow\n")
+	XWithdrawWindow((Display *)arg0, (Window)arg1, arg2);
+	NATIVE_EXIT(env, that, "XWithdrawWindow\n")
+}
+#endif
+
+#ifndef NO_XineramaIsActive
+JNIEXPORT jboolean JNICALL OS_NATIVE(XineramaIsActive)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XineramaIsActive\n")
+	rc = (jboolean)XineramaIsActive((Display *)arg0);
+	NATIVE_EXIT(env, that, "XineramaIsActive\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XineramaQueryScreens
+JNIEXPORT jint JNICALL OS_NATIVE(XineramaQueryScreens)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
 {
 	jint *lparg1=NULL;
 	jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XineramaQueryScreens\n");
-#endif
+	NATIVE_ENTER(env, that, "XineramaQueryScreens\n")
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	rc = (jint)XineramaQueryScreens((Display *)arg0, lparg1);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XineramaQueryScreens\n")
 	return rc;
 }
-
-#endif /* ! NO_XINERAMA_EXTENSIONS */
- 
-/*
- * ======== Start printing functions ========
- */
- 
-#ifndef NO_XPRINTING_EXTENSIONS
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpCreateContext
- * Signature: (I[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpCreateContext
-  (JNIEnv *env, jclass that, jint display, jbyteArray printer_name)
-{
-    jbyte *printer_name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpCreateContext\n");
-#endif
-    if (printer_name)
-        printer_name1 = (*env)->GetByteArrayElements(env, printer_name, NULL);    
-    rc = (jint) XpCreateContext((Display *)display, (char *)printer_name1);
-    if (printer_name)
-        (*env)->ReleaseByteArrayElements(env, printer_name, printer_name1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpGetPrinterList
- * Signature: (I[B[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpGetPrinterList
-  (JNIEnv *env, jclass that, jint display, jbyteArray printer_name, jintArray list_count)
-{
-    jbyte *printer_name1=NULL;
-    jint *list_count1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpGetPrinterList\n");
-#endif
-    if (printer_name)
-        printer_name1 = (*env)->GetByteArrayElements(env, printer_name, NULL);    
-    if (list_count)
-        list_count1 = (*env)->GetIntArrayElements(env, list_count, NULL);
-    rc = (jint) XpGetPrinterList((Display *)display, (char *)printer_name1, (int *)list_count1);
-    if (printer_name)
-        (*env)->ReleaseByteArrayElements(env, printer_name, printer_name1, 0);
-    if (list_count)
-        (*env)->ReleaseIntArrayElements(env, list_count, list_count1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpFreePrinterList
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XpFreePrinterList
-  (JNIEnv *env, jclass that, jint printer_list)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpFreePrinterList\n");
-#endif
-    XpFreePrinterList((XPPrinterList)printer_list);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpGetAttributes
- * Signature: (IIB)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpGetAttributes
-  (JNIEnv *env, jclass that, jint display, jint print_context, jbyte type)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpGetAttributes\n");
-#endif
-    return (jint) XpGetAttributes((Display *)display, (XPContext)print_context, (XPAttributes)type);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpGetOneAttribute
- * Signature: (IIB[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpGetOneAttribute
-  (JNIEnv *env, jclass that, jint display, jint print_context, jbyte type, jbyteArray attribute_name)
-{
-    jbyte *attribute_name1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpGetOneAttribute\n");
-#endif
-    if (attribute_name)
-        attribute_name1 = (*env)->GetByteArrayElements(env, attribute_name, NULL);    
-    rc = (jint) XpGetOneAttribute((Display *)display, (XPContext)print_context, (XPAttributes)type, (char *)attribute_name1);
-    if (attribute_name)
-        (*env)->ReleaseByteArrayElements(env, attribute_name, attribute_name1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpSetAttributes
- * Signature: (IIB[BB)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XpSetAttributes
-  (JNIEnv *env, jclass that, jint display, jint print_context, jbyte type, jbyteArray pool, jbyte replacement_rule)
-{
-    jbyte *pool1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpSetAttributes\n");
-#endif
-    if (pool)
-        pool1 = (*env)->GetByteArrayElements(env, pool, NULL);    
-    XpSetAttributes((Display *)display, (XPContext)print_context, (XPAttributes)type, (char *)pool1, (XPAttrReplacement)replacement_rule);
-    if (pool)
-        (*env)->ReleaseByteArrayElements(env, pool, pool1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpSetContext
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XpSetContext
-  (JNIEnv *env, jclass that, jint display, jint print_context)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpSetContext\n");
-#endif
-    XpSetContext((Display *)display, (XPContext)print_context);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpGetScreenOfContext
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpGetScreenOfContext
-  (JNIEnv *env, jclass that, jint display, jint print_context)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpGetScreenOfContext\n");
-#endif
-    return (jint) XpGetScreenOfContext((Display *)display, (XPContext)print_context);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpDestroyContext
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XpDestroyContext
-  (JNIEnv *env, jclass that, jint display, jint print_context)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpDestroyContext\n");
-#endif
-    XpDestroyContext((Display *)display, (XPContext)print_context);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpGetPageDimensions
- * Signature: (II[S[SLorg/eclipse/swt/internal/motif/XRectangle;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpGetPageDimensions
-  (JNIEnv *env, jclass that, jint display, jint print_context, jshortArray width, jshortArray height, jobject rectangle)
-{
-	DECL_GLOB(pGlob)
-    XRectangle xRect, *lpxRect=NULL;
-    jshort *width1=NULL, *height1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpGetPageDimensions\n");
-#endif
-
-    if (rectangle) {
-        lpxRect = &xRect;
-        cacheXrectangleFids(env, rectangle, &PGLOB(XrectangleFc));
-        getXrectangleFields(env, rectangle, lpxRect, &PGLOB(XrectangleFc));
-    }
-    if (width)
-        width1 = (*env)->GetShortArrayElements(env, width, NULL);    
-    if (height)
-        height1 = (*env)->GetShortArrayElements(env, height, NULL);    
-    rc = (jint) XpGetPageDimensions((Display *)display, (XPContext)print_context, 
-            (unsigned short *)width1, (unsigned short *)height1, (XRectangle *)lpxRect);
-    if (rectangle) {
-        setXrectangleFields(env, rectangle, lpxRect, &PGLOB(XrectangleFc));
-    }
-    if (width)
-        (*env)->ReleaseShortArrayElements(env, width, width1, 0);
-    if (height)
-        (*env)->ReleaseShortArrayElements(env, height, height1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpStartJob
- * Signature: (IB)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XpStartJob
-  (JNIEnv *env, jclass that, jint display, jbyte save_data)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpStartJob\n");
-#endif
-    XpStartJob((Display *)display, (XPSaveData)save_data);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpStartPage
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XpStartPage
-  (JNIEnv *env, jclass that, jint display, jint window)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpStartPage\n");
-#endif
-    XpStartPage((Display *)display, (Window)window);
-}
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpEndPage
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XpEndPage
-  (JNIEnv *env, jclass that, jint display)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpEndPage\n");
-#endif
-    XpEndPage((Display *)display);
+#ifndef NO_XmAddWMProtocolCallback
+JNIEXPORT void JNICALL OS_NATIVE(XmAddWMProtocolCallback)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "XmAddWMProtocolCallback\n")
+	XmAddWMProtocolCallback((Widget)arg0, (Atom)arg1, (XtCallbackProc)arg2, (XtPointer)arg3);
+	NATIVE_EXIT(env, that, "XmAddWMProtocolCallback\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpEndJob
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XpEndJob
-  (JNIEnv *env, jclass that, jint display)
+#ifndef NO_XmChangeColor
+JNIEXPORT void JNICALL OS_NATIVE(XmChangeColor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpEndJob\n");
+	NATIVE_ENTER(env, that, "XmChangeColor\n")
+	XmChangeColor((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmChangeColor\n")
+}
 #endif
-    XpEndJob((Display *)display);
+
+#ifndef NO_XmClipboardCopy
+JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardCopy)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jbyteArray arg4, jint arg5, jint arg6, jintArray arg7)
+{
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jint *lparg7=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmClipboardCopy\n")
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	rc = (jint)XmClipboardCopy((Display *)arg0, (Window)arg1, arg2, (char *)lparg3, (char *)lparg4, arg5, arg6, (void *)lparg7);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	NATIVE_EXIT(env, that, "XmClipboardCopy\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmClipboardEndCopy
+JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardEndCopy)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmClipboardEndCopy\n")
+	rc = (jint)XmClipboardEndCopy((Display *)arg0, (Window)arg1, arg2);
+	NATIVE_EXIT(env, that, "XmClipboardEndCopy\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpCancelJob
- * Signature: (IZ)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XpCancelJob
-  (JNIEnv *env, jclass that, jint display, jboolean discard)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpCancelJob\n");
-#endif
-    XpCancelJob((Display *)display, discard);
+#ifndef NO_XmClipboardEndRetrieve
+JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardEndRetrieve)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmClipboardEndRetrieve\n")
+	rc = (jint)XmClipboardEndRetrieve((Display *)arg0, (Window)arg1);
+	NATIVE_EXIT(env, that, "XmClipboardEndRetrieve\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpQueryVersion
- * Signature: (I[S[S)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpQueryVersion
-  (JNIEnv *env, jclass that, jint display, jshortArray major_version, jshortArray minor_version)
+#ifndef NO_XmClipboardInquireCount
+JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardInquireCount)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
 {
-    jshort *major_version1=NULL, *minor_version1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpQueryVersion\n");
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmClipboardInquireCount\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)XmClipboardInquireCount((Display *)arg0, (Window)arg1, (int *)lparg2, (unsigned long *)lparg3);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XmClipboardInquireCount\n")
+	return rc;
+}
 #endif
 
-    if (major_version)
-    	major_version1 = (*env)->GetShortArrayElements(env, major_version, NULL);
-    if (minor_version)
-    	minor_version1 = (*env)->GetShortArrayElements(env, minor_version, NULL);    
-    rc = (jint) XpQueryVersion((Display *)display, (short *)major_version1, (short *)minor_version1);
-    if (major_version)
-    	(*env)->ReleaseShortArrayElements(env, major_version, major_version1, 0);
-    if (minor_version)
-    	(*env)->ReleaseShortArrayElements(env, minor_version, minor_version1, 0);
+#ifndef NO_XmClipboardInquireFormat
+JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardInquireFormat)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4, jintArray arg5)
+{
+	jbyte *lparg3=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmClipboardInquireFormat\n")
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)XmClipboardInquireFormat((Display *)arg0, (Window)arg1, arg2, (char *)lparg3, arg4, (unsigned long *)lparg5);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	NATIVE_EXIT(env, that, "XmClipboardInquireFormat\n")
+	return rc;
+}
+#endif
 
-    return rc;
-}
-
-#endif /* ! NO_XPRINTING_EXTENSIONS */
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDefaultGCOfScreen
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDefaultGCOfScreen
-  (JNIEnv *env, jclass that, jint screen)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDefaultGCOfScreen\n");
+#ifndef NO_XmClipboardInquireLength
+JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardInquireLength)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jintArray arg3)
+{
+	jbyte *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmClipboardInquireLength\n")
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)XmClipboardInquireLength((Display *)arg0, (Window)arg1, (char *)lparg2, (unsigned long *)lparg3);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XmClipboardInquireLength\n")
+	return rc;
+}
 #endif
-    return (jint) XDefaultGCOfScreen((Screen *)screen);
+
+#ifndef NO_XmClipboardRetrieve
+JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardRetrieve)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jintArray arg5, jintArray arg6)
+{
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmClipboardRetrieve\n")
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	rc = (jint)XmClipboardRetrieve((Display *)arg0, (Window)arg1, (char *)lparg2, (char *)lparg3, arg4, (unsigned long *)lparg5, (long *)lparg6);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	NATIVE_EXIT(env, that, "XmClipboardRetrieve\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDefaultColormapOfScreen
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XDefaultColormapOfScreen
-  (JNIEnv *env, jclass that, jint screen)
+#ifndef NO_XmClipboardStartCopy
+JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardStartCopy)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jintArray arg6)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDefaultColormapOfScreen\n");
-#endif
-    return (jint) XDefaultColormapOfScreen((Screen *)screen);
+	jint *lparg6=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmClipboardStartCopy\n")
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	rc = (jint)XmClipboardStartCopy((Display *)arg0, (Window)arg1, (XmString)arg2, arg3, (Widget)arg4, (XmCutPasteProc)arg5, (long *)lparg6);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	NATIVE_EXIT(env, that, "XmClipboardStartCopy\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XRootWindowOfScreen
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XRootWindowOfScreen
-  (JNIEnv *env, jclass that, jint screen)
+#ifndef NO_XmClipboardStartRetrieve
+JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardStartRetrieve)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XRootWindowOfScreen\n");
+	jint rc;
+	NATIVE_ENTER(env, that, "XmClipboardStartRetrieve\n")
+	rc = (jint)XmClipboardStartRetrieve((Display *)arg0, (Window)arg1, arg2);
+	NATIVE_EXIT(env, that, "XmClipboardStartRetrieve\n")
+	return rc;
+}
 #endif
-    return (jint) XRootWindowOfScreen((Screen *)screen);
+
+#ifndef NO_XmComboBoxAddItem
+JNIEXPORT void JNICALL OS_NATIVE(XmComboBoxAddItem)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
+{
+	NATIVE_ENTER(env, that, "XmComboBoxAddItem\n")
+	XmComboBoxAddItem((Widget)arg0, (XmString)arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "XmComboBoxAddItem\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XScreenNumberOfScreen
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XScreenNumberOfScreen
-  (JNIEnv *env, jclass that, jint screen)
+#ifndef NO_XmComboBoxDeletePos
+JNIEXPORT void JNICALL OS_NATIVE(XmComboBoxDeletePos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XScreenNumberOfScreen\n");
+	NATIVE_ENTER(env, that, "XmComboBoxDeletePos\n")
+	XmComboBoxDeletePos((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmComboBoxDeletePos\n")
+}
 #endif
-    return (jint) XScreenNumberOfScreen((Screen *)screen);
+
+#ifndef NO_XmComboBoxSelectItem
+JNIEXPORT void JNICALL OS_NATIVE(XmComboBoxSelectItem)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XmComboBoxSelectItem\n")
+	XmComboBoxSelectItem((Widget)arg0, (XmString)arg1);
+	NATIVE_EXIT(env, that, "XmComboBoxSelectItem\n")
 }
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCreateWindow
- * Signature: (IIIIIIIIIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XCreateWindow
-  (JNIEnv *env, jclass that, jint display, jint parent, jint x, jint y, jint width, jint height,
-	jint border_width, jint depth, jint class, jint visual, jint value_mask, jint attributes)
+#endif
+
+#ifndef NO_XmCreateArrowButton
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateArrowButton)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCreateWindow\n");
-#endif
-    return (jint) XCreateWindow((Display *)display, (Window)parent, x, y, width, height,
-        border_width, depth, class, (Visual *)visual, (long)value_mask, (XSetWindowAttributes *)attributes);
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateArrowButton\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateArrowButton((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateArrowButton\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XDestroyWindow
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XDestroyWindow
-  (JNIEnv *env, jclass that, jint display, jint w)
+#ifndef NO_XmCreateCascadeButtonGadget
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateCascadeButtonGadget)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XDestroyWindow\n");
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateCascadeButtonGadget\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateCascadeButtonGadget((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateCascadeButtonGadget\n")
+	return rc;
+}
 #endif
-    XDestroyWindow((Display *)display, (Window)w);
+
+#ifndef NO_XmCreateComboBox
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateComboBox)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateComboBox\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateComboBox((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateComboBox\n")
+	return rc;
 }
+#endif
 
-/*
- * ======== End printing functions ========
- */
- 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    pipe
- * Signature: ([I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_pipe
-  (JNIEnv *env, jclass that, jintArray filedes)
-{
-    jint *filedes1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "pipe\n");
+#ifndef NO_XmCreateDialogShell
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateDialogShell)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateDialogShell\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateDialogShell((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateDialogShell\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateDrawingArea
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateDrawingArea)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateDrawingArea\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateDrawingArea((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateDrawingArea\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateDrawnButton
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateDrawnButton)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateDrawnButton\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateDrawnButton((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateDrawnButton\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateErrorDialog
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateErrorDialog)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateErrorDialog\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateErrorDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateErrorDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateFileSelectionDialog
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateFileSelectionDialog)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateFileSelectionDialog\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateFileSelectionDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateFileSelectionDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateForm
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateForm)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateForm\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateForm((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateForm\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateFrame
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateFrame)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateFrame\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateFrame((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateFrame\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateInformationDialog
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateInformationDialog)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateInformationDialog\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateInformationDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateInformationDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateLabel
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateLabel)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateLabel\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateLabel((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateLabel\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateList
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateList)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateList\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateList((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateList\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateMainWindow
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateMainWindow)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateMainWindow\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateMainWindow((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateMainWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateMenuBar
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateMenuBar)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateMenuBar\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateMenuBar((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateMenuBar\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateMessageDialog
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateMessageDialog)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateMessageDialog\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateMessageDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateMessageDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreatePopupMenu
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreatePopupMenu)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreatePopupMenu\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreatePopupMenu((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreatePopupMenu\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreatePulldownMenu
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreatePulldownMenu)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreatePulldownMenu\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreatePulldownMenu((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreatePulldownMenu\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreatePushButton
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreatePushButton)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreatePushButton\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreatePushButton((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreatePushButton\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreatePushButtonGadget
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreatePushButtonGadget)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreatePushButtonGadget\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreatePushButtonGadget((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreatePushButtonGadget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateQuestionDialog
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateQuestionDialog)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateQuestionDialog\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateQuestionDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateQuestionDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateScale
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateScale)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateScale\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateScale((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateScale\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateScrollBar
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateScrollBar)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateScrollBar\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateScrollBar((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateScrollBar\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateScrolledList
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateScrolledList)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateScrolledList\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateScrolledList((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateScrolledList\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateScrolledText
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateScrolledText)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateScrolledText\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateScrolledText((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateScrolledText\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateSeparator
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateSeparator)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateSeparator\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateSeparator((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateSeparator\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateSeparatorGadget
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateSeparatorGadget)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateSeparatorGadget\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateSeparatorGadget((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateSeparatorGadget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateTextField
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateTextField)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateTextField\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateTextField((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateTextField\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateToggleButton
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateToggleButton)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateToggleButton\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateToggleButton((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateToggleButton\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateToggleButtonGadget
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateToggleButtonGadget)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateToggleButtonGadget\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateToggleButtonGadget((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateToggleButtonGadget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateWarningDialog
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateWarningDialog)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmCreateWarningDialog\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateWarningDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmCreateWarningDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmDestroyPixmap
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmDestroyPixmap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmDestroyPixmap\n")
+	rc = (jboolean)XmDestroyPixmap((Screen *)arg0, (Pixmap)arg1);
+	NATIVE_EXIT(env, that, "XmDestroyPixmap\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmDragCancel
+JNIEXPORT void JNICALL OS_NATIVE(XmDragCancel)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmDragCancel\n")
+	XmDragCancel((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmDragCancel\n")
+}
+#endif
+
+#ifndef NO_XmDragStart
+JNIEXPORT jint JNICALL OS_NATIVE(XmDragStart)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmDragStart\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmDragStart((Widget)arg0, (XEvent *)arg1, (ArgList)lparg2, (Cardinal)arg3);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmDragStart\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XmDropSiteRegister
+JNIEXPORT void JNICALL OS_NATIVE(XmDropSiteRegister)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	NATIVE_ENTER(env, that, "XmDropSiteRegister\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	XmDropSiteRegister((Widget)arg0, (ArgList)lparg1, (Cardinal)arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmDropSiteRegister\n")
+}
+#endif
+
+#ifndef NO_XmDropSiteUnregister
+JNIEXPORT void JNICALL OS_NATIVE(XmDropSiteUnregister)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmDropSiteUnregister\n")
+	XmDropSiteUnregister((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmDropSiteUnregister\n")
+}
+#endif
+
+#ifndef NO_XmDropSiteUpdate
+JNIEXPORT void JNICALL OS_NATIVE(XmDropSiteUpdate)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	NATIVE_ENTER(env, that, "XmDropSiteUpdate\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	XmDropSiteUpdate((Widget)arg0, (ArgList)lparg1, (Cardinal)arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmDropSiteUpdate\n")
+}
 #endif
 
-    if (filedes) 
-        filedes1 = (*env)->GetIntArrayElements(env, filedes, NULL);
-    rc = (jint) pipe((int *)filedes1);
-    if (filedes)
-    	(*env)->ReleaseIntArrayElements(env, filedes, filedes1, 0);
+#ifndef NO_XmDropTransferAdd
+JNIEXPORT void JNICALL OS_NATIVE(XmDropTransferAdd)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	NATIVE_ENTER(env, that, "XmDropTransferAdd\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	XmDropTransferAdd((Widget)arg0, (XmDropTransferEntryRec *)lparg1, (Cardinal)arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmDropTransferAdd\n")
+}
+#endif
+
+#ifndef NO_XmDropTransferStart
+JNIEXPORT jint JNICALL OS_NATIVE(XmDropTransferStart)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmDropTransferStart\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)XmDropTransferStart((Widget)arg0, (ArgList)lparg1, (Cardinal)arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmDropTransferStart\n")
+	return rc;
+}
+#endif
 
-    return rc;
+#ifndef NO_XmFileSelectionBoxGetChild
+JNIEXPORT jint JNICALL OS_NATIVE(XmFileSelectionBoxGetChild)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmFileSelectionBoxGetChild\n")
+	rc = (jint)XmFileSelectionBoxGetChild((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmFileSelectionBoxGetChild\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    read
- * Signature: (I[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_read
-  (JNIEnv *env, jclass that, int filedes, jbyteArray buf, int nbyte)
+#ifndef NO_XmFontListAppendEntry
+JNIEXPORT jint JNICALL OS_NATIVE(XmFontListAppendEntry)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-    jbyte *buf1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "read\n");
+	jint rc;
+	NATIVE_ENTER(env, that, "XmFontListAppendEntry\n")
+	rc = (jint)XmFontListAppendEntry((XmFontList)arg0, (XmFontListEntry)arg1);
+	NATIVE_EXIT(env, that, "XmFontListAppendEntry\n")
+	return rc;
+}
 #endif
 
-    if (buf) 
-        buf1 = (*env)->GetByteArrayElements(env, buf, NULL);
-    rc = (jint) read(filedes, (char *)buf1, nbyte);
-    if (buf)
-    	(*env)->ReleaseByteArrayElements(env, buf, buf1, 0);
+#ifndef NO_XmFontListCopy
+JNIEXPORT jint JNICALL OS_NATIVE(XmFontListCopy)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmFontListCopy\n")
+	rc = (jint)XmFontListCopy((XmFontList)arg0);
+	NATIVE_EXIT(env, that, "XmFontListCopy\n")
+	return rc;
+}
+#endif
 
-    return rc;
+#ifndef NO_XmFontListEntryFree
+JNIEXPORT void JNICALL OS_NATIVE(XmFontListEntryFree)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	NATIVE_ENTER(env, that, "XmFontListEntryFree\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	XmFontListEntryFree((XmFontListEntry *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "XmFontListEntryFree\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    write
- * Signature: (I[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_write
-  (JNIEnv *env, jclass that, int filedes, jbyteArray buf, int nbyte)
+#ifndef NO_XmFontListEntryGetFont
+JNIEXPORT jint JNICALL OS_NATIVE(XmFontListEntryGetFont)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
 {
-    jbyte *buf1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "write\n");
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmFontListEntryGetFont\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)XmFontListEntryGetFont((XmFontListEntry)arg0, (XmFontType *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmFontListEntryGetFont\n")
+	return rc;
+}
 #endif
 
-    if (buf) 
-        buf1 = (*env)->GetByteArrayElements(env, buf, NULL);
-    rc = (jint) write(filedes, (char *)buf1, nbyte);
-    if (buf)
-    	(*env)->ReleaseByteArrayElements(env, buf, buf1, 0);
+#ifndef NO_XmFontListEntryLoad
+JNIEXPORT jint JNICALL OS_NATIVE(XmFontListEntryLoad)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jbyteArray arg3)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmFontListEntryLoad\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	rc = (jint)XmFontListEntryLoad((Display *)arg0, lparg1, arg2, lparg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XmFontListEntryLoad\n")
+	return rc;
+}
+#endif
 
-    return rc;
+#ifndef NO_XmFontListFree
+JNIEXPORT void JNICALL OS_NATIVE(XmFontListFree)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmFontListFree\n")
+	XmFontListFree((XmFontList)arg0);
+	NATIVE_EXIT(env, that, "XmFontListFree\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    FD_SETSIZE
- * Signature: ()I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_FD_1SETSIZE
-  (JNIEnv *env, jclass that)
+#ifndef NO_XmFontListFreeFontContext
+JNIEXPORT void JNICALL OS_NATIVE(XmFontListFreeFontContext)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "FD_SETSIZE\n");
+	NATIVE_ENTER(env, that, "XmFontListFreeFontContext\n")
+	XmFontListFreeFontContext((XmFontContext)arg0);
+	NATIVE_EXIT(env, that, "XmFontListFreeFontContext\n")
+}
 #endif
 
-  return FD_SETSIZE;
+#ifndef NO_XmFontListInitFontContext
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmFontListInitFontContext)
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)
+{
+	jint *lparg0=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmFontListInitFontContext\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jboolean)XmFontListInitFontContext((XmFontContext *)lparg0, (XmFontList)arg1);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "XmFontListInitFontContext\n")
+	return rc;
 }
-*/
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    NFDBITS
- * Signature: ()I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_NFDBITS
-  (JNIEnv *env, jclass that)
+#ifndef NO_XmFontListNextEntry
+JNIEXPORT jint JNICALL OS_NATIVE(XmFontListNextEntry)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "NFDBITS\n");
+	jint rc;
+	NATIVE_ENTER(env, that, "XmFontListNextEntry\n")
+	rc = (jint)XmFontListNextEntry((XmFontContext)arg0);
+	NATIVE_EXIT(env, that, "XmFontListNextEntry\n")
+	return rc;
+}
 #endif
 
-  return NFDBITS;
+#ifndef NO_XmGetAtomName
+JNIEXPORT jint JNICALL OS_NATIVE(XmGetAtomName)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmGetAtomName\n")
+	rc = (jint)XmGetAtomName((Display *)arg0, (Atom)arg1);
+	NATIVE_EXIT(env, that, "XmGetAtomName\n")
+	return rc;
 }
-*/
+#endif
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_fd_1set_1sizeof
-  (JNIEnv *env, jclass that)
+#ifndef NO_XmGetDragContext
+JNIEXPORT jint JNICALL OS_NATIVE(XmGetDragContext)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "NFDBITS\n");
+	jint rc;
+	NATIVE_ENTER(env, that, "XmGetDragContext\n")
+	rc = (jint)XmGetDragContext((Widget)arg0, (Time)arg1);
+	NATIVE_EXIT(env, that, "XmGetDragContext\n")
+	return rc;
+}
 #endif
 
-  return sizeof(fd_set);
+#ifndef NO_XmGetFocusWidget
+JNIEXPORT jint JNICALL OS_NATIVE(XmGetFocusWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmGetFocusWidget\n")
+	rc = (jint)XmGetFocusWidget((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmGetFocusWidget\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    FD_SET
- * Signature: (I[B)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_FD_1SET
-  (JNIEnv *env, jclass that, jint fd, jbyteArray set)
+#ifndef NO_XmGetPixmap
+JNIEXPORT jint JNICALL OS_NATIVE(XmGetPixmap)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
 {
-    jbyte *set1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "FD_SET\n");
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmGetPixmap\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)XmGetPixmap((Screen *)arg0, (char *)lparg1, (Pixel)arg2, (Pixel)arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmGetPixmap\n")
+	return rc;
+}
 #endif
 
-    if (set) set1 = (*env)->GetByteArrayElements(env, set, NULL);
-    FD_SET(fd, (fd_set*)set1);
-    if (set) (*env)->ReleaseByteArrayElements(env, set, set1, 0);
+#ifndef NO_XmGetPixmapByDepth
+JNIEXPORT jint JNICALL OS_NATIVE(XmGetPixmapByDepth)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jint arg4)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmGetPixmapByDepth\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)XmGetPixmapByDepth((Screen *)arg0, (char *)lparg1, arg2, arg3, arg4);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmGetPixmapByDepth\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    FD_ISSET
- * Signature: (I[B)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_FD_1ISSET
-  (JNIEnv *env, jclass that, jint fd, jbyteArray set)
+#ifndef NO_XmGetXmDisplay
+JNIEXPORT jint JNICALL OS_NATIVE(XmGetXmDisplay)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-    jbyte *set1=NULL;
-    jboolean rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "FD_ISSET\n");
+	jint rc;
+	NATIVE_ENTER(env, that, "XmGetXmDisplay\n")
+	rc = (jint)XmGetXmDisplay((Display *)arg0);
+	NATIVE_EXIT(env, that, "XmGetXmDisplay\n")
+	return rc;
+}
 #endif
 
-    if (set) set1 = (*env)->GetByteArrayElements(env, set, NULL);
-    rc = (jboolean)FD_ISSET(fd, (fd_set*)set1);
-    if (set) (*env)->ReleaseByteArrayElements(env, set, set1, 0);
-    return rc;
+#ifndef NO_XmImMbLookupString
+JNIEXPORT jint JNICALL OS_NATIVE(XmImMbLookupString)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jbyteArray arg2, jint arg3, jintArray arg4, jintArray arg5)
+{
+	XKeyEvent _arg1, *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmImMbLookupString\n")
+	if (arg1) lparg1 = getXKeyEventFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)XmImMbLookupString((Widget)arg0, (XKeyPressedEvent *)lparg1, (char *)lparg2, arg3, (KeySym *)lparg4, lparg5);
+	if (arg1) setXKeyEventFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	NATIVE_EXIT(env, that, "XmImMbLookupString\n")
+	return rc;
 }
+#endif
 
+#ifndef NO_XmImRegister
+JNIEXPORT void JNICALL OS_NATIVE(XmImRegister)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XmImRegister\n")
+	XmImRegister((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmImRegister\n")
+}
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    FD_ZERO
- * Signature: ([B)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_FD_1ZERO
-  (JNIEnv *env, jclass that, jbyteArray set)
+#ifndef NO_XmImSetFocusValues
+JNIEXPORT void JNICALL OS_NATIVE(XmImSetFocusValues)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
 {
-    jbyte *set1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "FD_ZERO\n");
+	jint *lparg1=NULL;
+	NATIVE_ENTER(env, that, "XmImSetFocusValues\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	XmImSetFocusValues((Widget)arg0, (ArgList)lparg1, arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmImSetFocusValues\n")
+}
 #endif
 
-    if (set) set1 = (*env)->GetByteArrayElements(env, set, NULL);
-    FD_ZERO((fd_set*)set1);
-    if (set) (*env)->ReleaseByteArrayElements(env, set, set1, 0);
+#ifndef NO_XmImSetValues
+JNIEXPORT void JNICALL OS_NATIVE(XmImSetValues)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	NATIVE_ENTER(env, that, "XmImSetValues\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	XmImSetValues((Widget)arg0, (ArgList)lparg1, arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmImSetValues\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    ConnectionNumber
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_ConnectionNumber
-  (JNIEnv *env, jclass that, jint display)
+#ifndef NO_XmImUnregister
+JNIEXPORT void JNICALL OS_NATIVE(XmImUnregister)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "ConnectionNumber\n");
+	NATIVE_ENTER(env, that, "XmImUnregister\n")
+	XmImUnregister((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmImUnregister\n")
+}
 #endif
 
-   return (jint)ConnectionNumber((Display*)display);
+#ifndef NO_XmImUnsetFocus
+JNIEXPORT void JNICALL OS_NATIVE(XmImUnsetFocus)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmImUnsetFocus\n")
+	XmImUnsetFocus((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmImUnsetFocus\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    select
- * Signature: (I[B[B[B[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_select__I_3B_3B_3B_3I
-  (JNIEnv *env, jclass that, int n, jbyteArray readfds, jbyteArray writefds, jbyteArray exceptfds, jintArray timeout)
+#ifndef NO_XmInternAtom
+JNIEXPORT jint JNICALL OS_NATIVE(XmInternAtom)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jboolean arg2)
 {
-    jbyte *readfds1=NULL;
-    jbyte *writefds1=NULL;
-    jbyte *exceptfds1=NULL;
-    jint *timeout1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "select\n");
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmInternAtom\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)XmInternAtom((Display *)arg0, (String)lparg1, arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmInternAtom\n")
+	return rc;
+}
 #endif
 
-    if (readfds) readfds1 = (*env)->GetByteArrayElements(env, readfds, NULL);
-    if (writefds) writefds1 = (*env)->GetByteArrayElements(env, writefds, NULL);
-    if (exceptfds) exceptfds1 = (*env)->GetByteArrayElements(env, exceptfds, NULL);
-    if (timeout) timeout1 = (*env)->GetIntArrayElements(env, timeout, NULL);
-    rc = (jint) select(n, (fd_set*)readfds1, (fd_set*)writefds1, (fd_set*)exceptfds1, (struct timeval*)timeout1);
-    if (readfds) (*env)->ReleaseByteArrayElements(env, readfds, readfds1, 0);
-    if (writefds) (*env)->ReleaseByteArrayElements(env, writefds, writefds1, 0);
-    if (exceptfds) (*env)->ReleaseByteArrayElements(env, exceptfds, exceptfds1, 0);
-    if (timeout) (*env)->ReleaseIntArrayElements(env, timeout, timeout1, 0);
+#ifndef NO_XmListAddItemUnselected
+JNIEXPORT void JNICALL OS_NATIVE(XmListAddItemUnselected)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XmListAddItemUnselected\n")
+	XmListAddItemUnselected((Widget)arg0, (XmString)arg1, arg2);
+	NATIVE_EXIT(env, that, "XmListAddItemUnselected\n")
+}
+#endif
 
-    return rc;
+#ifndef NO_XmListDeleteAllItems
+JNIEXPORT void JNICALL OS_NATIVE(XmListDeleteAllItems)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmListDeleteAllItems\n")
+	XmListDeleteAllItems((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmListDeleteAllItems\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    close
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_close
-  (JNIEnv *env, jclass that, int filedes)
+#ifndef NO_XmListDeleteItemsPos
+JNIEXPORT void JNICALL OS_NATIVE(XmListDeleteItemsPos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "close\n");
+	NATIVE_ENTER(env, that, "XmListDeleteItemsPos\n")
+	XmListDeleteItemsPos((Widget)arg0, arg1, arg2);
+	NATIVE_EXIT(env, that, "XmListDeleteItemsPos\n")
+}
 #endif
 
-    return (jint) close(filedes);
+#ifndef NO_XmListDeletePos
+JNIEXPORT void JNICALL OS_NATIVE(XmListDeletePos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XmListDeletePos\n")
+	XmListDeletePos((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmListDeletePos\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtAppAddInput
- * Signature: (IIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppAddInput
-  (JNIEnv *env, jclass that, jint app_context, jint source, jint condition, jint proc, jint client_data)
+#ifndef NO_XmListDeletePositions
+JNIEXPORT void JNICALL OS_NATIVE(XmListDeletePositions)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppAddInput\n");
+	jint *lparg1=NULL;
+	NATIVE_ENTER(env, that, "XmListDeletePositions\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	XmListDeletePositions((Widget)arg0, lparg1, arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmListDeletePositions\n")
+}
 #endif
 
-    return (jint) XtAppAddInput((XtAppContext)app_context, source, (XtPointer)condition, (XtInputCallbackProc)proc, (XtPointer)client_data);
+#ifndef NO_XmListDeselectAllItems
+JNIEXPORT void JNICALL OS_NATIVE(XmListDeselectAllItems)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmListDeselectAllItems\n")
+	XmListDeselectAllItems((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmListDeselectAllItems\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtRemoveInput
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtRemoveInput
-  (JNIEnv *env, jclass that, jint id)
+#ifndef NO_XmListDeselectPos
+JNIEXPORT void JNICALL OS_NATIVE(XmListDeselectPos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtRemoveInput\n");
+	NATIVE_ENTER(env, that, "XmListDeselectPos\n")
+	XmListDeselectPos((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmListDeselectPos\n")
+}
 #endif
 
-    XtRemoveInput((XtInputId)id);
+#ifndef NO_XmListGetKbdItemPos
+JNIEXPORT jint JNICALL OS_NATIVE(XmListGetKbdItemPos)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmListGetKbdItemPos\n")
+	rc = (jint)XmListGetKbdItemPos((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmListGetKbdItemPos\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmImGetXIC
- * Signature: (II[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImGetXIC
-  (JNIEnv *env, jclass that, jint widget, jint input_policy, jintArray args, jint num_args)
+#ifndef NO_XmListGetSelectedPos
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmListGetSelectedPos)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
 {
-    jint *args1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmImGetXIC\n");
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmListGetSelectedPos\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jboolean)XmListGetSelectedPos((Widget)arg0, (int **)lparg1, (int *)lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmListGetSelectedPos\n")
+	return rc;
+}
 #endif
-    if (args) 
-        args1 = (*env)->GetIntArrayElements(env, args, NULL);
-   rc = (jint)  XmImGetXIC((Widget)widget, (XmInputPolicy)input_policy, (ArgList)args1, num_args);
-    if (args)
-    	(*env)->ReleaseIntArrayElements(env, args, args1, 0);
-    	
-    return rc;   
+
+#ifndef NO_XmListItemPos
+JNIEXPORT jint JNICALL OS_NATIVE(XmListItemPos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmListItemPos\n")
+	rc = (jint)XmListItemPos((Widget)arg0, (XmString)arg1);
+	NATIVE_EXIT(env, that, "XmListItemPos\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmImGetXIM
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImGetXIM
-  (JNIEnv *env, jclass that, jint widget)
+#ifndef NO_XmListPosSelected
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmListPosSelected)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmImGetXIM\n");
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmListPosSelected\n")
+	rc = (jboolean)XmListPosSelected((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmListPosSelected\n")
+	return rc;
+}
 #endif
 
-    return (jint) XmImGetXIM((Widget)widget);
+#ifndef NO_XmListReplaceItemsPosUnselected
+JNIEXPORT void JNICALL OS_NATIVE(XmListReplaceItemsPosUnselected)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2, jint arg3)
+{
+	jint *lparg1=NULL;
+	NATIVE_ENTER(env, that, "XmListReplaceItemsPosUnselected\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	XmListReplaceItemsPosUnselected((Widget)arg0, (XmString *)lparg1, arg2, arg3);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmListReplaceItemsPosUnselected\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmImRegister
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImRegister
-  (JNIEnv *env, jclass that, jint widget, jint reserved)
+#ifndef NO_XmListSelectPos
+JNIEXPORT void JNICALL OS_NATIVE(XmListSelectPos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmImRegister\n");
+	NATIVE_ENTER(env, that, "XmListSelectPos\n")
+	XmListSelectPos((Widget)arg0, arg1, arg2);
+	NATIVE_EXIT(env, that, "XmListSelectPos\n")
+}
 #endif
 
-    XmImRegister((Widget)widget, reserved);
+#ifndef NO_XmListSetKbdItemPos
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmListSetKbdItemPos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmListSetKbdItemPos\n")
+	rc = (jboolean)XmListSetKbdItemPos((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmListSetKbdItemPos\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmImSetFocusValues
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImSetFocusValues
-  (JNIEnv *env, jclass that, jint widget, jintArray args, jint num_args)
+#ifndef NO_XmListSetPos
+JNIEXPORT void JNICALL OS_NATIVE(XmListSetPos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-    jint *args1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmImSetFocusValues\n");
+	NATIVE_ENTER(env, that, "XmListSetPos\n")
+	XmListSetPos((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmListSetPos\n")
+}
 #endif
-    if (args) 
-        args1 = (*env)->GetIntArrayElements(env, args, NULL);
-	XmImSetFocusValues((Widget)widget, (ArgList)args1, num_args);
-    if (args)
-    	(*env)->ReleaseIntArrayElements(env, args, args1, 0);
+
+#ifndef NO_XmListUpdateSelectedList
+JNIEXPORT void JNICALL OS_NATIVE(XmListUpdateSelectedList)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmListUpdateSelectedList\n")
+	XmListUpdateSelectedList((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmListUpdateSelectedList\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmImVaSetFocusValues
- * Signature: (IIIIIIIIII)I
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImVaSetFocusValues
-  (JNIEnv *env, jclass that, jint widget, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9)
+#ifndef NO_XmMainWindowSetAreas
+JNIEXPORT void JNICALL OS_NATIVE(XmMainWindowSetAreas)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmImVaSetFocusValues\n");
+	NATIVE_ENTER(env, that, "XmMainWindowSetAreas\n")
+	XmMainWindowSetAreas((Widget)arg0, (Widget)arg1, (Widget)arg2, (Widget)arg3, (Widget)arg4, (Widget)arg5);
+	NATIVE_EXIT(env, that, "XmMainWindowSetAreas\n")
+}
 #endif
-	XmImVaSetFocusValues((Widget)widget, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+
+#ifndef NO_XmMessageBoxGetChild
+JNIEXPORT jint JNICALL OS_NATIVE(XmMessageBoxGetChild)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmMessageBoxGetChild\n")
+	rc = (jint)XmMessageBoxGetChild((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmMessageBoxGetChild\n")
+	return rc;
 }
-*/
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmImSetValues
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImSetValues
-  (JNIEnv *env, jclass that, jint widget, jintArray args, jint num_args)
+#ifndef NO_XmParseMappingCreate
+JNIEXPORT jint JNICALL OS_NATIVE(XmParseMappingCreate)
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)
 {
-    jint *args1=NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmImSetValues\n");
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmParseMappingCreate\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)XmParseMappingCreate((ArgList)lparg0, arg1);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "XmParseMappingCreate\n")
+	return rc;
+}
 #endif
-    if (args) 
-        args1 = (*env)->GetIntArrayElements(env, args, NULL);
-	XmImSetValues((Widget)widget, (ArgList)args1, num_args);
-    if (args)
-    	(*env)->ReleaseIntArrayElements(env, args, args1, 0);
+
+#ifndef NO_XmParseMappingFree
+JNIEXPORT void JNICALL OS_NATIVE(XmParseMappingFree)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmParseMappingFree\n")
+	XmParseMappingFree((XmParseMapping)arg0);
+	NATIVE_EXIT(env, that, "XmParseMappingFree\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmImUnregister
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImUnregister
-  (JNIEnv *env, jclass that, jint widget)
+#ifndef NO_XmProcessTraversal
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmProcessTraversal)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmImUnregister\n");
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmProcessTraversal\n")
+	rc = (jboolean)XmProcessTraversal((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmProcessTraversal\n")
+	return rc;
+}
 #endif
 
-    XmImUnregister((Widget)widget);
+#ifndef NO_XmRenderTableAddRenditions
+JNIEXPORT jint JNICALL OS_NATIVE(XmRenderTableAddRenditions)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2, jint arg3)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmRenderTableAddRenditions\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)XmRenderTableAddRenditions((XmRenderTable)arg0, (XmRendition *)lparg1, arg2, arg3);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmRenderTableAddRenditions\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmImUnsetFocus
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImUnsetFocus
-  (JNIEnv *env, jclass that, jint widget)
+#ifndef NO_XmRenderTableFree
+JNIEXPORT void JNICALL OS_NATIVE(XmRenderTableFree)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmImUnsetFocus\n");
+	NATIVE_ENTER(env, that, "XmRenderTableFree\n")
+	XmRenderTableFree((XmRenderTable)arg0);
+	NATIVE_EXIT(env, that, "XmRenderTableFree\n")
+}
 #endif
 
-    XmImUnsetFocus((Widget)widget);
+#ifndef NO_XmRenditionCreate
+JNIEXPORT jint JNICALL OS_NATIVE(XmRenditionCreate)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmRenditionCreate\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmRenditionCreate((Widget)arg0, (XmStringTag)lparg1, (ArgList)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmRenditionCreate\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCreateIC
- * Signature: (IIIIIIII)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XCreateIC
-  (JNIEnv *env, jclass that, jint im, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+#ifndef NO_XmRenditionFree
+JNIEXPORT void JNICALL OS_NATIVE(XmRenditionFree)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCreateIC\n");
+	NATIVE_ENTER(env, that, "XmRenditionFree\n")
+	XmRenditionFree((XmRendition)arg0);
+	NATIVE_EXIT(env, that, "XmRenditionFree\n")
+}
 #endif
 
-    return (jint)XCreateIC((XIM)im, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+#ifndef NO_XmStringCompare
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmStringCompare)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmStringCompare\n")
+	rc = (jboolean)XmStringCompare((XmString)arg0, (XmString)arg1);
+	NATIVE_EXIT(env, that, "XmStringCompare\n")
+	return rc;
 }
-*/
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetICValues
- * Signature: (IIII)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetICValues
-  (JNIEnv *env, jclass that, jint ic, jint arg1, jint arg2, jint arg3)
+#ifndef NO_XmStringComponentCreate
+JNIEXPORT jint JNICALL OS_NATIVE(XmStringComponentCreate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetICValues\n");
+	jbyte *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmStringComponentCreate\n")
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	rc = (jint)XmStringComponentCreate(arg0, arg1, (XtPointer)lparg2);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmStringComponentCreate\n")
+	return rc;
+}
 #endif
 
-    return (jint)XSetICValues((XIC)ic, arg1, arg2, arg3);
+#ifndef NO_XmStringCreate
+JNIEXPORT jint JNICALL OS_NATIVE(XmStringCreate)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmStringCreate\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)XmStringCreate((char *)lparg0, (char *)lparg1);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmStringCreate\n")
+	return rc;
 }
-*/
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XGetICValues
- * Signature: (IIII)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XGetICValues
-  (JNIEnv *env, jclass that, jint ic, jint arg1, jint arg2, jint arg3)
+#ifndef NO_XmStringCreateLocalized
+JNIEXPORT jint JNICALL OS_NATIVE(XmStringCreateLocalized)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XGetICValues\n");
+	jbyte *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmStringCreateLocalized\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)XmStringCreateLocalized((char *)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "XmStringCreateLocalized\n")
+	return rc;
+}
 #endif
 
-    return (jint)XGetICValues((XIC)ic, arg1, arg2, arg3);
+#ifndef NO_XmStringDraw
+JNIEXPORT void JNICALL OS_NATIVE(XmStringDraw)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jobject arg10)
+{
+	XRectangle _arg10, *lparg10=NULL;
+	NATIVE_ENTER(env, that, "XmStringDraw\n")
+	if (arg10) lparg10 = getXRectangleFields(env, arg10, &_arg10);
+	XmStringDraw((Display *)arg0, (Window)arg1, (XmFontList)arg2, (XmString)arg3, (GC)arg4, arg5, arg6, arg7, arg8, arg9, lparg10);
+	if (arg10) setXRectangleFields(env, arg10, lparg10);
+	NATIVE_EXIT(env, that, "XmStringDraw\n")
 }
-*/
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XSetICFocus
- * Signature: (I)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetICFocus
-  (JNIEnv *env, jclass that, jint ic)
+#ifndef NO_XmStringDrawImage
+JNIEXPORT void JNICALL OS_NATIVE(XmStringDrawImage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jobject arg10)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XSetICFocus\n");
+	XRectangle _arg10, *lparg10=NULL;
+	NATIVE_ENTER(env, that, "XmStringDrawImage\n")
+	if (arg10) lparg10 = getXRectangleFields(env, arg10, &_arg10);
+	XmStringDrawImage((Display *)arg0, (Window)arg1, (XmFontList)arg2, (XmString)arg3, (GC)arg4, arg5, arg6, arg7, arg8, arg9, lparg10);
+	if (arg10) setXRectangleFields(env, arg10, lparg10);
+	NATIVE_EXIT(env, that, "XmStringDrawImage\n")
+}
 #endif
 
-    XSetICFocus((XIC)ic);
+#ifndef NO_XmStringDrawUnderline
+JNIEXPORT void JNICALL OS_NATIVE(XmStringDrawUnderline)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jobject arg10, jint arg11)
+{
+	XRectangle _arg10, *lparg10=NULL;
+	NATIVE_ENTER(env, that, "XmStringDrawUnderline\n")
+	if (arg10) lparg10 = getXRectangleFields(env, arg10, &_arg10);
+	XmStringDrawUnderline((Display *)arg0, (Window)arg1, (XmFontList)arg2, (XmString)arg3, (GC)arg4, arg5, arg6, arg7, arg8, arg9, lparg10, (XmString)arg11);
+	if (arg10) setXRectangleFields(env, arg10, lparg10);
+	NATIVE_EXIT(env, that, "XmStringDrawUnderline\n")
 }
-*/
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XUnsetICFocus
- * Signature: (I)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XUnsetICFocus
-  (JNIEnv *env, jclass that, jint ic)
+#ifndef NO_XmStringEmpty
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmStringEmpty)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XUnsetICFocus\n");
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmStringEmpty\n")
+	rc = (jboolean)XmStringEmpty((XmString)arg0);
+	NATIVE_EXIT(env, that, "XmStringEmpty\n")
+	return rc;
+}
 #endif
 
-    XUnsetICFocus((XIC)ic);
+#ifndef NO_XmStringFree
+JNIEXPORT void JNICALL OS_NATIVE(XmStringFree)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmStringFree\n")
+	XmStringFree((XmString)arg0);
+	NATIVE_EXIT(env, that, "XmStringFree\n")
 }
-*/
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XGetIMValues
- * Signature: (IIII)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XGetIMValues
-  (JNIEnv *env, jclass that, jint im, jint arg1, jint arg2, jint arg3)
+#ifndef NO_XmStringGenerate
+JNIEXPORT jint JNICALL OS_NATIVE(XmStringGenerate)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jint arg2, jbyteArray arg3)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XGetIMValues\n");
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jbyte *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmStringGenerate\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	rc = (jint)XmStringGenerate((XtPointer)lparg0, (XmStringTag)lparg1, arg2, (XmStringTag)lparg3);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XmStringGenerate\n")
+	return rc;
+}
 #endif
 
-    return (jint)XGetIMValues((XIM)im, arg1, arg2, arg3);
+#ifndef NO_XmStringHeight
+JNIEXPORT jint JNICALL OS_NATIVE(XmStringHeight)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmStringHeight\n")
+	rc = (jint)XmStringHeight((XmFontList)arg0, (XmString)arg1);
+	NATIVE_EXIT(env, that, "XmStringHeight\n")
+	return rc;
 }
-*/
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (I[SI)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__I_3SI
-  (JNIEnv *env, jclass that, jint dest, jshortArray src, jint count)
+#ifndef NO_XmStringParseText
+JNIEXPORT jint JNICALL OS_NATIVE(XmStringParseText)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jbyteArray arg2, jint arg3, jintArray arg4, jint arg5, jint arg6)
 {
-    jshort *src1;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__I_3SI\n");
+	jbyte *lparg0=NULL;
+	jbyte *lparg2=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmStringParseText\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)XmStringParseText((XtPointer)lparg0, (XtPointer *)arg1, (XmStringTag)lparg2, arg3, (XmParseTable)lparg4, arg5, (XtPointer)arg6);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "XmStringParseText\n")
+	return rc;
+}
 #endif
 
-    /* don't do anything if src pointer is NULL */
-    if (src) {
-        src1 = (*env)->GetShortArrayElements(env, src, NULL);
-        memmove((void *)dest, (void *)src1, count);
-        (*env)->ReleaseShortArrayElements(env, src, src1, 0);
-    }
+#ifndef NO_XmStringUnparse
+JNIEXPORT jint JNICALL OS_NATIVE(XmStringUnparse)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jintArray arg4, jint arg5, jint arg6)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmStringUnparse\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)XmStringUnparse((XmString)arg0, (XmStringTag)lparg1, arg2, arg3, (XmParseTable)lparg4, arg5, arg6);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "XmStringUnparse\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    nl_langinfo
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_nl_1langinfo
-  (JNIEnv *env, jclass that, jint item)
+#ifndef NO_XmStringWidth
+JNIEXPORT jint JNICALL OS_NATIVE(XmStringWidth)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "nl_langinfo\n");
+	jint rc;
+	NATIVE_ENTER(env, that, "XmStringWidth\n")
+	rc = (jint)XmStringWidth((XmFontList)arg0, (XmString)arg1);
+	NATIVE_EXIT(env, that, "XmStringWidth\n")
+	return rc;
+}
 #endif
 
-    return (jint)nl_langinfo(item);
+#ifndef NO_XmTabCreate
+JNIEXPORT jint JNICALL OS_NATIVE(XmTabCreate)
+	(JNIEnv *env, jclass that, jint arg0, jbyte arg1, jbyte arg2, jbyte arg3, jbyteArray arg4)
+{
+	jbyte *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmTabCreate\n")
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	rc = (jint)XmTabCreate(arg0, arg1, arg2, arg3, (char *)lparg4);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "XmTabCreate\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    iconv_open
- * Signature: ([B[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_iconv_1open
-  (JNIEnv *env, jclass that, jbyteArray tocode, jbyteArray fromcode)
+#ifndef NO_XmTabFree
+JNIEXPORT void JNICALL OS_NATIVE(XmTabFree)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-    jbyte *tocode1=NULL, *fromcode1=NULL;
-    jint result;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "iconv_open\n");
+	NATIVE_ENTER(env, that, "XmTabFree\n")
+	XmTabFree((XmTab)arg0);
+	NATIVE_EXIT(env, that, "XmTabFree\n")
+}
 #endif
-    if (tocode) 
-        tocode1 = (*env)->GetByteArrayElements(env, tocode, NULL);
-    if (fromcode) 
-        fromcode1 = (*env)->GetByteArrayElements(env, fromcode, NULL);
-	result = (jint)iconv_open((const char *)tocode1, (const char *)fromcode1);
-    if (tocode)
-    	(*env)->ReleaseByteArrayElements(env, tocode, tocode1, 0);
-    if (fromcode)
-    	(*env)->ReleaseByteArrayElements(env, fromcode, fromcode1, 0);
-    	
-    return result;
+
+#ifndef NO_XmTabListFree
+JNIEXPORT void JNICALL OS_NATIVE(XmTabListFree)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmTabListFree\n")
+	XmTabListFree((XmTabList)arg0);
+	NATIVE_EXIT(env, that, "XmTabListFree\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    iconv_close
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_iconv_1close
-  (JNIEnv *env, jclass that, jint cd)
+#ifndef NO_XmTabListInsertTabs
+JNIEXPORT jint JNICALL OS_NATIVE(XmTabListInsertTabs)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2, jint arg3)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "iconv_close\n");
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmTabListInsertTabs\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)XmTabListInsertTabs((XmTabList)arg0, (XmTab *)lparg1, arg2, arg3);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmTabListInsertTabs\n")
+	return rc;
+}
 #endif
 
-    return (jint)iconv_close((iconv_t)cd);
+#ifndef NO_XmTextClearSelection
+JNIEXPORT void JNICALL OS_NATIVE(XmTextClearSelection)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XmTextClearSelection\n")
+	XmTextClearSelection((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmTextClearSelection\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    iconv
- * Signature: (I[BI[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_iconv
-  (JNIEnv *env, jclass that, jint cd, jintArray inBuf, jintArray inBytesLeft, jintArray outBuf, jintArray outBytesLeft)
+#ifndef NO_XmTextCopy
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextCopy)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-    jint *inBuf1=NULL, *outBuf1=NULL, *inBytesLeft1=NULL, *outBytesLeft1=NULL;
-    jint result;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "iconv\n");
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmTextCopy\n")
+	rc = (jboolean)XmTextCopy((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmTextCopy\n")
+	return rc;
+}
 #endif
-    if (inBuf)
-        inBuf1 = (*env)->GetIntArrayElements(env, inBuf, NULL);
-    if (outBuf) 
-        outBuf1 = (*env)->GetIntArrayElements(env, outBuf, NULL);
-    if (inBytesLeft) 
-        inBytesLeft1 = (*env)->GetIntArrayElements(env, inBytesLeft, NULL);
-    if (outBytesLeft) 
-        outBytesLeft1 = (*env)->GetIntArrayElements(env, outBytesLeft, NULL);
-    result = (jint)iconv((iconv_t)cd, (void *)inBuf1, (size_t *)inBytesLeft1, (char **)outBuf1, (size_t *)outBytesLeft1);
-    if (inBuf)
-    	(*env)->ReleaseIntArrayElements(env, inBuf, inBuf1, 0);
-    if (outBuf)
-    	(*env)->ReleaseIntArrayElements(env, outBuf, outBuf1, 0);
-    if (inBytesLeft)
-    	(*env)->ReleaseIntArrayElements(env, inBytesLeft, inBytesLeft1, 0);
-    if (outBytesLeft)
-    	(*env)->ReleaseIntArrayElements(env, outBytesLeft, outBytesLeft1, 0);
-    return result;
+
+#ifndef NO_XmTextCut
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextCut)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmTextCut\n")
+	rc = (jboolean)XmTextCut((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmTextCut\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    MB_1CUR_1MAX
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_MB_1CUR_1MAX
-  (JNIEnv *env, jclass that)
+#ifndef NO_XmTextDisableRedisplay
+JNIEXPORT void JNICALL OS_NATIVE(XmTextDisableRedisplay)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "MB_1CUR_1MAX\n");
+	NATIVE_ENTER(env, that, "XmTextDisableRedisplay\n")
+	XmTextDisableRedisplay((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmTextDisableRedisplay\n")
+}
 #endif
 
-    return (jint)MB_CUR_MAX;
+#ifndef NO_XmTextEnableRedisplay
+JNIEXPORT void JNICALL OS_NATIVE(XmTextEnableRedisplay)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmTextEnableRedisplay\n")
+	XmTextEnableRedisplay((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmTextEnableRedisplay\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XCreateFontSet
- * Signature: (I[B[I[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XCreateFontSet
-  (JNIEnv *env, jclass that, jint display, jbyteArray base_font_name_list, jintArray missing_charset_list_return, jintArray missing_charset_count_return, jintArray def_string_return)
+#ifndef NO_XmTextFieldPaste
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextFieldPaste)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-	jbyte *base_font_name_list1=NULL;
-    jint *missing_charset_list_return1=NULL, *missing_charset_count_return1=NULL, *def_string_return1=NULL;
-    jint result;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XCreateFontSet\n");
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmTextFieldPaste\n")
+	rc = (jboolean)XmTextFieldPaste((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmTextFieldPaste\n")
+	return rc;
+}
 #endif
-    if (base_font_name_list)
-        base_font_name_list1 = (*env)->GetByteArrayElements(env, base_font_name_list, NULL);
-    if (missing_charset_list_return) 
-       missing_charset_list_return1 = (*env)->GetIntArrayElements(env, missing_charset_list_return, NULL);
-    if (missing_charset_count_return) 
-        missing_charset_count_return1 = (*env)->GetIntArrayElements(env, missing_charset_count_return, NULL);
-    if (def_string_return) 
-       def_string_return1 = (*env)->GetIntArrayElements(env, def_string_return, NULL);
-    result = (jint)XCreateFontSet((Display *)display, (char *)base_font_name_list1, (char ***)missing_charset_list_return1, (int *)missing_charset_count_return1, (char **)def_string_return1);
-    if (base_font_name_list)
-    	(*env)->ReleaseByteArrayElements(env, base_font_name_list, base_font_name_list1, 0);
-    if (missing_charset_list_return)
-    	(*env)->ReleaseIntArrayElements(env, missing_charset_list_return, missing_charset_list_return1, 0);
-    if (missing_charset_count_return)
-    	(*env)->ReleaseIntArrayElements(env, missing_charset_count_return, missing_charset_count_return1, 0);
-    if (def_string_return)
-    	(*env)->ReleaseIntArrayElements(env, def_string_return, def_string_return1, 0);
-    return result;
+
+#ifndef NO_XmTextGetInsertionPosition
+JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetInsertionPosition)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmTextGetInsertionPosition\n")
+	rc = (jint)XmTextGetInsertionPosition((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmTextGetInsertionPosition\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XLocaleOfFontSet
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XLocaleOfFontSet
-  (JNIEnv *env, jclass that, jint fontSet)
+#ifndef NO_XmTextGetLastPosition
+JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetLastPosition)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XLocaleOfFontSet\n");
+	jint rc;
+	NATIVE_ENTER(env, that, "XmTextGetLastPosition\n")
+	rc = (jint)XmTextGetLastPosition((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmTextGetLastPosition\n")
+	return rc;
+}
 #endif
 
-    return (jint)XLocaleOfFontSet((XFontSet)fontSet);
+#ifndef NO_XmTextGetMaxLength
+JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetMaxLength)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmTextGetMaxLength\n")
+	rc = (jint)XmTextGetMaxLength((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmTextGetMaxLength\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    setlocale
- * Signature: (I[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_setlocale
-  (JNIEnv *env, jclass that, int category, jbyteArray locale)
+#ifndef NO_XmTextGetSelection
+JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetSelection)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-    jbyte *locale1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "setlocale\n");
+	jint rc;
+	NATIVE_ENTER(env, that, "XmTextGetSelection\n")
+	rc = (jint)XmTextGetSelection((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmTextGetSelection\n")
+	return rc;
+}
 #endif
 
-    if (locale) 
-        locale1 = (*env)->GetByteArrayElements(env, locale, NULL);
-    rc = (jint) setlocale(category, (char *)locale1);
-    if (locale)
-    	(*env)->ReleaseByteArrayElements(env, locale, locale1, 0);
+#ifndef NO_XmTextGetSelectionPosition
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextGetSelectionPosition)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmTextGetSelectionPosition\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jboolean)XmTextGetSelectionPosition((Widget)arg0, (XmTextPosition *)lparg1, (XmTextPosition *)lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmTextGetSelectionPosition\n")
+	return rc;
+}
+#endif
 
-    return rc;
+#ifndef NO_XmTextGetString
+JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetString)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XmTextGetString\n")
+	rc = (jint)XmTextGetString((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmTextGetString\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XtInsertEventHandler
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtInsertEventHandler
-  (JNIEnv *env, jclass that, jint w, jint event_mask, jboolean nonmaskable, jint proc, jint client_data, jint position)
+#ifndef NO_XmTextGetSubstring
+JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetSubstring)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4)
 {
+	jbyte *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmTextGetSubstring\n")
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	rc = (jint)XmTextGetSubstring((Widget)arg0, arg1, arg2, arg3, (char *)lparg4);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "XmTextGetSubstring\n")
+	return rc;
+}
+#endif
 
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtInsertEventHandler\n");
+#ifndef NO_XmTextGetSubstringWcs
+JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetSubstringWcs)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4)
+{
+	jchar *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmTextGetSubstringWcs\n")
+	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
+	rc = (jint)XmTextGetSubstringWcs((Widget)arg0, (XmTextPosition)arg1, arg2, arg3, (wchar_t *)lparg4);
+	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "XmTextGetSubstringWcs\n")
+	return rc;
+}
 #endif
 
-	XtInsertEventHandler ((Widget) w, (EventMask) event_mask, (Boolean) nonmaskable, (XtEventHandler) proc, (XtPointer) client_data, (XtListPosition) position);
+#ifndef NO_XmTextInsert
+JNIEXPORT void JNICALL OS_NATIVE(XmTextInsert)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2)
+{
+	jbyte *lparg2=NULL;
+	NATIVE_ENTER(env, that, "XmTextInsert\n")
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	XmTextInsert((Widget)arg0, arg1, (char *)lparg2);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XmTextInsert\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmAddToPostFromList
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmAddToPostFromList
-  (JNIEnv *env, jclass that, jint menu, jint post_from_widget)
+#ifndef NO_XmTextPaste
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextPaste)
+	(JNIEnv *env, jclass that, jint arg0)
 {
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmTextPaste\n")
+	rc = (jboolean)XmTextPaste((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmTextPaste\n")
+	return rc;
+}
+#endif
 
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmAddToPostFromList\n");
+#ifndef NO_XmTextPosToXY
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextPosToXY)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2, jshortArray arg3)
+{
+	jshort *lparg2=NULL;
+	jshort *lparg3=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmTextPosToXY\n")
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+	rc = (jboolean)XmTextPosToXY((Widget)arg0, (XmTextPosition)arg1, (Position *)lparg2, (Position *)lparg3);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XmTextPosToXY\n")
+	return rc;
+}
 #endif
 
-	XmAddToPostFromList ((Widget) menu, (Widget) post_from_widget);
+#ifndef NO_XmTextReplace
+JNIEXPORT void JNICALL OS_NATIVE(XmTextReplace)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3)
+{
+	jbyte *lparg3=NULL;
+	NATIVE_ENTER(env, that, "XmTextReplace\n")
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	XmTextReplace((Widget)arg0, arg1, arg2, (char *)lparg3);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XmTextReplace\n")
 }
-*/
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmRemoveFromPostFromList
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmRemoveFromPostFromList
-  (JNIEnv *env, jclass that, jint menu, jint post_from_widget)
+#ifndef NO_XmTextScroll
+JNIEXPORT void JNICALL OS_NATIVE(XmTextScroll)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
+	NATIVE_ENTER(env, that, "XmTextScroll\n")
+	XmTextScroll((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmTextScroll\n")
+}
+#endif
 
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmRemoveFromPostFromList\n");
+#ifndef NO_XmTextSetEditable
+JNIEXPORT void JNICALL OS_NATIVE(XmTextSetEditable)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	NATIVE_ENTER(env, that, "XmTextSetEditable\n")
+	XmTextSetEditable((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmTextSetEditable\n")
+}
 #endif
 
-	XmRemoveFromPostFromList ((Widget) menu, (Widget) post_from_widget);
+#ifndef NO_XmTextSetHighlight
+JNIEXPORT void JNICALL OS_NATIVE(XmTextSetHighlight)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "XmTextSetHighlight\n")
+	XmTextSetHighlight((Widget)arg0, arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "XmTextSetHighlight\n")
 }
-*/
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmMenuPosition
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmMenuPosition
-  (JNIEnv *env, jclass that, jint menu, jint event)
+#ifndef NO_XmTextSetInsertionPosition
+JNIEXPORT void JNICALL OS_NATIVE(XmTextSetInsertionPosition)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
+	NATIVE_ENTER(env, that, "XmTextSetInsertionPosition\n")
+	XmTextSetInsertionPosition((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmTextSetInsertionPosition\n")
+}
+#endif
 
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmMenuPosition\n");
+#ifndef NO_XmTextSetMaxLength
+JNIEXPORT void JNICALL OS_NATIVE(XmTextSetMaxLength)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XmTextSetMaxLength\n")
+	XmTextSetMaxLength((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmTextSetMaxLength\n")
+}
 #endif
 
-	XmMenuPosition ((Widget) menu, (XButtonPressedEvent *) event);
+#ifndef NO_XmTextSetSelection
+JNIEXPORT void JNICALL OS_NATIVE(XmTextSetSelection)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "XmTextSetSelection\n")
+	XmTextSetSelection((Widget)arg0, arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "XmTextSetSelection\n")
 }
-*/
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    _XmSetMenuTraversal
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS__1XmSetMenuTraversal
-  (JNIEnv *env, jclass that, jint menu, jboolean traversal)
+#ifndef NO_XmTextSetString
+JNIEXPORT void JNICALL OS_NATIVE(XmTextSetString)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
 {
+	jbyte *lparg1=NULL;
+	NATIVE_ENTER(env, that, "XmTextSetString\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	XmTextSetString((Widget)arg0, (char *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XmTextSetString\n")
+}
+#endif
 
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "_XmSetMenuTraversal\n");
+#ifndef NO_XmTextShowPosition
+JNIEXPORT void JNICALL OS_NATIVE(XmTextShowPosition)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XmTextShowPosition\n")
+	XmTextShowPosition((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XmTextShowPosition\n")
+}
 #endif
 
-	_XmSetMenuTraversal ((Widget) menu, traversal);
+#ifndef NO_XmUpdateDisplay
+JNIEXPORT void JNICALL OS_NATIVE(XmUpdateDisplay)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XmUpdateDisplay\n")
+	XmUpdateDisplay((Widget)arg0);
+	NATIVE_EXIT(env, that, "XmUpdateDisplay\n")
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XEventsQueued
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XEventsQueued
-  (JNIEnv *env, jclass that, jint display, jint mode)
+#ifndef NO_XmWidgetGetDisplayRect
+JNIEXPORT jboolean JNICALL OS_NATIVE(XmWidgetGetDisplayRect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
+	XRectangle _arg1, *lparg1=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XmWidgetGetDisplayRect\n")
+	if (arg1) lparg1 = getXRectangleFields(env, arg1, &_arg1);
+	rc = (jboolean)XmWidgetGetDisplayRect((Widget)arg0, (XRectangle *)lparg1);
+	if (arg1) setXRectangleFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "XmWidgetGetDisplayRect\n")
+	return rc;
+}
+#endif
 
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XEventsQueued\n");
+#ifndef NO_XmbTextListToTextProperty
+JNIEXPORT jint JNICALL OS_NATIVE(XmbTextListToTextProperty)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	XTextProperty _arg4, *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmbTextListToTextProperty\n")
+	if (arg4) lparg4 = getXTextPropertyFields(env, arg4, &_arg4);
+	rc = (jint)XmbTextListToTextProperty((Display *)arg0, (char **)arg1, arg2, (XICCEncodingStyle)arg3, lparg4);
+	if (arg4) setXTextPropertyFields(env, arg4, lparg4);
+	NATIVE_EXIT(env, that, "XmbTextListToTextProperty\n")
+	return rc;
+}
 #endif
 
-	return (jint) XEventsQueued ((Display *) display, mode);
+#ifndef NO_XmbTextPropertyToTextList
+JNIEXPORT jint JNICALL OS_NATIVE(XmbTextPropertyToTextList)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jintArray arg2, jintArray arg3)
+{
+	XTextProperty _arg1, *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XmbTextPropertyToTextList\n")
+	if (arg1) lparg1 = getXTextPropertyFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)XmbTextPropertyToTextList((Display *)arg0, lparg1, (char ***)lparg2, (int *)lparg3);
+	if (arg1) setXTextPropertyFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XmbTextPropertyToTextList\n")
+	return rc;
 }
+#endif
 
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    memmove
- * Signature: (ILorg/eclipse/swt/internal/motif/XExposeEvent;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I
-  (JNIEnv *env, jclass that, jint dest, jobject src, jint count)
+#ifndef NO_XpCancelJob
+JNIEXPORT void JNICALL OS_NATIVE(XpCancelJob)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	DECL_GLOB(pGlob)
-    XEvent xEvent, *src1=NULL;
+	NATIVE_ENTER(env, that, "XpCancelJob\n")
+	XpCancelJob((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XpCancelJob\n")
+}
+#endif
 
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I\n");
+#ifndef NO_XpCreateContext
+JNIEXPORT jint JNICALL OS_NATIVE(XpCreateContext)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XpCreateContext\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)XpCreateContext((Display *)arg0, (char *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XpCreateContext\n")
+	return rc;
+}
 #endif
-    if (src) {
-        src1=&xEvent;
-        cacheXexposeeventFids(env, src, &PGLOB(XexposeeventFc));
-        getXexposeeventFields(env, src, src1, &PGLOB(XexposeeventFc));
-    }
-    memmove((void *)dest, (void *)src1, count);
+
+#ifndef NO_XpDestroyContext
+JNIEXPORT void JNICALL OS_NATIVE(XpDestroyContext)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XpDestroyContext\n")
+	XpDestroyContext((Display *)arg0, (XPContext)arg1);
+	NATIVE_EXIT(env, that, "XpDestroyContext\n")
 }
+#endif
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_getenv
-  (JNIEnv *env, jobject that, jbyteArray name)
+#ifndef NO_XpEndJob
+JNIEXPORT void JNICALL OS_NATIVE(XpEndJob)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-    char *name1=NULL;
-    jint result;
+	NATIVE_ENTER(env, that, "XpEndJob\n")
+	XpEndJob((Display *)arg0);
+	NATIVE_EXIT(env, that, "XpEndJob\n")
+}
+#endif
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "getenv\n");
+#ifndef NO_XpEndPage
+JNIEXPORT void JNICALL OS_NATIVE(XpEndPage)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XpEndPage\n")
+	XpEndPage((Display *)arg0);
+	NATIVE_EXIT(env, that, "XpEndPage\n")
+}
 #endif
 
-    if (name) name1 = (char *)(*env)->GetByteArrayElements(env, name, NULL);
-    result = (jint)getenv(name1);
-    if (name) (*env)->ReleaseByteArrayElements(env, name, (jbyte *)name1, 0);
+#ifndef NO_XpFreePrinterList
+JNIEXPORT void JNICALL OS_NATIVE(XpFreePrinterList)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XpFreePrinterList\n")
+	XpFreePrinterList((XPPrinterList)arg0);
+	NATIVE_EXIT(env, that, "XpFreePrinterList\n")
+}
+#endif
 
-	return result;
+#ifndef NO_XpGetOneAttribute
+JNIEXPORT jint JNICALL OS_NATIVE(XpGetOneAttribute)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyte arg2, jbyteArray arg3)
+{
+	jbyte *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XpGetOneAttribute\n")
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	rc = (jint)XpGetOneAttribute((Display *)arg0, (XPContext)arg1, (XPAttributes)arg2, (char *)lparg3);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XpGetOneAttribute\n")
+	return rc;
 }
+#endif
 
+#ifndef NO_XpGetPageDimensions
+JNIEXPORT jint JNICALL OS_NATIVE(XpGetPageDimensions)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2, jshortArray arg3, jobject arg4)
+{
+	jshort *lparg2=NULL;
+	jshort *lparg3=NULL;
+	XRectangle _arg4, *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XpGetPageDimensions\n")
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = getXRectangleFields(env, arg4, &_arg4);
+	rc = (jint)XpGetPageDimensions((Display *)arg0, (XPContext)arg1, lparg2, lparg3, (XRectangle *)lparg4);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	if (arg4) setXRectangleFields(env, arg4, lparg4);
+	NATIVE_EXIT(env, that, "XpGetPageDimensions\n")
+	return rc;
+}
+#endif
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XOpenDisplay
-  (JNIEnv *env, jobject that, jbyteArray name)
+#ifndef NO_XpGetPrinterList
+JNIEXPORT jint JNICALL OS_NATIVE(XpGetPrinterList)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2)
 {
-    char *name1=NULL;
-    jint result;
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XpGetPrinterList\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XpGetPrinterList((Display *)arg0, (char *)lparg1, (int *)lparg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "XpGetPrinterList\n")
+	return rc;
+}
+#endif
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "XOpenDisplay\n");
+#ifndef NO_XpGetScreenOfContext
+JNIEXPORT jint JNICALL OS_NATIVE(XpGetScreenOfContext)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XpGetScreenOfContext\n")
+	rc = (jint)XpGetScreenOfContext((Display *)arg0, (XPContext)arg1);
+	NATIVE_EXIT(env, that, "XpGetScreenOfContext\n")
+	return rc;
+}
 #endif
 
-    if (name) name1 = (char *)(*env)->GetByteArrayElements(env, name, NULL);
-    result = (jint)XOpenDisplay(name1);
-    if (name) (*env)->ReleaseByteArrayElements(env, name, (jbyte *)name1, 0);
-	return result;
+#ifndef NO_XpSetAttributes
+JNIEXPORT void JNICALL OS_NATIVE(XpSetAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyte arg2, jbyteArray arg3, jbyte arg4)
+{
+	jbyte *lparg3=NULL;
+	NATIVE_ENTER(env, that, "XpSetAttributes\n")
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	XpSetAttributes((Display *)arg0, (XPContext)arg1, (XPAttributes)arg2, (char *)lparg3, (XPAttrReplacement)arg4);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XpSetAttributes\n")
 }
+#endif
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XCloseDisplay
-  (JNIEnv *env, jobject that, jint display)
+#ifndef NO_XpSetContext
+JNIEXPORT void JNICALL OS_NATIVE(XpSetContext)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "XCloseDisplay\n");
+	NATIVE_ENTER(env, that, "XpSetContext\n")
+	XpSetContext((Display *)arg0, (XPContext)arg1);
+	NATIVE_EXIT(env, that, "XpSetContext\n")
+}
 #endif
-    XCloseDisplay((Display*)display);
+
+#ifndef NO_XpStartJob
+JNIEXPORT void JNICALL OS_NATIVE(XpStartJob)
+	(JNIEnv *env, jclass that, jint arg0, jbyte arg1)
+{
+	NATIVE_ENTER(env, that, "XpStartJob\n")
+	XpStartJob((Display *)arg0, (XPSaveData)arg1);
+	NATIVE_EXIT(env, that, "XpStartJob\n")
 }
+#endif
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppSetFallbackResources 
-  (JNIEnv *env, jclass that, jint app_context, jint specification_list)
+#ifndef NO_XpStartPage
+JNIEXPORT void JNICALL OS_NATIVE(XpStartPage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XtAppSetFallbackResources\n");
+	NATIVE_ENTER(env, that, "XpStartPage\n")
+	XpStartPage((Display *)arg0, (Window)arg1);
+	NATIVE_EXIT(env, that, "XpStartPage\n")
+}
 #endif
 
-    XtAppSetFallbackResources((XtAppContext)app_context, (String *)specification_list);
+#ifndef NO_XtAddCallback
+JNIEXPORT void JNICALL OS_NATIVE(XtAddCallback)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "XtAddCallback\n")
+	XtAddCallback((Widget)arg0, (String)arg1, (XtCallbackProc)arg2, (XtPointer)arg3);
+	NATIVE_EXIT(env, that, "XtAddCallback\n")
 }
+#endif
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeStringList
-  (JNIEnv *env, jclass that, jint list)
+#ifndef NO_XtAddEventHandler
+JNIEXPORT void JNICALL OS_NATIVE(XtAddEventHandler)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XFreeStringList\n");
+	NATIVE_ENTER(env, that, "XtAddEventHandler\n")
+	XtAddEventHandler((Widget)arg0, arg1, arg2, (XtEventHandler)arg3, (XtPointer)arg4);
+	NATIVE_EXIT(env, that, "XtAddEventHandler\n")
+}
 #endif
 
-    XFreeStringList((char **)list);
+#ifndef NO_XtAddExposureToRegion
+JNIEXPORT void JNICALL OS_NATIVE(XtAddExposureToRegion)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XtAddExposureToRegion\n")
+	XtAddExposureToRegion((XEvent *)arg0, (Region)arg1);
+	NATIVE_EXIT(env, that, "XtAddExposureToRegion\n")
 }
+#endif
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XReparentWindow
+#ifndef NO_XtAppAddInput
+JNIEXPORT jint JNICALL OS_NATIVE(XtAppAddInput)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
-	DEBUG_CALL("XReparentWindow\n")
-
-	return (jint)XReparentWindow((Display *)arg0, (Window)arg1, (Window)arg2, arg3, arg4);
+	jint rc;
+	NATIVE_ENTER(env, that, "XtAppAddInput\n")
+	rc = (jint)XtAppAddInput((XtAppContext)arg0, arg1, (XtPointer)arg2, (XtInputCallbackProc)arg3, (XtPointer)arg4);
+	NATIVE_EXIT(env, that, "XtAppAddInput\n")
+	return rc;
 }
+#endif
+
+#ifndef NO_XtAppAddTimeOut
+JNIEXPORT jint JNICALL OS_NATIVE(XtAppAddTimeOut)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtAppAddTimeOut\n")
+	rc = (jint)XtAppAddTimeOut((XtAppContext)arg0, arg1, (XtTimerCallbackProc)arg2, (XtPointer)arg3);
+	NATIVE_EXIT(env, that, "XtAppAddTimeOut\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtAppCreateShell
+JNIEXPORT jint JNICALL OS_NATIVE(XtAppCreateShell)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jint arg2, jint arg3, jintArray arg4, jint arg5)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XtAppCreateShell\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)XtAppCreateShell((String)lparg0, (String)lparg1, (WidgetClass)arg2, (Display *)arg3, (ArgList)lparg4, arg5);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "XtAppCreateShell\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtAppGetSelectionTimeout
+JNIEXPORT jint JNICALL OS_NATIVE(XtAppGetSelectionTimeout)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtAppGetSelectionTimeout\n")
+	rc = (jint)XtAppGetSelectionTimeout((XtAppContext)arg0);
+	NATIVE_EXIT(env, that, "XtAppGetSelectionTimeout\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtAppNextEvent
+JNIEXPORT void JNICALL OS_NATIVE(XtAppNextEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XtAppNextEvent\n")
+	XtAppNextEvent((XtAppContext)arg0, (XEvent *)arg1);
+	NATIVE_EXIT(env, that, "XtAppNextEvent\n")
+}
+#endif
+
+#ifndef NO_XtAppPeekEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(XtAppPeekEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XtAppPeekEvent\n")
+	rc = (jboolean)XtAppPeekEvent((XtAppContext)arg0, (XEvent *)arg1);
+	NATIVE_EXIT(env, that, "XtAppPeekEvent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtAppPending
+JNIEXPORT jint JNICALL OS_NATIVE(XtAppPending)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtAppPending\n")
+	rc = (jint)XtAppPending((XtAppContext)arg0);
+	NATIVE_EXIT(env, that, "XtAppPending\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtAppProcessEvent
+JNIEXPORT void JNICALL OS_NATIVE(XtAppProcessEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XtAppProcessEvent\n")
+	XtAppProcessEvent((XtAppContext)arg0, arg1);
+	NATIVE_EXIT(env, that, "XtAppProcessEvent\n")
+}
+#endif
+
+#ifndef NO_XtAppSetErrorHandler
+JNIEXPORT jint JNICALL OS_NATIVE(XtAppSetErrorHandler)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtAppSetErrorHandler\n")
+	rc = (jint)XtAppSetErrorHandler((XtAppContext)arg0, (XtErrorHandler)arg1);
+	NATIVE_EXIT(env, that, "XtAppSetErrorHandler\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtAppSetFallbackResources
+JNIEXPORT void JNICALL OS_NATIVE(XtAppSetFallbackResources)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XtAppSetFallbackResources\n")
+	XtAppSetFallbackResources((XtAppContext)arg0, (String *)arg1);
+	NATIVE_EXIT(env, that, "XtAppSetFallbackResources\n")
+}
+#endif
+
+#ifndef NO_XtAppSetSelectionTimeout
+JNIEXPORT void JNICALL OS_NATIVE(XtAppSetSelectionTimeout)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XtAppSetSelectionTimeout\n")
+	XtAppSetSelectionTimeout((XtAppContext)arg0, arg1);
+	NATIVE_EXIT(env, that, "XtAppSetSelectionTimeout\n")
+}
+#endif
+
+#ifndef NO_XtAppSetWarningHandler
+JNIEXPORT jint JNICALL OS_NATIVE(XtAppSetWarningHandler)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtAppSetWarningHandler\n")
+	rc = (jint)XtAppSetWarningHandler((XtAppContext)arg0, (XtErrorHandler)arg1);
+	NATIVE_EXIT(env, that, "XtAppSetWarningHandler\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtBuildEventMask
+JNIEXPORT jint JNICALL OS_NATIVE(XtBuildEventMask)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtBuildEventMask\n")
+	rc = (jint)XtBuildEventMask((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtBuildEventMask\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtCallActionProc
+JNIEXPORT void JNICALL OS_NATIVE(XtCallActionProc)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3, jint arg4)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg3=NULL;
+	NATIVE_ENTER(env, that, "XtCallActionProc\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	XtCallActionProc((Widget)arg0, (String)lparg1, (XEvent *)arg2, (String *)lparg3, arg4);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XtCallActionProc\n")
+}
+#endif
+
+#ifndef NO_XtClass
+JNIEXPORT jint JNICALL OS_NATIVE(XtClass)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtClass\n")
+	rc = (jint)XtClass((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtClass\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtConfigureWidget
+JNIEXPORT void JNICALL OS_NATIVE(XtConfigureWidget)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	NATIVE_ENTER(env, that, "XtConfigureWidget\n")
+	XtConfigureWidget((Widget)arg0, arg1, arg2, arg3, arg4, arg5);
+	NATIVE_EXIT(env, that, "XtConfigureWidget\n")
+}
+#endif
+
+#ifndef NO_XtCreateApplicationContext
+JNIEXPORT jint JNICALL OS_NATIVE(XtCreateApplicationContext)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtCreateApplicationContext\n")
+	rc = (jint)XtCreateApplicationContext();
+	NATIVE_EXIT(env, that, "XtCreateApplicationContext\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtCreatePopupShell
+JNIEXPORT jint JNICALL OS_NATIVE(XtCreatePopupShell)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jintArray arg3, jint arg4)
+{
+	jbyte *lparg0=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XtCreatePopupShell\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)XtCreatePopupShell((String)lparg0, (WidgetClass)arg1, (Widget)arg2, (ArgList)lparg3, arg4);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "XtCreatePopupShell\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtDestroyApplicationContext
+JNIEXPORT void JNICALL OS_NATIVE(XtDestroyApplicationContext)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtDestroyApplicationContext\n")
+	XtDestroyApplicationContext((XtAppContext)arg0);
+	NATIVE_EXIT(env, that, "XtDestroyApplicationContext\n")
+}
+#endif
+
+#ifndef NO_XtDestroyWidget
+JNIEXPORT void JNICALL OS_NATIVE(XtDestroyWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtDestroyWidget\n")
+	XtDestroyWidget((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtDestroyWidget\n")
+}
+#endif
+
+#ifndef NO_XtDispatchEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(XtDispatchEvent)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XtDispatchEvent\n")
+	rc = (jboolean)XtDispatchEvent((XEvent *)arg0);
+	NATIVE_EXIT(env, that, "XtDispatchEvent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtDisplay
+JNIEXPORT jint JNICALL OS_NATIVE(XtDisplay)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtDisplay\n")
+	rc = (jint)XtDisplay((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtDisplay\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtDisplayToApplicationContext
+JNIEXPORT jint JNICALL OS_NATIVE(XtDisplayToApplicationContext)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtDisplayToApplicationContext\n")
+	rc = (jint)XtDisplayToApplicationContext((Display *)arg0);
+	NATIVE_EXIT(env, that, "XtDisplayToApplicationContext\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtFree
+JNIEXPORT void JNICALL OS_NATIVE(XtFree)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtFree\n")
+	XtFree((char *)arg0);
+	NATIVE_EXIT(env, that, "XtFree\n")
+}
+#endif
+
+#ifndef NO_XtGetMultiClickTime
+JNIEXPORT jint JNICALL OS_NATIVE(XtGetMultiClickTime)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtGetMultiClickTime\n")
+	rc = (jint)XtGetMultiClickTime((Display *)arg0);
+	NATIVE_EXIT(env, that, "XtGetMultiClickTime\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtInsertEventHandler
+JNIEXPORT void JNICALL OS_NATIVE(XtInsertEventHandler)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4, jint arg5)
+{
+	NATIVE_ENTER(env, that, "XtInsertEventHandler\n")
+	XtInsertEventHandler((Widget)arg0, (EventMask)arg1, (Boolean)arg2, (XtEventHandler)arg3, (XtPointer)arg4, (XtListPosition)arg5);
+	NATIVE_EXIT(env, that, "XtInsertEventHandler\n")
+}
+#endif
+
+#ifndef NO_XtIsManaged
+JNIEXPORT jboolean JNICALL OS_NATIVE(XtIsManaged)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XtIsManaged\n")
+	rc = (jboolean)XtIsManaged((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtIsManaged\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtIsRealized
+JNIEXPORT jboolean JNICALL OS_NATIVE(XtIsRealized)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XtIsRealized\n")
+	rc = (jboolean)XtIsRealized((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtIsRealized\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtIsSubclass
+JNIEXPORT jboolean JNICALL OS_NATIVE(XtIsSubclass)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XtIsSubclass\n")
+	rc = (jboolean)XtIsSubclass((Widget)arg0, (WidgetClass)arg1);
+	NATIVE_EXIT(env, that, "XtIsSubclass\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtIsTopLevelShell
+JNIEXPORT jboolean JNICALL OS_NATIVE(XtIsTopLevelShell)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XtIsTopLevelShell\n")
+	rc = (jboolean)XtIsTopLevelShell((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtIsTopLevelShell\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtLastTimestampProcessed
+JNIEXPORT jint JNICALL OS_NATIVE(XtLastTimestampProcessed)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtLastTimestampProcessed\n")
+	rc = (jint)XtLastTimestampProcessed((Display *)arg0);
+	NATIVE_EXIT(env, that, "XtLastTimestampProcessed\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtMalloc
+JNIEXPORT jint JNICALL OS_NATIVE(XtMalloc)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtMalloc\n")
+	rc = (jint)XtMalloc(arg0);
+	NATIVE_EXIT(env, that, "XtMalloc\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtManageChild
+JNIEXPORT void JNICALL OS_NATIVE(XtManageChild)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtManageChild\n")
+	XtManageChild((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtManageChild\n")
+}
+#endif
+
+#ifndef NO_XtMapWidget
+JNIEXPORT void JNICALL OS_NATIVE(XtMapWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtMapWidget\n")
+	XtMapWidget((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtMapWidget\n")
+}
+#endif
+
+#ifndef NO_XtMoveWidget
+JNIEXPORT void JNICALL OS_NATIVE(XtMoveWidget)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XtMoveWidget\n")
+	XtMoveWidget((Widget)arg0, arg1, arg2);
+	NATIVE_EXIT(env, that, "XtMoveWidget\n")
+}
+#endif
+
+#ifndef NO_XtOpenDisplay
+JNIEXPORT jint JNICALL OS_NATIVE(XtOpenDisplay)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6, jint arg7)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jint *lparg6=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XtOpenDisplay\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	rc = (jint)XtOpenDisplay((XtAppContext)arg0, (String)lparg1, (String)lparg2, (String)lparg3, (XrmOptionDescRec *)arg4, arg5, (int *)lparg6, (char **)arg7);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	NATIVE_EXIT(env, that, "XtOpenDisplay\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtOverrideTranslations
+JNIEXPORT void JNICALL OS_NATIVE(XtOverrideTranslations)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XtOverrideTranslations\n")
+	XtOverrideTranslations((Widget)arg0, (XtTranslations)arg1);
+	NATIVE_EXIT(env, that, "XtOverrideTranslations\n")
+}
+#endif
+
+#ifndef NO_XtParent
+JNIEXPORT jint JNICALL OS_NATIVE(XtParent)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtParent\n")
+	rc = (jint)XtParent((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtParent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtParseTranslationTable
+JNIEXPORT jint JNICALL OS_NATIVE(XtParseTranslationTable)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XtParseTranslationTable\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)XtParseTranslationTable((String)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "XtParseTranslationTable\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtPopdown
+JNIEXPORT void JNICALL OS_NATIVE(XtPopdown)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtPopdown\n")
+	XtPopdown((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtPopdown\n")
+}
+#endif
+
+#ifndef NO_XtPopup
+JNIEXPORT void JNICALL OS_NATIVE(XtPopup)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XtPopup\n")
+	XtPopup((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XtPopup\n")
+}
+#endif
+
+#ifndef NO_XtQueryGeometry
+JNIEXPORT jint JNICALL OS_NATIVE(XtQueryGeometry)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2)
+{
+	XtWidgetGeometry _arg1, *lparg1=NULL;
+	XtWidgetGeometry _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XtQueryGeometry\n")
+	if (arg1) lparg1 = getXtWidgetGeometryFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getXtWidgetGeometryFields(env, arg2, &_arg2);
+	rc = (jint)XtQueryGeometry((Widget)arg0, (XtWidgetGeometry *)lparg1, (XtWidgetGeometry *)lparg2);
+	if (arg1) setXtWidgetGeometryFields(env, arg1, lparg1);
+	if (arg2) setXtWidgetGeometryFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "XtQueryGeometry\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtRealizeWidget
+JNIEXPORT void JNICALL OS_NATIVE(XtRealizeWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtRealizeWidget\n")
+	XtRealizeWidget((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtRealizeWidget\n")
+}
+#endif
+
+#ifndef NO_XtRemoveInput
+JNIEXPORT void JNICALL OS_NATIVE(XtRemoveInput)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtRemoveInput\n")
+	XtRemoveInput((XtInputId)arg0);
+	NATIVE_EXIT(env, that, "XtRemoveInput\n")
+}
+#endif
+
+#ifndef NO_XtRemoveTimeOut
+JNIEXPORT void JNICALL OS_NATIVE(XtRemoveTimeOut)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtRemoveTimeOut\n")
+	XtRemoveTimeOut(arg0);
+	NATIVE_EXIT(env, that, "XtRemoveTimeOut\n")
+}
+#endif
+
+#ifndef NO_XtResizeWidget
+JNIEXPORT void JNICALL OS_NATIVE(XtResizeWidget)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "XtResizeWidget\n")
+	XtResizeWidget((Widget)arg0, arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "XtResizeWidget\n")
+}
+#endif
+
+#ifndef NO_XtResizeWindow
+JNIEXPORT void JNICALL OS_NATIVE(XtResizeWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtResizeWindow\n")
+	XtResizeWindow((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtResizeWindow\n")
+}
+#endif
+
+#ifndef NO_XtSetLanguageProc
+JNIEXPORT jint JNICALL OS_NATIVE(XtSetLanguageProc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtSetLanguageProc\n")
+	rc = (jint)XtSetLanguageProc((XtAppContext)arg0, (XtLanguageProc)arg1, (XtPointer)arg2);
+	NATIVE_EXIT(env, that, "XtSetLanguageProc\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtSetMappedWhenManaged
+JNIEXPORT void JNICALL OS_NATIVE(XtSetMappedWhenManaged)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	NATIVE_ENTER(env, that, "XtSetMappedWhenManaged\n")
+	XtSetMappedWhenManaged((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "XtSetMappedWhenManaged\n")
+}
+#endif
+
+#ifndef NO_XtSetValues
+JNIEXPORT void JNICALL OS_NATIVE(XtSetValues)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	NATIVE_ENTER(env, that, "XtSetValues\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	XtSetValues((Widget)arg0, (ArgList)lparg1, arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XtSetValues\n")
+}
+#endif
+
+#ifndef NO_XtToolkitInitialize
+JNIEXPORT void JNICALL OS_NATIVE(XtToolkitInitialize)
+	(JNIEnv *env, jclass that)
+{
+	NATIVE_ENTER(env, that, "XtToolkitInitialize\n")
+	XtToolkitInitialize();
+	NATIVE_EXIT(env, that, "XtToolkitInitialize\n")
+}
+#endif
+
+#ifndef NO_XtToolkitThreadInitialize
+JNIEXPORT jboolean JNICALL OS_NATIVE(XtToolkitThreadInitialize)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "XtToolkitThreadInitialize\n")
+	rc = (jboolean)XtToolkitThreadInitialize();
+	NATIVE_EXIT(env, that, "XtToolkitThreadInitialize\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtTranslateCoords
+JNIEXPORT void JNICALL OS_NATIVE(XtTranslateCoords)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2, jshortArray arg3, jshortArray arg4)
+{
+	jshort *lparg3=NULL;
+	jshort *lparg4=NULL;
+	NATIVE_ENTER(env, that, "XtTranslateCoords\n")
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL);
+	XtTranslateCoords((Widget)arg0, arg1, arg2, lparg3, lparg4);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "XtTranslateCoords\n")
+}
+#endif
+
+#ifndef NO_XtUnmanageChild
+JNIEXPORT void JNICALL OS_NATIVE(XtUnmanageChild)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtUnmanageChild\n")
+	XtUnmanageChild((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtUnmanageChild\n")
+}
+#endif
+
+#ifndef NO_XtUnmapWidget
+JNIEXPORT void JNICALL OS_NATIVE(XtUnmapWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "XtUnmapWidget\n")
+	XtUnmapWidget((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtUnmapWidget\n")
+}
+#endif
+
+#ifndef NO_XtWindow
+JNIEXPORT jint JNICALL OS_NATIVE(XtWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtWindow\n")
+	rc = (jint)XtWindow((Widget)arg0);
+	NATIVE_EXIT(env, that, "XtWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XtWindowToWidget
+JNIEXPORT jint JNICALL OS_NATIVE(XtWindowToWidget)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XtWindowToWidget\n")
+	rc = (jint)XtWindowToWidget((Display *)arg0, (Window)arg1);
+	NATIVE_EXIT(env, that, "XtWindowToWidget\n")
+	return rc;
+}
+#endif
+
+#ifndef NO__1XmSetMenuTraversal
+JNIEXPORT void JNICALL OS_NATIVE(_1XmSetMenuTraversal)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	NATIVE_ENTER(env, that, "_1XmSetMenuTraversal\n")
+	_XmSetMenuTraversal((Widget)arg0, arg1);
+	NATIVE_EXIT(env, that, "_1XmSetMenuTraversal\n")
+}
+#endif
+
+#ifndef NO_close
+JNIEXPORT jint JNICALL OS_NATIVE(close)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "close\n")
+	rc = (jint)close(arg0);
+	NATIVE_EXIT(env, that, "close\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_getenv
+JNIEXPORT jint JNICALL OS_NATIVE(getenv)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "getenv\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)getenv(lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "getenv\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_iconv
+JNIEXPORT jint JNICALL OS_NATIVE(iconv)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "iconv\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)iconv((iconv_t)arg0, (void *)lparg1, (size_t *)lparg2, (char **)lparg3, (size_t *)lparg4);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "iconv\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_iconv_1close
+JNIEXPORT jint JNICALL OS_NATIVE(iconv_1close)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "iconv_1close\n")
+	rc = (jint)iconv_close((iconv_t)arg0);
+	NATIVE_EXIT(env, that, "iconv_1close\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_iconv_1open
+JNIEXPORT jint JNICALL OS_NATIVE(iconv_1open)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "iconv_1open\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)iconv_open((const char *)lparg0, (const char *)lparg1);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "iconv_1open\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XImage_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XImage_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XImage _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XImage_2I\n")
+	if (arg1) lparg1 = getXImageFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setXImageFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XImage_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XmDragProcCallbackStruct_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XmDragProcCallbackStruct_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XmDragProcCallbackStruct _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XmDragProcCallbackStruct_2I\n")
+	if (arg1) lparg1 = getXmDragProcCallbackStructFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setXmDragProcCallbackStructFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XmDragProcCallbackStruct_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XmTextBlockRec_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XmTextBlockRec_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XmTextBlockRec _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XmTextBlockRec_2I\n")
+	if (arg1) lparg1 = getXmTextBlockRecFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setXmTextBlockRecFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XmTextBlockRec_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XmTextVerifyCallbackStruct _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2I\n")
+	if (arg1) lparg1 = getXmTextVerifyCallbackStructFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setXmTextVerifyCallbackStructFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__I_3BI
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__I_3BI\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "memmove__I_3BI\n")
+}
+#endif
+
+#ifndef NO_memmove__I_3CI
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3CI)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__I_3CI\n")
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "memmove__I_3CI\n")
+}
+#endif
+
+#ifndef NO_memmove__I_3II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3II)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__I_3II\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "memmove__I_3II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_Visual_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_Visual_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	Visual _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_Visual_2II\n")
+	if (arg0) lparg0 = getVisualFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setVisualFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_Visual_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XButtonEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II\n")
+	if (arg0) lparg0 = getXButtonEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXButtonEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XButtonEvent _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I\n")
+	if (arg1) lparg1 = getXButtonEventFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setXButtonEventFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XCharStruct_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XCharStruct_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XCharStruct _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XCharStruct_2II\n")
+	if (arg0) lparg0 = getXCharStructFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXCharStructFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XCharStruct_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XConfigureEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XConfigureEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XConfigureEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XConfigureEvent_2II\n")
+	if (arg0) lparg0 = getXConfigureEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXConfigureEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XConfigureEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XCrossingEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XCrossingEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XCrossingEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XCrossingEvent_2II\n")
+	if (arg0) lparg0 = getXCrossingEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXCrossingEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XCrossingEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XExposeEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XExposeEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XExposeEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XExposeEvent_2II\n")
+	if (arg0) lparg0 = getXExposeEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXExposeEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XExposeEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XFocusChangeEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XFocusChangeEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XFocusChangeEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XFocusChangeEvent_2II\n")
+	if (arg0) lparg0 = getXFocusChangeEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXFocusChangeEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XFocusChangeEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XFontStruct_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XFontStruct_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XFontStruct _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XFontStruct_2II\n")
+	if (arg0) lparg0 = getXFontStructFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXFontStructFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XFontStruct_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XImage_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XImage_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XImage _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XImage_2II\n")
+	if (arg0) lparg0 = getXImageFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXImageFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XImage_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XineramaScreenInfo _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II\n")
+	if (arg0) lparg0 = getXineramaScreenInfoFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXineramaScreenInfoFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XKeyEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XKeyEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XKeyEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XKeyEvent_2II\n")
+	if (arg0) lparg0 = getXKeyEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXKeyEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XKeyEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XAnyEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II\n")
+	if (arg0) lparg0 = getXAnyEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXAnyEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XMotionEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XMotionEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XMotionEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XMotionEvent_2II\n")
+	if (arg0) lparg0 = getXMotionEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXMotionEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XMotionEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XmAnyCallbackStruct_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XmAnyCallbackStruct_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XmAnyCallbackStruct _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmAnyCallbackStruct_2II\n")
+	if (arg0) lparg0 = getXmAnyCallbackStructFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXmAnyCallbackStructFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmAnyCallbackStruct_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XmDragProcCallbackStruct_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XmDragProcCallbackStruct_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XmDragProcCallbackStruct _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmDragProcCallbackStruct_2II\n")
+	if (arg0) lparg0 = getXmDragProcCallbackStructFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXmDragProcCallbackStructFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmDragProcCallbackStruct_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XmDropFinishCallbackStruct_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XmDropFinishCallbackStruct_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XmDropFinishCallbackStruct _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmDropFinishCallbackStruct_2II\n")
+	if (arg0) lparg0 = getXmDropFinishCallbackStructFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXmDropFinishCallbackStructFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmDropFinishCallbackStruct_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XmDropProcCallbackStruct_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XmDropProcCallbackStruct_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XmDropProcCallbackStruct _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmDropProcCallbackStruct_2II\n")
+	if (arg0) lparg0 = getXmDropProcCallbackStructFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXmDropProcCallbackStructFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmDropProcCallbackStruct_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XmTextBlockRec_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XmTextBlockRec_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XmTextBlockRec _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmTextBlockRec_2II\n")
+	if (arg0) lparg0 = getXmTextBlockRecFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXmTextBlockRecFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmTextBlockRec_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XmTextVerifyCallbackStruct _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2II\n")
+	if (arg0) lparg0 = getXmTextVerifyCallbackStructFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXmTextVerifyCallbackStructFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2II\n")
+}
+#endif
+
+#ifndef NO_memmove___3BII
+JNIEXPORT void JNICALL OS_NATIVE(memmove___3BII)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2)
+{
+	jbyte *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove___3BII\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "memmove___3BII\n")
+}
+#endif
+
+#ifndef NO_memmove___3CII
+JNIEXPORT void JNICALL OS_NATIVE(memmove___3CII)
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
+{
+	jchar *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove___3CII\n")
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "memmove___3CII\n")
+}
+#endif
+
+#ifndef NO_memmove___3III
+JNIEXPORT void JNICALL OS_NATIVE(memmove___3III)
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2)
+{
+	jint *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove___3III\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "memmove___3III\n")
+}
+#endif
+
+#ifndef NO_memmove__I_3SI
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3SI)
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1, jint arg2)
+{
+	jshort *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__I_3SI\n")
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "memmove__I_3SI\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XExposeEvent _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I\n")
+	if (arg1) lparg1 = getXExposeEventFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setXExposeEventFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I\n")
+}
+#endif
+
+#ifndef NO_nl_1langinfo
+JNIEXPORT jint JNICALL OS_NATIVE(nl_1langinfo)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "nl_1langinfo\n")
+	rc = (jint)nl_langinfo(arg0);
+	NATIVE_EXIT(env, that, "nl_1langinfo\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_overrideShellWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(overrideShellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "overrideShellWidgetClass\n")
+	rc = (jint)overrideShellWidgetClass;
+	NATIVE_EXIT(env, that, "overrideShellWidgetClass\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_pipe
+JNIEXPORT jint JNICALL OS_NATIVE(pipe)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "pipe\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)pipe((int *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "pipe\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_read
+JNIEXPORT jint JNICALL OS_NATIVE(read)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "read\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)read(arg0, (char *)lparg1, arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "read\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_select
+JNIEXPORT jint JNICALL OS_NATIVE(select)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2, jbyteArray arg3, jintArray arg4)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "select\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)select(arg0, (fd_set *)lparg1, (fd_set *)lparg2, (fd_set *)lparg3, (struct timeval *)lparg4);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "select\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_setlocale
+JNIEXPORT jint JNICALL OS_NATIVE(setlocale)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "setlocale\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)setlocale(arg0, (char *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "setlocale\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_shellWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(shellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "shellWidgetClass\n")
+	rc = (jint)shellWidgetClass;
+	NATIVE_EXIT(env, that, "shellWidgetClass\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_strlen
+JNIEXPORT jint JNICALL OS_NATIVE(strlen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "strlen\n")
+	rc = (jint)strlen((char *)arg0);
+	NATIVE_EXIT(env, that, "strlen\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_topLevelShellWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(topLevelShellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "topLevelShellWidgetClass\n")
+	rc = (jint)topLevelShellWidgetClass;
+	NATIVE_EXIT(env, that, "topLevelShellWidgetClass\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_transientShellWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(transientShellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "transientShellWidgetClass\n")
+	rc = (jint)transientShellWidgetClass;
+	NATIVE_EXIT(env, that, "transientShellWidgetClass\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_write
+JNIEXPORT jint JNICALL OS_NATIVE(write)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "write\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)write(arg0, (char *)lparg1, arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "write\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_xmMenuShellWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(xmMenuShellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "xmMenuShellWidgetClass\n")
+	rc = (jint)xmMenuShellWidgetClass;
+	NATIVE_EXIT(env, that, "xmMenuShellWidgetClass\n")
+	return rc;
+}
+#endif
+

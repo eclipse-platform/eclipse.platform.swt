@@ -11,9 +11,7 @@
 package org.eclipse.swt.internal.motif;
 
  
-public class XmDropFinishCallbackStruct {
-	public int reason;
-	public int event;
+public class XmDropFinishCallbackStruct extends XmAnyCallbackStruct {
 	public int timeStamp;
 	public byte operation;
 	public byte operations;

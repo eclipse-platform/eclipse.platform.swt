@@ -138,7 +138,9 @@ static int checkStyle (int style) {
 	return style;
 }
 void click () {
-	OS.XtCallActionProc (handle, ARM_AND_ACTIVATE, new XAnyEvent (), null, 0);
+	int event = OS.XtMalloc (XEvent.sizeof);
+	OS.XtCallActionProc (handle, ARM_AND_ACTIVATE, event, null, 0);
+	OS.XtFree (event);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();

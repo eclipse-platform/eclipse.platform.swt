@@ -199,7 +199,7 @@ void createHandle (int index) {
 	setBackgroundPixel (pixel);
 }
 
-void click (boolean dropDown, XInputEvent xEvent) {
+void click (boolean dropDown, int state) {
 	if ((style & SWT.RADIO) != 0) {
 		selectRadio ();
 	} else {
@@ -215,7 +215,7 @@ void click (boolean dropDown, XInputEvent xEvent) {
 			event.y = (short) argList [3] + (short) argList [5];
 		}
 	}
-	if (xEvent != null) setInputState (event, xEvent);
+	if (state != 0) setInputState (event, state);
 	postEvent (SWT.Selection, event);
 }
 
@@ -883,7 +883,7 @@ int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispa
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		int width = argList [1], height = argList [3];
 		if (0 <= xEvent.x && xEvent.x < width && 0 <= xEvent.y && xEvent.y < height) {
-			click (xEvent.x > width - 12, xEvent);
+			click (xEvent.x > width - 12, xEvent.state);
 		}
 		setDrawPressed(set);
 	}
@@ -939,11 +939,11 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 	keysym [0] &= 0xFFFF;
 	switch (keysym [0]) {
 		case OS.XK_space:
-			click (false, xEvent);
+			click (false, xEvent.state);
 			break;
 		case OS.XK_KP_Enter:
 		case OS.XK_Return:
-			click (true, xEvent);
+			click (true, xEvent.state);
 			break;
 	}
 	/*
@@ -1129,7 +1129,7 @@ int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispa
 	*/
 //	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
 //	parent.XPointerMotion (w, client_data, call_data, continue_to_dispatch);
-	parent.sendMouseEvent (SWT.MouseMove, 0, xEvent);
+	parent.sendMouseEvent (SWT.MouseMove, 0, xEvent.time, xEvent.x, xEvent.y, xEvent.state);
 
 	return 0;
 }

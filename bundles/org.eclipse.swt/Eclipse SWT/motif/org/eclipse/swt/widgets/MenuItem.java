@@ -873,14 +873,14 @@ int XmNactivateCallback (int w, int client_data, int call_data) {
 	Event event = new Event ();
 	if (struct.event != 0) {
 		XButtonEvent xEvent = new XButtonEvent ();
-		OS.memmove (xEvent, struct.event, XAnyEvent.sizeof);
+		OS.memmove (xEvent, struct.event, XButtonEvent.sizeof);
 		event.time = xEvent.time;
 		switch (xEvent.type) {
 			case OS.ButtonPress:
 			case OS.ButtonRelease:
 			case OS.KeyPress:
 			case OS.KeyRelease:
-				setInputState (event, xEvent);
+				setInputState (event, xEvent.state);
 				break;
 		}
 	}
@@ -910,14 +910,14 @@ int XmNvalueChangedCallback (int w, int client_data, int call_data) {
 	Event event = new Event ();
 	if (struct.event != 0) {
 		XButtonEvent xEvent = new XButtonEvent ();
-		OS.memmove (xEvent, struct.event, XAnyEvent.sizeof);
+		OS.memmove (xEvent, struct.event, XButtonEvent.sizeof);
 		event.time = xEvent.time;
 		switch (xEvent.type) {
 			case OS.ButtonPress:
 			case OS.ButtonRelease:
 			case OS.KeyPress:
 			case OS.KeyRelease:
-				setInputState (event, xEvent);
+				setInputState (event, xEvent.state);
 				break;
 		}
 	}

@@ -11,10 +11,11 @@
 package org.eclipse.swt.internal.motif;
 
  
-public class XExposeEvent extends XEvent {
-	public int x, y;
-	public int width, height;
+public class XExposeEvent extends XAnyEvent {
+	public int x;
+	public int y;
+	public int width;
+	public int height;
 	public int count;
-	public int pad0, pad1, pad2, pad3, pad4, pad5, pad6, pad7, pad8, pad9;
-	public int pad10, pad11, pad12, pad13;
+	public static final int sizeof = 40;
 }

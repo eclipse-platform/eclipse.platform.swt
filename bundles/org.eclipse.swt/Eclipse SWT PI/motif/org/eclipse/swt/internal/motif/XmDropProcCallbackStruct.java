@@ -11,9 +11,7 @@
 package org.eclipse.swt.internal.motif;
 
  
-public class XmDropProcCallbackStruct {
-	public int reason;
-	public int event;
+public class XmDropProcCallbackStruct extends XmAnyCallbackStruct {
 	public int timeStamp;
 	public int dragContext;
 	public short x;

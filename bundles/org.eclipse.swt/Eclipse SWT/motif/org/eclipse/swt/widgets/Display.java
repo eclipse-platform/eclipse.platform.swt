@@ -94,7 +94,7 @@ import org.eclipse.swt.graphics.*;
 public class Display extends Device {
 
 	/* Motif Only Public Fields */
-	public XAnyEvent xEvent = new XAnyEvent ();
+	public int xEvent;
 	int lastSerial;
 	
 	/* Windows, Events and Callbacks */
@@ -575,6 +575,8 @@ void createDisplay (DeviceData data) {
 	int xtContext = OS.XtCreateApplicationContext ();
 	OS.XtSetLanguageProc (xtContext, 0, 0);
 	
+	xEvent = OS.XtMalloc (XEvent.sizeof);
+
 	/* 
 	* Feature in Linux.  On some DBCS Linux platforms, the default
 	* font is not be properly initialized to contain a font set.
@@ -701,11 +703,11 @@ boolean filters (int eventType) {
 	if (filterTable == null) return false;
 	return filterTable.hooks (eventType);
 }
-boolean filterEvent (XAnyEvent event) {
+boolean filterEvent (int event) {
 
 	/* Check the event and find the widget */
-	if (event.type != OS.KeyPress) return false;
 	OS.memmove (keyEvent, event, XKeyEvent.sizeof);
+	if (keyEvent.type != OS.KeyPress) return false;
 	if (keyEvent.keycode == 0) return false;
 	int xWindow = keyEvent.window;
 	if (xWindow == 0) return false;
@@ -741,9 +743,9 @@ boolean filterEvent (XAnyEvent event) {
 		* event, it causes an infinite loop.  The fix to remember the serial
 		* number and never call XFilterEvent() twice for the same event.
 		*/
-		if (event.serial != lastSerial) {	
+		if (keyEvent.serial != lastSerial) {	
 			if (OS.XFilterEvent (event, OS.XtWindow (handle))) return true;
-			lastSerial = event.serial;
+			lastSerial = keyEvent.serial;
 		}
 	}
 
@@ -833,7 +835,7 @@ public Shell getActiveShell () {
 	int handle = OS.XtWindowToWidget (xDisplay, xWindow);
 	if (handle == 0) return null;
 	do {
-		if (OS.XtIsSubclass (handle, OS.ShellWidgetClass ())) {
+		if (OS.XtIsSubclass (handle, OS.shellWidgetClass ())) {
 			Widget widget = WidgetTable.get (handle);
 			if (widget instanceof Shell) return (Shell) widget;
 			return null;
@@ -1361,7 +1363,7 @@ protected void init () {
 void initializeButton () {
 
 	int shellHandle, widgetHandle;
-	int widgetClass = OS.TopLevelShellWidgetClass ();
+	int widgetClass = OS.topLevelShellWidgetClass ();
 
 	/* Get the push button information */
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
@@ -1396,7 +1398,7 @@ void initializeButton () {
 	OS.XtDestroyWidget (shellHandle);
 }
 void initializeComposite () {
-	int widgetClass = OS.TopLevelShellWidgetClass ();
+	int widgetClass = OS.topLevelShellWidgetClass ();
 	int shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
 	int scrolledHandle = OS.XmCreateMainWindow (shellHandle, null, null, 0);
 	int [] argList1 = {OS.XmNorientation, OS.XmHORIZONTAL};
@@ -1460,7 +1462,7 @@ void initializeDefaults () {
 }
 void initializeDialog () {
 	int shellHandle, widgetHandle;
-	int widgetClass = OS.TopLevelShellWidgetClass ();
+	int widgetClass = OS.topLevelShellWidgetClass ();
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
 	widgetHandle = OS.XmCreateDialogShell (shellHandle, null, null, 0);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
@@ -1520,7 +1522,7 @@ void initializeDisplay () {
 
 	/* Create the hidden Override shell parent */
 	int xScreen = OS.XDefaultScreen (xDisplay);
-	int widgetClass = OS.TopLevelShellWidgetClass ();
+	int widgetClass = OS.topLevelShellWidgetClass ();
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtResizeWidget (shellHandle, OS.XDisplayWidth (xDisplay, xScreen), OS.XDisplayHeight (xDisplay, xScreen), 0);
@@ -1537,7 +1539,7 @@ void initializeDisplay () {
 }
 void initializeLabel () {
 	int shellHandle, widgetHandle;
-	int widgetClass = OS.TopLevelShellWidgetClass ();
+	int widgetClass = OS.topLevelShellWidgetClass ();
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
 		
 	/* 
@@ -1565,7 +1567,7 @@ void initializeLabel () {
 }
 void initializeList () {
 	int shellHandle, widgetHandle;
-	int widgetClass = OS.TopLevelShellWidgetClass ();
+	int widgetClass = OS.topLevelShellWidgetClass ();
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
 	widgetHandle = OS.XmCreateScrolledList (shellHandle, new byte [1], null, 0);
 	OS.XtManageChild (widgetHandle);
@@ -1610,7 +1612,7 @@ void initializeList () {
 }
 void initializeScrollBar () {
 	int shellHandle, widgetHandle;
-	int widgetClass = OS.TopLevelShellWidgetClass ();
+	int widgetClass = OS.topLevelShellWidgetClass ();
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
 	widgetHandle = OS.XmCreateScrollBar (shellHandle, null, null, 0);
 	OS.XtManageChild (widgetHandle);
@@ -1674,7 +1676,7 @@ void initializeSystemColors () {
 }
 void initializeText () {
 	int shellHandle, widgetHandle;
-	int widgetClass = OS.TopLevelShellWidgetClass ();
+	int widgetClass = OS.topLevelShellWidgetClass ();
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
 	widgetHandle = OS.XmCreateScrolledText (shellHandle, new byte [1], null, 0);
 	OS.XtManageChild (widgetHandle);
@@ -1997,9 +1999,11 @@ void releaseDisplay () {
 	//OS.XtFree (tabTranslations);
 	//OS.XtFree (dragTranslations);
 
+	if (xEvent != 0) OS.XtFree(xEvent);
+	xEvent = 0;
+
 	/* Release references */
 	thread = null;
-	xEvent = null;
 	buttonBackground = buttonForeground = 0;
 	defaultBackground = defaultForeground = 0;
 	COLOR_WIDGET_DARK_SHADOW = COLOR_WIDGET_NORMAL_SHADOW = COLOR_WIDGET_LIGHT_SHADOW =
@@ -2331,7 +2335,7 @@ void showToolTip (int handle, String toolTipText) {
 		OS.XtSetValues (toolTipHandle, argList, argList.length / 2);
 		if (xmString != 0) OS.XmStringFree (xmString);
 	} else {
-		int widgetClass = OS.OverrideShellWidgetClass ();
+		int widgetClass = OS.overrideShellWidgetClass ();
 		int [] argList1 = {
 			OS.XmNmwmDecorations, 0,
 			OS.XmNborderWidth, 1,
@@ -2545,12 +2549,13 @@ static int untranslateKey (int key) {
  */
 public void update () {
 	checkDevice ();
-	XAnyEvent event = new XAnyEvent ();
+	int event = OS.XtMalloc (XEvent.sizeof);
 	int mask = OS.ExposureMask | OS.ResizeRedirectMask |
 		OS.StructureNotifyMask | OS.SubstructureNotifyMask |
 		OS.SubstructureRedirectMask;
 	OS.XSync (xDisplay, false); OS.XSync (xDisplay, false);
 	while (OS.XCheckMaskEvent (xDisplay, mask, event)) OS.XtDispatchEvent (event);
+	OS.XtFree (event);
 }
 /**
  * If the receiver's user-interface thread was <code>sleep</code>'ing, 

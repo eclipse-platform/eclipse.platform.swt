@@ -354,7 +354,7 @@ public void addShellListener(ShellListener listener) {
 	addListener(SWT.Deiconify,typedListener);
 }
 void adjustTrim () {
-	if (OS.XtIsSubclass (shellHandle, OS.OverrideShellWidgetClass ())) {
+	if (OS.XtIsSubclass (shellHandle, OS.overrideShellWidgetClass ())) {
 		return;
 	}
 	int [] argList = {OS.XmNoverrideRedirect, 0};
@@ -607,10 +607,10 @@ void createHandle (int index) {
 	byte [] appClass = display.appClass;
 	if (parent == null && (style & SWT.ON_TOP) == 0 && inputMode != OS.MWM_INPUT_FULL_APPLICATION_MODAL) {
 		int xDisplay = display.xDisplay;
-		int widgetClass = OS.TopLevelShellWidgetClass ();
+		int widgetClass = OS.topLevelShellWidgetClass ();
 		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList1, argList1.length / 2);
 	} else {
-		int widgetClass = OS.TransientShellWidgetClass ();
+		int widgetClass = OS.transientShellWidgetClass ();
 //		if ((style & SWT.ON_TOP) != 0) {
 //			widgetClass = OS.OverrideShellWidgetClass ();
 //		}
@@ -886,7 +886,7 @@ void hookEvents () {
 	super.hookEvents ();
 	int windowProc = display.windowProc;
 	OS.XtInsertEventHandler (shellHandle, OS.StructureNotifyMask, false, windowProc, STRUCTURE_NOTIFY, OS.XtListTail);
-	if (OS.XtIsSubclass (shellHandle, OS.OverrideShellWidgetClass ())) return;
+	if (OS.XtIsSubclass (shellHandle, OS.overrideShellWidgetClass ())) return;
 	OS.XtInsertEventHandler (shellHandle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
 	int [] argList = {OS.XmNdeleteResponse, OS.XmDO_NOTHING};
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
@@ -1401,17 +1401,18 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 			configured = false;
 			if (oldX != xEvent.x || oldY != xEvent.y) sendEvent (SWT.Move);
 			if (oldWidth != xEvent.width || oldHeight != xEvent.height) {
-				XAnyEvent event = new XAnyEvent ();
+				int xEvent1 = OS.XtMalloc (XEvent.sizeof);
 				display.resizeWindow = xEvent.window;
 				display.resizeWidth = xEvent.width;
 				display.resizeHeight = xEvent.height;
 				display.resizeCount = 0;
 				int checkResizeProc = display.checkResizeProc;
-				OS.XCheckIfEvent (xEvent.display, event, checkResizeProc, 0);
+				OS.XCheckIfEvent (xEvent.display, xEvent1, checkResizeProc, 0);
 				if (display.resizeCount == 0) {
 					sendEvent (SWT.Resize);
 					if (layout != null) layout (false);
 				}
+				OS.XtFree (xEvent1);
 			}
 			if (xEvent.x != 0) oldX = xEvent.x;
 			if (xEvent.y != 0) oldY = xEvent.y;

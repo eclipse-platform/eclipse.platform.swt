@@ -55,7 +55,7 @@ public Clipboard(Display display) {
 	}
 	this.display = display;
 	
-	int widgetClass = OS.TopLevelShellWidgetClass ();
+	int widgetClass = OS.topLevelShellWidgetClass ();
 	shellHandle = OS.XtAppCreateShell (null, null, widgetClass, display.xDisplay, null, 0);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtRealizeWidget (shellHandle);

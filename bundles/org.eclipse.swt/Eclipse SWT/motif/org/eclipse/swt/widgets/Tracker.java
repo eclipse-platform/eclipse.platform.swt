@@ -389,7 +389,8 @@ public boolean open () {
 		oldX [0] = cursorPos.x;  oldY [0] = cursorPos.y;
 	}
 
-	XAnyEvent xEvent = new XAnyEvent ();
+	int xEvent = OS.XtMalloc (XEvent.sizeof);
+	XAnyEvent anyEvent = new XAnyEvent();
 	int [] newX = new int [1], newY = new int [1];
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	
@@ -417,7 +418,8 @@ public boolean open () {
 	while (tracking) {
 		if (parent != null && parent.isDisposed ()) break;
 		OS.XtAppNextEvent (xtContext, xEvent);
-		switch (xEvent.type) {
+		OS.memmove (anyEvent, xEvent, XAnyEvent.sizeof);
+		switch (anyEvent.type) {
 			case OS.MotionNotify:
 				if (cursor != 0) {
 					OS.XChangeActivePointerGrab (
@@ -457,7 +459,7 @@ public boolean open () {
 					drawRectangles ();
 					oldX [0] = newX [0];  oldY [0] = newY [0];
 				}
-				tracking = xEvent.type != OS.ButtonRelease;
+				tracking = anyEvent.type != OS.ButtonRelease;
 				break;
 			case OS.KeyPress:
 				XKeyEvent keyEvent = new XKeyEvent ();
@@ -539,6 +541,7 @@ public boolean open () {
 				OS.XtDispatchEvent (xEvent);
 		}
 	}
+	OS.XtFree (xEvent);
 	drawRectangles ();
 	if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
 	if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);

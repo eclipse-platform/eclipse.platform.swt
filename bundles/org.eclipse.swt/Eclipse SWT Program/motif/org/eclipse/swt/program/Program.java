@@ -911,7 +911,7 @@ static boolean cde_init( Display display ) {
 	/* Use the character encoding for the default locale */
 	byte[] appName = Converter.wcsToMbcs( null, "SWT", true );
 	int xtContext  = OS.XtDisplayToApplicationContext( display.xDisplay );
-	int widgetClass = OS.TopLevelShellWidgetClass();
+	int widgetClass = OS.topLevelShellWidgetClass();
 	int shell = OS.XtAppCreateShell( appName, appName, widgetClass, display.xDisplay, null, 0 );
 	boolean initOK  = CDE.DtAppInitialize( xtContext, display.xDisplay, shell, appName, appName );
 	if (!initOK) {

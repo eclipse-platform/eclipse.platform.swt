@@ -968,7 +968,7 @@ void createRenderTable() {
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 	int context = fontBuffer[0], fontListEntry = 0;
-	int widgetClass = OS.TopLevelShellWidgetClass ();
+	int widgetClass = OS.topLevelShellWidgetClass ();
 	int[] renditions = new int[4]; int renditionCount = 0;	
 		
 	/* Create a rendition for each entry in the font list */

@@ -1659,7 +1659,7 @@ boolean sendIMKeyEvent (int type, XKeyEvent xEvent, int textHandle) {
 		Event event = new Event ();
 		event.time = xEvent.time;
 		event.character = chars [index];
-		setInputState (event, xEvent);
+		setInputState (event, xEvent.state);
 		sendEvent (type, event);
 		// widget could be disposed at this point
 	
@@ -1750,13 +1750,13 @@ void sendMouseEvent (int type, int button, XCrossingEvent xEvent) {
 	setInputState (event, mask [0]);
 	postEvent (type, event);
 }
-void sendMouseEvent (int type, int button, XInputEvent xEvent) {
+void sendMouseEvent (int type, int button, int time, int x, int y, int state) {
 	Event event = new Event ();
-	event.time = xEvent.time;
+	event.time = time;
 	event.button = button;
-	event.x = xEvent.x;
-	event.y = xEvent.y;
-	setInputState (event, xEvent);
+	event.x = x;
+	event.y = y;
+	setInputState (event, state);
 	postEvent (type, event);
 }
 /**
@@ -2720,11 +2720,12 @@ void update (boolean all) {
 		if (display == 0) return;
 		int window = OS.XtWindow (handle);
 		if (window == 0) return;
-		XAnyEvent event = new XAnyEvent ();
+		int event = OS.XtMalloc (XEvent.sizeof);
 		OS.XSync (display, false);  OS.XSync (display, false);
 		while (OS.XCheckWindowEvent (display, window, OS.ExposureMask, event)) {
 			OS.XtDispatchEvent (event);
 		}
+		OS.XtFree (event);
 	}
 }
 void updateIM () {
@@ -2781,7 +2782,7 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
-	sendMouseEvent (SWT.MouseDown, xEvent.button, xEvent);
+	sendMouseEvent (SWT.MouseDown, xEvent.button, xEvent.time, xEvent.x, xEvent.y, xEvent.state);
 	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
 		postEvent (SWT.DragDetect);
 	}
@@ -2793,7 +2794,7 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	int lastTime = display.lastTime, eventTime = xEvent.time;
 	int lastButton = display.lastButton, eventButton = xEvent.button;
 	if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
-		sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent);
+		sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent.time, xEvent.x, xEvent.y, xEvent.state);
 	}
 	display.lastTime = eventTime == 0 ? 1 : eventTime;
 	display.lastButton = eventButton;
@@ -2813,7 +2814,7 @@ int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispa
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
-	sendMouseEvent (SWT.MouseUp, xEvent.button, xEvent);
+	sendMouseEvent (SWT.MouseUp, xEvent.button, xEvent.time, xEvent.x, xEvent.y, xEvent.state);
 	return 0;
 }
 int XEnterWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
@@ -2867,7 +2868,7 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 	OS.XGetInputFocus (xDisplay, xWindow, unused);
 	if (xWindow [0] != 0) {
 		int widget = OS.XtWindowToWidget (xDisplay, xWindow [0]);
-		if (widget != 0 && OS.XtClass (widget) == OS.XmMenuShellWidgetClass ()) return 0;
+		if (widget != 0 && OS.XtClass (widget) == OS.xmMenuShellWidgetClass ()) return 0;
 	}
 	
 	/* Process the focus change for the widget */
@@ -3010,7 +3011,7 @@ int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispa
 	display.addMouseHoverTimeOut (handle);
 	XMotionEvent xEvent = new XMotionEvent ();
 	OS.memmove (xEvent, call_data, XMotionEvent.sizeof);
-	sendMouseEvent (SWT.MouseMove, 0, xEvent);
+	sendMouseEvent (SWT.MouseMove, 0, xEvent.time, xEvent.x, xEvent.y, xEvent.state);
 	return 0;
 }
 }

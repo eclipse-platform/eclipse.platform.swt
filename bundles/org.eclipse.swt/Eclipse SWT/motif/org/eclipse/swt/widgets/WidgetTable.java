@@ -26,7 +26,7 @@ class WidgetTable {
 	}
 public static synchronized Widget get (int handle) {
 	if (handle == 0) return null;
-	if (OS.XtIsSubclass (handle, OS.ShellWidgetClass ())) {
+	if (OS.XtIsSubclass (handle, OS.shellWidgetClass ())) {
 		for (int i=0; i<Shells.length; i++) {
 			Widget shell = Shells [i];
 			if ((shell != null) && (shell.topHandle () == handle)) return shell;
@@ -42,7 +42,7 @@ public static synchronized Widget get (int handle) {
 }
 public synchronized static void put (int handle, Widget widget) {
 	if (handle == 0) return;
-	if (OS.XtIsSubclass (handle, OS.ShellWidgetClass ())) {
+	if (OS.XtIsSubclass (handle, OS.shellWidgetClass ())) {
 		for (int i=0; i<Shells.length; i++) {
 			if (Shells [i] == null) {
 				Shells [i] = (Shell) widget;
@@ -77,7 +77,7 @@ public synchronized static void put (int handle, Widget widget) {
 }
 public static synchronized Widget remove (int handle) {
 	if (handle == 0) return null;
-	if (OS.XtIsSubclass (handle, OS.ShellWidgetClass ())) {
+	if (OS.XtIsSubclass (handle, OS.shellWidgetClass ())) {
 		for (int i=0; i<Shells.length; i++) {
 			Widget shell = Shells [i];
 			if ((shell != null) && (shell.topHandle () == handle)) {

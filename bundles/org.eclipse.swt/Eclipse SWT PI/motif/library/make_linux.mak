@@ -28,7 +28,7 @@ QT_HOME    = /usr/lib/qt3
 SWT_PREFIX   = swt
 WS_PREFIX    = motif
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-SWT_OBJ      = callback.o structs.o swt.o
+SWT_OBJ      = callback.o structs.o swt.o swt_custom.o
 SWT_LIB      = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 	           -rpath . -x -shared -lX11 -lm -lXext -lXt -lXp -ldl -lXinerama
 

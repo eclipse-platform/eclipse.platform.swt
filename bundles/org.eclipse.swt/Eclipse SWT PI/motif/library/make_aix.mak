@@ -31,7 +31,7 @@ CDE_HOME   = /usr/dt
 SWT_PREFIX   = swt
 WS_PREFIX    = motif
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
-SWT_OBJ      = callback.o structs.o swt.o 
+SWT_OBJ      = callback.o structs.o swt.o swt_custom.o 
 SWT_LIB      = -L$(MOTIF_HOME) -G -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm -lXt -lX11 -lXext -liconv
 
 CDE_PREFIX   = swt-cde

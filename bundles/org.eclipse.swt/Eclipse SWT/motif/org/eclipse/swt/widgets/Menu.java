@@ -229,7 +229,7 @@ void createHandle (int index) {
 		int [] argc = new int [] {0};
 		int xtContext = OS.XtCreateApplicationContext ();
 		xDisplay = OS.XtOpenDisplay (xtContext, null, null, null, 0, 0, argc, 0);
-		shellHandle = OS.XtAppCreateShell (null, null, OS.TopLevelShellWidgetClass (), xDisplay, null, 0);
+		shellHandle = OS.XtAppCreateShell (null, null, OS.topLevelShellWidgetClass (), xDisplay, null, 0);
 	}
 	
 	/* BAR menu */

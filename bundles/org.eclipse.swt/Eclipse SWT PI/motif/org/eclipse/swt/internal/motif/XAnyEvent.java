@@ -12,6 +12,9 @@ package org.eclipse.swt.internal.motif;
 
  
 public class XAnyEvent extends XEvent {
-	public int pad0, pad1, pad2, pad3, pad4, pad5, pad6, pad7, pad8, pad9;
-	public int pad10, pad11, pad12, pad13, pad14, pad15, pad16, pad17, pad18;
+	public int serial;
+	public int send_event;
+	public int display;
+	public int window;
+	public static final int sizeof = 20;
 }
