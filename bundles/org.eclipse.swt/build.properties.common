@@ -1,5 +1,5 @@
 build.vaj.Eclipse\ SWT\ Custom\ Widgets=Eclipse SWT Custom Widgets/common
-build.includes=plugin.xml, plugin.jars,build.properties,readme_swt.html,version.txt
+build.includes=plugin.xml,plugin.jars,build.properties,readme_swt.html,version.txt
 
 source.ws/win32/swt.jar=Eclipse SWT/win32,Eclipse SWT/common,Eclipse SWT AWT/win32,Eclipse SWT Custom Widgets/common,Eclipse SWT Drag and Drop/win32,Eclipse SWT Drag and Drop/common,Eclipse SWT OLE Win32/win32,Eclipse SWT Printing/win32,Eclipse SWT Printing/common,Eclipse SWT Program/win32,Eclipse SWT Program/common
 
