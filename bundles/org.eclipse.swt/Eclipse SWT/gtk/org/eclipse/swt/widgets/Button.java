@@ -41,7 +41,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Button extends Control {
-	int boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
+	int /*long*/ boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
 	boolean selected;
 	Image image;
 	String text;
@@ -205,7 +205,7 @@ void createHandle (int index) {
 		OS.gtk_widget_show (boxHandle);
 		OS.gtk_widget_show (labelHandle);
 	}
-	int parentHandle = parent.parentingHandle ();
+	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_widget_show (fixedHandle);
@@ -245,7 +245,7 @@ void deregister () {
 	if (arrowHandle != 0) display.removeWidget (arrowHandle);
 }
 
-int fontHandle () {
+int /*long*/ fontHandle () {
 	if (labelHandle != 0) return labelHandle;
 	return super.fontHandle ();
 }
@@ -340,14 +340,14 @@ public String getText () {
 	return text;
 }
 
-int gtk_button_press_event (int widget, int event) {
-	int result = super.gtk_button_press_event (widget, event);
+int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	if ((style & SWT.RADIO) != 0) selected  = getSelection ();
 	return result;
 }
 
-int gtk_clicked (int widget) {
+int /*long*/ gtk_clicked (int /*long*/ widget) {
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
 			setSelection (!selected);
@@ -359,8 +359,8 @@ int gtk_clicked (int widget) {
 	return 0;
 }
 
-int gtk_focus_in_event (int widget, int event) {
-	int result = super.gtk_focus_in_event (widget, event);
+int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_focus_in_event (widget, event);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0 && OS.GTK_WIDGET_HAS_DEFAULT (handle)) {
@@ -370,8 +370,8 @@ int gtk_focus_in_event (int widget, int event) {
 	return result;
 }
 
-int gtk_focus_out_event (int widget, int event) {
-	int result = super.gtk_focus_out_event (widget, event);
+int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_focus_out_event (widget, event);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0 && !OS.GTK_WIDGET_HAS_DEFAULT (handle)) {
@@ -383,8 +383,8 @@ int gtk_focus_out_event (int widget, int event) {
 	return result;
 }
 
-int gtk_key_press_event (int widget, int event) {
-	int result = super.gtk_key_press_event (widget, event);
+int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) return result;
 	if ((style & SWT.RADIO) != 0) selected  = getSelection ();
 	return result;

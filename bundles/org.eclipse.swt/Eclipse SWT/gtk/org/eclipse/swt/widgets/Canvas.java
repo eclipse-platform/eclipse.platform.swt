@@ -99,22 +99,22 @@ Point getIMCaretPos () {
 	return new Point (caret.x, caret.y);
 }
 
-int gtk_expose_event (int widget, int event) {
+int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ event) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	int result = super.gtk_expose_event (widget, event);
+	int /*long*/ result = super.gtk_expose_event (widget, event);
 	if (isFocus) caret.setFocus ();
 	return result;
 }
 
-int gtk_focus_in_event (int widget, int event) {
-	int result = super.gtk_focus_in_event (widget, event);
+int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_focus_in_event (widget, event);
 	if (caret != null) caret.setFocus ();
 	return result;
 }
 
-int gtk_focus_out_event (int widget, int event) {
-	int result = super.gtk_focus_out_event (widget, event);
+int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_focus_out_event (widget, event);
 	if (caret != null) caret.killFocus ();
 	return result;
 }
@@ -168,21 +168,21 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 //	gc.copyArea (x, y, width, height, destX, destY);
 //	gc.dispose ();
 	
-	int window = paintWindow ();
-	int visibleRegion = OS.gdk_drawable_get_visible_region (window);
+	int /*long*/ window = paintWindow ();
+	int /*long*/ visibleRegion = OS.gdk_drawable_get_visible_region (window);
 	GdkRectangle srcRect = new GdkRectangle ();
 	srcRect.x = x;
 	srcRect.y = y;
 	srcRect.width = width;
 	srcRect.height = height;
-	int copyRegion = OS.gdk_region_rectangle (srcRect);
+	int /*long*/ copyRegion = OS.gdk_region_rectangle (srcRect);
 	OS.gdk_region_intersect(copyRegion, visibleRegion);
-	int invalidateRegion = OS.gdk_region_rectangle (srcRect);	
+	int /*long*/ invalidateRegion = OS.gdk_region_rectangle (srcRect);	
 	OS.gdk_region_subtract (invalidateRegion, visibleRegion);
 	OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
 	GdkRectangle copyRect = new GdkRectangle();
 	OS.gdk_region_get_clipbox (copyRegion, copyRect);
-	int gdkGC = OS.gdk_gc_new (window);
+	int /*long*/ gdkGC = OS.gdk_gc_new (window);
 	OS.gdk_gc_set_exposures (gdkGC, true);
 	OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
 	OS.g_object_unref (gdkGC);
@@ -282,7 +282,7 @@ public void setFont (Font font) {
 }
 	
 void updateCaret () {
-	int imHandle = imHandle ();
+	int /*long*/ imHandle = imHandle ();
 	if (imHandle == 0) return;
 	GdkRectangle rect = new GdkRectangle ();
 	rect.x = caret.x;

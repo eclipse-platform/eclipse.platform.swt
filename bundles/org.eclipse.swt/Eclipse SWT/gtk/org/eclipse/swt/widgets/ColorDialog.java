@@ -110,7 +110,7 @@ public RGB getRGB () {
  */
 public RGB open () {
 	byte [] buffer = Converter.wcsToMbcs (null, title, true);
-	int handle = OS.gtk_color_selection_dialog_new (buffer);
+	int /*long*/ handle = OS.gtk_color_selection_dialog_new (buffer);
 	if (parent!=null) {
 		OS.gtk_window_set_transient_for(handle, parent.topHandle());
 	}

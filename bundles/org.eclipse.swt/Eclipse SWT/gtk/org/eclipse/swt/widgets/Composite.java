@@ -39,8 +39,8 @@ import org.eclipse.swt.graphics.*;
  * @see Canvas
  */
 public class Composite extends Scrollable {
-	public int  embeddedHandle;
-	int imHandle, socketHandle;
+	public int /*long*/  embeddedHandle;
+	int /*long*/ imHandle, socketHandle;
 	Layout layout;
 	Control[] tabList;
 
@@ -83,15 +83,15 @@ public Composite (Composite parent, int style) {
 }
 
 Control [] _getChildren () {
-	int parentHandle = parentingHandle ();
-	int list = OS.gtk_container_get_children (parentHandle);
+	int /*long*/ parentHandle = parentingHandle ();
+	int /*long*/ list = OS.gtk_container_get_children (parentHandle);
 	if (list == 0) return new Control [0];
 	list = OS.g_list_reverse (list);
 	int count = OS.g_list_length (list);
 	Control [] children = new Control [count];
 	int i = 0, j = 0;
 	while (i < count) {
-		int handle = OS.g_list_nth_data (list, i);
+		int /*long*/ handle = OS.g_list_nth_data (list, i);
 		if (handle != 0) {
 			Widget widget = display.getWidget (handle);
 			if (widget != null && widget != this) {
@@ -176,14 +176,14 @@ void createHandle (int index) {
 	createHandle (index, parent.parentingHandle (), scrolled);
 }
 
-void createHandle (int index, int parentHandle, boolean scrolled) {
+void createHandle (int index, int /*long*/ parentHandle, boolean scrolled) {
 	if (scrolled) {
 		fixedHandle = OS.gtk_fixed_new ();
 		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_fixed_set_has_window (fixedHandle, true);
-		int vadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		int /*long*/ vadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 		if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
-		int hadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		int /*long*/ hadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 		if (hadj == 0) error (SWT.ERROR_NO_HANDLES);
 		scrolledHandle = OS.gtk_scrolled_window_new (hadj, vadj);
 		if (scrolledHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
@@ -232,7 +232,7 @@ void createHandle (int index, int parentHandle, boolean scrolled) {
 		embeddedHandle = OS.gtk_socket_get_id (socketHandle);
 	}
 	if (imHandle != 0) {
-		int window = OS.GTK_WIDGET_WINDOW (handle);
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
 		if (window != 0) {
 			OS.gtk_im_context_set_client_window (imHandle, window);
 		}
@@ -307,7 +307,7 @@ void fixTabList (Control control) {
 	tabList = newList;
 }
 
-int focusHandle () {
+int /*long*/ focusHandle () {
 	if (socketHandle != 0) return socketHandle;
 	return super.focusHandle ();
 }
@@ -392,8 +392,8 @@ public Control [] getTabList () {
 	return tabList;
 }
 
-int gtk_button_press_event (int widget, int event) {
-	int result = super.gtk_button_press_event (widget, event);
+int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_button_press_event (widget, event);
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 			GdkEventButton gdkEvent = new GdkEventButton ();
@@ -406,7 +406,7 @@ int gtk_button_press_event (int widget, int event) {
 	return result;
 }
 
-int gtk_expose_event (int widget, int eventPtr) {
+int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	if ((state & CANVAS) == 0) {
 		return super.gtk_expose_event (widget, eventPtr);
 	}
@@ -416,7 +416,7 @@ int gtk_expose_event (int widget, int eventPtr) {
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
 	GdkEventExpose gdkEvent = new GdkEventExpose ();
 	OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
-	int [] rectangles = new int [1];
+	int /*long*/ [] rectangles = new int /*long*/ [1];
 	int [] n_rectangles = new int [1];
 	OS.gdk_region_get_rectangles (gdkEvent.region, rectangles, n_rectangles);
 	GdkRectangle rect = new GdkRectangle ();
@@ -437,8 +437,8 @@ int gtk_expose_event (int widget, int eventPtr) {
 	return 0;
 }
 
-int gtk_key_press_event (int widget, int event) {
-	int result = super.gtk_key_press_event (widget, event);
+int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) return result;
 	/*
 	* Feature in GTK.  The default behavior when the return key
@@ -457,17 +457,17 @@ int gtk_key_press_event (int widget, int event) {
 	}
 	return result;
 }
-int gtk_focus_in_event (int widget, int event) {
-	int result = super.gtk_focus_in_event (widget, event);
+int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_focus_in_event (widget, event);
 	return (state & CANVAS) != 0 ? 1 : result;
 }
 
-int gtk_focus_out_event (int widget, int event) {
-	int result = super.gtk_focus_out_event (widget, event);
+int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_focus_out_event (widget, event);
 	return (state & CANVAS) != 0 ? 1 : result;
 }
 
-int gtk_scroll_child (int widget, int scrollType, int horizontal) {
+int /*long*/ gtk_scroll_child (int /*long*/ widget, int /*long*/ scrollType, int /*long*/ horizontal) {
 	/* Stop GTK scroll child signal for canvas */
 	OS.g_signal_stop_emission_by_name (widget, OS.scroll_child);
 	return 1;
@@ -491,7 +491,7 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 }
 
-int imHandle () {
+int /*long*/ imHandle () {
 	return imHandle;
 }
 
@@ -540,16 +540,16 @@ public void layout (boolean changed) {
 	layout.layout (this, changed);
 }
 
-void moveAbove (int child, int sibling) {
+void moveAbove (int /*long*/ child, int /*long*/ sibling) {
 	if (child == sibling) return;
-	int parentHandle = parentingHandle ();
+	int /*long*/ parentHandle = parentingHandle ();
 	GtkFixed fixed = new GtkFixed ();
 	OS.memmove (fixed, parentHandle);
-	int children = fixed.children;
+	int /*long*/ children = fixed.children;
 	if (children == 0) return;
 	int [] data = new int [1];
 	int [] widget = new int [1];
-	int childData = 0, childLink = 0, siblingLink = 0, temp = children;
+	int /*long*/ childData = 0, childLink = 0, siblingLink = 0, temp = children;
 	while (temp != 0) {
 		OS.memmove (data, temp, 4);
 		OS.memmove (widget, data [0], 4);
@@ -577,16 +577,16 @@ void moveAbove (int child, int sibling) {
 	OS.memmove (parentHandle, fixed);
 }
 
-void moveBelow (int child, int sibling) {
+void moveBelow (int /*long*/ child, int /*long*/ sibling) {
 	if (child == sibling) return;
-	int parentHandle = parentingHandle ();
+	int /*long*/ parentHandle = parentingHandle ();
 	GtkFixed fixed = new GtkFixed ();
 	OS.memmove (fixed, parentHandle);
-	int children = fixed.children;
+	int /*long*/ children = fixed.children;
 	if (children == 0) return;
 	int [] data = new int [1];
 	int [] widget = new int [1];
-	int childData = 0, childLink = 0, siblingLink = 0, temp = children;
+	int /*long*/ childData = 0, childLink = 0, siblingLink = 0, temp = children;
 	while (temp != 0) {
 		OS.memmove (data, temp, 4);
 		OS.memmove (widget, data [0], 4);
@@ -625,7 +625,7 @@ Point minimumSize () {
 	return new Point (width, height);
 }
 
-int parentingHandle () {
+int /*long*/ parentingHandle () {
 	if ((state & CANVAS) != 0) return handle;
 	return fixedHandle != 0 ? fixedHandle : handle;
 }

@@ -89,13 +89,13 @@ void createWidget (int index) {
 boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;	
-	int window = parent.paintWindow ();
-	int gc = OS.gdk_gc_new (window);
+	int /*long*/ window = parent.paintWindow ();
+	int /*long*/ gc = OS.gdk_gc_new (window);
 	GdkColor color = new GdkColor ();
 	color.red = (short) 0xffff;
 	color.green = (short) 0xffff;
 	color.blue = (short) 0xffff;
-	int colormap = OS.gdk_colormap_get_system ();
+	int /*long*/ colormap = OS.gdk_colormap_get_system ();
 	OS.gdk_colormap_alloc_color (colormap, color, true, true);
 	OS.gdk_gc_set_foreground (gc, color);
 	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
