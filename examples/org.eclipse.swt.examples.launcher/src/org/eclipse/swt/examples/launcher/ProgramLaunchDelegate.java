@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.*;import org.eclipse.debug.core.*;import org.e
 /**
  * A launch delegate for running a standalone program embedded inside a plugin package.
  */
-public class ProgramLaunchDelegate implements LaunchDelegate {
+class ProgramLaunchDelegate implements LaunchDelegate {
 	private String mainClassName;
 	private String pluginId;
 

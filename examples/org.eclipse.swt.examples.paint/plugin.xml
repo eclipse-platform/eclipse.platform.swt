@@ -27,7 +27,8 @@
          name="%view.PaintExample.name"
          category="org.eclipse.swt.examples.category"
          class="org.eclipse.swt.examples.paint.PaintView"
-         id="org.eclipse.swt.examples.paint.view">
+         id="org.eclipse.swt.examples.paint.view"
+         icon="icons/paint_example.gif">
    </view>
 </extension>
 <extension
@@ -121,16 +122,17 @@
 <extension
       point="org.eclipse.swt.examples.launcher.launchItems">
    <category
-         name="%launchcategory.SWTExamples.name"
-         description="%launchcategory.SWTExamples.description"
-         id="org.eclipse.swt.examples.launchcategory">
+         name="%launchcategory.SWTViewExamples.name"
+         description="%launchcategory.SWTViewExamples.description"
+         id="org.eclipse.swt.examples.launchViewCategory">
    </category>
    <viewItem
          viewId="org.eclipse.swt.examples.paint.view"
          name="%launchitem.PaintExample.name"
          description="%launchitem.PaintExample.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchViewCategory"
          source="paintsrc.zip"
+         icon="icons/paint_example.gif"
          id="org.eclipse.swt.examples.paint.launcher">
    </viewItem>
 </extension>

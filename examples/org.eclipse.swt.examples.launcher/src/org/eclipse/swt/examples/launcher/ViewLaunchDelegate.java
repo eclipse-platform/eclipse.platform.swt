@@ -5,7 +5,7 @@ package org.eclipse.swt.examples.launcher;
  */
 import org.eclipse.core.runtime.*;import org.eclipse.ui.*;
 /** * A launch delegate for starting an Eclipse view. */
-public class ViewLaunchDelegate implements LaunchDelegate {
+class ViewLaunchDelegate implements LaunchDelegate {
 	private String pluginViewId;
 
 	public ViewLaunchDelegate(String pluginViewId) {

@@ -21,32 +21,40 @@
 <extension
       point="org.eclipse.swt.examples.launcher.launchItems">
    <category
-         name="%launchcategory.SWTExamples.name"
-         description="%launchcategory.SWTExamples.description"
-         id="org.eclipse.swt.examples.launchcategory">
+         name="%launchcategory.SWTStandaloneExamples.name"
+         description="%launchcategory.SWTStandaloneExamples.description"
+         id="org.eclipse.swt.examples.launchStandaloneCategory">
    </category>
    <programItem
          pluginId="org.eclipse.swt.examples"
          mainClass="org.eclipse.swt.examples.addressbook.AddressBook"
          name="%launchitem.AddressBook.name"
          description="%launchitem.AddressBook.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.examples.addressbook.launcher">
    </programItem>
    <programItem
          pluginId="org.eclipse.swt.examples"
          mainClass="org.eclipse.swt.examples.explorer.FileViewer"
-         name="%launchitem.FileViewerExample.name"
-         description="%launchitem.FileViewerExample.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         name="%launchitem.FileViewer.name"
+         description="%launchitem.FileViewer.description"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.examples.explorer.launcher">
+   </programItem>
+   <programItem
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.hoverhelp.HoverHelp"
+         name="%launchitem.HoverHelp.name"
+         description="%launchitem.HoverHelp.description"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
+         id="org.eclipse.swt.examples.hoverhelp.launcher">
    </programItem>
    <programItem
          pluginId="org.eclipse.swt.examples"
          mainClass="org.eclipse.swt.examples.helloworld.HelloWorld1"
          name="%launchitem.HelloWorld1.name"
          description="%launchitem.HelloWorld1.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.examples.helloworld1.launcher">
    </programItem>
    <programItem
@@ -54,7 +62,7 @@
          mainClass="org.eclipse.swt.examples.helloworld.HelloWorld2"
          name="%launchitem.HelloWorld2.name"
          description="%launchitem.HelloWorld2.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.examples.helloworld2.launcher">
    </programItem>
    <programItem
@@ -62,7 +70,7 @@
          mainClass="org.eclipse.swt.examples.helloworld.HelloWorld3"
          name="%launchitem.HelloWorld3.name"
          description="%launchitem.HelloWorld3.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.examples.helloworld3.launcher">
    </programItem>
    <programItem
@@ -70,7 +78,7 @@
          mainClass="org.eclipse.swt.examples.helloworld.HelloWorld4"
          name="%launchitem.HelloWorld4.name"
          description="%launchitem.HelloWorld4.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.examples.helloworld4.launcher">
    </programItem>
    <programItem
@@ -78,7 +86,7 @@
          mainClass="org.eclipse.swt.examples.helloworld.HelloWorld5"
          name="%launchitem.HelloWorld5.name"
          description="%launchitem.HelloWorld5.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.examples.helloworld5.launcher">
    </programItem>
    <programItem
@@ -86,7 +94,7 @@
          mainClass="org.eclipse.swt.examples.imageexample.ImageAnalyzer"
          name="%launchitem.ImageAnalyzer.name"
          description="%launchitem.ImageAnalyzer.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.examples.imageanalyzer.launcher">
    </programItem>
    <programItem
@@ -94,7 +102,7 @@
          mainClass="org.eclipse.swt.examples.javaviewer.JavaViewer"
          name="%launchitem.JavaViewer.name"
          description="%launchitem.JavaViewer.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.examples.javaviewer.launcher">
    </programItem>
    <programItem
@@ -102,7 +110,7 @@
          mainClass="org.eclipse.swt.examples.texteditor.ColorTextEditor"
          name="%launchitem.TextEditor.name"
          description="%launchitem.TextEditor.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.examples.texteditor.launcher">
    </programItem>
 </extension>

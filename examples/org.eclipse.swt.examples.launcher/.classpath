@@ -19,5 +19,6 @@
         path="ECLIPSE_HOME/plugins/org.eclipse.debug.core/dtcore.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.debug.core/dtcoresrc.zip"/>
     <classpathentry kind="var"
         path="ECLIPSE_HOME/plugins/org.eclipse.swt/swt.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.swt/swtsrc.zip"/>
+    <classpathentry kind="src" path="icons"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

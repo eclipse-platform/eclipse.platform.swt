@@ -1,9 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.swt.examples.launcher.org.eclipse.swt.examples.launcher">
+<schema targetNamespace="org.eclipse.swt.examples.launcher">
 <annotation>
    <appInfo>
-      <meta.schema plugin="org.eclipse.swt.examples.launcher.org.eclipse.swt.examples.launcher" id="launchItems" name="%extension-point.launchItems.name"/>
+      <meta.schema plugin="org.eclipse.swt.examples.launcher" id="launchItems" name="Launch Items"/>
    </appInfo>
    <documentation>
       [Enter description of this extension point]
@@ -82,6 +81,13 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -116,6 +122,13 @@
             </annotation>
          </attribute>
          <attribute name="source" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="icon" type="string">
             <annotation>
                <documentation>
                   

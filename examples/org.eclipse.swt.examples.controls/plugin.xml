@@ -27,22 +27,25 @@
          name="%view.ControlsExample.name"
          category="org.eclipse.swt.examples.category"
          class="org.eclipse.swt.examples.controls.ControlView"
-         id="org.eclipse.swt.examples.controls.view">
+         id="org.eclipse.swt.examples.controls.view"
+         icon="icons/controls_example.gif">
    </view>
 </extension>
 <extension
       point="org.eclipse.swt.examples.launcher.launchItems">
    <category
-         name="%launchcategory.SWTExamples.name"
-         id="org.eclipse.swt.examples.launchcategory">
+         name="%launchcategory.SWTViewExamples.name"
+         description="%launchcategory.SWTViewExamples.description"
+         id="org.eclipse.swt.examples.launchViewCategory">
    </category>
    <viewItem
          viewId="org.eclipse.swt.examples.controls.view"
          name="%launchitem.ControlsExample.name"
          description="%launchitem.ControlsExample.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchViewCategory"
          source="controlssrc.zip"
-         id="org.eclipse.swt.examples.controls.launcher">
+         id="org.eclipse.swt.examples.controls.launcher"
+         icon="icons/controls_example.gif">
    </viewItem>
 </extension>
 </plugin>

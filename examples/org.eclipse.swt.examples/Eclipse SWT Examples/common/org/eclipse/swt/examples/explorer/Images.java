@@ -10,8 +10,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-public class Images {
-
+class Images {
 	// Bitmap Images
 	public static Image Copy;
 	public static Image Cut;

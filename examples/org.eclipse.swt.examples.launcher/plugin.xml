@@ -46,23 +46,25 @@
          name="%view.LauncherExample.name"
          category="org.eclipse.swt.examples.category"
          class="org.eclipse.swt.examples.launcher.LauncherView"
-         id="org.eclipse.swt.examples.launcher.view">
+         id="org.eclipse.swt.examples.launcher.view"
+         icon="icons/launcher_example.gif">
    </view>
 </extension>
 <extension
       point="org.eclipse.swt.examples.launcher.launchItems">
    <category
-         name="%launchcategory.SWTExamples.name"
-         description="%launchcategory.SWTExamples.description"
-         id="org.eclipse.swt.examples.launchcategory">
+         name="%launchcategory.SWTViewExamples.name"
+         description="%launchcategory.SWTViewExamples.description"
+         id="org.eclipse.swt.examples.launchViewCategory">
    </category>
    <viewItem
          viewId="org.eclipse.swt.examples.launcher.view"
          name="%launchitem.LauncherExample.name"
          description="%launchitem.LauncherExample.description"
-         category="org.eclipse.swt.examples.launchcategory"
+         category="org.eclipse.swt.examples.launchViewCategory"
          source="launchersrc.zip"
-         id="org.eclipse.swt.examples.launcher.launcher">
+         id="org.eclipse.swt.examples.launcher.launcher"
+         icon="icons/launcher_example.gif">
    </viewItem>
 </extension>
 </plugin>
