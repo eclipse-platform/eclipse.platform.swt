@@ -74,7 +74,9 @@ public final class GC {
 	static final int DIRTY_FONT = 1 << 3;
 	static final int DIRTY_LINESTYLE = 1 << 4;
 	static final int DIRTY_LINEWIDTH = 1 << 5;
-	static final int DIRTY_XORMODE = 1 << 6;
+	static final int DIRTY_LINECAP = 1 << 6;
+	static final int DIRTY_LINEJOIN = 1 << 7;
+	static final int DIRTY_XORMODE = 1 << 8;
 	
 GC() {
 }
@@ -1995,6 +1997,16 @@ public Color getForeground() {
 	return Color.photon_new(data.device, data.foreground);
 }
 
+public int getLineCap() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.lineCap;
+}
+
+public int getLineJoin() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.lineJoin;
+}
+
 /** 
  * Returns the receiver's line style, which will be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
@@ -2320,6 +2332,34 @@ public void setForeground (Color color) {
 	dirtyBits |= DIRTY_FOREGROUND;
 }
 
+public void setLineCap(int cap) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	switch (cap) {
+		case SWT.CAP_ROUND:
+		case SWT.CAP_FLAT:
+		case SWT.CAP_SQUARE:
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	data.lineCap = cap;
+	dirtyBits |= DIRTY_LINECAP;
+}
+
+public void setLineJoin(int join) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	switch (join) {
+		case SWT.JOIN_MITER:
+		case SWT.JOIN_ROUND:
+		case SWT.JOIN_BEVEL:
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	data.lineJoin = join;
+	dirtyBits |= DIRTY_LINEJOIN;
+}
+
 /** 
  * Sets the receiver's line style to the argument, which must be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
@@ -2389,8 +2429,23 @@ int setGC() {
 		if ((dirtyBits & DIRTY_CLIPPING) != 0) {
 			OS.PgSetMultiClip(data.clipRectsCount, data.clipRects);
 		}
-		if ((dirtyBits & (DIRTY_LINESTYLE | DIRTY_LINEWIDTH)) != 0) {
-			OS.PgSetStrokeCap(OS.Pg_ROUND_CAP);
+		if ((dirtyBits & DIRTY_LINECAP) != 0) {
+			int cap_style = 0;
+			switch (data.lineCap) {
+				case SWT.CAP_ROUND:cap_style = OS.Pg_ROUND_CAP; break;
+				case SWT.CAP_FLAT:cap_style = OS.Pg_BUTT_CAP; break;
+				case SWT.CAP_SQUARE:cap_style = OS.Pg_SQUARE_CAP; break;
+			}
+			OS.PgSetStrokeCap(cap_style);
+		}
+		if ((dirtyBits & DIRTY_LINEJOIN) != 0) {
+			int join_style = 0;
+			switch (data.lineJoin) {
+				case SWT.JOIN_ROUND:join_style = OS.Pg_ROUND_JOIN; break;
+				case SWT.JOIN_MITER:join_style = OS.Pg_MITER_JOIN; break;
+				case SWT.JOIN_BEVEL:join_style = OS.Pg_BEVEL_JOIN; break;
+			}
+			OS.PgSetStrokeJoin(join_style);
 		}
 		if ((dirtyBits & DIRTY_LINESTYLE) != 0) {
 			byte[] dashList = null;
