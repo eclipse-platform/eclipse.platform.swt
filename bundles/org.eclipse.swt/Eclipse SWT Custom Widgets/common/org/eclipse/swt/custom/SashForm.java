@@ -157,16 +157,16 @@ Control[] getControls(boolean onlyVisible) {
 	return result;
 }
 void onDragSash(Event event) {
-  if (event.detail == SWT.DRAG) {
-    // constrain feedback
-    Rectangle area = getClientArea();
-    if (getOrientation() == SWT.HORIZONTAL) {
+	if (event.detail == SWT.DRAG) {
+		// constrain feedback
+		Rectangle area = getClientArea();
+		if (getOrientation() == SWT.HORIZONTAL) {
 			event.x = Math.min(Math.max(DRAG_MINIMUM, event.x), area.width - DRAG_MINIMUM - SASH_WIDTH);
-    } else {
+		} else {
 			event.y = Math.min(Math.max(DRAG_MINIMUM, event.y), area.height - DRAG_MINIMUM - SASH_WIDTH);
-    }
-    return;
-  }
+		}
+		return;
+	}
 
 	Sash sash = (Sash)event.widget;
 	int sashIndex = -1;
@@ -191,6 +191,7 @@ void onDragSash(Event event) {
 		b2.x += shift;
 		b2.width -= shift;
 		if (b1.width < DRAG_MINIMUM || b2.width < DRAG_MINIMUM) {
+			event.doit = false;
 			return;
 		}
 		c1.setData(LAYOUT_RATIO, new Long((((long)b1.width << 16) + area.width - 1) / area.width));
@@ -201,6 +202,7 @@ void onDragSash(Event event) {
 		b2.y += shift;
 		b2.height -= shift;
 		if (b1.height < DRAG_MINIMUM || b2.height < DRAG_MINIMUM) {
+			event.doit = false;
 			return;
 		}
 		c1.setData(LAYOUT_RATIO, new Long((((long)b1.height << 16) + area.height - 1) / area.height));
