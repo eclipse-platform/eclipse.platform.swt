@@ -2466,7 +2466,11 @@ boolean translateTraversal (MSG msg) {
 	Shell shell = getShell ();
 	Control control = this;
 	do {
-		if (control.traverse (event)) return true;
+		if (control.traverse (event)) {
+			int hwndShell = shell.handle;
+			OS.SendMessage (hwndShell, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+			return true;
+		}
 		if (!event.doit && control.hooks (SWT.Traverse)) {
 			return false;
 		}
