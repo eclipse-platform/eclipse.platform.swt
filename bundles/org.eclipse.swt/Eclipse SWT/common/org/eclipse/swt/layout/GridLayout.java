@@ -153,10 +153,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		if (data.grabExcessHorizontalSpace && data.minimumWidth > 0) {
 			if (data.cacheWidth < data.minimumWidth) {
 				int trim = 0;
-				if (child instanceof Group) {
-					Group g = (Group)child;
-					trim = g.getSize ().x - g.getClientArea ().width;
-				} else if (child instanceof Scrollable) {
+				if (child instanceof Scrollable) {
 					Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
 					trim = rect.width;
 				} else {
@@ -397,10 +394,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 						if ((currentWidth != data.cacheWidth && data.horizontalAlignment == SWT.FILL) ||
 							(data.cacheWidth > currentWidth)) { 
 							int trim = 0;
-							if (child instanceof Group) {
-								Group g = (Group)child;
-								trim = g.getSize ().x - g.getClientArea ().width;
-							} else if (child instanceof Scrollable) {
+							if (child instanceof Scrollable) {
 								Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
 								trim = rect.width;
 							} else {

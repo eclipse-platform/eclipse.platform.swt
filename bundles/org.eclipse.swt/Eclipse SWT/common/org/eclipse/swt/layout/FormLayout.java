@@ -258,12 +258,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			FormAttachment right = data.getRightAttachment (child, spacing, flushCache);
 			int x1 = left.solveX (width), x2 = right.solveX (width);
 			if (data.height == SWT.DEFAULT && !data.needed) {
-				//TEMPORARY CODE
 				int trim = 0;
-				if (child instanceof Group) {
-					Group g = (Group)child;
-					trim = g.getSize ().x - g.getClientArea ().width;
-				} else if (child instanceof Scrollable) {
+				if (child instanceof Scrollable) {
 					Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
 					trim = rect.width;
 				} else {
