@@ -141,7 +141,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	} else {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
 		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);
-		length = OS.g_utf8_strlen(OS.pango_layout_get_text(layout), -1);
+		length = (int)/*64*/OS.g_utf8_strlen(OS.pango_layout_get_text(layout), -1);
 		selectionStart = translateOffset(selectionStart);
 		selectionEnd = translateOffset(selectionEnd);
 		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
@@ -394,7 +394,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 	int[] nAttrs = new int[1];
 	OS.pango_layout_get_log_attrs(layout, attrs, nAttrs);
 	if (attrs[0] == 0) return offset + step;
-	length = OS.g_utf8_strlen(OS.pango_layout_get_text(layout), -1);
+	length = (int)/*64*/OS.g_utf8_strlen(OS.pango_layout_get_text(layout), -1);
 	offset = translateOffset(offset);
 	PangoLogAttr logAttr = new PangoLogAttr();
 	offset += step;
