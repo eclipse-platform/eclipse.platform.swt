@@ -17,6 +17,7 @@ public TrayIcon (Display display) {
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
+	this.visible = true;
 }
 
 public void addSelectionListener(SelectionListener listener) {
