@@ -70,7 +70,7 @@ public void getBounds(float[] bounds) {
     if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
     if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
- 
+}
 
 public void getCurrentPoint(float[] point) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
