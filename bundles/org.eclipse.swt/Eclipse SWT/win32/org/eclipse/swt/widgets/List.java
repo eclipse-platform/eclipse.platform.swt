@@ -835,7 +835,10 @@ public void remove (int index) {
 /**
  * Removes the items from the receiver which are
  * between the given zero-relative start and end 
- * indices (inclusive).
+ * indices (inclusive).  If an invalid range is
+ * specified then any items in the receiver that correspond
+ * to valid indices within the range are removed before the
+ * <code>ERROR_INVALID_RANGE</code> exception is thrown.  
  *
  * @param start the start of the range
  * @param end the end of the range
