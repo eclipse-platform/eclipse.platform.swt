@@ -346,25 +346,19 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 }
 
 int /*long*/ createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY) {
-	/* Create bitmaps */
 	int /*long*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, width, height);
-	if (sourcePixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int /*long*/ maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, width, height);
-	if (maskPixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-
-	/* Get the colors */
-	GdkColor foreground = new GdkColor();
-	foreground.red = (short)65535;
-	foreground.green = (short)65535;
-	foreground.blue = (short)65535;
-	GdkColor background = new GdkColor();
-
-	/* Create the cursor */
-	int /*long*/ cursor = OS.gdk_cursor_new_from_pixmap (sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
-	
-	/* Dispose the pixmaps */
-	OS.g_object_unref (sourcePixmap);
-	OS.g_object_unref (maskPixmap);
+	int /*long*/ cursor = 0;
+	if (sourcePixmap != 0 && maskPixmap != 0) {
+		GdkColor foreground = new GdkColor();
+		foreground.red = (short)65535;
+		foreground.green = (short)65535;
+		foreground.blue = (short)65535;
+		GdkColor background = new GdkColor();
+		cursor = OS.gdk_cursor_new_from_pixmap (sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
+	}	
+	if (sourcePixmap != 0) OS.g_object_unref (sourcePixmap);
+	if (maskPixmap != 0) OS.g_object_unref (maskPixmap);
 	return cursor;
 }
 

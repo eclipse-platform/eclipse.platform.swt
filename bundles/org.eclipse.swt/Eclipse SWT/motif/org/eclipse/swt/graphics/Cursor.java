@@ -347,18 +347,18 @@ int createCursor(byte[] sourceData, byte[] maskData, int width, int height, int 
 	int drawable = OS.XDefaultRootWindow(xDisplay);
 	int sourcePixmap = OS.XCreateBitmapFromData(xDisplay, drawable, sourceData, width, height);
 	int maskPixmap = OS.XCreateBitmapFromData(xDisplay, drawable, maskData, width, height);
-	/* Get the colors */
-	int screenNum = OS.XDefaultScreen(xDisplay);
-	XColor foreground = new XColor();
-	foreground.pixel = OS.XWhitePixel(xDisplay, screenNum);
-	foreground.red = foreground.green = foreground.blue = (short)0xFFFF;
-	XColor background = new XColor();
-	background.pixel = OS.XBlackPixel(xDisplay, screenNum);
-	/* Create the cursor */
-	int cursor = OS.XCreatePixmapCursor(xDisplay, sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
-	/* Dispose the pixmaps */
-	OS.XFreePixmap(xDisplay, sourcePixmap);
-	OS.XFreePixmap(xDisplay, maskPixmap);
+	int cursor = 0;
+	if (sourcePixmap != 0 && maskPixmap != 0) {
+		int screenNum = OS.XDefaultScreen(xDisplay);
+		XColor foreground = new XColor();
+		foreground.pixel = OS.XWhitePixel(xDisplay, screenNum);
+		foreground.red = foreground.green = foreground.blue = (short)0xFFFF;
+		XColor background = new XColor();
+		background.pixel = OS.XBlackPixel(xDisplay, screenNum);
+		cursor = OS.XCreatePixmapCursor(xDisplay, sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
+	}
+	if (sourcePixmap != 0) OS.XFreePixmap(xDisplay, sourcePixmap);
+	if (maskPixmap != 0) OS.XFreePixmap(xDisplay, maskPixmap);
 	return cursor;
 }
 /**
