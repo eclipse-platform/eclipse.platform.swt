@@ -21,15 +21,13 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
-/* DO NOT USE - UNDER CONSTRUCTION */
-
 /**
  * Instances of this class are selectable user interface
  * objects that allow the user to enter and modify number
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>READ_ONLY, WRAP</dd>
+ * <dd>READ_ONLY</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, Modify</dd>
  * </dl>
@@ -37,7 +35,7 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public class Spinner extends Composite {	
+class Spinner extends Composite {	
 	int textHandle, buttonHandle;
 	int textVisibleRgn, buttonVisibleRgn;
 	int increment = 1;
@@ -68,16 +66,15 @@ public class Spinner extends Composite {
  * </ul>
  *
  * @see SWT#READ_ONLY
- * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-Spinner (Composite parent, int style) {
+public Spinner (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
 int actionProc (int theControl, int partCode) {
-	int value = OS.GetControl32BitValue (buttonHandle);
+	int value = getSelectionText ();
     switch (partCode) {
 	    case OS.kControlUpButtonPart:
 			value += increment;
@@ -86,7 +83,11 @@ int actionProc (int theControl, int partCode) {
 			value -= increment;
 	        break;
 	}
-	update (value, true, false);
+	int max = OS.GetControl32BitMaximum (buttonHandle);
+	int min = OS.GetControl32BitMinimum (buttonHandle);
+	if (value > max) value = min;
+	if (value < min) value = max;
+	setSelection (value, true);
 	return 0;
 }
 
@@ -167,7 +168,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @see VerifyListener
  * @see #removeVerifyListener
  */
-public void addVerifyListener (VerifyListener listener) {
+void addVerifyListener (VerifyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
@@ -296,7 +297,7 @@ void createHandle () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.SetControlData (textHandle, OS.kControlEntireControl, OS.kControlEditTextLockedTag, 1, new byte [] {1});
 	}
-	update (0, false, true);
+	setSelection (0, false);
 }
 
 /**
@@ -415,6 +416,28 @@ public int getSelection () {
 	return OS.GetControl32BitValue (buttonHandle);
 }
 
+int getSelectionText () {
+	int [] actualSize = new int [1];
+	int [] ptr = new int [1];
+	if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) == OS.noErr) {
+		CFRange range = new CFRange ();
+		range.location = 0;
+		range.length = OS.CFStringGetLength (ptr [0]);
+		char [] buffer= new char [range.length];
+		OS.CFStringGetCharacters (ptr [0], range, buffer);
+		OS.CFRelease (ptr [0]);
+		String string = new String (buffer);
+		try {
+			int value = Integer.parseInt (string);
+			int max = OS.GetControl32BitMaximum (buttonHandle);
+			int min = OS.GetControl32BitMinimum (buttonHandle);
+			if (min <= value && value <= max) return value;
+		} catch (NumberFormatException e) {
+		}
+	}	
+	return OS.GetControl32BitValue (buttonHandle);
+}
+
 int getVisibleRegion (int control, boolean clipChildren) {
 	if (control == textHandle) {
 		if (!clipChildren) return super.getVisibleRegion (control, clipChildren);
@@ -456,6 +479,18 @@ Rect inset () {
 	return display.spinnerInset;
 }
 
+int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	short [] part = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+	if (part [0] == OS.kControlFocusNoPart) {
+		int value = getSelectionText ();
+		setSelection (value, true);		
+	}
+	return result;
+}
+
 int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -463,31 +498,26 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	int delta = 0;
 	switch (keyCode [0]) {
-		case 36: { /* Return */
+		case 36: /* Return */
+			int value = getSelectionText ();
+			setSelection (value, true);
 			postEvent (SWT.DefaultSelection);
 			break;
-		}
-		case 116: { /* Page Up */
-			int value = OS.GetControl32BitValue (buttonHandle);
-			update (value + pageIncrement, true, false);
-			return OS.noErr;
-		}
-		case 121: { /* Page Down */
-			int value = OS.GetControl32BitValue (buttonHandle);
-			update (value - pageIncrement, true, false);
-			return OS.noErr;
-		}
-		case 125: { /* Down */
-			int value = OS.GetControl32BitValue (buttonHandle);
-			update (value - increment, true, false);
-			return OS.noErr;
-		}
-		case 126: { /* Up */
-			int value = OS.GetControl32BitValue (buttonHandle);
-			update (value + increment, true, false);
-			return OS.noErr;
-		}
+		case 116: /* Page Up */ delta = pageIncrement; break;
+		case 121: /* Page Down */ delta = -pageIncrement; break;
+		case 125: /* Down */ delta = -increment; break;
+		case 126: /* Up */ delta = increment; break;
+	}
+	if (delta != 0) {
+		int value = getSelectionText () + delta;
+		int max = OS.GetControl32BitMaximum (buttonHandle);
+		int min = OS.GetControl32BitMinimum (buttonHandle);
+		if (value > max) value = min;
+		if (value < min) value = max;
+		setSelection (value, true);
+		return OS.noErr;
 	}
 	return result;
 }
@@ -597,7 +627,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * @see VerifyListener
  * @see #addVerifyListener
  */
-public void removeVerifyListener (VerifyListener listener) {
+void removeVerifyListener (VerifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
@@ -641,13 +671,12 @@ boolean sendKeyEvent (int type, Event event) {
 	if (event.character == 0) return true;
 	String oldText = "", newText = "";
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		//int charCount = getCharCount ();
-		//Point selection = getSelection ();
 		int [] actualSize = new int [1];
 		int [] ptr = new int [1];
 		int charCount = 0;
 		if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) == OS.noErr) {
-			charCount = OS.CFStringGetLength (ptr [0]); 
+			charCount = OS.CFStringGetLength (ptr [0]);
+			OS.CFRelease (ptr [0]);
 		} 
 		short [] selection = new short [2];
 		OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null);
@@ -673,9 +702,6 @@ boolean sendKeyEvent (int type, Event event) {
 		}
 		newText = verifyText (oldText, start, end, event);
 		if (newText == null) return false;
-//		if (charCount - (end - start) + newText.length () > textLimit) { //Spinner not textLimit
-//			return false;
-//		}
 		if (newText != oldText) {
 			setText (newText, start, end, false);
 			start += newText.length ();
@@ -773,11 +799,12 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	int minimum = OS.GetControl32BitMinimum (buttonHandle);
-	if (value > minimum) {
-		OS.SetControl32BitMaximum (buttonHandle, value);
-		update (0, false, true);
-	}
+	if (value < 0) return;
+	int min = OS.GetControl32BitMinimum (buttonHandle);
+	if (value <= min) return;
+	int pos = OS.GetControl32BitValue (buttonHandle);
+	OS.SetControl32BitMaximum (buttonHandle, value);
+	if (pos > value) setSelection (value, false);	
 }
 
 /**
@@ -795,11 +822,12 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	int maximum = OS.GetControl32BitMaximum (buttonHandle);
-	if (value < maximum) {
-		OS.SetControl32BitMinimum (buttonHandle, value);
-		update (0, false, true);
-	}
+	if (value < 0) return;
+	int max = OS.GetControl32BitMaximum (buttonHandle);
+	if (value >= max) return;
+	int pos = OS.GetControl32BitValue (buttonHandle);
+	OS.SetControl32BitMinimum (buttonHandle, value);
+	if (pos < value) setSelection (value, false);
 }
 
 /**
@@ -835,7 +863,34 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	update (value, false, false);
+	int min = OS.GetControl32BitMinimum (buttonHandle);
+	int max = OS.GetControl32BitMaximum (buttonHandle);
+	value = Math.min (Math.max (min, value), max);
+	setSelection (value, false);
+}
+
+void setSelection (int value, boolean notify) {
+	OS.SetControl32BitValue (buttonHandle, value);
+	String string = String.valueOf (value);
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		int [] actualSize = new int [1];
+		int [] ptr = new int [1];
+		int length = 0;
+		if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) == OS.noErr) {
+			length = OS.CFStringGetLength (ptr [0]);
+			OS.CFRelease (ptr [0]);
+		}
+		string = verifyText (string, 0, length, null);
+		if (string == null) return;
+	}
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	OS.SetControlData (textHandle, OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
+	OS.CFRelease (ptr);
+	sendEvent (SWT.Modify);
+	if (notify) postEvent (SWT.Selection);
 }
 
 char [] setText (String string, int start, int end, boolean notify) {
@@ -883,43 +938,6 @@ void setZOrder () {
 	super.setZOrder ();
 	if (textHandle != 0) OS.HIViewAddSubview (handle, textHandle);
 	if (buttonHandle != 0) OS.HIViewAddSubview (handle, buttonHandle);
-}
-
-void update (int value, boolean notify, boolean force) {
-	int pos = OS.GetControl32BitValue (buttonHandle);
-	if (force) {
-		value = pos;
-	} else {
-		int max = OS.GetControl32BitMaximum (buttonHandle);
-		int min = OS.GetControl32BitMinimum (buttonHandle);
-		//TODO handle wrapping
-		if (value > max) value = max;
-		if (value < min) value = min;
-	}	
-	if (value != pos || force) {
-		OS.SetControl32BitValue (buttonHandle, value);
-		String text = String.valueOf (value);
-		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-			int [] actualSize = new int [1];
-			int [] ptr = new int [1];
-			int length = 0;
-			if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) == OS.noErr) {
-				length = OS.CFStringGetLength (ptr [0]);
-				OS.CFRelease (ptr [0]);
-			};
-			text = verifyText (text, 0, length, null);  
-		}
-		char [] buffer = new char [text.length ()];
-		text.getChars (0, buffer.length, buffer, 0);
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, text.length ());
-		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);		
-		OS.SetControlData (textHandle, OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
-		OS.CFRelease (ptr);
-		sendEvent (SWT.Modify);
-		if (notify) {
-			postEvent (SWT.Selection);
-		}
-	}
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {
