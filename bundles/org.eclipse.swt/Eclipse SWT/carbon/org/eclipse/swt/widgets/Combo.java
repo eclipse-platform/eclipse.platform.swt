@@ -209,7 +209,10 @@ void createHandle () {
 	} else {
 		int [] outControl = new int [1];
 		CGRect rect = new CGRect ();
-		int inAttributes = OS.kHIComboBoxAutoCompletionAttribute | OS.kHIComboBoxAutoSizeListAttribute;
+		int inAttributes = OS.kHIComboBoxAutoSizeListAttribute;
+		// The following code is intentionally commented.
+		// Auto completion does not allow the user to change case.
+		//inAttributes |= OS.kHIComboBoxAutoCompletionAttribute;
 		OS.HIComboBoxCreate(rect, 0, null, 0, inAttributes, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
