@@ -673,7 +673,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		}
 		return 1;
 	}
-	return super. processEvent (eventNumber, int0, int1, int2);
+	return super.processEvent (eventNumber, int0, int1, int2);
 }
 
 int processKeyDown (int callData, int arg1, int int2) {
