@@ -112,7 +112,6 @@ public class Display extends Device {
 	Callback windowCallback, drawCallback, workCallback, inputCallback, hotkeyCallback;
 	int windowProc, drawProc, workProc, inputProc, hotkeyProc, input, pulse;
 	boolean idle;
-	int eventLoopCount;
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
@@ -1415,7 +1414,6 @@ void postEvent (Event event) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	eventLoopCount++;
 	idle = false;
 	OS.PtRelease ();
 	OS.PtHold ();
@@ -1430,8 +1428,6 @@ public boolean readAndDispatch () {
 	}
 	OS.PtRelease ();
 	OS.PtHold ();
-	if (eventLoopCount > 0) OS.PtFlush();
-	eventLoopCount--;
 	return result;
 }
 
@@ -1837,6 +1833,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
  */
 public boolean sleep () {
 	checkDevice ();
+	OS.PtFlush ();
 	OS.PtHold ();
 	OS.PtAppProcessEvent (app_context);
 	runDeferredEvents ();
