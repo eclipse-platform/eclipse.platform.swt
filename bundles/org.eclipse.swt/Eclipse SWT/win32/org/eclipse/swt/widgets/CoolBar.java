@@ -629,8 +629,8 @@ void setBackgroundPixel (int pixel) {
 	/*
 	* Feature in Windows.  For some reason, Windows
 	* does not fully erase the coolbar area and coolbar
-	* items when you set the background.  The work around
-	* is to invalidate the coolbar area.
+	* items when you set the background.  The fix is
+	* to invalidate the coolbar area.
 	*/
 	if (!OS.IsWindowVisible (handle)) return;
 	if (OS.IsWinCE) {
