@@ -2988,7 +2988,22 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 		if (OS.IsDBCSLeadByte (lead)) return null;
 	}
 	
+	/*
+	* Feature in Windows.  When the user presses Ctrl+Backspace
+	* or Ctrl+Enter, Windows sends a WM_CHAR with Delete (0x7F)
+	* and '\n' instead of '\b' and '\r'.  This is the correct
+	* platform behavior but is not portable.  The fix is detect
+	* these cases and convert the character.
+	*/
 	display.lastAscii = wParam;
+	switch (display.lastAscii) {
+		case SWT.DEL:
+			if (display.lastKey == SWT.BS) display.lastAscii = SWT.BS;
+			break;
+		case SWT.LF:
+			if (display.lastKey == SWT.CR) display.lastAscii = SWT.CR;
+			break;
+	}
 	display.lastNull = wParam == 0;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_CHAR, wParam, lParam)) {
 		return LRESULT.ZERO;

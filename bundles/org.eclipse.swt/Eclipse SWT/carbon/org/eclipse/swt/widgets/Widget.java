@@ -1457,7 +1457,17 @@ void setKeyState (Event event, int theEvent) {
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	event.keyCode = Display.translateKey (keyCode [0]);
 	switch (event.keyCode) {
-		case SWT.LF: event.character = '\n'; break;
+		case SWT.LF: {
+			/*
+			* Feature in the Macintosh.  When the numeric key pad
+			* Enter key is pressed, it generates '\n'.  This is the
+			* correct platform behavior but is not portable.  The
+			* fix is to convert the '\n' into '\r'.
+			*/
+			event.keyCode = SWT.CR;
+			event.character = '\r';
+			break;
+		}
 		case SWT.BS: event.character = '\b'; break;
 		case SWT.CR: event.character = '\r'; break;
 		case SWT.DEL: event.character = 0x7F; break;
