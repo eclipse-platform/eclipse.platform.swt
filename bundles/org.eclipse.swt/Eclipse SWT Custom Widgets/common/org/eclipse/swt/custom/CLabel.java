@@ -375,8 +375,13 @@ void onPaint(PaintEvent event) {
 	if (shortenText) {
 		extent.x = 0;
 	    for(int i = 0; i < lines.length; i++) {
-	       lines[i] = shortenText(gc, lines[i], availableWidth);
-	       extent.x = Math.max(extent.x, getTotalSize(null, lines[i]).x);
+	    	Point e = gc.textExtent(lines[i], DRAW_FLAGS);
+	    	if (e.x > availableWidth) {
+	    		lines[i] = shortenText(gc, lines[i], availableWidth);
+	    		extent.x = Math.max(extent.x, getTotalSize(null, lines[i]).x);
+	    	} else {
+	    		extent.x = Math.max(extent.x, e.x);
+	    	}
 	    }
 		if (appToolTipText == null) {
 			super.setToolTipText(text);
