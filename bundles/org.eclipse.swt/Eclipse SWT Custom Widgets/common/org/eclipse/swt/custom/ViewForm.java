@@ -241,7 +241,7 @@ public Rectangle getClientArea() {
 	checkWidget();
 	Rectangle clientArea = super.getClientArea();
 	clientArea.x += borderLeft;
-	clientArea.y += borderTop + 1;
+	clientArea.y += borderTop;
 	clientArea.width -= borderLeft + borderRight;
 	clientArea.height -= borderTop + borderBottom;
 	return clientArea;
