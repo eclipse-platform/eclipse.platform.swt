@@ -1197,14 +1197,30 @@ public Color getBackground () {
 }
 
 GdkColor getBackgroundColor () {
+	return getBgColor ();
+}
+
+GdkColor getBgColor () {
 	int fontHandle = fontHandle ();
 	GtkStyle style = new GtkStyle ();
-	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
+	OS.memmove (style, OS.gtk_widget_get_style (fontHandle));
 	GdkColor color = new GdkColor ();
 	color.pixel = style.bg0_pixel;
 	color.red = style.bg0_red;
 	color.green = style.bg0_green;
 	color.blue = style.bg0_blue;
+	return color;
+}
+
+GdkColor getBaseColor () {
+	int fontHandle = fontHandle ();
+	GtkStyle style = new GtkStyle ();
+	OS.memmove (style, OS.gtk_widget_get_style (fontHandle));
+	GdkColor color = new GdkColor ();
+	color.pixel = style.base0_pixel;
+	color.red = style.base0_red;
+	color.green = style.base0_green;
+	color.blue = style.base0_blue;
 	return color;
 }
 
@@ -1295,6 +1311,10 @@ public Color getForeground () {
 }
 
 GdkColor getForegroundColor () {
+	return getFgColor ();
+}
+
+GdkColor getFgColor () {
 	int fontHandle = fontHandle ();
 	GtkStyle style = new GtkStyle ();
 	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
@@ -1303,6 +1323,18 @@ GdkColor getForegroundColor () {
 	color.red = style.fg0_red;
 	color.green = style.fg0_green;
 	color.blue = style.fg0_blue;
+	return color;
+}
+
+GdkColor getTextColor () {
+	int fontHandle = fontHandle ();
+	GtkStyle style = new GtkStyle ();
+	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
+	GdkColor color = new GdkColor ();
+	color.pixel = style.text0_pixel;
+	color.red = style.text0_red;
+	color.green = style.text0_green;
+	color.blue = style.text0_blue;
 	return color;
 }
 
