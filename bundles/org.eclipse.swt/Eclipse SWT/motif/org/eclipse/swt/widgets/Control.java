@@ -433,11 +433,8 @@ void createWidget (int index) {
 	* created.  Unless explicitly changed, the overridded traversal
 	* order is the same as the default.
 	*/
-	int [] argList1 = new int [] {OS.XmNnavigationType, 0};
-	OS.XtGetValues (handle, argList1, argList1.length / 2);
-	if (argList1 [1] == OS.XmTAB_GROUP) {
-		int [] argList2 = new int [] {OS.XmNnavigationType, OS.XmEXCLUSIVE_TAB_GROUP};
-		OS.XtSetValues (handle, argList2, argList2.length / 2);
+	if (getNavigationType () == OS.XmTAB_GROUP) {
+		setNavigationType (OS.XmEXCLUSIVE_TAB_GROUP);
 	}
 }
 int defaultBackground () {
@@ -769,6 +766,11 @@ public Point getLocation () {
 public Menu getMenu () {
 	checkWidget();
 	return menu;
+}
+int getNavigationType () {
+	int [] argList = {OS.XmNnavigationType, 0};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	return argList [1];
 }
 /**
  * Returns the receiver's parent, which must be a <code>Composite</code>
@@ -2126,6 +2128,11 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 }
 
+void setNavigationType (int type) {
+	int [] argList = {OS.XmNnavigationType, type};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+}
+
 /**
  * Changes the parent of the widget to be the one provided if
  * the underlying operating system supports this feature.
@@ -2457,9 +2464,7 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 }
 int traversalCode () {
 	int code = SWT.TRAVERSE_ESCAPE | SWT.TRAVERSE_RETURN;
-	int [] argList = {OS.XmNnavigationType, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] == OS.XmNONE) {
+	if (getNavigationType () == OS.XmNONE) {
 		code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
 	} else {
 		code |= SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;

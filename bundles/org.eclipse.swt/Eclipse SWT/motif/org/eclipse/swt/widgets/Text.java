@@ -573,6 +573,25 @@ int getLineNumber (int position) {
 	}
 	return count;
 }
+int getNavigationType () {
+	/*
+	* Bug in Motif.  On Solaris only, the implementation
+	* of XtGetValues for XmText does not check for a zero
+	* pointer in the arg list and GP's.  The fix is to
+	* allocate and free memory for the arg list value.
+	*/
+	if ((style & SWT.SINGLE) != 0) {
+		return super.getNavigationType ();
+	}
+	int ptr = OS.XtMalloc (4);
+	if (ptr == 0) return OS.XmNONE;
+	int [] argList = {OS.XmNnavigationType, ptr};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int [] buffer = new int [1];
+	OS.memmove (buffer, ptr, 4);
+	OS.XtFree (ptr);
+	return buffer [0];
+}
 /**
  * Gets the position of the selected text.
  * <p>

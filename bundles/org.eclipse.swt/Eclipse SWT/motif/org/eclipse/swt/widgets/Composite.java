@@ -268,17 +268,17 @@ public Control [] getTabList () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control control = children [i];
-		int [] argList = new int [] {OS.XmNnavigationType, 0};
-		OS.XtGetValues (control.handle, argList, argList.length / 2);
-		if (argList [1] == OS.XmEXCLUSIVE_TAB_GROUP) count++;
+		int type = control.getNavigationType ();
+		if (type == OS.XmEXCLUSIVE_TAB_GROUP) {
+			count++;
+		}
 	}
 	int index = 0;
 	Control [] tabList = new Control [count];
 	for (int i=0; i<children.length; i++) {
 		Control control = children [i];
-		int [] argList = new int [] {OS.XmNnavigationType, 0};
-		OS.XtGetValues (control.handle, argList, argList.length / 2);
-		if (argList [1] == OS.XmEXCLUSIVE_TAB_GROUP) {
+		int type = control.getNavigationType ();
+		if (type == OS.XmEXCLUSIVE_TAB_GROUP) {
 			tabList [index++] = control;
 		}
 	}
@@ -573,13 +573,11 @@ public void setTabList (Control [] tabList) {
 		}
 		if (control != this) error (SWT.ERROR_INVALID_PARENT);
 	}
-	int [] argList1 = new int [] {OS.XmNnavigationType, OS.XmTAB_GROUP};
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control control = children [i];
-		OS.XtSetValues (control.handle, argList1, argList1.length / 2);
+		control.setNavigationType (OS.XmTAB_GROUP);
 	}
-	int [] argList2 = new int [] {OS.XmNnavigationType, OS.XmEXCLUSIVE_TAB_GROUP};
 	for (int i=0; i<tabList.length; i++) {
 		/*
 		* Set the XmNnavigationType twice, once to clear the
@@ -588,8 +586,8 @@ public void setTabList (Control [] tabList) {
 		* same and does not change the tab order.
 		*/
 		Control control = tabList [i];
-		OS.XtSetValues (control.handle, argList1, argList1.length / 2);
-		OS.XtSetValues (control.handle, argList2, argList2.length / 2);
+		control.setNavigationType (OS.XmTAB_GROUP);
+		control.setNavigationType (OS.XmEXCLUSIVE_TAB_GROUP);
 	}
 }
 int traversalCode () {
