@@ -23,7 +23,7 @@ import org.eclipse.swt.internal.win32.*;
 
 public class PrintDialog extends Dialog {
 	int scope = PrinterData.ALL_PAGES;
-	int startPage = -1, endPage = -1;
+	int startPage = 1, endPage = 1;
 	boolean printToFile = false;
 	
 /**
@@ -254,8 +254,8 @@ public PrinterData open() {
 		PrinterData data = new PrinterData(driver, device);
 		if ((pd.Flags & OS.PD_PAGENUMS) != 0) {
 			data.scope = PrinterData.PAGE_RANGE;
-			data.startPage = pd.nFromPage;
-			data.endPage = pd.nToPage;
+			data.startPage = pd.nFromPage & 0xFFFF;
+			data.endPage = pd.nToPage & 0xFFFF;
 		} else if ((pd.Flags & OS.PD_SELECTION) != 0) {
 			data.scope = PrinterData.SELECTION;
 		}
