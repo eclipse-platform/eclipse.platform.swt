@@ -964,6 +964,12 @@ XColor getXColor (int pixel) {
 boolean hasFocus () {
 	return this == getDisplay ().getFocusControl ();
 }
+/**
+ * Returns true if the widget has native IM support
+ */
+boolean hasIMSupport() {
+	return false;
+}
 void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
 	OS.XtAddEventHandler (handle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
@@ -976,6 +982,15 @@ void hookEvents () {
 	OS.XtInsertEventHandler (handle, OS.ExposureMask, false, windowProc, EXPOSURE, OS.XtListTail);
 	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
 	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, HELP_CALLBACK);
+}
+int hoverProc (int id) {
+	return hoverProc (id, true);
+}
+int hoverProc (int id, boolean showTip) {
+	Display display = getDisplay ();
+	if (showTip) display.showToolTip (handle, toolTipText);
+	sendMouseEvent (SWT.MouseHover, 0);
+	return 0;
 }
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
@@ -1294,7 +1309,29 @@ int processFocusIn () {
 	sendEvent (SWT.FocusIn);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
-	processIMEFocusIn ();
+	if (!hasIMSupport()) {
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+			short [] point = getIMECaretPos ();
+			int ptr = OS.XtMalloc (4);
+			OS.memmove (ptr, point, 4);
+		
+			/*
+			* Bug in Motif. On Linux Japanese only, XmImSetFocusValues will cause
+			* a GPF when the XmNfontList value does not containt a FontSet. The fix
+			* is to call XmImSetValues to set the values and then call
+			* XmImSetFocusValues.
+			*/
+			int[] argList = {
+//				OS.XmNforeground, getForegroundPixel(),
+//				OS.XmNbackground, getBackgroundPixel(),
+				OS.XmNspotLocation, ptr,
+				OS.XmNfontList, font.handle,
+			};
+			OS.XmImSetValues (handle, argList, argList.length / 2);
+			OS.XmImSetFocusValues (handle, null, 0);
+			if (ptr != 0) OS.XtFree (ptr);
+		}
+	}	
 	return 0;
 }
 int processFocusOut () {
@@ -1306,45 +1343,11 @@ int processFocusOut () {
 		// widget could be disposed at this point
 		if (handle == 0) return 0;
 	}
-	processIMEFocusOut ();
-	return 0;
-}
-int processIMEFocusIn () {
-	if (!(hooks (SWT.KeyDown) || hooks (SWT.KeyUp))) return 0;
-	short [] point = getIMECaretPos ();
-	int ptr = OS.XtMalloc (4);
-	OS.memmove (ptr, point, 4);
-	
-	/*
-	* Bug in Motif. On Linux Japanese only, XmImSetFocusValues will cause
-	* a GPF when the XmNfontList value does not containt a FontSet. The fix
-	* is to call XmImSetValues to set the values and then call
-	* XmImSetFocusValues.
-	*/
-	int[] argList = {
-//		OS.XmNforeground, getForegroundPixel(),
-//		OS.XmNbackground, getBackgroundPixel(),
-		OS.XmNspotLocation, ptr,
-		OS.XmNfontList, font.handle,
-	};
-	OS.XmImSetValues (handle, argList, argList.length / 2);
-	OS.XmImSetFocusValues (handle, null, 0);
-
-	if (ptr != 0) OS.XtFree (ptr);
-	return 0;
-}
-int processIMEFocusOut () {
-	if (!(hooks (SWT.KeyDown) || hooks (SWT.KeyUp))) return 0;
-	OS.XmImUnsetFocus (handle);
-	return 0;
-}
-int hoverProc (int id) {
-	return hoverProc (id, true);
-}
-int hoverProc (int id, boolean showTip) {
-	Display display = getDisplay ();
-	if (showTip) display.showToolTip (handle, toolTipText);
-	sendMouseEvent (SWT.MouseHover, 0);
+	if (!hasIMSupport()) {
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+			OS.XmImUnsetFocus (handle);
+		}
+	}
 	return 0;
 }
 void propagateChildren (boolean enabled) {

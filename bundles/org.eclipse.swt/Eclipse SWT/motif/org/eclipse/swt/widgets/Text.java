@@ -835,6 +835,9 @@ boolean getWrap () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1] != 0;
 }
+boolean hasIMSupport() {
+	return true;
+}
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
@@ -930,12 +933,6 @@ int processFocusOut () {
 	if ((style & SWT.MULTI) != 0) return 0;
 	int [] argList = {OS.XmNcursorPositionVisible, 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
-	return 0;
-}
-int processIMEFocusIn () {
-	return 0;
-}
-int processIMEFocusOut () {
 	return 0;
 }
 void releaseWidget () {
