@@ -76,7 +76,7 @@ public CCombo (Composite parent, int style) {
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
 	if ((style & SWT.FLAT) != 0) textStyle |= SWT.FLAT;
 	text = new Text (this, textStyle);
-	popup = new Shell (getShell (), SWT.NO_TRIM);
+	popup = new Shell (getDisplay(), SWT.NO_TRIM | SWT.ON_TOP);
 	int listStyle = SWT.SINGLE | SWT.V_SCROLL;
 	if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
