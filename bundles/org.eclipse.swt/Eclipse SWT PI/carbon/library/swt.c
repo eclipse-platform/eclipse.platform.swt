@@ -21,8 +21,8 @@ static const Rect NULL_RECT;
 static Point point(JNIEnv *env, jshortArray a);
 static void copyEvent(JNIEnv *env, jintArray eData, EventRecord *event);
 static void copyEventData(JNIEnv *env, EventRecord *event, jintArray eData);
-static void setColor(struct RGBColor *c, int rgb);
 
+#ifdef DEBUG
 #define RC(f) checkStatus(__LINE__, (f))
 
 static int checkStatus(int line, int rc) {
@@ -38,6 +38,9 @@ static int checkStatus(int line, int rc) {
 	}
     return rc;
 }
+#else
+#define RC(f) f
+#endif
 
 //---- fonts
 
@@ -323,8 +326,24 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveDataBrowser
 	return (jint) status;
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataText(JNIEnv *env, jclass zz, jint itemId, jint sHandle) {
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataText(JNIEnv *env, jclass zz,
+			jint itemId, jint sHandle) {
 	return (jint) RC(SetDataBrowserItemDataText((DataBrowserItemDataRef) itemId, (CFStringRef)sHandle));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataBooleanValue(JNIEnv *env, jclass zz,
+			jint itemId, jboolean value) {
+	return (jint) RC(SetDataBrowserItemDataBooleanValue((DataBrowserItemDataRef) itemId, (Boolean)value));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataItemID(JNIEnv *env, jclass zz,
+			jint itemId, jint itemID) {
+	return (jint) RC(SetDataBrowserItemDataItemID((DataBrowserItemDataRef) itemId, (DataBrowserItemID)itemID));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataIcon(JNIEnv *env, jclass zz,
+			jint itemId, jint iconRef) {
+	return (jint) RC(SetDataBrowserItemDataIcon((DataBrowserItemDataRef) itemId, (IconRef)iconRef));
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserHasScrollBars(JNIEnv *env, jclass zz,	
@@ -401,6 +420,42 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserScr
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserScrollPosition(JNIEnv *env, jclass zz,
 				jint cHandle, jint top, jint left) {
 	return RC(SetDataBrowserScrollPosition((ControlRef)cHandle, (UInt32)top, (UInt32)left));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTarget(JNIEnv *env, jclass zz,
+				jint cHandle, jint rootID) {
+	return RC(SetDataBrowserTarget((ControlRef)cHandle, (DataBrowserItemID)rootID));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserListViewDisclosureColumn(JNIEnv *env, jclass zz,
+				jint cHandle, jint colID, jboolean b) {
+	return RC(SetDataBrowserListViewDisclosureColumn((ControlRef)cHandle, (DataBrowserTableViewColumnID)colID, (Boolean)b));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemPartBounds(JNIEnv *env, jclass zz,
+				jint cHandle, jint item, jint property, jint part, jshortArray bounds) {
+	jint *sa= (*env)->GetIntArrayElements(env, bounds, 0);
+	int rc= RC(GetDataBrowserItemPartBounds((ControlRef)cHandle, item, property, part, (Rect*) sa));
+	(*env)->ReleaseIntArrayElements(env, bounds, sa, 0);
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_OpenDataBrowserContainer(JNIEnv *env, jclass zz,
+				jint cHandle, jint container) {
+	return RC(OpenDataBrowserContainer((ControlRef)cHandle, container));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CloseDataBrowserContainer(JNIEnv *env, jclass zz,
+				jint cHandle, jint container) {
+	return RC(CloseDataBrowserContainer((ControlRef)cHandle, container));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemState(JNIEnv *env, jclass zz,
+				jint cHandle, jint item, jshortArray state) {
+	jint *sa= (*env)->GetIntArrayElements(env, state, 0);
+	int rc= RC(GetDataBrowserItemState((ControlRef)cHandle, item, (DataBrowserItemState*) sa));
+	(*env)->ReleaseIntArrayElements(env, state, sa, 0);
+	return rc;
 }
 
 //---- events
@@ -1138,15 +1193,19 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_UnlockPortBits(JN
 	return (jint) RC(UnlockPortBits((GrafPtr) pHandle));
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RGBForeColor(JNIEnv *enc, jclass zz, jint rgb) {
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RGBForeColor(JNIEnv *enc, jclass zz, jshort red, jshort green, jshort blue) {
 	struct RGBColor c;
-	setColor(&c, rgb);
+	c.red= red;
+	c.green= green;
+	c.blue= blue;
 	RGBForeColor(&c);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RGBBackColor(JNIEnv *enc, jclass zz, jint rgb) {
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RGBBackColor(JNIEnv *enc, jclass zz, jshort red, jshort green, jshort blue) {
 	struct RGBColor c;
-	setColor(&c, rgb);
+	c.red= red;
+	c.green= green;
+	c.blue= blue;
 	RGBBackColor(&c);
 }
 
@@ -2476,33 +2535,6 @@ JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_HandleControlKe
 	return (ControlPartCode) HandleControlKey((ControlRef)cHandle, (SInt16)inKeyCode, (SInt16)inCharCode, (EventModifiers) modifiers);
 }
 
-
-// User Pane hit test Callback
-/*
-static struct Closure *gUserPaneHitTestClosure;
-static pascal ControlPartCode UserPaneHitTestProc(ControlRef theControl, Point where) {
-	if (gUserPaneHitTestClosure != NULL) {
-		JNIEnv *env= gUserPaneHitTestClosure->env;
-		return (*env)->CallIntMethod(env, gUserPaneHitTestClosure->target, gUserPaneHitTestClosure->action, (jint)theControl,
-                                (jint)where.h, (jint)where.v);
-	}
-	return 0;
-}
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewUserPaneHitTestUPP(JNIEnv *env, jclass zz,
-					jobject target, jstring method) {
-	if (gUserPaneHitTestClosure != NULL)
-		return 0;
-	gUserPaneHitTestClosure= createClosure(env, target, method, "(III)I");
-	return (jint) NewControlUserPaneHitTestUPP(UserPaneHitTestProc);
-}
-*/
-
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RunApplicationEventLoop(JNIEnv *env, jclass zz) {
-	RunApplicationEventLoop();
-}
-*/
-
 //---- standard dialogs
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PickColor(JNIEnv *env, jclass zz,
@@ -3130,12 +3162,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitCursor(JNIEnv
 	InitCursor();
 }
 
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ExitToShell(JNIEnv *env, jclass zz) {
-	ExitToShell();
-}
-*/
-
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_HiWord(JNIEnv *env, jclass zz, jint i) {
 	return HiWord(i);
 }
@@ -3159,9 +3185,17 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCaretTime(JNIE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetAvailableWindowPositioningBounds(JNIEnv *env,
 				jclass zz, jint gHandle, jshortArray bounds) {
 	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	OSErr error= RC(GetAvailableWindowPositioningBounds((GDHandle) gHandle, (Rect*)sa));
+	jint rc= RC(GetAvailableWindowPositioningBounds((GDHandle) gHandle, (Rect*)sa));
 	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-	return error;
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetIconRef(JNIEnv *env, jclass zz,
+			jshort vRefNum, jint creator, jint iconType, jintArray iconRef) {
+	jint *sa= (*env)->GetIntArrayElements(env, iconRef, 0);
+	jint rc= RC(GetIconRef(vRefNum, (OSType)creator, (OSType)iconType, (IconRef*)sa));
+	(*env)->ReleaseIntArrayElements(env, iconRef, sa, 0);
+	return rc;
 }
 
 //---- utilities
@@ -3199,10 +3233,4 @@ static void copyEventData(JNIEnv *env, EventRecord *event, jintArray eData) {
 		event->modifiers= sa[5];
 		(*env)->ReleaseIntArrayElements(env, eData, sa, 0);	
 	}
-}
-
-static void setColor(struct RGBColor *c, int rgb) {
-	c->red= (rgb >> 16) * 257;
-	c->green= ((rgb >> 8) & 0xff) * 257;
-	c->blue= (rgb & 0xff) * 257;
 }
