@@ -161,8 +161,8 @@ public class CTabFolder2 extends Composite {
 	
 	static final int SELECTION_BORDER = 4;
 	static final int CURVE_WIDTH = 50;
-	static final int CURVE_TOP = 30;
-	static final int CURVE_BOTTOM = 30;
+	static final int CURVE_RIGHT = 30;
+	static final int CURVE_LEFT = 30;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -2548,17 +2548,42 @@ boolean updateTabHeight(int oldHeight){
 	
 	oldSize = null;
 	if (onBottom) {
-		curve = bezier(0, tabHeight+1,
-		               CURVE_TOP, tabHeight+1,
-				       CURVE_WIDTH-CURVE_BOTTOM, SELECTION_BORDER+1,
+		curve = bezier(0, tabHeight+2,
+		               CURVE_LEFT, tabHeight+2,
+				       CURVE_WIDTH-CURVE_RIGHT, SELECTION_BORDER+1,
 		               CURVE_WIDTH, SELECTION_BORDER+1,
 		               CURVE_WIDTH);
+		// workaround to get rid of blip at end of bezier
+		int index = -1;
+		for (int i = 0; i < curve.length/2; i++) {
+			if (curve[2*i+1] > tabHeight) {
+				index = i;
+			}
+		}
+		if (index > 0) {
+			int[] newCurve = new int[curve.length - 2*(index-1)];
+			System.arraycopy(curve, 2*(index-1), newCurve, 0, newCurve.length);
+			curve = newCurve;
+		}
 	} else {
 		curve = bezier(0, 0,
-		               CURVE_BOTTOM, 0, 
-		               CURVE_WIDTH-CURVE_TOP, tabHeight-SELECTION_BORDER,
-		               CURVE_WIDTH, tabHeight-SELECTION_BORDER,
+		               CURVE_LEFT, 0, 
+		               CURVE_WIDTH-CURVE_RIGHT, tabHeight-SELECTION_BORDER + 2,
+		               CURVE_WIDTH, tabHeight-SELECTION_BORDER + 2,
 		               CURVE_WIDTH);
+	// workaround to get rid of blip at end of bezier
+		int index = -1;
+		for (int i = 0; i < curve.length/2; i++) {
+			if (curve[2*i+1] > tabHeight-SELECTION_BORDER) {
+				index = i;
+				break;
+			}
+		}
+		if (index > 0) {
+			int[] newCurve = new int[2*(index-1)];
+			System.arraycopy(curve, 0, newCurve, 0, newCurve.length);
+			curve = newCurve;
+		}
 	}
 	
 	notifyListeners(SWT.Resize, new Event());
