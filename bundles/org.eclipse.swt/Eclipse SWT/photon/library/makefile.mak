@@ -1,4 +1,7 @@
- # Makefile for module 'swt'
+# Makefile for module 'swt'
+
+# (c) Copyright IBM Corp., 2000, 2001
+# All Rights Reserved.
 
 maj_ver=0
 min_ver=110

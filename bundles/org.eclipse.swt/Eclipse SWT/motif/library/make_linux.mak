@@ -1,5 +1,8 @@
 # Makefile for creating SWT libraries on Linux
-#
+
+# (c) Copyright IBM Corp., 2000, 2001
+# All Rights Reserved.
+
 # The following environment variables are assumed to be defined:
 #
 # MAJOR_VER  - the major version number 
