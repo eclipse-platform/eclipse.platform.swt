@@ -861,15 +861,24 @@ public void setCursor (Cursor cursor) {
 	if (cursor != null) {
 		type = cursor.type;
 		bitmap = cursor.bitmap;
-		if (type == OS.Ph_CURSOR_BITMAP) {
-			type &= ~OS.Ph_CURSOR_NO_INHERIT;
-		}
 	}
-	int [] args = {
+	int [] args = new int []{
 		OS.Pt_ARG_CURSOR_TYPE, type, 0,
 		OS.Pt_ARG_BITMAP_CURSOR, bitmap, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
+	
+	/*
+	* Bug in Photon. For some reason, the widget cursor will
+	* not change, when the new cursor is a bitmap cursor, if
+	* the flag Ph_CURSOR_NO_INHERIT is reset. The fix is to reset
+	* this flag after changing the cursor type to Ph_CURSOR_BITMAP.
+	*/
+	if (type == OS.Ph_CURSOR_BITMAP) {
+		type &= ~OS.Ph_CURSOR_NO_INHERIT;
+		args = new int []{OS.Pt_ARG_CURSOR_TYPE, type, 0};
+		OS.PtSetResources (handle, args.length / 3, args);
+	}
 }
 
 public void setEnabled (boolean enabled) {
