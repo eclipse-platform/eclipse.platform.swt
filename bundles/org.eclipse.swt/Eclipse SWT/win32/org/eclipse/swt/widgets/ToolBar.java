@@ -570,7 +570,7 @@ void releaseWidget () {
 		ToolItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
 			item.releaseImages ();
-			item.releaseWidget ();
+			item.releaseResources ();
 		}
 	}
 	items = null;

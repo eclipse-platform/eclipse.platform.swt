@@ -701,6 +701,12 @@ void releaseChild () {
  * @see #releaseHandle
  */
 void releaseHandle () {
+	state |= DISPOSED;
+}
+
+void releaseResources () {
+	releaseWidget ();
+	releaseHandle ();
 }
 
 /*
@@ -735,7 +741,6 @@ void releaseHandle () {
  */
 void releaseWidget () {
 	sendEvent (SWT.Dispose);
-	state |= DISPOSED;
 	eventTable = null;
 	data = null;
 	keys = null;

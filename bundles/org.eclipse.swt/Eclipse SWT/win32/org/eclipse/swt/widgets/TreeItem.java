@@ -470,6 +470,7 @@ void releaseChild () {
 }
 
 void releaseHandle () {
+	super.releaseHandle ();
 	handle = 0;
 }
 

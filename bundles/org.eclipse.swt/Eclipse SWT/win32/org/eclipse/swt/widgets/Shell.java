@@ -678,10 +678,7 @@ void releaseShells () {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed ()) {
-			shell.releaseWidget ();
-			shell.releaseHandle ();
-		}
+		if (!shell.isDisposed ()) shell.releaseResources ();
 	}
 }
 
@@ -1161,7 +1158,7 @@ LRESULT WM_DESTROY (int wParam, int lParam) {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.WS_CHILD) != 0) {
 		releaseChild ();
-		releaseWidget ();
+		releaseResources ();
 	}
 	return result;
 }

@@ -631,8 +631,7 @@ void releaseItems (TreeItem [] nodes, TVITEM tvItem) {
 			tvItem.hItem = hItem;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			items [tvItem.lParam] = null;
-			item.releaseWidget ();
-			item.releaseHandle ();
+			item.releaseResources ();
 		}
 	}
 }
@@ -641,8 +640,7 @@ void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
-			item.releaseWidget ();
-			item.releaseHandle ();
+			item.releaseResources ();
 		}
 	}
 	/*
@@ -691,8 +689,7 @@ public void removeAll () {
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
-			item.releaseWidget ();
-			item.releaseHandle ();
+			item.releaseResources ();
 		}
 	}
 	if (imageList != null) {

@@ -1049,7 +1049,7 @@ void releaseWidget () {
 	if (columnCount == 1 && columns [0] == null) columnCount = 0;
 	for (int i=0; i<columnCount; i++) {
 		TableColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseWidget ();
+		if (!column.isDisposed ()) column.releaseResources ();
 	}
 	columns = null;
 	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
@@ -1071,7 +1071,7 @@ void releaseWidget () {
 		OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
 		ignoreSelect = false;
 		TableItem item = items [i];
-		if (!item.isDisposed ()) item.releaseWidget ();
+		if (!item.isDisposed ()) item.releaseResources ();
 	}
 	
 	/*
@@ -1138,7 +1138,7 @@ public void remove (int [] indices) {
 			}
 			
 			// BUG - disposed callback could remove an item
-			items [index].releaseWidget ();
+			items [index].releaseResources ();
 			System.arraycopy (items, index + 1, items, index, --count - index);
 			items [count] = null;
 			last = index;
@@ -1179,7 +1179,7 @@ public void remove (int index) {
 	TableItem item = items [index];
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
-	item.releaseWidget ();
+	item.releaseResources ();
 }
 
 /**
@@ -1212,7 +1212,7 @@ public void remove (int start, int end) {
 		if (code == 0) break;
 		
 		// BUG - disposed callback could remove an item
-		items [index].releaseWidget ();
+		items [index].releaseResources ();
 		index++;
 	}
 	System.arraycopy (items, index, items, start, count - index);
@@ -1258,7 +1258,7 @@ public void removeAll () {
 		if (code == 0) break;
 		
 		// BUG - disposed callback could remove an item
-		items [index].releaseWidget ();
+		items [index].releaseResources ();
 		--index;
 	}
 	if (redraw) {

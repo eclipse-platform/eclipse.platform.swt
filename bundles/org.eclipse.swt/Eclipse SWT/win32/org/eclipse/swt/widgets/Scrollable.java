@@ -184,8 +184,8 @@ public ScrollBar getVerticalBar () {
 }
 
 void releaseWidget () {
-	if (horizontalBar != null) horizontalBar.releaseWidget ();
-	if (verticalBar != null) verticalBar.releaseWidget ();
+	if (horizontalBar != null) horizontalBar.releaseResources ();
+	if (verticalBar != null) verticalBar.releaseResources ();
 	horizontalBar = verticalBar = null;
 	super.releaseWidget ();
 }
