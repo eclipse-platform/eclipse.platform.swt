@@ -498,26 +498,35 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 		OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 		switch (hdr.code) {
 			case OS.TTN_GETDISPINFOW:
-				/*
-				* Bug in Windows 98.  For some reason, the tool bar control
-				* sends both TTN_GETDISPINFOW and TTN_GETDISPINFOA to get the
-				* tool tip text.  The fix is to avoid TTN_GETDISPINFOW, which
-				* should never be sent on Windows 98.
-				*/
-				if (!OS.IsUnicode) break;
-				// FALL THROUGH
-			case OS.TTN_GETDISPINFOA:
+			case OS.TTN_GETDISPINFOA: {
 				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
 				OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
 				String string = toolTipText (lpnmtdi);
 				if (string != null && string.length () != 0) {
+					Shell shell = getShell ();
 					string = Display.withCrLf (string);
-					/* Use the character encoding for the default locale */
-					TCHAR buffer = new TCHAR (0, string, true);
-					getShell ().setToolTipText (lpnmtdi, buffer);
+					/*
+					* Bug in Windows 98.  For some reason, the tool bar control
+					* sends both TTN_GETDISPINFOW and TTN_GETDISPINFOA to get
+					* the tool tip text and the tab folder control sends only 
+					* TTN_GETDISPINFOW.  The fix is to handle only TTN_GETDISPINFOW,
+					* even though it should never be sent on Windows 98.
+					*/
+					if (hdr.code == OS.TTN_GETDISPINFOW) {
+						int length = string.length ();
+						char [] buffer = new char [length + 1];
+						string.getChars(0, length, buffer, 0);
+						shell.setToolTipText (lpnmtdi, buffer);
+					} else {
+						/* Use the character encoding for the default locale */
+						TCHAR buffer = new TCHAR (0, string, true);
+						shell.setToolTipText (lpnmtdi, buffer);
+					}
 					OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
+					return LRESULT.ZERO;
 				}
-				return LRESULT.ZERO;
+				break;
+			}
 		}
 	}
 	return super.WM_NOTIFY (wParam, lParam);
