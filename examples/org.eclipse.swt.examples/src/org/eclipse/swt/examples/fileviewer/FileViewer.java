@@ -41,6 +41,7 @@ public class FileViewer {
 	private File[]  processedDropFiles = null; // so Drag only deletes what it needs to
 	private File[]  deferredRefreshFiles = null;      // to defer notifyRefreshFiles while we do DND
 	private boolean deferredRefreshRequested = false; // to defer notifyRefreshFiles while we do DND
+	private ProgressDialog progressDialog = null; // progress dialog for locally-initiated operations
 
 	/* Combo view */
 	private static final String COMBODATA_ROOTS = "Combo.roots";
@@ -1078,18 +1079,25 @@ public class FileViewer {
 		if (sourceNames == null) event.detail = DND.DROP_NONE;
 		if (event.detail == DND.DROP_NONE) return;
 
+		// Open progress dialog
+		progressDialog = new ProgressDialog(shell,
+			(event.detail == DND.DROP_MOVE) ? ProgressDialog.MOVE : ProgressDialog.COPY);
+		progressDialog.setTotalWorkUnits(sourceNames.length);
+		progressDialog.open();
+
 		// Copy each file
 		Vector /* of File */ processedFiles = new Vector();
-		for (int i = 0; i < sourceNames.length; i++){
+		for (int i = 0; (i < sourceNames.length) && (! progressDialog.isCancelled()); i++){
 			final File source = new File(sourceNames[i]);
 			final File dest = new File(targetFile, source.getName());
 			if (source.equals(dest)) continue; // ignore if in same location
 
-			for (;;) {
+			progressDialog.setDetailFile(source, ProgressDialog.COPY);
+			for (;! progressDialog.isCancelled();) {
 				if (copyFileStructure(source, dest)) {
 					processedFiles.add(source);
 					break;
-				} else {
+				} else if (! progressDialog.isCancelled()) {
 					if (event.detail == DND.DROP_MOVE && (!isDragging)) {
 						// It is not possible to notify an external drag source that a drop
 						// operation was only partially successful.  This is particularly a
@@ -1099,7 +1107,7 @@ public class FileViewer {
 						MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.RETRY | SWT.CANCEL);
 						box.setText(getResourceString("dialog.FailedCopy.title"));
 						box.setMessage(getResourceString("dialog.FailedCopy.description",
-							new Object[] { source }));
+							new Object[] { source, dest }));
 						int button = box.open();
 						if (button == SWT.CANCEL) {
 							i = sourceNames.length;
@@ -1112,17 +1120,21 @@ public class FileViewer {
 						MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
 						box.setText(getResourceString("dialog.FailedCopy.title"));
 						box.setMessage(getResourceString("dialog.FailedCopy.description",
-							new Object[] { source }));
+							new Object[] { source, dest }));
 						int button = box.open();
 						if (button == SWT.ABORT) i = sourceNames.length;
 						if (button != SWT.RETRY) break;
 					}
 				}
+				progressDialog.addProgress(1);
 			}
 		}
 		if (isDragging) {
 			// Remember exactly which files we processed
 			processedDropFiles = ((File[]) processedFiles.toArray(new File[processedFiles.size()]));
+		} else {
+			progressDialog.close();
+			progressDialog = null;
 		}
 		notifyRefreshFiles(new File[] { targetFile });
 	}
@@ -1148,14 +1160,20 @@ public class FileViewer {
 			for (int i = 0; i < sourceNames.length; ++i)
 				sourceFiles[i] = new File(sourceNames[i]);
 		}	
+		if (progressDialog == null)
+			progressDialog = new ProgressDialog(shell, ProgressDialog.MOVE);
+		progressDialog.setTotalWorkUnits(sourceFiles.length);
+		progressDialog.setProgress(0);
+		progressDialog.open();
 
 		// Delete each file
-		for (int i = 0; i < sourceFiles.length; i++){
+		for (int i = 0; (i < sourceFiles.length) && (! progressDialog.isCancelled()); i++){
 			final File source = sourceFiles[i];
-			for (;;) {
+			progressDialog.setDetailFile(source, ProgressDialog.DELETE);
+			for (;! progressDialog.isCancelled();) {
 				if (deleteFileStructure(source)) {
 					break;
-				} else {
+				} else if (! progressDialog.isCancelled()) {
 					MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
 					box.setText(getResourceString("dialog.FailedDelete.title"));
 					box.setMessage(getResourceString("dialog.FailedDelete.description",
@@ -1165,8 +1183,11 @@ public class FileViewer {
 					if (button == SWT.RETRY) break;
 				}
 			}
+			progressDialog.addProgress(1);
 		}
 		notifyRefreshFiles(sourceFiles);
+		progressDialog.close();
+		progressDialog = null;
 	}
 
 	/**
@@ -1237,18 +1258,28 @@ public class FileViewer {
 			/*
 			 * Copy a directory
 			 */
+			if (progressDialog != null) {
+				progressDialog.setDetailFile(oldFile, ProgressDialog.COPY);
+			}
 			if (simulateOnly) {
-				System.out.println(getResourceString("simulate.DirectoriesCreated.text",
-					new Object[] { newFile.getPath() }));
+				//System.out.println(getResourceString("simulate.DirectoriesCreated.text",
+				//	new Object[] { newFile.getPath() }));
 			} else {
 				if (! newFile.mkdirs()) return false;
 			}
 			File[] subFiles = oldFile.listFiles();
 			if (subFiles != null) {
+				if (progressDialog != null) {
+					progressDialog.addWorkUnits(subFiles.length);
+				}
 				for (int i = 0; i < subFiles.length; i++) {
 					File oldSubFile = subFiles[i];
 					File newSubFile = new File(newFile, oldSubFile.getName());
 					if (! copyFileStructure(oldSubFile, newSubFile)) return false;
+					if (progressDialog != null) {
+						progressDialog.addProgress(1);
+						if (progressDialog.isCancelled()) return false;
+					}
 				}
 			}
 		} else {
@@ -1256,8 +1287,8 @@ public class FileViewer {
 			 * Copy a file
 			 */
 			if (simulateOnly) {
-				System.out.println(getResourceString("simulate.CopyFromTo.text",
-					new Object[] { oldFile.getPath(), newFile.getPath() }));
+				//System.out.println(getResourceString("simulate.CopyFromTo.text",
+				//	new Object[] { oldFile.getPath(), newFile.getPath() }));
 			} else {
 				FileReader in = null;
 				FileWriter out = null;
@@ -1296,17 +1327,27 @@ public class FileViewer {
 			/*
 			 * Delete a directory
 			 */
+			if (progressDialog != null) {
+				progressDialog.setDetailFile(oldFile, ProgressDialog.DELETE);
+			}
 			File[] subFiles = oldFile.listFiles();
 			if (subFiles != null) {
+				if (progressDialog != null) {
+					progressDialog.addWorkUnits(subFiles.length);
+				}
 				for (int i = 0; i < subFiles.length; i++) {
 					File oldSubFile = subFiles[i];
 					if (! deleteFileStructure(oldSubFile)) return false;
+					if (progressDialog != null) {
+						progressDialog.addProgress(1);
+						if (progressDialog.isCancelled()) return false;
+					}
 				}
 			}
 		}
 		if (simulateOnly) {
-			System.out.println(getResourceString("simulate.Delete.text",
-				new Object[] { oldFile.getPath(), oldFile.getPath() }));
+			//System.out.println(getResourceString("simulate.Delete.text",
+			//	new Object[] { oldFile.getPath(), oldFile.getPath() }));
 			return true;
 		} else {
 			return oldFile.delete();
@@ -1432,6 +1473,9 @@ public class FileViewer {
 				}
 			}
 			workerThread = null;
+			// wake up UI thread in case it is in a modal loop awaiting thread termination
+			// (see workerStop())
+			display.wake();
 		}
 	};
 	
@@ -1460,7 +1504,8 @@ public class FileViewer {
 			final boolean doIncrementalRefresh = ((i & 127) == 127);
 			if (doIncrementalRefresh) display.syncExec(new Runnable() {
 				public void run () {
-					// table.redraw();
+					// guard against the shell being closed before this runs
+					if (shell.isDisposed()) return;
 					table.setRedraw(true);
 					table.setRedraw(false);
 				}
@@ -1470,6 +1515,8 @@ public class FileViewer {
 		// Allow the table to refresh itself
 		display.asyncExec(new Runnable() {
 			public void run() {
+				// guard against the shell being closed before this runs
+				if (shell.isDisposed()) return;
 				table.setRedraw(true);
 			}
 		});
@@ -1513,11 +1560,154 @@ public class FileViewer {
 
 		display.asyncExec(new Runnable() {
 			public void run () {
+				// guard against the shell being closed before this runs
+				if (shell.isDisposed()) return;
 				TableItem tableItem = new TableItem(table, 0);
 				tableItem.setText(strings);
 				tableItem.setImage(iconImage);
 				tableItem.setData(TABLEITEMDATA_FILE, file);
 			}
 		});
-	}	
+	}
+	
+	/**
+	 * Instances of this class manage a progress dialog for file operations.
+	 */
+	class ProgressDialog {
+		public final static int COPY = 0;
+		public final static int DELETE = 1;
+		public final static int MOVE = 2;
+
+		Shell shell;
+		Label messageLabel, detailLabel;
+		ProgressBar progressBar;
+		Button cancelButton;
+		boolean isCancelled = false;
+
+		final String operationKeyName[] = {
+			"Copy",
+			"Delete",
+			"Move"
+		};
+	
+		/**
+		 * Creates a progress dialog but does not open it immediately.
+		 * 
+		 * @param parent the parent Shell
+		 * @param style one of COPY, MOVE
+		 */
+		public ProgressDialog(Shell parent, int style) {
+			shell = new Shell(parent, SWT.BORDER | SWT.TITLE | SWT.APPLICATION_MODAL);
+			GridLayout gridLayout = new GridLayout();
+			shell.setLayout(gridLayout);
+			shell.setText(getResourceString("progressDialog." + operationKeyName[style] + ".title"));
+			shell.addShellListener(new ShellAdapter() {
+				public void shellClosed(ShellEvent e) {
+					isCancelled = true;
+				}
+			});
+			
+			messageLabel = new Label(shell, SWT.HORIZONTAL);
+			messageLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
+			messageLabel.setText(getResourceString("progressDialog." + operationKeyName[style] + ".description"));
+			
+			progressBar = new ProgressBar(shell, SWT.HORIZONTAL | SWT.WRAP);
+			progressBar.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
+			progressBar.setMinimum(0);
+			progressBar.setMaximum(0);
+			
+			detailLabel = new Label(shell, SWT.HORIZONTAL);
+			GridData gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
+			gridData.widthHint = 400;
+			detailLabel.setLayoutData(gridData);
+			
+			cancelButton = new Button(shell, SWT.PUSH);
+			cancelButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_FILL));
+			cancelButton.setText(getResourceString("progressDialog.cancelButton.text"));
+			cancelButton.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					isCancelled = true;
+					cancelButton.setEnabled(false);
+				}
+			});
+		}
+		/**
+		 * Sets the detail text to show the filename along with a string
+		 * representing the operation being performed on that file.
+		 * 
+		 * @param file the file to be detailed
+		 * @param operation one of COPY, DELETE
+		 */
+		public void setDetailFile(File file, int operation) {
+			String filename = file.getName();
+			detailLabel.setText(getResourceString("progressDialog." + operationKeyName[operation] + ".operation",
+				new Object[] { file }));
+		}
+		/**
+		 * Returns true if the Cancel button was been clicked.
+		 * 
+		 * @return true if the Cancel button was clicked.
+		 */
+		public boolean isCancelled() {
+			return isCancelled;
+		}
+		/**
+		 * Sets the total number of work units to be performed.
+		 * 
+		 * @param work the total number of work units
+		 */
+		public void setTotalWorkUnits(int work) {
+			progressBar.setMaximum(work);
+		}
+		/**
+		 * Adds to the total number of work units to be performed.
+		 * 
+		 * @param work the number of work units to add
+		 */
+		public void addWorkUnits(int work) {
+			setTotalWorkUnits(progressBar.getMaximum() + work);
+		}
+		/**
+		 * Sets the progress of completion of the total work units.
+		 * 
+		 * @param work the total number of work units completed
+		 */
+		public void setProgress(int work) {
+			progressBar.setSelection(work);
+			while (display.readAndDispatch()); // enable event processing
+		}
+		/**
+		 * Adds to the progress of completion of the total work units.
+		 * 
+		 * @param work the number of work units completed to add
+		 */
+		public void addProgress(int work) {
+			setProgress(progressBar.getSelection() + work);
+		}
+		/**
+		 * Opens the dialog.
+		 */
+		public void open() {
+			shell.pack();
+			final Shell parentShell = (Shell) shell.getParent();
+			Rectangle rect = parentShell.getBounds();
+			Rectangle bounds = shell.getBounds();
+			bounds.x = rect.x + (rect.width - bounds.width) / 2;
+			bounds.y = rect.y + (rect.height - bounds.height) / 2;
+			shell.setBounds(bounds);
+			shell.open();
+		}
+		/**
+		 * Closes the dialog and disposes its resources.
+		 */
+		public void close() {
+			shell.close();
+			shell.dispose();
+			shell = null;
+			messageLabel = null;
+			detailLabel = null;
+			progressBar = null;
+			cancelButton = null;
+		}
+	}
 }
