@@ -7,6 +7,7 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
+import java.io.*; 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
@@ -382,6 +383,10 @@ public String open () {
 
 	/* Compute the filter path */
 	if (filterPath == null) filterPath = "";
+	if (!filterPath.endsWith ("/")) {
+		File dir = new File (filterPath);
+		if (dir.exists () && dir.isDirectory ()) filterPath += '/';
+	}
 	/* Use the character encoding for the default locale */
 	byte [] buffer3 = Converter.wcsToMbcs (null, filterPath, true);
 	int xmStringPtr3 = OS.XmStringParseText (
@@ -401,7 +406,7 @@ public String open () {
 		OS.XmNpathMode, OS.XmPATH_MODE_FULL,
 		OS.XmNdialogTitle, xmStringPtr1,
 		OS.XmNpattern, xmStringPtr2,
-		OS.XmNdirectory, xmStringPtr3,
+		OS.XmNdirMask, xmStringPtr3,
 	};
 	/*
 	* Feature in Linux.  For some reason, the XmCreateFileSelectionDialog()
