@@ -318,6 +318,12 @@ private void onDispose() {
 		borderColor3.dispose();
 	}
 	borderColor3 = null;
+	
+	topLeft = null;
+	topCenter = null;
+	topRight = null;
+	content = null;
+	oldArea = null;
 }
 /**
 * Draws the focus border.

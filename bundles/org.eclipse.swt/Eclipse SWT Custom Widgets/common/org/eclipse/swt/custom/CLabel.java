@@ -270,6 +270,9 @@ private void onDispose(DisposeEvent event) {
 	gradientColors = null;
 	gradientPercents = null;
 	backgroundImage = null;
+	text = null;
+	image = null;
+	appToolTipText = null;
 }
 /* 
  * Process the paint event
