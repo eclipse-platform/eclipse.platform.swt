@@ -439,6 +439,17 @@ public boolean open () {
 	PhEvent_t phEvent = new PhEvent_t ();
 	Event event = new Event ();
 	Point cursorPos;
+	
+	// if exactly one of UP/DOWN is specified as a style then set the cursor
+	// orientation accordingly (the same is done for LEFT/RIGHT styles below)
+	int vStyle = style & (SWT.UP | SWT.DOWN);
+	if (vStyle == SWT.UP || vStyle == SWT.DOWN) {
+		cursorOrientation |= vStyle;
+	}
+	int hStyle = style & (SWT.LEFT | SWT.RIGHT);
+	if (hStyle == SWT.LEFT || hStyle == SWT.RIGHT) {
+		cursorOrientation |= hStyle;
+	}
 
 	drawRectangles (rectangles);
 	if ((style & SWT.MENU) == 0) {
