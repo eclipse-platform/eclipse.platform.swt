@@ -37,14 +37,11 @@ public class MessageBox extends Dialog {
 	int label;
 	int buttonOK, buttonCANCEL, buttonYES, buttonNO, buttonABORT, buttonRETRY, buttonIGNORE;
 
-	// While open...
-	boolean isWaiting = false;
-	int result;
+	int state;
 
 /*
  *   ===  CONSTRUCTORS  ===
  */
-
 
 /**
  * Constructs a new instance of this class given only its
@@ -104,7 +101,6 @@ public MessageBox (Shell parent) {
  */
 public MessageBox (Shell parent, int style) {
 	super(parent, checkStyle(style));
-	createHandle();
 }
 
 
@@ -148,31 +144,39 @@ public void setMessage (String string) {
  * </ul>
  */
 public int open () {
-	OS.gtk_widget_show (handle);
-
-// FIXME - WAIT FOR CLICK
-// There is a fundamental problem here.
-// We can't receive the clicked signal from the buttons, because by the API shape,
-// we are not a widget.
-
-	OS.gtk_widget_hide(handle);
-	return SWT.OK;
+	createHandle();
+	createMessage(); // includes configuring
+	createActionButtons();
+	state=0;
+	Callback destroyCallback = new Callback (this, "destroyFunc", 2);
+	int destroyFunc = destroyCallback.getAddress ();
+	byte [] destroy = Converter.wcsToMbcs (null, "delete_event", true);
+	OS.gtk_signal_connect_after (handle, destroy, destroyFunc, handle);
+	showHandle();
+	while(state==0) OS.gtk_main_iteration();
+	OS.gtk_widget_destroy(handle);
+	return state;
 }
 
 /*
- *   ===  HANDLE DANCES  ===
+ *   ===  Actual handle operations  ===
  */
 
 private void createHandle() {
 	handle = OS.gtk_dialog_new();
-	byte[] bytes = Converter.wcsToMbcs (null, getText(), true);
-
+	if (handle==0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if ((style & (SWT.PRIMARY_MODAL|SWT.APPLICATION_MODAL|SWT.SYSTEM_MODAL)) != 0) {
+		OS.gtk_window_set_modal(handle, true);
+	}
+}
+private void createMessage() {
+	byte[] bytes = Converter.wcsToMbcs (null, getMessage(), true);
 	label = OS.gtk_label_new (bytes);
 	GtkDialog dialog = new GtkDialog();
 	OS.memmove (dialog, handle, GtkDialog.sizeof);
-	OS.gtk_box_pack_start (dialog.vbox, label, true, true, 5);
-	OS.gtk_widget_show (label);
-	
+	OS.gtk_box_pack_start (dialog.vbox, label, true, true, 5); // FIXME should we use container_add??
+}
+private void createActionButtons() {	
 	if ((style & SWT.OK) != 0) buttonOK = createButton("OK");
 	if ((style & SWT.CANCEL) != 0) buttonCANCEL = createButton("CANCEL");
 
@@ -183,31 +187,42 @@ private void createHandle() {
 	if ((style & SWT.RETRY) != 0) buttonRETRY = createButton("RETRY");
 	if ((style & SWT.IGNORE) != 0) buttonIGNORE = createButton("IGNORE");
 }
-
+private void showHandle() {
+	OS.gtk_widget_show_all (handle);
+	
+	boolean hasTitle=false;
+	String title = getText();
+	if (title!=null) if (title.length()!=0) hasTitle=true;
+	
+	int decor = 0;
+	if (hasTitle) decor |= OS.GDK_DECOR_TITLE;
+	GtkWidget widget = new GtkWidget();
+	OS.memmove(widget, handle, GtkWidget.sizeof);
+	int gdkWindow = widget.window;
+	OS.gdk_window_set_decorations(gdkWindow, decor);
+	if (hasTitle) {
+		byte[] bytes = Converter.wcsToMbcs (null, title, true);
+		OS.gtk_window_set_title(handle, bytes);
+	}
+}
 int createButton(String buttonName) {
+	System.out.println("Creating button "+buttonName);
 	byte[] bytes = Converter.wcsToMbcs (null, buttonName, true);
-	int h = OS.gtk_button_new_with_label(bytes);
+	int buttonHandle = OS.gtk_button_new_with_label(bytes);
 	GtkDialog dialog = new GtkDialog();
 	OS.memmove (dialog, handle, GtkDialog.sizeof);
-	OS.gtk_box_pack_start (dialog.action_area, h, true, true, 0);
-	signal_connect(h, "clicked", SWT.Selection, 2);
-//	WidgetTable.put (h, this);
-	OS.gtk_widget_show (h);
-	return h;
+	OS.gtk_box_pack_start (dialog.action_area, buttonHandle, true, true, 0);
+	hookSelection(buttonHandle);
+	return buttonHandle;
 }
+private void hookSelection(int h) {
+	byte [] clicked = Converter.wcsToMbcs (null, "clicked", true);
+	
+	Callback okCallback = new Callback (this, "activateFunc", 2);
+	int okFunc = okCallback.getAddress ();
+	OS.gtk_signal_connect (h, clicked, okFunc, h);
 
-int processEvent (int eventNumber, int int0, int int1, int int2) {
-	if (eventNumber == SWT.Selection) processSelection (int0, int1, int2);
-	return 0;
 }
-
-void processSelection (int int0, int int1, int int2) {
-}
-
-/*
- *   ===  AS YET UNCLASSIFIED  ==
- */
-
 private static int checkStyle (int style) {
 	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
 	int bits = style & mask;
@@ -217,16 +232,21 @@ private static int checkStyle (int style) {
 	style = (style & ~mask) | SWT.OK;
 	return style;
 }
-private void signal_connect (int handle, String eventName, int swtEvent, int numArgs) {
-	byte [] buffer = Converter.wcsToMbcs (null, eventName, true);
-	int proc=0;
-	switch (numArgs) {
-		case 2: proc=Display.getDefault().windowProc2; break;
-		case 3: proc=Display.getDefault().windowProc3; break;
-		case 4: proc=Display.getDefault().windowProc4; break;
-		case 5: proc=Display.getDefault().windowProc5; break;
-		default: error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	OS.gtk_signal_connect (handle, buffer, proc, swtEvent);
+int activateFunc(int widget, int callData) {
+	if (widget==buttonOK)     { state=SWT.OK;     return 0; }
+	if (widget==buttonCANCEL) { state=SWT.CANCEL; return 0; }
+	if (widget==buttonYES)    { state=SWT.YES;    return 0; }
+	if (widget==buttonNO)     { state=SWT.NO;     return 0; }
+	if (widget==buttonABORT)  { state=SWT.ABORT;  return 0; }
+	if (widget==buttonRETRY)  { state=SWT.RETRY;  return 0; }
+	if (widget==buttonIGNORE) { state=SWT.IGNORE; return 0; }
+	return 0;
+}
+/*
+ * We need this because some WMs will give us a cross even when
+ * we specifically ask it not to.
+ */
+int destroyFunc(int widget, int callData) {
+	return 1;
 }
 }
