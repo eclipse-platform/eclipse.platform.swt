@@ -584,8 +584,6 @@ public boolean forceFocus () {
 	if (!isEnabled () || !isVisible ()/* || !isActive ()*/) return false;
 	if (isFocusControl ()) return true;
 	shell.bringToTop (false);
-	int [] features = new int [1];
-	OS.GetControlFeatures (handle, features);
 	int window = OS.GetControlOwner (handle);
 	OS.SetKeyboardFocus (window, handle, (short) OS.kControlFocusNextPart);
 	return hasFocus ();
