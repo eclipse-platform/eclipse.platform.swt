@@ -4414,6 +4414,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetScrapFlavorSize)
 }
 #endif
 
+#ifndef NO_GetScriptManagerVariable
+JNIEXPORT jint JNICALL OS_NATIVE(GetScriptManagerVariable)
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GetScriptManagerVariable\n")
+	rc = (jint)GetScriptManagerVariable(arg0);
+	NATIVE_EXIT(env, that, "GetScriptManagerVariable\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetSuperControl
 JNIEXPORT jint JNICALL OS_NATIVE(GetSuperControl)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
@@ -5581,6 +5593,21 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsWindowVisible)
 	NATIVE_ENTER(env, that, "IsWindowVisible\n")
 	rc = (jboolean)IsWindowVisible((WindowRef)arg0);
 	NATIVE_EXIT(env, that, "IsWindowVisible\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_KeyTranslate
+JNIEXPORT jint JNICALL OS_NATIVE(KeyTranslate)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "KeyTranslate\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)KeyTranslate((const void *)arg0, arg1, (UInt32 *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "KeyTranslate\n")
 	return rc;
 }
 #endif
