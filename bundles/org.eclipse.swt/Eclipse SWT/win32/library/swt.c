@@ -5512,6 +5512,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetCursor
 	return (jint)SetCursor((HCURSOR)arg0);
 }
 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetCursorPos
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetCursorPos\n")
+
+	return (jboolean)SetCursorPos(arg0, arg1);
+}
+
 #ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetDIBColorTable
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3)
