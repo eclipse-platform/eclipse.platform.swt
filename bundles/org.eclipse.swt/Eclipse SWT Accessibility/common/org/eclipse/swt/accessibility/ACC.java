@@ -54,8 +54,13 @@ public class ACC {
 	public static final int ROLE_LIST = 0x21;
 	public static final int ROLE_LISTITEM = 0x22;
 	public static final int ROLE_TABLE = 0x18;
-	public static final int ROLE_TABLECOLUMN = 0x19;
+	public static final int ROLE_TABLECELL = 0x1d;
+	public static final int ROLE_TABLECOLUMNHEADER = 0x19;
+	/** @deprecated use ROLE_TABLECOLUMNHEADER */
+	public static final int ROLE_TABLECOLUMN = ROLE_TABLECOLUMNHEADER;
+	public static final int ROLE_TABLEROWHEADER = 0x1a;
 	public static final int ROLE_TREE = 0x23;
+	public static final int ROLE_TREEITEM = 0x24;
 	public static final int ROLE_TABFOLDER = 0x3c;
 	public static final int ROLE_TABITEM = 0x25;
 	public static final int ROLE_PROGRESSBAR = 0x30;
