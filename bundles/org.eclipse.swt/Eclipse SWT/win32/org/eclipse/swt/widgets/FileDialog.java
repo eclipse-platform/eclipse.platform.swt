@@ -238,21 +238,6 @@ public String open () {
 	}
 
 	/*
-	* Feature in Windows.  The focus window is not saved and
-	* and restored automatically by the call to GetOpenFileName ().
-	* The fix is to save and restore the focus window.
-	*/
-	int hwndFocus = OS.GetFocus ();
-	
-	/*
-	* Bug/Feature in Windows.  When Windows opens the standard
-	* file dialog, it changes the cursor to the hourglass and
-	* does not put it back.  The fix is to save the current
-	* cursor and restore it when the dialog closes.
-	*/
-	int hCursor = OS.GetCursor ();
-
-	/*
 	* Open the dialog.  If the open fails due to an invalid
 	* file name, use an empty file name and open it again.
 	*/
@@ -342,12 +327,6 @@ public String open () {
 	OS.HeapFree (hHeap, 0, lpstrInitialDir);
 	OS.HeapFree (hHeap, 0, lpstrTitle);
 	if (lpstrDefExt != 0) OS.HeapFree (hHeap, 0, lpstrDefExt);
-	
-	/* Restore the old cursor */
-	OS.SetCursor (hCursor);
-	
-	/* Restore the old focus */
-	OS.SetFocus (hwndFocus);
 
 	/*
 	* This code is intentionally commented.  On some

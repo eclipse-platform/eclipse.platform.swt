@@ -176,21 +176,11 @@ public int open () {
 		hwndOwner = parent.handle;
 	}
 
-	/*
-	* Feature in Windows.  The focus window is not saved and
-	* and restored automatically by the call to MessageBox().
-	* The fix is to save and restore the focus window.
-	*/
-	int hwndFocus = OS.GetFocus ();
-
 	/* Open the message box */
 	/* Use the character encoding for the default locale */
 	TCHAR buffer1 = new TCHAR (0, message, true);
 	TCHAR buffer2 = new TCHAR (0, title, true);
 	int code = OS.MessageBox (hwndOwner, buffer1, buffer2, bits);
-	
-	/* Restore focus */
-	OS.SetFocus (hwndFocus);
 	
 	/*
 	* This code is intentionally commented.  On some
