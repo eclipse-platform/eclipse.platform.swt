@@ -106,7 +106,8 @@ public Object nativeToJava(TransferData transferData){
 	data.Release();	
 	if (transferData.result != COM.S_OK) return null;
 
-	int lpMultiByteStr = COM.GlobalLock(stgmedium.unionField);
+	int hMem = stgmedium.unionField;
+	int lpMultiByteStr = COM.GlobalLock(hMem);
 	if (lpMultiByteStr != 0) {
 		try {
 			int cchWideChar  = OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
@@ -116,7 +117,7 @@ public Object nativeToJava(TransferData transferData){
 				return new String(lpWideCharStr);
 			}
 		} finally {
-			COM.GlobalUnlock(lpMultiByteStr);
+			COM.GlobalUnlock(hMem);
 		}
 	}
 	return null;
