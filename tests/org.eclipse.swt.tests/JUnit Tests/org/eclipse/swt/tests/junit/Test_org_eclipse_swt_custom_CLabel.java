@@ -70,6 +70,10 @@ public void test_setBackground$Lorg_eclipse_swt_graphics_Color$I() {
 	warnUnimpl("Test test_setBackground$Lorg_eclipse_swt_graphics_Color$I not written");
 }
 
+public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
+	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
+}
+
 public void test_setBackgroundLorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Image not written");
 }
@@ -110,6 +114,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getToolTipText");
 	methodNames.addElement("test_setAlignmentI");
 	methodNames.addElement("test_setBackground$Lorg_eclipse_swt_graphics_Color$I");
+	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
@@ -128,6 +133,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getToolTipText")) test_getToolTipText();
 	else if (getName().equals("test_setAlignmentI")) test_setAlignmentI();
 	else if (getName().equals("test_setBackground$Lorg_eclipse_swt_graphics_Color$I")) test_setBackground$Lorg_eclipse_swt_graphics_Color$I();
+	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Image")) test_setBackgroundLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();

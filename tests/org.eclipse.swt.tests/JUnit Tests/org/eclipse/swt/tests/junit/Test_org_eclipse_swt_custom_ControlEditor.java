@@ -44,6 +44,10 @@ public void test_getEditor() {
 	warnUnimpl("Test test_getEditor not written");
 }
 
+public void test_layout() {
+	warnUnimpl("Test test_layout not written");
+}
+
 public void test_setEditorLorg_eclipse_swt_widgets_Control() {
 	warnUnimpl("Test test_setEditorLorg_eclipse_swt_widgets_Control not written");
 }
@@ -62,6 +66,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Composite");
 	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_getEditor");
+	methodNames.addElement("test_layout");
 	methodNames.addElement("test_setEditorLorg_eclipse_swt_widgets_Control");
 	return methodNames;
 }
@@ -69,6 +74,7 @@ protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_Composite")) test_ConstructorLorg_eclipse_swt_widgets_Composite();
 	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_getEditor")) test_getEditor();
+	else if (getName().equals("test_layout")) test_layout();
 	else if (getName().equals("test_setEditorLorg_eclipse_swt_widgets_Control")) test_setEditorLorg_eclipse_swt_widgets_Control();
 }
 }

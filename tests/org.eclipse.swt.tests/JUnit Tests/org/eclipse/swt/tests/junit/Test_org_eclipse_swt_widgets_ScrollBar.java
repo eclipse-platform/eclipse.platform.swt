@@ -656,6 +656,10 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
+public void test_dispose() {
+	warnUnimpl("Test test_dispose not written");
+}
+
 public void test_getDisplay() {
 	warnUnimpl("Test test_getDisplay not written");
 }
@@ -835,6 +839,7 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
+	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_getDisplay");
 	methodNames.addElement("test_getEnabled");
 	methodNames.addElement("test_getIncrement");
@@ -863,6 +868,7 @@ public static java.util.Vector methodNames() {
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
+	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_getDisplay")) test_getDisplay();
 	else if (getName().equals("test_getEnabled")) test_getEnabled();
 	else if (getName().equals("test_getIncrement")) test_getIncrement();

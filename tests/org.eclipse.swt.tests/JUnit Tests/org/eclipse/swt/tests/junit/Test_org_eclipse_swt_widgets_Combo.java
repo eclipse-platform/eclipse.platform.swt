@@ -130,6 +130,14 @@ public void test_computeSizeIIZ() {
 	warnUnimpl("Test test_computeSizeIIZ not written");
 }
 
+public void test_copy() {
+	warnUnimpl("Test test_copy not written");
+}
+
+public void test_cut() {
+	warnUnimpl("Test test_cut not written");
+}
+
 public void test_deselectI() {
 	combo.deselect(2);
 
@@ -436,6 +444,10 @@ public void test_removeLjava_lang_String() {
 	assertEquals(number, combo.getItemCount());
 }
 
+public void test_paste() {
+	warnUnimpl("Test test_paste not written");
+}
+
 public void test_removeAll() {
 	warnUnimpl("Test test_removeAll not written");
 }
@@ -610,6 +622,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_checkSubclass");
 	methodNames.addElement("test_clearSelection");
 	methodNames.addElement("test_computeSizeIIZ");
+	methodNames.addElement("test_copy");
+	methodNames.addElement("test_cut");
 	methodNames.addElement("test_deselectI");
 	methodNames.addElement("test_deselectAll");
 	methodNames.addElement("test_getItemI");
@@ -627,6 +641,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_removeI");
 	methodNames.addElement("test_removeII");
 	methodNames.addElement("test_removeLjava_lang_String");
+	methodNames.addElement("test_paste");
 	methodNames.addElement("test_removeAll");
 	methodNames.addElement("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener");
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
@@ -649,6 +664,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_checkSubclass")) test_checkSubclass();
 	else if (getName().equals("test_clearSelection")) test_clearSelection();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
+	else if (getName().equals("test_copy")) test_copy();
+	else if (getName().equals("test_cut")) test_cut();
 	else if (getName().equals("test_deselectI")) test_deselectI();
 	else if (getName().equals("test_deselectAll")) test_deselectAll();
 	else if (getName().equals("test_getItemI")) test_getItemI();
@@ -666,6 +683,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeI")) test_removeI();
 	else if (getName().equals("test_removeII")) test_removeII();
 	else if (getName().equals("test_removeLjava_lang_String")) test_removeLjava_lang_String();
+	else if (getName().equals("test_paste")) test_paste();
 	else if (getName().equals("test_removeAll")) test_removeAll();
 	else if (getName().equals("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener")) test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener();
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();

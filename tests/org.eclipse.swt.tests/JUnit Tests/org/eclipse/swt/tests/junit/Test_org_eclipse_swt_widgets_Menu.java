@@ -9,7 +9,6 @@ package org.eclipse.swt.tests.junit;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
 import junit.framework.*;
 import junit.textui.*;
 
@@ -280,6 +279,10 @@ public void test_setLocationII() {
 	warnUnimpl("Test test_setLocationII not written");
 }
 
+public void test_setLocationLorg_eclipse_swt_graphics_Point() {
+	warnUnimpl("Test test_setLocationLorg_eclipse_swt_graphics_Point not written");
+}
+
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
@@ -342,6 +345,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem");
 	methodNames.addElement("test_setEnabledZ");
 	methodNames.addElement("test_setLocationII");
+	methodNames.addElement("test_setLocationLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_setVisibleZ");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
 	return methodNames;
@@ -372,6 +376,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem")) test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem();
 	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
 	else if (getName().equals("test_setLocationII")) test_setLocationII();
+	else if (getName().equals("test_setLocationLorg_eclipse_swt_graphics_Point")) test_setLocationLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
 	else super.runTest();
 }

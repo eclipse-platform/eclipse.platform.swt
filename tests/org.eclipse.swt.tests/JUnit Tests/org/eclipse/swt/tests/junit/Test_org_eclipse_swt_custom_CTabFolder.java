@@ -66,6 +66,10 @@ public void test_getTabHeight() {
 	warnUnimpl("Test test_getTabHeight not written");
 }
 
+public void test_getTopRight() {
+	warnUnimpl("Test test_getTopRight not written");
+}
+
 public void test_getItemI() {
 	warnUnimpl("Test test_getItemI not written");
 }
@@ -146,6 +150,10 @@ public void test_setTabHeightI() {
 	warnUnimpl("Test test_setTabHeightI not written");
 }
 
+public void test_setTopRightLorg_eclipse_swt_widgets_Control() {
+	warnUnimpl("Test test_setTopRightLorg_eclipse_swt_widgets_Control not written");
+}
+
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -165,6 +173,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_onFocusLorg_eclipse_swt_widgets_Event");
 	methodNames.addElement("test_getClientArea");
 	methodNames.addElement("test_getTabHeight");
+	methodNames.addElement("test_getTopRight");
 	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getItemCount");
@@ -185,6 +194,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setSelectionI");
 	methodNames.addElement("test_setSelectionLorg_eclipse_swt_custom_CTabItem");
 	methodNames.addElement("test_setTabHeightI");
+	methodNames.addElement("test_setTopRightLorg_eclipse_swt_widgets_Control");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -197,6 +207,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_onFocusLorg_eclipse_swt_widgets_Event")) test_onFocusLorg_eclipse_swt_widgets_Event();
 	else if (getName().equals("test_getClientArea")) test_getClientArea();
 	else if (getName().equals("test_getTabHeight")) test_getTabHeight();
+	else if (getName().equals("test_getTopRight")) test_getTopRight();
 	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
@@ -217,6 +228,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
 	else if (getName().equals("test_setSelectionLorg_eclipse_swt_custom_CTabItem")) test_setSelectionLorg_eclipse_swt_custom_CTabItem();
 	else if (getName().equals("test_setTabHeightI")) test_setTabHeightI();
+	else if (getName().equals("test_setTopRightLorg_eclipse_swt_widgets_Control")) test_setTopRightLorg_eclipse_swt_widgets_Control();
 	else super.runTest();
 }
 }

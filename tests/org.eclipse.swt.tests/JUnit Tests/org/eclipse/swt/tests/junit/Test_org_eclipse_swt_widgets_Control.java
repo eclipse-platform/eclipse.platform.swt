@@ -623,6 +623,10 @@ public void test_setVisibleZ() {
 	assertTrue(!control.getVisible());
 }
 
+public void test_toControlII() {
+	warnUnimpl("Test test_toControlII not written");
+}
+
 public void test_toControlLorg_eclipse_swt_graphics_Point() {
 	Point controlCoords = control.toControl(new Point(0, 0));
 	assertEquals(new Point(0, 0), control.toDisplay(controlCoords));
@@ -632,6 +636,10 @@ public void test_toControlLorg_eclipse_swt_graphics_Point() {
 	}
 	catch (IllegalArgumentException e) {
 	}
+}
+
+public void test_toDisplayII() {
+	warnUnimpl("Test test_toDisplayII not written");
 }
 
 public void test_toDisplayLorg_eclipse_swt_graphics_Point() {
@@ -739,7 +747,9 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setSizeLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_setToolTipTextLjava_lang_String");
 	methodNames.addElement("test_setVisibleZ");
+	methodNames.addElement("test_toControlII");
 	methodNames.addElement("test_toControlLorg_eclipse_swt_graphics_Point");
+	methodNames.addElement("test_toDisplayII");
 	methodNames.addElement("test_toDisplayLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_traverseI");
 	methodNames.addElement("test_update");
@@ -815,7 +825,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setSizeLorg_eclipse_swt_graphics_Point")) test_setSizeLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();
 	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
+	else if (getName().equals("test_toControlII")) test_toControlII();
 	else if (getName().equals("test_toControlLorg_eclipse_swt_graphics_Point")) test_toControlLorg_eclipse_swt_graphics_Point();
+	else if (getName().equals("test_toDisplayII")) test_toDisplayII();
 	else if (getName().equals("test_toDisplayLorg_eclipse_swt_graphics_Point")) test_toDisplayLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_traverseI")) test_traverseI();
 	else if (getName().equals("test_update")) test_update();

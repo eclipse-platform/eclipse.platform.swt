@@ -147,6 +147,10 @@ public void test_getDefault() {
 	}
 }
 
+public void test_getDismissalAlignment() {
+	warnUnimpl("Test test_getDismissalAlignment not written");
+}
+
 public void test_getDataLjava_lang_String() {
 	warnUnimpl("Test test_getDataLjava_lang_String not written");
 }
@@ -239,6 +243,10 @@ public void test_setAppNameLjava_lang_String() {
 	warnUnimpl("Test test_setAppNameLjava_lang_String not written");
 }
 
+public void test_setCursorLocationII() {
+	warnUnimpl("Test test_setCursorLocationII not written");
+}
+
 public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
 	warnUnimpl("Test test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer not written");
 }
@@ -292,6 +300,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getCursorControl");
 	methodNames.addElement("test_getCursorLocation");
 	methodNames.addElement("test_getDefault");
+	methodNames.addElement("test_getDismissalAlignment");
 	methodNames.addElement("test_getDataLjava_lang_String");
 	methodNames.addElement("test_getData");
 	methodNames.addElement("test_getDoubleClickTime");
@@ -310,6 +319,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setDataLjava_lang_StringLjava_lang_Object");
 	methodNames.addElement("test_setDataLjava_lang_Object");
 	methodNames.addElement("test_setAppNameLjava_lang_String");
+	methodNames.addElement("test_setCursorLocationII");
 	methodNames.addElement("test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer");
 	methodNames.addElement("test_sleep");
 	methodNames.addElement("test_syncExecLjava_lang_Runnable");
@@ -337,6 +347,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getCursorControl")) test_getCursorControl();
 	else if (getName().equals("test_getCursorLocation")) test_getCursorLocation();
 	else if (getName().equals("test_getDefault")) test_getDefault();
+	else if (getName().equals("test_getDismissalAlignment")) test_getDismissalAlignment();
 	else if (getName().equals("test_getDataLjava_lang_String")) test_getDataLjava_lang_String();
 	else if (getName().equals("test_getData")) test_getData();
 	else if (getName().equals("test_getDoubleClickTime")) test_getDoubleClickTime();
@@ -355,6 +366,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setDataLjava_lang_StringLjava_lang_Object")) test_setDataLjava_lang_StringLjava_lang_Object();
 	else if (getName().equals("test_setDataLjava_lang_Object")) test_setDataLjava_lang_Object();
 	else if (getName().equals("test_setAppNameLjava_lang_String")) test_setAppNameLjava_lang_String();
+	else if (getName().equals("test_setCursorLocationII")) test_setCursorLocationII();
 	else if (getName().equals("test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer")) test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer();
 	else if (getName().equals("test_sleep")) test_sleep();
 	else if (getName().equals("test_syncExecLjava_lang_Runnable")) test_syncExecLjava_lang_Runnable();

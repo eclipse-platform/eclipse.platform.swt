@@ -68,6 +68,10 @@ public void test_getDisplay() {
 	warnUnimpl("Test test_getDisplay not written");
 }
 
+public void test_getGrayed() {
+	warnUnimpl("Test test_getGrayed not written");
+}
+
 public void test_getExpanded() {
 	warnUnimpl("Test test_getExpanded not written");
 }
@@ -120,6 +124,10 @@ public void test_setExpandedZ() {
 	warnUnimpl("Test test_setExpandedZ not written");
 }
 
+public void test_setGrayedZ() {
+	warnUnimpl("Test test_setGrayedZ not written");
+}
+
 public void test_setImageILorg_eclipse_swt_graphics_Image() {
 	warnUnimpl("Test test_setImageILorg_eclipse_swt_graphics_Image not written");
 }
@@ -155,6 +163,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getChecked");
 	methodNames.addElement("test_getDisplay");
 	methodNames.addElement("test_getExpanded");
+	methodNames.addElement("test_getGrayed");
 	methodNames.addElement("test_getImage");
 	methodNames.addElement("test_getImageI");
 	methodNames.addElement("test_getItemCount");
@@ -167,6 +176,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_setCheckedZ");
 	methodNames.addElement("test_setExpandedZ");
+	methodNames.addElement("test_setGrayedZ");
 	methodNames.addElement("test_setImageILorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setTextILjava_lang_String");
@@ -183,6 +193,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getChecked")) test_getChecked();
 	else if (getName().equals("test_getDisplay")) test_getDisplay();
 	else if (getName().equals("test_getExpanded")) test_getExpanded();
+	else if (getName().equals("test_getGrayed")) test_getGrayed();
 	else if (getName().equals("test_getImage")) test_getImage();
 	else if (getName().equals("test_getImageI")) test_getImageI();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
@@ -195,6 +206,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_setCheckedZ")) test_setCheckedZ();
 	else if (getName().equals("test_setExpandedZ")) test_setExpandedZ();
+	else if (getName().equals("test_setGrayedZ")) test_setGrayedZ();
 	else if (getName().equals("test_setImageILorg_eclipse_swt_graphics_Image")) test_setImageILorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setTextILjava_lang_String")) test_setTextILjava_lang_String();

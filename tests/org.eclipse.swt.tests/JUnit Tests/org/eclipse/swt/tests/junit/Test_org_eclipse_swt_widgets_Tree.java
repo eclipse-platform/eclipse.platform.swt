@@ -174,6 +174,10 @@ public void test_getSelectionCount(){
 	assertEquals(1, tree.getSelectionCount());
 }
 
+public void test_getTopItem() {
+	warnUnimpl("Test test_getTopItem not written");
+}
+
 public void test_removeAll() {
 	tree.removeAll();
 
@@ -400,6 +404,10 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem(){
 	assertEquals(":e:", new TreeItem[] {items[1]}, tree.getSelection());	
 }
 
+public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
+	warnUnimpl("Test test_setTopItemLorg_eclipse_swt_widgets_TreeItem not written");
+}
+
 public void test_showItemLorg_eclipse_swt_widgets_TreeItem(){
 	try {
 		tree.showItem(null);
@@ -470,6 +478,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getParentItem");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionCount");
+	methodNames.addElement("test_getTopItem");
 	methodNames.addElement("test_removeAll");
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener");
@@ -477,6 +486,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_setRedrawZ");
 	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem");
+	methodNames.addElement("test_setTopItemLorg_eclipse_swt_widgets_TreeItem");
 	methodNames.addElement("test_showItemLorg_eclipse_swt_widgets_TreeItem");
 	methodNames.addElement("test_showSelection");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
@@ -495,6 +505,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getParentItem")) test_getParentItem();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
+	else if (getName().equals("test_getTopItem")) test_getTopItem();
 	else if (getName().equals("test_removeAll")) test_removeAll();
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener")) test_removeTreeListenerLorg_eclipse_swt_events_TreeListener();
@@ -502,6 +513,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_setRedrawZ")) test_setRedrawZ();
 	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem")) test_setSelection$Lorg_eclipse_swt_widgets_TreeItem();
+	else if (getName().equals("test_setTopItemLorg_eclipse_swt_widgets_TreeItem")) test_setTopItemLorg_eclipse_swt_widgets_TreeItem();
 	else if (getName().equals("test_showItemLorg_eclipse_swt_widgets_TreeItem")) test_showItemLorg_eclipse_swt_widgets_TreeItem();
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else super.runTest();

@@ -38,6 +38,10 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
+public void test_computeSizeIIZ() {
+	warnUnimpl("Test test_computeSizeIIZ not written");
+}
+
 public void test_getAlwaysShowScrollBars() {
 	warnUnimpl("Test test_getAlwaysShowScrollBars not written");
 }
@@ -98,6 +102,7 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
+	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_getAlwaysShowScrollBars");
 	methodNames.addElement("test_getContent");
 	methodNames.addElement("test_layoutZ");
@@ -115,6 +120,7 @@ public static java.util.Vector methodNames() {
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
+	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_getAlwaysShowScrollBars")) test_getAlwaysShowScrollBars();
 	else if (getName().equals("test_getContent")) test_getContent();
 	else if (getName().equals("test_layoutZ")) test_layoutZ();
