@@ -146,14 +146,11 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	Point rightSize = (right == null) ? new Point(0, 0) : right.computeSize(rightWidth, hHint);
 	int width = (wHint == SWT.DEFAULT) ? SWT.DEFAULT : wHint - rightSize.x - CURVE_WIDTH + INDENT_LEFT + INDENT_RIGHT;
 	Point leftSize = (left == null) ? new Point(0, 0) : left.computeSize(width, hHint);
-	if (leftSize.y > rightSize.y && (hHint == SWT.DEFAULT || hHint > rightSize.y)) {
-		
-	}
 	Point size = new Point(0, 0);
 	size.x = leftSize.x + CURVE_WIDTH - INDENT_LEFT - INDENT_RIGHT + rightSize.x;
-	size.y = (left != null) ? leftSize.y : rightSize.y;
+	size.y = Math.max (leftSize.y, rightSize.y);
 	
-	if (wHint != SWT.DEFAULT) size.x  = wHint;
+	if (wHint != SWT.DEFAULT) size.x = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
 	
 	Rectangle trim = computeTrim(0, 0, size.x, size.y);
@@ -242,7 +239,7 @@ public void layout (boolean changed) {
 	curveStart = x - indentLeft;
 	x += curveWidth - indentLeft - indentRight;
 	if (right != null) {
-		int height = size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE;
+		int height = Math.min(size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, rightSize.y);
 		int y = BORDER_TOP + BORDER_STRIPE;
 		rightRect = new Rectangle(x, y, rightSize.x, height);
 	}
