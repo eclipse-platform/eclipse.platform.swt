@@ -1265,24 +1265,36 @@ int processKey (int info) {
 	if ((ke.key_flags & (OS.Pk_KF_Key_Down | OS.Pk_KF_Key_Repeat)) != 0) {
 		type = SWT.KeyDown;
 	}
+	int key = 0;
 	if ((ke.key_flags & OS.Pk_KF_Sym_Valid) != 0) {
-		event.keyCode = Display.translateKey (ke.key_sym);
-		if (event.keyCode == 0) {
-			switch (ke.key_sym) {
-				case OS.Pk_BackSpace:	event.character = '\b'; break;
-				case OS.Pk_KP_Tab:
-				case OS.Pk_Tab: 				event.character = '\t'; break;
-				case OS.Pk_Linefeed:		event.character = '\n'; break;
-				case OS.Pk_Clear: 			event.character = 0xB; break;
-				case OS.Pk_Return: 			event.character = '\r'; break;
-				case OS.Pk_Pause:			event.character = 0x13; break;
-				case OS.Pk_Scroll_Lock:	event.character = 0x14; break;
-				case OS.Pk_Escape:		event.character = 0x1B; break;
-				case OS.Pk_Delete:			event.character = 0x7F; break;
-				default:
-					event.character = (char) ke.key_sym;
+		 key = ke.key_sym;
+	} else {
+		if ((ke.key_flags & OS.Pk_KF_Cap_Valid) != 0 && type == SWT.KeyDown) {
+			key = ke.key_cap;
+			if ((ke.key_mods & OS.Pk_KM_Ctrl) != 0) {
+				if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
+				if (64 <= key && key <= 95) key -= 64;
 			}
 		}
+	}
+	event.keyCode = Display.translateKey (key);
+	if (event.keyCode == 0) {
+		switch (key) {
+			case OS.Pk_BackSpace:	event.character = '\b'; break;
+			case OS.Pk_KP_Tab:
+			case OS.Pk_Tab: 				event.character = '\t'; break;
+			case OS.Pk_Linefeed:		event.character = '\n'; break;
+			case OS.Pk_Clear: 			event.character = 0xB; break;
+			case OS.Pk_Return: 			event.character = '\r'; break;
+			case OS.Pk_Pause:			event.character = 0x13; break;
+			case OS.Pk_Scroll_Lock:	event.character = 0x14; break;
+			case OS.Pk_Escape:		event.character = 0x1B; break;
+			case OS.Pk_Delete:			event.character = 0x7F; break;
+			default:
+				event.character = (char) key;
+		}
+	}
+	if (type == SWT.KeyDown) {
 		display.lastKey = event.keyCode;
 		display.lastAscii = event.character;
 	}
