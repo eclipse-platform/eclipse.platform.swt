@@ -300,6 +300,10 @@ public void test_getColumns() {
 	assertEquals(0, table.getColumns().length);
 }
 
+public void test_getColumnOrder() {
+	//in test_setAColumnOrder$I
+}
+
 public void test_getGridLineWidth() {
 	// execute method but there is no way to check the value since it may be anything including 0
 	table.getGridLineWidth();
@@ -1239,6 +1243,74 @@ public void test_selectII() {
 
 	table.select(-1, -1);
 	assertEquals(new int[] {}, table.getSelectionIndices());
+}
+
+public void test_setColumnOrder$I() {
+	assertEquals(table.getColumnOrder(), new int[0]);
+	table.setColumnOrder(new int[0]);
+	assertEquals(table.getColumnOrder(), new int[0]);
+	try {
+		table.setColumnOrder(null);
+		fail("No exception thrown for null argument");
+	} catch (IllegalArgumentException ex) {}
+	try {
+		table.setColumnOrder(new int[1]);
+		fail("No exception thrown for invalid argument");
+	} catch (IllegalArgumentException ex) {}
+	
+	TableColumn column0 = new TableColumn(table, SWT.NONE);
+	TableColumn column1 = new TableColumn(table, SWT.NONE);
+	TableColumn column2 = new TableColumn(table, SWT.NONE);
+	assertEquals(table.getColumnOrder(), new int[]{0, 1, 2});
+	try {
+		table.setColumnOrder(null);
+		fail("No exception thrown for null argument");
+	} catch (IllegalArgumentException ex) {}
+	try {
+		table.setColumnOrder(new int[0]);
+		fail("No exception thrown for invalid argument");
+	} catch (IllegalArgumentException ex) {}
+	try {
+		table.setColumnOrder(new int[]{0,1});
+		fail("No exception thrown for invalid argument");
+	} catch (IllegalArgumentException ex) {}
+	try {
+		table.setColumnOrder(new int[]{0, 1, 2, 3});
+		fail("No exception thrown for invalid argument");
+	} catch (IllegalArgumentException ex) {}
+	try {
+		table.setColumnOrder(new int[]{0, 0, 1});
+		fail("No exception thrown for invalid argument");
+	} catch (IllegalArgumentException ex) {}
+	try {
+		table.setColumnOrder(new int[]{3, 0, 1});
+		fail("No exception thrown for invalid argument");
+	} catch (IllegalArgumentException ex) {}
+	table.setColumnOrder(new int[]{2, 1, 0});
+	assertEquals(table.getColumnOrder(), new int[] {2, 1, 0});
+	column2.dispose();
+	assertEquals(table.getColumnOrder(), new int[] {1, 0});
+	try {
+		table.setColumnOrder(new int[]{0, 1, 2});
+		fail("No exception thrown for invalid argument");
+	} catch (IllegalArgumentException ex) {}
+	column1.dispose();
+	assertEquals(table.getColumnOrder(), new int[]{0});
+	column0.dispose();
+	assertEquals(table.getColumnOrder(), new int[0]);
+	try {
+		table.setColumnOrder(new int[1]);
+		fail("No exception thrown for invalid argument");
+	} catch (IllegalArgumentException ex) {}
+	table.dispose();
+	try {
+		table.getColumnOrder();
+		fail("No exception thrown for widget is Disposed");
+	} catch (SWTException ex) {}
+	try {
+		table.setColumnOrder(new int[0]);
+		fail("No exception thrown for widget is Disposed");
+	} catch (SWTException ex) {}
 }
 
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
