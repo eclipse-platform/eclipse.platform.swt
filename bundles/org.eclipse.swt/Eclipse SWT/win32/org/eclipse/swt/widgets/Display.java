@@ -161,10 +161,10 @@ public class Display extends Device {
 	int [] systemFonts;
 	
 	/* System Images Cache */
-	int errorImage, infoImage, questionImage, warningImage;
+	int errorIcon, infoIcon, questionIcon, warningIcon;
 
 	/* System Cursors Cache */
-	Cursor[] cursors = new Cursor [22];
+	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
 
 	/* ImageList Cache */	
 	ImageList[] imageList, toolImageList, toolHotImageList, toolDisabledImageList;
@@ -1542,7 +1542,29 @@ public Color getSystemColor (int id) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#CURSOR_ARROW
+ * @see SWT#CURSOR_WAIT
+ * @see SWT#CURSOR_CROSS
+ * @see SWT#CURSOR_APPSTARTING
+ * @see SWT#CURSOR_HELP
+ * @see SWT#CURSOR_SIZEALL
+ * @see SWT#CURSOR_SIZENESW
+ * @see SWT#CURSOR_SIZENS
+ * @see SWT#CURSOR_SIZENWSE
+ * @see SWT#CURSOR_SIZEWE
+ * @see SWT#CURSOR_SIZEN
+ * @see SWT#CURSOR_SIZES
+ * @see SWT#CURSOR_SIZEE
+ * @see SWT#CURSOR_SIZEW
+ * @see SWT#CURSOR_SIZENE
+ * @see SWT#CURSOR_SIZESE
+ * @see SWT#CURSOR_SIZESW
+ * @see SWT#CURSOR_SIZENW
+ * @see SWT#CURSOR_UPARROW
+ * @see SWT#CURSOR_IBEAM
+ * @see SWT#CURSOR_NO
+ * @see SWT#CURSOR_HAND
+ * 
  * @since 3.0
  */
 public Cursor getSystemCursor (int id) {
@@ -1604,44 +1626,41 @@ public Font getSystemFont () {
  * @see SWT#ICON_QUESTION
  * @see SWT#ICON_WARNING
  * @see SWT#ICON_WORKING
+ * 
  * @since 3.0
  */
 public Image getSystemImage (int id) {
 	checkDevice ();
-	int image = 0;
+	int hIcon = 0;
 	switch (id) {
-		case SWT.ICON_ERROR: {
-			if (errorImage == 0) {
-				errorImage = OS.LoadImage (0, OS.OIC_HAND, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+		case SWT.ICON_ERROR:
+			if (errorIcon == 0) {
+				errorIcon = OS.LoadImage (0, OS.OIC_HAND, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
 			}
-			image = errorImage;
+			hIcon = errorIcon;
 			break;
-		}
+		case SWT.ICON_WORKING:
 		case SWT.ICON_INFORMATION:
-		case SWT.ICON_WORKING: {
-			if (infoImage == 0) {
-				infoImage = OS.LoadImage (0, OS.OIC_INFORMATION, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			if (infoIcon == 0) {
+				infoIcon = OS.LoadImage (0, OS.OIC_INFORMATION, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
 			}
-			image = infoImage;
+			hIcon = infoIcon;
 			break;
-		}
-		case SWT.ICON_QUESTION: {
-			if (questionImage == 0) {
-				questionImage = OS.LoadImage (0, OS.OIC_QUES, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+		case SWT.ICON_QUESTION:
+			if (questionIcon == 0) {
+				questionIcon = OS.LoadImage (0, OS.OIC_QUES, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
 			}
-			image = questionImage;
+			hIcon = questionIcon;
 			break;
-		}
-		case SWT.ICON_WARNING: {
-			if (warningImage == 0) {
-				warningImage = OS.LoadImage (0, OS.OIC_BANG, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+		case SWT.ICON_WARNING:
+			if (warningIcon == 0) {
+				warningIcon = OS.LoadImage (0, OS.OIC_BANG, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
 			}
-			image = warningImage;
+			hIcon = warningIcon;
 			break;
-		}
 	}
-	if (image == 0) return null;
-	return Image.win32_new (this, SWT.ICON, image);
+	if (hIcon == 0) return null;
+	return Image.win32_new (this, SWT.ICON, hIcon);
 }
 
 /**
@@ -2481,11 +2500,11 @@ void releaseDisplay () {
 	systemFonts = null;
 	
 	/* Release the System Images */
-	if (errorImage != 0) OS.DestroyIcon (errorImage);
-	if (infoImage != 0) OS.DestroyIcon (infoImage);
-	if (questionImage != 0) OS.DestroyIcon (questionImage);
-	if (warningImage != 0) OS.DestroyIcon (warningImage);
-	errorImage = infoImage = questionImage = warningImage = 0;
+	if (errorIcon != 0) OS.DestroyIcon (errorIcon);
+	if (infoIcon != 0) OS.DestroyIcon (infoIcon);
+	if (questionIcon != 0) OS.DestroyIcon (questionIcon);
+	if (warningIcon != 0) OS.DestroyIcon (warningIcon);
+	errorIcon = infoIcon = questionIcon = warningIcon = 0;
 	
 	/* Release the System Cursors */
 	for (int i = 0; i < cursors.length; i++) {
