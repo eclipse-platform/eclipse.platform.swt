@@ -410,6 +410,11 @@ public void setSize (Point size) {
  * 
  * @return the minimum width of the cool item, in pixels
  * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
  * @since 2.0
  */
 public int getMinimumWidth () {
@@ -429,6 +434,11 @@ public int getMinimumWidth () {
  * be resized to using the cool item's gripper.
  * 
  * @param width the minimum width of the cool item, in pixels
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  * 
  * @since 2.0
  */
