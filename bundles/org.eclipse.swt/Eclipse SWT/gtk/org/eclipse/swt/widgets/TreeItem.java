@@ -154,9 +154,12 @@ public TreeItem (TreeItem parentItem, int style) {
  */
 public Color getBackground () {
 	checkWidget ();
-	// FIXME
-	Tree parent = getParent();
-	return parent.getBackground();
+	int[] ptr = new int[1];
+	OS.gtk_tree_model_get(parent.modelHandle, handle, 3, ptr, -1);
+	if (ptr[0]==0) return parent.getBackground();
+	GdkColor gdkColor = new GdkColor();
+	OS.memmove(gdkColor, ptr[0], GdkColor.sizeof);
+	return Color.gtk_new(getDisplay(), gdkColor);
 }
 
 /**
@@ -280,9 +283,12 @@ public boolean getExpanded () {
  */
 public Color getForeground () {
 	checkWidget ();
-	// FIXME
-	Tree parent = getParent();
-	return parent.getForeground();
+	int[] ptr = new int[1];
+	OS.gtk_tree_model_get(parent.modelHandle, handle, 2, ptr, -1);
+	if (ptr[0]==0) return parent.getBackground();
+	GdkColor gdkColor = new GdkColor();
+	OS.memmove(gdkColor, ptr[0], GdkColor.sizeof);
+	return Color.gtk_new(getDisplay(), gdkColor);
 }
 
 /**
