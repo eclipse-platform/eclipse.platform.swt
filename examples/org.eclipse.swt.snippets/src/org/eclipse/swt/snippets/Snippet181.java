@@ -27,33 +27,34 @@ public class Snippet181 {
 		Shell shell = new Shell(display);
 		shell.setLayout(new RowLayout(SWT.HORIZONTAL));
 		final Table table = new Table(shell, SWT.BORDER | SWT.CHECK);
-		table.setLayoutData(new RowData(-1, 400));
+		table.setLayoutData(new RowData(-1, 300));
 		table.setHeaderVisible(true);
-		TableColumn column0 = new TableColumn(table, SWT.NONE);
-		column0.setText("Column 0");
-		column0.setMoveable(true);
-		TableColumn column1 = new TableColumn(table, SWT.NONE);
-		column1.setText("Column 1");
-		column1.setMoveable(true);
-		TableColumn column2 = new TableColumn(table, SWT.NONE);
-		column2.setText("Column 2");
-		column2.setMoveable(true);
-		TableColumn column3 = new TableColumn(table, SWT.NONE);
-		column3.setText("Column 3");
-		column3.setMoveable(true);
-		TableColumn column4 = new TableColumn(table, SWT.NONE);
-		column4.setText("Column 4");
-		column4.setMoveable(true);
-		for (int i = 0; i < 20; i++) {
+		TableColumn column = new TableColumn(table, SWT.LEFT);
+		column.setText("Column 0");
+		column = new TableColumn(table, SWT.CENTER);
+		column.setText("Column 1");
+		column = new TableColumn(table, SWT.CENTER);
+		column.setText("Column 2");
+		column = new TableColumn(table, SWT.CENTER);
+		column.setText("Column 3");
+		column = new TableColumn(table, SWT.CENTER);
+		column.setText("Column 4");
+		for (int i = 0; i < 100; i++) {
 			TableItem item = new TableItem(table, SWT.NONE);
-			String[] text = new String[]{"abc"+i, "def"+i, "ghi"+i,	"jkl"+i, "mnop"+i};
+			String[] text = new String[]{i+" 0", i+" 1", i+" 2", i+" 3", i+" 4"};
 			item.setText(text);
 		}
-		column0.pack();
-		column1.pack();
-		column2.pack();
-		column3.pack();
-		column4.pack();
+		Listener listener = new Listener() {
+			public void handleEvent(Event e) {
+				System.out.println("Move "+e.widget);
+			}
+		};
+		TableColumn[] columns = table.getColumns();
+		for (int i = 0; i < columns.length; i++) {
+			columns[i].pack();
+			columns[i].setMoveable(true);
+			columns[i].addListener(SWT.Move, listener);
+		}
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("invert column order");
 		b.addListener(SWT.Selection, new Listener() {
