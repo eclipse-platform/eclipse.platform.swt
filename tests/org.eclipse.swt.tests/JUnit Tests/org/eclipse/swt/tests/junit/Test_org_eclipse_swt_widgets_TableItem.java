@@ -513,9 +513,13 @@ public void test_setCheckedZ() {
 
 boolean compareFonts(Font font1, Font font2) {
 	if (SwtJunit.isGTK) {
-		FontData fontData1 = font1.getFontData()[0];
-		FontData fontData2 = font2.getFontData()[0];
-		return fontData1.equals(fontData2);
+		FontData[] fontData1 = font1.getFontData();
+		FontData[] fontData2 = font2.getFontData();
+		if (fontData1.length != fontData2.length) return false;
+		for (int i = 0; i < fontData1.length; i++) {
+			if (!fontData1[i].equals(fontData2[i])) return false;
+		};
+		return true;
 	}
 	return font1.handle == font2.handle;
 }
