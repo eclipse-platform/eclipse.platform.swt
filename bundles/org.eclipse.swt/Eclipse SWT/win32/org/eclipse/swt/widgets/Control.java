@@ -848,6 +848,11 @@ boolean hasCursor () {
 }
 
 boolean hasFocus () {
+	/*
+	* If a non-SWT child of the control has focus,
+	* then this control is considered to have focus
+	* even though it does not have focus in Windows.
+	*/
 	int hwndFocus = OS.GetFocus ();
 	while (hwndFocus != 0) {
 		if (hwndFocus == handle) return true;
