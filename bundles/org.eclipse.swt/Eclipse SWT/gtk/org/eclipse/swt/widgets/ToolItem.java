@@ -219,7 +219,6 @@ int topHandle() {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	checkWidget();
 	int x = OS.GTK_WIDGET_X (handle);
 	int y = OS.GTK_WIDGET_Y (handle);
 	int width = OS.GTK_WIDGET_WIDTH (handle);
