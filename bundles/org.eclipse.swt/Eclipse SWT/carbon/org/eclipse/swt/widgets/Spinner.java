@@ -205,15 +205,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	FontInfo info = new FontInfo ();
 	OS.GetFontInfo (info);
-	height = info.ascent + info.descent;
-	int [] ptr = new int [1];
-	OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, null);
+	height = info.ascent + info.descent;	
+	int max = OS.GetControl32BitMaximum (buttonHandle);
+	String string = String.valueOf (max);
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 	org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-	if (ptr [0] != 0) {
-		OS.GetThemeTextDimensions (ptr [0], themeFont, OS.kThemeStateActive, false, ioBounds, null);
+	if (ptr != 0) {
+		OS.GetThemeTextDimensions (ptr, themeFont, OS.kThemeStateActive, false, ioBounds, null);
 		width = Math.max (width, ioBounds.h);
 		height = Math.max (height, ioBounds.v);
-		OS.CFRelease (ptr [0]);
+		OS.CFRelease (ptr);
 	}
 	if (font != null) {
 		OS.SetPort (currentPort [0]);
