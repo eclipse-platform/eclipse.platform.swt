@@ -7,11 +7,12 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.OS;
-
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+
 
 public abstract class Control extends Widget implements Drawable {
 	/**
@@ -270,32 +271,13 @@ public boolean getVisible () {
 	return false;
 }
 
-int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	if (keyCode [0] == 114) {	// help key
-//		windowProc(focus.handle, SWT.Help);
-//		return OS.noErr;
-	}
-	sendKeyEvent (SWT.KeyDown, theEvent);
-	return OS.eventNotHandledErr;
-}
-
-int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
-	sendKeyEvent (SWT.KeyDown, theEvent);
-	return OS.eventNotHandledErr;
-}
-
 int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
 	sendKeyEvent (SWT.KeyUp, theEvent);
 	return OS.eventNotHandledErr;
-}
-
-int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
+}int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
+	sendKeyEvent (SWT.KeyDown, theEvent);
+	return OS.eventNotHandledErr;
+}int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
 	Display display = getDisplay ();
@@ -308,9 +290,18 @@ int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 	sendKeyEvent (type, theEvent);
 	display.lastModifiers = modifiers [0];
 	return OS.eventNotHandledErr;
-}
-					
-int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
+}int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	if (keyCode [0] == 114) {	// help key
+//		windowProc(focus.handle, SWT.Help);
+//		return OS.noErr;
+	}
+	sendKeyEvent (SWT.KeyDown, theEvent);
+	return OS.eventNotHandledErr;
+}int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -485,9 +476,7 @@ boolean sendKeyEvent (int type, int theEvent) {
 	setKeyState (event, theEvent);
 	postEvent (type, event);
 	return true;
-}
-
-public void setBackground (Color color) {
+}public void setBackground (Color color) {
 	checkWidget();
 	int pixel = -1;
 	if (color != null) {
@@ -501,6 +490,9 @@ void setBackgroundPixel (int pixel) {
 
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
+	Rect bounds = new Rect ();
+	OS.SetRect (bounds, (short)x, (short)y, (short) (x + Math.max (0, width)), (short) (y + Math.max (0, height)));
+	OS.SetControlBounds (handle, bounds);
 }
 
 public void setBounds (Rectangle rect) {
@@ -542,6 +534,7 @@ public void setLayoutData (Object layoutData) {
 
 public void setLocation (int x, int y) {
 	checkWidget();
+    OS.MoveControl (handle, (short)x, (short)y);
 }
 
 public void setLocation (Point location) {
@@ -571,6 +564,7 @@ public void setRedraw (boolean redraw) {
 
 public void setSize (int width, int height) {
 	checkWidget();
+	OS.SizeControl (handle, (short) Math.max (0, width), (short)Math.max (0, height));
 }
 
 public void setSize (Point size) {
@@ -666,4 +660,5 @@ boolean traverseMnemonic (Event event) {
 public void update () {
 	checkWidget();
 }
+
 }

@@ -9,7 +9,11 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+
 public /*final*/ class Button extends Control {
 
 public Button (Composite parent, int style) {
@@ -43,7 +47,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point(0, 0);
 }
 
-void createHandle (int index) {
+void createHandle () {
+	int window = parent.getShell ().shellHandle;
+	int [] outControl = new int [1];
+	if (OS.CreatePushButtonControl (window, new Rect (), 0, outControl) != OS.noErr) {
+		error (SWT.ERROR_NO_HANDLES);
+	}
+	handle = outControl [0];
+	OS.HIViewAddSubview(parent.handle, handle);
+	//OS.HIViewSetZOrder(controlHandle, OS.kHIViewZOrderAbove, where[0]
 }
 
 public int getAlignment () {
