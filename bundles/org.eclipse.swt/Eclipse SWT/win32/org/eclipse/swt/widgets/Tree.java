@@ -240,6 +240,7 @@ void createItem (TreeItem item, int hParent, int hInsertAfter) {
 	if (hItem == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	item.handle = hItem;
 	items [id] = item;
+	
 	/*
 	* This code is intentionally commented.
 	*/
@@ -250,7 +251,7 @@ void createItem (TreeItem item, int hParent, int hInsertAfter) {
 //	}
 
 	/*
-	* Bug in Windows.  When a child item ss added to a parent item
+	* Bug in Windows.  When a child item is added to a parent item
 	* that has no children outside of WM_NOTIFY with control code
 	* TVN_ITEMEXPANDED, the tree widget does not redraw the +/-
 	* indicator.  The fix is to detect this case and force a redraw.
@@ -849,6 +850,35 @@ void setForegroundPixel (int pixel) {
 	if (foreground == pixel) return;
 	foreground = pixel;
 	OS.SendMessage (handle, OS.TVM_SETTEXTCOLOR, 0, pixel);
+}
+
+public void setRedraw (boolean redraw) {
+	checkWidget ();
+	/*
+	* Bug in Windows.  For some reason, when WM_SETREDRAW
+	* is used to turn redraw on for a tree and the tree
+	* contains no items, the last item in the tree does
+	* not redraw properly.  If the tree has only one item,
+	* that item is not drawn.  If another window is dragged
+	* on top of the item, parts of the item are redrawn
+	* and erased at random.  The fix is to ensure that this
+	* case doesn't happen by inserting and deleting an item
+	* when redraw is turned on and there are no items in
+	* the tree.
+	*/
+	int hItem = 0;
+	if (redraw) {
+		int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
+		if (count == 0) {
+			TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();
+			tvInsert.hInsertAfter = OS.TVI_FIRST;
+			hItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
+		}
+	}
+	super.setRedraw (redraw);
+	if (hItem != 0) {
+		OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
+	}
 }
 
 /**
