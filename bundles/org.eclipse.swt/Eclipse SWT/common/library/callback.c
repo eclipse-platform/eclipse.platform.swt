@@ -268,7 +268,7 @@ SWT_PTR callback(int index, ...)
 	{
 	jobject callback = callbackData[index].callin;
 	jmethodID mid = callbackData[index].methodID;
-	JNIEnv *env;
+	JNIEnv *env = NULL;
 	jobject javaObject;
 	jboolean isStatic, isArrayBased;
 	int result = 0;
@@ -286,11 +286,19 @@ SWT_PTR callback(int index, ...)
 	{
 		(*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
 	}
+	
+	if (env == NULL) {
+#ifdef DEBUG_CALL_PRINTS
+		fprintf(stderr, "************ could not get env\n");
+#endif
+		return 0;
+	}
 
 	/* Either we are disconnected from the VM or an exception has occurred. */
-	if (env == 0 ||(*env)->ExceptionOccurred(env)) {
+	if ((*env)->ExceptionOccurred(env)) {
 #ifdef DEBUG_CALL_PRINTS
 		fprintf(stderr, "************ java exception occurred\n");
+		(*env)->ExceptionDescribe(env);
 #endif
 		return 0;
 	}
