@@ -641,6 +641,18 @@ public Shell getShell () {
 	return this;
 }
 
+public Point getSize () {
+	checkWidget ();
+	if (!OS.IsWinCE) {
+		if (OS.IsIconic (handle)) return super.getSize ();
+	}
+	RECT rect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	return new Point (width, height);
+}
+
 /**
  * Returns an array containing all shells which are 
  * descendents of the receiver.
