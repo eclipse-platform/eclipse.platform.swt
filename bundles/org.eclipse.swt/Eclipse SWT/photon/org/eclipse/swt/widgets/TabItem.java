@@ -225,10 +225,10 @@ public void setText (String string) {
 	int newPtr = OS.malloc (count * 4);
 	int [] str = new int [1];
 	int [] address = new int [1];
-	byte [] buffer = Converter.wcsToMbcs (null, stripMnemonics (string));
+	byte [] buffer = Converter.wcsToMbcs (null, stripMnemonics (string), true);
 	for (int i=0; i<count; i++) {
 		if (i == index) {
-			str [0] = OS.malloc (buffer.length + 1);
+			str [0] = OS.malloc (buffer.length);
 			OS.memmove (str [0], buffer, buffer.length);
 		} else {
 			OS.memmove (address, oldPtr + (i * 4), 4);

@@ -199,7 +199,7 @@ public String open () {
 	byte [] file_spec = Converter.wcsToMbcs (null, mask, true);
 	byte [] btn1_text = null;
 	if ((style & SWT.SAVE) != 0) {
-		btn1_text = Converter.wcsToMbcs(null, SWT.getMessage("SWT_Save"));
+		btn1_text = Converter.wcsToMbcs(null, SWT.getMessage("SWT_Save"), true);
 	}
 	int flags = OS.Pt_FSR_NO_FCHECK;
 	PtFileSelectionInfo_t info = new PtFileSelectionInfo_t ();
