@@ -134,20 +134,76 @@ public Browser(Composite parent, int style) {
 	
 	final int notificationCenter = WebKit.objc_msgSend(WebKit.C_NSNotificationCenter, WebKit.S_defaultCenter);
 
-	addListener(SWT.Dispose, new Listener() {
+	Listener listener = new Listener() {
 		public void handleEvent(Event e) {
-			Map.remove(new Integer(webView));
-			WebKit.objc_msgSend(notificationCenter, WebKit.S_removeObserver_name_object, Delegate, 0, webView);
+			switch (e.type) {
+				case SWT.Dispose: {
+					Map.remove(new Integer(webView));
+					WebKit.objc_msgSend(notificationCenter, WebKit.S_removeObserver_name_object, Delegate, 0, webView);
+					break;
+				}
+				case SWT.Hide: {
+					/*
+					* Bug on Safari. The web view cannot be obscured by other views above it.
+					* This problem is specified in the apple documentation for HiWebViewCreate.
+					* The workaround is to hook Hide and Show events on the browser's parents
+					* and set its size to 0 in Hide and to restore its size in Show.
+					*/
+					CGRect bounds = new CGRect();
+					OS.HIViewSetFrame(webViewHandle, bounds);
+					break;
+				}
+				case SWT.Show: {
+					/*
+					* Bug on Safari. The web view cannot be obscured by other views above it.
+					* This problem is specified in the apple documentation for HiWebViewCreate.
+					* The workaround is to hook Hide and Show events on the browser's parents
+					* and set its size to 0 in Hide and to restore its size in Show.
+					*/
+					CGRect bounds = new CGRect();
+					OS.HIViewGetFrame(handle, bounds);
+					OS.HIViewSetFrame(webViewHandle, bounds);
+					break;
+				}
+				case SWT.Resize: {
+					/*
+					* Bug on Safari. Resizing the height of a Shell containing a Browser at
+					* a fixed location causes the Browser to redraw at a wrong location.
+					* The web view is a HIView container that internally hosts
+					* a Cocoa NSView that uses a coordinates system with the origin at the
+					* bottom left corner of a window instead of the coordinates system used
+					* in Carbon that starts at the top left corner. The workaround is to
+					* reposition the web view every time the Shell of the Browser is resized.
+					* 
+					* Feature on Safari. The HIView ignores the call to update its position
+					* because it believes it has not changed. The workaround is to force
+					* it to reposition by changing its size and setting it back to the
+					* original value. 
+					*/
+					/* If the widget is hidden, leave its size to 0,0 as set in the SWT.Hide callback */
+					if (!isVisible()) break;
+					CGRect bounds = new CGRect();
+					OS.HIViewGetFrame(handle, bounds);
+					bounds.width++;
+					OS.HIViewSetFrame(webViewHandle, bounds);
+					bounds.width--;
+					OS.HIViewSetFrame(webViewHandle, bounds);
+					break;
+				}
+			}
 		}
-	});
-
-	addListener(SWT.Resize, new Listener() {
-		public void handleEvent(Event e) {
-			CGRect bounds = new CGRect();
-			OS.HIViewGetFrame(handle, bounds);
-			OS.HIViewSetFrame(webViewHandle, bounds);
-		}
-	});
+	};
+	addListener(SWT.Dispose, listener);
+	Shell shell = getShell();
+	shell.addListener(SWT.Resize, listener);
+	shell.addListener(SWT.Show, listener);
+	shell.addListener(SWT.Hide, listener);
+	Control c = this;
+	do {
+		c.addListener(SWT.Show, listener);
+		c.addListener(SWT.Hide, listener);
+		c = c.getParent();
+	} while (c != shell);
 	
 	if (callback == null) {
 		callback = new Callback(this.getClass(), "eventProc", 6); //$NON-NLS-1$
