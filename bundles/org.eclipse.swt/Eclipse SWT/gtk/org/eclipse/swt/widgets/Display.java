@@ -1460,6 +1460,11 @@ public static void setAppName (String name) {
 	APP_NAME = name;
 }
 
+public void setCursorLocation (int x, int y) {
+	checkDevice ();
+	/* This is not supported on GTK */
+}
+
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -1474,7 +1479,8 @@ public static void setAppName (String name) {
  */
 public void setCursorLocation (Point point) {
 	checkDevice ();
-	/* This is not supported on GTK */
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setCursorLocation (point.x, point.y);
 }
 
 /**
