@@ -310,6 +310,18 @@ int fontHandle () {
 	return super.fontHandle ();
 }
 
+public boolean forceFocus () {
+	checkWidget();
+	OS.gtk_widget_grab_focus (entryHandle);
+	return hasFocus ();
+}
+boolean hasFocus () {
+	boolean hasIt = OS.GTK_WIDGET_HAS_FOCUS(handle);
+	if (OS.GTK_WIDGET_HAS_FOCUS(entryHandle)) return true;
+	if (OS.GTK_WIDGET_HAS_FOCUS(listHandle)) return true;
+	if (OS.GTK_WIDGET_HAS_FOCUS(handle)) return true;
+	return false;
+}
 void hookEvents () {
 	// TO DO - expose, enter/exit, focus in/out
 	super.hookEvents ();
