@@ -738,6 +738,9 @@ void listEvent (Event event) {
 				// escape key cancels popup list
 				dropDown (false);
 			}
+			if ((event.stateMask & SWT.ALT) != 0 && (event.keyCode == SWT.ARROW_UP || event.keyCode == SWT.ARROW_DOWN)) {
+				dropDown (false);
+			}
 			if (event.character == SWT.CR || event.character == '\t') {
 				// Enter and Tab cause default selection
 				dropDown (false);
@@ -1141,6 +1144,14 @@ void textEvent (Event event) {
 			if (isDisposed()) break;
 			
 			if (event.keyCode == SWT.ARROW_UP || event.keyCode == SWT.ARROW_DOWN) {
+				if ((event.stateMask & SWT.ALT) != 0) {
+					boolean dropped = isDropped ();
+					text.selectAll ();
+					if (!dropped) setFocus ();
+					dropDown (!dropped);
+					break;
+				}
+
 				int oldIndex = getSelectionIndex ();
 				if (event.keyCode == SWT.ARROW_UP) {
 					select (Math.max (oldIndex - 1, 0));
