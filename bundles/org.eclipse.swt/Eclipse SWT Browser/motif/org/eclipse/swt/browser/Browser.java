@@ -177,7 +177,7 @@ public Browser(Composite parent, int style) {
 		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 		
 		AppShell = new nsIAppShell(result[0]);
-		rc = AppShell.Create(null, null);
+		rc = AppShell.Create(0, null);
 		if (rc != XPCOM.NS_OK) error(rc);
 		rc = AppShell.Spinup();
 		if (rc != XPCOM.NS_OK) error(rc);
