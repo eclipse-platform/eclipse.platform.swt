@@ -350,6 +350,14 @@ public boolean getSelection () {
 
 int gtk_activate (int widget) {
 	if ((style & SWT.CASCADE) != 0 && menu != null) return 0;
+	/*
+	* Bug in GTK.  When an ancestor menu is disabled and
+	* the user types an accelerator key, GTK delivers the
+	* the activate signal even though the menu item cannot
+	* be invoked using the mouse.  The fix is to ignore activate
+	* signals when an ancestor menu is disabled.
+	*/
+	if (!isEnabled ()) return 0;
 	Event event = new Event ();
 	int ptr = OS.gtk_get_current_event ();
 	if (ptr != 0) {
@@ -421,7 +429,7 @@ void hookEvents () {
  * @see #getEnabled
  */
 public boolean isEnabled () {
-	return getEnabled ();
+	return getEnabled () && parent.isEnabled ();
 }
 
 void releaseChild () {

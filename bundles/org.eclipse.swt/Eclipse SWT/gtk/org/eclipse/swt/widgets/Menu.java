@@ -559,7 +559,9 @@ public int indexOf (MenuItem item) {
  */
 public boolean isEnabled () {
 	checkWidget();
-	return getEnabled () && getParent ().getEnabled ();
+	Menu parentMenu = getParentMenu ();
+	if (parentMenu == null) return getEnabled ();
+	return getEnabled () && parentMenu.isEnabled ();
 }
 
 /**
