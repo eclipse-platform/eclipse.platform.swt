@@ -85,7 +85,7 @@ void addColumn (TreeColumn column) {
 		}
 		if (index == 0) {
 			texts [1] = text;
-			text = "";
+			text = "";	//$NON-NLS-1$
 		}
 
 		if (columnCount == 2) {
@@ -503,7 +503,7 @@ int getContentWidth (int columnIndex) {
 String getDisplayText (int columnIndex) {
 	if (parent.columns.length == 0) return getText (0);
 	String result = displayTexts [columnIndex];
-	return result != null ? result : "";
+	return result != null ? result : "";	//$NON-NLS-1$
 }
 /*
  * Returns the x value where the receiver's content (ie.- its image or text) begins
@@ -756,9 +756,9 @@ public String getText () {
 public String getText (int columnIndex) {
 	checkWidget ();
 	int validColumnCount = Math.max (1, parent.columns.length);
-	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return "";
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return "";	//$NON-NLS-1$
 	if (columnIndex == 0) return getText ();
-	if (texts [columnIndex] == null) return "";
+	if (texts [columnIndex] == null) return "";	//$NON-NLS-1$
 	return texts [columnIndex];
 }
 /*
@@ -1071,7 +1071,7 @@ void removeColumn (TreeColumn column, int index) {
 	}
 
 	if (index == 0) {
-		text = texts [0] != null ? texts [0] : "";
+		text = texts [0] != null ? texts [0] : "";	//$NON-NLS-1$
 		texts [0] = null;
 		image = images [0];
 		images [0] = null;

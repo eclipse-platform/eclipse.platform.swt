@@ -1207,7 +1207,7 @@ class AccessibleObject {
 
 	String getText () {
 		int /*long*/ parentResult = 0;
-		String parentText = "";
+		String parentText = "";	//$NON-NLS-1$
 		if (ATK.g_type_is_a (parentType, ATK_TEXT_TYPE)) {
 			int /*long*/ superType = ATK.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (handle));
 			AtkTextIface textIface = new AtkTextIface ();
