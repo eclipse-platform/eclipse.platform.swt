@@ -327,6 +327,7 @@ class TableTab extends ScrollableTab {
 	 * Sets the font of TableItem 0.
 	 */
 	void setItemFont () {
+		if (instance.startup) return;
 		table1.getItem (0).setFont (itemFont);
 		packColumns ();
 	}

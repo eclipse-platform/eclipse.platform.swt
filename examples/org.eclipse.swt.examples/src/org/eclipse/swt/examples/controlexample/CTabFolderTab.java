@@ -295,6 +295,7 @@ class CTabFolderTab extends Tab {
 	 * Sets the font of CTabItem 0.
 	 */
 	void setItemFont () {
+		if (instance.startup) return;
 		tabFolder1.getItem (0).setFont (itemFont);
 	}
 }

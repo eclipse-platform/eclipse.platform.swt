@@ -836,6 +836,7 @@ abstract class Tab {
 	 * Sets the font of the "Example" widgets.
 	 */
 	void setExampleWidgetFont () {
+		if (instance.startup) return;
 		if (fontButton == null) return; // no font button on this tab
 		Control [] controls = getExampleWidgets ();
 		for (int i = 0; i < controls.length; i++) {

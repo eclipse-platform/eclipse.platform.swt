@@ -359,6 +359,7 @@ class TableTreeTab extends ScrollableTab {
 	 * Sets the font of the Node 1 TreeItems.
 	 */
 	void setItemFont () {
+		if (instance.startup) return;
 		node1.setFont (itemFont);
 	}
 

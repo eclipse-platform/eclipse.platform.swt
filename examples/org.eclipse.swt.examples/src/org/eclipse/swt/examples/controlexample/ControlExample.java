@@ -32,6 +32,8 @@ public class ControlExample {
 		"openFolder.gif",
 		"target.gif" };
 
+	boolean startup = true;
+
 	/**
 	 * Creates an instance of a ControlExample embedded inside
 	 * the supplied parent Composite.
@@ -48,6 +50,7 @@ public class ControlExample {
 		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
 		    item.setData (tabs [i]);
 		}
+		startup = false;
 	}
 
 	/**
