@@ -140,6 +140,13 @@ class SashTab extends Tab {
 	}
 	
 	/**
+	 * Recreates the "Example" widgets.
+	 */
+	void recreateExampleWidgets () {
+		// this tab does not use this framework mechanism
+	}
+	
+	/**
 	 * Handle the shell resized event.
 	 */
 	void shellResized () {

@@ -324,7 +324,7 @@ abstract class Tab {
 		/*
 		* Create a two column page.
 		*/
-		tabFolderPage = new Composite (tabFolder, SWT.NULL);
+		tabFolderPage = new Composite (tabFolder, SWT.NONE);
 		GridLayout gridLayout = new GridLayout ();
 		tabFolderPage.setLayout (gridLayout);
 		gridLayout.numColumns = 2;

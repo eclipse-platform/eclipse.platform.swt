@@ -83,9 +83,9 @@ public class ControlExample {
 		logging = false;
 		form.setWeights(new int[] {100, 0});
 		eventConsole.setEnabled (false);
-		TabItem[] currentSelection = tabFolder.getSelection();
-		for (int i = 0; i < currentSelection.length; i++) {
-			Tab tab = (Tab) currentSelection[i].getData ();
+		TabItem[] tabs = tabFolder.getItems ();
+		for (int i = 0; i < tabs.length; i++) {
+			Tab tab = (Tab) tabs[i].getData ();
 			tab.recreateExampleWidgets ();
 		}
 	}
@@ -314,9 +314,9 @@ public class ControlExample {
 		logging = true;
 		form.setWeights(new int[] {80,20});
 		eventConsole.setEnabled (true);
-		TabItem[] currentSelection = tabFolder.getSelection();
-		for (int i = 0; i < currentSelection.length; i++) {
-			Tab tab = (Tab) currentSelection[i].getData ();
+		TabItem[] tabs = tabFolder.getItems ();
+		for (int i = 0; i < tabs.length; i++) {
+			Tab tab = (Tab) tabs[i].getData ();
 			tab.recreateExampleWidgets ();
 		}
 	}
