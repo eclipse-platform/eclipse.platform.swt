@@ -126,7 +126,7 @@ public CLabel(Composite parent, int style) {
  */
 private static int checkStyle (int style) {
 	if ((style & SWT.BORDER) != 0) style |= SWT.SHADOW_IN;
-	int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+	int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE | SWT.LEFT | SWT.RIGHT | SWT.CENTER | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	style = style & mask;
 	style |= SWT.NO_FOCUS;
 	if ((style & (SWT.CENTER | SWT.RIGHT)) == 0) style |= SWT.LEFT;
@@ -222,10 +222,17 @@ private Point getTotalSize(Image image, String text) {
 	
 	return size;
 }
-public void setToolTipText (String string) {
-	super.setToolTipText (string);
-	appToolTipText = super.getToolTipText();
-}	
+public int getStyle () {
+	int style = super.getStyle();
+	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	switch (align) {
+		case SWT.RIGHT: style |= SWT.RIGHT; break;
+		case SWT.CENTER: style |= SWT.CENTER; break;
+		case SWT.LEFT: style |= SWT.LEFT; break;
+	}
+	return style;
+}
+
 /**
  * Return the Label's text.
  * 
@@ -238,30 +245,6 @@ public String getText() {
 public String getToolTipText () {
 	checkWidget();
 	return appToolTipText;
-}
-/**
- * Paint the Label's border.
- */
-private void paintBorder(GC gc, Rectangle r) {
-	Display disp= getDisplay();
-
-	Color c1 = null;
-	Color c2 = null;
-	
-	int style = getStyle();
-	if ((style & SWT.SHADOW_IN) != 0) {
-		c1 = disp.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-		c2 = disp.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
-	}
-	if ((style & SWT.SHADOW_OUT) != 0) {		
-		c1 = disp.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
-		c2 = disp.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-	}
-		
-	if (c1 != null && c2 != null) {
-		gc.setLineWidth(1);
-		drawBevelRect(gc, r.x, r.y, r.width-1, r.height-1, c1, c2);
-	}
 }
 private void initAccessible() {
 	Accessible accessible = getAccessible();
@@ -441,6 +424,30 @@ void onPaint(PaintEvent event) {
 		int textHeight = gc.getFontMetrics().getHeight();
 		gc.setForeground(getForeground());
 		gc.drawText(t, x, rect.y + (rect.height-textHeight)/2, true);
+	}
+}
+/**
+ * Paint the Label's border.
+ */
+private void paintBorder(GC gc, Rectangle r) {
+	Display disp= getDisplay();
+
+	Color c1 = null;
+	Color c2 = null;
+	
+	int style = getStyle();
+	if ((style & SWT.SHADOW_IN) != 0) {
+		c1 = disp.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+		c2 = disp.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
+	}
+	if ((style & SWT.SHADOW_OUT) != 0) {		
+		c1 = disp.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
+		c2 = disp.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+	}
+		
+	if (c1 != null && c2 != null) {
+		gc.setLineWidth(1);
+		drawBevelRect(gc, r.x, r.y, r.width-1, r.height-1, c1, c2);
 	}
 }
 /**
@@ -662,6 +669,10 @@ public void setText(String text) {
 		this.text = text;
 		redraw();
 	}
+}
+public void setToolTipText (String string) {
+	super.setToolTipText (string);
+	appToolTipText = super.getToolTipText();
 }
 /**
  * Shorten the given text <code>t</code> so that its length doesn't exceed
