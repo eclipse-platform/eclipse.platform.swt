@@ -582,7 +582,6 @@ protected void release() {
 		/* AW
 		OS.XmFontListFree(defaultFont.handle);
 		*/
-		defaultFont.handle = null;
 		defaultFont = null;
 	}
 	if (printContext != 0) {
