@@ -429,6 +429,14 @@ public class SWT {
 	public static final int SHADOW_NONE = 1 << 5;
 
 	/**
+	 * style constant for progress bar behavior (value is 1&lt;&lt;1)
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>ProgressBar</code></li>
+	 * </ul></p>
+	 */
+	public static final int INDETERMINATE = 1 << 1;
+	
+	/**
 	 * style constant for tool window behavior (value is 1&lt;&lt;2)
 	 * <p>
 	 * A tool window is a window intended to be used as a floating toolbar.
@@ -619,9 +627,7 @@ public class SWT {
 	public static final int HIDE_SELECTION = 1 << 15;
 
 	/**
-	 * style constant for full row selection behavior. (value is 1&lt;&lt;16,
-	 * since FULL_SELECTION and SMOOTH share the same value, but 
-	 * are implemented on non-intersecting sets of widgets)
+	 * style constant for full row selection behavior. (value is 1&lt;&lt;16)
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Table</code></li>
@@ -640,15 +646,13 @@ public class SWT {
 	public static final int FLAT = 1 << 23;
 
 	/**
-	 * style constant for flat appearance. (value is 1&lt;&lt;16,
-	 * since FULL_SELECTION and SMOOTH share the same value, but 
-	 * are implemented on non-intersecting sets of widgets)
+	 * style constant for flat appearance. (value is 1&lt;&lt;16)
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>ProgressBar</code></li>
 	 * </ul></p>
 	 */
-	public static final int SMOOTH = FULL_SELECTION;
+	public static final int SMOOTH = 1 << 16;
 
 	/**
 	 * style constant for no background behavior (value is 1&lt;&lt;18)
@@ -790,7 +794,7 @@ public class SWT {
 	 * <li><code>RowLayout</code> type</li>
 	 * </ul></p>
 	 */
-	public static final int HORIZONTAL = H_SCROLL;
+	public static final int HORIZONTAL = 1 << 8;
 
 	/**
 	 * style constant for vertical alignment or orientation behavior (value is 1&lt;&lt;9)
@@ -806,7 +810,7 @@ public class SWT {
 	 * <li><code>RowLayout</code> type</li>
 	 * </ul></p>
 	 */
-	public static final int VERTICAL = V_SCROLL;
+	public static final int VERTICAL = 1 << 9;
 
 	/**
 	 * Input Method Editor style constant for double byte
