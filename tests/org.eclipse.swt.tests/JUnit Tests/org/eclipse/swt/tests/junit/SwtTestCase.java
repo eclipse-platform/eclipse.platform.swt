@@ -187,6 +187,6 @@ protected void warnUnimplAPI(String message) {
 	if (verbose) {
 		System.out.println("API not implemented " + this.getClass() + " " + getName());
 	}
-	unimplementedMethods++;
+	unimplementedAPI++;
 }
 }
