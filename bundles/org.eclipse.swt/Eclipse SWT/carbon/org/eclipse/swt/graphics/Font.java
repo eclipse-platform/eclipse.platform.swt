@@ -148,7 +148,8 @@ public Font(Device display, String name, int height, int style) {
  */
 public void dispose() {
 	handle = 0;
-	size = -1;
+	id = -1;
+	device = null;
 }
 
 /**
