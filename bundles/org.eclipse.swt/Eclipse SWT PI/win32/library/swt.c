@@ -225,7 +225,7 @@
 #define NO_ChooseColorW
 #endif /* WIN32_PLATFORM_WFSP */
 
-#ifndef _Win32_WCE
+#ifndef _WIN32_WCE
 #define NO_TransparentImage
 #endif /* _WIN32_WCE */
 
