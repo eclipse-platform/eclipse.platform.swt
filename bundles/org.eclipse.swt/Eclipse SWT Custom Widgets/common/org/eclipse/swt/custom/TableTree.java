@@ -125,6 +125,7 @@ int addItem(TableTreeItem item, int index) {
  * </ul>
  */
 public void addSelectionListener(SelectionListener listener) {
+	checkWidget();
 	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
@@ -144,6 +145,7 @@ public void addSelectionListener(SelectionListener listener) {
  * </ul>
  */
 public void addTreeListener(TreeListener listener) {
+	checkWidget();
 	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Expand, typedListener);
@@ -169,6 +171,7 @@ public void addTreeListener(TreeListener listener) {
  *	</ul>
  */
 public Point computeSize (int wHint, int hHint) {
+	checkWidget();
 	return table.computeSize (wHint, hHint, true);
 }
 
@@ -191,6 +194,7 @@ public Point computeSize (int wHint, int hHint) {
  *	</ul>
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget();
 	return table.computeTrim(x, y, width, height);
 }
 
@@ -206,6 +210,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
  * </ul>
  */
 public void deselectAll () {
+	checkWidget();
 	table.deselectAll();
 }
 
@@ -225,6 +230,7 @@ void expandItem (TableTreeItem item) {
  * @return the number of items in the widget
  */
 public int getItemCount () {
+	checkWidget();
 	return items.length;
 }
 
@@ -243,6 +249,7 @@ public int getItemCount () {
  * </ul>
  */
 public int getItemHeight () {
+	checkWidget();
 	return table.getItemHeight();
 }
 
@@ -253,6 +260,7 @@ public int getItemHeight () {
  *
  */
 public TableTreeItem [] getItems () {
+	checkWidget();
 	TableTreeItem[] newItems = new TableTreeItem[items.length];
 	System.arraycopy(items, 0, newItems, 0, items.length);
 	return newItems;
@@ -273,6 +281,7 @@ public TableTreeItem [] getItems () {
  *	</ul>
  */
 public TableTreeItem [] getSelection () {
+	checkWidget();
 	TableItem[] selection = table.getSelection();
 	TableTreeItem [] result = new TableTreeItem[selection.length];
 	for (int i = 0; i < selection.length; i++){
@@ -296,6 +305,7 @@ public TableTreeItem [] getSelection () {
  *	</ul>
  */
 public int getSelectionCount () {
+	checkWidget();
 	return table.getSelectionCount();
 }
 
@@ -305,6 +315,7 @@ public int getSelectionCount () {
  * @return the underlying Table control
  */
 public Table getTable () {
+	checkWidget();
 	return table;
 }
 
@@ -377,6 +388,7 @@ Image getMinusImage() {
  *
  */
 public int indexOf (TableTreeItem item) {
+	checkWidget();
 	for (int i = 0; i < items.length; i++) {
 		if (item == items[i]) return i;
 	}
@@ -415,6 +427,7 @@ void onSelection(Event e) {
 	notifyListeners(e.type, event);
 }
 public TableTreeItem getItem(Point point) {
+	checkWidget();
 	TableItem item = table.getItem(point);
 	if (item == null) return null;
 	return getItem(item);
@@ -516,6 +529,7 @@ void onMouseDown(Event event) {
  * </ul>
  */
 public void removeAll () {
+	checkWidget();
 	setRedraw(false);
 	for (int i = items.length - 1; i >= 0; i--) {
 		items[i].dispose();
@@ -547,6 +561,7 @@ void removeItem(TableTreeItem item) {
  * </ul>
  */
 public void removeSelectionListener (SelectionListener listener) {
+	checkWidget();
 	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
 	removeListener(SWT.Selection, listener);
 	removeListener(SWT.DefaultSelection, listener);
@@ -564,6 +579,7 @@ public void removeSelectionListener (SelectionListener listener) {
  * </ul>
  */
 public void removeTreeListener (TreeListener listener) {
+	checkWidget();
 	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
 	removeListener(SWT.Expand, listener);
 	removeListener(SWT.Collapse, listener);
@@ -581,6 +597,7 @@ public void removeTreeListener (TreeListener listener) {
  * </ul>
  */
 public void selectAll () {
+	checkWidget();
 	table.selectAll();
 }
 
@@ -696,6 +713,7 @@ public void setMenu (Menu menu) {
  * </ul>
  */
 public void setSelection (TableTreeItem[] items) {
+	checkWidget();
 	TableItem[] tableItems = new TableItem[items.length];
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] == null) throw new SWTError(SWT.ERROR_NULL_ARGUMENT);
@@ -732,6 +750,7 @@ public void setToolTipText (String string) {
  * </ul>
  */
 public void showItem (TableTreeItem item) {
+	checkWidget();
 	if (item == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
 	if (!item.getVisible()) expandItem (item);
 	TableItem tableItem = item.tableItem;
@@ -753,6 +772,7 @@ public void showItem (TableTreeItem item) {
  * </ul>
  */
 public void showSelection () {
+	checkWidget();
 	table.showSelection();
 }
 }

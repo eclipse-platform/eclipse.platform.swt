@@ -154,6 +154,7 @@ private static int checkStyle (int style) {
  * @return the Always Show Scrollbars flag value
  */
 public boolean getAlwaysShowScrollBars() {
+	checkWidget();
 	return alwaysShowScroll;
 }
 
@@ -161,6 +162,7 @@ public boolean getAlwaysShowScrollBars() {
  * Get the content that is being scrolled.
  */
 public Control getContent() {
+	checkWidget();
 	return content;
 }
 
@@ -173,6 +175,7 @@ private void hScroll() {
 }
 
 public void layout(boolean changed) {
+	checkWidget();
 	if (content == null) return;
 	Rectangle contentRect = content.getBounds();
 	ScrollBar hBar = getHorizontalBar ();
@@ -269,6 +272,7 @@ private void resize() {
  * horizontal and vertical directions.
  */
 public void setAlwaysShowScrollBars(boolean show) {
+	checkWidget();
 	if (show == alwaysShowScroll) return;
 	alwaysShowScroll = show;
 	ScrollBar hBar = getHorizontalBar ();
@@ -282,6 +286,7 @@ public void setAlwaysShowScrollBars(boolean show) {
  * Set the content that will be scrolled.
  */
 public void setContent(Control content) {
+	checkWidget();
 	if (this.content != null && !this.content.isDisposed()) {
 		this.content.removeListener(SWT.Resize, contentListener);
 		this.content.setBounds(new Rectangle(-200, -200, 0, 0));	
@@ -318,6 +323,7 @@ public void setContent(Control content) {
  * If expand is false, this behaviour is turned off.  By default, this behaviour is turned off.
  */
 public void setExpandHorizontal(boolean expand) {
+	checkWidget();
 	if (expand == expandHorizontal) return;
 	expandHorizontal = expand;
 	layout();
@@ -331,12 +337,14 @@ public void setExpandHorizontal(boolean expand) {
  * If expand is false, this behaviour is turned off.  By default, this behaviour is turned off.
  */
 public void setExpandVertical(boolean expand) {
+	checkWidget();
 	if (expand == expandVertical) return;
 	expandVertical = expand;
 	layout();
 }
 public void setLayout (Layout layout) {
 	// do not allow a layout to be set on this class because layout is being handled by the resize listener
+	checkWidget();
 	return;
 }
 /**
@@ -345,12 +353,15 @@ public void setLayout (Layout layout) {
  * setExpandVertical(true) has been set.
  */
 public void setMinHeight(int height) {
+	checkWidget();
 	setMinSize(minWidth, height);
 }
 public void setMinSize(Point size) {
+	checkWidget();
 	setMinSize(size.x, size.y);
 }
 public void setMinSize(int width, int height) {
+	checkWidget();
 	if (width == minWidth && height == minHeight) return;
 	minWidth = Math.max(0, width);
 	minHeight = Math.max(0, height);
@@ -363,6 +374,7 @@ public void setMinSize(int width, int height) {
  */
 
 public void setMinWidth(int width) {
+	checkWidget();
 	setMinSize(width, minHeight);
 }
 

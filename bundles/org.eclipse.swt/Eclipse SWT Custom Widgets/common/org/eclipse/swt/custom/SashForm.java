@@ -55,7 +55,7 @@ private static int checkStyle (int style) {
 	return style & mask;
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	
+	checkWidget();
 	Control[] controls = getControls(true);
 	if (controls.length == 0) return new Point(wHint, hHint);
 	
@@ -88,12 +88,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  * Answer SWT.VERTICAL   if the controls in the SashForm are laid out top to bottom.
  */
 public int getOrientation() {
+	checkWidget();
 	return orientation;
 }
 /**
  * Answer the control that currently is maximized in the SashForm.  This value may be null.
  */
 public Control getMaximizedControl(){
+	checkWidget();
 	return this.maxControl;
 }
 /**
@@ -105,6 +107,7 @@ public Control getMaximizedControl(){
  */
 
 public int[] getWeights() {
+	checkWidget();
 	Control[] cArray = getControls(false);
 	float[] ratios = new float[cArray.length];
 	for (int i = 0; i < cArray.length; i++) {
@@ -137,6 +140,7 @@ private Control[] getControls(boolean onlyVisible) {
 	return controls;
 }
 public void layout(boolean changed) {
+	checkWidget();
 	Rectangle area = getClientArea();
 	if (area.width == 0 || area.height == 0) return;
 	
@@ -302,6 +306,7 @@ private void onDragSash(Event event) {
  * If orientation is SWT.VERTICAL,   lay the controls in the SashForm out top to bottom.
  */
 public void setOrientation(int orientation) {
+	checkWidget();
 	if (this.orientation == orientation) return;
 	if (orientation != SWT.HORIZONTAL && orientation != SWT.VERTICAL) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -331,6 +336,7 @@ public void setOrientation(int orientation) {
  * </ul>
  */
 public void setLayout (Layout layout) {
+	checkWidget();
 }
 /**
  * Specify the control that should take up the entire client area of the SashForm.  
@@ -340,6 +346,7 @@ public void setLayout (Layout layout) {
  * the default layout where all controls are laid out separated by sashes.
  */
 public void setMaximizedControl(Control control){
+	checkWidget();
 	if (control == null) {
 		if (maxControl != null) {
 			this.maxControl = null;
@@ -356,13 +363,6 @@ public void setMaximizedControl(Control control){
 	}
 	maxControl = control;
 	layout();
-
-//		// walk up
-//		w= getParent();
-//		if (w instanceof SplitForm)
-//			 ((SplitForm) w).internalMaximize(this);
-//		else
-//			layout(true);
 }
 
 /**
@@ -373,6 +373,7 @@ public void setMaximizedControl(Control control){
  * non-sash child of the SashForm.
  */
 public void setWeights(int[] weights) {
+	checkWidget();
 	Control[] cArray = getControls(false);
 	if (weights == null || weights.length != cArray.length) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);

@@ -90,6 +90,7 @@ private static int checkStyle (int style) {
 	return style;
 }
 public Point computeSize(int wHint, int hHint, boolean changed) {
+	checkWidget();
 	Point e = getTotalSize(image, text);
 	if (wHint == SWT.DEFAULT){
 		e.x += 2*hIndent;
@@ -120,12 +121,14 @@ private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Col
  * The alignment style (LEFT, CENTER or RIGHT) is returned.
  */
 public int getAlignment() {
+	checkWidget();
 	return align;
 }
 /**
  * Return the CLabel's image or <code>null</code>.
  */
 public Image getImage() {
+	checkWidget();
 	return image;
 }
 /**
@@ -161,9 +164,11 @@ public void setToolTipText (String string) {
  * Return the Label's text.
  */
 public String getText() {
+	checkWidget();
 	return text;
 }
 public String getToolTipText () {
+	checkWidget();
 	return appToolTipText;
 }
 /**
@@ -299,6 +304,7 @@ private void onPaint(PaintEvent event) {
  * Use the values LEFT, CENTER and RIGHT to align image and text within the available space.
  */
 public void setAlignment(int align) {
+	checkWidget();
 	if (align != SWT.LEFT && align != SWT.RIGHT && align != SWT.CENTER) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -328,6 +334,7 @@ public void setAlignment(int align) {
  *                 less than the size of the colors array.
  */
 public void setBackground(Color[] colors, int[] percents) {	
+	checkWidget();
 	if (colors != null) {
 		if (percents == null || percents.length != colors.length - 1) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -386,6 +393,7 @@ public void setBackground(Color[] colors, int[] percents) {
 	redraw();
 }
 public void setBackground(Image image) {
+	checkWidget();
 	if (image == backgroundImage) return;	
 	gradientColors = null;
 	gradientPercents = null;
@@ -402,6 +410,7 @@ public void setFont(Font font) {
  * The value <code>null</code> clears it.
  */
 public void setImage(Image image) {
+	checkWidget();
 	if (image != this.image) {
 		this.image = image;
 		redraw();
@@ -412,6 +421,7 @@ public void setImage(Image image) {
  * The value <code>null</code> clears it.
  */
 public void setText(String text) {
+	checkWidget();
 	if (text == null) text = "";
 	if (! text.equals(this.text)) {
 		this.text = text;

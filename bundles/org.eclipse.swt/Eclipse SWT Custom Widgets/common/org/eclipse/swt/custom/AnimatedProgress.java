@@ -56,12 +56,13 @@ private static int checkStyle (int style) {
  * reset the presentation to a blank appearance.
  */
 public synchronized void clear(){
-	if (active) 
-		stop();
+	checkWidget();
+	if (active) stop();
 	showStripes = false;
 	redraw();
 }
 public Point computeSize(int wHint, int hHint, boolean changed) {
+	checkWidget();
 	Point size = null;
 	if (orientation == SWT.HORIZONTAL) {
 		size = new Point(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -74,7 +75,6 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	return size;
 }
 private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Color bottomright) {
-	
 	gc.setForeground(topleft);
 	gc.drawLine(x, y, x+w-1, y);
 	gc.drawLine(x, y, x, y+h-1);
@@ -140,7 +140,7 @@ private void paintStripes(GC gc) {
 * Start the animation.
 */
 public synchronized void start() {
-	
+	checkWidget();
 	if (active) return;
 
 	active = true;
@@ -163,6 +163,7 @@ public synchronized void start() {
 * Stop the animation.   Freeze the presentation at its current appearance.
 */
 public synchronized void stop() {
+	checkWidget();
 	active = false;
 }
 }

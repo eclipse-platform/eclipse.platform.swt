@@ -112,6 +112,7 @@ private static int checkStyle (int style) {
 	return style & mask | SWT.NO_REDRAW_RESIZE;
 }
 public Point computeSize(int wHint, int hHint, boolean changed) {
+	checkWidget();
 	// size of title bar area
 	Point leftSize = new Point(0, 0);
 	if (topLeft != null) {
@@ -152,6 +153,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	return size;
 }
 public Rectangle getClientArea() {
+	checkWidget();
 	Rectangle clientArea = super.getClientArea();
 	clientArea.x += BORDER_LEFT;
 	clientArea.y += BORDER_TOP;
@@ -163,6 +165,7 @@ public Rectangle getClientArea() {
 * Returns the content area.
 */
 public Control getContent() {
+	checkWidget();
 	return content;
 }
 /**
@@ -170,6 +173,7 @@ public Control getContent() {
 * Typically this is a toolbar.
 */
 public Control getTopCenter() {
+	checkWidget();
 	return topCenter;
 }
 /**
@@ -177,6 +181,7 @@ public Control getTopCenter() {
 * Typically this is a label such as CLabel.
 */
 public Control getTopLeft() {
+	checkWidget();
 	return topLeft;
 }
 /**
@@ -184,9 +189,11 @@ public Control getTopLeft() {
 * Typically this is a Close button or a composite with a Menu and Close button.
 */
 public Control getTopRight() {
+	checkWidget();
 	return topRight;
 }
 public void layout (boolean changed) {
+	checkWidget();
 	Rectangle rect = getClientArea();
 	
 	drawLine1 = -1;
@@ -373,6 +380,7 @@ private void onResize() {
 * the pane - however, the creator of the content must dispose of the content.
 */
 public void setContent(Control content) {
+	checkWidget();
 	if (content != null && content.getParent() != this) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -410,6 +418,7 @@ public void setFont(Font f) {
  * </ul>
  */
 public void setLayout (Layout layout) {
+	checkWidget();
 	return;
 }
 /**
@@ -419,6 +428,7 @@ public void setLayout (Layout layout) {
 * the pane - however, the creator of the topCenter must dispose of the topCenter.
 */
 public void setTopCenter(Control topCenter) {
+	checkWidget();
 	if (topCenter != null && topCenter.getParent() != this) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -435,6 +445,7 @@ public void setTopCenter(Control topCenter) {
 * the pane - however, the creator of the control must dispose of the control.
 */
 public void setTopLeft(Control c) {
+	checkWidget();
 	if (c != null && c.getParent() != this) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -451,6 +462,7 @@ public void setTopLeft(Control c) {
 * the pane - however, the creator of the control must dispose of the control.
 */
 public void setTopRight(Control c) {
+	checkWidget();
 	if (c != null && c.getParent() != this) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -461,6 +473,7 @@ public void setTopRight(Control c) {
 	layout();
 }
 public void setBorderVisible(boolean show) {
+	checkWidget();
 	if (showBorder == show) return;
 	
 	showBorder = show;
@@ -484,6 +497,7 @@ public void setBorderVisible(boolean show) {
 * required.
 */
 public void setTopCenterSeparate(boolean show) {
+	checkWidget();
 	separateTopCenter = show;
 	layout();
 }

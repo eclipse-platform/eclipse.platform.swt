@@ -119,6 +119,7 @@ static int checkStyle (int style) {
 *	when the item cannot be added
 */
 public void add (String string) {
+	checkWidget();
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	list.add (string);
 }
@@ -144,6 +145,7 @@ public void add (String string) {
 *	when the item cannot be added
 */
 public void add (String string, int index) {
+	checkWidget();
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	list.add (string, index);
 }
@@ -161,6 +163,7 @@ public void add (String string, int index) {
 *	when listener is null
 */
 public void addModifyListener (ModifyListener listener) {;
+	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Modify, typedListener);
@@ -179,6 +182,7 @@ public void addModifyListener (ModifyListener listener) {;
 *	when listener is null
 */
 public void addSelectionListener(SelectionListener listener) {
+	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
@@ -221,6 +225,7 @@ void arrowEvent (Event event) {
 *	when the widget has been disposed
 */
 public void clearSelection () {
+	checkWidget();
 	text.clearSelection ();
 	list.deselectAll ();
 }
@@ -243,6 +248,7 @@ void comboEvent (Event event) {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget();
 	int width = 0, height = 0;
 	Point textSize = text.computeSize (wHint, SWT.DEFAULT, changed);
 	Point arrowSize = arrow.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
@@ -271,6 +277,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 *	when the widget has been disposed
 */
 public void deselect (int index) {
+	checkWidget();
 	list.deselect (index);
 }
 /**
@@ -286,6 +293,7 @@ public void deselect (int index) {
 *	when the widget has been disposed
 */
 public void deselectAll () {
+	checkWidget();
 	list.deselectAll ();
 }
 void dropDown (boolean drop) {
@@ -306,6 +314,7 @@ void dropDown (boolean drop) {
 	list.setFocus();
 }
 public Control [] getChildren () {
+	checkWidget();
 	return new Control [0];
 }
 boolean getEditable () {
@@ -331,6 +340,7 @@ boolean getEditable () {
 *	when the operation fails
 */
 public String getItem (int index) {
+	checkWidget();
 	return list.getItem (index);
 }
 /**
@@ -349,6 +359,7 @@ public String getItem (int index) {
 *	when the operation fails
 */
 public int getItemCount () {
+	checkWidget();
 	return list.getItemCount ();
 }
 /**
@@ -367,6 +378,7 @@ public int getItemCount () {
 *	when the operation fails
 */
 public int getItemHeight () {
+	checkWidget();
 	return list.getItemHeight ();
 }
 /**
@@ -385,6 +397,7 @@ public int getItemHeight () {
 *	when the operation fails
 */
 public String [] getItems () {
+	checkWidget();
 	return list.getItems ();
 }
 /**
@@ -398,6 +411,7 @@ public String [] getItems () {
 *	when the widget has been disposed
 */
 public Point getSelection () {
+	checkWidget();
 	return text.getSelection ();
 }
 /**
@@ -414,6 +428,7 @@ public Point getSelection () {
 *	when the widget has been disposed
 */
 public int getSelectionIndex () {
+	checkWidget();
 	return list.getSelectionIndex ();
 }
 /**
@@ -429,6 +444,7 @@ public int getSelectionIndex () {
 *	when the widget has been disposed
 */
 public String getText () {
+	checkWidget();
 	return text.getText ();
 }
 /**
@@ -447,6 +463,7 @@ public String getText () {
 *	when the operation fails
 */
 public int getTextHeight () {
+	checkWidget();
 	return text.getLineHeight();
 }
 /**
@@ -460,6 +477,7 @@ public int getTextHeight () {
 *	when the widget has been disposed
 */
 public int getTextLimit () {
+	checkWidget();
 	return text.getTextLimit ();
 }
 /**
@@ -481,6 +499,7 @@ public int getTextLimit () {
 *	when string is null
 */
 public int indexOf (String string) {
+	checkWidget();
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return list.indexOf (string);
 }
@@ -504,6 +523,7 @@ public int indexOf (String string) {
 *	when string is null
 */
 public int indexOf (String string, int start) {
+	checkWidget();
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return list.indexOf (string, start);
 }
@@ -511,6 +531,7 @@ boolean isDropped () {
 	return popup.getVisible ();
 }
 public boolean isFocusControl () {
+	checkWidget();
 	if (text.isFocusControl() || arrow.isFocusControl() || list.isFocusControl() || popup.isFocusControl()) {
 		return true;
 	} else {
@@ -648,6 +669,7 @@ void popupEvent(Event event) {
 	}
 }
 public void redraw (int x, int y, int width, int height, boolean all) {
+	checkWidget();
 	if (!all) return;
 	Point location = text.getLocation();
 	text.redraw(x - location.x, y - location.y, width, height, all);
@@ -679,6 +701,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 *	when the operation fails
 */
 public void remove (int index) {
+	checkWidget();
 	list.remove (index);
 }
 /**
@@ -703,6 +726,7 @@ public void remove (int index) {
 *	when the operation fails
 */
 public void remove (int start, int end) {
+	checkWidget();
 	list.remove (start, end);
 }
 /**
@@ -723,6 +747,7 @@ public void remove (int start, int end) {
 *	when the operation fails
 */
 public void remove (String string) {
+	checkWidget();
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	list.remove (string);
 }
@@ -735,6 +760,7 @@ public void remove (String string) {
 *	when the widget has been disposed
 */
 public void removeAll () {
+	checkWidget();
 	text.setText ("");
 	list.removeAll ();
 }
@@ -752,6 +778,7 @@ public void removeAll () {
 *	when listener is null
 */
 public void removeModifyListener (ModifyListener listener) {
+	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener(SWT.Modify, listener);	
 }
@@ -769,6 +796,7 @@ public void removeModifyListener (ModifyListener listener) {
 *	when listener is null
 */
 public void removeSelectionListener (SelectionListener listener) {
+	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener(SWT.Selection, listener);
 	removeListener(SWT.DefaultSelection,listener);	
@@ -788,6 +816,7 @@ public void removeSelectionListener (SelectionListener listener) {
 *	when the widget has been disposed
 */
 public void select (int index) {
+	checkWidget();
 	if (index == -1) {
 		list.deselectAll ();
 		text.setText ("");
@@ -814,6 +843,7 @@ public void setBackground (Color color) {
 * Sets the focus.
 */
 public boolean setFocus () {
+	checkWidget();
 	return text.setFocus ();
 }
 /**
@@ -853,6 +883,7 @@ public void setForeground (Color color) {
 *	when the operation fails
 */
 public void setItem (int index, String string) {
+	checkWidget();
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	list.setItem (index, string);
 }
@@ -871,6 +902,7 @@ public void setItem (int index, String string) {
 *	when the operation fails
 */
 public void setItems (String [] items) {
+	checkWidget();
 	if (items == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int style = getStyle();
 	if ((style & SWT.READ_ONLY) != 0) text.setText ("");
@@ -889,6 +921,7 @@ public void setItems (String [] items) {
 *	when selection is null
 */
 public void setSelection (Point selection) {
+	checkWidget();
 	if (selection == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	text.setSelection (selection.x, selection.y);
 }
@@ -906,6 +939,7 @@ public void setSelection (Point selection) {
 *	when string is null
 */
 public void setText (String string) {
+	checkWidget();
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int index = list.indexOf (string);
 	if (index == -1) {
@@ -931,6 +965,7 @@ public void setText (String string) {
 *	when limit is 0
 */
 public void setTextLimit (int limit) {
+	checkWidget();
 	text.setTextLimit (limit);
 }
 

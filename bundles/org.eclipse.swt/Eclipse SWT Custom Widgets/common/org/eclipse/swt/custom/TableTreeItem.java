@@ -139,6 +139,7 @@ void addItem(TableTreeItem item, int index) {
  *	</ul>
  */
 public Rectangle getBounds (int index) {
+	checkWidget();
 	if (tableItem != null) {
 		return tableItem.getBounds(index);
 	} else {
@@ -156,6 +157,7 @@ public Rectangle getBounds (int index) {
 *	</ul>
 */
 public boolean getChecked () {
+	checkWidget();
 	if (tableItem == null) {
 		return checked;
 	}
@@ -176,6 +178,7 @@ public boolean getChecked () {
  *	</ul>
  */
 public Display getDisplay () {
+	checkWidget();
 	TableTree parent = this.parent;
 	if (parent == null) throw new SWTError (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
@@ -187,6 +190,7 @@ public Display getDisplay () {
  * @return a boolean that is the expanded state of the widget
  */
 public boolean getExpanded () {
+	checkWidget();
 	return expanded;
 }
 
@@ -199,6 +203,7 @@ public boolean getExpanded () {
  * @return the image at index 0
  */
 public Image getImage () {
+	checkWidget();
 	return getImage(0);
 }
 
@@ -214,6 +219,7 @@ public Image getImage () {
  * @return the image at the specified index or null
  */
 public Image getImage (int index) {
+	checkWidget();
 	if (0 < index && index < images.length) return images[index];
 	return null;
 }
@@ -229,6 +235,7 @@ int getIndent() {
  * @return the number of sub items
  */
 public int getItemCount () {
+	checkWidget();
 	return items.length;
 }
 
@@ -238,6 +245,7 @@ public int getItemCount () {
  * @return the sub items
  */
 public TableTreeItem[] getItems () {
+	checkWidget();
 	TableTreeItem[] newItems = new TableTreeItem[items.length];
 	System.arraycopy(items, 0, newItems, 0, items.length);
 	return newItems;
@@ -259,6 +267,7 @@ TableTreeItem getItem(TableItem tableItem) {
  * @return the parent
  */
 public TableTree getParent () {
+	checkWidget();
 	return parent;
 }
 
@@ -268,6 +277,7 @@ public TableTree getParent () {
  * @return the parent item.
  */
 public TableTreeItem getParentItem () {
+	checkWidget();
 	return parentItem;
 }
 
@@ -283,6 +293,7 @@ public TableTreeItem getParentItem () {
  *	</ul>
  */
 public String getText () {
+	checkWidget();
 	return getText(0);
 }
 
@@ -299,6 +310,7 @@ public String getText () {
  * @return the item text at the specified index, which can be null
  */
 public String getText(int index) {
+	checkWidget();
 	if (0 <= index && index < texts.length) return texts[index];
 	return null;
 }
@@ -319,7 +331,8 @@ boolean getVisible () {
  * @return the index of the item or -1 if the item is not found
  *
  */
-public int indexOf (TableTreeItem item) {	
+public int indexOf (TableTreeItem item) {
+	checkWidget();	
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] == item) return i;
 	}
@@ -402,6 +415,7 @@ void removeItem(TableTreeItem item) {
 *	</ul>
 */
 public void setChecked (boolean checked) {
+	checkWidget();
 	if (tableItem != null) {
 		tableItem.setChecked(checked);
 	}
@@ -418,6 +432,7 @@ public void setChecked (boolean checked) {
  *	</ul>
  */
 public void setExpanded (boolean expanded) {
+	checkWidget();
 	if (items.length == 0) return;
 	this.expanded = expanded;
 	if (tableItem == null) return;
@@ -445,6 +460,7 @@ public void setExpanded (boolean expanded) {
  *	</ul>
  */
 public void setImage (int index, Image image) {
+	checkWidget();
 	int columnCount = Math.max(parent.getTable().getColumnCount(), 1);
 	if (index <= 0 || index >= columnCount) return;
 	if (images.length < columnCount) {
@@ -466,6 +482,7 @@ public void setImage (int index, Image image) {
  * @param image the new image or null
  */
 public void setImage (Image image) {
+	checkWidget();
 	setImage(0, image);
 }
 
@@ -487,6 +504,7 @@ public void setImage (Image image) {
  *	</ul>
  */
 public void setText(int index, String text) {
+	checkWidget();
 	int columnCount = Math.max(parent.getTable().getColumnCount(), 1);
 	if (index < 0 || index >= columnCount) return;
 	if (texts.length < columnCount) {
