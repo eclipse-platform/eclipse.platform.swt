@@ -4580,4 +4580,10 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_strlen
 	return (jint)strlen((const char *)arg0);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1optimal_1column_1width
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1clist_1optimal_1column_1width\n")
 
+	return (jint)gtk_clist_optimal_column_width((GtkCList*)arg0, (gint)arg1);
+}
