@@ -171,8 +171,7 @@ public void test_copyAreaIIIIII() {
 	int pixel = imageData.getPixel(destX + 4, destY);
 	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(destX + 5, destY);
-// Causes failure
-// TODO: Find out why
+// Causes failure - bug 71329
 /* 	assertEquals(":b:", blueRGB, palette.getRGB(pixel));	
 	pixel = imageData.getPixel(destX + 10, destY);
 	assertEquals(":c:", blueRGB, palette.getRGB(pixel));	
@@ -199,8 +198,7 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	int pixel = imageData.getPixel(4, 0);
 	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(5, 0);
-//	 Causes failure
-//	 TODO: Find out why
+// Causes failure - bug 71329
 /*	assertEquals(":b:", blueRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(10, 0);
 	assertEquals(":c:", blueRGB, palette.getRGB(pixel));	
