@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 
-class SpinnerTab extends Tab {
+class SpinnerTab extends RangeTab {
 
 	/* Example widgets and groups that contain them */
 	Spinner spinner1;
@@ -63,6 +63,7 @@ class SpinnerTab extends Tab {
 		/* Compute the widget style */
 		int style = getDefaultStyle();
 		if (readOnlyButton.getSelection ()) style |= SWT.READ_ONLY;
+		if (borderButton.getSelection ()) style |= SWT.BORDER;
 		
 		/* Create the example widgets */
 		spinner1 = new Spinner (spinnerGroup, style);
@@ -96,6 +97,7 @@ class SpinnerTab extends Tab {
 	 * Creates the "Style" group.
 	 */
 	void createStyleGroup () {
+		orientationButtons = false;
 		super.createStyleGroup ();
 	
 		/* Create the extra widgets */
@@ -123,5 +125,40 @@ class SpinnerTab extends Tab {
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		readOnlyButton.setSelection ((spinner1.getStyle () & SWT.READ_ONLY) != 0);
+	}
+
+	/**
+	 * Sets the increment of the "Example" widgets.
+	 */
+	void setWidgetIncrement () {
+//		spinner1.setIncrement (incrementScale.getSelection ());
+	}
+	
+	/**
+	 * Sets the minimim of the "Example" widgets.
+	 */
+	void setWidgetMaximum () {
+		spinner1.setMaximum (maximumScale.getSelection ());
+	}
+	
+	/**
+	 * Sets the minimim of the "Example" widgets.
+	 */
+	void setWidgetMinimum () {
+		spinner1.setMinimum (minimumScale.getSelection ());
+	}
+	
+	/**
+	 * Sets the page increment of the "Example" widgets.
+	 */
+	void setWidgetPageIncrement () {
+//		spinner1.setPageIncrement (pageIncrementScale.getSelection ());
+	}
+	
+	/**
+	 * Sets the selection of the "Example" widgets.
+	 */
+	void setWidgetSelection () {
+		spinner1.setSelection (selectionScale.getSelection ());
 	}
 }

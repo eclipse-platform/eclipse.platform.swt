@@ -19,6 +19,7 @@ import org.eclipse.swt.events.*;
 abstract class RangeTab extends Tab {
 	/* Style widgets added to the "Style" group */
 	Button horizontalButton, verticalButton;
+	boolean orientationButtons = true;
 
 	/* Scale widgets added to the "Control" group */
 	Scale minimumScale, selectionScale, maximumScale;
@@ -142,10 +143,12 @@ abstract class RangeTab extends Tab {
 		super.createStyleGroup ();
 	
 		/* Create the extra widgets */
-		horizontalButton = new Button (styleGroup, SWT.RADIO);
-		horizontalButton.setText ("SWT.HORIZONTAL");
-		verticalButton = new Button (styleGroup, SWT.RADIO);
-		verticalButton.setText ("SWT.VERTICAL");
+		if (orientationButtons) {
+			horizontalButton = new Button (styleGroup, SWT.RADIO);
+			horizontalButton.setText ("SWT.HORIZONTAL");
+			verticalButton = new Button (styleGroup, SWT.RADIO);
+			verticalButton.setText ("SWT.VERTICAL");
+		}
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 	}
@@ -159,9 +162,11 @@ abstract class RangeTab extends Tab {
 		setWidgetMaximum ();
 		setWidgetSelection ();
 		Control [] controls = getExampleWidgets ();
-		if (controls.length != 0){
-			horizontalButton.setSelection ((controls [0].getStyle () & SWT.HORIZONTAL) != 0);
-			verticalButton.setSelection ((controls [0].getStyle () & SWT.VERTICAL) != 0);
+		if (controls.length != 0) {
+			if (orientationButtons) {
+				horizontalButton.setSelection ((controls [0].getStyle () & SWT.HORIZONTAL) != 0);
+				verticalButton.setSelection ((controls [0].getStyle () & SWT.VERTICAL) != 0);
+			}
 			borderButton.setSelection ((controls [0].getStyle () & SWT.BORDER) != 0);
 		}
 	}
