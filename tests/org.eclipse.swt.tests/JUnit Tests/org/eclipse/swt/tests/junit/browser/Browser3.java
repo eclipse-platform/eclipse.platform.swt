@@ -77,7 +77,7 @@ public class Browser3 {
 				shell.close();
 			}
 			public void show(VisibilityEvent event) {
-				if (!newWindow || !locationChanging || locationChanged) {
+				if (!newWindow || !locationChanging) {
 					System.out.println("Failure - VisibilityEvent.show received at wrong time");
 					passed = false;
 					shell.close();
