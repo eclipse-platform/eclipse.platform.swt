@@ -455,4 +455,9 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
 }
+boolean traverseReturn () {
+	int shellHandle = _getShell ().topHandle ();
+	boolean processed = OS.gtk_window_activate_default(shellHandle);
+	return processed;
+}
 }

@@ -2204,15 +2204,13 @@ boolean traverseItem (boolean next) {
 	return true;
 }
 boolean traverseReturn () {
-	int shellHandle = _getShell ().topHandle ();
-	boolean processed = OS.gtk_window_activate_default(shellHandle);
-	return processed;  // Should we really propagate to the parent shell?
+	return false;
 }
 boolean traversePage (boolean next) {
 	return false;
 }
 boolean traverseMnemonic (char key) {
-	return true; /* Handled natively.  Should get rid of the whole thing */
+	return true;
 }
 
 
