@@ -2396,9 +2396,9 @@ boolean setScrollWidth (TableItem item, boolean force) {
 					int hDC = OS.GetDC (handle);
 					int oldFont = OS.SelectObject (hDC, font);
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-					TCHAR tchar = new TCHAR (getCodePage (), string, false);
+					TCHAR buffer = new TCHAR (getCodePage (), string, false);
 					RECT rect = new RECT ();
-					OS.DrawText (hDC, tchar, tchar.length (), rect, flags);
+					OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 					OS.SelectObject (hDC, oldFont);
 					OS.ReleaseDC (handle, hDC);
 					newWidth = Math.max (newWidth, rect.right - rect.left);
