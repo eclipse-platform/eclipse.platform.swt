@@ -34,6 +34,25 @@ public static double ceil (double d) {
 }
 
 /**
+ * Returns 2 raised to the power of the argument.
+ *
+ * @param n an int value between 0 and 30 (inclusive)
+ * @return 2 raised to the power of the argument
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the argument is not between 0 and 30 (inclusive)</li>
+ * </ul>
+ */
+public static int pow2(int n) {
+	if (n >= 1 && n <= 30)
+		return 2 << (n - 1);
+	else if (n != 0) {
+		SWT.error(SWT.ERROR_INVALID_RANGE);
+	}
+	return 1;
+}
+
+/**
  * Loads a library if the underlying platform supports this.
  * If not, it is assumed that the library in question was 
  * properly made available in some other fashion.

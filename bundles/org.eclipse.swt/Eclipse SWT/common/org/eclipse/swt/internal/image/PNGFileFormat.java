@@ -451,7 +451,7 @@ static void compress16BitDepthTo8BitDepth(
 	int destinationOffset,
 	int numberOfValues) 
 {
-	//double multiplier = (Math.pow(2, 8) - 1) / (Math.pow(2, 16) - 1);
+	//double multiplier = (Compatibility.pow2(8) - 1) / (Compatibility.pow2(16) - 1);
 	for (int i = 0; i < numberOfValues; i++) {
 		int sourceIndex = sourceOffset + (2 * i);
 		int destinationIndex = destinationOffset + i;
@@ -471,7 +471,7 @@ static void compress16BitDepthTo8BitDepth(
  * byte of the 16-bit value.
  */
 static int compress16BitDepthTo8BitDepth(int value) {
-	//double multiplier = (Math.pow(2, 8) - 1) / (Math.pow(2, 16) - 1);
+	//double multiplier = (Compatibility.pow2(8) - 1) / (Compatibility.pow2(16) - 1);
 	//byte compressedValue = (byte)(value * multiplier);
 	return value >> 8;
 }

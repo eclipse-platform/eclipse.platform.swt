@@ -6,6 +6,7 @@ package org.eclipse.swt.custom;
 
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.Compatibility;
 import java.util.Vector;
 
 class DefaultLineStyler implements LineStyleListener, LineBackgroundListener {
@@ -41,7 +42,7 @@ void insertStyle(StyleRange style, int index) {
 	int size = styles.length;
 	if (styleCount == size) {
 		// expand the styles array by powers of 2
-		StyleRange[] newStyles = new StyleRange[size+(int)Math.pow(2, styleExpandExp)];
+		StyleRange[] newStyles = new StyleRange[size+Compatibility.pow2(styleExpandExp)];
 		System.arraycopy(styles, 0, newStyles, 0, size);
 		styles = newStyles;
 		styleExpandExp++;
@@ -187,7 +188,7 @@ void expandLinesBy(int numLines) {
 	if (size - lineCount >= numLines) {
 		return;
 	}
-	Color[] newLines = new Color[size+Math.max((int)Math.pow(2, lineExpandExp), numLines)];
+	Color[] newLines = new Color[size+Math.max(Compatibility.pow2(lineExpandExp), numLines)];
 	System.arraycopy(lineBackgrounds, 0, newLines, 0, size);
 	lineBackgrounds = newLines;
 	lineExpandExp++;

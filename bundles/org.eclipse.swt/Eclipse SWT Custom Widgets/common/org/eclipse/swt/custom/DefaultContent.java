@@ -6,6 +6,7 @@ package org.eclipse.swt.custom;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.widgets.*;
 import java.io.*;
 import java.util.Vector;
@@ -48,7 +49,7 @@ void addLineIndex(int start, int length) {
 	int size = lines.length;
 	if (lineCount == size) {
 		// expand the lines by powers of 2
-		int[][] newLines = new int[size+(int)Math.pow(2, expandExp)][2];
+		int[][] newLines = new int[size+Compatibility.pow2(expandExp)][2];
 		System.arraycopy(lines, 0, newLines, 0, size);
 		lines = newLines;
 		expandExp++;
@@ -72,7 +73,7 @@ int[][] addLineIndex(int start, int length, int[][] linesArray, int count) {
 	int size = linesArray.length;
 	int[][] newLines = linesArray;
 	if (count == size) {
-		newLines = new int[size+(int)Math.pow(2, replaceExpandExp)][2];
+		newLines = new int[size+Compatibility.pow2(replaceExpandExp)][2];
 		replaceExpandExp++;
 		System.arraycopy(linesArray, 0, newLines, 0, size);
 	}
