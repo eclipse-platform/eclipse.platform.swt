@@ -45,8 +45,6 @@ public class CBanner extends Composite {
 	Control bottom;
 	
 	int[] curve;
-	int curveWidth = 0;
-	int curveIndent = 0;
 	int curveStart = 0;
 	Rectangle curveRect = new Rectangle(0, 0, 0, 0);
 	
@@ -59,6 +57,10 @@ public class CBanner extends Composite {
 	static final int BORDER_BOTTOM = 2;
 	static final int BORDER_TOP = 3;
 	static final int BORDER_STRIPE = 1;
+	static final int CURVE_WIDTH = 50;
+	static final int CURVE_INDENT = 5;
+	static final int CURVE_RIGHT = 30;
+	static final int CURVE_LEFT = 30;
 	static final int CURVE_TAIL = 200;
 	static final int MIN_LEFT = 100;
 	static final int MIN_RIGHT = 150;
@@ -104,6 +106,27 @@ public CBanner(Composite parent, int style) {
 		addListener(events[i], listener);
 	}
 }
+static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, int count) {
+	// The parametric equations for a Bezier curve for x[t] and y[t] where  0 <= t <=1 are:
+	// x[t] = x0+3(x1-x0)t+3(x0+x2-2x1)t^3+(x3-x0+3x1-3x2)t^3
+	// y[t] = y0+3(y1-y0)t+3(y0+y2-2y1)t^2+(y3-y0+3y1-3y2)t^3
+	double a0 = x0;
+	double a1 = 3*(x1 - x0);
+	double a2 = 3*(x0 + x2 - 2*x1);
+	double a3 = x3 - x0 + 3*x1 - 3*x2;
+	double b0 = y0;
+	double b1 = 3*(y1 - y0);
+	double b2 = 3*(y0 + y2 - 2*y1);
+	double b3 = y3 - y0 + 3*y1 - 3*y2;
+
+	int[] polygon = new int[2*count + 2];
+	for (int i = 0; i <= count; i++) {
+		double t = (double)i / (double)count;
+		polygon[2*i] = (int)(a0 + a1*t + a2*t*t + a3*t*t*t);
+		polygon[2*i + 1] = (int)(b0 + b1*t + b2*t*t + b3*t*t*t);
+	}
+	return polygon;
+}
 static int checkStyle (int style) {
 	return SWT.NONE;
 }
@@ -123,17 +146,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 			height -= bottomSize.y + BORDER_TOP + BORDER_STRIPE + BORDER_BOTTOM;
 		}
 	}
-	if (showCurve) {
-		if (height != SWT.DEFAULT ) height -= BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
-		if (width == SWT.DEFAULT) {
-			Point s = left.computeSize(SWT.DEFAULT, height);
-			updateCurve(s.y + BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE);
-		} else {
-			Point s1 = right.computeSize(rightWidth, height);
-			Point s2 = left.computeSize(width - s1.x - 44, height); //44 - best guess at width of curve
-			updateCurve(s2.y + BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE);
-		}
-	}
+	if (showCurve && height != SWT.DEFAULT ) height -= BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
 	Point rightSize = new Point(0, 0);
 	if (right != null) {
 		Point trim = right.computeSize(rightWidth, height);
@@ -141,7 +154,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height);
 		if (width != SWT.DEFAULT) {
 			rightSize.x = Math.min(rightSize.x, width);
-			width -= rightSize.x + curveWidth - 2* curveIndent;
+			width -= rightSize.x + CURVE_WIDTH - 2* CURVE_INDENT;
 			width = Math.max(width, MIN_LEFT);
 		}
 	}
@@ -156,7 +169,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	if (bottom != null && (left != null || right != null)) h += BORDER_TOP + BORDER_BOTTOM + BORDER_STRIPE;
 	w += leftSize.x + rightSize.x;
 	if (showCurve) {
-		w += curveWidth - 2*curveIndent;
+		w += CURVE_WIDTH - 2*CURVE_INDENT;
 		h +=  BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
 	}
 	h += left != null ? leftSize.y : rightSize.y; 
@@ -164,7 +177,6 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) w = wHint;
 	if (hHint != SWT.DEFAULT) h = hHint;
 	
-	if (showCurve) updateCurve(getSize().y);
 	return new Point(w, h);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
@@ -245,7 +257,7 @@ public void layout (boolean changed) {
 		trim.x = trim.x - rightWidth;
 		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height);
 		rightSize.x = Math.min(rightSize.x, width);
-		width -= rightSize.x + curveWidth - 2*curveIndent;
+		width -= rightSize.x + CURVE_WIDTH - 2*CURVE_INDENT;
 		width = Math.max(width, MIN_LEFT); 
 	}
 
@@ -268,19 +280,19 @@ public void layout (boolean changed) {
 	if (showCurve) y += BORDER_TOP + BORDER_STRIPE;
 	if(left != null) {
 		leftRect = new Rectangle(x, y, leftSize.x, leftSize.y);
-		curveStart = x + leftSize.x - curveIndent;
-		x += leftSize.x + curveWidth - 2*curveIndent;
+		curveStart = x + leftSize.x - CURVE_INDENT;
+		x += leftSize.x + CURVE_WIDTH - 2*CURVE_INDENT;
 	}
 	if (right != null) {
 		rightRect = new Rectangle(x, y, rightSize.x, rightSize.y);
 	}
 	if (curveStart < oldStart) {
-		redraw(curveStart - CURVE_TAIL, 0, oldStart + curveWidth - curveStart + CURVE_TAIL + 5, size.y, false);
+		redraw(curveStart - CURVE_TAIL, 0, oldStart + CURVE_WIDTH - curveStart + CURVE_TAIL + 5, size.y, false);
 	}
 	if (curveStart > oldStart) {
-		redraw(oldStart - CURVE_TAIL, 0, curveStart + curveWidth - oldStart + CURVE_TAIL + 5, size.y, false);
+		redraw(oldStart - CURVE_TAIL, 0, curveStart + CURVE_WIDTH - oldStart + CURVE_TAIL + 5, size.y, false);
 	}
-	curveRect = new Rectangle(curveStart, 0, curveWidth, size.y);
+	curveRect = new Rectangle(curveStart, 0, CURVE_WIDTH, size.y);
 	update();
 	if (bottomRect != null) bottom.setBounds(bottomRect);
 	if (rightRect != null) right.setBounds(rightRect);
@@ -295,7 +307,7 @@ void onDispose() {
 void onMouseDown (int x, int y) {
 	if (curveRect.contains(x, y)) {
 		dragging = true;
-		rightDragDisplacement = curveStart - x + curveWidth - curveIndent;
+		rightDragDisplacement = curveStart - x + CURVE_WIDTH - CURVE_INDENT;
 	}
 }
 void onMouseExit() {
@@ -347,7 +359,7 @@ void onPaint(GC gc) {
 		line1[index++]=x+curve[2*i];
 		line1[index++]=y+curve[2*i+1];
 	}
-	line1[index++] = x + curveWidth;
+	line1[index++] = x + CURVE_WIDTH;
 	line1[index++] = 0;
 	line1[index++] = size.x;
 	line1[index++] = 0;
@@ -485,12 +497,11 @@ public void setRightWidth(int width) {
 	rightWidth = width;
 	layout(true);
 }
-void updateCurve (int height) {
-	int d = height - 12;
-	curve = new int[]{0,12+d, 0,11+d, 3,11+d, 4,10+d, 6,10+d, 7,9+d, 8,9+d, 10,7+d, 11,7+d,
-			          12,6+d, 22,6,
-					  23,5, 24,5, 26,3, 27,3, 28,2, 30,2, 31,1, 35,1, 36,0}; 
-	curveWidth = 36;
-	curveIndent = 5;	
+void updateCurve(int height) {
+	curve = bezier(0, height - BORDER_STRIPE + 1,
+	               CURVE_LEFT, height - BORDER_STRIPE + 1,
+			       CURVE_WIDTH-CURVE_RIGHT, 0,
+	               CURVE_WIDTH, 0,
+	               CURVE_WIDTH);
 }
 }
