@@ -1039,6 +1039,12 @@ public void setToolTipText (String string) {
 	arrow.setToolTipText (string);
 	text.setToolTipText (string);		
 }
+
+public void setVisible (boolean visible) {
+	super.setVisible(visible);
+	if (!visible) popup.setVisible(false);
+}
+
 void textEvent (Event event) {
 	switch (event.type) {
 		case SWT.FocusIn: {
