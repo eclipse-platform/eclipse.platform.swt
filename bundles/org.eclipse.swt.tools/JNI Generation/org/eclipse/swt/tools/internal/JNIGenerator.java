@@ -85,11 +85,6 @@ static int getByteCount(Class clazz) {
 	return 4;
 }
 
-static String getTypeSignature(Field field) {
-	Class clazz = field.getType();
-	return getTypeSignature(clazz);
-}
-
 static String getTypeSignature(Class clazz) {
 	if (clazz == Integer.TYPE) return "I";
 	if (clazz == Boolean.TYPE) return "Z";
@@ -106,11 +101,6 @@ static String getTypeSignature(Class clazz) {
 	return "L" + clazz.getName().replace('.', '/') + ";";
 }
 
-static String getTypeSignature1(Field field) {
-	Class clazz = field.getType();
-	return getTypeSignature1(clazz);
-}
-
 static String getTypeSignature1(Class clazz) {
 	if (clazz == Integer.TYPE) return "Int";
 	if (clazz == Boolean.TYPE) return "Boolean";
@@ -121,11 +111,6 @@ static String getTypeSignature1(Class clazz) {
 	if (clazz == Float.TYPE) return "Float";
 	if (clazz == Double.TYPE) return "Double";
 	return "Object";
-}
-
-static String getTypeSignature2(Field field) {
-	Class clazz = field.getType();
-	return getTypeSignature2(clazz);
 }
 
 static String getTypeSignature2(Class clazz) {
@@ -146,28 +131,6 @@ static String getTypeSignature2(Class clazz) {
 	return "jobject";
 }
 
-static String getTypeSignature4(Class clazz) {
-	if (clazz == Void.TYPE) return "void";
-	if (clazz == Integer.TYPE) return "jint";
-	if (clazz == Boolean.TYPE) return "jboolean";
-	if (clazz == Long.TYPE) return "jlong";
-	if (clazz == Short.TYPE) return "jshort";
-	if (clazz == Character.TYPE) return "jchar";
-	if (clazz == Byte.TYPE) return "jbyte";
-	if (clazz == Float.TYPE) return "jfloat";
-	if (clazz == Double.TYPE) return "jdouble";
-	if (clazz.isArray()) {
-		Class componentType = clazz.getComponentType();
-		return getTypeSignature4(componentType) + " *";
-	}
-	return getClassName(clazz) + " *";
-}
-
-static String getTypeSignature3(Field field) {
-	Class clazz = field.getType();
-	return getTypeSignature3(clazz);
-}
-
 static String getTypeSignature3(Class clazz) {
 	if (clazz == Void.TYPE) return "void";
 	if (clazz == Integer.TYPE) return "int";
@@ -184,6 +147,23 @@ static String getTypeSignature3(Class clazz) {
 		return getTypeSignature3(componentType) + "[]";
 	}
 	return clazz.getName();
+}
+
+static String getTypeSignature4(Class clazz) {
+	if (clazz == Void.TYPE) return "void";
+	if (clazz == Integer.TYPE) return "jint";
+	if (clazz == Boolean.TYPE) return "jboolean";
+	if (clazz == Long.TYPE) return "jlong";
+	if (clazz == Short.TYPE) return "jshort";
+	if (clazz == Character.TYPE) return "jchar";
+	if (clazz == Byte.TYPE) return "jbyte";
+	if (clazz == Float.TYPE) return "jfloat";
+	if (clazz == Double.TYPE) return "jdouble";
+	if (clazz.isArray()) {
+		Class componentType = clazz.getComponentType();
+		return getTypeSignature4(componentType) + " *";
+	}
+	return getClassName(clazz) + " *";
 }
 
 static Hashtable uniqueCache = new Hashtable();
@@ -235,19 +215,37 @@ static void sort(Class[] classes) {
 
 static String toC(String str) {
 	int length = str.length();
-	StringBuffer buf = new StringBuffer(length * 2);
+	StringBuffer buffer = new StringBuffer(length * 2);
 	for (int i = 0; i < length; i++) {
 		char c = str.charAt(i);
 		switch (c) {
-			case '_': buf.append("_1"); break;
-			case ';': buf.append("_2"); break;
-			case '[': buf.append("_3"); break;
-			case '.': buf.append("_"); break;
-			case '/': buf.append("_"); break;
-			default: buf.append(c);
+			case '_': buffer.append("_1"); break;
+			case ';': buffer.append("_2"); break;
+			case '[': buffer.append("_3"); break;
+			case '.': buffer.append("_"); break;
+			case '/': buffer.append("_"); break;
+			default: buffer.append(c);
 		}
 	}
-	return buf.toString();
+	return buffer.toString();
+}
+
+public abstract void generate(Class clazz);
+
+public void generate(Class[] classes) {
+	sort(classes);
+	for (int i = 0; i < classes.length; i++) {
+		Class clazz = classes[i];
+		generate(clazz);
+	}
+}
+
+public void generateMetaData(String key) {
+	MetaData mt = getMetaData();
+	String data = mt.getMetaData(key, null);
+	if (data == null) return;
+	output(fixDelimiter(data));
+	outputDelimiter();
 }
 
 public String getDelimiter() {
@@ -266,24 +264,6 @@ public String getPlatform() {
 	return SWT.getPlatform();
 }
 
-public abstract void generate(Class clazz);
-
-public void generateMetaData(String key) {
-	MetaData mt = getMetaData();
-	String data = mt.getMetaData(key, null);
-	if (data == null) return;
-	output(fixDelimiter(data));
-	outputDelimiter();
-}
-
-public void generate(Class[] classes) {
-	sort(classes);
-	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
-		generate(clazz);
-	}
-}
-
 public void output(String str) {
 	output.print(str);
 }
@@ -296,12 +276,12 @@ public void setDelimiter(String delimiter) {
 	this.delimiter = delimiter;
 }
 
-public void setOutput(PrintStream output) {
-	this.output = output;
-}
-
 public void setMetaData(MetaData data) {
 	metaData = data;
+}
+
+public void setOutput(PrintStream output) {
+	this.output = output;
 }
 
 }

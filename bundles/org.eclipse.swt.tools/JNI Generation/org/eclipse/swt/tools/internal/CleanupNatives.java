@@ -103,7 +103,6 @@ public void generate(Method method) {
 }
 
 public static void main(String[] args) {
-//	args = new String[]{"a", "b", "c"};
 	if (args.length < 2) {
 		System.out.println("Usage: java CleanupNatives <OS className> <src path> <class source>");
 		return;
@@ -113,12 +112,6 @@ public static void main(String[] args) {
 		String clazzName = args[0];
 		String[] sourcePath = new String[]{args[1]};
 		String classSource = args[2]; 
-//		clazzName = "org.eclipse.swt.internal.gtk.OS";
-//		sourcePath = new String[]{
-//			"/bluebird/teamswt/ssq/eclipse-gtk/workspace/org.eclipse.swt/Eclipse SWT/gtk/",
-//			"/bluebird/teamswt/ssq/eclipse-gtk/workspace/org.eclipse.swt/Eclipse SWT Drag and Drop/gtk/",
-//		};
-//		classSource = "/bluebird/teamswt/ssq/eclipse-gtk/workspace/org.eclipse.swt/Eclipse SWT PI/gtk/org/eclipse/swt/internal/gtk/OS.java";
 		Class clazz = Class.forName(clazzName);
 		gen.setSourcePath(sourcePath);
 		gen.setClassSourcePath(classSource);

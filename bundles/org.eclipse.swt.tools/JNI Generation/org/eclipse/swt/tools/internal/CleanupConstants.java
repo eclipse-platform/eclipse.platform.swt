@@ -83,13 +83,6 @@ public static void main(String[] args) {
 		String clazzName = args[0];
 		String[] sourcePath = new String[]{args[1]};
 		String classSource = args[2];
-//		clazzName = "org.eclipse.swt.internal.carbon.OS";
-//		sourcePath = new String[]{
-//			"/Users/ssq/Desktop/eclipse/workspace/org.eclipse.swt/Eclipse SWT/carbon/",
-//			"/Users/ssq/Desktop/eclipse/workspace/org.eclipse.swt/Eclipse SWT PI/carbon/org/eclipse/swt/internal/carbon/MacUtil.java",
-//			"/Users/ssq/Desktop/eclipse/workspace/org.eclipse.swt/Eclipse SWT Drag and Drop/carbon/org/eclipse/swt/dnd",
-//		};
-//		classSource = "/Users/ssq/Desktop/eclipse/workspace/org.eclipse.swt/Eclipse SWT PI/carbon/org/eclipse/swt/internal/carbon/OS.java";
 		Class clazz = Class.forName(clazzName);
 		gen.setSourcePath(sourcePath);
 		gen.setClassSourcePath(classSource);

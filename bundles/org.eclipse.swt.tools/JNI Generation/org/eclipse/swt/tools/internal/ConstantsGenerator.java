@@ -35,7 +35,7 @@ public void generate(Field[] fields) {
 public void generate(Field field) {
 	Class type = field.getType();
 	output("\tprintf(\"public static final ");
-	output(getTypeSignature3(field));
+	output(getTypeSignature3(field.getType()));
 	output(" ");
 	output(field.getName());
 	output(" = ");

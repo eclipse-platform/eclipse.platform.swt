@@ -254,7 +254,7 @@ void generateCacheFunction(Class clazz) {
 		output("Fc.clazz, \"");
 		output(field.getName());
 		output("\", \"");
-		output(getTypeSignature(field));
+		output(getTypeSignature(field.getType()));
 		output("\");");
 		outputDelimiter();
 	}
@@ -312,7 +312,7 @@ void generateGetFields(Class clazz) {
 			} else {
 				output("(*env)->Get");
 			}
-			output(getTypeSignature1(field));
+			output(getTypeSignature1(field.getType()));
 			if (isCPP) {
 				output("Field(lpObject, ");
 			} else {
@@ -328,9 +328,9 @@ void generateGetFields(Class clazz) {
 				output("\t{");
 				outputDelimiter();
 				output("\t");				
-				output(getTypeSignature2(field));
+				output(getTypeSignature2(field.getType()));
 				output(" lpObject1 = (");
-				output(getTypeSignature2(field));
+				output(getTypeSignature2(field.getType()));
 				if (isCPP) {
 					output(")env->GetObjectField(lpObject, ");
 				} else {
@@ -467,7 +467,7 @@ void generateSetFields(Class clazz) {
 			} else {
 				output("\t(*env)->Set");
 			}
-			output(getTypeSignature1(field));
+			output(getTypeSignature1(field.getType()));
 			if (isCPP) {
 				output("Field(lpObject, ");
 			} else {
@@ -477,7 +477,7 @@ void generateSetFields(Class clazz) {
 			output("Fc.");
 			output(field.getName());
 			output(", (");
-			output(getTypeSignature2(field));
+			output(getTypeSignature2(field.getType()));
 			output(")lpStruct->");
 			output(accessor);
 			output(");");
@@ -487,9 +487,9 @@ void generateSetFields(Class clazz) {
 				output("\t{");
 				outputDelimiter();
 				output("\t");				
-				output(getTypeSignature2(field));
+				output(getTypeSignature2(field.getType()));
 				output(" lpObject1 = (");
-				output(getTypeSignature2(field));
+				output(getTypeSignature2(field.getType()));
 				if (isCPP) {
 					output(")env->GetObjectField(lpObject, ");
 				} else {
