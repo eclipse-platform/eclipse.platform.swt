@@ -175,8 +175,8 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		for (int i=0; i<children.length; i++) {
 			Control child = children [i];
 			Rectangle rect = child.getBounds ();
-			if (Math.min(x + width, rect.x + rect.width) > Math.max (x, rect.x) && 
-				Math.min(y + height, rect.y + rect.height) > Math.max (y, rect.y)) {
+			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) && 
+				Math.min(y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {
 					child.setLocation (rect.x + deltaX, rect.y + deltaY);
 			}
 		}
