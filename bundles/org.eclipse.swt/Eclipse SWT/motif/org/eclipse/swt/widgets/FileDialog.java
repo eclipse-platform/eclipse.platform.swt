@@ -37,7 +37,6 @@ public class FileDialog extends Dialog {
 	String fileName = "";
 	String filterPath = "";
 	String fullPath;
-	boolean cancel = false;
 	static final String FILTER = "*";
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 
@@ -88,7 +87,6 @@ public FileDialog (Shell parent, int style) {
 }
 
 int cancelPressed (int widget, int client, int call) {
-	cancel = true;
 	OS.XtUnmanageChild (widget);
 	return 0;
 }

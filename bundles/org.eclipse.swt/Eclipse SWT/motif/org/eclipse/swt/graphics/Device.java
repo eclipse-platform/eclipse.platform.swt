@@ -450,7 +450,6 @@ public FontData [] getFontList (String faceName, boolean scalable) {
  */
 public Color getSystemColor (int id) {
 	checkDevice ();
-	XColor xColor = null;
 	switch (id) {
 		case SWT.COLOR_BLACK: 				return COLOR_BLACK;
 		case SWT.COLOR_DARK_RED: 			return COLOR_DARK_RED;
@@ -469,8 +468,7 @@ public Color getSystemColor (int id) {
 		case SWT.COLOR_CYAN: 				return COLOR_CYAN;
 		case SWT.COLOR_WHITE: 				return COLOR_WHITE;
 	}
-	if (xColor == null) return COLOR_BLACK;
-	return Color.motif_new (this, xColor);
+	return COLOR_BLACK;
 }
 
 /**
