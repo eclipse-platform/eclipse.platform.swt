@@ -1337,58 +1337,78 @@ public class SWT {
 	public static final int ERROR_FAILED_LOAD_LIBRARY = 47;
 	
 	/**
-	 * traversal event detail field value indicating that the ESC
-	 * key was pressed (value is 1&lt;&lt;1)
+	 * traversal event detail field value indicating that the 
+	 * key which designates that a dialog should be cancelled was
+	 * pressed; typically, this is the ESC key
+	 * (value is 1&lt;&lt;1)
 	 */
 	public static final int TRAVERSE_ESCAPE = 1 << 1;
 
 	/**
-	 * traversal event detail field value indicating that the ENTER
-	 * key was pressed (value is 1&lt;&lt;2)
+	 * traversal event detail field value indicating that the
+	 * key which designates that a dialog should be closed/accepted
+	 * was preseed; typically, this is the ENTER key
+	 * (value is 1&lt;&lt;2)
 	 */
 	public static final int TRAVERSE_RETURN = 1 << 2;
 
 	/**
-	 * traversal event detail field value indicating that the SHIFT-TAB
-	 * key was pressed (value is 1&lt;&lt;3)
+	 * traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * previous tab group was pressed; typically, this is the
+	 * SHIFT-TAB key sequence
+	 * (value is 1&lt;&lt;3)
 	 */
 	public static final int TRAVERSE_TAB_PREVIOUS = 1 << 3;
 
 	/**
-	 * traversal event detail field value indicating that the TAB
-	 * key was pressed (value is 1&lt;&lt;4)
+	 * traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * next tab group was pressed; typically, this is the
+	 * TAB key
 	 */
 	public static final int TRAVERSE_TAB_NEXT = 1 << 4;
 
 	/**
-	 * traversal event detail field value indicating that the LEFT-ARROW
-	 * or UP-ARROW keys was pressed (value is 1&lt;&lt;5)
+	 * traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * previous tab item was pressed; typically, this is either
+	 * the LEFT-ARROW or UP-ARROW keys
+	 * (value is 1&lt;&lt;5)
 	 */
 	public static final int TRAVERSE_ARROW_PREVIOUS = 1 << 5;
 
 	/**
-	 * traversal event detail field value indicating that the RIGHT-ARROW
-	 * or DOWN-ARROW keys was pressed (value is 1&lt;&lt;6)
+	 * traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * previous tab item was pressed; typically, this is either
+	 * the RIGHT-ARROW or DOWN-ARROW keys
+	 * (value is 1&lt;&lt;6)
 	 */
 	public static final int TRAVERSE_ARROW_NEXT = 1 << 6;
 
 	/**
-	 * traversal event detail field value indicating that a MNEMONIC
-	 * keys was pressed (value is 1&lt;&lt;7)
+	 * traversal event detail field value indicating that a 
+	 * mnemonic key sequence was pressed
+	 * (value is 1&lt;&lt;7)
 	 */
 	public static final int TRAVERSE_MNEMONIC = 1 << 7;
 
 	/**
-	 * traversal event detail field value indicating that the PREVIOUS-PAGE
-	 * key was pressed (value is 1&lt;&lt;8).  Typically, this key maps to
-	 * Ctrl+PgUp on most platforms.
+	 * traversal event detail field value indicating that the 
+	 * key which designates that the previous page of a multi-page
+	 * window should be shown was pressed; typically, this
+	 * is the CTRL-PgUp key sequence
+	 * (value is 1&lt;&lt;8)
 	 */
 	public static final int TRAVERSE_PAGE_PREVIOUS = 1 << 8;
 	
 	/**
-	 * traversal event detail field value indicating that the NEXT-PAGE
-	 * key was pressed (value is 1&lt;&lt;9).  Typically, this key maps to
-	 * Ctrl+PgDn on most platforms.
+	 * traversal event detail field value indicating that the 
+	 * key which designates that the next page of a multi-page
+	 * window should be shown was pressed; typically, this
+	 * is the CTRL-PgDn key sequence
+	 * (value is 1&lt;&lt;9)
 	 */
 	public static final int TRAVERSE_PAGE_NEXT = 1 << 9;
 
