@@ -7,7 +7,6 @@ package org.eclipse.swt.dnd;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -88,6 +87,7 @@ public class DropTarget extends Widget {
 	
 	private int iDataObject;
 	
+	private static final String DROPTARGETID = "DropTarget";
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
  * <code>Control</code>.
@@ -99,6 +99,13 @@ public class DropTarget extends Widget {
  * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
  *		   DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_INIT_DROP - unable to initiate drop target</li>
+ * </ul>
+ * 
  * @see DropTarget#dispose
  * @see DropTarget#checkSubclass
  * @see DND#DROP_NONE
@@ -109,11 +116,13 @@ public class DropTarget extends Widget {
 public DropTarget(Control control, int style) {
 
 	super (control, checkStyle(style));
-	
 	this.control = control;
-	
+	if (control.getData(DROPTARGETID) != null)
+		DND.error(DND.ERROR_CANNOT_INIT_DROP);
+	control.setData(DROPTARGETID, this);
 	createCOMInterfaces();
-
+	this.AddRef();
+	
 	int result = 0;
 	if ((result = COM.CoLockObjectExternal(iDropTarget.getAddress(), true, true)) != COM.S_OK)
 		DND.error(DND.ERROR_CANNOT_INIT_DROP, result);
@@ -214,6 +223,7 @@ private void onDispose () {
 	if (controlListener != null)
 		control.removeListener(SWT.Dispose, controlListener);
 	controlListener = null;
+	control.setData(DROPTARGETID, null);
 	transferAgents = null;
 	control = null;
 	

@@ -103,7 +103,8 @@ public class DragSource extends Widget {
 	private Listener controlListener;
 	
 	private int dataEffect;
-
+	
+	private static final String DRAGSOURCEID = "DragSource";
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
  * Creating an instance of a DragSource may cause system resources to be allocated depending on the platform.  
@@ -116,6 +117,8 @@ public class DragSource extends Widget {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_INIT_DRAG - unable to initiate drag source</li>
  * </ul>
  *
  * @see DragSource#dispose
@@ -128,11 +131,11 @@ public class DragSource extends Widget {
 public DragSource(Control control, int style) {
 
 	super (control, checkStyle (style));
-	
 	this.control = control;
-	
+	if (control.getData(DRAGSOURCEID) != null)
+		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
+	control.setData(DRAGSOURCEID, this);
 	createCOMInterfaces();
-
 	this.AddRef();
 
 	controlListener = new Listener () {
@@ -232,7 +235,8 @@ private void onDispose () {
 		control.removeListener(SWT.Dispose, controlListener);
 		control.removeListener(SWT.DragDetect, controlListener);
 	}
-	controlListener = null;	
+	controlListener = null;
+	control.setData(DRAGSOURCEID, null);	
 	control = null;
 	
 	transferAgents = null;
