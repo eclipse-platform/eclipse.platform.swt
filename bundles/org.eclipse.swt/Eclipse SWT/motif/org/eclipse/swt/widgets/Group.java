@@ -165,6 +165,10 @@ void createHandle (int index) {
 	int [] argList3 = {OS.XmNframeChildType, OS.XmFRAME_TITLE_CHILD};
 	labelHandle = OS.XmCreateLabel (handle, null, argList3, argList3.length / 2);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	
+	int [] argList4 = {OS.XmNforeground, 0, OS.XmNbackground, 0};
+	OS.XtGetValues (handle, argList4, argList4.length / 2);
+	OS.XtSetValues (labelHandle, argList4, argList4.length / 2);
 }
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);

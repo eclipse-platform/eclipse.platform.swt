@@ -268,6 +268,10 @@ void createHandle (int index) {
 	byte [] buffer = {(byte) ' ', 0};
 	handle = OS.XmCreateLabel (formHandle, buffer, argList2, argList2.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+
+	int [] argList3 = {OS.XmNbackground, 0};
+	OS.XtGetValues (handle, argList3, argList3.length / 2);
+	OS.XtSetValues (formHandle, argList3, argList3.length / 2);
 }
 int defaultBackground () {
 	return display.labelBackground;

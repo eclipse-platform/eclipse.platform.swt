@@ -265,6 +265,10 @@ void createHandle (int index, int parentHandle, boolean scrolled) {
 	int [] argList = {OS.XmNtraversalOn, 0};
 	focusHandle = OS.XmCreateDrawingArea (handle, null, argList, argList.length / 2);
 	if (focusHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	
+	int [] argList1 = {OS.XmNforeground, 0, OS.XmNbackground, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	if (formHandle != 0) OS.XtSetValues (formHandle, argList1, argList1.length / 2);
 }
 int defaultBackground () {
 	return display.compositeBackground;
