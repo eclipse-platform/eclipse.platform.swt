@@ -242,7 +242,10 @@ void createHandle () {
 	* and WS_EX_NOINHERITLAYOUT are specified for the table, the header will
 	* not be oriented correctly.  The fix is to explicitly set the orientation
 	* for the header.
+	* 
+	* NOTE: WS_EX_LAYOUTRTL is not supported on Windows NT.
 	*/
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) return;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		int extStyle = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);

@@ -2642,9 +2642,18 @@ void updateFont (Font oldFont, Font newFont) {
 }
 
 int widgetExtStyle () {
-	int bits = OS.WS_EX_NOINHERITLAYOUT;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
+	int bits = 0;
 	if ((style & SWT.BORDER) != 0) bits |= OS.WS_EX_CLIENTEDGE;
+	/*
+	* Feature in Windows NT.  When CreateWindowEx() is called with
+	* WS_EX_LAYOUTRTL or WS_EX_NOINHERITLAYOUT, CreateWindowEx()
+	* fails to create the HWND. The fix is to not use these bits.
+	*/
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10))  {
+		return bits;
+	} 
+	bits |= OS.WS_EX_NOINHERITLAYOUT;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
 	return bits;
 }
 
