@@ -932,6 +932,10 @@ public Object getData () {
 	checkDevice ();
 	return data;
 }
+public int getDismissalAlignment () {
+	checkDevice ();
+	return SWT.LEFT;
+}
 /**
  * Returns the longest duration, in milliseconds, between
  * two mouse button clicks that will be considered a

@@ -86,7 +86,7 @@ boolean drawCaret () {
 	if (window == 0) return false;
 	int xDisplay = OS.XtDisplay (handle);
 	int gc = OS.XCreateGC (xDisplay, window, 0, null);
-	int screenNum = OS.XDefaultScreen(xDisplay);	
+	int screenNum = OS.XDefaultScreen (xDisplay);	
 	OS.XSetFunction (xDisplay, gc, OS.GXxor);
 	OS.XSetForeground (xDisplay, gc, OS.XWhitePixel(xDisplay, screenNum));
 	int nWidth = width, nHeight = height;
