@@ -9,8 +9,6 @@ package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
 
-import org.eclipse.swt.internal.carbon.OS;
-
 /**
  * Instances of this class are descriptions of GCs in terms
  * of unallocated platform-specific data fields.
