@@ -3842,6 +3842,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWRefCon
 }
 #endif /* NO_GetWRefCon */
 
+#ifndef NO_GetWindowActivationScope
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowActivationScope
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetWindowActivationScope\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetWindowActivationScope((WindowRef)arg0, (WindowActivationScope *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetWindowBounds
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowBounds
 	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jobject arg2)
