@@ -369,6 +369,8 @@ GdkColor defaultForeground () {
 void deregister () {
 	super.deregister ();
 	if (bufferHandle != 0) WidgetTable.remove (bufferHandle);
+	int imContext = imContext ();
+	if (imContext != 0) WidgetTable.remove (imContext);
 }
 
 GdkColor getBackgroundColor () {
@@ -817,6 +819,28 @@ int gtk_changed (int widget) {
 	return 0;
 }
 
+int gtk_commit (int imcontext, int text) {
+	if (text == 0) return 0;
+	int length = OS.strlen (text);
+	if (length == 0) return 0;
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, text, length);
+	char [] chars = Converter.mbcsToWcs (null, buffer);
+	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
+	if (newChars == null) return 0;
+	OS.g_signal_handlers_block_matched (imcontext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
+	OS.g_signal_handlers_unblock_matched (imcontext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, handle);
+	if (newChars == chars) {
+		OS.g_signal_emit_by_name (imcontext, OS.commit, text);
+	} else {
+		buffer = Converter.wcsToMbcs (null, newChars, true);
+		OS.g_signal_emit_by_name (imcontext, OS.commit, buffer);
+	}
+	OS.g_signal_handlers_unblock_matched (imcontext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
+	OS.g_signal_handlers_block_matched (imcontext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, handle);
+	return 0;
+}
+
 int gtk_delete_range (int widget, int iter1, int iter2) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	byte [] startIter =  new byte [ITER_SIZEOF];
@@ -888,9 +912,22 @@ int gtk_insert_text (int widget, int int0, int int1, int int2) {
 	return 0;
 }
 
+int gtk_key_press_event (int widget, int event) {
+	if (!hasFocus ()) return 0;
+	int imHandle = imContext ();
+	if (imHandle != 0) {
+		OS.g_signal_handlers_block_matched (imHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, handle);
+		boolean filtered = OS.gtk_im_context_filter_keypress (imHandle, event);
+		OS.g_signal_handlers_unblock_matched (imHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, handle);
+		if (filtered) return 1;
+	}
+	return super.gtk_key_press_event (widget, event);
+}
+
 void hookEvents () {
 	super.hookEvents();
 	int windowProc2 = display.windowProc2;
+	int windowProc3 = display.windowProc3;
 	int windowProc4 = display.windowProc4;
 	int windowProc5 = display.windowProc5;
 	if ((style & SWT.SINGLE) != 0) {
@@ -903,6 +940,12 @@ void hookEvents () {
 		OS.g_signal_connect (bufferHandle, OS.insert_text, windowProc5, INSERT_TEXT);
 		OS.g_signal_connect (bufferHandle, OS.delete_range, windowProc4, DELETE_RANGE);
 	}
+	int imContext = imContext ();
+	if (imContext != 0) OS.g_signal_connect (imContext, OS.commit, windowProc3, COMMIT);
+}
+
+int imContext () {
+	return (style & SWT.SINGLE) != 0 ? OS.GTK_ENTRY_IM_CONTEXT (handle) : OS.GTK_TEXTVIEW_IM_CONTEXT (handle);
 }
 
 /**
@@ -969,6 +1012,8 @@ public void paste () {
 void register () {
 	super.register ();
 	if (bufferHandle != 0) WidgetTable.put (bufferHandle, this);
+	int imContext = imContext ();
+	if (imContext != 0) WidgetTable.put (imContext, this);
 }
 
 /**
@@ -1394,19 +1439,14 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 	switch (key) {
 		case OS.GDK_KP_Enter:
 		case OS.GDK_Return: {
-			int imHandle;
-			if ((style & SWT.SINGLE) != 0) {
-				imHandle = OS.GTK_ENTRY_IM_CONTEXT (handle);
-			} else {
-				imHandle = OS.GTK_TEXTVIEW_IM_CONTEXT (handle);
-			}			
-			if (imHandle != 0) {
+			int imContext =  imContext ();
+			if (imContext != 0) {
 				int [] preeditString = new int [1];
-				OS.gtk_im_context_get_preedit_string (imHandle, preeditString, null, null);
+				OS.gtk_im_context_get_preedit_string (imContext, preeditString, null, null);
 				if (preeditString [0] != 0) {
-					int lenght = OS.strlen (preeditString [0]);
+					int length = OS.strlen (preeditString [0]);
 					OS.g_free (preeditString [0]);
-					if (lenght != 0) return false;
+					if (length != 0) return false;
 				}
 			}
 		}

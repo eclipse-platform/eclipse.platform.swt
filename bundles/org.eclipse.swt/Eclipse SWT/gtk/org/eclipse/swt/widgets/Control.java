@@ -1603,15 +1603,8 @@ int gtk_commit (int imcontext, int text) {
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, text, length);
-	char [] result = Converter.mbcsToWcs (null, buffer);
-	int index = 0;
-	while (index < result.length) {
-		if (result [index] == 0) break;
-		Event event = new Event ();
-		event.character = result [index];
-		postEvent (SWT.KeyDown, event);
-		index++;
-	}
+	char [] chars = Converter.mbcsToWcs (null, buffer);
+	sendIMKeyEvent (SWT.KeyDown, null, chars);
 	return 0;
 }
 
@@ -1700,27 +1693,25 @@ int gtk_key_press_event (int widget, int event) {
 	if (!hasFocus ()) return 0;
 	int imHandle = imHandle ();
 	if (imHandle != 0) {
-		if (OS.gtk_im_context_filter_keypress (imHandle, event)) return 0;
+		if (OS.gtk_im_context_filter_keypress (imHandle, event)) return 1;
 	}
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
 	if (translateTraversal (gdkEvent)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
-	sendKeyEvent (SWT.KeyDown, gdkEvent);
-	return 0;
+	return sendKeyEvent (SWT.KeyDown, gdkEvent) ? 0 : 1;
 }
 
 int gtk_key_release_event (int widget, int event) {
 	if (!hasFocus ()) return 0;
 	int imHandle = imHandle ();
 	if (imHandle != 0) {
-		if (OS.gtk_im_context_filter_keypress (imHandle, event)) return 0;
+		if (OS.gtk_im_context_filter_keypress (imHandle, event)) return 1;
 	}
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-	sendKeyEvent (SWT.KeyUp, gdkEvent);
-	return 0;
+	return sendKeyEvent (SWT.KeyUp, gdkEvent) ? 0 : 1;
 }
 
 int gtk_leave_notify_event (int widget, int event) {
@@ -2108,30 +2099,41 @@ boolean sendHelpEvent (int helpType) {
 	return false;
 }
 
-void sendKeyEvent (int type, GdkEventKey keyEvent) {
-	int time = keyEvent.time;
+char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
+	int index = 0, count = 0;
+	while (index < chars.length) {
+		Event event = new Event ();
+		event.character = chars [index];
+		if (keyEvent != null) {
+			event.time = keyEvent.time;
+			setInputState (event, keyEvent.state);
+		}
+		sendEvent (type, event);
+		if (event.doit) chars [count++] = chars [index];
+		index++;
+	}
+	if (count == 0) return null;
+	if (index != count) {
+		char [] result = new char [count];
+		System.arraycopy (chars, 0, result, 0, count);
+		return result;
+	}
+	return chars;
+}
+
+boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 	int length = keyEvent.length;
 	if (length <= 1) {
 		Event event = new Event ();
-		event.time = time;
+		event.time = keyEvent.time;
 		setKeyState (event, keyEvent);
-		postEvent (type, event);
-	} else {
-		int string = keyEvent.string;
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, string, length);
-		char [] result = Converter.mbcsToWcs (null, buffer);
-		int index = 0;
-		while (index < result.length) {
-			if (result [index] == 0) break;
-			Event event = new Event ();
-			event.time = time;
-			event.character = result [index];
-			setInputState (event, keyEvent.state);
-			postEvent (type, event);
-			index++;
-		}
+		sendEvent (type, event);
+		return event.doit;
 	}
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, keyEvent.string, length);
+	char [] chars = Converter.mbcsToWcs (null, buffer);
+	return sendIMKeyEvent (type, keyEvent, chars) != null;
 }
 
 void sendMouseEvent (int type, int button, int gdkEvent) {

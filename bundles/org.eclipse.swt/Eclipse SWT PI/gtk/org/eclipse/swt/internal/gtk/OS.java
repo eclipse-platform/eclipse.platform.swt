@@ -346,6 +346,8 @@ public static final synchronized native void g_object_unref(int object);
 public static final synchronized native int g_quark_from_string(byte[] string);
 public static final synchronized native int g_signal_connect(int instance, byte[] detailed_signal, int proc, int data);
 public static final synchronized native int g_signal_connect_after(int instance, byte[] detailed_signal, int proc, int data);
+public static final synchronized native void g_signal_emit_by_name(int instance, byte[] detailed_signal, int data);
+public static final synchronized native void g_signal_emit_by_name(int instance, byte[] detailed_signal, byte [] data);
 public static final synchronized native void g_signal_handler_disconnect(int instance, int handler_id);
 public static final synchronized native int g_signal_handlers_block_matched(int instance, int mask, int signal_id, int detail, int closure, int func, int data);
 public static final synchronized native int g_signal_handlers_disconnect_matched(int instance, int mask, int signal_id, int detail, int closure, int func, int data);

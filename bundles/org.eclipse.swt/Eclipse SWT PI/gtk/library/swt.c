@@ -684,6 +684,36 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect_1
 	return rc;
 }
 #endif
+#ifndef NO_g_1signal_1emit_1by_1name__I_3B_3B
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1emit_1by_1name__I_3B_3B
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+
+	DEBUG_CALL("g_1signal_1emit_1by_1name__I_3B_3B\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	g_signal_emit_by_name((gpointer)arg0, (const gchar *)lparg1, (const gchar *)lparg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+}
+#endif
+
+#ifndef NO_g_1signal_1emit_1by_1name__I_3BI
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1emit_1by_1name__I_3BI
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("g_1signal_1emit_1by_1name__I_3BI\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	g_signal_emit_by_name((gpointer)arg0, (const gchar *)lparg1, (gpointer)arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+#endif
 
 #ifndef NO_g_1signal_1handler_1disconnect
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1handler_1disconnect
