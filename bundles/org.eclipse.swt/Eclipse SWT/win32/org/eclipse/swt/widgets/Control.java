@@ -1270,6 +1270,8 @@ boolean mnemonicMatch (char key) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #moveBelow
  */
 public void moveAbove (Control control) {
 	checkWidget ();
@@ -1311,6 +1313,8 @@ public void moveAbove (Control control) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #moveAbove
  */
 public void moveBelow (Control control) {
 	checkWidget ();
@@ -1373,7 +1377,8 @@ public void pack (boolean changed) {
 /**
  * Causes the entire bounds of the receiver to be marked
  * as needing to be redrawn. The next time a paint request
- * is processed, the control will be completely painted.
+ * is processed, the control will be completely painted,
+ * including the background.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1381,6 +1386,11 @@ public void pack (boolean changed) {
  * </ul>
  *
  * @see #update
+ * @see PaintListener
+ * @see SWT#Paint
+ * @see SWT#NO_BACKGROUND
+ * @see SWT#NO_REDRAW_RESIZE
+ * @see SWT#NO_MERGE_PAINTS
  */
 public void redraw () {
 	checkWidget ();
@@ -1397,11 +1407,12 @@ public void redraw () {
  * Causes the rectangular area of the receiver specified by
  * the arguments to be marked as needing to be redrawn. 
  * The next time a paint request is processed, that area of
- * the receiver will be painted. If the <code>all</code> flag
- * is <code>true</code>, any children of the receiver which
- * intersect with the specified area will also paint their
- * intersecting areas. If the <code>all</code> flag is 
- * <code>false</code>, the children will not be painted.
+ * the receiver will be painted, including the background.
+ * If the <code>all</code> flag is <code>true</code>, any
+ * children of the receiver which intersect with the specified
+ * area will also paint their intersecting areas. If the
+ * <code>all</code> flag is <code>false</code>, the children
+ * will not be painted.
  *
  * @param x the x coordinate of the area to draw
  * @param y the y coordinate of the area to draw
@@ -1415,6 +1426,11 @@ public void redraw () {
  * </ul>
  *
  * @see #update
+ * @see PaintListener
+ * @see SWT#Paint
+ * @see SWT#NO_BACKGROUND
+ * @see SWT#NO_REDRAW_RESIZE
+ * @see SWT#NO_MERGE_PAINTS
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
@@ -2795,6 +2811,8 @@ void unsubclass () {
  * </ul>
  *
  * @see #redraw
+ * @see PaintListener
+ * @see SWT#Paint
  */
 public void update () {
 	checkWidget ();
