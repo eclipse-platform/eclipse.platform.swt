@@ -1363,10 +1363,12 @@ void setWindowVisible (boolean visible) {
 	if (OS.IsWindowVisible (shellHandle) == visible) return;
 	if (visible) {
 		if (!moved) {
+			moved = true;
 			sendEvent (SWT.Move);
 			if (isDisposed ()) return;
 		}
 		if (!resized) {
+			resized = true;
 			sendEvent (SWT.Resize);
 			if (isDisposed ()) return;
 			if (layout != null) {
