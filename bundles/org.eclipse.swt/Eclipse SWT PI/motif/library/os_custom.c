@@ -45,8 +45,8 @@ JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
 	OS_NATIVE_ENTER(env, that, XtGetValues_FUNC)
 	if (argList) if ((argList1 = (*env)->GetIntArrayElements(env, argList, NULL)) == NULL) goto failTag;
 	if (numArgs > MAX_ARGS) {
-		values = (int *) XtMalloc (numArgs * sizeof(int));
-		zeros = (int *) XtMalloc (numArgs * sizeof(int));
+		if ((values = (int *) XtMalloc (numArgs * sizeof(int))) == NULL) goto failTag;
+		if ((zeros = (int *) XtMalloc (numArgs * sizeof(int))) == NULL) goto failTag;
 	}
 	for (i = 0; i < numArgs; i++) {   
 		zeros[i] = values[i] = 0;
@@ -58,7 +58,6 @@ JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
 		}
 	}
 	XtGetValues((Widget)widget, (ArgList)argList1, numArgs);
-failTag:
 	for (i = 0; i < numArgs; i++) {   
 		if (zeros[i]) {
 			char* charPtr = (char *)(argList1[i*2] - 1);
@@ -70,11 +69,12 @@ failTag:
 			}
 		}
 	}
+failTag:
 	if (numArgs > MAX_ARGS) {
-		XtFree((char *)values);
-		XtFree((char *)zeros);
+		if (values) XtFree((char *)values);
+		if (zeros) XtFree((char *)zeros);
 	}
-	if (argList)(*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
+	if (argList && argList1)(*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
 	OS_NATIVE_EXIT(env, that, XtGetValues_FUNC)
 }
 #endif
