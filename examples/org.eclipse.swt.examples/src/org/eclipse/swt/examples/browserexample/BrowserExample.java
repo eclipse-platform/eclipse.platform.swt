@@ -41,9 +41,8 @@ public class BrowserExample {
 public BrowserExample(Composite parent) {
 	initResources();
 	final Display display = parent.getDisplay();
-	GridLayout gridLayout = new GridLayout();
-	gridLayout.numColumns = 3;
-	parent.setLayout(gridLayout);
+	FormLayout layout = new FormLayout();
+	parent.setLayout(layout);
 	ToolBar toolbar = new ToolBar(parent, SWT.NONE);
 	final ToolItem itemBack = new ToolItem(toolbar, SWT.PUSH);
 	itemBack.setText(getResourceString("Back"));
@@ -55,22 +54,15 @@ public BrowserExample(Composite parent) {
 	itemRefresh.setText(getResourceString("Refresh"));
 	final ToolItem itemGo = new ToolItem(toolbar, SWT.PUSH);
 	itemGo.setText(getResourceString("Go"));
-		
-	GridData data = new GridData();
-	data.horizontalSpan = 2;
-	toolbar.setLayoutData(data);
+
+	location = new Text(parent, SWT.BORDER);
 
 	final Canvas canvas = new Canvas(parent, SWT.NO_BACKGROUND);
-	data = new GridData();
-	data.horizontalAlignment = GridData.END;
-	Rectangle rect = images[0].getBounds();
-	data.widthHint = rect.width;
-	data.heightHint = rect.height;
-	data.verticalSpan = 2;
-	canvas.setLayoutData(data);
+	final Rectangle rect = images[0].getBounds();
 	canvas.addListener(SWT.Paint, new Listener() {
 		public void handleEvent(Event e) {
-			e.gc.drawImage(images[index], 0, 0);
+			Point pt = canvas.getSize();
+			e.gc.drawImage(images[index], 0, 0, rect.width, rect.height, 0, 0, pt.x, pt.y);			
 		}
 	});
 	canvas.addListener(SWT.MouseDown, new Listener() {
@@ -90,23 +82,19 @@ public BrowserExample(Composite parent) {
 			display.timerExec(150, this);
 		}
 	});
-	
-	Label labelAddress = new Label(parent, SWT.NONE);
-	labelAddress.setText(getResourceString("Address"));
-	
-	location = new Text(parent, SWT.BORDER);
-	data = new GridData();
-	data.horizontalAlignment = GridData.FILL;
-	data.horizontalSpan = 1;
-	data.grabExcessHorizontalSpace = true;
-	location.setLayoutData(data);
 
-	data = new GridData();
-	data.horizontalAlignment = GridData.FILL;
-	data.verticalAlignment = GridData.FILL;
-	data.horizontalSpan = 3;
-	data.grabExcessHorizontalSpace = true;
-	data.grabExcessVerticalSpace = true;
+	final Label status = new Label(parent, SWT.NONE);
+	final ProgressBar progressBar = new ProgressBar(parent, SWT.NONE);
+
+	FormData data = new FormData();
+	data.top = new FormAttachment(0, 5);
+	toolbar.setLayoutData(data);
+
+	data = new FormData();
+	data.left = new FormAttachment(0, 0);
+	data.right = new FormAttachment(100, 0);
+	data.top = new FormAttachment(canvas, 5, SWT.DEFAULT);
+	data.bottom = new FormAttachment(status, -5, SWT.DEFAULT);
 	try {
 		browser = new Browser(parent, SWT.NONE);
 		browser.setLayoutData(data);
@@ -117,14 +105,28 @@ public BrowserExample(Composite parent) {
 		label.setLayoutData(data);
 	}
 
-	final Label status = new Label(parent, SWT.NONE);
-	data = new GridData(GridData.FILL_HORIZONTAL);
-	data.horizontalSpan = 2;
+	data = new FormData();
+	data.width = 24;
+	data.height = 24;
+	data.top = new FormAttachment(0, 5);
+	data.right = new FormAttachment(100, -5);
+	canvas.setLayoutData(data);
+
+	data = new FormData();
+	data.top = new FormAttachment(toolbar, 0, SWT.TOP);
+	data.left = new FormAttachment(toolbar, 5, SWT.RIGHT);
+	data.right = new FormAttachment(canvas, -5, SWT.DEFAULT);
+	location.setLayoutData(data);
+
+	data = new FormData();
+	data.left = new FormAttachment(0, 5);
+	data.right = new FormAttachment(progressBar, 0, SWT.DEFAULT);
+	data.bottom = new FormAttachment(100, -5);
 	status.setLayoutData(data);
 	
-	final ProgressBar progressBar = new ProgressBar(parent, SWT.NONE);
-	data = new GridData();
-	data.horizontalAlignment = GridData.END;
+	data = new FormData();
+	data.right = new FormAttachment(100, -5);
+	data.bottom = new FormAttachment(100, -5);
 	progressBar.setLayoutData(data);
 
 	if (browser != null) {
