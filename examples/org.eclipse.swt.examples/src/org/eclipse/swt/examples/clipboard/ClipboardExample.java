@@ -25,6 +25,8 @@ public class ClipboardExample {
 	Text pasteText;
 	Text copyRtfText;
 	Text pasteRtfText;
+	Text copyHtmlText;
+	Text pasteHtmlText;
 	Table copyFileTable;
 	Table pasteFileTable;
 	Text text;
@@ -78,6 +80,7 @@ public void open(Display display) {
 	
 	createTextTransfer(copyGroup, pasteGroup);
 	createRTFTransfer(copyGroup, pasteGroup);
+	createHTMLTransfer(copyGroup, pasteGroup);
 	createFileTransfer(copyGroup, pasteGroup);
 	createMyTransfer(copyGroup, pasteGroup);
 	createControlTransfer(controlGroup);
@@ -172,6 +175,49 @@ void createRTFTransfer(Composite copyParent, Composite pasteParent){
 			if (data != null && data.length() > 0) {
 				status.setText("");
 				pasteRtfText.setText("start paste>"+data+"<end paste");
+			} else {
+				status.setText("nothing to paste");
+			}
+		}
+	});
+}
+void createHTMLTransfer(Composite copyParent, Composite pasteParent){
+	//	HTML Transfer
+	Label l = new Label(copyParent, SWT.NONE);
+	l.setText("HTMLTransfer:"); //$NON-NLS-1$
+	copyHtmlText = new Text(copyParent, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+	copyHtmlText.setText("<b>Hello World</b>");
+	GridData data = new GridData(GridData.FILL_HORIZONTAL);
+	data.heightHint = data.widthHint = SIZE;
+	copyHtmlText.setLayoutData(data);
+	Button b = new Button(copyParent, SWT.PUSH);
+	b.setText("Copy");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			String data = copyHtmlText.getText();
+			if (data.length() > 0) {
+				status.setText("");
+				clipboard.setContents(new Object[] {data}, new Transfer[] {HTMLTransfer.getInstance()});
+			} else {
+				status.setText("nothing to copy");
+			}
+		}
+	});
+	  
+	l = new Label(pasteParent, SWT.NONE);
+	l.setText("HTMLTransfer:"); //$NON-NLS-1$
+	pasteHtmlText = new Text(pasteParent, SWT.READ_ONLY | SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+	data = new GridData(GridData.FILL_HORIZONTAL);
+	data.heightHint = data.widthHint = SIZE;
+	pasteHtmlText.setLayoutData(data);
+	b = new Button(pasteParent, SWT.PUSH);
+	b.setText("Paste");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			String data = (String)clipboard.getContents(HTMLTransfer.getInstance());
+			if (data != null && data.length() > 0) {
+				status.setText("");
+				pasteHtmlText.setText("start paste>"+data+"<end paste");
 			} else {
 				status.setText("nothing to paste");
 			}
