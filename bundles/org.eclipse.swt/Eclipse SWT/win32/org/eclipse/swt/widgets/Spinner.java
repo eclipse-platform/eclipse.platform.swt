@@ -118,6 +118,9 @@ void createHandle () {
 	int textExStyle = (style & SWT.BORDER) != 0 ? OS.WS_EX_CLIENTEDGE : 0;
 	int textStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.ES_AUTOHSCROLL;
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= OS.ES_READONLY;
+	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) textExStyle |= OS.WS_EX_LAYOUTRTL;
+	}
 	hwndText = OS.CreateWindowEx (
         textExStyle,
         EditClass,
