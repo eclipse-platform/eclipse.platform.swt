@@ -40,6 +40,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Label extends Control {
+	int formHandle;
 	String text = "";
 	Image image, bitmap, disabled;
 
@@ -126,11 +127,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		/* If we are not wrapping, ask the widget for its geometry. */
 		XtWidgetGeometry result = new XtWidgetGeometry ();
 		result.request_mode = OS.CWWidth | OS.CWHeight;
-		int [] argList2 = {OS.XmNrecomputeSize, 1};
-		OS.XtSetValues(handle, argList2, argList2.length / 2);
 		OS.XtQueryGeometry (handle, null, result);
-		int [] argList3 = {OS.XmNrecomputeSize, 0};
-		OS.XtSetValues(handle, argList3, argList3.length / 2);
 		width += result.width;
 		height += result.height;
 	}
@@ -166,16 +163,25 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
+	int [] argList1 = {
+		OS.XmNancestorSensitive, 1,
+		OS.XmNmarginWidth, 0,
+		OS.XmNmarginHeight, 0, 
+		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
+		OS.XmNborderWidth, borderWidth,
+	};
+	formHandle = OS.XmCreateForm (parentHandle, null, argList1, argList1.length / 2);
+	if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int alignment = OS.XmALIGNMENT_BEGINNING;
 	if ((style & SWT.CENTER) != 0) alignment = OS.XmALIGNMENT_CENTER;
 	if ((style & SWT.RIGHT) != 0) alignment = OS.XmALIGNMENT_END;
-	int [] argList = {
-		OS.XmNancestorSensitive, 1,
-		OS.XmNrecomputeSize, 0,
+	int [] argList2 = {
 		OS.XmNalignment, alignment,
-		OS.XmNborderWidth, borderWidth,
+		OS.XmNtopAttachment, OS.XmATTACH_FORM,
+		OS.XmNleftAttachment, OS.XmATTACH_FORM,
+		OS.XmNrightAttachment, OS.XmATTACH_FORM,
 	};
-	handle = OS.XmCreateLabel (parentHandle, null, argList, argList.length / 2);
+	handle = OS.XmCreateLabel (formHandle, null, argList2, argList2.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 int defaultBackground () {
@@ -186,6 +192,14 @@ Font defaultFont () {
 }
 int defaultForeground () {
 	return display.labelForeground;
+}
+void deregister () {
+	super.deregister ();
+	if (formHandle != 0) display.removeWidget (formHandle);
+}
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	if (formHandle != 0) enableHandle (enabled, formHandle);
 }
 public boolean forceFocus () {
 	checkWidget();
@@ -257,6 +271,19 @@ public String getText () {
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return text;
 }
+void manageChildren () {
+	if (formHandle != 0) {
+		OS.XtSetMappedWhenManaged (formHandle, false);
+		OS.XtManageChild (formHandle);
+	}
+	super.manageChildren ();
+	if (formHandle != 0) {
+		int [] argList = {OS.XmNborderWidth, 0};
+		OS.XtGetValues (formHandle, argList, argList.length / 2);
+		OS.XtResizeWidget (formHandle, 1, 1, argList [1]);
+		OS.XtSetMappedWhenManaged (formHandle, true);
+	}
+}
 boolean mnemonicHit (char key) {
 	Composite control = this.parent;
 	while (control != null) {
@@ -278,6 +305,18 @@ boolean mnemonicMatch (char key) {
 	char mnemonic = findMnemonic (getText ());
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
+}
+void propagateWidget (boolean enabled) {
+	super.propagateWidget (enabled);
+	if (formHandle != 0) propagateHandle (enabled, formHandle, OS.None);
+}
+void register () {
+	super.register ();
+	if (formHandle != 0) display.addWidget (formHandle, this);
+}
+void releaseHandle () {
+	super.releaseHandle ();
+	formHandle = 0;
 }
 void releaseWidget () {
 	super.releaseWidget ();
@@ -497,6 +536,10 @@ public void setText (String string) {
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	if (xmString != 0) OS.XmStringFree (xmString);
+}
+int topHandle () {
+	if (formHandle != 0) return formHandle;
+	return handle;
 }
 int xFocusOut (XFocusChangeEvent xEvent) {
 	int result = super.xFocusOut (xEvent);
