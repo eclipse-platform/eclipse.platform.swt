@@ -790,10 +790,10 @@ void updateParameters() {
 		paramsLt.setHeaderVisible(false);
 		return;
 	}
-	paramsLt.setRedraw(false);
 	TableItem memberItem = membersLt.getItem(indices[0]);
 	Object data = memberItem.getData();
 	if (!(data instanceof MethodData)) return;
+	paramsLt.setRedraw(false);
 	MethodData methodData = (MethodData)memberItem.getData();
 	Method method = methodData.getMethod();
 	Class[] params = method.getParameterTypes();
