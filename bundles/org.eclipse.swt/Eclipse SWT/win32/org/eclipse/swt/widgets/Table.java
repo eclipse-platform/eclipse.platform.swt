@@ -1122,6 +1122,11 @@ public int getColumnCount () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
+ * @see Table#setColumnOrder(int[])
+ * @see TableColumn#getMoveable()
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
  * @since 3.1
  */
 public int[] getColumnOrder () {
@@ -2131,7 +2136,12 @@ void setBackgroundPixel (int pixel) {
  *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
  * </ul>
- *
+ * 
+ * @see Table#getColumnOrder()
+ * @see TableColumn#getMoveable()
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
  * @since 3.1
  */
 public void setColumnOrder (int [] order) {

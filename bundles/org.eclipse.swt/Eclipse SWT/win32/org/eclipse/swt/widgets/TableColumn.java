@@ -234,6 +234,8 @@ public Table getParent () {
  * 
  * @see Table#getColumnOrder()
  * @see Table#setColumnOrder(int[])
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
  * 
  * @since 3.1
  */
@@ -513,6 +515,8 @@ public void setImage (Image image) {
  * 
  * @see Table#setColumnOrder(int[])
  * @see Table#getColumnOrder()
+ * @see TableColumn#getMoveable()
+ * @see SWT#Move
  * 
  * @since 3.1
  */
