@@ -1139,13 +1139,45 @@ void manageChildren () {
 	* value.  This relies on the fact that Motif will
 	* not reassign focus when the new widget is not
 	* traversable.
+	* 
+	* NOTE: This code currently does not work when a
+	* sibling will take focus.
 	*/
+	boolean fixFocus = false;
 	int [] argList1 = {OS.XmNtraversalOn, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
-	int [] argList2 = {OS.XmNtraversalOn, 0};
-	OS.XtSetValues (handle, argList2, argList2.length / 2);
+	if (argList1 [1] != 0) {
+		int xDisplay = OS.XtDisplay (handle);
+		if (xDisplay != 0) {
+			int [] buffer1 = new int [1], buffer2 = new int [1];
+			OS.XGetInputFocus (xDisplay, buffer1, buffer2);
+			int xWindow = buffer1 [0];
+			if (xWindow != 0) {
+				int focusHandle = OS.XtWindowToWidget (xDisplay, xWindow);
+				if (focusHandle != 0) {
+					focusHandle = OS.XmGetFocusWidget (focusHandle);
+					if (focusHandle != 0) {
+						int parentHandle = parent.handle;
+						do {
+							if (parentHandle == focusHandle) break;
+						} while ((parentHandle = OS.XtParent (parentHandle)) != 0);
+						fixFocus = parentHandle != 0;
+					}
+				}
+			}
+		}
+	}	
+	if (fixFocus) {
+		int [] argList2 = {OS.XmNtraversalOn, 0};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
+	}
 	OS.XtManageChild (handle);
-	OS.XtSetValues (handle, argList1, argList1.length / 2);
+	if (fixFocus) {
+		OS.XtSetValues (handle, argList1, argList1.length / 2);
+	}
+	Display display = getDisplay ();
+	OS.XtOverrideTranslations (handle, display.tabTranslations);
+	OS.XtOverrideTranslations (handle, display.arrowTranslations);
 	int [] argList3 = {OS.XmNborderWidth, 0};
 	OS.XtGetValues (handle, argList3, argList3.length / 2);
 	OS.XtResizeWidget (handle, 1, 1, argList3 [1]);
