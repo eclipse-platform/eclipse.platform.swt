@@ -725,14 +725,19 @@ public void setMenu (Menu menu) {
  * @see TableTree#deselectAll()
  */
 public void setSelection (TableTreeItem[] items) {
-	checkWidget();
+	checkWidget ();
 	if (items == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if ((table.getStyle() & SWT.SINGLE) != 0 && items.length > 1) {
+	int length = items.length;
+	if (length == 0) {
 		deselectAll();
 		return;
 	}
-	TableItem[] tableItems = new TableItem[items.length];
-	for (int i = 0; i < items.length; i++) {
+	if ((table.getStyle() & SWT.SINGLE) != 0 && length > 1) {
+		deselectAll();
+		return;
+	}
+	TableItem[] tableItems = new TableItem[length];
+	for (int i = 0; i < length; i++) {
 		if (items[i] == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (!items[i].getVisible()) expandItem (items[i]);
 		tableItems[i] = items[i].tableItem;
