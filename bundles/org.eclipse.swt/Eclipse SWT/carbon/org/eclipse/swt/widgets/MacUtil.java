@@ -35,19 +35,30 @@ public class MacUtil {
 	//---- HIView utilities
 	
 	/**
-	 * Returns the HIView that represents the contents of the given window.
+	 * Returns the HIView that represents the contents of the given window or
+	 * the root HIView if no contents HIView could be found.
 	 */
-	private static int getContentView(int wHandle) {
-		int[] cv= new int[1];
-		OS.HIViewFindByID(OS.HIViewGetRoot(wHandle), OS.kHIViewWindowContentID(), cv);
-		return cv[0];
+	private static int getContentView(int windowHandle) {
+		int rootControl= OS.HIViewGetRoot(windowHandle);
+		if (rootControl == 0) {
+			System.out.println("getContentView: could not find root control");
+			return 0;
+		}
+		int[] contentView= new int[1];
+		int rc= OS.HIViewFindByID(rootControl, OS.kHIViewWindowContentID(), contentView);
+		if (rc != OS.noErr) {
+			if (rc != OS.errUnknownControl)
+				System.out.println("getContentView: errNo: " + rc);
+			return rootControl;
+		}
+		return contentView[0];
 	}
 	
 	//---- control utilities
 			
-	static int getChild(int handle, int[] t, int n, int i) {
+	static int getChild(int controlHandle, int[] tmp, int n, int i) {
 		int index= (n-1 - i);
-		int status= OS.GetIndexedSubControl(handle, (short)(index+1), t);
+		int status= OS.GetIndexedSubControl(controlHandle, (short)(index+1), tmp);
 		if (status != OS.noErr)
 			System.out.println("MacUtil.getChild: error");
 		return status;
@@ -68,18 +79,23 @@ public class MacUtil {
 	 * Inserts the given child at position in the parent.
 	 * If pos is out of range the child is added at the end (below all other).
 	 */
-	static void insertControl(int controlHandle, int parentHandle, int pos) {
+	static void insertControl(int controlHandle, int parent, int pos) {
+		
+		int parentHandle= parent;
 		
 		// make sure that parentHandle really refers to a Control
-		if (OS.IsValidControlHandle(parentHandle)) {
+		if (OS.IsValidControlHandle(parent)) {
 			// it is a Control
+			parentHandle= parent;
 		} else if (OS.IsValidWindowPtr(parentHandle)) {
 			// it is a Window: get the Window's content Control
-			parentHandle= getContentView(parentHandle);
+			parentHandle= getContentView(parent);
+			if (parentHandle == 0)
+				parentHandle= getContentView(parent);
 		} else {
 			System.out.println("MacUtil.insertControl: parentHandle is neither control nor window");
 		}
-		
+		// todo
 		int n= countSubControls(parentHandle);
 		
 		int should= pos;
@@ -135,6 +151,13 @@ public class MacUtil {
 	/**
 	 * Returns location of given Control relative to the window.	 */
 	static org.eclipse.swt.graphics.Point getLocation(int cHandle) {
+		
+//		int windowHandle= OS.GetControlOwner(cHandle);
+//		CGPoint p= new CGPoint();
+//		OS.HIViewConvertPoint(p, cHandle, 0 /*getContentView(windowHandle)*/);
+//		int xx= (int) p.x;
+//		int yy= (int) p.y;
+		
 		int x= 0, y= 0;
 		Rect tmp= new Rect();
 		int parent= cHandle;
@@ -148,6 +171,9 @@ public class MacUtil {
 			x+= tmp.left;
 			y+= tmp.top;
 		}
+		
+//		if (x != xx || y != yy)
+//			System.out.println("MacUtil.getLocation: differ " + x+"/"+y + " " + xx+"/"+yy);
 		return new org.eclipse.swt.graphics.Point(x, y);
 	}
 
@@ -296,7 +322,7 @@ public class MacUtil {
 	 * Returns the parent of the given control or null if the control is the window's content control.
 	 */
 	static int getSuperControl(int cHandle) {
-        
+		
 		int wHandle= OS.GetControlOwner(cHandle);
 		if (wHandle == 0) {
 			//System.out.println("MacUtil.getSuperControl: GetControlOwner error");
