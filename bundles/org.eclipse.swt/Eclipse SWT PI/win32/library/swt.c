@@ -6406,9 +6406,23 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetForegroundWindow)
 JNIEXPORT jint JNICALL OS_NATIVE(SetLayout)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
+	HMODULE hm;
+	FARPROC fp;
+	
 	DEBUG_CALL("SetLayout\n")
 
-	return (jint)SetLayout((HDC)arg0, (DWORD)arg1);
+	/* SPECIAL */
+    /*
+    *  SetLayout is a Win2000 and Win98 specific call
+    *  If you link it into swt.dll a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
+    */
+    if ((hm=GetModuleHandle("gdi32.dll")) && (fp=GetProcAddress(hm, "SetLayout"))) {
+    	return (jint) (fp)((HDC)arg0, (DWORD)arg1);
+//		return (jint)SetLayout((HDC)arg0, (DWORD)arg1);
+	}
+	return 0;
 }
 #endif /* NO_SetLayout */
 
