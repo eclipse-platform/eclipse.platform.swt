@@ -1224,5 +1224,6 @@ public static final native void memcpy(int dest, Rect src, int n);
 public static final native void memcpy(int dest, String src, int n);
 public static final native void memcpy(char[] dest, byte[] src, int size);
 public static final native void memcpy(byte[] dest, char[] src, int size);
+public static final native void memcpy(int dest, EventRecord src, int size);
 public static final native void memset(int dest, int value, int size);
 }

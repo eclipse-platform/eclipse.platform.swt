@@ -8288,6 +8288,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_Curso
 }
 #endif
 
+#ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_EventRecord_2I
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_EventRecord_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	EventRecord _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_EventRecord_2I\n")
+	if (arg1) lparg1 = getEventRecordFields(env, arg1, &_arg1);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setEventRecordFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_EventRecord_2I\n")
+}
+#endif
+
 #ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I
 JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
