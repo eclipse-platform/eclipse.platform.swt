@@ -37,4 +37,15 @@ public final class GCData {
 	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
 	public int renderTable;
+
+	public String string;
+	public int stringWidth = -1;
+	public int stringHeight = -1;
+	public int xmString;
+
+	public String text;
+	public int textWidth = -1;
+	public int textHeight = -1;
+	public int xmText, xmMnemonic;
+	public int drawFlags;
 }
