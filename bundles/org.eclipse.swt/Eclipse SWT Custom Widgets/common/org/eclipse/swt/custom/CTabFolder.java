@@ -125,6 +125,8 @@ public class CTabFolder extends Composite {
 	boolean expanded = true;
 	int decoratorWidth = 16;
 	
+	boolean tipShowing;
+	
 	// borders and shapes
 	int border = 0;
 	boolean showBorder =  false;
@@ -1327,6 +1329,7 @@ void onMouseDown(Event event) {
 }
 
 void onMouseHover(Event event) {
+	if (tipShowing) return;
 	showToolTip(event.x, event.y);
 }
 void onMouseUp(Event event) {
@@ -2411,11 +2414,12 @@ void showToolTip (int x, int y) {
 		return;
 	}
 	
-	final int [] events = new int[] {SWT.MouseExit, SWT.MouseMove};
+	final int [] events = new int[] {SWT.MouseExit, SWT.MouseHover, SWT.MouseMove};
 	final Listener[] listener = new Listener[1];
 	listener[0] = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
+				case SWT.MouseHover:
 				case SWT.MouseMove:
 					if (updateToolTip(event.x, event.y, label)) break;
 					// FALL THROUGH
@@ -2424,6 +2428,7 @@ void showToolTip (int x, int y) {
 						removeListener(events[i], listener[0]);
 					}
 					tip.dispose();
+					tipShowing = false;
 					break;
 			}
 		}
@@ -2431,6 +2436,7 @@ void showToolTip (int x, int y) {
 	for (int i = 0; i < events.length; i++) {
 		addListener(events[i], listener[0]);
 	}
+	tipShowing = true;
 	tip.setVisible(true);
 }
 boolean updateToolTip (int x, int y, Label label) {
