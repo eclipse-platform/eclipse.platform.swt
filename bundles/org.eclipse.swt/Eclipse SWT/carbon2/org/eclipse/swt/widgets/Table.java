@@ -47,8 +47,11 @@ public class Table extends Composite {
 	GC paintGC;
 	int itemCount, columnCount, idCount, anchorFirst, anchorLast, headerHeight;
 	boolean ignoreSelect;
+	int showIndex = -1;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
+	static final int EXTRA_WIDTH = 25;
+	static final int CHECK_COLUMN_WIDTH = 25;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -141,24 +144,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0;
 	if (wHint == SWT.DEFAULT) {
-		//TODO - add CHECK column + extra space
 		GC gc = new GC (this);
 		int columnCount = Math.max (this.columnCount, 1);
 		for (int j=0; j<columnCount; j++) {
 			int columnWidth = 0;
 			for (int i=0; i<itemCount; i++) {
 				TableItem item = items [i];
-				Image image = item.getImage (j);
-				String text = item.getText (j);
-				int itemWidth = 0;
-				if (image != null) itemWidth = image.getBounds ().width + 2;
-				if (text != null && text.length () > 0) itemWidth += gc.stringExtent (text).x;
-				columnWidth = Math.max (columnWidth, itemWidth);
+				columnWidth = Math.max (columnWidth, item.calculateWidth (j, gc));
 			}
-			width += columnWidth + 20;
+			width += columnWidth + EXTRA_WIDTH;
 		}
 		gc.dispose ();
-		if ((style & SWT.CHECK) != 0) width += 35 + 20;
+		if ((style & SWT.CHECK) != 0) width += CHECK_COLUMN_WIDTH + EXTRA_WIDTH;
 	} else {
 		width = wHint;
 	}
@@ -209,8 +206,8 @@ void createHandle () {
 		checkColumn.propertyDesc_propertyType = OS.kDataBrowserCheckboxType;
 		checkColumn.propertyDesc_propertyFlags = OS.kDataBrowserPropertyIsMutable;
 		//TODO - CHECK column size
-		checkColumn.headerBtnDesc_minimumWidth = 25;
-		checkColumn.headerBtnDesc_maximumWidth = 25;
+		checkColumn.headerBtnDesc_minimumWidth = CHECK_COLUMN_WIDTH;
+		checkColumn.headerBtnDesc_maximumWidth = CHECK_COLUMN_WIDTH;
 		checkColumn.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 		OS.AddDataBrowserListViewColumn (handle, checkColumn, position++);
 	}
@@ -219,9 +216,10 @@ void createHandle () {
 	column.propertyDesc_propertyID = COLUMN_ID;
 	column.propertyDesc_propertyType = OS.kDataBrowserCustomType;
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
-	column.headerBtnDesc_maximumWidth = 0x7FFF;
+	column.headerBtnDesc_maximumWidth = 0x7fff;
 	column.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) 0);
 
 	/*
 	* Feature in the Macintosh.  Scroll bars are not created until
@@ -260,7 +258,7 @@ void createItem (TableColumn column, int index) {
 		desc.propertyDesc_propertyID = column.id;
 		desc.propertyDesc_propertyType = OS.kDataBrowserCustomType;
 		desc.propertyDesc_propertyFlags = OS.kDataBrowserDefaultPropertyFlags;
-		desc.headerBtnDesc_maximumWidth = 0x7FFF;
+		desc.headerBtnDesc_maximumWidth = 0x7fff;
 		desc.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 		OS.AddDataBrowserListViewColumn (handle, desc, position);
 		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column.id, (short)0);
@@ -1131,15 +1129,6 @@ int itemNotificationProc (int browser, int id, int message) {
 	return OS.noErr;
 }
 
-int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-	if (columnCount <= 1) {
-		Rectangle rect = getClientArea ();
-		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) rect.width);
-	}
-	return result;
-}
-
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -1468,14 +1457,10 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	* Ensure that the top item is visible when the tree is resized
 	* from a zero size to a size that can show the selection.
 	*/
-	//TODO - optimize
-	int index = -1;
-	if (resize && control == handle) {
-		Rectangle rect = getClientArea ();
-		if (rect.height < getItemHeight ()) index = getTopIndex ();
-	}
 	int result = super.setBounds (control, x, y, width, height, move, resize, events);
-	if (index != -1) showIndex (index);
+	if (showIndex != -1) {
+		showIndex (showIndex);
+	}
 	return result;
 }
 
@@ -1519,6 +1504,19 @@ public void setHeaderVisible (boolean show) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget ();
+}
+
+void setScrollWidth (TableItem item) {
+	if (columnCount != 0) return;
+	GC gc = new GC (this);
+	int newWidth = item.calculateWidth (0, gc);
+	gc.dispose ();
+	newWidth += EXTRA_WIDTH;
+	short [] width = new short [1];
+	OS.GetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width);
+	if (width [0] < newWidth) {
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) newWidth);
+	}
 }
 
 /**
@@ -1675,16 +1673,21 @@ public void setTopIndex (int index) {
 
 void showIndex (int index) {
 	if (0 <= index && index < itemCount) {
-		//TODO - doesn't work for SWT.CHECK
+		Rectangle rect = getClientArea ();
+		if (rect.height < getItemHeight ()) {
+			showIndex = index;
+			return;
+		}
+		showIndex = -1;
+		TableItem item = items [index];
+		Rectangle itemRect = item.getBounds (0);
+		if (!itemRect.isEmpty()) {
+			if (rect.contains (itemRect.x, itemRect.y)
+				&& rect.contains (itemRect.x, itemRect.y + itemRect.height)) return;
+		}
 		int id = columnCount == 0 ? COLUMN_ID : columns [0].id;
-		short [] width = new short [1];
-		OS.GetDataBrowserTableViewNamedColumnWidth (handle, id, width);
-		Rect rect = new Rect (), inset = new Rect ();
-		OS.GetControlBounds (handle, rect);
-		OS.GetDataBrowserScrollBarInset (handle, inset);
-		OS.SetDataBrowserTableViewNamedColumnWidth (handle, id, (short)(rect.right - rect.left - inset.left - inset.right));
-		OS.RevealDataBrowserItem (handle, index + 1, COLUMN_ID, (byte) (OS.kDataBrowserRevealWithoutSelecting | OS.kDataBrowserRevealAndCenterInView));
-		OS.SetDataBrowserTableViewNamedColumnWidth (handle, id, (short)width [0]);
+		if ((style & SWT.CHECK) != 0) id = CHECK_COLUMN_ID;
+		OS.RevealDataBrowserItem (handle, index + 1, id, (byte) OS.kDataBrowserRevealWithoutSelecting);
 	}
 }
 

@@ -110,6 +110,15 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+int calculateWidth (int index, GC gc) {
+	int width = 0;
+	Image image = getImage (index);
+	String text = getText (index);
+	if (image != null) width = image.getBounds ().width + 2;
+	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
+	return width;
+}
+
 /**
  * Returns the receiver's background color.
  *
@@ -486,6 +495,7 @@ public void setImage (int index, Image image) {
 	if (itemIndex == -1) return;
 	if (index == 0) {
 		super.setImage (image);
+		parent.setScrollWidth (this);
 	}
 	int columnCount = parent.columnCount;
 	if (0 <= index && index < columnCount) {
@@ -565,6 +575,7 @@ public void setText (int index, String string) {
 	if (itemIndex == -1) return;
 	if (index == 0) {
 		super.setText (string);
+		parent.setScrollWidth (this);
 	}
 	int columnCount = parent.columnCount;
 	if (0 <= index && index < columnCount) {

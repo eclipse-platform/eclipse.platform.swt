@@ -46,8 +46,11 @@ public class Tree extends Composite {
 	GC paintGC;
 	int anchorFirst, anchorLast;
 	boolean ignoreSelect, ignoreExpand;
+	TreeItem showItem;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
+	static final int EXTRA_WIDTH = 25;
+	static final int CHECK_COLUMN_WIDTH = 25;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -163,21 +166,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0;
 	if (wHint == SWT.DEFAULT) {
-		//TODO - add CHECK column + extra space
 		TreeItem [] items = getItems ();
 		GC gc = new GC (this);
 		for (int i=0; i<items.length; i++) {
 			TreeItem item = items [i];
-			Image image = item.getImage ();
-			String text = item.getText ();
-			int itemWidth = 0;
-			if (image != null) itemWidth = image.getBounds ().width + 2;
-			if (text != null && text.length () > 0) itemWidth += gc.stringExtent (text).x;
-			width = Math.max (width, itemWidth);
+			width = Math.max (width, item.calculateWidth (gc));
 		}
 		gc.dispose ();
-		width += 20;
-		if ((style & SWT.CHECK) != 0) width += 35 + 20;
+		width += EXTRA_WIDTH;
+		if ((style & SWT.CHECK) != 0) width += CHECK_COLUMN_WIDTH + EXTRA_WIDTH;
 	} else {
 		width = wHint;
 	}
@@ -222,8 +219,8 @@ void createHandle () {
 		checkColumn.propertyDesc_propertyType = OS.kDataBrowserCheckboxType;
 		checkColumn.propertyDesc_propertyFlags = OS.kDataBrowserPropertyIsMutable;
 		//TODO - check column size
-		checkColumn.headerBtnDesc_minimumWidth = 25;
-		checkColumn.headerBtnDesc_maximumWidth = 25;
+		checkColumn.headerBtnDesc_minimumWidth = CHECK_COLUMN_WIDTH;
+		checkColumn.headerBtnDesc_maximumWidth = CHECK_COLUMN_WIDTH;
 		checkColumn.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 		OS.AddDataBrowserListViewColumn (handle, checkColumn, position++);
 	}
@@ -232,10 +229,10 @@ void createHandle () {
 	column.propertyDesc_propertyID = COLUMN_ID;
 	column.propertyDesc_propertyType = OS.kDataBrowserCustomType;
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
-	column.headerBtnDesc_maximumWidth = 0x7FFF;
 	column.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);
 	OS.SetDataBrowserListViewDisclosureColumn (handle, COLUMN_ID, true);
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) 0);
 
 	/*
 	* Feature in the Macintosh.  Scroll bars are not created until
@@ -332,30 +329,15 @@ void destroyItem (TreeItem item) {
 	if (OS.RemoveDataBrowserItems (handle, parentID, 1, new int[] {item.id}, 0) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
-	for (int i=0; i<items.length; i++) {
-		if (items [i] != null) {
-			TreeItem parentItem = items [i].parentItem;
-			while (parentItem != null && parentItem != item) {
-				parentItem = parentItem.parentItem;
-			}
-			if (parentItem == item) {
-				TreeItem oldItem = items [i];
-				items [i].id = 0;
-				items [i].index = -1;	
-				items [i] = null;
-				oldItem.releaseResources ();
-			}
-		}
-	}
+	releaseItems (item.getItems ());
 	TreeItem parentItem = item.parentItem;
 	for (int i=0; i<items.length; i++) {
 		if (items [i] != null && items [i].parentItem == parentItem) {
 			if (items [i].index >= item.index) --items [i].index;
 		}
 	}
-	items [item.id - 1] = null;
-	item.id = 0;
-	item.index = -1;
+	releaseItem (item);
+	setScrollWidth ();
 }
 
 int drawItemProc (int browser, int id, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
@@ -538,7 +520,8 @@ public TreeItem [] getItems () {
 	return getItems (null);
 }
 
-public TreeItem [] getItems (TreeItem item) {
+TreeItem [] getItems (TreeItem item) {
+	if (items == null) return new TreeItem [0];
 	int count = 0;
 	for (int i=0; i<items.length; i++) {
 		if (items [i] != null && items [i].parentItem == item) count++;
@@ -785,6 +768,7 @@ int itemNotificationProc (int browser, int id, int message) {
 			Event event = new Event ();
 			event.item = item;
 			sendEvent (SWT.Collapse, event);
+			setScrollWidth ();
 			break;
 		}
 		case OS.kDataBrowserContainerOpened: {	
@@ -797,24 +781,20 @@ int itemNotificationProc (int browser, int id, int message) {
 			for (int i=0; i<items.length; i++) {
 				if (items [i] != null && items [i].parentItem == item) count++;
 			}
+			TreeItem [] newItems = new TreeItem [count];
 			int [] ids = new int [count];
 			for (int i=0; i<items.length; i++) {
 				if (items [i] != null && items [i].parentItem == item) {
 					ids [items [i].index] = items [i].id;
+					newItems [items [i].index] = items [i];
 				}
 			}
 			OS.AddDataBrowserItems (handle, id, ids.length, ids, 0);
+			setScrollWidth (newItems, false);
 			break;
 		}
 	}
 	return OS.noErr;
-}
-
-int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-	Rectangle rect = getClientArea ();
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) rect.width);
-	return result;
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
@@ -837,6 +817,25 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		if (!isDisposed () && isEnabled ()) sendFocusEvent (true);
 	}
 	return result;
+}
+
+boolean releaseItem (TreeItem item) {
+	if (item.isDisposed ()) return false;
+	items [item.id - 1] = null;
+	return true;
+}
+
+void releaseItems (TreeItem [] nodes) {
+	for (int i=0; i<nodes.length; i++) {
+		TreeItem item = nodes [i];
+		TreeItem [] sons = item.getItems ();
+		if (sons.length != 0) {
+			releaseItems (sons);
+		}
+		if (releaseItem (item)) {
+			item.releaseResources ();
+		}
+	}
 }
 
 void releaseWidget () {
@@ -868,6 +867,7 @@ public void removeAll () {
 	}
 	items = new TreeItem [4];
 	anchorFirst = anchorLast = 0;
+	setScrollWidth ();
 }
 
 /**
@@ -964,15 +964,52 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	* Ensure that the selection is visible when the tree is resized
 	* from a zero size to a size that can show the selection.
 	*/
-	//TODO - optimize
-	TreeItem item = null;
-	if (resize && control == handle) {
-		Rectangle rect = getClientArea ();
-		if (rect.height < getItemHeight ()) item = getTopItem ();
-	}
 	int result = super.setBounds (control, x, y, width, height, move, resize, events);
-	if (item != null) showItem (item, true);
+	if (showItem != null && !showItem.isDisposed ()) {
+		showItem (showItem , true);
+	}		 
 	return result;
+}
+
+int calculateWidth (TreeItem [] items, GC gc) {
+	int width = 0;
+	for (int i = 0; i < items.length; i++) {
+		TreeItem item = items [i];
+		width = Math.max (width, item.calculateWidth (gc));
+		if (item.getExpanded ()) {			
+			width = Math.max (width, calculateWidth (item.getItems (), gc));
+		}
+	}
+	return width;
+}
+
+void setScrollWidth () {
+	setScrollWidth (getItems (), true);
+}
+
+void setScrollWidth (TreeItem item) {
+	TreeItem parentItem = item.parentItem;
+	if (parentItem != null && !parentItem.getExpanded ()) return;
+	GC gc = new GC (this);
+	int newWidth = item.calculateWidth (gc);
+	gc.dispose ();
+	short [] width = new short [1];
+	OS.GetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width);
+	if (width [0] < newWidth) {
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) newWidth);
+	}
+}
+
+void setScrollWidth (TreeItem [] items, boolean set) {
+	GC gc = new GC (this);
+	int newWidth = calculateWidth (items, gc);
+	gc.dispose ();
+	if (!set) {
+		short [] width = new short [1];
+		OS.GetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width);
+		if (width [0] >= newWidth) return;
+	}
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) newWidth);
 }
 
 /**
@@ -1085,29 +1122,20 @@ void showItem (TreeItem item, boolean scroll) {
 	for (int i=path.length-1; i>=0; --i) {
 		path [i].setExpanded (true);
 	}
-//	if (scroll) {
-//		short [] width = new short [1];
-//		OS.GetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width);
-//		Rect rect = new Rect (), inset = new Rect ();
-//		OS.GetControlBounds (handle, rect);
-//		OS.GetDataBrowserScrollBarInset (handle, inset);
-//		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)(rect.right - rect.left - inset.left - inset.right));
-//		OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
-//		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)width [0]);
-//	}
 	if (scroll) {
 		//TODO - optimize
-		Rectangle treeRect = getClientArea ();
-		Rectangle itemRect = item.getBounds ();
-		if (!itemRect.isEmpty() && treeRect.contains (itemRect.x, itemRect.y) && treeRect.contains (itemRect.x, itemRect.y + itemRect.height)) return;
-		OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) (OS.kDataBrowserRevealWithoutSelecting | OS.kDataBrowserRevealAndCenterInView));
-		int [] top = new int [1], left = new int [1];
-		OS.GetDataBrowserScrollPosition (handle, top, left);
-		OS.SetDataBrowserScrollPosition (handle, top [0], 0);
-		itemRect = item.getBounds ();
-		if (!(treeRect.contains (itemRect.x, itemRect.y) && treeRect.contains (itemRect.x + itemRect.width, itemRect.y))) {
-			OS.SetDataBrowserScrollPosition (handle, top [0], left [0]);
+		Rectangle rect = getClientArea ();
+		if (rect.height < getItemHeight ()) {
+			showItem = item;
+			return;
 		}
+		showItem = null;
+		Rectangle itemRect = item.getBounds ();
+		if (!itemRect.isEmpty()) {
+			if (rect.contains (itemRect.x, itemRect.y)
+				&& rect.contains (itemRect.x, itemRect.y + itemRect.height)) return;
+		}
+		OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
 	}
 }
 

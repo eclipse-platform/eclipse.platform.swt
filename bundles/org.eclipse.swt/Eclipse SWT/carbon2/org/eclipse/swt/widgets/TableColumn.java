@@ -32,7 +32,6 @@ public class TableColumn extends Item {
 	Table parent;
 	int id;
 	boolean resizable;
-	static final int EXTRA_WIDTH = 20;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -256,7 +255,7 @@ public int getWidth () {
 	checkWidget ();
 	short [] width = new short [1];
 	OS.GetDataBrowserTableViewNamedColumnWidth (parent.handle, id, width);
-	return Math.max (0, width [0] - EXTRA_WIDTH);
+	return Math.max (0, width [0] - Table.EXTRA_WIDTH);
 }
 
 /**
@@ -277,15 +276,10 @@ public void pack () {
 	int index = parent.indexOf (this);
 	for (int i=0; i<parent.itemCount; i++) {
 		TableItem item = parent.items [i];
-		Image image = item.getImage (index);
-		String text = item.getText (index);
-		int itemWidth = 0;
-		if (image != null) itemWidth = image.getBounds ().width + 2;
-		if (text != null && text.length () > 0) itemWidth += gc.stringExtent (text).x;
-		width = Math.max (width, itemWidth);
+		width = Math.max (width, item.calculateWidth (index, gc));
 	}
 	gc.dispose ();
-	width += EXTRA_WIDTH;
+	width += Table.EXTRA_WIDTH;
 	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) width);
 }
 
@@ -417,7 +411,7 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) (width + EXTRA_WIDTH));
+	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) (width + Table.EXTRA_WIDTH));
 	updateHeader ();
 }
 
@@ -438,7 +432,7 @@ void updateHeader () {
 	desc.version = OS.kDataBrowserListViewLatestHeaderDesc;
 	if (resizable) {
 		desc.minimumWidth = 0;
-		desc.maximumWidth = 0x7FFF;
+		desc.maximumWidth = 0x7fff;
 	} else {
 		short [] width = new short [1];
 		OS.GetDataBrowserTableViewNamedColumnWidth (parent.handle, id, width);

@@ -189,6 +189,15 @@ static TreeItem checkNull (TreeItem item) {
 	return item;
 }
 
+int calculateWidth (GC gc) {
+	int width = 0;
+	Image image = getImage ();
+	String text = getText ();
+	if (image != null) width = image.getBounds ().width + 2;
+	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
+	return width;
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -531,6 +540,7 @@ public void setGrayed (boolean grayed) {
 public void setImage (Image image) {
 	checkWidget ();
 	super.setImage (image);
+	parent.setScrollWidth (this);
 	redraw ();
 }
 
@@ -538,6 +548,7 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
+	parent.setScrollWidth (this);
 	redraw ();
 }
 
