@@ -31,40 +31,40 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(GnomeVFSMimeApplication_1sizeof)
 }
 #endif
 
-#ifndef NO_g_1free
-JNIEXPORT void JNICALL GNOME_NATIVE(g_1free)
+#ifndef NO__1g_1free
+JNIEXPORT void JNICALL GNOME_NATIVE(_1g_1free)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	GNOME_NATIVE_ENTER(env, that, g_1free_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1g_1free_FUNC);
 	g_free((gpointer)arg0);
-	GNOME_NATIVE_EXIT(env, that, g_1free_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1g_1free_FUNC);
 }
 #endif
 
-#ifndef NO_g_1list_1next
-JNIEXPORT jint JNICALL GNOME_NATIVE(g_1list_1next)
+#ifndef NO__1g_1list_1next
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1g_1list_1next)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, g_1list_1next_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1g_1list_1next_FUNC);
 	rc = (jint)g_list_next(arg0);
-	GNOME_NATIVE_EXIT(env, that, g_1list_1next_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1g_1list_1next_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_g_1object_1unref
-JNIEXPORT void JNICALL GNOME_NATIVE(g_1object_1unref)
+#ifndef NO__1g_1object_1unref
+JNIEXPORT void JNICALL GNOME_NATIVE(_1g_1object_1unref)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	GNOME_NATIVE_ENTER(env, that, g_1object_1unref_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1g_1object_1unref_FUNC);
 	g_object_unref((gpointer)arg0);
-	GNOME_NATIVE_EXIT(env, that, g_1object_1unref_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1g_1object_1unref_FUNC);
 }
 #endif
 
-#ifndef NO_gnome_1icon_1lookup
-JNIEXPORT jint JNICALL GNOME_NATIVE(gnome_1icon_1lookup)
+#ifndef NO__1gnome_1icon_1lookup
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1icon_1lookup)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jbyteArray arg5, jint arg6, jintArray arg7)
 {
 	jbyte *lparg2=NULL;
@@ -72,7 +72,7 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(gnome_1icon_1lookup)
 	jbyte *lparg5=NULL;
 	jint *lparg7=NULL;
 	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, gnome_1icon_1lookup_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1icon_1lookup_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
@@ -83,121 +83,121 @@ fail:
 	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	GNOME_NATIVE_EXIT(env, that, gnome_1icon_1lookup_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1icon_1lookup_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_gnome_1icon_1theme_1lookup_1icon
-JNIEXPORT jint JNICALL GNOME_NATIVE(gnome_1icon_1theme_1lookup_1icon)
+#ifndef NO__1gnome_1icon_1theme_1lookup_1icon
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1icon_1theme_1lookup_1icon)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)
 {
 	jint *lparg3=NULL;
 	jint *lparg4=NULL;
 	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, gnome_1icon_1theme_1lookup_1icon_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1icon_1theme_1lookup_1icon_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)gnome_icon_theme_lookup_icon((GnomeIconTheme *)arg0, (const char *)arg1, arg2, (const GnomeIconData **)lparg3, lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	GNOME_NATIVE_EXIT(env, that, gnome_1icon_1theme_1lookup_1icon_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1icon_1theme_1lookup_1icon_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_gnome_1icon_1theme_1new
-JNIEXPORT jint JNICALL GNOME_NATIVE(gnome_1icon_1theme_1new)
+#ifndef NO__1gnome_1icon_1theme_1new
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1icon_1theme_1new)
 	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, gnome_1icon_1theme_1new_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1icon_1theme_1new_FUNC);
 	rc = (jint)gnome_icon_theme_new();
-	GNOME_NATIVE_EXIT(env, that, gnome_1icon_1theme_1new_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1icon_1theme_1new_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_gnome_1vfs_1get_1registered_1mime_1types
-JNIEXPORT jint JNICALL GNOME_NATIVE(gnome_1vfs_1get_1registered_1mime_1types)
+#ifndef NO__1gnome_1vfs_1get_1registered_1mime_1types
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1get_1registered_1mime_1types)
 	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, gnome_1vfs_1get_1registered_1mime_1types_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1get_1registered_1mime_1types_FUNC);
 	rc = (jint)gnome_vfs_get_registered_mime_types();
-	GNOME_NATIVE_EXIT(env, that, gnome_1vfs_1get_1registered_1mime_1types_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1get_1registered_1mime_1types_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_gnome_1vfs_1init
-JNIEXPORT jboolean JNICALL GNOME_NATIVE(gnome_1vfs_1init)
+#ifndef NO__1gnome_1vfs_1init
+JNIEXPORT jboolean JNICALL GNOME_NATIVE(_1gnome_1vfs_1init)
 	(JNIEnv *env, jclass that)
 {
 	jboolean rc = 0;
-	GNOME_NATIVE_ENTER(env, that, gnome_1vfs_1init_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1init_FUNC);
 	rc = (jboolean)gnome_vfs_init();
-	GNOME_NATIVE_EXIT(env, that, gnome_1vfs_1init_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1init_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_gnome_1vfs_1mime_1application_1free
-JNIEXPORT void JNICALL GNOME_NATIVE(gnome_1vfs_1mime_1application_1free)
+#ifndef NO__1gnome_1vfs_1mime_1application_1free
+JNIEXPORT void JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1application_1free)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	GNOME_NATIVE_ENTER(env, that, gnome_1vfs_1mime_1application_1free_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1application_1free_FUNC);
 	gnome_vfs_mime_application_free((GnomeVFSMimeApplication *)arg0);
-	GNOME_NATIVE_EXIT(env, that, gnome_1vfs_1mime_1application_1free_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1application_1free_FUNC);
 }
 #endif
 
-#ifndef NO_gnome_1vfs_1mime_1extensions_1list_1free
-JNIEXPORT void JNICALL GNOME_NATIVE(gnome_1vfs_1mime_1extensions_1list_1free)
+#ifndef NO__1gnome_1vfs_1mime_1extensions_1list_1free
+JNIEXPORT void JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1extensions_1list_1free)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	GNOME_NATIVE_ENTER(env, that, gnome_1vfs_1mime_1extensions_1list_1free_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1extensions_1list_1free_FUNC);
 	gnome_vfs_mime_extensions_list_free((GList *)arg0);
-	GNOME_NATIVE_EXIT(env, that, gnome_1vfs_1mime_1extensions_1list_1free_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1extensions_1list_1free_FUNC);
 }
 #endif
 
-#ifndef NO_gnome_1vfs_1mime_1get_1default_1application
-JNIEXPORT jint JNICALL GNOME_NATIVE(gnome_1vfs_1mime_1get_1default_1application)
+#ifndef NO__1gnome_1vfs_1mime_1get_1default_1application
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1get_1default_1application)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
 	jbyte *lparg0=NULL;
 	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, gnome_1vfs_1mime_1get_1default_1application_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1get_1default_1application_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jint)gnome_vfs_mime_get_default_application(lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	GNOME_NATIVE_EXIT(env, that, gnome_1vfs_1mime_1get_1default_1application_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1get_1default_1application_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_gnome_1vfs_1mime_1get_1extensions_1list
-JNIEXPORT jint JNICALL GNOME_NATIVE(gnome_1vfs_1mime_1get_1extensions_1list)
+#ifndef NO__1gnome_1vfs_1mime_1get_1extensions_1list
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1get_1extensions_1list)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, gnome_1vfs_1mime_1get_1extensions_1list_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1get_1extensions_1list_FUNC);
 	rc = (jint)gnome_vfs_mime_get_extensions_list((const char *)arg0);
-	GNOME_NATIVE_EXIT(env, that, gnome_1vfs_1mime_1get_1extensions_1list_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1get_1extensions_1list_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_gnome_1vfs_1mime_1registered_1mime_1type_1list_1free
-JNIEXPORT void JNICALL GNOME_NATIVE(gnome_1vfs_1mime_1registered_1mime_1type_1list_1free)
+#ifndef NO__1gnome_1vfs_1mime_1registered_1mime_1type_1list_1free
+JNIEXPORT void JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1registered_1mime_1type_1list_1free)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	GNOME_NATIVE_ENTER(env, that, gnome_1vfs_1mime_1registered_1mime_1type_1list_1free_FUNC);
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1registered_1mime_1type_1list_1free_FUNC);
 	gnome_vfs_mime_registered_mime_type_list_free((GList *)arg0);
-	GNOME_NATIVE_EXIT(env, that, gnome_1vfs_1mime_1registered_1mime_1type_1list_1free_FUNC);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1registered_1mime_1type_1list_1free_FUNC);
 }
 #endif
 

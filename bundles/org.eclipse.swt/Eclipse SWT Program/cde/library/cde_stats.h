@@ -21,14 +21,14 @@ extern char* CDE_nativeFunctionNames[];
 #endif
 
 typedef enum {
-	DtActionInvoke_FUNC,
-	DtAppInitialize_FUNC,
-	DtDbLoad_FUNC,
-	DtDtsDataTypeIsAction_FUNC,
-	DtDtsDataTypeNames_FUNC,
-	DtDtsDataTypeToAttributeValue_FUNC,
-	DtDtsFileToDataType_FUNC,
-	DtDtsFreeAttributeValue_FUNC,
-	DtDtsFreeDataType_FUNC,
-	DtDtsFreeDataTypeNames_FUNC,
+	_1DtActionInvoke_FUNC,
+	_1DtAppInitialize_FUNC,
+	_1DtDbLoad_FUNC,
+	_1DtDtsDataTypeIsAction_FUNC,
+	_1DtDtsDataTypeNames_FUNC,
+	_1DtDtsDataTypeToAttributeValue_FUNC,
+	_1DtDtsFileToDataType_FUNC,
+	_1DtDtsFreeAttributeValue_FUNC,
+	_1DtDtsFreeDataType_FUNC,
+	_1DtDtsFreeDataTypeNames_FUNC,
 } CDE_FUNCS;

@@ -19,66 +19,6 @@
 
 #define ATK_NATIVE(func) Java_org_eclipse_swt_internal_accessibility_gtk_ATK_##func
 
-#ifndef NO_ATK_1ACTION_1GET_1IFACE
-JNIEXPORT jint JNICALL ATK_NATIVE(ATK_1ACTION_1GET_1IFACE)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, ATK_1ACTION_1GET_1IFACE_FUNC);
-	rc = (jint)ATK_ACTION_GET_IFACE(arg0);
-	ATK_NATIVE_EXIT(env, that, ATK_1ACTION_1GET_1IFACE_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_ATK_1COMPONENT_1GET_1IFACE
-JNIEXPORT jint JNICALL ATK_NATIVE(ATK_1COMPONENT_1GET_1IFACE)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, ATK_1COMPONENT_1GET_1IFACE_FUNC);
-	rc = (jint)ATK_COMPONENT_GET_IFACE(arg0);
-	ATK_NATIVE_EXIT(env, that, ATK_1COMPONENT_1GET_1IFACE_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_ATK_1OBJECT_1FACTORY_1CLASS
-JNIEXPORT jint JNICALL ATK_NATIVE(ATK_1OBJECT_1FACTORY_1CLASS)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, ATK_1OBJECT_1FACTORY_1CLASS_FUNC);
-	rc = (jint)ATK_OBJECT_FACTORY_CLASS(arg0);
-	ATK_NATIVE_EXIT(env, that, ATK_1OBJECT_1FACTORY_1CLASS_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_ATK_1SELECTION_1GET_1IFACE
-JNIEXPORT jint JNICALL ATK_NATIVE(ATK_1SELECTION_1GET_1IFACE)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, ATK_1SELECTION_1GET_1IFACE_FUNC);
-	rc = (jint)ATK_SELECTION_GET_IFACE(arg0);
-	ATK_NATIVE_EXIT(env, that, ATK_1SELECTION_1GET_1IFACE_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_ATK_1TEXT_1GET_1IFACE
-JNIEXPORT jint JNICALL ATK_NATIVE(ATK_1TEXT_1GET_1IFACE)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, ATK_1TEXT_1GET_1IFACE_FUNC);
-	rc = (jint)ATK_TEXT_GET_IFACE(arg0);
-	ATK_NATIVE_EXIT(env, that, ATK_1TEXT_1GET_1IFACE_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_AtkObjectFactoryClass_1sizeof
 JNIEXPORT jint JNICALL ATK_NATIVE(AtkObjectFactoryClass_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -103,176 +43,236 @@ JNIEXPORT jint JNICALL ATK_NATIVE(AtkObjectFactory_1sizeof)
 }
 #endif
 
-#ifndef NO_GTK_1ACCESSIBLE
-JNIEXPORT jint JNICALL ATK_NATIVE(GTK_1ACCESSIBLE)
+#ifndef NO__1ATK_1ACTION_1GET_1IFACE
+JNIEXPORT jint JNICALL ATK_NATIVE(_1ATK_1ACTION_1GET_1IFACE)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, GTK_1ACCESSIBLE_FUNC);
-	rc = (jint)GTK_ACCESSIBLE(arg0);
-	ATK_NATIVE_EXIT(env, that, GTK_1ACCESSIBLE_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1ATK_1ACTION_1GET_1IFACE_FUNC);
+	rc = (jint)ATK_ACTION_GET_IFACE(arg0);
+	ATK_NATIVE_EXIT(env, that, _1ATK_1ACTION_1GET_1IFACE_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_atk_1focus_1tracker_1notify
-JNIEXPORT void JNICALL ATK_NATIVE(atk_1focus_1tracker_1notify)
+#ifndef NO__1ATK_1COMPONENT_1GET_1IFACE
+JNIEXPORT jint JNICALL ATK_NATIVE(_1ATK_1COMPONENT_1GET_1IFACE)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	ATK_NATIVE_ENTER(env, that, atk_1focus_1tracker_1notify_FUNC);
-	atk_focus_tracker_notify((AtkObject *)arg0);
-	ATK_NATIVE_EXIT(env, that, atk_1focus_1tracker_1notify_FUNC);
+	jint rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1ATK_1COMPONENT_1GET_1IFACE_FUNC);
+	rc = (jint)ATK_COMPONENT_GET_IFACE(arg0);
+	ATK_NATIVE_EXIT(env, that, _1ATK_1COMPONENT_1GET_1IFACE_FUNC);
+	return rc;
 }
 #endif
 
-#ifndef NO_atk_1get_1default_1registry
-JNIEXPORT jint JNICALL ATK_NATIVE(atk_1get_1default_1registry)
+#ifndef NO__1ATK_1OBJECT_1FACTORY_1CLASS
+JNIEXPORT jint JNICALL ATK_NATIVE(_1ATK_1OBJECT_1FACTORY_1CLASS)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1ATK_1OBJECT_1FACTORY_1CLASS_FUNC);
+	rc = (jint)ATK_OBJECT_FACTORY_CLASS(arg0);
+	ATK_NATIVE_EXIT(env, that, _1ATK_1OBJECT_1FACTORY_1CLASS_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1ATK_1SELECTION_1GET_1IFACE
+JNIEXPORT jint JNICALL ATK_NATIVE(_1ATK_1SELECTION_1GET_1IFACE)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1ATK_1SELECTION_1GET_1IFACE_FUNC);
+	rc = (jint)ATK_SELECTION_GET_IFACE(arg0);
+	ATK_NATIVE_EXIT(env, that, _1ATK_1SELECTION_1GET_1IFACE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1ATK_1TEXT_1GET_1IFACE
+JNIEXPORT jint JNICALL ATK_NATIVE(_1ATK_1TEXT_1GET_1IFACE)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1ATK_1TEXT_1GET_1IFACE_FUNC);
+	rc = (jint)ATK_TEXT_GET_IFACE(arg0);
+	ATK_NATIVE_EXIT(env, that, _1ATK_1TEXT_1GET_1IFACE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1GTK_1ACCESSIBLE
+JNIEXPORT jint JNICALL ATK_NATIVE(_1GTK_1ACCESSIBLE)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1GTK_1ACCESSIBLE_FUNC);
+	rc = (jint)GTK_ACCESSIBLE(arg0);
+	ATK_NATIVE_EXIT(env, that, _1GTK_1ACCESSIBLE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1atk_1focus_1tracker_1notify
+JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1focus_1tracker_1notify)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	ATK_NATIVE_ENTER(env, that, _1atk_1focus_1tracker_1notify_FUNC);
+	atk_focus_tracker_notify((AtkObject *)arg0);
+	ATK_NATIVE_EXIT(env, that, _1atk_1focus_1tracker_1notify_FUNC);
+}
+#endif
+
+#ifndef NO__1atk_1get_1default_1registry
+JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1get_1default_1registry)
 	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, atk_1get_1default_1registry_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1atk_1get_1default_1registry_FUNC);
 	rc = (jint)atk_get_default_registry();
-	ATK_NATIVE_EXIT(env, that, atk_1get_1default_1registry_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1atk_1get_1default_1registry_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_atk_1object_1factory_1get_1accessible_1type
-JNIEXPORT jint JNICALL ATK_NATIVE(atk_1object_1factory_1get_1accessible_1type)
+#ifndef NO__1atk_1object_1factory_1get_1accessible_1type
+JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1object_1factory_1get_1accessible_1type)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, atk_1object_1factory_1get_1accessible_1type_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1atk_1object_1factory_1get_1accessible_1type_FUNC);
 	rc = (jint)atk_object_factory_get_accessible_type((AtkObjectFactory *)arg0);
-	ATK_NATIVE_EXIT(env, that, atk_1object_1factory_1get_1accessible_1type_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1atk_1object_1factory_1get_1accessible_1type_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_atk_1object_1initialize
-JNIEXPORT void JNICALL ATK_NATIVE(atk_1object_1initialize)
+#ifndef NO__1atk_1object_1initialize
+JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1object_1initialize)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	ATK_NATIVE_ENTER(env, that, atk_1object_1initialize_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1atk_1object_1initialize_FUNC);
 	atk_object_initialize((AtkObject *)arg0, (gpointer)arg1);
-	ATK_NATIVE_EXIT(env, that, atk_1object_1initialize_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1atk_1object_1initialize_FUNC);
 }
 #endif
 
-#ifndef NO_atk_1registry_1get_1factory
-JNIEXPORT jint JNICALL ATK_NATIVE(atk_1registry_1get_1factory)
+#ifndef NO__1atk_1registry_1get_1factory
+JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1registry_1get_1factory)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, atk_1registry_1get_1factory_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1atk_1registry_1get_1factory_FUNC);
 	rc = (jint)atk_registry_get_factory((AtkRegistry *)arg0, (GType)arg1);
-	ATK_NATIVE_EXIT(env, that, atk_1registry_1get_1factory_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1atk_1registry_1get_1factory_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_atk_1registry_1set_1factory_1type
-JNIEXPORT void JNICALL ATK_NATIVE(atk_1registry_1set_1factory_1type)
+#ifndef NO__1atk_1registry_1set_1factory_1type
+JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1registry_1set_1factory_1type)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	ATK_NATIVE_ENTER(env, that, atk_1registry_1set_1factory_1type_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1atk_1registry_1set_1factory_1type_FUNC);
 	atk_registry_set_factory_type((AtkRegistry *)arg0, (GType)arg1, (GType)arg2);
-	ATK_NATIVE_EXIT(env, that, atk_1registry_1set_1factory_1type_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1atk_1registry_1set_1factory_1type_FUNC);
 }
 #endif
 
-#ifndef NO_atk_1state_1set_1add_1state
-JNIEXPORT jboolean JNICALL ATK_NATIVE(atk_1state_1set_1add_1state)
+#ifndef NO__1atk_1state_1set_1add_1state
+JNIEXPORT jboolean JNICALL ATK_NATIVE(_1atk_1state_1set_1add_1state)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jboolean rc = 0;
-	ATK_NATIVE_ENTER(env, that, atk_1state_1set_1add_1state_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1atk_1state_1set_1add_1state_FUNC);
 	rc = (jboolean)atk_state_set_add_state((AtkStateSet *)arg0, (AtkStateType)arg1);
-	ATK_NATIVE_EXIT(env, that, atk_1state_1set_1add_1state_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1atk_1state_1set_1add_1state_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_atk_1state_1set_1new
-JNIEXPORT jint JNICALL ATK_NATIVE(atk_1state_1set_1new)
+#ifndef NO__1atk_1state_1set_1new
+JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1state_1set_1new)
 	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, atk_1state_1set_1new_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1atk_1state_1set_1new_FUNC);
 	rc = (jint)atk_state_set_new();
-	ATK_NATIVE_EXIT(env, that, atk_1state_1set_1new_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1atk_1state_1set_1new_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_call__II
-JNIEXPORT jint JNICALL ATK_NATIVE(call__II)
+#ifndef NO__1call__II
+JNIEXPORT jint JNICALL ATK_NATIVE(_1call__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, call__II_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1call__II_FUNC);
 	rc = (jint)((jint (*)())arg0)(arg1);
-	ATK_NATIVE_EXIT(env, that, call__II_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1call__II_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_call__III
-JNIEXPORT jint JNICALL ATK_NATIVE(call__III)
+#ifndef NO__1call__III
+JNIEXPORT jint JNICALL ATK_NATIVE(_1call__III)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, call__III_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1call__III_FUNC);
 	rc = (jint)((jint (*)())arg0)(arg1, arg2);
-	ATK_NATIVE_EXIT(env, that, call__III_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1call__III_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_call__IIII
-JNIEXPORT jint JNICALL ATK_NATIVE(call__IIII)
+#ifndef NO__1call__IIII
+JNIEXPORT jint JNICALL ATK_NATIVE(_1call__IIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
 	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, call__IIII_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1call__IIII_FUNC);
 	rc = (jint)((jint (*)())arg0)(arg1, arg2, arg3);
-	ATK_NATIVE_EXIT(env, that, call__IIII_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1call__IIII_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_call__IIIII
-JNIEXPORT jint JNICALL ATK_NATIVE(call__IIIII)
+#ifndef NO__1call__IIIII
+JNIEXPORT jint JNICALL ATK_NATIVE(_1call__IIIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
 	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, call__IIIII_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1call__IIIII_FUNC);
 	rc = (jint)((jint (*)())arg0)(arg1, arg2, arg3, arg4);
-	ATK_NATIVE_EXIT(env, that, call__IIIII_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1call__IIIII_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_call__IIIIII
-JNIEXPORT jint JNICALL ATK_NATIVE(call__IIIIII)
+#ifndef NO__1call__IIIIII
+JNIEXPORT jint JNICALL ATK_NATIVE(_1call__IIIIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
 	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, call__IIIIII_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1call__IIIIII_FUNC);
 	rc = (jint)((jint (*)())arg0)(arg1, arg2, arg3, arg4, arg5);
-	ATK_NATIVE_EXIT(env, that, call__IIIIII_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1call__IIIIII_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_call__IIIIIII
-JNIEXPORT jint JNICALL ATK_NATIVE(call__IIIIIII)
+#ifndef NO__1call__IIIIIII
+JNIEXPORT jint JNICALL ATK_NATIVE(_1call__IIIIIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
 {
 	jint rc = 0;
-	ATK_NATIVE_ENTER(env, that, call__IIIIIII_FUNC);
+	ATK_NATIVE_ENTER(env, that, _1call__IIIIIII_FUNC);
 	rc = (jint)((jint (*)())arg0)(arg1, arg2, arg3, arg4, arg5, arg6);
-	ATK_NATIVE_EXIT(env, that, call__IIIIIII_FUNC);
+	ATK_NATIVE_EXIT(env, that, _1call__IIIIIII_FUNC);
 	return rc;
 }
 #endif

@@ -630,387 +630,3387 @@ public static final native int MonitorEnter(Object object);
 public static final native int MonitorExit(Object object);
 
 /** Natives */
-public static final synchronized native int Call(int proc, int arg1, int arg2);
-public static final synchronized native int ConnectionNumber(int display);
+public static final native int _Call(int proc, int arg1, int arg2);
+public static final int Call(int proc, int arg1, int arg2) {
+	lock.lock();
+	try {
+		return _Call(proc, arg1, arg2);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _ConnectionNumber(int display);
+public static final int ConnectionNumber(int display) {
+	lock.lock();
+	try {
+		return _ConnectionNumber(display);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int CODESET();
 public static final native boolean FD_ISSET(int fd, byte[] fd_set);
 public static final native void FD_SET(int fd, byte[] fd_set);
 public static final native void FD_ZERO(byte[] fd_set);
 public static final native int LC_CTYPE();
 public static final native int MB_CUR_MAX();
-public static final synchronized native int overrideShellWidgetClass();
-public static final synchronized native int shellWidgetClass();
-public static final synchronized native int topLevelShellWidgetClass();
-public static final synchronized native int transientShellWidgetClass();
-public static final synchronized native int xmMenuShellWidgetClass();
-public static final synchronized native int XAllocColor(int display, int colormap, XColor color);
-public static final synchronized native void XBell(int display, int ms);
-public static final synchronized native int XBlackPixel(int display, int screenNum);
-public static final synchronized native int XChangeActivePointerGrab(int display, int eventMask, int cursor, int time);
-public static final synchronized native void XChangeProperty(int display, int w, int property, int type, int format, int mode, int[] data, int nelements);
-public static final synchronized native void XChangeWindowAttributes(int display, int window, int mask, XSetWindowAttributes attributes);
-public static final synchronized native int XCheckIfEvent(int display, int event_return, int predicate, int arg);
-public static final synchronized native boolean XCheckMaskEvent(int display, int mask, int event);
-public static final synchronized native boolean XCheckWindowEvent(int display, int window, int mask, int event);
-public static final synchronized native void XClearArea(int display, int window, int x, int y, int width, int height, boolean exposures);
-public static final synchronized native void XClipBox(int region, XRectangle rectangle);
-public static final synchronized native void XCloseDisplay(int display);
-public static final synchronized native void XCopyArea(int display, int src, int dest, int gc, int src_x, int src_y, int width, int height, int dest_x, int dest_y);
-public static final synchronized native void XCopyPlane(int display, int src, int dest, int gc, int src_x, int src_y, int width, int height, int dest_x, int dest_y, int plane);
-public static final synchronized native int XCreateBitmapFromData(int display, int drawable, byte[] data, int width, int height);
-public static final synchronized native int XCreateFontCursor(int display, int shape);
-public static final synchronized native int XCreateGC(int display, int window, int mask, XGCValues values);
-public static final synchronized native int XCreateImage(int display, int visual, int depth, int format, int offset, int data, int width, int height, int bitmap_pad, int bytes_per_line);
-public static final synchronized native int XCreatePixmap(int display, int drawable, int width, int height, int depth);
-public static final synchronized native int XCreatePixmapCursor(int display, int source, int mask, XColor foreground_color, XColor background_color, int x, int y);
-public static final synchronized native int XCreateRegion();
-public static final synchronized native int XCreateWindow(int display, int parent, int x, int y, int width, int height, int border_width, int depth, int clazz, int visual, long value_mask, XSetWindowAttributes attributes);
-public static final synchronized native int XDefaultColormap(int display, int screen_number);
-public static final synchronized native int XDefaultColormapOfScreen(int screen);
-public static final synchronized native int XDefaultDepthOfScreen(int screen);
-public static final synchronized native int XDefaultGCOfScreen(int screen);
-public static final synchronized native int XDefaultRootWindow(int display);
-public static final synchronized native int XDefaultScreen(int display);
-public static final synchronized native int XDefaultScreenOfDisplay(int display);
-public static final synchronized native int XDefaultVisual(int display, int screen_number);
-public static final synchronized native void XDefineCursor(int display, int window, int cursor);
-public static final synchronized native int XDestroyImage(int ximage);
-public static final synchronized native void XDestroyRegion(int region);
-public static final synchronized native void XDestroyWindow(int display, int w);
-public static final synchronized native int XDisplayHeight(int display, int screen);
-public static final synchronized native int XDisplayHeightMM(int display, int screen);
-public static final synchronized native int XDisplayWidth(int display, int screen);
-public static final synchronized native int XDisplayWidthMM(int display, int screen);
-public static final synchronized native void XDrawArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2);
-public static final synchronized native void XDrawLine(int display, int drawable, int gc, int x1, int y1, int x2, int y2);
-public static final synchronized native void XDrawLines(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode);
-public static final synchronized native void XDrawRectangle(int display, int drawable, int gc, int x, int y, int width, int height);
-public static final synchronized native void XDrawPoint(int display, int drawable, int gc, int x, int y);
-public static final synchronized native boolean XEmptyRegion(int region);
-public static final synchronized native int XEventsQueued(int display, int mode);
-public static final synchronized native void XFillArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2);
-public static final synchronized native int XFillPolygon(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode, int style);
-public static final synchronized native void XFillRectangle(int display, int drawable, int gc, int x, int y, int width, int height);
-public static final synchronized native boolean XFilterEvent(int event, int window);
-public static final synchronized native void XFlush(int display);
-public static final synchronized native int XFontsOfFontSet(int fontSet, int[] fontStructs, int[] fontNames);
-public static final synchronized native int XFree(int address);
-public static final synchronized native int XFreeColors(int display, int colormap, int[] pixels, int npixels, int planes);
-public static final synchronized native void XFreeCursor(int display, int pixmap);
-public static final synchronized native void XFreeFont(int display, int font_struct);
-public static final synchronized native void XFreeFontNames(int list);
-public static final synchronized native void XFreeGC(int display, int gc);
-public static final synchronized native void XFreePixmap(int display, int pixmap);
-public static final synchronized native void XFreeStringList(int list);
-public static final synchronized native int XGetGCValues(int display, int gc, int valuemask, XGCValues values);
-public static final synchronized native int XGetGeometry(int display, int drawable, int[] root_return, int[] x_return, int[] y_return, int[] width_return, int[] height_return, int[] border_width_return, int[] depth_return);
-public static final synchronized native int XGetImage(int display, int drawable, int x, int y, int width, int height, int plane_mask, int format);
-public static final synchronized native int XGetInputFocus(int display, int[] window, int[] revert);
-public static final synchronized native boolean XGetWindowAttributes(int display, int window, XWindowAttributes attributes);
-public static final synchronized native int XGetWindowProperty(int display, int window, int property, int offset, int length, boolean delete, int req_type, int[] actual_type_return, int[] actual_format_return, int[] nitems_return, int[] bytes_after_return, int[] prop_return);
-public static final synchronized native int XGrabKeyboard(int display, int grabWindow, int ownerEvents, int pointerMode, int keyboardMode, int time);
-public static final synchronized native int XGrabPointer(int display, int grabWindow, int ownerEvents, int eventMask, int pointerMode, int keyboardMode, int confineToWindow, int cursor, int time);
-public static final synchronized native int XInitThreads();
-public static final synchronized native int XInternAtom(int display, byte[] name, boolean ifExists);
-public static final synchronized native void XIntersectRegion(int sra, int srb, int dr_return);
-public static final synchronized native int XKeysymToKeycode(int display, int keysym);
-public static final synchronized native int XKeysymToString(int keysym);
-public static final synchronized native int XListFonts(int display, byte[] pattern, int maxnames, int[] actual_count_return);
-public static final synchronized native int XListProperties(int display, int window, int[] num_prop_return);
-public static final synchronized native int XLocaleOfFontSet(int fontSet);
-public static final synchronized native int XLookupString(XKeyEvent event, byte[] string, int size, int[] keysym, int[] status);
-public static final synchronized native int XLowerWindow(int display, int window);
-public static final synchronized native void XMapWindow(int display, int w);
-public static final synchronized native int XGetModifierMapping(int display);
-public static final synchronized native int XGetIconSizes(int display, int w, int[] size_list_return, int[] count_return);
-public static final synchronized native void XMoveResizeWindow(int display, int w, int x, int y, int width, int height);
-public static final synchronized native int XOffsetRegion(int r, int dx, int dy);
-public static final synchronized native int XOpenDisplay(byte[] display_name);
-public static final synchronized native boolean XPointInRegion(int region, int x, int y);
-public static final synchronized native int XPolygonRegion(short[] points, int n, int fill_rule);
-public static final synchronized native int XPutImage(int display, int drawable, int gc, int image, int srcX, int srcY, int destX, int destY, int width, int height);
-public static final synchronized native int XQueryColor(int display, int colormap, XColor color);
-public static final synchronized native int XQueryBestCursor(int display, int d, int width, int height, int[] width_return, int[] height_return);
-public static final synchronized native int XQueryPointer(int display, int window, int[] root, int[] child, int[] rootX, int[] rootY, int[] windowX, int[] windowY, int[] mask);
-public static final synchronized native int XQueryTree(int display, int window, int[] root_return, int[] parent_return, int[] children_return, int[] nChildren_return);
-public static final synchronized native int XRaiseWindow(int display, int window);
-public static final synchronized native int XReconfigureWMWindow(int display, int window, int screen, int valueMask, XWindowChanges values);
-public static final synchronized native int XRectInRegion(int region, int x, int y, int width, int height);
-public static final synchronized native int XReparentWindow(int display, int win, int parent, int x, int y);
-public static final synchronized native void XResizeWindow(int display, int w, int width, int height);
-public static final synchronized native int XRootWindowOfScreen(int screen);
-public static final synchronized native void XSelectInput(int display, int window, int mask);
-public static final synchronized native int XSendEvent(int display, int window, boolean propagate, int event_mask, int event);
-public static final synchronized native void XSetBackground(int display, int gc, int background);
-public static final synchronized native void XSetClipMask(int display, int gc, int pixmap);
-public static final synchronized native void XSetClipRectangles(int display, int gc, int clip_x_origin, int clip_y_origin, XRectangle rectangles, int n, int ordering);
-public static final synchronized native int XSetDashes(int display, int gc, int dash_offset, byte[] dash_list, int n);
-public static final synchronized native int XSetErrorHandler(int handler);
-public static final synchronized native void XSetFillStyle(int display, int gc, int fill_style);
-public static final synchronized native void XSetForeground(int display, int gc, int foreground);
-public static final synchronized native void XSetFunction(int display, int gc, int function);
-public static final synchronized native void XSetGraphicsExposures(int display, int gc, boolean graphics_exposures);
-public static final synchronized native int XSetIOErrorHandler(int handler);
-public static final synchronized native int XSetInputFocus(int display, int window, int revert, int time);
-public static final synchronized native int XSetLineAttributes(int display, int gc, int lineWidth, int lineStyle, int capStyle, int joinStyle);
-public static final synchronized native void XSetRegion(int display, int gc, int region);
-public static final synchronized native void XSetStipple(int display, int gc, int pixmap);
-public static final synchronized native void XSetSubwindowMode(int display, int gc, int subwindow_mode);
-public static final synchronized native void XSetWMNormalHints(int display, int w, XSizeHints hints);
-public static final synchronized native void XShapeCombineMask(int display, int dest, int dest_kind, int x_off, int y_off, int src, int op);
-public static final synchronized native void XShapeCombineRegion(int display, int dest, int dest_kind, int x_off, int y_off, int region, int op);
-public static final synchronized native void XSubtractRegion(int sra, int srb, int dr_return);
-public static final synchronized native void XSync(int display, boolean discard);
-public static final synchronized native int XSynchronize(int display, boolean onoff);
-public static final synchronized native void XTestFakeButtonEvent(int display, int button, boolean is_press, int delay);
-public static final synchronized native void XTestFakeKeyEvent(int display, int keycode, boolean is_press, int delay);
-public static final synchronized native void XTestFakeMotionEvent(int display, int screen_number, int x, int y, int delay);
-public static final synchronized native boolean XTranslateCoordinates(int display, int src_w, int dest_w, int src_x, int src_y, int[] dest_x_return, int[] dest_y_return, int[] child_return);
-public static final synchronized native void XUndefineCursor(int display, int window);
-public static final synchronized native int XUngrabKeyboard(int display, int time);
-public static final synchronized native int XUngrabPointer(int display, int time);
-public static final synchronized native void XUnionRectWithRegion(XRectangle rectangle, int src_region, int dest_region_return);
-public static final synchronized native void XUnionRegion(int sra, int srb, int dr_return);
-public static final synchronized native void XUnmapWindow(int display, int window);
-public static final synchronized native int XWarpPointer(int display, int sourceWindow, int destWindow, int sourceX, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY);
-public static final synchronized native int XWhitePixel(int display, int screenNum);
-public static final synchronized native void XWithdrawWindow(int display, int window, int screen);
-public static final synchronized native boolean XineramaIsActive(int dpy);
-public static final synchronized native int XineramaQueryScreens(int dpy, int[] number);
-public static final synchronized native void XmAddWMProtocolCallback(int shell, int protocol, int callback, int closure);
-public static final synchronized native void XmChangeColor(int widget, int pixel);
-public static final synchronized native int XmClipboardCopy(int display, int window, int item_id, byte[] format_name, byte[] buffer, int length, int private_id, int[] data_id);
-public static final synchronized native int XmClipboardEndCopy(int display, int window, int item_id);
-public static final synchronized native int XmClipboardEndRetrieve(int display, int window);
-public static final synchronized native int XmClipboardInquireCount(int display, int window, int[] count, int[] max_format_name_length);
-public static final synchronized native int XmClipboardInquireFormat(int display, int window, int index, byte[] format_name_buf, int buffer_len, int[] copied_len);
-public static final synchronized native int XmClipboardInquireLength(int display, int widget, byte[] format_name, int[] length);
-public static final synchronized native int XmClipboardRetrieve(int display, int window, byte[] format_name, byte[] buffer, int length, int[] num_bytes, int[] private_id);
-public static final synchronized native int XmClipboardStartCopy(int display, int window, int clip_label, int timestamp, int widget, int callback, int[] item_id);
-public static final synchronized native int XmClipboardStartRetrieve(int display, int window, int timestamp);
-public static final synchronized native void XmComboBoxAddItem(int widget, int xmString, int position, boolean unique);
-public static final synchronized native void XmComboBoxDeletePos(int widget, int position);
-public static final synchronized native void XmComboBoxSelectItem(int widget, int xmString);
-public static final synchronized native int XmCreateArrowButton(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateCascadeButtonGadget(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateComboBox(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateDialogShell(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateDrawingArea(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateDrawnButton(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateErrorDialog(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateFileSelectionDialog(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateForm(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateFrame(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateInformationDialog(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateLabel(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateList(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateMainWindow(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateMenuBar(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateMessageDialog(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreatePopupMenu(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreatePulldownMenu(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreatePushButton(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreatePushButtonGadget(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateQuestionDialog(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateScale(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateScrollBar(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateScrolledList(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateScrolledText(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateSeparator(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateSeparatorGadget(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateSimpleSpinBox(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateTextField(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateToggleButton(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateToggleButtonGadget(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateWarningDialog(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native int XmCreateWorkingDialog(int parent, byte[] name, int[] arglist, int argcount);
-public static final synchronized native boolean XmDestroyPixmap(int screen, int pixmap);
-public static final synchronized native void XmDragCancel(int dragcontext);
-public static final synchronized native int XmDragStart(int widget, int event, int[] arglist, int argcount);
-public static final synchronized native void XmDropSiteRegister(int widget, int[] arglist, int argcount);
-public static final synchronized native void XmDropSiteUnregister(int widget);
-public static final synchronized native void XmDropSiteUpdate(int widget, int[] arglist, int argcount);
-public static final synchronized native void XmDropTransferAdd(int drop_transfer, int[] transfers, int num_transfers);
-public static final synchronized native int XmDropTransferStart(int widget, int[] arglist, int argcount);
-public static final synchronized native int XmFileSelectionBoxGetChild(int widget, int child);
-public static final synchronized native int XmFontListAppendEntry(int oldList, int entry);
-public static final synchronized native int XmFontListCopy(int fontlist);
-public static final synchronized native void XmFontListEntryFree(int[] entry);
-public static final synchronized native int XmFontListEntryGetFont(int entry, int[] type_return);
-public static final synchronized native int XmFontListEntryLoad(int display, byte[] fontName, int type, byte[] tag);
-public static final synchronized native void XmFontListFree(int list);
-public static final synchronized native void XmFontListFreeFontContext(int context);
-public static final synchronized native boolean XmFontListInitFontContext(int[] context, int fontList);
-public static final synchronized native int XmFontListNextEntry(int context);
-public static final synchronized native int XmGetAtomName(int display, int atom);
-public static final synchronized native int XmGetDragContext(int widget, int timestamp);
-public static final synchronized native int XmGetFocusWidget(int widget);
-public static final synchronized native int XmGetPixmap(int screen, byte[] name, int fgPixel, int bgPixel);
-public static final synchronized native int XmGetPixmapByDepth(int screen, byte[] image_name, int foreground, int background, int depth);
-public static final synchronized native int XmGetXmDisplay(int display);
-public static final synchronized native int XmImMbLookupString(int widget, XKeyEvent event, byte[] string, int size, int[] keysym, int[] status);
-public static final synchronized native void XmImRegister(int widget, int reserved);
-public static final synchronized native void XmImSetFocusValues(int widget, int[] args, int num_args);
-public static final synchronized native void XmImSetValues(int widget, int[] args, int num_args);
-public static final synchronized native void XmImUnregister(int widget);
-public static final synchronized native void XmImUnsetFocus(int widget);
-public static final synchronized native int XmInternAtom(int display, byte[] name, boolean only_if_exists);
-public static final synchronized native void XmListAddItemUnselected(int list, int xmString, int position);
-public static final synchronized native void XmListDeleteAllItems(int list);
-public static final synchronized native void XmListDeleteItemsPos(int list, int item_count, int position);
-public static final synchronized native void XmListDeletePos(int list, int position);
-public static final synchronized native void XmListDeletePositions(int list, int[] position_list, int position_count);
-public static final synchronized native void XmListDeselectAllItems(int list);
-public static final synchronized native void XmListDeselectPos(int list, int position);
-public static final synchronized native int XmListGetKbdItemPos(int list);
-public static final synchronized native boolean XmListGetSelectedPos(int list, int[] positions, int[] count);
-public static final synchronized native int XmListItemPos(int list, int xmString);
-public static final synchronized native boolean XmListPosSelected(int list, int position);
-public static final synchronized native void XmListReplaceItemsPosUnselected(int list, int[] new_items, int item_count, int position);
-public static final synchronized native void XmListSelectPos(int list, int position, boolean notify);
-public static final synchronized native boolean XmListSetKbdItemPos(int list, int position);
-public static final synchronized native void XmListSetPos(int list, int position);
-public static final synchronized native void XmListUpdateSelectedList(int list);
-public static final synchronized native void XmMainWindowSetAreas(int widget, int menu, int command, int hscroll, int vscroll, int wregion);
-public static final synchronized native int XmMessageBoxGetChild(int widget, int child);
-public static final synchronized native int XmParseMappingCreate(int[] argList, int argCount);
-public static final synchronized native void XmParseMappingFree(int parseMapping);
-public static final synchronized native boolean XmProcessTraversal(int widget, int dir);
-public static final synchronized native int XmRenderTableAddRenditions(int oldTable, int[] renditions, int renditionCount, int mergeMode);
-public static final synchronized native void XmRenderTableFree(int renderTable);
-public static final synchronized native int XmRenditionCreate(int widget, byte[] tag, int[] argList, int argCount);
-public static final synchronized native void XmRenditionFree(int rendition);
-public static final synchronized native int XmStringBaseline(int fontList, int xmString);
-public static final synchronized native boolean XmStringCompare(int xmString1, int xmString2);
-public static final synchronized native int XmStringComponentCreate(int type, int length, byte[] value);
-public static final synchronized native int XmStringConcat(int xmString1, int xmString2);
-public static final synchronized native int XmStringCreate(byte[] string, byte[] charset);
-public static final synchronized native int XmStringCreateLocalized(byte[] string);
-public static final synchronized native void XmStringDraw(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);
-public static final synchronized native void XmStringDrawImage(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);
-public static final synchronized native void XmStringDrawUnderline(int display, int window, int fontlist, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip, int xmStringUnderline);
-public static final synchronized native boolean XmStringEmpty(int s1);
-public static final synchronized native void XmStringExtent(int fontList, int xmString, short[] width, short[] height);
-public static final synchronized native void XmStringFree(int xmString);
-public static final synchronized native int XmStringGenerate(byte[] text, byte[] tag, int type, byte[] rendition);
-public static final synchronized native int XmStringHeight(int fontList, int xmString);
-public static final synchronized native int XmStringParseText(byte[] text, int textEnd, byte[] tag, int tagType, int[] parseTable, int parseCount, int callData);
-public static final synchronized native int XmStringUnparse(int xmString, byte[] tag, int tagType, int outputType, int[] parseTable, int parseCount, int parseModel);
-public static final synchronized native int XmStringWidth(int fontList, int xmString);
-public static final synchronized native int XmTabCreate(int value, byte units, byte offsetModel, byte alignment, byte[] decimal);
-public static final synchronized native void XmTabFree(int tab);
-public static final synchronized native void XmTabListFree(int tabList);
-public static final synchronized native int XmTabListInsertTabs(int oldList, int[] tabs, int tab_count, int position);
-public static final synchronized native void XmTextClearSelection(int widget, int time);
-public static final synchronized native boolean XmTextCopy(int widget, int time);
-public static final synchronized native boolean XmTextCut(int widget, int time);
-public static final synchronized native void XmTextDisableRedisplay(int widget);
-public static final synchronized native void XmTextEnableRedisplay(int widget);
-public static final synchronized native boolean XmTextFieldPaste(int widget);
-public static final synchronized native int XmTextGetInsertionPosition(int widget);
-public static final synchronized native int XmTextGetLastPosition(int widget);
-public static final synchronized native int XmTextGetMaxLength(int widget);
-public static final synchronized native int XmTextGetSelection(int widget);
-public static final synchronized native boolean XmTextGetSelectionPosition(int widget, int[] left, int[] right);
-public static final synchronized native int XmTextGetString(int widget);
-public static final synchronized native int XmTextGetSubstring(int widget, int start, int num_chars, int buffer_size, byte[] buffer);
-public static final synchronized native int XmTextGetSubstringWcs(int widget, int start, int num_chars, int buffer_size, char[] buffer);
-public static final synchronized native void XmTextInsert(int widget, int position, byte[] value);
-public static final synchronized native boolean XmTextPaste(int widget);
-public static final synchronized native boolean XmTextPosToXY(int widget, int position, short[] x, short[] y);
-public static final synchronized native void XmTextReplace(int widget, int from_pos, int to_pos, byte[] value);
-public static final synchronized native void XmTextScroll(int widget, int lines);
-public static final synchronized native void XmTextSetEditable(int widget, boolean editable);
-public static final synchronized native void XmTextSetHighlight(int widget, int left, int right, int mode);
-public static final synchronized native void XmTextSetInsertionPosition(int widget, int position);
-public static final synchronized native void XmTextSetMaxLength(int widget, int max_length);
-public static final synchronized native void XmTextSetSelection(int widget, int first, int last, int time);
-public static final synchronized native void XmTextSetString(int widget, byte[] value);
-public static final synchronized native void XmTextShowPosition(int widget, int position);
-public static final synchronized native void XmUpdateDisplay(int widget);
-public static final synchronized native boolean XmWidgetGetDisplayRect(int region, XRectangle rectangle);
-public static final synchronized native int XmbTextListToTextProperty(int display, int list, int count, int style, XTextProperty text_prop_return);
-public static final synchronized native int XmbTextPropertyToTextList(int display, XTextProperty text_prop, int[] list_return, int[] count_return);
-public static final synchronized native void XpCancelJob(int display, boolean discard);
-public static final synchronized native int XpCreateContext(int display, byte[] printer_name);
-public static final synchronized native void XpDestroyContext(int display, int print_context);
-public static final synchronized native void XpEndJob(int display);
-public static final synchronized native void XpEndPage(int display);
-public static final synchronized native void XpFreePrinterList(int printer_list);
-public static final synchronized native int XpGetOneAttribute(int display, int print_context, byte type, byte[] attribute_name);
-public static final synchronized native int XpGetPageDimensions(int display, int print_context, short[] width, short[] height, XRectangle reproducible_area);
-public static final synchronized native int XpGetPrinterList(int display, byte[] printer_name, int[] list_count);
-public static final synchronized native int XpGetScreenOfContext(int display, int print_context);
-public static final synchronized native void XpSetAttributes(int display, int print_context, byte type, byte[] pool, byte replacement_rule);
-public static final synchronized native void XpSetContext(int display, int print_context);
-public static final synchronized native void XpStartJob(int display, byte save_data);
-public static final synchronized native void XpStartPage(int display, int window);
-public static final synchronized native void XtAddCallback(int widget, int callback_name, int callback, int client_data);
-public static final synchronized native void XtAddEventHandler(int widget, int event_mask, boolean nonmaskable, int proc, int client_data);
-public static final synchronized native void XtAddExposureToRegion(int event, int region);
-public static final synchronized native int XtAppAddInput(int app_context, int source, int condition, int proc, int client_data);
-public static final synchronized native int XtAppAddTimeOut(int app_context, int interval, int proc, int client_data);
-public static final synchronized native int XtAppCreateShell(byte[] appName, byte[] appClass, int widgetClass, int display, int[] argList, int argCount);
-public static final synchronized native int XtAppGetSelectionTimeout(int appContext);
-public static final synchronized native void XtAppNextEvent(int appContext, int event);
-public static final synchronized native boolean XtAppPeekEvent(int appContext, int event);
-public static final synchronized native int XtAppPending(int appContext);
-public static final synchronized native void XtAppProcessEvent(int appContext, int inputMask);
-public static final synchronized native int XtAppSetErrorHandler(int app_context, int handler);
-public static final synchronized native void XtAppSetFallbackResources(int app_context, int specification_list);
-public static final synchronized native void XtAppSetSelectionTimeout(int appContext, int timeout);
-public static final synchronized native int XtAppSetWarningHandler(int app_context, int handler);
-public static final synchronized native int XtBuildEventMask(int widget);
-public static final synchronized native void XtCallActionProc(int widget, byte[] action, int event, int[] params, int num_params);
-public static final synchronized native int XtClass(int widget);
-public static final synchronized native void XtConfigureWidget(int widget, int x, int y, int width, int height, int borderWidth);
-public static final synchronized native int XtCreateApplicationContext();
-public static final synchronized native int XtCreatePopupShell(byte[] name, int widgetClass, int parent, int[] argList, int argCount);
-public static final synchronized native void XtDestroyApplicationContext(int appContext);
-public static final synchronized native void XtDestroyWidget(int widget);
-public static final synchronized native boolean XtDispatchEvent(int event);
-public static final synchronized native int XtDisplay(int widget);
-public static final synchronized native int XtDisplayToApplicationContext(int display);
-public static final synchronized native void XtFree(int ptr);
-public static final synchronized native int XtGetMultiClickTime(int display);
-public static final synchronized native void XtGetValues(int widget, int[] argList, int numArgs);
-public static final synchronized native void XtInsertEventHandler(int w, int event_mask, boolean nonmaskable, int proc, int client_data, int position);
-public static final synchronized native boolean XtIsManaged(int widget);
-public static final synchronized native boolean XtIsRealized(int widget);
-public static final synchronized native boolean XtIsSubclass(int widget, int widgetClass);
-public static final synchronized native boolean XtIsTopLevelShell(int widget);
-public static final synchronized native int XtLastTimestampProcessed(int display);
-public static final synchronized native int XtMalloc(int size);
-public static final synchronized native void XtManageChild(int widget);
-public static final synchronized native void XtMapWidget(int widget);
-public static final synchronized native void XtMoveWidget(int widget, int x, int y);
-public static final synchronized native int XtNameToWidget(int reference, byte[] names);
-public static final synchronized native int XtOpenDisplay(int xtAppContext, byte[] displayName, byte[] applicationName, byte[] applicationClass, int options, int numOptions, int[] argc, int argv);
-public static final synchronized native void XtOverrideTranslations(int w, int translations);
-public static final synchronized native int XtParent(int widget);
-public static final synchronized native int XtParseTranslationTable(byte[] string);
-public static final synchronized native void XtPopdown(int widget);
-public static final synchronized native void XtPopup(int widget, int flags);
-public static final synchronized native int XtQueryGeometry(int widget, XtWidgetGeometry intended, XtWidgetGeometry preferred_return);
-public static final synchronized native void XtRealizeWidget(int widget);
-public static final synchronized native void XtRegisterDrawable(int display, int drawable, int widget);
-public static final synchronized native void XtRemoveEventHandler(int widget, int event_mask, boolean nonmaskable, int proc, int client_data);
-public static final synchronized native void XtRemoveInput(int id);
-public static final synchronized native void XtRemoveTimeOut(int id);
-public static final synchronized native void XtResizeWidget(int widget, int width, int height, int borderWidth);
-public static final synchronized native void XtResizeWindow(int widget);
-public static final synchronized native int XtSetLanguageProc(int appContext, int languageProc, int pointer);
-public static final synchronized native void XtSetMappedWhenManaged(int widget, boolean flag);
-public static final synchronized native void XtSetValues(int widget, int[] argList, int numArgs);
-public static final synchronized native void XtToolkitInitialize();
-public static final synchronized native boolean XtToolkitThreadInitialize();
-public static final synchronized native void XtTranslateCoords(int widget, short x, short y, short[] root_x, short[] root_y);
-public static final synchronized native void XtUnmanageChild(int widget);
-public static final synchronized native void XtUnmapWidget(int widget);
-public static final synchronized native void XtUnregisterDrawable(int display, int drawable);
-public static final synchronized native int XtWindow(int widget);
-public static final synchronized native int XtWindowToWidget(int display, int widget);
-public static final synchronized native void _XmSetMenuTraversal(int menu, boolean traversal);
+public static final native int _overrideShellWidgetClass();
+public static final int overrideShellWidgetClass() {
+	lock.lock();
+	try {
+		return _overrideShellWidgetClass();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _shellWidgetClass();
+public static final int shellWidgetClass() {
+	lock.lock();
+	try {
+		return _shellWidgetClass();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _topLevelShellWidgetClass();
+public static final int topLevelShellWidgetClass() {
+	lock.lock();
+	try {
+		return _topLevelShellWidgetClass();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _transientShellWidgetClass();
+public static final int transientShellWidgetClass() {
+	lock.lock();
+	try {
+		return _transientShellWidgetClass();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _xmMenuShellWidgetClass();
+public static final int xmMenuShellWidgetClass() {
+	lock.lock();
+	try {
+		return _xmMenuShellWidgetClass();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XAllocColor(int display, int colormap, XColor color);
+public static final int XAllocColor(int display, int colormap, XColor color) {
+	lock.lock();
+	try {
+		return _XAllocColor(display, colormap, color);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XBell(int display, int ms);
+public static final void XBell(int display, int ms) {
+	lock.lock();
+	try {
+		_XBell(display, ms);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XBlackPixel(int display, int screenNum);
+public static final int XBlackPixel(int display, int screenNum) {
+	lock.lock();
+	try {
+		return _XBlackPixel(display, screenNum);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XChangeActivePointerGrab(int display, int eventMask, int cursor, int time);
+public static final int XChangeActivePointerGrab(int display, int eventMask, int cursor, int time) {
+	lock.lock();
+	try {
+		return _XChangeActivePointerGrab(display, eventMask, cursor, time);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XChangeProperty(int display, int w, int property, int type, int format, int mode, int[] data, int nelements);
+public static final void XChangeProperty(int display, int w, int property, int type, int format, int mode, int[] data, int nelements) {
+	lock.lock();
+	try {
+		_XChangeProperty(display, w, property, type, format, mode, data, nelements);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XChangeWindowAttributes(int display, int window, int mask, XSetWindowAttributes attributes);
+public static final void XChangeWindowAttributes(int display, int window, int mask, XSetWindowAttributes attributes) {
+	lock.lock();
+	try {
+		_XChangeWindowAttributes(display, window, mask, attributes);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XCheckIfEvent(int display, int event_return, int predicate, int arg);
+public static final int XCheckIfEvent(int display, int event_return, int predicate, int arg) {
+	lock.lock();
+	try {
+		return _XCheckIfEvent(display, event_return, predicate, arg);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XCheckMaskEvent(int display, int mask, int event);
+public static final boolean XCheckMaskEvent(int display, int mask, int event) {
+	lock.lock();
+	try {
+		return _XCheckMaskEvent(display, mask, event);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XCheckWindowEvent(int display, int window, int mask, int event);
+public static final boolean XCheckWindowEvent(int display, int window, int mask, int event) {
+	lock.lock();
+	try {
+		return _XCheckWindowEvent(display, window, mask, event);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XClearArea(int display, int window, int x, int y, int width, int height, boolean exposures);
+public static final void XClearArea(int display, int window, int x, int y, int width, int height, boolean exposures) {
+	lock.lock();
+	try {
+		_XClearArea(display, window, x, y, width, height, exposures);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XClipBox(int region, XRectangle rectangle);
+public static final void XClipBox(int region, XRectangle rectangle) {
+	lock.lock();
+	try {
+		_XClipBox(region, rectangle);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XCloseDisplay(int display);
+public static final void XCloseDisplay(int display) {
+	lock.lock();
+	try {
+		_XCloseDisplay(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XCopyArea(int display, int src, int dest, int gc, int src_x, int src_y, int width, int height, int dest_x, int dest_y);
+public static final void XCopyArea(int display, int src, int dest, int gc, int src_x, int src_y, int width, int height, int dest_x, int dest_y) {
+	lock.lock();
+	try {
+		_XCopyArea(display, src, dest, gc, src_x, src_y, width, height, dest_x, dest_y);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XCopyPlane(int display, int src, int dest, int gc, int src_x, int src_y, int width, int height, int dest_x, int dest_y, int plane);
+public static final void XCopyPlane(int display, int src, int dest, int gc, int src_x, int src_y, int width, int height, int dest_x, int dest_y, int plane) {
+	lock.lock();
+	try {
+		_XCopyPlane(display, src, dest, gc, src_x, src_y, width, height, dest_x, dest_y, plane);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XCreateBitmapFromData(int display, int drawable, byte[] data, int width, int height);
+public static final int XCreateBitmapFromData(int display, int drawable, byte[] data, int width, int height) {
+	lock.lock();
+	try {
+		return _XCreateBitmapFromData(display, drawable, data, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XCreateFontCursor(int display, int shape);
+public static final int XCreateFontCursor(int display, int shape) {
+	lock.lock();
+	try {
+		return _XCreateFontCursor(display, shape);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XCreateGC(int display, int window, int mask, XGCValues values);
+public static final int XCreateGC(int display, int window, int mask, XGCValues values) {
+	lock.lock();
+	try {
+		return _XCreateGC(display, window, mask, values);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XCreateImage(int display, int visual, int depth, int format, int offset, int data, int width, int height, int bitmap_pad, int bytes_per_line);
+public static final int XCreateImage(int display, int visual, int depth, int format, int offset, int data, int width, int height, int bitmap_pad, int bytes_per_line) {
+	lock.lock();
+	try {
+		return _XCreateImage(display, visual, depth, format, offset, data, width, height, bitmap_pad, bytes_per_line);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XCreatePixmap(int display, int drawable, int width, int height, int depth);
+public static final int XCreatePixmap(int display, int drawable, int width, int height, int depth) {
+	lock.lock();
+	try {
+		return _XCreatePixmap(display, drawable, width, height, depth);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XCreatePixmapCursor(int display, int source, int mask, XColor foreground_color, XColor background_color, int x, int y);
+public static final int XCreatePixmapCursor(int display, int source, int mask, XColor foreground_color, XColor background_color, int x, int y) {
+	lock.lock();
+	try {
+		return _XCreatePixmapCursor(display, source, mask, foreground_color, background_color, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XCreateRegion();
+public static final int XCreateRegion() {
+	lock.lock();
+	try {
+		return _XCreateRegion();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XCreateWindow(int display, int parent, int x, int y, int width, int height, int border_width, int depth, int clazz, int visual, long value_mask, XSetWindowAttributes attributes);
+public static final int XCreateWindow(int display, int parent, int x, int y, int width, int height, int border_width, int depth, int clazz, int visual, long value_mask, XSetWindowAttributes attributes) {
+	lock.lock();
+	try {
+		return _XCreateWindow(display, parent, x, y, width, height, border_width, depth, clazz, visual, value_mask, attributes);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDefaultColormap(int display, int screen_number);
+public static final int XDefaultColormap(int display, int screen_number) {
+	lock.lock();
+	try {
+		return _XDefaultColormap(display, screen_number);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDefaultColormapOfScreen(int screen);
+public static final int XDefaultColormapOfScreen(int screen) {
+	lock.lock();
+	try {
+		return _XDefaultColormapOfScreen(screen);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDefaultDepthOfScreen(int screen);
+public static final int XDefaultDepthOfScreen(int screen) {
+	lock.lock();
+	try {
+		return _XDefaultDepthOfScreen(screen);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDefaultGCOfScreen(int screen);
+public static final int XDefaultGCOfScreen(int screen) {
+	lock.lock();
+	try {
+		return _XDefaultGCOfScreen(screen);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDefaultRootWindow(int display);
+public static final int XDefaultRootWindow(int display) {
+	lock.lock();
+	try {
+		return _XDefaultRootWindow(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDefaultScreen(int display);
+public static final int XDefaultScreen(int display) {
+	lock.lock();
+	try {
+		return _XDefaultScreen(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDefaultScreenOfDisplay(int display);
+public static final int XDefaultScreenOfDisplay(int display) {
+	lock.lock();
+	try {
+		return _XDefaultScreenOfDisplay(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDefaultVisual(int display, int screen_number);
+public static final int XDefaultVisual(int display, int screen_number) {
+	lock.lock();
+	try {
+		return _XDefaultVisual(display, screen_number);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XDefineCursor(int display, int window, int cursor);
+public static final void XDefineCursor(int display, int window, int cursor) {
+	lock.lock();
+	try {
+		_XDefineCursor(display, window, cursor);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDestroyImage(int ximage);
+public static final int XDestroyImage(int ximage) {
+	lock.lock();
+	try {
+		return _XDestroyImage(ximage);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XDestroyRegion(int region);
+public static final void XDestroyRegion(int region) {
+	lock.lock();
+	try {
+		_XDestroyRegion(region);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XDestroyWindow(int display, int w);
+public static final void XDestroyWindow(int display, int w) {
+	lock.lock();
+	try {
+		_XDestroyWindow(display, w);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDisplayHeight(int display, int screen);
+public static final int XDisplayHeight(int display, int screen) {
+	lock.lock();
+	try {
+		return _XDisplayHeight(display, screen);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDisplayHeightMM(int display, int screen);
+public static final int XDisplayHeightMM(int display, int screen) {
+	lock.lock();
+	try {
+		return _XDisplayHeightMM(display, screen);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDisplayWidth(int display, int screen);
+public static final int XDisplayWidth(int display, int screen) {
+	lock.lock();
+	try {
+		return _XDisplayWidth(display, screen);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XDisplayWidthMM(int display, int screen);
+public static final int XDisplayWidthMM(int display, int screen) {
+	lock.lock();
+	try {
+		return _XDisplayWidthMM(display, screen);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XDrawArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2);
+public static final void XDrawArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2) {
+	lock.lock();
+	try {
+		_XDrawArc(display, drawable, gc, x1, y1, x2, y2, a1, a2);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XDrawLine(int display, int drawable, int gc, int x1, int y1, int x2, int y2);
+public static final void XDrawLine(int display, int drawable, int gc, int x1, int y1, int x2, int y2) {
+	lock.lock();
+	try {
+		_XDrawLine(display, drawable, gc, x1, y1, x2, y2);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XDrawLines(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode);
+public static final void XDrawLines(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode) {
+	lock.lock();
+	try {
+		_XDrawLines(display, drawable, gc, xPoints, nPoints, mode);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XDrawRectangle(int display, int drawable, int gc, int x, int y, int width, int height);
+public static final void XDrawRectangle(int display, int drawable, int gc, int x, int y, int width, int height) {
+	lock.lock();
+	try {
+		_XDrawRectangle(display, drawable, gc, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XDrawPoint(int display, int drawable, int gc, int x, int y);
+public static final void XDrawPoint(int display, int drawable, int gc, int x, int y) {
+	lock.lock();
+	try {
+		_XDrawPoint(display, drawable, gc, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XEmptyRegion(int region);
+public static final boolean XEmptyRegion(int region) {
+	lock.lock();
+	try {
+		return _XEmptyRegion(region);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XEventsQueued(int display, int mode);
+public static final int XEventsQueued(int display, int mode) {
+	lock.lock();
+	try {
+		return _XEventsQueued(display, mode);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XFillArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2);
+public static final void XFillArc(int display, int drawable, int gc, int x1, int y1, int x2, int y2, int a1, int a2) {
+	lock.lock();
+	try {
+		_XFillArc(display, drawable, gc, x1, y1, x2, y2, a1, a2);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XFillPolygon(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode, int style);
+public static final int XFillPolygon(int display, int drawable, int gc, short[] xPoints, int nPoints, int mode, int style) {
+	lock.lock();
+	try {
+		return _XFillPolygon(display, drawable, gc, xPoints, nPoints, mode, style);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XFillRectangle(int display, int drawable, int gc, int x, int y, int width, int height);
+public static final void XFillRectangle(int display, int drawable, int gc, int x, int y, int width, int height) {
+	lock.lock();
+	try {
+		_XFillRectangle(display, drawable, gc, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XFilterEvent(int event, int window);
+public static final boolean XFilterEvent(int event, int window) {
+	lock.lock();
+	try {
+		return _XFilterEvent(event, window);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XFlush(int display);
+public static final void XFlush(int display) {
+	lock.lock();
+	try {
+		_XFlush(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XFontsOfFontSet(int fontSet, int[] fontStructs, int[] fontNames);
+public static final int XFontsOfFontSet(int fontSet, int[] fontStructs, int[] fontNames) {
+	lock.lock();
+	try {
+		return _XFontsOfFontSet(fontSet, fontStructs, fontNames);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XFree(int address);
+public static final int XFree(int address) {
+	lock.lock();
+	try {
+		return _XFree(address);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XFreeColors(int display, int colormap, int[] pixels, int npixels, int planes);
+public static final int XFreeColors(int display, int colormap, int[] pixels, int npixels, int planes) {
+	lock.lock();
+	try {
+		return _XFreeColors(display, colormap, pixels, npixels, planes);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XFreeCursor(int display, int pixmap);
+public static final void XFreeCursor(int display, int pixmap) {
+	lock.lock();
+	try {
+		_XFreeCursor(display, pixmap);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XFreeFont(int display, int font_struct);
+public static final void XFreeFont(int display, int font_struct) {
+	lock.lock();
+	try {
+		_XFreeFont(display, font_struct);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XFreeFontNames(int list);
+public static final void XFreeFontNames(int list) {
+	lock.lock();
+	try {
+		_XFreeFontNames(list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XFreeGC(int display, int gc);
+public static final void XFreeGC(int display, int gc) {
+	lock.lock();
+	try {
+		_XFreeGC(display, gc);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XFreePixmap(int display, int pixmap);
+public static final void XFreePixmap(int display, int pixmap) {
+	lock.lock();
+	try {
+		_XFreePixmap(display, pixmap);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XFreeStringList(int list);
+public static final void XFreeStringList(int list) {
+	lock.lock();
+	try {
+		_XFreeStringList(list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XGetGCValues(int display, int gc, int valuemask, XGCValues values);
+public static final int XGetGCValues(int display, int gc, int valuemask, XGCValues values) {
+	lock.lock();
+	try {
+		return _XGetGCValues(display, gc, valuemask, values);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XGetGeometry(int display, int drawable, int[] root_return, int[] x_return, int[] y_return, int[] width_return, int[] height_return, int[] border_width_return, int[] depth_return);
+public static final int XGetGeometry(int display, int drawable, int[] root_return, int[] x_return, int[] y_return, int[] width_return, int[] height_return, int[] border_width_return, int[] depth_return) {
+	lock.lock();
+	try {
+		return _XGetGeometry(display, drawable, root_return, x_return, y_return, width_return, height_return, border_width_return, depth_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XGetImage(int display, int drawable, int x, int y, int width, int height, int plane_mask, int format);
+public static final int XGetImage(int display, int drawable, int x, int y, int width, int height, int plane_mask, int format) {
+	lock.lock();
+	try {
+		return _XGetImage(display, drawable, x, y, width, height, plane_mask, format);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XGetInputFocus(int display, int[] window, int[] revert);
+public static final int XGetInputFocus(int display, int[] window, int[] revert) {
+	lock.lock();
+	try {
+		return _XGetInputFocus(display, window, revert);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XGetWindowAttributes(int display, int window, XWindowAttributes attributes);
+public static final boolean XGetWindowAttributes(int display, int window, XWindowAttributes attributes) {
+	lock.lock();
+	try {
+		return _XGetWindowAttributes(display, window, attributes);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XGetWindowProperty(int display, int window, int property, int offset, int length, boolean delete, int req_type, int[] actual_type_return, int[] actual_format_return, int[] nitems_return, int[] bytes_after_return, int[] prop_return);
+public static final int XGetWindowProperty(int display, int window, int property, int offset, int length, boolean delete, int req_type, int[] actual_type_return, int[] actual_format_return, int[] nitems_return, int[] bytes_after_return, int[] prop_return) {
+	lock.lock();
+	try {
+		return _XGetWindowProperty(display, window, property, offset, length, delete, req_type, actual_type_return, actual_format_return, nitems_return, bytes_after_return, prop_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XGrabKeyboard(int display, int grabWindow, int ownerEvents, int pointerMode, int keyboardMode, int time);
+public static final int XGrabKeyboard(int display, int grabWindow, int ownerEvents, int pointerMode, int keyboardMode, int time) {
+	lock.lock();
+	try {
+		return _XGrabKeyboard(display, grabWindow, ownerEvents, pointerMode, keyboardMode, time);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XGrabPointer(int display, int grabWindow, int ownerEvents, int eventMask, int pointerMode, int keyboardMode, int confineToWindow, int cursor, int time);
+public static final int XGrabPointer(int display, int grabWindow, int ownerEvents, int eventMask, int pointerMode, int keyboardMode, int confineToWindow, int cursor, int time) {
+	lock.lock();
+	try {
+		return _XGrabPointer(display, grabWindow, ownerEvents, eventMask, pointerMode, keyboardMode, confineToWindow, cursor, time);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XInitThreads();
+public static final int XInitThreads() {
+	lock.lock();
+	try {
+		return _XInitThreads();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XInternAtom(int display, byte[] name, boolean ifExists);
+public static final int XInternAtom(int display, byte[] name, boolean ifExists) {
+	lock.lock();
+	try {
+		return _XInternAtom(display, name, ifExists);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XIntersectRegion(int sra, int srb, int dr_return);
+public static final void XIntersectRegion(int sra, int srb, int dr_return) {
+	lock.lock();
+	try {
+		_XIntersectRegion(sra, srb, dr_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XKeysymToKeycode(int display, int keysym);
+public static final int XKeysymToKeycode(int display, int keysym) {
+	lock.lock();
+	try {
+		return _XKeysymToKeycode(display, keysym);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XKeysymToString(int keysym);
+public static final int XKeysymToString(int keysym) {
+	lock.lock();
+	try {
+		return _XKeysymToString(keysym);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XListFonts(int display, byte[] pattern, int maxnames, int[] actual_count_return);
+public static final int XListFonts(int display, byte[] pattern, int maxnames, int[] actual_count_return) {
+	lock.lock();
+	try {
+		return _XListFonts(display, pattern, maxnames, actual_count_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XListProperties(int display, int window, int[] num_prop_return);
+public static final int XListProperties(int display, int window, int[] num_prop_return) {
+	lock.lock();
+	try {
+		return _XListProperties(display, window, num_prop_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XLocaleOfFontSet(int fontSet);
+public static final int XLocaleOfFontSet(int fontSet) {
+	lock.lock();
+	try {
+		return _XLocaleOfFontSet(fontSet);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XLookupString(XKeyEvent event, byte[] string, int size, int[] keysym, int[] status);
+public static final int XLookupString(XKeyEvent event, byte[] string, int size, int[] keysym, int[] status) {
+	lock.lock();
+	try {
+		return _XLookupString(event, string, size, keysym, status);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XLowerWindow(int display, int window);
+public static final int XLowerWindow(int display, int window) {
+	lock.lock();
+	try {
+		return _XLowerWindow(display, window);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XMapWindow(int display, int w);
+public static final void XMapWindow(int display, int w) {
+	lock.lock();
+	try {
+		_XMapWindow(display, w);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XGetModifierMapping(int display);
+public static final int XGetModifierMapping(int display) {
+	lock.lock();
+	try {
+		return _XGetModifierMapping(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XGetIconSizes(int display, int w, int[] size_list_return, int[] count_return);
+public static final int XGetIconSizes(int display, int w, int[] size_list_return, int[] count_return) {
+	lock.lock();
+	try {
+		return _XGetIconSizes(display, w, size_list_return, count_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XMoveResizeWindow(int display, int w, int x, int y, int width, int height);
+public static final void XMoveResizeWindow(int display, int w, int x, int y, int width, int height) {
+	lock.lock();
+	try {
+		_XMoveResizeWindow(display, w, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XOffsetRegion(int r, int dx, int dy);
+public static final int XOffsetRegion(int r, int dx, int dy) {
+	lock.lock();
+	try {
+		return _XOffsetRegion(r, dx, dy);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XOpenDisplay(byte[] display_name);
+public static final int XOpenDisplay(byte[] display_name) {
+	lock.lock();
+	try {
+		return _XOpenDisplay(display_name);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XPointInRegion(int region, int x, int y);
+public static final boolean XPointInRegion(int region, int x, int y) {
+	lock.lock();
+	try {
+		return _XPointInRegion(region, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XPolygonRegion(short[] points, int n, int fill_rule);
+public static final int XPolygonRegion(short[] points, int n, int fill_rule) {
+	lock.lock();
+	try {
+		return _XPolygonRegion(points, n, fill_rule);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XPutImage(int display, int drawable, int gc, int image, int srcX, int srcY, int destX, int destY, int width, int height);
+public static final int XPutImage(int display, int drawable, int gc, int image, int srcX, int srcY, int destX, int destY, int width, int height) {
+	lock.lock();
+	try {
+		return _XPutImage(display, drawable, gc, image, srcX, srcY, destX, destY, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XQueryColor(int display, int colormap, XColor color);
+public static final int XQueryColor(int display, int colormap, XColor color) {
+	lock.lock();
+	try {
+		return _XQueryColor(display, colormap, color);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XQueryBestCursor(int display, int d, int width, int height, int[] width_return, int[] height_return);
+public static final int XQueryBestCursor(int display, int d, int width, int height, int[] width_return, int[] height_return) {
+	lock.lock();
+	try {
+		return _XQueryBestCursor(display, d, width, height, width_return, height_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XQueryPointer(int display, int window, int[] root, int[] child, int[] rootX, int[] rootY, int[] windowX, int[] windowY, int[] mask);
+public static final int XQueryPointer(int display, int window, int[] root, int[] child, int[] rootX, int[] rootY, int[] windowX, int[] windowY, int[] mask) {
+	lock.lock();
+	try {
+		return _XQueryPointer(display, window, root, child, rootX, rootY, windowX, windowY, mask);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XQueryTree(int display, int window, int[] root_return, int[] parent_return, int[] children_return, int[] nChildren_return);
+public static final int XQueryTree(int display, int window, int[] root_return, int[] parent_return, int[] children_return, int[] nChildren_return) {
+	lock.lock();
+	try {
+		return _XQueryTree(display, window, root_return, parent_return, children_return, nChildren_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XRaiseWindow(int display, int window);
+public static final int XRaiseWindow(int display, int window) {
+	lock.lock();
+	try {
+		return _XRaiseWindow(display, window);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XReconfigureWMWindow(int display, int window, int screen, int valueMask, XWindowChanges values);
+public static final int XReconfigureWMWindow(int display, int window, int screen, int valueMask, XWindowChanges values) {
+	lock.lock();
+	try {
+		return _XReconfigureWMWindow(display, window, screen, valueMask, values);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XRectInRegion(int region, int x, int y, int width, int height);
+public static final int XRectInRegion(int region, int x, int y, int width, int height) {
+	lock.lock();
+	try {
+		return _XRectInRegion(region, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XReparentWindow(int display, int win, int parent, int x, int y);
+public static final int XReparentWindow(int display, int win, int parent, int x, int y) {
+	lock.lock();
+	try {
+		return _XReparentWindow(display, win, parent, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XResizeWindow(int display, int w, int width, int height);
+public static final void XResizeWindow(int display, int w, int width, int height) {
+	lock.lock();
+	try {
+		_XResizeWindow(display, w, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XRootWindowOfScreen(int screen);
+public static final int XRootWindowOfScreen(int screen) {
+	lock.lock();
+	try {
+		return _XRootWindowOfScreen(screen);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSelectInput(int display, int window, int mask);
+public static final void XSelectInput(int display, int window, int mask) {
+	lock.lock();
+	try {
+		_XSelectInput(display, window, mask);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XSendEvent(int display, int window, boolean propagate, int event_mask, int event);
+public static final int XSendEvent(int display, int window, boolean propagate, int event_mask, int event) {
+	lock.lock();
+	try {
+		return _XSendEvent(display, window, propagate, event_mask, event);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetBackground(int display, int gc, int background);
+public static final void XSetBackground(int display, int gc, int background) {
+	lock.lock();
+	try {
+		_XSetBackground(display, gc, background);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetClipMask(int display, int gc, int pixmap);
+public static final void XSetClipMask(int display, int gc, int pixmap) {
+	lock.lock();
+	try {
+		_XSetClipMask(display, gc, pixmap);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetClipRectangles(int display, int gc, int clip_x_origin, int clip_y_origin, XRectangle rectangles, int n, int ordering);
+public static final void XSetClipRectangles(int display, int gc, int clip_x_origin, int clip_y_origin, XRectangle rectangles, int n, int ordering) {
+	lock.lock();
+	try {
+		_XSetClipRectangles(display, gc, clip_x_origin, clip_y_origin, rectangles, n, ordering);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XSetDashes(int display, int gc, int dash_offset, byte[] dash_list, int n);
+public static final int XSetDashes(int display, int gc, int dash_offset, byte[] dash_list, int n) {
+	lock.lock();
+	try {
+		return _XSetDashes(display, gc, dash_offset, dash_list, n);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XSetErrorHandler(int handler);
+public static final int XSetErrorHandler(int handler) {
+	lock.lock();
+	try {
+		return _XSetErrorHandler(handler);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetFillStyle(int display, int gc, int fill_style);
+public static final void XSetFillStyle(int display, int gc, int fill_style) {
+	lock.lock();
+	try {
+		_XSetFillStyle(display, gc, fill_style);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetForeground(int display, int gc, int foreground);
+public static final void XSetForeground(int display, int gc, int foreground) {
+	lock.lock();
+	try {
+		_XSetForeground(display, gc, foreground);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetFunction(int display, int gc, int function);
+public static final void XSetFunction(int display, int gc, int function) {
+	lock.lock();
+	try {
+		_XSetFunction(display, gc, function);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetGraphicsExposures(int display, int gc, boolean graphics_exposures);
+public static final void XSetGraphicsExposures(int display, int gc, boolean graphics_exposures) {
+	lock.lock();
+	try {
+		_XSetGraphicsExposures(display, gc, graphics_exposures);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XSetIOErrorHandler(int handler);
+public static final int XSetIOErrorHandler(int handler) {
+	lock.lock();
+	try {
+		return _XSetIOErrorHandler(handler);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XSetInputFocus(int display, int window, int revert, int time);
+public static final int XSetInputFocus(int display, int window, int revert, int time) {
+	lock.lock();
+	try {
+		return _XSetInputFocus(display, window, revert, time);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XSetLineAttributes(int display, int gc, int lineWidth, int lineStyle, int capStyle, int joinStyle);
+public static final int XSetLineAttributes(int display, int gc, int lineWidth, int lineStyle, int capStyle, int joinStyle) {
+	lock.lock();
+	try {
+		return _XSetLineAttributes(display, gc, lineWidth, lineStyle, capStyle, joinStyle);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetRegion(int display, int gc, int region);
+public static final void XSetRegion(int display, int gc, int region) {
+	lock.lock();
+	try {
+		_XSetRegion(display, gc, region);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetStipple(int display, int gc, int pixmap);
+public static final void XSetStipple(int display, int gc, int pixmap) {
+	lock.lock();
+	try {
+		_XSetStipple(display, gc, pixmap);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetSubwindowMode(int display, int gc, int subwindow_mode);
+public static final void XSetSubwindowMode(int display, int gc, int subwindow_mode) {
+	lock.lock();
+	try {
+		_XSetSubwindowMode(display, gc, subwindow_mode);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetWMNormalHints(int display, int w, XSizeHints hints);
+public static final void XSetWMNormalHints(int display, int w, XSizeHints hints) {
+	lock.lock();
+	try {
+		_XSetWMNormalHints(display, w, hints);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XShapeCombineMask(int display, int dest, int dest_kind, int x_off, int y_off, int src, int op);
+public static final void XShapeCombineMask(int display, int dest, int dest_kind, int x_off, int y_off, int src, int op) {
+	lock.lock();
+	try {
+		_XShapeCombineMask(display, dest, dest_kind, x_off, y_off, src, op);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XShapeCombineRegion(int display, int dest, int dest_kind, int x_off, int y_off, int region, int op);
+public static final void XShapeCombineRegion(int display, int dest, int dest_kind, int x_off, int y_off, int region, int op) {
+	lock.lock();
+	try {
+		_XShapeCombineRegion(display, dest, dest_kind, x_off, y_off, region, op);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSubtractRegion(int sra, int srb, int dr_return);
+public static final void XSubtractRegion(int sra, int srb, int dr_return) {
+	lock.lock();
+	try {
+		_XSubtractRegion(sra, srb, dr_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSync(int display, boolean discard);
+public static final void XSync(int display, boolean discard) {
+	lock.lock();
+	try {
+		_XSync(display, discard);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XSynchronize(int display, boolean onoff);
+public static final int XSynchronize(int display, boolean onoff) {
+	lock.lock();
+	try {
+		return _XSynchronize(display, onoff);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XTestFakeButtonEvent(int display, int button, boolean is_press, int delay);
+public static final void XTestFakeButtonEvent(int display, int button, boolean is_press, int delay) {
+	lock.lock();
+	try {
+		_XTestFakeButtonEvent(display, button, is_press, delay);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XTestFakeKeyEvent(int display, int keycode, boolean is_press, int delay);
+public static final void XTestFakeKeyEvent(int display, int keycode, boolean is_press, int delay) {
+	lock.lock();
+	try {
+		_XTestFakeKeyEvent(display, keycode, is_press, delay);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XTestFakeMotionEvent(int display, int screen_number, int x, int y, int delay);
+public static final void XTestFakeMotionEvent(int display, int screen_number, int x, int y, int delay) {
+	lock.lock();
+	try {
+		_XTestFakeMotionEvent(display, screen_number, x, y, delay);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XTranslateCoordinates(int display, int src_w, int dest_w, int src_x, int src_y, int[] dest_x_return, int[] dest_y_return, int[] child_return);
+public static final boolean XTranslateCoordinates(int display, int src_w, int dest_w, int src_x, int src_y, int[] dest_x_return, int[] dest_y_return, int[] child_return) {
+	lock.lock();
+	try {
+		return _XTranslateCoordinates(display, src_w, dest_w, src_x, src_y, dest_x_return, dest_y_return, child_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XUndefineCursor(int display, int window);
+public static final void XUndefineCursor(int display, int window) {
+	lock.lock();
+	try {
+		_XUndefineCursor(display, window);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XUngrabKeyboard(int display, int time);
+public static final int XUngrabKeyboard(int display, int time) {
+	lock.lock();
+	try {
+		return _XUngrabKeyboard(display, time);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XUngrabPointer(int display, int time);
+public static final int XUngrabPointer(int display, int time) {
+	lock.lock();
+	try {
+		return _XUngrabPointer(display, time);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XUnionRectWithRegion(XRectangle rectangle, int src_region, int dest_region_return);
+public static final void XUnionRectWithRegion(XRectangle rectangle, int src_region, int dest_region_return) {
+	lock.lock();
+	try {
+		_XUnionRectWithRegion(rectangle, src_region, dest_region_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XUnionRegion(int sra, int srb, int dr_return);
+public static final void XUnionRegion(int sra, int srb, int dr_return) {
+	lock.lock();
+	try {
+		_XUnionRegion(sra, srb, dr_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XUnmapWindow(int display, int window);
+public static final void XUnmapWindow(int display, int window) {
+	lock.lock();
+	try {
+		_XUnmapWindow(display, window);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XWarpPointer(int display, int sourceWindow, int destWindow, int sourceX, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY);
+public static final int XWarpPointer(int display, int sourceWindow, int destWindow, int sourceX, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY) {
+	lock.lock();
+	try {
+		return _XWarpPointer(display, sourceWindow, destWindow, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XWhitePixel(int display, int screenNum);
+public static final int XWhitePixel(int display, int screenNum) {
+	lock.lock();
+	try {
+		return _XWhitePixel(display, screenNum);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XWithdrawWindow(int display, int window, int screen);
+public static final void XWithdrawWindow(int display, int window, int screen) {
+	lock.lock();
+	try {
+		_XWithdrawWindow(display, window, screen);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XineramaIsActive(int dpy);
+public static final boolean XineramaIsActive(int dpy) {
+	lock.lock();
+	try {
+		return _XineramaIsActive(dpy);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XineramaQueryScreens(int dpy, int[] number);
+public static final int XineramaQueryScreens(int dpy, int[] number) {
+	lock.lock();
+	try {
+		return _XineramaQueryScreens(dpy, number);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmAddWMProtocolCallback(int shell, int protocol, int callback, int closure);
+public static final void XmAddWMProtocolCallback(int shell, int protocol, int callback, int closure) {
+	lock.lock();
+	try {
+		_XmAddWMProtocolCallback(shell, protocol, callback, closure);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmChangeColor(int widget, int pixel);
+public static final void XmChangeColor(int widget, int pixel) {
+	lock.lock();
+	try {
+		_XmChangeColor(widget, pixel);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmClipboardCopy(int display, int window, int item_id, byte[] format_name, byte[] buffer, int length, int private_id, int[] data_id);
+public static final int XmClipboardCopy(int display, int window, int item_id, byte[] format_name, byte[] buffer, int length, int private_id, int[] data_id) {
+	lock.lock();
+	try {
+		return _XmClipboardCopy(display, window, item_id, format_name, buffer, length, private_id, data_id);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmClipboardEndCopy(int display, int window, int item_id);
+public static final int XmClipboardEndCopy(int display, int window, int item_id) {
+	lock.lock();
+	try {
+		return _XmClipboardEndCopy(display, window, item_id);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmClipboardEndRetrieve(int display, int window);
+public static final int XmClipboardEndRetrieve(int display, int window) {
+	lock.lock();
+	try {
+		return _XmClipboardEndRetrieve(display, window);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmClipboardInquireCount(int display, int window, int[] count, int[] max_format_name_length);
+public static final int XmClipboardInquireCount(int display, int window, int[] count, int[] max_format_name_length) {
+	lock.lock();
+	try {
+		return _XmClipboardInquireCount(display, window, count, max_format_name_length);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmClipboardInquireFormat(int display, int window, int index, byte[] format_name_buf, int buffer_len, int[] copied_len);
+public static final int XmClipboardInquireFormat(int display, int window, int index, byte[] format_name_buf, int buffer_len, int[] copied_len) {
+	lock.lock();
+	try {
+		return _XmClipboardInquireFormat(display, window, index, format_name_buf, buffer_len, copied_len);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmClipboardInquireLength(int display, int widget, byte[] format_name, int[] length);
+public static final int XmClipboardInquireLength(int display, int widget, byte[] format_name, int[] length) {
+	lock.lock();
+	try {
+		return _XmClipboardInquireLength(display, widget, format_name, length);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmClipboardRetrieve(int display, int window, byte[] format_name, byte[] buffer, int length, int[] num_bytes, int[] private_id);
+public static final int XmClipboardRetrieve(int display, int window, byte[] format_name, byte[] buffer, int length, int[] num_bytes, int[] private_id) {
+	lock.lock();
+	try {
+		return _XmClipboardRetrieve(display, window, format_name, buffer, length, num_bytes, private_id);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmClipboardStartCopy(int display, int window, int clip_label, int timestamp, int widget, int callback, int[] item_id);
+public static final int XmClipboardStartCopy(int display, int window, int clip_label, int timestamp, int widget, int callback, int[] item_id) {
+	lock.lock();
+	try {
+		return _XmClipboardStartCopy(display, window, clip_label, timestamp, widget, callback, item_id);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmClipboardStartRetrieve(int display, int window, int timestamp);
+public static final int XmClipboardStartRetrieve(int display, int window, int timestamp) {
+	lock.lock();
+	try {
+		return _XmClipboardStartRetrieve(display, window, timestamp);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmComboBoxAddItem(int widget, int xmString, int position, boolean unique);
+public static final void XmComboBoxAddItem(int widget, int xmString, int position, boolean unique) {
+	lock.lock();
+	try {
+		_XmComboBoxAddItem(widget, xmString, position, unique);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmComboBoxDeletePos(int widget, int position);
+public static final void XmComboBoxDeletePos(int widget, int position) {
+	lock.lock();
+	try {
+		_XmComboBoxDeletePos(widget, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmComboBoxSelectItem(int widget, int xmString);
+public static final void XmComboBoxSelectItem(int widget, int xmString) {
+	lock.lock();
+	try {
+		_XmComboBoxSelectItem(widget, xmString);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateArrowButton(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateArrowButton(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateArrowButton(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateCascadeButtonGadget(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateCascadeButtonGadget(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateCascadeButtonGadget(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateComboBox(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateComboBox(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateComboBox(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateDialogShell(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateDialogShell(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateDialogShell(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateDrawingArea(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateDrawingArea(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateDrawingArea(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateDrawnButton(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateDrawnButton(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateDrawnButton(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateErrorDialog(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateErrorDialog(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateErrorDialog(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateFileSelectionDialog(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateFileSelectionDialog(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateFileSelectionDialog(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateForm(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateForm(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateForm(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateFrame(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateFrame(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateFrame(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateInformationDialog(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateInformationDialog(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateInformationDialog(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateLabel(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateLabel(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateLabel(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateList(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateList(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateList(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateMainWindow(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateMainWindow(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateMainWindow(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateMenuBar(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateMenuBar(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateMenuBar(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateMessageDialog(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateMessageDialog(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateMessageDialog(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreatePopupMenu(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreatePopupMenu(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreatePopupMenu(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreatePulldownMenu(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreatePulldownMenu(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreatePulldownMenu(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreatePushButton(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreatePushButton(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreatePushButton(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreatePushButtonGadget(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreatePushButtonGadget(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreatePushButtonGadget(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateQuestionDialog(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateQuestionDialog(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateQuestionDialog(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateScale(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateScale(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateScale(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateScrollBar(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateScrollBar(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateScrollBar(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateScrolledList(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateScrolledList(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateScrolledList(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateScrolledText(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateScrolledText(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateScrolledText(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateSeparator(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateSeparator(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateSeparator(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateSeparatorGadget(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateSeparatorGadget(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateSeparatorGadget(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateSimpleSpinBox(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateSimpleSpinBox(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateSimpleSpinBox(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateTextField(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateTextField(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateTextField(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateToggleButton(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateToggleButton(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateToggleButton(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateToggleButtonGadget(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateToggleButtonGadget(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateToggleButtonGadget(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateWarningDialog(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateWarningDialog(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateWarningDialog(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmCreateWorkingDialog(int parent, byte[] name, int[] arglist, int argcount);
+public static final int XmCreateWorkingDialog(int parent, byte[] name, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmCreateWorkingDialog(parent, name, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmDestroyPixmap(int screen, int pixmap);
+public static final boolean XmDestroyPixmap(int screen, int pixmap) {
+	lock.lock();
+	try {
+		return _XmDestroyPixmap(screen, pixmap);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmDragCancel(int dragcontext);
+public static final void XmDragCancel(int dragcontext) {
+	lock.lock();
+	try {
+		_XmDragCancel(dragcontext);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmDragStart(int widget, int event, int[] arglist, int argcount);
+public static final int XmDragStart(int widget, int event, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmDragStart(widget, event, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmDropSiteRegister(int widget, int[] arglist, int argcount);
+public static final void XmDropSiteRegister(int widget, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		_XmDropSiteRegister(widget, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmDropSiteUnregister(int widget);
+public static final void XmDropSiteUnregister(int widget) {
+	lock.lock();
+	try {
+		_XmDropSiteUnregister(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmDropSiteUpdate(int widget, int[] arglist, int argcount);
+public static final void XmDropSiteUpdate(int widget, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		_XmDropSiteUpdate(widget, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmDropTransferAdd(int drop_transfer, int[] transfers, int num_transfers);
+public static final void XmDropTransferAdd(int drop_transfer, int[] transfers, int num_transfers) {
+	lock.lock();
+	try {
+		_XmDropTransferAdd(drop_transfer, transfers, num_transfers);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmDropTransferStart(int widget, int[] arglist, int argcount);
+public static final int XmDropTransferStart(int widget, int[] arglist, int argcount) {
+	lock.lock();
+	try {
+		return _XmDropTransferStart(widget, arglist, argcount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmFileSelectionBoxGetChild(int widget, int child);
+public static final int XmFileSelectionBoxGetChild(int widget, int child) {
+	lock.lock();
+	try {
+		return _XmFileSelectionBoxGetChild(widget, child);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmFontListAppendEntry(int oldList, int entry);
+public static final int XmFontListAppendEntry(int oldList, int entry) {
+	lock.lock();
+	try {
+		return _XmFontListAppendEntry(oldList, entry);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmFontListCopy(int fontlist);
+public static final int XmFontListCopy(int fontlist) {
+	lock.lock();
+	try {
+		return _XmFontListCopy(fontlist);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmFontListEntryFree(int[] entry);
+public static final void XmFontListEntryFree(int[] entry) {
+	lock.lock();
+	try {
+		_XmFontListEntryFree(entry);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmFontListEntryGetFont(int entry, int[] type_return);
+public static final int XmFontListEntryGetFont(int entry, int[] type_return) {
+	lock.lock();
+	try {
+		return _XmFontListEntryGetFont(entry, type_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmFontListEntryLoad(int display, byte[] fontName, int type, byte[] tag);
+public static final int XmFontListEntryLoad(int display, byte[] fontName, int type, byte[] tag) {
+	lock.lock();
+	try {
+		return _XmFontListEntryLoad(display, fontName, type, tag);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmFontListFree(int list);
+public static final void XmFontListFree(int list) {
+	lock.lock();
+	try {
+		_XmFontListFree(list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmFontListFreeFontContext(int context);
+public static final void XmFontListFreeFontContext(int context) {
+	lock.lock();
+	try {
+		_XmFontListFreeFontContext(context);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmFontListInitFontContext(int[] context, int fontList);
+public static final boolean XmFontListInitFontContext(int[] context, int fontList) {
+	lock.lock();
+	try {
+		return _XmFontListInitFontContext(context, fontList);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmFontListNextEntry(int context);
+public static final int XmFontListNextEntry(int context) {
+	lock.lock();
+	try {
+		return _XmFontListNextEntry(context);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmGetAtomName(int display, int atom);
+public static final int XmGetAtomName(int display, int atom) {
+	lock.lock();
+	try {
+		return _XmGetAtomName(display, atom);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmGetDragContext(int widget, int timestamp);
+public static final int XmGetDragContext(int widget, int timestamp) {
+	lock.lock();
+	try {
+		return _XmGetDragContext(widget, timestamp);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmGetFocusWidget(int widget);
+public static final int XmGetFocusWidget(int widget) {
+	lock.lock();
+	try {
+		return _XmGetFocusWidget(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmGetPixmap(int screen, byte[] name, int fgPixel, int bgPixel);
+public static final int XmGetPixmap(int screen, byte[] name, int fgPixel, int bgPixel) {
+	lock.lock();
+	try {
+		return _XmGetPixmap(screen, name, fgPixel, bgPixel);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmGetPixmapByDepth(int screen, byte[] image_name, int foreground, int background, int depth);
+public static final int XmGetPixmapByDepth(int screen, byte[] image_name, int foreground, int background, int depth) {
+	lock.lock();
+	try {
+		return _XmGetPixmapByDepth(screen, image_name, foreground, background, depth);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmGetXmDisplay(int display);
+public static final int XmGetXmDisplay(int display) {
+	lock.lock();
+	try {
+		return _XmGetXmDisplay(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmImMbLookupString(int widget, XKeyEvent event, byte[] string, int size, int[] keysym, int[] status);
+public static final int XmImMbLookupString(int widget, XKeyEvent event, byte[] string, int size, int[] keysym, int[] status) {
+	lock.lock();
+	try {
+		return _XmImMbLookupString(widget, event, string, size, keysym, status);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmImRegister(int widget, int reserved);
+public static final void XmImRegister(int widget, int reserved) {
+	lock.lock();
+	try {
+		_XmImRegister(widget, reserved);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmImSetFocusValues(int widget, int[] args, int num_args);
+public static final void XmImSetFocusValues(int widget, int[] args, int num_args) {
+	lock.lock();
+	try {
+		_XmImSetFocusValues(widget, args, num_args);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmImSetValues(int widget, int[] args, int num_args);
+public static final void XmImSetValues(int widget, int[] args, int num_args) {
+	lock.lock();
+	try {
+		_XmImSetValues(widget, args, num_args);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmImUnregister(int widget);
+public static final void XmImUnregister(int widget) {
+	lock.lock();
+	try {
+		_XmImUnregister(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmImUnsetFocus(int widget);
+public static final void XmImUnsetFocus(int widget) {
+	lock.lock();
+	try {
+		_XmImUnsetFocus(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmInternAtom(int display, byte[] name, boolean only_if_exists);
+public static final int XmInternAtom(int display, byte[] name, boolean only_if_exists) {
+	lock.lock();
+	try {
+		return _XmInternAtom(display, name, only_if_exists);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmListAddItemUnselected(int list, int xmString, int position);
+public static final void XmListAddItemUnselected(int list, int xmString, int position) {
+	lock.lock();
+	try {
+		_XmListAddItemUnselected(list, xmString, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmListDeleteAllItems(int list);
+public static final void XmListDeleteAllItems(int list) {
+	lock.lock();
+	try {
+		_XmListDeleteAllItems(list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmListDeleteItemsPos(int list, int item_count, int position);
+public static final void XmListDeleteItemsPos(int list, int item_count, int position) {
+	lock.lock();
+	try {
+		_XmListDeleteItemsPos(list, item_count, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmListDeletePos(int list, int position);
+public static final void XmListDeletePos(int list, int position) {
+	lock.lock();
+	try {
+		_XmListDeletePos(list, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmListDeletePositions(int list, int[] position_list, int position_count);
+public static final void XmListDeletePositions(int list, int[] position_list, int position_count) {
+	lock.lock();
+	try {
+		_XmListDeletePositions(list, position_list, position_count);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmListDeselectAllItems(int list);
+public static final void XmListDeselectAllItems(int list) {
+	lock.lock();
+	try {
+		_XmListDeselectAllItems(list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmListDeselectPos(int list, int position);
+public static final void XmListDeselectPos(int list, int position) {
+	lock.lock();
+	try {
+		_XmListDeselectPos(list, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmListGetKbdItemPos(int list);
+public static final int XmListGetKbdItemPos(int list) {
+	lock.lock();
+	try {
+		return _XmListGetKbdItemPos(list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmListGetSelectedPos(int list, int[] positions, int[] count);
+public static final boolean XmListGetSelectedPos(int list, int[] positions, int[] count) {
+	lock.lock();
+	try {
+		return _XmListGetSelectedPos(list, positions, count);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmListItemPos(int list, int xmString);
+public static final int XmListItemPos(int list, int xmString) {
+	lock.lock();
+	try {
+		return _XmListItemPos(list, xmString);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmListPosSelected(int list, int position);
+public static final boolean XmListPosSelected(int list, int position) {
+	lock.lock();
+	try {
+		return _XmListPosSelected(list, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmListReplaceItemsPosUnselected(int list, int[] new_items, int item_count, int position);
+public static final void XmListReplaceItemsPosUnselected(int list, int[] new_items, int item_count, int position) {
+	lock.lock();
+	try {
+		_XmListReplaceItemsPosUnselected(list, new_items, item_count, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmListSelectPos(int list, int position, boolean notify);
+public static final void XmListSelectPos(int list, int position, boolean notify) {
+	lock.lock();
+	try {
+		_XmListSelectPos(list, position, notify);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmListSetKbdItemPos(int list, int position);
+public static final boolean XmListSetKbdItemPos(int list, int position) {
+	lock.lock();
+	try {
+		return _XmListSetKbdItemPos(list, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmListSetPos(int list, int position);
+public static final void XmListSetPos(int list, int position) {
+	lock.lock();
+	try {
+		_XmListSetPos(list, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmListUpdateSelectedList(int list);
+public static final void XmListUpdateSelectedList(int list) {
+	lock.lock();
+	try {
+		_XmListUpdateSelectedList(list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmMainWindowSetAreas(int widget, int menu, int command, int hscroll, int vscroll, int wregion);
+public static final void XmMainWindowSetAreas(int widget, int menu, int command, int hscroll, int vscroll, int wregion) {
+	lock.lock();
+	try {
+		_XmMainWindowSetAreas(widget, menu, command, hscroll, vscroll, wregion);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmMessageBoxGetChild(int widget, int child);
+public static final int XmMessageBoxGetChild(int widget, int child) {
+	lock.lock();
+	try {
+		return _XmMessageBoxGetChild(widget, child);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmParseMappingCreate(int[] argList, int argCount);
+public static final int XmParseMappingCreate(int[] argList, int argCount) {
+	lock.lock();
+	try {
+		return _XmParseMappingCreate(argList, argCount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmParseMappingFree(int parseMapping);
+public static final void XmParseMappingFree(int parseMapping) {
+	lock.lock();
+	try {
+		_XmParseMappingFree(parseMapping);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmProcessTraversal(int widget, int dir);
+public static final boolean XmProcessTraversal(int widget, int dir) {
+	lock.lock();
+	try {
+		return _XmProcessTraversal(widget, dir);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmRenderTableAddRenditions(int oldTable, int[] renditions, int renditionCount, int mergeMode);
+public static final int XmRenderTableAddRenditions(int oldTable, int[] renditions, int renditionCount, int mergeMode) {
+	lock.lock();
+	try {
+		return _XmRenderTableAddRenditions(oldTable, renditions, renditionCount, mergeMode);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmRenderTableFree(int renderTable);
+public static final void XmRenderTableFree(int renderTable) {
+	lock.lock();
+	try {
+		_XmRenderTableFree(renderTable);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmRenditionCreate(int widget, byte[] tag, int[] argList, int argCount);
+public static final int XmRenditionCreate(int widget, byte[] tag, int[] argList, int argCount) {
+	lock.lock();
+	try {
+		return _XmRenditionCreate(widget, tag, argList, argCount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmRenditionFree(int rendition);
+public static final void XmRenditionFree(int rendition) {
+	lock.lock();
+	try {
+		_XmRenditionFree(rendition);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmStringBaseline(int fontList, int xmString);
+public static final int XmStringBaseline(int fontList, int xmString) {
+	lock.lock();
+	try {
+		return _XmStringBaseline(fontList, xmString);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmStringCompare(int xmString1, int xmString2);
+public static final boolean XmStringCompare(int xmString1, int xmString2) {
+	lock.lock();
+	try {
+		return _XmStringCompare(xmString1, xmString2);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmStringComponentCreate(int type, int length, byte[] value);
+public static final int XmStringComponentCreate(int type, int length, byte[] value) {
+	lock.lock();
+	try {
+		return _XmStringComponentCreate(type, length, value);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmStringConcat(int xmString1, int xmString2);
+public static final int XmStringConcat(int xmString1, int xmString2) {
+	lock.lock();
+	try {
+		return _XmStringConcat(xmString1, xmString2);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmStringCreate(byte[] string, byte[] charset);
+public static final int XmStringCreate(byte[] string, byte[] charset) {
+	lock.lock();
+	try {
+		return _XmStringCreate(string, charset);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmStringCreateLocalized(byte[] string);
+public static final int XmStringCreateLocalized(byte[] string) {
+	lock.lock();
+	try {
+		return _XmStringCreateLocalized(string);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmStringDraw(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);
+public static final void XmStringDraw(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip) {
+	lock.lock();
+	try {
+		_XmStringDraw(display, window, renderTable, xmString, gc, x, y, width, align, lay_dir, clip);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmStringDrawImage(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);
+public static final void XmStringDrawImage(int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip) {
+	lock.lock();
+	try {
+		_XmStringDrawImage(display, window, renderTable, xmString, gc, x, y, width, align, lay_dir, clip);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmStringDrawUnderline(int display, int window, int fontlist, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip, int xmStringUnderline);
+public static final void XmStringDrawUnderline(int display, int window, int fontlist, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip, int xmStringUnderline) {
+	lock.lock();
+	try {
+		_XmStringDrawUnderline(display, window, fontlist, xmString, gc, x, y, width, align, lay_dir, clip, xmStringUnderline);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmStringEmpty(int s1);
+public static final boolean XmStringEmpty(int s1) {
+	lock.lock();
+	try {
+		return _XmStringEmpty(s1);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmStringExtent(int fontList, int xmString, short[] width, short[] height);
+public static final void XmStringExtent(int fontList, int xmString, short[] width, short[] height) {
+	lock.lock();
+	try {
+		_XmStringExtent(fontList, xmString, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmStringFree(int xmString);
+public static final void XmStringFree(int xmString) {
+	lock.lock();
+	try {
+		_XmStringFree(xmString);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmStringGenerate(byte[] text, byte[] tag, int type, byte[] rendition);
+public static final int XmStringGenerate(byte[] text, byte[] tag, int type, byte[] rendition) {
+	lock.lock();
+	try {
+		return _XmStringGenerate(text, tag, type, rendition);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmStringHeight(int fontList, int xmString);
+public static final int XmStringHeight(int fontList, int xmString) {
+	lock.lock();
+	try {
+		return _XmStringHeight(fontList, xmString);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmStringParseText(byte[] text, int textEnd, byte[] tag, int tagType, int[] parseTable, int parseCount, int callData);
+public static final int XmStringParseText(byte[] text, int textEnd, byte[] tag, int tagType, int[] parseTable, int parseCount, int callData) {
+	lock.lock();
+	try {
+		return _XmStringParseText(text, textEnd, tag, tagType, parseTable, parseCount, callData);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmStringUnparse(int xmString, byte[] tag, int tagType, int outputType, int[] parseTable, int parseCount, int parseModel);
+public static final int XmStringUnparse(int xmString, byte[] tag, int tagType, int outputType, int[] parseTable, int parseCount, int parseModel) {
+	lock.lock();
+	try {
+		return _XmStringUnparse(xmString, tag, tagType, outputType, parseTable, parseCount, parseModel);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmStringWidth(int fontList, int xmString);
+public static final int XmStringWidth(int fontList, int xmString) {
+	lock.lock();
+	try {
+		return _XmStringWidth(fontList, xmString);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmTabCreate(int value, byte units, byte offsetModel, byte alignment, byte[] decimal);
+public static final int XmTabCreate(int value, byte units, byte offsetModel, byte alignment, byte[] decimal) {
+	lock.lock();
+	try {
+		return _XmTabCreate(value, units, offsetModel, alignment, decimal);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTabFree(int tab);
+public static final void XmTabFree(int tab) {
+	lock.lock();
+	try {
+		_XmTabFree(tab);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTabListFree(int tabList);
+public static final void XmTabListFree(int tabList) {
+	lock.lock();
+	try {
+		_XmTabListFree(tabList);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmTabListInsertTabs(int oldList, int[] tabs, int tab_count, int position);
+public static final int XmTabListInsertTabs(int oldList, int[] tabs, int tab_count, int position) {
+	lock.lock();
+	try {
+		return _XmTabListInsertTabs(oldList, tabs, tab_count, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextClearSelection(int widget, int time);
+public static final void XmTextClearSelection(int widget, int time) {
+	lock.lock();
+	try {
+		_XmTextClearSelection(widget, time);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmTextCopy(int widget, int time);
+public static final boolean XmTextCopy(int widget, int time) {
+	lock.lock();
+	try {
+		return _XmTextCopy(widget, time);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmTextCut(int widget, int time);
+public static final boolean XmTextCut(int widget, int time) {
+	lock.lock();
+	try {
+		return _XmTextCut(widget, time);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextDisableRedisplay(int widget);
+public static final void XmTextDisableRedisplay(int widget) {
+	lock.lock();
+	try {
+		_XmTextDisableRedisplay(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextEnableRedisplay(int widget);
+public static final void XmTextEnableRedisplay(int widget) {
+	lock.lock();
+	try {
+		_XmTextEnableRedisplay(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmTextFieldPaste(int widget);
+public static final boolean XmTextFieldPaste(int widget) {
+	lock.lock();
+	try {
+		return _XmTextFieldPaste(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmTextGetInsertionPosition(int widget);
+public static final int XmTextGetInsertionPosition(int widget) {
+	lock.lock();
+	try {
+		return _XmTextGetInsertionPosition(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmTextGetLastPosition(int widget);
+public static final int XmTextGetLastPosition(int widget) {
+	lock.lock();
+	try {
+		return _XmTextGetLastPosition(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmTextGetMaxLength(int widget);
+public static final int XmTextGetMaxLength(int widget) {
+	lock.lock();
+	try {
+		return _XmTextGetMaxLength(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmTextGetSelection(int widget);
+public static final int XmTextGetSelection(int widget) {
+	lock.lock();
+	try {
+		return _XmTextGetSelection(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmTextGetSelectionPosition(int widget, int[] left, int[] right);
+public static final boolean XmTextGetSelectionPosition(int widget, int[] left, int[] right) {
+	lock.lock();
+	try {
+		return _XmTextGetSelectionPosition(widget, left, right);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmTextGetString(int widget);
+public static final int XmTextGetString(int widget) {
+	lock.lock();
+	try {
+		return _XmTextGetString(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmTextGetSubstring(int widget, int start, int num_chars, int buffer_size, byte[] buffer);
+public static final int XmTextGetSubstring(int widget, int start, int num_chars, int buffer_size, byte[] buffer) {
+	lock.lock();
+	try {
+		return _XmTextGetSubstring(widget, start, num_chars, buffer_size, buffer);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmTextGetSubstringWcs(int widget, int start, int num_chars, int buffer_size, char[] buffer);
+public static final int XmTextGetSubstringWcs(int widget, int start, int num_chars, int buffer_size, char[] buffer) {
+	lock.lock();
+	try {
+		return _XmTextGetSubstringWcs(widget, start, num_chars, buffer_size, buffer);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextInsert(int widget, int position, byte[] value);
+public static final void XmTextInsert(int widget, int position, byte[] value) {
+	lock.lock();
+	try {
+		_XmTextInsert(widget, position, value);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmTextPaste(int widget);
+public static final boolean XmTextPaste(int widget) {
+	lock.lock();
+	try {
+		return _XmTextPaste(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmTextPosToXY(int widget, int position, short[] x, short[] y);
+public static final boolean XmTextPosToXY(int widget, int position, short[] x, short[] y) {
+	lock.lock();
+	try {
+		return _XmTextPosToXY(widget, position, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextReplace(int widget, int from_pos, int to_pos, byte[] value);
+public static final void XmTextReplace(int widget, int from_pos, int to_pos, byte[] value) {
+	lock.lock();
+	try {
+		_XmTextReplace(widget, from_pos, to_pos, value);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextScroll(int widget, int lines);
+public static final void XmTextScroll(int widget, int lines) {
+	lock.lock();
+	try {
+		_XmTextScroll(widget, lines);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextSetEditable(int widget, boolean editable);
+public static final void XmTextSetEditable(int widget, boolean editable) {
+	lock.lock();
+	try {
+		_XmTextSetEditable(widget, editable);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextSetHighlight(int widget, int left, int right, int mode);
+public static final void XmTextSetHighlight(int widget, int left, int right, int mode) {
+	lock.lock();
+	try {
+		_XmTextSetHighlight(widget, left, right, mode);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextSetInsertionPosition(int widget, int position);
+public static final void XmTextSetInsertionPosition(int widget, int position) {
+	lock.lock();
+	try {
+		_XmTextSetInsertionPosition(widget, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextSetMaxLength(int widget, int max_length);
+public static final void XmTextSetMaxLength(int widget, int max_length) {
+	lock.lock();
+	try {
+		_XmTextSetMaxLength(widget, max_length);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextSetSelection(int widget, int first, int last, int time);
+public static final void XmTextSetSelection(int widget, int first, int last, int time) {
+	lock.lock();
+	try {
+		_XmTextSetSelection(widget, first, last, time);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextSetString(int widget, byte[] value);
+public static final void XmTextSetString(int widget, byte[] value) {
+	lock.lock();
+	try {
+		_XmTextSetString(widget, value);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmTextShowPosition(int widget, int position);
+public static final void XmTextShowPosition(int widget, int position) {
+	lock.lock();
+	try {
+		_XmTextShowPosition(widget, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XmUpdateDisplay(int widget);
+public static final void XmUpdateDisplay(int widget) {
+	lock.lock();
+	try {
+		_XmUpdateDisplay(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XmWidgetGetDisplayRect(int region, XRectangle rectangle);
+public static final boolean XmWidgetGetDisplayRect(int region, XRectangle rectangle) {
+	lock.lock();
+	try {
+		return _XmWidgetGetDisplayRect(region, rectangle);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmbTextListToTextProperty(int display, int list, int count, int style, XTextProperty text_prop_return);
+public static final int XmbTextListToTextProperty(int display, int list, int count, int style, XTextProperty text_prop_return) {
+	lock.lock();
+	try {
+		return _XmbTextListToTextProperty(display, list, count, style, text_prop_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XmbTextPropertyToTextList(int display, XTextProperty text_prop, int[] list_return, int[] count_return);
+public static final int XmbTextPropertyToTextList(int display, XTextProperty text_prop, int[] list_return, int[] count_return) {
+	lock.lock();
+	try {
+		return _XmbTextPropertyToTextList(display, text_prop, list_return, count_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XpCancelJob(int display, boolean discard);
+public static final void XpCancelJob(int display, boolean discard) {
+	lock.lock();
+	try {
+		_XpCancelJob(display, discard);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XpCreateContext(int display, byte[] printer_name);
+public static final int XpCreateContext(int display, byte[] printer_name) {
+	lock.lock();
+	try {
+		return _XpCreateContext(display, printer_name);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XpDestroyContext(int display, int print_context);
+public static final void XpDestroyContext(int display, int print_context) {
+	lock.lock();
+	try {
+		_XpDestroyContext(display, print_context);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XpEndJob(int display);
+public static final void XpEndJob(int display) {
+	lock.lock();
+	try {
+		_XpEndJob(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XpEndPage(int display);
+public static final void XpEndPage(int display) {
+	lock.lock();
+	try {
+		_XpEndPage(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XpFreePrinterList(int printer_list);
+public static final void XpFreePrinterList(int printer_list) {
+	lock.lock();
+	try {
+		_XpFreePrinterList(printer_list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XpGetOneAttribute(int display, int print_context, byte type, byte[] attribute_name);
+public static final int XpGetOneAttribute(int display, int print_context, byte type, byte[] attribute_name) {
+	lock.lock();
+	try {
+		return _XpGetOneAttribute(display, print_context, type, attribute_name);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XpGetPageDimensions(int display, int print_context, short[] width, short[] height, XRectangle reproducible_area);
+public static final int XpGetPageDimensions(int display, int print_context, short[] width, short[] height, XRectangle reproducible_area) {
+	lock.lock();
+	try {
+		return _XpGetPageDimensions(display, print_context, width, height, reproducible_area);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XpGetPrinterList(int display, byte[] printer_name, int[] list_count);
+public static final int XpGetPrinterList(int display, byte[] printer_name, int[] list_count) {
+	lock.lock();
+	try {
+		return _XpGetPrinterList(display, printer_name, list_count);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XpGetScreenOfContext(int display, int print_context);
+public static final int XpGetScreenOfContext(int display, int print_context) {
+	lock.lock();
+	try {
+		return _XpGetScreenOfContext(display, print_context);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XpSetAttributes(int display, int print_context, byte type, byte[] pool, byte replacement_rule);
+public static final void XpSetAttributes(int display, int print_context, byte type, byte[] pool, byte replacement_rule) {
+	lock.lock();
+	try {
+		_XpSetAttributes(display, print_context, type, pool, replacement_rule);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XpSetContext(int display, int print_context);
+public static final void XpSetContext(int display, int print_context) {
+	lock.lock();
+	try {
+		_XpSetContext(display, print_context);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XpStartJob(int display, byte save_data);
+public static final void XpStartJob(int display, byte save_data) {
+	lock.lock();
+	try {
+		_XpStartJob(display, save_data);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XpStartPage(int display, int window);
+public static final void XpStartPage(int display, int window) {
+	lock.lock();
+	try {
+		_XpStartPage(display, window);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtAddCallback(int widget, int callback_name, int callback, int client_data);
+public static final void XtAddCallback(int widget, int callback_name, int callback, int client_data) {
+	lock.lock();
+	try {
+		_XtAddCallback(widget, callback_name, callback, client_data);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtAddEventHandler(int widget, int event_mask, boolean nonmaskable, int proc, int client_data);
+public static final void XtAddEventHandler(int widget, int event_mask, boolean nonmaskable, int proc, int client_data) {
+	lock.lock();
+	try {
+		_XtAddEventHandler(widget, event_mask, nonmaskable, proc, client_data);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtAddExposureToRegion(int event, int region);
+public static final void XtAddExposureToRegion(int event, int region) {
+	lock.lock();
+	try {
+		_XtAddExposureToRegion(event, region);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtAppAddInput(int app_context, int source, int condition, int proc, int client_data);
+public static final int XtAppAddInput(int app_context, int source, int condition, int proc, int client_data) {
+	lock.lock();
+	try {
+		return _XtAppAddInput(app_context, source, condition, proc, client_data);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtAppAddTimeOut(int app_context, int interval, int proc, int client_data);
+public static final int XtAppAddTimeOut(int app_context, int interval, int proc, int client_data) {
+	lock.lock();
+	try {
+		return _XtAppAddTimeOut(app_context, interval, proc, client_data);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtAppCreateShell(byte[] appName, byte[] appClass, int widgetClass, int display, int[] argList, int argCount);
+public static final int XtAppCreateShell(byte[] appName, byte[] appClass, int widgetClass, int display, int[] argList, int argCount) {
+	lock.lock();
+	try {
+		return _XtAppCreateShell(appName, appClass, widgetClass, display, argList, argCount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtAppGetSelectionTimeout(int appContext);
+public static final int XtAppGetSelectionTimeout(int appContext) {
+	lock.lock();
+	try {
+		return _XtAppGetSelectionTimeout(appContext);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtAppNextEvent(int appContext, int event);
+public static final void XtAppNextEvent(int appContext, int event) {
+	lock.lock();
+	try {
+		_XtAppNextEvent(appContext, event);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XtAppPeekEvent(int appContext, int event);
+public static final boolean XtAppPeekEvent(int appContext, int event) {
+	lock.lock();
+	try {
+		return _XtAppPeekEvent(appContext, event);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtAppPending(int appContext);
+public static final int XtAppPending(int appContext) {
+	lock.lock();
+	try {
+		return _XtAppPending(appContext);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtAppProcessEvent(int appContext, int inputMask);
+public static final void XtAppProcessEvent(int appContext, int inputMask) {
+	lock.lock();
+	try {
+		_XtAppProcessEvent(appContext, inputMask);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtAppSetErrorHandler(int app_context, int handler);
+public static final int XtAppSetErrorHandler(int app_context, int handler) {
+	lock.lock();
+	try {
+		return _XtAppSetErrorHandler(app_context, handler);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtAppSetFallbackResources(int app_context, int specification_list);
+public static final void XtAppSetFallbackResources(int app_context, int specification_list) {
+	lock.lock();
+	try {
+		_XtAppSetFallbackResources(app_context, specification_list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtAppSetSelectionTimeout(int appContext, int timeout);
+public static final void XtAppSetSelectionTimeout(int appContext, int timeout) {
+	lock.lock();
+	try {
+		_XtAppSetSelectionTimeout(appContext, timeout);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtAppSetWarningHandler(int app_context, int handler);
+public static final int XtAppSetWarningHandler(int app_context, int handler) {
+	lock.lock();
+	try {
+		return _XtAppSetWarningHandler(app_context, handler);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtBuildEventMask(int widget);
+public static final int XtBuildEventMask(int widget) {
+	lock.lock();
+	try {
+		return _XtBuildEventMask(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtCallActionProc(int widget, byte[] action, int event, int[] params, int num_params);
+public static final void XtCallActionProc(int widget, byte[] action, int event, int[] params, int num_params) {
+	lock.lock();
+	try {
+		_XtCallActionProc(widget, action, event, params, num_params);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtClass(int widget);
+public static final int XtClass(int widget) {
+	lock.lock();
+	try {
+		return _XtClass(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtConfigureWidget(int widget, int x, int y, int width, int height, int borderWidth);
+public static final void XtConfigureWidget(int widget, int x, int y, int width, int height, int borderWidth) {
+	lock.lock();
+	try {
+		_XtConfigureWidget(widget, x, y, width, height, borderWidth);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtCreateApplicationContext();
+public static final int XtCreateApplicationContext() {
+	lock.lock();
+	try {
+		return _XtCreateApplicationContext();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtCreatePopupShell(byte[] name, int widgetClass, int parent, int[] argList, int argCount);
+public static final int XtCreatePopupShell(byte[] name, int widgetClass, int parent, int[] argList, int argCount) {
+	lock.lock();
+	try {
+		return _XtCreatePopupShell(name, widgetClass, parent, argList, argCount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtDestroyApplicationContext(int appContext);
+public static final void XtDestroyApplicationContext(int appContext) {
+	lock.lock();
+	try {
+		_XtDestroyApplicationContext(appContext);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtDestroyWidget(int widget);
+public static final void XtDestroyWidget(int widget) {
+	lock.lock();
+	try {
+		_XtDestroyWidget(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XtDispatchEvent(int event);
+public static final boolean XtDispatchEvent(int event) {
+	lock.lock();
+	try {
+		return _XtDispatchEvent(event);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtDisplay(int widget);
+public static final int XtDisplay(int widget) {
+	lock.lock();
+	try {
+		return _XtDisplay(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtDisplayToApplicationContext(int display);
+public static final int XtDisplayToApplicationContext(int display) {
+	lock.lock();
+	try {
+		return _XtDisplayToApplicationContext(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtFree(int ptr);
+public static final void XtFree(int ptr) {
+	lock.lock();
+	try {
+		_XtFree(ptr);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtGetMultiClickTime(int display);
+public static final int XtGetMultiClickTime(int display) {
+	lock.lock();
+	try {
+		return _XtGetMultiClickTime(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtGetValues(int widget, int[] argList, int numArgs);
+public static final void XtGetValues(int widget, int[] argList, int numArgs) {
+	lock.lock();
+	try {
+		_XtGetValues(widget, argList, numArgs);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtInsertEventHandler(int w, int event_mask, boolean nonmaskable, int proc, int client_data, int position);
+public static final void XtInsertEventHandler(int w, int event_mask, boolean nonmaskable, int proc, int client_data, int position) {
+	lock.lock();
+	try {
+		_XtInsertEventHandler(w, event_mask, nonmaskable, proc, client_data, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XtIsManaged(int widget);
+public static final boolean XtIsManaged(int widget) {
+	lock.lock();
+	try {
+		return _XtIsManaged(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XtIsRealized(int widget);
+public static final boolean XtIsRealized(int widget) {
+	lock.lock();
+	try {
+		return _XtIsRealized(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XtIsSubclass(int widget, int widgetClass);
+public static final boolean XtIsSubclass(int widget, int widgetClass) {
+	lock.lock();
+	try {
+		return _XtIsSubclass(widget, widgetClass);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XtIsTopLevelShell(int widget);
+public static final boolean XtIsTopLevelShell(int widget) {
+	lock.lock();
+	try {
+		return _XtIsTopLevelShell(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtLastTimestampProcessed(int display);
+public static final int XtLastTimestampProcessed(int display) {
+	lock.lock();
+	try {
+		return _XtLastTimestampProcessed(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtMalloc(int size);
+public static final int XtMalloc(int size) {
+	lock.lock();
+	try {
+		return _XtMalloc(size);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtManageChild(int widget);
+public static final void XtManageChild(int widget) {
+	lock.lock();
+	try {
+		_XtManageChild(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtMapWidget(int widget);
+public static final void XtMapWidget(int widget) {
+	lock.lock();
+	try {
+		_XtMapWidget(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtMoveWidget(int widget, int x, int y);
+public static final void XtMoveWidget(int widget, int x, int y) {
+	lock.lock();
+	try {
+		_XtMoveWidget(widget, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtNameToWidget(int reference, byte[] names);
+public static final int XtNameToWidget(int reference, byte[] names) {
+	lock.lock();
+	try {
+		return _XtNameToWidget(reference, names);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtOpenDisplay(int xtAppContext, byte[] displayName, byte[] applicationName, byte[] applicationClass, int options, int numOptions, int[] argc, int argv);
+public static final int XtOpenDisplay(int xtAppContext, byte[] displayName, byte[] applicationName, byte[] applicationClass, int options, int numOptions, int[] argc, int argv) {
+	lock.lock();
+	try {
+		return _XtOpenDisplay(xtAppContext, displayName, applicationName, applicationClass, options, numOptions, argc, argv);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtOverrideTranslations(int w, int translations);
+public static final void XtOverrideTranslations(int w, int translations) {
+	lock.lock();
+	try {
+		_XtOverrideTranslations(w, translations);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtParent(int widget);
+public static final int XtParent(int widget) {
+	lock.lock();
+	try {
+		return _XtParent(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtParseTranslationTable(byte[] string);
+public static final int XtParseTranslationTable(byte[] string) {
+	lock.lock();
+	try {
+		return _XtParseTranslationTable(string);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtPopdown(int widget);
+public static final void XtPopdown(int widget) {
+	lock.lock();
+	try {
+		_XtPopdown(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtPopup(int widget, int flags);
+public static final void XtPopup(int widget, int flags) {
+	lock.lock();
+	try {
+		_XtPopup(widget, flags);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtQueryGeometry(int widget, XtWidgetGeometry intended, XtWidgetGeometry preferred_return);
+public static final int XtQueryGeometry(int widget, XtWidgetGeometry intended, XtWidgetGeometry preferred_return) {
+	lock.lock();
+	try {
+		return _XtQueryGeometry(widget, intended, preferred_return);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtRealizeWidget(int widget);
+public static final void XtRealizeWidget(int widget) {
+	lock.lock();
+	try {
+		_XtRealizeWidget(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtRegisterDrawable(int display, int drawable, int widget);
+public static final void XtRegisterDrawable(int display, int drawable, int widget) {
+	lock.lock();
+	try {
+		_XtRegisterDrawable(display, drawable, widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtRemoveEventHandler(int widget, int event_mask, boolean nonmaskable, int proc, int client_data);
+public static final void XtRemoveEventHandler(int widget, int event_mask, boolean nonmaskable, int proc, int client_data) {
+	lock.lock();
+	try {
+		_XtRemoveEventHandler(widget, event_mask, nonmaskable, proc, client_data);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtRemoveInput(int id);
+public static final void XtRemoveInput(int id) {
+	lock.lock();
+	try {
+		_XtRemoveInput(id);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtRemoveTimeOut(int id);
+public static final void XtRemoveTimeOut(int id) {
+	lock.lock();
+	try {
+		_XtRemoveTimeOut(id);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtResizeWidget(int widget, int width, int height, int borderWidth);
+public static final void XtResizeWidget(int widget, int width, int height, int borderWidth) {
+	lock.lock();
+	try {
+		_XtResizeWidget(widget, width, height, borderWidth);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtResizeWindow(int widget);
+public static final void XtResizeWindow(int widget) {
+	lock.lock();
+	try {
+		_XtResizeWindow(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtSetLanguageProc(int appContext, int languageProc, int pointer);
+public static final int XtSetLanguageProc(int appContext, int languageProc, int pointer) {
+	lock.lock();
+	try {
+		return _XtSetLanguageProc(appContext, languageProc, pointer);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtSetMappedWhenManaged(int widget, boolean flag);
+public static final void XtSetMappedWhenManaged(int widget, boolean flag) {
+	lock.lock();
+	try {
+		_XtSetMappedWhenManaged(widget, flag);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtSetValues(int widget, int[] argList, int numArgs);
+public static final void XtSetValues(int widget, int[] argList, int numArgs) {
+	lock.lock();
+	try {
+		_XtSetValues(widget, argList, numArgs);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtToolkitInitialize();
+public static final void XtToolkitInitialize() {
+	lock.lock();
+	try {
+		_XtToolkitInitialize();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XtToolkitThreadInitialize();
+public static final boolean XtToolkitThreadInitialize() {
+	lock.lock();
+	try {
+		return _XtToolkitThreadInitialize();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtTranslateCoords(int widget, short x, short y, short[] root_x, short[] root_y);
+public static final void XtTranslateCoords(int widget, short x, short y, short[] root_x, short[] root_y) {
+	lock.lock();
+	try {
+		_XtTranslateCoords(widget, x, y, root_x, root_y);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtUnmanageChild(int widget);
+public static final void XtUnmanageChild(int widget) {
+	lock.lock();
+	try {
+		_XtUnmanageChild(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtUnmapWidget(int widget);
+public static final void XtUnmapWidget(int widget) {
+	lock.lock();
+	try {
+		_XtUnmapWidget(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtUnregisterDrawable(int display, int drawable);
+public static final void XtUnregisterDrawable(int display, int drawable) {
+	lock.lock();
+	try {
+		_XtUnregisterDrawable(display, drawable);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtWindow(int widget);
+public static final int XtWindow(int widget) {
+	lock.lock();
+	try {
+		return _XtWindow(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtWindowToWidget(int display, int widget);
+public static final int XtWindowToWidget(int display, int widget) {
+	lock.lock();
+	try {
+		return _XtWindowToWidget(display, widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void __XmSetMenuTraversal(int menu, boolean traversal);
+public static final void _XmSetMenuTraversal(int menu, boolean traversal) {
+	lock.lock();
+	try {
+		__XmSetMenuTraversal(menu, traversal);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int close(int filedes);
 public static final native int fd_set_sizeof();
 public static final native int getenv(byte[] name);

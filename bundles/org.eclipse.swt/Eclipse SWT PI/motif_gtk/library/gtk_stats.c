@@ -21,18 +21,18 @@
 int GTK_nativeFunctionCount = 12;
 int GTK_nativeFunctionCallCount[12];
 char * GTK_nativeFunctionNames[] = {
-	"GTK_1WIDGET_1HEIGHT",
-	"GTK_1WIDGET_1WIDTH",
-	"g_1signal_1connect",
-	"gtk_1events_1pending",
-	"gtk_1init_1check",
-	"gtk_1main",
-	"gtk_1main_1iteration",
-	"gtk_1plug_1new",
-	"gtk_1widget_1destroy",
-	"gtk_1widget_1show",
-	"gtk_1widget_1show_1now",
-	"gtk_1window_1new",
+	"_1GTK_1WIDGET_1HEIGHT",
+	"_1GTK_1WIDGET_1WIDTH",
+	"_1g_1signal_1connect",
+	"_1gtk_1events_1pending",
+	"_1gtk_1init_1check",
+	"_1gtk_1main",
+	"_1gtk_1main_1iteration",
+	"_1gtk_1plug_1new",
+	"_1gtk_1widget_1destroy",
+	"_1gtk_1widget_1show",
+	"_1gtk_1widget_1show_1now",
+	"_1gtk_1window_1new",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

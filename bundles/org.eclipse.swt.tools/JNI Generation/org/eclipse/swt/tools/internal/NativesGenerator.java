@@ -451,6 +451,8 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 	outputln("*/");
 	outputln("\t{");
 
+	String name = method.getName();
+	if (name.startsWith("_")) name = name.substring(1);
 	if (getPlatform().equals("win32")) {
 		outputln("\t\tstatic int initialized = 0;");
 		outputln("\t\tstatic HMODULE hm = NULL;");
@@ -462,12 +464,12 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		}
 		outputln("\t\tif (!initialized) {");
 		output("\t\t\tif (!(hm = GetModuleHandle(");
-		output(method.getName());
+		output(name);
 		output("_LIB))) hm = LoadLibrary(");
-		output(method.getName());
+		output(name);
 		outputln("_LIB);");
 		output("\t\t\tif (hm) fp = GetProcAddress(hm, \"");
-		output(method.getName());
+		output(name);
 		outputln("\");");
 		outputln("\t\t\tinitialized = 1;");
 		outputln("\t\t}");
@@ -504,10 +506,10 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		}
 		outputln("\t\tif (!initialized) {");
 		output("\t\t\tif (!handle) handle = dlopen(");
-		output(method.getName());
+		output(name);
 		outputln("_LIB, RTLD_LAZY);");
 		output("\t\t\tif (handle) fptr = (FPTR)dlsym(handle, \"");
-		output(method.getName());
+		output(name);
 		outputln("\");");
 		outputln("\t\t\tinitialized = 1;");
 		outputln("\t\t}");
@@ -568,7 +570,9 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
 	}
 	int paramStart = 0;
-	if (method.getName().equalsIgnoreCase("call")) {
+	String name = method.getName();
+	if (name.startsWith("_")) name = name.substring(1);
+	if (name.equalsIgnoreCase("call")) {
 		output("(");
 		ParameterData paramData = getMetaData().getMetaData(method, 0);
 		String cast = paramData.getCast(); 
@@ -581,7 +585,7 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		}
 		output("arg0)");
 		paramStart = 1;
-	} else if (method.getName().startsWith("VtblCall")) {
+	} else if (name.startsWith("VtblCall")) {
 		output("((");
 		output(getTypeSignature2(returnType));
 		output(" (STDMETHODCALLTYPE *)(");
@@ -606,7 +610,6 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 			output(accessor);
 		} else {
 			int index = -1;
-			String name = method.getName();
 			if ((index = name.indexOf('_')) != -1) {
 				output(name.substring(index + 1, name.length()));
 			} else {
@@ -621,7 +624,6 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 			output(accessor);
 		} else {
 			int index = -1;
-			String name = method.getName();
 			if ((index = name.indexOf('_')) != -1) {
 				output(name.substring(0, index));
 			} else {
@@ -642,7 +644,7 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		if (accessor.length() != 0) {
 			output(accessor);
 		} else {
-			output(method.getName());
+			output(name);
 		}
 	}
 	generateFunctionCallRightSide(method, methodData, paramTypes, paramStart);
@@ -688,7 +690,9 @@ void generateFunctionBody(Method method, MethodData methodData, String function,
 	outputln("{");
 	
 	/* Custom GTK memmoves. */
-	boolean isGTKmemove = method.getName().equals("memmove") && paramTypes.length == 2 && returnType == Void.TYPE;
+	String name = method.getName();
+	if (name.startsWith("_")) name = name.substring(1);
+	boolean isGTKmemove = name.equals("memmove") && paramTypes.length == 2 && returnType == Void.TYPE;
 	if (isGTKmemove) {
 		generateGTKmemmove(method, function, paramTypes);
 	} else {

@@ -2969,24 +2969,15 @@ public boolean sleep () {
 					if (timeout [0] < 0) timeout [0] = 50;
 					
 					/* Exit the OS lock to allow other threads to enter GTK */
-					int count = Callback.getEntryCount ();
-					for (int i = 0; i < count; i++) {
-						synchronized (OS_LOCK) {
-							OS.MonitorExit (OS_LOCK);
-						}
-					}
-					synchronized (OS_LOCK) {
-						OS_LOCK.notifyAll ();
-					}
+					Lock lock = OS.lock;
+					int count = lock.unlock();
+					for (int i = 0; i < count; i++) lock.unlock();
 					try {
 						wake = false;
 						OS.Call (poll, fds, nfds, timeout [0]);
 					} finally {
-						for (int i = 0; i < count; i++) {
-							synchronized (OS_LOCK) {
-								OS.MonitorEnter (OS_LOCK);
-							}
-						}
+						for (int i = 0; i < count; i++) lock.lock();
+						lock.lock();
 					}
 				}
 			}

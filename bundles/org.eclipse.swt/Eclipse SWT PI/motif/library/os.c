@@ -27,30 +27,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(CODESET)
 }
 #endif
 
-#ifndef NO_Call
-JNIEXPORT jint JNICALL OS_NATIVE(Call)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, Call_FUNC);
-	rc = (jint)((jint (*)())arg0)(arg1, arg2);
-	OS_NATIVE_EXIT(env, that, Call_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_ConnectionNumber
-JNIEXPORT jint JNICALL OS_NATIVE(ConnectionNumber)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, ConnectionNumber_FUNC);
-	rc = (jint)ConnectionNumber(arg0);
-	OS_NATIVE_EXIT(env, that, ConnectionNumber_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_FD_1ISSET
 JNIEXPORT jboolean JNICALL OS_NATIVE(FD_1ISSET)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
@@ -119,736 +95,760 @@ JNIEXPORT jint JNICALL OS_NATIVE(MB_1CUR_1MAX)
 }
 #endif
 
-#ifndef NO_XAllocColor
-JNIEXPORT jint JNICALL OS_NATIVE(XAllocColor)
+#ifndef NO__1Call
+JNIEXPORT jint JNICALL OS_NATIVE(_1Call)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1Call_FUNC);
+	rc = (jint)((jint (*)())arg0)(arg1, arg2);
+	OS_NATIVE_EXIT(env, that, _1Call_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1ConnectionNumber
+JNIEXPORT jint JNICALL OS_NATIVE(_1ConnectionNumber)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1ConnectionNumber_FUNC);
+	rc = (jint)ConnectionNumber(arg0);
+	OS_NATIVE_EXIT(env, that, _1ConnectionNumber_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1XAllocColor
+JNIEXPORT jint JNICALL OS_NATIVE(_1XAllocColor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	XColor _arg2, *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XAllocColor_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XAllocColor_FUNC);
 	if (arg2) if ((lparg2 = getXColorFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)XAllocColor((Display *)arg0, arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setXColorFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, XAllocColor_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XAllocColor_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XBell
-JNIEXPORT void JNICALL OS_NATIVE(XBell)
+#ifndef NO__1XBell
+JNIEXPORT void JNICALL OS_NATIVE(_1XBell)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XBell_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XBell_FUNC);
 	XBell((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XBell_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XBell_FUNC);
 }
 #endif
 
-#ifndef NO_XBlackPixel
-JNIEXPORT jint JNICALL OS_NATIVE(XBlackPixel)
+#ifndef NO__1XBlackPixel
+JNIEXPORT jint JNICALL OS_NATIVE(_1XBlackPixel)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XBlackPixel_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XBlackPixel_FUNC);
 	rc = (jint)XBlackPixel((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XBlackPixel_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XBlackPixel_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XChangeActivePointerGrab
-JNIEXPORT jint JNICALL OS_NATIVE(XChangeActivePointerGrab)
+#ifndef NO__1XChangeActivePointerGrab
+JNIEXPORT jint JNICALL OS_NATIVE(_1XChangeActivePointerGrab)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XChangeActivePointerGrab_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XChangeActivePointerGrab_FUNC);
 	rc = (jint)XChangeActivePointerGrab((Display *)arg0, arg1, (Cursor)arg2, (Time)arg3);
-	OS_NATIVE_EXIT(env, that, XChangeActivePointerGrab_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XChangeActivePointerGrab_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XChangeProperty
-JNIEXPORT void JNICALL OS_NATIVE(XChangeProperty)
+#ifndef NO__1XChangeProperty
+JNIEXPORT void JNICALL OS_NATIVE(_1XChangeProperty)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jintArray arg6, jint arg7)
 {
 	jint *lparg6=NULL;
-	OS_NATIVE_ENTER(env, that, XChangeProperty_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XChangeProperty_FUNC);
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	XChangeProperty((Display *)arg0, (Window)arg1, (Atom)arg2, (Atom)arg3, arg4, arg5, (unsigned char *)lparg6, arg7);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
-	OS_NATIVE_EXIT(env, that, XChangeProperty_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XChangeProperty_FUNC);
 }
 #endif
 
-#ifndef NO_XChangeWindowAttributes
-JNIEXPORT void JNICALL OS_NATIVE(XChangeWindowAttributes)
+#ifndef NO__1XChangeWindowAttributes
+JNIEXPORT void JNICALL OS_NATIVE(_1XChangeWindowAttributes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
 {
 	XSetWindowAttributes _arg3, *lparg3=NULL;
-	OS_NATIVE_ENTER(env, that, XChangeWindowAttributes_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XChangeWindowAttributes_FUNC);
 	if (arg3) if ((lparg3 = getXSetWindowAttributesFields(env, arg3, &_arg3)) == NULL) goto fail;
 	XChangeWindowAttributes((Display *)arg0, arg1, arg2, lparg3);
 fail:
 	if (arg3 && lparg3) setXSetWindowAttributesFields(env, arg3, lparg3);
-	OS_NATIVE_EXIT(env, that, XChangeWindowAttributes_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XChangeWindowAttributes_FUNC);
 }
 #endif
 
-#ifndef NO_XCheckIfEvent
-JNIEXPORT jint JNICALL OS_NATIVE(XCheckIfEvent)
+#ifndef NO__1XCheckIfEvent
+JNIEXPORT jint JNICALL OS_NATIVE(_1XCheckIfEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XCheckIfEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCheckIfEvent_FUNC);
 	rc = (jint)XCheckIfEvent((Display *)arg0, (XEvent *)arg1, (Bool (*)())arg2, (XPointer)arg3);
-	OS_NATIVE_EXIT(env, that, XCheckIfEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCheckIfEvent_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XCheckMaskEvent
-JNIEXPORT jboolean JNICALL OS_NATIVE(XCheckMaskEvent)
+#ifndef NO__1XCheckMaskEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XCheckMaskEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XCheckMaskEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCheckMaskEvent_FUNC);
 	rc = (jboolean)XCheckMaskEvent((Display *)arg0, arg1, (XEvent *)arg2);
-	OS_NATIVE_EXIT(env, that, XCheckMaskEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCheckMaskEvent_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XCheckWindowEvent
-JNIEXPORT jboolean JNICALL OS_NATIVE(XCheckWindowEvent)
+#ifndef NO__1XCheckWindowEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XCheckWindowEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XCheckWindowEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCheckWindowEvent_FUNC);
 	rc = (jboolean)XCheckWindowEvent((Display *)arg0, (Window)arg1, arg2, (XEvent *)arg3);
-	OS_NATIVE_EXIT(env, that, XCheckWindowEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCheckWindowEvent_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XClearArea
-JNIEXPORT void JNICALL OS_NATIVE(XClearArea)
+#ifndef NO__1XClearArea
+JNIEXPORT void JNICALL OS_NATIVE(_1XClearArea)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jboolean arg6)
 {
-	OS_NATIVE_ENTER(env, that, XClearArea_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XClearArea_FUNC);
 	XClearArea((Display *)arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-	OS_NATIVE_EXIT(env, that, XClearArea_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XClearArea_FUNC);
 }
 #endif
 
-#ifndef NO_XClipBox
-JNIEXPORT void JNICALL OS_NATIVE(XClipBox)
+#ifndef NO__1XClipBox
+JNIEXPORT void JNICALL OS_NATIVE(_1XClipBox)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	XRectangle _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, XClipBox_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XClipBox_FUNC);
 	if (arg1) if ((lparg1 = getXRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
 	XClipBox((Region)arg0, (XRectangle *)lparg1);
 fail:
 	if (arg1 && lparg1) setXRectangleFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, XClipBox_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XClipBox_FUNC);
 }
 #endif
 
-#ifndef NO_XCloseDisplay
-JNIEXPORT void JNICALL OS_NATIVE(XCloseDisplay)
+#ifndef NO__1XCloseDisplay
+JNIEXPORT void JNICALL OS_NATIVE(_1XCloseDisplay)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XCloseDisplay_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCloseDisplay_FUNC);
 	XCloseDisplay((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XCloseDisplay_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCloseDisplay_FUNC);
 }
 #endif
 
-#ifndef NO_XCopyArea
-JNIEXPORT void JNICALL OS_NATIVE(XCopyArea)
+#ifndef NO__1XCopyArea
+JNIEXPORT void JNICALL OS_NATIVE(_1XCopyArea)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9)
 {
-	OS_NATIVE_ENTER(env, that, XCopyArea_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCopyArea_FUNC);
 	XCopyArea((Display *)arg0, arg1, arg2, (GC)arg3, arg4, arg5, arg6, arg7, arg8, arg9);
-	OS_NATIVE_EXIT(env, that, XCopyArea_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCopyArea_FUNC);
 }
 #endif
 
-#ifndef NO_XCopyPlane
-JNIEXPORT void JNICALL OS_NATIVE(XCopyPlane)
+#ifndef NO__1XCopyPlane
+JNIEXPORT void JNICALL OS_NATIVE(_1XCopyPlane)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10)
 {
-	OS_NATIVE_ENTER(env, that, XCopyPlane_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCopyPlane_FUNC);
 	XCopyPlane((Display *)arg0, arg1, arg2, (GC)arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
-	OS_NATIVE_EXIT(env, that, XCopyPlane_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCopyPlane_FUNC);
 }
 #endif
 
-#ifndef NO_XCreateBitmapFromData
-JNIEXPORT jint JNICALL OS_NATIVE(XCreateBitmapFromData)
+#ifndef NO__1XCreateBitmapFromData
+JNIEXPORT jint JNICALL OS_NATIVE(_1XCreateBitmapFromData)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jint arg4)
 {
 	jbyte *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XCreateBitmapFromData_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCreateBitmapFromData_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XCreateBitmapFromData((Display *)arg0, arg1, (char *)lparg2, arg3, arg4);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XCreateBitmapFromData_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCreateBitmapFromData_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XCreateFontCursor
-JNIEXPORT jint JNICALL OS_NATIVE(XCreateFontCursor)
+#ifndef NO__1XCreateFontCursor
+JNIEXPORT jint JNICALL OS_NATIVE(_1XCreateFontCursor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XCreateFontCursor_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCreateFontCursor_FUNC);
 	rc = (jint)XCreateFontCursor((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XCreateFontCursor_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCreateFontCursor_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XCreateGC
-JNIEXPORT jint JNICALL OS_NATIVE(XCreateGC)
+#ifndef NO__1XCreateGC
+JNIEXPORT jint JNICALL OS_NATIVE(_1XCreateGC)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
 {
 	XGCValues _arg3, *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XCreateGC_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCreateGC_FUNC);
 	if (arg3) if ((lparg3 = getXGCValuesFields(env, arg3, &_arg3)) == NULL) goto fail;
 	rc = (jint)XCreateGC((Display *)arg0, arg1, arg2, lparg3);
 fail:
 	if (arg3 && lparg3) setXGCValuesFields(env, arg3, lparg3);
-	OS_NATIVE_EXIT(env, that, XCreateGC_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCreateGC_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XCreateImage
-JNIEXPORT jint JNICALL OS_NATIVE(XCreateImage)
+#ifndef NO__1XCreateImage
+JNIEXPORT jint JNICALL OS_NATIVE(_1XCreateImage)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XCreateImage_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCreateImage_FUNC);
 	rc = (jint)XCreateImage((Display *)arg0, (Visual *)arg1, arg2, arg3, arg4, (char *)arg5, arg6, arg7, arg8, arg9);
-	OS_NATIVE_EXIT(env, that, XCreateImage_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCreateImage_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XCreatePixmap
-JNIEXPORT jint JNICALL OS_NATIVE(XCreatePixmap)
+#ifndef NO__1XCreatePixmap
+JNIEXPORT jint JNICALL OS_NATIVE(_1XCreatePixmap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XCreatePixmap_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCreatePixmap_FUNC);
 	rc = (jint)XCreatePixmap((Display *)arg0, arg1, arg2, arg3, arg4);
-	OS_NATIVE_EXIT(env, that, XCreatePixmap_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCreatePixmap_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XCreatePixmapCursor
-JNIEXPORT jint JNICALL OS_NATIVE(XCreatePixmapCursor)
+#ifndef NO__1XCreatePixmapCursor
+JNIEXPORT jint JNICALL OS_NATIVE(_1XCreatePixmapCursor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jobject arg4, jint arg5, jint arg6)
 {
 	XColor _arg3, *lparg3=NULL;
 	XColor _arg4, *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XCreatePixmapCursor_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCreatePixmapCursor_FUNC);
 	if (arg3) if ((lparg3 = getXColorFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getXColorFields(env, arg4, &_arg4)) == NULL) goto fail;
 	rc = (jint)XCreatePixmapCursor((Display *)arg0, (Pixmap)arg1, (Pixmap)arg2, lparg3, lparg4, arg5, arg6);
 fail:
 	if (arg4 && lparg4) setXColorFields(env, arg4, lparg4);
 	if (arg3 && lparg3) setXColorFields(env, arg3, lparg3);
-	OS_NATIVE_EXIT(env, that, XCreatePixmapCursor_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCreatePixmapCursor_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XCreateRegion
-JNIEXPORT jint JNICALL OS_NATIVE(XCreateRegion)
+#ifndef NO__1XCreateRegion
+JNIEXPORT jint JNICALL OS_NATIVE(_1XCreateRegion)
 	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XCreateRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCreateRegion_FUNC);
 	rc = (jint)XCreateRegion();
-	OS_NATIVE_EXIT(env, that, XCreateRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCreateRegion_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XCreateWindow
-JNIEXPORT jint JNICALL OS_NATIVE(XCreateWindow)
+#ifndef NO__1XCreateWindow
+JNIEXPORT jint JNICALL OS_NATIVE(_1XCreateWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jlong arg10, jobject arg11)
 {
 	XSetWindowAttributes _arg11, *lparg11=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XCreateWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XCreateWindow_FUNC);
 	if (arg11) if ((lparg11 = getXSetWindowAttributesFields(env, arg11, &_arg11)) == NULL) goto fail;
 	rc = (jint)XCreateWindow((Display *)arg0, (Window)arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, (Visual *)arg9, arg10, (XSetWindowAttributes *)lparg11);
 fail:
 	if (arg11 && lparg11) setXSetWindowAttributesFields(env, arg11, lparg11);
-	OS_NATIVE_EXIT(env, that, XCreateWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XCreateWindow_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDefaultColormap
-JNIEXPORT jint JNICALL OS_NATIVE(XDefaultColormap)
+#ifndef NO__1XDefaultColormap
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDefaultColormap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDefaultColormap_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDefaultColormap_FUNC);
 	rc = (jint)XDefaultColormap((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XDefaultColormap_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDefaultColormap_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDefaultColormapOfScreen
-JNIEXPORT jint JNICALL OS_NATIVE(XDefaultColormapOfScreen)
+#ifndef NO__1XDefaultColormapOfScreen
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDefaultColormapOfScreen)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDefaultColormapOfScreen_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDefaultColormapOfScreen_FUNC);
 	rc = (jint)XDefaultColormapOfScreen((Screen *)arg0);
-	OS_NATIVE_EXIT(env, that, XDefaultColormapOfScreen_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDefaultColormapOfScreen_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDefaultDepthOfScreen
-JNIEXPORT jint JNICALL OS_NATIVE(XDefaultDepthOfScreen)
+#ifndef NO__1XDefaultDepthOfScreen
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDefaultDepthOfScreen)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDefaultDepthOfScreen_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDefaultDepthOfScreen_FUNC);
 	rc = (jint)XDefaultDepthOfScreen((Screen *)arg0);
-	OS_NATIVE_EXIT(env, that, XDefaultDepthOfScreen_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDefaultDepthOfScreen_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDefaultGCOfScreen
-JNIEXPORT jint JNICALL OS_NATIVE(XDefaultGCOfScreen)
+#ifndef NO__1XDefaultGCOfScreen
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDefaultGCOfScreen)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDefaultGCOfScreen_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDefaultGCOfScreen_FUNC);
 	rc = (jint)XDefaultGCOfScreen((Screen *)arg0);
-	OS_NATIVE_EXIT(env, that, XDefaultGCOfScreen_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDefaultGCOfScreen_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDefaultRootWindow
-JNIEXPORT jint JNICALL OS_NATIVE(XDefaultRootWindow)
+#ifndef NO__1XDefaultRootWindow
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDefaultRootWindow)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDefaultRootWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDefaultRootWindow_FUNC);
 	rc = (jint)XDefaultRootWindow((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XDefaultRootWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDefaultRootWindow_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDefaultScreen
-JNIEXPORT jint JNICALL OS_NATIVE(XDefaultScreen)
+#ifndef NO__1XDefaultScreen
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDefaultScreen)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDefaultScreen_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDefaultScreen_FUNC);
 	rc = (jint)XDefaultScreen((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XDefaultScreen_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDefaultScreen_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDefaultScreenOfDisplay
-JNIEXPORT jint JNICALL OS_NATIVE(XDefaultScreenOfDisplay)
+#ifndef NO__1XDefaultScreenOfDisplay
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDefaultScreenOfDisplay)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDefaultScreenOfDisplay_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDefaultScreenOfDisplay_FUNC);
 	rc = (jint)XDefaultScreenOfDisplay((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XDefaultScreenOfDisplay_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDefaultScreenOfDisplay_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDefaultVisual
-JNIEXPORT jint JNICALL OS_NATIVE(XDefaultVisual)
+#ifndef NO__1XDefaultVisual
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDefaultVisual)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDefaultVisual_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDefaultVisual_FUNC);
 	rc = (jint)XDefaultVisual((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XDefaultVisual_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDefaultVisual_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDefineCursor
-JNIEXPORT void JNICALL OS_NATIVE(XDefineCursor)
+#ifndef NO__1XDefineCursor
+JNIEXPORT void JNICALL OS_NATIVE(_1XDefineCursor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XDefineCursor_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDefineCursor_FUNC);
 	XDefineCursor((Display *)arg0, arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XDefineCursor_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDefineCursor_FUNC);
 }
 #endif
 
-#ifndef NO_XDestroyImage
-JNIEXPORT jint JNICALL OS_NATIVE(XDestroyImage)
+#ifndef NO__1XDestroyImage
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDestroyImage)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDestroyImage_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDestroyImage_FUNC);
 	rc = (jint)XDestroyImage((XImage *)arg0);
-	OS_NATIVE_EXIT(env, that, XDestroyImage_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDestroyImage_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDestroyRegion
-JNIEXPORT void JNICALL OS_NATIVE(XDestroyRegion)
+#ifndef NO__1XDestroyRegion
+JNIEXPORT void JNICALL OS_NATIVE(_1XDestroyRegion)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XDestroyRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDestroyRegion_FUNC);
 	XDestroyRegion((Region)arg0);
-	OS_NATIVE_EXIT(env, that, XDestroyRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDestroyRegion_FUNC);
 }
 #endif
 
-#ifndef NO_XDestroyWindow
-JNIEXPORT void JNICALL OS_NATIVE(XDestroyWindow)
+#ifndef NO__1XDestroyWindow
+JNIEXPORT void JNICALL OS_NATIVE(_1XDestroyWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XDestroyWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDestroyWindow_FUNC);
 	XDestroyWindow((Display *)arg0, (Window)arg1);
-	OS_NATIVE_EXIT(env, that, XDestroyWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDestroyWindow_FUNC);
 }
 #endif
 
-#ifndef NO_XDisplayHeight
-JNIEXPORT jint JNICALL OS_NATIVE(XDisplayHeight)
+#ifndef NO__1XDisplayHeight
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDisplayHeight)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDisplayHeight_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDisplayHeight_FUNC);
 	rc = (jint)XDisplayHeight((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XDisplayHeight_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDisplayHeight_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDisplayHeightMM
-JNIEXPORT jint JNICALL OS_NATIVE(XDisplayHeightMM)
+#ifndef NO__1XDisplayHeightMM
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDisplayHeightMM)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDisplayHeightMM_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDisplayHeightMM_FUNC);
 	rc = (jint)XDisplayHeightMM((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XDisplayHeightMM_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDisplayHeightMM_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDisplayWidth
-JNIEXPORT jint JNICALL OS_NATIVE(XDisplayWidth)
+#ifndef NO__1XDisplayWidth
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDisplayWidth)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDisplayWidth_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDisplayWidth_FUNC);
 	rc = (jint)XDisplayWidth((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XDisplayWidth_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDisplayWidth_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDisplayWidthMM
-JNIEXPORT jint JNICALL OS_NATIVE(XDisplayWidthMM)
+#ifndef NO__1XDisplayWidthMM
+JNIEXPORT jint JNICALL OS_NATIVE(_1XDisplayWidthMM)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XDisplayWidthMM_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDisplayWidthMM_FUNC);
 	rc = (jint)XDisplayWidthMM((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XDisplayWidthMM_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDisplayWidthMM_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XDrawArc
-JNIEXPORT void JNICALL OS_NATIVE(XDrawArc)
+#ifndef NO__1XDrawArc
+JNIEXPORT void JNICALL OS_NATIVE(_1XDrawArc)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
 {
-	OS_NATIVE_ENTER(env, that, XDrawArc_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDrawArc_FUNC);
 	XDrawArc((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-	OS_NATIVE_EXIT(env, that, XDrawArc_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDrawArc_FUNC);
 }
 #endif
 
-#ifndef NO_XDrawLine
-JNIEXPORT void JNICALL OS_NATIVE(XDrawLine)
+#ifndef NO__1XDrawLine
+JNIEXPORT void JNICALL OS_NATIVE(_1XDrawLine)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
 {
-	OS_NATIVE_ENTER(env, that, XDrawLine_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDrawLine_FUNC);
 	XDrawLine((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4, arg5, arg6);
-	OS_NATIVE_EXIT(env, that, XDrawLine_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDrawLine_FUNC);
 }
 #endif
 
-#ifndef NO_XDrawLines
-JNIEXPORT void JNICALL OS_NATIVE(XDrawLines)
+#ifndef NO__1XDrawLines
+JNIEXPORT void JNICALL OS_NATIVE(_1XDrawLines)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jshortArray arg3, jint arg4, jint arg5)
 {
 	jshort *lparg3=NULL;
-	OS_NATIVE_ENTER(env, that, XDrawLines_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDrawLines_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	XDrawLines((Display *)arg0, (Drawable)arg1, (GC)arg2, (XPoint *)lparg3, arg4, arg5);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, XDrawLines_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDrawLines_FUNC);
 }
 #endif
 
-#ifndef NO_XDrawPoint
-JNIEXPORT void JNICALL OS_NATIVE(XDrawPoint)
+#ifndef NO__1XDrawPoint
+JNIEXPORT void JNICALL OS_NATIVE(_1XDrawPoint)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
-	OS_NATIVE_ENTER(env, that, XDrawPoint_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDrawPoint_FUNC);
 	XDrawPoint((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4);
-	OS_NATIVE_EXIT(env, that, XDrawPoint_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDrawPoint_FUNC);
 }
 #endif
 
-#ifndef NO_XDrawRectangle
-JNIEXPORT void JNICALL OS_NATIVE(XDrawRectangle)
+#ifndef NO__1XDrawRectangle
+JNIEXPORT void JNICALL OS_NATIVE(_1XDrawRectangle)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
 {
-	OS_NATIVE_ENTER(env, that, XDrawRectangle_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XDrawRectangle_FUNC);
 	XDrawRectangle((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4, arg5, arg6);
-	OS_NATIVE_EXIT(env, that, XDrawRectangle_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XDrawRectangle_FUNC);
 }
 #endif
 
-#ifndef NO_XEmptyRegion
-JNIEXPORT jboolean JNICALL OS_NATIVE(XEmptyRegion)
+#ifndef NO__1XEmptyRegion
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XEmptyRegion)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XEmptyRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XEmptyRegion_FUNC);
 	rc = (jboolean)XEmptyRegion((Region)arg0);
-	OS_NATIVE_EXIT(env, that, XEmptyRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XEmptyRegion_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XEventsQueued
-JNIEXPORT jint JNICALL OS_NATIVE(XEventsQueued)
+#ifndef NO__1XEventsQueued
+JNIEXPORT jint JNICALL OS_NATIVE(_1XEventsQueued)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XEventsQueued_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XEventsQueued_FUNC);
 	rc = (jint)XEventsQueued((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XEventsQueued_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XEventsQueued_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XFillArc
-JNIEXPORT void JNICALL OS_NATIVE(XFillArc)
+#ifndef NO__1XFillArc
+JNIEXPORT void JNICALL OS_NATIVE(_1XFillArc)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
 {
-	OS_NATIVE_ENTER(env, that, XFillArc_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFillArc_FUNC);
 	XFillArc((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-	OS_NATIVE_EXIT(env, that, XFillArc_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFillArc_FUNC);
 }
 #endif
 
-#ifndef NO_XFillPolygon
-JNIEXPORT jint JNICALL OS_NATIVE(XFillPolygon)
+#ifndef NO__1XFillPolygon
+JNIEXPORT jint JNICALL OS_NATIVE(_1XFillPolygon)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jshortArray arg3, jint arg4, jint arg5, jint arg6)
 {
 	jshort *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XFillPolygon_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFillPolygon_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)XFillPolygon((Display *)arg0, (Drawable)arg1, (GC)arg2, (XPoint *)lparg3, arg4, arg5, arg6);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, XFillPolygon_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFillPolygon_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XFillRectangle
-JNIEXPORT void JNICALL OS_NATIVE(XFillRectangle)
+#ifndef NO__1XFillRectangle
+JNIEXPORT void JNICALL OS_NATIVE(_1XFillRectangle)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
 {
-	OS_NATIVE_ENTER(env, that, XFillRectangle_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFillRectangle_FUNC);
 	XFillRectangle((Display *)arg0, (Drawable)arg1, (GC)arg2, arg3, arg4, arg5, arg6);
-	OS_NATIVE_EXIT(env, that, XFillRectangle_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFillRectangle_FUNC);
 }
 #endif
 
-#ifndef NO_XFilterEvent
-JNIEXPORT jboolean JNICALL OS_NATIVE(XFilterEvent)
+#ifndef NO__1XFilterEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XFilterEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XFilterEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFilterEvent_FUNC);
 	rc = (jboolean)XFilterEvent((XEvent *)arg0, (Window)arg1);
-	OS_NATIVE_EXIT(env, that, XFilterEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFilterEvent_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XFlush
-JNIEXPORT void JNICALL OS_NATIVE(XFlush)
+#ifndef NO__1XFlush
+JNIEXPORT void JNICALL OS_NATIVE(_1XFlush)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XFlush_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFlush_FUNC);
 	XFlush((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XFlush_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFlush_FUNC);
 }
 #endif
 
-#ifndef NO_XFontsOfFontSet
-JNIEXPORT jint JNICALL OS_NATIVE(XFontsOfFontSet)
+#ifndef NO__1XFontsOfFontSet
+JNIEXPORT jint JNICALL OS_NATIVE(_1XFontsOfFontSet)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
 {
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XFontsOfFontSet_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFontsOfFontSet_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XFontsOfFontSet((XFontSet)arg0, (XFontStruct ***)lparg1, (char ***)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XFontsOfFontSet_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFontsOfFontSet_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XFree
-JNIEXPORT jint JNICALL OS_NATIVE(XFree)
+#ifndef NO__1XFree
+JNIEXPORT jint JNICALL OS_NATIVE(_1XFree)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XFree_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFree_FUNC);
 	rc = (jint)XFree((char *)arg0);
-	OS_NATIVE_EXIT(env, that, XFree_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFree_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XFreeColors
-JNIEXPORT jint JNICALL OS_NATIVE(XFreeColors)
+#ifndef NO__1XFreeColors
+JNIEXPORT jint JNICALL OS_NATIVE(_1XFreeColors)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3, jint arg4)
 {
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XFreeColors_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFreeColors_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XFreeColors((Display *)arg0, arg1, (unsigned long *)lparg2, arg3, arg4);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XFreeColors_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFreeColors_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XFreeCursor
-JNIEXPORT void JNICALL OS_NATIVE(XFreeCursor)
+#ifndef NO__1XFreeCursor
+JNIEXPORT void JNICALL OS_NATIVE(_1XFreeCursor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XFreeCursor_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFreeCursor_FUNC);
 	XFreeCursor((Display *)arg0, (Cursor)arg1);
-	OS_NATIVE_EXIT(env, that, XFreeCursor_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFreeCursor_FUNC);
 }
 #endif
 
-#ifndef NO_XFreeFont
-JNIEXPORT void JNICALL OS_NATIVE(XFreeFont)
+#ifndef NO__1XFreeFont
+JNIEXPORT void JNICALL OS_NATIVE(_1XFreeFont)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XFreeFont_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFreeFont_FUNC);
 	XFreeFont((Display *)arg0, (XFontStruct *)arg1);
-	OS_NATIVE_EXIT(env, that, XFreeFont_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFreeFont_FUNC);
 }
 #endif
 
-#ifndef NO_XFreeFontNames
-JNIEXPORT void JNICALL OS_NATIVE(XFreeFontNames)
+#ifndef NO__1XFreeFontNames
+JNIEXPORT void JNICALL OS_NATIVE(_1XFreeFontNames)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XFreeFontNames_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFreeFontNames_FUNC);
 	XFreeFontNames((char **)arg0);
-	OS_NATIVE_EXIT(env, that, XFreeFontNames_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFreeFontNames_FUNC);
 }
 #endif
 
-#ifndef NO_XFreeGC
-JNIEXPORT void JNICALL OS_NATIVE(XFreeGC)
+#ifndef NO__1XFreeGC
+JNIEXPORT void JNICALL OS_NATIVE(_1XFreeGC)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XFreeGC_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFreeGC_FUNC);
 	XFreeGC((Display *)arg0, (GC)arg1);
-	OS_NATIVE_EXIT(env, that, XFreeGC_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFreeGC_FUNC);
 }
 #endif
 
-#ifndef NO_XFreePixmap
-JNIEXPORT void JNICALL OS_NATIVE(XFreePixmap)
+#ifndef NO__1XFreePixmap
+JNIEXPORT void JNICALL OS_NATIVE(_1XFreePixmap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XFreePixmap_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFreePixmap_FUNC);
 	XFreePixmap((Display *)arg0, (Pixmap)arg1);
-	OS_NATIVE_EXIT(env, that, XFreePixmap_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFreePixmap_FUNC);
 }
 #endif
 
-#ifndef NO_XFreeStringList
-JNIEXPORT void JNICALL OS_NATIVE(XFreeStringList)
+#ifndef NO__1XFreeStringList
+JNIEXPORT void JNICALL OS_NATIVE(_1XFreeStringList)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XFreeStringList_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XFreeStringList_FUNC);
 	XFreeStringList((char **)arg0);
-	OS_NATIVE_EXIT(env, that, XFreeStringList_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XFreeStringList_FUNC);
 }
 #endif
 
-#ifndef NO_XGetGCValues
-JNIEXPORT jint JNICALL OS_NATIVE(XGetGCValues)
+#ifndef NO__1XGetGCValues
+JNIEXPORT jint JNICALL OS_NATIVE(_1XGetGCValues)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
 {
 	XGCValues _arg3, *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XGetGCValues_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XGetGCValues_FUNC);
 	if (arg3) if ((lparg3 = getXGCValuesFields(env, arg3, &_arg3)) == NULL) goto fail;
 	rc = (jint)XGetGCValues((Display *)arg0, (GC)arg1, arg2, lparg3);
 fail:
 	if (arg3 && lparg3) setXGCValuesFields(env, arg3, lparg3);
-	OS_NATIVE_EXIT(env, that, XGetGCValues_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XGetGCValues_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XGetGeometry
-JNIEXPORT jint JNICALL OS_NATIVE(XGetGeometry)
+#ifndef NO__1XGetGeometry
+JNIEXPORT jint JNICALL OS_NATIVE(_1XGetGeometry)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7, jintArray arg8)
 {
 	jint *lparg2=NULL;
@@ -859,7 +859,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XGetGeometry)
 	jint *lparg7=NULL;
 	jint *lparg8=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XGetGeometry_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XGetGeometry_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
@@ -876,91 +876,91 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XGetGeometry_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XGetGeometry_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XGetIconSizes
-JNIEXPORT jint JNICALL OS_NATIVE(XGetIconSizes)
+#ifndef NO__1XGetIconSizes
+JNIEXPORT jint JNICALL OS_NATIVE(_1XGetIconSizes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
 {
 	jint *lparg2=NULL;
 	jint *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XGetIconSizes_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XGetIconSizes_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)XGetIconSizes((Display *)arg0, (Window)arg1, (XIconSize **)lparg2, (int *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XGetIconSizes_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XGetIconSizes_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XGetImage
-JNIEXPORT jint JNICALL OS_NATIVE(XGetImage)
+#ifndef NO__1XGetImage
+JNIEXPORT jint JNICALL OS_NATIVE(_1XGetImage)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XGetImage_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XGetImage_FUNC);
 	rc = (jint)XGetImage((Display *)arg0, (Drawable)arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-	OS_NATIVE_EXIT(env, that, XGetImage_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XGetImage_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XGetInputFocus
-JNIEXPORT jint JNICALL OS_NATIVE(XGetInputFocus)
+#ifndef NO__1XGetInputFocus
+JNIEXPORT jint JNICALL OS_NATIVE(_1XGetInputFocus)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
 {
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XGetInputFocus_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XGetInputFocus_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XGetInputFocus((Display *)arg0, (Window *)lparg1, (int *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XGetInputFocus_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XGetInputFocus_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XGetModifierMapping
-JNIEXPORT jint JNICALL OS_NATIVE(XGetModifierMapping)
+#ifndef NO__1XGetModifierMapping
+JNIEXPORT jint JNICALL OS_NATIVE(_1XGetModifierMapping)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XGetModifierMapping_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XGetModifierMapping_FUNC);
 	rc = (jint)XGetModifierMapping((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XGetModifierMapping_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XGetModifierMapping_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XGetWindowAttributes
-JNIEXPORT jboolean JNICALL OS_NATIVE(XGetWindowAttributes)
+#ifndef NO__1XGetWindowAttributes
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XGetWindowAttributes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	XWindowAttributes _arg2, *lparg2=NULL;
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XGetWindowAttributes_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XGetWindowAttributes_FUNC);
 	if (arg2) if ((lparg2 = getXWindowAttributesFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jboolean)XGetWindowAttributes((Display *)arg0, arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setXWindowAttributesFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, XGetWindowAttributes_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XGetWindowAttributes_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XGetWindowProperty
-JNIEXPORT jint JNICALL OS_NATIVE(XGetWindowProperty)
+#ifndef NO__1XGetWindowProperty
+JNIEXPORT jint JNICALL OS_NATIVE(_1XGetWindowProperty)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jboolean arg5, jint arg6, jintArray arg7, jintArray arg8, jintArray arg9, jintArray arg10, jintArray arg11)
 {
 	jint *lparg7=NULL;
@@ -969,7 +969,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XGetWindowProperty)
 	jint *lparg10=NULL;
 	jint *lparg11=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XGetWindowProperty_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XGetWindowProperty_FUNC);
 	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
 	if (arg8) if ((lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL)) == NULL) goto fail;
 	if (arg9) if ((lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL)) == NULL) goto fail;
@@ -982,146 +982,146 @@ fail:
 	if (arg9 && lparg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
 	if (arg8 && lparg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
 	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
-	OS_NATIVE_EXIT(env, that, XGetWindowProperty_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XGetWindowProperty_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XGrabKeyboard
-JNIEXPORT jint JNICALL OS_NATIVE(XGrabKeyboard)
+#ifndef NO__1XGrabKeyboard
+JNIEXPORT jint JNICALL OS_NATIVE(_1XGrabKeyboard)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XGrabKeyboard_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XGrabKeyboard_FUNC);
 	rc = (jint)XGrabKeyboard((Display *)arg0, arg1, arg2, arg3, arg4, arg5);
-	OS_NATIVE_EXIT(env, that, XGrabKeyboard_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XGrabKeyboard_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XGrabPointer
-JNIEXPORT jint JNICALL OS_NATIVE(XGrabPointer)
+#ifndef NO__1XGrabPointer
+JNIEXPORT jint JNICALL OS_NATIVE(_1XGrabPointer)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XGrabPointer_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XGrabPointer_FUNC);
 	rc = (jint)XGrabPointer((Display *)arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-	OS_NATIVE_EXIT(env, that, XGrabPointer_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XGrabPointer_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XInitThreads
-JNIEXPORT jint JNICALL OS_NATIVE(XInitThreads)
+#ifndef NO__1XInitThreads
+JNIEXPORT jint JNICALL OS_NATIVE(_1XInitThreads)
 	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XInitThreads_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XInitThreads_FUNC);
 	rc = (jint)XInitThreads();
-	OS_NATIVE_EXIT(env, that, XInitThreads_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XInitThreads_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XInternAtom
-JNIEXPORT jint JNICALL OS_NATIVE(XInternAtom)
+#ifndef NO__1XInternAtom
+JNIEXPORT jint JNICALL OS_NATIVE(_1XInternAtom)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jboolean arg2)
 {
 	jbyte *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XInternAtom_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XInternAtom_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XInternAtom((Display *)arg0, (char *)lparg1, arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XInternAtom_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XInternAtom_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XIntersectRegion
-JNIEXPORT void JNICALL OS_NATIVE(XIntersectRegion)
+#ifndef NO__1XIntersectRegion
+JNIEXPORT void JNICALL OS_NATIVE(_1XIntersectRegion)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XIntersectRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XIntersectRegion_FUNC);
 	XIntersectRegion((Region)arg0, (Region)arg1, (Region)arg2);
-	OS_NATIVE_EXIT(env, that, XIntersectRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XIntersectRegion_FUNC);
 }
 #endif
 
-#ifndef NO_XKeysymToKeycode
-JNIEXPORT jint JNICALL OS_NATIVE(XKeysymToKeycode)
+#ifndef NO__1XKeysymToKeycode
+JNIEXPORT jint JNICALL OS_NATIVE(_1XKeysymToKeycode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XKeysymToKeycode_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XKeysymToKeycode_FUNC);
 	rc = (jint)XKeysymToKeycode((Display *)arg0, (KeySym)arg1);
-	OS_NATIVE_EXIT(env, that, XKeysymToKeycode_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XKeysymToKeycode_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XKeysymToString
-JNIEXPORT jint JNICALL OS_NATIVE(XKeysymToString)
+#ifndef NO__1XKeysymToString
+JNIEXPORT jint JNICALL OS_NATIVE(_1XKeysymToString)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XKeysymToString_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XKeysymToString_FUNC);
 	rc = (jint)XKeysymToString(arg0);
-	OS_NATIVE_EXIT(env, that, XKeysymToString_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XKeysymToString_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XListFonts
-JNIEXPORT jint JNICALL OS_NATIVE(XListFonts)
+#ifndef NO__1XListFonts
+JNIEXPORT jint JNICALL OS_NATIVE(_1XListFonts)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XListFonts_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XListFonts_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)XListFonts((Display *)arg0, (char *)lparg1, arg2, (int *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XListFonts_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XListFonts_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XListProperties
-JNIEXPORT jint JNICALL OS_NATIVE(XListProperties)
+#ifndef NO__1XListProperties
+JNIEXPORT jint JNICALL OS_NATIVE(_1XListProperties)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
 {
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XListProperties_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XListProperties_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XListProperties((Display *)arg0, (Window)arg1, (int *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XListProperties_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XListProperties_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XLocaleOfFontSet
-JNIEXPORT jint JNICALL OS_NATIVE(XLocaleOfFontSet)
+#ifndef NO__1XLocaleOfFontSet
+JNIEXPORT jint JNICALL OS_NATIVE(_1XLocaleOfFontSet)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XLocaleOfFontSet_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XLocaleOfFontSet_FUNC);
 	rc = (jint)XLocaleOfFontSet((XFontSet)arg0);
-	OS_NATIVE_EXIT(env, that, XLocaleOfFontSet_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XLocaleOfFontSet_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XLookupString
-JNIEXPORT jint JNICALL OS_NATIVE(XLookupString)
+#ifndef NO__1XLookupString
+JNIEXPORT jint JNICALL OS_NATIVE(_1XLookupString)
 	(JNIEnv *env, jclass that, jobject arg0, jbyteArray arg1, jint arg2, jintArray arg3, jintArray arg4)
 {
 	XKeyEvent _arg0, *lparg0=NULL;
@@ -1129,7 +1129,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XLookupString)
 	jint *lparg3=NULL;
 	jint *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XLookupString_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XLookupString_FUNC);
 	if (arg0) if ((lparg0 = getXKeyEventFields(env, arg0, &_arg0)) == NULL) goto fail;
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
@@ -1140,148 +1140,148 @@ fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) setXKeyEventFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, XLookupString_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XLookupString_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XLowerWindow
-JNIEXPORT jint JNICALL OS_NATIVE(XLowerWindow)
+#ifndef NO__1XLowerWindow
+JNIEXPORT jint JNICALL OS_NATIVE(_1XLowerWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XLowerWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XLowerWindow_FUNC);
 	rc = (jint)XLowerWindow((Display *)arg0, (Window)arg1);
-	OS_NATIVE_EXIT(env, that, XLowerWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XLowerWindow_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XMapWindow
-JNIEXPORT void JNICALL OS_NATIVE(XMapWindow)
+#ifndef NO__1XMapWindow
+JNIEXPORT void JNICALL OS_NATIVE(_1XMapWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XMapWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XMapWindow_FUNC);
 	XMapWindow((Display *)arg0, (Window)arg1);
-	OS_NATIVE_EXIT(env, that, XMapWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XMapWindow_FUNC);
 }
 #endif
 
-#ifndef NO_XMoveResizeWindow
-JNIEXPORT void JNICALL OS_NATIVE(XMoveResizeWindow)
+#ifndef NO__1XMoveResizeWindow
+JNIEXPORT void JNICALL OS_NATIVE(_1XMoveResizeWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
-	OS_NATIVE_ENTER(env, that, XMoveResizeWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XMoveResizeWindow_FUNC);
 	XMoveResizeWindow((Display *)arg0, (Window)arg1, arg2, arg3, arg4, arg5);
-	OS_NATIVE_EXIT(env, that, XMoveResizeWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XMoveResizeWindow_FUNC);
 }
 #endif
 
-#ifndef NO_XOffsetRegion
-JNIEXPORT jint JNICALL OS_NATIVE(XOffsetRegion)
+#ifndef NO__1XOffsetRegion
+JNIEXPORT jint JNICALL OS_NATIVE(_1XOffsetRegion)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XOffsetRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XOffsetRegion_FUNC);
 	rc = (jint)XOffsetRegion((Region)arg0, arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XOffsetRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XOffsetRegion_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XOpenDisplay
-JNIEXPORT jint JNICALL OS_NATIVE(XOpenDisplay)
+#ifndef NO__1XOpenDisplay
+JNIEXPORT jint JNICALL OS_NATIVE(_1XOpenDisplay)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
 	jbyte *lparg0=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XOpenDisplay_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XOpenDisplay_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jint)XOpenDisplay((char *)lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XOpenDisplay_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XOpenDisplay_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XPointInRegion
-JNIEXPORT jboolean JNICALL OS_NATIVE(XPointInRegion)
+#ifndef NO__1XPointInRegion
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XPointInRegion)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XPointInRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XPointInRegion_FUNC);
 	rc = (jboolean)XPointInRegion((Region)arg0, arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XPointInRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XPointInRegion_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XPolygonRegion
-JNIEXPORT jint JNICALL OS_NATIVE(XPolygonRegion)
+#ifndef NO__1XPolygonRegion
+JNIEXPORT jint JNICALL OS_NATIVE(_1XPolygonRegion)
 	(JNIEnv *env, jclass that, jshortArray arg0, jint arg1, jint arg2)
 {
 	jshort *lparg0=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XPolygonRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XPolygonRegion_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jint)XPolygonRegion((XPoint *)lparg0, arg1, arg2);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XPolygonRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XPolygonRegion_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XPutImage
-JNIEXPORT jint JNICALL OS_NATIVE(XPutImage)
+#ifndef NO__1XPutImage
+JNIEXPORT jint JNICALL OS_NATIVE(_1XPutImage)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XPutImage_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XPutImage_FUNC);
 	rc = (jint)XPutImage((Display *)arg0, (Drawable)arg1, (GC)arg2, (XImage *)arg3, arg4, arg5, arg6, arg7, arg8, arg9);
-	OS_NATIVE_EXIT(env, that, XPutImage_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XPutImage_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XQueryBestCursor
-JNIEXPORT jint JNICALL OS_NATIVE(XQueryBestCursor)
+#ifndef NO__1XQueryBestCursor
+JNIEXPORT jint JNICALL OS_NATIVE(_1XQueryBestCursor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
 {
 	jint *lparg4=NULL;
 	jint *lparg5=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XQueryBestCursor_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XQueryBestCursor_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	rc = (jint)XQueryBestCursor((Display *)arg0, arg1, arg2, arg3, (unsigned int *)lparg4, (unsigned int *)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	OS_NATIVE_EXIT(env, that, XQueryBestCursor_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XQueryBestCursor_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XQueryColor
-JNIEXPORT jint JNICALL OS_NATIVE(XQueryColor)
+#ifndef NO__1XQueryColor
+JNIEXPORT jint JNICALL OS_NATIVE(_1XQueryColor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	XColor _arg2, *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XQueryColor_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XQueryColor_FUNC);
 	if (arg2) if ((lparg2 = getXColorFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)XQueryColor((Display *)arg0, arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setXColorFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, XQueryColor_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XQueryColor_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XQueryPointer
-JNIEXPORT jint JNICALL OS_NATIVE(XQueryPointer)
+#ifndef NO__1XQueryPointer
+JNIEXPORT jint JNICALL OS_NATIVE(_1XQueryPointer)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7, jintArray arg8)
 {
 	jint *lparg2=NULL;
@@ -1292,7 +1292,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XQueryPointer)
 	jint *lparg7=NULL;
 	jint *lparg8=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XQueryPointer_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XQueryPointer_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
@@ -1309,13 +1309,13 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XQueryPointer_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XQueryPointer_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XQueryTree
-JNIEXPORT jint JNICALL OS_NATIVE(XQueryTree)
+#ifndef NO__1XQueryTree
+JNIEXPORT jint JNICALL OS_NATIVE(_1XQueryTree)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5)
 {
 	jint *lparg2=NULL;
@@ -1323,7 +1323,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XQueryTree)
 	jint *lparg4=NULL;
 	jint *lparg5=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XQueryTree_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XQueryTree_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
@@ -1334,380 +1334,380 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XQueryTree_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XQueryTree_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XRaiseWindow
-JNIEXPORT jint JNICALL OS_NATIVE(XRaiseWindow)
+#ifndef NO__1XRaiseWindow
+JNIEXPORT jint JNICALL OS_NATIVE(_1XRaiseWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XRaiseWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XRaiseWindow_FUNC);
 	rc = (jint)XRaiseWindow((Display *)arg0, (Window)arg1);
-	OS_NATIVE_EXIT(env, that, XRaiseWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XRaiseWindow_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XReconfigureWMWindow
-JNIEXPORT jint JNICALL OS_NATIVE(XReconfigureWMWindow)
+#ifndef NO__1XReconfigureWMWindow
+JNIEXPORT jint JNICALL OS_NATIVE(_1XReconfigureWMWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
 {
 	XWindowChanges _arg4, *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XReconfigureWMWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XReconfigureWMWindow_FUNC);
 	if (arg4) if ((lparg4 = getXWindowChangesFields(env, arg4, &_arg4)) == NULL) goto fail;
 	rc = (jint)XReconfigureWMWindow((Display *)arg0, (Window)arg1, arg2, arg3, lparg4);
 fail:
 	if (arg4 && lparg4) setXWindowChangesFields(env, arg4, lparg4);
-	OS_NATIVE_EXIT(env, that, XReconfigureWMWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XReconfigureWMWindow_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XRectInRegion
-JNIEXPORT jint JNICALL OS_NATIVE(XRectInRegion)
+#ifndef NO__1XRectInRegion
+JNIEXPORT jint JNICALL OS_NATIVE(_1XRectInRegion)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XRectInRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XRectInRegion_FUNC);
 	rc = (jint)XRectInRegion((Region)arg0, arg1, arg2, arg3, arg4);
-	OS_NATIVE_EXIT(env, that, XRectInRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XRectInRegion_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XReparentWindow
-JNIEXPORT jint JNICALL OS_NATIVE(XReparentWindow)
+#ifndef NO__1XReparentWindow
+JNIEXPORT jint JNICALL OS_NATIVE(_1XReparentWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XReparentWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XReparentWindow_FUNC);
 	rc = (jint)XReparentWindow((Display *)arg0, (Window)arg1, (Window)arg2, arg3, arg4);
-	OS_NATIVE_EXIT(env, that, XReparentWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XReparentWindow_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XResizeWindow
-JNIEXPORT void JNICALL OS_NATIVE(XResizeWindow)
+#ifndef NO__1XResizeWindow
+JNIEXPORT void JNICALL OS_NATIVE(_1XResizeWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-	OS_NATIVE_ENTER(env, that, XResizeWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XResizeWindow_FUNC);
 	XResizeWindow((Display *)arg0, (Window)arg1, arg2, arg3);
-	OS_NATIVE_EXIT(env, that, XResizeWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XResizeWindow_FUNC);
 }
 #endif
 
-#ifndef NO_XRootWindowOfScreen
-JNIEXPORT jint JNICALL OS_NATIVE(XRootWindowOfScreen)
+#ifndef NO__1XRootWindowOfScreen
+JNIEXPORT jint JNICALL OS_NATIVE(_1XRootWindowOfScreen)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XRootWindowOfScreen_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XRootWindowOfScreen_FUNC);
 	rc = (jint)XRootWindowOfScreen((Screen *)arg0);
-	OS_NATIVE_EXIT(env, that, XRootWindowOfScreen_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XRootWindowOfScreen_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XSelectInput
-JNIEXPORT void JNICALL OS_NATIVE(XSelectInput)
+#ifndef NO__1XSelectInput
+JNIEXPORT void JNICALL OS_NATIVE(_1XSelectInput)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XSelectInput_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSelectInput_FUNC);
 	XSelectInput((Display *)arg0, (Window)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XSelectInput_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSelectInput_FUNC);
 }
 #endif
 
-#ifndef NO_XSendEvent
-JNIEXPORT jint JNICALL OS_NATIVE(XSendEvent)
+#ifndef NO__1XSendEvent
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSendEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XSendEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSendEvent_FUNC);
 	rc = (jint)XSendEvent((Display *)arg0, (Window)arg1, (Bool)arg2, (long)arg3, (XEvent *)arg4);
-	OS_NATIVE_EXIT(env, that, XSendEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSendEvent_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XSetBackground
-JNIEXPORT void JNICALL OS_NATIVE(XSetBackground)
+#ifndef NO__1XSetBackground
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetBackground)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XSetBackground_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetBackground_FUNC);
 	XSetBackground((Display *)arg0, (GC)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XSetBackground_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetBackground_FUNC);
 }
 #endif
 
-#ifndef NO_XSetClipMask
-JNIEXPORT void JNICALL OS_NATIVE(XSetClipMask)
+#ifndef NO__1XSetClipMask
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetClipMask)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XSetClipMask_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetClipMask_FUNC);
 	XSetClipMask((Display *)arg0, (GC)arg1, (Pixmap)arg2);
-	OS_NATIVE_EXIT(env, that, XSetClipMask_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetClipMask_FUNC);
 }
 #endif
 
-#ifndef NO_XSetClipRectangles
-JNIEXPORT void JNICALL OS_NATIVE(XSetClipRectangles)
+#ifndef NO__1XSetClipRectangles
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetClipRectangles)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jint arg6)
 {
 	XRectangle _arg4, *lparg4=NULL;
-	OS_NATIVE_ENTER(env, that, XSetClipRectangles_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetClipRectangles_FUNC);
 	if (arg4) if ((lparg4 = getXRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
 	XSetClipRectangles((Display *)arg0, (GC)arg1, arg2, arg3, (XRectangle *)lparg4, arg5, arg6);
 fail:
 	if (arg4 && lparg4) setXRectangleFields(env, arg4, lparg4);
-	OS_NATIVE_EXIT(env, that, XSetClipRectangles_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetClipRectangles_FUNC);
 }
 #endif
 
-#ifndef NO_XSetDashes
-JNIEXPORT jint JNICALL OS_NATIVE(XSetDashes)
+#ifndef NO__1XSetDashes
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSetDashes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4)
 {
 	jbyte *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XSetDashes_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetDashes_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)XSetDashes((Display *)arg0, (GC)arg1, arg2, (char *)lparg3, arg4);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, XSetDashes_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetDashes_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XSetErrorHandler
-JNIEXPORT jint JNICALL OS_NATIVE(XSetErrorHandler)
+#ifndef NO__1XSetErrorHandler
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSetErrorHandler)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XSetErrorHandler_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetErrorHandler_FUNC);
 	rc = (jint)XSetErrorHandler((XErrorHandler)arg0);
-	OS_NATIVE_EXIT(env, that, XSetErrorHandler_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetErrorHandler_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XSetFillStyle
-JNIEXPORT void JNICALL OS_NATIVE(XSetFillStyle)
+#ifndef NO__1XSetFillStyle
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetFillStyle)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XSetFillStyle_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetFillStyle_FUNC);
 	XSetFillStyle((Display *)arg0, (GC)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XSetFillStyle_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetFillStyle_FUNC);
 }
 #endif
 
-#ifndef NO_XSetForeground
-JNIEXPORT void JNICALL OS_NATIVE(XSetForeground)
+#ifndef NO__1XSetForeground
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetForeground)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XSetForeground_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetForeground_FUNC);
 	XSetForeground((Display *)arg0, (GC)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XSetForeground_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetForeground_FUNC);
 }
 #endif
 
-#ifndef NO_XSetFunction
-JNIEXPORT void JNICALL OS_NATIVE(XSetFunction)
+#ifndef NO__1XSetFunction
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetFunction)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XSetFunction_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetFunction_FUNC);
 	XSetFunction((Display *)arg0, (GC)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XSetFunction_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetFunction_FUNC);
 }
 #endif
 
-#ifndef NO_XSetGraphicsExposures
-JNIEXPORT void JNICALL OS_NATIVE(XSetGraphicsExposures)
+#ifndef NO__1XSetGraphicsExposures
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetGraphicsExposures)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
 {
-	OS_NATIVE_ENTER(env, that, XSetGraphicsExposures_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetGraphicsExposures_FUNC);
 	XSetGraphicsExposures((Display *)arg0, (GC)arg1, (Bool)arg2);
-	OS_NATIVE_EXIT(env, that, XSetGraphicsExposures_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetGraphicsExposures_FUNC);
 }
 #endif
 
-#ifndef NO_XSetIOErrorHandler
-JNIEXPORT jint JNICALL OS_NATIVE(XSetIOErrorHandler)
+#ifndef NO__1XSetIOErrorHandler
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSetIOErrorHandler)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XSetIOErrorHandler_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetIOErrorHandler_FUNC);
 	rc = (jint)XSetIOErrorHandler((XIOErrorHandler)arg0);
-	OS_NATIVE_EXIT(env, that, XSetIOErrorHandler_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetIOErrorHandler_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XSetInputFocus
-JNIEXPORT jint JNICALL OS_NATIVE(XSetInputFocus)
+#ifndef NO__1XSetInputFocus
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSetInputFocus)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XSetInputFocus_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetInputFocus_FUNC);
 	rc = (jint)XSetInputFocus((Display *)arg0, (Window)arg1, arg2, arg3);
-	OS_NATIVE_EXIT(env, that, XSetInputFocus_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetInputFocus_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XSetLineAttributes
-JNIEXPORT jint JNICALL OS_NATIVE(XSetLineAttributes)
+#ifndef NO__1XSetLineAttributes
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSetLineAttributes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XSetLineAttributes_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetLineAttributes_FUNC);
 	rc = (jint)XSetLineAttributes((Display *)arg0, (GC)arg1, arg2, arg3, arg4, arg5);
-	OS_NATIVE_EXIT(env, that, XSetLineAttributes_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetLineAttributes_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XSetRegion
-JNIEXPORT void JNICALL OS_NATIVE(XSetRegion)
+#ifndef NO__1XSetRegion
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetRegion)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XSetRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetRegion_FUNC);
 	XSetRegion((Display *)arg0, (GC)arg1, (Region)arg2);
-	OS_NATIVE_EXIT(env, that, XSetRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetRegion_FUNC);
 }
 #endif
 
-#ifndef NO_XSetStipple
-JNIEXPORT void JNICALL OS_NATIVE(XSetStipple)
+#ifndef NO__1XSetStipple
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetStipple)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XSetStipple_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetStipple_FUNC);
 	XSetStipple((Display *)arg0, (GC)arg1, (Pixmap)arg2);
-	OS_NATIVE_EXIT(env, that, XSetStipple_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetStipple_FUNC);
 }
 #endif
 
-#ifndef NO_XSetSubwindowMode
-JNIEXPORT void JNICALL OS_NATIVE(XSetSubwindowMode)
+#ifndef NO__1XSetSubwindowMode
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetSubwindowMode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XSetSubwindowMode_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetSubwindowMode_FUNC);
 	XSetSubwindowMode((Display *)arg0, (GC)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XSetSubwindowMode_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetSubwindowMode_FUNC);
 }
 #endif
 
-#ifndef NO_XSetWMNormalHints
-JNIEXPORT void JNICALL OS_NATIVE(XSetWMNormalHints)
+#ifndef NO__1XSetWMNormalHints
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetWMNormalHints)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	XSizeHints _arg2, *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, XSetWMNormalHints_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSetWMNormalHints_FUNC);
 	if (arg2) if ((lparg2 = getXSizeHintsFields(env, arg2, &_arg2)) == NULL) goto fail;
 	XSetWMNormalHints((Display *)arg0, (Window)arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setXSizeHintsFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, XSetWMNormalHints_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSetWMNormalHints_FUNC);
 }
 #endif
 
-#ifndef NO_XShapeCombineMask
-JNIEXPORT void JNICALL OS_NATIVE(XShapeCombineMask)
+#ifndef NO__1XShapeCombineMask
+JNIEXPORT void JNICALL OS_NATIVE(_1XShapeCombineMask)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
 {
-	OS_NATIVE_ENTER(env, that, XShapeCombineMask_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XShapeCombineMask_FUNC);
 	XShapeCombineMask((Display *)arg0, (Window)arg1, arg2, arg3, arg4, (Pixmap)arg5, arg6);
-	OS_NATIVE_EXIT(env, that, XShapeCombineMask_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XShapeCombineMask_FUNC);
 }
 #endif
 
-#ifndef NO_XShapeCombineRegion
-JNIEXPORT void JNICALL OS_NATIVE(XShapeCombineRegion)
+#ifndef NO__1XShapeCombineRegion
+JNIEXPORT void JNICALL OS_NATIVE(_1XShapeCombineRegion)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
 {
-	OS_NATIVE_ENTER(env, that, XShapeCombineRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XShapeCombineRegion_FUNC);
 	XShapeCombineRegion((Display *)arg0, (Window)arg1, arg2, arg3, arg4, (Region)arg5, arg6);
-	OS_NATIVE_EXIT(env, that, XShapeCombineRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XShapeCombineRegion_FUNC);
 }
 #endif
 
-#ifndef NO_XSubtractRegion
-JNIEXPORT void JNICALL OS_NATIVE(XSubtractRegion)
+#ifndef NO__1XSubtractRegion
+JNIEXPORT void JNICALL OS_NATIVE(_1XSubtractRegion)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XSubtractRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSubtractRegion_FUNC);
 	XSubtractRegion((Region)arg0, (Region)arg1, (Region)arg2);
-	OS_NATIVE_EXIT(env, that, XSubtractRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSubtractRegion_FUNC);
 }
 #endif
 
-#ifndef NO_XSync
-JNIEXPORT void JNICALL OS_NATIVE(XSync)
+#ifndef NO__1XSync
+JNIEXPORT void JNICALL OS_NATIVE(_1XSync)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	OS_NATIVE_ENTER(env, that, XSync_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSync_FUNC);
 	XSync((Display *)arg0, (Bool)arg1);
-	OS_NATIVE_EXIT(env, that, XSync_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSync_FUNC);
 }
 #endif
 
-#ifndef NO_XSynchronize
-JNIEXPORT jint JNICALL OS_NATIVE(XSynchronize)
+#ifndef NO__1XSynchronize
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSynchronize)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XSynchronize_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XSynchronize_FUNC);
 	rc = (jint)XSynchronize((Display *)arg0, (Bool)arg1);
-	OS_NATIVE_EXIT(env, that, XSynchronize_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XSynchronize_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XTestFakeButtonEvent
-JNIEXPORT void JNICALL OS_NATIVE(XTestFakeButtonEvent)
+#ifndef NO__1XTestFakeButtonEvent
+JNIEXPORT void JNICALL OS_NATIVE(_1XTestFakeButtonEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3)
 {
-	OS_NATIVE_ENTER(env, that, XTestFakeButtonEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XTestFakeButtonEvent_FUNC);
 	XTestFakeButtonEvent((Display *)arg0, arg1, (Bool)arg2, (unsigned long)arg3);
-	OS_NATIVE_EXIT(env, that, XTestFakeButtonEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XTestFakeButtonEvent_FUNC);
 }
 #endif
 
-#ifndef NO_XTestFakeKeyEvent
-JNIEXPORT void JNICALL OS_NATIVE(XTestFakeKeyEvent)
+#ifndef NO__1XTestFakeKeyEvent
+JNIEXPORT void JNICALL OS_NATIVE(_1XTestFakeKeyEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3)
 {
-	OS_NATIVE_ENTER(env, that, XTestFakeKeyEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XTestFakeKeyEvent_FUNC);
 	XTestFakeKeyEvent((Display *)arg0, arg1, (Bool)arg2, (unsigned long)arg3);
-	OS_NATIVE_EXIT(env, that, XTestFakeKeyEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XTestFakeKeyEvent_FUNC);
 }
 #endif
 
-#ifndef NO_XTestFakeMotionEvent
-JNIEXPORT void JNICALL OS_NATIVE(XTestFakeMotionEvent)
+#ifndef NO__1XTestFakeMotionEvent
+JNIEXPORT void JNICALL OS_NATIVE(_1XTestFakeMotionEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
-	OS_NATIVE_ENTER(env, that, XTestFakeMotionEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XTestFakeMotionEvent_FUNC);
 	XTestFakeMotionEvent((Display *)arg0, arg1, arg2, arg3, (unsigned long)arg4);
-	OS_NATIVE_EXIT(env, that, XTestFakeMotionEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XTestFakeMotionEvent_FUNC);
 }
 #endif
 
-#ifndef NO_XTranslateCoordinates
-JNIEXPORT jboolean JNICALL OS_NATIVE(XTranslateCoordinates)
+#ifndef NO__1XTranslateCoordinates
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XTranslateCoordinates)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jintArray arg5, jintArray arg6, jintArray arg7)
 {
 	jint *lparg5=NULL;
 	jint *lparg6=NULL;
 	jint *lparg7=NULL;
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XTranslateCoordinates_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XTranslateCoordinates_FUNC);
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
@@ -1716,170 +1716,170 @@ fail:
 	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
-	OS_NATIVE_EXIT(env, that, XTranslateCoordinates_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XTranslateCoordinates_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XUndefineCursor
-JNIEXPORT void JNICALL OS_NATIVE(XUndefineCursor)
+#ifndef NO__1XUndefineCursor
+JNIEXPORT void JNICALL OS_NATIVE(_1XUndefineCursor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XUndefineCursor_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XUndefineCursor_FUNC);
 	XUndefineCursor((Display *)arg0, (Window)arg1);
-	OS_NATIVE_EXIT(env, that, XUndefineCursor_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XUndefineCursor_FUNC);
 }
 #endif
 
-#ifndef NO_XUngrabKeyboard
-JNIEXPORT jint JNICALL OS_NATIVE(XUngrabKeyboard)
+#ifndef NO__1XUngrabKeyboard
+JNIEXPORT jint JNICALL OS_NATIVE(_1XUngrabKeyboard)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XUngrabKeyboard_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XUngrabKeyboard_FUNC);
 	rc = (jint)XUngrabKeyboard((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XUngrabKeyboard_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XUngrabKeyboard_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XUngrabPointer
-JNIEXPORT jint JNICALL OS_NATIVE(XUngrabPointer)
+#ifndef NO__1XUngrabPointer
+JNIEXPORT jint JNICALL OS_NATIVE(_1XUngrabPointer)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XUngrabPointer_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XUngrabPointer_FUNC);
 	rc = (jint)XUngrabPointer((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XUngrabPointer_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XUngrabPointer_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XUnionRectWithRegion
-JNIEXPORT void JNICALL OS_NATIVE(XUnionRectWithRegion)
+#ifndef NO__1XUnionRectWithRegion
+JNIEXPORT void JNICALL OS_NATIVE(_1XUnionRectWithRegion)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
 	XRectangle _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, XUnionRectWithRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XUnionRectWithRegion_FUNC);
 	if (arg0) if ((lparg0 = getXRectangleFields(env, arg0, &_arg0)) == NULL) goto fail;
 	XUnionRectWithRegion((XRectangle *)lparg0, (Region)arg1, (Region)arg2);
 fail:
 	if (arg0 && lparg0) setXRectangleFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, XUnionRectWithRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XUnionRectWithRegion_FUNC);
 }
 #endif
 
-#ifndef NO_XUnionRegion
-JNIEXPORT void JNICALL OS_NATIVE(XUnionRegion)
+#ifndef NO__1XUnionRegion
+JNIEXPORT void JNICALL OS_NATIVE(_1XUnionRegion)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XUnionRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XUnionRegion_FUNC);
 	XUnionRegion((Region)arg0, (Region)arg1, (Region)arg2);
-	OS_NATIVE_EXIT(env, that, XUnionRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XUnionRegion_FUNC);
 }
 #endif
 
-#ifndef NO_XUnmapWindow
-JNIEXPORT void JNICALL OS_NATIVE(XUnmapWindow)
+#ifndef NO__1XUnmapWindow
+JNIEXPORT void JNICALL OS_NATIVE(_1XUnmapWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XUnmapWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XUnmapWindow_FUNC);
 	XUnmapWindow((Display *)arg0, (Window)arg1);
-	OS_NATIVE_EXIT(env, that, XUnmapWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XUnmapWindow_FUNC);
 }
 #endif
 
-#ifndef NO_XWarpPointer
-JNIEXPORT jint JNICALL OS_NATIVE(XWarpPointer)
+#ifndef NO__1XWarpPointer
+JNIEXPORT jint JNICALL OS_NATIVE(_1XWarpPointer)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XWarpPointer_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XWarpPointer_FUNC);
 	rc = (jint)XWarpPointer((Display *)arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
-	OS_NATIVE_EXIT(env, that, XWarpPointer_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XWarpPointer_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XWhitePixel
-JNIEXPORT jint JNICALL OS_NATIVE(XWhitePixel)
+#ifndef NO__1XWhitePixel
+JNIEXPORT jint JNICALL OS_NATIVE(_1XWhitePixel)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XWhitePixel_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XWhitePixel_FUNC);
 	rc = (jint)XWhitePixel((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XWhitePixel_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XWhitePixel_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XWithdrawWindow
-JNIEXPORT void JNICALL OS_NATIVE(XWithdrawWindow)
+#ifndef NO__1XWithdrawWindow
+JNIEXPORT void JNICALL OS_NATIVE(_1XWithdrawWindow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XWithdrawWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XWithdrawWindow_FUNC);
 	XWithdrawWindow((Display *)arg0, (Window)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XWithdrawWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XWithdrawWindow_FUNC);
 }
 #endif
 
-#ifndef NO_XineramaIsActive
-JNIEXPORT jboolean JNICALL OS_NATIVE(XineramaIsActive)
+#ifndef NO__1XineramaIsActive
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XineramaIsActive)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XineramaIsActive_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XineramaIsActive_FUNC);
 	rc = (jboolean)XineramaIsActive((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XineramaIsActive_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XineramaIsActive_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XineramaQueryScreens
-JNIEXPORT jint JNICALL OS_NATIVE(XineramaQueryScreens)
+#ifndef NO__1XineramaQueryScreens
+JNIEXPORT jint JNICALL OS_NATIVE(_1XineramaQueryScreens)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
 {
 	jint *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XineramaQueryScreens_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XineramaQueryScreens_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XineramaQueryScreens((Display *)arg0, lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XineramaQueryScreens_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XineramaQueryScreens_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmAddWMProtocolCallback
-JNIEXPORT void JNICALL OS_NATIVE(XmAddWMProtocolCallback)
+#ifndef NO__1XmAddWMProtocolCallback
+JNIEXPORT void JNICALL OS_NATIVE(_1XmAddWMProtocolCallback)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-	OS_NATIVE_ENTER(env, that, XmAddWMProtocolCallback_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmAddWMProtocolCallback_FUNC);
 	XmAddWMProtocolCallback((Widget)arg0, (Atom)arg1, (XtCallbackProc)arg2, (XtPointer)arg3);
-	OS_NATIVE_EXIT(env, that, XmAddWMProtocolCallback_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmAddWMProtocolCallback_FUNC);
 }
 #endif
 
-#ifndef NO_XmChangeColor
-JNIEXPORT void JNICALL OS_NATIVE(XmChangeColor)
+#ifndef NO__1XmChangeColor
+JNIEXPORT void JNICALL OS_NATIVE(_1XmChangeColor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmChangeColor_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmChangeColor_FUNC);
 	XmChangeColor((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmChangeColor_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmChangeColor_FUNC);
 }
 #endif
 
-#ifndef NO_XmClipboardCopy
-JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardCopy)
+#ifndef NO__1XmClipboardCopy
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmClipboardCopy)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jbyteArray arg4, jint arg5, jint arg6, jintArray arg7)
 {
 	jbyte *lparg3=NULL;
 	jbyte *lparg4=NULL;
 	jint *lparg7=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmClipboardCopy_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmClipboardCopy_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
@@ -1888,94 +1888,94 @@ fail:
 	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, XmClipboardCopy_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmClipboardCopy_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmClipboardEndCopy
-JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardEndCopy)
+#ifndef NO__1XmClipboardEndCopy
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmClipboardEndCopy)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmClipboardEndCopy_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmClipboardEndCopy_FUNC);
 	rc = (jint)XmClipboardEndCopy((Display *)arg0, (Window)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XmClipboardEndCopy_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmClipboardEndCopy_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmClipboardEndRetrieve
-JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardEndRetrieve)
+#ifndef NO__1XmClipboardEndRetrieve
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmClipboardEndRetrieve)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmClipboardEndRetrieve_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmClipboardEndRetrieve_FUNC);
 	rc = (jint)XmClipboardEndRetrieve((Display *)arg0, (Window)arg1);
-	OS_NATIVE_EXIT(env, that, XmClipboardEndRetrieve_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmClipboardEndRetrieve_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmClipboardInquireCount
-JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardInquireCount)
+#ifndef NO__1XmClipboardInquireCount
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmClipboardInquireCount)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
 {
 	jint *lparg2=NULL;
 	jint *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmClipboardInquireCount_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmClipboardInquireCount_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)XmClipboardInquireCount((Display *)arg0, (Window)arg1, (int *)lparg2, (unsigned long *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XmClipboardInquireCount_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmClipboardInquireCount_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmClipboardInquireFormat
-JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardInquireFormat)
+#ifndef NO__1XmClipboardInquireFormat
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmClipboardInquireFormat)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4, jintArray arg5)
 {
 	jbyte *lparg3=NULL;
 	jint *lparg5=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmClipboardInquireFormat_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmClipboardInquireFormat_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	rc = (jint)XmClipboardInquireFormat((Display *)arg0, (Window)arg1, arg2, (char *)lparg3, arg4, (unsigned long *)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, XmClipboardInquireFormat_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmClipboardInquireFormat_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmClipboardInquireLength
-JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardInquireLength)
+#ifndef NO__1XmClipboardInquireLength
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmClipboardInquireLength)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jintArray arg3)
 {
 	jbyte *lparg2=NULL;
 	jint *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmClipboardInquireLength_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmClipboardInquireLength_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)XmClipboardInquireLength((Display *)arg0, (Window)arg1, (char *)lparg2, (unsigned long *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XmClipboardInquireLength_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmClipboardInquireLength_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmClipboardRetrieve
-JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardRetrieve)
+#ifndef NO__1XmClipboardRetrieve
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmClipboardRetrieve)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jintArray arg5, jintArray arg6)
 {
 	jbyte *lparg2=NULL;
@@ -1983,7 +1983,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardRetrieve)
 	jint *lparg5=NULL;
 	jint *lparg6=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmClipboardRetrieve_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmClipboardRetrieve_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
@@ -1994,1017 +1994,1017 @@ fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XmClipboardRetrieve_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmClipboardRetrieve_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmClipboardStartCopy
-JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardStartCopy)
+#ifndef NO__1XmClipboardStartCopy
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmClipboardStartCopy)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jintArray arg6)
 {
 	jint *lparg6=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmClipboardStartCopy_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmClipboardStartCopy_FUNC);
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	rc = (jint)XmClipboardStartCopy((Display *)arg0, (Window)arg1, (XmString)arg2, arg3, (Widget)arg4, (XmCutPasteProc)arg5, (long *)lparg6);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
-	OS_NATIVE_EXIT(env, that, XmClipboardStartCopy_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmClipboardStartCopy_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmClipboardStartRetrieve
-JNIEXPORT jint JNICALL OS_NATIVE(XmClipboardStartRetrieve)
+#ifndef NO__1XmClipboardStartRetrieve
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmClipboardStartRetrieve)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmClipboardStartRetrieve_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmClipboardStartRetrieve_FUNC);
 	rc = (jint)XmClipboardStartRetrieve((Display *)arg0, (Window)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XmClipboardStartRetrieve_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmClipboardStartRetrieve_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmComboBoxAddItem
-JNIEXPORT void JNICALL OS_NATIVE(XmComboBoxAddItem)
+#ifndef NO__1XmComboBoxAddItem
+JNIEXPORT void JNICALL OS_NATIVE(_1XmComboBoxAddItem)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
 {
-	OS_NATIVE_ENTER(env, that, XmComboBoxAddItem_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmComboBoxAddItem_FUNC);
 	XmComboBoxAddItem((Widget)arg0, (XmString)arg1, arg2, arg3);
-	OS_NATIVE_EXIT(env, that, XmComboBoxAddItem_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmComboBoxAddItem_FUNC);
 }
 #endif
 
-#ifndef NO_XmComboBoxDeletePos
-JNIEXPORT void JNICALL OS_NATIVE(XmComboBoxDeletePos)
+#ifndef NO__1XmComboBoxDeletePos
+JNIEXPORT void JNICALL OS_NATIVE(_1XmComboBoxDeletePos)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmComboBoxDeletePos_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmComboBoxDeletePos_FUNC);
 	XmComboBoxDeletePos((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmComboBoxDeletePos_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmComboBoxDeletePos_FUNC);
 }
 #endif
 
-#ifndef NO_XmComboBoxSelectItem
-JNIEXPORT void JNICALL OS_NATIVE(XmComboBoxSelectItem)
+#ifndef NO__1XmComboBoxSelectItem
+JNIEXPORT void JNICALL OS_NATIVE(_1XmComboBoxSelectItem)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmComboBoxSelectItem_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmComboBoxSelectItem_FUNC);
 	XmComboBoxSelectItem((Widget)arg0, (XmString)arg1);
-	OS_NATIVE_EXIT(env, that, XmComboBoxSelectItem_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmComboBoxSelectItem_FUNC);
 }
 #endif
 
-#ifndef NO_XmCreateArrowButton
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateArrowButton)
+#ifndef NO__1XmCreateArrowButton
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateArrowButton)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateArrowButton_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateArrowButton_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateArrowButton((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateArrowButton_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateArrowButton_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateCascadeButtonGadget
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateCascadeButtonGadget)
+#ifndef NO__1XmCreateCascadeButtonGadget
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateCascadeButtonGadget)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateCascadeButtonGadget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateCascadeButtonGadget_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateCascadeButtonGadget((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateCascadeButtonGadget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateCascadeButtonGadget_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateComboBox
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateComboBox)
+#ifndef NO__1XmCreateComboBox
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateComboBox)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateComboBox_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateComboBox_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateComboBox((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateComboBox_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateComboBox_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateDialogShell
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateDialogShell)
+#ifndef NO__1XmCreateDialogShell
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateDialogShell)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateDialogShell_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateDialogShell_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateDialogShell((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateDialogShell_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateDialogShell_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateDrawingArea
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateDrawingArea)
+#ifndef NO__1XmCreateDrawingArea
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateDrawingArea)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateDrawingArea_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateDrawingArea_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateDrawingArea((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateDrawingArea_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateDrawingArea_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateDrawnButton
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateDrawnButton)
+#ifndef NO__1XmCreateDrawnButton
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateDrawnButton)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateDrawnButton_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateDrawnButton_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateDrawnButton((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateDrawnButton_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateDrawnButton_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateErrorDialog
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateErrorDialog)
+#ifndef NO__1XmCreateErrorDialog
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateErrorDialog)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateErrorDialog_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateErrorDialog_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateErrorDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateErrorDialog_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateErrorDialog_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateFileSelectionDialog
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateFileSelectionDialog)
+#ifndef NO__1XmCreateFileSelectionDialog
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateFileSelectionDialog)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateFileSelectionDialog_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateFileSelectionDialog_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateFileSelectionDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateFileSelectionDialog_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateFileSelectionDialog_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateForm
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateForm)
+#ifndef NO__1XmCreateForm
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateForm)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateForm_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateForm_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateForm((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateForm_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateForm_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateFrame
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateFrame)
+#ifndef NO__1XmCreateFrame
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateFrame)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateFrame_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateFrame_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateFrame((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateFrame_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateFrame_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateInformationDialog
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateInformationDialog)
+#ifndef NO__1XmCreateInformationDialog
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateInformationDialog)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateInformationDialog_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateInformationDialog_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateInformationDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateInformationDialog_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateInformationDialog_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateLabel
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateLabel)
+#ifndef NO__1XmCreateLabel
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateLabel)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateLabel_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateLabel_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateLabel((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateLabel_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateLabel_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateList
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateList)
+#ifndef NO__1XmCreateList
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateList)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateList_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateList_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateList((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateList_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateList_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateMainWindow
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateMainWindow)
+#ifndef NO__1XmCreateMainWindow
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateMainWindow)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateMainWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateMainWindow_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateMainWindow((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateMainWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateMainWindow_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateMenuBar
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateMenuBar)
+#ifndef NO__1XmCreateMenuBar
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateMenuBar)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateMenuBar_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateMenuBar_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateMenuBar((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateMenuBar_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateMenuBar_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateMessageDialog
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateMessageDialog)
+#ifndef NO__1XmCreateMessageDialog
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateMessageDialog)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateMessageDialog_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateMessageDialog_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateMessageDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateMessageDialog_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateMessageDialog_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreatePopupMenu
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreatePopupMenu)
+#ifndef NO__1XmCreatePopupMenu
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreatePopupMenu)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreatePopupMenu_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreatePopupMenu_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreatePopupMenu((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreatePopupMenu_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreatePopupMenu_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreatePulldownMenu
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreatePulldownMenu)
+#ifndef NO__1XmCreatePulldownMenu
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreatePulldownMenu)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreatePulldownMenu_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreatePulldownMenu_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreatePulldownMenu((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreatePulldownMenu_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreatePulldownMenu_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreatePushButton
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreatePushButton)
+#ifndef NO__1XmCreatePushButton
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreatePushButton)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreatePushButton_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreatePushButton_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreatePushButton((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreatePushButton_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreatePushButton_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreatePushButtonGadget
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreatePushButtonGadget)
+#ifndef NO__1XmCreatePushButtonGadget
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreatePushButtonGadget)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreatePushButtonGadget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreatePushButtonGadget_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreatePushButtonGadget((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreatePushButtonGadget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreatePushButtonGadget_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateQuestionDialog
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateQuestionDialog)
+#ifndef NO__1XmCreateQuestionDialog
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateQuestionDialog)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateQuestionDialog_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateQuestionDialog_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateQuestionDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateQuestionDialog_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateQuestionDialog_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateScale
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateScale)
+#ifndef NO__1XmCreateScale
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateScale)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateScale_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateScale_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateScale((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateScale_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateScale_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateScrollBar
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateScrollBar)
+#ifndef NO__1XmCreateScrollBar
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateScrollBar)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateScrollBar_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateScrollBar_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateScrollBar((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateScrollBar_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateScrollBar_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateScrolledList
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateScrolledList)
+#ifndef NO__1XmCreateScrolledList
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateScrolledList)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateScrolledList_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateScrolledList_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateScrolledList((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateScrolledList_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateScrolledList_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateScrolledText
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateScrolledText)
+#ifndef NO__1XmCreateScrolledText
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateScrolledText)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateScrolledText_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateScrolledText_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateScrolledText((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateScrolledText_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateScrolledText_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateSeparator
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateSeparator)
+#ifndef NO__1XmCreateSeparator
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateSeparator)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateSeparator_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateSeparator_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateSeparator((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateSeparator_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateSeparator_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateSeparatorGadget
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateSeparatorGadget)
+#ifndef NO__1XmCreateSeparatorGadget
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateSeparatorGadget)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateSeparatorGadget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateSeparatorGadget_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateSeparatorGadget((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateSeparatorGadget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateSeparatorGadget_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateSimpleSpinBox
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateSimpleSpinBox)
+#ifndef NO__1XmCreateSimpleSpinBox
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateSimpleSpinBox)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateSimpleSpinBox_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateSimpleSpinBox_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateSimpleSpinBox((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateSimpleSpinBox_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateSimpleSpinBox_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateTextField
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateTextField)
+#ifndef NO__1XmCreateTextField
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateTextField)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateTextField_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateTextField_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateTextField((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateTextField_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateTextField_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateToggleButton
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateToggleButton)
+#ifndef NO__1XmCreateToggleButton
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateToggleButton)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateToggleButton_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateToggleButton_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateToggleButton((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateToggleButton_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateToggleButton_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateToggleButtonGadget
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateToggleButtonGadget)
+#ifndef NO__1XmCreateToggleButtonGadget
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateToggleButtonGadget)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateToggleButtonGadget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateToggleButtonGadget_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateToggleButtonGadget((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateToggleButtonGadget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateToggleButtonGadget_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateWarningDialog
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateWarningDialog)
+#ifndef NO__1XmCreateWarningDialog
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateWarningDialog)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateWarningDialog_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateWarningDialog_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateWarningDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateWarningDialog_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateWarningDialog_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmCreateWorkingDialog
-JNIEXPORT jint JNICALL OS_NATIVE(XmCreateWorkingDialog)
+#ifndef NO__1XmCreateWorkingDialog
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmCreateWorkingDialog)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmCreateWorkingDialog_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmCreateWorkingDialog_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmCreateWorkingDialog((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmCreateWorkingDialog_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmCreateWorkingDialog_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmDestroyPixmap
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmDestroyPixmap)
+#ifndef NO__1XmDestroyPixmap
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmDestroyPixmap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmDestroyPixmap_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmDestroyPixmap_FUNC);
 	rc = (jboolean)XmDestroyPixmap((Screen *)arg0, (Pixmap)arg1);
-	OS_NATIVE_EXIT(env, that, XmDestroyPixmap_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmDestroyPixmap_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmDragCancel
-JNIEXPORT void JNICALL OS_NATIVE(XmDragCancel)
+#ifndef NO__1XmDragCancel
+JNIEXPORT void JNICALL OS_NATIVE(_1XmDragCancel)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmDragCancel_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmDragCancel_FUNC);
 	XmDragCancel((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmDragCancel_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmDragCancel_FUNC);
 }
 #endif
 
-#ifndef NO_XmDragStart
-JNIEXPORT jint JNICALL OS_NATIVE(XmDragStart)
+#ifndef NO__1XmDragStart
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmDragStart)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3)
 {
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmDragStart_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmDragStart_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmDragStart((Widget)arg0, (XEvent *)arg1, (ArgList)lparg2, (Cardinal)arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XmDragStart_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmDragStart_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmDropSiteRegister
-JNIEXPORT void JNICALL OS_NATIVE(XmDropSiteRegister)
+#ifndef NO__1XmDropSiteRegister
+JNIEXPORT void JNICALL OS_NATIVE(_1XmDropSiteRegister)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
 {
 	jint *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, XmDropSiteRegister_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmDropSiteRegister_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	XmDropSiteRegister((Widget)arg0, (ArgList)lparg1, (Cardinal)arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmDropSiteRegister_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmDropSiteRegister_FUNC);
 }
 #endif
 
-#ifndef NO_XmDropSiteUnregister
-JNIEXPORT void JNICALL OS_NATIVE(XmDropSiteUnregister)
+#ifndef NO__1XmDropSiteUnregister
+JNIEXPORT void JNICALL OS_NATIVE(_1XmDropSiteUnregister)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmDropSiteUnregister_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmDropSiteUnregister_FUNC);
 	XmDropSiteUnregister((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmDropSiteUnregister_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmDropSiteUnregister_FUNC);
 }
 #endif
 
-#ifndef NO_XmDropSiteUpdate
-JNIEXPORT void JNICALL OS_NATIVE(XmDropSiteUpdate)
+#ifndef NO__1XmDropSiteUpdate
+JNIEXPORT void JNICALL OS_NATIVE(_1XmDropSiteUpdate)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
 {
 	jint *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, XmDropSiteUpdate_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmDropSiteUpdate_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	XmDropSiteUpdate((Widget)arg0, (ArgList)lparg1, (Cardinal)arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmDropSiteUpdate_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmDropSiteUpdate_FUNC);
 }
 #endif
 
-#ifndef NO_XmDropTransferAdd
-JNIEXPORT void JNICALL OS_NATIVE(XmDropTransferAdd)
+#ifndef NO__1XmDropTransferAdd
+JNIEXPORT void JNICALL OS_NATIVE(_1XmDropTransferAdd)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
 {
 	jint *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, XmDropTransferAdd_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmDropTransferAdd_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	XmDropTransferAdd((Widget)arg0, (XmDropTransferEntryRec *)lparg1, (Cardinal)arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmDropTransferAdd_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmDropTransferAdd_FUNC);
 }
 #endif
 
-#ifndef NO_XmDropTransferStart
-JNIEXPORT jint JNICALL OS_NATIVE(XmDropTransferStart)
+#ifndef NO__1XmDropTransferStart
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmDropTransferStart)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
 {
 	jint *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmDropTransferStart_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmDropTransferStart_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XmDropTransferStart((Widget)arg0, (ArgList)lparg1, (Cardinal)arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmDropTransferStart_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmDropTransferStart_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmFileSelectionBoxGetChild
-JNIEXPORT jint JNICALL OS_NATIVE(XmFileSelectionBoxGetChild)
+#ifndef NO__1XmFileSelectionBoxGetChild
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmFileSelectionBoxGetChild)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmFileSelectionBoxGetChild_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmFileSelectionBoxGetChild_FUNC);
 	rc = (jint)XmFileSelectionBoxGetChild((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmFileSelectionBoxGetChild_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmFileSelectionBoxGetChild_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmFontListAppendEntry
-JNIEXPORT jint JNICALL OS_NATIVE(XmFontListAppendEntry)
+#ifndef NO__1XmFontListAppendEntry
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmFontListAppendEntry)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmFontListAppendEntry_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmFontListAppendEntry_FUNC);
 	rc = (jint)XmFontListAppendEntry((XmFontList)arg0, (XmFontListEntry)arg1);
-	OS_NATIVE_EXIT(env, that, XmFontListAppendEntry_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmFontListAppendEntry_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmFontListCopy
-JNIEXPORT jint JNICALL OS_NATIVE(XmFontListCopy)
+#ifndef NO__1XmFontListCopy
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmFontListCopy)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmFontListCopy_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmFontListCopy_FUNC);
 	rc = (jint)XmFontListCopy((XmFontList)arg0);
-	OS_NATIVE_EXIT(env, that, XmFontListCopy_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmFontListCopy_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmFontListEntryFree
-JNIEXPORT void JNICALL OS_NATIVE(XmFontListEntryFree)
+#ifndef NO__1XmFontListEntryFree
+JNIEXPORT void JNICALL OS_NATIVE(_1XmFontListEntryFree)
 	(JNIEnv *env, jclass that, jintArray arg0)
 {
 	jint *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, XmFontListEntryFree_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmFontListEntryFree_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	XmFontListEntryFree((XmFontListEntry *)lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XmFontListEntryFree_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmFontListEntryFree_FUNC);
 }
 #endif
 
-#ifndef NO_XmFontListEntryGetFont
-JNIEXPORT jint JNICALL OS_NATIVE(XmFontListEntryGetFont)
+#ifndef NO__1XmFontListEntryGetFont
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmFontListEntryGetFont)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
 {
 	jint *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmFontListEntryGetFont_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmFontListEntryGetFont_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XmFontListEntryGetFont((XmFontListEntry)arg0, (XmFontType *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmFontListEntryGetFont_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmFontListEntryGetFont_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmFontListEntryLoad
-JNIEXPORT jint JNICALL OS_NATIVE(XmFontListEntryLoad)
+#ifndef NO__1XmFontListEntryLoad
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmFontListEntryLoad)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jbyteArray arg3)
 {
 	jbyte *lparg1=NULL;
 	jbyte *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmFontListEntryLoad_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmFontListEntryLoad_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)XmFontListEntryLoad((Display *)arg0, (char *)lparg1, arg2, (char *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmFontListEntryLoad_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmFontListEntryLoad_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmFontListFree
-JNIEXPORT void JNICALL OS_NATIVE(XmFontListFree)
+#ifndef NO__1XmFontListFree
+JNIEXPORT void JNICALL OS_NATIVE(_1XmFontListFree)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmFontListFree_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmFontListFree_FUNC);
 	XmFontListFree((XmFontList)arg0);
-	OS_NATIVE_EXIT(env, that, XmFontListFree_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmFontListFree_FUNC);
 }
 #endif
 
-#ifndef NO_XmFontListFreeFontContext
-JNIEXPORT void JNICALL OS_NATIVE(XmFontListFreeFontContext)
+#ifndef NO__1XmFontListFreeFontContext
+JNIEXPORT void JNICALL OS_NATIVE(_1XmFontListFreeFontContext)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmFontListFreeFontContext_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmFontListFreeFontContext_FUNC);
 	XmFontListFreeFontContext((XmFontContext)arg0);
-	OS_NATIVE_EXIT(env, that, XmFontListFreeFontContext_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmFontListFreeFontContext_FUNC);
 }
 #endif
 
-#ifndef NO_XmFontListInitFontContext
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmFontListInitFontContext)
+#ifndef NO__1XmFontListInitFontContext
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmFontListInitFontContext)
 	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)
 {
 	jint *lparg0=NULL;
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmFontListInitFontContext_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmFontListInitFontContext_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jboolean)XmFontListInitFontContext((XmFontContext *)lparg0, (XmFontList)arg1);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XmFontListInitFontContext_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmFontListInitFontContext_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmFontListNextEntry
-JNIEXPORT jint JNICALL OS_NATIVE(XmFontListNextEntry)
+#ifndef NO__1XmFontListNextEntry
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmFontListNextEntry)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmFontListNextEntry_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmFontListNextEntry_FUNC);
 	rc = (jint)XmFontListNextEntry((XmFontContext)arg0);
-	OS_NATIVE_EXIT(env, that, XmFontListNextEntry_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmFontListNextEntry_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmGetAtomName
-JNIEXPORT jint JNICALL OS_NATIVE(XmGetAtomName)
+#ifndef NO__1XmGetAtomName
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmGetAtomName)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmGetAtomName_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmGetAtomName_FUNC);
 	rc = (jint)XmGetAtomName((Display *)arg0, (Atom)arg1);
-	OS_NATIVE_EXIT(env, that, XmGetAtomName_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmGetAtomName_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmGetDragContext
-JNIEXPORT jint JNICALL OS_NATIVE(XmGetDragContext)
+#ifndef NO__1XmGetDragContext
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmGetDragContext)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmGetDragContext_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmGetDragContext_FUNC);
 	rc = (jint)XmGetDragContext((Widget)arg0, (Time)arg1);
-	OS_NATIVE_EXIT(env, that, XmGetDragContext_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmGetDragContext_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmGetFocusWidget
-JNIEXPORT jint JNICALL OS_NATIVE(XmGetFocusWidget)
+#ifndef NO__1XmGetFocusWidget
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmGetFocusWidget)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmGetFocusWidget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmGetFocusWidget_FUNC);
 	rc = (jint)XmGetFocusWidget((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmGetFocusWidget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmGetFocusWidget_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmGetPixmap
-JNIEXPORT jint JNICALL OS_NATIVE(XmGetPixmap)
+#ifndef NO__1XmGetPixmap
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmGetPixmap)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmGetPixmap_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmGetPixmap_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XmGetPixmap((Screen *)arg0, (char *)lparg1, (Pixel)arg2, (Pixel)arg3);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmGetPixmap_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmGetPixmap_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmGetPixmapByDepth
-JNIEXPORT jint JNICALL OS_NATIVE(XmGetPixmapByDepth)
+#ifndef NO__1XmGetPixmapByDepth
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmGetPixmapByDepth)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jint arg4)
 {
 	jbyte *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmGetPixmapByDepth_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmGetPixmapByDepth_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XmGetPixmapByDepth((Screen *)arg0, (char *)lparg1, arg2, arg3, arg4);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmGetPixmapByDepth_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmGetPixmapByDepth_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmGetXmDisplay
-JNIEXPORT jint JNICALL OS_NATIVE(XmGetXmDisplay)
+#ifndef NO__1XmGetXmDisplay
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmGetXmDisplay)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmGetXmDisplay_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmGetXmDisplay_FUNC);
 	rc = (jint)XmGetXmDisplay((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XmGetXmDisplay_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmGetXmDisplay_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmImMbLookupString
-JNIEXPORT jint JNICALL OS_NATIVE(XmImMbLookupString)
+#ifndef NO__1XmImMbLookupString
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmImMbLookupString)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jbyteArray arg2, jint arg3, jintArray arg4, jintArray arg5)
 {
 	XKeyEvent _arg1, *lparg1=NULL;
@@ -3012,7 +3012,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XmImMbLookupString)
 	jint *lparg4=NULL;
 	jint *lparg5=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmImMbLookupString_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmImMbLookupString_FUNC);
 	if (arg1) if ((lparg1 = getXKeyEventFields(env, arg1, &_arg1)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
@@ -3023,562 +3023,562 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) setXKeyEventFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, XmImMbLookupString_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmImMbLookupString_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmImRegister
-JNIEXPORT void JNICALL OS_NATIVE(XmImRegister)
+#ifndef NO__1XmImRegister
+JNIEXPORT void JNICALL OS_NATIVE(_1XmImRegister)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmImRegister_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmImRegister_FUNC);
 	XmImRegister((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmImRegister_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmImRegister_FUNC);
 }
 #endif
 
-#ifndef NO_XmImSetFocusValues
-JNIEXPORT void JNICALL OS_NATIVE(XmImSetFocusValues)
+#ifndef NO__1XmImSetFocusValues
+JNIEXPORT void JNICALL OS_NATIVE(_1XmImSetFocusValues)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
 {
 	jint *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, XmImSetFocusValues_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmImSetFocusValues_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	XmImSetFocusValues((Widget)arg0, (ArgList)lparg1, arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmImSetFocusValues_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmImSetFocusValues_FUNC);
 }
 #endif
 
-#ifndef NO_XmImSetValues
-JNIEXPORT void JNICALL OS_NATIVE(XmImSetValues)
+#ifndef NO__1XmImSetValues
+JNIEXPORT void JNICALL OS_NATIVE(_1XmImSetValues)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
 {
 	jint *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, XmImSetValues_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmImSetValues_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	XmImSetValues((Widget)arg0, (ArgList)lparg1, arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmImSetValues_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmImSetValues_FUNC);
 }
 #endif
 
-#ifndef NO_XmImUnregister
-JNIEXPORT void JNICALL OS_NATIVE(XmImUnregister)
+#ifndef NO__1XmImUnregister
+JNIEXPORT void JNICALL OS_NATIVE(_1XmImUnregister)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmImUnregister_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmImUnregister_FUNC);
 	XmImUnregister((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmImUnregister_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmImUnregister_FUNC);
 }
 #endif
 
-#ifndef NO_XmImUnsetFocus
-JNIEXPORT void JNICALL OS_NATIVE(XmImUnsetFocus)
+#ifndef NO__1XmImUnsetFocus
+JNIEXPORT void JNICALL OS_NATIVE(_1XmImUnsetFocus)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmImUnsetFocus_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmImUnsetFocus_FUNC);
 	XmImUnsetFocus((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmImUnsetFocus_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmImUnsetFocus_FUNC);
 }
 #endif
 
-#ifndef NO_XmInternAtom
-JNIEXPORT jint JNICALL OS_NATIVE(XmInternAtom)
+#ifndef NO__1XmInternAtom
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmInternAtom)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jboolean arg2)
 {
 	jbyte *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmInternAtom_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmInternAtom_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XmInternAtom((Display *)arg0, (String)lparg1, arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmInternAtom_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmInternAtom_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmListAddItemUnselected
-JNIEXPORT void JNICALL OS_NATIVE(XmListAddItemUnselected)
+#ifndef NO__1XmListAddItemUnselected
+JNIEXPORT void JNICALL OS_NATIVE(_1XmListAddItemUnselected)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XmListAddItemUnselected_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListAddItemUnselected_FUNC);
 	XmListAddItemUnselected((Widget)arg0, (XmString)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XmListAddItemUnselected_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListAddItemUnselected_FUNC);
 }
 #endif
 
-#ifndef NO_XmListDeleteAllItems
-JNIEXPORT void JNICALL OS_NATIVE(XmListDeleteAllItems)
+#ifndef NO__1XmListDeleteAllItems
+JNIEXPORT void JNICALL OS_NATIVE(_1XmListDeleteAllItems)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmListDeleteAllItems_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListDeleteAllItems_FUNC);
 	XmListDeleteAllItems((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmListDeleteAllItems_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListDeleteAllItems_FUNC);
 }
 #endif
 
-#ifndef NO_XmListDeleteItemsPos
-JNIEXPORT void JNICALL OS_NATIVE(XmListDeleteItemsPos)
+#ifndef NO__1XmListDeleteItemsPos
+JNIEXPORT void JNICALL OS_NATIVE(_1XmListDeleteItemsPos)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XmListDeleteItemsPos_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListDeleteItemsPos_FUNC);
 	XmListDeleteItemsPos((Widget)arg0, arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XmListDeleteItemsPos_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListDeleteItemsPos_FUNC);
 }
 #endif
 
-#ifndef NO_XmListDeletePos
-JNIEXPORT void JNICALL OS_NATIVE(XmListDeletePos)
+#ifndef NO__1XmListDeletePos
+JNIEXPORT void JNICALL OS_NATIVE(_1XmListDeletePos)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmListDeletePos_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListDeletePos_FUNC);
 	XmListDeletePos((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmListDeletePos_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListDeletePos_FUNC);
 }
 #endif
 
-#ifndef NO_XmListDeletePositions
-JNIEXPORT void JNICALL OS_NATIVE(XmListDeletePositions)
+#ifndef NO__1XmListDeletePositions
+JNIEXPORT void JNICALL OS_NATIVE(_1XmListDeletePositions)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
 {
 	jint *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, XmListDeletePositions_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListDeletePositions_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	XmListDeletePositions((Widget)arg0, (int *)lparg1, arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmListDeletePositions_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListDeletePositions_FUNC);
 }
 #endif
 
-#ifndef NO_XmListDeselectAllItems
-JNIEXPORT void JNICALL OS_NATIVE(XmListDeselectAllItems)
+#ifndef NO__1XmListDeselectAllItems
+JNIEXPORT void JNICALL OS_NATIVE(_1XmListDeselectAllItems)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmListDeselectAllItems_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListDeselectAllItems_FUNC);
 	XmListDeselectAllItems((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmListDeselectAllItems_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListDeselectAllItems_FUNC);
 }
 #endif
 
-#ifndef NO_XmListDeselectPos
-JNIEXPORT void JNICALL OS_NATIVE(XmListDeselectPos)
+#ifndef NO__1XmListDeselectPos
+JNIEXPORT void JNICALL OS_NATIVE(_1XmListDeselectPos)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmListDeselectPos_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListDeselectPos_FUNC);
 	XmListDeselectPos((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmListDeselectPos_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListDeselectPos_FUNC);
 }
 #endif
 
-#ifndef NO_XmListGetKbdItemPos
-JNIEXPORT jint JNICALL OS_NATIVE(XmListGetKbdItemPos)
+#ifndef NO__1XmListGetKbdItemPos
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmListGetKbdItemPos)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmListGetKbdItemPos_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListGetKbdItemPos_FUNC);
 	rc = (jint)XmListGetKbdItemPos((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmListGetKbdItemPos_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListGetKbdItemPos_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmListGetSelectedPos
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmListGetSelectedPos)
+#ifndef NO__1XmListGetSelectedPos
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmListGetSelectedPos)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
 {
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmListGetSelectedPos_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListGetSelectedPos_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jboolean)XmListGetSelectedPos((Widget)arg0, (int **)lparg1, (int *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmListGetSelectedPos_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListGetSelectedPos_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmListItemPos
-JNIEXPORT jint JNICALL OS_NATIVE(XmListItemPos)
+#ifndef NO__1XmListItemPos
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmListItemPos)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmListItemPos_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListItemPos_FUNC);
 	rc = (jint)XmListItemPos((Widget)arg0, (XmString)arg1);
-	OS_NATIVE_EXIT(env, that, XmListItemPos_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListItemPos_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmListPosSelected
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmListPosSelected)
+#ifndef NO__1XmListPosSelected
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmListPosSelected)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmListPosSelected_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListPosSelected_FUNC);
 	rc = (jboolean)XmListPosSelected((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmListPosSelected_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListPosSelected_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmListReplaceItemsPosUnselected
-JNIEXPORT void JNICALL OS_NATIVE(XmListReplaceItemsPosUnselected)
+#ifndef NO__1XmListReplaceItemsPosUnselected
+JNIEXPORT void JNICALL OS_NATIVE(_1XmListReplaceItemsPosUnselected)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2, jint arg3)
 {
 	jint *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, XmListReplaceItemsPosUnselected_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListReplaceItemsPosUnselected_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	XmListReplaceItemsPosUnselected((Widget)arg0, (XmString *)lparg1, arg2, arg3);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmListReplaceItemsPosUnselected_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListReplaceItemsPosUnselected_FUNC);
 }
 #endif
 
-#ifndef NO_XmListSelectPos
-JNIEXPORT void JNICALL OS_NATIVE(XmListSelectPos)
+#ifndef NO__1XmListSelectPos
+JNIEXPORT void JNICALL OS_NATIVE(_1XmListSelectPos)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
 {
-	OS_NATIVE_ENTER(env, that, XmListSelectPos_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListSelectPos_FUNC);
 	XmListSelectPos((Widget)arg0, arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XmListSelectPos_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListSelectPos_FUNC);
 }
 #endif
 
-#ifndef NO_XmListSetKbdItemPos
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmListSetKbdItemPos)
+#ifndef NO__1XmListSetKbdItemPos
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmListSetKbdItemPos)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmListSetKbdItemPos_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListSetKbdItemPos_FUNC);
 	rc = (jboolean)XmListSetKbdItemPos((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmListSetKbdItemPos_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListSetKbdItemPos_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmListSetPos
-JNIEXPORT void JNICALL OS_NATIVE(XmListSetPos)
+#ifndef NO__1XmListSetPos
+JNIEXPORT void JNICALL OS_NATIVE(_1XmListSetPos)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmListSetPos_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListSetPos_FUNC);
 	XmListSetPos((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmListSetPos_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListSetPos_FUNC);
 }
 #endif
 
-#ifndef NO_XmListUpdateSelectedList
-JNIEXPORT void JNICALL OS_NATIVE(XmListUpdateSelectedList)
+#ifndef NO__1XmListUpdateSelectedList
+JNIEXPORT void JNICALL OS_NATIVE(_1XmListUpdateSelectedList)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmListUpdateSelectedList_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmListUpdateSelectedList_FUNC);
 	XmListUpdateSelectedList((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmListUpdateSelectedList_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmListUpdateSelectedList_FUNC);
 }
 #endif
 
-#ifndef NO_XmMainWindowSetAreas
-JNIEXPORT void JNICALL OS_NATIVE(XmMainWindowSetAreas)
+#ifndef NO__1XmMainWindowSetAreas
+JNIEXPORT void JNICALL OS_NATIVE(_1XmMainWindowSetAreas)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
-	OS_NATIVE_ENTER(env, that, XmMainWindowSetAreas_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmMainWindowSetAreas_FUNC);
 	XmMainWindowSetAreas((Widget)arg0, (Widget)arg1, (Widget)arg2, (Widget)arg3, (Widget)arg4, (Widget)arg5);
-	OS_NATIVE_EXIT(env, that, XmMainWindowSetAreas_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmMainWindowSetAreas_FUNC);
 }
 #endif
 
-#ifndef NO_XmMessageBoxGetChild
-JNIEXPORT jint JNICALL OS_NATIVE(XmMessageBoxGetChild)
+#ifndef NO__1XmMessageBoxGetChild
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmMessageBoxGetChild)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmMessageBoxGetChild_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmMessageBoxGetChild_FUNC);
 	rc = (jint)XmMessageBoxGetChild((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmMessageBoxGetChild_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmMessageBoxGetChild_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmParseMappingCreate
-JNIEXPORT jint JNICALL OS_NATIVE(XmParseMappingCreate)
+#ifndef NO__1XmParseMappingCreate
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmParseMappingCreate)
 	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)
 {
 	jint *lparg0=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmParseMappingCreate_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmParseMappingCreate_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jint)XmParseMappingCreate((ArgList)lparg0, arg1);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XmParseMappingCreate_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmParseMappingCreate_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmParseMappingFree
-JNIEXPORT void JNICALL OS_NATIVE(XmParseMappingFree)
+#ifndef NO__1XmParseMappingFree
+JNIEXPORT void JNICALL OS_NATIVE(_1XmParseMappingFree)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmParseMappingFree_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmParseMappingFree_FUNC);
 	XmParseMappingFree((XmParseMapping)arg0);
-	OS_NATIVE_EXIT(env, that, XmParseMappingFree_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmParseMappingFree_FUNC);
 }
 #endif
 
-#ifndef NO_XmProcessTraversal
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmProcessTraversal)
+#ifndef NO__1XmProcessTraversal
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmProcessTraversal)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmProcessTraversal_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmProcessTraversal_FUNC);
 	rc = (jboolean)XmProcessTraversal((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmProcessTraversal_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmProcessTraversal_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmRenderTableAddRenditions
-JNIEXPORT jint JNICALL OS_NATIVE(XmRenderTableAddRenditions)
+#ifndef NO__1XmRenderTableAddRenditions
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmRenderTableAddRenditions)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2, jint arg3)
 {
 	jint *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmRenderTableAddRenditions_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmRenderTableAddRenditions_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XmRenderTableAddRenditions((XmRenderTable)arg0, (XmRendition *)lparg1, arg2, arg3);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmRenderTableAddRenditions_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmRenderTableAddRenditions_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmRenderTableFree
-JNIEXPORT void JNICALL OS_NATIVE(XmRenderTableFree)
+#ifndef NO__1XmRenderTableFree
+JNIEXPORT void JNICALL OS_NATIVE(_1XmRenderTableFree)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmRenderTableFree_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmRenderTableFree_FUNC);
 	XmRenderTableFree((XmRenderTable)arg0);
-	OS_NATIVE_EXIT(env, that, XmRenderTableFree_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmRenderTableFree_FUNC);
 }
 #endif
 
-#ifndef NO_XmRenditionCreate
-JNIEXPORT jint JNICALL OS_NATIVE(XmRenditionCreate)
+#ifndef NO__1XmRenditionCreate
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmRenditionCreate)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmRenditionCreate_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmRenditionCreate_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmRenditionCreate((Widget)arg0, (XmStringTag)lparg1, (ArgList)lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmRenditionCreate_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmRenditionCreate_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmRenditionFree
-JNIEXPORT void JNICALL OS_NATIVE(XmRenditionFree)
+#ifndef NO__1XmRenditionFree
+JNIEXPORT void JNICALL OS_NATIVE(_1XmRenditionFree)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmRenditionFree_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmRenditionFree_FUNC);
 	XmRenditionFree((XmRendition)arg0);
-	OS_NATIVE_EXIT(env, that, XmRenditionFree_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmRenditionFree_FUNC);
 }
 #endif
 
-#ifndef NO_XmStringBaseline
-JNIEXPORT jint JNICALL OS_NATIVE(XmStringBaseline)
+#ifndef NO__1XmStringBaseline
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmStringBaseline)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringBaseline_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringBaseline_FUNC);
 	rc = (jint)XmStringBaseline((XmRenderTable)arg0, (XmString)arg1);
-	OS_NATIVE_EXIT(env, that, XmStringBaseline_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringBaseline_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmStringCompare
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmStringCompare)
+#ifndef NO__1XmStringCompare
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmStringCompare)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringCompare_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringCompare_FUNC);
 	rc = (jboolean)XmStringCompare((XmString)arg0, (XmString)arg1);
-	OS_NATIVE_EXIT(env, that, XmStringCompare_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringCompare_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmStringComponentCreate
-JNIEXPORT jint JNICALL OS_NATIVE(XmStringComponentCreate)
+#ifndef NO__1XmStringComponentCreate
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmStringComponentCreate)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2)
 {
 	jbyte *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringComponentCreate_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringComponentCreate_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XmStringComponentCreate(arg0, arg1, (XtPointer)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XmStringComponentCreate_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringComponentCreate_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmStringConcat
-JNIEXPORT jint JNICALL OS_NATIVE(XmStringConcat)
+#ifndef NO__1XmStringConcat
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmStringConcat)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringConcat_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringConcat_FUNC);
 	rc = (jint)XmStringConcat((XmString)arg0, (XmString)arg1);
-	OS_NATIVE_EXIT(env, that, XmStringConcat_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringConcat_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmStringCreate
-JNIEXPORT jint JNICALL OS_NATIVE(XmStringCreate)
+#ifndef NO__1XmStringCreate
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmStringCreate)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
 {
 	jbyte *lparg0=NULL;
 	jbyte *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringCreate_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringCreate_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XmStringCreate((char *)lparg0, (char *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XmStringCreate_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringCreate_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmStringCreateLocalized
-JNIEXPORT jint JNICALL OS_NATIVE(XmStringCreateLocalized)
+#ifndef NO__1XmStringCreateLocalized
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmStringCreateLocalized)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
 	jbyte *lparg0=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringCreateLocalized_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringCreateLocalized_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jint)XmStringCreateLocalized((char *)lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XmStringCreateLocalized_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringCreateLocalized_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmStringDraw
-JNIEXPORT void JNICALL OS_NATIVE(XmStringDraw)
+#ifndef NO__1XmStringDraw
+JNIEXPORT void JNICALL OS_NATIVE(_1XmStringDraw)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jobject arg10)
 {
 	XRectangle _arg10, *lparg10=NULL;
-	OS_NATIVE_ENTER(env, that, XmStringDraw_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringDraw_FUNC);
 	if (arg10) if ((lparg10 = getXRectangleFields(env, arg10, &_arg10)) == NULL) goto fail;
 	XmStringDraw((Display *)arg0, (Window)arg1, (XmFontList)arg2, (XmString)arg3, (GC)arg4, arg5, arg6, arg7, arg8, arg9, lparg10);
 fail:
 	if (arg10 && lparg10) setXRectangleFields(env, arg10, lparg10);
-	OS_NATIVE_EXIT(env, that, XmStringDraw_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringDraw_FUNC);
 }
 #endif
 
-#ifndef NO_XmStringDrawImage
-JNIEXPORT void JNICALL OS_NATIVE(XmStringDrawImage)
+#ifndef NO__1XmStringDrawImage
+JNIEXPORT void JNICALL OS_NATIVE(_1XmStringDrawImage)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jobject arg10)
 {
 	XRectangle _arg10, *lparg10=NULL;
-	OS_NATIVE_ENTER(env, that, XmStringDrawImage_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringDrawImage_FUNC);
 	if (arg10) if ((lparg10 = getXRectangleFields(env, arg10, &_arg10)) == NULL) goto fail;
 	XmStringDrawImage((Display *)arg0, (Window)arg1, (XmFontList)arg2, (XmString)arg3, (GC)arg4, arg5, arg6, arg7, arg8, arg9, lparg10);
 fail:
 	if (arg10 && lparg10) setXRectangleFields(env, arg10, lparg10);
-	OS_NATIVE_EXIT(env, that, XmStringDrawImage_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringDrawImage_FUNC);
 }
 #endif
 
-#ifndef NO_XmStringDrawUnderline
-JNIEXPORT void JNICALL OS_NATIVE(XmStringDrawUnderline)
+#ifndef NO__1XmStringDrawUnderline
+JNIEXPORT void JNICALL OS_NATIVE(_1XmStringDrawUnderline)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jobject arg10, jint arg11)
 {
 	XRectangle _arg10, *lparg10=NULL;
-	OS_NATIVE_ENTER(env, that, XmStringDrawUnderline_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringDrawUnderline_FUNC);
 	if (arg10) if ((lparg10 = getXRectangleFields(env, arg10, &_arg10)) == NULL) goto fail;
 	XmStringDrawUnderline((Display *)arg0, (Window)arg1, (XmFontList)arg2, (XmString)arg3, (GC)arg4, arg5, arg6, arg7, arg8, arg9, lparg10, (XmString)arg11);
 fail:
 	if (arg10 && lparg10) setXRectangleFields(env, arg10, lparg10);
-	OS_NATIVE_EXIT(env, that, XmStringDrawUnderline_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringDrawUnderline_FUNC);
 }
 #endif
 
-#ifndef NO_XmStringEmpty
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmStringEmpty)
+#ifndef NO__1XmStringEmpty
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmStringEmpty)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringEmpty_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringEmpty_FUNC);
 	rc = (jboolean)XmStringEmpty((XmString)arg0);
-	OS_NATIVE_EXIT(env, that, XmStringEmpty_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringEmpty_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmStringExtent
-JNIEXPORT void JNICALL OS_NATIVE(XmStringExtent)
+#ifndef NO__1XmStringExtent
+JNIEXPORT void JNICALL OS_NATIVE(_1XmStringExtent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2, jshortArray arg3)
 {
 	jshort *lparg2=NULL;
 	jshort *lparg3=NULL;
-	OS_NATIVE_ENTER(env, that, XmStringExtent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringExtent_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	XmStringExtent((XmRenderTable)arg0, (XmString)arg1, (Dimension *)lparg2, (Dimension *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XmStringExtent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringExtent_FUNC);
 }
 #endif
 
-#ifndef NO_XmStringFree
-JNIEXPORT void JNICALL OS_NATIVE(XmStringFree)
+#ifndef NO__1XmStringFree
+JNIEXPORT void JNICALL OS_NATIVE(_1XmStringFree)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmStringFree_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringFree_FUNC);
 	XmStringFree((XmString)arg0);
-	OS_NATIVE_EXIT(env, that, XmStringFree_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringFree_FUNC);
 }
 #endif
 
-#ifndef NO_XmStringGenerate
-JNIEXPORT jint JNICALL OS_NATIVE(XmStringGenerate)
+#ifndef NO__1XmStringGenerate
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmStringGenerate)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jint arg2, jbyteArray arg3)
 {
 	jbyte *lparg0=NULL;
 	jbyte *lparg1=NULL;
 	jbyte *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringGenerate_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringGenerate_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
@@ -3587,32 +3587,32 @@ fail:
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XmStringGenerate_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringGenerate_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmStringHeight
-JNIEXPORT jint JNICALL OS_NATIVE(XmStringHeight)
+#ifndef NO__1XmStringHeight
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmStringHeight)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringHeight_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringHeight_FUNC);
 	rc = (jint)XmStringHeight((XmFontList)arg0, (XmString)arg1);
-	OS_NATIVE_EXIT(env, that, XmStringHeight_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringHeight_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmStringParseText
-JNIEXPORT jint JNICALL OS_NATIVE(XmStringParseText)
+#ifndef NO__1XmStringParseText
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmStringParseText)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jbyteArray arg2, jint arg3, jintArray arg4, jint arg5, jint arg6)
 {
 	jbyte *lparg0=NULL;
 	jbyte *lparg2=NULL;
 	jint *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringParseText_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringParseText_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
@@ -3621,465 +3621,465 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XmStringParseText_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringParseText_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmStringUnparse
-JNIEXPORT jint JNICALL OS_NATIVE(XmStringUnparse)
+#ifndef NO__1XmStringUnparse
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmStringUnparse)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jintArray arg4, jint arg5, jint arg6)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringUnparse_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringUnparse_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)XmStringUnparse((XmString)arg0, (XmStringTag)lparg1, arg2, arg3, (XmParseTable)lparg4, arg5, arg6);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmStringUnparse_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringUnparse_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmStringWidth
-JNIEXPORT jint JNICALL OS_NATIVE(XmStringWidth)
+#ifndef NO__1XmStringWidth
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmStringWidth)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmStringWidth_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmStringWidth_FUNC);
 	rc = (jint)XmStringWidth((XmFontList)arg0, (XmString)arg1);
-	OS_NATIVE_EXIT(env, that, XmStringWidth_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmStringWidth_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTabCreate
-JNIEXPORT jint JNICALL OS_NATIVE(XmTabCreate)
+#ifndef NO__1XmTabCreate
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmTabCreate)
 	(JNIEnv *env, jclass that, jint arg0, jbyte arg1, jbyte arg2, jbyte arg3, jbyteArray arg4)
 {
 	jbyte *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTabCreate_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTabCreate_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)XmTabCreate(arg0, arg1, arg2, arg3, (char *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
-	OS_NATIVE_EXIT(env, that, XmTabCreate_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTabCreate_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTabFree
-JNIEXPORT void JNICALL OS_NATIVE(XmTabFree)
+#ifndef NO__1XmTabFree
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTabFree)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmTabFree_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTabFree_FUNC);
 	XmTabFree((XmTab)arg0);
-	OS_NATIVE_EXIT(env, that, XmTabFree_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTabFree_FUNC);
 }
 #endif
 
-#ifndef NO_XmTabListFree
-JNIEXPORT void JNICALL OS_NATIVE(XmTabListFree)
+#ifndef NO__1XmTabListFree
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTabListFree)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmTabListFree_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTabListFree_FUNC);
 	XmTabListFree((XmTabList)arg0);
-	OS_NATIVE_EXIT(env, that, XmTabListFree_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTabListFree_FUNC);
 }
 #endif
 
-#ifndef NO_XmTabListInsertTabs
-JNIEXPORT jint JNICALL OS_NATIVE(XmTabListInsertTabs)
+#ifndef NO__1XmTabListInsertTabs
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmTabListInsertTabs)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2, jint arg3)
 {
 	jint *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTabListInsertTabs_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTabListInsertTabs_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XmTabListInsertTabs((XmTabList)arg0, (XmTab *)lparg1, arg2, arg3);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmTabListInsertTabs_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTabListInsertTabs_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextClearSelection
-JNIEXPORT void JNICALL OS_NATIVE(XmTextClearSelection)
+#ifndef NO__1XmTextClearSelection
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextClearSelection)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmTextClearSelection_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextClearSelection_FUNC);
 	XmTextClearSelection((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmTextClearSelection_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextClearSelection_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextCopy
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextCopy)
+#ifndef NO__1XmTextCopy
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmTextCopy)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextCopy_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextCopy_FUNC);
 	rc = (jboolean)XmTextCopy((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmTextCopy_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextCopy_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextCut
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextCut)
+#ifndef NO__1XmTextCut
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmTextCut)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextCut_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextCut_FUNC);
 	rc = (jboolean)XmTextCut((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmTextCut_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextCut_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextDisableRedisplay
-JNIEXPORT void JNICALL OS_NATIVE(XmTextDisableRedisplay)
+#ifndef NO__1XmTextDisableRedisplay
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextDisableRedisplay)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmTextDisableRedisplay_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextDisableRedisplay_FUNC);
 	XmTextDisableRedisplay((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmTextDisableRedisplay_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextDisableRedisplay_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextEnableRedisplay
-JNIEXPORT void JNICALL OS_NATIVE(XmTextEnableRedisplay)
+#ifndef NO__1XmTextEnableRedisplay
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextEnableRedisplay)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmTextEnableRedisplay_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextEnableRedisplay_FUNC);
 	XmTextEnableRedisplay((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmTextEnableRedisplay_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextEnableRedisplay_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextFieldPaste
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextFieldPaste)
+#ifndef NO__1XmTextFieldPaste
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmTextFieldPaste)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextFieldPaste_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextFieldPaste_FUNC);
 	rc = (jboolean)XmTextFieldPaste((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmTextFieldPaste_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextFieldPaste_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextGetInsertionPosition
-JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetInsertionPosition)
+#ifndef NO__1XmTextGetInsertionPosition
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmTextGetInsertionPosition)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextGetInsertionPosition_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextGetInsertionPosition_FUNC);
 	rc = (jint)XmTextGetInsertionPosition((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmTextGetInsertionPosition_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextGetInsertionPosition_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextGetLastPosition
-JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetLastPosition)
+#ifndef NO__1XmTextGetLastPosition
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmTextGetLastPosition)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextGetLastPosition_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextGetLastPosition_FUNC);
 	rc = (jint)XmTextGetLastPosition((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmTextGetLastPosition_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextGetLastPosition_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextGetMaxLength
-JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetMaxLength)
+#ifndef NO__1XmTextGetMaxLength
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmTextGetMaxLength)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextGetMaxLength_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextGetMaxLength_FUNC);
 	rc = (jint)XmTextGetMaxLength((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmTextGetMaxLength_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextGetMaxLength_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextGetSelection
-JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetSelection)
+#ifndef NO__1XmTextGetSelection
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmTextGetSelection)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextGetSelection_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextGetSelection_FUNC);
 	rc = (jint)XmTextGetSelection((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmTextGetSelection_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextGetSelection_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextGetSelectionPosition
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextGetSelectionPosition)
+#ifndef NO__1XmTextGetSelectionPosition
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmTextGetSelectionPosition)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
 {
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextGetSelectionPosition_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextGetSelectionPosition_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jboolean)XmTextGetSelectionPosition((Widget)arg0, (XmTextPosition *)lparg1, (XmTextPosition *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmTextGetSelectionPosition_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextGetSelectionPosition_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextGetString
-JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetString)
+#ifndef NO__1XmTextGetString
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmTextGetString)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextGetString_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextGetString_FUNC);
 	rc = (jint)XmTextGetString((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmTextGetString_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextGetString_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextGetSubstring
-JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetSubstring)
+#ifndef NO__1XmTextGetSubstring
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmTextGetSubstring)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4)
 {
 	jbyte *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextGetSubstring_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextGetSubstring_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)XmTextGetSubstring((Widget)arg0, arg1, arg2, arg3, (char *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
-	OS_NATIVE_EXIT(env, that, XmTextGetSubstring_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextGetSubstring_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextGetSubstringWcs
-JNIEXPORT jint JNICALL OS_NATIVE(XmTextGetSubstringWcs)
+#ifndef NO__1XmTextGetSubstringWcs
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmTextGetSubstringWcs)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4)
 {
 	jchar *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextGetSubstringWcs_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextGetSubstringWcs_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)XmTextGetSubstringWcs((Widget)arg0, (XmTextPosition)arg1, arg2, arg3, (wchar_t *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
-	OS_NATIVE_EXIT(env, that, XmTextGetSubstringWcs_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextGetSubstringWcs_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextInsert
-JNIEXPORT void JNICALL OS_NATIVE(XmTextInsert)
+#ifndef NO__1XmTextInsert
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextInsert)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2)
 {
 	jbyte *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, XmTextInsert_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextInsert_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	XmTextInsert((Widget)arg0, arg1, (char *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XmTextInsert_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextInsert_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextPaste
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextPaste)
+#ifndef NO__1XmTextPaste
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmTextPaste)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextPaste_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextPaste_FUNC);
 	rc = (jboolean)XmTextPaste((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmTextPaste_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextPaste_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextPosToXY
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmTextPosToXY)
+#ifndef NO__1XmTextPosToXY
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmTextPosToXY)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2, jshortArray arg3)
 {
 	jshort *lparg2=NULL;
 	jshort *lparg3=NULL;
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmTextPosToXY_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextPosToXY_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jboolean)XmTextPosToXY((Widget)arg0, (XmTextPosition)arg1, (Position *)lparg2, (Position *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XmTextPosToXY_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextPosToXY_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmTextReplace
-JNIEXPORT void JNICALL OS_NATIVE(XmTextReplace)
+#ifndef NO__1XmTextReplace
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextReplace)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3)
 {
 	jbyte *lparg3=NULL;
-	OS_NATIVE_ENTER(env, that, XmTextReplace_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextReplace_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	XmTextReplace((Widget)arg0, arg1, arg2, (char *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, XmTextReplace_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextReplace_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextScroll
-JNIEXPORT void JNICALL OS_NATIVE(XmTextScroll)
+#ifndef NO__1XmTextScroll
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextScroll)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmTextScroll_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextScroll_FUNC);
 	XmTextScroll((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmTextScroll_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextScroll_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextSetEditable
-JNIEXPORT void JNICALL OS_NATIVE(XmTextSetEditable)
+#ifndef NO__1XmTextSetEditable
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextSetEditable)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmTextSetEditable_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextSetEditable_FUNC);
 	XmTextSetEditable((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmTextSetEditable_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextSetEditable_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextSetHighlight
-JNIEXPORT void JNICALL OS_NATIVE(XmTextSetHighlight)
+#ifndef NO__1XmTextSetHighlight
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextSetHighlight)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-	OS_NATIVE_ENTER(env, that, XmTextSetHighlight_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextSetHighlight_FUNC);
 	XmTextSetHighlight((Widget)arg0, arg1, arg2, arg3);
-	OS_NATIVE_EXIT(env, that, XmTextSetHighlight_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextSetHighlight_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextSetInsertionPosition
-JNIEXPORT void JNICALL OS_NATIVE(XmTextSetInsertionPosition)
+#ifndef NO__1XmTextSetInsertionPosition
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextSetInsertionPosition)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmTextSetInsertionPosition_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextSetInsertionPosition_FUNC);
 	XmTextSetInsertionPosition((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmTextSetInsertionPosition_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextSetInsertionPosition_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextSetMaxLength
-JNIEXPORT void JNICALL OS_NATIVE(XmTextSetMaxLength)
+#ifndef NO__1XmTextSetMaxLength
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextSetMaxLength)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmTextSetMaxLength_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextSetMaxLength_FUNC);
 	XmTextSetMaxLength((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmTextSetMaxLength_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextSetMaxLength_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextSetSelection
-JNIEXPORT void JNICALL OS_NATIVE(XmTextSetSelection)
+#ifndef NO__1XmTextSetSelection
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextSetSelection)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-	OS_NATIVE_ENTER(env, that, XmTextSetSelection_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextSetSelection_FUNC);
 	XmTextSetSelection((Widget)arg0, arg1, arg2, arg3);
-	OS_NATIVE_EXIT(env, that, XmTextSetSelection_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextSetSelection_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextSetString
-JNIEXPORT void JNICALL OS_NATIVE(XmTextSetString)
+#ifndef NO__1XmTextSetString
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextSetString)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
 {
 	jbyte *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, XmTextSetString_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextSetString_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	XmTextSetString((Widget)arg0, (char *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XmTextSetString_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextSetString_FUNC);
 }
 #endif
 
-#ifndef NO_XmTextShowPosition
-JNIEXPORT void JNICALL OS_NATIVE(XmTextShowPosition)
+#ifndef NO__1XmTextShowPosition
+JNIEXPORT void JNICALL OS_NATIVE(_1XmTextShowPosition)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XmTextShowPosition_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmTextShowPosition_FUNC);
 	XmTextShowPosition((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XmTextShowPosition_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmTextShowPosition_FUNC);
 }
 #endif
 
-#ifndef NO_XmUpdateDisplay
-JNIEXPORT void JNICALL OS_NATIVE(XmUpdateDisplay)
+#ifndef NO__1XmUpdateDisplay
+JNIEXPORT void JNICALL OS_NATIVE(_1XmUpdateDisplay)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XmUpdateDisplay_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmUpdateDisplay_FUNC);
 	XmUpdateDisplay((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XmUpdateDisplay_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmUpdateDisplay_FUNC);
 }
 #endif
 
-#ifndef NO_XmWidgetGetDisplayRect
-JNIEXPORT jboolean JNICALL OS_NATIVE(XmWidgetGetDisplayRect)
+#ifndef NO__1XmWidgetGetDisplayRect
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XmWidgetGetDisplayRect)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	XRectangle _arg1, *lparg1=NULL;
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XmWidgetGetDisplayRect_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmWidgetGetDisplayRect_FUNC);
 	if (arg1) if ((lparg1 = getXRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
 	rc = (jboolean)XmWidgetGetDisplayRect((Widget)arg0, (XRectangle *)lparg1);
 fail:
 	if (arg1 && lparg1) setXRectangleFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, XmWidgetGetDisplayRect_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmWidgetGetDisplayRect_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmbTextListToTextProperty
-JNIEXPORT jint JNICALL OS_NATIVE(XmbTextListToTextProperty)
+#ifndef NO__1XmbTextListToTextProperty
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmbTextListToTextProperty)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
 {
 	XTextProperty _arg4, *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmbTextListToTextProperty_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmbTextListToTextProperty_FUNC);
 	if (arg4) if ((lparg4 = getXTextPropertyFields(env, arg4, &_arg4)) == NULL) goto fail;
 	rc = (jint)XmbTextListToTextProperty((Display *)arg0, (char **)arg1, arg2, (XICCEncodingStyle)arg3, lparg4);
 fail:
 	if (arg4 && lparg4) setXTextPropertyFields(env, arg4, lparg4);
-	OS_NATIVE_EXIT(env, that, XmbTextListToTextProperty_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmbTextListToTextProperty_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XmbTextPropertyToTextList
-JNIEXPORT jint JNICALL OS_NATIVE(XmbTextPropertyToTextList)
+#ifndef NO__1XmbTextPropertyToTextList
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmbTextPropertyToTextList)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jintArray arg2, jintArray arg3)
 {
 	XTextProperty _arg1, *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XmbTextPropertyToTextList_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XmbTextPropertyToTextList_FUNC);
 	if (arg1) if ((lparg1 = getXTextPropertyFields(env, arg1, &_arg1)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
@@ -4088,102 +4088,102 @@ fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) setXTextPropertyFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, XmbTextPropertyToTextList_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XmbTextPropertyToTextList_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XpCancelJob
-JNIEXPORT void JNICALL OS_NATIVE(XpCancelJob)
+#ifndef NO__1XpCancelJob
+JNIEXPORT void JNICALL OS_NATIVE(_1XpCancelJob)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	OS_NATIVE_ENTER(env, that, XpCancelJob_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpCancelJob_FUNC);
 	XpCancelJob((Display *)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XpCancelJob_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpCancelJob_FUNC);
 }
 #endif
 
-#ifndef NO_XpCreateContext
-JNIEXPORT jint JNICALL OS_NATIVE(XpCreateContext)
+#ifndef NO__1XpCreateContext
+JNIEXPORT jint JNICALL OS_NATIVE(_1XpCreateContext)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
 {
 	jbyte *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XpCreateContext_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpCreateContext_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XpCreateContext((Display *)arg0, (char *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XpCreateContext_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpCreateContext_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XpDestroyContext
-JNIEXPORT void JNICALL OS_NATIVE(XpDestroyContext)
+#ifndef NO__1XpDestroyContext
+JNIEXPORT void JNICALL OS_NATIVE(_1XpDestroyContext)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XpDestroyContext_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpDestroyContext_FUNC);
 	XpDestroyContext((Display *)arg0, (XPContext)arg1);
-	OS_NATIVE_EXIT(env, that, XpDestroyContext_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpDestroyContext_FUNC);
 }
 #endif
 
-#ifndef NO_XpEndJob
-JNIEXPORT void JNICALL OS_NATIVE(XpEndJob)
+#ifndef NO__1XpEndJob
+JNIEXPORT void JNICALL OS_NATIVE(_1XpEndJob)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XpEndJob_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpEndJob_FUNC);
 	XpEndJob((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XpEndJob_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpEndJob_FUNC);
 }
 #endif
 
-#ifndef NO_XpEndPage
-JNIEXPORT void JNICALL OS_NATIVE(XpEndPage)
+#ifndef NO__1XpEndPage
+JNIEXPORT void JNICALL OS_NATIVE(_1XpEndPage)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XpEndPage_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpEndPage_FUNC);
 	XpEndPage((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XpEndPage_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpEndPage_FUNC);
 }
 #endif
 
-#ifndef NO_XpFreePrinterList
-JNIEXPORT void JNICALL OS_NATIVE(XpFreePrinterList)
+#ifndef NO__1XpFreePrinterList
+JNIEXPORT void JNICALL OS_NATIVE(_1XpFreePrinterList)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XpFreePrinterList_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpFreePrinterList_FUNC);
 	XpFreePrinterList((XPPrinterList)arg0);
-	OS_NATIVE_EXIT(env, that, XpFreePrinterList_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpFreePrinterList_FUNC);
 }
 #endif
 
-#ifndef NO_XpGetOneAttribute
-JNIEXPORT jint JNICALL OS_NATIVE(XpGetOneAttribute)
+#ifndef NO__1XpGetOneAttribute
+JNIEXPORT jint JNICALL OS_NATIVE(_1XpGetOneAttribute)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyte arg2, jbyteArray arg3)
 {
 	jbyte *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XpGetOneAttribute_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpGetOneAttribute_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)XpGetOneAttribute((Display *)arg0, (XPContext)arg1, (XPAttributes)arg2, (char *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, XpGetOneAttribute_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpGetOneAttribute_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XpGetPageDimensions
-JNIEXPORT jint JNICALL OS_NATIVE(XpGetPageDimensions)
+#ifndef NO__1XpGetPageDimensions
+JNIEXPORT jint JNICALL OS_NATIVE(_1XpGetPageDimensions)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2, jshortArray arg3, jobject arg4)
 {
 	jshort *lparg2=NULL;
 	jshort *lparg3=NULL;
 	XRectangle _arg4, *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XpGetPageDimensions_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpGetPageDimensions_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getXRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
@@ -4192,149 +4192,149 @@ fail:
 	if (arg4 && lparg4) setXRectangleFields(env, arg4, lparg4);
 	if (arg3 && lparg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, XpGetPageDimensions_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpGetPageDimensions_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XpGetPrinterList
-JNIEXPORT jint JNICALL OS_NATIVE(XpGetPrinterList)
+#ifndef NO__1XpGetPrinterList
+JNIEXPORT jint JNICALL OS_NATIVE(_1XpGetPrinterList)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XpGetPrinterList_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpGetPrinterList_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)XpGetPrinterList((Display *)arg0, (char *)lparg1, (int *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XpGetPrinterList_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpGetPrinterList_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XpGetScreenOfContext
-JNIEXPORT jint JNICALL OS_NATIVE(XpGetScreenOfContext)
+#ifndef NO__1XpGetScreenOfContext
+JNIEXPORT jint JNICALL OS_NATIVE(_1XpGetScreenOfContext)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XpGetScreenOfContext_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpGetScreenOfContext_FUNC);
 	rc = (jint)XpGetScreenOfContext((Display *)arg0, (XPContext)arg1);
-	OS_NATIVE_EXIT(env, that, XpGetScreenOfContext_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpGetScreenOfContext_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XpSetAttributes
-JNIEXPORT void JNICALL OS_NATIVE(XpSetAttributes)
+#ifndef NO__1XpSetAttributes
+JNIEXPORT void JNICALL OS_NATIVE(_1XpSetAttributes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyte arg2, jbyteArray arg3, jbyte arg4)
 {
 	jbyte *lparg3=NULL;
-	OS_NATIVE_ENTER(env, that, XpSetAttributes_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpSetAttributes_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	XpSetAttributes((Display *)arg0, (XPContext)arg1, (XPAttributes)arg2, (char *)lparg3, (XPAttrReplacement)arg4);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, XpSetAttributes_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpSetAttributes_FUNC);
 }
 #endif
 
-#ifndef NO_XpSetContext
-JNIEXPORT void JNICALL OS_NATIVE(XpSetContext)
+#ifndef NO__1XpSetContext
+JNIEXPORT void JNICALL OS_NATIVE(_1XpSetContext)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XpSetContext_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpSetContext_FUNC);
 	XpSetContext((Display *)arg0, (XPContext)arg1);
-	OS_NATIVE_EXIT(env, that, XpSetContext_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpSetContext_FUNC);
 }
 #endif
 
-#ifndef NO_XpStartJob
-JNIEXPORT void JNICALL OS_NATIVE(XpStartJob)
+#ifndef NO__1XpStartJob
+JNIEXPORT void JNICALL OS_NATIVE(_1XpStartJob)
 	(JNIEnv *env, jclass that, jint arg0, jbyte arg1)
 {
-	OS_NATIVE_ENTER(env, that, XpStartJob_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpStartJob_FUNC);
 	XpStartJob((Display *)arg0, (XPSaveData)arg1);
-	OS_NATIVE_EXIT(env, that, XpStartJob_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpStartJob_FUNC);
 }
 #endif
 
-#ifndef NO_XpStartPage
-JNIEXPORT void JNICALL OS_NATIVE(XpStartPage)
+#ifndef NO__1XpStartPage
+JNIEXPORT void JNICALL OS_NATIVE(_1XpStartPage)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XpStartPage_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XpStartPage_FUNC);
 	XpStartPage((Display *)arg0, (Window)arg1);
-	OS_NATIVE_EXIT(env, that, XpStartPage_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XpStartPage_FUNC);
 }
 #endif
 
-#ifndef NO_XtAddCallback
-JNIEXPORT void JNICALL OS_NATIVE(XtAddCallback)
+#ifndef NO__1XtAddCallback
+JNIEXPORT void JNICALL OS_NATIVE(_1XtAddCallback)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-	OS_NATIVE_ENTER(env, that, XtAddCallback_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAddCallback_FUNC);
 	XtAddCallback((Widget)arg0, (String)arg1, (XtCallbackProc)arg2, (XtPointer)arg3);
-	OS_NATIVE_EXIT(env, that, XtAddCallback_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAddCallback_FUNC);
 }
 #endif
 
-#ifndef NO_XtAddEventHandler
-JNIEXPORT void JNICALL OS_NATIVE(XtAddEventHandler)
+#ifndef NO__1XtAddEventHandler
+JNIEXPORT void JNICALL OS_NATIVE(_1XtAddEventHandler)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4)
 {
-	OS_NATIVE_ENTER(env, that, XtAddEventHandler_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAddEventHandler_FUNC);
 	XtAddEventHandler((Widget)arg0, arg1, arg2, (XtEventHandler)arg3, (XtPointer)arg4);
-	OS_NATIVE_EXIT(env, that, XtAddEventHandler_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAddEventHandler_FUNC);
 }
 #endif
 
-#ifndef NO_XtAddExposureToRegion
-JNIEXPORT void JNICALL OS_NATIVE(XtAddExposureToRegion)
+#ifndef NO__1XtAddExposureToRegion
+JNIEXPORT void JNICALL OS_NATIVE(_1XtAddExposureToRegion)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XtAddExposureToRegion_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAddExposureToRegion_FUNC);
 	XtAddExposureToRegion((XEvent *)arg0, (Region)arg1);
-	OS_NATIVE_EXIT(env, that, XtAddExposureToRegion_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAddExposureToRegion_FUNC);
 }
 #endif
 
-#ifndef NO_XtAppAddInput
-JNIEXPORT jint JNICALL OS_NATIVE(XtAppAddInput)
+#ifndef NO__1XtAppAddInput
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtAppAddInput)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtAppAddInput_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppAddInput_FUNC);
 	rc = (jint)XtAppAddInput((XtAppContext)arg0, arg1, (XtPointer)arg2, (XtInputCallbackProc)arg3, (XtPointer)arg4);
-	OS_NATIVE_EXIT(env, that, XtAppAddInput_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppAddInput_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtAppAddTimeOut
-JNIEXPORT jint JNICALL OS_NATIVE(XtAppAddTimeOut)
+#ifndef NO__1XtAppAddTimeOut
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtAppAddTimeOut)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtAppAddTimeOut_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppAddTimeOut_FUNC);
 	rc = (jint)XtAppAddTimeOut((XtAppContext)arg0, arg1, (XtTimerCallbackProc)arg2, (XtPointer)arg3);
-	OS_NATIVE_EXIT(env, that, XtAppAddTimeOut_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppAddTimeOut_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtAppCreateShell
-JNIEXPORT jint JNICALL OS_NATIVE(XtAppCreateShell)
+#ifndef NO__1XtAppCreateShell
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtAppCreateShell)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jint arg2, jint arg3, jintArray arg4, jint arg5)
 {
 	jbyte *lparg0=NULL;
 	jbyte *lparg1=NULL;
 	jint *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtAppCreateShell_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppCreateShell_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
@@ -4343,401 +4343,401 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XtAppCreateShell_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppCreateShell_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtAppGetSelectionTimeout
-JNIEXPORT jint JNICALL OS_NATIVE(XtAppGetSelectionTimeout)
+#ifndef NO__1XtAppGetSelectionTimeout
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtAppGetSelectionTimeout)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtAppGetSelectionTimeout_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppGetSelectionTimeout_FUNC);
 	rc = (jint)XtAppGetSelectionTimeout((XtAppContext)arg0);
-	OS_NATIVE_EXIT(env, that, XtAppGetSelectionTimeout_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppGetSelectionTimeout_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtAppNextEvent
-JNIEXPORT void JNICALL OS_NATIVE(XtAppNextEvent)
+#ifndef NO__1XtAppNextEvent
+JNIEXPORT void JNICALL OS_NATIVE(_1XtAppNextEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XtAppNextEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppNextEvent_FUNC);
 	XtAppNextEvent((XtAppContext)arg0, (XEvent *)arg1);
-	OS_NATIVE_EXIT(env, that, XtAppNextEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppNextEvent_FUNC);
 }
 #endif
 
-#ifndef NO_XtAppPeekEvent
-JNIEXPORT jboolean JNICALL OS_NATIVE(XtAppPeekEvent)
+#ifndef NO__1XtAppPeekEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XtAppPeekEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XtAppPeekEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppPeekEvent_FUNC);
 	rc = (jboolean)XtAppPeekEvent((XtAppContext)arg0, (XEvent *)arg1);
-	OS_NATIVE_EXIT(env, that, XtAppPeekEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppPeekEvent_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtAppPending
-JNIEXPORT jint JNICALL OS_NATIVE(XtAppPending)
+#ifndef NO__1XtAppPending
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtAppPending)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtAppPending_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppPending_FUNC);
 	rc = (jint)XtAppPending((XtAppContext)arg0);
-	OS_NATIVE_EXIT(env, that, XtAppPending_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppPending_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtAppProcessEvent
-JNIEXPORT void JNICALL OS_NATIVE(XtAppProcessEvent)
+#ifndef NO__1XtAppProcessEvent
+JNIEXPORT void JNICALL OS_NATIVE(_1XtAppProcessEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XtAppProcessEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppProcessEvent_FUNC);
 	XtAppProcessEvent((XtAppContext)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XtAppProcessEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppProcessEvent_FUNC);
 }
 #endif
 
-#ifndef NO_XtAppSetErrorHandler
-JNIEXPORT jint JNICALL OS_NATIVE(XtAppSetErrorHandler)
+#ifndef NO__1XtAppSetErrorHandler
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtAppSetErrorHandler)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtAppSetErrorHandler_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppSetErrorHandler_FUNC);
 	rc = (jint)XtAppSetErrorHandler((XtAppContext)arg0, (XtErrorHandler)arg1);
-	OS_NATIVE_EXIT(env, that, XtAppSetErrorHandler_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppSetErrorHandler_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtAppSetFallbackResources
-JNIEXPORT void JNICALL OS_NATIVE(XtAppSetFallbackResources)
+#ifndef NO__1XtAppSetFallbackResources
+JNIEXPORT void JNICALL OS_NATIVE(_1XtAppSetFallbackResources)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XtAppSetFallbackResources_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppSetFallbackResources_FUNC);
 	XtAppSetFallbackResources((XtAppContext)arg0, (String *)arg1);
-	OS_NATIVE_EXIT(env, that, XtAppSetFallbackResources_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppSetFallbackResources_FUNC);
 }
 #endif
 
-#ifndef NO_XtAppSetSelectionTimeout
-JNIEXPORT void JNICALL OS_NATIVE(XtAppSetSelectionTimeout)
+#ifndef NO__1XtAppSetSelectionTimeout
+JNIEXPORT void JNICALL OS_NATIVE(_1XtAppSetSelectionTimeout)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XtAppSetSelectionTimeout_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppSetSelectionTimeout_FUNC);
 	XtAppSetSelectionTimeout((XtAppContext)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XtAppSetSelectionTimeout_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppSetSelectionTimeout_FUNC);
 }
 #endif
 
-#ifndef NO_XtAppSetWarningHandler
-JNIEXPORT jint JNICALL OS_NATIVE(XtAppSetWarningHandler)
+#ifndef NO__1XtAppSetWarningHandler
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtAppSetWarningHandler)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtAppSetWarningHandler_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtAppSetWarningHandler_FUNC);
 	rc = (jint)XtAppSetWarningHandler((XtAppContext)arg0, (XtErrorHandler)arg1);
-	OS_NATIVE_EXIT(env, that, XtAppSetWarningHandler_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtAppSetWarningHandler_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtBuildEventMask
-JNIEXPORT jint JNICALL OS_NATIVE(XtBuildEventMask)
+#ifndef NO__1XtBuildEventMask
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtBuildEventMask)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtBuildEventMask_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtBuildEventMask_FUNC);
 	rc = (jint)XtBuildEventMask((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtBuildEventMask_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtBuildEventMask_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtCallActionProc
-JNIEXPORT void JNICALL OS_NATIVE(XtCallActionProc)
+#ifndef NO__1XtCallActionProc
+JNIEXPORT void JNICALL OS_NATIVE(_1XtCallActionProc)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3, jint arg4)
 {
 	jbyte *lparg1=NULL;
 	jint *lparg3=NULL;
-	OS_NATIVE_ENTER(env, that, XtCallActionProc_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtCallActionProc_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	XtCallActionProc((Widget)arg0, (String)lparg1, (XEvent *)arg2, (String *)lparg3, arg4);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XtCallActionProc_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtCallActionProc_FUNC);
 }
 #endif
 
-#ifndef NO_XtClass
-JNIEXPORT jint JNICALL OS_NATIVE(XtClass)
+#ifndef NO__1XtClass
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtClass)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtClass_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtClass_FUNC);
 	rc = (jint)XtClass((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtClass_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtClass_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtConfigureWidget
-JNIEXPORT void JNICALL OS_NATIVE(XtConfigureWidget)
+#ifndef NO__1XtConfigureWidget
+JNIEXPORT void JNICALL OS_NATIVE(_1XtConfigureWidget)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
-	OS_NATIVE_ENTER(env, that, XtConfigureWidget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtConfigureWidget_FUNC);
 	XtConfigureWidget((Widget)arg0, arg1, arg2, arg3, arg4, arg5);
-	OS_NATIVE_EXIT(env, that, XtConfigureWidget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtConfigureWidget_FUNC);
 }
 #endif
 
-#ifndef NO_XtCreateApplicationContext
-JNIEXPORT jint JNICALL OS_NATIVE(XtCreateApplicationContext)
+#ifndef NO__1XtCreateApplicationContext
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtCreateApplicationContext)
 	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtCreateApplicationContext_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtCreateApplicationContext_FUNC);
 	rc = (jint)XtCreateApplicationContext();
-	OS_NATIVE_EXIT(env, that, XtCreateApplicationContext_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtCreateApplicationContext_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtCreatePopupShell
-JNIEXPORT jint JNICALL OS_NATIVE(XtCreatePopupShell)
+#ifndef NO__1XtCreatePopupShell
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtCreatePopupShell)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jintArray arg3, jint arg4)
 {
 	jbyte *lparg0=NULL;
 	jint *lparg3=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtCreatePopupShell_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtCreatePopupShell_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	rc = (jint)XtCreatePopupShell((String)lparg0, (WidgetClass)arg1, (Widget)arg2, (ArgList)lparg3, arg4);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XtCreatePopupShell_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtCreatePopupShell_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtDestroyApplicationContext
-JNIEXPORT void JNICALL OS_NATIVE(XtDestroyApplicationContext)
+#ifndef NO__1XtDestroyApplicationContext
+JNIEXPORT void JNICALL OS_NATIVE(_1XtDestroyApplicationContext)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtDestroyApplicationContext_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtDestroyApplicationContext_FUNC);
 	XtDestroyApplicationContext((XtAppContext)arg0);
-	OS_NATIVE_EXIT(env, that, XtDestroyApplicationContext_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtDestroyApplicationContext_FUNC);
 }
 #endif
 
-#ifndef NO_XtDestroyWidget
-JNIEXPORT void JNICALL OS_NATIVE(XtDestroyWidget)
+#ifndef NO__1XtDestroyWidget
+JNIEXPORT void JNICALL OS_NATIVE(_1XtDestroyWidget)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtDestroyWidget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtDestroyWidget_FUNC);
 	XtDestroyWidget((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtDestroyWidget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtDestroyWidget_FUNC);
 }
 #endif
 
-#ifndef NO_XtDispatchEvent
-JNIEXPORT jboolean JNICALL OS_NATIVE(XtDispatchEvent)
+#ifndef NO__1XtDispatchEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XtDispatchEvent)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XtDispatchEvent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtDispatchEvent_FUNC);
 	rc = (jboolean)XtDispatchEvent((XEvent *)arg0);
-	OS_NATIVE_EXIT(env, that, XtDispatchEvent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtDispatchEvent_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtDisplay
-JNIEXPORT jint JNICALL OS_NATIVE(XtDisplay)
+#ifndef NO__1XtDisplay
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtDisplay)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtDisplay_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtDisplay_FUNC);
 	rc = (jint)XtDisplay((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtDisplay_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtDisplay_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtDisplayToApplicationContext
-JNIEXPORT jint JNICALL OS_NATIVE(XtDisplayToApplicationContext)
+#ifndef NO__1XtDisplayToApplicationContext
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtDisplayToApplicationContext)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtDisplayToApplicationContext_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtDisplayToApplicationContext_FUNC);
 	rc = (jint)XtDisplayToApplicationContext((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XtDisplayToApplicationContext_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtDisplayToApplicationContext_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtFree
-JNIEXPORT void JNICALL OS_NATIVE(XtFree)
+#ifndef NO__1XtFree
+JNIEXPORT void JNICALL OS_NATIVE(_1XtFree)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtFree_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtFree_FUNC);
 	XtFree((char *)arg0);
-	OS_NATIVE_EXIT(env, that, XtFree_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtFree_FUNC);
 }
 #endif
 
-#ifndef NO_XtGetMultiClickTime
-JNIEXPORT jint JNICALL OS_NATIVE(XtGetMultiClickTime)
+#ifndef NO__1XtGetMultiClickTime
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtGetMultiClickTime)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtGetMultiClickTime_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtGetMultiClickTime_FUNC);
 	rc = (jint)XtGetMultiClickTime((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XtGetMultiClickTime_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtGetMultiClickTime_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtInsertEventHandler
-JNIEXPORT void JNICALL OS_NATIVE(XtInsertEventHandler)
+#ifndef NO__1XtInsertEventHandler
+JNIEXPORT void JNICALL OS_NATIVE(_1XtInsertEventHandler)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4, jint arg5)
 {
-	OS_NATIVE_ENTER(env, that, XtInsertEventHandler_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtInsertEventHandler_FUNC);
 	XtInsertEventHandler((Widget)arg0, (EventMask)arg1, (Boolean)arg2, (XtEventHandler)arg3, (XtPointer)arg4, (XtListPosition)arg5);
-	OS_NATIVE_EXIT(env, that, XtInsertEventHandler_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtInsertEventHandler_FUNC);
 }
 #endif
 
-#ifndef NO_XtIsManaged
-JNIEXPORT jboolean JNICALL OS_NATIVE(XtIsManaged)
+#ifndef NO__1XtIsManaged
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XtIsManaged)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XtIsManaged_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtIsManaged_FUNC);
 	rc = (jboolean)XtIsManaged((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtIsManaged_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtIsManaged_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtIsRealized
-JNIEXPORT jboolean JNICALL OS_NATIVE(XtIsRealized)
+#ifndef NO__1XtIsRealized
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XtIsRealized)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XtIsRealized_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtIsRealized_FUNC);
 	rc = (jboolean)XtIsRealized((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtIsRealized_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtIsRealized_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtIsSubclass
-JNIEXPORT jboolean JNICALL OS_NATIVE(XtIsSubclass)
+#ifndef NO__1XtIsSubclass
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XtIsSubclass)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XtIsSubclass_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtIsSubclass_FUNC);
 	rc = (jboolean)XtIsSubclass((Widget)arg0, (WidgetClass)arg1);
-	OS_NATIVE_EXIT(env, that, XtIsSubclass_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtIsSubclass_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtIsTopLevelShell
-JNIEXPORT jboolean JNICALL OS_NATIVE(XtIsTopLevelShell)
+#ifndef NO__1XtIsTopLevelShell
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XtIsTopLevelShell)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XtIsTopLevelShell_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtIsTopLevelShell_FUNC);
 	rc = (jboolean)XtIsTopLevelShell((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtIsTopLevelShell_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtIsTopLevelShell_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtLastTimestampProcessed
-JNIEXPORT jint JNICALL OS_NATIVE(XtLastTimestampProcessed)
+#ifndef NO__1XtLastTimestampProcessed
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtLastTimestampProcessed)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtLastTimestampProcessed_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtLastTimestampProcessed_FUNC);
 	rc = (jint)XtLastTimestampProcessed((Display *)arg0);
-	OS_NATIVE_EXIT(env, that, XtLastTimestampProcessed_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtLastTimestampProcessed_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtMalloc
-JNIEXPORT jint JNICALL OS_NATIVE(XtMalloc)
+#ifndef NO__1XtMalloc
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtMalloc)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtMalloc_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtMalloc_FUNC);
 	rc = (jint)XtMalloc(arg0);
-	OS_NATIVE_EXIT(env, that, XtMalloc_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtMalloc_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtManageChild
-JNIEXPORT void JNICALL OS_NATIVE(XtManageChild)
+#ifndef NO__1XtManageChild
+JNIEXPORT void JNICALL OS_NATIVE(_1XtManageChild)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtManageChild_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtManageChild_FUNC);
 	XtManageChild((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtManageChild_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtManageChild_FUNC);
 }
 #endif
 
-#ifndef NO_XtMapWidget
-JNIEXPORT void JNICALL OS_NATIVE(XtMapWidget)
+#ifndef NO__1XtMapWidget
+JNIEXPORT void JNICALL OS_NATIVE(_1XtMapWidget)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtMapWidget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtMapWidget_FUNC);
 	XtMapWidget((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtMapWidget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtMapWidget_FUNC);
 }
 #endif
 
-#ifndef NO_XtMoveWidget
-JNIEXPORT void JNICALL OS_NATIVE(XtMoveWidget)
+#ifndef NO__1XtMoveWidget
+JNIEXPORT void JNICALL OS_NATIVE(_1XtMoveWidget)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XtMoveWidget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtMoveWidget_FUNC);
 	XtMoveWidget((Widget)arg0, arg1, arg2);
-	OS_NATIVE_EXIT(env, that, XtMoveWidget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtMoveWidget_FUNC);
 }
 #endif
 
-#ifndef NO_XtNameToWidget
-JNIEXPORT jint JNICALL OS_NATIVE(XtNameToWidget)
+#ifndef NO__1XtNameToWidget
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtNameToWidget)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
 {
 	jbyte *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtNameToWidget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtNameToWidget_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)XtNameToWidget((Widget)arg0, (String)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XtNameToWidget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtNameToWidget_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtOpenDisplay
-JNIEXPORT jint JNICALL OS_NATIVE(XtOpenDisplay)
+#ifndef NO__1XtOpenDisplay
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtOpenDisplay)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6, jint arg7)
 {
 	jbyte *lparg1=NULL;
@@ -4745,7 +4745,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XtOpenDisplay)
 	jbyte *lparg3=NULL;
 	jint *lparg6=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtOpenDisplay_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtOpenDisplay_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
@@ -4756,294 +4756,354 @@ fail:
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XtOpenDisplay_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtOpenDisplay_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtOverrideTranslations
-JNIEXPORT void JNICALL OS_NATIVE(XtOverrideTranslations)
+#ifndef NO__1XtOverrideTranslations
+JNIEXPORT void JNICALL OS_NATIVE(_1XtOverrideTranslations)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XtOverrideTranslations_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtOverrideTranslations_FUNC);
 	XtOverrideTranslations((Widget)arg0, (XtTranslations)arg1);
-	OS_NATIVE_EXIT(env, that, XtOverrideTranslations_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtOverrideTranslations_FUNC);
 }
 #endif
 
-#ifndef NO_XtParent
-JNIEXPORT jint JNICALL OS_NATIVE(XtParent)
+#ifndef NO__1XtParent
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtParent)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtParent_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtParent_FUNC);
 	rc = (jint)XtParent((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtParent_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtParent_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtParseTranslationTable
-JNIEXPORT jint JNICALL OS_NATIVE(XtParseTranslationTable)
+#ifndef NO__1XtParseTranslationTable
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtParseTranslationTable)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
 	jbyte *lparg0=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtParseTranslationTable_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtParseTranslationTable_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jint)XtParseTranslationTable((String)lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, XtParseTranslationTable_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtParseTranslationTable_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtPopdown
-JNIEXPORT void JNICALL OS_NATIVE(XtPopdown)
+#ifndef NO__1XtPopdown
+JNIEXPORT void JNICALL OS_NATIVE(_1XtPopdown)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtPopdown_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtPopdown_FUNC);
 	XtPopdown((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtPopdown_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtPopdown_FUNC);
 }
 #endif
 
-#ifndef NO_XtPopup
-JNIEXPORT void JNICALL OS_NATIVE(XtPopup)
+#ifndef NO__1XtPopup
+JNIEXPORT void JNICALL OS_NATIVE(_1XtPopup)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XtPopup_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtPopup_FUNC);
 	XtPopup((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XtPopup_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtPopup_FUNC);
 }
 #endif
 
-#ifndef NO_XtQueryGeometry
-JNIEXPORT jint JNICALL OS_NATIVE(XtQueryGeometry)
+#ifndef NO__1XtQueryGeometry
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtQueryGeometry)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2)
 {
 	XtWidgetGeometry _arg1, *lparg1=NULL;
 	XtWidgetGeometry _arg2, *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtQueryGeometry_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtQueryGeometry_FUNC);
 	if (arg1) if ((lparg1 = getXtWidgetGeometryFields(env, arg1, &_arg1)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = getXtWidgetGeometryFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)XtQueryGeometry((Widget)arg0, (XtWidgetGeometry *)lparg1, (XtWidgetGeometry *)lparg2);
 fail:
 	if (arg2 && lparg2) setXtWidgetGeometryFields(env, arg2, lparg2);
 	if (arg1 && lparg1) setXtWidgetGeometryFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, XtQueryGeometry_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtQueryGeometry_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtRealizeWidget
-JNIEXPORT void JNICALL OS_NATIVE(XtRealizeWidget)
+#ifndef NO__1XtRealizeWidget
+JNIEXPORT void JNICALL OS_NATIVE(_1XtRealizeWidget)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtRealizeWidget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtRealizeWidget_FUNC);
 	XtRealizeWidget((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtRealizeWidget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtRealizeWidget_FUNC);
 }
 #endif
 
-#ifndef NO_XtRegisterDrawable
-JNIEXPORT void JNICALL OS_NATIVE(XtRegisterDrawable)
+#ifndef NO__1XtRegisterDrawable
+JNIEXPORT void JNICALL OS_NATIVE(_1XtRegisterDrawable)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	OS_NATIVE_ENTER(env, that, XtRegisterDrawable_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtRegisterDrawable_FUNC);
 	XtRegisterDrawable((Display *)arg0, (Drawable)arg1, (Widget)arg2);
-	OS_NATIVE_EXIT(env, that, XtRegisterDrawable_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtRegisterDrawable_FUNC);
 }
 #endif
 
-#ifndef NO_XtRemoveEventHandler
-JNIEXPORT void JNICALL OS_NATIVE(XtRemoveEventHandler)
+#ifndef NO__1XtRemoveEventHandler
+JNIEXPORT void JNICALL OS_NATIVE(_1XtRemoveEventHandler)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4)
 {
-	OS_NATIVE_ENTER(env, that, XtRemoveEventHandler_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtRemoveEventHandler_FUNC);
 	XtRemoveEventHandler((Widget)arg0, arg1, arg2, (XtEventHandler)arg3, (XtPointer)arg4);
-	OS_NATIVE_EXIT(env, that, XtRemoveEventHandler_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtRemoveEventHandler_FUNC);
 }
 #endif
 
-#ifndef NO_XtRemoveInput
-JNIEXPORT void JNICALL OS_NATIVE(XtRemoveInput)
+#ifndef NO__1XtRemoveInput
+JNIEXPORT void JNICALL OS_NATIVE(_1XtRemoveInput)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtRemoveInput_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtRemoveInput_FUNC);
 	XtRemoveInput((XtInputId)arg0);
-	OS_NATIVE_EXIT(env, that, XtRemoveInput_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtRemoveInput_FUNC);
 }
 #endif
 
-#ifndef NO_XtRemoveTimeOut
-JNIEXPORT void JNICALL OS_NATIVE(XtRemoveTimeOut)
+#ifndef NO__1XtRemoveTimeOut
+JNIEXPORT void JNICALL OS_NATIVE(_1XtRemoveTimeOut)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtRemoveTimeOut_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtRemoveTimeOut_FUNC);
 	XtRemoveTimeOut(arg0);
-	OS_NATIVE_EXIT(env, that, XtRemoveTimeOut_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtRemoveTimeOut_FUNC);
 }
 #endif
 
-#ifndef NO_XtResizeWidget
-JNIEXPORT void JNICALL OS_NATIVE(XtResizeWidget)
+#ifndef NO__1XtResizeWidget
+JNIEXPORT void JNICALL OS_NATIVE(_1XtResizeWidget)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-	OS_NATIVE_ENTER(env, that, XtResizeWidget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtResizeWidget_FUNC);
 	XtResizeWidget((Widget)arg0, arg1, arg2, arg3);
-	OS_NATIVE_EXIT(env, that, XtResizeWidget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtResizeWidget_FUNC);
 }
 #endif
 
-#ifndef NO_XtResizeWindow
-JNIEXPORT void JNICALL OS_NATIVE(XtResizeWindow)
+#ifndef NO__1XtResizeWindow
+JNIEXPORT void JNICALL OS_NATIVE(_1XtResizeWindow)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtResizeWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtResizeWindow_FUNC);
 	XtResizeWindow((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtResizeWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtResizeWindow_FUNC);
 }
 #endif
 
-#ifndef NO_XtSetLanguageProc
-JNIEXPORT jint JNICALL OS_NATIVE(XtSetLanguageProc)
+#ifndef NO__1XtSetLanguageProc
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtSetLanguageProc)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtSetLanguageProc_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtSetLanguageProc_FUNC);
 	rc = (jint)XtSetLanguageProc((XtAppContext)arg0, (XtLanguageProc)arg1, (XtPointer)arg2);
-	OS_NATIVE_EXIT(env, that, XtSetLanguageProc_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtSetLanguageProc_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtSetMappedWhenManaged
-JNIEXPORT void JNICALL OS_NATIVE(XtSetMappedWhenManaged)
+#ifndef NO__1XtSetMappedWhenManaged
+JNIEXPORT void JNICALL OS_NATIVE(_1XtSetMappedWhenManaged)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	OS_NATIVE_ENTER(env, that, XtSetMappedWhenManaged_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtSetMappedWhenManaged_FUNC);
 	XtSetMappedWhenManaged((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, XtSetMappedWhenManaged_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtSetMappedWhenManaged_FUNC);
 }
 #endif
 
-#ifndef NO_XtSetValues
-JNIEXPORT void JNICALL OS_NATIVE(XtSetValues)
+#ifndef NO__1XtSetValues
+JNIEXPORT void JNICALL OS_NATIVE(_1XtSetValues)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
 {
 	jint *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, XtSetValues_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtSetValues_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	XtSetValues((Widget)arg0, (ArgList)lparg1, arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, XtSetValues_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtSetValues_FUNC);
 }
 #endif
 
-#ifndef NO_XtToolkitInitialize
-JNIEXPORT void JNICALL OS_NATIVE(XtToolkitInitialize)
+#ifndef NO__1XtToolkitInitialize
+JNIEXPORT void JNICALL OS_NATIVE(_1XtToolkitInitialize)
 	(JNIEnv *env, jclass that)
 {
-	OS_NATIVE_ENTER(env, that, XtToolkitInitialize_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtToolkitInitialize_FUNC);
 	XtToolkitInitialize();
-	OS_NATIVE_EXIT(env, that, XtToolkitInitialize_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtToolkitInitialize_FUNC);
 }
 #endif
 
-#ifndef NO_XtToolkitThreadInitialize
-JNIEXPORT jboolean JNICALL OS_NATIVE(XtToolkitThreadInitialize)
+#ifndef NO__1XtToolkitThreadInitialize
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XtToolkitThreadInitialize)
 	(JNIEnv *env, jclass that)
 {
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, XtToolkitThreadInitialize_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtToolkitThreadInitialize_FUNC);
 	rc = (jboolean)XtToolkitThreadInitialize();
-	OS_NATIVE_EXIT(env, that, XtToolkitThreadInitialize_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtToolkitThreadInitialize_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtTranslateCoords
-JNIEXPORT void JNICALL OS_NATIVE(XtTranslateCoords)
+#ifndef NO__1XtTranslateCoords
+JNIEXPORT void JNICALL OS_NATIVE(_1XtTranslateCoords)
 	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2, jshortArray arg3, jshortArray arg4)
 {
 	jshort *lparg3=NULL;
 	jshort *lparg4=NULL;
-	OS_NATIVE_ENTER(env, that, XtTranslateCoords_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtTranslateCoords_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	XtTranslateCoords((Widget)arg0, arg1, arg2, lparg3, lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
-	OS_NATIVE_EXIT(env, that, XtTranslateCoords_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtTranslateCoords_FUNC);
 }
 #endif
 
-#ifndef NO_XtUnmanageChild
-JNIEXPORT void JNICALL OS_NATIVE(XtUnmanageChild)
+#ifndef NO__1XtUnmanageChild
+JNIEXPORT void JNICALL OS_NATIVE(_1XtUnmanageChild)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtUnmanageChild_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtUnmanageChild_FUNC);
 	XtUnmanageChild((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtUnmanageChild_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtUnmanageChild_FUNC);
 }
 #endif
 
-#ifndef NO_XtUnmapWidget
-JNIEXPORT void JNICALL OS_NATIVE(XtUnmapWidget)
+#ifndef NO__1XtUnmapWidget
+JNIEXPORT void JNICALL OS_NATIVE(_1XtUnmapWidget)
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	OS_NATIVE_ENTER(env, that, XtUnmapWidget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtUnmapWidget_FUNC);
 	XtUnmapWidget((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtUnmapWidget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtUnmapWidget_FUNC);
 }
 #endif
 
-#ifndef NO_XtUnregisterDrawable
-JNIEXPORT void JNICALL OS_NATIVE(XtUnregisterDrawable)
+#ifndef NO__1XtUnregisterDrawable
+JNIEXPORT void JNICALL OS_NATIVE(_1XtUnregisterDrawable)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, XtUnregisterDrawable_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtUnregisterDrawable_FUNC);
 	XtUnregisterDrawable((Display *)arg0, (Drawable)arg1);
-	OS_NATIVE_EXIT(env, that, XtUnregisterDrawable_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtUnregisterDrawable_FUNC);
 }
 #endif
 
-#ifndef NO_XtWindow
-JNIEXPORT jint JNICALL OS_NATIVE(XtWindow)
+#ifndef NO__1XtWindow
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtWindow)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtWindow_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtWindow_FUNC);
 	rc = (jint)XtWindow((Widget)arg0);
-	OS_NATIVE_EXIT(env, that, XtWindow_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtWindow_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_XtWindowToWidget
-JNIEXPORT jint JNICALL OS_NATIVE(XtWindowToWidget)
+#ifndef NO__1XtWindowToWidget
+JNIEXPORT jint JNICALL OS_NATIVE(_1XtWindowToWidget)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, XtWindowToWidget_FUNC);
+	OS_NATIVE_ENTER(env, that, _1XtWindowToWidget_FUNC);
 	rc = (jint)XtWindowToWidget((Display *)arg0, (Window)arg1);
-	OS_NATIVE_EXIT(env, that, XtWindowToWidget_FUNC);
+	OS_NATIVE_EXIT(env, that, _1XtWindowToWidget_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO__1XmSetMenuTraversal
-JNIEXPORT void JNICALL OS_NATIVE(_1XmSetMenuTraversal)
+#ifndef NO__1_1XmSetMenuTraversal
+JNIEXPORT void JNICALL OS_NATIVE(_1_1XmSetMenuTraversal)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	OS_NATIVE_ENTER(env, that, _1XmSetMenuTraversal_FUNC);
+	OS_NATIVE_ENTER(env, that, _1_1XmSetMenuTraversal_FUNC);
 	_XmSetMenuTraversal((Widget)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, _1XmSetMenuTraversal_FUNC);
+	OS_NATIVE_EXIT(env, that, _1_1XmSetMenuTraversal_FUNC);
+}
+#endif
+
+#ifndef NO__1overrideShellWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(_1overrideShellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1overrideShellWidgetClass_FUNC);
+	rc = (jint)overrideShellWidgetClass;
+	OS_NATIVE_EXIT(env, that, _1overrideShellWidgetClass_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1shellWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(_1shellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1shellWidgetClass_FUNC);
+	rc = (jint)shellWidgetClass;
+	OS_NATIVE_EXIT(env, that, _1shellWidgetClass_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1topLevelShellWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(_1topLevelShellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1topLevelShellWidgetClass_FUNC);
+	rc = (jint)topLevelShellWidgetClass;
+	OS_NATIVE_EXIT(env, that, _1topLevelShellWidgetClass_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1transientShellWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(_1transientShellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1transientShellWidgetClass_FUNC);
+	rc = (jint)transientShellWidgetClass;
+	OS_NATIVE_EXIT(env, that, _1transientShellWidgetClass_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1xmMenuShellWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(_1xmMenuShellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1xmMenuShellWidgetClass_FUNC);
+	rc = (jint)xmMenuShellWidgetClass;
+	OS_NATIVE_EXIT(env, that, _1xmMenuShellWidgetClass_FUNC);
+	return rc;
 }
 #endif
 
@@ -5748,18 +5808,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(nl_1langinfo)
 }
 #endif
 
-#ifndef NO_overrideShellWidgetClass
-JNIEXPORT jint JNICALL OS_NATIVE(overrideShellWidgetClass)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, overrideShellWidgetClass_FUNC);
-	rc = (jint)overrideShellWidgetClass;
-	OS_NATIVE_EXIT(env, that, overrideShellWidgetClass_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_pipe
 JNIEXPORT jint JNICALL OS_NATIVE(pipe)
 	(JNIEnv *env, jclass that, jintArray arg0)
@@ -5833,18 +5881,6 @@ fail:
 }
 #endif
 
-#ifndef NO_shellWidgetClass
-JNIEXPORT jint JNICALL OS_NATIVE(shellWidgetClass)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, shellWidgetClass_FUNC);
-	rc = (jint)shellWidgetClass;
-	OS_NATIVE_EXIT(env, that, shellWidgetClass_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_strlen
 JNIEXPORT jint JNICALL OS_NATIVE(strlen)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -5853,30 +5889,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(strlen)
 	OS_NATIVE_ENTER(env, that, strlen_FUNC);
 	rc = (jint)strlen((char *)arg0);
 	OS_NATIVE_EXIT(env, that, strlen_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_topLevelShellWidgetClass
-JNIEXPORT jint JNICALL OS_NATIVE(topLevelShellWidgetClass)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, topLevelShellWidgetClass_FUNC);
-	rc = (jint)topLevelShellWidgetClass;
-	OS_NATIVE_EXIT(env, that, topLevelShellWidgetClass_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_transientShellWidgetClass
-JNIEXPORT jint JNICALL OS_NATIVE(transientShellWidgetClass)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, transientShellWidgetClass_FUNC);
-	rc = (jint)transientShellWidgetClass;
-	OS_NATIVE_EXIT(env, that, transientShellWidgetClass_FUNC);
 	return rc;
 }
 #endif
@@ -5893,18 +5905,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(write)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, write_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_xmMenuShellWidgetClass
-JNIEXPORT jint JNICALL OS_NATIVE(xmMenuShellWidgetClass)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, xmMenuShellWidgetClass_FUNC);
-	rc = (jint)xmMenuShellWidgetClass;
-	OS_NATIVE_EXIT(env, that, xmMenuShellWidgetClass_FUNC);
 	return rc;
 }
 #endif

@@ -29,9 +29,9 @@ JNIEXPORT void JNICALL OS_NATIVE(setResourceMem)
 }
 #endif
 
-#ifndef NO_XtGetValues
+#ifndef NO__1XtGetValues
 #define MAX_ARGS 32
-JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
+JNIEXPORT void JNICALL OS_NATIVE(_1XtGetValues)
   (JNIEnv *env, jclass that, jint widget, jintArray argList, jint numArgs)
 {
 	jint *argList1=NULL;
@@ -42,7 +42,7 @@ JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
 	int *zeros = zeroBuff;
 	int i;
 
-	OS_NATIVE_ENTER(env, that, XtGetValues_FUNC)
+	OS_NATIVE_ENTER(env, that, _1XtGetValues_FUNC)
 	if (argList) if ((argList1 = (*env)->GetIntArrayElements(env, argList, NULL)) == NULL) goto failTag;
 	if (numArgs > MAX_ARGS) {
 		if ((values = (int *) XtMalloc (numArgs * sizeof(int))) == NULL) goto failTag;
@@ -75,30 +75,6 @@ failTag:
 		if (zeros) XtFree((char *)zeros);
 	}
 	if (argList && argList1)(*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-	OS_NATIVE_EXIT(env, that, XtGetValues_FUNC)
-}
-#endif
-
-#ifndef NO_MonitorEnter
-JNIEXPORT jint JNICALL OS_NATIVE(MonitorEnter)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	jint rc;
-	OS_NATIVE_ENTER(env, that, MonitorEnter_FUNC);
-	rc = (jint)(*env)->MonitorEnter(env, arg0);
-	OS_NATIVE_EXIT(env, that, MonitorEnter_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_MonitorExit
-JNIEXPORT jint JNICALL OS_NATIVE(MonitorExit)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	jint rc;
-	OS_NATIVE_ENTER(env, that, MonitorExit_FUNC);
-	rc = (jint)(*env)->MonitorExit(env, arg0);
-	OS_NATIVE_EXIT(env, that, MonitorExit_FUNC);
-	return rc;
+	OS_NATIVE_EXIT(env, that, _1XtGetValues_FUNC)
 }
 #endif

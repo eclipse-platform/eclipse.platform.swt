@@ -34,27 +34,3 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 	return rc;
 }
 #endif
-
-#ifndef NO_MonitorEnter
-JNIEXPORT jint JNICALL OS_NATIVE(MonitorEnter)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	jint rc;
-	OS_NATIVE_ENTER(env, that, MonitorEnter_FUNC);
-	rc = (jint)(*env)->MonitorEnter(env, arg0);
-	OS_NATIVE_EXIT(env, that, MonitorEnter_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_MonitorExit
-JNIEXPORT jint JNICALL OS_NATIVE(MonitorExit)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	jint rc;
-	OS_NATIVE_ENTER(env, that, MonitorExit_FUNC);
-	rc = (jint)(*env)->MonitorExit(env, arg0);
-	OS_NATIVE_EXIT(env, that, MonitorExit_FUNC);
-	return rc;
-}
-#endif
