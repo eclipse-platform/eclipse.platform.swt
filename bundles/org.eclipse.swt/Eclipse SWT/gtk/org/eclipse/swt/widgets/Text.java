@@ -36,8 +36,9 @@ import org.eclipse.swt.events.*;
 public class Text extends Scrollable {
 	int bufferHandle, tabs = 8;
 	
+	static final int INNER_BORDER = 2;
 	static final int ITER_SIZEOF = 56;
-	
+		
 	public final static int LIMIT;
 	public final static String DELIMITER;
 	/*
@@ -128,6 +129,10 @@ void createHandle (int index) {
 		if ((style & SWT.BORDER) != 0) {
 			OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 		}
+		int just = OS.GTK_JUSTIFY_LEFT;
+		if ((style & SWT.CENTER) != 0) just = OS.GTK_JUSTIFY_CENTER; 
+		if ((style & SWT.RIGHT) != 0) just = OS.GTK_JUSTIFY_RIGHT;
+		OS.gtk_text_view_set_justification (handle, just);
 	}
 	OS.gtk_widget_show (handle);
 }
@@ -269,25 +274,43 @@ public void clearSelection () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	int xborder = 0, yborder = 0;
+	int[] w = new int [1], h = new int [1];
 	if ((style & SWT.SINGLE) != 0) {
-		return super.computeSize (wHint, hHint, changed);
-	}
-	boolean fixWrap = (style & SWT.WRAP) != 0 && wHint == SWT.DEFAULT;
-	if (fixWrap) OS.gtk_text_view_set_wrap_mode (handle, OS.GTK_WRAP_NONE);
-	int width = OS.GTK_WIDGET_WIDTH (handle);
-	int height = OS.GTK_WIDGET_HEIGHT (handle);
-	OS.gtk_widget_set_size_request (handle, wHint, hHint); 
-	if ((style & SWT.WRAP) != 0) {
-		while (OS.gtk_events_pending () != 0) {
-			OS.gtk_main_iteration ();
+		int layout = OS.gtk_entry_get_layout (handle);
+		OS.pango_layout_get_size (layout, w, h);
+		if ((style & SWT.BORDER) != 0) {
+			GtkStyle style = new GtkStyle (); 
+			OS.memmove (style, OS.gtk_widget_get_style (handle));
+			xborder += style.xthickness;
+			yborder += style.ythickness;
 		}
+		xborder += INNER_BORDER;
+		yborder += INNER_BORDER;
+	} else {
+		byte [] start =  new byte [ITER_SIZEOF], end  =  new byte [ITER_SIZEOF];
+		OS.gtk_text_buffer_get_bounds (bufferHandle, start, end);
+		int text = OS.gtk_text_buffer_get_text (bufferHandle, start, end, true);
+		int layout = OS.gtk_widget_create_pango_layout (handle, text);
+		OS.g_free (text);
+		OS.pango_layout_set_width (layout, wHint * OS.PANGO_SCALE);
+		OS.pango_layout_get_size (layout, w, h);
+		OS.g_object_unref (layout);
+		int borderWidth = OS.gtk_container_get_border_width (handle);  
+		xborder += borderWidth;
+		yborder += borderWidth;
 	}
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
-	OS.gtk_widget_set_size_request (handle, width, height);
-	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
-	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
-	if (fixWrap) OS.gtk_text_view_set_wrap_mode (handle, OS.GTK_WRAP_WORD);
+	int [] property = new int [1];
+	OS.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
+	if (property [0] != 0) {
+		OS.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
+		xborder += property [0];
+		yborder += property [0];
+	}
+	int width = OS.PANGO_PIXELS (w [0]) + 2 * xborder;
+	int height = OS.PANGO_PIXELS (h [0]) + 2 * yborder;
+	width = wHint == SWT.DEFAULT ? width : wHint;
+	height = hHint == SWT.DEFAULT ? height : hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }

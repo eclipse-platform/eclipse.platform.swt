@@ -261,9 +261,11 @@ public class OS {
 	public static final byte[] value_changed = signal("value_changed");
 	
 	/** Properties */
-	public static final byte[] xalign = signal("xalign");
 	public static final byte[] button_relief = signal("button_relief");
+	public static final byte[] focus_line_width = signal("focus_line_width");
+	public static final byte[] interior_focus = signal("interior_focus");
 	public static final byte[] mode = signal("mode");
+	public static final byte[] xalign = signal("xalign");
 	
 static byte [] signal (String name) {
 	int length = name.length ();
@@ -521,6 +523,7 @@ public static final synchronized native void gtk_editable_select_region(int edit
 public static final synchronized native void gtk_editable_set_editable(int entry, boolean editable);
 public static final synchronized native void gtk_editable_set_position(int editable, int position);
 public static final synchronized native char gtk_entry_get_invisible_char(int entry);
+public static final synchronized native int gtk_entry_get_layout (int entry);
 public static final synchronized native int gtk_entry_get_max_length(int entry);
 public static final synchronized native int gtk_entry_get_text(int entry);
 public static final synchronized native boolean gtk_entry_get_visibility(int entry);
@@ -676,6 +679,7 @@ public static final synchronized native int gtk_text_view_new();
 public static final synchronized native void gtk_text_view_scroll_mark_onscreen(int text_view, int mark);
 public static final synchronized native boolean gtk_text_view_scroll_to_iter(int text_view, byte[] iter, double within_margin, boolean use_align, double xalign, double yalign);
 public static final synchronized native void gtk_text_view_set_editable(int text_view, boolean setting);
+public static final synchronized native void gtk_text_view_set_justification(int text_view, int justification);
 public static final synchronized native void gtk_text_view_set_tabs(int text_view, int tabs);
 public static final synchronized native void gtk_text_view_set_wrap_mode(int text_view, int wrap_mode);
 public static final synchronized native int gtk_timeout_add(int interval, int function, int data);
@@ -769,6 +773,7 @@ public static final synchronized native int gtk_vseparator_new();
 public static final synchronized native void gtk_widget_add_accelerator(int widget, byte[] accel_signal, int accel_group, int accel_key, int accel_mods, int accel_flags);
 public static final synchronized native void gtk_widget_add_events(int widget, int events);
 public static final synchronized native int gtk_widget_create_pango_layout(int widget, byte[] text);
+public static final synchronized native int gtk_widget_create_pango_layout(int widget, int text);
 public static final synchronized native void gtk_widget_destroy(int widget);
 public static final synchronized native int gtk_widget_get_default_style();
 public static final synchronized native int gtk_widget_get_modifier_style(int widget);
@@ -879,6 +884,7 @@ public static final synchronized native void pango_layout_get_size(int layout, i
 public static final synchronized native int pango_layout_new(int context);
 public static final synchronized native void pango_layout_set_font_description(int context, int descr);
 public static final synchronized native void pango_layout_set_text(int layout, byte[] text, int length);
+public static final synchronized native void pango_layout_set_width(int layout, int width);
 public static final synchronized native void pango_tab_array_free(int tab_array);
 public static final synchronized native int pango_tab_array_new(int initial_size, boolean positions_in_pixels);
 public static final synchronized native void pango_tab_array_set_tab(int tab_array, int tab_index, int alignment, int location);
