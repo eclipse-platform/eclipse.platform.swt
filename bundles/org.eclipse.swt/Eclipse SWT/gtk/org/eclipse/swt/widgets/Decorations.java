@@ -90,9 +90,12 @@ public class Decorations extends Canvas {
 	boolean minimized, maximized;
 	Menu menuBar;
 	Menu [] menus;
+	int accelGroup;	
+	
 Decorations () {
 	/* Do nothing */
 }
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -124,6 +127,7 @@ Decorations () {
 public Decorations (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+
 static int checkStyle (int style) {
 	if ((style & (SWT.MENU | SWT.MIN | SWT.MAX | SWT.CLOSE)) != 0) {
 		style |= SWT.TITLE;
@@ -153,9 +157,24 @@ Control computeTabRoot () {
 	return this;
 }
 
+void createAccelGroup () {
+	if (accelGroup != 0) return;
+	accelGroup = OS.gtk_accel_group_new ();
+	if (accelGroup == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	//FIXME - what should we do for Decorations
+	int shellHandle = topHandle ();
+	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
+	if (menuBar != null) menuBar.addAccelerators (accelGroup);
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	text = "";
+}
+
+void destroyAccelGroup () {
+	if (accelGroup != 0) OS.gtk_accel_group_unref (accelGroup);
+	accelGroup = 0;
 }
 
 /**
@@ -180,6 +199,7 @@ public Button getDefaultButton () {
 //	return (Button)button;
 	return null;
 }
+
 /**
  * Returns the receiver's image if it had previously been 
  * set using <code>setImage()</code>. The image is typically
@@ -205,6 +225,7 @@ public Image getImage () {
 	checkWidget();
 	return image;
 }
+
 /**
  * Returns <code>true</code> if the receiver is currently
  * maximized, and false otherwise. 
@@ -223,6 +244,7 @@ public boolean getMaximized () {
 	checkWidget();
 	return maximized;
 }
+
 /**
  * Returns the receiver's menu bar if one had previously
  * been set, otherwise returns null.
@@ -238,6 +260,7 @@ public Menu getMenuBar () {
 	checkWidget();
 	return menuBar;
 }
+
 /**
  * Returns <code>true</code> if the receiver is currently
  * minimized, and false otherwise. 
@@ -256,9 +279,11 @@ public boolean getMinimized () {
 	checkWidget();
 	return minimized;
 }
+
 String getNameText () {
 	return getText ();
 }
+
 /**
  * Returns the receiver's text, which is the string that the
  * window manager will typically display as the receiver's
@@ -317,6 +342,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	image = null;
 }
+
 /**
  * If the argument is not null, sets the receiver's default
  * button to the argument, and if the argument is null, sets
@@ -375,6 +401,7 @@ public void setImage (Image image) {
 	int window = OS.GTK_WIDGET_WINDOW(topHandle());
 	OS.gdk_window_set_icon (window, 0, pixmap, mask);
 }
+
 /**
  * Sets the maximized state of the receiver.
  * If the argument is <code>true</code> causes the receiver
@@ -402,6 +429,7 @@ public void setMaximized (boolean maximized) {
 	checkWidget();
 	this.maximized = maximized;
 }
+
 /**
  * Sets the receiver's menu bar to the argument, which
  * may be null.
@@ -426,6 +454,7 @@ public void setMenuBar (Menu menu) {
 	}
 	menuBar = menu;
 }
+
 /**
  * Sets the minimized stated of the receiver.
  * If the argument is <code>true</code> causes the receiver
@@ -453,6 +482,7 @@ public void setMinimized (boolean minimized) {
 	checkWidget();
 	this.minimized = minimized;
 }
+
 /**
  * Sets the receiver's text, which is the string that the
  * window manager will typically display as the receiver's

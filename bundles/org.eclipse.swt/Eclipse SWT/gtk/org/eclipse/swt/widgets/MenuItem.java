@@ -67,6 +67,7 @@ public MenuItem (Menu parent, int style) {
 	this.parent = parent;
 	createWidget (parent.getItemCount ());
 }
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Menu</code>), a style value
@@ -107,8 +108,12 @@ public MenuItem (Menu parent, int style, int index) {
 	}
 	createWidget (index);
 }
-void addAccelerator (int accel_group) {
-	if (accel_group == 0) return;
+
+void addAccelerator (int accelGroup) {
+	if (menu != null) {
+		menu.addAccelerators (accelGroup);
+		return;
+	}
 	if (accelerator == 0) return;
 	int mask = 0;
 	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.GDK_CONTROL_MASK;
@@ -121,8 +126,9 @@ void addAccelerator (int accel_group) {
 	} else {
 		keysym = wcsToMbcs ((char) keysym);
 	}
-	OS.gtk_widget_add_accelerator (handle, OS.activate, accel_group, keysym, mask, OS.GTK_ACCEL_VISIBLE);
+	OS.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, keysym, mask, OS.GTK_ACCEL_VISIBLE);
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the arm events are generated for the control, by sending
@@ -206,9 +212,11 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
 }
+
 static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.CASCADE, 0);
 }
+
 void createHandle (int index) {
 	state |= HANDLE;
 	byte [] buffer = new byte [1];
@@ -239,6 +247,7 @@ void createHandle (int index) {
 	}
 	OS.gtk_widget_show (handle);
 }
+
 /**
  * Return the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:
@@ -256,11 +265,13 @@ public int getAccelerator () {
 	checkWidget();
 	return accelerator;
 }
+
 public Display getDisplay () {
 	Menu parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -278,6 +289,7 @@ public boolean getEnabled () {
 	checkWidget();
 	return OS.GTK_WIDGET_SENSITIVE(handle);
 }
+
 /**
  * Returns the receiver's cascade menu if it has one or null
  * if it does not. Only <code>CASCADE</code> menu items can have
@@ -296,6 +308,7 @@ public Menu getMenu () {
 	checkWidget();
 	return menu;
 }
+
 /**
  * Returns the receiver's parent, which must be a <code>Menu</code>.
  *
@@ -310,6 +323,7 @@ public Menu getParent () {
 	checkWidget();
 	return parent;
 }
+
 /**
  * Returns <code>true</code> if the receiver is selected,
  * and false otherwise.
@@ -329,12 +343,14 @@ public boolean getSelection () {
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
 	return OS.gtk_check_menu_item_get_active(handle);
 }
+
 void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	OS.gtk_signal_connect (handle, OS.activate, windowProc2, SWT.Selection);
 }
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -351,15 +367,18 @@ void hookEvents () {
 public boolean isEnabled () {
 	return getEnabled ();
 }
+
 int processSelection (int int0, int int1, int int2) {
 	postEvent (SWT.Selection);
 	return 0;
 }
+
 void releaseChild () {
 	super.releaseChild ();
 	if (menu != null) menu.dispose ();
 	menu = null;
 }
+
 void releaseWidget () {
 	if (menu != null) {
 		menu.releaseWidget ();
@@ -367,28 +386,11 @@ void releaseWidget () {
 	}
 	menu = null;
 	super.releaseWidget ();
-	int accel_group = parent.getShell ().accelGroup;
-	if (accel_group != 0) removeAccelerator (accel_group);
+	if (accelerator != 0) parent.destroyAccelGroup ();
 	accelerator = 0;
 	parent = null;
 }
-void removeAccelerator (int accel_group) {
-	if (accel_group == 0) return;
-	if (accelerator == 0) return;
-	int mask = 0;
-	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.GDK_CONTROL_MASK;
-	if ((accelerator & SWT.ALT) != 0) mask |= OS.GDK_MOD1_MASK;
-	if ((accelerator & SWT.SHIFT) != 0) mask |= OS.GDK_SHIFT_MASK;
-	int keysym = accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CTRL);
-	int newKey = Display.untranslateKey (keysym);
-	if (newKey != 0) {
-		keysym = newKey;
-	} else {
-		keysym = wcsToMbcs ((char) keysym);
-	}
-	OS.gtk_widget_remove_accelerator (handle, accel_group, keysym, mask);
-	accelerator = 0;
-}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the arm events are generated for the control.
@@ -476,11 +478,10 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setAccelerator (int accelerator) {
 	checkWidget();
-	int accel_group = parent.getShell ().accelGroup;
-	if (this.accelerator != 0) removeAccelerator (accel_group);
 	this.accelerator = accelerator;
-	if (accelerator != 0) addAccelerator (accel_group);
+	parent.destroyAccelGroup ();
 }
+
 /**
  * Enables the receiver if the argument is <code>true</code>,
  * and disables it otherwise. A disabled control is typically
@@ -573,9 +574,9 @@ public void setMenu (Menu menu) {
 		menu.cascade = this;
 		OS.gtk_menu_item_set_submenu (handle, menu.handle);
 	}
-
-	
+	parent.destroyAccelGroup ();	
 }
+
 /**
  * Sets the selection state of the receiver.
  * <p>
@@ -596,6 +597,7 @@ public void setSelection (boolean selected) {
 	OS.gtk_check_menu_item_set_active (handle, selected);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

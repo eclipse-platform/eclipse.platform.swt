@@ -67,6 +67,14 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.POP_UP, SWT.BAR, SWT.DROP_DOWN, 0, 0, 0);
 }
 
+void addAccelerators (int accelGroup) {
+	MenuItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		MenuItem item = items[i];
+		item.addAccelerator (accelGroup);
+	}
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the help events are generated for the control, by sending
@@ -135,6 +143,10 @@ void createHandle (int index) {
 void createWidget (int index) {
 	super.createWidget (index);
 	parent.add (this);
+}
+
+void destroyAccelGroup () {
+	parent.destroyAccelGroup ();
 }
 
 /**

@@ -97,7 +97,6 @@ public class Shell extends Decorations {
 	Display display;
 	int shellHandle;
 	int modal;
-	int accelGroup;
 	boolean hasFocus;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
@@ -424,8 +423,6 @@ void createHandle (int index) {
 	int bits = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	boolean modal = (style & bits) != 0 || (parent != null && (parent.style & bits) != 0);
 	OS.gtk_window_set_modal (shellHandle, modal);
-	accelGroup = OS.gtk_accel_group_new ();
-	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
 }
 
 void hookEvents () {
@@ -438,6 +435,7 @@ void hookEvents () {
 	OS.gtk_signal_connect (shellHandle, OS.configure_event, windowProc3, SWT.Move);
 	OS.gtk_signal_connect (shellHandle, OS.delete_event, windowProc3, SWT.Dispose);
 	OS.gtk_signal_connect (shellHandle, OS.event_after, windowProc3, SWT.Activate);
+	OS.gtk_signal_connect (shellHandle, OS.event, windowProc3, 0);
 }
 
 void register () {
@@ -581,6 +579,17 @@ int processDeiconify (int int0, int int1, int int2) {
 int processDispose (int int0, int int1, int int2) {
 	closeWidget ();
 	return 0;
+}
+
+int processEvent (int eventNumber, int int0, int int1, int int2) {
+	if (eventNumber == 0) {
+		GdkEvent gdkEvent = new GdkEvent ();
+		OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
+		if (gdkEvent.type == OS.GDK_KEY_PRESS) {
+			createAccelGroup ();
+		}
+	}
+	return super.processEvent (eventNumber, int0, int1, int2);
 }
 
 int processActivate (int int0, int int1, int int2) {
@@ -815,6 +824,7 @@ public void setMenuBar (Menu menu) {
 	int [] width = new int [1], height = new int [1];
 	OS.gtk_window_get_size (shellHandle, width, height);
 	resizeBounds (width [0], height [0], !both);
+	destroyAccelGroup ();
 }
 
 public void setMinimized (boolean minimized) {
@@ -964,8 +974,7 @@ void releaseShells () {
 }
 void releaseWidget () {
 	releaseShells ();
-	if (accelGroup != 0) OS.gtk_accel_group_unref (accelGroup);
-	accelGroup = 0;
+	destroyAccelGroup ();
 	super.releaseWidget ();
 	display = null;
 	lastActive = null;
