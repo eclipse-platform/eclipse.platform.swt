@@ -118,7 +118,8 @@ public final class RowLayout extends Layout {
 	
 	/**
 	 * fill specifies whether the controls in a row should be
-	 * all the same height.
+	 * all the same height for horizontal layouts, or the same
+	 * width for vertical layouts.
 	 *
 	 * The default value is false.
 	 * 
