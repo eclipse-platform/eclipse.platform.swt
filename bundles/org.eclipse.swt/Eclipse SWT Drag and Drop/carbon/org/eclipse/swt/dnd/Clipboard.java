@@ -49,7 +49,7 @@ public Clipboard(Display display) {
 		}
 	}
 	if (display.getThread() != Thread.currentThread()) {
-		SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
+		DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 	this.display = display;
 }
@@ -88,6 +88,34 @@ protected void checkSubclass () {
 		DND.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
 }
+/**
+ * Throws an <code>SWTException</code> if the receiver can not
+ * be accessed by the caller. This may include both checks on
+ * the state of the receiver and more generally on the entire
+ * execution context. This method <em>should</em> be called by
+ * widget implementors to enforce the standard SWT invariants.
+ * <p>
+ * Currently, it is an error to invoke any method (other than
+ * <code>isDisposed()</code>) on a widget that has had its 
+ * <code>dispose()</code> method called. It is also an error
+ * to call widget methods from any thread that is different
+ * from the thread that created the widget.
+ * </p><p>
+ * In future releases of SWT, there may be more or fewer error
+ * checks and exceptions may be thrown for different reasons.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+protected void checkWidget () {
+	Display display = this.display;
+	if (display == null) DND.error (SWT.ERROR_WIDGET_DISPOSED);
+	if (display.getThread() != Thread.currentThread ()) DND.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (display.isDisposed()) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+}
 
 /**
  * Disposes of the operating system resources associated with the clipboard. 
@@ -96,8 +124,13 @@ protected void checkSubclass () {
  * 
  * <p>NOTE: On some platforms the data will not be available once the application
  * has exited or the display has been disposed.</p>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
  */
 public void dispose () {
+	if (display.getThread() != Thread.currentThread()) DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	display = null;
 }
 
@@ -123,10 +156,17 @@ public void dispose () {
  * @param transfer the transfer agent for the type of data being requested
  * 
  * @return the data obtained from the clipboard or null if no data of this type is available
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if transfer is null</li>
+ * </ul>
  */
 public Object getContents(Transfer transfer) {
-	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	checkWidget();
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	
 	int[] scrap = new int[1];
@@ -179,17 +219,17 @@ public Object getContents(Transfer transfer) {
  * specific format; each entry in the data array must have a corresponding dataType
  * 
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if data is null or datatypes is null 
+ *    <li>ERROR_INVALID_ARGUMENT - if data is null or datatypes is null 
  *          or the length of data is not the same as the length of dataTypes</li>
  * </ul>
  *  @exception SWTError <ul>
- *    <li>ERROR_CANNOT_SET_CLIPBOARD - if the clipboard is locked or 
- *         otherwise unavailable</li>
- * </ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_CANNOT_SET_CLIPBOARD - if the clipboard is locked or otherwise unavailable</li>
+  * </ul>
  */
 public void setContents(Object[] data, Transfer[] dataTypes) {
-	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	checkWidget();
 	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -221,6 +261,32 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 }
 
 /**
+ * Returns an array of the data types currently available on the system clipboard. Use
+ * with Transfer.isSupportedType.
+ *
+ * @return array of TransferData
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Transfer#isSupportedType
+ * 
+ * @since 3.0
+ */
+public TransferData[] getAvailableTypes() {
+	checkWidget();
+	int[] types = _getAvailableTypes();
+	TransferData[] result = new TransferData[types.length];
+	for (int i = 0; i < types.length; i++) {
+		result[i] = new TransferData();
+		result[i].type = types[i];
+	}
+	return result;
+}
+
+/**
  * Returns a platform specific list of the data types currently available on the 
  * system clipboard.
  * 
@@ -230,10 +296,14 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
  * 
  * @return a platform specific list of the data types currently available on the 
  * system clipboard
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public String[] getAvailableTypeNames() {
-	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	checkWidget();
 	int[] types = _getAvailableTypes();
 	String[] names = new String[types.length];
 	for (int i = 0; i < types.length; i++) {
@@ -246,24 +316,6 @@ public String[] getAvailableTypeNames() {
 		names[i] = sb.toString();
 	}
 	return names;
-}
-
-/**
- * 
- * @return array of TransferData
- * 
- * @since 3.0
- */
-public TransferData[] getAvailableTypes() {
-	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
-	int[] types = _getAvailableTypes();
-	TransferData[] result = new TransferData[types.length];
-	for (int i = 0; i < types.length; i++) {
-		result[i] = new TransferData();
-		result[i].type = types[i];
-	}
-	return result;
 }
 
 private int[] _getAvailableTypes() {
