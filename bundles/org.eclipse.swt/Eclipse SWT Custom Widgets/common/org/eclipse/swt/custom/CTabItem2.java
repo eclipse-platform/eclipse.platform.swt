@@ -140,7 +140,7 @@ void drawSelected(GC gc ) {
 	int[] shape = null;
 	int extra = CTabFolder2.CURVE_WIDTH/2;
 	if (this.parent.onBottom) {
-		int[] left = parent.bottomLeftCorner;
+		int[] left = CTabFolder2.BOTTOM_LEFT_CORNER;
 		int[] right = parent.curve;
 		shape = new int[left.length+right.length+4];
 		int index = 0;
@@ -157,7 +157,7 @@ void drawSelected(GC gc ) {
 		shape[index++] = x + width + extra;
 		shape[index++] = y + CTabFolder2.SELECTION_BORDER - 1;
 	} else {
-		int[] left = parent.topLeftCorner;
+		int[] left = CTabFolder2.TOP_LEFT_CORNER;
 		int[] right = parent.curve;
 		shape = new int[left.length+right.length+4];
 		int index = 0;
@@ -231,7 +231,7 @@ void drawSelected(GC gc ) {
 void drawUnselected(GC gc) {
 	int[] border = null;
 	if (this.parent.onBottom) {
-		int[] corner = this.parent.bottomLeftCorner;
+		int[] corner = CTabFolder2.BOTTOM_LEFT_CORNER;
 		border = new int[corner.length+6];
 		int index = 0;
 		for(int i = 0; i < corner.length/2; i++) {
@@ -245,7 +245,7 @@ void drawUnselected(GC gc) {
 		border[index++]=x;
 		border[index++]=y;
 	} else {
-		int[] corner = this.parent.topLeftCorner;
+		int[] corner = CTabFolder2.TOP_LEFT_CORNER;
 		border = new int[corner.length+6];
 		int index = 0;
 		for(int i = 0; i < corner.length/2; i++) {
