@@ -752,4 +752,29 @@ void setData(int pData){
 			break;
 	}
 }
+public String toString () {
+    String str = null;
+    switch (type) {
+	    case COM.VT_BOOL :
+	        return "VT_BOOL{"+booleanData+"}";
+	    case COM.VT_I2 :
+	        return "VT_I2{"+shortData+"}";
+	    case COM.VT_I4 :
+	        return "VT_I4{"+intData+"}";
+	    case COM.VT_R4 :
+	        return "VT_R4{"+floatData+"}";
+	    case COM.VT_BSTR :
+	        return "VT_BSTR{"+stringData+"}";
+	    case COM.VT_DISPATCH :
+	        return "VT_DISPATCH{"+(dispatchData == null ? 0 : dispatchData.getAddress())+"}";
+	    case COM.VT_UNKNOWN :
+	        return "VT_UNKNOWN{"+(unknownData == null ? 0 : unknownData.getAddress())+"}";
+	    case COM.VT_EMPTY :
+	        return "VT_EMPTY";
+	 }
+    if ((type & COM.VT_BYREF) != 0) {
+        return "VT_BYREF|"+(type & ~COM.VT_BYREF)+"{"+byRefPtr+"}";
+    }
+    return "Unsupported Type "+type;
+}
 }
