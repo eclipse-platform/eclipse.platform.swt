@@ -272,6 +272,10 @@ public class MacUtil {
 		return new String(c);
 	}
 
+	public static int OSType(String s) {
+		return ((s.charAt(0) & 0xff) << 24) | ((s.charAt(1) & 0xff) << 16) | ((s.charAt(2) & 0xff) << 8) | (s.charAt(3) & 0xff);
+	}
+
 	/**
 	 * Create a new control and embed it in the given parent control.
 	 */
