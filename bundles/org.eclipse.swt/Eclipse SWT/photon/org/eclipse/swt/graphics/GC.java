@@ -2099,6 +2099,14 @@ public void setBackground (Color color) {
  */
 public void setClipping (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (width < 0) {
+		x = x + width;
+		width = -width;
+	}
+	if (height < 0) {
+		y = y + height;
+		height = -height;
+	}
 	int clipRects = data.clipRects;
 	if (clipRects != 0)
 		OS.free(clipRects);
