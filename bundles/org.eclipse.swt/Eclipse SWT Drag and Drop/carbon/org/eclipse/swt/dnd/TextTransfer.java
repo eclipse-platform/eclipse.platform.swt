@@ -6,8 +6,9 @@ package org.eclipse.swt.dnd;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
- 
- import org.eclipse.swt.internal.Converter;
+
+import org.eclipse.swt.internal.Converter; 
+import org.eclipse.swt.internal.carbon.OS;
  
 /**
  * The class <code>TextTransfer</code> provides a platform specific mechanism 
@@ -26,7 +27,7 @@ public class TextTransfer extends ByteArrayTransfer {
 
 	private static TextTransfer _instance = new TextTransfer();
 	private static final String TYPENAME1 = "TEXT";
-	private static final int TYPEID1 = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
+	private static final int TYPEID1 = OS.kScrapFlavorTypeText;
 
 private TextTransfer() {
 }
@@ -38,6 +39,7 @@ private TextTransfer() {
 public static TextTransfer getInstance () {
 	return _instance;
 }
+
 /**
  * This implementation of <code>javaToNative</code> converts plain text
  * represented by a java <code>String</code> to a platform specific representation.
@@ -48,10 +50,14 @@ public static TextTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) return;
+	if (object == null || !(object instanceof String)) {
+		transferData.result = -1;
+		return;
+	} 
 	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
 	super.javaToNative(buffer, transferData);
 }
+
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of plain text to a java <code>String</code>.
@@ -72,9 +78,11 @@ public Object nativeToJava(TransferData transferData){
 	int end = string.indexOf('\0');
 	return (end == -1) ? string : string.substring(0, end);
 }
+
 protected String[] getTypeNames() {
 	return new String[] { TYPENAME1 };
 }
+
 protected int[] getTypeIds() {
 	return new int[] { TYPEID1 };
 }

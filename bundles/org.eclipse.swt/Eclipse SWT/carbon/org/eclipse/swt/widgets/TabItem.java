@@ -9,6 +9,9 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.ControlTabInfoRecV1;
+import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -27,6 +30,7 @@ public class TabItem extends Item {
 	TabFolder parent;
 	Control control;
 	String toolTipText;
+	int cIcon;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -118,7 +122,7 @@ protected void checkSubclass () {
  * </ul>
  */
 public Control getControl () {
-	checkWidget();
+	checkWidget ();
 	return control;
 }
 
@@ -138,7 +142,7 @@ public Display getDisplay () {
  * </ul>
  */
 public TabFolder getParent () {
-	checkWidget();
+	checkWidget ();
 	return parent;
 }
 
@@ -154,7 +158,7 @@ public TabFolder getParent () {
  * </ul>
  */
 public String getToolTipText () {
-	checkWidget();
+	checkWidget ();
 	return toolTipText;
 }
 
@@ -169,6 +173,10 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (cIcon != 0) {
+		destroyCIcon (cIcon);
+		cIcon = 0;
+	}
 	control = null;
 	parent = null;
 }
@@ -189,7 +197,7 @@ void releaseWidget () {
  * </ul>
  */
 public void setControl (Control control) {
-	checkWidget();
+	checkWidget ();
 	if (control != null) {
 		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
@@ -212,21 +220,51 @@ public void setControl (Control control) {
 }
 
 public void setImage (Image image) {
-	checkWidget();
+	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-	getParent().setTabImage(index, image);
+	if (cIcon != 0) {
+		destroyCIcon(cIcon);
+		cIcon = 0;
+	}
+	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
+	if (image == null) {
+		inContent.contentType = (short)OS.kControlContentTextOnly;
+	} else {
+		cIcon = createCIcon (image);
+		inContent.contentType = (short)OS.kControlContentCIconHandle;
+		inContent.iconRef = cIcon;
+	}
+	OS.SetControlData (parent.handle, index+1, OS.kControlTabImageContentTag, ControlButtonContentInfo.sizeof, inContent);
+	parent.redraw ();
 }
 
 public void setText (String string) {
-	checkWidget();
+	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if ((style & SWT.ARROW) != 0) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
-	//getParent().updateCarbon(index);
-	getParent().setTabText(index, string);
+	char [] buffer = new char [text.length ()];
+	text.getChars (0, buffer.length, buffer, 0);
+	int i=0, j=0;
+	while (i < buffer.length) {
+		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == Mnemonic) {i++; continue;}
+			j--;
+		}
+	}
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);	
+	ControlTabInfoRecV1 tab = new ControlTabInfoRecV1 ();
+	tab.version= (short) OS.kControlTabInfoVersionOne;
+	tab.iconSuiteID = 0;
+	tab.name = ptr;
+	OS.SetControlData (parent.handle, index+1, OS.kControlTabInfoTag, ControlTabInfoRecV1.sizeof, tab);
+	OS.CFRelease (ptr);
 }
 
 /**

@@ -8,8 +8,9 @@ package org.eclipse.swt.graphics;
  */
 
 import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
- 
+
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are 
  * supported by SWT are located. Instances are used to draw on either an 
@@ -29,27 +30,14 @@ public final class GC {
 	 * the handle to the OS device context
 	 * (Warning: This field is platform dependent)
 	 */
-	public int handle;	// a Mac CGrafPort
+	public int handle;
 	
 	Drawable drawable;
 	GCData data;
-		
-	//---- AW
-	private MacRect fRect= new MacRect();
-	private int[] fSavePort= new int[1];
-	private int[] fSaveGWorld= new int[1];
-	private int fSaveClip= OS.NewRgn();
-	private boolean fIsFocused= false;
-	private int fLineWidth= 1;
-	private boolean fXorMode= false;
-	private int fDamageRgn;
-	private boolean fPendingClip;
-	
-	private int[] fContext= new int[1];
-	//---- AW
 
 GC() {
 }
+
 /**	 
  * Constructs a new instance of this class which has been
  * configured to draw on the specified drawable. Sets the
@@ -71,49 +59,37 @@ GC() {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
  */
-public GC (Drawable drawable) {
+public GC(Drawable drawable) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
-	int xGC = drawable.internal_new_GC(data);
-	init(drawable, data, xGC);
+	int gdkGC = drawable.internal_new_GC(data);
+	init(drawable, data, gdkGC);
 }
 
-/**
- * Copies a rectangular area of the receiver at the source
- * position onto the receiver at the destination position.
+/**	 
+ * Invokes platform specific functionality to allocate a new graphics context.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>GC</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
  *
- * @param srcX the x coordinate in the receiver of the area to be copied
- * @param srcY the y coordinate in the receiver of the area to be copied
- * @param width the width of the area to copy
- * @param height the height of the area to copy
- * @param destX the x coordinate in the receiver of the area to copy to
- * @param destY the y coordinate in the receiver of the area to copy to
+ * @param drawable the Drawable for the receiver.
+ * @param data the data for the receiver.
  *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
+ * @return a new <code>GC</code>
+ *
+ * @private
  */
-public void copyArea(int x, int y, int width, int height, int destX, int destY) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (width <= 0 || height <= 0) return;
-	int deltaX = destX - x, deltaY = destY - y;
-	if (deltaX == 0 && deltaY == 0) return;
-		
-	Rectangle src= new Rectangle(x, y, width, height);
-	src= src.union(new Rectangle(destX, destY, width, height));
-	MacRect r= new MacRect(src);
-	
-	try {
-		if (focus(true, null)) {
-			int rgn= OS.NewRgn();
-			OS.ScrollRect(r.getData(), (short)deltaX, (short)deltaY, rgn);
-			OS.InvalWindowRgn(OS.GetWindowFromPort(handle), rgn);
-			OS.DisposeRgn(rgn);
-		}
-	} finally {
-		unfocus(true);
-	}
+public static GC carbon_new(Drawable drawable, GCData data) {
+	GC gc = new GC();
+	int context = drawable.internal_new_GC(data);
+	gc.init(drawable, data, context);
+	return gc;
 }
+
 /**
  * Copies a rectangular area of the receiver at the specified
  * position into the image, which must be of type <code>SWT.BITMAP</code>.
@@ -133,44 +109,154 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	/* AW
-	Rectangle rect = image.getBounds();
-	int xDisplay = data.display;
-	int xGC = OS.XCreateGC(xDisplay, image.pixmap, 0, null);
-	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.XSetSubwindowMode (xDisplay, xGC, OS.IncludeInferiors);
-	OS.XCopyArea(xDisplay, data.drawable, image.pixmap, xGC, x, y, rect.width, rect.height, 0, 0);
-	OS.XFreeGC(xDisplay, xGC);
-	*/
-	System.out.println("GC.copyArea(Image): nyi");
+	//NOT IMPLEMENTED
 }
+
+/**
+ * Copies a rectangular area of the receiver at the source
+ * position onto the receiver at the destination position.
+ *
+ * @param srcX the x coordinate in the receiver of the area to be copied
+ * @param srcY the y coordinate in the receiver of the area to be copied
+ * @param width the width of the area to copy
+ * @param height the height of the area to copy
+ * @param destX the x coordinate in the receiver of the area to copy to
+ * @param destY the y coordinate in the receiver of the area to copy to
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (width <= 0 || height <= 0) return;
+	int deltaX = destX - srcX, deltaY = destY - srcY;
+	if (deltaX == 0 && deltaY == 0) return;
+	if (data.image != null) {
+ 		OS.CGContextSaveGState(handle);
+ 		OS.CGContextScaleCTM(handle, 1, -1);
+ 		OS.CGContextTranslateCTM(handle, 0, -(height + 2 * destY));
+ 		CGRect rect = new CGRect();
+ 		rect.x = destX;
+ 		rect.y = destY;
+ 		rect.width = width;
+		rect.height = height;
+		//NOT DONE - transparency
+ 		OS.CGContextDrawImage(handle, rect, data.image.handle);
+ 		OS.CGContextRestoreGState(handle);
+ 		return;
+	}
+	if (data.control != 0) {
+		int window = OS.GetControlOwner(data.control);
+		int port = OS.GetWindowPort(window);
+
+		/* Calculate src and dest rectangles/regions */
+		Rect rect = new Rect();
+		OS.GetControlBounds(data.control, rect);		
+		Rect srcRect = new Rect();
+		OS.GetControlBounds(data.control, srcRect);
+		int left = srcRect.left + srcX;
+		int top = srcRect.top + srcY;
+		OS.SetRect(srcRect, (short)left, (short)top, (short)(left + width), (short)(top + height));
+		int srcRgn = OS.NewRgn();
+		OS.RectRgn(srcRgn, srcRect);		
+		OS.SectRect(rect, srcRect, srcRect);
+		Rect destRect = new Rect ();
+		destRect.left = srcRect.left;
+		destRect.top = srcRect.top;
+		destRect.right = srcRect.right;
+		destRect.bottom = srcRect.bottom;
+		OS.OffsetRect(destRect, (short)deltaX, (short)deltaY);
+		int destRgn = OS.NewRgn();
+		OS.RectRgn(destRgn, destRect);
+		
+		/* Copy bits with appropriated clipping region */
+		if (!OS.EmptyRect(srcRect)) {
+			int clipRgn = data.visibleRgn;
+			if (data.clipRgn != 0) {
+				clipRgn = OS.NewRgn();
+				OS.SectRgn(data.clipRgn, clipRgn, clipRgn);
+			}
+
+			/*
+			* Feature in the Macintosh.  ScrollRect() only copies bits
+			* that are inside the specified rectangle.  This means that
+			* it is not possible to copy non overlaping bits without
+			* copying the bits in between the source and destination
+			* rectangles.  The fix is to check if the source and
+			* destination rectangles are disjoint and use CopyBits()
+			* instead.
+			*/
+			boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
+			if (!disjoint && (deltaX == 0 || deltaY == 0)) {
+				int[] currentPort = new int[1];
+				OS.GetPort(currentPort);
+				OS.SetPort(port);
+				int oldClip = OS.NewRgn();
+				OS.GetClip(oldClip);
+				OS.SetClip(clipRgn);
+				OS.UnionRect(srcRect, destRect, rect);
+				OS.ScrollRect(rect, (short)deltaX, (short)deltaY, 0);
+				OS.SetClip(oldClip);
+				OS.DisposeRgn(oldClip);
+				OS.SetPort(currentPort[0]);
+			} else {
+				int portBitMap = OS.GetPortBitMapForCopyBits (port);
+				OS.CopyBits(portBitMap, portBitMap, srcRect, destRect, (short)OS.srcCopy, clipRgn);
+				OS.QDFlushPortBuffer(port, destRgn);
+			}
+			
+			if (clipRgn != data.visibleRgn) OS.DisposeRgn(clipRgn);
+		}
+		
+		/* Invalidate src and obscured areas */
+		int invalRgn = OS.NewRgn();
+		OS.DiffRgn(srcRgn, data.visibleRgn, invalRgn);
+		OS.OffsetRgn(invalRgn, (short)deltaX, (short)deltaY);
+		OS.DiffRgn(srcRgn, destRgn, srcRgn);
+		OS.UnionRgn(srcRgn, invalRgn, invalRgn);
+		OS.SectRgn(data.visibleRgn, invalRgn, invalRgn);
+		OS.InvalWindowRgn(window, invalRgn);
+		OS.DisposeRgn(invalRgn);
+		
+		/* Dispose src and dest regions */
+		OS.DisposeRgn(destRgn);
+		OS.DisposeRgn(srcRgn);
+	}
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the graphics context. Applications must dispose of all GCs
  * which they allocate.
  */
-public void dispose () {
+public void dispose() {
 	if (handle == 0) return;
 	if (data.device.isDisposed()) return;
-	
+
 	/* Free resources */
 	int clipRgn = data.clipRgn;
 	if (clipRgn != 0) OS.DisposeRgn(clipRgn);
-		
 	Image image = data.image;
-	if (image != null) image.memGC = null;
+	if (image != null) {
+		image.memGC = null;
+//		if (image.transparentPixel != -1) image.createMask();
+	}
+	int layout = data.layout;
+	if (layout != 0) OS.ATSUDisposeTextLayout(layout);
+	int style = data.style;
+	if (style != 0) OS.ATSUDisposeTextLayout(style);
 
 	/* Dispose the GC */
 	drawable.internal_dispose_GC(handle, data);
 
-	data.clipRgn = 0;
-	data.font = null;
+	data.clipRgn = data.style = data.layout = 0;
 	drawable = null;
-	data.device = null;
 	data.image = null;
 	data = null;
 	handle = 0;
 }
+
 /**
  * Draws the outline of a circular or elliptical arc 
  * within the specified rectangular area.
@@ -215,12 +301,16 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
 	}
 	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	/* AW
-	OS.XDrawArc(data.display,data.drawable,handle,x,y,width,height,startAngle * 64 ,endAngle * 64);
-	*/
-	System.out.println("GC.drawArc");
+	}	
+	OS.CGContextBeginPath(handle);
+    OS.CGContextSaveGState(handle);
+    OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
+    OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
+    OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Math.PI / 180,  -endAngle * (float)Math.PI / 180, true);
+    OS.CGContextRestoreGState(handle);
+	OS.CGContextStrokePath(handle);
 }
+
 /** 
  * Draws a rectangle, based on the specified arguments, which has
  * the appearance of the platform's <em>focus rectangle</em> if the
@@ -238,40 +328,12 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
  *
  * @see #drawRectangle
  */
-public void drawFocus (int x, int y, int width, int height) {
+public void drawFocus(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/*
-	* When the drawable is not a widget, the highlight
-	* color is zero.
-	*/
-	/* AW
-	int highlightColor = 0;
-	int widget = OS.XtWindowToWidget (xDisplay, xDrawable);
-	if (widget != 0) {
-		int [] argList = {OS.XmNhighlightColor, 0};
-		OS.XtGetValues (widget, argList, argList.length / 2);
-		highlightColor = argList [1];
-	}
-	*/
-	
-	/* Draw the focus rectangle */
-	if (width < 0) {
-		x = x + width;
-		width = -width;
-	}
-	if (height < 0) {
-		y = y + height;
-		height = -height;
-	}
-	/* AW
-	XGCValues values = new XGCValues ();
-	OS.XGetGCValues (xDisplay, handle, OS.GCForeground, values);
-	OS.XSetForeground (xDisplay, handle, highlightColor);
-	OS.XDrawRectangle (xDisplay, xDrawable, handle, x, y, width - 1, height - 1);
-	OS.XSetForeground (xDisplay, handle, values.foreground);
-	*/
-	//System.out.println("GC.drawFocus");
+	//NOT DONE
+//	drawRectangle (x, y, width - 1, height - 1);
 }
+
 /**
  * Draws the given image in the receiver at the specified
  * coordinates.
@@ -297,6 +359,7 @@ public void drawImage(Image image, int x, int y) {
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
 }
+
 /**
  * Copies a rectangular area from the source image into a (potentially
  * different sized) rectangular area in the receiver. If the source
@@ -339,71 +402,52 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false);
 }
-void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-	MacRect bounds= new MacRect();
-	OS.GetPixBounds(srcImage.pixmap, bounds.getData());
- 	int imgWidth = bounds.getWidth();
- 	int imgHeight = bounds.getHeight();
 
+void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
+ 	int imageHandle = srcImage.handle;
+ 	int imgWidth = OS.CGImageGetWidth(imageHandle);
+ 	int imgHeight = OS.CGImageGetHeight(imageHandle);
  	if (simple) {
  		srcWidth = destWidth = imgWidth;
  		srcHeight = destHeight = imgHeight;
  	} else {
+ 		simple = srcX == 0 && srcY == 0 &&
+ 			srcWidth == destWidth && destWidth == imgWidth &&
+ 			srcHeight == destHeight && destHeight == imgHeight;
 		if (srcX + srcWidth > imgWidth || srcY + srcHeight > imgHeight) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
  	}
-
-	if (srcImage.alpha == 0)	// fully transparent
-		return;
-
-	if (srcImage.pixmap == 0)
-		return;
-	int srcBits= OS.DerefHandle(srcImage.pixmap);
-	if (srcBits == 0)
-		return;
-	int destBits= OS.GetPortBitMapForCopyBits(handle);
-	if (destBits == 0)
-		return;
-
- 	try {
-		if (focus(true, null)) {
-	
-			MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
-			fRect.set(destX, destY, destWidth, destHeight);
-		
-			OS.RGBBackColor((short)0xFFFF, (short)0xFFFF, (short)0xFFFF);
-			OS.RGBForeColor((short)0x0000, (short)0x0000, (short)0x0000);
-
-			if (srcImage.alpha != -1 || srcImage.alphaData != null) {
-				
-				if (srcImage.alpha == 255) {	// fully opaque
-					OS.CopyBits(srcBits, destBits, ib.getData(), fRect.getData(), (short)0, 0);
-					return;
-				}
-				
-				//OS.CopyDeepMask(srcBits, maskBits, destBits, ib.getData(), ib.getData(), fRect.getData(), (short)0, 0);
-				System.out.println("GC.drawImage: alpha drawing not nyi");
-
-			} else if (srcImage.transparentPixel != -1 || srcImage.mask != 0) {
-				/* Generate the mask if necessary. */
-				if (srcImage.transparentPixel != -1) srcImage.createMask();
-	
-				int maskBits= srcImage.mask != 0 ? OS.DerefHandle(srcImage.mask) : 0;
-				if (maskBits != 0)
-					OS.CopyMask(srcBits, maskBits, destBits, ib.getData(), ib.getData(), fRect.getData());
-
-				/* Destroy the image mask if there is a GC created on the image */
-				if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
-
-			} else {
-				OS.CopyBits(srcBits, destBits, ib.getData(), fRect.getData(), (short)0, 0);
-			}
-		}
-	} finally {
-		unfocus(true);
-	}
+ 	OS.CGContextSaveGState(handle);
+ 	OS.CGContextScaleCTM(handle, 1, -1);
+ 	OS.CGContextTranslateCTM(handle, 0, -(destHeight + 2 * destY));
+ 	CGRect rect = new CGRect();
+ 	rect.x = destX;
+ 	rect.y = destY;
+ 	rect.width = destWidth;
+	rect.height = destHeight;
+ 	if (simple) {
+ 		OS.CGContextDrawImage(handle, rect, imageHandle);
+ 	} else {
+	 	int width = OS.CGImageGetWidth(imageHandle);
+		int height = OS.CGImageGetHeight(imageHandle);
+		int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
+		int bpp = OS.CGImageGetBitsPerPixel(imageHandle);
+		int bpr = OS.CGImageGetBytesPerRow(imageHandle);
+		int colorspace = OS.CGImageGetColorSpace(imageHandle);
+		int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
+		int data = srcImage.data + (srcY * bpr) + srcX * 4;
+		int provider = OS.CGDataProviderCreateWithData(0, data, srcHeight * bpr, 0);
+		if (provider == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int subImage = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, false, 0);
+		OS.CGDataProviderRelease(provider);
+		if (subImage == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+ 		OS.CGContextDrawImage(handle, rect, subImage);
+ 		OS.CGImageRelease(subImage);
+ 	}
+ 	OS.CGContextRestoreGState(handle);
 }
+
 /** 
  * Draws a line, using the foreground color, between the points 
  * (<code>x1</code>, <code>y1</code>) and (<code>x2</code>, <code>y2</code>).
@@ -417,19 +461,14 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawLine (int x1, int y1, int x2, int y2) {
+public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	try {
-		if (focus(true, null)) {
-			MacUtil.RGBForeColor(data.foreground);
-			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			OS.MoveTo((short)x1, (short)y1);
-			OS.LineTo((short)x2, (short)y2);
-		}
-	} finally {
-		unfocus(true);
-	}
+	OS.CGContextBeginPath(handle);
+	OS.CGContextMoveToPoint(handle, x1, y1);
+	OS.CGContextAddLineToPoint(handle, x2, y2);
+	OS.CGContextStrokePath(handle);
 }
+
 /** 
  * Draws the outline of an oval, using the foreground color,
  * within the specified rectangular area.
@@ -461,17 +500,16 @@ public void drawOval(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	try {
-		if (focus(true, null)) {
-			MacUtil.RGBForeColor(data.foreground);
-			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			fRect.set(x, y, width+1, height+1);
-			OS.FrameOval(fRect.getData());
-		}
-	} finally {
-		unfocus(true);
-	}
+	OS.CGContextBeginPath(handle);
+    OS.CGContextSaveGState(handle);
+    OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
+    OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
+    OS.CGContextMoveToPoint(handle, 1, 0);
+    OS.CGContextAddArc(handle, 0, 0, 1, 0, (float)(2 *Math.PI), true);
+    OS.CGContextRestoreGState(handle);
+	OS.CGContextStrokePath(handle);
 }
+
 /** 
  * Draws the closed polygon which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 
@@ -492,45 +530,16 @@ public void drawOval(int x, int y, int width, int height) {
 public void drawPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	
-	// Motif does not have a native drawPolygon() call. Instead we ensure 
-	// that the first and last points are the same and call drawPolyline().
-	
-	int length = pointArray.length;
-
-	// Need at least 3 points to define the polygon. If 2 or fewer points
-	// passed in, it is either a line or point so just call drawPolyline().
-	// Check what happens when XOR is implemented. We may not be able to
-	// do this optimization.
-	
-	if (length < 4) {
-			drawPolyline(pointArray);
-			return;
+	float[] points = new float[pointArray.length];
+	for (int i=0; i<points.length; i++) {
+		points[i] = pointArray[i];
 	}
-
-	// If first and last points are the same, the polygon is already closed.
-	// Just call drawPolyline().
-	//
-	// Check what happens when XOR is implemented. We may not be able to
-	// do this optimization.
-	
-	if (pointArray[0] == pointArray[length - 2] && (pointArray[1] == pointArray[length - 1])) {
-		drawPolyline(pointArray);
-		return;
-	}
-
-	// Grow the list of points by one element and make sure the first and last
-	// points are the same. This will close the polygon and we can use the
-	// drawPolyline() call. 
-		
-	int newPoints[] = new int[length + 2];
-	for (int i = 0; i < length ; i++) 
-		newPoints[i] = pointArray[i];
-	newPoints[length] = pointArray[0];
-	newPoints[length + 1] = pointArray[1];
-
-	drawPolyline(newPoints);
+	OS.CGContextBeginPath(handle);
+	OS.CGContextAddLines(handle, points, points.length / 2);
+	OS.CGContextClosePath(handle);
+	OS.CGContextStrokePath(handle);
 }
+
 /** 
  * Draws the polyline which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 
@@ -551,38 +560,15 @@ public void drawPolygon(int[] pointArray) {
 public void drawPolyline(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	/* AW
-	short[] xPoints = new short[pointArray.length];
-	for (int i = 0; i<pointArray.length;i++) {
-		xPoints[i] = (short) pointArray[i];
+	float[] points = new float[pointArray.length];
+	for (int i=0; i<points.length; i++) {
+		points[i] = pointArray[i];
 	}
-	OS.XDrawLines(data.display,data.drawable,handle,xPoints,xPoints.length / 2, OS.CoordModeOrigin);
-	*/
-	
-	if (pointArray.length < 4)
-		return;
-	
-	int poly= 0;
-	try {
-		if (focus(true, null)) {
-		
-			poly= OS.OpenPoly();
-			OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
-			for (int i= 2; i < pointArray.length; i+= 2)
-				OS.LineTo((short)pointArray[i], (short)pointArray[i+1]);
-			OS.ClosePoly();
-			
-			MacUtil.RGBForeColor(data.foreground);
-			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			OS.FramePoly(poly);
-		}
-	} finally {
-		unfocus(true);
-	}
-	
-	if (poly != 0)
-		OS.KillPoly(poly);
+	OS.CGContextBeginPath(handle);
+	OS.CGContextAddLines(handle, points, points.length / 2);
+	OS.CGContextStrokePath(handle);
 }
+
 /** 
  * Draws the outline of the rectangle specified by the arguments,
  * using the receiver's foreground color. The left and right edges
@@ -598,7 +584,7 @@ public void drawPolyline(int[] pointArray) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawRectangle (int x, int y, int width, int height) {
+public void drawRectangle(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -608,17 +594,14 @@ public void drawRectangle (int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	try {
-		if (focus(true, null)) {
-			MacUtil.RGBForeColor(data.foreground);
-			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			fRect.set(x-fLineWidth/2, y-fLineWidth/2, width+fLineWidth, height+fLineWidth);
-			OS.FrameRect(fRect.getData());
-		}
-	} finally {
-		unfocus(true);
-	}
+	CGRect rect = new CGRect();
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	OS.CGContextStrokeRect(handle, rect);
 }
+
 /** 
  * Draws the outline of the specified rectangle, using the receiver's
  * foreground color. The left and right edges of the rectangle are at
@@ -635,10 +618,11 @@ public void drawRectangle (int x, int y, int width, int height) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawRectangle (Rectangle rect) {
+public void drawRectangle(Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	drawRectangle (rect.x, rect.y, rect.width, rect.height);
 }
+
 /** 
  * Draws the outline of the round-cornered rectangle specified by 
  * the arguments, using the receiver's foreground color. The left and
@@ -658,27 +642,28 @@ public void drawRectangle (Rectangle rect) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
+public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (width < 0) {
-		x = x + width;
-		width = -width;
+	if (arcWidth == 0 || arcHeight == 0) {
+		drawRectangle(x, y, width, height);
+    	return;
 	}
-	if (height < 0) {
-		y = y + height;
-		height = -height;
-	}
-	try {
-		if (focus(true, null)) {
-			MacUtil.RGBForeColor(data.foreground);
-			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			fRect.set(x, y, width+1, height+1);
-			OS.FrameRoundRect(fRect.getData(), (short)arcWidth, (short)arcHeight);
-		}
-	} finally {
-		unfocus(true);
-	}
+	OS.CGContextBeginPath(handle);
+	OS.CGContextSaveGState(handle);
+	OS.CGContextTranslateCTM(handle, x, y);
+	OS.CGContextScaleCTM(handle, arcWidth, arcHeight);
+    float fw = width / (float)arcWidth;
+	float fh = height / (float)arcHeight;
+	OS.CGContextMoveToPoint(handle, fw, fh/2);
+	OS.CGContextAddArcToPoint(handle, fw, fh, fw/2, fh, 1);
+	OS.CGContextAddArcToPoint(handle, 0, fh, 0, fh/2, 1);
+	OS.CGContextAddArcToPoint(handle, 0, 0, fw/2, 0, 1);
+	OS.CGContextAddArcToPoint(handle, fw, 0, fw, fh/2, 1);
+	OS.CGContextClosePath(handle);
+	OS.CGContextRestoreGState(handle);
+	OS.CGContextStrokePath(handle);
 }
+
 /** 
  * Draws the given string, using the receiver's current font and
  * foreground color. No tab expansion or carriage return processing
@@ -700,6 +685,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 public void drawString (String string, int x, int y) {
 	drawString(string, x, y, false);
 }
+
 /** 
  * Draws the given string, using the receiver's current font and
  * foreground color. No tab expansion or carriage return processing
@@ -720,44 +706,26 @@ public void drawString (String string, int x, int y) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawString (String string, int x, int y, boolean isTransparent) {
+public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	/* AW
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	int xmString = OS.XmStringCreate (buffer, OS.XmFONTLIST_DEFAULT_TAG);
-	if (isTransparent) {
-		OS.XmStringDraw (data.display, data.drawable, data.fontList, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
-	} else {
-		OS.XmStringDrawImage (data.display, data.drawable, data.fontList, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
-	}			
-//	OS.XmStringDrawUnderline (display, drawable, fontList, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null, 0);
-	OS.XmStringFree (xmString);
-	*/
-	try {
-		if (focus(true, null)) {
-			installFont();
-			MacUtil.RGBForeColor(data.foreground);
-			if (isTransparent) {
-				OS.TextMode(OS.srcOr);
-			} else {
-				if ((data.background & 0xff000000) == 0) {
-					MacUtil.RGBBackColor(data.background);
-					OS.TextMode(OS.srcCopy);
-				} else {
-					//System.out.println("GC.drawString: " + Integer.toHexString(data.background));
-					OS.TextMode(OS.srcOr);
-				}
-			}
-			short[] fontInfo= new short[4];
-			OS.GetFontInfo(fontInfo);	// FontInfo
-			OS.MoveTo((short)x, (short)(y+fontInfo[0]));
-			OS.DrawText(string, data.font.fID, data.font.fSize, data.font.fFace);
-		}
-	} finally {
-		unfocus(true);
-	}
+	int length = string.length();
+	if (length == 0) return;
+	OS.CGContextSaveGState(handle);
+	OS.CGContextScaleCTM(handle, 1, -1);
+	OS.CGContextTranslateCTM(handle, 0, -data.fontAscent);
+	OS.CGContextSetFillColor(handle, data.foreground);
+	char[] buffer = new char[length];
+	string.getChars(0, length, buffer, 0);
+	int ptr = OS.NewPtr(length * 2);
+	OS.memcpy(ptr, buffer, length * 2);
+	OS.ATSUSetTextPointerLocation(data.layout, ptr, 0, length, length);
+	OS.ATSUSetRunStyle(data.layout, data.style, 0, length);
+	OS.ATSUDrawText(data.layout, 0, length, x << 16, -y << 16);
+	OS.DisposePtr(ptr);
+	OS.CGContextRestoreGState(handle);
 }
+
 /** 
  * Draws the given string, using the receiver's current font and
  * foreground color. Tab expansion and carriage return processing
@@ -776,9 +744,10 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawText (String string, int x, int y) {
+public void drawText(String string, int x, int y) {
 	drawText(string, x, y, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
+
 /** 
  * Draws the given string, using the receiver's current font and
  * foreground color. Tab expansion and carriage return processing
@@ -799,11 +768,12 @@ public void drawText (String string, int x, int y) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawText (String string, int x, int y, boolean isTransparent) {
+public void drawText(String string, int x, int y, boolean isTransparent) {
 	int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
 	if (isTransparent) flags |= SWT.DRAW_TRANSPARENT;
 	drawText(string, x, y, flags);
 }
+
 /** 
  * Draws the given string, using the receiver's current font and
  * foreground color. Tab expansion, line delimiter and mnemonic
@@ -841,61 +811,8 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	
-	/* AW
-	if (data.renderTable == 0) createRenderTable();
-	int renderTable = data.renderTable;
-
-	char mnemonic=0;
-	int tableLength = 0;
-	Device device = data.device;
-	int[] parseTable = new int[2];
-	char[] text = new char[string.length()];
-	string.getChars(0, text.length, text, 0);
-	if ((flags & SWT.DRAW_DELIMITER) != 0) parseTable[tableLength++] = device.crMapping;
-	if ((flags & SWT.DRAW_TAB) != 0) parseTable[tableLength++] = device.tabMapping;
-	if ((flags & SWT.DRAW_MNEMONIC) != 0) mnemonic = stripMnemonic(text);
-	
-	String codePage = getCodePage();
-	byte[] buffer = Converter.wcsToMbcs(codePage, text, true);
-	int xmString = OS.XmStringParseText(buffer, 0, OS.XmFONTLIST_DEFAULT_TAG, OS.XmCHARSET_TEXT, parseTable, tableLength, 0);
-	if (mnemonic != 0) {
-		byte [] buffer1 = Converter.wcsToMbcs(codePage, new char[]{mnemonic}, true);
-		int xmStringUnderline = OS.XmStringCreate (buffer1, OS.XmFONTLIST_DEFAULT_TAG);
-		OS.XmStringDrawUnderline(data.display, data.drawable, renderTable, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null, xmStringUnderline);
-		OS.XmStringFree(xmStringUnderline);
-	} else {
-		if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
-			OS.XmStringDraw(data.display, data.drawable, renderTable, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
-		} else {
-			OS.XmStringDrawImage(data.display, data.drawable, renderTable, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
-		}
-	}
-	OS.XmStringFree(xmString);
-	*/
-	try {
-		if (focus(true, null)) {
-			installFont();
-			MacUtil.RGBForeColor(data.foreground);
-			if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
-				OS.TextMode(OS.srcOr);
-			} else {
-				if ((data.background & 0xff000000) == 0) {
-					MacUtil.RGBBackColor(data.background);
-					OS.TextMode(OS.srcCopy);
-				} else {
-					//System.out.println("GC.drawText: " + Integer.toHexString(data.background));
-					OS.TextMode(OS.srcOr);
-				}
-			}
-			short[] fontInfo= new short[4];
-			OS.GetFontInfo(fontInfo);	// FontInfo
-			OS.MoveTo((short)x, (short)(y+fontInfo[0]));
-			OS.DrawText(string, data.font.fID, data.font.fSize, data.font.fFace);
-		}
-	} finally {
-		unfocus(true);
-	}
+	//NOT DONE
+	drawString(string, x, y);
 }
 
 /**
@@ -908,11 +825,12 @@ public void drawText (String string, int x, int y, int flags) {
  *
  * @see #hashCode
  */
-public boolean equals (Object object) {
+public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof GC)) return false;
 	return handle == ((GC)object).handle;
 }
+
 /**
  * Fills the interior of a circular or elliptical arc within
  * the specified rectangular area, with the receiver's background
@@ -961,14 +879,15 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int end
 	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	/* AW
-	XGCValues values = new XGCValues ();
-	OS.XGetGCValues (xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
-	OS.XSetForeground (xDisplay, handle, values.background);
-	OS.XFillArc(xDisplay,data.drawable,handle,x,y,width,height,startAngle * 64 ,endAngle * 64);
-	OS.XSetForeground (xDisplay, handle, values.foreground);
-	*/
-	System.out.println("GC.fillArc");
+	OS.CGContextBeginPath(handle);
+    OS.CGContextSaveGState(handle);
+    OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
+    OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
+    OS.CGContextMoveToPoint(handle, 0, 0);
+    OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Math.PI / 180,  -endAngle * (float)Math.PI / 180, true);
+    OS.CGContextClosePath(handle);
+    OS.CGContextRestoreGState(handle);
+	OS.CGContextFillPath(handle);
 }
 
 /**
@@ -995,110 +914,35 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if ((width == 0) || (height == 0)) return;
 	
-	try {
-		if (! focus(true, null))
-			return;
-		
-		/* AW
-		int xDisplay = data.display;
-		int xScreenNum = OS.XDefaultScreen(xDisplay);
-		XGCValues values = new XGCValues();
-		*/
-		int fromColor, toColor;
-		/* AW
-		OS.XGetGCValues(xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
-		fromColor = values.foreground;
-		toColor = values.background;
-		*/
-		fromColor = data.foreground;
-		toColor = data.background;
-		
-		boolean swapColors = false;
-		if (width < 0) {
-			x += width; width = -width;
-			if (! vertical) swapColors = true;
-		}
-		if (height < 0) {
-			y += height; height = -height;
-			if (vertical) swapColors = true;
-		}
-		if (swapColors) {
-			final int t = fromColor;
-			fromColor = toColor;
-			toColor = t;
-		}
-		
-		if (fromColor == toColor) {
-			/* AW
-			OS.XFillRectangle(xDisplay, data.drawable, handle, x, y, width, height);
-			*/
-			MacUtil.RGBForeColor(data.foreground);
-			fRect.set(x, y, width, height);
-			OS.PaintRect(fRect.getData());
-			return;
-		}
-		/* X Window deals with a virtually limitless array of color formats
-		 * but we only distinguish between paletted and direct modes
-		 */	
-		/* AW
-		final int xScreen = OS.XDefaultScreenOfDisplay(xDisplay);
-		final int xVisual = OS.XDefaultVisual(xDisplay, xScreenNum);
-		Visual visual = new Visual();
-		OS.memmove(visual, xVisual, visual.sizeof);
-		final int depth = OS.XDefaultDepthOfScreen(xScreen);
-		*/
-		
-		int depth= getCurrentScreenDepth();
-		final boolean directColor = (depth > 8);
-	
-		// This code is intentionally commented since elsewhere in SWT we
-		// assume that depth <= 8 means we are in a paletted mode though
-		// this is not always the case.
-		//final boolean directColor = (visual.c_class == OS.TrueColor) || (visual.c_class == OS.DirectColor);
-	
-		/* AW
-		XColor xColor = new XColor();
-		xColor.pixel = fromColor;
-		OS.XQueryColor(xDisplay, data.colormap, xColor);
-		final RGB fromRGB = new RGB((xColor.red & 0xffff) >>> 8, (xColor.green & 0xffff) >>> 8, (xColor.blue & 0xffff) >>> 8);
-		xColor.pixel = toColor;
-		OS.XQueryColor(xDisplay, data.colormap, xColor);
-		final RGB toRGB = new RGB((xColor.red & 0xffff) >>> 8, (xColor.green & 0xffff) >>> 8, (xColor.blue & 0xffff) >>> 8);
-		*/
-		
-		RGB fromRGB = Color.carbon_new(data.device, fromColor, false).getRGB();
-		RGB toRGB = Color.carbon_new(data.device, toColor, false).getRGB();
-	
-		final int redBits, greenBits, blueBits;
-		if (directColor) {
-			// RGB mapped display
-			redBits = getChannelWidth(0x00ff0000 /* AW visual.red_mask */);
-			greenBits = getChannelWidth(0x0000ff00 /* AW visual.green_mask */);
-			blueBits = getChannelWidth(0x000000ff /* AW visual.blue_mask */);
-		} else {
-			// Index display
-			redBits = greenBits = blueBits = 0;
-		}
-	
-		ImageData.fillGradientRectangle(this, data.device,
-			x, y, width, height, vertical, fromRGB, toRGB,
-			redBits, greenBits, blueBits);
-			
-	} finally {
-		unfocus(true);
-	}
-}
+	/* Rewrite this to use GdkPixbuf */
 
-/**
- * Computes the required channel width (depth) from a mask.
- */
-static int getChannelWidth(int mask) {
-	int width = 0;
-	while (mask != 0) {
-		width += (mask & 1);
-		mask >>>= 1;
+	RGB backgroundRGB, foregroundRGB;
+	backgroundRGB = getBackground().getRGB();
+	foregroundRGB = getForeground().getRGB();
+
+	RGB fromRGB, toRGB;
+	fromRGB = foregroundRGB;
+	toRGB   = backgroundRGB;
+	boolean swapColors = false;
+	if (width < 0) {
+		x += width; width = -width;
+		if (! vertical) swapColors = true;
 	}
-	return width;
+	if (height < 0) {
+		y += height; height = -height;
+		if (vertical) swapColors = true;
+	}
+	if (swapColors) {
+		fromRGB = backgroundRGB;
+		toRGB   = foregroundRGB;
+	}
+	if (fromRGB == toRGB) {
+		fillRectangle(x, y, width, height);
+		return;
+	}
+	ImageData.fillGradientRectangle(this, data.device,
+		x, y, width, height, vertical, fromRGB, toRGB,
+		8, 8, 8);
 }
 
 /** 
@@ -1117,7 +961,7 @@ static int getChannelWidth(int mask) {
  *
  * @see #drawOval
  */
-public void fillOval (int x, int y, int width, int height) {
+public void fillOval(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -1127,20 +971,17 @@ public void fillOval (int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	try {
-		if (focus(true, null)) {
-			if ((data.background & 0xff000000) == 0) {
-				MacUtil.RGBForeColor(data.background);
-				fRect.set(x, y, width, height);
-				OS.PaintOval(fRect.getData());
-			} else {
-				//	System.out.println("GC.fillOval: " + Integer.toHexString(data.background));
-			}
-		}
-	} finally {
-		unfocus(true);
-	}
+	OS.CGContextBeginPath(handle);
+    OS.CGContextSaveGState(handle);
+    OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
+    OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
+    OS.CGContextMoveToPoint(handle, 1, 0);
+    OS.CGContextAddArc(handle, 0, 0, 1, 0,  (float)(Math.PI * 2), false);
+    OS.CGContextClosePath(handle);
+    OS.CGContextRestoreGState(handle);
+	OS.CGContextFillPath(handle);
 }
+
 /** 
  * Fills the interior of the closed polygon which is defined by the
  * specified array of integer coordinates, using the receiver's
@@ -1163,37 +1004,16 @@ public void fillOval (int x, int y, int width, int height) {
 public void fillPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-
-	/* AW
-	short[] xPoints = new short[pointArray.length];
-	for (int i = 0; i<pointArray.length;i++) {
-		xPoints[i] = (short) pointArray[i];
+	float[] points = new float[pointArray.length];
+	for (int i=0; i<points.length; i++) {
+		points[i] = pointArray[i];
 	}
-	int xDisplay = data.display;
-	XGCValues values = new XGCValues ();
-	OS.XGetGCValues (xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
-	OS.XSetForeground (xDisplay, handle, values.background);
-	OS.XFillPolygon(xDisplay, data.drawable, handle,xPoints, xPoints.length / 2, OS.Complex, OS.CoordModeOrigin);
-	OS.XSetForeground (xDisplay, handle, values.foreground);
-	*/
-	int poly= 0;
-	try {
-		if (focus(true, null)) {
-			poly= OS.OpenPoly();
-			OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
-			for (int i= 2; i < pointArray.length; i+= 2)
-				OS.LineTo((short)pointArray[i], (short)pointArray[i+1]);
-			OS.ClosePoly();
-			
-			MacUtil.RGBForeColor(data.background);
-			OS.PaintPoly(poly);
-		}
-	} finally {
-		unfocus(true);
-	}
-	if (poly != 0)
-		OS.KillPoly(poly);
+	OS.CGContextBeginPath(handle);
+	OS.CGContextAddLines(handle, points, points.length / 2);
+	OS.CGContextClosePath(handle);
+	OS.CGContextFillPath(handle);
 }
+
 /** 
  * Fills the interior of the rectangle specified by the arguments,
  * using the receiver's background color. 
@@ -1209,7 +1029,7 @@ public void fillPolygon(int[] pointArray) {
  *
  * @see #drawRectangle
  */
-public void fillRectangle (int x, int y, int width, int height) {
+public void fillRectangle(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -1219,27 +1039,14 @@ public void fillRectangle (int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	try {
-		if (focus(true, null)) {
-			fRect.set(x, y, width, height);
-			if ((data.background & 0xFF000000) == 0) {
-				MacUtil.RGBForeColor(data.background);
-				OS.PaintRect(fRect.getData());
-			} else {
-				short depth= getCurrentScreenDepth();
-				int[] state= new int[1];
-				OS.GetThemeDrawingState(state);
-				//OS.SetThemeBackground(OS.kThemeBrushDialogBackgroundActive, depth, true);
-				if (data.controlHandle != 0)
-					OS.SetUpControlBackground(data.controlHandle, depth, true);
-				OS.EraseRect(fRect.getData());
-				OS.SetThemeDrawingState(state[0], true);
-			}
-		}
-	} finally {
-		unfocus(true);
-	}
+	CGRect rect = new CGRect();
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	OS.CGContextFillRect(handle, rect);
 }
+
 /** 
  * Fills the interior of the specified rectangle, using the receiver's
  * background color. 
@@ -1255,10 +1062,12 @@ public void fillRectangle (int x, int y, int width, int height) {
  *
  * @see #drawRectangle
  */
-public void fillRectangle (Rectangle rect) {
+public void fillRectangle(Rectangle rect) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	fillRectangle(rect.x, rect.y, rect.width, rect.height);
 }
+
 /** 
  * Fills the interior of the round-cornered rectangle specified by 
  * the arguments, using the receiver's background color. 
@@ -1276,22 +1085,28 @@ public void fillRectangle (Rectangle rect) {
  *
  * @see #drawRoundRectangle
  */
-public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
+public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	try {
-		if (focus(true, null)) {
-			if ((data.background & 0xff000000) == 0) {
-				MacUtil.RGBForeColor(data.background);
-				fRect.set(x, y, width, height);
-				OS.PaintRoundRect(fRect.getData(), (short)arcWidth, (short)arcHeight);
-			} else {
-				//	System.out.println("GC.fillRoundRectangle: " + Integer.toHexString(data.background));
-			}
-		}
-	} finally {
-		unfocus(true);
+	if (arcWidth == 0 || arcHeight == 0) {
+		fillRectangle(x, y, width, height);
+    	return;
 	}
+	OS.CGContextBeginPath(handle);
+	OS.CGContextSaveGState(handle);
+	OS.CGContextTranslateCTM(handle, x, y);
+	OS.CGContextScaleCTM(handle, arcWidth, arcHeight);
+    float fw = width / (float)arcWidth;
+	float fh = height / (float)arcHeight;
+	OS.CGContextMoveToPoint(handle, fw, fh/2);
+	OS.CGContextAddArcToPoint(handle, fw, fh, fw/2, fh, 1);
+	OS.CGContextAddArcToPoint(handle, 0, fh, 0, fh/2, 1);
+	OS.CGContextAddArcToPoint(handle, 0, 0, fw/2, 0, 1);
+	OS.CGContextAddArcToPoint(handle, fw, 0, fw, fh/2, 1);
+	OS.CGContextClosePath(handle);
+	OS.CGContextRestoreGState(handle);
+	OS.CGContextFillPath(handle);
 }
+
 /**
  * Returns the <em>advance width</em> of the specified character in
  * the font which is currently selected into the receiver.
@@ -1307,16 +1122,12 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int getAdvanceWidth(char ch) {
+public int getAdvanceWidth(char ch) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	try {
-		focus(false, null);
-		installFont();
-		return OS.CharWidth((byte) ch);
-	} finally {
-		unfocus(false);
-	}
+	//NOT DONE
+	return stringExtent(new String(new char[]{ch})).x;
 }
+
 /** 
  * Returns the background color.
  *
@@ -1328,16 +1139,9 @@ public int getAdvanceWidth(char ch) {
  */
 public Color getBackground() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* AW
-	int xDisplay = data.display;
-	XGCValues values = new XGCValues();
-	OS.XGetGCValues(xDisplay, handle, OS.GCBackground, values);
-	XColor xColor = new XColor();
-	xColor.pixel = values.background;
-	OS.XQueryColor(xDisplay,data.colormap,xColor);
-	*/
-	return Color.carbon_new(data.device, data.background, false);
+	return Color.carbon_new (data.device, data.background);
 }
+
 /**
  * Returns the width of the specified character in the font
  * selected into the receiver. 
@@ -1356,9 +1160,10 @@ public Color getBackground() {
  */
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	System.out.println("GC.getCharWidth");
-	return 0;
+	//NOT DONE
+	return stringExtent(new String(new char[]{ch})).x;
 }
+
 /** 
  * Returns the bounding rectangle of the receiver's clipping
  * region. If no clipping region is set, the return value
@@ -1373,33 +1178,28 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* AW
-	int clipRgn = data.clipRgn;
-	if (clipRgn == 0) {
-		int[] width = new int[1]; int[] height = new int[1];
-		int[] unused = new int[1];
-		OS.XGetGeometry(data.display, data.drawable, unused, unused, unused, width, height, unused, unused);
-		return new Rectangle(0, 0, width[0], height[0]);
-	}
-	XRectangle rect = new XRectangle();
-	OS.XClipBox(clipRgn, rect);
-	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
-	*/
-	MacRect bounds= new MacRect();
 	if (data.clipRgn == 0) {
-		if (data.controlHandle != 0) {
-			OS.GetControlBounds(data.controlHandle, bounds.getData());
-			return new Rectangle(0, 0, bounds.getWidth(), bounds.getHeight());
+		int width = 0, height = 0;
+		if (data.control != 0) {
+			Rect bounds = new Rect();
+			OS.GetControlBounds(data.control, bounds);
+			width = bounds.right - bounds.left;
+			height = bounds.bottom - bounds.top;
 		}
 		if (data.image != null) {
-			return data.image.getBounds();
-		}	
-		System.out.println("GC.getClipping(): should not happen");
-		return new Rectangle(0, 0, 100, 100);
+			int image = data.image.handle;
+			width = OS.CGImageGetWidth(image);
+			height = OS.CGImageGetHeight(image);
+		}
+		return new Rectangle(0, 0, width, height);
 	}
-	OS.GetRegionBounds(data.clipRgn, bounds.getData());
-	return bounds.toRectangle();
+	Rect bounds = new Rect();
+	OS.GetRegionBounds(data.clipRgn, bounds);
+	int width = bounds.right - bounds.left;
+	int height = bounds.bottom - bounds.top;
+	return new Rectangle(bounds.left, bounds.top, width, height);
 }
+
 /** 
  * Sets the region managed by the argument to the current
  * clipping region of the receiver.
@@ -1413,38 +1213,28 @@ public Rectangle getClipping() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void getClipping(Region region) {
+public void getClipping(Region region) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	
-	if (region.handle == 0)
-		region.handle= OS.NewRgn();
-		
 	if (data.clipRgn == 0) {
-		if (data.controlHandle != 0) {
-			OS.GetControlRegion(data.controlHandle, OS.kWindowContentRgn, region.handle);
-		} else
-			System.out.println("GC.getClipping(Region): nyi");
-	} else {
-		OS.CopyRgn(data.clipRgn, region.handle);
-	}
-	
-	/* AW
-	if (clipRgn == 0) {
-		int[] width = new int[1]; int[] height = new int[1];
-		int[] unused = new int[1];
-		OS.XGetGeometry(data.display, data.drawable, unused, unused, unused, width, height, unused, unused);
-		OS.XSubtractRegion (hRegion, hRegion, hRegion);
-		XRectangle rect = new XRectangle();
-		rect.x = 0; rect.y = 0;
-		rect.width = (short)width[0]; rect.height = (short)height[0];
-		OS.XUnionRectWithRegion(rect, hRegion, hRegion);
+		int width = 0, height = 0;
+		if (data.control != 0) {
+			Rect bounds = new Rect();
+			OS.GetControlBounds(data.control, bounds);
+			width = bounds.right - bounds.left;
+			height = bounds.bottom - bounds.top;
+		}
+		if (data.image != null) {
+			int image = data.image.handle;
+			width = OS.CGImageGetWidth(image);
+			height = OS.CGImageGetHeight(image);
+		}
+		OS.SetRectRgn(region.handle, (short) 0, (short) 0, (short) width, (short) height);
 		return;
 	}
-	OS.XSubtractRegion (hRegion, hRegion, hRegion);
-	OS.XUnionRegion (clipRgn, hRegion, hRegion);
-	*/
+	OS.CopyRgn(data.clipRgn, region.handle);
 }
+
 /** 
  * Returns the font currently being used by the receiver
  * to draw and measure text.
@@ -1455,21 +1245,11 @@ public void getClipping(Region region) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Font getFont () {
+public Font getFont() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return Font.carbon_new(data.device, data.font);
+	return data.font;
 }
-int getFontHeight () {
-	try {
-		focus(false, null);
-		installFont();
-		short[] fontInfo= new short[4];
-		OS.GetFontInfo(fontInfo);	// FontInfo
-		return fontInfo[0] + fontInfo[1];
-	} finally {
-		unfocus(false);
-	}
-}
+
 /**
  * Returns a FontMetrics which contains information
  * about the font currently being used by the receiver
@@ -1483,19 +1263,21 @@ int getFontHeight () {
  */
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	
-	try {
-		focus(false, null);
-		installFont();
-		short[] fontInfo= new short[4];
-		OS.GetFontInfo(fontInfo);	// FontInfo
-		String s= "abcdefghijklmnopqrstuvwxyz";
-		int width= OS.TextWidth(s, data.font.fID, data.font.fSize, data.font.fFace) / 26;
-		return FontMetrics.carbon_new(fontInfo[0], fontInfo[1], width, fontInfo[3], fontInfo[0]+fontInfo[1]);
-	} finally {
-		unfocus(false);	
-	}
+	Font font = data.font;
+	FontInfo info = new FontInfo();
+	OS.FetchFontInfo(font.id, font.size, font.style, info);
+	FontMetrics fm = new FontMetrics();
+	fm.ascent = info.ascent;
+	fm.descent = info.descent;
+	fm.leading = info.leading;
+	/* This code is intentionaly comment. Not right for fixed width fonts. */
+	//fm.averageCharWidth = info.widMax / 3;
+	String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
+	fm.averageCharWidth = stringExtent(s).x / s.length();
+	fm.height = fm.ascent + fm.descent;
+	return fm;
 }
+
 /** 
  * Returns the receiver's foreground color.
  *
@@ -1505,19 +1287,11 @@ public FontMetrics getFontMetrics() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Color getForeground() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* AW
-	int xDisplay = data.display;
-	XGCValues values = new XGCValues();
-	OS.XGetGCValues(xDisplay, handle, OS.GCForeground, values);
-	XColor xColor = new XColor();
-	xColor.pixel = values.foreground;
-	OS.XQueryColor(xDisplay,data.colormap,xColor);
-	return Color.motif_new(data.device, xColor);
-	*/
-	return Color.carbon_new(data.device, data.foreground, false);
+public Color getForeground() {	
+	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	return Color.carbon_new(data.device, data.foreground);	
 }
+
 /** 
  * Returns the receiver's line style, which will be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
@@ -1534,6 +1308,7 @@ public int getLineStyle() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineStyle;
 }
+
 /** 
  * Returns the width that will be used when drawing lines
  * for all of the figure drawing operations (that is,
@@ -1548,13 +1323,9 @@ public int getLineStyle() {
  */
 public int getLineWidth() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* AW
-	XGCValues values = new XGCValues();
-	OS.XGetGCValues(data.display, handle, OS.GCLineWidth, values);
-	return values.line_width;
-	*/
-	return fLineWidth;
+	return data.lineWidth;
 }
+
 /** 
  * Returns <code>true</code> if this GC is drawing in the mode
  * where the resulting color in the destination is the
@@ -1571,13 +1342,9 @@ public int getLineWidth() {
  */
 public boolean getXORMode() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* AW
-	XGCValues values = new XGCValues ();
-	OS.XGetGCValues (data.display, handle, OS.GCFunction, values);
-	return values.function == OS.GXxor;
-	*/
-	return fXorMode;
+	return data.xorMode;
 }
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
@@ -1592,17 +1359,36 @@ public boolean getXORMode() {
  *
  * @see #equals
  */
-public int hashCode () {
+public int hashCode() {
 	return handle;
 }
-void init(Drawable drawable, GCData data, int xGC) {
-	/* AW
-	int xDisplay = data.display;
-	int foreground = data.foreground;
-	if (foreground != -1) OS.XSetForeground (xDisplay, xGC, foreground);
-	int background = data.background;
-	if (background != -1) OS.XSetBackground (xDisplay, xGC, background);
-	*/
+
+void init(Drawable drawable, GCData data, int context) {
+	int colorspace = data.device.colorspace;
+	OS.CGContextSetStrokeColorSpace(context, colorspace);
+	OS.CGContextSetFillColorSpace(context, colorspace);
+	float[] foreground = data.foreground;
+	if (foreground != null) OS.CGContextSetStrokeColor(context, foreground);
+	float[] background = data.background;
+	if (background != null) OS.CGContextSetFillColor(context, background);
+
+	int[] buffer = new int[1];
+	OS.ATSUCreateTextLayout(buffer);
+	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	data.layout = buffer[0];
+	OS.ATSUCreateStyle(buffer);
+	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	data.style = buffer[0];
+	
+	int ptr = OS.NewPtr(4);
+	buffer[0] = context;
+	OS.memcpy(ptr, buffer, 4);
+	int[] tags = new int[]{OS.kATSUCGContextTag};
+	int[] sizes = new int[]{4};
+	int[] values = new int[]{ptr};
+	OS.ATSUSetLayoutControls(data.layout, tags.length, tags, sizes, values);
+	OS.DisposePtr(ptr);
+
 	Image image = data.image;
 	if (image != null) {
 		image.memGC = this;
@@ -1611,14 +1397,16 @@ void init(Drawable drawable, GCData data, int xGC) {
 		 * the image.  Destroy it so that it is regenerated when
 		 * necessary.
 		 */
-		if (image.transparentPixel != -1) image.destroyMask();
+//		if (image.transparentPixel != -1) image.destroyMask();
 	}
 	this.drawable = drawable;
 	this.data = data;
-	if (xGC == 0)
-		SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	handle = xGC;
+	handle = context;
+
+	Font font = data.font;
+	if (font != null) setFont(font);
 }
+
 /**
  * Returns <code>true</code> if the receiver has a clipping
  * region set into it, and <code>false</code> otherwise.
@@ -1635,9 +1423,9 @@ void init(Drawable drawable, GCData data, int xGC) {
  */
 public boolean isClipped() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	System.out.println("GC.isClipped: nyi");
 	return data.clipRgn != 0;
 }
+
 /**
  * Returns <code>true</code> if the GC has been disposed,
  * and <code>false</code> otherwise.
@@ -1651,12 +1439,7 @@ public boolean isClipped() {
 public boolean isDisposed() {
 	return handle == 0;
 }
-public static GC macosx_new(Drawable drawable, GCData data) {
-	GC gc = new GC();
-	int xGC = drawable.internal_new_GC(data);
-	gc.init(drawable, data, xGC);
-	return gc;
-}
+
 /**
  * Sets the background color. The background color is used
  * for fill operations and as the background color when text
@@ -1672,12 +1455,14 @@ public static GC macosx_new(Drawable drawable, GCData data) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void setBackground (Color color) {
+public void setBackground(Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.background= color.handle;
+	data.background = color.handle;
+	OS.CGContextSetFillColor(handle, color.handle);
 }
+
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the rectangular area specified
@@ -1692,13 +1477,13 @@ public void setBackground (Color color) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void setClipping (int x, int y, int width, int height) {
+public void setClipping(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (data.clipRgn == 0)
-		data.clipRgn = OS.NewRgn ();
-	OS.SetRectRgn(data.clipRgn, (short) x, (short) y, (short) (x+width), (short) (y+height));
-	fPendingClip= true;
+	if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
+	OS.SetRectRgn(data.clipRgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
+	setCGClipping();
 }
+
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the rectangular area specified
@@ -1710,18 +1495,22 @@ public void setClipping (int x, int y, int width, int height) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void setClipping (Rectangle rect) {
+public void setClipping(Rectangle r) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (rect == null) {
+	if (r == null) {
 		if (data.clipRgn != 0) {
 			OS.DisposeRgn(data.clipRgn);
-			data.clipRgn= 0;
+			data.clipRgn = 0;
+		} else {
+			return;
 		}
-		fPendingClip= true;
-		return;
+	} else {
+		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
+		OS.SetRectRgn(data.clipRgn, (short)r.x, (short)r.y, (short)(r.x + r.width), (short)(r.y + r.height));
 	}
-	setClipping (rect.x, rect.y, rect.width, rect.height);
+	setCGClipping();
 }
+
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the region specified
@@ -1733,20 +1522,59 @@ public void setClipping (Rectangle rect) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void setClipping (Region region) {
+public void setClipping(Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) {
 		if (data.clipRgn != 0) {
-			OS.DisposeRgn (data.clipRgn);
+			OS.DisposeRgn(data.clipRgn);
 			data.clipRgn = 0;
+		} else {
+			return;
 		}
 	} else {
-		if (data.clipRgn == 0)
-			data.clipRgn = OS.NewRgn();
+		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
 		OS.CopyRgn(region.handle, data.clipRgn);
 	}
-	fPendingClip= true;
+	setCGClipping();
 }
+
+void setCGClipping () {
+	if (data.control == 0) {
+		OS.CGContextScaleCTM(handle, 1, -1);
+		if (data.clipRgn != 0) {
+			OS.ClipCGContextToRegion(handle, new Rect(), data.clipRgn);
+		} else {
+			int rgn = OS.NewRgn();
+			OS.SetRectRgn(rgn, (short)-32768, (short)-32768, (short)32767, (short)32767);
+			OS.ClipCGContextToRegion(handle, new Rect(), rgn);
+			OS.DisposeRgn(rgn);
+		}
+		OS.CGContextScaleCTM(handle, 1, -1);
+		return;
+	}
+	int window = OS.GetControlOwner(data.control);
+	int port = OS.GetWindowPort(window);
+	Rect rect = new Rect();
+	OS.GetControlBounds(data.control, rect);
+	Rect portRect = new Rect();
+	OS.GetPortBounds(port, portRect);
+	int portHeight = portRect.bottom - portRect.top;
+	OS.CGContextTranslateCTM(handle, -rect.left, portHeight - rect.top);
+	OS.CGContextScaleCTM(handle, 1, -1);
+	if (data.clipRgn != 0) { 
+		int rgn = OS.NewRgn();
+		OS.CopyRgn(data.clipRgn, rgn);
+		OS.OffsetRgn(rgn, rect.left, rect.top);
+		OS.SectRgn(data.visibleRgn, rgn, rgn);
+		OS.ClipCGContextToRegion(handle, portRect, rgn);
+		OS.DisposeRgn(rgn);
+	} else {
+		OS.ClipCGContextToRegion(handle, portRect, data.visibleRgn);
+	}
+	OS.CGContextScaleCTM(handle, 1, -1);
+	OS.CGContextTranslateCTM(handle, rect.left, -portHeight + rect.top);
+}
+
 /** 
  * Sets the font which will be used by the receiver
  * to draw and measure text to the argument. If the
@@ -1762,15 +1590,27 @@ public void setClipping (Region region) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void setFont (Font font) {
+public void setFont(Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (font == null) {
-		data.font = data.device.systemFont;
-	} else {
-		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		data.font = font.handle;
-	}
+	if (font == null) font = data.device.systemFont;
+	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	data.font = font;
+	int ptr = OS.NewPtr(16);
+	OS.memcpy(ptr, new int[]{font.handle}, 4); 
+	OS.memcpy(ptr + 4, new int[]{font.size << 16}, 4); 
+	OS.memcpy(ptr + 8, new byte[]{(font.style & OS.bold) != 0 ? (byte)1 : 0}, 1); 
+	OS.memcpy(ptr + 9, new byte[]{(font.style & OS.italic) != 0 ? (byte)1 : 0}, 1); 
+	int[] tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag, OS.kATSUQDBoldfaceTag, OS.kATSUQDItalicTag};
+	int[] sizes = new int[]{4, 4, 1, 1};
+	int[] values = new int[]{ptr, ptr + 4, ptr + 8, ptr + 9};
+	OS.ATSUSetAttributes(data.style, tags.length, tags, sizes, values);
+	OS.DisposePtr(ptr);
+	FontInfo info = new FontInfo();
+	OS.FetchFontInfo(font.id, font.size, font.style, info);
+	data.fontAscent = info.ascent;
+	data.fontDescent = info.descent;
 }
+
 /**
  * Sets the foreground color. The foreground color is used
  * for drawing operations including when text is drawn.
@@ -1785,12 +1625,14 @@ public void setFont (Font font) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void setForeground (Color color) {
+public void setForeground(Color color) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.foreground= color.handle;
+	data.foreground = color.handle;
+	OS.CGContextSetStrokeColor(handle, color.handle);
 }
+
 /** 
  * Sets the receiver's line style to the argument, which must be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
@@ -1805,32 +1647,28 @@ public void setForeground (Color color) {
  */
 public void setLineStyle(int lineStyle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* AW
-	int xDisplay = data.display;
 	switch (lineStyle) {
 		case SWT.LINE_SOLID:
-			data.lineStyle = lineStyle;
-			OS.XSetLineAttributes(xDisplay, handle, 0, OS.LineSolid, OS.CapButt, OS.JoinMiter);
-			return;
+			OS.CGContextSetLineDash(handle, 0, null, 0);
+			break;
 		case SWT.LINE_DASH:
-			OS.XSetDashes(xDisplay,handle,0, new byte[] {6, 2},2);
+			OS.CGContextSetLineDash(handle, 0, new float[]{18, 6}, 2);
 			break;
 		case SWT.LINE_DOT:
-			OS.XSetDashes(xDisplay,handle,0, new byte[] {3, 1},2);
+			OS.CGContextSetLineDash(handle, 0, new float[]{3, 3}, 2);
 			break;
 		case SWT.LINE_DASHDOT:
-			OS.XSetDashes(xDisplay,handle,0, new byte[] {6, 2, 3, 1},4);
+			OS.CGContextSetLineDash(handle, 0, new float[]{9, 6, 3, 6}, 4);
 			break;
 		case SWT.LINE_DASHDOTDOT:
-			OS.XSetDashes(xDisplay,handle,0, new byte[] {6, 2, 3, 1, 3, 1},6);
+			OS.CGContextSetLineDash(handle, 0, new float[]{9, 3, 3, 3, 3, 3}, 6);
 			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.lineStyle = lineStyle;
-	OS.XSetLineAttributes(xDisplay, handle, 0, OS.LineDoubleDash, OS.CapButt, OS.JoinMiter);
-	*/
 }
+
 /** 
  * Sets the width that will be used when drawing lines
  * for all of the figure drawing operations (that is,
@@ -1845,17 +1683,10 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int width) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (data.lineStyle == SWT.LINE_SOLID) {
-		/* AW
-		OS.XSetLineAttributes(data.display, handle, width, OS.LineSolid, OS.CapButt, OS.JoinMiter);
-		*/
-	} else {
-		/* AW
-		OS.XSetLineAttributes(data.display, handle, width, OS.LineDoubleDash, OS.CapButt, OS.JoinMiter);
-		*/
-	}
-	fLineWidth= width;
+	data.lineWidth = width;
+	OS.CGContextSetLineWidth(handle, width);
 }
+
 /** 
  * If the argument is <code>true</code>, puts the receiver
  * in a drawing mode where the resulting color in the destination
@@ -1872,14 +1703,10 @@ public void setLineWidth(int width) {
  */
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* AW
-	if (xor)
-		OS.XSetFunction(data.display, handle, OS.GXxor);
-	else
-		OS.XSetFunction(data.display, handle, OS.GXcopy);
-	*/
-	fXorMode= xor;
+	//NOT DONE
+	data.xorMode = xor;
 }
+
 /**
  * Returns the extent of the given string. No tab
  * expansion or carriage return processing will be performed.
@@ -1899,29 +1726,28 @@ public void setXORMode(boolean xor) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Point stringExtent(String string) {
+public Point stringExtent(String string) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (string.length () == 0) return new Point(0, getFontHeight());
-	/* AW
-	byte[] buffer = Converter.wcsToMbcs(getCodePage (), string, true);
-	int xmString = OS.XmStringCreate(buffer, OS.XmFONTLIST_DEFAULT_TAG);
-	int fontList = data.fontList;
-	int width = OS.XmStringWidth(fontList, xmString);
-	int height = OS.XmStringHeight(fontList, xmString);
-	OS.XmStringFree(xmString);
-	*/
-	try {
-		focus(false, null);
-		installFont();
-		int width= OS.TextWidth(string, data.font.fID, data.font.fSize, data.font.fFace);
-		short[] fontInfo= new short[4];
-		OS.GetFontInfo(fontInfo);	// FontInfo
-		return new Point(width, fontInfo[0] + fontInfo[1]);
-	} finally {
-		unfocus(false);
-	}
+	int length = string.length();
+	if (length == 0) return new Point(0, data.fontAscent + data.fontDescent);
+	char[] buffer = new char[length];
+	string.getChars(0, length, buffer, 0);
+	int ptr1 = OS.NewPtr(length * 2);
+	OS.memcpy(ptr1, buffer, length * 2);
+	OS.ATSUSetTextPointerLocation(data.layout, ptr1, 0, length, length);
+	OS.ATSUSetRunStyle(data.layout, data.style, 0, length);
+	int ptr2 = OS.NewPtr(ATSTrapezoid.sizeof);
+	OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, ptr2, null);
+	OS.DisposePtr(ptr1);
+	ATSTrapezoid trapezoid = new ATSTrapezoid();
+	OS.memcpy(trapezoid, ptr2, ATSTrapezoid.sizeof);
+	OS.DisposePtr(ptr2);
+	int width = (trapezoid.upperRight_x >> 16) - (trapezoid.upperLeft_x >> 16);
+	int height = (trapezoid.lowerRight_y >> 16) - (trapezoid.upperRight_y >> 16);
+	return new Point(width, height);
 }
+
 /**
  * Returns the extent of the given string. Tab expansion and
  * carriage return processing are performed.
@@ -1944,6 +1770,7 @@ public Point stringExtent(String string) {
 public Point textExtent(String string) {
 	return textExtent(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
+
 /**
  * Returns the extent of the given string. Tab expansion, line
  * delimiter and mnemonic processing are performed according to
@@ -1978,39 +1805,10 @@ public Point textExtent(String string) {
 public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (string.length () == 0) return new Point(0, getFontHeight());
-	
-	/* AW
-	if (data.renderTable == 0) createRenderTable();
-	int renderTable = data.renderTable;
-
-	int tableLength = 0;
-	Device device = data.device;
-	int[] parseTable = new int[2];
-	char[] text = new char[string.length()];
-	string.getChars(0, text.length, text, 0);	
-	if ((flags & SWT.DRAW_DELIMITER) != 0) parseTable[tableLength++] = device.crMapping;
-	if ((flags & SWT.DRAW_TAB) != 0) parseTable[tableLength++] = device.tabMapping;
-	if ((flags & SWT.DRAW_MNEMONIC) != 0) stripMnemonic(text);	
-
-	byte[] buffer = Converter.wcsToMbcs(getCodePage(), text, true);
-	int xmString = OS.XmStringParseText(buffer, 0, OS.XmFONTLIST_DEFAULT_TAG, OS.XmCHARSET_TEXT, parseTable, tableLength, 0);
-	int width = OS.XmStringWidth(renderTable, xmString);
-	int height =  OS.XmStringHeight(renderTable, xmString);
-	OS.XmStringFree(xmString);
-	return new Point(width, height);
-	*/
-	try {
-		focus(false, null);
-		installFont();
-		int width= OS.TextWidth(string, data.font.fID, data.font.fSize, data.font.fFace);
-		short[] fontInfo= new short[4];
-		OS.GetFontInfo(fontInfo);	// FontInfo
-		return new Point(width, fontInfo[0] + fontInfo[1]);
-	} finally {
-		unfocus(false);
-	}
+	//NOT DONE
+	return stringExtent(string);
 }
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -2021,147 +1819,5 @@ public String toString () {
 	if (isDisposed()) return "GC {*DISPOSED*}";
 	return "GC {" + handle + "}";
 }
-
-//---- Mac Stuff
-
-	public void installFont() {
-		if (data != null && data.font != null)
-			data.font.installInGrafPort();
-	}
-
-	private boolean focus(boolean doClip, MacRect bounds) {
-		
-		if (fIsFocused && !fPendingClip) {
-			return true;
-		}
-
-		// save global state
-		OS.GetGWorld(fSavePort, fSaveGWorld);		
-		OS.SetGWorld(handle, fSaveGWorld[0]);
-		
-		if (!doClip)
-			return true;
-		
-		int dx= 0, dy= 0;
-
-		// set origin of port using drawable bounds
-		if (data.controlHandle != 0) {
-			OS.GetControlBounds(data.controlHandle, fRect.getData());
-			dx= fRect.getX();
-			dy= fRect.getY();
-			OS.SetOrigin((short)-dx, (short)-dy);
-			MacPoint p= new MacPoint(-dx, -dy);
-			OS.QDSetPatternOrigin(p.getData());
-		}
-		// save clip region
-		OS.GetClip(fSaveClip);
-		
-		// calculate new clip based on the controls bound and GC clipping region
-		if (data.controlHandle != 0) {
-			
-			int result= OS.NewRgn();
-			MacUtil.getVisibleRegion(data.controlHandle, result, true);
-			OS.OffsetRgn(result, (short)-dx, (short)-dy);
-
-			// clip against damage 
-			if (fDamageRgn != 0) {
-				int dRgn= OS.NewRgn();
-				OS.CopyRgn(fDamageRgn, dRgn);
-				OS.OffsetRgn(dRgn, (short)-dx, (short)-dy);
-				OS.SectRgn(result, dRgn, result);
-			}
-			
-			// clip against GC clipping region
-			if (data.clipRgn != 0) {
-				OS.SectRgn(result, data.clipRgn, result);
-			}
-				
-			OS.SetClip(result);
-			if (bounds != null)
-				OS.GetRegionBounds(result, bounds.getData());
-			OS.DisposeRgn(result);
-			
-		} else {
-			// clip against GC clipping region
-			if (data.clipRgn != 0) {
-				OS.SetClip(data.clipRgn);
-				if (bounds != null)
-					OS.GetRegionBounds(data.clipRgn, bounds.getData());
-			} else {
-				if (bounds != null)
-					bounds.set(0, 0, 0x8fff, 0x8fff);
-			}
-		}
-		fPendingClip= false;
-		
-		return true;
-	}
-
-	private void unfocus(boolean doClip) {
-		
-		if (fIsFocused)
-			return;
-		
-		if (doClip) {
-			// restore clipping and origin of port
-			OS.SetClip(fSaveClip);
-			OS.SetOrigin((short)0, (short)0);
-		}
-		
-		// restore globals
-		OS.SetGWorld(fSavePort[0], fSaveGWorld[0]);
-	}
-	
-	public Rectangle carbon_focus(int damageRgn) {
-		OS.LockPortBits(handle);
-		fDamageRgn= damageRgn;
-		MacRect bounds= new MacRect();
-		focus(true, bounds);
-		fIsFocused= true;
-		return bounds.toRectangle();
-	}
-	
-	public void carbon_unfocus() {
-		fIsFocused= false;
-		unfocus(true);
-		fDamageRgn= 0;
-		OS.UnlockPortBits(handle);
-	}
-		
-	private short getCurrentScreenDepth() {
-		int gd= OS.GetGDevice();
-		if (gd != 0) {
-			int pm= OS.getgdPMap(gd);
-			if (pm != 0)
-				return OS.GetPixDepth(pm);
-		}
-		return 32;
-	}
-		
-	// new Core Graphic stuff
-	
-	public int carbon_CG_focus() {
-		
-		if (OS.QDBeginCGContext(handle, fContext) != OS.kNoErr)
-			return 0;
-			
-		int context= fContext[0];
-		
-		MacRect b= new MacRect();
-		OS.GetPortBounds(handle, b.getData()); 
-		
-		int clip= OS.NewRgn();
-		OS.GetPortClipRegion(handle, clip);
-		OS.ClipCGContextToRegion(context, b.getData(), clip);
-		OS.DisposeRgn(clip);
-	              		
-		OS.CGContextTranslateCTM(context, 0, b.getHeight());
-		OS.CGContextScaleCTM(context, 1, -1);
-		return context;
-	}
-
-	public void carbon_CG_unfocus() {
-		OS.QDEndCGContext(handle, fContext);							
-	}
 
 }

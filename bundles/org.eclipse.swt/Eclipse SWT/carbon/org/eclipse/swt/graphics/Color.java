@@ -7,6 +7,7 @@ package org.eclipse.swt.graphics;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 
 /**
@@ -23,26 +24,20 @@ import org.eclipse.swt.*;
  * @see RGB
  */
 public final class Color {
-
 	/**
 	 * the handle to the OS color resource 
 	 * (Warning: This field is platform dependent)
 	 */
-	public int handle;
+	public float[] handle;
 
 	/**
 	 * The device where this color was created.
 	 */
 	Device device;
-	
-	// AW
-	private static final int DISPOSED = 0x01;
-	private static final int SYSTEM = 0x02;
-	private int fFlags;
-	// AW
-	
+
 Color() {
 }
+
 /**	 
  * Constructs a new instance of this class given a device and the
  * desired red, green and blue values expressed as ints in the range
@@ -67,9 +62,10 @@ Color() {
  *
  * @see #dispose
  */
-public Color (Device device, int red, int green, int blue) {
+public Color(Device device, int red, int green, int blue) {
 	init(device, red, green, blue);
 }
+
 /**	 
  * Constructs a new instance of this class given a device and an
  * <code>RGB</code> describing the desired red, green and blue values.
@@ -92,24 +88,23 @@ public Color (Device device, int red, int green, int blue) {
  *
  * @see #dispose
  */
-public Color (Device device, RGB rgb) {
+public Color(Device device, RGB rgb) {
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, rgb.red, rgb.green, rgb.blue);
 }
+
 /**
  * Disposes of the operating system resources associated with
  * the color. Applications must dispose of all colors which
  * they allocate.
  */
 public void dispose() {
-	if ((fFlags & SYSTEM) != 0) {
-		System.out.println("Color.dispose: attempt to dispose system color; ignored");
-		return;
-	}
-	if (device != null && device.isDisposed()) return;
+	if (handle == null) return;
+	if (device.isDisposed()) return;
 	device = null;
-	fFlags |= DISPOSED;
+	handle = null;
 }
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -120,12 +115,16 @@ public void dispose() {
  *
  * @see #hashCode
  */
-public boolean equals (Object object) {
+public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
 	Color color = (Color)object;
-	return device == color.device && handle == color.handle; 
+	float[] rgbColor = color.handle;
+	if (handle == rgbColor) return true;
+	return device == color.device && handle[0] == rgbColor[0] &&
+		handle[1] == rgbColor[1] && handle[2] == rgbColor[2];
 }
+
 /**
  * Returns the amount of blue in the color, from 0 to 255.
  *
@@ -135,10 +134,11 @@ public boolean equals (Object object) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int getBlue () {
+public int getBlue() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return handle & 0xFF;
+	return (int)(handle[2] * 255);
 }
+
 /**
  * Returns the amount of green in the color, from 0 to 255.
  *
@@ -148,10 +148,11 @@ public int getBlue () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int getGreen () {
+public int getGreen() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return (handle >> 8) & 0xFF;
+	return (int)(handle[1] * 255);
 }
+
 /**
  * Returns the amount of red in the color, from 0 to 255.
  *
@@ -161,21 +162,11 @@ public int getGreen () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public int getRed () {
+public int getRed() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return (handle >> 16) & 0xFF;
+	return (int)(handle[0] * 255);
 }
-/**
- * Returns an <code>RGB</code> representing the receiver.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public RGB getRGB () {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return new RGB((handle >> 16) & 0xFF, (handle >> 8) & 0xFF, (handle >> 0) & 0xFF);
-}
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
@@ -186,10 +177,46 @@ public RGB getRGB () {
  *
  * @see #equals
  */
-public int hashCode () {
+public int hashCode() {
 	if (isDisposed()) return 0;
-	return handle;
+	return (int)(handle[0] * 255) ^ (int)(handle[1] * 255) ^ (int)(handle[2] * 255);
 }
+
+/**
+ * Returns an <code>RGB</code> representing the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public RGB getRGB () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return new RGB(getRed(), getGreen(), getBlue());
+}
+
+/**	 
+ * Invokes platform specific functionality to allocate a new color.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Color</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param handle the handle for the color
+ * 
+ * @private
+ */
+public static Color carbon_new(Device device, float[] rgbColor) {
+	if (device == null) device = Device.getDevice();
+	Color color = new Color();
+	color.handle = rgbColor;
+	color.device = device;
+	return color;
+}
+
 void init(Device device, int red, int green, int blue) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -199,9 +226,14 @@ void init(Device device, int red, int green, int blue) {
 		(blue > 255) || (blue < 0)) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-    this.device= device;
-	handle= ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | (blue & 0xFF);
+	float[] rgbColor = new float[4];
+	rgbColor[0] = red / 255f;
+	rgbColor[1] = green / 255f;
+	rgbColor[2] = blue / 255f;
+	rgbColor[3] = 1;
+	handle = rgbColor;
 }
+
 /**
  * Returns <code>true</code> if the color has been disposed,
  * and <code>false</code> otherwise.
@@ -213,17 +245,9 @@ void init(Device device, int red, int green, int blue) {
  * @return <code>true</code> when the color is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-	return (fFlags & DISPOSED) != 0;
+	return handle == null;
 }
-public static Color carbon_new(Device device, int packed, boolean system) {
-	if (device == null) device = Device.getDevice();
-	Color color = new Color();
-	color.device = device;
-	color.handle = packed;
-	if (system)
-		color.fFlags |= SYSTEM;
-	return color;
-}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -234,4 +258,5 @@ public String toString () {
 	if (isDisposed()) return "Color {*DISPOSED*}";
 	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + "}";
 }
+
 }

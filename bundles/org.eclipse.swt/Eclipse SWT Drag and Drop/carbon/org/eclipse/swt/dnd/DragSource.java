@@ -88,6 +88,13 @@ import org.eclipse.swt.internal.*;
  * </dl>
  */
 public final class DragSource extends Widget {
+	
+	// info for registering as a drag source
+	private Control control;
+	private Listener controlListener;
+	private Transfer[] transferAgents = new Transfer[0];
+	
+	private static final String DRAGSOURCEID = "DragSource";
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -112,6 +119,24 @@ public final class DragSource extends Widget {
  */
 public DragSource(Control control, int style) {
 	super (control, style);
+	this.control = control;
+	if (control.getData(DRAGSOURCEID) != null)
+		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
+		
+	controlListener = new Listener () {
+		public void handleEvent (Event event) {
+			if (event.type == SWT.Dispose){
+				DragSource.this.dispose();
+			}
+		}
+	};
+	control.addListener (SWT.Dispose, controlListener);
+	
+	this.addListener(SWT.Dispose, new Listener() {
+		public void handleEvent(Event e) {
+			onDispose();
+		}
+	});
 }
 
 /**
@@ -144,9 +169,21 @@ public DragSource(Control control, int style) {
  * @see DragSourceEvent
  */
 public void addDragListener(DragSourceListener listener) {
-
+	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
+	DNDListener typedListener = new DNDListener (listener);
+	addListener (DND.DragStart, typedListener);
+	addListener (DND.DragEnd, typedListener);
+	addListener (DND.DragSetData, typedListener);
 }
 
+protected void checkSubclass () {
+	String name = getClass().getName ();
+	String validName = DragSource.class.getName();
+	if (!validName.equals(name)) {
+		DND.error (SWT.ERROR_INVALID_SUBCLASS);
+	}
+}
+	
 /**
  * Returns the Control which is registered for this DragSource.  This is the control that the 
  * user clicks in to initiate dragging.
@@ -154,11 +191,12 @@ public void addDragListener(DragSourceListener listener) {
  * @return the Control which is registered for this DragSource
  */
 public Control getControl () {
-	return null;
+	return control;
 }
 
 public Display getDisplay () {
-	return null;
+	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	return control.getDisplay ();
 }
 /**
  * Returns the list of data types that can be transferred by this DragSource.
@@ -166,7 +204,19 @@ public Display getDisplay () {
  * @return the list of data types that can be transferred by this DragSource
  */
 public Transfer[] getTransfer(){
-	return null;
+	return transferAgents;
+}
+
+private void onDispose () {
+	if (control != null && controlListener != null){
+		control.removeListener(SWT.Dispose, controlListener);
+		control.removeListener(SWT.DragDetect, controlListener);
+	}
+	controlListener = null;
+	control.setData(DRAGSOURCEID, null);	
+	control = null;
+	
+	transferAgents = null;
 }
 
 /**
@@ -187,6 +237,10 @@ public Transfer[] getTransfer(){
  * @see #addDragListener
  */
 public void removeDragListener(DragSourceListener listener) {
+	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
+	removeListener (DND.DragStart, listener);
+	removeListener (DND.DragEnd, listener);
+	removeListener (DND.DragSetData, listener);
 }
 
 /**
@@ -198,6 +252,7 @@ public void removeDragListener(DragSourceListener listener) {
  * dragged from this source
  */
 public void setTransfer(Transfer[] transferAgents){
+	this.transferAgents = transferAgents;
 }
 
 }

@@ -1,12 +1,11 @@
+package org.eclipse.swt.internal.carbon;
+
 /*
- * Copyright (c) 2002 IBM Corp.  All rights reserved.
+ * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
  * This file is made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
- *
- * Andre Weinand, OTI - Initial version
  */
-package org.eclipse.swt.internal.carbon;
 
 import org.eclipse.swt.internal.Library;
 
@@ -17,1414 +16,1061 @@ public class OS {
 		Library.loadLibrary ("swt");
 	}
 	
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// Carbon Toolbox native API
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-
-	// status
-	public static final int kNoErr = 0;
-	
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Appearance Manager
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	public static final short kThemeBrushDialogBackgroundActive = 1; /* Dialogs */
-	public static final short kThemeBrushDialogBackgroundInactive = 2; /* Dialogs */
-	public static final short kThemeBrushAlertBackgroundActive = 3;
-	public static final short kThemeBrushAlertBackgroundInactive = 4;
-	public static final short kThemeBrushModelessDialogBackgroundActive = 5;
-	public static final short kThemeBrushModelessDialogBackgroundInactive = 6;
-	public static final short kThemeBrushUtilityWindowBackgroundActive = 7; /* Miscellaneous */
-	public static final short kThemeBrushUtilityWindowBackgroundInactive = 8; /* Miscellaneous */
-	public static final short kThemeBrushListViewSortColumnBackground = 9; /* Finder */
-	public static final short kThemeBrushListViewBackground = 10;
-	public static final short kThemeBrushIconLabelBackground = 11;
-	public static final short kThemeBrushListViewSeparator  = 12;
-	public static final short kThemeBrushChasingArrows      = 13;
-	public static final short kThemeBrushDragHilite         = 14;
-	public static final short kThemeBrushDocumentWindowBackground = 15;
-	public static final short kThemeBrushFinderWindowBackground = 16;
-
-	public static final short kThemeSystemFont              = 0;
-	public static final short kThemeSmallSystemFont         = 1;
-	public static final short kThemeSmallEmphasizedSystemFont = 2;
-	public static final short kThemeViewsFont               = 3;    /* The following ID's are only available with MacOS X or CarbonLib 1.3 and later*/
-	public static final short kThemeEmphasizedSystemFont    = 4;
-	public static final short kThemeApplicationFont         = 5;
-	public static final short kThemeLabelFont               = 6;
-	public static final short kThemeMenuTitleFont           = 100;
-	public static final short kThemeMenuItemFont            = 101;
-	public static final short kThemeMenuItemMarkFont        = 102;
-	public static final short kThemeMenuItemCmdKeyFont      = 103;
-	public static final short kThemeWindowTitleFont         = 104;
-	public static final short kThemePushButtonFont          = 105;
-	public static final short kThemeUtilityWindowTitleFont  = 106;
-	public static final short kThemeAlertHeaderFont         = 107;
-	public static final short kThemeCurrentPortFont         = 200;
-	
-	public static final short kThemeStateInactive = 0;
-	public static final short kThemeStateActive = 1;
-	public static final short kThemeStatePressed = 2;
-	public static final short kThemeStateRollover = 6;
-	public static final short kThemeStateUnavailable = 7;
-	public static final short kThemeStateUnavailableInactive = 8;
-	
-	public static final short kThemeSmallBevelButton	= 8;    /* small-shadow bevel button */
-
-	public static final short kThemeButtonOff	= 0;
-	public static final short kThemeButtonOn	= 1;
-	public static final short kThemeButtonMixed	= 2;
-
-	public static final short smSystemScript = -1; 	/* designates system script.*/
-
-	public static native int RegisterAppearanceClient();
-
-	public static native int SetThemeWindowBackground(int wHandle, short brush, boolean update);
-	
-	public static native int DrawThemeTextBox(int sHandle, short fontID, int state, boolean wrapToWidth,
-			short[] bounds, short just, int context);
-
-	public static native int GetThemeTextDimensions(int sHandle, short fontID, int state, boolean wrapToWidth,
-			short[] ioBounds, short[] baseLine);
-		
-	public static native int DrawThemeEditTextFrame(short[] bounds, int state);
-	public static native int DrawThemeFocusRect(short[] bounds, boolean hasFocus);
-	public static native int DrawThemeGenericWell(short[] bounds, int state, boolean fillCenter);
-	public static native int DrawThemeSeparator(short[] bounds, int state);
-	
-	public static native int GetThemeFont(short themeFontId, short scriptCode,
-				byte[] fontName, short[] fontSize, byte[] style);
-	
-	public static native int DrawThemeButton(short[] bounds, short kind, short[] newInfo, short[] prevInfo,
-				int eraseProc, int labelProc, int userData);
-				
-	public static native int SetThemeBackground(short inBrush, short depth, boolean isColorDevice);
-	public static native int GetThemeDrawingState(int[] state);
-	public static native int SetThemeDrawingState(int state, boolean disposeNow);
-				
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Event Manager
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	// event what
-	public static final short nullEvent	= 0;
-	public static final short mouseDown	= 1;
-	public static final short mouseUp	= 2;
-	public static final short keyDown	= 3;
-	public static final short keyUp		= 4;
-	public static final short autoKey	= 5;
-	public static final short updateEvt	= 6;
-	public static final short diskEvt	= 7;
-	public static final short activateEvt	= 8;
-	public static final short osEvt		= 15;
-	public static final short kHighLevelEvent	= 23;
-
-	// masks
-	public static final short updateMask	= 1 << updateEvt;
-	public static final short everyEvent	= (short) 0xFFFF;
-	
-	// masks
-	public static final int charCodeMask	= 0x000000FF;
-	public static final int keyCodeMask		= 0x0000FF00;
-
-	// EventModifiers
-	public static final int activeFlag		= 1;	/* activate? (activateEvt and mouseDown)*/
-	public static final int btnState		= 1 << 7;	/* state of button?*/
-	public static final int cmdKey			= 1 << 8;	/* command key down?*/
-	public static final int shiftKey		= 1 << 9;	/* shift key down?*/
-	public static final int alphaLock		= 1 << 10;	/* alpha lock down?*/
-	public static final int optionKey		= 1 << 11;	/* option key down?*/
-	public static final int controlKey		= 1 << 12;	/* control key down?*/
-	public static final int rightShiftKey	= 1 << 13;	/* right shift key down?*/
-	public static final int rightOptionKey	= 1 << 14;	/* right Option key down?*/
-	public static final int rightControlKey	= 1 << 15;	/* right Control key down?*/
-	
-	public static native boolean GetNextEvent(short eventMask, int[] eventData);
-    public static native boolean WaitNextEvent(short eventMask, int[] eventData, int sleepTime);
-	public static native boolean StillDown();
-	public static native void GetMouse(short[] where);
-	public static native void AEProcessAppleEvent(int[] eventData);
-	public static native int MenuEvent(int[] eventData);
-	public static native int PostEvent(short eventNum, int eventMsg);
-	public static native int GetKeyboardFocus(int wHandle, int[] cHandle);
-	public static native int SetKeyboardFocus(int wHandle, int cHandle, short inPart);
-	public static native int AdvanceKeyboardFocus(int wHandle);
-	public static native boolean IsShowContextualMenuClick(int[] eventData);
-	public static native int ContextualMenuSelect(int mHandle, short[] location, short[] menuId, short[] index);
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Carbon Event Manager
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	public static final double kEventDurationForever	= -1.0;
-	public static final double kEventDurationNoWait		= 0.0;
-	
-	public static final int eventNotHandledErr	= -9874;
-	public static final int eventLoopTimedOutErr= -9875;
-
-	public static final int kEventAttributeNone			= 0;
-	public static final int kEventAttributeUserEvent	= 1 << 0;
-
-	public static final int kEventClassMouse		= ('m'<<24) + ('o'<<16) + ('u'<<8) + 's';
-	public static final int kEventClassKeyboard		= ('k'<<24) + ('e'<<16) + ('y'<<8) + 'b';
-	public static final int kEventClassTextInput	= ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
-	public static final int kEventClassApplication	= ('a'<<24) + ('p'<<16) + ('p'<<8) + 'l';
-	public static final int kEventClassAppleEvent	= ('e'<<24) + ('p'<<16) + ('p'<<8) + 'c';
-		public static final int kEventAppleEvent	= 1;
-	public static final int kEventClassMenu			= ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
-	public static final int kEventClassWindow		= ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
-	public static final int kEventClassControl		= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'l';
-	public static final int kEventClassTablet		= ('t'<<24) + ('b'<<16) + ('l'<<8) + 't';
-	public static final int kEventClassVolume		= ('v'<<24) + ('o'<<16) + ('l'<<8) + ' ';
-	public static final int kEventClassAppearance	= ('a'<<24) + ('p'<<16) + ('p'<<8) + 'm';
-	public static final int kEventClassService		= ('s'<<24) + ('e'<<16) + ('r'<<8) + 'v';
-	public static final int kEventClassCommand		= ('c'<<24) + ('m'<<16) + ('d'<<8) + 's';
-		public static final int kEventProcessCommand	= 1;
-
-	
-	public static final int typeUInt32= ('m'<<24) + ('a'<<16) + ('g'<<8) + 'n';
-	public static final int typeChar= ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
-	public static final int typeUnicodeText= ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
-	public static final int typeWindowRef= ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
-	public static final int typeWindowDefPartCode= ('w'<<24) + ('d'<<16) + ('p'<<8) + 't';
-	public static final int typeControlRef= ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
-	public static final int typeMouseButton= ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
-	public static final int typeQDPoint= ('Q'<<24) + ('D'<<16) + ('p'<<8) + 't';
-	public static final int typeType= ('t'<<24) + ('y'<<16) + ('p'<<8) + 'e';
-	public static final int typeSInt32= ('l'<<24) + ('o'<<16) + ('n'<<8) + 'g';
-	
-	
-	public static final int kEventParamDirectObject	= ('-'<<24) + ('-'<<16) + ('-'<<8) + '-'; /* type varies depending on event*/
-	public static final int kEventParamAttributes	= ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r'; /* typeUInt32*/
-
-	public static final int kEventParamWindowDefPart= ('w'<<24) + ('d'<<16) + ('p'<<8) + 'c';
-	
-	// Generic toolbox parameters and types
-	public static final int kEventParamWindowRef 	= ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
-	public static final int kEventParamControlRef= ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
-	public static final int kEventParamAEEventID= ('e'<<24) + ('v'<<16) + ('t'<<8) + 'i';
-	public static final int kEventParamAEEventClass= ('e'<<24) + ('v'<<16) + ('c'<<8) + 'l';
-
-	// Mouse Event
-	public static final int kEventParamWindowMouseLocation= ('w'<<24) + ('m'<<16) + ('o'<<8) + 'u';	/* typeHIPoint*/
-	public static final int kEventParamMouseButton= ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
-	public static final int kEventParamMouseLocation= ('m'<<24) + ('l'<<16) + ('o'<<8) + 'c';
-	public static final int kEventParamMouseChord= ('c'<<24) + ('h'<<16) + ('o'<<8) + 'r';
-	public static final int kEventParamMouseWheelDelta= ('m'<<24) + ('w'<<16) + ('d'<<8) + 'l';
-
-	// Window event parameters and types
-	
-
-	public static final int kEventParamTextInputSendText= ('t'<<24) + ('s'<<16) + ('t'<<8) + 'x';
-
-	public static final int kEventParamKeyCode= ('k'<<24) + ('c'<<16) + ('o'<<8) + 'd';
-	public static final int kEventParamKeyMacCharCodes= ('k'<<24) + ('c'<<16) + ('h'<<8) + 'r';
-	public static final int kEventParamKeyModifiers= ('k'<<24) + ('m'<<16) + ('o'<<8) + 'd';
-	public static final int kEventParamKeyUnicodes= ('k'<<24) + ('u'<<16) + ('n'<<8) + 'i';
-	
-	public static final short kEventMouseButtonPrimary= 1;		// the left mouse button
-	public static final short kEventMouseButtonSecondary= 2;	// the right mouse button
-	public static final short kEventMouseButtonTertiary= 3;		// the middle mouse button
-
-	public static final int kEventMouseDown		= 1;
-	public static final int kEventMouseUp		= 2;
-	public static final int kEventMouseMoved	= 5;
-	public static final int kEventMouseDragged	= 6;
-	public static final int kEventMouseEntered	= 8;
-	public static final int kEventMouseExited	= 9;
-	public static final int kEventMouseWheelMoved= 10;
-	
-	public static final int kEventRawKeyDown	= 1;    // A key was pressed
-	public static final int kEventRawKeyRepeat	= 2;	// Sent periodically as a key is held down by the user
-	public static final int kEventRawKeyUp		= 3;	// A key was released
-	public static final int kEventRawKeyModifiersChanged= 4;	// The keyboard modifiers (bucky bits) have changed.
-	public static final int kEventHotKeyPressed	= 5;	// A registered Hot Key was pressed.
-	public static final int kEventHotKeyReleased= 6;	// A registered Hot Key was released (this is only sent on Mac OS X).
-		
-	public static final int kEventWindowDrawContent	= 2;
-	public static final int kEventWindowActivated	= 5;
-	public static final int kEventWindowDeactivated	= 6;
-	public static final int kEventWindowBoundsChanged = 27;
-	public static final int kEventWindowClose		= 72;
-	
-	public static final int kWindowBoundsChangeUserDrag   = (1 << 0);
-	public static final int kWindowBoundsChangeUserResize = (1 << 1);
-	public static final int kWindowBoundsChangeSizeChanged = (1 << 2);
-	public static final int kWindowBoundsChangeOriginChanged = (1 << 3);
-
-	public static final int kEventMenuBeginTracking = 1;
-	public static final int kEventMenuEndTracking = 2;
-		
-	public static final int kEventTextInputUnicodeForKeyEvent = 2;
-	
+	/** Constants */
+	public static final int RGBDirect = 16;
+	public static final int bold = 1;
+	public static final int checkMark = 18;
+	public static final int cmdKey = 1 << 8;
+	public static final int controlKey = 1 << 12;
+	public static final int diamondMark = 19;
+	public static final int errControlIsNotEmbedder = -30590;
+	public static final int errUnknownControl = -30584;
+	public static final int eventLoopTimedOutErr = -9875;
+	public static final int eventNotHandledErr = -9874;
+	public static final int inContent = 3;
+	public static final int inMenuBar = 1;
+	public static final int inStructure = 15;
+	public static final int inZoomIn = 7;
+	public static final int inZoomOut = 8;
+	public static final int italic = 2;
 	public static final int kAEQuitApplication = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
-
-	public static native int CallNextEventHandler(int nextHandler, int eventRefHandle); 
-	
-	public static native int InstallEventHandler(int eventTargetRef, int controlHandlerUPP, int[] eventTypes, int clientData);
-	
-	public static native int GetEventHICommand(int eRefHandle, int[] outParamType);
-			
-	public static native int GetEventParameter(int eRefHandle, int paramName, int paramType, int[] outParamType,
-			int[] outActualSize, byte[] data);
-	public static native int GetEventParameter(int eRefHandle, int paramName, int paramType, int[] outParamType,
-			int[] outActualSize, char[] data);
-	public static native int GetEventParameter(int eRefHandle, int paramName, int paramType, int[] outParamType,
-			int[] outActualSize, short[] data);
-	public static native int GetEventParameter(int eRefHandle, int paramName, int paramType, int[] outParamType,
-			int[] outActualSize, int[] data);
-	public static native int SetEventParameter(int eRefHandle, int paramName, int paramType, char[] data);
-
-	public static native int GetControlEventTarget(int cHandle);
-	public static native int GetMenuEventTarget(int cHandle);
-	public static native int GetUserFocusEventTarget();
-	public static native int GetApplicationEventTarget();
-			
-	public static native int GetUserFocusWindow();
-	
-	public static native int GetCurrentEventLoop();
-
-	public static native int InstallEventLoopTimer(int inEventLoop, double inFireDelay, 
-			double inInterval, int inTimerProc, int inTimerData, int[] outTimer);
-	public static native int RemoveEventLoopTimer(int inTimer);
-	public static native double GetLastUserEventTime();
-	public static native int ReceiveNextEvent(int[] eventTypeSpecList, double inTimeout, boolean inPullEvent, int[] outEvent);
-	public static native int GetEventDispatcherTarget();
-	public static native int SendEventToEventTarget(int theEvent, int theTarget);
-	public static native void ReleaseEvent(int theEvent);
-	public static native boolean ConvertEventRefToEventRecord(int eHandle, int[] outEvent);
-	public static native int InstallStandardEventHandler(int inTarget);
-	public static native int GetWindowEventTarget(int wHandle);
-	public static native int GetEventClass(int eHandle);
-	public static native int GetEventKind(int eHandle);
-	public static native double GetEventTime(int eHandle);
-	public static native int GetMouseLocation(int eHandle, short[] location);
-	public static native int TrackMouseLocation(int portHandle, short[] outPt, short[] outResult);
-	public static native void GetGlobalMouse(short[] where);
-	public static native int CreateEvent(int allocator, int inClassID, int kind, double when, int flags, int[] outEventRef);
-	public static native int PostEventToQueue(int inQueue, int inEvent, short inPriority);
-	public static native int GetMainEventQueue();
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Font manager
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	public static final short kInvalidFontFamily	= -1;
-
-	public static native short FMGetFontFamilyFromName(byte[] name);
-	public static native int FMGetFontFamilyName(short id, byte[] name);
-	
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Cursors
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public static final int kThemeArrowCursor = 0;
-    public static final int kThemeCopyArrowCursor = 1;
-    public static final int kThemeAliasArrowCursor = 2;
-    public static final int kThemeContextualMenuArrowCursor = 3;
-    public static final int kThemeIBeamCursor = 4;
-    public static final int kThemeCrossCursor = 5;
-    public static final int kThemePlusCursor = 6;
-    public static final int kThemeWatchCursor = 7;
-    public static final int kThemeClosedHandCursor = 8;
-    public static final int kThemeOpenHandCursor = 9;
-    public static final int kThemePointingHandCursor = 10;
-    public static final int kThemeCountingUpHandCursor = 11;
-    public static final int kThemeCountingDownHandCursor = 12;
-    public static final int kThemeCountingUpAndDownHandCursor = 13;
-    public static final int kThemeSpinningCursor = 14;
-    public static final int kThemeResizeLeftCursor = 15;
-    public static final int kThemeResizeRightCursor = 16;
-    public static final int kThemeResizeLeftRightCursor = 17;
- 
-    public static final short iBeamCursor = 1;
-    public static final short crossCursor = 2;
-    public static final short plusCursor = 3;
-    public static final short watchCursor = 4;
-
-	public static native void InitCursor();
-	public static native int NewCursor(short hotX, short hotY, short[] data, short[] mask);
-	public static native int GetCursor(short id);
-	public static native void SetCursor(int cursor);
-	public static native int SetThemeCursor(int themeCursor);
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// QuickDraw
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	// transfer modes
-	public static final short srcCopy	= 0;
-	public static final short srcOr		= 1;
-	
-	// text faces
-	public static final short normal	= 0;
-	public static final short bold		= 1;
-	public static final short italic	= 2;
-	
-	public static final int kQDUseDefaultTextRendering = 0;
-	public static final int kQDUseTrueTypeScalerGlyphs = (1 << 0);
-	public static final int kQDUseCGTextRendering = (1 << 1);
+	public static final int kAlertCautionAlert = 2;
+	public static final int kAlertNoteAlert = 1;
+	public static final int kAlertPlainAlert = 3;
+	public static final int kAlertStopAlert = 0;
+	public static final int kAlertDefaultOKText           = -1;
+	public static final int kAlertDefaultCancelText       = -1;
+	public static final int kAlertStdAlertOKButton        = 1;
+	public static final int kAlertStdAlertCancelButton    = 2;
+	public static final int kAlertStdAlertOtherButton     = 3;
+	public static final int kAtSpecifiedOrigin = 0;
+	public static final int kATSUCGContextTag = 32767;
+	public static final int kATSUFontTag = 261;
+	public static final int kATSUQDBoldfaceTag = 256;
+	public static final int kATSUQDItalicTag = 257;
+	public static final int kATSUseDeviceOrigins = 1;
+	public static final int kATSUSizeTag = 262;
+	public static final int kCFAllocatorDefault = 0;
+	public static final int kCFURLPOSIXPathStyle = 0;
+	public static final int kCGImageAlphaFirst = 4;
+	public static final int kCGImageAlphaNoneSkipFirst = 6;
+	public static final int kColorPickerDialogIsMoveable =  1;
+	public static final int kColorPickerDialogIsModal = 2;
+	public static final int kControlBehaviorPushbutton = 0;
+	public static final int kControlBehaviorToggles = 0x0100;
+	public static final int kControlBevelButtonAlignCenter = 0;
+	public static final int kControlBevelButtonAlignLeft  = 1;
+	public static final int kControlBevelButtonAlignRight = 2;
+	public static final int kControlBevelButtonAlignTextCenter = 1;
+	public static final int kControlBevelButtonAlignTextFlushRight = -1;
+	public static final int kControlBevelButtonAlignTextFlushLeft = -2;
+	public static final int kControlBevelButtonNormalBevelProc = 33;
+	public static final int kControlBevelButtonSmallBevel = 0;
+	public static final int kControlBevelButtonLargeBevel = 2;
+	public static final int kControlBevelButtonMenuRefTag = ('m'<<24) + ('h'<<16) + ('n'<<8) + 'd';
+	public static final int kControlBevelButtonNormalBevel = 1;
+	public static final int kControlBevelButtonPlaceBelowGraphic = 3;
+	public static final int kControlBevelButtonPlaceToRightOfGraphic = 1;
+	public static final int kControlBevelButtonKindTag = ('b'<<24) + ('e'<<16) + ('b'<<8) + 'k';
+	public static final int kControlBevelButtonTextAlignTag = ('t'<<24) + ('a'<<16) + ('l'<<8) + 'i';
+	public static final int kControlBevelButtonTextPlaceTag = ('t'<<24) + ('p'<<16) + ('l'<<8) + 'c';
+	public static final int kControlBevelButtonGraphicAlignTag = ('g'<<24) + ('a'<<16) + ('l'<<8) + 'i';
+	public static final int kControlBoundsChangeSizeChanged = 1 << 2;
+	public static final int kControlBoundsChangePositionChanged = 1 << 3;
+	public static final int kControlCheckBoxAutoToggleProc = 371;
+	public static final int kControlContentCIconHandle = 130;
+	public static final int kControlContentIconRef = 132;
+	public static final int kControlContentMetaPart = -2;
+	public static final int kControlContentTextOnly = 0;
+	public static final int kControlDownButtonPart = 21;
+	public static final int kControlEditTextCFStringTag = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
+	public static final int kControlEditTextSingleLineTag = ('s'<<24) + ('g'<<16) + ('l'<<8) + 'c';
+	public static final int kControlEditTextSelectionTag = ('s'<<24) + ('e'<<16) + ('l'<<8) + 'e';
+	public static final int kControlEditTextTextTag = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
+	public static final int kControlEntireControl = 0;
+	public static final int kControlGetsFocusOnClick = 1 << 8;
+	public static final int kControlGroupBoxTextTitleProc = 160;
+	public static final int kControlHandlesTracking = 1 << 5;
+	public static final int kControlIconTransformTag = ('t'<<24) + ('r'<<16) + ('f'<<8) + 'm';
+	public static final int kControlIndicatorPart = 129;
+	public static final int kControlPageDownPart = 23;
+	public static final int kControlPageUpPart = 22;
+	public static final int kControlPopupArrowEastProc = 192;
+	public static final int kControlPopupArrowOrientationEast = 0;
+	public static final int kControlPopupArrowOrientationWest = 1;
+	public static final int kControlPopupArrowOrientationNorth = 2;
+	public static final int kControlPopupArrowOrientationSouth = 3;
+	public static final int kControlPopupArrowSizeNormal  = 0;
+	public static final int kControlPopupArrowSizeSmall   = 1;
+	public static final int kControlPopupButtonProc = 400;
+	public static final int kControlProgressBarIndeterminateTag = ('i'<<24) + ('n'<<16) + ('d'<<8) + 'e';
+	public static final int kControlProgressBarProc = 80;
+	public static final int kControlPushButtonProc = 368;
+	public static final int kControlRadioButtonAutoToggleProc = 372;
+	public static final int kControlScrollBarLiveProc = 386;
+	public static final int kControlSeparatorLineProc = 144;
+	public static final int kControlSliderLiveFeedback = (1 << 0);
+	public static final int kControlSliderNonDirectional = (1 << 3);
+	public static final int kControlSliderProc = 48;
+	public static final int kControlStructureMetaPart = -1;
+	public static final int kControlSupportsEmbedding = 1 << 1;
+	public static final int kControlSupportsFocus = 1 << 2;
+	public static final int kControlStaticTextCFStringTag = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
+	public static final int kControlTabContentRectTag = ('r'<<24) + ('e'<<16) + ('c'<<8) + 't';
+	public static final int kControlTabDirectionNorth = 0;
+	public static final int kControlTabImageContentTag = ('c'<<24) + ('o'<<16) + ('n'<<8) + 't';
+	public static final int kControlTabInfoVersionOne = 1;
+	public static final int kControlTabInfoTag = ('t'<<24) + ('a'<<16) + ('b'<<8) + 'i';
+	public static final int kControlTabSizeLarge = 0;
+	public static final int kControlTabSmallProc = 129;
+	public static final int kControlUpButtonPart = 20;
+	public static final int kControlUserPaneDrawProcTag = ('d'<<24) + ('r'<<16) + ('a'<<8) + 'w';
+	public static final int kControlUserPaneHitTestProcTag = ('h'<<24) + ('i'<<16) + ('t'<<8) + 't';
+	public static final int kControlUserPaneProc = 256;
+	public static final int kControlUserPaneTrackingProcTag = ('t'<<24) + ('r'<<16) + ('a'<<8) + 'k';
+	public static final int kControlUseFontMask = 0x1;
+	public static final int kControlUseSizeMask = 0x4;
+	public static final int kControlUseThemeFontIDMask = 0x80;
+	public static final int kControlUseFaceMask = 0x2;
+	public static final int kCurrentProcess = 2;
+	public static final int kDataBrowserCheckboxType = ('c'<<24) + ('h'<<16) + ('b'<<8) + 'x';
+	public static final int kDataBrowserCmdTogglesSelection = 1 << 3;
+	public static final int kDataBrowserContainerClosed = 10;
+	public static final int kDataBrowserContainerClosing = 9;
+	public static final int kDataBrowserContainerIsClosableProperty = 6;
+	public static final int kDataBrowserContainerIsOpen = 1 << 1;
+	public static final int kDataBrowserContainerIsOpenableProperty = 5;
+	public static final int kDataBrowserContainerIsSortableProperty = 7;
+	public static final int kDataBrowserContainerOpened = 8;
+	public static final int kDataBrowserCustomType = 0x3F3F3F3F;
+	public static final int kDataBrowserDefaultPropertyFlags = 0;
+	public static final int kDataBrowserDragSelect = 1 << 0;
+	public static final int kDataBrowserIconAndTextType = ('t'<<24) + ('i'<<16) + ('c'<<8) + 'n';
+	public static final int kDataBrowserItemIsActiveProperty = 1;
+	public static final int kDataBrowserItemIsContainerProperty = 4;
+	public static final int kDataBrowserItemIsEditableProperty = 3;
+	public static final int kDataBrowserItemIsSelectableProperty = 2;
+	public static final int kDataBrowserItemIsSelected = 1 << 0;
+	public static final int kDataBrowserItemNoProperty = 0;
+	public static final int kDataBrowserItemParentContainerProperty = 11;
+	public static final int kDataBrowserItemsAdd = 0;
+	public static final int kDataBrowserItemsAssign = 1;
+	public static final int kDataBrowserItemsRemove = 3;
+	public static final int kDataBrowserItemRemoved = 2;
+	public static final int kDataBrowserItemSelected = 5;
+	public static final int kDataBrowserItemDeselected = 6;
+	public static final int kDataBrowserItemDoubleClicked = 7;
+	public static final int kDataBrowserLatestCallbacks = 0;
+	public static final int kDataBrowserLatestCustomCallbacks = 0;
+	public static final int kDataBrowserListView = ('l'<<24) + ('s'<<16) + ('t'<<8) + 'v';
+	public static final int kDataBrowserListViewLatestHeaderDesc = 0;
+	public static final int kDataBrowserListViewSelectionColumn = 1 << OS.kDataBrowserViewSpecificFlagsOffset;
+	public static final int kDataBrowserNeverEmptySelectionSet = 1 << 6;
+	public static final int kDataBrowserNoItem = 0;
+	public static final int kDataBrowserOrderIncreasing = 1;
+	public static final int kDataBrowserPropertyEnclosingPart = 0;
+	public static final int kDataBrowserPropertyIsMutable = 1 << 0;
+	public static final int kDataBrowserRevealOnly = 0;
+	public static final int kDataBrowserRevealAndCenterInView = 1 << 0;
+	public static final int kDataBrowserRevealWithoutSelecting = 1 << 1;
+	public static final int kDataBrowserSelectOnlyOne = 1 << 1;
+	public static final int kDataBrowserTextType = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
+	public static final int kDataBrowserTableViewFillHilite = 1;
+	public static final int kDataBrowserViewSpecificFlagsOffset = 16;
+	public static final int kDocumentWindowClass = 6;
+	public static final int kEventAppleEvent = 1;
+	public static final int kEventAttributeUserEvent = 1 << 0;
+	public static final int kEventClassAppleEvent = ('e'<<24) + ('p'<<16) + ('p'<<8) + 'c';
+	public static final int kEventClassCommand = ('c'<<24) + ('m'<<16) + ('d'<<8) + 's';
+	public static final int kEventClassControl = ('c'<<24) + ('n'<<16) + ('t'<<8) + 'l';
+	public static final int kEventClassFont= ('f'<<24) + ('o'<<16) + ('n'<<8) + 't';
+	public static final int kEventClassHIObject = ('h'<<24) + ('i'<<16) + ('o'<<8) + 'b';
+	public static final int kEventClassKeyboard = ('k'<<24) + ('e'<<16) + ('y'<<8) + 'b';
+	public static final int kEventClassMenu = ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
+	public static final int kEventClassMouse = ('m'<<24) + ('o'<<16) + ('u'<<8) + 's';
+	public static final int kEventClassTextInput = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
+	public static final int kEventClassWindow = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
+  	public static final int kEventControlActivate = 9;
+  	public static final int kEventControlAddedSubControl = 152;
+	public static final int kEventControlBoundsChanged = 154;
+	public static final int kEventControlClick = 13;
+	public static final int kEventControlContextualMenuClick = 12;
+  	public static final int kEventControlDeactivate = 10;
+	public static final int kEventControlDraw = 4;
+	public static final int kControlFocusNextPart = -1;
+	public static final int kEventControlHit = 1;
+	public static final int kEventControlSetCursor = 11;
+	public static final int kEventControlSetFocusPart = 7;
+	public static final int kEventControlRemovingSubControl = 153;
+	public static final int kEventPriorityStandard = 1;
+	public static final double kEventDurationForever = -1.0;
+	public static final double kEventDurationNoWait = 0.0;
+	public static final int kEventFontSelection = 2;
+	public static final int kEventFontPanelClosed = 1;
+	public static final int kEventHIObjectConstruct = 1;
+	public static final int kEventHIObjectDestruct = 3;
+	public static final int kEventMenuClosed = 5;
+	public static final int kEventMenuOpening = 4;
+	public static final int kEventMenuPopulate = 9;
+	public static final int kEventMouseButtonPrimary = 1;
+	public static final int kEventMouseButtonSecondary = 2;
+	public static final int kEventMouseButtonTertiary = 3;
+	public static final int kEventMouseDown = 1;
+	public static final int kEventMouseDragged = 6;
+	public static final int kEventMouseEntered = 8;
+	public static final int kEventMouseExited = 9;
+	public static final int kEventMouseMoved = 5;
+	public static final int kEventMouseUp = 2;
+	public static final int kEventMouseWheelMoved = 10;
+	public static final int kEventParamAEEventClass = ('e'<<24) + ('v'<<16) + ('c'<<8) + 'l';
+	public static final int kEventParamAEEventID = ('e'<<24) + ('v'<<16) + ('t'<<8) + 'i';
+	public static final int kEventParamAttributes = ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r';
+	public static final int kEventParamCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
+	public static final int kEventParamClickCount = ('c'<<24) + ('c'<<16) + ('n'<<8) + 't';
+	public static final int kEventParamControlPart= ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
+	public static final int kEventParamControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
+	public static final int kEventParamCurrentBounds = ('c'<<24) + ('r'<<16) + ('c'<<8) + 't';
+	public static final int kEventParamDirectObject = ('-'<<24) + ('-'<<16) + ('-'<<8) + '-';
+	public static final int kEventParamFMFontFamily = ('f'<<24) + ('m'<<16) + ('f'<<8) + 'm';
+	public static final int kEventParamFMFontStyle = ('f'<<24) + ('m'<<16) + ('s'<<8) + 't';
+	public static final int kEventParamFMFontSize = ('f'<<24) + ('m'<<16) + ('s'<<8) + 'z';
+	public static final int kEventParamFontColor = ('f'<<24) + ('c'<<16) + ('l'<<8) + 'r';
+	public static final int kEventParamKeyCode = ('k'<<24) + ('c'<<16) + ('o'<<8) + 'd';
+	public static final int kEventParamKeyMacCharCodes = ('k'<<24) + ('c'<<16) + ('h'<<8) + 'r';
+	public static final int kEventParamKeyModifiers = ('k'<<24) + ('m'<<16) + ('o'<<8) + 'd';
+	public static final int kEventParamMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
+	public static final int kEventParamMouseChord = ('c'<<24) + ('h'<<16) + ('o'<<8) + 'r';
+	public static final int kEventParamMouseLocation = ('m'<<24) + ('l'<<16) + ('o'<<8) + 'c';
+	public static final int kEventParamMouseWheelDelta = ('m'<<24) + ('w'<<16) + ('d'<<8) + 'l';
+	public static final int kEventParamPreviousBounds = ('p'<<24) + ('r'<<16) + ('c'<<8) + 't';
+	public static final int kEventParamOriginalBounds = ('o'<<24) + ('r'<<16) + ('c'<<8) + 't';
+	public static final int kEventParamRgnHandle =  ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
+	public static final int kEventParamTextInputSendText = ('t'<<24) + ('s'<<16) + ('t'<<8) + 'x';
+	public static final int kEventParamWindowDefPart = ('w'<<24) + ('d'<<16) + ('p'<<8) + 'c';
+	public static final int kEventParamWindowMouseLocation = ('w'<<24) + ('m'<<16) + ('o'<<8) + 'u';
+	public static final int kEventParamWindowRef = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
+	public static final int kEventProcessCommand = 1;
+	public static final int kEventRawKeyDown = 1;
+	public static final int kEventRawKeyRepeat = 2;
+	public static final int kEventRawKeyUp = 3;
+	public static final int kEventRawKeyModifiersChanged = 4;
+	public static final int kEventTextInputUnicodeForKeyEvent = 2;
+	public static final int kEventWindowActivated = 5;
+	public static final int kEventWindowBoundsChanged = 27;
+	public static final int kEventWindowClose = 72;
+	public static final int kEventWindowCollapsed = 67;
+	public static final int kEventWindowDeactivated = 6;
+	public static final int kEventWindowDrawContent = 2;
+	public static final int kEventWindowExpanded = 70;
+	public static final int kEventWindowFocusAcquired = 200;
+	public static final int kEventWindowFocusRelinquish = 201;
+	public static final int kEventWindowHidden = 25;
+	public static final int kEventWindowShown = 24;
+	public static final int kEventWindowUpdate = 1;
+	public static final int kFMIterationCompleted = -980;
+	public static final int kFloatingWindowClass = 5;
+	public static final int kFontSelectionQDStyleVersionZero = 0;
+	public static final int kFontSelectionQDType = ('q'<<24) + ('s'<<16) + ('t'<<8) + 'l';
+	public static final int kHIComboBoxAutoCompletionAttribute = (1 << 0);	
+	public static final int kHIComboBoxAutoSizeListAttribute = (1 << 3);
+	public static final int kHIComboBoxEditTextPart = 5;
+	public static final int kHICommandFromMenu = 1 << 0;
+	public static final int kHIViewZOrderAbove = 1;
+	public static final int kHIViewZOrderBelow = 2;
+	public static final int kHMCFStringContent = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
+	public static final int kHMAbsoluteCenterAligned = 23;
+	public static final int kHMContentProvided = 0;
+	public static final int kHMContentNotProvided = -1;
+	public static final int kHMContentNotProvidedDontPropagate = -2;
+	public static final int kHMDefaultSide = 0;
+	public static final int kHMDisposeContent = 1;
+	public static final int kHMSupplyContent = 0;
+	public static final int kHelpWindowClass = 10;
+	public static final int kInvalidFontFamily = -1;
+	public static final int kMacHelpVersion = 3;
+	public static final int kMenuBlankGlyph = 97;
+	public static final int kMenuCapsLockGlyph = 99;
+	public static final int kMenuCGImageRefType = 7;
+	public static final int kMenuCheckmarkGlyph = 18;
+	public static final int kMenuClearGlyph = 28;
+	public static final int kMenuCommandGlyph = 17;
+	public static final int kMenuContextualMenuGlyph = 109;
+	public static final int kMenuControlGlyph = 6;
+	public static final int kMenuControlISOGlyph = 138;
+	public static final int kMenuControlModifier = 4;
+	public static final int kMenuDeleteLeftGlyph = 23;
+	public static final int kMenuDeleteRightGlyph = 10;
+	public static final int kMenuDiamondGlyph = 19;
+	public static final int kMenuDownArrowGlyph = 106;
+	public static final int kMenuDownwardArrowDashedGlyph = 16;
+	public static final int kMenuEnterGlyph = 4;
+	public static final int kMenuEscapeGlyph = 27;
+	public static final int kMenuF10Glyph = 120;
+	public static final int kMenuF11Glyph = 121;
+	public static final int kMenuF12Glyph = 122;
+	public static final int kMenuF1Glyph = 111;
+	public static final int kMenuF2Glyph = 112;
+	public static final int kMenuF3Glyph = 113;
+	public static final int kMenuF4Glyph = 114;
+	public static final int kMenuF5Glyph = 115;
+	public static final int kMenuF6Glyph = 116;
+	public static final int kMenuF7Glyph = 117;
+	public static final int kMenuF8Glyph = 118;
+	public static final int kMenuF9Glyph = 119;
+	public static final int kMenuHelpGlyph = 103;
+	public static final int kMenuItemAttrSeparator = 64;
+	public static final int kMenuLeftArrowDashedGlyph = 24;
+	public static final int kMenuLeftArrowGlyph = 100;
+	public static final int kMenuNoCommandModifier = (1 << 3);
+	public static final int kMenuNoIcon = 0;
+	public static final int kMenuNoModifiers = 0;
+	public static final int kMenuNonmarkingReturnGlyph = 13;
+	public static final int kMenuNullGlyph = 0;
+	public static final int kMenuOptionGlyph = 7;
+	public static final int kMenuOptionModifier = (1 << 1);
+	public static final int kMenuPageDownGlyph = 107;
+	public static final int kMenuPageUpGlyph = 98;
+	public static final int kMenuPencilGlyph = 15;
+	public static final int kMenuPowerGlyph = 110;
+	public static final int kMenuReturnGlyph = 11;
+	public static final int kMenuReturnR2LGlyph = 12;
+	public static final int kMenuRightArrowDashedGlyph = 26;
+	public static final int kMenuRightArrowGlyph = 101;
+	public static final int kMenuShiftGlyph = 5;
+	public static final int kMenuShiftModifier = (1 << 0);
+	public static final int kMenuTabRightGlyph = 2;
+	public static final int kMenuUpArrowDashedGlyph = 25;
+	public static final int kMenuUpArrowGlyph = 104;
+	public static final int kMouseTrackingMouseDown= 1;
+	public static final int kMouseTrackingMouseUp= 2;
+	public static final int kMouseTrackingMouseExited  = 3;
+	public static final int kMouseTrackingMouseEntered = 4;
+	public static final int kMouseTrackingMouseDragged= 5;
+	public static final int kMouseTrackingMouseKeyModifiersChanged= 6;
+	public static final int kMouseTrackingUserCancelled= 7;
+	public static final int kMouseTrackingTimedOut= 8;
+	public static final int kMouseTrackingMouseMoved= 9;
+	public static final int kModalWindowClass = 3;
+	public static final int kMovableModalWindowClass = 4;
+	public static final int kNavAllowInvisibleFiles = 0x00000100;
+	public static final int kNavAllowMultipleFiles = 0x00000080;
+	public static final int kNavAllowOpenPackages = 0x00002000;
+	public static final int kNavCBNewLocation = 5;
+	public static final int kNavGenericSignature = ('*'<<24) + ('*'<<16) + ('*'<<8) + '*';
+	public static final int kNavSupportPackages = 0x00001000;
+	public static final int kNavUserActionCancel = 1;
+	public static final int kNavUserActionChoose = 4;
+	public static final int kNavUserActionOpen = 2;
+	public static final int kNavUserActionSaveAs = 3;
 	public static final int kQDUseCGTextMetrics = (1 << 2);
-	public static final int kQDSupportedFlags =
-				kQDUseTrueTypeScalerGlyphs | kQDUseCGTextRendering | kQDUseCGTextMetrics;
-	public static final int kQDDontChangeFlags = 0xFFFFFFFF;
-	
-	public static native int QDSwapTextFlags(int flags);
-	public static native void QDSetPatternOrigin(short[] point);
-	public static native int GetQDGlobalsScreenBits(int bitmap);
-
-	public static native int GetPort();
-	public static native void SetPort(int pHandle);
-	public static native boolean IsValidPort(int pHandle);
-	public static native int GetWindowFromPort(int pHandle);
-	public static native void GetPortBounds(int pHandle, short[] rect);
-	public static native void NormalizeThemeDrawingState();
-	public static native void RGBForeColor(short red, short green, short blue);
-	public static native void RGBBackColor(short red, short green, short blue);
-	//public static native void GlobalToLocal(short[] point);
-	//public static native void LocalToGlobal(short[] point);
-	public static native void QDGlobalToLocalPoint(int port, short[] point);
-	public static native void QDLocalToGlobalPoint(int port, short[] point);
-
-	public static native void ScrollRect(short[] rect, short dh, short dv, int updateRgn);
-	public static native int GetPortVisibleRegion(int portHandle, int rgnHandle);
-	public static native void SetPortVisibleRegion(int portHandle, int rgnHandle);
-	public static native void QDFlushPortBuffer(int port, int rgnHandle);
-	public static native int QDGetDirtyRegion(int portHandle, int rgnHandle);
-	public static native int QDSetDirtyRegion(int portHandle, int rgnHandle);
-	public static native int LockPortBits(int portHandle);
-	public static native int UnlockPortBits(int portHandle);
-
-	// clipping
-	public static native void ClipRect(short[] clipRect);
-	public static native void GetClip(int rgnHandle);
-	public static native void SetClip(int rgnHandle);	
-	public static native void SetOrigin(short h, short v);
-	public static native void GetPortClipRegion(int port, int clipRgn);
-	
-	// Text
-	public static native void TextFont(short fontID);
-	public static native void TextSize(short size);
-	public static native void TextFace(short face);
-	public static native void TextMode(short mode);
-	public static native void DrawText(String s, short font, short size, short face);
-	public static native short TextWidth(String s, short font, short size, short face);
-	public static native short CharWidth(byte c);
-	public static native void GetFontInfo(short[] info);	// FontInfo: short[4]
-	public static native void SetFractEnable(boolean enable);
-	
-	// Lines & Polygons
-	public static native void PenSize(short h, short v);
-	public static native void MoveTo(short h, short v);
-	public static native void LineTo(short h, short v);
-	
-	// Rectangles
-	public static native void EraseRect(short[] bounds);	// rect: short[4]
-	public static native void FrameRect(short[] bounds);
-	public static native void PaintRect(short[] bounds);
-	public static native void InvertRect(short x, short y, short w, short h);
-	
-	// Ovals
-	public static native void FrameOval(short[] bounds);
-	public static native void PaintOval(short[] bounds);
-	
-	// Round Rectangle
-	public static native void FrameRoundRect(short[] bounds, short ovalWidth, short ovalHeight);
-	public static native void PaintRoundRect(short[] bounds, short ovalWidth, short ovalHeight);
-	
-	// Regions
-	public static native int NewRgn();
-	public static native void SetEmptyRgn(int rgnHandle);
-	public static native void RectRgn(int rgnHandle, short[] rect);
-	public static native void SetRectRgn(int rgnHandle, short left, short top, short right, short bottom);
-	public static native void DisposeRgn(int rgnHandle);
-	public static native boolean EmptyRgn(int rgnHandle);
-	public static native void GetRegionBounds(int rgnHandle, short[] bounds);
-	public static native void SectRgn(int srcRgnA, int srcRgnB, int dstRgn);
-	public static native void UnionRgn(int srcRgnA, int srcRgnB, int dstRgn);
-	public static native void DiffRgn(int srcRgnA, int srcRgnB, int dstRgn);
-	public static native boolean PtInRgn(short[] pt, int rgnHandle);
-	public static native boolean RectInRgn(short[] rect, int rgnHandle);
-	public static native void CopyRgn(int srcRgnHandle, int dstRgnHandle);
-	public static native void OffsetRgn(int rgnHandle, short dh, short dv);
-	
-	public static native void EraseRgn(int rgnHandle);
-	public static native void InvertRgn(int rgnHandle);
-	
-	// Polygons
-	public static native int OpenPoly();
-	public static native void ClosePoly();
-	public static native void OffsetPoly(int polyHandle, short dx, short dy);
-	public static native void FramePoly(int polyHandle);
-	public static native void PaintPoly(int polyHandle);
-	public static native void KillPoly(int polyHandle);
-	
-
-    // BitMaps & PixMaps
-	public static final short Indexed= 0;
-	public static final short RGBDirect= 16;
-	
-	public static native int NewPixMap(short w, short h, short rowBytes,
-			short pixelType, short pixelSize, short cmpSize, short cmpCount, short pixelFormat);
-	public static native void DisposePixMap(int pHandle);
-	public static native int duplicatePixMap(int srcPixmap);
-	
-	public static native int getRowBytes(int pHandle);
-	public static native void setRowBytes(int pHandle, short rowBytes);
-	public static native int GetPixRowBytes(int pHandle);
-	public static native void GetPixBounds(int pHandle, short[] bounds);
-	public static native void setPixBounds(int pHandle, short top, short left, short bottom, short right);
-	public static native short GetPixDepth(int pHandle);
-	public static native int getPixHRes(int pHandle);
-	public static native int getPixVRes(int pHandle);
-	public static native int getBaseAddr(int pHandle);
-	public static native void setBaseAddr(int pHandle, int data);
-	public static native int getColorTableSize(int pHandle);	// returns number of slots
-	public static native void getColorTable(int pHandle, short[] colorSpec);
-	public static native void setColorTable(int pHandle, short[] colorSpec);
-
-	public static native void CopyBits(int srcPixMapHandle, int dstPixMapHandle, short[] srcRect, short[] dstRect,
-											short mode, int maskRgn);
-	public static native void CopyMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle,
-											short[] srcRect, short[] maskRect, short[] dstRect);
-	public static native void CopyDeepMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle,
-											short[] srcRect, short[] maskRect, short[] dstRect, short mode, int maskRgn);
-
-	public static native int GetPortBitMapForCopyBits(int portHandle);
-	
-	// CIcon
-	public static native int NewCIcon(int pixmapHandle, int maskHandle);
-	public static native int getCIconIconData(int iconHandle);
-	public static native int getCIconColorTable(int iconHandle);
-
-	// GWorlds
-	public static native int NewGWorldFromPtr(int[] offscreenGWorld, int pHandle);
-	public static native void DisposeGWorld(int offscreenGWorld);
-	public static native void SetGWorld(int portHandle, int gdHandle);
-	public static native void GetGWorld(int[] portHandle, int[] gdHandle);
-	public static native int GetGDevice();
-	public static native int GetMainDevice();
-	public static native int getgdPMap(int gdHandle);
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Window Manager
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	// window class
-	public static final int kAlertWindowClass             = 1;   /* I need your attention now.*/
-	public static final int kMovableAlertWindowClass      = 2;   /* I need your attention now, but I'm kind enough to let you switch out of this app to do other things.*/
-	public static final int kModalWindowClass             = 3;   /* system modal, not draggable*/
-	public static final int kMovableModalWindowClass      = 4;   /* application modal, draggable*/
-	public static final int kFloatingWindowClass          = 5;   /* floats above all other application windows*/
-	public static final int kDocumentWindowClass          = 6;   /* document windows*/
-	public static final int kUtilityWindowClass           = 8;   /* system-wide floating windows (TSM, AppleGuide) (available in CarbonLib 1.1)*/
-	public static final int kHelpWindowClass              = 10;  /* help window (no frame; coachmarks, help tags ) (available in CarbonLib 1.1)*/
-	public static final int kSheetWindowClass             = 11;  /* sheet windows for dialogs (available in Mac OS X and CarbonLib 1.3)*/
-	public static final int kToolbarWindowClass           = 12;  /* toolbar windows (above documents, below floating windows) (available in CarbonLib 1.1)*/
-	public static final int kPlainWindowClass             = 13;  /* plain window (in document layer)*/
-	public static final int kOverlayWindowClass           = 14;  /* transparent window which allows 'screen' drawing via CoreGraphics (Mac OS X only)*/
-	public static final int kSheetAlertWindowClass        = 15;  /* sheet windows for alerts (available in Mac OS X after 10.0.x and CarbonLib 1.3)*/
-	public static final int kAltPlainWindowClass          = 16;  /* alternate plain window (in document layer) (available in Mac OS X after 10.0.x and CarbonLib 1.3)*/
-	public static final int kAllWindowClasses             = 0xFFFFFFFF; /* for use with GetFrontWindowOfClass, FindWindowOfClass, GetNextWindowOfClass*/
-
-	// window attributes
-	public static final int kWindowNoAttributes           = 0;
-	/* This window has a close box.
-	 * Available for windows of kDocumentWindowClass, kFloatingWindowClass, and kUtilityWindowClass. */
-	public static final int kWindowCloseBoxAttribute      = (1 << 0);
-	/* This window changes width when zooming.
-	 * Available for windows of kDocumentWindowClass, kFloatingWindowClass, and kUtilityWindowClass. */
-	public static final int kWindowHorizontalZoomAttribute = (1 << 1);
-	/* This window changes height when zooming.
-	 * Available for windows of kDocumentWindowClass, kFloatingWindowClass, and kUtilityWindowClass. */
-	public static final int kWindowVerticalZoomAttribute  = (1 << 2);
-	/* This window changes both width and height when zooming.
-	 * Available for windows of kDocumentWindowClass, kFloatingWindowClass, and kUtilityWindowClass. */
-	public static final int kWindowFullZoomAttribute = (kWindowVerticalZoomAttribute | kWindowHorizontalZoomAttribute);
-	/* This window has a collapse box.
-	 * Available for windows of kDocumentWindowClass and, on Mac OS 9, kFloatingWindowClass and
-	 * kUtilityWindowClass; not available for windows of kFloatingWindowClass or kUtilityWindowClass on Mac OS X. */
-	public static final int kWindowCollapseBoxAttribute   = (1 << 3);
-	/* This window can be resized.
-	 * Available for windows of kDocumentWindowClass, kMovableModalWindowClass,
-	 * kFloatingWindowClass, kUtilityWindowClass, and kSheetWindowClass. */
-	public static final int kWindowResizableAttribute     = (1 << 4);
-	/* This window has a vertical titlebar on the side of the window.
-	 * Available for windows of kFloatingWindowClass and kUtilityWindowClass. */
-	public static final int kWindowSideTitlebarAttribute  = (1 << 5);
-	/* This window has a toolbar button.
-	 * Available for windows of kDocumentWindowClass on Mac OS X. */
-	public static final int kWindowToolbarButtonAttribute = (1 << 6);
-	/* This window receives no update events.
-	 * Available for all windows. */
-	public static final int kWindowNoUpdatesAttribute     = (1 << 16);
-	/* This window receives no activate events.
-	 * Available for all windows.*/
-	public static final int kWindowNoActivatesAttribute   = (1 << 17);
-	/* This window receives mouse events even for areas of the window
-	 * that are transparent (have an alpha channel component of zero).
-	 * Available for windows of kOverlayWindowClass on Mac OS X.*/
-	public static final int kWindowOpaqueForEventsAttribute = (1 << 18);
-	public static final int kWindowCompositingAttribute   = (1 << 19);
-	/* This window has no shadow.
-	 * Available for all windows on Mac OS X.
-	 * This attribute is automatically given to windows of kOverlayWindowClass. */
-	public static final int kWindowNoShadowAttribute      = (1 << 21);
-	/* This window is automatically hidden on suspend and shown on resume.
-	 * Available for all windows. This attribute is automatically
-	 * given to windows of kFloatingWindowClass, kHelpWindowClass, and
-	 * kToolbarWindowClass. */
-	public static final int kWindowHideOnSuspendAttribute = (1 << 24);	
-	/* This window has the standard Carbon window event handler installed.
-	 * Available for all windows. */
-	public static final int kWindowStandardHandlerAttribute = (1 << 25);
-	/* This window is automatically hidden during fullscreen mode (when the menubar is invisible) and shown afterwards.
-	 * Available for all windows.
-	 * This attribute is automatically given to windows of kUtilityWindowClass. */	 
-	public static final int kWindowHideOnFullScreenAttribute = (1 << 26);	
-	/* This window is added to the standard Window menu.
-	 * Available for windows of kDocumentWindowClass.
-	 * This attribute is automatically given to windows of kDocumentWindowClass. */
-	public static final int kWindowInWindowMenuAttribute  = (1 << 27);
-	/* This window supports live resizing.
-	 * Available for all windows on Mac OS X. */
-	public static final int kWindowLiveResizeAttribute    = (1 << 28);
-	/* This window will not be repositioned by the default kEventWindowConstrain
-	 * handler in response to changes in monitor size, Dock position, and so on.
-	 * Available for all windows on Mac OS X after 10.0.x. */
-	public static final int kWindowNoConstrainAttribute   = (1 << 31);
-	/* The minimum set of window attributes commonly used by document windows. */
-	public static final int kWindowStandardDocumentAttributes = (kWindowCloseBoxAttribute | kWindowFullZoomAttribute | kWindowCollapseBoxAttribute | kWindowResizableAttribute);
-	/* The minimum set of window attributes commonly used by floating windows. */
-	public static final int kWindowStandardFloatingAttributes = (kWindowCloseBoxAttribute | kWindowCollapseBoxAttribute);
-	
-	// window modality
+	public static final int kQDUseCGTextRendering = (1 << 1);
+	public static final int kScrapFlavorTypeText = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
+	public static final boolean kScrollBarsSyncAlwaysActive = true;
+	public static final boolean kScrollBarsSyncWithFocus = false;
+	public static final int kSheetWindowClass = 11;
+	public static final int kStdCFStringAlertVersionOne = 1;
+	public static final int kControlSliderDoesNotPoint = 2;
+	public static final int kTXNAlwaysWrapAtViewEdgeMask = 1 << 11;
+	public static final int kTXNDisableDragAndDropTag = ('d'<<24) + ('r'<<16) + ('a'<<8) + 'g';
+	public static final int kTXNDoFontSubstitution = ('f'<<24) + ('s'<<16) + ('u'<<8) + 'b';
+	public static final int kTXNDontDrawCaretWhenInactiveMask = 1 << 12;
+	public static final int kTXNEndOffset = 2147483647;
+	public static final int kTXNMarginsTag = ('m'<<24) + ('a'<<16) + ('r'<<8) + 'g';
+	public static final int kTXNMonostyledTextMask = 1 << 17;
+	public static final int kTXNReadOnlyMask = 1 << 5;
+	public static final int kTXNSingleLineOnlyMask = 1 << 14;
+	public static final int kTXNStartOffset = 0;
+	public static final int kTXNSystemDefaultEncoding = 0;
+	public static final int kTXNTextEditStyleFrameType = 1;
+	public static final int kTXNUnicodeTextData = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
+	public static final int kTXNUnicodeTextFile = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
+	public static final int kTXNUseCurrentSelection = -1;
+	public static final int kTXNVisibilityTag = ('v'<<24) + ('i'<<16) + ('s'<<8) + 'b';
+	public static final int kTXNWantHScrollBarMask = 1 << 2;
+	public static final int kTXNWantVScrollBarMask = 1 << 3;
+	public static final int kThemeArrowButton = 4;
+	public static final int kThemeArrowCursor = 0;
+	public static final int kThemeBrushDialogBackgroundActive = 1;
+	public static final int kThemeBrushDocumentWindowBackground = 15;
+	public static final int kThemeBrushPrimaryHighlightColor = -3;
+	public static final int kThemeBrushSecondaryHighlightColor = -4;
+	public static final int kThemeBrushButtonFaceActive = 29;
+	public static final int kThemeBrushFocusHighlight = 19;
+	public static final int kThemeBrushListViewBackground = 10; 
+	public static final int kThemeButtonOff = 0;
+	public static final int kThemeButtonOn = 1;
+	public static final int kThemeCheckBox = 1;
+	public static final int kThemeCrossCursor = 5;
+	public static final int kThemeCurrentPortFont = 200;
+	public static final int kThemeDisclosureButton = 6;
+	public static final int kThemeDisclosureRight = 0;
+	public static final int kThemeDisclosureDown = 1;
+	public static final int kThemeDisclosureLeft = 2;
+	public static final int kThemeEmphasizedSystemFont = 4;
+	public static final int kThemeIBeamCursor = 4;
+	public static final int kThemeMetricDisclosureTriangleHeight = 25;
+	public static final int kThemeMetricCheckBoxWidth = 50;
+	public static final int kThemeMetricRadioButtonWidth = 52;
+	public static final int kThemeMetricEditTextFrameOutset = 5;
+	public static final int kThemeMetricFocusRectOutset = 7;
+	public static final int kThemeMetricHSliderHeight = 41;
+	public static final int kThemeMetricNormalProgressBarThickness = 58;
+	public static final int kThemeMetricScrollBarWidth = 0;
+	public static final int kThemeMetricVSliderWidth = 45;
+	public static final int kThemeNotAllowedCursor = 18;
+	public static final int kThemePointingHandCursor = 10;
+	public static final int kThemePushButton = 0;
+	public static final int kThemePushButtonFont = 105;
+	public static final int kThemeRadioButton = 2;
+	public static final int kThemeResizeLeftRightCursor = 17;
+	public static final int kThemeResizeLeftCursor = 15;
+	public static final int kThemeResizeRightCursor = 16;
+	public static final int kThemeRoundedBevelButton = 15;
+	public static final int kThemeSmallBevelButton = 8;
+	public static final int kThemeSmallEmphasizedSystemFont = 2;
+	public static final int kThemeSmallSystemFont = 1;
+	public static final int kThemeSpinningCursor = 14;
+	public static final int kThemeStateActive = 1;
+	public static final int kThemeStateInactive = 0;
+	public static final int kThemeStatePressed = 2;
+	public static final int kThemeSystemFont = 0;
+	public static final int kThemeTextColorDocumentWindowTitleActive = 23;
+	public static final int kThemeTextColorDocumentWindowTitleInactive = 24;
+	public static final int kThemeTextColorListView = 22;
+	public static final int kThemeTextColorPushButtonActive = 12;
+	public static final int kThemeToolbarFont = 108;
+	public static final int kThemeViewsFont = 3;
+	public static final int kThemeWatchCursor = 7;
+	public static final int kTransformSelected = 0x4000;
+	public static final int kUtilityWindowClass = 8;
+    public static final int kWindowActivationScopeNone = 0;
+    public static final int kWindowActivationScopeIndependent = 1;
+    public static final int kWindowActivationScopeAll = 2;
+	public static final int kWindowAlertPositionParentWindowScreen = 0x700A;
+    public static final int kWindowBoundsChangeOriginChanged = 1<<3;
+    public static final int kWindowBoundsChangeSizeChanged = 1<<2;
+    public static final int kWindowCascadeOnMainScreen = 4;
+	public static final int kWindowCloseBoxAttribute = (1 << 0);
+	public static final int kWindowCollapseBoxAttribute = (1 << 3);
+	public static final int kWindowCompositingAttribute = (1 << 19);
+	public static final int kWindowContentRgn = 33;
+	public static final int kWindowGroupAttrHideOnCollapse = 16;
+	public static final int kWindowHorizontalZoomAttribute = 1 << 1;
+	public static final int kWindowVerticalZoomAttribute  = 1 << 2;
+	public static final int kWindowFullZoomAttribute = (OS.kWindowVerticalZoomAttribute | OS.kWindowHorizontalZoomAttribute);
+	public static final int kWindowLiveResizeAttribute = (1 << 28);
+	public static final int kWindowModalityAppModal = 2;
 	public static final int kWindowModalityNone = 0;
 	public static final int kWindowModalitySystemModal = 1;
-	public static final int kWindowModalityAppModal = 2;
 	public static final int kWindowModalityWindowModal = 3;
-	
-	// ScrollWindowOptions
-	public static final int kScrollWindowNoOptions= 0;
-    public static final int kScrollWindowInvalidate= 1;
-    public static final int kScrollWindowEraseToPortBackground= 2;
-	
-	// Region values to pass into GetWindowRegion & GetWindowBounds
-	//public static final short kWindowTitleBarRgn            = 0;
-	//public static final short kWindowTitleTextRgn           = 1;
-	//public static final short kWindowCloseBoxRgn            = 2;
-	//public static final short kWindowZoomBoxRgn             = 3;
-	//public static final short kWindowDragRgn                = 5;
-	//public static final short kWindowGrowRgn                = 6;
-	//public static final short kWindowCollapseBoxRgn         = 7;
-	//public static final short kWindowTitleProxyIconRgn      = 8;
-	public static final short kWindowStructureRgn           = 32;
-	public static final short kWindowContentRgn             = 33;   /* Content area of the window; empty when the window is collapsed*/
-	//public static final short kWindowUpdateRgn              = 34;   /* Carbon forward*/
-	//public static final short kWindowOpaqueRgn              = 35;   /* Mac OS X: Area of window considered to be opaque. Only valid for windows with alpha channels.*/
-	//public static final short kWindowGlobalPortRgn          = 40;    /* Carbon forward - bounds of the windowÕs port in global coordinates; not affected by CollapseWindow*/
+	public static final int kWindowNoShadowAttribute = (1 << 21);
+	public static final int kWindowResizableAttribute = (1 << 4);
+	public static final int kWindowStandardHandlerAttribute = (1 << 25);
+	public static final int kWindowStructureRgn = 32;
+	public static final int mouseDown = 1;
+	public static final int noErr = 0;
+	public static final int normal = 0;
+	public static final int optionKey = 1 << 11;
+	public static final int shiftKey = 1 << 9;
+	public static final int smSystemScript = -1;
+	public static final int srcCopy = 0;
+	public static final int srcOr = 1;
+	public static final int typeCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
+	public static final int typeChar = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
+	public static final int typeControlPartCode = ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
+	public static final int typeControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
+	public static final int typeFileURL= ('f'<<24) + ('u'<<16) + ('r'<<8) + 'l';	
+	public static final int typeFSRef = ('f'<<24) + ('s'<<16) + ('r'<<8) + 'f';
+	public static final int typeHICommand = ('h'<<24) + ('c'<<16) + ('m'<<8) + 'd';
+	public static final int typeHIPoint = ('h'<<24) + ('i'<<16) + ('p'<<8) + 't';
+	public static final int typeMenuRef = ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
+	public static final int typeMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
+	public static final int typeQDPoint = ('Q'<<24) + ('D'<<16) + ('p'<<8) + 't';
+	public static final int typeQDRectangle = ('q'<<24) + ('d'<<16) + ('r'<<8) + 't';
+	public static final int typeQDRgnHandle = ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
+	public static final int typeRGBColor = ('c'<<24) + ('R'<<16) + ('G'<<8) + 'B';
+	public static final int typeSInt16 = ('s'<<24) + ('h'<<16) + ('o'<<8) + 'r';
+	public static final int typeSInt32 = ('l'<<24) + ('o'<<16) + ('n'<<8) + 'g';
+	public static final int typeType = ('t'<<24) + ('y'<<16) + ('p'<<8) + 'e';
+	public static final int typeUInt32 = ('m'<<24) + ('a'<<16) + ('g'<<8) + 'n';
+	public static final int typeUnicodeText = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
+	public static final int typeWindowDefPartCode = ('w'<<24) + ('d'<<16) + ('p'<<8) + 't';
+	public static final int typeWindowRef = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
+	public static final int updateEvt = 6;
+	public static final int updateMask = 1 << updateEvt;
+	public static final int userCanceledErr = -128;
 
-		
-	public static native int CreateNewWindow(int windowClass, int attributes, short[] bounds, int[] wHandle);
-	public static native int GetWindowPort(int wHandle);
-	public static native void BeginUpdate(int wHandle);
-	public static native void EndUpdate(int wHandle);
-	public static native void DrawControls(int wHandle);
-	public static native void UpdateControls(int wHandle, int rgnHandle);
-	//public static native void DrawGrowIcon(int wHandle);
-	public static native void SetPortWindowPort(int wHandle);
-	public static native int FrontWindow();
-	public static native int FrontNonFloatingWindow();
-	public static native void SelectWindow(int wHandle);
-	public static native void ActivateWindow(int wHandle, boolean activate);
-	public static native void BringToFront(int wHandle);
-	public static native short FindWindow(short[] where, int[] wHandle);
-	//public static native boolean ResizeWindow(int wHandle, short[] startPt, short[] sizeConstraints, short[] newContentRect);
-	//public static native void DragWindow(int wHandle, short[] startPt, short[] boundsRect);
-	//public static native void GetWindowPortBounds(int wHandle, short[] bounds);
-	//public static native boolean TrackGoAway(int wHandle, short[] startPt);
-	//public static native boolean TrackBox(int wHandle, short[] startPt, short part);
-	//public static native void ZoomWindow(int wHandle, short part, boolean toFront);
-	public static native void DisposeWindow(int wHandle);
-	public static native void InvalWindowRect(int wHandle, short[] bounds);
-	public static native void InvalWindowRgn(int wHandle, int rgnHandle);
-	public static native void ShowWindow(int wHandle);
-	public static native void HideWindow(int wHandle);
-	public static native int ShowSheetWindow(int wHandle, int parenthandle);
-	public static native int HideSheetWindow(int wHandle);
-	public static native void SetWindowBounds(int wHandle, short windowRegion, short[] bounds);
-	public static native void GetWindowBounds(int wHandle, short windowRegion, short[] bounds);
-	public static native boolean IsValidWindowPtr(int grafPort);
-	public static native int GetWRefCon(int wHandle);
-	public static native void SetWRefCon(int wHandle, int data);
-	public static native void SizeWindow(int wHandle, short w, short h, boolean update);
-	public static native void MoveWindow(int wHandle, short h, short v, boolean toFront);
-	public static native void ScrollWindowRect(int wHandle, short[] rect, short dx, short dy, int options, int exposedRgn);
-	public static native int CopyWindowTitleAsCFString(int wHandle, int[] sHandle);
-	public static native int SetWindowTitleWithCFString(int wHandle, int sHandle);
-	public static native boolean IsWindowVisible(int wHandle);
-	public static native int SetWindowDefaultButton(int wHandle, int cHandle);
-	public static native int GetWindowDefaultButton(int wHandle, int[] cHandle);
-	public static native int GetWindowModality(int wHandle, int[] modalityKind, int[] unavailableWindowHandle);
-	public static native int SetWindowModality(int wHandle, int modalityKind, int unavailableWindowHandle);
-	public static native int CollapseWindow(int wHandle, boolean collapse);
-	public static native boolean IsWindowActive(int wHandle);
-	
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Menu Manager
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-    public static final int kMenuItemAttrDisabled = 1;
-    public static final int kMenuItemAttrSeparator = 64;
-	
-	// menu item mark characters
-	public static final char checkMark= (char)18;	// for SWT.CHECK
-	public static final char diamondMark= (char)19;	// for SWT.RADIO
-	
-	// menu glyphs
-	public static final short kMenuNullGlyph = 0;
-	public static final short kMenuTabRightGlyph = 2;
-	public static final short kMenuTabLeftGlyph = 3;
-	public static final short kMenuEnterGlyph = 4;
-	public static final short kMenuShiftGlyph = 5;
-	public static final short kMenuControlGlyph = 6;
-	public static final short kMenuOptionGlyph = 7;
-	public static final short kMenuSpaceGlyph = 9;
-	public static final short kMenuDeleteRightGlyph = 10;
-	public static final short kMenuReturnGlyph = 11;
-	public static final short kMenuReturnR2LGlyph = 12;
-	public static final short kMenuNonmarkingReturnGlyph = 13;
-	public static final short kMenuPencilGlyph = 15;
-	public static final short kMenuDownwardArrowDashedGlyph = 16;
-	public static final short kMenuCommandGlyph = 17;
-	public static final short kMenuCheckmarkGlyph = 18;
-	public static final short kMenuDiamondGlyph = 19;
-	public static final short kMenuAppleLogoFilledGlyph = 20;
-	public static final short kMenuParagraphKoreanGlyph = 21;
-	public static final short kMenuDeleteLeftGlyph = 23;
-	public static final short kMenuLeftArrowDashedGlyph = 24;
-	public static final short kMenuUpArrowDashedGlyph = 25;
-	public static final short kMenuRightArrowDashedGlyph = 26;
-	public static final short kMenuEscapeGlyph = 27;
-	public static final short kMenuClearGlyph = 28;
-	public static final short kMenuLeftDoubleQuotesJapaneseGlyph = 29;
-	public static final short kMenuRightDoubleQuotesJapaneseGlyph = 30;
-	public static final short kMenuTrademarkJapaneseGlyph = 31;
-	public static final short kMenuBlankGlyph = 97;
-	public static final short kMenuPageUpGlyph = 98;
-	public static final short kMenuCapsLockGlyph = 99;
-	public static final short kMenuLeftArrowGlyph = 100;
-	public static final short kMenuRightArrowGlyph = 101;
-	public static final short kMenuNorthwestArrowGlyph = 102;
-	public static final short kMenuHelpGlyph = 103;
-	public static final short kMenuUpArrowGlyph = 104;
-	public static final short kMenuSoutheastArrowGlyph = 105;
-	public static final short kMenuDownArrowGlyph = 106;
-	public static final short kMenuPageDownGlyph = 107;
-	public static final short kMenuAppleLogoOutlineGlyph = 108;
-	public static final short kMenuContextualMenuGlyph = 109;
-	public static final short kMenuPowerGlyph = 110;
-	public static final short kMenuF1Glyph = 111;
-	public static final short kMenuF2Glyph = 112;
-	public static final short kMenuF3Glyph = 113;
-	public static final short kMenuF4Glyph = 114;
-	public static final short kMenuF5Glyph = 115;
-	public static final short kMenuF6Glyph = 116;
-	public static final short kMenuF7Glyph = 117;
-	public static final short kMenuF8Glyph = 118;
-	public static final short kMenuF9Glyph = 119;
-	public static final short kMenuF10Glyph = 120;
-	public static final short kMenuF11Glyph = 121;
-	public static final short kMenuF12Glyph = 122;
-	public static final short kMenuF13Glyph = 135;
-	public static final short kMenuF14Glyph = 136;
-	public static final short kMenuF15Glyph = 137;
-	public static final short kMenuControlISOGlyph = 138;
+/** Natives */
+public static final native int kHIViewWindowContentID();
+public static final native int ActiveNonFloatingWindow();
+public static final native int AECountItems(AEDesc theAEDescList, int[] theCount);
+public static final native int AEGetNthPtr(AEDesc theAEDescList, int index, int desiredType, int[] theAEKeyword, int[] typeCode, int dataPtr, int maximumSize, int[] actualSize);
+public static final native int AEProcessAppleEvent(EventRecord theEventRecord);
+public static final native int ATSUCreateStyle(int[] oStyle);
+public static final native int ATSUCreateTextLayout(int[] oTextLayout);
+public static final native int ATSUDisposeStyle(int iStyle);
+public static final native int ATSUDisposeTextLayout(int iTextLayout);
+public static final native int ATSUDrawText(int iTextLayout, int iLineOffset, int iLineLength, int iLocationX, int iLocationY);
+public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iBoundsCharStart, int iBoundsCharLength, short iTypeOfBounds, int iMaxNumberOfBounds, int oGlyphBounds, int[] oActualNumberOfBounds);
+public static final native int ATSUSetAttributes(int iStyle, int iAttributeCount, int[] iTag, int[] iValueSize, int[] iValue); 
+public static final native int ATSUSetLayoutControls(int iTextLayout, int iAttributeCount, int[] iTag, int[] iValueSize, int[] iValue);
+public static final native int ATSUSetRunStyle(int iTextLayout, int iStyle, int iRunStart, int iRunLength);
+public static final native int ATSUSetTextPointerLocation(int iTextLayout, int iText, int iTextOffset, int iTextLength, int iTextTotalLength);
+public static final native int AddDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
+public static final native int AddDataBrowserListViewColumn(int browser, DataBrowserListViewColumnDesc columnDesc, int position);  
+public static final native int AppendMenuItemTextWithCFString(int mHandle, int sHandle, int attributes, int commandID, short[] outItemIndex);
+public static final native int AutoSizeDataBrowserListViewColumns(int cHandle);
+public static final native void BeginUpdate(int wHandle);
+public static final native void BringToFront(int wHandle);
+public static final native void CFRelease(int sHandle);
+public static final native int CFStringCreateWithBytes(int alloc, byte[] bytes, int numBytes, int encoding, boolean isExternalRepresentation);
+public static final native int CFStringCreateWithCharacters(int alloc, char[] chars, int numChars);
+public static final native int CFStringGetBytes(int theString, CFRange range, int encoding, byte lossByte, boolean isExternalRepresentation, byte[] buffer, int maxBufLen, int[] usedBufLen);
+public static final native void CFStringGetCharacters(int theString, CFRange range, char[] buffer);
+public static final native int CFStringGetLength(int theString);
+public static final native int CFStringGetSystemEncoding();
+public static final native int CFURLCopyFileSystemPath(int anURL, int pathStyle);
+public static final native int CFURLCopyLastPathComponent(int url);
+public static final native int CFURLCreateCopyAppendingPathComponent(int allocator, int url, int pathComponent, boolean isDirectory);
+public static final native int CFURLCreateCopyDeletingLastPathComponent(int allocator, int url);
+public static final native int CFURLCreateFromFSRef(int allocator, byte[] fsRef);
+public static final native void CGContextScaleCTM(int inContext, float sx, float sy);
+public static final native void CGContextTranslateCTM(int inContext, float tx, float ty);
+public static final native int CGBitmapContextCreate(int data, int width, int height, int bitsPerComponent, int bytesPerRow, int colorspace, int alphaInfo);
+public static final native int CGColorSpaceCreateDeviceRGB ();
+public static final native void CGColorSpaceRelease (int cs);
+public static final native void CGContextAddArc (int ctx, float x, float y, float radius, float startAngle, float endAngle, boolean clockwise);
+public static final native void CGContextAddArcToPoint (int ctx, float x1, float y1, float x2, float y2, float radius);
+public static final native void CGContextAddLineToPoint (int ctx, float x, float y);
+public static final native void CGContextAddLines (int ctx, float[] points, int count);
+public static final native void CGContextBeginPath (int ctx);
+public static final native void CGContextClip (int ctx);
+public static final native void CGContextClosePath (int ctx);
+public static final native void CGContextDrawImage (int ctx, CGRect rect, int image);
+public static final native void CGContextFillPath (int ctx);
+public static final native void CGContextStrokeRect (int ctx, CGRect rect);
+public static final native void CGContextFillRect (int ctx, CGRect rect);
+public static final native void CGContextFlush (int ctx);
+public static final native void CGContextGetTextPosition (int ctx, CGPoint point);
+public static final native void CGContextMoveToPoint (int ctx, float x, float y);
+public static final native void CGContextRelease(int ctx);
+public static final native void CGContextRestoreGState(int ctx);
+public static final native void CGContextSaveGState(int ctx);
+public static final native void CGContextSelectFont (int ctx, byte[] name, float size, int textEncoding);
+public static final native void CGContextSetFillColorSpace (int ctx, int colorspace);
+public static final native void CGContextSetFontSize (int ctx, float size);
+public static final native void CGContextSetStrokeColorSpace (int ctx, int colorspace);
+public static final native void CGContextSetFillColor (int ctx, float[] value);
+public static final native void CGContextSetLineDash (int ctx, float phase, float[] lengths, int count);
+public static final native void CGContextSetLineWidth (int ctx, float width);
+public static final native void CGContextSetStrokeColor (int ctx, float[] value);
+public static final native void CGContextSetRGBFillColor (int ctx, float r, float g, float b, float alpha);
+public static final native void CGContextSetRGBStrokeColor (int ctx, float r, float g, float b, float alpha);
+public static final native void CGContextSetTextDrawingMode (int ctx, int mode);
+public static final native void CGContextSetTextPosition (int ctx, float x, float y);
+public static final native void CGContextShowText (int ctx, byte[] cstring, int length);
+public static final native void CGContextShowTextAtPoint (int ctx, float x, float y, byte[] cstring, int length);
+public static final native void CGContextSetTextMatrix (int ctx, float[] transform);
+public static final native void CGContextStrokePath (int ctx);
+public static final native void CGContextSynchronize (int ctx);
+public static final native int CGDataProviderCreateWithData (int info, int data, int size, int releaseData);
+public static final native void CGDataProviderRelease (int provider);
+public static final native int CGImageCreate (int width, int height, int bitsPerComponent, int bitsPerPixel, int bytesPerRow, int colorspace, int alphaInfo, int provider, float[] decode, boolean shouldInterpolate, int intent);
+public static final native int CGImageGetAlphaInfo (int image);
+public static final native int CGImageGetBitsPerComponent (int image);
+public static final native int CGImageGetBitsPerPixel (int image);
+public static final native int CGImageGetBytesPerRow (int image);
+public static final native int CGImageGetColorSpace (int image);
+public static final native int CGImageGetHeight (int image);
+public static final native int CGImageGetWidth (int image);
+public static final native void CGImageRelease (int image);
+public static final native int CallNextEventHandler(int nextHandler, int eventRefHandle);
+public static final native short CharWidth(short c);
+public static final native int ClearCurrentScrap();
+public static final native int ClearKeyboardFocus(int inWindow);
+public static final native void ClearMenuBar();
+public static final native int ClipCGContextToRegion(int inContext, Rect portRect, int rgnHandle);
+public static final native int CloseDataBrowserContainer(int cHandle, int container);
+public static final native void ClosePoly();
+public static final native int CollapseWindow(int wHandle, boolean collapse);
+public static final native boolean ConvertEventRefToEventRecord(int inEvent, EventRecord outEvent);
+public static final native void CopyBits(int srcPixMapHandle, int dstPixMapHandle, Rect srcRect, Rect dstRect, short mode, int maskRgn);
+public static final native int CopyControlTitleAsCFString(int cHandle, int[] sHandle);
+public static final native void CopyDeepMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle, Rect srcRect, Rect maskRect, Rect dstRect, short mode, int maskRgn);
+public static final native int CopyMenuItemTextAsCFString(int mHandle, short index, int[] sHandle);
+public static final native void CopyRgn(int srcRgnHandle, int dstRgnHandle);
+public static final native short CountMenuItems(int mHandle);
+public static final native int CountSubControls(int cHandle, short[] count);
+public static final native int CreateBevelButtonControl(int window, Rect boundsRect, int title, short thickness, short behavior, int info, short menuID, short menuBehavior, short menuPlacement, int[] outControl);
+public static final native int CreateCheckBoxControl(int window, Rect boundsRect, int title, int initialValue, boolean autoToggle, int[] outControl);
+public static final native int CreateCGContextForPort(int inPort, int[] outContext);
+public static final native int CreateDataBrowserControl(int window, Rect boundsRect, int style,int[] outControl);
+public static final native int CreateEvent(int allocator, int inClassID, int kind, double when, int flags, int[] outEventRef);
+public static final native int CreateGroupBoxControl(int window, Rect boundsRect, int title, boolean primary, int[] outControl);
+public static final native int CreateIconControl(int window, Rect boundsRect, ControlButtonContentInfo icon, boolean dontTrack, int[] outControl);
+public static final native int CreateNewMenu(short menuID, int menuAttributes, int[] outMenuRef);
+public static final native int CreateNewWindow(int windowClass, int attributes, Rect bounds, int[] wHandle);
+public static final native int CreatePopupArrowControl(int window, Rect boundsRect, short orientation, short size, int[] outControl);
+public static final native int CreatePopupButtonControl(int window, Rect boundsRect, int title, short menuID, boolean variableWidth, short titleWidth, short titleJustification, int titleStyle, int[] outControl);
+public static final native int CreateProgressBarControl(int window, Rect boundsRect, int value, int minimim, int maximum, boolean indeterminate, int [] outControl);
+public static final native int CreatePushButtonControl(int window, Rect boundsRect, int title, int[] outControl);
+public static final native int CreatePushButtonWithIconControl(int window, Rect boundsRect, int title, ControlButtonContentInfo icon, short iconAlignment, int[] outControl);
+public static final native int CreateRadioButtonControl(int window, Rect boundsRect, int title, int initialValue, boolean autoToggle, int[] outControl);
+public static final native int CreateRootControl(int windowHandle, int[] cHandle);
+public static final native int CreateSliderControl(int window, Rect boundsRect, int value, int minimum, int maximum, int orientation, short numTickMarks, boolean liveTracking, int liveTrackingProc, int [] outControl);
+public static final native int CreateScrollBarControl(int window, Rect boundsRect, int value, int minimum, int maximum, int viewSize, boolean liveTracking, int liveTrackingProc, int [] outControl);
+public static final native int CreateSeparatorControl(int window, Rect boundsRect, int [] outControl);
+public static final native int CreateStandardAlert(short alertType, int errorSHandle, int explanationSHandle, AlertStdCFStringAlertParamRec alertParamHandle, int[] dialogHandle);
+public static final native int CreateStaticTextControl(int window, Rect boundsRect, int text, ControlFontStyleRec style, int [] outControl);    
+public static final native int CreateTabsControl(int window, Rect boundsRect, short size, short direction, short numTabs, int tabArray, int[] outControl);
+public static final native int CreateEditUnicodeTextControl(int window, Rect boundsRect, int text, boolean isPassword, ControlFontStyleRec style, int [] outControl);
+public static final native int CreateUserPaneControl(int window, Rect boundsRect, int features, int [] outControl);
+public static final native int CreateWindowGroup (int inAttributes, int [] outGroup);
+public static final native void DeleteMenu(short menuID);
+public static final native void DeleteMenuItem(int mHandle, short index);
+public static final native int DeleteMenuItems(int mHandle, short firstItem, int numItems);
+public static final native void DiffRgn(int srcRgnA, int srcRgnB, int dstRgn);
+public static final native int DisableControl(int cHandle);
+public static final native void DisableMenuCommand(int mHandle, int commandId);
+public static final native void DisableMenuItem(int mHandle, short index);
+public static final native void DisposeControl(int cHandle);
+public static final native void DisposeGWorld(int offscreenGWorld);
+public static final native void DisposeHandle(int handle);
+public static final native void DisposeMenu(int mHandle);
+public static final native void DisposePtr(int ptr);
+public static final native void DisposeRgn(int rgnHandle);
+public static final native void DisposeWindow(int wHandle);
+public static final native void DrawMenuBar();
+public static final native void DrawText(byte[] textBuf, short firstByte, short byteCount);
+public static final native int DrawThemeButton(Rect inBounds, short inKind, ThemeButtonDrawInfo inNewInfo, ThemeButtonDrawInfo inPrevInfo, int inEraseProc, int inLabelProc, int inUserData);
+public static final native int DrawThemeEditTextFrame(Rect bounds, int state);
+public static final native int DrawThemeFocusRect(Rect bounds, boolean hasFocus);
+public static final native int DrawThemeSeparator(Rect bounds, int state);
+public static final native int DrawThemeTextBox(int sHandle, short fontID, int state, boolean wrapToWidth, Rect bounds, short just, int context);
+public static final native int EmbedControl(int inControl, int inContainer);
+public static final native boolean EmptyRect(Rect r);
+public static final native boolean EmptyRgn(int rgnHandle);
+public static final native int EnableControl(int cHandle);
+public static final native void EnableMenuCommand(int mHandle, int commandId);
+public static final native void EnableMenuItem(int mHandle, short index);
+public static final native void EndUpdate(int wHandle);
+public static final native boolean EqualRect(Rect rect1, Rect rect2);
+public static final native void EraseRect(Rect bounds);
+public static final native void EraseRgn(int rgnHandle);
+public static final native int FetchFontInfo(short fontID, short fontSize, short fontStyle, FontInfo info); 
+public static final native int Fix2Long(int x);
+public static final native int FMCreateFontFamilyInstanceIterator(short iFontFamily, int ioIterator);
+public static final native int FMCreateFontFamilyIterator(int iFilter, int iRefCon, int iOptions, int ioIterator);
+public static final native int FMDisposeFontFamilyIterator(int ioIterator);
+public static final native int FMDisposeFontFamilyInstanceIterator(int ioIterator);
+public static final native int FMGetFontFamilyName(short id, byte[] name);
+public static final native short FMGetFontFamilyFromName(byte[] name);
+public static final native int FMGetFontFromFontFamilyInstance(short iFontFamily, short iStyle, int[] oFont, short[] oIntrinsicStyle);
+public static final native int FMGetNextFontFamily(int ioIterator, short[] oFontFamily);
+public static final native int FMGetNextFontFamilyInstance(int ioIterator, int[] oFont, short[] oStyle, short[] oSize);
+public static final native boolean FPIsFontPanelVisible();
+public static final native int FPShowHideFontPanel();
+public static final native short FindWindow(Point where, int[] wHandle);
+public static final native void FrameOval(Rect bounds);
+public static final native void FramePoly(int polyHandle);
+public static final native void FrameRect(Rect bounds);
+public static final native void FrameRoundRect(Rect bounds, short ovalWidth, short ovalHeight);
+public static final native int FrontWindow();
+public static final native short GetAppFont();
+public static final native int GetApplicationEventTarget();
+public static final native int GetAvailableWindowAttributes(int windowClass);
+public static final native int GetAvailableWindowPositioningBounds(int inDevice, Rect outAvailableRect);
+public static final native int GetBestControlRect(int inControl, Rect outRect, short[] outBaseLineOffset);
+public static final native int GetCaretTime();
+public static final native void GetClip(int rgnHandle);
+public static final native int GetControl32BitMaximum(int cHandle);
+public static final native int GetControl32BitMinimum(int cHandle);
+public static final native int GetControl32BitValue(int cHandle);
+public static final native void GetControlBounds(int cHandle, Rect bounds);
+public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, Rect inBuffer, int[] outActualSize);
+public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, int[] inBuffer, int[] outActualSize);
+public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, short[] inBuffer, int[] outActualSize);
+public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, byte[] inBuffer, int[] outActualSize);
+public static final native int GetControlEventTarget(int cHandle);
+public static final native int GetControlFeatures(int inControl, int[] outFeatures);
+public static final native int GetControlOwner(int cHandle);
+public static final native int GetControlProperty(int control, int  propertyCreator, int propertyTag, int bufferSize, int[] actualSize,  int[] propertyBuffer);
+public static final native int GetControlReference(int cHandle);
+public static final native int GetControlRegion(int cHandle, short inPart, int rgnHandle);
+public static final native short GetControlValue(int cHandle);
+public static final native int GetControlViewSize(int cHandle);
+public static final native int GetCurrentEventButtonState();
+public static final native int GetCurrentEventLoop();
+public static final native int GetCurrentEventKeyModifiers();
+public static final native int GetCurrentEventQueue();
+public static final native int GetCurrentProcess(int[] psn);
+public static final native int GetCurrentScrap(int[] scrap);
+public static final native int GetDataBrowserCallbacks(int browser, DataBrowserCallbacks  callbacks);
+public static final native int GetDataBrowserItemCount(int cHandle, int container, boolean recurse, int state, int[] numItems);
+public static final native int GetDataBrowserItemDataButtonValue(int itemData, short [] theData);
+public static final native int GetDataBrowserItemPartBounds(int cHandle, int item, int property, int part, Rect bounds);
+public static final native int GetDataBrowserItems(int browser, int container, boolean recurse, int state, int items);
+public static final native int GetDataBrowserItemState(int browser, int item, int [] state);
+public static final native int GetDataBrowserListViewHeaderBtnHeight(int browser, short [] height);
+public static final native int GetDataBrowserListViewHeaderDesc(int browser, int column, DataBrowserListViewHeaderDesc desc);
+public static final native int GetDataBrowserTableViewItemID(int browser, int row, int [] item);
+public static final native int GetDataBrowserTableViewItemRow(int browser, int item, int [] row);                         
+public static final native int GetDataBrowserTableViewColumnPosition(int browser, int column, int [] position);
+public static final native int GetDataBrowserTableViewNamedColumnWidth(int browser, int column, short [] width);
+public static final native int GetDataBrowserTableViewRowHeight(int browser, short [] height);
+public static final native int GetDataBrowserScrollBarInset(int browser, Rect insetRect);
+public static final native int GetDataBrowserScrollPosition(int cHandle, int[] top, int[] left);
+public static final native int GetDataBrowserSelectionAnchor(int browser, int [] first, int [] last);
+public static final native int GetDblTime();
+public static final native short GetDefFontSize();
+public static final native int GetEventClass(int eHandle);
+public static final native int GetEventDispatcherTarget();
+public static final native int GetEventKind(int eHandle);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, int[] outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, char[] outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, short[] outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, byte[] outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, HICommand outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, Point outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, CGPoint outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, RGBColor outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, Rect outData);
+public static final native double GetEventTime(int eHandle);
+public static final native void GetFontInfo(short[] info);
+public static final native int GetGDevice();
+public static final native void GetGWorld(int[] portHandle, int[] gdHandle);
+public static final native void GetGlobalMouse(Point where);
+public static final native int GetHandleSize(int handle);
+public static final native int GetIconRef(short vRefNum, int creator, int iconType, int[] theIconRef);
+public static final native int GetIndMenuItemWithCommandID(int mHandle, int commandId, int index, int[] outMenu, short[] outIndex);
+public static final native int GetIndexedSubControl(int cHandle, short index, int[] outHandle);
+public static final native int GetKeyboardFocus(int wHandle, int[] cHandle);
+public static final native double GetLastUserEventTime();
+public static final native int GetMainDevice();
+public static final native int GetMainEventQueue();
+public static final native int GetMenuCommandMark(int theMenu, int commandId, char[] outMark);
+public static final native int GetMenuEventTarget(int cHandle);
+public static final native int GetMenuFont(int inMenu, short[] outFontID, short[] outFontSize);
+public static final native short GetMenuID(int menu);
+public static final native int GetMenuItemCommandID(int inMenu, short inItem, int[] outCommandID);
+public static final native int GetMenuItemHierarchicalMenu(int inMenu, short inItem, int []outHierMenu);
+public static final native int GetMenuItemRefCon(int inMenu, short intItem, int[] outRefCon);
+public static final native int GetMenuTrackingData(int menu, MenuTrackingData outData);
+public static final native void GetMouse(Point where);
+public static final native void GetPixBounds(int pHandle, Rect bounds);
+public static final native short GetPixDepth(int pHandle);
+public static final native void GetPort(int[] port);
+public static final native int GetPortBitMapForCopyBits(int portHandle);
+public static final native void GetPortBounds(int pHandle, Rect rect);
+public static final native void GetPortClipRegion(int port, int clipRgn);
+public static final native int GetPortVisibleRegion(int portHandle, int rgnHandle);
+public static final native int GetPtrSize(int ptr);
+public static final native void GetRegionBounds(int rgnHandle, Rect bounds);
+public static final native int GetRootControl(int windowHandle, int[] cHandle);
+public static final native int GetScrapFlavorCount(int scrap, int[] infoCount);
+public static final native int GetScrapFlavorData(int scrap, int flavorType, int[] byteCount, byte[] destination);
+public static final native int GetScrapFlavorInfoList(int scrap, int[] infoCount, int[] info);
+public static final native int GetScrapFlavorSize(int scrap, int flavorType, int[] byteCount);
+public static final native int GetSuperControl(int cHandle, int[] parentHandle);
+public static final native int GetThemeBrushAsColor(short inBrush, short inDepth, boolean inColorDev, RGBColor outColor);
+public static final native int GetThemeDrawingState(int[] state);
+public static final native int GetThemeFont(short themeFontId, short scriptCode, byte[] fontName, short[] fontSize, byte[] style);
+public static final native int GetThemeMetric(int inMetric, int [] outMetric);
+public static final native int GetThemeTextColor(short inColor, short inDepth, boolean inColorDev, RGBColor outColor);
+public static final native int GetThemeTextDimensions(int sHandle, short fontID, int state, boolean wrapToWidth, Point ioBounds, short[] baseLine);
+public static final native int GetUserFocusEventTarget();
+public static final native int GetWRefCon(int wHandle);
+public static final native void GetWindowBounds(int wHandle, short windowRegion, Rect bounds);
+public static final native int GetWindowDefaultButton(int wHandle, int[] cHandle);
+public static final native int GetWindowEventTarget(int wHandle);
+public static final native int GetWindowFromPort(int pHandle);
+public static final native int GetWindowGroupOfClass (int windowClass);
+public static final native int GetWindowModality(int inWindow, int[] outModalKind, int[] outUnavailableWindow);
+public static final native int GetWindowPort(int wHandle);
+public static final native void GetWindowStructureWidths(int intWindow, Rect outRect);
+public static final native int HandleControlSetCursor(int control, Point localPoint, int modifiers, boolean[] cursorWasSet);  
+public static final native int HIComboBoxAppendTextItem(int inComboBox, int inText, int[] outIndex);
+public static final native int HIComboBoxCopyTextItemAtIndex(int inComboBox, int inIndex, int[] outString);
+public static final native int HIComboBoxCreate(CGRect boundsRect, int text, ControlFontStyleRec style, int list, int inAttributes, int[] outComboBox);
+public static final native int HIComboBoxGetItemCount(int inComboBox);
+public static final native int HIComboBoxInsertTextItemAtIndex(int inComboBox, int inIndex, int inText);
+public static final native int HIComboBoxRemoveItemAtIndex(int inComboBox, int inIndex);
+public static final native int HIObjectCopyClassID(int inObject);
+public static final native int HIObjectCreate(int inClassID, int inConstructData, int[] outObject);
+public static final native int HIObjectRegisterSubclass(int inClassID, int inBaseClassID, int inOptions, int inConstructProc, int inNumEvents, int[] inEventList, int inConstructData, int[] outClassRef);
+public static final native int HIViewAddSubview(int parent, int child);
+public static final native int HIViewClick(int inView, int inEvent);
+public static final native int HIViewConvertPoint(CGPoint ioPoint, int inSourceView, int inDestView);
+public static final native int HIViewFindByID(int inStartView, int inID, int[] outControl);
+public static final native int HIViewGetFirstSubview(int inView);
+public static final native int HIViewGetLastSubview(int inView);
+public static final native int HIViewGetNextView(int inView);
+public static final native int HIViewGetFrame(int inView, CGRect outRect);
+public static final native int HIViewGetRoot(int wHandle);
+public static final native int HIViewGetSizeConstraints(int inView, CGRect outMinSize, CGRect outMaxSize);
+public static final native int HIViewGetSubviewHit(int inView, CGPoint inPoint, boolean inDeep, int[] outView);
+public static final native int HIViewGetViewForMouseEvent(int inView, int inEvent, int[] outView);
+public static final native boolean HIViewIsVisible(int inView);
+public static final native int HIViewRemoveFromSuperview(int inView);
+public static final native int HIViewSetDrawingEnabled(int inView, boolean isEnabled);
+public static final native int HIViewSetFrame(int inView, CGRect inRect);
+public static final native int HIViewSetNeedsDisplay(int inView, boolean inNeedsDisplay);
+public static final native int HIViewSetNeedsDisplayInRegion(int inView, int inRgn, boolean inNeedsDisplay);
+public static final native int HIViewSetVisible(int inView, boolean inVisible);
+public static final native int HIViewSetZOrder(int inView, int inOp, int inOther);
+public static final native int HIViewSimulateClick(int inView, short inPartToClick, int modifiers, short[] outPartClicked);
+public static final native short HandleControlClick(int cHandle, Point where, int modifiers, int actionUPP);
+public static final native short HiWord(int doubleWord);
+public static final native void HideWindow(int wHandle);
+public static final native void HiliteMenu(short menuID);
+public static final native void HLock(int h);
+public static final native int HMGetTagDelay (int [] outDelay);
+public static final native int HMHideTag ();
+public static final native int HMSetTagDelay (int inDelay);
+public static final native void HMInstallControlContentCallback(int inControl, int inContentUPP);  
+public static final native void HUnlock(int h);
+public static final native int InitContextualMenus();
+public static final native void InitCursor();
+public static final native int InitDataBrowserCallbacks(DataBrowserCallbacks callbacks);
+public static final native int InitDataBrowserCustomCallbacks(DataBrowserCustomCallbacks callbacks); 
+public static final native void InsertMenu(int mHandle, short beforeID);
+public static final native int InsertMenuItemTextWithCFString(int mHandle, int sHandle, short index, int attributes, int commandID);
+public static final native int InstallEventHandler(int inTarget, int inHandler, int inNumTypes, int[] inList, int inUserData, int[] outRef);
+public static final native int InstallEventLoopTimer(int inEventLoop, double inFireDelay, double inInterval, int inTimerProc, int inTimerData, int[] outTimer);
+public static final native void InvalWindowRect(int wHandle, Rect bounds);
+public static final native void InvalWindowRgn(int wHandle, int rgnHandle);
+public static final native void InvertRect(Rect r);
+public static final native void InvertRgn(int rgnHandle);
+public static final native boolean IsControlActive(int inControl);
+public static final native boolean IsControlEnabled(int cHandle);
+public static final native boolean IsControlVisible(int cHandle);
+public static final native boolean IsDataBrowserItemSelected(int cHandle, int itemID);
+public static final native boolean IsMenuCommandEnabled(int mHandle, int commandId);
+public static final native boolean IsMenuItemEnabled(int mHandle, short index);
+public static final native boolean IsValidControlHandle(int cHandle);
+public static final native boolean IsValidMenu(int mHandle);
+public static final native boolean IsValidWindowPtr(int grafPort);
+public static final native boolean IsWindowActive(int window);
+public static final native boolean IsWindowCollapsed(int window);
+public static final native boolean IsWindowVisible(int window);
+public static final native void KillPoly(int polyHandle);
+public static final native void LineTo(short h, short v);
+public static final native short LoWord(int doubleWord);
+public static final native int LockPortBits(int portHandle);
+public static final native int MenuSelect(Point mHandle);
+public static final native void MoveControl(int theControl, short h, short v);
+public static final native void MoveTo(short h, short v);
+public static final native void MoveWindow(int wHandle, short h, short v, boolean toFront);
+public static final native int NavCreateChooseFolderDialog(NavDialogCreationOptions inOptions, int inEventProc, int inFilterProc, int inClientData, int[] outDialog);
+public static final native int NavCreateGetFileDialog(NavDialogCreationOptions inOptions, int inTypeList, int inEventProc, int inPreviewProc, int inFilterProc, int inClientData, int[] outDialog);
+public static final native int NavCreatePutFileDialog(NavDialogCreationOptions inOptions, int inFileType, int inFileCreator, int inEventProc, int inClientData, int[] outDialog);
+public static final native void NavDialogDispose(int dialogHandle);
+public static final native int NavDialogGetSaveFileName(int dialogHandle);
+public static final native int NavDialogGetUserAction(int dialogHandle);
+public static final native int NavDialogRun(int dialogHandle);
+public static final native int NavDialogSetSaveFileName(int dialogHandle, int fileNameHandle);
+public static final native int NavGetDefaultDialogCreationOptions(NavDialogCreationOptions outOptions);
+public static final native int NavDialogGetReply(int inDialog, NavReplyRecord outReply);
+public static final native int NewControl(int owningWindow, Rect boundsRect, byte[] controlTitle, boolean initiallyVisible, short initialValue, short minimumValue, short maximumValue, short procID, int controlReference);
+public static final native int NewGWorldFromPtr(int[] offscreenGWorld, int PixelFormat, Rect boundsRect, int cTable, int aGDevice, int flags, int newBuffer, int rowBytes);
+public static final native int NewHandle(int size);
+public static final native int NewHandleClear(int size);
+public static final native int NewPtr(int size);
+public static final native int NewPtrClear(int size);
+public static final native int NewRgn();
+public static final native void OffsetRect(Rect rect, short dh, short dv);
+public static final native void OffsetRgn(int rgnHandle, short dh, short dv);
+public static final native int OpenDataBrowserContainer(int cHandle, int container);
+public static final native int OpenPoly();
+public static final native void PaintOval(Rect bounds);
+public static final native void PaintPoly(int polyHandle);
+public static final native void PaintRect(Rect bounds);
+public static final native void PaintRoundRect(Rect bounds, short ovalWidth, short ovalHeight);
+public static final native void PenSize(short h, short v);
+public static final native int PickColor(ColorPickerInfo theColorInfo);
+public static final native int PopUpMenuSelect(int mHandle, short top, short left, short popUpItem);
+public static final native int PostEvent(short eventNum, int eventMsg);
+public static final native int PostEventToQueue(int inQueue, int inEvent, short inPriority);
+public static final native boolean PtInRect(Point pt, Rect r);
+public static final native boolean PtInRgn(Point pt, int rgnHandle);
+public static final native int PutScrapFlavor(int scrap, int flavorType, int flavorFlags, int flavorSize, byte[] flavorData);
+public static final native int QDBeginCGContext(int inPort, int[] outContext);
+public static final native int QDEndCGContext(int inPort, int[] inoutContext);
+public static final native void QDFlushPortBuffer(int port, int rgnHandle);
+public static final native void QDGlobalToLocalPoint(int port, Point point);
+public static final native void QDLocalToGlobalPoint(int port, Point point);
+public static final native void QDSetPatternOrigin(Point point);
+public static final native int QDSwapTextFlags(int flags);
+public static final native void RGBBackColor(RGBColor color);
+public static final native void RGBForeColor(RGBColor color);
+public static final native int ReceiveNextEvent(int inNumTypes, int[] inList, double inTimeout, boolean inPullEvent, int[] outEvent);
+public static final native boolean RectInRgn(Rect rect, int rgnHandle);
+public static final native void RectRgn(int rgnHandle, Rect left);
+public static final native int RegisterAppearanceClient();
+public static final native void ReleaseEvent(int theEvent);
+public static final native int ReleaseMenu(int mHandle);
+public static final native int ReleaseWindowGroup (int inGroup);
+public static final native int RemoveControlProperty(int control, int propertyCreator, int propertyTag);
+public static final native int RemoveDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
+public static final native int RemoveDataBrowserTableViewColumn(int browser, int column);
+public static final native int RemoveEventHandler(int inHandlerRef);
+public static final native int RemoveEventLoopTimer(int inTimer);
+public static final native int RepositionWindow(int window, int parentWindow, int method);
+public static final native int RetainMenu(int mHandle);
+public static final native int RevealDataBrowserItem(int browser, int item, int property, byte options);
+public static final native int RunStandardAlert(int dialogHandle, int modalFilterUPP, short[] itemHit);
+public static final native void ScrollRect(Rect rect, short dh, short dv, int updateRgn);
+public static final native boolean SectRect(Rect src1, Rect src2, Rect dstRect);
+public static final native void SectRgn(int srcRgnA, int srcRgnB, int dstRgn);
+public static final native void SelectWindow(int wHandle);
+public static final native void SendBehind(int window, int behindWindow);
+public static final native int SendEventToEventTarget(int theEvent, int theTarget);
+public static final native int SetBevelButtonContentInfo(int inButton, ControlButtonContentInfo inContent);
+public static final native void SetClip(int rgnHandle);
+public static final native void SetControl32BitMaximum(int cHandle, int maximum);
+public static final native void SetControl32BitMinimum(int cHandle, int minimum);
+public static final native void SetControl32BitValue(int cHandle, int value);
+public static final native void SetControlAction(int cHandle, int actionProc);
+public static final native void SetControlBounds(int cHandle, Rect bounds);
+public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, ControlButtonContentInfo inData);
+public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, ControlTabInfoRecV1 inData);
+public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, Rect inData);
+public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, short[] inData);
+public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, int[] inData);
+public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, int inData);
+public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, byte[] inData);
+public static final native int SetControlFontStyle(int inControl, ControlFontStyleRec inStyle);
+public static final native void SetControlPopupMenuHandle(int cHandle, int popupMenuHandle);
+public static final native int SetControlProperty(int control, int propertyCreator, int propertyTag, int propertySize, int[] propertyData);
+public static final native void SetControlReference(int cHandle, int data);
+public static final native int SetControlTitleWithCFString(int cHandle, int sHandle);
+public static final native void SetControlViewSize(int cHandle, int viewSize);
+public static final native void SetCursor(int cursor);
+public static final native int SetDataBrowserCallbacks(int browser, DataBrowserCallbacks  callbacks);
+public static final native int SetDataBrowserCustomCallbacks(int browser, DataBrowserCustomCallbacks  callbacks);
+public static final native int SetDataBrowserHasScrollBars(int cHandle, boolean hScroll, boolean vScroll);
+public static final native int SetDataBrowserItemDataBooleanValue(int itemRef, boolean data);
+public static final native int SetDataBrowserItemDataButtonValue(int itemRef, short themeButtonValue);
+public static final native int SetDataBrowserItemDataIcon(int itemRef, int iconRef);
+public static final native int SetDataBrowserItemDataItemID(int itemRef, int itemID);
+public static final native int SetDataBrowserItemDataText(int itemRef, int sHandle);
+public static final native int SetDataBrowserListViewDisclosureColumn(int cHandle, int colID, boolean b);
+public static final native int SetDataBrowserListViewHeaderBtnHeight(int cHandle, short height);
+public static final native int SetDataBrowserListViewHeaderDesc(int browser, int column, DataBrowserListViewHeaderDesc desc);
+public static final native int SetDataBrowserScrollPosition(int cHandle, int top, int left);
+public static final native int SetDataBrowserSelectedItems(int cHandle, int numItems, int[] items, int operation);
+public static final native int SetDataBrowserSelectionFlags(int cHandle, int selectionFlags);
+public static final native int SetDataBrowserTableViewColumnPosition(int browser, int column, int position);
+public static final native int SetDataBrowserTableViewHiliteStyle(int browser, int hiliteStyle);  
+public static final native int SetDataBrowserTableViewItemRow(int browser, int item, int row);
+public static final native int SetDataBrowserTableViewNamedColumnWidth(int browser, int column, short width);
+public static final native int SetDataBrowserTarget(int cHandle, int rootID);
+public static final native int SetEventLoopTimerNextFireTime(int inTimer, double inNextFire);
+public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, char[] inDataPtr);
+public static final native int SetFontInfoForSelection(int iStyleType, int iNumStyles, int iStyles, int iFPEventTarget);
+public static final native int SetFrontProcess(int[] psn);
+public static final native void SetGWorld(int portHandle, int gdHandle);
+public static final native int SetKeyboardFocus(int wHandle, int cHandle, short inPart);
+public static final native int SetMenuCommandMark(int mHandle, int commandId, char mark);
+public static final native int SetMenuFont(int mHandle, short fontID, short size);
+public static final native int SetMenuItemCommandKey(int mHandle, short index, boolean virtualKey, char key);
+public static final native int SetMenuItemHierarchicalMenu(int mHandle, short index, int hierMenuHandle);
+public static final native int SetMenuItemIconHandle(int mHandle, short item, byte iconType, int iconHandle);
+public static final native int SetMenuItemKeyGlyph(int mHandle, short index, short glyph);
+public static final native int SetMenuItemModifiers(int mHandle, short index, byte modifiers);
+public static final native int SetMenuItemRefCon(int mHandle, short index, int refCon);
+public static final native int SetMenuItemTextWithCFString(int mHandle, short index, int sHandle);
+public static final native int SetMenuTitleWithCFString(int mHandle, int sHandle);
+public static final native void SetOrigin(short h, short v);
+public static final native void SetPort(int pHandle);
+public static final native void SetPortBounds(int port, Rect rect);
+public static final native void SetPortWindowPort(int wHandle);
+public static final native void SetPt(Point p, short h, short v);
+public static final native void SetRect(Rect r, short left, short top, short right, short bottom);
+public static final native void SetRectRgn(int rgnHandle, short left, short top, short right, short bottom);
+public static final native int SetRootMenu(int mHandle);
+public static final native int SetThemeBackground(short inBrush, short depth, boolean isColorDevice);
+public static final native int SetThemeCursor(int themeCursor);
+public static final native int SetThemeDrawingState(int state, boolean disposeNow);
+public static final native int SetThemeWindowBackground(int wHandle, short brush, boolean update);
+public static final native int SetUpControlBackground(int cHandle, short depth, boolean isColorDevice);
+public static final native void SetWRefCon(int wHandle, int data);
+public static final native int SetWindowActivationScope(int wHandle, int scope);
+public static final native void SetWindowBounds(int window, int regionCode, Rect globalBounds);
+public static final native int SetWindowDefaultButton(int wHandle, int cHandle);
+public static final native int SetWindowGroup(int inWindow, int inNewGroup);
+public static final native int SetWindowGroupOwner(int inGroup, int inWindow);
+public static final native int SetWindowGroupParent(int inGroup, int inNewGroup);
+public static final native int SetWindowModality(int inWindow, int inModalKind, int inUnavailableWindow);
+public static final native int SetWindowTitleWithCFString(int wHandle, int sHandle);
+public static final native void ShowWindow(int wHandle);
+public static final native void SizeControl(int cHandle, short w, short h);
+public static final native void SizeWindow(int wHandle, short w, short h, boolean update);
+public static final native boolean StillDown();
+public static final native int SyncCGContextOriginWithPort(int inContext, int port);
+public static final native void SysBeep(short duration);
+public static final native int TXNActivate(int txHandle, int frameID, boolean scrollBarState);
+public static final native int TXNAdjustCursor (int iTXNObject, int ioCursorRgn);
+public static final native void TXNClick(int iTXNObject, EventRecord iEvent);
+public static final native int TXNCopy(int txHandle);
+public static final native int TXNCut(int txHandle);
+public static final native int TXNDataSize(int txHandle);
+public static final native void TXNDeleteObject(int txHandle);
+public static final native void TXNDraw(int txHandle, int gDevice);
+public static final native int TXNEchoMode(int txHandle, char echoCharacter, int encoding, boolean on);
+public static final native void TXNFocus(int txHandle, boolean becomingFocused);
+public static final native int TXNGetData(int txHandle, int startOffset, int endOffset, int[] dataHandle);
+public static final native int TXNGetLineCount(int txHandle, int[] lineTotal);
+public static final native int TXNGetLineMetrics(int iTXNObject, int iLineNumber, int [] oLineWidth, int [] oLineHeight);
+public static final native int TXNGetTXNObjectControls(int iTXNObject, int iControlCount, int [] iControlTags, int [] oControlData);
+public static final native int TXNGetRectBounds(int iTXNObject, Rect oViewRect, TXNLongRect oDestinationRect, TXNLongRect oTextRect);
+public static final native void TXNGetSelection(int txHandle, int[] startOffset, int[] endOffset);
+public static final native void TXNGetViewRect (int iTXNObject, Rect oViewRect);
+public static final native int TXNInitTextension(int iDefaultFonts, int iCountDefaultFonts, int iUsageFlags);
+public static final native int TXNNewObject(int iFileSpec, int iWindw, Rect iFrame, int iFrameOptions, int iFrameType, int iFileType, int iPermanentEncoding, int [] oTXNObject, int[] oTXNFrameID, int iRefCpm);
+public static final native int TXNOffsetToPoint(int txHandle, int offset, Point point);
+public static final native int TXNPaste(int txHandle);
+public static final native int TXNPointToOffset (int iTXNObject, Point iPoint, int [] oOffset);
+public static final native void TXNSelectAll(int txHandle);
+public static final native void TXNSetRectBounds(int iTXNObject, Rect iViewRect, TXNLongRect iDestinationRect, boolean iUpdate);
+public static final native int TXNSetData(int iTXNObject, int iDataType, char[] iDataPtr, int iDataSize, int iStartOffset, int iEndOffset);
+public static final native void TXNSetFrameBounds(int txHandle, int top, int left, int bottom, int right, int frameID);
+public static final native int TXNSetSelection(int txHandle, int startOffset, int endOffset);
+public static final native int TXNSetTXNObjectControls(int iTXNObject, boolean iClearAll, int iControlCount, int[] iControlTags, int[] iControlData);
+public static final native void TXNShowSelection(int txHandle, boolean showEnd);
+public static final native short TestControl(int control, Point point);
+public static final native void TextFace(short face);
+public static final native void TextFont(short fontID);
+public static final native void TextMode(short mode);
+public static final native void TextSize(short size);
+public static final native short TextWidth(byte[] textBuf, short firstByte, short byteCount);
+public static final native int TrackMouseLocationWithOptions(int inPort, int inOptions, double inTime, Point outPt, int [] outModifiers, short[] outResult);
+public static final native void UnionRect(Rect srcA, Rect srcB, Rect dst);
+public static final native void UnionRgn(int srcRgnA, int srcRgnB, int dstRgn);
+public static final native int UnlockPortBits(int portHandle);
+public static final native void UpdateControls(int wHandle, int rgnHandle);
+public static final native int UpdateDataBrowserItems(int cHandle, int container, int numItems, int[] items, int preSortProperty, int propertyID);
+public static final native int ZoomWindowIdeal(int inWindow, short inPartCode, Point ioIdealSize);
+public static final native void memcpy(ATSTrapezoid dest, int src, int n);
+public static final native void memcpy(byte[] dest, int src, int n);
+public static final native void memcpy(char[] dest, int src, int n);
+public static final native void memcpy(int[] dest, int src, int n);
+public static final native void memcpy(int dest, int[] src, int n);
+public static final native void memcpy(int dest, PixMap src, int n);
+public static final native void memcpy(int dest, Cursor src, int n);
+public static final native void memcpy(GDevice dest, int src, int n);
+public static final native void memcpy(PixMap dest, int src, int n);
+public static final native void memcpy(FontSelectionQDStyle dest, int src, int n);
+public static final native void memcpy(HMHelpContentRec dest, int src, int n);
+public static final native void memcpy(int dest, HMHelpContentRec src, int n);
+public static final native void memcpy(int dest, BitMap src, int n);
+public static final native void memcpy(int dest, char[] src, int n);
+public static final native void memcpy(int dest, int src, int n);
+public static final native void memcpy(int dest, byte[] src, int n);
+public static final native void memcpy(int dest, FontSelectionQDStyle src, int n);
+public static final native void memcpy(Rect dest, int src, int n);
+public static final native void memcpy(int dest, Rect src, int n);
+public static final native void memset(int dest, int value, int size);
 
-	// menu event types
-	public static final int kEventMenuOpening=	4;
-	public static final int kEventMenuClosed=	5;
-	public static final int kEventMenuPopulate=	9;
-	
-	// For use with Get/SetMenuItemModifiers
-	public static final byte kMenuNoModifiers		= 0;		/* Mask for no modifiers*/
-	public static final byte kMenuShiftModifier		= (1 << 0); /* Mask for shift key modifier*/
-	public static final byte kMenuOptionModifier	= (1 << 1); /* Mask for option key modifier*/
-	public static final byte kMenuControlModifier	= (1 << 2); /* Mask for control key modifier*/
-	public static final byte kMenuNoCommandModifier	= (1 << 3); /* Mask for no command key modifier*/
-
-	public static native int MenuSelect(short[] where);
-	public static native void HiliteMenu(short menuID);
-	public static native void DrawMenuBar();
-	public static native void InvalMenuBar();
-
-	public static native int CreateNewMenu(int menuID, int menuAttributes, int[] menuRef);
-	public static native void DisposeMenu(int mHandle);
-	public static native int InitContextualMenus();
-
-	public static native void InsertMenu(int mHandle, short beforeID);
-	public static native void DeleteMenu(short menuID);
-	public static native void ClearMenuBar();
-	
-	public static native short CountMenuItems(int mHandle);
-	public static native int DeleteMenuItems(int mHandle, short firstItem, int numItems);
-
-	public static native int GetMenuItemRefCon(int mHandle, short index, int[] refCon);
-	public static native int SetMenuItemRefCon(int mHandle, short index, int refCon);
-	public static native int SetMenuItemCommandKey(int mHandle, short index, boolean virtualKey, char key);
-	public static native int SetMenuItemModifiers(int mHandle, short index, byte modifiers);
-	public static native int SetMenuItemKeyGlyph(int mHandle, short index, short glyph);
-	public static native int InvalidateMenuItems(int mHandle, short index, int numItems);
-
-	public static native int AppendMenuItemTextWithCFString(int mHandle, int sHandle, int attributes, int commandID, short[] outItemIndex);
-	public static native int InsertMenuItemTextWithCFString(int mHandle, int sHandle, short index, int attributes, int commandID);
-	public static native int SetMenuItemTextWithCFString(int mHandle, short index, int sHandle);
-	public static native int CopyMenuItemTextAsCFString(int mHandle, short index, int[] sHandle);
-
-	//public static native int SetMenuItemCommandID(int mHandle, short index, int commandId);
-	public static native void EnableMenuCommand(int mHandle, int commandId);
-	public static native void DisableMenuCommand(int mHandle, int commandId);
-	public static native boolean IsMenuCommandEnabled (int mHandle, int commandId);
-	public static native int GetIndMenuItemWithCommandID(int mHandle, int commandId, int index, int[] outMenu, short[] outIndex);
-	public static native void DeleteMenuItem(int mHandle, short index);
-	public static native int GetMenuItemCommandID(int mHandle, short index, int[] outCommandID);
-	public static native short GetMenuID(int mHandle);
-	public static native int GetMenuHandle(short menuID);
-	public static native int PopUpMenuSelect(int mHandle, short top, short left, short popUpItem);
-	public static native int SetRootMenu(int mHandle);
-	public static native int RetainMenu(int mHandle);
-	public static native int ReleaseMenu(int mHandle);
-	public static native int SetMenuTitleWithCFString(int mHandle, int sHandle);
-	public static native int SetMenuItemHierarchicalMenu(int mHandle, short index, int hierMenuHandle);
-	public static native int GetMenuItemHierarchicalMenu(int mHandle, short index, int[] outHierMenuHandle);
-	//public static native void InsertMenuItem(int mHandle, byte[] text, short index);
-	//public static native void AppendMenu(int mHandle, byte[] text);
-	public static native int ChangeMenuItemAttributes(int mHandle, short index, int setAttributes, int clearAttributes);
-	public static native void CheckMenuItem(int mHandle, short index, boolean checked);	
-	public static native int GetMenuCommandMark(int mHandle, int commandId, char[] outMark);
-	public static native int SetMenuCommandMark(int mHandle, int commandId, char mark);
-	public static native boolean IsValidMenu(int mHandle);
-	public static native void SetMenuID(int mHandle, short id);	
-	public static native boolean IsMenuItemEnabled(int mHandle, short index);
-	public static native void DisableMenuItem(int mHandle, short index);
-	public static native void EnableMenuItem(int mHandle, short index);
-	public static native int SetMenuFont(int mHandle, short fontID, short size);
-	public static native int GetMenuFont(int mHandle, short[] fontID, short[] size);
-	public static native short GetMenuWidth(int mHandle);
-	public static native void CalcMenuSize(int mHandle);
-	public static native int SetMenuItemIconHandle(int mHandle, short item, byte iconType, int iconHandle);
-	public static native int SetMenuItemCommandID(int mHandle, short item, int commandID);
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Control Manager
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	// err codes
-	public static final int errCouldntSetFocus            	= -30585;
-	public static final int errControlIsNotEmbedder			= -30590;
-	public static final int errCantEmbedRoot				= -30595;
-
-	// control proc IDs
-	public static final short kControlBevelButtonSmallBevelProc= 32;
-	public static final short kControlBevelButtonNormalBevelProc= 33;
-	public static final short kControlBevelButtonLargeBevelProc= 34;
-	public static final short kControlSliderProc            = 48;
-	public static final short kControlProgressBarProc       = 80;
-	public static final short kControlTabSmallProc			= 129;
-	public static final short kControlSeparatorLineProc		= 144;
-	public static final short kControlGroupBoxTextTitleProc = 160;
-	public static final short kControlPopupArrowEastProc	= 192;
-	public static final short kControlUserPaneProc			= 256;
-	public static final short kControlEditTextProc			= 272;
-	public static final short kControlStaticTextProc        = 288;
-	public static final short kControlListBoxProc   		= 352;
-	public static final short kControlListBoxAutoSizeProc   = 353;
-	public static final short kControlPushButtonProc   		= 368;
-	public static final short kControlCheckBoxProc   		= 369;
-	public static final short kControlRadioButtonProc   	= 370;
-	public static final short kControlCheckBoxAutoToggleProc= 371;
-	public static final short kControlRadioButtonAutoToggleProc= 372;
-	public static final short kControlPushButLeftIconProc   = 374;
-	public static final short kControlScrollBarLiveProc     = 386;
-	public static final short kControlPopupButtonProc       = 400;
-	public static final short kControlEditUnicodeTextProc   = 912;
-	public static final short popupMenuProc                 = 1008;
-
-	// meta part codes for GetControlRegion etc.
-	public static final short kControlEntireControl			= 0;
-	public static final short kControlStructureMetaPart     = (short) -1;
-	public static final short kControlContentMetaPart       = (short) -2;
-
-	// part codes
-	public static final short inDesk		= 0;
-	public static final short inNoWindow	= 0;
-	public static final short inMenuBar		= 1;
-	public static final short inSysWindow	= 2;
-	public static final short inContent		= 3;
-	public static final short inDrag		= 4;
-	public static final short inGrow		= 5;
-	public static final short inGoAway		= 6;
-	public static final short inZoomIn 		= 7;
-	public static final short inZoomOut		= 8;
-	public static final short inCollapseBox	= 11;
-	public static final short inProxyIcon		= 12;
-	public static final short inToolbarButton	= 13;
-	public static final short inStructure		= 15;
-	
-	// other part codes
-	public static final short kControlUpButtonPart	= 20;
-	public static final short kControlDownButtonPart= 21;
-	public static final short kControlPageUpPart	= 22;
-	public static final short kControlPageDownPart	= 23;
-	public static final short kControlIndicatorPart	= 129;
-	public static final short thumbDrag				= 999;
-	
-	// tags
-	public static final int kControlProgressBarIndeterminateTag = ('i'<<24) + ('n'<<16) + ('d'<<8) + 'e';
-	
-	// BevelButton control types
-	public static final short kControlBehaviorPushbutton    = 0;
-	public static final short kControlBehaviorToggles       = 0x0100;
-	public static final short kControlBehaviorSticky        = 0x0200;
-	public static final short kControlBehaviorSingleValueMenu = 0;
-	public static final short kControlBehaviorCommandMenu   = 0x2000; /* menu holds commands, not choices. Overrides multi-value bit.*/
-	public static final short kControlBehaviorMultiValueMenu = 0x4000; /* only makes sense when a menu is attached.*/
-	public static final short kControlBehaviorOffsetContents = (short) 0x8000;
-
-	public static final short kControlBevelButtonMenuOnBottom = 0;
-	public static final short kControlBevelButtonMenuOnRight = (1 << 2);
-
-	
-	// control event types
-	public static final int kEventControlBoundsChanged	= 154;
-	public static native void SetControlAction(int cHandle, int actionProc);
-
-	public static native int NewControl(int windowHandle, boolean initiallyVisible, short initial, short min, short max, short procID);
-	public static native void DisposeControl(int cHandle);
-		
-	public static native int GetRootControl(int windowHandle, int[] cHandle);
-	public static native int CreateRootControl(int windowHandle, int[] cHandle);
-	public static native int EmbedControl(int cHandle, int parentControlHandle);
-	public static native int CountSubControls(int cHandle, short[] count);
-	public static native int GetIndexedSubControl(int cHandle, short index, int[] outHandle);
-	public static native int GetSuperControl(int cHandle, int[] parentHandle);
-
-	public static native int GetControlOwner(int cHandle);
-	//public static native int FindControlUnderMouse(short[] where, int windowHandle, short[] cpart);
-	public static native short TestControl(int cHandle, short[] where);
-	public static native short HandleControlClick(int cHandle, short[] where, int modifiers, int actionUPP);
-	public static native void MoveControl(int cHandle, short x, short y);
-	public static native void SizeControl(int cHandle, short w, short h);
-	public static native void ShowControl(int cHandle);
-	public static native void HideControl(int cHandle);
-	public static native boolean IsValidControlHandle(int cHandle);
-	public static native void SetControlReference(int cHandle, int data);
-	public static native int GetControlReference(int cHandle);
-	public static native int SetControlTitleWithCFString(int cHandle, int sHandle);
-	public static native int GetControlTitleAsCFString(int cHandle, int[] sHandle);
-	//public static native int setControlToolTipText(int cHandle, short[] bounds, int sHandle);
-	public static native void GetControlBounds(int cHandle, short[] bounds);
-	public static native void SetControlBounds(int cHandle, short[] bounds);
-	public static native int CreateUserPaneControl(int windowHandle, short[] bounds, int features, int[] cHandle);
-	public static native boolean IsControlVisible(int cHandle);
-	public static native int SetControlVisibility(int cHandle, boolean inIsVisible, boolean inDoDraw);
-	public static native boolean IsControlActive(int cHandle);
-	public static native int EnableControl(int cHandle);
-	public static native int DisableControl(int cHandle);
-	public static native boolean IsControlEnabled(int cHandle);
-	public static native int GetControl32BitMinimum(int cHandle);
-	public static native void SetControl32BitMinimum(int cHandle, int minimum);
-	public static native void SetControlMinimum(int cHandle, short minimum);
-	public static native int GetControl32BitMaximum(int cHandle);
-	public static native void SetControl32BitMaximum(int cHandle, int maximum);
-	public static native int GetControl32BitValue(int cHandle);
-	public static native short GetControlValue(int cHandle);
-	public static native void SetControl32BitValue(int cHandle, int value);
-	public static native int GetControlViewSize(int cHandle);
-	public static native void SetControlViewSize(int cHandle, int viewSize);
-	public static native int GetBestControlRect(int cHandle, short[] outRect, short[] outBaseLineOffset);
-	public static native int GetControlKind(int cHandle, int[] outControlKind);
-	public static native int GetControlData(int cHandle, short part, int tag, short[] data);
-	public static native int GetControlData(int cHandle, short part, int tag, int[] data);
-	public static native int SetControlData(int cHandle, short part, int tag, int data);
-	public static native int SetControlData(int cHandle, short part, int tag, short[] data);
-	public static native short HandleControlKey(int cHandle, short keyCode, char charCode, int modifiers);
-	public static native int SetControlFontStyle(int cHandle, short font, short size, short style);
-	public static native int SetUpControlBackground(int cHandle, short depth, boolean isColorDevice);
-
-	public static native int GetControlRegion(int cHandle, short inPart, int rgnHandle);
-	
-	public static short kControlContentCIconHandle= 130;
-
-	public static final int kControlBevelButtonOwnedMenuRefTag = ('o'<<24) + ('m'<<16) + ('r'<<8) + 'f'; /* MenuRef (control will dispose)*/
-	public static final int kControlBevelButtonCenterPopupGlyphTag = ('p'<<24) + ('g'<<16) + ('l'<<8) + 'c'; /* Boolean: true = center, false = bottom right*/
-
-	public static native int SetBevelButtonContentInfo(int cHandle, short controlContentType, int controlContentHandle);	
-
-	
-	// Slider variants
-	public static final short kControlSliderLiveFeedback	= (1 << 0);
-	public static final short kControlSliderHasTickMarks	= (1 << 1);
-	public static final short kControlSliderReverseDirection	= (1 << 2);
-	public static final short kControlSliderNonDirectional	= (1 << 3);
-
-	// Data Browser
-	public static final int kDataBrowserItemNoProperty = 0;   /* The anti-property (no associated data) */
-	public static final int kDataBrowserItemIsActiveProperty = 1; /* Boolean typed data (defaults to true) */
-	public static final int kDataBrowserItemIsSelectableProperty = 2; /* Boolean typed data (defaults to true) */
-	public static final int kDataBrowserItemIsEditableProperty = 3; /* Boolean typed data (defaults to false, used for editable properties) */
-	public static final int kDataBrowserItemIsContainerProperty = 4; /* Boolean typed data (defaults to false) */
-	public static final int kDataBrowserContainerIsOpenableProperty = 5; /* Boolean typed data (defaults to true) */
-	public static final int kDataBrowserContainerIsClosableProperty = 6; /* Boolean typed data (defaults to true) */
-	public static final int kDataBrowserContainerIsSortableProperty = 7; /* Boolean typed data (defaults to true) */
-	public static final int kDataBrowserItemSelfIdentityProperty = 8; /* kDataBrowserIconAndTextType (display property; ColumnView only) */
-	public static final int kDataBrowserContainerAliasIDProperty = 9; /* DataBrowserItemID (alias/symlink an item to a container item) */
-	public static final int kDataBrowserColumnViewPreviewProperty = 10; /* kDataBrowserCustomType (display property; ColumnView only) */
-	public static final int kDataBrowserItemParentContainerProperty = 11; /* DataBrowserItemID (the parent of the specified item, used by ColumnView) */
-
-	// Notifications used in DataBrowserItemNotificationProcPtr
-	public static final int kDataBrowserItemAdded         = 1;    /* The specified item has been added to the browser */
-	public static final int kDataBrowserItemRemoved       = 2;    /* The specified item has been removed from the browser */
-	public static final int kDataBrowserEditStarted       = 3;    /* Starting an EditText session for specified item */
-	public static final int kDataBrowserEditStopped       = 4;    /* Stopping an EditText session for specified item */
-	public static final int kDataBrowserItemSelected      = 5;    /* Item has just been added to the selection set */
-	public static final int kDataBrowserItemDeselected    = 6;    /* Item has just been removed from the selection set */
-	public static final int kDataBrowserItemDoubleClicked = 7;
-	public static final int kDataBrowserContainerOpened   = 8;    /* Container is open */
-	public static final int kDataBrowserContainerClosing  = 9;    /* Container is about to close (and will real soon now, y'all) */
-	public static final int kDataBrowserContainerClosed   = 10;   /* Container is closed (y'all come back now!) */
-	public static final int kDataBrowserContainerSorting  = 11;   /* Container is about to be sorted (lock any volatile properties) */
-	public static final int kDataBrowserContainerSorted   = 12;   /* Container has been sorted (you may release any property locks) */
-	public static final int kDataBrowserUserToggledContainer = 16; /* _User_ requested container open/close state to be toggled */
-	public static final int kDataBrowserTargetChanged     = 15;   /* The target has changed to the specified item */
-	public static final int kDataBrowserUserStateChanged  = 13;   /* The user has reformatted the view for the target */
-	public static final int kDataBrowserSelectionSetChanged = 14;  /* The selection set has been modified (net result may be the same) */
-
-	public static final int kDataBrowserNoItem= 0;
-	public static final int kDataBrowserDefaultPropertyFlags = 0;
-	public static final int kDataBrowserPropertyIsMutable = 1 << 0;
-	
-	public static final int kDataBrowserTextType= ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';	/* CFStringRef */
-	public static final int kDataBrowserIconAndTextType= ('t'<<24) + ('i'<<16) + ('c'<<8) + 'n';	/* IconRef, CFStringRef, etc */
-	public static final int kDataBrowserCheckboxType= ('c'<<24) + ('h'<<16) + ('b'<<8) + 'x';	/* ThemeButtonValue */
-
-	public static final int kDataBrowserListViewLatestHeaderDesc = 0;
-	
-	public static final int kDataBrowserDragSelect        = 1 << 0;
-	public static final int kDataBrowserSelectOnlyOne     = 1 << 1;
-	public static final int kDataBrowserResetSelection    = 1 << 2;
-	public static final int kDataBrowserCmdTogglesSelection = 1 << 3;
-	public static final int kDataBrowserNoDisjointSelection = 1 << 4;
-	public static final int kDataBrowserAlwaysExtendSelection = 1 << 5;
-	public static final int kDataBrowserNeverEmptySelectionSet = 1 << 6;
-
-	public static final int kDataBrowserViewSpecificFlagsOffset = 16;
-	public static final int kDataBrowserListViewSelectionColumn= 1 << kDataBrowserViewSpecificFlagsOffset;
- 
- 	// data browser item states 
-	public static native int newColumnDesc(int propertyID, int propertyType, int propertyFlags,
-			short minimumWidth, short maximumWidth);
-			
-	public static native int AddDataBrowserListViewColumn(int cHandle, int handle, int index);
-	
-	public static native int createDataBrowserControl(int wHandle);
-	
-	public static native int AutoSizeDataBrowserListViewColumns(int cHandle);
-		
-	public static native void setDataBrowserCallbacks(int cHandle, int dataCallbackUPP,
-										int compareCallbackUPP, int itemNotificationCallbackUPP);
-	
-	public static native int SetDataBrowserActiveItems(int cHandle, boolean active);
-	public static native int AddDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
-	public static native int RemoveDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
-
-	public static native int SetDataBrowserItemDataText(int itemRef, int sHandle);
-	public static native int SetDataBrowserItemDataBooleanValue(int itemRef, boolean data);
-	public static native int SetDataBrowserItemDataItemID(int itemRef, int itemID);
-	public static native int SetDataBrowserItemDataIcon(int itemRef, int iconRef);
-	public static native int SetDataBrowserItemDataButtonValue(int itemRef, short themeButtonValue);
-	
-	public static native int SetDataBrowserHasScrollBars(int cHandle, boolean hScroll, boolean vScroll);
-	public static native int SetDataBrowserListViewHeaderBtnHeight(int cHandle, short height);
-	public static native int UpdateDataBrowserItems(int cHandle, int container, int numItems, int[] items, int preSortProperty, int propertyID);
-	public static native int GetDataBrowserItemCount(int cHandle, int container, boolean recurse, int state, int[] numItems);
-	public static native int GetDataBrowserItems(int cHandle, int container, boolean recurse, int state, int handle);
-	public static native int RevealDataBrowserItem(int cHandle, int itemID, int colID, boolean center);
-	public static native boolean IsDataBrowserItemSelected(int cHandle, int itemID);
-	public static native int GetDataBrowserScrollPosition(int cHandle, int[] top, int[] left);
-    public static native int SetDataBrowserScrollPosition(int cHandle, int top, int left);
-
-	/* Set operations for use with SetDataBrowserSelectedItems */
-	public static final int kDataBrowserItemsAdd          = 0;    /* add specified items to existing set */
-	public static final int kDataBrowserItemsAssign       = 1;    /* assign destination set to specified items */
-	public static final int kDataBrowserItemsToggle       = 2;    /* toggle membership state of specified items */
-	public static final int kDataBrowserItemsRemove       = 3;	  /* remove specified items from existing set */
-	
-	public static native int SetDataBrowserSelectionFlags(int cHandle, int selectionFlags);
-	public static native int SetDataBrowserSelectedItems(int cHandle, int numItems, int[] items, int operation);
-	
-	public static native int SetDataBrowserTarget(int cHandle, int rootID);
-	public static native int SetDataBrowserListViewDisclosureColumn(int cHandle, int colID, boolean b);
-
-	public static final int kDataBrowserPropertyEnclosingPart = 0;
-//	public static final int kDataBrowserPropertyContentPart = ('-'<<24) + ('-'<<16) + ('-'<<8) + '-';
-//	public static final int kDataBrowserPropertyDisclosurePart = ('d'<<24) + ('i'<<16) + ('s'<<8) + 'c';
-//	public static final int kDataBrowserPropertyTextPart = kDataBrowserTextType;
-//	public static final int kDataBrowserPropertyIconPart = kDataBrowserIconType;
-//	public static final int kDataBrowserPropertySliderPart = kDataBrowserSliderType;
-//	public static final int kDataBrowserPropertyCheckboxPart = kDataBrowserCheckboxType;
-//	public static final int kDataBrowserPropertyProgressBarPart = kDataBrowserProgressBarType;
-//	public static final int kDataBrowserPropertyRelevanceRankPart = kDataBrowserRelevanceRankType;
-
-	public static native int GetDataBrowserItemPartBounds(int cHandle, int item, int property,
-			int part, short[] bounds);
-			
-	public static native int OpenDataBrowserContainer(int cHandle, int container);
-	public static native int CloseDataBrowserContainer(int cHandle, int container);
- 
- 	public static final int kDataBrowserItemIsSelected = 1 << 0;
- 	public static final int kDataBrowserContainerIsOpen = 1 << 1;
- 	public static final int kDataBrowserItemIsDragTarget = 1 << 2; /* During a drag operation */
-
-	public static native int GetDataBrowserItemState(int cHandle, int item, int[] state);
- 
-	//---- User Pane
-	
-	// feature bits
-	//public static final int kControlSupportsGhosting      = 1 << 0;
-	public static final int kControlSupportsEmbedding     = 1 << 1;
-	public static final int kControlSupportsFocus         = 1 << 2;
-	//public static final int kControlWantsIdle             = 1 << 3;
-	//public static final int kControlWantsActivate         = 1 << 4;
-	public static final int kControlHandlesTracking       = 1 << 5;
-	//public static final int kControlSupportsDataAccess    = 1 << 6;
-	//public static final int kControlHasSpecialBackground  = 1 << 7;
-	public static final int kControlGetsFocusOnClick      = 1 << 8;
-	//public static final int kControlSupportsCalcBestRect  = 1 << 9;
-	//public static final int kControlSupportsLiveFeedback  = 1 << 10;
-	//public static final int kControlHasRadioBehavior      = 1 << 11;
-	//public static final int kControlSupportsDragAndDrop   = 1 << 12;
-	//public static final int kControlAutoToggles           = 1 << 14;
-	//public static final int kControlSupportsGetRegion     = 1 << 17;
-	//public static final int kControlSupportsFlattening    = 1 << 19;
-	//public static final int kControlSupportsSetCursor     = 1 << 20;
-	//public static final int kControlSupportsContextualMenus = 1 << 21;
-	//public static final int kControlSupportsClickActivation = 1 << 22;
-	//public static final int kControlIdlesWithTimer        = 1 << 23;
-	
-	public static final int kControlUserPaneDrawProcTag= ('d'<<24) + ('r'<<16) + ('a'<<8) + 'w';
-	public static final int kControlUserPaneHitTestProcTag= ('h'<<24) + ('i'<<16) + ('t'<<8) + 't';
-	public static final int kControlUserPaneTrackingProcTag= ('t'<<24) + ('r'<<16) + ('a'<<8) + 'k';
-	
-	// StaticText
-	public static final int kControlStaticTextCFStringTag= ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
-	
-	// TextEdit
-	public static final int kControlEditTextTextTag= ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
-	public static final int kControlEditTextSelectionTag= ('s'<<24) + ('e'<<16) + ('l'<<8) + 'e';
-	public static final int kControlEditTextCFStringTag= ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
-	public static final int kControlEditTextLockedTag= ('l'<<24) + ('o'<<16) + ('c'<<8) + 'k';
-	
-	/*
-	public static native int CreateEditUnicodeTextControl(int wHandle, short[] bounds, int sHandle,
-		boolean isPassword, int styleHandle, int[] outControl);
-	*/
-	
-	///// MLTE Text
-	public static final int kTXNWantHScrollBarMask        = 1 << 2;
-	public static final int kTXNWantVScrollBarMask        = 1 << 3;
-	public static final int kTXNReadOnlyMask              = 1 << 5;
-	public static final int kTXNAlwaysWrapAtViewEdgeMask  = 1 << 11;
-	public static final int kTXNDontDrawCaretWhenInactiveMask = 1 << 12;
-	public static final int kTXNSingleLineOnlyMask        = 1 << 14;
-	public static final int kTXNMonostyledTextMask		 = 1 << 17;
-
-	public static final int kTXNTextEditStyleFrameType    = 1;
-	
-	public static final int kTXNUnicodeTextFile           = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
-	
-	public static final int kTXNSystemDefaultEncoding     = 0;
-	
-	public static final int kTXNUnicodeTextData           = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
-	
-	public static final int kTXNWordWrapStateTag          = ('w'<<24) + ('w'<<16) + ('r'<<8) + 's';
-	public static final int kTXNTabSettingsTag            = ('t'<<24) + ('a'<<16) + ('b'<<8) + 's';
-	public static final int kTXNDoFontSubstitution        = ('f'<<24) + ('s'<<16) + ('u'<<8) + 'b';
-	public static final int kTXNVisibilityTag			 = ('v'<<24) + ('i'<<16) + ('s'<<8) + 'b';
-
-	/* kTXNWordWrapStateTag */
-	public static final boolean kTXNAutoWrap                  = false;
-	public static final boolean kTXNNoAutoWrap                = true;
-	
-	/* TXNScrollBarState */
-	public static final boolean kScrollBarsAlwaysActive       = true;
-	public static final boolean kScrollBarsSyncWithFocus      = false;
-
-	// Offsets
-    public static final int kTXNUseCurrentSelection = -1;
-    public static final int kTXNStartOffset = 0;
-    public static final int kTXNEndOffset = 2147483647;
-	
-		
-	public static native int TXNInitTextension();
-	public static native int TXNNewObject(int fileSpec, int wHandle, short[] bounds, int frameOptions,
-		int frameType, int fileType, int iPermanentEncoding, int[] handle, int[] frameID, int refcon);
-	public static native void TXNDeleteObject(int txHandle);
-	public static native void TXNSetFrameBounds(int txHandle, int top, int left, int bottom, int right, int frameID);
-	public static native void TXNDraw(int txHandle, int gDevice);
-	public static native int TXNGetData(int txHandle, int startOffset, int endOffset, int[] dataHandle);
-	public static native int TXNSetData(int txHandle, char[] data, int startOffset, int endOffset);
-	public static native int TXNGetLineCount(int txHandle, int[] lineTotal);
-	public static native int TXNDataSize(int txHandle);
-	public static native void TXNGetSelection(int txHandle, int[] startOffset, int[] endOffset);
-	public static native int TXNSetSelection(int txHandle, int startOffset, int endOffset);
-	public static native void TXNSelectAll(int txHandle);
-	public static native void TXNShowSelection(int txHandle, boolean showEnd);
-	public static native void TXNKeyDown(int txHandle, int[] eventData);
-	public static native void TXNClick(int txHandle, int[] eventData);
-	public static native void TXNFocus(int txHandle, boolean becomingFocused);
-	public static native int TXNCut(int txHandle);
-	public static native int TXNCopy(int txHandle);
-	public static native int TXNPaste(int txHandle);
-	public static native int TXNGetRectBounds(int txHandle, short[] viewRect, int[] destinationRect, int[] textRect);
-	public static native void TXNSetRectBounds(int txHandle, short[] viewRect, int[] destRect, boolean update);
-	public static native int TXNActivate(int txHandle, int frameID, boolean scrollBarState);
-	public static native int TXNEchoMode(int txHandle, char echoCharacter, int encoding, boolean on);
-	public static native int TXNOffsetToPoint(int txHandle, int offset, short[] point);
-	public static native void TXNResizeFrame(int txHandle, int width, int height, int frameID);
-	public static native void TXNGetViewRect(int txHandle, short[] viewRect);
-	public static native int TXNGetLineMetrics(int txHandle, int lineNumber, int[] lineWidth, int[] lineHeight);
-	public static native void TXNForceUpdate(int txHandle);
-	public static native int TXNSetTXNObjectControls(int txHandle, boolean clearAll, int controlCount, int[] controlTags, int[] controlData);
-	//public static native int TXNSetBackground(int txHandle, TXNBackground *iBackgroundInfo);
-	public static native void setTXNMargins(int txHandle, short margin);
-
-	// TabFolder
-	public static final int kControlTabInfoTag= ('t'<<24) + ('a'<<16) + ('b'<<8) + 'i';	/* ControlTabInfoRec*/
-	public static final int kControlTabContentRectTag= ('r'<<24) + ('e'<<16) + ('c'<<8) + 't';	/* Rect*/
-
-	public static native int CreateTabFolderControl(int wHandle, int[] cHandle);
-	public static native int setTabText(int cHandle, int index, int sHandle);
-	public static native int setTabIcon(int cHandle, int index, int iconHandle);
-	
-	// Popup menus
-	/* 
-	public static final int kControlPopupButtonMenuRefTag = OSType("mhan"); // MenuRef
-	public static final int kControlPopupButtonExtraHeightTag = OSType("exht"); // SInt16 - extra vertical whitespace within the button
-	public static final int kControlPopupButtonOwnedMenuRefTag = OSType("omrf"); // MenuRef
-	public static final int kControlPopupButtonCheckCurrentTag = OSType("chck"); // Boolean - whether the popup puts a checkmark next to the current item (defaults to true)
-	public static native int CreatePopupButtonControl(int wHandle, short[] bounds, int sHandle, short menuID,
-			boolean variableWidth, short titleWidth, short titleJustification, byte titleStyle, int[] outControl);
-	*/
-	public static native void SetControlPopupMenuHandle(int cHandle, int popupMenuHandle);
-	
-	//---- Alerts and Dialogs
-	// Alert types
-    public static final short kAlertStopAlert = 0;
-    public static final short kAlertNoteAlert = 1;
-    public static final short kAlertCautionAlert = 2;
-    public static final short kAlertPlainAlert = 3;
-	
-	public static native int CreateStandardAlert(short alertType, int errorSHandle, int explanationSHandle,
-				int alertParamHandle, int[] dialogHandle);
-
-	public static native int RunStandardAlert(int dialogHandle, int modalFilterUPP, short[] itemHit);
-	
-	public static native int PickColor(short[] rgb, short[] where, byte[] title, boolean[] success);
-	
-	// File dialog
-	public static final int kNavAllowMultipleFiles= 0x00000080; /* allow multiple items to be selected */
-  
-	public static final int kNavUserActionNone = 0;
-	public static final int kNavUserActionCancel = 1;	/* The user cancelled the dialog. */
-	public static final int kNavUserActionOpen = 2;	/* Open button in the GetFile dialog. */
-	public static final int kNavUserActionSaveAs = 3; /* Save button in the PutFile dialog. */
-	public static final int kNavUserActionChoose = 4;	/* Choose button in the ChooseFile, ChooseFolder, ChooseVolume or ChooseObject dialogs.*/
-	public static final int kNavUserActionNewFolder = 5; /* New Folder button in the New Folder dialog. */
-	public static final int kNavUserActionSaveChanges = 6; /* Save button in an AskSaveChanges dialog. */
-	public static final int kNavUserActionDontSaveChanges = 7; /* Don't Save button in an AskSaveChanges dialog. */
-  	public static final int kNavUserActionDiscardChanges = 8; /* Discard button in the AskDiscardChanges dialog. */
-  	public static final int kNavUserActionReviewDocuments = 9; /* Review Unsaved button in the AskReviewDocuments dialog (Mac OS X only). */
-  	public static final int kNavUserActionDiscardDocuments = 10; /* The user clicked the Discard Changes button in the AskReviewDocuments dialog (Mac OS X only). */
-		
-	public static native int NavCreateGetFileDialog(int options, int titleHandle, int parentHandle, int[] dialogHandle);
-	public static native int NavCreatePutFileDialog(int options, int titleHandle, int parentHandle, int[] dialogHandle,
-									int fileType, int fileCreator);
-	public static native int NavCreateChooseFolderDialog(int options, int windowTitle, int messageHandle,
-									int parentWindowHandle, int[] dialogHandle);
-								
-	public static native int NavDialogSetSaveFileName(int dialogHandle, int fileNameHandle);
-	public static native int NavDialogGetSaveFileName(int dialogHandle);
-
-	public static native int NavDialogRun(int dialogHandle);
-	public static native int NavDialogGetUserAction(int dialogHandle);
-	
-	public static native int NavDialogGetReply(int dialogHandle, int[] replyHandle);
-	public static native int NavReplyRecordGetSelection(int replyHandle);	// returns AEDescList
-	public static native void NavDialogDisposeReply(int replyHandle);
-	
-	public static native int AECountItems(int aeDescList, int[] count);
-	public static native int AEGetNthPtr(int aeDescList, int oneBasedIndex, int[] sHandle);
-	
-	public static native int getFiles(int dialogHandle);
-	public static native void NavDialogDispose(int dialogHandle);
-	
-	
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// CFStrings
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	public static native int CFStringCreateWithCharacters(String s);
-	public static native void CFRelease(int sHandle);
-	public static native int CFStringGetLength(int sHandle);
-	public static native void CFStringGetCharacters(int sHandle, int start, int length, char[] buffer);
-	
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// Handles
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	public static native int NewHandle(int size);
-	public static native int NewHandleClear(int size);
-	public static native void DisposeHandle(int handle);
-	public static native int GetHandleSize(int handle);
-	public static native void getHandleData(int handle, char[] data);
-	public static native void getHandleData(int handle, int[] data);
-	public static native int DerefHandle(int handle);
-	
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// Ptrs
-	//////////////////////////////////////////////////////////////////////////////////////////////////	
-	public static native int NewPtr(int size);
-	public static native int NewPtrClear(int size);
-	public static native void DisposePtr(int ptr);
-	public static native int GetPtrSize(int ptr);
-	//public static native int MemError();
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// Unix memory utilities
-	//////////////////////////////////////////////////////////////////////////////////////////////////	
-	public static native void memcpy(int dest, int src, int n);
-	public static native void memcpy(int dest, byte[] src, int n);
-	public static native void memcpy(byte[] dest, int src, int n);
-	public static native void memset(int dest, int value, int size);
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// Scrap
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-
-	public static native int GetCurrentScrap(int[] scrapHandle);
-	public static native int GetScrapFlavorCount(int scrapHandle, int[] flavorCount);
-	public static native int GetScrapFlavorInfoList(int scrapHandle, int[] flavorCount, int[] info);
-	public static native int GetScrapFlavorSize(int scrapHandle, int flavorType, int[] size);
-	public static native int GetScrapFlavorData(int scrapHandle, int flavorType, int[] size, byte[] data);
-	public static native int PutScrapFlavor(int scrapHandle, int flavorType, int flavorFlags, byte[] data); 
-	public static native int ClearCurrentScrap();
-	 
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// Misc
-	//////////////////////////////////////////////////////////////////////////////////////////////////
- 	public static native short HiWord(int doubleWord);
-	public static native short LoWord(int doubleWord);
-	public static native void SysBeep(short duration);
-	public static native int GetDblTime();
-	public static native int GetCaretTime();
-	public static native int GetAvailableWindowPositioningBounds(int gHandle, short[] mainScreenRect);
-	
-	public static native int GetIconRef(short vRefNum, int creator, int iconType, int[] iconRef);
-	
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	// Jaguar
-	//////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	// HIObject
-		public static final int kEventClassHIObject= ('h'<<24) + ('i'<<16) + ('o'<<8) + 'b';
-		
-		public static final int kEventHIObjectConstruct= 1;
-		public static final int kEventHIObjectInitialize= 2;
-		public static final int kEventHIObjectDestruct= 3;
-		//public static final int kEventHIObjectIsEqual= 4;
-		//public static final int kEventHIObjectPrintDebugInfo= 5;
- 
-	public static native int HIObjectRegisterSubclass(int inClassID, int inBaseClassID, int inOptions,
-			int inConstructProc, int[] inEventList, int inConstructData, int[] outClassRef);
-	public static native int HIObjectCreate(int inClassID, int inConstructData, int[] outObject);
-	public static native int HIObjectCopyClassID(int inObject);
-
-	// HIView
-		public static final int kEventControlDraw= 4;
-		public static final int kEventControlAddedSubControl= 152;
-		public static final int kEventControlRemovingSubControl= 153;
-	public static native int HIViewAddSubview(int parent, int child);
-	public static native int HIViewRemoveFromSuperview(int inView);
-	public static native int HIViewGetFrame(int inView, float[] outRect);
-	public static native int HIViewSetFrame(int inView, int x, int y, int width, int height);
-	public static native int HIViewSetDrawingEnabled(int inView, boolean isEnabled);
-	public static native int HIViewSimulateClick(int inView, short inPartToClick, int modifiers,
-										short[] outPartClicked);
-	public static native int HIViewSetZOrder(int inView, int inOp, int inOther);
-		public static final int kHIViewZOrderAbove= 1;
-		public static final int kHIViewZOrderBelow= 2;
-		
-	public static native int HIViewClick(int inView, int inEvent);
-	public static native int HIViewConvertPoint(float[] ioPoint, int inSourceView, int inDestView);
-	public static native int HIViewGetRoot(int wHandle);
-	public static native int HIViewSetNeedsDisplay(int inView, boolean inNeedsDisplay);
-	public static native int HIViewSetNeedsDisplayInRegion(int inView, int inRgn, boolean inNeedsDisplay);
-	public static native int HIViewSetVisible(int inView, boolean inVisible);
-	public static native int HIViewChangeAttributes(int inView, int inAttrsToSet, int inAttrsToClear);
-	public static native int HIViewFindByID(int inStartView, int inID, int[] outControl);
-	public static native int HIViewGetViewForMouseEvent(int inView, int inEvent, int[] outView);
-
-	// HIComboBox
-  		public static final short kHIComboBoxEditTextPart=  5;
-  		public static final short kHIComboBoxDisclosurePart=  28;
-
-	public static native int HIComboBoxCreate(int[] outComboBox, int attributes);
-		public static final int kHIComboBoxNoAttributes = 0;
-		public static final int kHIComboBoxAutoCompletionAttribute = (1 << 0);
-		public static final int kHIComboBoxAutoDisclosureAttribute = (1 << 1);
-		public static final int kHIComboBoxAutoSortAttribute  = (1 << 2);
-		public static final int kHIComboBoxAutoSizeListAttribute = (1 << 3);
-		public static final int kHIComboBoxStandardAttributes = (kHIComboBoxAutoCompletionAttribute | kHIComboBoxAutoDisclosureAttribute | kHIComboBoxAutoSizeListAttribute);
-
-	public static native int HIComboBoxGetItemCount(int inComboBox);
-	public static native int HIComboBoxInsertTextItemAtIndex(int inComboBox, int inIndex, int inText);
-	public static native int HIComboBoxAppendTextItem(int inComboBox, int inText);
-	public static native int HIComboBoxRemoveItemAtIndex(int inComboBox, int inIndex);
-
-	public static native int HIComboBoxCopyTextItemAtIndex(int inComboBox, int inIndex, int[] outString);
-
-	public static native void Init();
-	
-	// core graphics
-	
-	public static native int QDBeginCGContext(int inPort, int[] outContext);
-	public static native int QDEndCGContext(int inPort, int[] inoutContext);
-	public static native int SyncCGContextOriginWithPort(int inContext, int port);
-	
-	public static native void CGContextSaveGState(int inContext);
-	public static native void CGContextRestoreGState(int inContext);
-	
-	public static native void CGContextStrokeRect(int inContext, float x, float y, float w, float h);
-	public static native void CGContextFillRect(int inContext, float x, float y, float w, float h);
-	
-	public static native void CGContextScaleCTM(int inContext, float sx, float sy);
-	public static native void CGContextTranslateCTM(int inContext, float tx, float ty);
-	
-	public static native void CGContextClipToRect(int inContext, float x, float y, float w, float h);
-	public static native int ClipCGContextToRegion(int inContext, short[] portRect, int rgnHandle);
-
-	public static native void CGContextBeginPath(int inContext);
-	public static native void CGContextMoveToPoint(int inContext, float x, float y);
-	public static native void CGContextAddArc(int inContext, float x, float y, float radius,
-					float startAngle, float endAngle, int clockwise);
-	public static native void CGContextClosePath(int inContext);
-	public static native void CGContextStrokePath(int inContext);
-	public static native void CGContextFillPath(int inContext);
-	
-	public static native void CGContextShowGlyphsAtPoint(int inContext, float x, float y, char[] glyphs);
-	public static native void CGContextShowTextAtPoint(int inContext, float x, float y, byte[] chars);
-
-	// process manager
-	public static native int GetCurrentProcess(int[] psn);
-	public static native int SetFrontProcess(int[] psn);
-	
-	public static final int kCFAllocatorDefault = 0;
+public static final native int HIViewSetBoundsOrigin(int inView, float inX, float inY); 
 }

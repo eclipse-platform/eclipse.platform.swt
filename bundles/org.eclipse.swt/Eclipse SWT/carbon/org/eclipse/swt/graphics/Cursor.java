@@ -7,9 +7,8 @@ package org.eclipse.swt.graphics;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * Instances of this class manage operating system resources that
@@ -35,26 +34,66 @@ import org.eclipse.swt.widgets.Display;
  * Note: Only one of the above styles may be specified.
  * </p>
  */
+
 public final class Cursor {
+	
 	/**
 	 * the handle to the OS cursor resource
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
-
+	
 	/**
-	 * The device where this Cursor was created.
+	 * the device where this cursor was created
 	 */
 	Device device;
 	
-	// AW
-	private boolean fDispose;
+	/**
+	 * data and mask used to create a Resize NS Cursor
+	 */
+	static final short [] SIZENS_SOURCE = new short[] {
+		(short)0x0000,
+		(short)0x0180,
+		(short)0x03C0,
+		(short)0x07E0,
+		(short)0x0180,
+		(short)0x0180,
+		(short)0x0180,
+	 	(short)0x7FFE,
+	 	(short)0x7FFE,
+		(short)0x0180,
+		(short)0x0180,
+		(short)0x0180,
+		(short)0x07E0,
+		(short)0x03C0,
+		(short)0x0180,
+		(short)0x0000,
+	};
+	static final short [] SIZENS_MASK = new short[] {
+		(short)0x0180,
+		(short)0x03C0,
+		(short)0x07E0,
+		(short)0x0FF0,
+		(short)0x0FF0,
+		(short)0x03C0,
+		(short)0xFFFF,
+	 	(short)0xFFFF,
+	 	(short)0xFFFF,
+		(short)0xFFFF,
+		(short)0x03C0,
+		(short)0x0FF0,
+		(short)0x0FF0,
+		(short)0x07E0,
+		(short)0x03C0,
+		(short)0x0180,
+	};
 	
-	private static int NO_CURSOR;
-	// AW
-		
-Cursor () {
+/**
+ * Prevents uninitialized instances from being created outside the package.
+ */
+Cursor() {
 }
+
 /**	 
  * Constructs a new cursor given a device and a style
  * constant describing the desired cursor appearance.
@@ -96,58 +135,48 @@ Cursor () {
  * @see SWT#CURSOR_NO
  * @see SWT#CURSOR_HAND
  */
-public Cursor (Device device, int style) {
+public Cursor(Device device, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-	
-	handle = OS.kThemeArrowCursor;		// the default cursor
-	
 	switch (style) {
-	case SWT.CURSOR_ARROW:
-		handle= OS.kThemeArrowCursor;
-		break;
-	case SWT.CURSOR_WAIT:
-		handle= OS.kThemeSpinningCursor;
-		break;
-	case SWT.CURSOR_APPSTARTING:
-		handle= OS.kThemeWatchCursor;
-		break;
-	case SWT.CURSOR_HAND:
-		handle= OS.kThemeOpenHandCursor;
-		break;
-	case SWT.CURSOR_CROSS:
-		handle= OS.kThemeCrossCursor;
-		break;
-	case SWT.CURSOR_HELP: 				break;
-	case SWT.CURSOR_SIZEALL: 			break;
-	case SWT.CURSOR_SIZENESW: 			break;
-	case SWT.CURSOR_SIZENS: 			break;
-	case SWT.CURSOR_SIZENWSE: 			break;
-	case SWT.CURSOR_SIZEWE: 			break;
-	case SWT.CURSOR_SIZEN: 			break;
-	case SWT.CURSOR_SIZES: 			break;
-	case SWT.CURSOR_SIZEE: 			break;
-	case SWT.CURSOR_SIZEW: 			break;
-	case SWT.CURSOR_SIZENE: 			break;
-	case SWT.CURSOR_SIZESE: 			break;
-	case SWT.CURSOR_SIZESW: 			break;
-	case SWT.CURSOR_SIZENW: 			break;
-	case SWT.CURSOR_UPARROW: 			break;
-	case SWT.CURSOR_IBEAM:
-		handle= OS.kThemeIBeamCursor;
-		break;
-	case SWT.CURSOR_NO:
-		if (NO_CURSOR == 0) {
-			short[] data= new short[16];
-			NO_CURSOR= OS.NewCursor((short) 0, (short)0, data, data);
+		case SWT.CURSOR_HAND: 			handle = OS.kThemePointingHandCursor; break;
+		case SWT.CURSOR_ARROW: 		handle = OS.kThemeArrowCursor; break;
+		case SWT.CURSOR_WAIT: 			handle = OS.kThemeSpinningCursor; break;
+		case SWT.CURSOR_CROSS: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_APPSTARTING: 	handle = OS.kThemeWatchCursor; break;
+		case SWT.CURSOR_HELP: 			handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZEALL: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZENESW: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZENS: {
+			org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
+			cursor.data = SIZENS_SOURCE;
+			cursor.mask = SIZENS_MASK;
+			cursor.hotSpot_h = 7;
+			cursor.hotSpot_v = 7;
+			handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
+			if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);	
+	 		break;
 		}
-		handle = NO_CURSOR;
-		break;
-	default:
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		case SWT.CURSOR_SIZENWSE: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZEWE: 		handle = OS.kThemeResizeLeftRightCursor; break;
+		case SWT.CURSOR_SIZEN: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZES: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZEE: 		handle = OS.kThemeResizeRightCursor; break;
+		case SWT.CURSOR_SIZEW: 		handle = OS.kThemeResizeLeftCursor; break;
+		case SWT.CURSOR_SIZENE: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZESE: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZESW: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZENW: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_UPARROW: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_IBEAM: 		handle = OS.kThemeIBeamCursor; break;
+		case SWT.CURSOR_NO: 			handle = OS.kThemeNotAllowedCursor; break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 }
+
 /**	 
  * Constructs a new cursor given a device, image and mask
  * data describing the desired cursor appearance, and the x
@@ -180,14 +209,14 @@ public Cursor (Device device, int style) {
  *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
  * </ul>
  */
-public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
+public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
 		if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		}
 		mask = source.getTransparencyMask();
 	}
@@ -195,7 +224,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 	if (mask.width != source.width || mask.height != source.height) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	/* Check depths */
+	/* Check color depths */
 	if (mask.depth != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (source.depth != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	/* Check the hotspots */
@@ -203,51 +232,56 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	
-	int w= Math.min(16, source.width);
-	int h= Math.min(16, source.height);
-	
-	short[] data= new short[16];
-	short[] msk= new short[16];
-	
-	for (int y= 0; y < h; y++) {
-		short d= 0;
-		short m= 0;
-		for (int x= 0; x < w; x++) {
+	/* Create the cursor */
+	org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
+	int width = Math.min(16, source.width);
+	int height = Math.min(16, source.height);
+	short[] srcData = cursor.data;
+	short[] maskData = cursor.mask;
+	for (int y= 0; y < height; y++) {
+		short d = 0, m = 0;
+		for (int x= 0; x < width; x++) {
 			int bit= 1 >> x;
-			if (source.getPixel(x, y) != 0)
-				d |= bit;
-			if (mask.getPixel(x, y) != 0)
-				m |= bit;
+			if (source.getPixel(x, y) != 0) d |= bit;
+			if (mask.getPixel(x, y) != 0) m |= bit;
 		}
-		data[y]= d;
-		msk[y]= m;
+		srcData[y] = d;
+		maskData[y] = m;
 	}
-	
-	OS.NewCursor((short) hotspotX, (short)hotspotY, data, msk);
+	cursor.hotSpot_h = (short)Math.min(16, hotspotX);
+	cursor.hotSpot_v = (short)Math.min(16, hotspotY);
+	handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	fDispose= true;
+	OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
 }
-//public static Cursor carbon_new(Device device, int handle) {
-//	if (device == null) device = Device.getDevice();
-//	Cursor cursor = new Cursor();
-//	cursor.device = device;
-//	cursor.handle = handle;
-//	return cursor;
-//}
+
 /**
  * Disposes of the operating system resources associated with
  * the cursor. Applications must dispose of all cursors which
  * they allocate.
  */
 public void dispose () {
-	if (handle == 0) return;
+	if (handle == -1) return;
 	if (device.isDisposed()) return;
-	if (fDispose)
-		OS.DisposePtr(handle);
-	device = null;
+	switch (handle) {
+		case OS.kThemePointingHandCursor:
+		case OS.kThemeArrowCursor:
+		case OS.kThemeSpinningCursor:
+		case OS.kThemeCrossCursor:
+		case OS.kThemeWatchCursor:
+		case OS.kThemeIBeamCursor:
+		case OS.kThemeNotAllowedCursor:
+		case OS.kThemeResizeLeftRightCursor:
+		case OS.kThemeResizeLeftCursor:
+		case OS.kThemeResizeRightCursor:
+			break;
+		default:
+			OS.DisposePtr(handle);
+	}
 	handle = -1;
+	device = null;
 }
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -261,9 +295,10 @@ public void dispose () {
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Cursor)) return false;
-	Cursor cursor = (Cursor)object;
+	Cursor cursor = (Cursor) object;
 	return device == cursor.device && handle == cursor.handle;
 }
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
@@ -277,6 +312,7 @@ public boolean equals (Object object) {
 public int hashCode () {
 	return handle;
 }
+
 /**
  * Returns <code>true</code> if the cursor has been disposed,
  * and <code>false</code> otherwise.
@@ -290,6 +326,7 @@ public int hashCode () {
 public boolean isDisposed() {
 	return handle == -1;
 }
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -301,35 +338,27 @@ public String toString () {
 	return "Cursor {" + handle + "}";
 }
 
-////////////////////////////////////////////////////////
-// Mac stuff
-////////////////////////////////////////////////////////
-
-	/**
-	 * Method install.
-	 */
-	public void install(Display display) {
-		if (handle != display.fCurrentCursor) {
-			display.fCurrentCursor= handle;
-			switch (handle) {
-				
-			case -1:	// disposed
-				break;
-
-			case OS.kThemeArrowCursor:
-			case OS.kThemeSpinningCursor:
-			case OS.kThemeWatchCursor:
-			case OS.kThemeOpenHandCursor:
-			case OS.kThemeCrossCursor:
-			case OS.kThemeIBeamCursor:
-				OS.SetThemeCursor(handle);
-				break;
-				
-			default:
-				display.setCursor(handle);
-				break;
-			}
-		}
-	}
+/**	 
+ * Invokes platform specific functionality to allocate a new cursor.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Cursor</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param handle the handle for the cursor
+ * 
+ * @private
+ */
+public static Cursor carbon_new(Device device, int handle) {
+	if (device == null) device = Device.getDevice();
+	Cursor cursor = new Cursor();
+	cursor.handle = handle;
+	cursor.device = device;
+	return cursor;
+}
 
 }

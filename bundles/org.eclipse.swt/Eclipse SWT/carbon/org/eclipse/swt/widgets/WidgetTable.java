@@ -1,5 +1,7 @@
 package org.eclipse.swt.widgets;
 
+import org.eclipse.swt.internal.carbon.*;
+
 /*
  * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
  * This file is made available under the terms of the Common Public License v1.0
@@ -7,23 +9,27 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.OS;
-
 public class WidgetTable {
 	static int FreeSlot = 0;
 	static int GrowSize = 1024;
 	static int [] IndexTable = new int [GrowSize];
 	static Widget [] WidgetTable = new Widget [GrowSize];
+	static final int SWT0 = ('s'<<24) + ('w'<<16) + ('t'<<8) + '0';
+	static int [] Property = new int [1];
 	static {
 		for (int i=0; i<GrowSize-1; i++) IndexTable [i] = i + 1;
 		IndexTable [GrowSize - 1] = -1;
 	}
+	
 public static synchronized Widget get (int handle) {
 	if (handle == 0) return null;
-	int index = getUserData(handle) - 1;
+	Property [0] = 0;
+	OS.GetControlProperty (handle, SWT0, SWT0, 4, null, Property);
+	int index = Property [0] - 1;
 	if (0 <= index && index < WidgetTable.length) return WidgetTable [index];
 	return null;
 }
+
 public synchronized static void put (int handle, Widget widget) {
 	if (handle == 0) return;
 	if (FreeSlot == -1) {
@@ -39,40 +45,47 @@ public synchronized static void put (int handle, Widget widget) {
 		IndexTable = newIndexTable;
 		WidgetTable = newWidgetTable;
 	}
-    setUserData(handle, FreeSlot + 1);
+	Property [0] = FreeSlot + 1;
+	OS.SetControlProperty (handle, SWT0, SWT0, 4, Property);
 	int oldSlot = FreeSlot;
 	FreeSlot = IndexTable [oldSlot];
 	IndexTable [oldSlot] = -2;
 	WidgetTable [oldSlot] = widget;
 }
+
 public static synchronized Widget remove (int handle) {
 	if (handle == 0) return null;
 	Widget widget = null;
-    int index= getUserData(handle) - 1;
+	Property [0] = 0;
+	OS.GetControlProperty (handle, SWT0, SWT0, 4, null, Property);
+	int index = Property [0] - 1;
 	if (0 <= index && index < WidgetTable.length) {
 		widget = WidgetTable [index];
 		WidgetTable [index] = null;
 		IndexTable [index] = FreeSlot;
 		FreeSlot = index;
-        setUserData(handle, 0);
+		OS.RemoveControlProperty (handle, SWT0, SWT0);
+
 	}
 	return widget;
 }
-public static synchronized Shell [] shells () {
-      int size= 0;
-      for (int i= 0; i < WidgetTable.length; i++)
-            if (WidgetTable[i] instanceof Shell)
-				size++;
 
-      int index= 0;
-      Shell[] result= new Shell[size];
+public static synchronized Shell [] shells () {
+      int count = 0;
       for (int i= 0; i < WidgetTable.length; i++) {
-            Widget widget= WidgetTable[i];
-            if (widget instanceof Shell)
+            if (WidgetTable[i] instanceof Shell) count++;
+      }
+      int index= 0;
+      Shell [] result = new Shell [count];
+      for (int i= 0; i < WidgetTable.length; i++) {
+            Widget widget = WidgetTable [i];
+            if (widget != null && widget instanceof Shell) {
                   result [index++]= (Shell) widget;
+            }
       }
       return result;
 }
+
 public static synchronized int size () {
 	int length = 0;
 	for (int i=0; i<WidgetTable.length; i++) {
@@ -80,38 +93,4 @@ public static synchronized int size () {
 	}
 	return length;
 }
-/////////////////////////////////////////////////
-// Mac stuff
-/////////////////////////////////////////////////
-
-	private static int getUserData(int handle) {
-		if (OS.IsValidControlHandle(handle))
-			return OS.GetControlReference(handle);
-		if (OS.IsValidMenu(handle)) {
-			int[] refCon= new int[1];
-			OS.GetMenuItemRefCon(handle, (short)0, refCon);
-			//System.out.println("refCon: " + refCon[0]);
-			return refCon[0];
-		}
-		if (OS.IsValidWindowPtr(handle))
-			return OS.GetWRefCon(handle);
-		//System.out.println("WidgetTable.getUserData: unknown handle type");
-		return -1;
-	}
-	
-	private static void setUserData(int handle, int data) {
-		if (OS.IsValidControlHandle(handle)) {
-			OS.SetControlReference(handle, data);
-			return;
-		}
-		if (OS.IsValidMenu(handle)) {
-			OS.SetMenuItemRefCon(handle, (short)0, data);
-			return;
-		}
-		if (OS.IsValidWindowPtr(handle)) {
-			OS.SetWRefCon(handle, data);
-			return;
-		}
-		System.out.println("WidgetTable.setUserData: unknown handle type: " + handle);
-	}
 }

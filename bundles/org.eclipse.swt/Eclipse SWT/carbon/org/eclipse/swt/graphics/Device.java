@@ -7,8 +7,9 @@ package org.eclipse.swt.graphics;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.*;
 
 /**
  * This class is the abstract superclass of all device objects,
@@ -18,34 +19,30 @@ import org.eclipse.swt.internal.carbon.*;
  */
 public abstract class Device implements Drawable {
 	
-	/**
-	 * the handle to the GDevice
-	 * (Warning: This field is platform dependent)
-	 */
-	public int fGDeviceHandle;	
-
 	/* Debugging */
 	public static boolean DEBUG;
 	boolean debug = DEBUG;
-	public boolean tracking = DEBUG;
+	boolean tracking = DEBUG;
 	Error [] errors;
 	Object [] objects;
-		
-	/* System Colors */
+	
+	/* Disposed flag */
+	boolean disposed, warnings;
+	
+	int colorspace;
+	
+	/*
+	* The following colors are listed in the Windows
+	* Programmer's Reference as the colors in the default
+	* palette.
+	*/
 	Color COLOR_BLACK, COLOR_DARK_RED, COLOR_DARK_GREEN, COLOR_DARK_YELLOW, COLOR_DARK_BLUE;
 	Color COLOR_DARK_MAGENTA, COLOR_DARK_CYAN, COLOR_GRAY, COLOR_DARK_GRAY, COLOR_RED;
 	Color COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE;
-	
-	/* System Font */
-	MacFont systemFont;
 
-	// AW
-	int fScreenDepth;
-	// AW
+	/* System Font */
+	Font systemFont;
 	
-	/* Warning and Error Handlers */
-	boolean warnings = true;
-		
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -66,8 +63,8 @@ public abstract class Device implements Drawable {
 		} catch (Throwable e) {}
 	}	
 
-/* 
-* TEMPORARY CODE 
+/*
+* TEMPORARY CODE.
 */
 static Device getDevice () {
 	if (DeviceFinder != null) DeviceFinder.run();
@@ -90,8 +87,8 @@ static Device getDevice () {
  */
 public Device(DeviceData data) {
 	if (data != null) {
-		tracking = data.tracking;
 		debug = data.debug;
+		tracking = data.tracking;
 	}
 	create (data);
 	init ();
@@ -99,21 +96,13 @@ public Device(DeviceData data) {
 		errors = new Error [128];
 		objects = new Object [128];
 	}
-	
-	/* Initialize the system font slot */
-	Font font = getSystemFont ();
-	//FontData fd = font.getFontData ()[0];
-	systemFont = font.handle;
 }
 
 protected void checkDevice () {
-	if (fGDeviceHandle == 0) SWT.error (SWT.ERROR_DEVICE_DISPOSED);
+	if (disposed) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 }
 
 protected void create (DeviceData data) {
-}
-
-protected void destroy () {
 }
 
 /**
@@ -131,7 +120,7 @@ public void dispose () {
 	checkDevice ();
 	release ();
 	destroy ();
-	fGDeviceHandle= 0;
+	disposed = true;
 	if (tracking) {
 		objects = null;
 		errors = null;
@@ -148,6 +137,9 @@ void dispose_Object (Object object) {
 	}
 }
 
+protected void destroy () {
+}
+
 /**
  * Returns a rectangle describing the receiver's size and location.
  *
@@ -159,52 +151,14 @@ void dispose_Object (Object object) {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	
-	MacRect bounds= new MacRect();
-	if (fGDeviceHandle != 0) {
-		int pm= OS.getgdPMap(fGDeviceHandle);
-		if (pm != 0)
-			OS.GetPixBounds(pm, bounds.getData());
-	}
-	return bounds.toRectangle();
-}
-
-/**
- * Returns a rectangle which describes the area of the
- * receiver which is capable of displaying data.
- * 
- * @return the client area
- *
- * @exception SWTException <ul>
- *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- *
- * @see #getBounds
- */
-public Rectangle getClientArea () {
-	checkDevice ();
-	
-	MacRect bounds= new MacRect();
-	int gdh= OS.GetMainDevice();
-	OS.GetAvailableWindowPositioningBounds(gdh, bounds.getData());
-	return bounds.toRectangle();
-}
-
-/**
- * Returns the bit depth of the screen, which is the number of
- * bits it takes to represent the number of unique colors that
- * the screen is currently capable of displaying. This number 
- * will typically be one of 1, 8, 15, 16, 24 or 32.
- *
- * @return the depth of the screen
- *
- * @exception SWTException <ul>
- *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
-public int getDepth () {
-	checkDevice ();
-	return fScreenDepth;
+	int gdevice = OS.GetMainDevice();
+	int[] ptr = new int[1];
+	OS.memcpy(ptr, gdevice, 4);
+	GDevice device = new GDevice();
+	OS.memcpy(device, ptr[0], GDevice.sizeof);
+	Rect rect = new Rect();
+	OS.GetPixBounds(device.gdPMap, rect);
+	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 /**
@@ -221,7 +175,7 @@ public int getDepth () {
  * @see DeviceData
  */
 public DeviceData getDeviceData () {
-	checkDevice ();
+	checkDevice();
 	DeviceData data = new DeviceData ();
 	data.debug = debug;
 	data.tracking = tracking;
@@ -244,6 +198,49 @@ public DeviceData getDeviceData () {
 }
 
 /**
+ * Returns a rectangle which describes the area of the
+ * receiver which is capable of displaying data.
+ * 
+ * @return the client area
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #getBounds
+ */
+public Rectangle getClientArea () {
+	checkDevice ();
+	int gdevice = OS.GetMainDevice();
+	Rect rect = new Rect();
+	OS.GetAvailableWindowPositioningBounds(gdevice, rect);
+	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+}
+
+/**
+ * Returns the bit depth of the screen, which is the number of
+ * bits it takes to represent the number of unique colors that
+ * the screen is currently capable of displaying. This number 
+ * will typically be one of 1, 8, 15, 16, 24 or 32.
+ *
+ * @return the depth of the screen
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public int getDepth () {
+	checkDevice ();	
+	int gdevice = OS.GetMainDevice();
+	int[] ptr = new int[1];
+	OS.memcpy(ptr, gdevice, 4);
+	GDevice device = new GDevice();
+	OS.memcpy(device, ptr[0], GDevice.sizeof);
+	int depth = OS.GetPixDepth(device.gdPMap);
+	return depth;
+}
+
+/**
  * Returns a point whose x coordinate is the horizontal
  * dots per inch of the display, and whose y coordinate
  * is the vertical dots per inch of the display.
@@ -256,28 +253,15 @@ public DeviceData getDeviceData () {
  */
 public Point getDPI () {
 	checkDevice ();
-	/* AW
-	int xScreenNum = OS.XDefaultScreen (xDisplay);
-	int width = OS.XDisplayWidth (xDisplay, xScreenNum);
-	int height = OS.XDisplayHeight (xDisplay, xScreenNum);
-	int mmX = OS.XDisplayWidthMM (xDisplay, xScreenNum);
-	int mmY = OS.XDisplayHeightMM (xDisplay, xScreenNum);
-	*/
-	/* 0.03937 mm/inch */
-	/* AW
-	double inchesX = mmX * 0.03937;
-	double inchesY = mmY * 0.03937;
-	int x = (int)((width / inchesX) + 0.5);
-	int y = (int)((height / inchesY) + 0.5);
-	return new Point (x, y);
-	*/
-	
-	if (fGDeviceHandle != 0) {
-		int pm= OS.getgdPMap(fGDeviceHandle);
-		if (pm != 0)
-			return new Point(OS.getPixHRes(pm) >> 16, OS.getPixVRes(pm) >> 16);
-	}
-	return new Point(72, 72);
+	int gdevice = OS.GetMainDevice();
+	int[] ptr = new int[1];
+	OS.memcpy(ptr, gdevice, 4);
+	GDevice device = new GDevice();
+	OS.memcpy(device, ptr[0], GDevice.sizeof);
+	OS.memcpy(ptr, device.gdPMap, 4);
+	PixMap pixmap = new PixMap();
+	OS.memcpy(pixmap, ptr[0], PixMap.sizeof);
+	return new Point (pixmap.hRes >> 16, pixmap.vRes >> 16);
 }
 
 /**
@@ -293,52 +277,53 @@ public Point getDPI () {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public FontData [] getFontList (String faceName, boolean scalable) {	
+public FontData[] getFontList (String faceName, boolean scalable) {	
 	checkDevice ();
-	/* AW
-	String xlfd;
-	if (faceName == null) {
-		xlfd = "-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
-	} else {
-		int dashIndex = faceName.indexOf('-');
-		if (dashIndex < 0) {
-			xlfd = "-*-" + faceName + "-*-*-*-*-*-*-*-*-*-*-*-*";
-		} else {
-			xlfd = "-" + faceName + "-*-*-*-*-*-*-*-*-*-*-*-*";
+	//NOT DONE - scalable
+	int nFds = 0;
+	FontData[] fds = new FontData[4];
+
+	int[] font = new int[1];
+	short[] fontFamily = new short[1];
+	short[] style = new short[1];
+	short[] size = new short[1];
+	byte[] buffer = new byte[256];
+	int familyIter = OS.NewPtr(16 * 4);
+	int fontIter = OS.NewPtr(16 * 4);
+	OS.FMCreateFontFamilyIterator(0, 0, 0, familyIter);
+	while (OS.FMGetNextFontFamily(familyIter, fontFamily) != OS.kFMIterationCompleted) {
+		OS.FMGetFontFamilyName(fontFamily[0], buffer);
+		int length = buffer[0] & 0xFF;
+		char[] chars = new char[length];
+		for (int i=0; i<length; i++) {
+			chars[i]= (char)buffer[i+1];
+		}
+		String name = new String(chars);
+		if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
+			OS.FMCreateFontFamilyInstanceIterator(fontFamily[0], fontIter);
+			while (OS.FMGetNextFontFamilyInstance(fontIter, font, style, size) != OS.kFMIterationCompleted) {
+				int s = SWT.NORMAL;
+				if ((style[0] & OS.italic) != 0) s |= SWT.ITALIC;
+				if ((style[0] & OS.bold) != 0) s |= SWT.BOLD;
+				FontData data = new FontData(name, s, size[0]);
+				if (nFds == fds.length) {
+					FontData[] newFds = new FontData[fds.length + 4];
+					System.arraycopy(fds, 0, newFds, 0, nFds);
+					fds = newFds;
+				}
+				fds[nFds++] = data;
+			}
+			OS.FMDisposeFontFamilyInstanceIterator(fontIter);
 		}
 	}
-	*/
-	/* Use the character encoding for the default locale */
-	/* AW
-	byte [] buffer1 = Converter.wcsToMbcs (null, xlfd, true);
-	int [] ret = new int [1];
-	int listPtr = OS.XListFonts (xDisplay, buffer1, 65535, ret);
-	int ptr = listPtr;
-	int [] intBuf = new int [1];
-	FontData [] fd = new FontData [ret [0]];
-	int fdIndex = 0;
-	for (int i = 0; i < ret [0]; i++) {
-		OS.memmove (intBuf, ptr, 4);
-		int charPtr = intBuf [0];
-		int length = OS.strlen (charPtr);
-		byte [] buffer2 = new byte [length];
-		OS.memmove (buffer2, charPtr, length);
-		// Use the character encoding for the default locale
-		char [] chars = Converter.mbcsToWcs (null, buffer2);
-		FontData data = FontData.motif_new (new String (chars));
-		boolean isScalable = data.averageWidth == 0 && data.pixels == 0 && data.points == 0;
-		if (isScalable == scalable) {
-			fd [fdIndex++] = data;
-		}
-		ptr += 4;
-	}
-	OS.XFreeFontNames (listPtr);
-	if (fdIndex == ret [0]) return fd;
-	FontData [] result = new FontData [fdIndex];
-	System.arraycopy (fd, 0, result, 0, fdIndex);
+	OS.FMDisposeFontFamilyIterator(familyIter);
+	OS.DisposePtr(familyIter);
+	OS.DisposePtr(fontIter);
+	
+	if (nFds == fds.length) return fds;
+	FontData[] result = new FontData[nFds];
+	System.arraycopy(fds, 0, result, 0, nFds);
 	return result;
-	*/
-	return new FontData [0];
 }
 
 /**
@@ -361,9 +346,6 @@ public FontData [] getFontList (String faceName, boolean scalable) {
  */
 public Color getSystemColor (int id) {
 	checkDevice ();
-	/* AW
-	XColor xColor = null;
-	*/
 	switch (id) {
 		case SWT.COLOR_BLACK: 				return COLOR_BLACK;
 		case SWT.COLOR_DARK_RED: 			return COLOR_DARK_RED;
@@ -382,11 +364,7 @@ public Color getSystemColor (int id) {
 		case SWT.COLOR_CYAN: 				return COLOR_CYAN;
 		case SWT.COLOR_WHITE: 				return COLOR_WHITE;
 	}
-	/* AW
-	if (xColor == null) return COLOR_BLACK;
-	return Color.motif_new (this, xColor);
-	*/
-	return Color.carbon_new(this, 0x000000, false);
+	return COLOR_BLACK;
 }
 
 /**
@@ -411,7 +389,7 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return Font.carbon_new (this, systemFont);
+	return systemFont;
 }
 
 /**
@@ -431,30 +409,36 @@ public boolean getWarnings () {
 }
 
 protected void init () {
-
-	fScreenDepth= getDeviceDepth(fGDeviceHandle);
-
-	/*
-	* The following colors are listed in the Windows
-	* Programmer's Reference as the colors in the default
-	* palette.
-	*/
-	COLOR_BLACK = 		Color.carbon_new(this, 0x000000, true);
-	COLOR_DARK_RED = 	Color.carbon_new(this, 0x800000, true);
-	COLOR_DARK_GREEN = 	Color.carbon_new(this, 0x008000, true);
-	COLOR_DARK_YELLOW = Color.carbon_new(this, 0x808000, true);
-	COLOR_DARK_BLUE = 	Color.carbon_new(this, 0x000080, true);
-	COLOR_DARK_MAGENTA =Color.carbon_new(this, 0x800080, true);
-	COLOR_DARK_CYAN = 	Color.carbon_new(this, 0x008080, true);
-	COLOR_GRAY = 		Color.carbon_new(this, 0xC0C0C0, true);
-	COLOR_DARK_GRAY = 	Color.carbon_new(this, 0x808080, true);
-	COLOR_RED = 		Color.carbon_new(this, 0xFF0000, true);
-	COLOR_GREEN = 		Color.carbon_new(this, 0x00FF00, true);
-	COLOR_YELLOW = 		Color.carbon_new(this, 0xFFFF00, true);
-	COLOR_BLUE = 		Color.carbon_new(this, 0x0000FF, true);
-	COLOR_MAGENTA = 	Color.carbon_new(this, 0xFF00FF, true);
-	COLOR_CYAN = 		Color.carbon_new(this, 0x00FFFF, true);
-	COLOR_WHITE = 		Color.carbon_new(this, 0xFFFFFF, true);
+	colorspace = OS.CGColorSpaceCreateDeviceRGB();
+	if (colorspace == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	
+	/* Create the standard colors */
+	COLOR_BLACK = new Color (this, 0,0,0);
+	COLOR_DARK_RED = new Color (this, 0x80,0,0);
+	COLOR_DARK_GREEN = new Color (this, 0,0x80,0);
+	COLOR_DARK_YELLOW = new Color (this, 0x80,0x80,0);
+	COLOR_DARK_BLUE = new Color (this, 0,0,0x80);
+	COLOR_DARK_MAGENTA = new Color (this, 0x80,0,0x80);
+	COLOR_DARK_CYAN = new Color (this, 0,0x80,0x80);
+	COLOR_GRAY = new Color (this, 0xC0,0xC0,0xC0);
+	COLOR_DARK_GRAY = new Color (this, 0x80,0x80,0x80);
+	COLOR_RED = new Color (this, 0xFF,0,0);
+	COLOR_GREEN = new Color (this, 0,0xFF,0);
+	COLOR_YELLOW = new Color (this, 0xFF,0xFF,0);
+	COLOR_BLUE = new Color (this, 0,0,0xFF);
+	COLOR_MAGENTA = new Color (this, 0xFF,0,0xFF);
+	COLOR_CYAN = new Color (this, 0,0xFF,0xFF);
+	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
+	
+	/* Initialize the system font slot */
+	short id = OS.GetAppFont();
+	short style = (short)0; 
+	short size = OS.GetDefFontSize();
+	int[] font = new int[1];
+	if (OS.FMGetFontFromFontFamilyInstance(id, style, font, null) != 0) {
+		SWT.error(SWT.ERROR_NO_HANDLES);
+	}
+	systemFont = Font.carbon_new (this, font[0], id, style, size);
 }
 
 /**	 
@@ -502,9 +486,9 @@ public abstract void internal_dispose_GC (int handle, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	return fGDeviceHandle == 0;
+	return disposed;
 }
-	
+
 void new_Object (Object object) {
 	for (int i=0; i<objects.length; i++) {
 		if (objects [i] == null) {
@@ -523,9 +507,12 @@ void new_Object (Object object) {
 	errors = newErrors;
 }
 
-protected void release () {	
-	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW =
-	COLOR_DARK_BLUE = COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
+protected void release () {
+	OS.CGColorSpaceRelease(colorspace);
+	colorspace = 0;
+	
+	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW = COLOR_DARK_BLUE =
+	COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
 }
 
@@ -544,19 +531,6 @@ protected void release () {
 public void setWarnings (boolean warnings) {
 	checkDevice ();
 	this.warnings = warnings;
-	if (debug) return;
 }
 
-////////////////////////////////////////////////////////
-// Mac stuff
-////////////////////////////////////////////////////////
-
-	static int getDeviceDepth(int gd) {
-		if (gd != 0) {
-			int pm= OS.getgdPMap(gd);
-			if (pm != 0)
-				return OS.GetPixDepth(pm);
-		}
-		return 32;
-	}
 }

@@ -8,6 +8,7 @@ package org.eclipse.swt.graphics;
  */
 
 import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
 
 /**
@@ -24,21 +25,36 @@ import org.eclipse.swt.*;
  * @see FontData
  */
 public final class Font {
-	
+
 	/**
-	 * the handle to the OS font resource
+	 * the handle to the OS font (a FMFont)
 	 * (Warning: This field is platform dependent)
 	 */
-	public MacFont handle;
+	public int handle;
 	
 	/**
-	 * the device where this font was created
+	 * the id to the OS font (a FMFontFamily)
+	 * (Warning: This field is platform dependent)
+	 */
+	public short id;
+	
+	/**
+	 * the style to the OS font (a FMFontStyle)
+	 * (Warning: This field is platform dependent)
+	 */
+	public short style;
+
+	/**
+	 * the size to the OS font
+	 * (Warning: This field is platform dependent)
+	 */
+	public short size;
+
+	/**
+	 * The device where this image was created.
 	 */
 	Device device;
 	
-/**
- * Prevents uninitialized instances from being created outside the package.
- */
 Font() {
 }
 
@@ -60,17 +76,16 @@ Font() {
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
  */
-public Font(Device device, FontData fd) {
+public Font(Device display, FontData fd) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, fd);
-	if (device.tracking) device.new_Object(this);	
+	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(device, fd.getName(), fd.getHeight(), fd.getStyle());
 }
 
 /**	 
- * Constructs a new font given a device and an array
- * of font data which describes the desired font's
- * appearance.
+ * Constructs a new font given a device and font datas
+ * which describes the desired font's appearance.
  * <p>
  * You must dispose the font when it is no longer required. 
  * </p>
@@ -87,16 +102,15 @@ public Font(Device device, FontData fd) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
- * 
- * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	init(device, fds[0]);
-	if (device.tracking) device.new_Object(this);	
+	FontData fd = fds[0];
+	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(device,fd.getName(), fd.getHeight(), fd.getStyle());
 }
 
 /**	 
@@ -121,12 +135,10 @@ public Font(Device device, FontData[] fds) {
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given arguments</li>
  * </ul>
  */
-public Font(Device device, String name, int height, int style) {
+public Font(Device display, String name, int height, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new FontData (name, height, style));
-	if (device.tracking) device.new_Object(this);	
+	init(device, name, height, style);
 }
 
 /**
@@ -135,9 +147,8 @@ public Font(Device device, String name, int height, int style) {
  * they allocate.
  */
 public void dispose() {
-	if (handle == null) return;
-	handle = null;
-	if (device.tracking) device.dispose_Object(this);
+	handle = 0;
+	id = -1;
 	device = null;
 }
 
@@ -154,8 +165,7 @@ public void dispose() {
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Font)) return false;
-	Font font = (Font) object;
-	return device == font.device && handle.equals(font.handle);
+	return handle == ((Font)object).handle;
 }
 
 /**
@@ -172,54 +182,19 @@ public boolean equals(Object object) {
  */
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return new FontData[] { new FontData(handle.getName(), handle.getSize(), handle.getFace()) };
-}
-
-/**
- * Returns an integer hash code for the receiver. Any two 
- * objects which return <code>true</code> when passed to 
- * <code>equals</code> must return the same value for this
- * method.
- *
- * @return the receiver's hash
- *
- * @see #equals
- */
-public int hashCode () {
-	if (handle != null)
-		return handle.hashCode();
-	return 0;
-}
-
-void init (Device device, FontData fd) {
-	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
-	handle= new MacFont(fd.fontFamily, fd.height, fd.style);
-}
-
-/**
- * Returns <code>true</code> if the font has been disposed,
- * and <code>false</code> otherwise.
- * <p>
- * This method gets the dispose state for the font.
- * When a font has been disposed, it is an error to
- * invoke any other method using the font.
- *
- * @return <code>true</code> when the font is disposed and <code>false</code> otherwise
- */
-public boolean isDisposed() {
-	return handle == null;
-}
-
-/**
- * Returns a string containing a concise, human-readable
- * description of the receiver.
- *
- * @return a string representation of the receiver
- */
-public String toString () {
-	if (isDisposed()) return "Font {*DISPOSED*}";
-	return "Font {" + handle + "}";
+	byte[] buffer = new byte[256];
+	OS.FMGetFontFamilyName(id, buffer);
+	int length = buffer[0] & 0xFF;
+	char[] chars = new char[length];
+	for (int i=0; i<length; i++) {
+		chars[i]= (char)buffer[i+1];
+	}
+	String name = new String(chars);
+	int style = SWT.NORMAL;
+	if ((this.style & OS.italic) != 0) style |= SWT.ITALIC;
+	if ((this.style & OS.bold) != 0) style |= SWT.BOLD;
+	FontData data = new FontData(name, size, style);
+	return new FontData[]{data};
 }
 
 /**	 
@@ -234,15 +209,80 @@ public String toString () {
  *
  * @param device the device on which to allocate the color
  * @param handle the handle for the font
+ * @param size the size for the font
  * 
  * @private
  */
-public static Font carbon_new(Device device, MacFont macFont) {
+public static Font carbon_new(Device device, int handle, short id, short style, short size) {
 	if (device == null) device = Device.getDevice();
 	Font font = new Font();
-	font.handle = macFont;
+	font.handle = handle;
+	font.id = id;
+	font.style = style;
+	font.size = size;
 	font.device = device;
 	return font;
+}
+
+/**
+ * Returns an integer hash code for the receiver. Any two 
+ * objects which return <code>true</code> when passed to 
+ * <code>equals</code> must return the same value for this
+ * method.
+ *
+ * @return the receiver's hash
+ *
+ * @see #equals
+ */
+public int hashCode() {
+	return handle;
+}
+
+void init(Device device, String name, int height, int style) {
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	byte[] buffer = new byte[256];
+	int length = name.length();
+	if (length > 255) length = 255;
+	buffer[0] = (byte)length;
+	for (int i=0; i<length; i++) {
+		buffer[i+1]= (byte)name.charAt(i);
+	}
+	this.id = OS.FMGetFontFamilyFromName(buffer);
+	if (this.id == OS.kInvalidFontFamily) this.id = OS.GetAppFont();
+	if ((style & SWT.ITALIC) != 0) this.style |= OS.italic;
+	if ((style & SWT.BOLD) != 0) this.style |= OS.bold;
+	this.size = (short)height;
+	int[] font = new int[1];
+	if (OS.FMGetFontFromFontFamilyInstance(id, this.style, font, null) != 0) {
+		SWT.error(SWT.ERROR_NO_HANDLES);
+	}
+	this.handle = font[0];
+}
+
+/**
+ * Returns <code>true</code> if the font has been disposed,
+ * and <code>false</code> otherwise.
+ * <p>
+ * This method gets the dispose state for the font.
+ * When a font has been disposed, it is an error to
+ * invoke any other method using the font.
+ *
+ * @return <code>true</code> when the font is disposed and <code>false</code> otherwise
+ */
+public boolean isDisposed() {
+	return handle == 0;
+}
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "Font {*DISPOSED*}";
+	return "Font {" + handle + "}";
 }
 
 }

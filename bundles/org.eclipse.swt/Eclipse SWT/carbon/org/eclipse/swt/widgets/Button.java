@@ -7,113 +7,26 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
+import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
+import org.eclipse.swt.internal.carbon.CFRange;
+import org.eclipse.swt.internal.carbon.Rect;
 
-/**
- * Instances of this class represent a selectable user interface object that
- * issues notification when pressed and released. 
- * <dl>
- * <dt><b>Styles:</b></dt>
- * <dd>ARROW, CHECK, PUSH, RADIO, TOGGLE, FLAT</dd>
- * <dd>UP, DOWN, LEFT, RIGHT, CENTER</dd>
- * <dt><b>Events:</b></dt>
- * <dd>Selection</dd>
- * </dl>
- * <p>
- * Note: Only one of the styles ARROW, CHECK, PUSH, RADIO, and TOGGLE 
- * may be specified.
- * </p><p>
- * Note: Only one of the styles LEFT, RIGHT, and CENTER may be specified.
- * </p><p>
- * Note: Only one of the styles UP, DOWN, LEFT, and RIGHT may be specified
- * when the ARROW style is specified.
- * </p><p>
- * IMPORTANT: This class is intended to be subclassed <em>only</em>
- * within the SWT implementation.
- * </p>
- */
-public /*final*/ class Button extends Control {
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+
+public class Button extends Control {
+	String text = "";
 	Image image;
+	int cIcon;
+	boolean isImage;
 	
-	// AW
-	private boolean fImageMode;
-	private int fAlignment;
-	private int fCIconHandle;
-	private int fTopMargin;
-	private int fBottomMargin;
-	
-	private static final int MARGIN= 3;	// correct value would be 6; however the shadow is only 2
-	private static final int SPACE= 9;	// min is 8 or may be 9
-	private static final int TOP_MARGIN= 0;	// 
-	private static final int BOTTOM_MARGIN= 5;	// 
-	// AW
-	
-/**
- * Constructs a new instance of this class given its parent
- * and a style value describing its behavior and appearance.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * lists the style constants that are applicable to the class.
- * Style bits are also inherited from superclasses.
- * </p>
- *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT#ARROW
- * @see SWT#CHECK
- * @see SWT#PUSH
- * @see SWT#RADIO
- * @see SWT#TOGGLE
- * @see SWT#FLAT
- * @see SWT#LEFT
- * @see SWT#RIGHT
- * @see SWT#CENTER
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
-/**
- * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
- * it one of the messages defined in the <code>SelectionListener</code>
- * interface.
- * <p>
- * <code>widgetSelected</code> is called when the control is selected.
- * <code>widgetDefaultSelected</code> is not called.
- * </p>
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see SelectionListener
- * @see #removeSelectionListener
- * @see SelectionEvent
- */
+
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -121,6 +34,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.Selection,typedListener);
 	addListener(SWT.DefaultSelection,typedListener);
 }
+
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO, SWT.TOGGLE, 0);
 	if ((style & SWT.PUSH) != 0) {
@@ -134,260 +48,190 @@ static int checkStyle (int style) {
 	}
 	return style;
 }
-void click () {
-	short part= 10;
-	if ((style & SWT.CHECK) != 0 || (style & SWT.RADIO) != 0)
-		part= 11;
-    OS.HIViewSimulateClick(handle, part, 0, new short[1]);
-}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	int border = getBorderWidth ();
-	int width = border * 2, height = border * 2;
+	// NEEDS WORK - empty string
 	if ((style & SWT.ARROW) != 0) {
-		Display display = getDisplay ();
-		width += display.scrolledMarginX;
-		height += display.scrolledMarginY;
-		if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
-		if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
+		int [] outMetric = new int [1];
+		OS.GetThemeMetric (OS.kThemeMetricDisclosureTriangleHeight, outMetric);
+		int width = outMetric [0], height = outMetric [0];
+		if (wHint != SWT.DEFAULT) width = wHint;
+		if (hHint != SWT.DEFAULT) height = hHint;
 		return new Point (width, height);
 	}
-    /* AW
-	XtWidgetGeometry result = new XtWidgetGeometry ();
-	result.request_mode = OS.CWWidth | OS.CWHeight;
-	int [] argList2 = {OS.XmNrecomputeSize, 1};
-	OS.XtSetValues(handle, argList2, argList2.length / 2);
-	OS.XtQueryGeometry (handle, null, result);
-	int [] argList3 = {OS.XmNrecomputeSize, 0};
-	OS.XtSetValues(handle, argList3, argList3.length / 2);
-	*/
-	Point result= MacUtil.computeSize(handle);
-	if ((style & SWT.PUSH) != 0) {
-		if (image != null) {	// is a Bevel button!
-			Rectangle bounds= image.getBounds();
-			result.x= 4 + bounds.width + 4;
-			result.y= 4 + bounds.height + 4;
-		} else {
-			String s= getText();
-			if (s != null && s.length() > 0) {
-				result.x= result.x - 2*SPACE + 2*MARGIN;
-				result.y= result.y + TOP_MARGIN + BOTTOM_MARGIN;
+
+	int width = 0, height = 0;
+
+	if (isImage && image != null) {
+		Rectangle bounds = image.getBounds();
+		width = bounds.width;
+		height = bounds.height;
+	} else {
+		int [] ptr = new int [1];
+		OS.CopyControlTitleAsCFString(handle, ptr);
+		if (ptr [0] != 0) {
+			if (font == null) {
+				org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
+				short [] baseLine = new short [1];
+				OS.GetThemeTextDimensions(ptr [0], (short)OS.kThemePushButtonFont, OS.kThemeStateActive, false, ioBounds, baseLine);
+				width = ioBounds.h;
+				height = ioBounds.v;
+			} else {
+				// NEEDS WORK - alternatively we could use GetThemeTextDimensions with OS.kThemeCurrentPortFont
+				int length = OS.CFStringGetLength (ptr [0]);
+				char [] buffer = new char [length];
+				CFRange range = new CFRange ();
+				range.length = length;
+				OS.CFStringGetCharacters (ptr [0], range, buffer);
+				String string = new String (buffer);
+				GC gc = new GC (this);
+				Point extent = gc.stringExtent (string);
+				gc.dispose ();
+				width = extent.x;
+				height = extent.y;
 			}
+			OS.CFRelease (ptr [0]);
+		} else {
+			width = DEFAULT_WIDTH;
+			height = DEFAULT_HEIGHT;
 		}
 	}
-	width += result.x;
-	height += result.y;
-	/*
-	 * Feature in Motif. If a button's labelType is XmSTRING but it
-	 * has no label set into it yet, recomputing the size will
-	 * not take into account the height of the font, as we would
-	 * like it to. Take care of this case.
-	 */
-    /* AW
-	int [] argList = {OS.XmNlabelType, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] == OS.XmSTRING) {
-		int [] argList1 = {OS.XmNlabelString, 0};
-		OS.XtGetValues (handle, argList1, argList1.length / 2);
-		int xmString = argList1 [1];
-		if (OS.XmStringEmpty (xmString)) height += getFontHeight ();
-	}
-	*/
-	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
-		/* AW
-		int [] argList4 = new int [] {OS.XmNmarginLeft, 0, OS.XmNmarginRight, 0, OS.XmNmarginTop, 0, OS.XmNmarginBottom, 0};
-		OS.XtGetValues (handle, argList4, argList4.length / 2);
-		if (wHint != SWT.DEFAULT) width = wHint + argList4 [1] + argList4 [3] + (border * 2);
-		if (hHint != SWT.DEFAULT) height = hHint + argList4 [5] + argList4 [7] + (border * 2);
-		*/
-		int left= 0;
-		int right= 0;
-		int top= 0;
-		int bottom= 0;
-		
-		if (wHint != SWT.DEFAULT) width = wHint + left + right;
-		if (hHint != SWT.DEFAULT) height = hHint + top + bottom;
-	}
-		
-	return new Point(width, height);
-}
-void createHandle (int index) {
-	state |= HANDLE;
-	/* AW
-	int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
-	*/
-	int parentHandle = parent.handle;
 
-	/* ARROW button */
+	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		int [] outMetric = new int [1];
+		int metric = ((style & SWT.CHECK) != 0) ? OS.kThemeMetricCheckBoxWidth : OS.kThemeMetricRadioButtonWidth;
+		OS.GetThemeMetric (metric, outMetric);	
+ 		width += outMetric [0] + 3; // +3 for gap between button and text/image
+		height = Math.max(outMetric [0], height);
+	} else {
+		if ((style & SWT.FLAT) != 0 || (style & SWT.TOGGLE) != 0) {
+			width += 10;
+			height += 10;
+		} else {
+			width += 28;
+			height += 8;
+		}
+	}
+	
+	Rect inset = getInset ();
+	width += inset.left + inset.right;
+	height += inset.top + inset.bottom;
+	
+	/*
+	 * Feature in Mac OS X. Setting the width of a bevel button
+	 * widget to less than 20 will fail.  This means you can not 
+	 * make a button very small.  By forcing the width to be greater
+	 * than or equal to 20, the height of the button can be made
+	 * very small, even 0.
+	 */
+	width = Math.max(20, width);
+	int border = (style & SWT.PUSH) != 0 ? 2 : 0;
+	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
+	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
+	return new Point (width, height);
+}
+
+void createHandle () {
+	int [] outControl = new int [1];
+	int window = OS.GetControlOwner (parent.handle);
+				
 	if ((style & SWT.ARROW) != 0) {
-        /*
-		int alignment = OS.XmARROW_UP;
-		if ((style & SWT.UP) != 0) alignment = OS.XmARROW_UP;
-		if ((style & SWT.DOWN) != 0) alignment = OS.XmARROW_DOWN;
-		if ((style & SWT.LEFT) != 0) alignment = OS.XmARROW_LEFT;
-		if ((style & SWT.RIGHT) != 0) alignment = OS.XmARROW_RIGHT;
-		int [] argList = {
-			OS.XmNtraversalOn, 0,
-			OS.XmNarrowDirection, alignment,
-			OS.XmNborderWidth, borderWidth,
-			OS.XmNancestorSensitive, 1,
-		};
-		handle = OS.XmCreateArrowButton (parentHandle, null, argList, argList.length / 2);
-        */
-        handle= MacUtil.newControl(parentHandle, (short)OS.kControlBevelButtonNormalBevelProc);
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		int kThemeDisclosureRight = 0;
-  		int kThemeDisclosureDown = 1;
-  		int kThemeDisclosureLeft = 2;
-  		int kThemeDisclosureButton = 6;
-  		int kControlBevelButtonKindTag = ('b'<<24) + ('e'<<16) + ('b'<<8) + 'k';
-		int orientation = kThemeDisclosureRight;
-		if ((style & SWT.UP) != 0) orientation = kThemeDisclosureRight; // NEEDS WORK
-		if ((style & SWT.DOWN) != 0) orientation = kThemeDisclosureDown;
-		if ((style & SWT.LEFT) != 0) orientation = kThemeDisclosureLeft;
-		OS.SetControlData (handle, OS.kControlEntireControl, kControlBevelButtonKindTag, new short [] {(short)(kThemeDisclosureButton)});
+		int orientation = OS.kThemeDisclosureRight;
+		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureRight; // NEEDS WORK
+		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
+		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
+		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)(OS.kThemeDisclosureButton)});
 		OS.SetControl32BitMaximum (handle, 2);
 		OS.SetControl32BitValue (handle, orientation);
-        /* AW
-		if ((style & SWT.FLAT) != 0) {
-			int [] argList1 = {OS.XmNshadowThickness, 1};
-			OS.XtSetValues (handle, argList1, argList1.length / 2);
-		}
-        */
-		return;
 	}
-
-	/* Compute alignment */
-    /* AW
-	int alignment = OS.XmALIGNMENT_BEGINNING;
-	if ((style & SWT.CENTER) != 0) alignment = OS.XmALIGNMENT_CENTER;
-	if ((style & SWT.RIGHT) != 0) alignment = OS.XmALIGNMENT_END;
-    */
-
-	/* TOGGLE button */
+	
+	if ((style & SWT.CHECK) != 0) {
+		//OS.CreateCheckBoxControl (window, null, 0, 0 /*initially off*/, true, outControl);
+		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)OS.kControlBehaviorToggles, 0, (short)0, (short)0, (short)0, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeCheckBox});
+	}
+	
+	if ((style & SWT.RADIO) != 0) {
+		//OS.CreateRadioButtonControl(window, null, 0, 0 /*initially off*/, true, outControl);
+		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)OS.kControlBehaviorToggles, 0, (short)0, (short)0, (short)0, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeRadioButton});
+	}
+	
 	if ((style & SWT.TOGGLE) != 0) {
-		/*
-		* Bug in Motif.  When XmNindicatorOn is set to false,
-		* Motif doesn't reset the shadow thickness to give a
-		* push button look.  The fix is to set the shadow
-		* thickness when ever this resource is changed.
-		*/
-        /* AW
-		Display display = getDisplay ();
-		int thickness = display.buttonShadowThickness;
-		int [] argList = {
-			OS.XmNancestorSensitive, 1,
-			OS.XmNrecomputeSize, 0,
-			OS.XmNindicatorOn, 0,
-			OS.XmNshadowThickness, (style & SWT.FLAT) != 0 ? 1 : thickness,
-			OS.XmNalignment, alignment,
-			OS.XmNborderWidth, borderWidth,
-		};
-		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
-        */
-		handle= MacUtil.newControl(parentHandle, (short)0, OS.kControlBehaviorToggles, (short)0, OS.kControlBevelButtonNormalBevelProc);
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		setFont(defaultFont());
-		return;
+		OS.CreateBevelButtonControl(window, null, 0, (short)OS.kControlBevelButtonNormalBevel, (short)OS.kControlBehaviorToggles, 0, (short)0, (short)0, (short)0, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		if ((style & SWT.FLAT) == 0 ) {
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeRoundedBevelButton});
+		}
+	}
+	
+	if ((style & SWT.PUSH) != 0) {
+		if ((style & SWT.FLAT) != 0) {
+			OS.CreateBevelButtonControl(window, null, 0, (short)2, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
+		} else {
+			OS.CreatePushButtonControl (window, null, 0, outControl);
+			//OS.CreateBevelButtonControl(window, null, 0, (short)2, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
+		}
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		if ((style & SWT.FLAT) == 0 ) {
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemePushButton});
+		}
 	}
 
-	/* CHECK or RADIO button */
-	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		/*
-		* Bug in Motif.  For some reason, a toggle button
-		* with XmNindicatorType XmONE_OF_MANY must have this
-		* value set at creation or the highlight color will
-		* not be correct.  The fix is to set these values
-		* on create.
-		*/
-        /* AW
-		int indicatorType = OS.XmONE_OF_MANY;
-		if ((style & SWT.CHECK) != 0) indicatorType = OS.XmN_OF_MANY;
-		int [] argList = {
-			OS.XmNancestorSensitive, 1,
-			OS.XmNrecomputeSize, 0,
-			OS.XmNindicatorType, indicatorType,
-			OS.XmNalignment, alignment,
-			OS.XmNborderWidth, borderWidth,
-		};
-		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
-        */
-		short type= (style & SWT.CHECK) != 0
-					? OS.kControlCheckBoxAutoToggleProc
-					: OS.kControlRadioButtonAutoToggleProc;
-		handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, type);
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		setFont(defaultFont());
-		return;
+	ControlFontStyleRec fontRec = new ControlFontStyleRec();
+	fontRec.flags = (short) OS.kControlUseThemeFontIDMask;
+	fontRec.font = (short) defaultThemeFont ();
+	OS.SetControlFontStyle (handle, fontRec);
+	
+	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) != 0) {
+		int textAlignment = 0;
+		int graphicAlignment = 0;
+		if ((style & SWT.LEFT) != 0) {
+			textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
+			graphicAlignment = OS.kControlBevelButtonAlignLeft;
+		}
+		if ((style & SWT.CENTER) != 0) {
+			textAlignment = OS.kControlBevelButtonAlignTextCenter;
+			graphicAlignment = OS.kControlBevelButtonAlignCenter;
+		}
+		if ((style & SWT.RIGHT) != 0) {
+			textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
+			graphicAlignment = OS.kControlBevelButtonAlignRight;
+		}
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
 	}
+}
 
-	/* PUSH button */
-    /* AW
-	int [] argList = {
-		OS.XmNancestorSensitive, 1,
-		OS.XmNrecomputeSize, 0,
-		OS.XmNalignment, alignment,
-		OS.XmNborderWidth, borderWidth,
-    */
-	short type= (style & SWT.FLAT) != 0
-					? OS.kControlBevelButtonNormalBevelProc
-					: OS.kControlPushButtonProc;
-    handle= MacUtil.newControl(parentHandle, type);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	setFont(defaultFont());
-	/* AW
-	if ((style & SWT.FLAT) != 0) {
-		int [] argList1 = {OS.XmNshadowThickness, 1};
-		OS.XtSetValues (handle, argList1, argList1.length / 2);
-	}
-	*/
+int defaultThemeFont () {	
+	return OS.kThemePushButtonFont;
 }
-int defaultBackground () {
-	return getDisplay ().buttonBackground;
-}
-Font defaultFont () {
-	return getDisplay ().buttonFont;
-}
-int defaultForeground () {
-	return getDisplay ().buttonForeground;
-}
-/**
- * Returns a value which describes the position of the
- * text or image in the receiver. The value will be one of
- * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is an <code>ARROW</code> button, in 
- * which case, the alignment will indicate the direction of
- * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
- * <code>UP</code> or <code>DOWN</code>).
- *
- * @return the alignment 
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
 public int getAlignment () {
-	checkWidget();
-    return fAlignment;
+	checkWidget ();
+	if ((style & SWT.ARROW) != 0) {
+		if ((style & SWT.UP) != 0) return SWT.UP;
+		if ((style & SWT.DOWN) != 0) return SWT.DOWN;
+		if ((style & SWT.LEFT) != 0) return SWT.LEFT;
+		if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
+		return SWT.UP;
+	}
+	if ((style & SWT.LEFT) != 0) return SWT.LEFT;
+	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
+	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
+	return SWT.LEFT;
 }
-boolean getDefault () {
-	if ((style & SWT.PUSH) == 0) return false;
-    int[] control= new int[1];
-	OS.GetWindowDefaultButton(OS.GetControlOwner(handle), control);
-	return control[0] == handle;
-}
-/**
- * Returns the receiver's image if it has one, or null
- * if it does not.
- *
- * @return the receiver's image
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
 public Image getImage () {
 	checkWidget();
 	return image;
@@ -395,128 +239,73 @@ public Image getImage () {
 String getNameText () {
 	return getText ();
 }
-/**
- * Returns <code>true</code> if the receiver is selected,
- * and false otherwise.
- * <p>
- * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
- * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
- * it is selected when it is pushed in. If the receiver is of any other type,
- * this method returns false.
- *
- * @return the selection state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
 public boolean getSelection () {
-	checkWidget();
+	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
     return OS.GetControl32BitValue(handle) != 0;
 }
-/**
- * Returns the receiver's text, which will be an empty
- * string if it has never been set.
- *
- * @return the receiver's text
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
 public String getText () {
-	checkWidget();
-	if ((style & SWT.ARROW) != 0) return "";
-	int sHandle[]= new int[1];
-    OS.GetControlTitleAsCFString(handle, sHandle);
-	return MacUtil.getStringAndRelease(sHandle[0]);
+	checkWidget ();
+	return text;
 }
-void hookEvents () {
-	super.hookEvents ();
-	/* AW
-	int callback = OS.XmNactivateCallback;
-	int windowProc = getDisplay ().windowProc;
-	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) != 0) callback = OS.XmNvalueChangedCallback;
-	OS.XtAddCallback (handle, callback, windowProc, SWT.Selection);
-	*/
-	if (MacUtil.HIVIEW) {
-		Display display= getDisplay();
-		OS.SetControlAction(handle, display.fControlActionProc);
+
+Rect getInset () {
+	if ((style & SWT.PUSH) == 0) return super.getInset();
+	Display display = getDisplay ();
+	return display.buttonInset;
+}
+
+int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
+	if (isImage && image != null && (style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
+		Rect rect = new Rect();
+		OS.GetControlBounds (handle, rect);
+		int width = OS.CGImageGetWidth (image.handle);
+		int height = OS.CGImageGetHeight (image.handle);
+		int x = Math.max (0, (rect.right - rect.left - width) / 2);
+		int y = Math.max (0, (rect.bottom - rect.top - height) / 2);
+		GCData data = new GCData ();
+		data.paintEvent = theEvent;
+		GC gc = GC.carbon_new (this, data);
+		gc.drawImage (image, x, y);
+		gc.dispose ();
+		return OS.noErr;
 	}
+	return result;
 }
-boolean mnemonicHit (char key) {
-	if (!setFocus ()) return false;
-	click ();
-	return true;
-}
-/* AW
-boolean mnemonicMatch (char key) {
-	char mnemonic = findMnemonic (getText ());
-	if (mnemonic == '\0') return false;
-	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
-}
-*/
-int processFocusIn () {
-	super.processFocusIn ();
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if ((style & SWT.PUSH) == 0) return 0;
-	getShell ().setDefaultButton (this, false);
-	return 0;
-}
-int processFocusOut () {
-	super.processFocusOut ();
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if ((style & SWT.PUSH) == 0) return 0;
-	if (getDefault ()) {
-		getShell ().setDefaultButton (null, false);
-	}
-	return 0;
-}
-int processSelection (Object callData) {
+
+int kEventControlHit (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlHit (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
 	if ((style & SWT.RADIO) != 0) {
-		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) selectRadio ();
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
+		}
 	}
-	return super.processSelection (callData);
+	postEvent (SWT.Selection);
+	return OS.eventNotHandledErr;
 }
+
+int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	if ((style & SWT.PUSH) != 0) {
+		short [] part = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+		menuShell ().setDefaultButton ((part [0] != 0) ? this : null, false);	
+	}
+	return result;
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
-    /*
-	int [] argList = {
-		OS.XmNlabelPixmap, OS.XmUNSPECIFIED_PIXMAP,
-		OS.XmNlabelInsensitivePixmap, OS.XmUNSPECIFIED_PIXMAP,
-	};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-    */
-    if (fCIconHandle != 0) {
-    	if (handle != 0)
-    		OS.SetBevelButtonContentInfo(handle, (short)0, 0);
-		Image.disposeCIcon(fCIconHandle);
-		fCIconHandle= 0;
-    }
-	image = null;
+	if (cIcon != 0) {
+		destroyCIcon (cIcon);
+		cIcon = 0;
+	}
 }
-/**
- * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see SelectionListener
- * @see #addSelectionListener
- */
+
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -524,217 +313,158 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
+
 void selectRadio () {
+	/*
+	* This code is intentionally commented.  When two groups
+	* of radio buttons with the same parent are separated by
+	* another control, the correct behavior should be that
+	* the two groups act independently.  This is consistent
+	* with radio tool and menu items.  The commented code
+	* implements this behavior.
+	*/
+//	int index = 0;
+//	Control [] children = parent._getChildren ();
+//	while (index < children.length && children [index] != this) index++;
+//	int i = index - 1;
+//	while (i >= 0 && children [i].setRadioSelection (false)) --i;
+//	int j = index + 1;
+//	while (j < children.length && children [j].setRadioSelection (false)) j++;
+//	setSelection (true);
 	Control [] children = parent._getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (this != child && child instanceof Button) {
-			Button button = (Button) child;
-			if ((button.getStyle () & SWT.RADIO) != 0) {
-				if (button.getSelection ()) {
-					button.setSelection (false);
-					button.postEvent (SWT.Selection);
-				}
-			}
-		}
+		if (this != child) child.setRadioSelection (false);
 	}
 	setSelection (true);
 }
-/**
- * Controls how text, images and arrows will be displayed
- * in the receiver. The argument should be one of
- * <code>LEFT</code>, <code>RIGHT</code> or <code>CENTER</code>
- * unless the receiver is an <code>ARROW</code> button, in 
- * which case, the argument indicates the direction of
- * the arrow (one of <code>LEFT</code>, <code>RIGHT</code>, 
- * <code>UP</code> or <code>DOWN</code>).
- *
- * @param alignment the new alignment 
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
 public void setAlignment (int alignment) {
-	checkWidget();
 	if ((style & SWT.ARROW) != 0) {
-		fAlignment= alignment;
-		System.out.println("Button.setAlignment: nyi");
+		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
+		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
+		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
+		int orientation = OS.kThemeDisclosureRight;
+		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureRight; // NEEDS WORK
+		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
+		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
+		OS.SetControl32BitValue (handle, orientation);
 		return;
 	}
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
-	fAlignment= alignment;
-	System.out.println("Button.setAlignment: nyi");
+	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	int textAlignment = 0;
+	int graphicAlignment = 0;
+	if ((style & SWT.LEFT) != 0) {
+		textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
+		graphicAlignment = OS.kControlBevelButtonAlignLeft;
+	}
+	if ((style & SWT.CENTER) != 0) {
+		textAlignment = OS.kControlBevelButtonAlignTextCenter;
+		graphicAlignment = OS.kControlBevelButtonAlignCenter;
+	}
+	if ((style & SWT.RIGHT) != 0) {
+		textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
+		graphicAlignment = OS.kControlBevelButtonAlignRight;
+	}
+	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
+	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
+	redraw ();
 }
+
+public void setBounds (int x, int y, int width, int height) {
+	checkWidget ();
+	/* Bug in MacOS X. When setting the height of a bevel button 
+	 * to a value less than 20, the button is drawn incorrectly.
+	 * The fix is to force the height to be greater than or equal to 20.
+	 */
+	if ((style & SWT.ARROW) == 0) {
+		height = Math.max (20, height);
+	}
+	super.setBounds (x, y, width, height);
+}
+
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
-	if (getShell ().parent == null) return;
-	OS.SetWindowDefaultButton(OS.GetControlOwner(handle), value ? handle : 0);
+	int window = OS.GetControlOwner (handle);
+	OS.SetWindowDefaultButton (window, value ? handle : 0);
 }
-/**
- * Sets the receiver's image to the argument, which may be
- * null indicating that no image should be displayed.
- *
- * @param image the image to display on the receiver (may be null)
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
- * </ul> 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
 public void setImage (Image image) {
 	checkWidget();
-	
-	this.image = image;
-	
-	if (fCIconHandle != 0) {
-		Image.disposeCIcon(fCIconHandle);
-		fCIconHandle= 0;
+	if ((style & SWT.ARROW) != 0) return;
+	if (cIcon != 0) {
+		destroyCIcon(cIcon);
+		cIcon = 0;
 	}
+	this.image = image;
+	isImage = true;
 	
-	if (image != null) {
-		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		fCIconHandle= Image.carbon_createCIcon(image);
-		if (fCIconHandle != 0)
-			setMode(fCIconHandle);
-	} else 
-		setMode(0);
+	if (image == null) {
+		setText (text);
+		return;
+	}
+
+	if (text.length () > 0) {
+		char [] buffer = new char [] {' '};
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+		OS.SetControlTitleWithCFString (handle, ptr);
+		OS.CFRelease (ptr);
+	}
+
+	cIcon = createCIcon (image);
+	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
+	inContent.contentType = (short)OS.kControlContentCIconHandle;
+	inContent.iconRef = cIcon;
+	OS.SetBevelButtonContentInfo (handle, inContent);
+	redraw ();
 }
-/**
- * Sets the selection state of the receiver, if it is of type <code>CHECK</code>, 
- * <code>RADIO</code>, or <code>TOGGLE</code>.
- *
- * <p>
- * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
- * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
- * it is selected when it is pushed in.
- *
- * @param selected the new selection state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
+boolean setRadioSelection (boolean value){
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
+}
+
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-	OS.SetControl32BitValue(handle, selected ? 1 : 0);
+	OS.SetControl32BitValue (handle, selected ? 1 : 0);
 }
-/**
- * Sets the receiver's text.
- * <p>
- * This method sets the button label.  The label may include
- * the mnemonic character but must not contain line delimiters.
- * </p>
- * 
- * @param string the new text
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
-	
-	int sHandle= 0;
-	try {
-		sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(string));
-		if (OS.SetControlTitleWithCFString(handle, sHandle) != OS.kNoErr)
-			error (SWT.ERROR_CANNOT_SET_TEXT);
-	} finally {
-		if (sHandle != 0)
-			OS.CFRelease(sHandle);
+	text = string;
+	if (isImage) {
+		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
+		inContent.contentType = (short)OS.kControlContentTextOnly;
+		OS.SetBevelButtonContentInfo(handle, inContent);
 	}
-}
-
-int traversalCode () {
-	int code = super.traversalCode ();
-	if ((style & SWT.PUSH) != 0) return code;
-	return code | SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
-}
-
-////////////////////////////////////////////////////////
-// Mac stuff
-////////////////////////////////////////////////////////
-
-private void setMode(int icon) {
-	
-	if ((style & SWT.FLAT) != 0 || fImageMode) {
-		OS.SetBevelButtonContentInfo(handle, OS.kControlContentCIconHandle, icon);
-		redraw();
-		return;
+	isImage = false;
+	int length = text.length ();
+	String s = (length == 0) ? " ": text;
+	char [] buffer = new char [length];
+	s.getChars (0, buffer.length, buffer, 0);
+	int i=0, j=0;
+	while (i < buffer.length) {
+		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == Mnemonic) {i++; continue;}
+			j--;
+		}
 	}
-
-	if ((style & SWT.PUSH) == 0)
-		return;	// we only transmogrify push buttons
-	
-	fImageMode= true;
-	
-	int[] ph= new int[1];
-	int rc= OS.GetSuperControl(handle, ph);
-	if (rc != OS.kNoErr)
-		System.out.println("Button.setMode: " + rc);
-	int parentHandle= ph[0];
-	
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	
-	int index= MacUtil.indexOf(parentHandle, handle);
-	if (index < 0)
-		System.out.println("Button.setMode: can't find handle");
-	Widget w= WidgetTable.get(handle);
-	WidgetTable.remove(handle);
-	OS.DisposeControl(handle);
-	
-	short type= icon != 0 ? OS.kControlBevelButtonNormalBevelProc : OS.kControlPushButtonProc;
-		
-    handle= MacUtil.newControl(parentHandle, index, (short)0, (short)0, (short)0, type);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	WidgetTable.put(handle, w);
-	
-	OS.SetControlBounds(handle, bounds.getData());
-	OS.SetBevelButtonContentInfo(handle, OS.kControlContentCIconHandle, icon);
-}
-
-/**
- * Overridden from Control.
- * x and y are relative to window!
- */
-void handleResize(int hndl, MacRect bounds) {
-	fTopMargin= fBottomMargin= 0;
-	if ((style & SWT.PUSH) != 0 && image == null) {	// for push buttons
-		Point result= MacUtil.computeSize(hndl);
-		int diff= bounds.getHeight()-result.y;
-		fTopMargin= diff/2;
-		fBottomMargin= diff-fTopMargin;
-		bounds.inset(MARGIN, fTopMargin, MARGIN, fBottomMargin);
-	}
-	super.handleResize(hndl, bounds);
-}
-
-void internalGetControlBounds(int hndl, MacRect bounds) {
-	super.internalGetControlBounds(hndl, bounds);
-	if ((style & SWT.PUSH) != 0 && image == null)
-		bounds.inset(-MARGIN, -fTopMargin, -MARGIN, -fBottomMargin);
-}
-
-public void setFont (Font font) {
-	super.setFont(null);
-}
-
-int sendKeyEvent(int type, MacEvent mEvent, Event event) {
-	return OS.CallNextEventHandler(mEvent.getNextHandler(), mEvent.getEventRef());
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	OS.SetControlTitleWithCFString (handle, ptr);
+	OS.CFRelease (ptr);
+	redraw ();
 }
 
 }

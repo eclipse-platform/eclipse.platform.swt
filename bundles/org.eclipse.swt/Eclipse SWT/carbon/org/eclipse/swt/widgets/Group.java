@@ -7,9 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of this class provide an etched border
@@ -31,11 +32,9 @@ import org.eclipse.swt.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public /*final*/ class Group extends Composite {
-
-	private static final int LABEL_HEIGHT= 20;
-	private static final int MARGIN= 4;
-
+public class Group extends Composite {
+	String text;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -71,6 +70,7 @@ public /*final*/ class Group extends Composite {
 public Group (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+
 static int checkStyle (int style) {
 	/*
 	* Even though it is legal to create this widget
@@ -81,93 +81,59 @@ static int checkStyle (int style) {
 	*/
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
+
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
-    /* AW
-	int trimX, trimY, trimWidth, trimHeight;
-	int [] argList = {
-		OS.XmNwidth, 0,
-		OS.XmNheight, 0,
-		OS.XmNshadowThickness, 0,
-		OS.XmNmarginWidth, 0,
-		OS.XmNmarginHeight, 0
-	};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int thickness = argList [5];
-	int marginWidth = argList [7];
-	int marginHeight = argList [9];
-	int borderWidth = getBorderWidth ();
-	trimX = x - marginWidth + thickness - borderWidth;
-	trimY = y - marginHeight + thickness - borderWidth;
-	trimWidth = width + ((marginWidth + thickness + borderWidth) * 2);
-	trimHeight = height + ((marginHeight + thickness + borderWidth) * 2);
-	if (OS.XtIsManaged (labelHandle)) {
-		int [] argList2 = {OS.XmNy, 0, OS.XmNheight, 0};
-		OS.XtGetValues (labelHandle, argList2, argList2.length / 2);
-		int labelHeight = ((short) argList2 [1]) + argList2 [3];
-		trimY = y - labelHeight;
-		trimHeight = height + labelHeight + (marginHeight + thickness);
-	}
-    */
-	return new Rectangle (x-MARGIN, y-LABEL_HEIGHT, width+(2*MARGIN), height+LABEL_HEIGHT+MARGIN);
+	checkWidget ();
+	Rect bounds = new Rect ();
+	OS.GetControlBounds (handle, bounds);
+	int rgnHandle = OS.NewRgn ();
+	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
+	Rect client = new Rect ();
+	OS.GetRegionBounds (rgnHandle, client);
+	OS.DisposeRgn (rgnHandle);
+	x -= client.left - bounds.left;
+	y -= client.top - bounds.top;
+	width += Math.max (8, (bounds.right - bounds.left) - (client.right - client.left));
+	height += Math.max (22, (bounds.bottom - bounds.top) - (client.bottom - client.top));
+	return new Rectangle (x, y, width, height);
 }
-void createHandle (int index) {
-	state |= HANDLE;
-	int parentHandle = parent.handle;
-    /*
-	formHandle = OS.XmCreateForm (parentHandle, null, argList1, argList1.length / 2);
-	if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
-    */
-    /* AW
-	int [] argList2 = {
-		OS.XmNshadowType, shadowType (),
-		OS.XmNtopAttachment, OS.XmATTACH_FORM,
-		OS.XmNbottomAttachment, OS.XmATTACH_FORM,
-		OS.XmNleftAttachment, OS.XmATTACH_FORM,
-		OS.XmNrightAttachment, OS.XmATTACH_FORM,
-		OS.XmNresizable, 0,
-	};
-	handle = OS.XmCreateFrame (formHandle, null, argList2, argList2.length / 2);
-    */
-	handle= MacUtil.newControl(parentHandle, OS.kControlGroupBoxTextTitleProc);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	setFont(defaultFont());
+
+void createHandle () {
+	int [] outControl = new int [1];
+	int window = OS.GetControlOwner (parent.handle);
+	OS.CreateGroupBoxControl (window, null, 0, true, outControl);
+	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+	handle = outControl [0];
 }
-Font defaultFont () {
-	return getDisplay ().groupFont;
+
+int defaultThemeFont () {	
+	return OS.kThemeEmphasizedSystemFont;
 }
+
+void drawWidget (int control) {
+	drawBackground (handle, background);
+}
+
 public Rectangle getClientArea () {
 	checkWidget();
-    /* AW
-	int [] argList = {
-		OS.XmNwidth, 0,
-		OS.XmNheight, 0,
-		OS.XmNshadowThickness, 0,
-		OS.XmNmarginWidth, 0,
-		OS.XmNmarginHeight, 0
-	};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int thickness = argList [5];
-	int marginWidth = argList [7];
-	int marginHeight = argList [9];
-	int x = marginWidth + thickness;
-	int y = marginHeight + thickness;
-	int width = argList [1] - ((marginWidth + thickness) * 2) - 1;
-	int height = argList [3] - ((marginHeight + thickness) * 2) - 1;
-	if (OS.XtIsManaged (labelHandle)) {
-		int [] argList2 = {OS.XmNy, 0, OS.XmNheight, 0};
-		OS.XtGetValues (labelHandle, argList2, argList2.length / 2);
-		y = ((short) argList2 [1]) + argList2 [3];
-		height = argList [3] - y - (marginHeight + thickness) - 1;
-	}
+	Rect bounds = new Rect ();
+	OS.GetControlBounds (handle, bounds);
+	int rgnHandle = OS.NewRgn ();
+	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
+	Rect client = new Rect ();
+	OS.GetRegionBounds (rgnHandle, client);
+	OS.DisposeRgn (rgnHandle);
+	int x = Math.max (0, client.left - bounds.left);
+	int y = Math.max (0, client.top - bounds.top);
+	int width = Math.max (0, client.right - client.left);
+	int height = Math.max (0, client.bottom - client.top);
 	return new Rectangle (x, y, width, height);
-    */
-	Point e= getSize();
-    return new Rectangle(MARGIN, LABEL_HEIGHT, e.x-(2*MARGIN), e.y-(LABEL_HEIGHT+MARGIN));
 }
+
 /**
  * Returns the receiver's text, which is the string that the
  * is used as the <em>title</em>. If the text has not previously
@@ -181,21 +147,10 @@ public Rectangle getClientArea () {
  * </ul>
  */
 public String getText () {
-	checkWidget();
-	int[] sHandle= new int[1];
-    OS.GetControlTitleAsCFString(handle, sHandle);
-	return MacUtil.getStringAndRelease(sHandle[0]);
+	checkWidget ();
+	return text;
 }
-/* AW
-boolean mnemonicHit (char key) {
-	return setFocus ();
-}
-boolean mnemonicMatch (char key) {
-	char mnemonic = findMnemonic (getText ());
-	if (mnemonic == '\0') return false;
-	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
-}
-*/
+
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,
@@ -214,13 +169,22 @@ boolean mnemonicMatch (char key) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int sHandle= 0;
-	try {
-		sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(string));
-		OS.SetControlTitleWithCFString(handle, sHandle);
-	} finally {
-		if (sHandle != 0)
-			OS.CFRelease(sHandle);
+	if ((style & SWT.ARROW) != 0) return;
+	text = string;
+	char [] buffer = new char [text.length ()];
+	text.getChars (0, buffer.length, buffer, 0);
+	int i=0, j=0;
+	while (i < buffer.length) {
+		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == Mnemonic) {i++; continue;}
+			j--;
+		}
 	}
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	OS.SetControlTitleWithCFString (handle, ptr);
+	OS.CFRelease (ptr);
 }
+
 }

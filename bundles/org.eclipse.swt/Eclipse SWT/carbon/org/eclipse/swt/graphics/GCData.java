@@ -8,8 +8,7 @@ package org.eclipse.swt.graphics;
  */
 
 import org.eclipse.swt.*;
-
-import org.eclipse.swt.internal.carbon.MacFont;
+import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of this class are descriptions of GCs in terms
@@ -26,12 +25,20 @@ import org.eclipse.swt.internal.carbon.MacFont;
 public final class GCData {
 	public Device device;
 	public Image image;
-	public int foreground = -1;
-	public int background = -1;
-	public MacFont font;
+	public float[] foreground;
+	public float[] background;
 	public int clipRgn;
+	public int lineWidth = 1;
 	public int lineStyle = SWT.LINE_SOLID;
-	// AW
-	public int controlHandle;
-	// AW
+	public boolean xorMode;
+	
+	public Font font;
+	public int fontAscent;
+	public int fontDescent;
+	public int layout;
+	public int style;
+	
+	public int paintEvent;
+	public int visibleRgn;
+	public int control;
 }

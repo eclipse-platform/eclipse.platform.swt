@@ -7,124 +7,35 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import java.util.ArrayList;
-import java.util.Iterator;
+
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.CGPoint;
+import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.HICommand;
+import org.eclipse.swt.internal.carbon.RGBColor;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Callback;
-import org.eclipse.swt.internal.carbon.*;
 
-/**
- * Instances of this class are responsible for managing the
- * connection between SWT and the underlying operating
- * system. Their most important function is to implement
- * the SWT event loop in terms of the platform event model.
- * They also provide various methods for accessing information
- * about the operating system, and have overall control over
- * the operating system resources which SWT allocates.
- * <p>
- * Applications which are built with SWT will <em>almost always</em>
- * require only a single display. In particular, some platforms
- * which SWT supports will not allow more than one <em>active</em>
- * display. In other words, some platforms do not support
- * creating a new display if one already exists that has not been
- * sent the <code>dispose()</code> message.
- * <p>
- * In SWT, the thread which creates a <code>Display</code>
- * instance is distinguished as the <em>user-interface thread</em>
- * for that display.
- * </p>
- * The user-interface thread for a particular display has the
- * following special attributes:
- * <ul>
- * <li>
- * The event loop for that display must be run from the thread.
- * </li>
- * <li>
- * Some SWT API methods (notably, most of the public methods in
- * <code>Widget</code> and its subclasses), may only be called
- * from the thread. (To support multi-threaded user-interface
- * applications, class <code>Display</code> provides inter-thread
- * communication methods which allow threads other than the 
- * user-interface thread to request that it perform operations
- * on their behalf.)
- * </li>
- * <li>
- * The thread is not allowed to construct other 
- * <code>Display</code>s until that display has been disposed.
- * (Note that, this is in addition to the restriction mentioned
- * above concerning platform support for multiple displays. Thus,
- * the only way to have multiple simultaneously active displays,
- * even on platforms which support it, is to have multiple threads.)
- * </li>
- * </ul>
- * Enforcing these attributes allows SWT to be implemented directly
- * on the underlying operating system's event model. This has 
- * numerous benefits including smaller footprint, better use of 
- * resources, safer memory management, clearer program logic,
- * better performance, and fewer overall operating system threads
- * required. The down side however, is that care must be taken
- * (only) when constructing multi-threaded applications to use the
- * inter-thread communication mechanisms which this class provides
- * when required.
- * </p><p>
- * All SWT API methods which may only be called from the user-interface
- * thread are distinguished in their documentation by indicating that
- * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
- * SWT exception.
- * </p>
- * <dl>
- * <dt><b>Styles:</b></dt>
- * <dd>(none)</dd>
- * <dt><b>Events:</b></dt>
- * <dd>Close, Dispose</dd>
- * </dl>
- * <p>
- * IMPORTANT: This class is <em>not</em> intended to be subclassed.
- * </p>
- * 
- * @see #syncExec
- * @see #asyncExec
- * @see #wake
- * @see #readAndDispatch
- * @see #sleep
- * @see #dispose
- */
 public class Display extends Device {
 
-	/* Windows, Events and Callbacks */
-	static String APP_NAME = "SWT";
+	//TEMPORARY
+	int textHighlightThickness = 4;
+	
+	/* Windows and Events */
 	Event [] eventQueue;
-	EventTable eventTable;
-	
-	/* Default Fonts, Colors, Insets, Widths and Heights. */
-	Font defaultFont;
-	Font listFont, textFont, buttonFont, labelFont, groupFont;		
-	private short fHoverThemeFont;
-
-	int dialogBackground, dialogForeground;
-	int buttonBackground, buttonForeground, buttonShadowThickness;
-	int compositeBackground, compositeForeground;
-	int compositeTopShadow, compositeBottomShadow, compositeBorder;
-	int listBackground, listForeground, listSelect, textBackground, textForeground;
-	int labelBackground, labelForeground, scrollBarBackground, scrollBarForeground;
-	int scrolledInsetX, scrolledInsetY, scrolledMarginX, scrolledMarginY;
-	int defaultBackground, defaultForeground;
-	int textHighlightThickness;
-	
-	/* System Colors */
-	Color COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
-	Color COLOR_WIDGET_HIGHLIGHT_SHADOW, COLOR_WIDGET_BACKGROUND, COLOR_WIDGET_BORDER;
-	Color COLOR_LIST_FOREGROUND, COLOR_LIST_BACKGROUND, COLOR_LIST_SELECTION, COLOR_LIST_SELECTION_TEXT;
-	Color COLOR_INFO_BACKGROUND;
-	
-	/* Initial Guesses for Shell Trimmings. */
-	int borderTrimWidth = 4, borderTrimHeight = 4;
-	int resizeTrimWidth = 6, resizeTrimHeight = 6;
-	int titleBorderTrimWidth = 5, titleBorderTrimHeight = 28;
-	int titleResizeTrimWidth = 6, titleResizeTrimHeight = 29;
-	int titleTrimWidth = 0, titleTrimHeight = 23;
+	Callback actionCallback, commandCallback, controlCallback;
+	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, helpCallback;
+	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback;
+	Callback mouseCallback, trackingCallback, windowCallback;
+	int actionProc, commandProc, controlProc;
+	int drawItemProc, itemDataProc, itemNotificationProc, helpProc;
+	int hitTestProc, keyboardProc, menuProc, mouseHoverProc;
+	int mouseProc, trackingProc, windowProc;
+	EventTable eventTable, filterTable;
+	int queue, lastModifiers;
 	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
@@ -134,44 +45,67 @@ public class Display extends Device {
 	Runnable [] disposeList;
 	
 	/* Timers */
-	int [] timerIDs;
+	int [] timerIds;
 	Runnable [] timerList;
+	Callback timerCallback;
 	int timerProc;	
+		
+	/* Current caret */
+	Caret currentCaret;
+	Callback caretCallback;
+	int caretID, caretProc;
+	
+	/* Grabs */
+	Control grabControl;
+
+	/* Hover Help */
+	int helpString;
+	Control helpControl;
+	int lastHelpX, lastHelpY;
+	
+	/* Mouse Enter/Exit */
+	Control currentControl;
+	
+	/* Mouse Hover */
+	Control hoverControl;
+	int mouseHoverID;
+	
+	/* Menus */
+	Menu menuBar;
+	Menu [] menus, popups;
+	MenuItem [] items;
+	static final int ID_TEMPORARY = 1000;
+	static final int ID_START = 1001;
+	
+	/* Insets */
+	Rect buttonInset, tabFolderInset, comboInset;
+	
+	/* Focus */
+	boolean ignoreFocus;
 	
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
-	
-		// AW
-		//{49,				0x20},	// space
-		{51,				SWT.BS},
-		//{36,				SWT.CR},
-		// AW
+
+		/* Non-Numeric Keypad Keys */
+		{126,	SWT.ARROW_UP},
+		{125,	SWT.ARROW_DOWN},
+		{123,	SWT.ARROW_LEFT},
+		{124,	SWT.ARROW_RIGHT},
+		{116,	SWT.PAGE_UP},
+		{121,	SWT.PAGE_DOWN},
+		{115,	SWT.HOME},
+		{119,	SWT.END},
+		{71,	SWT.INSERT},
+
+		/* Virtual and Ascii Keys */
+		{51,	SWT.BS},
+		{36,	SWT.CR},
+		{117,	SWT.DEL},
+		{53,	SWT.ESC},
+		{76,	SWT.LF},
+		{48,	SWT.TAB},	
 		
-		// Keyboard and Mouse Masks
-//		{OS.XK_Alt_L,		SWT.ALT},
-//		{OS.XK_Alt_R,		SWT.ALT},
-//		{OS.XK_Shift_L,		SWT.SHIFT},
-//		{OS.XK_Shift_R,		SWT.SHIFT},
-//		{OS.XK_Control_L,	SWT.CONTROL},
-//		{OS.XK_Control_R,	SWT.CONTROL},
-		
-//		{OS.VK_LBUTTON, SWT.BUTTON1},
-//		{OS.VK_MBUTTON, SWT.BUTTON3},
-//		{OS.VK_RBUTTON, SWT.BUTTON2},
-		
-		// Non-Numeric Keypad Constants
-		{126,				SWT.ARROW_UP},
-		{125,				SWT.ARROW_DOWN},
-		{123,				SWT.ARROW_LEFT},
-		{124,				SWT.ARROW_RIGHT},
-		{116,				SWT.PAGE_UP},
-		{121,				SWT.PAGE_DOWN},
-		{115,				SWT.HOME},
-		{119,				SWT.END},
-		{71,				SWT.INSERT},
-//		{OS.XK_Delete,		SWT.DELETE},
-	
-		// Functions Keys 
+		/* Functions Keys */
 		{122,		SWT.F1},
 		{120,		SWT.F2},
 		{99,		SWT.F3},
@@ -184,62 +118,21 @@ public class Display extends Device {
 		{109,		SWT.F10},
 		{103,		SWT.F11},
 		{111,		SWT.F12},
+		
+		/* Numeric Keypad Keys */
 	};
 
 	/* Multiple Displays. */
 	static Display Default;
 	static Display [] Displays = new Display [4];
-
-	/* Double Click */
-	int lastTime, lastButton;
-	
-	/* Current caret */
-	Caret currentCaret;
-	int caretID, caretProc;
-			
+				
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
-	
-	/* Mouse Hover */
-	int mouseHoverID, mouseHoverProc;
-	int mouseHoverHandle, toolTipWindowHandle;
 			
 	/* Display Data */
 	Object data;
 	String [] keys;
 	Object [] values;
-	
-	/* AW Mac */
-	private static final int TOOLTIP_MARGIN= 3;
-	private static final int HOVER_TIMEOUT= 500;	// in milli seconds
-	private static final int SWT_USER_EVENT= ('S'<<24) + ('W'<<16) + ('T'<<8) + '1';
-
-	private int fMenuId= 5000;
-	
-	// Callbacks
-	private ArrayList fCallbacks;
-	// callback procs
-	int fApplicationProc;
-	int fWindowProc;
-	int fMouseProc;
-	int fMenuProc;
-	int fControlActionProc;
-	int fUserPaneDrawProc, fUserPaneHitTestProc, fUserPaneTrackingProc;
-	int fDataBrowserDataProc, fDataBrowserCompareProc, fDataBrowserItemNotificationProc;
-	
-	private int fUpdateRegion;
-	private int fTrackedControl;
-	private int fFocusControl;
-	private int fCurrentControl;
-	private String fToolTipText;
-	private int fLastHoverHandle;
-	boolean fInContextMenu;	// true while tracking context menu
-	public int fCurrentCursor;
-	private Shell fMenuRootShell;
-	
-	private static boolean fgCarbonInitialized;
-	private static boolean fgInitCursorCalled;
-	/* end AW */
 	
 	/*
 	* TEMPORARY CODE.  Install the runnable that
@@ -258,6 +151,26 @@ public class Display extends Device {
 		};
 	}
 	
+	static {
+		/*
+		* Feature in the Macintosh.  On OS 10.2, it is necessary
+		* to explicitly check in with the Process Manager and set
+		* the current process to be the front process in order for
+		* windows to come to the front by default.  The fix is call
+		* both GetCurrentProcess() and SetFrontProcess().
+		* 
+		* NOTE: It is not actually necessary to use the process
+		* serial number returned by GetCurrentProcess() in the
+		* call to SetFrontProcess() (ie. kCurrentProcess can be
+		* used) but both functions must be called in order for
+		* windows to come to the front.
+		*/
+		int [] psn = new int [2];
+		if (OS.GetCurrentProcess (psn) == OS.noErr) {
+			OS.SetFrontProcess (psn);
+		}
+	}
+	
 /*
 * TEMPORARY CODE.
 */
@@ -265,53 +178,33 @@ static void setDevice (Device device) {
 	CurrentDevice = device;
 }
 
-/**
- * Constructs a new instance of this class.
- * <p>
- * Note: The resulting display is marked as the <em>current</em>
- * display. If this is the first display which has been 
- * constructed since the application started, it is also
- * marked as the <em>default</em> display.
- * </p>
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see #getCurrent
- * @see #getDefault
- * @see Widget#checkSubclass
- * @see Shell
- */
-public Display () {
-	this (null);
-}
-public Display (DeviceData data) {
-	super (checkNull (data));
+static int translateKey (int key) {
+	for (int i=0; i<KeyTable.length; i++) {
+		if (KeyTable [i] [0] == key) return KeyTable [i] [1];
+	}
+	return 0;
 }
 
-/**
- * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs. When the
- * event does occur in the display, the listener is notified by
- * sending it the <code>handleEvent()</code> message.
- *
- * @param eventType the type of event to listen for
- * @param listener the listener which should be notified when the event occurs
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see Listener
- * @see #removeListener
- * 
- * @since 2.0 
- */
+static int untranslateKey (int key) {
+	for (int i=0; i<KeyTable.length; i++) {
+		if (KeyTable [i] [1] == key) return KeyTable [i] [0];
+	}
+	return 0;
+}
+
+int actionProc (int theControl, int partCode) {
+	Widget widget = WidgetTable.get (theControl);
+	if (widget != null) return widget.actionProc (theControl, partCode);
+	return OS.noErr;
+}
+
+public void addFilter (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (filterTable == null) filterTable = new EventTable ();
+	filterTable.hook (eventType, listener);
+}
+
 public void addListener (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -319,82 +212,95 @@ public void addListener (int eventType, Listener listener) {
 	eventTable.hook (eventType, listener);
 }
 
-/**
- * Requests that the connection between SWT and the underlying
- * operating system be closed.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see #dispose
- * 
- * @since 2.0
- */
-public void close () {
-	checkDevice ();
-	Event event = new Event ();
-	sendEvent (SWT.Close, event);
-	if (event.doit) dispose ();
+void addMenu (Menu menu) {
+	if (menus == null) menus = new Menu [12];
+	for (int i=0; i<menus.length; i++) {
+		if (menus [i] == null) {
+			menu.id = (short)(ID_START + i);
+			menus [i] = menu;
+			return;
+		}
+	}
+	Menu [] newMenus = new Menu [menus.length + 12];
+	menu.id = (short)(ID_START + menus.length);
+	newMenus [menus.length] = menu;
+	System.arraycopy (menus, 0, newMenus, 0, menus.length);
+	menus = newMenus;
 }
 
-void addMouseHoverTimeOut (int handle) {
-	if (mouseHoverID != 0) OS.RemoveEventLoopTimer(mouseHoverID);
-	mouseHoverID = 0;
-	if (handle == fLastHoverHandle) return;
-	int[] timer= new int[1];
-	OS.InstallEventLoopTimer(OS.GetCurrentEventLoop(), HOVER_TIMEOUT / 1000.0, 0.0, mouseHoverProc, handle, timer);
-	mouseHoverID = timer[0];
-	mouseHoverHandle = handle;
+void addMenuItem (MenuItem item) {
+	if (items == null) items = new MenuItem [12];
+	for (int i=0; i<items.length; i++) {
+		if (items [i] == null) {
+			item.id = ID_START + i;
+			items [i] = item;
+			return;
+		}
+	}
+	MenuItem [] newItems = new MenuItem [items.length + 12];
+	item.id = ID_START + items.length;
+	newItems [items.length] = item;
+	System.arraycopy (items, 0, newItems, 0, items.length);
+	items = newItems;
 }
-static DeviceData checkNull (DeviceData data) {
-	if (data == null) data = new DeviceData ();
-	return data;
+
+void addPopup (Menu menu) {
+	if (popups == null) popups = new Menu [4];
+	int length = popups.length;
+	for (int i=0; i<length; i++) {
+		if (popups [i] == menu) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (popups [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Menu [] newPopups = new Menu [length + 4];
+		System.arraycopy (popups, 0, newPopups, 0, length);
+		popups = newPopups;
+	}
+	popups [index] = menu;
 }
-protected void checkDevice () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-}
-/**
- * Causes the <code>run()</code> method of the runnable to
- * be invoked by the user-interface thread at the next 
- * reasonable opportunity. The caller of this method continues 
- * to run in parallel, and is not notified when the
- * runnable has completed.
- *
- * @param runnable code to run on the user-interface thread.
- *
- * @see #syncExec
- */
+
 public void asyncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.asyncExec (runnable);
 }
-/**
- * Causes the system hardware to emit a short sound
- * (if it supports this capability).
- */
+
 public void beep () {
 	checkDevice ();
-	OS.SysBeep((short)100);
+	OS.SysBeep ((short) 100);
 }
+
 int caretProc (int id, int clientData) {
-	if (id != caretID) {
-		return 0;
-	}
-	OS.RemoveEventLoopTimer(id);
-	caretID = 0;
 	if (currentCaret == null) return 0;
 	if (currentCaret.blinkCaret ()) {
 		int blinkRate = currentCaret.blinkRate;
-		int[] timer= new int[1];
-		OS.InstallEventLoopTimer(OS.GetCurrentEventLoop(), blinkRate / 1000.0, 0.0, caretProc, 0, timer);
-		caretID = timer[0];
+		OS.SetEventLoopTimerNextFireTime (id, blinkRate / 1000.0);
 	} else {
 		currentCaret = null;
 	}
 	return 0;
 }
+
+protected void checkDevice () {
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+}
+
+protected void checkSubclass () {
+	if (!Display.isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+public Display () {
+	this (null);
+}
+
+public Display (DeviceData data) {
+	super (data);
+}
+
 static synchronized void checkDisplay (Thread thread) {
 	for (int i=0; i<Displays.length; i++) {
 		if (Displays [i] != null && Displays [i].thread == thread) {
@@ -402,11 +308,68 @@ static synchronized void checkDisplay (Thread thread) {
 		}
 	}
 }
-protected void checkSubclass () {
-	if (!Display.isValidClass (getClass ())) {
-		error (SWT.ERROR_INVALID_SUBCLASS);
+
+int commandProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
+	HICommand command = new HICommand ();
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeHICommand, null, HICommand.sizeof, null, command);
+	switch (eventKind) {
+		case OS.kEventProcessCommand: {
+			if (command.commandID == OS.kAEQuitApplication) {
+				close ();
+				return OS.noErr;
+			}
+			if ((command.attributes & OS.kHICommandFromMenu) != 0) {
+				if (userData != 0) {
+					Widget widget = WidgetTable.get (userData);
+					if (widget != null) return widget.commandProc (nextHandler, theEvent, userData);
+				} else {
+					int menuRef = command.menu_menuRef;
+					short menuID = OS.GetMenuID (menuRef);
+					Menu menu = findMenu (menuID);
+					if (menu != null) {
+						int [] outCommandID = new int [1];
+						short menuIndex = command.menu_menuItemIndex;
+						OS.GetMenuItemCommandID (menuRef, menuIndex, outCommandID);
+						MenuItem item = findMenuItem (outCommandID [0]);
+						return item.kEventProcessCommand (nextHandler, theEvent, userData);
+					}
+					OS.HiliteMenu ((short) 0);
+				}
+			}
+		}
 	}
+	return OS.eventNotHandledErr;
 }
+
+Rect computeInset (int control) {
+	int tempRgn = OS.NewRgn ();
+	Rect rect = new Rect ();
+	OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
+	OS.GetControlBounds (control, rect);
+	Rect rgnRect = new Rect ();
+	OS.GetRegionBounds (tempRgn, rgnRect);
+	OS.DisposeRgn (tempRgn);
+	rect.left -= rgnRect.left;
+	rect.top -= rgnRect.top;
+	rect.right = (short) (rgnRect.right - rect.right);
+	rect.bottom = (short) (rgnRect.bottom - rect.bottom);
+	return rect; 
+}
+
+int controlProc (int nextHandler, int theEvent, int userData) {
+	Widget widget = WidgetTable.get (userData);
+	if (widget != null) return widget.controlProc (nextHandler, theEvent, userData);
+	return OS.eventNotHandledErr;
+}
+
+public void close () {
+	checkDevice ();
+	Event event = new Event ();
+	sendEvent (SWT.Close, event);
+	if (event.doit) dispose ();
+}
+
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay (thread = Thread.currentThread ());
@@ -414,54 +377,27 @@ protected void create (DeviceData data) {
 	register (this);
 	if (Default == null) Default = this;
 }
+
 void createDisplay (DeviceData data) {
-	
-	/* Initialize Carbon */
-	synchronized (Display.class) {
-		if (!fgCarbonInitialized) {
-			OS.RegisterAppearanceClient();
-			OS.TXNInitTextension();
-			//OS.InitCursor();
-			OS.QDSwapTextFlags(OS.kQDUseCGTextRendering + OS.kQDUseCGTextMetrics);
-			if (OS.InitContextualMenus() != OS.kNoErr)
-				System.out.println("Display.createDisplay: error in OS.InitContextualMenus");
-			int[] psn= new int[2];
-			if (OS.GetCurrentProcess(psn) == OS.kNoErr)
-	    		OS.SetFrontProcess(psn);
-				
-			OS.Init();
-	    }
-		fgCarbonInitialized = true;
-	}
-	
-	fGDeviceHandle= OS.GetMainDevice();
+	queue = OS.GetCurrentEventQueue ();
+	OS.TXNInitTextension (0, 0, 0);
 }
+
 synchronized static void deregister (Display display) {
 	for (int i=0; i<Displays.length; i++) {
 		if (display == Displays [i]) Displays [i] = null;
 	}
 }
+
 protected void destroy () {
 	if (this == Default) Default = null;
 	deregister (this);
 	destroyDisplay ();
 }
+
 void destroyDisplay () {
-	// dispose Callbacks
-	Iterator iter= fCallbacks.iterator();
-	while (iter.hasNext()) {
-		Callback cb= (Callback) iter.next();
-		cb.dispose();
-	}
-	fCallbacks= null;
 }
-/**
- * Causes the <code>run()</code> method of the runnable to
- * be invoked by the user-interface thread just before the
- * receiver is disposed.
- *
- * @param runnable code to run at dispose time.
- */
+
 public void disposeExec (Runnable runnable) {
 	checkDevice ();
 	if (disposeList == null) disposeList = new Runnable [4];
@@ -476,61 +412,46 @@ public void disposeExec (Runnable runnable) {
 	newDisposeList [disposeList.length] = runnable;
 	disposeList = newDisposeList;
 }
+
+int drawItemProc (int browser, int item, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.drawItemProc (browser, item, property, itemState, theRect, gdDepth, colorDevice);
+	return OS.noErr;
+}
+
 void error (int code) {
 	SWT.error(code);
 }
-/**
- * Given the operating system handle for a widget, returns
- * the instance of the <code>Widget</code> subclass which
- * represents it in the currently running application, if
- * such exists, or null if no matching widget can be found.
- *
- * @param handle the handle for the widget
- * @return the SWT widget that the handle represents
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
+boolean filterEvent (Event event) {
+	if (filterTable != null) filterTable.sendEvent (event);
+	return false;
+}
+
+boolean filters (int eventType) {
+	if (filterTable == null) return false;
+	return filterTable.hooks (eventType);
+}
+
+Menu findMenu (int id) {
+	if (menus == null) return null;
+	int index = id - ID_START;
+	if (0 <= index && index < menus.length) return menus [index];
+	return null;
+}
+
+MenuItem findMenuItem (int id) {
+	if (items == null) return null;
+	int index = id - ID_START;
+	if (0 <= index && index < items.length) return items [index];
+	return null;
+}
+
 public Widget findWidget (int handle) {
 	checkDevice ();
 	return WidgetTable.get (handle);
 }
-/**
- * Returns the currently active <code>Shell</code>, or null
- * if no shell belonging to the currently running application
- * is active.
- *
- * @return the active shell or null
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Shell getActiveShell () {
-	checkDevice ();
-	Control control = getFocusControl ();
-	if (control == null) return null;
-	return control.getShell ();
-}
-/**
- * Returns the display which the currently running thread is
- * the user-interface thread for, or null if the currently
- * running thread is not a user-interface thread for any display.
- *
- * @return the current display
- */
-public static synchronized Display getCurrent () {
-	return findDisplay (Thread.currentThread ());
-}
-/**
- * Returns the display which the given thread is the
- * user-interface thread for, or null if the given thread
- * is not a user-interface thread for any display.
- *
- * @param thread the user-interface thread
- * @return the display for the given thread
- */
+
 public static synchronized Display findDisplay (Thread thread) {
 	for (int i=0; i<Displays.length; i++) {
 		Display display = Displays [i];
@@ -540,93 +461,69 @@ public static synchronized Display findDisplay (Thread thread) {
 	}
 	return null;
 }
-/**
- * Returns the control which the on-screen pointer is currently
- * over top of, or null if it is not currently over one of the
- * controls built by the currently running application.
- *
- * @return the control under the cursor
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Control getCursorControl () {
+
+public Shell getActiveShell () {
 	checkDevice ();
-	System.out.println("Display.getCursorControl: nyi");
-	
-	/* AW
-	int [] unused = new int [1], buffer = new int [1];
-	int xWindow, xParent = OS.XDefaultRootWindow (xDisplay);
-	do {
-		if (OS.XQueryPointer (
-			xDisplay, xParent, unused, buffer,
-			unused, unused, unused, unused, unused) == 0) return null;
-		if ((xWindow = buffer [0]) != 0) xParent = xWindow;
-	} while (xWindow != 0);
-	int handle = OS.XtWindowToWidget (xDisplay, xParent);
-	if (handle == 0) return null;
-	do {
-		Widget widget = WidgetTable.get (handle);
-		if (widget != null && widget instanceof Control) {
-			Control control = (Control) widget;
-			if (control.getEnabled ()) return control;
-		}
-	} while ((handle = OS.XtParent (handle)) != 0);
-	*/
+	int theWindow = OS.ActiveNonFloatingWindow ();
+	if (theWindow == 0) return null;
+	int [] theControl = new int [1];
+	OS.GetRootControl (theWindow, theControl);
+	Widget widget = WidgetTable.get (theControl [0]);
+	if (widget instanceof Shell) return (Shell) widget;
 	return null;
 }
-/**
- * Returns the location of the on-screen pointer relative
- * to the top left corner of the screen.
- *
- * @return the cursor location
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
+public static synchronized Display getCurrent () {
+	return findDisplay (Thread.currentThread ());
+}
+
+int getCaretBlinkTime () {
+	return OS.GetCaretTime () * 1000 / 60;
+}
+
+public Control getCursorControl () {
+	checkDevice ();
+	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetGlobalMouse (where);
+	int [] theWindow = new int [1];
+	if (OS.FindWindow (where, theWindow) != OS.inContent) return null;
+	if (theWindow [0] == 0) return null;
+	Rect rect = new Rect ();
+	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
+	CGPoint inPoint = new CGPoint ();
+	inPoint.x = where.h - rect.left;
+	inPoint.y = where.v - rect.top;
+	int [] theRoot = new int [1];
+	OS.GetRootControl (theWindow [0], theRoot);
+	int [] theControl = new int [1];
+	OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+	if (theControl [0] != 0) {
+		do {
+			Widget widget = WidgetTable.get (theControl [0]);
+			if (widget != null && widget instanceof Control) {
+				Control control = (Control) widget;
+				if (control.getEnabled ()) return control;
+			}
+			OS.GetSuperControl (theControl [0], theControl);
+		} while (theControl [0] != 0);
+	}
+	Widget widget = WidgetTable.get (theRoot [0]);
+	if (widget != null && widget instanceof Control) return (Control) widget;
+	return null;
+}
+
 public Point getCursorLocation () {
 	checkDevice ();
-	MacPoint loc= new MacPoint();
-	OS.GetGlobalMouse(loc.getData());
-	return new Point (loc.getX(), loc.getY());
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetGlobalMouse (pt);
+	return new Point (pt.h, pt.v);
 }
-/**
- * Returns the default display. One is created (making the
- * thread that invokes this method its user-interface thread)
- * if it did not already exist.
- *
- * @return the default display
- */
+
 public static synchronized Display getDefault () {
 	if (Default == null) Default = new Display ();
 	return Default;
 }
-/**
- * Returns the application defined property of the receiver
- * with the specified name, or null if it has not been set.
- * <p>
- * Applications may have associated arbitrary objects with the
- * receiver in this fashion. If the objects stored in the
- * properties need to be notified when the display is disposed
- * of, it is the application's responsibility provide a
- * <code>disposeExec()</code> handler which does so.
- * </p>
- *
- * @param key the name of the property
- * @return the value of the property or null if it has not been set
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the key is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see #setData
- * @see #disposeExec
- */
+
 public Object getData (String key) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -636,105 +533,74 @@ public Object getData (String key) {
 	}
 	return null;
 }
-/**
- * Returns the application defined, display specific data
- * associated with the receiver, or null if it has not been
- * set. The <em>display specific data</em> is a single,
- * unnamed field that is stored with every display. 
- * <p>
- * Applications may put arbitrary objects in this field. If
- * the object stored in the display specific data needs to
- * be notified when the display is disposed of, it is the
- * application's responsibility provide a
- * <code>disposeExec()</code> handler which does so.
- * </p>
- *
- * @return the display specific data
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
- * </ul>
- *
- * @see #setData
- * @see #disposeExec
- */
+
 public Object getData () {
 	checkDevice ();
 	return data;
 }
-/**
- * Returns the longest duration, in milliseconds, between
- * two mouse button clicks that will be considered a
- * <em>double click</em> by the underlying operating system.
- *
- * @return the double click time
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
 public int getDoubleClickTime () {
 	checkDevice ();
-	return (OS.GetDblTime() * 1000) / 60; 
+	return OS.GetDblTime (); 
 }
-/**
- * Returns the control which currently has keyboard focus,
- * or null if keyboard events are not currently going to
- * any of the controls built by the currently running
- * application.
- *
- * @return the control under the cursor
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
 public Control getFocusControl () {
 	checkDevice ();
-	/* AW
-	int [] buffer1 = new int [1], buffer2 = new int [1];
-	OS.XGetInputFocus (xDisplay, buffer1, buffer2);
-	int xWindow = buffer1 [0];
-	if (xWindow == 0) return null;
-	int handle = OS.XtWindowToWidget (xDisplay, xWindow);
-	if (handle == 0) return null;
-	handle = OS.XmGetFocusWidget (handle);
-	*/
-	int handle= fFocusControl;
-	if (handle == 0) return null;
+	int theWindow = OS.ActiveNonFloatingWindow ();
+	if (theWindow == 0) return null;
+	return getFocusControl (theWindow);
+}
+
+Control getFocusControl (int window) {
+	int [] theControl = new int [1];
+	OS.GetKeyboardFocus (window, theControl);
+	if (theControl [0] == 0) return null;
 	do {
-		Widget widget = WidgetTable.get (handle);
-		if (widget instanceof Control) {
-			Control window = (Control) widget;
-			if (window.getEnabled ()) return window;
+		Widget widget = WidgetTable.get (theControl [0]);
+		if (widget != null && widget instanceof Control) {
+			Control control = (Control) widget;
+			if (control.getEnabled ()) return control;
 		}
-	} while ((handle = MacUtil.getSuperControl (handle)) != 0);
+		OS.GetSuperControl (theControl [0], theControl);
+	} while (theControl [0] != 0);
 	return null;
 }
-/**
- * Returns the maximum allowed depth of icons on this display.
- * On some platforms, this may be different than the actual
- * depth of the display.
- *
- * @return the maximum icon depth
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
 public int getIconDepth () {
-	return 8;	// we don't support direct icons yet
+	return getDepth ();
 }
-/**
- * Returns an array containing all shells which have not been
- * disposed and have the receiver as their display.
- *
- * @return the receiver's shells
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
+int getLastEventTime () {
+	/*
+	* This code is intentionally commented.  Event time is
+	* in seconds and we need an accurate time in milliseconds.
+	*/
+//	return (int) (OS.GetLastUserEventTime () * 1000.0);
+	return (int) System.currentTimeMillis ();
+}
+
+Menu [] getMenus (Decorations shell) {
+	if (menus == null) return new Menu [0];
+	int count = 0;
+	for (int i = 0; i < menus.length; i++) {
+		Menu menu = menus[i];
+		if (menu != null && menu.parent == shell) count++;
+	}
+	int index = 0;
+	Menu[] result = new Menu[count];
+	for (int i = 0; i < menus.length; i++) {
+		Menu menu = menus[i];
+		if (menu != null && menu.parent == shell) {
+			result[index++] = menu;
+		}
+	}
+	return result;
+}
+
+Menu getMenuBar () {
+	return menuBar;
+}
+
 public Shell [] getShells () {
 	checkDevice ();
 	/*
@@ -762,300 +628,232 @@ public Shell [] getShells () {
 	}
 	return result;
 }
-/**
- * Returns the thread that has invoked <code>syncExec</code>
- * or null if no such runnable is currently being invoked by
- * the user-interface thread.
- * <p>
- * Note: If a runnable invoked by asyncExec is currently
- * running, this method will return null.
- * </p>
- *
- * @return the receiver's sync-interface thread
- */
+
 public Thread getSyncThread () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	return synchronizer.syncThread;
 }
-/**
- * Returns the matching standard color for the given
- * constant, which should be one of the color constants
- * specified in class <code>SWT</code>. Any value other
- * than one of the SWT color constants which is passed
- * in will result in the color black. This color should
- * not be free'd because it was allocated by the system,
- * not the application.
- *
- * @param id the color constant
- * @return the matching color
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see SWT
- */
+
 public Color getSystemColor (int id) {
 	checkDevice ();
-	Color xColor = null;
+	//NOT DONE
+	
+	RGBColor rgb = new RGBColor ();
 	switch (id) {
-		case SWT.COLOR_INFO_FOREGROUND: 		return super.getSystemColor (SWT.COLOR_BLACK);
-		case SWT.COLOR_INFO_BACKGROUND: 		return COLOR_INFO_BACKGROUND;
-		case SWT.COLOR_TITLE_FOREGROUND:		return super.getSystemColor (SWT.COLOR_WHITE);
-		case SWT.COLOR_TITLE_BACKGROUND:		return super.getSystemColor (SWT.COLOR_DARK_BLUE);
-		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:	return super.getSystemColor (SWT.COLOR_BLUE);
-		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:	return super.getSystemColor (SWT.COLOR_BLACK);
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:	return super.getSystemColor (SWT.COLOR_DARK_GRAY);
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	return super.getSystemColor (SWT.COLOR_GRAY);
-		case SWT.COLOR_WIDGET_DARK_SHADOW:	xColor = COLOR_WIDGET_DARK_SHADOW; break;
-		case SWT.COLOR_WIDGET_NORMAL_SHADOW:	xColor = COLOR_WIDGET_NORMAL_SHADOW; break;
-		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 	xColor = COLOR_WIDGET_LIGHT_SHADOW; break;
-		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:	xColor = COLOR_WIDGET_HIGHLIGHT_SHADOW; break;
-		case SWT.COLOR_WIDGET_BACKGROUND: 	xColor = COLOR_WIDGET_BACKGROUND; break;
-		case SWT.COLOR_WIDGET_FOREGROUND:
-		case SWT.COLOR_WIDGET_BORDER: 		xColor = COLOR_WIDGET_BORDER; break;
-		case SWT.COLOR_LIST_FOREGROUND: 	xColor = COLOR_LIST_FOREGROUND; break;
-		case SWT.COLOR_LIST_BACKGROUND: 	xColor = COLOR_LIST_BACKGROUND; break;
-		case SWT.COLOR_LIST_SELECTION: 		xColor = COLOR_LIST_SELECTION; break;
-		case SWT.COLOR_LIST_SELECTION_TEXT: 	xColor = COLOR_LIST_SELECTION_TEXT; break;
+		case SWT.COLOR_INFO_FOREGROUND: 						return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_INFO_BACKGROUND: 						return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
+		case SWT.COLOR_TITLE_FOREGROUND:						OS.GetThemeTextColor((short)OS.kThemeTextColorDocumentWindowTitleActive, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_TITLE_BACKGROUND:						OS.GetThemeBrushAsColor((short)-5/*undocumented darker highlight color*/, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: 	OS.GetThemeBrushAsColor((short)OS.kThemeBrushPrimaryHighlightColor, (short)getDepth(), true, rgb) ; break;
+		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:	OS.GetThemeTextColor((short)OS.kThemeTextColorDocumentWindowTitleInactive, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: 	OS.GetThemeBrushAsColor((short)OS.kThemeBrushSecondaryHighlightColor, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT: OS.GetThemeBrushAsColor((short)OS.kThemeBrushSecondaryHighlightColor, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_WIDGET_DARK_SHADOW:				return Color.carbon_new (this, new float [] {0x33 / 255f, 0x33 / 255f, 0x33 / 255f, 1});
+		case SWT.COLOR_WIDGET_NORMAL_SHADOW:			return Color.carbon_new (this, new float [] {0x66 / 255f, 0x66 / 255f, 0x66 / 255f, 1});
+		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				return Color.carbon_new (this, new float [] {0x99 / 255f, 0x99 / 255f, 0x99 / 255f, 1});
+		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:		return Color.carbon_new (this, new float [] {0xCC / 255f, 0xCC / 255f, 0xCC / 255f, 1});
+		case SWT.COLOR_WIDGET_BACKGROUND: 					OS.GetThemeBrushAsColor((short)OS.kThemeBrushButtonFaceActive, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_WIDGET_FOREGROUND:					OS.GetThemeTextColor((short)OS.kThemeTextColorPushButtonActive, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_WIDGET_BORDER: 							return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_LIST_FOREGROUND: 						OS.GetThemeTextColor((short)OS.kThemeTextColorListView, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_LIST_BACKGROUND: 						OS.GetThemeBrushAsColor((short)OS.kThemeBrushListViewBackground, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_LIST_SELECTION_TEXT: 					OS.GetThemeTextColor((short)OS.kThemeTextColorListView, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_LIST_SELECTION:								OS.GetThemeBrushAsColor((short)OS.kThemeBrushPrimaryHighlightColor, (short)getDepth(), true, rgb); break;
 		default:
 			return super.getSystemColor (id);	
 	}
-	if (xColor == null)
-		System.out.println("Display.getSystemColor: color null " + id);
-	if (xColor == null) return super.getSystemColor (SWT.COLOR_BLACK);
-	//return Color.carbon_new (this, xColor);
-	return xColor;
-	// return getSystemColor(this, id);
+	float red = ((rgb.red >> 8) & 0xFF) / 255f;
+	float green = ((rgb.green >> 8) & 0xFF) / 255f;
+	float blue = ((rgb.blue >> 8) & 0xFF) / 255f;
+	return Color.carbon_new (this, new float[]{red, green, blue, 1});
 }
-/**
- * Returns a reasonable font for applications to use.
- * On some platforms, this will match the "default font"
- * or "system font" if such can be found.  This font
- * should not be free'd because it was allocated by the
- * system, not the application.
- * <p>
- * Typically, applications which want the default look
- * should simply not set the font on the widgets they
- * create. Widgets are always created with the correct
- * default font for the class of user-interface component
- * they represent.
- * </p>
- *
- * @return a font
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Font getSystemFont () {
-	checkDevice ();
-	return defaultFont;
-}
-/**
- * Returns the user-interface thread for the receiver.
- *
- * @return the receiver's user-interface thread
- */
+
 public Thread getThread () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	return thread;
 }
-void hideToolTip () {
-	if (toolTipWindowHandle != 0) {
-		OS.HideWindow(toolTipWindowHandle);
-		OS.DisposeWindow(toolTipWindowHandle);
-		toolTipWindowHandle = 0;
-	}
+
+int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
+	Widget widget = WidgetTable.get (inControl);
+	if (widget != null) return widget.helpProc (inControl, inGlobalMouse, inRequest, outContentProvided, ioHelpContent);
+	return OS.eventNotHandledErr;
 }
+
+int hitTestProc (int browser, int item, int property, int theRect, int mouseRect) {
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.hitTestProc (browser, item, property, theRect, mouseRect);
+	return OS.noErr;
+}
+
 protected void init () {
 	super.init ();
-				
-	/* Create the callbacks */
-	timerProc= createCallback("timerProc", 2);
-	caretProc= createCallback("caretProc", 2);
-	mouseHoverProc= createCallback("mouseHoverProc", 2);
-
-	fWindowProc= createCallback("handleWindowCallback", 3);
-	fMouseProc= createCallback("handleMouseCallback", 3);
-	fControlActionProc= createCallback("handleControlAction", 2);
-	fUserPaneDrawProc= createCallback("handleUserPaneDraw", 2);
-	fUserPaneHitTestProc= createCallback("handleUserPaneHitTest", 2);
-	fUserPaneTrackingProc= createCallback("handleUserPaneTracking", 3);
-	fDataBrowserDataProc= createCallback("handleDataBrowserDataCallback", 5);
-	fDataBrowserCompareProc= createCallback("handleDataBrowserCompareCallback", 4);
-	fDataBrowserItemNotificationProc= createCallback("handleDataBrowserItemNotificationCallback", 3);
-	fMenuProc= createCallback("handleMenuCallback", 3);
+	initializeCallbacks ();
+	initializeInsets ();	
+}
 	
-	// create standard event handler
-	fApplicationProc= createCallback("handleApplicationCallback", 3);
-	int[] mask= new int[] {
+void initializeCallbacks () {
+	/* Create Callbacks */
+	actionCallback = new Callback (this, "actionProc", 2);
+	actionProc = actionCallback.getAddress ();
+	if (actionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	caretCallback = new Callback(this, "caretProc", 2);
+	caretProc = caretCallback.getAddress();
+	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	commandCallback = new Callback (this, "commandProc", 3);
+	commandProc = commandCallback.getAddress ();
+	if (commandProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	controlCallback = new Callback (this, "controlProc", 3);
+	controlProc = controlCallback.getAddress ();
+	if (controlProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	drawItemCallback = new Callback (this, "drawItemProc", 7);
+	drawItemProc = drawItemCallback.getAddress ();
+	if (drawItemProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	itemDataCallback = new Callback (this, "itemDataProc", 5);
+	itemDataProc = itemDataCallback.getAddress ();
+	if (itemDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	itemNotificationCallback = new Callback (this, "itemNotificationProc", 3);
+	itemNotificationProc = itemNotificationCallback.getAddress ();
+	if (itemNotificationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	helpCallback = new Callback (this, "helpProc", 5);
+	helpProc = helpCallback.getAddress ();
+	if (helpProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	hitTestCallback = new Callback (this, "hitTestProc", 5);
+	hitTestProc = hitTestCallback.getAddress ();
+	if (hitTestProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	keyboardCallback = new Callback (this, "keyboardProc", 3);
+	keyboardProc = keyboardCallback.getAddress ();
+	if (keyboardProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	menuCallback = new Callback (this, "menuProc", 3);
+	menuProc = menuCallback.getAddress ();
+	if (menuProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	mouseHoverCallback = new Callback (this, "mouseHoverProc", 2);
+	mouseHoverProc = mouseHoverCallback.getAddress ();
+	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	mouseCallback = new Callback (this, "mouseProc", 3);
+	mouseProc = mouseCallback.getAddress ();
+	if (mouseProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	timerCallback = new Callback (this, "timerProc", 2);
+	timerProc = timerCallback.getAddress ();
+	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	trackingCallback = new Callback (this, "trackingProc", 6);
+	trackingProc = trackingCallback.getAddress ();
+	if (trackingProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	windowCallback = new Callback (this, "windowProc", 3);
+	windowProc = windowCallback.getAddress ();
+	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		
+	/* Install Event Handlers */
+	int[] mask1 = new int[] {
 		OS.kEventClassCommand, OS.kEventProcessCommand,
-		
-		//OS.kEventClassAppleEvent, OS.kAEQuitApplication,
-		OS.kEventClassAppleEvent, OS.kEventAppleEvent,
-		
-		// we track down events here because we need to know when the user 
-		// clicked in the menu bar
-		OS.kEventClassMouse, OS.kEventMouseDown,
-		// we track up, dragged, and moved events because
-		// we need to get these events even if the mouse is outside of the window.
-		OS.kEventClassMouse, OS.kEventMouseDragged,
-		OS.kEventClassMouse, OS.kEventMouseUp,
-		OS.kEventClassMouse, OS.kEventMouseMoved,
-			
-		SWT_USER_EVENT, 54321,
-		SWT_USER_EVENT, 54322,
 	};
-	if (OS.InstallEventHandler(OS.GetApplicationEventTarget(), fApplicationProc, mask, 0) != OS.kNoErr)
-		error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
-	
-	int textInputProc= createCallback("handleTextCallback", 3);
-	mask= new int[] {
+	int appTarget = OS.GetApplicationEventTarget ();
+	OS.InstallEventHandler (appTarget, commandProc, mask1.length / 2, mask1, 0, null);
+	int[] mask2 = new int[] {
+		OS.kEventClassMouse, OS.kEventMouseDown,
+		OS.kEventClassMouse, OS.kEventMouseDragged,
+//		OS.kEventClassMouse, OS.kEventMouseEntered,
+//		OS.kEventClassMouse, OS.kEventMouseExited,
+		OS.kEventClassMouse, OS.kEventMouseMoved,
+		OS.kEventClassMouse, OS.kEventMouseUp,
+		OS.kEventClassMouse, OS.kEventMouseWheelMoved,
+	};
+	OS.InstallEventHandler (appTarget, mouseProc, mask2.length / 2, mask2, 0, null);
+	int [] mask3 = new int[] {
 		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
+		OS.kEventClassKeyboard, OS.kEventRawKeyModifiersChanged,
 		OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
 		OS.kEventClassKeyboard, OS.kEventRawKeyUp,
 	};
-	if (OS.InstallEventHandler(OS.GetUserFocusEventTarget(), textInputProc, mask, 0) != OS.kNoErr)
-		error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
-	
-	buttonFont = Font.carbon_new (this, getThemeFont(OS.kThemeSmallSystemFont));
-	buttonShadowThickness= 1;
-
-	//scrolledInsetX = scrolledInsetY = 15;
-	scrolledMarginX= scrolledMarginY= 15;
-	compositeForeground = 0x000000;
-	compositeBackground = -1; // 0xEEEEEE;
-	
-	groupFont = Font.carbon_new (this, getThemeFont(OS.kThemeSmallEmphasizedSystemFont));
-	
-	dialogForeground= 0x000000;
-	dialogBackground= 0xffffff;
-	
-	labelForeground = 0x000000;
-	labelBackground = -1; 
-	labelFont = Font.carbon_new (this, getThemeFont(OS.kThemeSmallSystemFont));
-	
-	listForeground = 0x000000;
-	listBackground = 0xffffff;
-	listSelect = listForeground;	// if reversed colors
-	listFont= Font.carbon_new (this, new MacFont((short)1)); // Mac Appl Font
-
-	scrollBarForeground = 0x000000;
-	scrollBarBackground = 0xffffff;
-
-	textForeground = 0x000000;
-	textBackground = 0xffffff;
-	textHighlightThickness = 1; // ???
-	textFont= Font.carbon_new (this, new MacFont((short)1));	// Mac Appl Font
-
-	COLOR_WIDGET_DARK_SHADOW = 		Color.carbon_new(this, 0x333333, true);	
-	COLOR_WIDGET_NORMAL_SHADOW = 	Color.carbon_new(this, 0x666666, true);	
-	COLOR_WIDGET_LIGHT_SHADOW = 	Color.carbon_new(this, 0x999999, true);
-	COLOR_WIDGET_HIGHLIGHT_SHADOW = Color.carbon_new(this, 0xCCCCCC, true);	
-	COLOR_WIDGET_BACKGROUND = 		Color.carbon_new(this, 0xFFFFFF, true);	
-	COLOR_WIDGET_BORDER = 			Color.carbon_new(this, 0x000000, true);	
-	COLOR_LIST_FOREGROUND = 		Color.carbon_new(this, 0x000000, true);	
-	COLOR_LIST_BACKGROUND = 		Color.carbon_new(this, 0xFFFFFF, true);	
-	COLOR_LIST_SELECTION = 			Color.carbon_new(this, 0x6666CC, true);
-	COLOR_LIST_SELECTION_TEXT = 	Color.carbon_new(this, 0xFFFFFF, true);
-	COLOR_INFO_BACKGROUND = 		Color.carbon_new(this, 0xFFFFE1, true);
-	
-	fHoverThemeFont= OS.kThemeSmallSystemFont;
-
-	defaultFont = Font.carbon_new (this, getThemeFont(OS.kThemeSmallSystemFont));
-	
-	defaultForeground = compositeForeground;
-	defaultBackground = compositeBackground;
+	int focusTarget = OS.GetUserFocusEventTarget ();
+	OS.InstallEventHandler (focusTarget, keyboardProc, mask3.length / 2, mask3, 0, null);
 }
-/**	 
- * Invokes platform specific functionality to allocate a new GC handle.
- * <p>
- * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
- * API for <code>Display</code>. It is marked public only so that it
- * can be shared within the packages provided by SWT. It is not
- * available on all platforms, and should never be called from
- * application code.
- * </p>
- *
- * @param data the platform specific GC data 
- * @return the platform specific GC handle
- *
- * @private
- */
+
+void initializeInsets () {
+	int [] outControl = new int [1];
+	Rect rect = new Rect ();
+	rect.right = rect.bottom = (short) 200;
+	
+	OS.CreatePushButtonControl (0, rect, 0, outControl);
+	buttonInset = computeInset (outControl [0]);
+	OS.DisposeControl (outControl [0]);
+	
+	OS.CreateTabsControl (0, rect, (short)OS.kControlTabSizeLarge, (short)OS.kControlTabDirectionNorth, (short) 0, 0, outControl);
+	tabFolderInset = computeInset (outControl [0]);
+	OS.DisposeControl (outControl [0]);
+
+	CGRect cgRect = new CGRect ();
+	cgRect.width = cgRect.height = 200;
+	int inAttributes = OS.kHIComboBoxAutoCompletionAttribute | OS.kHIComboBoxAutoSizeListAttribute;
+	OS.HIComboBoxCreate (cgRect, 0, null, 0, inAttributes, outControl);
+	comboInset = computeInset (outControl [0]);
+	 //FIXME - 
+	comboInset.bottom = comboInset.top;
+	OS.DisposeControl (outControl [0]);
+}
+
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	/* AW
-	int xDrawable = OS.XDefaultRootWindow (xDisplay);
-	int xGC = OS.XCreateGC (xDisplay, xDrawable, 0, null);
-	if (xGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	OS.XSetSubwindowMode (xDisplay, xGC, OS.IncludeInferiors);
+	// NEEDS WORK
+	int window = OS.FrontWindow ();
+	int port = OS.GetWindowPort (window);
+	int [] buffer = new int [1];
+	OS.CreateCGContextForPort (port, buffer);
+	int context = buffer [0];
+	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		data.device = this;
-		data.display = xDisplay;
-		data.drawable = xDrawable;
-		data.fontList = defaultFont;
-		data.colormap = OS.XDefaultColormap (xDisplay, OS.XDefaultScreen (xDisplay));
+		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
+		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
+		data.font = getSystemFont ();
 	}
-	return xGC;
-	*/
+	return context;
+}
 
-	if (data != null) {
-		data.device = this;
-		/* AW
-		data.display = xDisplay;
-		data.drawable = xWindow;
-		data.foreground = argList [1];
-		data.background = argList [3];
-		data.fontList = fontList;
-		data.colormap = argList [5];
-		*/
-		data.foreground = 0x000000;
-		data.background = 0xffffff;
-		data.font = new MacFont((short)1);
-		data.controlHandle = 0;
-	}
+public void internal_dispose_GC (int context, GCData data) {
+	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	// NEEDS WORK
+	OS.CGContextFlush (context);
+	OS.CGContextRelease (context);
+}
 
-	int wHandle= OS.FrontWindow();
-	int xGC= OS.GetWindowPort(wHandle);
-	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	
-    return xGC;
-}
-/**	 
- * Invokes platform specific functionality to dispose a GC handle.
- * <p>
- * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
- * API for <code>Display</code>. It is marked public only so that it
- * can be shared within the packages provided by SWT. It is not
- * available on all platforms, and should never be called from
- * application code.
- * </p>
- *
- * @param handle the platform specific GC handle
- * @param data the platform specific GC data 
- *
- * @private
- */
-public void internal_dispose_GC (int gc, GCData data) {
-}
-boolean isValidThread () {
-	return thread == Thread.currentThread ();
-}
 static boolean isValidClass (Class clazz) {
 	String name = clazz.getName ();
 	int index = name.lastIndexOf ('.');
 	return name.substring (0, index + 1).equals (PACKAGE_PREFIX);
 }
-int mouseHoverProc (int id, int handle) {
-	if (mouseHoverID != 0) OS.RemoveEventLoopTimer(mouseHoverID);
-	mouseHoverID = mouseHoverHandle = 0;
-	int rc= windowProc (handle, SWT.MouseHover, new MacMouseEvent());
-	sendUserEvent(54321);
-	return rc;
+
+boolean isValidThread () {
+	return thread == Thread.currentThread ();
 }
+
+int itemDataProc (int browser, int item, int property, int itemData, int setValue) {
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.itemDataProc (browser, item, property, itemData, setValue);
+	return OS.noErr;
+}
+
+int itemNotificationProc (int browser, int item, int message) {
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.itemNotificationProc (browser, item, message);
+	return OS.noErr;
+}
+
+int keyboardProc (int nextHandler, int theEvent, int userData) {
+	Widget widget = WidgetTable.get (userData);
+	if (widget == null) {
+		int theWindow = OS.ActiveNonFloatingWindow ();
+		if (theWindow == 0) return OS.eventNotHandledErr;
+		int [] theControl = new int [1];
+		OS.GetKeyboardFocus (theWindow, theControl);
+		if (theControl [0] == 0) {
+			OS.GetRootControl (theWindow, theControl);
+		}
+		widget = WidgetTable.get (theControl [0]);
+	}
+	if (widget != null) return widget.keyboardProc (nextHandler, theEvent, userData);
+	return OS.eventNotHandledErr;
+}
+
 void postEvent (Event event) {
 	/*
 	* Place the event at the end of the event queue.
@@ -1077,60 +875,127 @@ void postEvent (Event event) {
 	}
 	eventQueue [index] = event;
 }
-/**
- * Reads an event from the operating system's event queue,
- * dispatches it appropriately, and returns <code>true</code>
- * if there is potentially more work to do, or <code>false</code>
- * if the caller can sleep until another event is placed on
- * the event queue.
- * <p>
- * In addition to checking the system event queue, this method also
- * checks if any inter-thread messages (created by <code>syncExec()</code>
- * or <code>asyncExec()</code>) are waiting to be processed, and if
- * so handles them before returning.
- * </p>
- *
- * @return <code>false</code> if the caller can sleep upon return from this method
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see #sleep
- * @see #wake
- */
-public boolean readAndDispatch () {
-	checkDevice ();
-
-	if (!fgInitCursorCalled) {
-		OS.InitCursor();
-		fgInitCursorCalled= true;
+	
+int menuProc (int nextHandler, int theEvent, int userData) {
+	if (userData != 0) {
+		Widget widget = WidgetTable.get (userData);
+		if (widget != null) return widget.menuProc (nextHandler, theEvent, userData);
+	} else {
+		int [] theMenu = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeMenuRef, null, 4, null, theMenu);
+		short menuID = OS.GetMenuID (theMenu [0]);
+		Menu menu = findMenu (menuID);
+		if (menu != null) return menu.menuProc (nextHandler, theEvent, userData);
 	}
+	return OS.eventNotHandledErr;
+}
 
-	int[] evt= new int[1];
-	int rc= OS.ReceiveNextEvent(null, OS.kEventDurationNoWait, true, evt);
-
-	switch (rc) {
-	case OS.kNoErr:
-		int event= evt[0];
-		if (OS.GetEventClass(event) == SWT_USER_EVENT && OS.GetEventKind(event) == 54322) {
-			OS.ReleaseEvent(event);
+int mouseProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
+	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, where.sizeof, null, where);
+	int [] theWindow = new int [1];
+	int part = OS.FindWindow (where, theWindow);
+	switch (part) {
+		case OS.inMenuBar: {
+			if (eventKind == OS.kEventMouseDown) {
+				OS.MenuSelect (where);
+				return OS.noErr;
+			}
 			break;
 		}
-		OS.SendEventToEventTarget(event, OS.GetEventDispatcherTarget());
-		OS.ReleaseEvent(event);
-		runDeferredEvents();
+		case OS.inContent: {
+			Rect windowRect = new Rect ();
+			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, windowRect);
+			CGPoint inPoint = new CGPoint ();
+			inPoint.x = where.h - windowRect.left;
+			inPoint.y = where.v - windowRect.top;
+			int [] theRoot = new int [1];
+			OS.GetRootControl (theWindow [0], theRoot);
+			int [] theControl = new int [1];
+			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+			if (theControl [0] == 0) theControl [0] = theRoot [0];
+			Widget widget = WidgetTable.get (theControl [0]);
+			switch (eventKind) {
+				case OS.kEventMouseDragged:
+				case OS.kEventMouseMoved: {
+					org.eclipse.swt.internal.carbon.Point localPoint = new org.eclipse.swt.internal.carbon.Point ();
+					localPoint.h = (short) inPoint.x;
+					localPoint.v = (short) inPoint.y;
+					int [] modifiers = new int [1];
+					OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+					boolean [] cursorWasSet = new boolean [1];
+					OS.HandleControlSetCursor (theControl [0], localPoint, (short) modifiers [0], cursorWasSet);
+					if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
+					if (widget != null) {
+						if (widget == hoverControl) {
+							int [] outDelay = new int [1];
+							OS.HMGetTagDelay (outDelay);
+							if (mouseHoverID != 0) {
+								OS.SetEventLoopTimerNextFireTime (mouseHoverID, outDelay [0] / 1000.0);
+							}
+						} else {
+							//NOT DONE - get rid of instanceof test
+							if (widget instanceof Control) {
+								if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
+								hoverControl = (Control) widget;
+								int [] id = new int [1], outDelay = new int [1];
+								OS.HMGetTagDelay (outDelay);
+								int handle = hoverControl.handle;
+								int eventLoop = OS.GetCurrentEventLoop ();
+								OS.InstallEventLoopTimer (eventLoop, outDelay [0] / 1000.0, 0.0, mouseHoverProc, handle, id);
+								if ((mouseHoverID = id [0]) == 0) hoverControl = null;
+							}
+						}
+					}
+				}
+			}
+			if (widget != null) {
+				return userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
+			}
+			break;
+		}
+	}
+	switch (eventKind) {
+		case OS.kEventMouseDragged:
+		case OS.kEventMouseMoved:
+			OS.InitCursor ();
+	}
+	if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
+	mouseHoverID = 0;
+	hoverControl = null;
+	return OS.eventNotHandledErr;
+}
+
+int mouseHoverProc (int id, int handle) {
+	if (hoverControl == null) return 0;
+	if (hoverControl.handle == handle && !hoverControl.isDisposed ()) {
+		//OPTIMIZE - use OS calls
+		int chord = OS.GetCurrentEventButtonState ();
+		int modifiers = OS.GetCurrentEventKeyModifiers ();
+		Point pt = hoverControl.toControl (getCursorLocation ());
+		hoverControl.sendMouseEvent (SWT.MouseHover, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+	}
+	hoverControl = null;
+	return 0;
+}
+
+public boolean readAndDispatch () {
+	checkDevice ();
+	runEnterExit ();
+	int [] outEvent = new int [1];
+	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
+	if (status == OS.noErr) {
+		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
+		OS.ReleaseEvent (outEvent [0]);
+		runPopups ();
+		runDeferredEvents ();
+		runGrabs ();
 		return true;
-
-	case OS.eventLoopTimedOutErr:
-		break;
-
-	default:
-		System.out.println("readAndDispatch: error " + rc);
-		break;
 	}
 	return runAsyncMessages ();
 }
+
 static synchronized void register (Display display) {
 	for (int i=0; i<Displays.length; i++) {
 		if (Displays [i] == null) {
@@ -1143,6 +1008,7 @@ static synchronized void register (Display display) {
 	newDisplays [Displays.length] = display;
 	Displays = newDisplays;
 }
+
 protected void release () {
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
@@ -1163,80 +1029,51 @@ protected void release () {
 	releaseDisplay ();
 	super.release ();
 }
+
 void releaseDisplay () {
-	
-	/* Dispose the caret callback */
-	/* AW
-	if (caretID != 0) OS.XtRemoveTimeOut (caretID);
-	*/
-	if (caretID != 0) OS.RemoveEventLoopTimer(caretID);
-	caretID = caretProc = 0;
-	
-	/* Dispose the timer callback */
-	if (timerIDs != null) {
-		for (int i=0; i<timerIDs.length; i++) {
-			/* AW
-			if (timerIDs [i] != 0) OS.XtRemoveTimeOut (timerIDs [i]);
-			*/
-			if (timerIDs [i] != 0) OS.RemoveEventLoopTimer (timerIDs [i]);
-		}
-	}
-	timerIDs = null;
-	timerList = null;
+	actionCallback.dispose ();
+	caretCallback.dispose ();
+	commandCallback.dispose ();
+	controlCallback.dispose ();
+	drawItemCallback.dispose ();
+	itemDataCallback.dispose ();
+	itemNotificationCallback.dispose ();
+	helpCallback.dispose ();
+	hitTestCallback.dispose ();
+	keyboardCallback.dispose ();
+	menuCallback.dispose ();
+	mouseHoverCallback.dispose ();
+	mouseCallback.dispose ();
+	trackingCallback.dispose ();
+	windowCallback.dispose ();
+	actionCallback = caretCallback = commandCallback = null;
+	controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
+	helpCallback = hitTestCallback = keyboardCallback = menuCallback = null;
+	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = null;
+	actionProc = caretProc = commandProc = 0;
+	controlProc = drawItemProc = itemDataProc = itemNotificationProc = 0;
+	helpProc = hitTestProc = keyboardProc = menuProc = 0;
+	mouseHoverProc = mouseProc = trackingProc = windowProc = 0;
+	timerCallback.dispose ();
+	timerCallback = null;
 	timerProc = 0;
+	grabControl = helpControl = currentControl = null;
+	if (helpString != 0) OS.CFRelease (helpString);
+	helpString = 0;
+	//NOT DONE - call terminate TXN if this is the last display 
+	//NOTE: - display create and dispose needs to be synchronized on all platforms
+//	 TXNTerminateTextension ();
 
-	/* Dispose the mouse hover callback */
-	if (mouseHoverID != 0) OS.RemoveEventLoopTimer(mouseHoverID);
-	mouseHoverID = mouseHoverProc = mouseHoverHandle = toolTipWindowHandle = 0;
-
-	/* Free the font lists */
-	/* AW
-	if (buttonFont != 0) OS.XmFontListFree (buttonFont);
-	if (labelFont != 0) OS.XmFontListFree (labelFont);
-	if (textFont != 0) OS.XmFontListFree (textFont);
-	if (listFont != 0) OS.XmFontListFree (listFont);
-	listFont = textFont = labelFont = buttonFont = 0;
-	*/
-	defaultFont = null;	
-	
-	/* Release references */
-	thread = null;
-	buttonBackground = buttonForeground = 0;
-	defaultBackground = defaultForeground = 0;
-	COLOR_WIDGET_DARK_SHADOW = COLOR_WIDGET_NORMAL_SHADOW = COLOR_WIDGET_LIGHT_SHADOW =
-	COLOR_WIDGET_HIGHLIGHT_SHADOW = COLOR_WIDGET_BACKGROUND = COLOR_WIDGET_BORDER =
-	COLOR_LIST_FOREGROUND = COLOR_LIST_BACKGROUND = COLOR_LIST_SELECTION = COLOR_LIST_SELECTION_TEXT = null;
-	COLOR_INFO_BACKGROUND = null;
-}
-void releaseToolTipHandle (int handle) {
-	if (mouseHoverHandle == handle) removeMouseHoverTimeOut ();
-	if (toolTipWindowHandle != 0) {
-		/* AW
-		int shellParent = OS.XtParent(toolTipWindowHandle);
-		if (handle == shellParent) toolTipWindowHandle = 0;
-		*/
-	}
 }
 
-/**
- * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
- *
- * @param eventType the type of event to listen for
- * @param listener the listener which should no longer be notified when the event occurs
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see Listener
- * @see #addListener
- * 
- * @since 2.0 
- */
+public void removeFilter (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (filterTable == null) return;
+	filterTable.unhook (eventType, listener);
+	if (filterTable.size () == 0) filterTable = null;
+}
+
 public void removeListener (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1244,13 +1081,56 @@ public void removeListener (int eventType, Listener listener) {
 	eventTable.unhook (eventType, listener);
 }
 
-void removeMouseHoverTimeOut () {
-	if (mouseHoverID != 0) OS.RemoveEventLoopTimer(mouseHoverID);
-	mouseHoverID = mouseHoverHandle = 0;
+void removeMenu (Menu menu) {
+	if (menus == null) return;
+	menus [menu.id - ID_START] = null;
 }
+
+void removeMenuItem (MenuItem item) {
+	if (items == null) return;
+	items [item.id - ID_START] = null;
+}
+
+void removePopup (Menu menu) {
+	if (popups == null) return;
+	for (int i=0; i<popups.length; i++) {
+		if (popups [i] == menu) {
+			popups [i] = null;
+			return;
+		}
+	}
+}
+
 boolean runAsyncMessages () {
 	return synchronizer.runAsyncMessages ();
 }
+
+boolean runEnterExit () {
+	//OPTIMIZE - use OS calls, no garbage, widget already hit tested in mouse move
+	Point point = null;
+	int chord = 0, modifiers = 0;
+	Control control = getCursorControl ();
+	if (control != currentControl) {
+		if (currentControl != null && !currentControl.isDisposed ()) {
+			point = getCursorLocation ();
+			chord = OS.GetCurrentEventButtonState ();
+			modifiers = OS.GetCurrentEventKeyModifiers ();
+			Point pt = currentControl.toControl (point);
+			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+		}
+		if ((currentControl = control) != null) {
+			if (point == null) {
+				point = getCursorLocation ();
+				chord = OS.GetCurrentEventButtonState ();
+				modifiers = OS.GetCurrentEventKeyModifiers ();
+			}
+			Point pt = currentControl.toControl (point);
+			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+		}
+	}
+	return point != null;
+}
+
 boolean runDeferredEvents () {
 	/*
 	* Run deferred events.  This code is always
@@ -1286,22 +1166,94 @@ boolean runDeferredEvents () {
 	eventQueue = null;
 	return true;
 }
+
+void runGrabs () {
+	if (grabControl == null) return;
+	Rect rect = new Rect ();
+	int [] outModifiers = new int [1];
+	short [] outResult = new short [1];
+	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
+	try {
+		while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
+			lastModifiers = OS.GetCurrentEventKeyModifiers ();
+			int oldState = OS.GetCurrentEventButtonState ();
+			OS.TrackMouseLocationWithOptions (0, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
+			int type = 0, button = 0;
+			switch ((int)outResult [0]) {
+				case OS.kMouseTrackingMouseDown: {
+					type = SWT.MouseDown;
+					int newState = OS.GetCurrentEventButtonState ();
+					if ((oldState & 0x1) == 0 && (newState & 0x1) != 0) button = 1;
+					if ((oldState & 0x2) == 0 && (newState & 0x2) != 0) button = 2;
+					if ((oldState & 0x4) == 0 && (newState & 0x4) != 0) button = 3;
+					break;
+				}
+				case OS.kMouseTrackingMouseUp: {
+					type = SWT.MouseUp;
+					int newState = OS.GetCurrentEventButtonState ();
+					if ((oldState & 0x1) != 0 && (newState & 0x1) == 0) button = 1;
+					if ((oldState & 0x2) != 0 && (newState & 0x2) == 0) button = 2;
+					if ((oldState & 0x4) != 0 && (newState & 0x4) == 0) button = 3;
+					break;
+				}
+				case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
+				case OS.kMouseTrackingMouseEntered: 				type = SWT.MouseEnter; break;
+				case OS.kMouseTrackingMouseDragged: 				type = SWT.MouseMove; break;
+				case OS.kMouseTrackingMouseKeyModifiersChanged:	break;
+				case OS.kMouseTrackingUserCancelled:				break;
+				case OS.kMouseTrackingTimedOut: 					break;
+				case OS.kMouseTrackingMouseMoved: 					type = SWT.MouseMove; break;
+			}
+			if (type != 0) {	
+				int handle = grabControl.handle;
+				int window = OS.GetControlOwner (handle);
+				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+				int x = outPt.h - rect.left;
+				int y = outPt.v - rect.top;
+				OS.GetControlBounds (handle, rect);
+				x -= rect.left;
+				y -=  rect.top;
+				int chord = OS.GetCurrentEventButtonState ();
+				grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
+				//TEMPORARY CODE
+				update ();
+			}
+		}
+	} finally {
+		grabControl = null;
+	}
+}
+
+boolean runPopups () {
+	if (popups == null) return false;
+	grabControl = null;
+	boolean result = false;
+	while (popups != null) {
+		Menu menu = popups [0];
+		if (menu == null) break;
+		int length = popups.length;
+		System.arraycopy (popups, 1, popups, 0, --length);
+		popups [length] = null;
+		menu._setVisible (true);
+		result = true;
+	}
+	popups = null;
+	return result;
+}
+
 void sendEvent (int eventType, Event event) {
-	if (eventTable == null) return;
+	if (eventTable == null && filterTable == null) {
+		return;
+	}
 	if (event == null) event = new Event ();
 	event.display = this;
 	event.type = eventType;
-	if (event.time == 0) {
-		/* AW
-		if (OS.IsWinCE) {
-			event.time = OS.GetTickCount ();
-		} else {
-			event.time = OS.GetMessageTime ();
-		}
-		*/
+	if (event.time == 0) event.time = getLastEventTime ();
+	if (!filterEvent (event)) {
+		if (eventTable != null) eventTable.sendEvent (event);
 	}
-	eventTable.sendEvent (event);
 }
+
 /**
  * On platforms which support it, sets the application name
  * to be the argument. On Motif, for example, this can be used
@@ -1310,7 +1262,20 @@ void sendEvent (int eventType, Event event) {
  * @param name the new app name
  */
 public static void setAppName (String name) {
-	APP_NAME = name;
+}
+
+void setCurrentCaret (Caret caret) {
+	if (caretID != 0) OS.RemoveEventLoopTimer (caretID);
+	caretID = 0;
+	currentCaret = caret;
+	if (currentCaret != null) {
+		int blinkRate = currentCaret.blinkRate;
+		int [] timerId = new int [1];
+		double time = blinkRate / 1000.0;
+		int eventLoop = OS.GetCurrentEventLoop ();
+		OS.InstallEventLoopTimer (eventLoop, time, time, caretProc, 0, timerId);
+		caretID = timerId [0];
+	}
 }
 
 /**
@@ -1328,50 +1293,9 @@ public static void setAppName (String name) {
 public void setCursorLocation (Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	/* AW
-	int x = point.x;
-	int y = point.y;
-	int xWindow = OS.XDefaultRootWindow (xDisplay);	
-	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
-	*/
-	System.out.println("Display.setCursorLocation: nyi");
+	/* Not possible on the MAC */
 }
 
-void setCurrentCaret (Caret caret) {
-	if (caretID != 0) OS.RemoveEventLoopTimer(caretID);
-	caretID = 0;
-	currentCaret = caret;
-	if (currentCaret != null) {
-		int blinkRate = currentCaret.blinkRate;
-		int[] timer= new int[1];
-		OS.InstallEventLoopTimer(OS.GetCurrentEventLoop(), blinkRate / 1000.0, 0.0, caretProc, 0, timer);
-		caretID = timer[0];
-	}
-}
-/**
- * Sets the application defined property of the receiver
- * with the specified name to the given argument.
- * <p>
- * Applications may have associated arbitrary objects with the
- * receiver in this fashion. If the objects stored in the
- * properties need to be notified when the display is disposed
- * of, it is the application's responsibility provide a
- * <code>disposeExec()</code> handler which does so.
- * </p>
- *
- * @param key the name of the property
- * @param value the new value for the property
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the key is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see #setData
- * @see #disposeExec
- */
 public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1419,45 +1343,12 @@ public void setData (String key, Object value) {
 	keys = newKeys;
 	values = newValues;
 }
-/**
- * Sets the application defined, display specific data
- * associated with the receiver, to the argument.
- * The <em>display specific data</em> is a single,
- * unnamed field that is stored with every display. 
- * <p>
- * Applications may put arbitrary objects in this field. If
- * the object stored in the display specific data needs to
- * be notified when the display is disposed of, it is the
- * application's responsibility provide a
- * <code>disposeExec()</code> handler which does so.
- * </p>
- *
- * @param data the new display specific data
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
- * </ul>
- *
- * @see #getData
- * @see #disposeExec
- */
+
 public void setData (Object data) {
 	checkDevice ();
 	this.data = data;
 }
-/**
- * Sets the synchronizer used by the display to be
- * the argument, which can not be null.
- *
- * @param synchronizer the new synchronizer for the display (must not be null)
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the synchronizer is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
+
 public void setSynchronizer (Synchronizer synchronizer) {
 	checkDevice ();
 	if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1466,142 +1357,67 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	}
 	this.synchronizer = synchronizer;
 }
-void setToolTipText (int handle, String toolTipText) {
-/* AW
-	if (toolTipHandle == 0) return;
-	int shellHandle = OS.XtParent (toolTipHandle);
-	int shellParent = OS.XtParent (shellHandle);
-	if (handle != shellParent) return;
-*/
-	showToolTip (handle, toolTipText);
+
+void setMenuBar (Menu menu) {
+	/*
+	* Feature in the Macintosh.  SetRootMenu() does not
+	* accept NULL to indicate that their should be no
+	* menu bar. The fix is to create a temporary empty
+	* menu, set that to be the menu bar, clear the menu
+	* bar and then delete the temporary menu.
+	*/
+	if (menu == menuBar) return;
+	int theMenu = 0;
+	if (menu == null) {
+		int outMenuRef [] = new int [1];
+		OS.CreateNewMenu ((short) ID_TEMPORARY, 0, outMenuRef);
+		theMenu = outMenuRef [0];
+	} else {
+		theMenu = menu.handle;
+	}
+	OS.SetRootMenu (theMenu);
+	if (menu == null) {
+		OS.ClearMenuBar ();
+		OS.DeleteMenu (OS.GetMenuID (theMenu));
+		OS.DisposeMenu (theMenu);
+	}
+	menuBar = menu;
 }
-void showToolTip (int handle, String toolTipText) {
 
-	if (toolTipText == null || toolTipText.length () == 0) {
-		if (toolTipWindowHandle != 0)
-			OS.HideWindow(toolTipWindowHandle);
-		return;
-	}
-
-	if (toolTipWindowHandle != 0)
-		 return;
-	
-	if (handle != fCurrentControl) {
-		//System.out.println("Display.showToolTip: handle is not current");
-		//beep();
-		return;
-	}
-	if (fInContextMenu) {
-		//System.out.println("Display.showToolTip: menu is visible");
-		//beep();
-		return;
-	}	
-	if (OS.StillDown()) {
-		//System.out.println("Display.showToolTip: button is down");
-		//beep();
-		return;
-	}	
-	
-	toolTipText= MacUtil.removeMnemonics(toolTipText);
-	
-	// remember text
-	fToolTipText= toolTipText;
-	
-	// calculate text bounding box
-	short[] bounds= new short[2];
-	short[] baseLine= new short[1];
-	int sHandle= OS.CFStringCreateWithCharacters(toolTipText);
-	OS.GetThemeTextDimensions(sHandle, fHoverThemeFont, OS.kThemeStateActive, false, bounds, baseLine);
-	if (bounds[1] > 200) {	// too wide -> wrap text
-		bounds[1]= (short) 200;
-		OS.GetThemeTextDimensions(sHandle, fHoverThemeFont, OS.kThemeStateActive, true, bounds, baseLine);
-	}
-	OS.CFRelease(sHandle);
-	int width= bounds[1] + 2*TOOLTIP_MARGIN;
-	int height= bounds[0] + 2*TOOLTIP_MARGIN;
-	
-	// position just below mouse cursor
-	MacPoint loc= new MacPoint();
-	OS.GetGlobalMouse(loc.getData());
-	int x= loc.getX() + 16;
-	int y= loc.getY() + 16;
-
-	// Ensure that the tool tip is on the screen.
-	MacRect screenBounds= new MacRect();
-	OS.GetAvailableWindowPositioningBounds(OS.GetMainDevice(), screenBounds.getData());
-	x = Math.max (0, Math.min (x, screenBounds.getWidth() - width ));
-	y = Math.max (0, Math.min (y, screenBounds.getHeight() - height ));
-
-	// create window
-	int[] wHandle= new int[1];
-	if (OS.CreateNewWindow(OS.kHelpWindowClass, 0, new MacRect(x, y, width, height).getData(), wHandle) == OS.kNoErr) {
-		toolTipWindowHandle= wHandle[0];
-		int[] mask= new int[] {
-			OS.kEventClassWindow, OS.kEventWindowDrawContent
-		};
-		OS.InstallEventHandler(OS.GetWindowEventTarget(toolTipWindowHandle), fWindowProc, mask, toolTipWindowHandle);
-		OS.ShowWindow(toolTipWindowHandle);
-		fLastHoverHandle= handle;
-	}
-}
-/**
- * Causes the user-interface thread to <em>sleep</em> (that is,
- * to be put in a state where it does not consume CPU cycles)
- * until an event is received or it is otherwise awakened.
- *
- * @return <code>true</code> if an event requiring dispatching was placed on the queue.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see #wake
- */
 public boolean sleep () {
 	checkDevice ();
-	return OS.ReceiveNextEvent(null, OS.kEventDurationForever, false, null) == OS.kNoErr;
+	//NOT DONE - timers shouldn't run here
+	return OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
 }
-/**
- * Causes the <code>run()</code> method of the runnable to
- * be invoked by the user-interface thread at the next 
- * reasonable opportunity. The thread which calls this method
- * is suspended until the runnable completes.
- *
- * @param runnable code to run on the user-interface thread.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>
- * </ul>
- *
- * @see #asyncExec
- */
+
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.syncExec (runnable);
 }
-/**
- * Causes the <code>run()</code> method of the runnable to
- * be invoked by the user-interface thread after the specified
- * number of milliseconds have elapsed. If milliseconds is less
- * than zero, the runnable is not executed.
- *
- * @param milliseconds the delay before running the runnable
- * @param runnable code to run on the user-interface thread
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the runnable is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see #asyncExec
- */
+
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
+	if (runnable == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (timerList == null) timerList = new Runnable [4];
-	if (timerIDs == null) timerIDs = new int [4];
+	if (timerIds == null) timerIds = new int [4];
 	int index = 0;
+	while (index < timerList.length) {
+		if (timerList [index] == runnable) break;
+		index++;
+	}
+	if (index != timerList.length) {
+		int timerId = timerIds [index];
+		if (milliseconds < 0) {
+			OS.RemoveEventLoopTimer (timerId);
+			timerList [index] = null;
+			timerIds [index] = 0;
+		} else {
+			OS.SetEventLoopTimerNextFireTime (timerId, milliseconds / 1000.0);
+		}
+		return;
+	} 
+	if (milliseconds < 0) return;
+	index = 0;
 	while (index < timerList.length) {
 		if (timerList [index] == null) break;
 		index++;
@@ -1610,869 +1426,99 @@ public void timerExec (int milliseconds, Runnable runnable) {
 		Runnable [] newTimerList = new Runnable [timerList.length + 4];
 		System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
 		timerList = newTimerList;
-		int [] newTimerIDs = new int [timerIDs.length + 4];
-		System.arraycopy (timerIDs, 0, newTimerIDs, 0, timerIDs.length);
-		timerIDs = newTimerIDs;
+		int [] newTimerIds = new int [timerIds.length + 4];
+		System.arraycopy (timerIds, 0, newTimerIds, 0, timerIds.length);
+		timerIds = newTimerIds;
 	}
-	int[] timer= new int[1];
-	OS.InstallEventLoopTimer(OS.GetCurrentEventLoop(), milliseconds / 1000.0, 0.0, timerProc, index, timer);
-	int timerID = timer[0];
-	
-	if (timerID != 0) {
-		timerIDs [index] = timerID;
+	int [] timerId = new int [1];
+	int eventLoop = OS.GetCurrentEventLoop ();
+	OS.InstallEventLoopTimer (eventLoop, milliseconds / 1000.0, 0.0, timerProc, index, timerId);
+	if (timerId [0] != 0) {
+		timerIds [index] = timerId [0];
 		timerList [index] = runnable;
 	}
 }
+
 int timerProc (int id, int index) {
-	if (id != 0)
-		OS.RemoveEventLoopTimer(id);
 	if (timerList == null) return 0;
 	if (0 <= index && index < timerList.length) {
 		Runnable runnable = timerList [index];
 		timerList [index] = null;
-		timerIDs [index] = 0;
+		timerIds [index] = 0;
 		if (runnable != null) runnable.run ();
 	}
 	return 0;
 }
-static int translateKey (int key) {
-	for (int i=0; i<KeyTable.length; i++) {
-		if (KeyTable [i] [0] == key) return KeyTable [i] [1];
-	}
-	return 0;
+
+int trackingProc (int browser, int itemID, int property, int theRect, int startPt, int modifiers) {
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.trackingProc (browser, itemID, property, theRect, startPt, modifiers);
+	return OS.noErr;
 }
-static int untranslateKey (int key) {
-	for (int i=0; i<KeyTable.length; i++) {
-		if (KeyTable [i] [1] == key) return KeyTable [i] [0];
-	}
-	return 0;
-}
-/**
- * Forces all outstanding paint requests for the display
- * to be processed before this method returns.
- *
- * @see Control#update
- */
+
 public void update () {
 	checkDevice ();
-	/* AW
-	XAnyEvent event = new XAnyEvent ();
-	int mask = OS.ExposureMask | OS.ResizeRedirectMask |
-		OS.StructureNotifyMask | OS.SubstructureNotifyMask |
-		OS.SubstructureRedirectMask;
-	OS.XSync (xDisplay, false); OS.XSync (xDisplay, false);
-	while (OS.XCheckMaskEvent (xDisplay, mask, event)) OS.XtDispatchEvent (event);
-	*/
-	int wHandle= 0;
-	int[] macEvent= new int[6];
-	while (OS.GetNextEvent(OS.updateMask, macEvent)) {
-		if (macEvent[0] == OS.updateEvt) {
-			wHandle= macEvent[1];
-			updateWindow(wHandle);
-		}
+	int [] outEvent = new int [1];
+	int [] mask = new int [] {OS.kEventClassWindow, OS.kEventWindowUpdate};
+	while (OS.ReceiveNextEvent (mask.length / 2, mask, OS.kEventDurationNoWait, true, outEvent) == OS.noErr) {
+		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
+		OS.ReleaseEvent (outEvent [0]);
+	}
+}
+
+void updateMenuBar () {
+	updateMenuBar (getActiveShell ());
+}
+
+void updateMenuBar (Shell shell) {
+	if (shell == null) shell = getActiveShell ();
+	boolean modal = false;
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	while (shell != null) {
+		if (shell.menuBar != null) break;
+		if ((shell.style & mask) != 0) modal = true;
+		shell = (Shell) shell.parent;
 	}
 	/*
-	if (wHandle != 0) {
-		int port= OS.GetWindowPort(wHandle);
-		if (port != 0)
-			OS.QDFlushPortBuffer(port, 0);
-	}
+	* Feature in the Macintosh.  For some reason, when a modal shell
+	* is active, DisableMenuItem() when called with zero (indicating
+	* that the entire menu is to be disabled) will not disable the
+	* current menu bar.  The fix is to disable each individual menu
+	* item.
 	*/
+	if (menuBar != null) {
+		MenuItem [] items = menuBar.getItems ();
+		for (int i=0; i<items.length; i++) {
+			if (items [i].getEnabled ()) items [i]._setEnabled (true);
+		}
+	}
+	setMenuBar (shell != null ? shell.menuBar : null);
+	if (menuBar != null && modal) {
+		int theMenu = menuBar.handle;
+		MenuItem [] items = menuBar.getItems ();
+		for (int i=0; i<items.length; i++) items [i]._setEnabled (false);
+	}
 }
-/**
- * If the receiver's user-interface thread was <code>sleep</code>'ing, 
- * causes it to be awakened and start running again. Note that this
- * method may be called from any thread.
- *
- * @see #sleep
- */
+
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
-	/* Send a user event to wake up in ReceiveNextEvent */
-	sendUserEvent(54322);
-}
-public int windowProc (int handle, int clientData) {
-	Widget widget = WidgetTable.get (handle);
-	if (widget == null) return 0;
-	return widget.processEvent (clientData);
-}
-public int windowProc (int handle, boolean callData) {
-	Widget widget = WidgetTable.get (handle);
-	if (widget == null) return 0;
-	return widget.processSetFocus (new Boolean(callData));
-}
-public int windowProc (int handle, int clientData, int callData) {
-	Widget widget = WidgetTable.get (handle);
-	if (widget == null) return 0;
-	return widget.processResize (new Integer(callData));
-}
-public int windowProc (int handle, int clientData, MacEvent callData) {
-	Widget widget = WidgetTable.get (handle);
-	if (widget == null) return 0;
-	return widget.processEvent (clientData, callData);
-}
-public int windowProc (int handle, int clientData, MacMouseEvent mme) {
-	Widget widget = WidgetTable.get (handle);
-	if (widget == null) return 0;
-	return widget.processEvent (clientData, mme);
-}
-public int windowProc (int handle, int clientData, MacControlEvent mce) {
-	Widget widget = WidgetTable.get (handle);
-	if (widget == null) return 0;
-	return widget.processEvent (clientData, mce);
-}
-static String convertToLf(String text) {
-	char Cr = '\r';
-	char Lf = '\n';
-	int length = text.length ();
-	if (length == 0) return text;
-	
-	/* Check for an LF or CR/LF.  Assume the rest of the string 
-	 * is formatted that way.  This will not work if the string 
-	 * contains mixed delimiters. */
-	int i = text.indexOf (Lf, 0);
-	if (i == -1 || i == 0) return text;
-	if (text.charAt (i - 1) != Cr) return text;
-
-	/* The string is formatted with CR/LF.
-	 * Create a new string with the LF line delimiter. */
-	i = 0;
-	StringBuffer result = new StringBuffer ();
-	while (i < length) {
-		int j = text.indexOf (Cr, i);
-		if (j == -1) j = length;
-		String s = text.substring (i, j);
-		result.append (s);
-		i = j + 2;
-		result.append (Lf);
-	}
-	return result.toString ();
+	int [] event = new int [1];
+	OS.CreateEvent (0, 0, 0, 0.0, OS.kEventAttributeUserEvent, event);
+	OS.PostEventToQueue (queue, event [0], (short) OS.kEventPriorityStandard);
 }
 
-////////////////////////////////////////////////////////////////////////////
-// Some Mac helper functions
-////////////////////////////////////////////////////////////////////////////
+int windowProc (int nextHandler, int theEvent, int userData) {
+	Widget widget = WidgetTable.get (userData);
+	if (widget == null) {
+		int [] theWindow = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeWindowRef, null, 4, null, theWindow);
+		int [] theRoot = new int [1];
+		OS.GetRootControl (theWindow [0], theRoot);
+		widget = WidgetTable.get (theRoot [0]);
+	}
+	if (widget != null)  return widget.windowProc (nextHandler, theEvent, userData); 
+	return OS.eventNotHandledErr;
+}
 
-	int nextMenuId() {
-		return fMenuId++;
-	}
-
-	void flush (int cHandle) {
-		int wHandle= OS.GetControlOwner(cHandle);
-		if (wHandle != 0) {
-			int port= OS.GetWindowPort(wHandle);
-			if (port != 0)
-				OS.QDFlushPortBuffer(port, 0);
-		}
-	}
-	
-	//---- callbacks
-	
-	private int handleControlAction(int cHandle, int partCode) {
-		if (MacUtil.HIVIEW)
-			System.out.println("Display.handleControlAction: " + cHandle + " " + partCode);
-		return windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, partCode, true));
-	}
-
-	private int handleUserPaneDraw(int cHandle, int partCode) {
-		int updateRgn= fUpdateRegion;
-		if (updateRgn == 0) {
-			updateRgn= OS.NewRgn();
-			int wHandle= OS.GetControlOwner(cHandle);
-			OS.GetPortVisibleRegion(OS.GetWindowPort(wHandle), updateRgn);
-		}
-		int status= windowProc(cHandle, SWT.Paint, new MacControlEvent(cHandle, fUpdateRegion));
-		if (updateRgn != fUpdateRegion && updateRgn != 0)
-			OS.DisposeRgn(updateRgn);
-		return status;
-	}
-		
-	private int handleUserPaneHitTest(int cHandle, int where) {
-		if (MacUtil.HIVIEW)
-			System.out.println("handleUserPaneHitTest");
-		Widget w= WidgetTable.get(cHandle);
-		if (w instanceof Text || w instanceof Combo)
-			return 112;
-		return 111;
-	}
-		
-	private int handleUserPaneTracking(int cHandle, int where, int actionProc) {
-		
-		MacPoint pt= new MacPoint(OS.HiWord(where), OS.LoWord(where));
-		short[] trackingResult= new short[1];
-		
-		Widget widget = WidgetTable.get (cHandle);
-		if (widget == null) return 0;
-
-		widget.processMouseDown(new MacMouseEvent(1, pt.toPoint()));
-		//System.out.println("V" + pt.toPoint());
-		
-		/*
-		MacRect bounds= new MacRect();
-		OS.GetControlBounds(cHandle, bounds.getData());
-		int x= bounds.getX();
-		int y= bounds.getY();
-		System.out.println("Bounds" + bounds.toRectangle());
-		*/
-		
-		while (true) {
-			OS.TrackMouseLocation(0, pt.getData(), trackingResult);
-			Point p= pt.toPoint();
-			p.x-= 100;
-			p.y-= 100
-			;
-			switch (trackingResult[0]) {
-			case 5: // kMouseTrackingMouseDragged
-				widget.processMouseMove(new MacMouseEvent(1, p));
-				//System.out.println("-" + p);
-				break;
-			case 2: // kMouseTrackingMouseUp
-			case 7: // kMouseTrackingUserCancelled
-				widget.processMouseUp(new MacMouseEvent(1, p));
-				//System.out.println("A" + p);
-				return 0;
-			}
-		}
-	}
-	
-	private int handleDataBrowserDataCallback(int cHandle, int item, int property, int itemData, int setValue) {
-		Widget widget= WidgetTable.get(cHandle);
-		if (widget instanceof List) {
-			List list= (List) widget;
-			return list.handleItemCallback(item, property, itemData);
-		}
-		if (widget instanceof Tree2) {
-			Tree2 tree= (Tree2) widget;
-			return tree.handleItemCallback(item, property, itemData, setValue);
-		}
-		return OS.kNoErr;
-	}
-	
-	private int handleDataBrowserCompareCallback(int cHandle, int item1ID, int item2ID, int sortID) {
-		Widget widget= WidgetTable.get(cHandle);
-		if (widget instanceof List) {
-			List list= (List) widget;
-			return list.handleCompareCallback(item1ID, item2ID, sortID);
-		}
-		if (widget instanceof Tree2) {
-			Tree2 tree= (Tree2) widget;
-			return tree.handleCompareCallback(item1ID, item2ID, sortID);
-		}
-		return OS.kNoErr;
-	}
-	
-	private int handleDataBrowserItemNotificationCallback(int cHandle, int item, int message) {
-		Widget widget= WidgetTable.get(cHandle);
-		if (widget instanceof List) {
-			List list= (List) widget;
-			return list.handleItemNotificationCallback(item, message);
-		}
-		if (widget instanceof Tree2) {
-			Tree2 tree= (Tree2) widget;
-			return tree.handleItemNotificationCallback(item, message);
-		}
-//		if (message == 14) {	// selection changed
-//			windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, item, false));
-//		}
-		return OS.kNoErr;
-	}
-	
-	private int handleMenuCallback(int nextHandler, int eHandle, int mHandle) {
-		switch (OS.GetEventKind(eHandle)) {
-		case OS.kEventMenuPopulate:
-		case OS.kEventMenuOpening:
-		
-			if (fInContextMenu)
-				OS.SetMenuFont(mHandle, (short)1024, (short)11);	// AW: FIXME menu id
-			/*
-			// copy the menu's font
-			short[] fontID= new short[1];
-			short[] size= new short[1];
-			OS.GetMenuFont(hMenu, fontID, size);
-			OS.SetMenuFont(menu.handle, fontID[0], size[0]);
-			*/ 
-		
-			windowProc(mHandle, SWT.Show, new MacEvent(eHandle, nextHandler));
-			break;
-		case OS.kEventMenuClosed:
-			windowProc(mHandle, SWT.Hide, new MacEvent(eHandle, nextHandler));
-			break;
-		}
-		return OS.kNoErr;
-	}
-	
-	private int handleTextCallback(int nextHandler, int eRefHandle, int userData) {
-		
-		int eventClass= OS.GetEventClass(eRefHandle);
-		int eventKind= OS.GetEventKind(eRefHandle);
-		
-		switch (eventClass) {
-			
-		case OS.kEventClassTextInput:
-			switch (eventKind) {
-			case OS.kEventTextInputUnicodeForKeyEvent:
-				return OS.eventNotHandledErr;
-			default:
-				System.out.println("Display.handleTextCallback: kEventClassTextInput: unexpected event kind");
-				break;
-			}
-			break;
-			
-		case OS.kEventClassKeyboard:
-		
-			// decide whether a SWT control has the focus
-			Control focus= getFocusControl();
-			if (focus == null || focus.handle == 0)
-				return OS.eventNotHandledErr;
-				
-			int frontWindow= OS.FrontWindow();
-			if (findWidget(frontWindow) == null) {
-				int w= OS.GetControlOwner(focus.handle);
-				if (w != OS.FrontWindow())	// its probably a standard dialog
-					return OS.eventNotHandledErr;
-			}
-						
-			switch (eventKind) {
-			case OS.kEventRawKeyDown:
-				if (MacEvent.getKeyCode(eRefHandle) == 122) {	// help key f1
-					windowProc(focus.handle, SWT.Help);
-					return OS.kNoErr;
-				}
-				// fall through!
-			case OS.kEventRawKeyRepeat:
-				return focus.processEvent(SWT.KeyDown, new MacEvent(eRefHandle, nextHandler));
-				
-			case OS.kEventRawKeyUp:
-				return focus.processEvent(SWT.KeyUp, new MacEvent(eRefHandle, nextHandler));
-				
-			default:
-				System.out.println("Display.handleTextCallback: kEventClassKeyboard: unexpected event kind");
-				break;
-			}
-			break;
-			
-		default:
-			System.out.println("Display.handleTextCallback: unexpected event class");
-			break;
-		}
-		return OS.eventNotHandledErr;
-	}
-	
-	private int handleMouseCallback(int nextHandler, int eRefHandle, int whichWindow) {
-		int eventClass= OS.GetEventClass(eRefHandle);
-		int eventKind= OS.GetEventKind(eRefHandle);
-		
-		switch (eventClass) {
-			
-		case OS.kEventClassMouse:
-			return handleMouseEvent(nextHandler, eRefHandle, eventKind, whichWindow);
-		
-		default:
-			System.out.println("handleMouseCallback: unexpected event class: " + MacUtil.toString(eventClass));
-			break;
-		}
-		return OS.eventNotHandledErr;
-	}
-	
-	private int handleWindowCallback(int nextHandler, int eRefHandle, int whichWindow) {
-		
-		int eventClass= OS.GetEventClass(eRefHandle);
-		int eventKind= OS.GetEventKind(eRefHandle);
-		
-		switch (eventClass) {
-			
-		case OS.kEventClassMouse:
-			return handleMouseEvent(nextHandler, eRefHandle, eventKind, whichWindow);
-			
-		case OS.kEventClassWindow:
-			switch (eventKind) {
-			case OS.kEventWindowActivated:
-				Widget widget = WidgetTable.get(whichWindow);
-				if (widget instanceof Shell)
-					fMenuRootShell= (Shell) widget;
-				windowProc(whichWindow, true);
-				break; //return OS.kNoErr;
-				
-			case OS.kEventWindowDeactivated:
-				fMenuRootShell= null;
-				windowProc(whichWindow, false);
-				break; // return OS.kNoErr;
-				
-			case OS.kEventWindowBoundsChanged:
-				int[] attr= new int[1];
-				OS.GetEventParameter(eRefHandle, OS.kEventParamAttributes, OS.typeUInt32, null, null, attr);	
-				windowProc(whichWindow, SWT.Resize, attr[0]);
-				return OS.kNoErr;
-				
-			case OS.kEventWindowClose:
-				windowProc(whichWindow, SWT.Dispose);
-				return OS.kNoErr;
-				
-			case OS.kEventWindowDrawContent:
-				if (toolTipWindowHandle == whichWindow) {
-					processPaintToolTip(whichWindow);
-				} else {
-					if (MacUtil.HIVIEW)
-						break;
-					updateWindow2(whichWindow);
-				}
-				return OS.kNoErr;
-				
-			default:
-				System.out.println("handleWindowCallback: kEventClassWindow kind:" + eventKind);
-				break;
-			}
-			break;
-			
-		default:
-			System.out.println("handleWindowCallback: unexpected event class: " + MacUtil.toString(eventClass));
-			break;
-		}
-		return OS.eventNotHandledErr;
-	}
-	
-	private int handleApplicationCallback(int nextHandler, int eRefHandle, int userData) {
-	
-		int eventClass= OS.GetEventClass(eRefHandle);
-		int eventKind= OS.GetEventKind(eRefHandle);
-		
-		switch (eventClass) {
-			
-		case OS.kEventClassAppleEvent:
-		
-			// check for 'quit' events
-			int[] aeclass= new int[1];
-			if (OS.GetEventParameter(eRefHandle, OS.kEventParamAEEventClass, OS.typeType, null, null, aeclass) == OS.kNoErr) {
-				// System.out.println("kEventClassAppleEvent: " + MacUtil.toString(aeclass[0]));
-				int[] aetype= new int[1];
-				if (OS.GetEventParameter(eRefHandle, OS.kEventParamAEEventID, OS.typeType, null, null, aetype) == OS.kNoErr) {
-					//System.out.println("kEventParamAEEventID: " + MacUtil.toString(aetype[0]));
-					if (aetype[0] == OS.kAEQuitApplication)
-						close();
-				}
-			}
-			
-			OS.AEProcessAppleEvent(new MacEvent(eRefHandle).toOldMacEvent());
-			break;
-			
-		case OS.kEventClassCommand:
-		
-			if (eventKind == OS.kEventProcessCommand) {
-				int[] rc= new int[4];
-				OS.GetEventHICommand(eRefHandle, rc);
-				
-				if (rc[1] == OS.kAEQuitApplication) {
-					close();
-					OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
-					return OS.kNoErr;
-				}
-				
-				// try to map the MenuRef to a SWT Menu
-				Widget w= findWidget (rc[2]);
-				if (w instanceof Menu) {
-					Menu menu= (Menu) w;
-					menu.handleMenu(rc[3]);
-					OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
-					return OS.kNoErr;
-				}
-				
-				
-				OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
-				// we do not return kNoErr here so that the default handler
-				// takes care of special menus like the Combo menu.
-			}
-			break;
-		
-		case OS.kEventClassMouse:
-			switch (eventKind) {
-				
-			case OS.kEventMouseDown:
-			
-				fTrackedControl= 0;
-				
-				hideToolTip();
-	
-				MacEvent mEvent= new MacEvent(eRefHandle);
-				MacPoint where= mEvent.getWhere();
-				int[] w= new int[1];
-				short part= OS.FindWindow(where.getData(), w);
-								
-				OS.QDGlobalToLocalPoint(OS.GetWindowPort(w[0]), where.getData());
-				
-				if (part == OS.inMenuBar) {
-					OS.MenuSelect(mEvent.getWhere().getData());
-					//doMenuCommand(OS.MenuSelect(mEvent.getWhere().getData()));
-					return OS.kNoErr;
-				}
-				break;
-				
-			case OS.kEventMouseDragged:
-			case OS.kEventMouseUp:
-			case OS.kEventMouseMoved:
-				return handleMouseEvent(nextHandler, eRefHandle, eventKind, 0);
-			}
-			break;
-						
-		case SWT_USER_EVENT:	// SWT1 user event
-			//System.out.println("handleApplicationCallback: user event " + eventKind);
-			return OS.kNoErr;
-			
-		default:
-			System.out.println("handleApplicationCallback: unknown event class" + MacUtil.toString(eventClass));
-			break;
-		}
-		return OS.eventNotHandledErr;
-	}
-		
-	private int handleMouseEvent(int nextHandler, int eRefHandle, int eventKind, int whichWindow) {
-		
-		if (MacUtil.HIVIEW)
-			return OS.eventNotHandledErr;
-		
-		if (eventKind == OS.kEventMouseDown)
-			fTrackedControl= 0;
-		
-		MacEvent me= new MacEvent(eRefHandle);
-		MacPoint where= me.getWhere();
-		
-		short part= 0;
-		if (whichWindow == 0) {
-			if (fTrackedControl != 0) {
-				whichWindow= OS.GetControlOwner(fTrackedControl);
-			} else {
-				int[] w= new int[1];
-				part= OS.FindWindow(where.getData(), w);
-				whichWindow= w[0];
-			}
-		} else {
-			part= OS.FindWindow(where.getData(), new int[1]);
-		}
-		
-		if (whichWindow == 0 && eventKind == OS.kEventMouseDown) {
-			int[] wHandle= new int[1];
-			int rc= OS.GetEventParameter(eRefHandle, OS.kEventParamWindowRef, OS.typeWindowRef, null, null, wHandle);
-			if (rc == OS.kNoErr)
-				whichWindow= wHandle[0];
-		}
-		
-		if (whichWindow == 0) {
-			//System.out.println("Display.handleMouseEvent:  whichWindow == 0");
-			return OS.eventNotHandledErr;
-		}
-			
-		MacEvent.trackStateMask(eRefHandle, eventKind);
-				
-		switch (eventKind) {
-		
-		case OS.kEventMouseWheelMoved:
-			OS.QDGlobalToLocalPoint(OS.GetWindowPort(whichWindow), where.getData());			
-			int cntrl= MacUtil.findControlUnderMouse(where, whichWindow, null);
-			Widget ww= findWidget(cntrl);
-			if (ww instanceof Composite) {
-				Composite s= (Composite) ww;
-				ScrollBar sb= s.getVerticalBar();
-				if (sb != null)
-					return sb.processWheel(eRefHandle);
-			}
-			break;
-		
-		case OS.kEventMouseDown:
-					
-			if (!OS.IsWindowActive(whichWindow)) {
-				// let the default handler activate the window
-				return OS.eventNotHandledErr;
-			}
-		
-			hideToolTip ();
-		
-			if (part == OS.inContent || (MacUtil.HIVIEW && part == OS.inStructure))
-				if (false && MacUtil.HIVIEW) {
-					return OS.eventNotHandledErr;
-				} else {
-					if (!handleContentClick(me, whichWindow))
-						return OS.kNoErr;
-				}
-
-			break;
-		
-		case OS.kEventMouseDragged:
-			if (fTrackedControl != 0) {
-				windowProc(fTrackedControl, SWT.MouseMove, new MacMouseEvent(me));
-				return OS.kNoErr;
-			}
-			break;
-
-		case OS.kEventMouseUp:
-			if (fTrackedControl != 0) {
-				windowProc(fTrackedControl, SWT.MouseUp, new MacMouseEvent(me));
-				fTrackedControl= 0;
-				return OS.kNoErr;
-			}	
-			break;
-			
-		case OS.kEventMouseMoved:
-		
-			fTrackedControl= 0;			
-			
-			OS.QDGlobalToLocalPoint(OS.GetWindowPort(whichWindow), where.getData());			
-			int whichControl= MacUtil.findControlUnderMouse(where, whichWindow, null);
-		
-			if (fCurrentControl != whichControl) {
-			
-				if (fCurrentControl != 0) {
-					fLastHoverHandle= 0;
-					windowProc(fCurrentControl, SWT.MouseExit, new MacMouseEvent(me));
-				}
-				
-				fCurrentControl= whichControl;
-				
-				Widget w= findWidget(fCurrentControl);
-				if (w instanceof Control) {
-					Control c= (Control) w;
-					if (c.cursor != null)
-						c.cursor.install(this);	
-					else
-						setCursor(0);		
-				} else
-					setCursor(0);
-				
-				windowProc(fCurrentControl, SWT.MouseMove, new MacMouseEvent(me));
-				
-				if (fCurrentControl != 0) {
-					windowProc(fCurrentControl, SWT.MouseEnter, new MacMouseEvent(me));
-				}
-				return OS.kNoErr;			
-			} else {
-				if (fCurrentControl != 0) {
-					windowProc(fCurrentControl, SWT.MouseMove, new MacMouseEvent(me));
-					return OS.kNoErr;
-				}
-			}
-			break;
-		}
-					
-		return OS.eventNotHandledErr;
-	}
-
-	boolean setMacFocusHandle(int wHandle, int focusHandle) {
-	
-		if (fFocusControl != focusHandle) {
-			int oldFocus= fFocusControl;
-			fFocusControl= focusHandle;
-			
-			if (oldFocus != 0)
-				windowProc(oldFocus, false);
-			
-			
-			if (wHandle != 0) {
-				int[] focusControl= new int[1];
-				OS.GetKeyboardFocus(wHandle, focusControl);
-				if (focusControl[0] != fFocusControl) {
-					OS.SetKeyboardFocus(wHandle, focusHandle, (short)-1);
-					//if (rc != OS.kNoErr)
-					//	System.out.println("Display.setMacFocusHandle: SetKeyboardFocus " + rc);
-				}
-			}
-
-			if (fFocusControl != 0)
-				windowProc(fFocusControl, true);
-		}
-		return true;
-	}
-			
-	private boolean handleContentClick(MacEvent me, int whichWindow) {
-	
-		MacPoint where= me.getWhere();
-		MacPoint globalPos= me.getWhere();
-				
-		OS.QDGlobalToLocalPoint(OS.GetWindowPort(whichWindow), where.getData());
-		
-		short[] cpart= new short[1];		
-		int whichControl= 0;
-		if (MacUtil.HIVIEW) {
-			int[] ov= new int[1];
-			int root= OS.HIViewGetRoot(whichWindow);
-			OS.HIViewGetViewForMouseEvent(root, me.getEventRef(), ov);
-			whichControl= ov[0];
-		} else {
-			whichControl= MacUtil.findControlUnderMouse(where, whichWindow, cpart);				
-		}
-		
-		// focus change
-		setMacFocusHandle(whichWindow, whichControl);
-								
-		if (whichControl != 0) {
-		
-			// deal with the context menu
-			Widget wc= WidgetTable.get(whichControl);
-			if (wc instanceof Control) {
-				Menu cm= ((Control)wc).getMenu();	// is a context menu installed?
-				if (cm != null && me.isShowContextualMenuClick()) {
-					try {
-						fInContextMenu= true;
-						// AW: not ready for primetime
-						// OS.ContextualMenuSelect(cm.handle, globalPos.getData(), new short[1], new short[1]);
-						OS.PopUpMenuSelect(cm.handle, (short)globalPos.getY(), (short)globalPos.getX(), (short)1);
-					} finally {
-						fInContextMenu= false;
-					}
-					return false;
-				}
-			}
-			
-			if (MacUtil.HIVIEW) {
-				OS.HIViewClick(whichControl, me.getEventRef());
-				return false;
-			}
-		
-			switch (cpart[0]) {
-			case 0:
-				break;
-
-			case 111:	// User pane
-				fTrackedControl= whichControl;	// starts mouse tracking
-				windowProc(whichControl, SWT.MouseDown, new MacMouseEvent(me));
-				break;
-
-			case 112:	// User pane
-				windowProc(whichControl, SWT.MouseDown, new MacMouseEvent(me));
-				break;
-				
-			default:
-				windowProc(whichControl, SWT.MouseDown, new MacMouseEvent(me));
-				
-				if (MacUtil.HIVIEW) {
-					// AW: Jaguar:
-					OS.HIViewClick(whichControl, me.getEventRef());
-				} else {
-					int cpart2= OS.HandleControlClick(whichControl, where.getData(), me.getModifiers(), -1);
-					if (cpart2 != 0) {
-						windowProc(whichControl, SWT.Selection, new MacControlEvent(whichControl, cpart2, false));
-					}
-				}
-				break;
-			}
-		}
-		return false;
-	}
-		
-	public void updateWindow(int whichWindow) {
-	
-		int curPort= OS.GetPort();
-		OS.SetPortWindowPort(whichWindow);
-		OS.BeginUpdate(whichWindow);
-		
-		updateWindow2(whichWindow);
-
-		OS.EndUpdate(whichWindow);
-		OS.SetPort(curPort);
-	}
-
-	public void updateWindow2(int whichWindow) {
-		if (toolTipWindowHandle == whichWindow) {
-			processPaintToolTip(whichWindow);
-		} else {
-			fUpdateRegion= OS.NewRgn();
-			OS.GetPortVisibleRegion(OS.GetWindowPort(whichWindow), fUpdateRegion);
-
-			OS.EraseRgn(fUpdateRegion);
-			OS.UpdateControls(whichWindow, fUpdateRegion);
-							
-			OS.DisposeRgn(fUpdateRegion);
-			fUpdateRegion= 0;
-		}
-	}
-		
-	/*
-	static void processAllUpdateEvents2(int cHandle) {
-		
-		if (true) {
-			int[] macEvent= new int[6];
-			while (OS.GetNextEvent(OS.updateMask, macEvent))
-				if (macEvent[0] == OS.updateEvt)
-					getDefault().updateWindow(macEvent[1]);
-		} else {
-			int[] mask= new int[] {
-				OS.kEventClassWindow, OS.kEventWindowDrawContent
-			};
-			int[] evt= new int[1];
-			while (OS.ReceiveNextEvent(mask, 0.01, true, evt) == OS.kNoErr) {
-				//System.out.println("got update");
-				int rc= OS.SendEventToEventTarget(evt[0], OS.GetEventDispatcherTarget());
-                if (rc != OS.kNoErr)
-					System.out.println("processAllUpdateEvents: " + rc);
-				OS.ReleaseEvent(evt[0]);
-			}
-		}
-
-		int wHandle= OS.GetControlOwner(cHandle);
-		if (wHandle != 0) {
-			int port= OS.GetWindowPort(wHandle);
-			if (port != 0) {
-				OS.QDFlushPortBuffer(port, 0);
-				//System.out.println("QDFlushPortBuffer");
-			}
-		}
-	}
-	*/
-	
-	private void processPaintToolTip(int wHandle) {
-			
-		Color infoForeground = getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-		Color infoBackground = getSystemColor (SWT.COLOR_INFO_BACKGROUND);
-		MacUtil.RGBBackColor(infoBackground.handle);
-		MacUtil.RGBForeColor(infoForeground.handle);
-		
-		MacRect bounds= new MacRect();
-		OS.GetWindowBounds(wHandle, OS.kWindowContentRgn, bounds.getData());
-		
-		bounds= new MacRect(0, 0, bounds.getWidth(), bounds.getHeight());
-		
-		OS.EraseRect(bounds.getData());
-		
-		if (fToolTipText != null) {
-			int sHandle= OS.CFStringCreateWithCharacters(fToolTipText);
-			bounds= new MacRect(TOOLTIP_MARGIN, TOOLTIP_MARGIN,
-							bounds.getWidth()-2*TOOLTIP_MARGIN, bounds.getHeight()-2*TOOLTIP_MARGIN);
-			OS.DrawThemeTextBox(sHandle, fHoverThemeFont, OS.kThemeStateActive, true, bounds.getData(), (short)0, 0);
-			OS.CFRelease(sHandle);
-		}
-	}
-	
-	private void sendUserEvent(int kind) {
-		int[] event= new int[1];
-		OS.CreateEvent(0, SWT_USER_EVENT, kind, 0.0, OS.kEventAttributeUserEvent, event);
-		if (event[0] != 0)
-			OS.PostEventToQueue(OS.GetMainEventQueue(), event[0], (short)2);
-	}
-	
-	public static MacFont getThemeFont(short themeFontId) {
-		byte[] fontName= new byte[256];
-		short[] fontSize= new short[1];
-		byte[] style= new byte[1];
-		OS.GetThemeFont(themeFontId, OS.smSystemScript, fontName, fontSize, style);
-		return new MacFont(MacUtil.toString(fontName), fontSize[0], style[0]);
-	}
-	
-	public void setCursor(int cursor) {
-		if (fCurrentCursor != cursor) {
-			fCurrentCursor= cursor;
-			if (cursor == 0)
-				OS.InitCursor();
-			else
-				OS.SetCursor(cursor);
-		}
-	}
-	
-	private int createCallback(String method, int argCount) {
-		Callback cb= new Callback(this, method, argCount);
-		if (fCallbacks == null)
-			fCallbacks= new ArrayList();
-		fCallbacks.add(cb);
-		int proc= cb.getAddress();
-		if (proc == 0)
-			error (SWT.ERROR_NO_MORE_CALLBACKS);
-		return proc;
-	}
 }
