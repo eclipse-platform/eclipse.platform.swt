@@ -70,7 +70,7 @@ case $OS in
 				CDE_HOME=/usr/dt		
 			fi
 			OUTPUT_DIR=../../../org.eclipse.swt.motif/os/solaris/sparc
-			PATH=/opt/SUNWspro/bin:$PATH
+			PATH=/usr/ccs/bin:/opt/SUNWspro/bin:$PATH
 			export PATH
 			makefile="make_solaris.mak"
 			echo "Building Solaris motif sparc version of SWT"
