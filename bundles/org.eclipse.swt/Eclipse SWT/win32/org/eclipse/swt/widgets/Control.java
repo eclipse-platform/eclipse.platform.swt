@@ -3484,8 +3484,6 @@ LRESULT WM_MEASUREITEM (int wParam, int lParam) {
 }
 
 LRESULT WM_MENUCHAR (int wParam, int lParam) {
-	Display display = getDisplay ();
-	display.mnemonicKeyHit = false;
 	/*
 	* Feature in Windows.  When the user types Alt+<key>
 	* and <key> does not match a mnemonic in the System
@@ -3495,7 +3493,9 @@ LRESULT WM_MENUCHAR (int wParam, int lParam) {
 	* stop Windows from beeping by closing the menu.
 	*/
 	int type = wParam >> 16;
-	if (type == 0 || type == OS.MF_SYSMENU) {
+	if (type == 0 || type == OS.MF_SYSMENU) {	
+		Display display = getDisplay ();
+		display.mnemonicKeyHit = false;
 		return new LRESULT (OS.MNC_CLOSE << 16);
 	}
 	return null;
@@ -3505,6 +3505,8 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 	int code = wParam >> 16;
 	Shell shell = getShell ();
 	if (code == -1 && lParam == 0) {
+		Display display = getDisplay ();
+		display.mnemonicKeyHit = true;
 		Menu menu = shell.activeMenu;
 		while (menu != null) {
 			/*
