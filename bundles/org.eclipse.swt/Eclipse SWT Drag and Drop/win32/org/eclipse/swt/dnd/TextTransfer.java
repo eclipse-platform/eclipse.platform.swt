@@ -11,7 +11,6 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.internal.ole.win32.COM;
-import org.eclipse.swt.internal.win32.TCHAR;
 import org.eclipse.swt.internal.ole.win32.STGMEDIUM;
 import org.eclipse.swt.internal.ole.win32.FORMATETC;
 import org.eclipse.swt.internal.ole.win32.IDataObject;
