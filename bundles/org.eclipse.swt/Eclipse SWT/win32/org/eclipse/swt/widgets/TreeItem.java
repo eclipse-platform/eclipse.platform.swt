@@ -451,6 +451,17 @@ public TreeItem getParentItem () {
 	return parent.items [tvItem.lParam];
 }
 
+void redraw () {
+	if (parent.drawCount > 0) return;
+	int hwnd = parent.handle;
+	if (!OS.IsWindowVisible (hwnd)) return;
+	RECT rect = new RECT ();
+	rect.left = handle;
+	if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+		OS.InvalidateRect (hwnd, rect, true);
+	}
+}
+
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
@@ -485,31 +496,16 @@ void releaseWidget () {
  */
 public void setBackground (Color color) {
 	checkWidget ();
-	if (color != null && color.isDisposed ())
+	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	if (color != null && color.handle != parent.getBackgroundPixel ())	{
+	}
+	int pixel = -1;
+	if (color != null) {
 		parent.customDraw = true;
+		pixel = color.handle;
 	}
-	if ((color == null && background != -1) ||
-	    (color != null && background != color.handle)) {
-		int hwnd = parent.handle;
-		if (OS.IsWindowVisible (hwnd)) {
-			RECT rect = new RECT ();
-			rect.left = handle;
-			OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect);
-			int width = rect.right - rect.left;
-			int height = rect.bottom - rect.top;			
-			if (width > 0 || height > 0) {;
-				if (OS.IsWinCE) {
-					OS.InvalidateRect (hwnd, rect, true);
-				} else {
-					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE |OS.RDW_ALLCHILDREN;
-					OS.RedrawWindow (hwnd, rect, 0, flags);
-				}
-			}
-		}
-	}
-	background = (color == null) ? -1 : color.handle;
+	background = pixel;
+	redraw ();
 }
 
 /**
@@ -608,31 +604,16 @@ public void setExpanded (boolean expanded) {
  */
 public void setForeground (Color color) {
 	checkWidget ();
-	if (color != null && color.isDisposed ())
+	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	if (color != null && color.handle != parent.getForegroundPixel ())	{
+	}
+	int pixel = -1;
+	if (color != null) {
 		parent.customDraw = true;
+		pixel = color.handle;
 	}
-	if ((color == null && foreground != -1) ||
-	    (color != null && foreground != color.handle)) {
-		int hwnd = parent.handle;
-		if (OS.IsWindowVisible (hwnd)) {
-			RECT rect = new RECT ();
-			rect.left = handle;
-			OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect);	
-			int width = rect.right - rect.left;
-			int height = rect.bottom - rect.top;			
-			if (width > 0 || height > 0) {;
-				if (OS.IsWinCE) {
-					OS.InvalidateRect (hwnd, rect, true);
-				} else {
-					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE |OS.RDW_ALLCHILDREN;
-					OS.RedrawWindow (hwnd, rect, 0, flags);
-				}
-			}
-		}
-	}
-	foreground = (color == null) ? -1 : color.handle;	
+	foreground = pixel;
+	redraw ();
 }
 
 /**

@@ -295,6 +295,7 @@ void createItem (TableColumn column, int index) {
 }
 
 void createItem (TableItem item, int index) {
+	item.foreground = item.background = -1;
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	if (count == items.length) {
@@ -332,7 +333,6 @@ void createItem (TableItem item, int index) {
 	if (result == -1) error (SWT.ERROR_ITEM_NOT_ADDED);
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
-	item.foreground = item.background = -1;
 }
 
 ScrollBar createScrollBar (int type) {
@@ -2293,31 +2293,34 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
-		case OS.NM_CUSTOMDRAW:
+		case OS.NM_CUSTOMDRAW: {
 			if (!customDraw) break;
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
-				case OS.CDDS_PREPAINT:
-					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
-				case OS.CDDS_ITEMPREPAINT:
-					return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW);
-				case OS.CDDS_ITEMPREPAINT | OS.CDDS_SUBITEM:
+				case OS.CDDS_PREPAINT: return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
+				case OS.CDDS_ITEMPREPAINT: return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW);
+				case OS.CDDS_ITEMPREPAINT | OS.CDDS_SUBITEM: {
 					TableItem item = items [nmcd.dwItemSpec];
-					nmcd.clrText = (item.foreground == -1) ? getForegroundPixel () : item.foreground;
-					nmcd.clrTextBk = (item.background == -1) ? getBackgroundPixel () : item.background;
+					int clrText = item.foreground, clrTextBk = item.background;
+					if (clrText == -1 && clrTextBk == -1) break;
+					nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
+					nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 					OS.MoveMemory (lParam, nmcd, nmcd.sizeof);
 					return new LRESULT (OS.CDRF_NEWFONT);
+				}
 			}
 			break;
+		}
 		case OS.LVN_MARQUEEBEGIN: return LRESULT.ONE;
 		case OS.LVN_BEGINDRAG:
-		case OS.LVN_BEGINRDRAG:
+		case OS.LVN_BEGINRDRAG: {
 			dragStarted = true;
 			if (hdr.code == OS.LVN_BEGINDRAG) {
 				postEvent (SWT.DragDetect);
 			}
 			break;
+		}
 		case OS.LVN_COLUMNCLICK: {
 			NMLISTVIEW pnmlv = new NMLISTVIEW ();
 			OS.MoveMemory(pnmlv, lParam, NMLISTVIEW.sizeof);
