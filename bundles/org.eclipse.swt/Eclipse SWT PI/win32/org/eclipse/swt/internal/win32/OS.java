@@ -777,6 +777,7 @@ public class OS {
 	public static final int SC_SIZE = 0xf000;
 	public static final int SC_TASKLIST = 0xf130;
 	public static final int SC_VSCROLL = 0xf070;
+	public static final int SEM_FAILCRITICALERRORS = 0x1;
 	public static final int SF_RTF = 0x2;
 	public static final int SHCMBF_HIDDEN = 0x2;
 	public static final int SHCMBM_OVERRIDEKEY = OS.WM_USER + 403;
@@ -2370,6 +2371,7 @@ public static final native int SetClipboardData (int uFormat, int hMem);
 public static final native int SetCursor (int hCursor);
 public static final native boolean SetCursorPos (int X, int Y);
 public static final native int SetDIBColorTable (int hdc, int uStartIndex, int cEntries, byte[] pColors);
+public static final native int SetErrorMode (int uMode);
 public static final native int SetFocus (int hWnd);
 public static final native boolean SetForegroundWindow (int hWnd);
 public static final native int SetLayout (int hdc, int dwLayout);

@@ -174,6 +174,7 @@
 #define NO_SendMessageA__II_3I_3I
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2
 #define NO_SetDIBColorTable
+#define NO_SetErrorMode
 #define NO_SetMenu
 #define NO_SetMenuDefaultItem
 #define NO_SetMenuInfo
@@ -6490,6 +6491,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetDIBColorTable)
 	return rc;
 }
 #endif /* NO_SetDIBColorTable */
+
+#ifndef NO_SetErrorMode
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetErrorMode
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetErrorMode\n")
+
+	return (jint)SetErrorMode(arg0);
+}
+#endif /* NO_SetErrorMode */
 
 #ifndef NO_SetFocus
 JNIEXPORT jint JNICALL OS_NATIVE(SetFocus)
