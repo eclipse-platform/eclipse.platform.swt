@@ -717,7 +717,10 @@ public Image (Device device, String filename) {
 	if (device.tracking) device.new_Object(this);	
 }
 
-/* Create a DIB from a DDB without using GetDIBits */
+/** 
+ * Create a DIB from a DDB without using GetDIBits. Note that 
+ * the DDB should not be selected into a HDC.
+ */
 int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 	
 	/* Determine the DDB depth */
@@ -1237,7 +1240,20 @@ public ImageData getImageData() {
 			int handle = this.handle;
 			if (OS.IsWinCE) {
 				if (!isDib) {
-					handle = createDIBFromDDB(hDC, handle, width, height);
+					boolean mustRestore = false;
+					if (memGC != null && !memGC.isDisposed()) {
+						mustRestore = true;
+						GCData data = memGC.data;
+						if (data.hNullBitmap != 0) {
+							OS.SelectObject(memGC.handle, data.hNullBitmap);
+							data.hNullBitmap = 0;
+						}
+					}
+					handle = createDIBFromDDB(hDC, this.handle, width, height);
+					if (mustRestore) {
+						int hOldBitmap = OS.SelectObject(memGC.handle, handle);
+						memGC.data.hNullBitmap = hOldBitmap;
+					}
 					isDib = true;
 				}
 			}
