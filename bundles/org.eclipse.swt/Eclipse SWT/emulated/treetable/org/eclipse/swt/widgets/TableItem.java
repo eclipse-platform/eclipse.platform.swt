@@ -1202,6 +1202,7 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (background == color) return;
 	if (background != null && background.equals (color)) return;
 	background = color;
 	redraw();
@@ -1236,6 +1237,7 @@ public void setBackground (int index, Color color) {
 	if (cellBackground == null) {
 		cellBackground = new Color [count];
 	}
+	if (cellBackground [index] == color) return;
 	if (cellBackground [index] != null && cellBackground [index].equals (color)) return;
 	cellBackground [index] = color;
 	redraw ();
@@ -1263,6 +1265,7 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (this.font == font) return;
 	if (this.font != null && this.font.equals (font)) return;
 	this.font = font;
 	redraw ();
@@ -1298,6 +1301,7 @@ public void setFont (int index, Font font) {
 	if (cellFont == null) {
 		cellFont = new Font [count];
 	}
+	if (cellFont [index] == font) return;
 	if (cellFont [index] != null && cellFont [index].equals (font)) return;
 	cellFont [index] = font;
 	redraw ();
@@ -1326,6 +1330,7 @@ public void setForeground (Color color){
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (foreground == color) return;
 	if (foreground != null && foreground.equals (color)) return;
 	foreground = color;
 	redraw(); 
@@ -1360,6 +1365,7 @@ public void setForeground (int index, Color color){
 	if (cellForeground == null) {
 		cellForeground = new Color [count];
 	}
+	if (cellForeground [index] == color) return;
 	if (cellForeground [index] != null && cellForeground [index].equals (color)) return;
 	cellForeground [index] = color;
 	redraw ();
