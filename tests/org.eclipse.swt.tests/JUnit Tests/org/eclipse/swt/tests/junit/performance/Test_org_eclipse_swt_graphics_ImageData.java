@@ -87,7 +87,7 @@ public void test_ConstructorLjava_lang_String() {
 			String format = imageFormats[i];
 			String fullName = getPath(fileName + "." + format);
 			
-			PerformanceMeter meter = createMeter(fullName);
+			PerformanceMeter meter = createMeter(fileName + "." + format);
 			meter.start();
 			for (int j = 0; j < COUNT; j++) {
 				new ImageData(fullName);

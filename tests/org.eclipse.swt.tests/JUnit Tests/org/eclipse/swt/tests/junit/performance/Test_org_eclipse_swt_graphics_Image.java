@@ -211,7 +211,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 			String pathName = getPath(fileName + "." + format);
 			Image[] images = new Image[COUNT];
 			
-			PerformanceMeter meter = createMeter(pathName);
+			PerformanceMeter meter = createMeter(fileName + "." + format);
 			meter.start();
 			for (int j = 0; j < COUNT; j++) {
 				images[j] = new Image(display, pathName);
