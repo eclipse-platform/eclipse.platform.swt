@@ -2,136 +2,158 @@
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="GENERATOR" content="Mozilla/4.5 [en] (Win98; I) [Netscape]">
+   <meta name="GENERATOR" content="Mozilla/4.7 [en] (WinNT; I) [Netscape]">
    <meta name="Author" content="IBM">
    <title>Eclipse Platform Release Notes - SWT</title>
 </head>
 <body>
 
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 118 - Saturday June 2, 2001
+<h2>
+<a NAME="API Changes"></a>API Changes</h2>
 
-<h2><a NAME="API Changes"></a>API Changes</h2>
-
-<h3><a NAME="SWT Examples are now a plugin"></a>SWT Examples are now a plugin</h3>
-
-<p> SWT examples run as a plugin in the Eclipse desktop.
-
-<p> To run the examples, follow these steps:
-
+<h3>
+<a NAME="SWT Examples are now a plugin"></a>SWT Examples are now a plugin</h3>
+SWT examples run as a plugin in the Eclipse desktop.
+<p>To run the examples, follow these steps:
 <ol>
-	<li>Perspective -> Show View -> Other...
-	<li>In the Show View dialog, expand the topmost SWT Examples category.
-	<li>Select "Launcher" and click OK to get the SWT Launcher view.
-	<li>From this view, you can launch all of the SWT Examples, including both stand-alone examples (10 of them) and plugin examples (3 of them: Controls, Paint, & OLE).
-</ol>
+<li>
+Perspective -> Show View -> Other...</li>
 
+<li>
+In the Show View dialog, expand the topmost SWT Examples category.</li>
+
+<li>
+Select "Launcher" and click OK to get the SWT Launcher view.</li>
+
+<li>
+From this view, you can launch all of the SWT Examples, including both
+stand-alone examples (10 of them) and plugin examples (3 of them: Controls,
+Paint, &amp; OLE).</li>
+</ol>
 <b>Notes:</b>
 <ul>
-	<li>Select an example in the launcher list to see a description of the example.
-	<li>Press the Run button or double-click the example to launch it.
-	<li>If the example has a source jar (i.e. the plugin examples have source jars), then press Add to Workspace to add the source to a project in your workspace.
-	<li>An alternate way to launch the Controls, Paint, & OLE examples, since they are plugins, is to select them from Perspective -> Show View -> Other...
- </ul>
-    
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GEPBX8: SWT:Linux - Adding a new entry to a tool bar overwrites the first entry
-1GEPAFQ: ITPUI:Linux - Using 'open perspective' button replaces button with new perspective
-1GEM261: SWT:ALL - CCombo still has focus when invisible
-1GELK0B: ITPUI:Linux - No popup menu on shortcut bar tools?
-1GEJIKJ: SWT:Linux - Depth 2 PNGs cause unspecified error
-1GEAS7V: ITPUI:Linux - ToolItem image does not update
-1GE8ZKY: ITPJUI:Linux - Content assist not working on Linux
-1GE5F2Y: ITPUI:Linux - No popup-menu over perspectives in left column
-1GD0L49: SWT:Linux - Popup menus do not work in Toolbar
-1G95PJ6: ITPUI:WIN2000 - Changing task priority loses task selection
-</blockquote>
-   
+<li>
+Select an example in the launcher list to see a description of the example.</li>
+
+<li>
+Press the Run button or double-click the example to launch it.</li>
+
+<li>
+If the example has a source jar (i.e. the plugin examples have source jars),
+then press Add to Workspace to add the source to a project in your workspace.</li>
+
+<li>
+An alternate way to launch the Controls, Paint, &amp; OLE examples, since
+they are plugins, is to select them from Perspective -> Show View -> Other...</li>
+</ul>
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>1GEPBX8: SWT:Linux - Adding a new entry to a tool bar overwrites
+the first entry 1GEPAFQ: ITPUI:Linux - Using 'open perspective' button
+replaces button with new perspective 1GEM261: SWT:ALL - CCombo still has
+focus when invisible 1GELK0B: ITPUI:Linux - No popup menu on shortcut bar
+tools? 1GEJIKJ: SWT:Linux - Depth 2 PNGs cause unspecified error 1GEAS7V:
+ITPUI:Linux - ToolItem image does not update 1GE8ZKY: ITPJUI:Linux - Content
+assist not working on Linux 1GE5F2Y: ITPUI:Linux - No popup-menu over perspectives
+in left column 1GD0L49: SWT:Linux - Popup menus do not work in Toolbar
+1G95PJ6: ITPUI:WIN2000 - Changing task priority loses task selection</blockquote>
+
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 117 - Friday June 1, 2001
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GENQD3: SWT:ALL - Character conversion broken for wide characters.
-<br>1GELTSI: SWT:WIN2000 - Tree does not update properly when images disposed and re-set
-<br>1GELNIG: SWT:WIN2000 - Tree item selection not shown if same item previously cleared
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>1GENQD3: SWT:ALL - Character conversion broken for wide characters.
+<br>1GELTSI: SWT:WIN2000 - Tree does not update properly when images disposed
+and re-set
+<br>1GELNIG: SWT:WIN2000 - Tree item selection not shown if same item previously
+cleared
 <br>1GELNDR: SWT:WIN2000 - eclipse.exe is not killed
 <br>1GEASNK: SWT:Linux - Double-clicking '+' or '-' collapses whole tree
 <br>1GEAMLV: ITPUI:WIN98 - Tab Folder tabs show duplicate
 <br>1GE4XB5: ITPUI:WIN2000 - JavaDoc for SWT SelectionEvent is unclear
 <br>1GDX9PN: ITPUI:WINNT - ArrayIndexOutOfBounds in Console/StyledText
-<br>1GDVHI9: ITPUI:ALL - Editor tab not drawn on file open (editor area hidden)
+<br>1GDVHI9: ITPUI:ALL - Editor tab not drawn on file open (editor area
+hidden)
 <br>1GDQAVN: ITPUI:Linux - Eclipse crashing copying text
 <br>1GCHTAP: SWT:Linux - Font logic doesn't handle unknown fonts appropritately
 <br>1G9TX2I: SWT:Linux - Interlaced GIF gives X error on X
-<br>1G4IUX6: SWT:Linux - X Error of failed request:  BadDrawable
-</blockquote>
+<br>1G4IUX6: SWT:Linux - X Error of failed request: BadDrawable</blockquote>
 
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 116 - Thursday May 31, 2001
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GEJNQV: SWT:WIN - Table performance on dispose.
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>1GEJNQV: SWT:WIN - Table performance on dispose.
 <br>1GEAALG: SWT:WIN2000 - CCombo gives too many focus in focus out events
 <br>1GDF8U8: SWT:Linux - The Drop-down list can't display in Tasks of Eclipse
 <br>1GD7J2T: SWT:WINNT - Not getting key events from CCombo
-<br>1GCTD2T: ITPJUI:WIN2000 - Rename type dialog has name scrolled
-</blockquote>
+<br>1GCTD2T: ITPJUI:WIN2000 - Rename type dialog has name scrolled</blockquote>
 
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 115 - Wednesday May 30, 2001
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GEGPCA: SWT:ALL - Exception for hover-help
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>1GEGPCA: SWT:ALL - Exception for hover-help
 <br>1GEGF7L: SWT:ALL - Program.execute does not handle cases without %1
 <br>1GEEG7A: SWT:WIN2000 - IndexOutOfBounds in styledText
 <br>1GEAPRQ: ITPUI:Linux - Window loses focus when editor tooltip appears
 <br>1GE8XP9: SWT:Linux - SIGSEGV using code assist
-<br>1GE8K1W: SWT:Linux - MessageBox does not wrap text.
-</blockquote>
+<br>1GE8K1W: SWT:Linux - MessageBox does not wrap text.</blockquote>
 
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 114 - Tuesday May 29, 2001
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GEGFFW: SWT:Linux - Exception comparing gif files
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>1GEGFFW: SWT:Linux - Exception comparing gif files
 <br>1GEGF7L: SWT:ALL - Program.execute does not handle cases without %1
 <br>1GEG8HB: SWT:ALL - DCR - support VERTICAL toolbar
 <br>1GE8LZX: SWT:Linux - Segmentation Fault using a text widget
 <br>1GE8LOW: SWT:Linux - bogus exception thrown in Cursor constructor.
 <br>1GE75IM: SWT:Linux - BadDrawable in X_GetGeometry when resize window
 <br>1GDTNST: SWT:WIN2000 - Table.remove(int,int) does not check bounds
-<br>1GDS5G6: SWT:Linux - Program for .html files does not parse commands properly
+<br>1GDS5G6: SWT:Linux - Program for .html files does not parse commands
+properly
 <br>1GDRWIL: ITPUI:ALL - Exception in the Navigator in Japanese
-<br>1GDD38J: ITPUI:ALL - Quick Start: The tab does not visit the Cancel command button.
+<br>1GDD38J: ITPUI:ALL - Quick Start: The tab does not visit the Cancel
+command button.
 <br>1GD0KUB: SWT:Linux - Double-clicking in table just deselects item
-<br>1GCN5RI: SWT:Linux - Closing sample1.readme does not remove button until moving mouse
+<br>1GCN5RI: SWT:Linux - Closing sample1.readme does not remove button
+until moving mouse
 <br>1GALH3B: SWT:Linux - GC.copyArea causes an X-Error
 <br>1GAL4QA: SWT:Linux - Graphics components causing GPF's
 <br>1G9TX4I: SWT:WIN - ImageAnalyzer hangs on interlaced animated GIF
-<br>1G9GBP8: SWT:WINNT - GC.drawString() check for null, GC.drawText() doesn't
+<br>1G9GBP8: SWT:WINNT - GC.drawString() check for null, GC.drawText()
+doesn't
 <br>1G5YXG0: SWT:ALL - Walkback scaling a small image to be really small
-<br>1G5WZR6: SWT:ALL - Disposed Image objects should throw consistent errors 
-<br>1GEG8FT: SWT:ALL - Custom widgets do not handle dispose correctly.
-</blockquote>
+<br>1G5WZR6: SWT:ALL - Disposed Image objects should throw consistent errors
+<br>1GEG8FT: SWT:ALL - Custom widgets do not handle dispose correctly.</blockquote>
 
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 112 - Thursday May 24, 2001
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GE75O4: SWT:Linux - Missing libXm.so.2 in last build
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>1GE75O4: SWT:Linux - Missing libXm.so.2 in last build
 <br>1GE6XTM: SWT:Linux - Tooltips always appear in the same place
 <br>1GE6NVD: SWT:ALL - StyledText.setRedraw(boolean) does not work as expected
 <br>1GE56QT: SWT:ALL - ToolItem creates disabled image when not needed
@@ -139,153 +161,204 @@ SWT Build 112 - Thursday May 24, 2001
 <br>1GE3D5X: SWT:Linux - NPE when Image disposed before GC
 <br>1GDW5PA: SWT:ALL - javadoc errors in org.eclipse.swt
 <br>1GDQDPW: SWT:Neutrino - More mouse up events fired than mouse downs
-<br>1GDQ855: SWT:Neutrino - GC.stringExtent() returns incorrect value for empty string
+<br>1GDQ855: SWT:Neutrino - GC.stringExtent() returns incorrect value for
+empty string
 <br>1GDO85F: SWT:WINNT - Minor javadoc typo
-<br>1GDDE87: SWT:WIN2000 - ToolItem: setImage() before setDisabledImage() does more work
+<br>1GDDE87: SWT:WIN2000 - ToolItem: setImage() before setDisabledImage()
+does more work
 <br>1GCN4CP: SWT:Linux - Tooltips at screen border on Linux
-<br>1G7AJ6K: SWT:Neutrino - problem with visibility of child shell when parent is not visible
-</blockquote>
+<br>1G7AJ6K: SWT:Neutrino - problem with visibility of child shell when
+parent is not visible</blockquote>
 
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 110 - Tuesday May 22, 2001
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>&nbsp;
 <br>1GE2ZDR: SWT:WINNT - List comments need updating
 <br>1GE2L8G: ITPJUI:WIN2000 - Editor screen cheese on import assist
 <br>1GDXG5O: ITPSRCEDIT:WIN2000 - Syntax not highlighted when searching
-<br>1GDXFRX: ITPSRCEDIT:WIN2000 - Syntax not highlighted when previous character is selected
+<br>1GDXFRX: ITPSRCEDIT:WIN2000 - Syntax not highlighted when previous
+character is selected
 <br>1GDWZTD: ITPJUI:WINNT - Refreshing problems in editor
-<br>1GDWYXP: ITPJUI:WIN2000 - Still get incorrect rendered Java Files
-</blockquote>
+<br>1GDWYXP: ITPJUI:WIN2000 - Still get incorrect rendered Java Files</blockquote>
 
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 108 - Thursday May 17, 2001
+<h2>
+<a NAME="API Changes"></a>API Changes</h2>
 
-<h2><a NAME="API Changes"></a>API Changes</h2>
+<h3>
+<a NAME="SWT in its own plugin"></a>SWT in its own plugin</h3>
+SWT is now in its own plugin called org.eclipse.swt. The jars and dll/library
+files are now located in this new plugin folder. Formerly, the SWT classes
+were included in the workbench.jar and the dll/libraries were located in
+the org.eclipse.ui plugin.
+<p><b>NOTE:</b> You may need to change some of your scripts that invoke
+SWT examples to point at the new jar and dll/lib location. Also, when you
+launch UI Main you must specify the windowing system in the command line
+using the "-ws&nbsp;<windowing system>" argument. For example, on windows,
+eclipse.bat now has the following appearance:
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .\jre\bin\java -verify -cp startup.jar org.eclipse.core.launcher.UIMain -application org.eclipse.ui.workbench -ws win32 %1 %2 %3 %4 %5 %6 %7 %8 %9</pre>
 
-<h3><a NAME="SWT in its own plugin"></a>SWT in its own plugin</h3>
-
-SWT is now in its own plugin called org.eclipse.swt.
-The jars and dll/library files are now located in this new plugin folder.  
-Formerly, the SWT classes were included in the workbench.jar and the dll/libraries 
-were located in the org.eclipse.ui plugin.
-<p>
-<b>NOTE:</b> You may need to change some of your scripts that invoke SWT examples 
-to point at the new jar and dll/lib location.
-Also, when you launch UI Main you must specify the windowing system in the command line 
-using the "-ws <windowing system>" argument.
-For example, on windows, eclipse.bat now has the following appearance:
-
-<pre>
-	.\jre\bin\java -verify -cp startup.jar org.eclipse.core.launcher.UIMain -application org.eclipse.ui.workbench -ws win32 %1 %2 %3 %4 %5 %6 %7 %8 %9
-</pre>
-
-</b>
-
-<h3><a NAME="Styled Text"></a>Styled Text</h3>
-
+<h3>
+<a NAME="Styled Text"></a>Styled Text</h3>
 The following API changes have been made to StyledText:
-<p>
-If you are implementing your own StyledTextContent implementation, the semantics of how to handle replaceTextRange have
-changed.  Instead of modifying your content and then sending the TextChangedEvent with how the text was changed, one must now:
+<p>If you are implementing your own StyledTextContent implementation, the
+semantics of how to handle replaceTextRange have changed. Instead of modifying
+your content and then sending the TextChangedEvent with how the text was
+changed, one must now:
 <ol>
-	<li>send the TextChangingEvent (with how the text is to be modified)
-	<li>change your text model content
-	<li>send the TextChangedEvent  
-</ol>
+<li>
+send the TextChangingEvent (with how the text is to be modified)</li>
 
+<li>
+change your text model content</li>
+
+<li>
+send the TextChangedEvent</li>
+</ol>
 The code changes for this are as follows:
 <ul>
-	<li>renamed:
-	<ul>
-		<li>StyledTextContent.addTextChangedListener -> addTextChangeListener
-		<li>StyledTextContent.removeTextChangedListener -> removeTextChangeListener
-	</ul>
-	<li>new:
-	<ul>
-		<li>TextChangingEvent
-		<li>TextChangeListener, methods to implement
-		<ul>
-			<li>textChanging(TextChangingEvent)
-			<li>textChanged(TextChangedEvent)
-			<li>textSet(TextChangedEvent)
-		</ul>
-	</ul>
-	<li>removed:
-	<ul>
-		<li>All fields of TextChangedEvent, data will be in the TextChangingEvent, differences as follows:
-		<ul>
-			<li>int start; 
-			<li>String newText; (vs. replacedText)
-			<li>int replaceCharCount;  (renamed from replace<d>CharCount)
-			<li>int newCharCount; 		
-			<li>int replaceLineCount; (renamed from replace<d>LineCount)
-			<li>int newLineCount;
-		</ul>	
-		<li>TextChangedListener
-	</ul>
+<li>
+renamed:</li>
+
+<ul>
+<li>
+StyledTextContent.addTextChangedListener -> addTextChangeListener</li>
+
+<li>
+StyledTextContent.removeTextChangedListener -> removeTextChangeListener</li>
 </ul>
 
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1FV0NUA: SWT:WINNT - Exception loading jpg
+<li>
+new:</li>
+
+<ul>
+<li>
+TextChangingEvent</li>
+
+<li>
+TextChangeListener, methods to implement</li>
+
+<ul>
+<li>
+textChanging(TextChangingEvent)</li>
+
+<li>
+textChanged(TextChangedEvent)</li>
+
+<li>
+textSet(TextChangedEvent)</li>
+</ul>
+</ul>
+
+<li>
+removed:</li>
+
+<ul>
+<li>
+All fields of TextChangedEvent, data will be in the TextChangingEvent,
+differences as follows:</li>
+
+<ul>
+<li>
+int start;</li>
+
+<li>
+String newText; (vs. replacedText)</li>
+
+<li>
+int replaceCharCount; (renamed from replace<d>CharCount)</li>
+
+<li>
+int newCharCount;</li>
+
+<li>
+int replaceLineCount; (renamed from replace<d>LineCount)</li>
+
+<li>
+int newLineCount;</li>
+</ul>
+
+<li>
+TextChangedListener</li>
+</ul>
+</ul>
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>1FV0NUA: SWT:WINNT - Exception loading jpg
 <br>1GCHMCZ: SWT:ALL - TabFolder.setLayout should not do anything
 <br>1GC2Y4C: ITPJUI:WINNT - Editor does not correctly refresh
 <br>1GCSZGA: SWT:Linux - Drop down items on ToolBar do not work.
 <br>1GDH148: SWT:ALL - StyledText - flash when mouse select on empty line.
-<br>1GDRSKQ: SWT:ALL - ViewForm calls setVisible incorrectly
-</blockquote>
+<br>1GDRSKQ: SWT:ALL - ViewForm calls setVisible incorrectly</blockquote>
 
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 106 - Monday May 14, 2001
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GD0H51: ITPJUI:Linux - Java Build Path properties page walkback
-</blockquote>
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>1GD0H51: ITPJUI:Linux - Java Build Path properties page walkback</blockquote>
 
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 105 - Thursday May 10, 2001
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GDH5XA: SWT:Linux - Shell deactivate Event not fired
+<blockquote>1GDH5XA: SWT:Linux - Shell deactivate Event not fired
 <br>1GDGWW9: SWT:WIN2000 - Converter @param tags missing var name for terminate
 <br>1GDGN75: SWT:WIN2000 - Table should reset image list if no items
 <br>1GDCYE3: ITPJUI:WINNT - all perspectives corrupted
 <br>1GDCSRP: SWT:WINNT - Reading PNG streams having 2-bit image depth
 <br>1GD7UBX: SWT:WINNT - Trivial error in TableEditor class comment
-<br>1GD46XF: SWT:WIN2000 - Since build 048, Label widget has no left margin for text
-<br>1GBQ19X: SWT:WIN2000 - Problems with context menu lifecycle
-</blockquote>
+<br>1GD46XF: SWT:WIN2000 - Since build 048, Label widget has no left margin
+for text
+<br>1GBQ19X: SWT:WIN2000 - Problems with context menu lifecycle</blockquote>
+
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 104 - Monday May 7, 2001
+<h2>
+<a NAME="What's new"></a>What's new in this drop</h2>
 
-<h2><a NAME="What's new"></a>What's new in this drop</h2>
+<h3>
+<a NAME="Behaviour Changes"></a>Behaviour Changes</h3>
 
-<h3><a NAME="Behaviour Changes"></a>Behaviour Changes</h3>
 <ul>
-<li>StyledText was incorrectly changing the cursor to a busy cursor when performing a copy or paste.  Setting the cursor is the responsibility of the application.
+<li>
+StyledText was incorrectly changing the cursor to a busy cursor when performing
+a copy or paste. Setting the cursor is the responsibility of the application.</li>
 </ul>
 
-<h3><a NAME="API Changes"></a>API Changes</h3>
+<h3>
+<a NAME="API Changes"></a>API Changes</h3>
+
 <ul>
-<li>StyledText.print() has been added.
-<li>Printer support has been added.
+<li>
+StyledText.print() has been added.</li>
+
+<li>
+Printer support has been added.</li>
 </ul>
 
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GD7MK9: SWT:WINNT - Cheese in label when setting a different size image and changing the bounds in the layout
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>1GD7MK9: SWT:WINNT - Cheese in label when setting a different
+size image and changing the bounds in the layout
 <br>1GD63XZ: SWT:WIN2000 - exit eclipse workbench throws exception
 <br>1GD5ZND: SWT:WINNT - Label ignoring setAlignment method call
 <br>1GD0LO7: ITPUI:Linux - External files given wrong path
@@ -293,396 +366,313 @@ SWT Build 104 - Monday May 7, 2001
 <br>1GBPPQW: ITPJUI:WIN2000 - Tab width is 2 instead of 4
 <br>1GBOBBO: SWT:ALL - Should check in Display methods if display is disposed
 <br>1GBCXQA: SWT:Linux - Cannot paste to single-line Text widget
-<br>1GAP5O4: SWT:ALL - DCR: Printing API and implementation
-</blockquote>
+<br>1GAP5O4: SWT:ALL - DCR: Printing API and implementation</blockquote>
 
 <h1>
-Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 103 - Thursday May 3, 2001
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GD4KNI: SWT:WIN2000 - TableEditor.setColumn(int) has off-by-one error
+<blockquote>1GD4KNI: SWT:WIN2000 - TableEditor.setColumn(int) has off-by-one
+error
 <br>1GD45AU: SWT:Linux - UnsatisfiedLinkError gnome_mime_type
-<br>1GD3XC2: SWT:WIN - GC.dispose() doesn't fully clean up - leaves itself in image
+<br>1GD3XC2: SWT:WIN - GC.dispose() doesn't fully clean up - leaves itself
+in image
 <br>1GD3M6G: ITPUI:WIN2000 - SWT Error when closing Workbench
 <br>1GD3LD6: ITPUI:WINNT - Exception closing a second workbench window
 <br>1GD3FWL: ITPJUI:WINNT - walkback on closing the workbench
-<br>1GCV0HC: SWT:WIN2000 - TreeItem::setExpanded does not trigger selection change?
+<br>1GCV0HC: SWT:WIN2000 - TreeItem::setExpanded does not trigger selection
+change?
 <br>1GBOADO: SWT:WIN - WIN - Clean up after RichText removal
-<br>1GCN531: SWT:WIN2000 - CTabFolder child's visibility is false on notification
-</blockquote>
+<br>1GCN531: SWT:WIN2000 - CTabFolder child's visibility is false on notification</blockquote>
 
-<h1>IBM Eclipse Platform Release Notes<br>SWT</h1>
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 102 - Tuesday May 1, 2001
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GD0J8V: SWT:Linux - NPE setting background pixel on label
+<blockquote>1GD0J8V: SWT:Linux - NPE setting background pixel on label
 <br>1GD0BTL: SWT:Linux - Cursor doesn't blink unless you move the mouse
 <br>1GCUT5I: SWT:ALL - ViewForm::setBorderVisible() does not draw properly
-<br>1GCUIH2: SWT:Linux - NPE on image dispose setting label background color
-<br>1GCPHMP: SWT:Linux - GC.copyArea results in X_ClearArea error when regions are disjoint
-<br>1GAZZ7F: SWT:ALL - package com.ibm.itp.os.* should be renamed
-</blockquote>
+<br>1GCUIH2: SWT:Linux - NPE on image dispose setting label background
+color
+<br>1GCPHMP: SWT:Linux - GC.copyArea results in X_ClearArea error when
+regions are disjoint
+<br>1GAZZ7F: SWT:ALL - package com.ibm.itp.os.* should be renamed</blockquote>
 
-<h1>IBM Eclipse Platform Release Notes<br>SWT</h1>
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 100 - Thursday April 26, 2001
-
-<p><b>Renaming of packages and projects to org.eclipse version</b></p>
-
-<h1>IBM Eclipse Platform Release Notes<br>SWT</h1>
+<p><b>Renaming of packages and projects to org.eclipse version</b>
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 075 - Thursday April 26, 2001
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GCQU7S: SWT:WINNT - Exception getting image pixel
+<blockquote>1GCQU7S: SWT:WINNT - Exception getting image pixel
 <br>1GCQPTX: SWT:WINNT - Gradient colour is black on WINNT
 <br>1GCQKWP: SWT:WINNT - ImageData corrupt for certain images
-<br>1GCP2JE: SWT:WINNT - Exception collapsing the parent of an item with a TreeEditor open
-<br>1GCP11O: SWT:WINNT - TreeEditor created too far left
-</blockquote>
+<br>1GCP2JE: SWT:WINNT - Exception collapsing the parent of an item with
+a TreeEditor open
+<br>1GCP11O: SWT:WINNT - TreeEditor created too far left</blockquote>
 
-<h1>IBM Eclipse Platform Release Notes<br>SWT</h1>
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 074 - Tuesday April 24, 2001
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GCGDPB: SWT:Linux - Table column resize
+<blockquote>1GCGDPB: SWT:Linux - Table column resize
 <br>1GCGA89: SWT:ALL - CLabel tool tip does not always update properly
 <br>1GCG3O2: SWT:WIN - NullPointerException when closing window
-<br>1GCG1TY: SWT:WIN2000 - Label.setImage(null) doesn't work and background does not show through
+<br>1GCG1TY: SWT:WIN2000 - Label.setImage(null) doesn't work and background
+does not show through
 <br>1GCFUMC: SWT:ALL - CTabFolder X button not centered
 <br>1GBZEZ2: SWT:ALL - CTabItem is not showing tool tip.
 <br>1FVEUN9: SWT:Linux - Expand all problems operation in LF is slow
-<br>1FMRW6Q: SWT:UNIX - Tree/Table don't repaint on setForeground()
-</blockquote>
+<br>1FMRW6Q: SWT:UNIX - Tree/Table don't repaint on setForeground()</blockquote>
 
-<h1>IBM Eclipse Platform Release Notes<br>SWT</h1>
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 073 - Thursday April 19, 2001
+<h2>
+<a NAME="What's new"></a>What's new in this drop</h2>
 
-<h2><a NAME="What's new"></a>What's new in this drop</h2>
-
-<h3><a NAME="Behaviour Changes"></a>Behaviour Changes</h3>
-<ul>
-<li>FocusIn and FocusOut events sent for OleControlSite and OleClientSite
-</ul>
-
-<h3><a NAME="API Changes"></a>API Changes</h3>
+<h3>
+<a NAME="Behaviour Changes"></a>Behaviour Changes</h3>
 
 <ul>
-<li>Support for the following system colors has been added:
-	<ul>
-	<li>SWT.COLOR_TITLE_FOREGROUND
-	<li>SWT.COLOR_TITLE_BACKGROUND
-	<li>SWT.COLOR_TITLE_BACKGROUND_GRADIENT
-	<li>SWT.COLOR_TITLE_INACTIVE_FOREGROUND
-	<li>SWT.COLOR_TITLE_INACTIVE_BACKGROUND
-	<li>SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT
-	</ul>
-<li>CTabFolder.setInsertMark(int index, boolean after) added
-<li>CTabFolder.setInsertMark(CTabItem item, boolean after) added
-<li>CTabFolder.setSelectionForeground(Color color) added
-<li>CTabFolder.setBackground(Image image) deprecated - use CTabFolder.setSelectionBackground(Image image)
-<li>CTabFolder.setBackground(Color[] colors, int[] percents) deprecated - use CTabFolder.setSelectionBackground(Color[] colors, int[] percents)
+<li>
+FocusIn and FocusOut events sent for OleControlSite and OleClientSite</li>
 </ul>
 
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GCC93K: SWT:ALL - Should SWT be issuing selection event when tab item added?
+<h3>
+<a NAME="API Changes"></a>API Changes</h3>
+
+<ul>
+<li>
+Support for the following system colors has been added:</li>
+
+<ul>
+<li>
+SWT.COLOR_TITLE_FOREGROUND</li>
+
+<li>
+SWT.COLOR_TITLE_BACKGROUND</li>
+
+<li>
+SWT.COLOR_TITLE_BACKGROUND_GRADIENT</li>
+
+<li>
+SWT.COLOR_TITLE_INACTIVE_FOREGROUND</li>
+
+<li>
+SWT.COLOR_TITLE_INACTIVE_BACKGROUND</li>
+
+<li>
+SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT</li>
+</ul>
+
+<li>
+CTabFolder.setInsertMark(int index, boolean after) added</li>
+
+<li>
+CTabFolder.setInsertMark(CTabItem item, boolean after) added</li>
+
+<li>
+CTabFolder.setSelectionForeground(Color color) added</li>
+
+<li>
+CTabFolder.setBackground(Image image) deprecated - use CTabFolder.setSelectionBackground(Image
+image)</li>
+
+<li>
+CTabFolder.setBackground(Color[] colors, int[] percents) deprecated - use
+CTabFolder.setSelectionBackground(Color[] colors, int[] percents)</li>
+</ul>
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>1GCC93K: SWT:ALL - Should SWT be issuing selection event when
+tab item added?
 <br>1GCC7G8: SWT:Linux - scrolled to far left when opening CTabFolder
-<br>1GCALVS: SWT:WIN - Button.computeSize() not correct for radio buttons w/ 48 point font
+<br>1GCALVS: SWT:WIN - Button.computeSize() not correct for radio buttons
+w/ 48 point font
 <br>1GC3YIG: SWT:WIN - FileDialog chooses a bogus initial filterExtension
-<br>1GBPOYG: ITPJUI:WIN2000 - Editor tabs are changing size when switching between different tabs
+<br>1GBPOYG: ITPJUI:WIN2000 - Editor tabs are changing size when switching
+between different tabs
 <br>1GB2373: SWT:WINNT - Menu help callback: widget is destroyed
-<br>1GAW5MX: SWT:WINNT - Shell calls saveFocus after firing deactivate event
+<br>1GAW5MX: SWT:WINNT - Shell calls saveFocus after firing deactivate
+event
 <br>1G9X2Z4: SWT:WINNT - GIF transparent color not transparent
 <br>1G3ESH6: SWT:ALL - GIFs with transparency problems
-<br>1G0V4WM: J9JCL:WINNT - Transparency index vs Transparency color...
-</blockquote>
+<br>1G0V4WM: J9JCL:WINNT - Transparency index vs Transparency color...</blockquote>
 
-<h1>IBM Eclipse Platform Release Notes<br>SWT</h1>
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 072 - Tuesday April 17, 2001
+<h2>
+<a NAME="What's new"></a>What's new in this drop</h2>
 
-<h2><a NAME="What's new"></a>What's new in this drop</h2>
-<h3><a NAME="API Changes"></a>API Changes</h3>
+<h3>
+<a NAME="API Changes"></a>API Changes</h3>
 
 <ul>
-<li>CLabel.setBackground(Image image) added
-<li>CTabFolder.setBackground(Image image) added
+<li>
+CLabel.setBackground(Image image) added</li>
+
+<li>
+CTabFolder.setBackground(Image image) added</li>
 </ul>
 
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-<blockquote>
-1GCA2T3: SWT:WINNT - Program.getImageData() has NumberFormatException
-<br>1GAJCZU: ITPJUI:WINNT - segmented viewer toolbar icon shows up in random places
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>1GCA2T3: SWT:WINNT - Program.getImageData() has NumberFormatException
+<br>1GAJCZU: ITPJUI:WINNT - segmented viewer toolbar icon shows up in random
+places
 <br>1GBPGMO: ITPJUI:WINNT - Create package toolbar icon is wrong
 <br>1GBXHID: SWT:Linux - NullPointerException disposing Color
-<br>1GC1AEN: SWT:Linux - Walkback during shutdown on linux
-</blockquote>
+<br>1GC1AEN: SWT:Linux - Walkback during shutdown on linux</blockquote>
 
-<h1>IBM Eclipse Platform Release Notes<br>SWT</h1>
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 071 - Thursday April 12, 2001
+<h2>
+<a NAME="What's new"></a>What's new in this drop</h2>
 
-<h2><a NAME="What's new"></a>What's new in this drop</h2>
-<h3><a NAME="API Changes"></a>API Changes</h3>
+<h3>
+<a NAME="API Changes"></a>API Changes</h3>
 
 <ul>
-<li> Tracker.open() now returns a boolean - false when tracking cancelled.
-<li> added Display.getSyncThread() for core
+<li>
+Tracker.open() now returns a boolean - false when tracking cancelled.</li>
+
+<li>
+added Display.getSyncThread() for core</li>
 </ul>
 
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 
-<blockquote>
-1GC182H: SWT:Neutrino - Bug in error checking in GC.drawImage()
+<blockquote>1GC182H: SWT:Neutrino - Bug in error checking in GC.drawImage()
 <br>1GBXGV0: SWT:ALL - DCR: No api on Tracker to know escape key pressed
 <br>1GBRRGA: SWT:WIN2000 - TableTree: Mouse selection on text toggles checkbox
 <br>1GBPLGT: ITPJUI:WINNT - Can't enter umlauts in JavaEditor
 <br>1GBPI4O: SWT:WIN2000 - Losing close box of Editor
 <br>1GBOC3W: SWT:Linux - Problem with Mask when drawing on image
-<br>1GBADIS: SWT:ALL - minimumSize gives wrong size in Composite which result in wrong behavior of calculateSize() and pack()
+<br>1GBADIS: SWT:ALL - minimumSize gives wrong size in Composite which
+result in wrong behavior of calculateSize() and pack()
 <br>1GALCDN: SWT:WIN98 - GC keeps line width set at 0
 <br>1G97CWG: SWT:Linux - Wiggly mouse
-<br>1G82MBI: IVJIDT:WIN98 - GPF (repeatable) - 3.5.3 - when terminating running java code - editing running code
-</blockquote>
+<br>1G82MBI: IVJIDT:WIN98 - GPF (repeatable) - 3.5.3 - when terminating
+running java code - editing running code</blockquote>
 
-<h1>IBM Eclipse Platform Release Notes<br>SWT</h1>
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 070 - Tuesday April 10, 2001
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-
-<blockquote>
-1GBR8U9: SWT:WIN2000 - SashForm.setMaximizedControl problem
+<blockquote>1GBR8U9: SWT:WIN2000 - SashForm.setMaximizedControl problem
 <br>1GBQ145: SWT:WIN2000 - broken implementation of ViewForm.layout
 <br>1GBM11E: SWT:WIN2000 - ViewForm border problems
 <br>1GBR6XI: SWT:WIN2000 - SashForm overrides wrong layout method
-<br>1GBRCNC: SWT:WIN2000 - Layout problems with SashForm & ViewForm
-<br>1G98NJQ: ITPJUI:WIN2000 - Outliner context menu disappears after empty selection
+<br>1GBRCNC: SWT:WIN2000 - Layout problems with SashForm &amp; ViewForm
+<br>1G98NJQ: ITPJUI:WIN2000 - Outliner context menu disappears after empty
+selection
 <br>1GBM8SZ: SWT:WIN2000 - SashForm doesn't work in wizard pages
 <br>1GBKSNP: SWT:Linux - Control.setForeground does not redraw control
 <br>1GBLZDR: SWT:WIN2000 - Label text moves up when pane titlebar splits
 <br>1GBPPLT: ITPJUI:WIN2000 - Strange line spacing in Java Editor
 <br>1GBQ54Q: SWT:Linux - MenuItems are not added in the right position.
 <br>1GBRBTY: SWT:WIN2000 - SashForm clips bottom most control by one pixel
-<br>1GBRC0V: SWT:WIN2000 - ViewForm renders a "title bar" also none of the top controls are set
+<br>1GBRC0V: SWT:WIN2000 - ViewForm renders a "title bar" also none of
+the top controls are set
 <br>1GBRCGL: SWT:WIN2000 - Animated Progress shows up with slider in ProgressDialog
-<br>1GBX8G1: SWT:Neutrino - Default font support doesn't capture style, height
-<br>1GBX8LN: SWT:WIN2000 - Tree.getSelection() iterates over all items twice if selection is empty
-</blockquote>
-
-<h1>IBM Eclipse Platform Release Notes<br>SWT</h1>
-SWT Build 069 - Thursday April 5, 2001
-
-<h2><a NAME="What's new"></a>What's new in this drop</h2>
-<h3><a NAME="API Changes"></a>API Changes</h3>
-<ul>
-<li>The class RichText has been removed.  
-Use com.ibm.swt.custom.StyledText instead.
-
-<li>
-The class com.ibm.itp.os.ProgramSupport has been deprecated because 
-it was a random assortment of helper methods some of which Windows 
-specific and could not be implemented on other platforms.
-The functionality has been redistributed as follows:
-<ul>
-<li>ProgramSupport.getWindowSystem - use SWT.getPlatform
-<li>ProgramSupport.isReparentable - use Control.isReparentable
-<li>ProgramSupport.print - RichText no longer exists
-<li>ProgramSupport.getFriendlyName - not used
-<li>ProgramSupport.loadLargeIcon - not used
-<li>ProgramSupport.loadSmallIcon - use Program.getImageData
-<li>ProgramSupport.queryExtension - use Program.findProgram
-<li>ProgramSupport.queryExtensionIcon - use Program.getImageData
-<li>ProgramSupport.queryExtensionProgramID - use OLE.findProgramID
-<li>ProgramSupport.queryInsertables - not used
-<li>ProgramSupport.queryRegisteredPrograms - use Program.getPrograms
-<li>ProgramSupport.shellExecute - use Program.launch
-</ul>
-
-<li>OleClientSite.containsOleInfo has been deprecated - use OLE.isOleFile
-
-<li>The methods Control.isValidWidget, Widget.isValidWidget and Menu.isValidWidget have been removed.
-
-</ul>
-
-<h2>
-<a NAME="Known deficiencies"></a>Known deficiencies</h2>
-
-<ul>
-<li>
-The support for running Swing and AWT widgets within SWT layouts only works
-on Windows. There are currently significant incompatibilities between the
-way AWT and SWT deal with Motif. There is no workaround at this time.</li>
-
-<li>
-TableEditors are not notified when the cell they are editing changes its
-dimensions. This can cause them to look odd when the underlying table (or
-one of its columns) is resized while they are open. This occurs on both
-Windows and Linux. In addition, because of the way XWindows handles child
-widgets, it is possible for TableEditors to lose focus on Linux in situations
-where they do not on Windows. Simply clicking on the TableEditor again,
-will return focus to it.</li>
-</ul>
-
-<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
-
-<blockquote>
-1GBLZLL: SWT:WINNT - NegativeArraySizeException in SashForm
-<br>1GBKN67: SWT:WINNT - StyledText - paste replacing text does not show new text
-<br>1GBKERA: SWT:ALL - Typo in BusyIndicator.showWhile - 'Dusplay'
-<br>1GBKCLF: SWT:WINNT - StyledText - IllegalArgumentException in DefaultContent.getLine
-<br>1GBF77D: SWT:WINNT - getFontData().getHeight() discrepancy
-<br>1GBF74Z: SWT:ALL - CLabel::onPaint exception
-<br>1GBEI94: ITPUI:WIN2000 - Walkback in AnimatedProgress
-<br>1GBD9LZ: SWT:ALL - CTabFolder exception using scroll arrows
-<br>1GBD356: SWT:ALL - TabItem.setControl(null) throws NullPointerException
-<br>1GB9GZD: SWT:Linux - Motif - Color depth scaling
-<br>1FT97NJ: SWT:Linux - Tree/Table turns item grey when focus lost
-</blockquote>
+<br>1GBX8G1: SWT:Neutrino - Default font support doesn't capture style,
+height
+<br>1GBX8LN: SWT:WIN2000 - Tree.getSelection() iterates over all items
+twice if selection is empty</blockquote>
 
 <h1>
-IBM Eclipse Platform Release Notes<br>
+Eclipse Platform Build Notes<br>
 SWT</h1>
-SWT Build 063 through SWT Build 068 - Thursday March 29, 2001
-
+SWT Build 069 - Thursday April 5, 2001
 <h2>
 <a NAME="What's new"></a>What's new in this drop</h2>
 
-<h3><a NAME="New Classes"></a>New Classes</h3>
-<ul>
-<li><b>SashForm</b>  The SashForm lays out its children in a Row or Column arrangement (as specified
-by the orientation) and places a Sash between the children.
-One child may be maximized to occupy the entire size of the SashForm.
-The relative sizes of the children may be specfied using weights.
-
-<li><b>StackLayout</b> This Layout stacks all the controls one on top of the other and resizes all controls
-to have the same size and location.  The control specified in topControl is visible and all other controls 
-are not visible. Users must set the topControl value to flip between the visible items and the call 
-layout() on the composite which has the StackLayout.
-</ul>
-
 <h3>
 <a NAME="API Changes"></a>API Changes</h3>
-<li>Widget.notifyListener deleted - Use Widget.notifyListeners
-<li>SelectionAdapter.widgetDoubleSelected deleted - Use SelectionAdapter.widgetDefaultSelected instead
-<li>SelectionListener.widgetDoubleSelected deleted - Use SelectionListener.widgetDefaultSelected instead
-<li>SWT.DoubleSelection deleted - Use SWT.DefaultSelection instead.
-<li>WidgetListener deleted - Use DisposeListener instead.
-<li>Widget.addWidgetListener deleted - Use Widget.addDisposeListener instead.
-<li>Widget.removeWidgetListener deleted - Use Widget.removeDisposeListener instead
-<li>SWT.ERROR_NO_COMMON_PARENT deleted 
-<li>Clipboard.Clipboard() deleted - Use Clipboard.Clipboard(Display) instead
-<li>DragSource.startDrag() deleted - Use DragSourceListener.dragStart instead
-<li>GridLayout.id deleted 
-<li>ImageData.DM_UNSPECIFIED deleted 
-<li>ImageData.DM_FILL_NONE deleted 
-<li>ImageData.DM_FILL_BACKGROUND deleted 
-<li>ImageData.DM_FILL_PREVIOUS deleted 
-<li>ImageData.isIcon() deleted 
-<li>com.ibm.swt.custom.CustomLabel deleted - Use CLabel instead
-<li>com.ibm.swt.custom.CustomPane deleted - Use ViewForm instead
-<li>com.ibm.swt.custom.ScrollingComposite deleted - Use ScrolledComposite instead
-</ul>
-
-<p><b>***NOTE***</b> There has been some renaming of Interface methods, which will unavoidably
-break code while the rename is being done. In order to make it easier for
-yourself before we rename next week, you might want to do the rename in
-your copy of SWT after you get tomorrow's drop, and fix all breakage immediately.
-<br><b>***NOTE2***</b> in general, you always want to try to use an Adapter
-(when one exists) instead of implementing the corresponding Listener.
-This will insulate you from changes to the interface. Also, we have
-seen cases where an SWT event Listener interface is being implemented
-by a public class. This not only exposes your public class to interface
-changes, but it also forces your public class to bogusly provide the
-SWT Listener interface's methods as your public API. <em>Don't do that.</em>
-
-<h3>
-<a NAME="Styled Text changes"></a>Styled Text changes</h3>
 
 <ul>
-<li>StyledText
-<br>
-For those who are implementing StyledTextContent,
-the constructor for the TextChangedEvent class has changed.
-The TextChangedEvent() constructor no longer exists.
-Use the TextChangedEvent(StyledTextContent source) constructor instead.
-<b>NOTE:</b> The parameter to this constructor cannot be null.
-</ul>
+<li>
+The class RichText has been removed. Use com.ibm.swt.custom.StyledText
+instead.</li>
 
-<p><b>These StyledText methods have been renamed:</b>
-<ul>
-<li>StyledText.getSelection() ==> use getSelectionRange() instead
-<li>StyledText.getText(int start, int length) ==> use getTextRange(int,int) instead
-<li>StyledTextContent.getText(int start, int length) ==> use getTextRange(int,int) instead
-<li>StyledText.redraw(int,int,boolean) ==> use redrawRange(int,int,boolean) instead
-<li>StyledText.replace(int start, int length) ==> use replaceTextRange(int,int) instead
-<li>StyledTextContent.replaceText(int start, int length) ==> use replaceTextRange(int,int) instead
-<li>StyledText.setSelection(int start, int length) ==> use setSelectionRange(int,int) instead
-</ul>
-
-<p><b>These methods have been introduced to maintain SWT API consistency.</b>
-<p>StyledText selection methods used to take (int start, int length) and now the parameters are (int start, int end).
-<p><b> WARNING</b>These names are the same as the old names, BUT the semantics have changed.  
-Also note that in the case of setSelection(start,end) the behavior has also changed to be consistent with
-SWT (the selection is made visible):
-<ul>
-<li>StyledText.getSelection() ==> returns Point(start,end)
-<li>StyledText.getText(int start, int end)
-<li>StyledText.setSelection(int start, int end)
-</ul>
-
-<p>The compiler is not going to point these changes out automatically.
-You can decide whether to use the new "selection range" API with (start, length) semantics,
-or stick with the old method names and change your calling semantics to (start, end).
-We suggest you use the following trick to get the compiler to help you make the changes:
-<ol>
-<li>Make sure you have SWT 0.067 loaded.
-<li>Rename the 3 StyledText methods, getSelection, getText, and setSelection, to getSelection2, 
-    getText2, and setSelection2.
-<li>You will now have red x's everywhere you called those methods.
-<li>Make the changes (either change to call getSelectionRange/getTextRange/setSelectionRange, 
-    or change to use "start, end").
-<li>Replace the 3 StyledText methods with the released version.
-</ol>
-
-<p><b>These deprecated methods have been removed from StyledText:</b>
-<ul>
-<li>StyledText.getCaretLineNumber()
-<li>StyledText.getCaretLocation()
-<li>StyledText.getCaretPosition()
-<li>StyledText.getDelimiter()
-<li>StyledText.getDoubleClick()
-<li>StyledText.setDoubleClick(boolean)
-<li>StyledText.setSelectionForeground (Color color)
-<li>StyledText.setSelectionVisible(boolean visible)
-<li>StyledText.setText(String string, Color colors [], int [] ranges)
-</ul>
-
-<p><b>These deprecated methods have been undeprecated:</b>
-<ul>
-<li>StyledText.append (String string)
-<li>StyledText.insert (String string)
-<li>StyledText.getLineCount ()
-<li>StyledText.selectAll()
-<li>StyledText.getSelectionCount()
-<li>StyledText.setSelection (int start)
-<li>StyledText.setSelection(Point point)
-</ul>
-
-<p>The method invokeAction(int) is now public.  You may use this method to support special key 
-binding needs like multi-keystroke bindings or macro recording/playback.
-
-<h3>
-<a NAME="Other highlights"></a>Other highlights</h3>
+<li>
+The class com.ibm.itp.os.ProgramSupport has been deprecated because it
+was a random assortment of helper methods some of which Windows specific
+and could not be implemented on other platforms. The functionality has
+been redistributed as follows:</li>
 
 <ul>
-<li> The ability to set a Disabled image for use in the Toolbar has been added.
-<li> The ability to create a new gray scale image from a color image has been added.
-<pre>
-	Image grayImage = new Image(getDisplay(), colorImage, SWT.IMAGE_GRAY) 
-</pre>
+<li>
+ProgramSupport.getWindowSystem - use SWT.getPlatform</li>
+
+<li>
+ProgramSupport.isReparentable - use Control.isReparentable</li>
+
+<li>
+ProgramSupport.print - RichText no longer exists</li>
+
+<li>
+ProgramSupport.getFriendlyName - not used</li>
+
+<li>
+ProgramSupport.loadLargeIcon - not used</li>
+
+<li>
+ProgramSupport.loadSmallIcon - use Program.getImageData</li>
+
+<li>
+ProgramSupport.queryExtension - use Program.findProgram</li>
+
+<li>
+ProgramSupport.queryExtensionIcon - use Program.getImageData</li>
+
+<li>
+ProgramSupport.queryExtensionProgramID - use OLE.findProgramID</li>
+
+<li>
+ProgramSupport.queryInsertables - not used</li>
+
+<li>
+ProgramSupport.queryRegisteredPrograms - use Program.getPrograms</li>
+
+<li>
+ProgramSupport.shellExecute - use Program.launch</li>
+</ul>
+
+<li>
+OleClientSite.containsOleInfo has been deprecated - use OLE.isOleFile</li>
+
+<li>
+The methods Control.isValidWidget, Widget.isValidWidget and Menu.isValidWidget
+have been removed.</li>
 </ul>
 
 <h2>
@@ -707,7 +697,292 @@ will return focus to it.</li>
 <h2>
 <a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 
-<blockquote>
+<blockquote>1GBLZLL: SWT:WINNT - NegativeArraySizeException in SashForm
+<br>1GBKN67: SWT:WINNT - StyledText - paste replacing text does not show
+new text
+<br>1GBKERA: SWT:ALL - Typo in BusyIndicator.showWhile - 'Dusplay'
+<br>1GBKCLF: SWT:WINNT - StyledText - IllegalArgumentException in DefaultContent.getLine
+<br>1GBF77D: SWT:WINNT - getFontData().getHeight() discrepancy
+<br>1GBF74Z: SWT:ALL - CLabel::onPaint exception
+<br>1GBEI94: ITPUI:WIN2000 - Walkback in AnimatedProgress
+<br>1GBD9LZ: SWT:ALL - CTabFolder exception using scroll arrows
+<br>1GBD356: SWT:ALL - TabItem.setControl(null) throws NullPointerException
+<br>1GB9GZD: SWT:Linux - Motif - Color depth scaling
+<br>1FT97NJ: SWT:Linux - Tree/Table turns item grey when focus lost</blockquote>
+
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
+SWT Build 063 through SWT Build 068 - Thursday March 29, 2001
+<h2>
+<a NAME="What's new"></a>What's new in this drop</h2>
+
+<h3>
+<a NAME="New Classes"></a>New Classes</h3>
+
+<ul>
+<li>
+<b>SashForm</b> The SashForm lays out its children in a Row or Column arrangement
+(as specified by the orientation) and places a Sash between the children.
+One child may be maximized to occupy the entire size of the SashForm. The
+relative sizes of the children may be specfied using weights.</li>
+
+<li>
+<b>StackLayout</b> This Layout stacks all the controls one on top of the
+other and resizes all controls to have the same size and location. The
+control specified in topControl is visible and all other controls are not
+visible. Users must set the topControl value to flip between the visible
+items and the call layout() on the composite which has the StackLayout.</li>
+</ul>
+
+<h3>
+<a NAME="API Changes"></a>API Changes</h3>
+
+<li>
+Widget.notifyListener deleted - Use Widget.notifyListeners</li>
+
+<li>
+SelectionAdapter.widgetDoubleSelected deleted - Use SelectionAdapter.widgetDefaultSelected
+instead</li>
+
+<li>
+SelectionListener.widgetDoubleSelected deleted - Use SelectionListener.widgetDefaultSelected
+instead</li>
+
+<li>
+SWT.DoubleSelection deleted - Use SWT.DefaultSelection instead.</li>
+
+<li>
+WidgetListener deleted - Use DisposeListener instead.</li>
+
+<li>
+Widget.addWidgetListener deleted - Use Widget.addDisposeListener instead.</li>
+
+<li>
+Widget.removeWidgetListener deleted - Use Widget.removeDisposeListener
+instead</li>
+
+<li>
+SWT.ERROR_NO_COMMON_PARENT deleted</li>
+
+<li>
+Clipboard.Clipboard() deleted - Use Clipboard.Clipboard(Display) instead</li>
+
+<li>
+DragSource.startDrag() deleted - Use DragSourceListener.dragStart instead</li>
+
+<li>
+GridLayout.id deleted</li>
+
+<li>
+ImageData.DM_UNSPECIFIED deleted</li>
+
+<li>
+ImageData.DM_FILL_NONE deleted</li>
+
+<li>
+ImageData.DM_FILL_BACKGROUND deleted</li>
+
+<li>
+ImageData.DM_FILL_PREVIOUS deleted</li>
+
+<li>
+ImageData.isIcon() deleted</li>
+
+<li>
+com.ibm.swt.custom.CustomLabel deleted - Use CLabel instead</li>
+
+<li>
+com.ibm.swt.custom.CustomPane deleted - Use ViewForm instead</li>
+
+<li>
+com.ibm.swt.custom.ScrollingComposite deleted - Use ScrolledComposite instead</li>
+
+<p><br><b>***NOTE***</b> There has been some renaming of Interface methods,
+which will unavoidably break code while the rename is being done. In order
+to make it easier for yourself before we rename next week, you might want
+to do the rename in your copy of SWT after you get tomorrow's drop, and
+fix all breakage immediately.
+<br><b>***NOTE2***</b> in general, you always want to try to use an Adapter
+(when one exists) instead of implementing the corresponding Listener. This
+will insulate you from changes to the interface. Also, we have seen cases
+where an SWT event Listener interface is being implemented by a public
+class. This not only exposes your public class to interface changes, but
+it also forces your public class to bogusly provide the SWT Listener interface's
+methods as your public API. <i>Don't do that.</i>
+<h3>
+<a NAME="Styled Text changes"></a>Styled Text changes</h3>
+
+<ul>
+<li>
+StyledText</li>
+
+<br>For those who are implementing StyledTextContent, the constructor for
+the TextChangedEvent class has changed. The TextChangedEvent() constructor
+no longer exists. Use the TextChangedEvent(StyledTextContent source) constructor
+instead.
+<b>NOTE:</b> The parameter to this constructor cannot be null.</ul>
+<b>These StyledText methods have been renamed:</b>
+<ul>
+<li>
+StyledText.getSelection() ==> use getSelectionRange() instead</li>
+
+<li>
+StyledText.getText(int start, int length) ==> use getTextRange(int,int)
+instead</li>
+
+<li>
+StyledTextContent.getText(int start, int length) ==> use getTextRange(int,int)
+instead</li>
+
+<li>
+StyledText.redraw(int,int,boolean) ==> use redrawRange(int,int,boolean)
+instead</li>
+
+<li>
+StyledText.replace(int start, int length) ==> use replaceTextRange(int,int)
+instead</li>
+
+<li>
+StyledTextContent.replaceText(int start, int length) ==> use replaceTextRange(int,int)
+instead</li>
+
+<li>
+StyledText.setSelection(int start, int length) ==> use setSelectionRange(int,int)
+instead</li>
+</ul>
+<b>These methods have been introduced to maintain SWT API consistency.</b>
+<p>StyledText selection methods used to take (int start, int length) and
+now the parameters are (int start, int end).
+<p><b>WARNING</b>These names are the same as the old names, BUT the semantics
+have changed. Also note that in the case of setSelection(start,end) the
+behavior has also changed to be consistent with SWT (the selection is made
+visible):
+<ul>
+<li>
+StyledText.getSelection() ==> returns Point(start,end)</li>
+
+<li>
+StyledText.getText(int start, int end)</li>
+
+<li>
+StyledText.setSelection(int start, int end)</li>
+</ul>
+The compiler is not going to point these changes out automatically. You
+can decide whether to use the new "selection range" API with (start, length)
+semantics, or stick with the old method names and change your calling semantics
+to (start, end). We suggest you use the following trick to get the compiler
+to help you make the changes:
+<ol>
+<li>
+Make sure you have SWT 0.067 loaded.</li>
+
+<li>
+Rename the 3 StyledText methods, getSelection, getText, and setSelection,
+to getSelection2, getText2, and setSelection2.</li>
+
+<li>
+You will now have red x's everywhere you called those methods.</li>
+
+<li>
+Make the changes (either change to call getSelectionRange/getTextRange/setSelectionRange,
+or change to use "start, end").</li>
+
+<li>
+Replace the 3 StyledText methods with the released version.</li>
+</ol>
+<b>These deprecated methods have been removed from StyledText:</b>
+<ul>
+<li>
+StyledText.getCaretLineNumber()</li>
+
+<li>
+StyledText.getCaretLocation()</li>
+
+<li>
+StyledText.getCaretPosition()</li>
+
+<li>
+StyledText.getDelimiter()</li>
+
+<li>
+StyledText.getDoubleClick()</li>
+
+<li>
+StyledText.setDoubleClick(boolean)</li>
+
+<li>
+StyledText.setSelectionForeground (Color color)</li>
+
+<li>
+StyledText.setSelectionVisible(boolean visible)</li>
+
+<li>
+StyledText.setText(String string, Color colors [], int [] ranges)</li>
+</ul>
+<b>These deprecated methods have been undeprecated:</b>
+<ul>
+<li>
+StyledText.append (String string)</li>
+
+<li>
+StyledText.insert (String string)</li>
+
+<li>
+StyledText.getLineCount ()</li>
+
+<li>
+StyledText.selectAll()</li>
+
+<li>
+StyledText.getSelectionCount()</li>
+
+<li>
+StyledText.setSelection (int start)</li>
+
+<li>
+StyledText.setSelection(Point point)</li>
+</ul>
+The method invokeAction(int) is now public. You may use this method to
+support special key binding needs like multi-keystroke bindings or macro
+recording/playback.
+<h3>
+<a NAME="Other highlights"></a>Other highlights</h3>
+
+<ul>
+<li>
+The ability to set a Disabled image for use in the Toolbar has been added.</li>
+
+<li>
+The ability to create a new gray scale image from a color image has been
+added.</li>
+
+<pre>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Image grayImage = new Image(getDisplay(), colorImage, SWT.IMAGE_GRAY)</pre>
+</ul>
+
+<h2>
+<a NAME="Known deficiencies"></a>Known deficiencies</h2>
+
+<ul>
+<li>
+The support for running Swing and AWT widgets within SWT layouts only works
+on Windows. There are currently significant incompatibilities between the
+way AWT and SWT deal with Motif. There is no workaround at this time.</li>
+
+<li>
+TableEditors are not notified when the cell they are editing changes its
+dimensions. This can cause them to look odd when the underlying table (or
+one of its columns) is resized while they are open. This occurs on both
+Windows and Linux. In addition, because of the way XWindows handles child
+widgets, it is possible for TableEditors to lose focus on Linux in situations
+where they do not on Windows. Simply clicking on the TableEditor again,
+will return focus to it.</li>
+</ul>
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>&nbsp;
 <br><b>In 68:</b>
 <br>1GBCTBY: SWT:ALL - DCR: Make 3 border rgb color public
 <br>1GBCSHG: SWT:WIN2000 - TableTree should have getItem(Point point)
@@ -718,65 +993,73 @@ will return focus to it.</li>
 <br>1GAWIAP: SWT:WINNT - StyledText - key bindings - make doAction() public
 <br>1GAVQGI: SWT:ALL - Migrate remaining JFace widgets
 <br>1GAVQA6: SWT:ALL - Notebook custom widget
-<br>1GAJ9KP: SWT:ALL - TableTree class has no selection support for the SWT.CHECK style
+<br>1GAJ9KP: SWT:ALL - TableTree class has no selection support for the
+SWT.CHECK style
 <br>1G5T37N: SWT:Linux - Table repaints excessively
-
-<br>
-<br>
-<br><b>In 67:</b>
-<br>1GB1VFN: SWT:Neutrino - Cannot "swipe select" text in Text (SINGLE style)
-<br>1GB0DAQ: SWT:Neutrino - Calling getText() on a Button of style CHECK causes an exception
+<br>&nbsp;
+<p><b>In 67:</b>
+<br>1GB1VFN: SWT:Neutrino - Cannot "swipe select" text in Text (SINGLE
+style)
+<br>1GB0DAQ: SWT:Neutrino - Calling getText() on a Button of style CHECK
+causes an exception
 <br>1GAZU5I: SWT:ALL - TableTree - order of items is wrong when first opened
-<br>1GAXJIG: SWT:WIN2000 - Why does the new BusyIndiocator need a display passed in
+<br>1GAXJIG: SWT:WIN2000 - Why does the new BusyIndiocator need a display
+passed in
 <br>1GAUU7N: SWT:ALL - StyledText - SWT API Compliance
 <br>1GAU7AO: SWT:ALL - Increase max VTable size
 <br>1GAQREA: SWT:ALL - DOC: Using SWT Layouts
 <br>1GAPCPB: SWT:ALL - StyledText: last line slurs when scrolling
 <br>1GAP7II: SWT:ALL - DCR - CTabItem visual enhancements
-<br>1G6ZJXO: SWT:WINNT - Changing the visibility of a Splitter's child doesn't work
-<br>1G54RZE: SWT:WINNT - GC.drawImage(Image, int, int)  too slow
+<br>1G6ZJXO: SWT:WINNT - Changing the visibility of a Splitter's child
+doesn't work
+<br>1G54RZE: SWT:WINNT - GC.drawImage(Image, int, int) too slow
 <br>1G0I960: SWT:WINNT - GC.drawImage newing Objects, could be much faster
-
-<br>
-<br>
-<br><b>In 66:</b>
-<br>1GAX9NB: SWT:Neutrino - Combo dropdown erased when MouseEnter/Exit hooked on Container
+<br>&nbsp;
+<p><b>In 66:</b>
+<br>1GAX9NB: SWT:Neutrino - Combo dropdown erased when MouseEnter/Exit
+hooked on Container
 <br>1GAWHN7: SWT:WIN2000 - computeSize on toolbar makes it Visible
 <br>1GAW64X: SWT:WIN2000 - Most setters of ViewForm are broken
-<br>1GAUR6V: SWT:WIN - "Hot Images in ToolBar" does not work if items are disabled
-<br>1GAPCG7: SWT:ALL - StyledText: inefficiencies when redrawing multiple lines
+<br>1GAUR6V: SWT:WIN - "Hot Images in ToolBar" does not work if items are
+disabled
+<br>1GAPCG7: SWT:ALL - StyledText: inefficiencies when redrawing multiple
+lines
 <br>1GAP46W: SWT:ALL - ViewForm activeBorder not always visible
 <br>1GAP36M: SWT:ALL - CLabel::setBackgroundGradient does not redraw
-<br>1G8VVLS: SWT:ALL - DCR: Need an API to get the color of a pixel at a point on the Desktop
+<br>1G8VVLS: SWT:ALL - DCR: Need an API to get the color of a pixel at
+a point on the Desktop
 <br>1G2O4LD: SWT:ALL - Need API to take a screen snapshot
-
-<br>
-<br>
-<br><b>In 65:</b>
+<br>&nbsp;
+<p><b>In 65:</b>
 <br>1GAUEK1: SWT:WIN2000 - Context menus get never removed from the shell
 <br>1GAP7DE: SWT:ALL - OLE editor go gray when deactivated
-<br>1GAP2VP: SWT:ALL - Background gradient api diff for CTabFolder & CLabel
-<br>1GAL0ES: SWT:WINNT - Menu item help callback does not occur until after menu is down
+<br>1GAP2VP: SWT:ALL - Background gradient api diff for CTabFolder &amp;
+CLabel
+<br>1GAL0ES: SWT:WINNT - Menu item help callback does not occur until after
+menu is down
 <br>1GAJBTA: ITPJUI:WINNT - walkback when editing java file
-<br>1GAJ9GX: SWT:ALL - combo box never receives an event for an "enter" key
+<br>1GAJ9GX: SWT:ALL - combo box never receives an event for an "enter"
+key
 <br>1G8IU7A: SWT:ALL - new alpha APIs on ImageData
 <br>1G8HBF8: SWT:Neutrino - Alpha problems with off-screen graphics
 <br>1G7YWTN: SWT:Neutrino - No KeyDown or KeyUp for multi-line text
-<br>1G7MIEJ: SWT:WINNT - notification of enter  & double click
+<br>1G7MIEJ: SWT:WINNT - notification of enter &amp; double click
 <br>1G7GHRM: SWT:WIN98 - prop sheet - second column does not fit
 <br>1G7EQ69: SWT:Neutrino - No KeyUp messages sent
 <br>1G55SCR: SWT:Neutrino - List.getItemHeight() completely bogus
-<br>1G54XZT: SWT:WINNT - Combo box - can't tell if someone hits <Enter>
-<br>1FT06EX: SWT:ALL - FileDialog.setFilterExtensions() does not properly degrade on non Windows platforms
-<br>1FSY6QR: SWT:WINNT - DCR - FileDialog API should better balance platform function vs. portability
-<br>1FMGL58: SWT:WIN - Single-line TextEditor does not send event when <Enter> is pressed
+<br>1G54XZT: SWT:WINNT - Combo box - can't tell if someone hits&nbsp;<Enter>
+<br>1FT06EX: SWT:ALL - FileDialog.setFilterExtensions() does not properly
+degrade on non Windows platforms
+<br>1FSY6QR: SWT:WINNT - DCR - FileDialog API should better balance platform
+function vs. portability
+<br>1FMGL58: SWT:WIN - Single-line TextEditor does not send event when&nbsp;<Enter>is
+pressed
 <br>1FBPLB5: SWT:ALL - List(SINGLE) - setSelection and selectAll inconsistent
-<br>1FBPKD9: SWT:WIN - List - selectAll() setSelection() inconsistancy when items repeat
+<br>1FBPKD9: SWT:WIN - List - selectAll() setSelection() inconsistancy
+when items repeat
 <br>1FBPKCY: SWT:WIN - List - inconsistent setSelection() behaviour
-
-<br>
-<br>
-<br><b>In 63:</b>
+<br>&nbsp;
+<p><b>In 63:</b>
 <br>1GABZR5: SWT:Linux - Table cheese when removing last column
 <br>1G9XBWB: SWT:ALL - DOC: Layout class still has Smalltalk-style comments
 <br>1G7PMZX: SWT:ALL - notifyListener should be called notifyListeners
@@ -784,8 +1067,9 @@ will return focus to it.</li>
 <br>1G4DGHG: SWT:Linux - Thumb drag scrolling causes cheese
 <br>1FZU2X2: SWT:ALL - Why is DisposeListener called "WidgetListener"?
 <br>1FVX5JS: SWT:WINNT - PaletteData.getPixel(RGB) needs to be fixed
-<br>1FT05NQ: SWT:ALL - DCR FileDialog.setFilterExtensions() doesn't support common Windows usage
-<br>1FCDRW0: SWT:AIX - TrackBar - setPageIncrement()
-</blockquote>
+<br>1FT05NQ: SWT:ALL - DCR FileDialog.setFilterExtensions() doesn't support
+common Windows usage
+<br>1FCDRW0: SWT:AIX - TrackBar - setPageIncrement()</blockquote>
+<a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
 </html>
