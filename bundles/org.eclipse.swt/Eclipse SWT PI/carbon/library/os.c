@@ -270,7 +270,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetSoftLineBreaks)
 	NATIVE_ENTER(env, that, "ATSUGetSoftLineBreaks\n")
 	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
 	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
-	rc = (jint)ATSUGetSoftLineBreaks((ATSUTextLayout)arg0, (UniCharArrayOffset)arg1, (UniCharCount)arg2, (ItemCount)arg3, (UniCharArrayOffset *)lparg4, (ItemCount *)lparg5);
+	rc = (jint)ATSUGetSoftLineBreaks((ATSUTextLayout)arg0, arg1, arg2, arg3, (UniCharArrayOffset *)lparg4, (ItemCount *)lparg5);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	NATIVE_EXIT(env, that, "ATSUGetSoftLineBreaks\n")
@@ -346,6 +346,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetRunStyle)
 	NATIVE_ENTER(env, that, "ATSUSetRunStyle\n")
 	rc = (jint)ATSUSetRunStyle((ATSUTextLayout)arg0, (ATSUStyle)arg1, (UniCharArrayOffset)arg2, (UniCharCount)arg3);
 	NATIVE_EXIT(env, that, "ATSUSetRunStyle\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUSetSoftLineBreak
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetSoftLineBreak)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUSetSoftLineBreak\n")
+	rc = (jint)ATSUSetSoftLineBreak((ATSUTextLayout)arg0, arg1);
+	NATIVE_EXIT(env, that, "ATSUSetSoftLineBreak\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUSetTabArray
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetTabArray)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUSetTabArray\n")
+	rc = (jint)ATSUSetTabArray((ATSUTextLayout)arg0, (const ATSUTab *)arg1, arg2);
+	NATIVE_EXIT(env, that, "ATSUSetTabArray\n")
 	return rc;
 }
 #endif
@@ -5605,6 +5629,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(LockPortBits)
 }
 #endif
 
+#ifndef NO_Long2Fix
+JNIEXPORT jint JNICALL OS_NATIVE(Long2Fix)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "Long2Fix\n")
+	rc = (jint)Long2Fix(arg0);
+	NATIVE_EXIT(env, that, "Long2Fix\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_MenuSelect
 JNIEXPORT jint JNICALL OS_NATIVE(MenuSelect)
 	(JNIEnv *env, jclass that, jobject arg0)
@@ -8318,16 +8354,15 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__III)
 }
 #endif
 
-#ifndef NO_memcpy__ILjava_lang_String_2I
-JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILjava_lang_String_2I)
+#ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_ATSUTab_2I
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_ATSUTab_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
-	const jchar *lparg1= NULL;
-	NATIVE_ENTER(env, that, "memcpy__ILjava_lang_String_2I\n")
-	if (arg1) lparg1 = (*env)->GetStringChars(env, arg1, NULL);
+	ATSUTab _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_ATSUTab_2I\n")
+	if (arg1) lparg1 = getATSUTabFields(env, arg1, &_arg1);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleaseStringChars(env, arg1, lparg1);
-	NATIVE_EXIT(env, that, "memcpy__ILjava_lang_String_2I\n")
+	NATIVE_EXIT(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_ATSUTab_2I\n")
 }
 #endif
 
@@ -8339,7 +8374,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_BitMa
 	NATIVE_ENTER(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_BitMap_2I\n")
 	if (arg1) lparg1 = getBitMapFields(env, arg1, &_arg1);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) setBitMapFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_BitMap_2I\n")
 }
 #endif
@@ -8352,7 +8386,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_Curso
 	NATIVE_ENTER(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_Cursor_2I\n")
 	if (arg1) lparg1 = getCursorFields(env, arg1, &_arg1);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) setCursorFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_Cursor_2I\n")
 }
 #endif
@@ -8365,7 +8398,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_Event
 	NATIVE_ENTER(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_EventRecord_2I\n")
 	if (arg1) lparg1 = getEventRecordFields(env, arg1, &_arg1);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) setEventRecordFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_EventRecord_2I\n")
 }
 #endif
@@ -8378,7 +8410,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_FontS
 	NATIVE_ENTER(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I\n")
 	if (arg1) lparg1 = getFontSelectionQDStyleFields(env, arg1, &_arg1);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) setFontSelectionQDStyleFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I\n")
 }
 #endif
@@ -8391,7 +8422,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_HMHel
 	NATIVE_ENTER(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_HMHelpContentRec_2I\n")
 	if (arg1) lparg1 = getHMHelpContentRecFields(env, arg1, &_arg1);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) setHMHelpContentRecFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_HMHelpContentRec_2I\n")
 }
 #endif
@@ -8404,7 +8434,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_PixMa
 	NATIVE_ENTER(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_PixMap_2I\n")
 	if (arg1) lparg1 = getPixMapFields(env, arg1, &_arg1);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) setPixMapFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_PixMap_2I\n")
 }
 #endif
@@ -8417,7 +8446,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_RGBCo
 	NATIVE_ENTER(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_RGBColor_2I\n")
 	if (arg1) lparg1 = getRGBColorFields(env, arg1, &_arg1);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) setRGBColorFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_RGBColor_2I\n")
 }
 #endif
@@ -8430,7 +8458,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_Rect_
 	NATIVE_ENTER(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I\n")
 	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) setRectFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I\n")
 }
 #endif
@@ -8441,9 +8468,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3BI)
 {
 	jbyte *lparg1=NULL;
 	NATIVE_ENTER(env, that, "memcpy__I_3BI\n")
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memcpy__I_3BI\n")
 }
 #endif
@@ -8454,9 +8481,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3CI)
 {
 	jchar *lparg1=NULL;
 	NATIVE_ENTER(env, that, "memcpy__I_3CI\n")
-	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memcpy__I_3CI\n")
 }
 #endif
@@ -8467,9 +8494,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3II)
 {
 	jint *lparg1=NULL;
 	NATIVE_ENTER(env, that, "memcpy__I_3II\n")
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memcpy__I_3II\n")
 }
 #endif
@@ -8480,7 +8507,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_ATSTra
 {
 	ATSTrapezoid _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II\n")
-	if (arg0) lparg0 = getATSTrapezoidFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setATSTrapezoidFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II\n")
@@ -8493,7 +8520,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_FontSe
 {
 	FontSelectionQDStyle _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II\n")
-	if (arg0) lparg0 = getFontSelectionQDStyleFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setFontSelectionQDStyleFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II\n")
@@ -8506,7 +8533,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_GDevic
 {
 	GDevice _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II\n")
-	if (arg0) lparg0 = getGDeviceFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGDeviceFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II\n")
@@ -8519,7 +8546,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_HMHelp
 {
 	HMHelpContentRec _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II\n")
-	if (arg0) lparg0 = getHMHelpContentRecFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setHMHelpContentRecFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II\n")
@@ -8532,7 +8559,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_PixMap
 {
 	PixMap _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_PixMap_2II\n")
-	if (arg0) lparg0 = getPixMapFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setPixMapFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_PixMap_2II\n")
@@ -8545,7 +8572,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_Rect_2
 {
 	Rect _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_Rect_2II\n")
-	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setRectFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memcpy__Lorg_eclipse_swt_internal_carbon_Rect_2II\n")
@@ -8558,9 +8585,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3BII)
 {
 	jbyte *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy___3BII\n")
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "memcpy___3BII\n")
 }
 #endif
@@ -8572,11 +8599,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3B_3CI)
 	jbyte *lparg0=NULL;
 	jchar *lparg1=NULL;
 	NATIVE_ENTER(env, that, "memcpy___3B_3CI\n")
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memcpy___3B_3CI\n")
 }
 #endif
@@ -8587,9 +8614,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3CII)
 {
 	jchar *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy___3CII\n")
-	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "memcpy___3CII\n")
 }
 #endif
@@ -8601,11 +8628,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3C_3BI)
 	jchar *lparg0=NULL;
 	jbyte *lparg1=NULL;
 	NATIVE_ENTER(env, that, "memcpy___3C_3BI\n")
-	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memcpy___3C_3BI\n")
 }
 #endif
@@ -8616,9 +8643,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3III)
 {
 	jint *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy___3III\n")
-	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "memcpy___3III\n")
 }
 #endif

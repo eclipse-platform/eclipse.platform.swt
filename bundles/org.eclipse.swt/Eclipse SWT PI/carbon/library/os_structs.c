@@ -98,6 +98,40 @@ void setATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct
 }
 #endif
 
+#ifndef NO_ATSUTab
+typedef struct ATSUTab_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID tabPosition, tabType;
+} ATSUTab_FID_CACHE;
+
+ATSUTab_FID_CACHE ATSUTabFc;
+
+void cacheATSUTabFields(JNIEnv *env, jobject lpObject)
+{
+	if (ATSUTabFc.cached) return;
+	ATSUTabFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ATSUTabFc.tabPosition = (*env)->GetFieldID(env, ATSUTabFc.clazz, "tabPosition", "I");
+	ATSUTabFc.tabType = (*env)->GetFieldID(env, ATSUTabFc.clazz, "tabType", "S");
+	ATSUTabFc.cached = 1;
+}
+
+ATSUTab *getATSUTabFields(JNIEnv *env, jobject lpObject, ATSUTab *lpStruct)
+{
+	if (!ATSUTabFc.cached) cacheATSUTabFields(env, lpObject);
+	lpStruct->tabPosition = (*env)->GetIntField(env, lpObject, ATSUTabFc.tabPosition);
+	lpStruct->tabType = (*env)->GetShortField(env, lpObject, ATSUTabFc.tabType);
+	return lpStruct;
+}
+
+void setATSUTabFields(JNIEnv *env, jobject lpObject, ATSUTab *lpStruct)
+{
+	if (!ATSUTabFc.cached) cacheATSUTabFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ATSUTabFc.tabPosition, (jint)lpStruct->tabPosition);
+	(*env)->SetShortField(env, lpObject, ATSUTabFc.tabType, (jshort)lpStruct->tabType);
+}
+#endif
+
 #ifndef NO_AlertStdCFStringAlertParamRec
 typedef struct AlertStdCFStringAlertParamRec_FID_CACHE {
 	int cached;

@@ -613,6 +613,8 @@ public static final native int ATSUSetAttributes(int iStyle, int iAttributeCount
 public static final native int ATSUSetFontFeatures(int iStyle, int iFeatureCount,  short[] iType, short[] iSelector);
 public static final native int ATSUSetLayoutControls(int iTextLayout, int iAttributeCount, int[] iTag, int[] iValueSize, int[] iValue);
 public static final native int ATSUSetRunStyle(int iTextLayout, int iStyle, int iRunStart, int iRunLength);
+public static final native int ATSUSetSoftLineBreak(int iTextLayout, int iLineBreak);
+public static final native int ATSUSetTabArray(int iTextLayout, int iTabs, int iTabCount);
 public static final native int ATSUSetTextPointerLocation(int iTextLayout, int iText, int iTextOffset, int iTextLength, int iTextTotalLength);
 public static final native int ATSUSetTransientFontMatching(int iTextLayout, boolean iTransientFontMatching);
 public static final native int ATSUTextInserted(int iTextLayout, int iInsertionLocation, int iInsertionLength);
@@ -997,6 +999,7 @@ public static final native boolean IsWindowCollapsed(int window);
 public static final native boolean IsWindowVisible(int window);
 public static final native void KillPoly(int polyHandle);
 public static final native void LineTo(short h, short v);
+public static final native int Long2Fix(int x);
 public static final native short LoWord(int doubleWord);
 public static final native int LockPortBits(int portHandle);
 public static final native int MenuSelect(Point mHandle);
@@ -1230,9 +1233,9 @@ public static final native void memcpy(int dest, FontSelectionQDStyle src, int n
 public static final native void memcpy(int dest, RGBColor src, int n);
 public static final native void memcpy(Rect dest, int src, int n);
 public static final native void memcpy(int dest, Rect src, int n);
-public static final native void memcpy(int dest, String src, int n);
 public static final native void memcpy(char[] dest, byte[] src, int size);
 public static final native void memcpy(byte[] dest, char[] src, int size);
 public static final native void memcpy(int dest, EventRecord src, int size);
+public static final native void memcpy(int dest, ATSUTab src, int size);
 public static final native void memset(int dest, int value, int size);
 }
