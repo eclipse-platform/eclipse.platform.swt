@@ -76,6 +76,7 @@ public static char [] mbcsToWcs (int codePage, byte [] buffer) {
 			if (cchWideChar == 0) return EMPTY_CHAR_ARRAY;
 			lpWideCharStr = new char [cchWideChar];
 			OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, length, lpWideCharStr, cchWideChar);
+			return lpWideCharStr;
 		}
 	}
 	return lpWideCharStr;
