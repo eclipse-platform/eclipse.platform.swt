@@ -550,8 +550,18 @@ public void setEnabled (boolean enabled) {
 	checkWidget();
 	int hwnd = parent.handle;
 	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
-	fsState &= ~OS.TBSTATE_ENABLED;
-	if (enabled) fsState |= OS.TBSTATE_ENABLED;
+	/*
+	* Feature in Windows.  When TB_SETSTATE is used to set the
+	* state of a tool item, the item redraws even when the state
+	* has not changed.  The fix is to detect this case and avoid
+	* setting the state. 
+	*/
+	if (((fsState & OS.TBSTATE_ENABLED) != 0) == enabled) return;
+	if (enabled) {
+		fsState |= OS.TBSTATE_ENABLED;
+	} else {
+		fsState &= ~OS.TBSTATE_ENABLED;
+	}
 	OS.SendMessage (hwnd, OS.TB_SETSTATE, id, fsState);
 	if (image != null) updateImages ();
 }
@@ -643,8 +653,18 @@ public void setSelection (boolean selected) {
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	int hwnd = parent.handle;
 	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
-	fsState &= ~OS.TBSTATE_CHECKED;
-	if (selected) fsState |= OS.TBSTATE_CHECKED;
+	/*
+	* Feature in Windows.  When TB_SETSTATE is used to set the
+	* state of a tool item, the item redraws even when the state
+	* has not changed.  The fix is to detect this case and avoid
+	* setting the state. 
+	*/
+	if (((fsState & OS.TBSTATE_CHECKED) != 0) == selected) return;
+	if (selected) {
+		fsState |= OS.TBSTATE_CHECKED;
+	} else {
+		fsState &= ~OS.TBSTATE_CHECKED;
+	}
 	OS.SendMessage (hwnd, OS.TB_SETSTATE, id, fsState);
 }
 /**
