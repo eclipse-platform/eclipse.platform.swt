@@ -512,8 +512,7 @@ public int getSelectionCount () {
 public int getSelectionIndex () {
 	checkWidget();
 	int selection = OS.GTK_CLIST_SELECTION (handle);
-	if (selection == 0) return 0;
-	if (OS.g_list_length (selection) == 0) return -1;
+	if (selection == 0 || OS.g_list_length (selection) == 0) return -1;
 	return OS.g_list_nth_data (selection, 0);
 }
 
