@@ -122,8 +122,12 @@ void destroyWidget () {
 }
 
 public void dispose () {
+	/*
+	* Note:  It is valid to attempt to dispose a widget
+	* more than once.  If this happens, fail silently.
+	*/
+	if (!isValidWidget ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	releaseChild ();
 	releaseWidget ();
 	destroyWidget ();
