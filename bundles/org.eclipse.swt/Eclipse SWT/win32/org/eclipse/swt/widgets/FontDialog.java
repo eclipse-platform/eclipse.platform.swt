@@ -120,8 +120,15 @@ public FontData open () {
 	lpcf.Flags = OS.CF_SCREENFONTS | OS.CF_EFFECTS;
 	int lpLogFont = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, LOGFONT.sizeof);
 	if (fontData != null && fontData.data != null) {
+		LOGFONT logFont = fontData.data;
+		int lfHeight = logFont.lfHeight;
+		int hDC = OS.GetDC (0);
+		int pixels = -Compatibility.round (fontData.height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY), 72);
+		OS.ReleaseDC (0, hDC);
+		logFont.lfHeight = pixels;
 		lpcf.Flags |= OS.CF_INITTOLOGFONTSTRUCT;
-		OS.MoveMemory (lpLogFont, fontData.data, LOGFONT.sizeof);
+		OS.MoveMemory (lpLogFont, logFont, LOGFONT.sizeof);
+		logFont.lfHeight = lfHeight;
 	}
 	lpcf.lpLogFont = lpLogFont;
 	fontData = null;
