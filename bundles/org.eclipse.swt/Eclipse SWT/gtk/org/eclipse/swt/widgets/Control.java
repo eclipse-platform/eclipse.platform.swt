@@ -1695,12 +1695,21 @@ int processMouseDown (int callData, int arg1, int int2) {
 }
 
 int processMouseEnter (int callData, int arg1, int int2) {
+	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
+	OS.memmove (gdkEvent, callData, GdkEventCrossing.sizeof);
+	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL) return 0;
+	if (gdkEvent.subwindow != 0) return 0;
 	sendMouseEvent (SWT.MouseEnter, 0, callData);
 	return 0;
 }
+
 int processMouseExit (int callData, int arg1, int int2) {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeout (handle);
+	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
+	OS.memmove (gdkEvent, callData, GdkEventCrossing.sizeof);
+	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL) return 0;
+	if (gdkEvent.subwindow != 0) return 0;
 	sendMouseEvent (SWT.MouseExit, 0, callData);
 	return 0;
 }

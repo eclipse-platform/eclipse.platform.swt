@@ -40,6 +40,7 @@ public class OS {
 	public static final int GDK_CONTROL_MASK = 0x4;
 	public static final int GDK_COPY = 0x0;
 	public static final int GDK_CROSS = 0x1e;
+	public static final int GDK_CROSSING_NORMAL = 0;
 	public static final int GDK_Cancel = 0xff69;
 	public static final int GDK_Clear = 0xff0B;
 	public static final int GDK_Control_L = 0xffe3;
