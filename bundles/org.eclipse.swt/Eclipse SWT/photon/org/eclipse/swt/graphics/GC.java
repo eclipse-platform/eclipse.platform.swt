@@ -1249,6 +1249,8 @@ public void drawText (String string, int x, int y, int flags) {
 }
 
 Point drawText(String text, int x, int y, int flags, boolean draw) {
+	/* NOT DONE - inline code for performance */
+	
 	int length = text.length();
 	char[] buffer = new char[length];
 	text.getChars(0, length, buffer, 0);
