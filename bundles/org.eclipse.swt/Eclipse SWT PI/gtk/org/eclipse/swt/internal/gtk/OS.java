@@ -1237,6 +1237,7 @@ public static final synchronized native void pango_font_description_set_style(in
 public static final synchronized native void pango_font_description_set_weight(int /*long*/ desc, int weight);
 public static final synchronized native int /*long*/ pango_font_description_to_string(int /*long*/ desc);
 public static final synchronized native int /*long*/ pango_font_face_describe(int /*long*/ face);
+public static final synchronized native int /*long*/ pango_font_family_get_name (int /*long*/ family);
 public static final synchronized native void pango_font_family_list_faces(int /*long*/ family, int /*long*/[] faces, int[] n_faces);
 public static final synchronized native int /*long*/ pango_font_get_metrics(int /*long*/ font, int /*long*/ language);
 public static final synchronized native int pango_font_metrics_get_approximate_char_width(int /*long*/ metrics);
