@@ -207,6 +207,7 @@ public class OS {
 	public static final int Pt_CB_TREE_SELECTION	                                     = ( 23 * 1000 + 22 );
 	public static final int Pt_TREE_COLLAPSING  = 0;
 	public static final int Pt_TREE_EXPANDING   = 1;
+	public static final int  Pt_HOTKEYS_FIRST     =                                    0x00000080;
 /*** END MANUALLY ADDED/FIXED ***/
 
 //public static final int Aw_ARG_ONOFF_STATE                                    = ( 5 * 1000 + 1 );
