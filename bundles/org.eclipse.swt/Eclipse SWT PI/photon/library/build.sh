@@ -12,4 +12,4 @@
 
 export IVE_HOME=~/ive/bin
 
-make -f make_photon.mak $1 $2 $3 $4
+make -f make_qnx.mak $1 $2 $3 $4
