@@ -2573,7 +2573,7 @@ void setButtonBounds() {
 		switch (topRightAlignment) {
 			case SWT.FILL: {
 				int rightEdge = size.x - borderRight - 3 - maxRect.width - minRect.width;
-				if (!simple) rightEdge -= 2;
+				if (!simple && borderRight > 0 && !showMax && !showMin) rightEdge -= 2;
 				if (single) {
 					if (items.length == 0 || selectedIndex == -1) {
 						topRightRect.x = borderLeft + 3;
@@ -2604,7 +2604,7 @@ void setButtonBounds() {
 			case SWT.RIGHT: {
 				Point topRightSize = topRight.computeSize(SWT.DEFAULT, tabHeight, false);
 				int rightEdge = size.x - borderRight - 3 - maxRect.width - minRect.width;
-				if (!simple) rightEdge -= 2;
+				if (!simple && borderRight > 0 && !showMax && !showMin) rightEdge -= 2;
 				topRightRect.x = rightEdge - topRightSize.x;
 				topRightRect.width = topRightSize.x;
 				topRightRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
