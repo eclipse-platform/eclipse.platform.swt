@@ -463,6 +463,7 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (background != null && background.equals (color)) return;
 	background = color;
 	redraw ();
 }
@@ -481,6 +482,7 @@ public void setBackground (Color color) {
 public void setChecked (boolean checked) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
+	if (this.checked == checked) return;
 	this.checked = checked;
 	redraw ();
 }
@@ -529,6 +531,7 @@ public void setFont (Font font) {
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (this.font != null && this.font.equals (font)) return;
 	this.font = font;
 	redraw ();
 }
@@ -558,6 +561,7 @@ public void setForeground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (foreground != null && foreground.equals (color)) return;
 	foreground = color;
 	redraw ();
 }
@@ -576,6 +580,7 @@ public void setForeground (Color color) {
 public void setGrayed (boolean grayed) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
+	if (this.grayed == grayed) return;
 	this.grayed = grayed;
 	redraw ();
 }
@@ -591,6 +596,7 @@ public void setImage (Image image) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (string.equals (text)) return;
 	super.setText (string);
 	width = -1;
 	parent.setScrollWidth (this);
