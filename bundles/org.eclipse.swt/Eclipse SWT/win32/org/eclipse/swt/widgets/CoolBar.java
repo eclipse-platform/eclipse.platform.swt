@@ -242,6 +242,18 @@ void createItem (CoolItem item, int index) {
 		rbBand.cx = MAX_WIDTH; 
 	}
 	
+	/*
+	* Feature in Windows. Is possible that the item at index zero
+	* has the RBBS_BREAK flag set. When a new item is inserted at
+	* position zero, the previous item at position zero moves to
+	* a new line.  The fix is to detect this case and clear the
+	* RBBS_BREAK flag on the previous item before inserting the
+	* new item.
+	*/
+	if (index == 0 && count > 0) {
+		getItem (0).setWrap (false); 
+	}
+	
 	if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, rbBand) == 0) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
