@@ -934,6 +934,7 @@ public void remove (int index) {
  */
 public void remove (int start, int end) {
 	checkWidget();
+	if (start > end) return;
 	if (!(0 <= start && start <= end && end < items.length)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
@@ -1097,7 +1098,7 @@ void setForegroundColor (GdkColor color) {
 public void setItem (int index, String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!(0 <= index && index <= items.length)) {
+	if (!(0 <= index && index < items.length)) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	items [index] = string;
