@@ -317,6 +317,7 @@ public class OS {
 //	public static final int WindingRule = 0x1;
 	public static final int XA_FONT = 18;
 	public static final int XBufferOverflow = 0xFFFFFFFF;
+	public static final int XCompoundTextStyle = 1;
 //	public static final int XC_arrow = 2;
 //	public static final int XC_based_arrow_down = 4;
 //	public static final int XC_based_arrow_up = 6;
@@ -452,6 +453,7 @@ public class OS {
 //	public static final int XLookupChars = 0x2;
 //	public static final int XLookupKeySym = 0x3;
 //	public static final int XLookupNone = 0x1;
+	public static final int XStringStyle = 0;
 	public static final int XmALIGNMENT_BEGINNING = 0x0;
 	public static final int XmALIGNMENT_CENTER = 0x1;
 	public static final int XmALIGNMENT_END = 0x2;
@@ -1200,6 +1202,9 @@ public static final synchronized native void XmTextShowPosition (int widget, int
 public static final synchronized native void XmUpdateDisplay (int widget);
 public static final synchronized native boolean XmWidgetGetDisplayRect (int region, XRectangle rectangle);
 //public static final synchronized native int XmbLookupString (int ic, XKeyEvent event, byte [] string, int size, int [] keysym, int [] status);
+public static final synchronized native int XmbTextListToTextProperty (int display, int list, int count, int style, XTextProperty text_prop_return);
+public static final synchronized native int XmbTextPropertyToTextList (int display, XTextProperty text_prop, int[] list_return, int[] count_return);
+
 public static final synchronized native void XtAddCallback (int widget, int callback_name, int callback, int client_data);
 public static final synchronized native void XtAddEventHandler (int widget, int event_mask, boolean nonmaskable, int proc, int client_data);
 public static final synchronized native void XtAddExposureToRegion (int event, int region);

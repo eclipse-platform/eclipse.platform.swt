@@ -35,6 +35,7 @@ XMTEXTBLOCKREC_FID_CACHE XmtextblockrecFc;
 XMTEXTVERIFYCALLBACKSTRUCT_FID_CACHE XmtextverifycallbackstructFc;
 XRECTANGLE_FID_CACHE XrectangleFc;
 XSETWINDOWATTRIBUTES_FID_CACHE XsetwindowattributesFc;
+XTEXTPROPERTY_FID_CACHE XtextpropertyFc;
 XTWIDGETGEOMETRY_FID_CACHE XtwidgetgeometryFc;
 XWINDOWATTRIBUTES_FID_CACHE XwindowattributesFc;
 XWINDOWCHANGES_FID_CACHE XwindowchangesFc;
@@ -515,6 +516,19 @@ void cacheXsetwindowattributesFids(JNIEnv *env, jobject lpXsetwindowattributes, 
     lpCache->override_redirect = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"override_redirect","I");
     lpCache->colormap = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"colormap","I");
     lpCache->cursor = (*env)->GetFieldID(env,lpCache->xsetwindowattributesClass,"cursor","I");
+    lpCache->cached = 1;
+}
+
+void cacheXtextpropertyFids(JNIEnv *env, jobject lpXtextproperty, PXTEXTPROPERTY_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+
+    lpCache->xtextpropertyClass = (*env)->GetObjectClass(env,lpXtextproperty);
+
+    lpCache->value = (*env)->GetFieldID(env,lpCache->xtextpropertyClass,"value","I");
+    lpCache->encoding = (*env)->GetFieldID(env,lpCache->xtextpropertyClass,"encoding","I");
+    lpCache->format = (*env)->GetFieldID(env,lpCache->xtextpropertyClass,"format","I");
+    lpCache->nitems = (*env)->GetFieldID(env,lpCache->xtextpropertyClass,"nitems","I");
     lpCache->cached = 1;
 }
 
@@ -1295,6 +1309,22 @@ void setXsetwindowattributesFields(JNIEnv *env, jobject lpObject, XSetWindowAttr
     (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->override_redirect, lpXsetwindowattributes->override_redirect);
     (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->colormap, lpXsetwindowattributes->colormap);
     (*env)->SetIntField(env,lpObject,lpXsetwindowattributesFc->cursor, lpXsetwindowattributes->cursor);
+}
+
+void getXtextpropertyFields(JNIEnv *env, jobject lpObject, XTextProperty *lpXtextproperty, PXTEXTPROPERTY_FID_CACHE lpXtextpropertyFc)
+{
+    lpXtextproperty->value = (unsigned char *)(*env)->GetIntField(env,lpObject,lpXtextpropertyFc->value);
+    lpXtextproperty->encoding = (Atom)(*env)->GetIntField(env,lpObject,lpXtextpropertyFc->encoding);
+    lpXtextproperty->format = (*env)->GetIntField(env,lpObject,lpXtextpropertyFc->format);
+    lpXtextproperty->nitems = (unsigned long)(*env)->GetIntField(env,lpObject,lpXtextpropertyFc->nitems);
+}
+
+void setXtextpropertyFields(JNIEnv *env, jobject lpObject, XTextProperty *lpXtextproperty, PXTEXTPROPERTY_FID_CACHE lpXtextpropertyFc)
+{
+    (*env)->SetIntField(env,lpObject,lpXtextpropertyFc->value, (int)lpXtextproperty->value);
+    (*env)->SetIntField(env,lpObject,lpXtextpropertyFc->encoding, (int)lpXtextproperty->encoding);
+    (*env)->SetIntField(env,lpObject,lpXtextpropertyFc->format, lpXtextproperty->format);
+    (*env)->SetIntField(env,lpObject,lpXtextpropertyFc->nitems, lpXtextproperty->nitems);
 }
 
 void getXwindowattributesFields(JNIEnv *env, jobject lpObject, XWindowAttributes *lpXwindowattributes, PXWINDOWATTRIBUTES_FID_CACHE lpXwindowattributesFc)

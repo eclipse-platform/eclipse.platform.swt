@@ -5393,6 +5393,88 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmbLookupString
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XmbTextListToTextProperty
+ * Signature: (IIIILorg/eclipse/swt/internal/motif/XTextProperty;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmbTextListToTextProperty
+  (JNIEnv *env, jclass that, jint display, jint list, jint count, jint style, jobject text_prop_return)
+{
+	DECL_GLOB(pGlob)
+	XTextProperty xTextProperty, *lpxTextProperty=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XmbTextListToTextProperty\n");
+#endif
+
+    if (text_prop_return) {
+        lpxTextProperty = &xTextProperty;
+        cacheXtextpropertyFids(env, text_prop_return, &PGLOB(XtextpropertyFc));
+        getXtextpropertyFields(env, text_prop_return, lpxTextProperty, &PGLOB(XtextpropertyFc));
+    }
+
+    rc = (jint)XmbTextListToTextProperty((Display *)display, (char **)list, count, (XICCEncodingStyle)style, lpxTextProperty);
+
+#ifdef PRINT_FAILED_RCODES
+    if (rc == 0)
+        fprintf(stderr, "XmbTextListToTextProperty: call failed rc = %d\n", rc);
+#endif
+
+    if (text_prop_return) {
+        setXtextpropertyFields(env, text_prop_return, lpxTextProperty, &PGLOB(XtextpropertyFc));
+    }
+	return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XmbTextPropertyToTextList
+ * Signature: (ILorg/eclipse/swt/internal/motif/XTextProperty;[I[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmbTextPropertyToTextList
+  (JNIEnv *env, jclass that, jint display, jobject text_prop, jintArray list_return, jintArray count_return)
+{
+	DECL_GLOB(pGlob)
+	XTextProperty xTextProperty, *lpxTextProperty=NULL;
+	jint *list_return1=NULL, *count_return1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XmbTextPropertyToTextList\n");
+#endif
+
+    if (text_prop) {
+        lpxTextProperty = &xTextProperty;
+        cacheXtextpropertyFids(env, text_prop, &PGLOB(XtextpropertyFc));
+        getXtextpropertyFields(env, text_prop, lpxTextProperty, &PGLOB(XtextpropertyFc));
+    }
+    
+	if (list_return)
+        list_return1 = (*env)->GetIntArrayElements(env, list_return, NULL);
+        
+	if (count_return)
+        count_return1 = (*env)->GetIntArrayElements(env, count_return, NULL);
+        
+    rc = (jint)XmbTextPropertyToTextList((Display *)display, lpxTextProperty, (char ***)list_return1, (int *)count_return1);
+
+#ifdef PRINT_FAILED_RCODES
+    if (rc == 0)
+        fprintf(stderr, "XmbTextPropertyToTextList: call failed rc = %d\n", rc);
+#endif
+
+    if (text_prop) {
+        setXtextpropertyFields(env, text_prop, lpxTextProperty, &PGLOB(XtextpropertyFc));
+    }
+    
+    if (list_return)
+        (*env)->ReleaseIntArrayElements(env, list_return, list_return1, 0);
+
+    if (count_return)
+        (*env)->ReleaseIntArrayElements(env, count_return, count_return1, 0);
+                
+	return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XtAddCallback
  * Signature: (IIII)V
  */

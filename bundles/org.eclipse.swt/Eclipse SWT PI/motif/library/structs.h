@@ -323,6 +323,18 @@ typedef struct XSETWINDOWATTRIBUTES_FID_CACHE {
 
 typedef XSETWINDOWATTRIBUTES_FID_CACHE *PXSETWINDOWATTRIBUTES_FID_CACHE;
 
+/* XTEXTPROPERTY struct */
+typedef struct XTEXTPROPERTY_FID_CACHE {
+    
+    int cached;
+    jclass xtextpropertyClass;
+    jfieldID value, encoding, format, nitems;
+
+} XTEXTPROPERTY_FID_CACHE;
+
+typedef XTEXTPROPERTY_FID_CACHE *PXTEXTPROPERTY_FID_CACHE;
+
+
 /* XWINDOWATTRIBUTES struct */
 typedef struct XWINDOWATTRIBUTES_FID_CACHE {
     
@@ -374,6 +386,7 @@ void cacheXmtextverifycallbackstructFids(JNIEnv *env, jobject lpXmtextverifycall
 void cacheXrectangleFids(JNIEnv *env, jobject lpRect, PXRECTANGLE_FID_CACHE lpCache);
 void cacheXwindowchangesFids(JNIEnv *env, jobject lpXwindowchanges, PXWINDOWCHANGES_FID_CACHE lpCache);
 void cacheXsetwindowattributesFids(JNIEnv *env, jobject lpXsetwindowattributes, PXSETWINDOWATTRIBUTES_FID_CACHE lpCache);
+void cacheXtextpropertyFids(JNIEnv *env, jobject lpXtextproperty, PXTEXTPROPERTY_FID_CACHE lpCache);
 void cacheXwindowattributesFids(JNIEnv *env, jobject lpXwindowattributes, PXWINDOWATTRIBUTES_FID_CACHE lpCache);
 void cacheXtwidgetgeometryFids(JNIEnv *env, jobject lpXtwidgetgeometry, PXTWIDGETGEOMETRY_FID_CACHE lpCache);
 
@@ -429,6 +442,8 @@ void getXrectangleFields(JNIEnv *env, jobject lpObject, XRectangle *lpXrect, PXR
 void setXrectangleFields(JNIEnv *env, jobject lpObject, XRectangle *lpXrect, PXRECTANGLE_FID_CACHE lpXrectFc);
 void getXsetwindowattributesFields(JNIEnv *env, jobject lpObject, XSetWindowAttributes *lpXsetwindowattributes, PXSETWINDOWATTRIBUTES_FID_CACHE lpXsetwindowattributesFc);
 void setXsetwindowattributesFields(JNIEnv *env, jobject lpObject, XSetWindowAttributes *lpXsetwindowattributes, PXSETWINDOWATTRIBUTES_FID_CACHE lpXsetwindowattributesFc);
+void getXtextpropertyFields(JNIEnv *env, jobject lpObject, XTextProperty *lpXtextproperty, PXTEXTPROPERTY_FID_CACHE lpXtextpropertyFc);
+void setXtextpropertyFields(JNIEnv *env, jobject lpObject, XTextProperty *lpXtextproperty, PXTEXTPROPERTY_FID_CACHE lpXtextpropertyFc);
 void getXwindowattributesFields(JNIEnv *env, jobject lpObject, XWindowAttributes *lpXwindowattributes, PXWINDOWATTRIBUTES_FID_CACHE lpXwindowattributesFc);
 void setXwindowattributesFields(JNIEnv *env, jobject lpObject, XWindowAttributes *lpXwindowattributes, PXWINDOWATTRIBUTES_FID_CACHE lpXwindowattributesFc);
 void getXwindowchangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpXwindowchanges, PXWINDOWCHANGES_FID_CACHE lpXwindowchangesFc);
@@ -458,6 +473,7 @@ extern XMTEXTBLOCKREC_FID_CACHE XmtextblockrecFc;
 extern XMTEXTVERIFYCALLBACKSTRUCT_FID_CACHE XmtextverifycallbackstructFc;
 extern XRECTANGLE_FID_CACHE XrectangleFc;
 extern XSETWINDOWATTRIBUTES_FID_CACHE XsetwindowattributesFc;
+extern XTEXTPROPERTY_FID_CACHE XtextpropertyFc;
 extern XTWIDGETGEOMETRY_FID_CACHE XtwidgetgeometryFc;
 extern XWINDOWATTRIBUTES_FID_CACHE XwindowattributesFc;
 extern XWINDOWCHANGES_FID_CACHE XwindowchangesFc;
