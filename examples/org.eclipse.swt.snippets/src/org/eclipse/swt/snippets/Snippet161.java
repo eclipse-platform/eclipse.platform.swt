@@ -36,7 +36,7 @@ public class Snippet161 {
 				"newNode.appendChild(text);\r\n"+
 				"document.getElementById('myid').appendChild(newNode);\r\n"+
 				"\r\n"+
-				"document.bgColor=Math.round(Math.random()*0xffffff);");
+				"document.bgColor='yellow';");
 		final Button button = new Button(comp, SWT.PUSH);
 		button.setText("Execute Script");
 		button.addListener(SWT.Selection, new Listener() {
