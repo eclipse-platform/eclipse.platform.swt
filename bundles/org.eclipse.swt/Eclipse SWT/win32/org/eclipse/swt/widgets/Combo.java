@@ -1208,26 +1208,32 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {	
-	if ((style & SWT.READ_ONLY) != 0 || (style & SWT.DROP_DOWN) == 0) return super.WM_SIZE (wParam, lParam);
 	/*
-	* Bug in Windows.  When the combo widget contains text that
-	* does not correspond to an item in the list, on resize 
-	* the widget selects the closest match from the list.
-	* The fix is to remember the original text and set the
-	* original text back into the widget after the resize.
+	* Feature in Windows.  When an editable drop down combo box
+	* contains text that does not correspond to an item in the
+	* list, when the widget is resized, it selects the closest
+	* match from the list.  The fix is to remember the original
+	* text and reset it after the widget is resized.
 	*/
-	int selection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	if ((style & SWT.READ_ONLY) != 0 || (style & SWT.DROP_DOWN) == 0) {
+		return super.WM_SIZE (wParam, lParam);
+	}
+	int index = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	boolean redraw = false;
 	TCHAR buffer = null;
-	if (selection == OS.CB_ERR) {
+	int [] start = null, end = null;
+	if (index == OS.CB_ERR) {
 		int length = OS.GetWindowTextLength (handle);
 		if (length != 0) {
 			buffer = new TCHAR (getCodePage (), length + 1);
 			OS.GetWindowText (handle, buffer, length + 1);
-			setRedraw (false);
+			start = new int [1];  end = new int [1];
+			OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
+			redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+			if (redraw) setRedraw (false);
 		}
 	}
 	LRESULT result = super.WM_SIZE (wParam, lParam);
-	
 	/*
 	* It is possible (but unlikely), that application
 	* code could have disposed the widget in the resize
@@ -1236,10 +1242,11 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* WM_SIZE message.
 	*/
 	if (isDisposed ()) return result;
-	
 	if (buffer != null) {
 		OS.SetWindowText (handle, buffer);
-		setRedraw (true);
+		int bits = start [0] | (end [0] << 16);
+		OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
+		if (redraw) setRedraw (true);
 	}
 	return result; 
 }
