@@ -1113,7 +1113,12 @@ public void setDoubleClickEnabled (boolean doubleClick) {
  * <p>
  * The echo character is the character that is
  * displayed when the user enters text or the
- * text is changed by the programmer.
+ * text is changed by the programmer. Setting
+ * the echo character to '\0' clears the echo
+ * character and redraws the original text.
+ * If for any reason the echo character is invalid,
+ * the default echo character for the platform
+ * is used.
  * </p>
  *
  * @param echo the new echo character
@@ -1352,6 +1357,12 @@ public void setText (String string) {
 /**
  * Sets the maximum number of characters that the receiver
  * is capable of holding to be the argument.
+ * <p>
+ * Instead of trying to set the text limit to zero, consider
+ * creating a read-only text widget.
+ * </p><p>
+ * To reset this value to the default, use <code>setTextLimit(Text.LIMIT)</code>.
+ * </p>
  *
  * @param limit new text limit
  *
