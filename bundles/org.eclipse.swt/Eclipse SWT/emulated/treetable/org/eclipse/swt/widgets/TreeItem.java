@@ -491,16 +491,9 @@ void computeDisplayTexts (GC gc) {
 	int columnCount = parent.columns.length;
 	if (columnCount == 0) return;
 	
-	Font oldFont = gc.getFont ();
 	for (int i = 0; i < columnCount; i++) {
-		boolean fontChanged = false;
-		Font font = getFont (i);
-		if (!font.equals (oldFont)) {
-			gc.setFont (font);
-			fontChanged = true;
-		}
+		gc.setFont (getFont (i));
 		computeDisplayText (i, gc);
-		if (fontChanged) gc.setFont (oldFont);
 	}
 }
 public void dispose () {
@@ -1408,15 +1401,10 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	
 	/* draw the text */
 	if (text.length () > 0) {
-		boolean fontChanged = false, foregroundChanged = false;
-		Font oldFont = gc.getFont ();
-		Font font = getFont (columnIndex);
-		if (!font.equals (oldFont)) {
-			gc.setFont (font);
-			fontChanged = true;
-		}
+		gc.setFont (getFont (columnIndex));
 		int fontHeight = getFontHeight (columnIndex);
 		Color oldForeground = gc.getForeground ();
+		boolean foregroundChanged = false;
 		if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 			foregroundChanged = true;
@@ -1430,7 +1418,6 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		x = getTextX (columnIndex) + MARGIN_TEXT;
 		gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
 		if (foregroundChanged) gc.setForeground (oldForeground);
-		if (fontChanged) gc.setFont (oldFont);
 	}
 }
 /*
@@ -1439,18 +1426,11 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 void recomputeTextWidths (GC gc) {
 	int validColumnCount = Math.max (1, parent.columns.length);
 	textWidths = new int [validColumnCount];
-	Font oldFont = gc.getFont ();
 	for (int i = 0; i < textWidths.length; i++) {
 		String value = getDisplayText (i);
 		if (value != null) {
-			boolean fontChanged = false;
-			Font font = getFont (i);
-			if (!font.equals (oldFont)) {
-				gc.setFont (font);
-				fontChanged = true;
-			}
+			gc.setFont (getFont (i));
 			textWidths [i] = gc.stringExtent (value).x;
-			if (fontChanged) gc.setFont (oldFont);
 		}
 	}
 }
@@ -1471,7 +1451,6 @@ void removeColumn (TreeColumn column, int index) {
 		cellFonts = null;
 		fontHeights = null;
 		GC gc = new GC (parent);
-		gc.setFont (getFont ());
 		recomputeTextWidths (gc);
 		gc.dispose ();
 		/* notify all child items as well */
@@ -1827,9 +1806,9 @@ public void setFont (Font value) {
 	/* recompute cached values for string measurements */
 	GC gc = new GC (parent);
 	gc.setFont (getFont ());
+	fontHeight = gc.getFontMetrics ().getHeight ();
 	computeDisplayTexts (gc);
 	recomputeTextWidths (gc);
-	fontHeight = gc.getFontMetrics ().getHeight ();
 	gc.dispose ();
 	
 	/* horizontal bar could be affected if tree has no columns */
@@ -2200,15 +2179,8 @@ public void setText (int columnIndex, String value) {
 }
 void updateColumnWidth (TreeColumn column, GC gc) {
 	int columnIndex = column.getIndex ();
-	boolean fontChanged = false;
-	Font oldFont = gc.getFont ();
-	Font font = getFont (columnIndex);
-	if (!font.equals(oldFont)) {
-		gc.setFont (font);
-		fontChanged = true;
-	}
+	gc.setFont (getFont (columnIndex));
 	computeDisplayText (columnIndex, gc);
-	if (fontChanged) gc.setFont (oldFont);
 	for (int i = 0; i < items.length; i++) {
 		items [i].updateColumnWidth (column, gc);
 	}
