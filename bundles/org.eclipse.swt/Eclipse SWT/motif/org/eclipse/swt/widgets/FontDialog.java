@@ -773,7 +773,10 @@ void openDialog () {
 	originY = Math.min (originY, heightLimit - pt.y);
 	shell.setBounds (originX, originY, pt.x, pt.y);
 	
-	shell.setText(getText());
+	String title = getText ();
+	if (title.length () == 0) title = SWT.getMessage ("SWT_FontDialog_Title");
+	shell.setText(title);
+	
 	// Open the window.
 	shell.open();
 }
