@@ -87,14 +87,21 @@ int clientHandle () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	if (layout==null) return computeNativeSize(handle, wHint, hHint, changed);
-
-	Point size = layout.computeSize (this, wHint, hHint, changed);
-	if (size.x == 0) size.x = DEFAULT_WIDTH;
-	if (size.y == 0) size.y = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) size.x = wHint;
-	if (hHint != SWT.DEFAULT) size.y = hHint;
-	Rectangle trim = computeTrim (0, 0, size.x, size.y);
+	Point defaultSize = computeNativeSize (handle, wHint, hHint, changed);
+	Point size;
+	if (layout != null) {
+		size = layout.computeSize (this, wHint, hHint, changed);
+	} else {
+		size = minimumSize ();
+	}
+	int width = size.x,  height = size.y;
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	Rectangle trim = computeTrim (0, 0, width, height);
+	width = Math.max (trim.width, defaultSize.x);
+	height = trim.height;
 	return new Point (trim.width, trim.height);
 }
 
@@ -122,18 +129,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  * @see #getClientArea
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();	
-	int fixedWidth = OS.GTK_WIDGET_WIDTH (fixedHandle);
-	int fixedHeight = OS.GTK_WIDGET_HEIGHT (fixedHandle);
+	checkWidget();
 	int clientX = OS.GTK_WIDGET_X (clientHandle);
 	int clientY = OS.GTK_WIDGET_Y (clientHandle);
-	int clientWidth = OS.GTK_WIDGET_WIDTH (clientHandle);
-	int clientHeight = OS.GTK_WIDGET_HEIGHT (clientHandle);	
 	x -= clientX;
 	y -= clientY;
-	//FIXME - why we have to add extra space
-	width += 15 + fixedWidth - clientWidth;
-	height += 15 + fixedHeight - clientHeight;
+	width += clientX + clientX;
+	height += clientX + clientY;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -177,6 +179,20 @@ void deregister () {
 
 int eventHandle () {
 	return fixedHandle;
+}
+
+void fixGroup () {
+	/*
+	* Force the container to allocate the size of its children.
+	*/
+	int flags = OS.GTK_WIDGET_FLAGS (handle);
+	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_VISIBLE);
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (handle, requisition);
+	OS.gtk_container_resize_children (handle);
+	if ((flags & OS.GTK_VISIBLE) == 0) {
+		OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_VISIBLE);	
+	}
 }
 
 public Rectangle getClientArea () {
@@ -266,6 +282,7 @@ public void setText (String string) {
 		OS.gtk_frame_set_label_widget (handle, 0);
 		OS.gtk_widget_hide (labelHandle);
 	}
+	fixGroup ();
 }
 
 }
