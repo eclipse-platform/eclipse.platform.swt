@@ -143,7 +143,7 @@ public String [] getFilterNames () {
  *
  * @return the directory path string
  * 
- * @see setFilterExtensions
+ * @see #setFilterExtensions
  */
 public String getFilterPath () {
 	return filterPath;
@@ -416,7 +416,7 @@ public void setFilterNames (String [] names) {
  *
  * @param string the directory path
  * 
- * @see setFilterExtensions
+ * @see #setFilterExtensions
  */
 public void setFilterPath (String string) {
 	filterPath = string;
