@@ -93,9 +93,15 @@ import org.eclipse.swt.graphics.*;
  */
 public class Display extends Device {
 
+	/**
+	 * (Warning: This field is only present on GTK)
+	 */
+	public int [] dispatchEvents;
+
 	/* Events Dispatching and Callback */
 	int gdkEventCount;
 	int /*long*/ [] gdkEvents;
+	Widget [] gdkEventWidgets;
 	Event [] eventQueue;
 	Callback eventCallback;
 	GdkEventButton gdkEvent = new GdkEventButton ();
@@ -392,13 +398,28 @@ public void addFilter (int eventType, Listener listener) {
 }
 
 void addGdkEvent (int /*long*/ event) {
-	if (gdkEvents == null) gdkEvents = new int /*long*/ [4];
+	if (gdkEvents == null) {
+		gdkEvents = new int /*long*/ [4];
+		gdkEventWidgets = new Widget [4];
+	}
 	if (gdkEventCount == gdkEvents.length) {
 		int /*long*/ [] newEvents = new int /*long*/ [gdkEventCount + 4];
 		System.arraycopy (gdkEvents, 0, newEvents, 0, gdkEventCount);
 		gdkEvents = newEvents;
+		Widget [] newWidgets = new Widget [gdkEventCount + 4];
+		System.arraycopy (gdkEventWidgets, 0, newWidgets, 0, gdkEventCount);
+		gdkEventWidgets = newWidgets;
 	}
-	gdkEvents [gdkEventCount++] = event;
+	Widget widget = null;
+	int handle = OS.gtk_get_event_widget (event);
+	if (handle != 0) {
+		do {
+			widget = getWidget (handle);
+		} while (widget == null && (handle = OS.gtk_widget_get_parent (handle)) != 0);
+	}
+	gdkEvents [gdkEventCount] = event;
+	gdkEventWidgets [gdkEventCount] = widget;
+	gdkEventCount++;
 }
 
 /**
@@ -721,6 +742,20 @@ void error (int code) {
 
 int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	boolean dispatch = true;
+	if (dispatchEvents != null) {
+		dispatch = false;
+		for (int i = 0; i < dispatchEvents.length; i++) {
+			if (gdkEvent.type == dispatchEvents [i]) {
+				dispatch = true;
+				break;
+			}
+		}
+	}
+	if (!dispatch) {
+		addGdkEvent (OS.gdk_event_copy (event));
+		return 0;
+	}
 	boolean forward = false;
 	Control control = null;
 	int /*long*/ window = 0;
@@ -779,6 +814,16 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		}
 	}
 	OS.gtk_main_do_event (event);
+	if (dispatchEvents == null && gdkEventCount != 0) {
+		for (int i = 0; i < gdkEventCount; i++) {
+			if (gdkEventWidgets [i] == null || !gdkEventWidgets [i].isDisposed ()) {
+				OS.gdk_event_put (gdkEvents [i]);
+				OS.gdk_event_free (gdkEvents [i]);
+			}
+		}
+		gdkEventCount = 0;
+		gdkEvents = null;
+	}
 	if (control != null ) {
 		if (shell != null && !shell.isDisposed () && (shell.style & SWT.ON_TOP) != 0) {
 			OS.gtk_grab_remove (shell.shellHandle);
@@ -1837,15 +1882,6 @@ void postEvent (Event event) {
 public boolean readAndDispatch () {
 	checkDevice ();
 	runPopups ();
-	if (gdkEventCount != 0) {
-		int /*long*/ event = removeGdkEvent ();
-		if (event != 0) {
-			eventProc (event, 0);
-			OS.gdk_event_free (event);
-		}
-		runDeferredEvents ();
-		return true;
-	}
 	int status = OS.gtk_events_pending ();
 	if (status != 0) {
 		OS.gtk_main_iteration ();
@@ -2003,9 +2039,15 @@ public void removeFilter (int eventType, Listener listener) {
 int /*long*/ removeGdkEvent () {
 	if (gdkEventCount == 0) return 0;
 	int /*long*/ event = gdkEvents [0];
-	System.arraycopy (gdkEvents, 1, gdkEvents, 0, --gdkEventCount);
+	--gdkEventCount;
+	System.arraycopy (gdkEvents, 1, gdkEvents, 0, gdkEventCount);
+	System.arraycopy (gdkEventWidgets, 1, gdkEventWidgets, 0, gdkEventCount);
 	gdkEvents [gdkEventCount] = 0;
-	if (gdkEventCount == 0) gdkEvents = null;
+	gdkEventWidgets [gdkEventCount] = null;
+	if (gdkEventCount == 0) {
+		gdkEvents = null;
+		gdkEventWidgets = null;
+	}
 	return event;
 }
 

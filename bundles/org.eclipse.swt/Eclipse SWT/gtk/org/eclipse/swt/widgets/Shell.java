@@ -1042,16 +1042,32 @@ public void setVisible (boolean visible) {
 	if ((OS.GTK_WIDGET_MAPPED (shellHandle) == visible)) return;
 	if (visible) {
 		sendEvent (SWT.Show);
-		// widget could be disposed at this point
 		if (isDisposed ()) return;
+
+		/*
+		* In order to ensure that the shell is visible
+		* and fully painted, dispatch events such as
+		* GDK_MAP and GDK_CONFIGURE, until the GDK_MAP
+		* event for the shell is received.
+		*/
 		mapped = false;
 		OS.gtk_widget_show (shellHandle);
+		display.dispatchEvents = new int [] {
+			OS.GDK_EXPOSE,
+			OS.GDK_CONFIGURE,
+			OS.GDK_MAP,
+			OS.GDK_UNMAP,
+			OS.GDK_NO_EXPOSE,
+		};
 		while (!isDisposed () && !mapped) {
 			OS.gtk_main_iteration ();
 		}
-		// widget could be disposed at this point
+		display.dispatchEvents = null;
+		if (isDisposed ()) return;
+		update (true);
 		if (isDisposed ()) return;
 		adjustTrim ();
+
 		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 		if ((style & mask) != 0) {
 			OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
@@ -1068,6 +1084,7 @@ void setZOrder (Control sibling, boolean above) {
 
 int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	mapped = true;
+	display.dispatchEvents = null;
 	return 0;
 }
 

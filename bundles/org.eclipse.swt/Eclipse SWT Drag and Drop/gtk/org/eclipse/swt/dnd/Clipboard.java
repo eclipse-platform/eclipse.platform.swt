@@ -188,13 +188,13 @@ public Object getContents(Transfer transfer) {
 	int[] typeIds = transfer.getTypeIds();
 	for (int i = 0; i < typeIds.length; i++) {
 		// try the primary selection first
-		selection_data = OS.gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, typeIds[i]);
+		selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, typeIds[i]);
 		if( selection_data != 0) break;
 	};
 	if (selection_data == 0) {
 		// try the clipboard selection second
 		for (int i = 0; i < typeIds.length; i++) {
-			selection_data = OS.gtk_clipboard_wait_for_contents(GTKCLIPBOARD, typeIds[i]);
+			selection_data = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, typeIds[i]);
 			if( selection_data != 0) break;
 		};
 	}
@@ -348,7 +348,7 @@ public String[] getAvailableTypeNames() {
 private  int[] _getAvailableTypes() {
 	int[] types = new int[0];
 	// first try the primary clipboard
-	int /*long*/ selection_data = OS.gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, TARGET);
+	int /*long*/ selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, TARGET);
 	if (selection_data != 0) {
 		try {
 			GtkSelectionData gtkSelectionData = new GtkSelectionData();
@@ -361,7 +361,7 @@ private  int[] _getAvailableTypes() {
 		}
 	}
 	// next try the selection clipboard
-	selection_data  = OS.gtk_clipboard_wait_for_contents(GTKCLIPBOARD, TARGET);
+	selection_data  = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, TARGET);
 	if (selection_data != 0) {
 		try {
 			GtkSelectionData gtkSelectionData = new GtkSelectionData();
@@ -378,5 +378,12 @@ private  int[] _getAvailableTypes() {
 		}
 	}
 	return types;
+}
+
+int /*long*/ gtk_clipboard_wait_for_contents(int /*long*/ clipboard, int /*long*/ target) {
+	display.dispatchEvents = new int[]{OS.GDK_SELECTION_NOTIFY};
+	int /*long*/ selection_data = OS.gtk_clipboard_wait_for_contents(clipboard, target);
+	display.dispatchEvents = null;
+	return selection_data;
 }
 }
