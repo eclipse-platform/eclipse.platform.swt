@@ -3,7 +3,7 @@
 <plugin
    id="org.eclipse.swt.examples.controls"
    name="%plugin.SWTControlsExample.name"
-   version="0.9"
+   version="1.0"
    provider-name="Object Technology International, Inc."
    class="org.eclipse.swt.examples.controls.ControlPlugin">
 <!-- Required plugins -->
@@ -15,12 +15,13 @@
 </requires>
 
 <!-- Runtime -->
+<!-- Runtime -->
 <runtime>
    <library name="controls.jar"/>
 </runtime>
 
-<!-- Extensions -->
 <!-- Extension points -->
+<!-- Extensions -->
 <extension
       point="org.eclipse.ui.views">
    <view

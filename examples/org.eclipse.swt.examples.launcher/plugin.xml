@@ -3,7 +3,7 @@
 <plugin
    id="org.eclipse.swt.examples.launcher"
    name="%plugin.SWTLauncherExample.name"
-   version="0.9"
+   version="1.0"
    provider-name="Object Technology International, Inc."
    class="org.eclipse.swt.examples.launcher.LauncherPlugin">
 <!-- Required plugins -->
@@ -62,16 +62,18 @@
          id="org.eclipse.swt.examples.launchViewCategory">
    </category>
    <item
-         enabled="false"
          name="%launchitem.LauncherExample.name"
+         enabled="false"
          icon="icons/launcher_example.gif"
          description="%launchitem.LauncherExample.description"
          category="org.eclipse.swt.examples.launchViewCategory"
          id="org.eclipse.swt.examples.launcher.viewlauncher">
       <view
-         viewId="org.eclipse.swt.examples.launcher.view"/>
+            viewId="org.eclipse.swt.examples.launcher.view">
+      </view>
       <source
-         zip="launchersrc.zip"/>
+            zip="launchersrc.zip">
+      </source>
    </item>
 </extension>
 </plugin>
