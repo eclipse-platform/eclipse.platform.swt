@@ -1615,7 +1615,7 @@ static int closestMatch(int depth, byte red, byte green, byte blue, int redMask,
 static final ImageData convertMask(ImageData mask) {
 	if (mask.depth == 1) return mask;
 	PaletteData palette = new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255,255,255)});
-	ImageData tempMask = new ImageData(mask.width, mask.height, 1, palette);
+	ImageData newMask = new ImageData(mask.width, mask.height, 1, palette);
 	/* Find index of black in mask palette */
 	int blackIndex = 0;
 	RGB[] rgbs = mask.getRGBs();
@@ -1635,9 +1635,9 @@ static final ImageData convertMask(ImageData mask) {
 				pixels[i] = 1;
 			}
 		}
-		tempMask.setPixels(0, y, mask.width, pixels, 0);
+		newMask.setPixels(0, y, mask.width, pixels, 0);
 	}
-	return tempMask;
+	return newMask;
 }
 
 static final byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
