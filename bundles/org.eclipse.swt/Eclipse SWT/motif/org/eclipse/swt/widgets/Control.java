@@ -3,7 +3,7 @@ package org.eclipse.swt.widgets;
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
-*/
+ */
 
 /**
 *	The widget class is the abstract superclass of all
@@ -26,6 +26,7 @@ package org.eclipse.swt.widgets;
 *
 **/
 
+/* Imports */
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.graphics.*;
@@ -47,6 +48,7 @@ import org.eclipse.swt.events.*;
  * within the SWT implementation.
  * </p>
  */
+/* Class Definition */
 public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	int fontList;
@@ -399,8 +401,30 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createWidget (int index) {
 	super.createWidget (index);
-	setZOrder ();
-	realizeChildren ();
+	/*
+	* Feature in MOTIF.  When a widget is created before the
+	* parent has been realized, the widget is created behind
+	* all siblings in the Z-order.  When a widget is created
+	* after the parent parent has been realized, it is created
+	* in front of all siblings.  This is not incorrect but is
+	* unexpected.  The fix is to force all widgets to always
+	* be created behind their siblings.
+	*/
+	int topHandle = topHandle ();
+	if (OS.XtIsRealized (topHandle)) {
+		int window = OS.XtWindow (topHandle);
+		if (window != 0) {
+			int display = OS.XtDisplay (topHandle);
+			if (display != 0) OS.XLowerWindow (display, window);
+		}
+		/*
+		* Make that the widget has been properly realized
+		* because the widget was created after the parent
+		* has been realized.  This is not part of the fix
+		* for Z-order in the code above. 
+		*/
+		realizeChildren ();
+	}
 }
 int defaultBackground () {
 	return getDisplay ().defaultBackground;
@@ -1905,9 +1929,7 @@ public void setCursor (Cursor cursor) {
 	if (display == 0) return;
 	int window = OS.XtWindow (handle);
 	if (window == 0) {
-		if (OS.XtIsRealized (handle)) return;
-		Shell shell = this.getShell ();
-		shell.realizeWidget ();
+		if (!OS.XtIsRealized (handle)) getShell ().realizeWidget ();
 		window = OS.XtWindow (handle);
 		if (window == 0) return;
 	}
@@ -2298,25 +2320,6 @@ public void setVisible (boolean visible) {
 	if ((argList [1] != 0) == visible) return;
 	OS.XtSetMappedWhenManaged (topHandle, visible);
 	sendEvent (visible ? SWT.Show : SWT.Hide);
-}
-void setZOrder () {
-	/*
-	* Feature in MOTIF.  When a widget is created before the
-	* parent has been realized, the widget is created behind
-	* all siblings in the Z-order.  When a widget is created
-	* after the parent parent has been realized, it is created
-	* in front of all siblings.  This is not incorrect but is
-	* unexpected.  The fix is to force all widgets to always
-	* be created behind their siblings.
-	*/
-	int topHandle = topHandle ();
-	if (OS.XtIsRealized (topHandle)) {
-		int window = OS.XtWindow (topHandle);
-		if (window != 0) {
-			int display = OS.XtDisplay (topHandle);
-			if (display != 0) OS.XLowerWindow (display, window);
-		}
-	}
 }
 void setZOrder (Control control, boolean above) {
 	/*
