@@ -427,7 +427,7 @@ public TreeItem getParentItem () {
 }
 
 void redraw (int propertyID) {
-	if (parent.drawCount != 0) return;
+	if (parent.drawCount != 0 && propertyID != Tree.CHECK_COLUMN_ID) return;
 	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
 	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, propertyID);
 }

@@ -457,12 +457,13 @@ public String getText (int index) {
 	return "";
 }
 
-void redraw () {
+void redraw (int propertyID) {
 	cached = true;
-	if (parent.ignoreRedraw || parent.drawCount != 0) return;
+	if (parent.ignoreRedraw) return;
+	if (parent.drawCount != 0 && propertyID != Table.CHECK_COLUMN_ID) return;
 	int itemIndex = parent.indexOf (this);
 	int [] id = new int [] {itemIndex + 1};
-	OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, propertyID);
 }
 
 void releaseChild () {
@@ -507,7 +508,7 @@ public void setBackground (Color color) {
 	if (background == color) return;
 	if (background != null && background.equals (color)) return;
 	background = color;
-	redraw ();
+	redraw (OS.kDataBrowserNoItem);
 }
 
 /**
@@ -542,7 +543,7 @@ public void setBackground (int index, Color color) {
 	if (cellBackground [index] == color) return;
 	if (cellBackground [index] != null && cellBackground [index].equals (color)) return;
 	cellBackground [index] = color;
-	redraw ();
+	redraw (OS.kDataBrowserNoItem);
 }
 
 /**
@@ -561,7 +562,7 @@ public void setChecked (boolean checked) {
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.checked == checked) return;
 	this.checked = checked;
-	redraw ();
+	redraw (Table.CHECK_COLUMN_ID);
 }
 
 /**
@@ -589,7 +590,7 @@ public void setFont (Font font){
 	if (this.font == font) return;
 	if (this.font != null && this.font.equals (font)) return;
 	this.font = font;
-	redraw ();
+	redraw (OS.kDataBrowserNoItem);
 }
 
 /**
@@ -624,7 +625,7 @@ public void setFont (int index, Font font) {
 	if (cellFont [index] == font) return;
 	if (cellFont [index] != null && cellFont [index].equals (font)) return;
 	cellFont [index] = font;
-	redraw ();
+	redraw (OS.kDataBrowserNoItem);
 }
 
 /**
@@ -653,7 +654,7 @@ public void setForeground (Color color) {
 	if (foreground == color) return;
 	if (foreground != null && foreground.equals (color)) return;
 	foreground = color;
-	redraw ();
+	redraw (OS.kDataBrowserNoItem);
 }
 
 /**
@@ -688,7 +689,7 @@ public void setForeground (int index, Color color){
 	if (cellForeground [index] == color) return;
 	if (cellForeground [index] != null && cellForeground [index].equals (color)) return;
 	cellForeground [index] = color;
-	redraw ();
+	redraw (OS.kDataBrowserNoItem);
 }
 /**
  * Sets the grayed state of the checkbox for this item.  This state change 
@@ -706,7 +707,7 @@ public void setGrayed (boolean grayed) {
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
-	redraw ();
+	redraw (Table.CHECK_COLUMN_ID);
 }
 
 /**
@@ -768,7 +769,7 @@ public void setImage (int index, Image image) {
 		images [index] = image;	
 	}
 	if (index == 0) parent.setScrollWidth (this);
-	redraw ();
+	redraw (OS.kDataBrowserNoItem);
 }
 
 public void setImage (Image image) {
@@ -791,7 +792,7 @@ public void setImageIndent (int indent) {
 	checkWidget();
 	if (indent < 0) return;
 	/* Image indent is not supported on the Macintosh */
-	redraw ();
+	redraw (OS.kDataBrowserNoItem);
 }
 
 /**
@@ -845,7 +846,7 @@ public void setText (int index, String string) {
 		strings [index] = string;
 	}
 	if (index == 0) parent.setScrollWidth (this);
-	redraw ();
+	redraw (OS.kDataBrowserNoItem);
 }
 
 public void setText (String string) {
