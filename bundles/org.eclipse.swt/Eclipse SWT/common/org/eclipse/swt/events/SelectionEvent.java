@@ -51,6 +51,12 @@ public class SelectionEvent extends TypedEvent {
 	public int height;
 
 	/**
+	 * the state of the keyboard modifier keys at the time
+	 * the event was generated.
+	 */
+	public int stateMask;
+
+	/**
 	 * a flag indicating whether the operation should be allowed
 	 */
 	public boolean doit;
@@ -69,6 +75,7 @@ public SelectionEvent(Event e) {
 	this.width = e.width;
 	this.height = e.height;
 	this.detail = e.detail;
+	this.stateMask = e.stateMask;
 	this.doit = e.doit;
 }
 
