@@ -555,9 +555,7 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Image)) return false;
 	Image image = (Image)object;
-	return device == image.device && pixmap == image.pixmap &&
-		transparentPixel == image.transparentPixel &&
-		mask == image.mask;
+	return device == image.device && pixmap == image.pixmap;
 }
 
 /**
