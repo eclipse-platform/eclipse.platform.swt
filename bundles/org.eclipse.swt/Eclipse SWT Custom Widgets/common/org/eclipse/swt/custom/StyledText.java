@@ -5402,7 +5402,7 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 	}
 	if (selection.y > startOffset && selection.x < startOffset + replacedLength) {
 		// selection intersects replaced text. set caret behind text change
-		caretOffset = selection.x = selection.y = startOffset + newLength;
+		internalSetSelection(startOffset + newLength, 0);
 		// always update the caret location. fixes 1G8FODP
 		setCaretLocation();
 	}
