@@ -2420,12 +2420,16 @@ public boolean sleep () {
 	
 	int display_fd = OS.ConnectionNumber (xDisplay);
 	int max_fd = display_fd > read_fd ? display_fd : read_fd;
-	OS.FD_ZERO (fd_set);
-	OS.FD_SET (display_fd, fd_set);
-	OS.FD_SET (read_fd, fd_set);
-	timeout [0] = 0;
-	timeout [1] = 100000;
-	OS.select (max_fd + 1, fd_set, null, null, timeout);
+	do {
+		OS.FD_ZERO (fd_set);
+		OS.FD_SET (display_fd, fd_set);
+		OS.FD_SET (read_fd, fd_set);
+		timeout [0] = 0;
+		timeout [1] = 100000;
+		if (OS.select (max_fd + 1, fd_set, null, null, timeout) != 0) break;
+		int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+		if (OS.XtAppPending (xtContext) != 0) return true;
+	} while (true);
 	return OS.FD_ISSET (display_fd, fd_set);
 }
 /**
