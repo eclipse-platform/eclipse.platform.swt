@@ -1031,15 +1031,13 @@ public void select (int index) {
 
 void select (int index, boolean scroll) {
 	if (index == -1) return;
+	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+	if (!(0 <= index && index < count)) return;
 	if (scroll) {
 		if ((style & SWT.SINGLE) != 0) {
 			OS.SendMessage (handle, OS.LB_SETCURSEL, index, 0);
 		} else {
-			int focusIndex = OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
-			OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
-			if (focusIndex != -1) {
-				OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
-			}
+			OS.SendMessage (handle, OS.LB_SETSEL, 1, index);	
 		}		
 		return;
 	}
@@ -1065,7 +1063,7 @@ void select (int index, boolean scroll) {
 	}
 	if ((style & SWT.MULTI) != 0) {
 		if (focusIndex != -1) {
-			OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
+			OS.SendMessage (handle, OS.LB_SETCARETINDEX, focusIndex, 0);
 		}
 	}
 	OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
@@ -1166,6 +1164,8 @@ void setBounds (int x, int y, int width, int height, int flags) {
 
 void setFocusIndex (int index) {
 //	checkWidget ();	
+	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+	if (!(0 <= index && index < count)) return;
 	OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
 }
 
@@ -1357,7 +1357,7 @@ public void setSelection(int [] indices) {
 	if ((style & SWT.MULTI) != 0) {
 		if (indices.length != 0) {
 			int focusIndex = indices [0];
-			if (focusIndex != -1) setFocusIndex (focusIndex);
+			if (focusIndex >= 0) setFocusIndex (focusIndex);
 		}
 	}
 }
@@ -1409,7 +1409,7 @@ public void setSelection (String [] items) {
 	}
 	if ((style & SWT.SINGLE) != 0) deselectAll ();
 	if ((style & SWT.MULTI) != 0) {
-		if (focusIndex != -1) setFocusIndex (focusIndex);
+		if (focusIndex >= 0) setFocusIndex (focusIndex);
 	}
 }
 
@@ -1433,7 +1433,7 @@ public void setSelection (int index) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index, true);
 	if ((style & SWT.MULTI) != 0) {
-		if (index != -1) setFocusIndex (index);
+		if (index >= 0) setFocusIndex (index);
 	}
 }
 
@@ -1459,7 +1459,7 @@ public void setSelection (int start, int end) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end, true);
 	if ((style & SWT.MULTI) != 0) {
-		if (start != -1) setFocusIndex (start);
+		if (start >= 0) setFocusIndex (start);
 	}
 }
 
