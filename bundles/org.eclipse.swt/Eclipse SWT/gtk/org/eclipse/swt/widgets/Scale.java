@@ -115,7 +115,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	fixedHandle = OS.gtk_fixed_new ();
+	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	int /*long*/ hAdjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 0);

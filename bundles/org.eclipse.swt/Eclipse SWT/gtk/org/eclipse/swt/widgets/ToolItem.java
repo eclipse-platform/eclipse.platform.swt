@@ -516,6 +516,11 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
 
+int /*long*/ gtk_map (int /*long*/ widget) {
+	parent.fixZOrder ();
+	return 0;
+}
+
 int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
@@ -554,6 +559,9 @@ void hookEvents () {
 	OS.g_signal_connect (handle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
 	OS.g_signal_connect (handle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
 	OS.g_signal_connect (handle, OS.event_after, windowProc3, EVENT_AFTER);
+
+	int /*long*/ topHandle = topHandle ();
+	OS.g_signal_connect_after (topHandle, OS.map, windowProc2, MAP);
 }
 
 /**

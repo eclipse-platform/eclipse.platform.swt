@@ -84,9 +84,6 @@ public class ATK extends OS {
 	/** 64 bit */
 	public static final synchronized native int AtkObjectFactory_sizeof ();
 	public static final synchronized native int AtkObjectFactoryClass_sizeof ();
-	public static final synchronized native int GInterfaceInfo_sizeof ();
-	public static final synchronized native int GTypeInfo_sizeof ();
-	public static final synchronized native int GTypeQuery_sizeof ();
 	
 	/** Native methods */
 	public static final synchronized native int /*long*/ ATK_ACTION_GET_IFACE (int /*long*/ obj);
@@ -94,9 +91,6 @@ public class ATK extends OS {
 	public static final synchronized native int /*long*/ ATK_OBJECT_FACTORY_CLASS (int /*long*/ klass);
 	public static final synchronized native int /*long*/ ATK_SELECTION_GET_IFACE (int /*long*/ obj);
 	public static final synchronized native int /*long*/ ATK_TEXT_GET_IFACE (int /*long*/ handle);
-	public static final synchronized native int /*long*/ G_OBJECT_CLASS (int /*long*/ klass);
-	public static final synchronized native int /*long*/ G_OBJECT_GET_CLASS (int /*long*/ object);
-	public static final synchronized native int /*long*/ G_TYPE_FROM_INSTANCE (int /*long*/ instance);
 	public static final synchronized native int /*long*/ GTK_ACCESSIBLE (int /*long*/ handle);
 	public static final synchronized native void atk_focus_tracker_notify (int /*long*/ object);
 	public static final synchronized native int /*long*/ atk_get_default_registry ();
@@ -112,18 +106,6 @@ public class ATK extends OS {
 	public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3);
 	public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
 	public static final synchronized native int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5);
-	public static final synchronized native int /*long*/ g_object_new (int /*long*/ type, int /*long*/ first_property_name);
-	public static final synchronized native void g_type_add_interface_static (int /*long*/ instance_type, int /*long*/ interface_type, int /*long*/ info);
-	public static final synchronized native int /*long*/ g_type_class_peek (int /*long*/ g_class);
-	public static final synchronized native int /*long*/ g_type_class_peek_parent (int /*long*/ g_class);
-	public static final synchronized native int /*long*/ g_type_from_name (byte[] name);
-	public static final synchronized native int /*long*/ g_type_interface_peek_parent (int /*long*/ iface);
-	public static final synchronized native boolean g_type_is_a (int /*long*/ type, int /*long*/ is_a_type);
-	public static final synchronized native int /*long*/ g_type_name (int /*long*/ handle);
-	public static final synchronized native int /*long*/ g_type_parent (int /*long*/ type);
-	public static final synchronized native void g_type_query (int /*long*/ type, int /*long*/ query);
-	public static final synchronized native int /*long*/ g_type_register_static (int /*long*/ parent_type, byte[] type_name, int /*long*/ info, int flags);
-	public static final synchronized native int /*long*/ gtk_widget_get_toplevel (int /*long*/ widget);
 	public static final synchronized native void memmove (AtkActionIface dest, int /*long*/ src);
 	public static final synchronized native void memmove (AtkComponentIface dest, int /*long*/ src);
 	public static final synchronized native void memmove (AtkHypertextIface dest, int /*long*/ src);
@@ -132,8 +114,6 @@ public class ATK extends OS {
 	public static final synchronized native void memmove (AtkSelectionIface dest, int /*long*/ src);	
 	public static final synchronized native void memmove (AtkTextIface dest, int /*long*/ src);
 	public static final synchronized native void memmove (GtkAccessible  dest, int /*long*/ src);
-	public static final synchronized native void memmove (GObjectClass  dest, int /*long*/ src);
-	public static final synchronized native void memmove (GTypeQuery dest, int /*long*/ src, int /*long*/ size);	
 	public static final synchronized native void memmove (int /*long*/ dest, AtkActionIface src);
 	public static final synchronized native void memmove (int /*long*/ dest, AtkComponentIface src);
 	public static final synchronized native void memmove (int /*long*/ dest, AtkHypertextIface src);
@@ -141,7 +121,4 @@ public class ATK extends OS {
 	public static final synchronized native void memmove (int /*long*/ dest, AtkObjectFactoryClass src);
 	public static final synchronized native void memmove (int /*long*/ dest, AtkSelectionIface src);
 	public static final synchronized native void memmove (int /*long*/ dest, AtkTextIface src);
-	public static final synchronized native void memmove (int /*long*/ dest, GInterfaceInfo src, int size);
-	public static final synchronized native void memmove (int /*long*/ dest, GObjectClass src);
-	public static final synchronized native void memmove (int /*long*/ dest, GTypeInfo src, int size);
 }

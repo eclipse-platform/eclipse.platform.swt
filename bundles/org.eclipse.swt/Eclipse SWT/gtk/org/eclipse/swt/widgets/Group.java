@@ -112,7 +112,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle(int index) {
 	state |= HANDLE;
-	fixedHandle = OS.gtk_fixed_new ();
+	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_frame_new (null);
@@ -121,7 +121,7 @@ void createHandle(int index) {
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.g_object_ref (labelHandle);
 	OS.gtk_object_sink (labelHandle);
-	clientHandle = OS.gtk_fixed_new();
+	clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_container_add (handle, clientHandle);

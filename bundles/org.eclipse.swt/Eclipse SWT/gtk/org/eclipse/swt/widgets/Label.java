@@ -133,7 +133,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	fixedHandle = OS.gtk_fixed_new ();
+	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -142,6 +142,7 @@ void createHandle (int index) {
 		} else {
 			handle = OS.gtk_vseparator_new ();
 		}
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
 		handle = OS.gtk_hbox_new (false, 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -152,7 +153,6 @@ void createHandle (int index) {
 		OS.gtk_container_add (handle, labelHandle);
 		OS.gtk_container_add (handle, imageHandle);
 	}
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.BORDER) != 0) {
 		frameHandle = OS.gtk_frame_new (null);
 		if (frameHandle == 0) error (SWT.ERROR_NO_HANDLES);

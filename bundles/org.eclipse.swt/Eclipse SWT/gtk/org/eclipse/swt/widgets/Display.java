@@ -209,6 +209,12 @@ public class Display extends Device {
 	Menu [] popups;
 	int popupTime;
 	
+	/* Fixed Subclass */
+	static int /*long*/ fixed_type;
+	static int /*long*/ fixed_info_ptr;
+	static Callback fixedClassInitCallback, fixedMapCallback;
+	static int /*long*/ fixedClassInitProc, fixedMapProc;
+
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
 		
@@ -708,8 +714,6 @@ synchronized void createDisplay (DeviceData data) {
 	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES);
 	}
-	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
-	OS.gdk_rgb_init ();
 	int /*long*/ ptr = OS.gtk_check_version (MAJOR, MINOR, MICRO);
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
@@ -720,6 +724,24 @@ synchronized void createDisplay (DeviceData data) {
 		int major = OS.gtk_major_version (), minor = OS.gtk_minor_version (), micro = OS.gtk_micro_version ();
 		System.out.println ("***WARNING: Detected: " + major + "." + minor + "." + micro);
 	}
+	if (fixed_type == 0) {
+		byte [] type_name = Converter.wcsToMbcs (null, "SwtFixed", true);
+		fixedClassInitCallback = new Callback (getClass (), "fixedClassInitProc", 2);
+		fixedClassInitProc = fixedClassInitCallback.getAddress ();
+		if (fixedClassInitProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		fixedMapCallback = new Callback (getClass (), "fixedMapProc", 1);
+		fixedMapProc = fixedMapCallback.getAddress ();
+		if (fixedMapProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		GTypeInfo fixed_info = new GTypeInfo ();
+		fixed_info.class_size = (short) OS.GtkFixedClass_sizeof ();
+		fixed_info.class_init = fixedClassInitProc;
+		fixed_info.instance_size = (short) OS.GtkFixed_sizeof ();
+		fixed_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
+		OS.memmove (fixed_info_ptr, fixed_info, GTypeInfo.sizeof);
+		fixed_type = OS.g_type_register_static (OS.GTK_TYPE_FIXED (), type_name, fixed_info_ptr, 0);
+	}	
+	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
+	OS.gdk_rgb_init ();
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
 	OS.gdk_set_program_class (buffer);
 	byte [] flatStyle = Converter.wcsToMbcs (null, "style \"swt-flat\" { GtkToolbar::shadow-type = none } widget \"*swt-toolbar-flat*\" style : highest \"swt-flat\"", true);
@@ -903,6 +925,21 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 public Widget findWidget (int /*long*/ handle) {
 	checkDevice ();
 	return getWidget (handle);
+}
+
+static int /*long*/ fixedClassInitProc (int /*long*/ g_class, int /*long*/ class_data) {
+	GtkWidgetClass klass = new GtkWidgetClass ();
+	OS.memmove (klass, g_class);
+	klass.map = fixedMapProc;
+	OS.memmove (g_class, klass);
+	return 0;
+}
+
+static int /*long*/ fixedMapProc (int /*long*/ handle) {
+	Display display = getCurrent ();
+	Widget widget = display.getWidget (handle);
+	if (widget != null) return widget.fixedMapProc (handle);
+	return 0;
 }
 
 void flushExposes (int /*long*/ window, boolean all) {
@@ -1136,6 +1173,10 @@ public Point getDPI () {
 	int width = OS.gdk_screen_width ();
 	int dpi = Compatibility.round (254 * width, widthMM * 10);
 	return new Point (dpi, dpi);
+}
+
+int /*long*/ gtk_fixed_get_type () {
+	return fixed_type;
 }
 
 /**

@@ -1347,6 +1347,26 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 	oldDecorations.fixDecorations (newDecorations, this, menus);
 }
 
+int /*long*/ fixedMapProc (int /*long*/ widget) {
+	OS.GTK_WIDGET_SET_FLAGS (widget, OS.GTK_MAPPED);
+	int /*long*/ widgetList = OS.gtk_container_get_children (widget);
+	if (widgetList != 0) {
+		int /*long*/ widgets = widgetList;
+		while (widgets != 0) {
+			int /*long*/ child = OS.g_list_data (widgets);
+			if (OS.GTK_WIDGET_VISIBLE (child) && OS.gtk_widget_get_child_visible (child) && !OS.GTK_WIDGET_MAPPED (child)) {
+				OS.gtk_widget_map (child);
+			}
+			widgets = OS.g_list_next (widgets);
+		}
+		OS.g_list_free (widgetList);
+	}
+	if ((OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_NO_WINDOW) == 0) {
+		OS.gdk_window_show_unraised (OS.GTK_WIDGET_WINDOW (widget));
+	}
+	return 0;
+}
+
 /**
  * Forces the receiver to have the <em>keyboard focus</em>, causing
  * all keyboard events to be delivered to it.
@@ -1841,26 +1861,6 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
 
-int /*long*/ gtk_map (int /*long*/ widget) {
-	/*
-	* Feature in GTK. The gdk window is raised to the top of the stack
-	* when gdk_window_show() is called. The fix is restore the stacking 
-	* order after the window  is mapped.
-	*/
-	int index = 0;
-	Control [] children = parent._getChildren ();
-	while (index < children.length) {
-		if (children [index] == this) break;
-		index++;
-	}
-	if (index == 0) {
-		setZOrder (null, true);
-	} else {
-		setZOrder (children [index - 1], false);
-	}
-	return 0;
-}
-
 int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 	int result = 0;
 	int /*long*/ eventPtr = OS.gtk_get_current_event ();
@@ -2238,6 +2238,7 @@ void releaseWidget () {
 		OS.gdk_window_destroy (enableWindow);
 		enableWindow = 0;
 	}
+	redrawWindow = 0;
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();
 	}
@@ -2973,17 +2974,8 @@ void setZOrder (Control sibling, boolean above, boolean fixChildren) {
 			parent.moveBelow (topHandle, siblingHandle);
 		}
 	}
-	/*
-	* Make sure that the parent handle is on the bottom of the stack
-	* when the parent children are siblings of the parent handle.
-	*/
-	if (!above && fixChildren && parent.parentingHandle () == parent.fixedHandle) {
-		int /*long*/ parentHandle = parent.handle;
-		if ((OS.GTK_WIDGET_FLAGS(parentHandle) & OS.GTK_NO_WINDOW) == 0) {
-			window = OS.GTK_WIDGET_WINDOW (parentHandle);
-			if (window != 0) OS.gdk_window_lower (window);
-		}
-	}
+	/*  Make sure that the parent internal windows are on the bottom of the stack	*/
+	if (!above && fixChildren) 	parent.fixZOrder ();
 }
 
 boolean showMenu (int x, int y) {

@@ -9,12 +9,12 @@
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
  *******************************************************************************/
-package org.eclipse.swt.internal.accessibility.gtk;
+package org.eclipse.swt.internal.gtk;
 
- 
+
 public class GInterfaceInfo {
 	public int /*long*/ interface_init;
 	public int /*long*/ interface_finalize;
 	public int /*long*/ interface_data;
-	public static final int sizeof = ATK.GInterfaceInfo_sizeof();
+	public static final int sizeof = OS.GInterfaceInfo_sizeof();
 }

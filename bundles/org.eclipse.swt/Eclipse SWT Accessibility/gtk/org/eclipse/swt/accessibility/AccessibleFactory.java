@@ -373,7 +373,7 @@ class AccessibleFactory {
 
 	static void registerAccessible (Accessible accessible) {
 		int /*long*/ controlHandle = accessible.getControlHandle ();
-		int /*long*/ widgetType = ATK.G_TYPE_FROM_INSTANCE (controlHandle);
+		int /*long*/ widgetType = ATK.G_OBJECT_TYPE (controlHandle);
 		AccessibleFactory factory = (AccessibleFactory) Factories.get (new LONG (widgetType));
 		if (factory == null) {
 			factory = new AccessibleFactory (widgetType);
@@ -388,7 +388,7 @@ class AccessibleFactory {
 	
 	static void unregisterAccessible (Accessible accessible) {
 		int /*long*/ controlHandle = accessible.getControlHandle ();
-		int /*long*/ widgetType = ATK.G_TYPE_FROM_INSTANCE (controlHandle);
+		int /*long*/ widgetType = ATK.G_OBJECT_TYPE (controlHandle);
 		AccessibleFactory factory = (AccessibleFactory) Factories.get (new LONG (widgetType));
 		if (factory != null) {
 			factory.removeAccessible (accessible);

@@ -708,6 +708,10 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 	return 0;
 }
 
+int /*long*/ fixedMapProc (int /*long*/ widget) {
+	return 0;
+}
+
 char [] fixMnemonic (String string) {
 	int length = string.length ();
 	char [] text = new char [length];

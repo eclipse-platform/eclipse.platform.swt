@@ -86,26 +86,26 @@ Control [] _getChildren () {
 	int /*long*/ parentHandle = parentingHandle ();
 	int /*long*/ list = OS.gtk_container_get_children (parentHandle);
 	if (list == 0) return new Control [0];
-	list = OS.g_list_reverse (list);
 	int count = OS.g_list_length (list);
 	Control [] children = new Control [count];
-	int i = 0, j = 0;
-	while (i < count) {
-		int /*long*/ handle = OS.g_list_nth_data (list, i);
+	int i = 0;
+	int /*long*/ temp = list;
+	while (temp != 0) {
+		int /*long*/ handle = OS.g_list_data (temp);
 		if (handle != 0) {
 			Widget widget = display.getWidget (handle);
 			if (widget != null && widget != this) {
 				if (widget instanceof Control) {
-					children [j++] = (Control) widget;
+					children [i++] = (Control) widget;
 				}
 			}
 		}
-		i++;
+		temp = OS.g_list_next (temp);
 	}
 	OS.g_list_free (list);
-	if (i == j) return children;
-	Control [] newChildren = new Control [j];
-	System.arraycopy (children, 0, newChildren, 0, j);
+	if (i == count) return children;
+	Control [] newChildren = new Control [i];
+	System.arraycopy (children, 0, newChildren, 0, i);
 	return newChildren;
 }
 
@@ -178,7 +178,7 @@ void createHandle (int index) {
 
 void createHandle (int index, boolean scrolled) {
 	if (scrolled) {
-		fixedHandle = OS.gtk_fixed_new ();
+		fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_fixed_set_has_window (fixedHandle, true);
 		int /*long*/ vadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
@@ -188,7 +188,7 @@ void createHandle (int index, boolean scrolled) {
 		scrolledHandle = OS.gtk_scrolled_window_new (hadj, vadj);
 		if (scrolledHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	}
-	handle = OS.gtk_fixed_new ();
+	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (handle, true);
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
@@ -213,7 +213,6 @@ void createHandle (int index, boolean scrolled) {
 		int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
-		//TODO - CHECK WIDTH IS THERE ALREADY THEN DON'T SET
 		if (hasBorder ()) {
 			OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 		}
@@ -283,6 +282,29 @@ void fixTabList (Control control) {
 		}
 	}
 	tabList = newList;
+}
+
+void fixZOrder () {
+	if ((state & CANVAS) != 0) return;
+	int /*long*/ parentHandle = parentingHandle ();
+	int /*long*/ parentWindow = OS.GTK_WIDGET_WINDOW (parentHandle);
+	if (parentWindow == 0) return;
+	int /*long*/ [] userData = new int /*long*/ [1];
+	int /*long*/ windowList = OS.gdk_window_get_children (parentWindow);
+	if (windowList != 0) {
+		int /*long*/ windows = windowList;
+		while (windows != 0) {
+			int /*long*/ window = OS.g_list_data (windows);
+			if (window != redrawWindow) {
+				OS.gdk_window_get_user_data (window, userData);
+				if (userData [0] == 0 || OS.G_OBJECT_TYPE (userData [0]) != display.gtk_fixed_get_type ()) {
+					OS.gdk_window_lower (window);
+				}
+			}
+			windows = OS.g_list_next (windows);
+		}
+		OS.g_list_free (windowList);
+	}
 }
 
 int /*long*/ focusHandle () {
@@ -459,6 +481,11 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	return (state & CANVAS) != 0 ? 1 : result;
 }
 
+int /*long*/ gtk_map (int /*long*/ widget) {
+	fixZOrder ();
+	return 0;	
+}
+
 int /*long*/ gtk_realize (int /*long*/ widget) {
 	int /*long*/ result = super.gtk_realize (widget);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
@@ -575,15 +602,15 @@ void moveAbove (int /*long*/ child, int /*long*/ sibling) {
 		temp = OS.g_list_next (temp);
 	}
 	children = OS.g_list_remove_link (children, childLink);
-	if (siblingLink == 0 || OS.g_list_next (siblingLink) == 0) {
+	if (siblingLink == 0 || OS.g_list_previous (siblingLink) == 0) {
 		OS.g_list_free_1 (childLink);
-		children = OS.g_list_append (children, childData);
+		children = OS.g_list_prepend (children, childData);
 	} else {
-		temp = OS.g_list_next (siblingLink);
-		OS.g_list_set_next (childLink, temp);
-		OS.g_list_set_previous (temp, childLink);
-		OS.g_list_set_previous (childLink, siblingLink);
-		OS.g_list_set_next (siblingLink, childLink);
+		temp = OS.g_list_previous (siblingLink);
+		OS.g_list_set_previous (childLink, temp);
+		OS.g_list_set_next (temp, childLink);
+		OS.g_list_set_next (childLink, siblingLink);
+		OS.g_list_set_previous (siblingLink, childLink);
 	}
 	fixed.children = children;
 	OS.memmove (parentHandle, fixed);
@@ -616,15 +643,15 @@ void moveBelow (int /*long*/ child, int /*long*/ sibling) {
 		temp = OS.g_list_next (temp);
 	}
 	children = OS.g_list_remove_link (children, childLink);
-	if (siblingLink == 0 || OS.g_list_previous (siblingLink) == 0) {
+	if (siblingLink == 0 || OS.g_list_next (siblingLink) == 0) {
 		OS.g_list_free_1 (childLink);
-		children = OS.g_list_prepend (children, childData);
+		children = OS.g_list_append (children, childData);
 	} else {
-		temp = OS.g_list_previous (siblingLink);
-		OS.g_list_set_previous (childLink, temp);
-		OS.g_list_set_next (temp, childLink);
-		OS.g_list_set_next (childLink, siblingLink);
-		OS.g_list_set_previous (siblingLink, childLink);
+		temp = OS.g_list_next (siblingLink);
+		OS.g_list_set_next (childLink, temp);
+		OS.g_list_set_previous (temp, childLink);
+		OS.g_list_set_previous (childLink, siblingLink);
+		OS.g_list_set_next (siblingLink, childLink);
 	}
 	fixed.children = children;
 	OS.memmove (parentHandle, fixed);

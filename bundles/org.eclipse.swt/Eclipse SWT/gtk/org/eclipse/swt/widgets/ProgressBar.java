@@ -76,8 +76,12 @@ static int checkStyle (int style) {
 
 void createHandle (int index) {
 	state |= HANDLE;
+	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_progress_bar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_container_add (fixedHandle, handle);
 	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_PROGRESS_BOTTOM_TO_TOP : OS.GTK_PROGRESS_LEFT_TO_RIGHT;
 	OS.gtk_progress_bar_set_orientation (handle, orientation);
 	if ((style & SWT.INDETERMINATE) != 0) {

@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int ATK_nativeFunctionCount = 60;
-int ATK_nativeFunctionCallCount[60];
+int ATK_nativeFunctionCount = 37;
+int ATK_nativeFunctionCallCount[37];
 char * ATK_nativeFunctionNames[] = {
 	"ATK_1ACTION_1GET_1IFACE", 
 	"ATK_1COMPONENT_1GET_1IFACE", 
@@ -28,13 +28,7 @@ char * ATK_nativeFunctionNames[] = {
 	"ATK_1TEXT_1GET_1IFACE", 
 	"AtkObjectFactoryClass_1sizeof", 
 	"AtkObjectFactory_1sizeof", 
-	"GInterfaceInfo_1sizeof", 
 	"GTK_1ACCESSIBLE", 
-	"GTypeInfo_1sizeof", 
-	"GTypeQuery_1sizeof", 
-	"G_1OBJECT_1CLASS", 
-	"G_1OBJECT_1GET_1CLASS", 
-	"G_1TYPE_1FROM_1INSTANCE", 
 	"atk_1focus_1tracker_1notify", 
 	"atk_1get_1default_1registry", 
 	"atk_1object_1factory_1get_1accessible_1type", 
@@ -49,18 +43,6 @@ char * ATK_nativeFunctionNames[] = {
 	"call__IIIII", 
 	"call__IIIIII", 
 	"call__IIIIIII", 
-	"g_1object_1new", 
-	"g_1type_1add_1interface_1static", 
-	"g_1type_1class_1peek", 
-	"g_1type_1class_1peek_1parent", 
-	"g_1type_1from_1name", 
-	"g_1type_1interface_1peek_1parent", 
-	"g_1type_1is_1a", 
-	"g_1type_1name", 
-	"g_1type_1parent", 
-	"g_1type_1query", 
-	"g_1type_1register_1static", 
-	"gtk_1widget_1get_1toplevel", 
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2", 
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2", 
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2", 
@@ -68,9 +50,6 @@ char * ATK_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2", 
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2", 
 	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2", 
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GInterfaceInfo_2I", 
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2", 
-	"memmove__ILorg_eclipse_swt_internal_accessibility_gtk_GTypeInfo_2I", 
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2I", 
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I", 
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2I", 
@@ -78,8 +57,6 @@ char * ATK_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkObjectFactoryClass_2I", 
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkSelectionIface_2I", 
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextIface_2I", 
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2I", 
-	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GTypeQuery_2II", 
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GtkAccessible_2I", 
 };
 

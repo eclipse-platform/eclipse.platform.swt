@@ -9,13 +9,15 @@
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
  *******************************************************************************/
-package org.eclipse.swt.internal.accessibility.gtk;
+package org.eclipse.swt.internal.gtk;
 
 
-public class GTypeQuery {
-	public int type;
-	public int /*long*/ type_name;
-	public int class_size;
-	public int instance_size;
-	public static final int sizeof = ATK.GTypeQuery_sizeof();
+public class GObjectClass {
+	public int /*long*/ constructor;
+	public int /*long*/ set_property;
+	public int /*long*/ get_property;
+	public int /*long*/ dispose;
+	public int /*long*/ finalize;
+	public int /*long*/ dispatch_properties_changed;
+	public int /*long*/ notify;
 }

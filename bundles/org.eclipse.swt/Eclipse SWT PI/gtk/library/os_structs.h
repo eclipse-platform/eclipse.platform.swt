@@ -15,6 +15,54 @@
 
 #include "os.h"
 
+#ifndef NO_GInterfaceInfo
+void cacheGInterfaceInfoFields(JNIEnv *env, jobject lpObject);
+GInterfaceInfo *getGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct);
+void setGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct);
+#define GInterfaceInfo_sizeof() sizeof(GInterfaceInfo)
+#else
+#define cacheGInterfaceInfoFields(a,b)
+#define getGInterfaceInfoFields(a,b,c) NULL
+#define setGInterfaceInfoFields(a,b,c)
+#define GInterfaceInfo_sizeof() 0
+#endif
+
+#ifndef NO_GObjectClass
+void cacheGObjectClassFields(JNIEnv *env, jobject lpObject);
+GObjectClass *getGObjectClassFields(JNIEnv *env, jobject lpObject, GObjectClass *lpStruct);
+void setGObjectClassFields(JNIEnv *env, jobject lpObject, GObjectClass *lpStruct);
+#define GObjectClass_sizeof() sizeof(GObjectClass)
+#else
+#define cacheGObjectClassFields(a,b)
+#define getGObjectClassFields(a,b,c) NULL
+#define setGObjectClassFields(a,b,c)
+#define GObjectClass_sizeof() 0
+#endif
+
+#ifndef NO_GTypeInfo
+void cacheGTypeInfoFields(JNIEnv *env, jobject lpObject);
+GTypeInfo *getGTypeInfoFields(JNIEnv *env, jobject lpObject, GTypeInfo *lpStruct);
+void setGTypeInfoFields(JNIEnv *env, jobject lpObject, GTypeInfo *lpStruct);
+#define GTypeInfo_sizeof() sizeof(GTypeInfo)
+#else
+#define cacheGTypeInfoFields(a,b)
+#define getGTypeInfoFields(a,b,c) NULL
+#define setGTypeInfoFields(a,b,c)
+#define GTypeInfo_sizeof() 0
+#endif
+
+#ifndef NO_GTypeQuery
+void cacheGTypeQueryFields(JNIEnv *env, jobject lpObject);
+GTypeQuery *getGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct);
+void setGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct);
+#define GTypeQuery_sizeof() sizeof(GTypeQuery)
+#else
+#define cacheGTypeQueryFields(a,b)
+#define getGTypeQueryFields(a,b,c) NULL
+#define setGTypeQueryFields(a,b,c)
+#define GTypeQuery_sizeof() 0
+#endif
+
 #ifndef NO_GdkColor
 void cacheGdkColorFields(JNIEnv *env, jobject lpObject);
 GdkColor *getGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct);
@@ -325,6 +373,18 @@ void setGtkTargetPairFields(JNIEnv *env, jobject lpObject, GtkTargetPair *lpStru
 #define getGtkTargetPairFields(a,b,c) NULL
 #define setGtkTargetPairFields(a,b,c)
 #define GtkTargetPair_sizeof() 0
+#endif
+
+#ifndef NO_GtkWidgetClass
+void cacheGtkWidgetClassFields(JNIEnv *env, jobject lpObject);
+GtkWidgetClass *getGtkWidgetClassFields(JNIEnv *env, jobject lpObject, GtkWidgetClass *lpStruct);
+void setGtkWidgetClassFields(JNIEnv *env, jobject lpObject, GtkWidgetClass *lpStruct);
+#define GtkWidgetClass_sizeof() sizeof(GtkWidgetClass)
+#else
+#define cacheGtkWidgetClassFields(a,b)
+#define getGtkWidgetClassFields(a,b,c) NULL
+#define setGtkWidgetClassFields(a,b,c)
+#define GtkWidgetClass_sizeof() 0
 #endif
 
 #ifndef NO_PangoAttribute

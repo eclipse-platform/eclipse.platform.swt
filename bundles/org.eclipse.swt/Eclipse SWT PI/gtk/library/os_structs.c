@@ -16,6 +16,190 @@
 #include "swt.h"
 #include "os_structs.h"
 
+#ifndef NO_GInterfaceInfo
+typedef struct GInterfaceInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID interface_init, interface_finalize, interface_data;
+} GInterfaceInfo_FID_CACHE;
+
+GInterfaceInfo_FID_CACHE GInterfaceInfoFc;
+
+void cacheGInterfaceInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (GInterfaceInfoFc.cached) return;
+	GInterfaceInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GInterfaceInfoFc.interface_init = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_init", "I");
+	GInterfaceInfoFc.interface_finalize = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_finalize", "I");
+	GInterfaceInfoFc.interface_data = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_data", "I");
+	GInterfaceInfoFc.cached = 1;
+}
+
+GInterfaceInfo *getGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct)
+{
+	if (!GInterfaceInfoFc.cached) cacheGInterfaceInfoFields(env, lpObject);
+	lpStruct->interface_init = (GInterfaceInitFunc)(*env)->GetIntField(env, lpObject, GInterfaceInfoFc.interface_init);
+	lpStruct->interface_finalize = (GInterfaceFinalizeFunc)(*env)->GetIntField(env, lpObject, GInterfaceInfoFc.interface_finalize);
+	lpStruct->interface_data = (gpointer)(*env)->GetIntField(env, lpObject, GInterfaceInfoFc.interface_data);
+	return lpStruct;
+}
+
+void setGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct)
+{
+	if (!GInterfaceInfoFc.cached) cacheGInterfaceInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, GInterfaceInfoFc.interface_init, (jint)lpStruct->interface_init);
+	(*env)->SetIntField(env, lpObject, GInterfaceInfoFc.interface_finalize, (jint)lpStruct->interface_finalize);
+	(*env)->SetIntField(env, lpObject, GInterfaceInfoFc.interface_data, (jint)lpStruct->interface_data);
+}
+#endif
+
+#ifndef NO_GObjectClass
+typedef struct GObjectClass_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID constructor, set_property, get_property, dispose, finalize, dispatch_properties_changed, notify;
+} GObjectClass_FID_CACHE;
+
+GObjectClass_FID_CACHE GObjectClassFc;
+
+void cacheGObjectClassFields(JNIEnv *env, jobject lpObject)
+{
+	if (GObjectClassFc.cached) return;
+	GObjectClassFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GObjectClassFc.constructor = (*env)->GetFieldID(env, GObjectClassFc.clazz, "constructor", "I");
+	GObjectClassFc.set_property = (*env)->GetFieldID(env, GObjectClassFc.clazz, "set_property", "I");
+	GObjectClassFc.get_property = (*env)->GetFieldID(env, GObjectClassFc.clazz, "get_property", "I");
+	GObjectClassFc.dispose = (*env)->GetFieldID(env, GObjectClassFc.clazz, "dispose", "I");
+	GObjectClassFc.finalize = (*env)->GetFieldID(env, GObjectClassFc.clazz, "finalize", "I");
+	GObjectClassFc.dispatch_properties_changed = (*env)->GetFieldID(env, GObjectClassFc.clazz, "dispatch_properties_changed", "I");
+	GObjectClassFc.notify = (*env)->GetFieldID(env, GObjectClassFc.clazz, "notify", "I");
+	GObjectClassFc.cached = 1;
+}
+
+GObjectClass *getGObjectClassFields(JNIEnv *env, jobject lpObject, GObjectClass *lpStruct)
+{
+	if (!GObjectClassFc.cached) cacheGObjectClassFields(env, lpObject);
+	lpStruct->constructor = (GObject *(*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.constructor);
+	lpStruct->set_property = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.set_property);
+	lpStruct->get_property = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.get_property);
+	lpStruct->dispose = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.dispose);
+	lpStruct->finalize = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.finalize);
+	lpStruct->dispatch_properties_changed = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.dispatch_properties_changed);
+	lpStruct->notify = (void (*)())(*env)->GetIntField(env, lpObject, GObjectClassFc.notify);
+	return lpStruct;
+}
+
+void setGObjectClassFields(JNIEnv *env, jobject lpObject, GObjectClass *lpStruct)
+{
+	if (!GObjectClassFc.cached) cacheGObjectClassFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, GObjectClassFc.constructor, (jint)lpStruct->constructor);
+	(*env)->SetIntField(env, lpObject, GObjectClassFc.set_property, (jint)lpStruct->set_property);
+	(*env)->SetIntField(env, lpObject, GObjectClassFc.get_property, (jint)lpStruct->get_property);
+	(*env)->SetIntField(env, lpObject, GObjectClassFc.dispose, (jint)lpStruct->dispose);
+	(*env)->SetIntField(env, lpObject, GObjectClassFc.finalize, (jint)lpStruct->finalize);
+	(*env)->SetIntField(env, lpObject, GObjectClassFc.dispatch_properties_changed, (jint)lpStruct->dispatch_properties_changed);
+	(*env)->SetIntField(env, lpObject, GObjectClassFc.notify, (jint)lpStruct->notify);
+}
+#endif
+
+#ifndef NO_GTypeInfo
+typedef struct GTypeInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID class_size, base_init, base_finalize, class_init, class_finalize, class_data, instance_size, n_preallocs, instance_init, value_table;
+} GTypeInfo_FID_CACHE;
+
+GTypeInfo_FID_CACHE GTypeInfoFc;
+
+void cacheGTypeInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (GTypeInfoFc.cached) return;
+	GTypeInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GTypeInfoFc.class_size = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "class_size", "S");
+	GTypeInfoFc.base_init = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "base_init", "I");
+	GTypeInfoFc.base_finalize = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "base_finalize", "I");
+	GTypeInfoFc.class_init = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "class_init", "I");
+	GTypeInfoFc.class_finalize = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "class_finalize", "I");
+	GTypeInfoFc.class_data = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "class_data", "I");
+	GTypeInfoFc.instance_size = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "instance_size", "S");
+	GTypeInfoFc.n_preallocs = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "n_preallocs", "S");
+	GTypeInfoFc.instance_init = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "instance_init", "I");
+	GTypeInfoFc.value_table = (*env)->GetFieldID(env, GTypeInfoFc.clazz, "value_table", "I");
+	GTypeInfoFc.cached = 1;
+}
+
+GTypeInfo *getGTypeInfoFields(JNIEnv *env, jobject lpObject, GTypeInfo *lpStruct)
+{
+	if (!GTypeInfoFc.cached) cacheGTypeInfoFields(env, lpObject);
+	lpStruct->class_size = (guint16)(*env)->GetShortField(env, lpObject, GTypeInfoFc.class_size);
+	lpStruct->base_init = (GBaseInitFunc)(*env)->GetIntField(env, lpObject, GTypeInfoFc.base_init);
+	lpStruct->base_finalize = (GBaseFinalizeFunc)(*env)->GetIntField(env, lpObject, GTypeInfoFc.base_finalize);
+	lpStruct->class_init = (GClassInitFunc)(*env)->GetIntField(env, lpObject, GTypeInfoFc.class_init);
+	lpStruct->class_finalize = (GClassFinalizeFunc)(*env)->GetIntField(env, lpObject, GTypeInfoFc.class_finalize);
+	lpStruct->class_data = (gconstpointer)(*env)->GetIntField(env, lpObject, GTypeInfoFc.class_data);
+	lpStruct->instance_size = (guint16)(*env)->GetShortField(env, lpObject, GTypeInfoFc.instance_size);
+	lpStruct->n_preallocs = (guint16)(*env)->GetShortField(env, lpObject, GTypeInfoFc.n_preallocs);
+	lpStruct->instance_init = (GInstanceInitFunc)(*env)->GetIntField(env, lpObject, GTypeInfoFc.instance_init);
+	lpStruct->value_table = (GTypeValueTable *)(*env)->GetIntField(env, lpObject, GTypeInfoFc.value_table);
+	return lpStruct;
+}
+
+void setGTypeInfoFields(JNIEnv *env, jobject lpObject, GTypeInfo *lpStruct)
+{
+	if (!GTypeInfoFc.cached) cacheGTypeInfoFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, GTypeInfoFc.class_size, (jshort)lpStruct->class_size);
+	(*env)->SetIntField(env, lpObject, GTypeInfoFc.base_init, (jint)lpStruct->base_init);
+	(*env)->SetIntField(env, lpObject, GTypeInfoFc.base_finalize, (jint)lpStruct->base_finalize);
+	(*env)->SetIntField(env, lpObject, GTypeInfoFc.class_init, (jint)lpStruct->class_init);
+	(*env)->SetIntField(env, lpObject, GTypeInfoFc.class_finalize, (jint)lpStruct->class_finalize);
+	(*env)->SetIntField(env, lpObject, GTypeInfoFc.class_data, (jint)lpStruct->class_data);
+	(*env)->SetShortField(env, lpObject, GTypeInfoFc.instance_size, (jshort)lpStruct->instance_size);
+	(*env)->SetShortField(env, lpObject, GTypeInfoFc.n_preallocs, (jshort)lpStruct->n_preallocs);
+	(*env)->SetIntField(env, lpObject, GTypeInfoFc.instance_init, (jint)lpStruct->instance_init);
+	(*env)->SetIntField(env, lpObject, GTypeInfoFc.value_table, (jint)lpStruct->value_table);
+}
+#endif
+
+#ifndef NO_GTypeQuery
+typedef struct GTypeQuery_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type, type_name, class_size, instance_size;
+} GTypeQuery_FID_CACHE;
+
+GTypeQuery_FID_CACHE GTypeQueryFc;
+
+void cacheGTypeQueryFields(JNIEnv *env, jobject lpObject)
+{
+	if (GTypeQueryFc.cached) return;
+	GTypeQueryFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GTypeQueryFc.type = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "type", "I");
+	GTypeQueryFc.type_name = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "type_name", "I");
+	GTypeQueryFc.class_size = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "class_size", "I");
+	GTypeQueryFc.instance_size = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "instance_size", "I");
+	GTypeQueryFc.cached = 1;
+}
+
+GTypeQuery *getGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct)
+{
+	if (!GTypeQueryFc.cached) cacheGTypeQueryFields(env, lpObject);
+	lpStruct->type = (GType)(*env)->GetIntField(env, lpObject, GTypeQueryFc.type);
+	lpStruct->type_name = (const gchar *)(*env)->GetIntField(env, lpObject, GTypeQueryFc.type_name);
+	lpStruct->class_size = (guint)(*env)->GetIntField(env, lpObject, GTypeQueryFc.class_size);
+	lpStruct->instance_size = (guint)(*env)->GetIntField(env, lpObject, GTypeQueryFc.instance_size);
+	return lpStruct;
+}
+
+void setGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct)
+{
+	if (!GTypeQueryFc.cached) cacheGTypeQueryFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, GTypeQueryFc.type, (jint)lpStruct->type);
+	(*env)->SetIntField(env, lpObject, GTypeQueryFc.type_name, (jint)lpStruct->type_name);
+	(*env)->SetIntField(env, lpObject, GTypeQueryFc.class_size, (jint)lpStruct->class_size);
+	(*env)->SetIntField(env, lpObject, GTypeQueryFc.instance_size, (jint)lpStruct->instance_size);
+}
+#endif
+
 #ifndef NO_GdkColor
 typedef struct GdkColor_FID_CACHE {
 	int cached;
@@ -1347,6 +1531,229 @@ void setGtkTargetPairFields(JNIEnv *env, jobject lpObject, GtkTargetPair *lpStru
 	(*env)->SetIntField(env, lpObject, GtkTargetPairFc.target, (jint)lpStruct->target);
 	(*env)->SetIntField(env, lpObject, GtkTargetPairFc.flags, (jint)lpStruct->flags);
 	(*env)->SetIntField(env, lpObject, GtkTargetPairFc.info, (jint)lpStruct->info);
+}
+#endif
+
+#ifndef NO_GtkWidgetClass
+typedef struct GtkWidgetClass_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID activate_signal, set_scroll_adjustments_signal, dispatch_child_properties_changed, show, show_all, hide, hide_all, map, unmap, realize, unrealize, size_request, size_allocate, state_changed, parent_set, hierarchy_changed, style_set, direction_changed, grab_notify, child_notify, mnemonic_activate, grab_focus, focus, event, button_press_event, button_release_event, scroll_event, motion_notify_event, delete_event, destroy_event, expose_event, key_press_event, key_release_event, enter_notify_event, leave_notify_event, configure_event, focus_in_event, focus_out_event, map_event, unmap_event, property_notify_event, selection_clear_event, selection_request_event, selection_notify_event, proximity_in_event, proximity_out_event, visibility_notify_event, client_event, no_expose_event, window_state_event, selection_get, selection_received, drag_begin, drag_end, drag_data_get, drag_data_delete, drag_leave, drag_motion, drag_drop, drag_data_received, popup_menu, show_help, get_accessible, screen_changed;
+} GtkWidgetClass_FID_CACHE;
+
+GtkWidgetClass_FID_CACHE GtkWidgetClassFc;
+
+void cacheGtkWidgetClassFields(JNIEnv *env, jobject lpObject)
+{
+	if (GtkWidgetClassFc.cached) return;
+	cacheGObjectClassFields(env, lpObject);
+	GtkWidgetClassFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GtkWidgetClassFc.activate_signal = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "activate_signal", "I");
+	GtkWidgetClassFc.set_scroll_adjustments_signal = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "set_scroll_adjustments_signal", "I");
+	GtkWidgetClassFc.dispatch_child_properties_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "dispatch_child_properties_changed", "I");
+	GtkWidgetClassFc.show = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "show", "I");
+	GtkWidgetClassFc.show_all = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "show_all", "I");
+	GtkWidgetClassFc.hide = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "hide", "I");
+	GtkWidgetClassFc.hide_all = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "hide_all", "I");
+	GtkWidgetClassFc.map = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "map", "I");
+	GtkWidgetClassFc.unmap = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "unmap", "I");
+	GtkWidgetClassFc.realize = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "realize", "I");
+	GtkWidgetClassFc.unrealize = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "unrealize", "I");
+	GtkWidgetClassFc.size_request = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "size_request", "I");
+	GtkWidgetClassFc.size_allocate = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "size_allocate", "I");
+	GtkWidgetClassFc.state_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "state_changed", "I");
+	GtkWidgetClassFc.parent_set = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "parent_set", "I");
+	GtkWidgetClassFc.hierarchy_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "hierarchy_changed", "I");
+	GtkWidgetClassFc.style_set = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "style_set", "I");
+	GtkWidgetClassFc.direction_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "direction_changed", "I");
+	GtkWidgetClassFc.grab_notify = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "grab_notify", "I");
+	GtkWidgetClassFc.child_notify = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "child_notify", "I");
+	GtkWidgetClassFc.mnemonic_activate = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "mnemonic_activate", "I");
+	GtkWidgetClassFc.grab_focus = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "grab_focus", "I");
+	GtkWidgetClassFc.focus = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "focus", "I");
+	GtkWidgetClassFc.event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "event", "I");
+	GtkWidgetClassFc.button_press_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "button_press_event", "I");
+	GtkWidgetClassFc.button_release_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "button_release_event", "I");
+	GtkWidgetClassFc.scroll_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "scroll_event", "I");
+	GtkWidgetClassFc.motion_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "motion_notify_event", "I");
+	GtkWidgetClassFc.delete_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "delete_event", "I");
+	GtkWidgetClassFc.destroy_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "destroy_event", "I");
+	GtkWidgetClassFc.expose_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "expose_event", "I");
+	GtkWidgetClassFc.key_press_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "key_press_event", "I");
+	GtkWidgetClassFc.key_release_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "key_release_event", "I");
+	GtkWidgetClassFc.enter_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "enter_notify_event", "I");
+	GtkWidgetClassFc.leave_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "leave_notify_event", "I");
+	GtkWidgetClassFc.configure_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "configure_event", "I");
+	GtkWidgetClassFc.focus_in_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "focus_in_event", "I");
+	GtkWidgetClassFc.focus_out_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "focus_out_event", "I");
+	GtkWidgetClassFc.map_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "map_event", "I");
+	GtkWidgetClassFc.unmap_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "unmap_event", "I");
+	GtkWidgetClassFc.property_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "property_notify_event", "I");
+	GtkWidgetClassFc.selection_clear_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_clear_event", "I");
+	GtkWidgetClassFc.selection_request_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_request_event", "I");
+	GtkWidgetClassFc.selection_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_notify_event", "I");
+	GtkWidgetClassFc.proximity_in_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "proximity_in_event", "I");
+	GtkWidgetClassFc.proximity_out_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "proximity_out_event", "I");
+	GtkWidgetClassFc.visibility_notify_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "visibility_notify_event", "I");
+	GtkWidgetClassFc.client_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "client_event", "I");
+	GtkWidgetClassFc.no_expose_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "no_expose_event", "I");
+	GtkWidgetClassFc.window_state_event = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "window_state_event", "I");
+	GtkWidgetClassFc.selection_get = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_get", "I");
+	GtkWidgetClassFc.selection_received = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "selection_received", "I");
+	GtkWidgetClassFc.drag_begin = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_begin", "I");
+	GtkWidgetClassFc.drag_end = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_end", "I");
+	GtkWidgetClassFc.drag_data_get = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_data_get", "I");
+	GtkWidgetClassFc.drag_data_delete = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_data_delete", "I");
+	GtkWidgetClassFc.drag_leave = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_leave", "I");
+	GtkWidgetClassFc.drag_motion = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_motion", "I");
+	GtkWidgetClassFc.drag_drop = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_drop", "I");
+	GtkWidgetClassFc.drag_data_received = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "drag_data_received", "I");
+	GtkWidgetClassFc.popup_menu = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "popup_menu", "I");
+	GtkWidgetClassFc.show_help = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "show_help", "I");
+	GtkWidgetClassFc.get_accessible = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "get_accessible", "I");
+	GtkWidgetClassFc.screen_changed = (*env)->GetFieldID(env, GtkWidgetClassFc.clazz, "screen_changed", "I");
+	GtkWidgetClassFc.cached = 1;
+}
+
+GtkWidgetClass *getGtkWidgetClassFields(JNIEnv *env, jobject lpObject, GtkWidgetClass *lpStruct)
+{
+	if (!GtkWidgetClassFc.cached) cacheGtkWidgetClassFields(env, lpObject);
+	getGObjectClassFields(env, lpObject, (GObjectClass *)lpStruct);
+	lpStruct->activate_signal = (*env)->GetIntField(env, lpObject, GtkWidgetClassFc.activate_signal);
+	lpStruct->set_scroll_adjustments_signal = (*env)->GetIntField(env, lpObject, GtkWidgetClassFc.set_scroll_adjustments_signal);
+	lpStruct->dispatch_child_properties_changed = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.dispatch_child_properties_changed);
+	lpStruct->show = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.show);
+	lpStruct->show_all = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.show_all);
+	lpStruct->hide = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.hide);
+	lpStruct->hide_all = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.hide_all);
+	lpStruct->map = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.map);
+	lpStruct->unmap = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.unmap);
+	lpStruct->realize = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.realize);
+	lpStruct->unrealize = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.unrealize);
+	lpStruct->size_request = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.size_request);
+	lpStruct->size_allocate = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.size_allocate);
+	lpStruct->state_changed = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.state_changed);
+	lpStruct->parent_set = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.parent_set);
+	lpStruct->hierarchy_changed = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.hierarchy_changed);
+	lpStruct->style_set = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.style_set);
+	lpStruct->direction_changed = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.direction_changed);
+	lpStruct->grab_notify = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.grab_notify);
+	lpStruct->child_notify = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.child_notify);
+	lpStruct->mnemonic_activate = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.mnemonic_activate);
+	lpStruct->grab_focus = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.grab_focus);
+	lpStruct->focus = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.focus);
+	lpStruct->event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.event);
+	lpStruct->button_press_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.button_press_event);
+	lpStruct->button_release_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.button_release_event);
+	lpStruct->scroll_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.scroll_event);
+	lpStruct->motion_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.motion_notify_event);
+	lpStruct->delete_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.delete_event);
+	lpStruct->destroy_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.destroy_event);
+	lpStruct->expose_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.expose_event);
+	lpStruct->key_press_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.key_press_event);
+	lpStruct->key_release_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.key_release_event);
+	lpStruct->enter_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.enter_notify_event);
+	lpStruct->leave_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.leave_notify_event);
+	lpStruct->configure_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.configure_event);
+	lpStruct->focus_in_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.focus_in_event);
+	lpStruct->focus_out_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.focus_out_event);
+	lpStruct->map_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.map_event);
+	lpStruct->unmap_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.unmap_event);
+	lpStruct->property_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.property_notify_event);
+	lpStruct->selection_clear_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.selection_clear_event);
+	lpStruct->selection_request_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.selection_request_event);
+	lpStruct->selection_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.selection_notify_event);
+	lpStruct->proximity_in_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.proximity_in_event);
+	lpStruct->proximity_out_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.proximity_out_event);
+	lpStruct->visibility_notify_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.visibility_notify_event);
+	lpStruct->client_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.client_event);
+	lpStruct->no_expose_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.no_expose_event);
+	lpStruct->window_state_event = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.window_state_event);
+	lpStruct->selection_get = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.selection_get);
+	lpStruct->selection_received = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.selection_received);
+	lpStruct->drag_begin = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_begin);
+	lpStruct->drag_end = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_end);
+	lpStruct->drag_data_get = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_data_get);
+	lpStruct->drag_data_delete = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_data_delete);
+	lpStruct->drag_leave = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_leave);
+	lpStruct->drag_motion = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_motion);
+	lpStruct->drag_drop = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_drop);
+	lpStruct->drag_data_received = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.drag_data_received);
+	lpStruct->popup_menu = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.popup_menu);
+	lpStruct->show_help = (gboolean(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.show_help);
+	lpStruct->get_accessible = (AtkObject*(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.get_accessible);
+	lpStruct->screen_changed = (void(*)())(*env)->GetIntField(env, lpObject, GtkWidgetClassFc.screen_changed);
+	return lpStruct;
+}
+
+void setGtkWidgetClassFields(JNIEnv *env, jobject lpObject, GtkWidgetClass *lpStruct)
+{
+	if (!GtkWidgetClassFc.cached) cacheGtkWidgetClassFields(env, lpObject);
+	setGObjectClassFields(env, lpObject, (GObjectClass *)lpStruct);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.activate_signal, (jint)lpStruct->activate_signal);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.set_scroll_adjustments_signal, (jint)lpStruct->set_scroll_adjustments_signal);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.dispatch_child_properties_changed, (jint)lpStruct->dispatch_child_properties_changed);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.show, (jint)lpStruct->show);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.show_all, (jint)lpStruct->show_all);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.hide, (jint)lpStruct->hide);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.hide_all, (jint)lpStruct->hide_all);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.map, (jint)lpStruct->map);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.unmap, (jint)lpStruct->unmap);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.realize, (jint)lpStruct->realize);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.unrealize, (jint)lpStruct->unrealize);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.size_request, (jint)lpStruct->size_request);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.size_allocate, (jint)lpStruct->size_allocate);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.state_changed, (jint)lpStruct->state_changed);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.parent_set, (jint)lpStruct->parent_set);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.hierarchy_changed, (jint)lpStruct->hierarchy_changed);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.style_set, (jint)lpStruct->style_set);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.direction_changed, (jint)lpStruct->direction_changed);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.grab_notify, (jint)lpStruct->grab_notify);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.child_notify, (jint)lpStruct->child_notify);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.mnemonic_activate, (jint)lpStruct->mnemonic_activate);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.grab_focus, (jint)lpStruct->grab_focus);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.focus, (jint)lpStruct->focus);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.event, (jint)lpStruct->event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.button_press_event, (jint)lpStruct->button_press_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.button_release_event, (jint)lpStruct->button_release_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.scroll_event, (jint)lpStruct->scroll_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.motion_notify_event, (jint)lpStruct->motion_notify_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.delete_event, (jint)lpStruct->delete_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.destroy_event, (jint)lpStruct->destroy_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.expose_event, (jint)lpStruct->expose_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.key_press_event, (jint)lpStruct->key_press_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.key_release_event, (jint)lpStruct->key_release_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.enter_notify_event, (jint)lpStruct->enter_notify_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.leave_notify_event, (jint)lpStruct->leave_notify_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.configure_event, (jint)lpStruct->configure_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.focus_in_event, (jint)lpStruct->focus_in_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.focus_out_event, (jint)lpStruct->focus_out_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.map_event, (jint)lpStruct->map_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.unmap_event, (jint)lpStruct->unmap_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.property_notify_event, (jint)lpStruct->property_notify_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.selection_clear_event, (jint)lpStruct->selection_clear_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.selection_request_event, (jint)lpStruct->selection_request_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.selection_notify_event, (jint)lpStruct->selection_notify_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.proximity_in_event, (jint)lpStruct->proximity_in_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.proximity_out_event, (jint)lpStruct->proximity_out_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.visibility_notify_event, (jint)lpStruct->visibility_notify_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.client_event, (jint)lpStruct->client_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.no_expose_event, (jint)lpStruct->no_expose_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.window_state_event, (jint)lpStruct->window_state_event);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.selection_get, (jint)lpStruct->selection_get);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.selection_received, (jint)lpStruct->selection_received);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_begin, (jint)lpStruct->drag_begin);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_end, (jint)lpStruct->drag_end);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_data_get, (jint)lpStruct->drag_data_get);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_data_delete, (jint)lpStruct->drag_data_delete);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_leave, (jint)lpStruct->drag_leave);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_motion, (jint)lpStruct->drag_motion);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_drop, (jint)lpStruct->drag_drop);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.drag_data_received, (jint)lpStruct->drag_data_received);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.popup_menu, (jint)lpStruct->popup_menu);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.show_help, (jint)lpStruct->show_help);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.get_accessible, (jint)lpStruct->get_accessible);
+	(*env)->SetIntField(env, lpObject, GtkWidgetClassFc.screen_changed, (jint)lpStruct->screen_changed);
 }
 #endif
 

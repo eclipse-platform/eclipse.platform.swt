@@ -181,7 +181,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	fixedHandle = OS.gtk_fixed_new ();
+	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_notebook_new ();
@@ -220,7 +220,7 @@ void createItem (TabItem item, int index) {
 	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_container_add (boxHandle, imageHandle);
 	OS.gtk_container_add (boxHandle, labelHandle);
-	int /*long*/ pageHandle = OS.gtk_fixed_new ();
+	int /*long*/ pageHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	OS.gtk_notebook_insert_page (handle, pageHandle, boxHandle, index);

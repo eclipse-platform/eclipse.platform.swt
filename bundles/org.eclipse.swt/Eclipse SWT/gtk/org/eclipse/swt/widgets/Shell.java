@@ -781,11 +781,6 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
 
-int /*long*/ gtk_map (int /*long*/ widget) {
-	if (enableWindow != 0) OS.gdk_window_raise (enableWindow);
-	return 0;
-}
-
 int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 	minimized = false;
 	sendEvent (SWT.Deiconify);

@@ -111,9 +111,13 @@ static int checkStyle (int style) {
 
 void createHandle (int index) {
 	state |= HANDLE | MENU;
+	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	if ((style & SWT.SINGLE) != 0) {
 		handle = OS.gtk_entry_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (fixedHandle, handle);
 		OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 		OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
 		OS.gtk_entry_set_visibility (handle, (style & SWT.PASSWORD) == 0);
@@ -124,9 +128,6 @@ void createHandle (int index) {
 			OS.gtk_entry_set_alignment (handle, alignment);
 		}
 	} else {
-		fixedHandle = OS.gtk_fixed_new ();
-		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_fixed_set_has_window (fixedHandle, true);
 		scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = OS.gtk_text_view_new ();
@@ -147,20 +148,6 @@ void createHandle (int index) {
 		if ((style & SWT.CENTER) != 0) just = OS.GTK_JUSTIFY_CENTER; 
 		if ((style & SWT.RIGHT) != 0) just = OS.GTK_JUSTIFY_RIGHT;
 		OS.gtk_text_view_set_justification (handle, just);
-	}
-	/*
-	* Bug in GTK.  When the parent is realized before the GtkTextView
-	* widget is created, the GTK_TEXT_WINDOW_TEXT window does not have
-	* its event mask properly set to match gtk_widget_add_events().
-	* The fix is to detect this and set the window event mask if
-	* necessary.    
-	*/
-	if ((style & SWT.MULTI) != 0) {
-		int /*long*/ window = OS.gtk_text_view_get_window (handle, OS.GTK_TEXT_WINDOW_TEXT);
-		if (window != 0) {
-			int mask = OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK;
-			OS.gdk_window_set_events (window, OS.gdk_window_get_events (window) | mask);
-		}
 	}
 }
 

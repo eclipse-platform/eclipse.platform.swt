@@ -9,9 +9,9 @@
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
  *******************************************************************************/
-package org.eclipse.swt.internal.accessibility.gtk;
+package org.eclipse.swt.internal.gtk;
 
- 
+
 public class GTypeInfo {
 	public short class_size;
 	public int /*long*/ base_init;
@@ -23,5 +23,5 @@ public class GTypeInfo {
 	public short n_preallocs;
 	public int /*long*/ instance_init;
 	public int /*long*/ value_table;
-	public static final int sizeof = ATK.GTypeInfo_sizeof();	
+	public static final int sizeof = OS.GTypeInfo_sizeof();	
 }
