@@ -81,6 +81,8 @@ class ShellTab extends Tab {
 			Shell shell = tabFolderPage.getShell ();
 			shells [shellCount] = new Shell (shell, style);
 		}
+		Button button = new Button(shells [shellCount], SWT.PUSH);
+		button.setBounds(20, 20, 100, 30);
 	
 		/* Set the size, title and open the shell */
 		shells [shellCount].setSize (300, 100);
