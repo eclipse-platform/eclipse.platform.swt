@@ -13,7 +13,7 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * The <code>Clipboard</code> provides a mechanism for copying data from one
+ * The <code>Clipboard</code> provides a mechanism for transferring data from one
  * application to another or within an application.
  * 
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
@@ -24,6 +24,21 @@ public class Clipboard {
 	private final int MAX_RETRIES = 10;
 
 
+/**
+ * Constructs a new instance of this class.  Creating an instance of a Clipboard
+ * may cause system resources to be allocated depending on the platform.  It is therefore
+ * mandatory that the Clipboard instance be disposed when no longer required.
+ *
+ * @param display the display on which to allocate the clipboard
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see Clipboard#dispose
+ * @see Clipboard#checkSubclass
+ */
 public Clipboard(Display display) {	
 	checkSubclass ();
 	if (display == null) {
@@ -56,18 +71,23 @@ public void dispose () {
 	display = null;
 }
 /**
- *  Retrieve the data of the specified type currently available on the system clipboard.
+ * Retrieve the data of the specified type currently available on the system clipboard.  Refer to the 
+ * specific subclass of <code>Tramsfer</code> to determine the type of object returned.
  * 
- *  <code><pre>
- * 	Clipboard clipboard = new Clipboard(display);
- *		TextTransfer textTransfer = TextTransfer.getInstance();
- *		String textData = (String)clipboard.getContents(textTransfer);
- * 	if (textData != null) System.out.println("Text is "+textData);
- *		RTFTransfer rtfTransfer = RTFTransfer.getInstance();
- *  	String rtfData = (String)clipboard.getContents(rtfTransfer);
- * 	if (rtfData != null) System.out.println("RTF Text is "+rtfData);
- *		clipboard.dispose();
- * </code></pre>
+ * <p>The following snippet shows text and RTF text being retrieved from the clipboard:</p>
+ * 
+ *    <code><pre>
+ *    Clipboard clipboard = new Clipboard(display);
+ *    TextTransfer textTransfer = TextTransfer.getInstance();
+ *    String textData = (String)clipboard.getContents(textTransfer);
+ *    if (textData != null) System.out.println("Text is "+textData);
+ *    RTFTransfer rtfTransfer = RTFTransfer.getInstance();
+ *    String rtfData = (String)clipboard.getContents(rtfTransfer);
+ *    if (rtfData != null) System.out.println("RTF Text is "+rtfData);
+ *    clipboard.dispose();
+ *    </code></pre>
+ * 
+ * @see Transfer
  * 
  * @param transfer the transfer agent for the type of data being requested
  * 
@@ -201,17 +221,12 @@ public void setContents(Object[] data, Transfer[] transferAgents){
  * Returns a platform specific list of the data types currently available on the 
  * system clipboard.
  * 
- * <p>Note: <code>getAvailableTypeNames</code> is a tool for writing a Transfer 
- * sub-class only.  It should NOT be used within an application because it provides 
+ * <p>Note: <code>getAvailableTypeNames</code> is a utility for writing a Transfer 
+ * sub-class.  It should NOT be used within an application because it provides 
  * platform specific information.</p>
  * 
  * @returns a platform specific list of the data types currently available on the 
  * system clipboard
- */
-/*
- * Note: getAvailableTypeNames is a tool for writing a Transfer sub-class only.  It should
- * NOT be used within an application because it provides platform specfic 
- * information.
  */
 public String[] getAvailableTypeNames() {
 	String[] types = new String[0];

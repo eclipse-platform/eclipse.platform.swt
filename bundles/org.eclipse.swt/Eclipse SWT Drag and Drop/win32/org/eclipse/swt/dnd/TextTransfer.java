@@ -17,6 +17,13 @@ import org.eclipse.swt.internal.ole.win32.IDataObject;
  * for converting plain text represented as a java <code>String</code> 
  * to a platform specific representation of the data and vice versa.  See 
  * <code>Transfer</code> for additional information.
+ * 
+ * <p>An example of a java <code>String</code> containing plain text is shown 
+ * below:</p>
+ * 
+ * <code><pre>
+ *     String textData = "Hello World";
+ * </code></pre>
  */
 public class TextTransfer extends ByteArrayTransfer {
 

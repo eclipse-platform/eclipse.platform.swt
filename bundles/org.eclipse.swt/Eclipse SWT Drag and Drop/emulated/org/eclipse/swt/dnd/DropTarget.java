@@ -58,21 +58,26 @@ import org.eclipse.swt.internal.*;
  * </pre></code>
  *
  * <dl>
- *	<dt><b>Styles</b> <dd>DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK 
- *	<dt><b>Events</b> <dd>DND.DragEnter, DND.DragLeave, DND.DragOver, DND.DragOperationChanged, 
- *                        DND.Drop, DND.DropAccept
+ *	<dt><b>Styles</b></dt> <dd>DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK</dd>
+ *	<dt><b>Events</b></dt> <dd>DND.DragEnter, DND.DragLeave, DND.DragOver, DND.DragOperationChanged, 
+ *                             DND.DropAccept, DND.Drop </dd>
  * </dl>
  */
 public final class DropTarget extends Widget {
 	
 /**
- * Creates a new <code>DropTarget</code> to handle dropping on the specified <code>Control</code>.
+ * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
+ * <code>Control</code>.
+ * Creating an instance of a DropTarget may cause system resources to be allocated 
+ * depending on the platform.  It is therefore mandatory that the DropTarget instance 
+ * be disposed when no longer required.
  * 
- * @param control the <code>Control</code> over which the user positions the cursor to drop data
- *
+ * @param control the <code>Control</code> over which the user positions the cursor to drop the data
  * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
- *					DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
+ *		   DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
  *
+ * @see DropTarget#dispose
+ * @see DropTarget#checkSubclass
  * @see DND#DROP_NONE
  * @see DND#DROP_COPY
  * @see DND#DROP_MOVE
@@ -82,15 +87,37 @@ public DropTarget(Control control, int style) {
 	super(control, style);
 }
 
-/**	 
- * Adds the listener to receive events.
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when a drag and drop operation is in progress, by sending
+ * it one of the messages defined in the <code>DropTargetListener</code>
+ * interface.
+ * 
+ * <p><ul>
+ * <li><code>dragEnter</code> is called when the cursor has entered the drop target boundaries
+ * <li><code>dragLeave</code> is called when the cursor has left the drop target boundaries and just before
+ * the drop occurs or is cancelled.
+ * <li><code>dragOperationChanged</code> is called when the operation being performed has changed 
+ * (usually due to the user changing the selected modifier key(s) while dragging)
+ * <li><code>dragOver</code> is called when the cursor is moving over the drop target
+ * <li><code>dropAccept</code> is called just before the drop is performed.  The drop target is given 
+ * the chance to change the nature of the drop or veto the drop by setting the <code>event.detail</code> field
+ * <li><code>drop</code> is called when the data is being dropped
+ * </ul></p>
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
- * @exception SWTError 
- *	<ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- * 		<li>ERROR_WIDGET_DISPOSED  when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DropTargetListener
+ * @see #removeDropListener
+ * @see DropTargetEvent
  */
 public void addDropListener(DropTargetListener listener) {	
 }
@@ -100,35 +127,46 @@ public void addDropListener(DropTargetListener listener) {
  * user positions the cursor to drop the data.
  *
  * @return the Control which is registered for this DropTarget
- *
  */
 public Control getControl () {
 	return null;
 }
+
 public Display getDisplay () {
 	return null;
 }
 /**
- * Returns the list of data types that can be transferred to this DropTarget.
+ * Returns a list of the data types that can be transferred to this DropTarget.
  *
- * @return the list of data types that can be transferred to this DropTarget
- *
+ * @return a list of the data types that can be transferred to this DropTarget
  */
 public Transfer[] getTransfer() { return null; }
+
 public void notifyListener (int eventType, Event event) {}
-/**	 
- * Removes the listener.
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when a drag and drop operation is in progress.
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
- * @exception SWTError
- *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
- * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DropTargetListener
+ * @see #addDropListener
  */
 public void removeDropListener(DropTargetListener listener) {}
 /**
- * Specifies the list of data types that can be transferred to this DropTarget.
+ * Specifies the data types that can be transferred to this DropTarget.  If data is 
+ * being dragged that does not match one of these types, the drop target will be notified of 
+ * the drag and drop operation but the currentDataType will be null and the operation 
+ * will be DND.NONE.
  *
  * @param transferAgents a list of Transfer objects which define the types of data that can be
  *						 dropped on this target

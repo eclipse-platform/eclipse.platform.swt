@@ -7,8 +7,31 @@ package org.eclipse.swt.dnd;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+/**
+ * This adapter class provides default implementations for the
+ * methods described by the <code>DragSourceListener</code> interface.
+ * 
+ * <p>Classes that wish to deal with <code>DragSourceEvent</code>s can
+ * extend this class and override only the methods which they are
+ * interested in.</p>
+ *
+ * @see DragSourceListener
+ * @see DragSourceEvent
+ */
 public class DragSourceAdapter implements DragSourceListener {
+	/**
+	 * This implementation of <code>dragStart</code> permits the drag operation to start.
+	 * For additional information see <code>DropTargetListener.dragStart</code>.
+	 */
 	public void dragStart(DragSourceEvent event){};
+	/**
+	 * This implementation of <code>dragFinished</code> does nothing.
+	 * For additional information see <code>DropTargetListener.dragFinished</code>.
+	 */
 	public void dragFinished(DragSourceEvent event){};
+	/**
+	 * This implementation of <code>dragSetData</code> does nothing.
+	 * For additional information see <code>DropTargetListener.dragSetData</code>.
+	 */
 	public void dragSetData(DragSourceEvent event){};
 }

@@ -11,68 +11,75 @@ import org.eclipse.swt.widgets.Widget;
 
 /**
  * The DropTargetEvent contains the event information passed in the methods of the DropTargetListener.
- * 
- * <p>When in dragEnter(), dragOver(), dragLeave(), dragOperationChanged(), dropAccept(), 
- * the following fields apply:
- * <ul>
- * <li>(in)widget        - the DropTarget on which the data will be dropped if the mouse is released
- * <li>(in)time          - the time of the event
- * <li>(in)x             - the x-cordinate of the cursor relative to the <code>Display</code>
- * <li>(in)y             - the y-cordinate of the cursor relative to the <code>Display</code>
- * <li>(in)dataTypes     - a list of the types of data that the DragSource can support
- * <li>(in,out)currentDataType - the specific type of data that will be provided on a drop
- * <li>(in)operations    - a list of the operations that the DragSource can support (e.g. DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK)
- * <li>(in,out)detail    - the operation being performed (one of DND.DROP_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
- * <li>(in)item          - if the associated control is a table or tree, this field contains the item located at the cursor coordinates
- * </ul>
- * The application can change the operation that will be performed by modifying the <code>detail</code> field 
- * but the choice must be one of the values in the <code>operations</code> field.  
- * The application can also change the type of data being requested by modifying the <code>currentDataTypes</code>
- * field  but the value must be one of the values in the <code>dataTypes list</code>.</p>
- *
- * <p>When in drop(), the following fields apply:
- * <ul>
- * <li>(in)widget     - the DropTarget on which the data was dropped
- * <li>(in)time       - the time of the event
- * <li>(in)x          - the x-cordinate of the cursor relative to the <code>Display</code>
- * <li>(in)y          - the y-cordinate of the cursor relative to the <code>Display</code>
- * <li>(in,out)detail - the operation being performed (one of DND.DROP_MOVE, DND.DROP_TARGET_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
- * <li>(in)currentDataType - the specific type of data that is be contained in the <code>data</code> field
- * <li>(in)data       - the data (which is of type currentDataType); the type of Java Object contained in this field is
- *						dependant on the Transfer subclass.  For example, the TextTransfer subclass provides a
- *						String with the text in the String.  The FileTransfer object provides an array of String with
- *						each String in the array containing the full path of the file.
- * (in)item          - if the associated control is a table or tree, this field contains the item located at the cursor coordinates
- * </ul>
- * The application can cancel the drop operation by setting the detail field to DND.DROP_NONE.</p>
- *
  */
 public class DropTargetEvent extends TypedEvent {
-	public int x;
-	public int y;
-	public int detail;
 	/**
-	 * A list of the operations that the DragSource can support 
+	 * The x-cordinate of the cursor relative to the <code>Display</code>
+	 */
+	public int x;
+	
+	/**
+	 * The y-cordinate of the cursor relative to the <code>Display</code>
+	 */
+	public int y;
+	
+	/**
+	 * The operation being performed.
+	 * @see DND.DROP_NONE
+	 * @see DND.DROP_MOVE
+	 * @see DND.DROP_COPY
+	 * @see DND.DROP_LINK
+	 */
+	public int detail;
+	
+	/**
+	 * A bitwise OR'ing of the operations that the DragSource can support 
 	 * (e.g. DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK).
+	 * The detail value must be a member of this list or DND.DROP_NONE.
+	 * @see DND.DROP_NONE
+	 * @see DND.DROP_MOVE
+	 * @see DND.DROP_COPY
+	 * @see DND.DROP_LINK
 	 */
 	public int operations;
+	
+	/**
+	 * A bitwise OR'ing of the drag under effect feedback to be displayed to the user
+	 * (e.g. DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL | DND.FEEDBACK_EXPAND).
+	 * <p>A value of DND.FEEDBACK_NONE indicates that no drag under effect will be displayed.</p>
+	 * <p>Feedback effects will only be applied if they are applicable.</p>
+	 * <p>The default value is DND.FEEDBACK_SELECT.</p>
+	 * @see DND.FEEDBACK_SELECT
+	 * @see DND.FEEDBACK_INSERT_BEFORE
+	 * @see DND.FEEDBACK_INSERT_AFTER
+	 * @see DND.FEEDBACK_SCROLL
+	 * @see DND.FEEDBACK_EXPAND
+	 */
 	public int feedback;
+	
+	/**
+	 * If the associated control is a table or tree, this field contains the item located 
+	 * at the cursor coordinates.
+	 */
 	public Widget item;
 	
-	/*
-	 * Platform specfic data.
-	 */
 	/**
 	 * The type of data that will be dropped.
 	 */
 	public TransferData currentDataType;
+	
 	/**
 	 * A list of the types of data that the DragSource is capable of providing.
 	 * The currentDataType must be a member of this list.
 	 */
 	public TransferData[] dataTypes;
 
-	
+/**
+ * Constructs a new instance of this class based on the
+ * information in the given untyped event.
+ *
+ * @param e the untyped event containing the information
+ */
 public DropTargetEvent(DNDEvent e) {
 	super(e);
 	this.data = e.data;

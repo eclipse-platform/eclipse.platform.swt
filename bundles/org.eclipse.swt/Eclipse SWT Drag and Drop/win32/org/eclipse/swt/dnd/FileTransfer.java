@@ -14,7 +14,20 @@ import org.eclipse.swt.internal.win32.DROPFILES;
  * The class <code>FileTransfer</code> provides a platform specific mechanism 
  * for converting a list of files represented as a java <code>String[]</code> to a 
  * platform specific representation of the data and vice versa.  
+ * Each <code>String</code> in the array contains the absolute path for a single 
+ * file or directory.
  * See <code>Transfer</code> for additional information.
+ * 
+ * <p>An example of a java <code>String[]</code> containing a list of files is shown 
+ * below:</p>
+ * 
+ * <code><pre>
+ *     File file1 = new File("C:\temp\file1");
+ *     File file2 = new File("C:\temp\file2");
+ *     String[] fileData = new String[2];
+ *     fileData[0] = file1.getAbsolutePath();
+ *     fileData[1] = file2.getAbsolutePath();
+ * </code></pre>
  */
 public class FileTransfer extends ByteArrayTransfer {
 	

@@ -16,10 +16,11 @@ import org.eclipse.swt.internal.ole.win32.*;
  * to a platform specific representation of the data and vice versa.  See 
  * <code>Transfer</code> for additional information.
  * 
- * <p>An example of a java <code>String</code> containg RTF text is shown 
+ * <p>An example of a java <code>String</code> containing RTF text is shown 
  * below:</p>
+ * 
  * <code><pre>
- * String rtfData = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i Hello World}";
+ *     String rtfData = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i Hello World}";
  * </code></pre>
  */
 public class RTFTransfer extends ByteArrayTransfer {

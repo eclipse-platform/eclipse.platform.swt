@@ -12,7 +12,8 @@ import org.eclipse.swt.internal.SWTEventListener;
  * The <code>DragSourceListener</code> class provides event notification to the application for DragSource events.
  *
  * <p>When the user drops data on a <code>DropTarget</code>, the application which defines the <code>DragSource</code>
- * must provide the dropped data by implementing <code>dragSetData</code>.</p>
+ * must provide the dropped data by implementing <code>dragSetData</code>.  In the dragSetData, the application
+ * must support all the data types that were specified in the DragSource#setTransfer method.</p>
  *
  * <p>After the drop has completed successfully or has been aborted, the application which defines the 
  * <code>DragSource</code> is required to take the appropriate cleanup action.  In the case of a successful 
@@ -27,13 +28,14 @@ public interface DragSourceListener extends SWTEventListener {
  *
  * <p>The following fields in the DragSourceEvent apply:
  * <ul>
- * <li>widget   - (in) the DragSource object that initiated the drag
- * <li>time     - (in) the time of the event
- * <li>doit     - (out) set to false by default.  To cause a drag to begin, set this to true.
+ * <li>(in)widget
+ * <li>(in)time
+ * <li>(in,out)doit
  * </ul></p>
  *
- * @param event the information associated with the drag finished event
- *
+ * @param event the information associated with the drag start event
+ * 
+ * @see DragSourceEvent
  */
 public void dragStart(DragSourceEvent event);
 
@@ -42,13 +44,15 @@ public void dragStart(DragSourceEvent event);
  *
  * <p>The following fields in the DragSourceEvent apply:
  * <ul>
- * <li>widget   - (in) the DragSource object that initiated the drag
- * <li>time     - (in) the time of the event
- * <li>dataType - (in) the type of data requested.  This is a TransferData object and can be used with the Transfer subclasses.
- * <li>data     - (out) the application inserts the actual data here (must match the dataType)
+ * <li>(in)widget
+ * <li>(in)time
+ * <li>(in)dataType - the type of data requested.
+ * <li>(out)data    - the application inserts the actual data here (must match the dataType)
  * </ul></p>
  *
  * @param event the information associated with the drag set data event
+ * 
+ * @see DragSourceEvent
  */
 public void dragSetData(DragSourceEvent event);
 
@@ -58,14 +62,15 @@ public void dragSetData(DragSourceEvent event);
  *
  * <p>The following fields in the DragSourceEvent apply:
  * <ul>
- * <li>widget   - (in) the DragSource object that initiated the drag
- * <li>time     - (in) the time of the event
- * <li>doit     - (in) true if the operation performed successfully
- * <li>detail   - (in) the operation that was performed (DND.DROP_MOVE, DND.DROP_TARGET_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
+ * <li>(in)widget
+ * <li>(in)time
+ * <li>(in)doit
+ * <li>(in)detail
  * </ul></p>
  *
  * @param event the information associated with the drag finished event
- *
+ * 
+ * @see DragSourceEvent
  */
 public void dragFinished(DragSourceEvent event);
 }
