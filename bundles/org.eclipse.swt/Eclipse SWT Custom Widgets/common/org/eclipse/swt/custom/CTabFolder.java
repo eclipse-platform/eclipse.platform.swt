@@ -1101,30 +1101,21 @@ private void onPaint(Event event) {
 	GC gc = event.gc;
 	Rectangle rect = super.getClientArea();
 	if (items.length == 0) {
-		
-		if (showBorders) {
-			gc.setForeground(borderColor1);
-			gc.drawRectangle(rect.x + borderRight, 
-			                 rect.y + borderBottom, 
-			                 rect.x + rect.width - borderRight - 1, 
-			                 rect.y + rect.height - borderBottom - 1);	
-			// fill in top and left edge with parent's background color
-			gc.setBackground(getParent().getBackground());
-			gc.fillRectangle(rect.x, rect.y, borderRight, rect.height);
-			gc.fillRectangle(rect.x, rect.y, rect.width, borderBottom);
-
-		}
-		int tabHeight = getTabHeight();
-		if (tabHeight > 0) {
-			int y = rect.y + borderBottom + tabHeight;
-			if (onBottom) {
-				y = rect.y + rect.height - tabHeight - 1;
+		if (showBorders) {		
+			if ((getStyle() & SWT.FLAT) != 0) {
+				gc.setForeground(borderColor1);
+				gc.drawRectangle(rect.x, rect.y, rect.x + rect.width - 1, rect.y + rect.height - 1);
+			} else {
+				gc.setForeground(borderColor1);
+				gc.drawRectangle(rect.x, rect.y, rect.x + rect.width - 3, rect.y + rect.height - 3);
+						
+				// fill in right and bottom edges with parent's background
+				gc.setBackground(getParent().getBackground());
+				gc.fillRectangle(rect.x + rect.width - 2, rect.y, 2, rect.height);
+				gc.fillRectangle(rect.x, rect.y + rect.height - 2, rect.width, 2);
 			}
-			gc.setForeground(borderColor1);
-			gc.drawLine(rect.x + borderRight, y, rect.x + rect.width, y);
+			gc.setForeground(getForeground());
 		}
-		gc.setForeground(getForeground());
-		gc.setBackground(getBackground());
 		return;
 	}
 	
