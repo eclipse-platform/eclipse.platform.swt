@@ -865,8 +865,10 @@ int processFocusOut () {
 	return 0;
 }
 int processMouseDown (Object callData) {
-	MacEvent me= (MacEvent) callData;
-	OS.TXNClick(fTX, me.getData());
+	if (callData instanceof MacEvent) {
+		MacEvent me= (MacEvent) callData;
+		OS.TXNClick(fTX, me.getData());
+	}
 	return 0;
 }
 int processPaint (Object callData) {
@@ -1417,7 +1419,7 @@ void enableWidget (boolean enabled) {
 ////////////////////////////////////////////////////////
 
 	/**
-	 * Overridden from Control.
+	 * Overridden from Control. Takes care of shadow
 	 * x and y are relative to window!
 	 */
 	void handleResize(int hndl, int x, int y, int width, int height) {
@@ -1430,7 +1432,7 @@ void enableWidget (boolean enabled) {
 			OS.SetControlBounds(fPopupButton, new MacRect(x, y, width, height).getData());
 	}
 	
-	int sendKeyEvent(int nextHandler, int eRefHandle) {
+	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
 		int status= OS.CallNextEventHandler(nextHandler, eRefHandle);
 		sendEvent (SWT.Modify);
 		return status;

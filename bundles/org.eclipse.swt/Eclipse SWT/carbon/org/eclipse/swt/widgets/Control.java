@@ -1265,8 +1265,9 @@ int processMouseEnter (Object callData) {
     */
 	MacEvent me= (MacEvent) callData;
 	Event event = new Event ();
-	event.x = me.getX();
-	event.y = me.getY();
+	Point p= me.getWhere2();
+	event.x = p.x;
+	event.y = p.y;
 	postEvent (SWT.MouseEnter, event);
 	return 0;
 }
@@ -1288,8 +1289,9 @@ int processMouseExit (Object callData) {
 	*/
 	MacEvent me= (MacEvent) callData;
 	Event event = new Event ();
-	event.x = me.getX();
-	event.y = me.getY();
+	Point p= me.getWhere2();
+	event.x = p.x;
+	event.y = p.y;
 	postEvent (SWT.MouseExit, event);
 	return 0;
 }
@@ -1728,7 +1730,7 @@ void sendHelpEvent (Object callData) {
 		control = control.parent;
 	}
 }
-byte [] sendIMEKeyEvent (int type, /* AW XKeyEvent */ MacEvent xEvent) {
+final byte [] sendIMEKeyEvent (int type, /* AW XKeyEvent */ MacEvent xEvent) {
 	/*
 	* Bug in Motif. On Linux only, XmImMbLookupString () does not return
 	* XBufferOverflow as the status if the buffer is too small. The fix
@@ -1745,8 +1747,7 @@ byte [] sendIMEKeyEvent (int type, /* AW XKeyEvent */ MacEvent xEvent) {
 	if (length == 0) return null;
 	*/
 	
-	byte [] buffer = new byte[1];
-	buffer[0]= xEvent.getCharacter();
+	byte [] buffer = new byte[0];
 
 	/* Convert from MBCS to UNICODE and send the event */
 	/* Use the character encoding for the default locale */
@@ -1754,7 +1755,7 @@ byte [] sendIMEKeyEvent (int type, /* AW XKeyEvent */ MacEvent xEvent) {
 	char [] result = Converter.mbcsToWcs (null, buffer);
 	*/
 	char [] result= new char[1];
-	result[0]= (char) buffer[0];
+	result[0]= (char) xEvent.getMacCharCodes();
 	
 	int index = 0;
 	while (index < result.length) {
@@ -1768,11 +1769,8 @@ byte [] sendIMEKeyEvent (int type, /* AW XKeyEvent */ MacEvent xEvent) {
 	}
 	return buffer;
 }
-void sendKeyEvent (int type, MacEvent xEvent) {
+final void sendKeyEvent (int type, MacEvent xEvent) {
 	Event event = new Event ();
-    /* AW
-	event.time = xEvent.time;
-    */
     event.time = xEvent.getWhen();
 	setKeyState (event, xEvent);
 	postEvent (type, event);
@@ -1789,9 +1787,6 @@ void sendKeyEvent (int type, MacEvent xEvent) {
 }
 void sendMouseEvent (int type, int button, MacEvent xEvent) {
 	Event event = new Event ();
-    /* AW
-	event.time = xEvent.time;
-    */
     event.time = xEvent.getWhen();
 	event.button = button;
     /* AW
@@ -2689,5 +2684,13 @@ public void update () {
 	 */
 	void handleResize(int hndl, int x, int y, int width, int height) {
 		OS.SetControlBounds(hndl, new MacRect(x, y, width, height).getData());
+	}
+	
+	/**
+	 * Hook (overwritten in Text and Combo)
+	 */
+	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
+		processEvent (type, new MacEvent(eRefHandle));
+		return OS.kNoErr;
 	}
 }

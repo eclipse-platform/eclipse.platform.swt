@@ -9,13 +9,6 @@ package org.eclipse.swt.graphics;
 
 public class DeviceData {
 	/*
-	* Motif only fields.
-	*/
-	public String display_name;
-	public String application_name;
-	public String application_class;
-
-	/*
 	* Debug fields - may not be honoured
 	* on some SWT platforms.
 	*/

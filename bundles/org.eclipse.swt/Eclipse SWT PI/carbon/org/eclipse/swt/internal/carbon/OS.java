@@ -179,18 +179,34 @@ public class OS {
 	public static final int kEventClassVolume		= ('v'<<24) + ('o'<<16) + ('l'<<8) + ' ';
 	public static final int kEventClassAppearance	= ('a'<<24) + ('p'<<16) + ('p'<<8) + 'm';
 	public static final int kEventClassService		= ('s'<<24) + ('e'<<16) + ('r'<<8) + 'v';
+	public static final int kEventClassCommand		= ('c'<<24) + ('m'<<16) + ('d'<<8) + 's';
 	
+	public static final int typeUInt32= ('m'<<24) + ('a'<<16) + ('g'<<8) + 'n';
+	public static final int typeChar= ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
 	public static final int typeUnicodeText= ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
 	public static final int typeWindowRef= ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
 	public static final int typeWindowDefPartCode= ('w'<<24) + ('d'<<16) + ('p'<<8) + 't';
 	public static final int typeControlRef= ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
+	public static final int typeMouseButton= ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
+	public static final int typeQDPoint= ('Q'<<24) + ('D'<<16) + ('p'<<8) + 't';
 	
 	public static final int kEventParamWindowDefPart= ('w'<<24) + ('d'<<16) + ('p'<<8) + 'c';
 	public static final int kEventParamControlRef= ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
-	
+	public static final int kEventParamMouseButton= ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
+	public static final int kEventParamMouseLocation= ('m'<<24) + ('l'<<16) + ('o'<<8) + 'c';
+
 	public static final int kEventTextInputUnicodeForKeyEvent = 2;
 
 	public static final int kEventParamTextInputSendText= ('t'<<24) + ('s'<<16) + ('t'<<8) + 'x';
+
+	public static final int kEventParamKeyCode= ('k'<<24) + ('c'<<16) + ('o'<<8) + 'd';
+	public static final int kEventParamKeyMacCharCodes= ('k'<<24) + ('c'<<16) + ('h'<<8) + 'r';
+	public static final int kEventParamKeyModifiers= ('k'<<24) + ('m'<<16) + ('o'<<8) + 'd';
+	public static final int kEventParamKeyUnicodes= ('k'<<24) + ('u'<<16) + ('n'<<8) + 'i';
+	
+	public static final short kEventMouseButtonPrimary= 1;		// the left mouse button
+	public static final short kEventMouseButtonSecondary= 2;	// the right mouse button
+	public static final short kEventMouseButtonTertiary= 3;		// the middle mouse button
 
 	public static final int kEventMouseDown		= 1;
 	public static final int kEventMouseUp		= 2;
@@ -219,8 +235,6 @@ public class OS {
 	public static final int kEventMenuBeginTracking = 1;
 	public static final int kEventMenuEndTracking = 2;
 		
-	public static final int typeUInt32	= ('m'<<24) + ('a'<<16) + ('g'<<8) + 'n';
-
 	public static final int kEventParamDirectObject	= ('-'<<24) + ('-'<<16) + ('-'<<8) + '-'; /* type varies depending on event*/
 	public static final int kEventParamAttributes	= ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r'; /* typeUInt32*/
 
@@ -228,14 +242,18 @@ public class OS {
 	
 	public static native int InstallEventHandler(int eventTargetRef, int controlHandlerUPP, int[] eventTypes, int clientData);
 	
+	public static native int GetEventHICommand(int eRefHandle, int[] outParamType);
+			
 	public static native int GetEventParameter(int eRefHandle, int paramName, int paramType, int[] outParamType,
-			int[] outActualSize, char[] data);			
+			int[] outActualSize, byte[] data);
 	public static native int GetEventParameter(int eRefHandle, int paramName, int paramType, int[] outParamType,
-			int[] outActualSize, short[] data);			
+			int[] outActualSize, char[] data);
 	public static native int GetEventParameter(int eRefHandle, int paramName, int paramType, int[] outParamType,
-			int[] outActualSize, int[] data);			
+			int[] outActualSize, short[] data);
+	public static native int GetEventParameter(int eRefHandle, int paramName, int paramType, int[] outParamType,
+			int[] outActualSize, int[] data);
 	public static native int SetEventParameter(int eRefHandle, int paramName, int paramType, char[] data);
-				
+
 	public static native int GetControlEventTarget(int cHandle);
 	public static native int GetMenuEventTarget(int cHandle);
 	public static native int GetUserFocusEventTarget();
@@ -265,6 +283,7 @@ public class OS {
 	public static native int GetWindowEventTarget(int wHandle);
 	public static native int GetEventClass(int eHandle);
 	public static native int GetEventKind(int eHandle);
+	public static native double GetEventTime(int eHandle);
 	public static native int GetMouseLocation(int eHandle, short[] location);
 	public static native int TrackMouseLocation(int portHandle, short[] outPt, short[] outResult);
 	public static native void GetGlobalMouse(short[] where);

@@ -782,6 +782,7 @@ private static void setAccelerator(int menu, short index, int accelerator) {
 	byte modifiers= 0;
 	if ((accelerator & SWT.SHIFT) != 0)
 		modifiers |= OS.kMenuShiftModifier;
+		
 	if ((accelerator & SWT.CONTROL) != 0)
 		modifiers |= OS.kMenuControlModifier;
 	if ((accelerator & SWT.ALT) != 0)
@@ -795,6 +796,10 @@ private static void setAccelerator(int menu, short index, int accelerator) {
 		else
 			modifiers |= OS.kMenuNoCommandModifier;
 	}
+	
+	if ((accelerator & SWT.ALT) != 0)
+		modifiers |= OS.kMenuControlModifier;
+
 	
 	if (modifiers != 0)
 		OS.SetMenuItemModifiers(menu, index, modifiers);

@@ -23,25 +23,14 @@ public abstract class Device implements Drawable {
 	* (Warning: This field is platform dependent)
 	*/
 	public int xDisplay;
-	
-	/* Arguments for XtOpenDisplay */
-	String display_name;
-	String application_name;
-	String application_class;
-	
+		
 	/* Debugging */
 	public static boolean DEBUG;
 	boolean debug = DEBUG;
 	public boolean tracking = DEBUG;
 	Error [] errors;
 	Object [] objects;
-	
-	/* Colormap and reference count for this display */
-	/* AW
-	XColor [] xcolors;
-	*/
-	int [] colorRefCount;
-	
+		
 	/* System Colors */
 	Color COLOR_BLACK, COLOR_DARK_RED, COLOR_DARK_GREEN, COLOR_DARK_YELLOW, COLOR_DARK_BLUE;
 	Color COLOR_DARK_MAGENTA, COLOR_DARK_CYAN, COLOR_GRAY, COLOR_DARK_GRAY, COLOR_RED;
@@ -54,19 +43,7 @@ public abstract class Device implements Drawable {
 
 	/* Warning and Error Handlers */
 	boolean warnings = true;
-	Callback xErrorCallback, xtWarningCallback, xIOErrorCallback, xtErrorCallback;
-	int xErrorProc, xtWarningProc, xIOErrorProc, xtErrorProc;
-	int xNullErrorProc, xtNullWarningProc, xNullIOErrorProc, xtNullErrorProc;
-	
-	public static String XDefaultPrintServer = ":1";
-	static {
-		/* Read the default print server name from
-		 * the XPRINTER environment variable.
-		 */
-		XDefaultPrintServer = ":1";
-	}
-	protected static int xPrinter;
-	
+		
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -111,9 +88,6 @@ static Device getDevice () {
  */
 public Device(DeviceData data) {
 	if (data != null) {
-		display_name = data.display_name;
-		application_name = data.application_name;
-		application_class = data.application_class;
 		tracking = data.tracking;
 		debug = data.debug;
 	}
@@ -250,9 +224,6 @@ public int getDepth () {
 public DeviceData getDeviceData () {
 	checkDevice ();
 	DeviceData data = new DeviceData ();
-	data.display_name = display_name;
-	data.application_name = application_name;
-	data.application_class = application_class;
 	data.debug = debug;
 	data.tracking = tracking;
 	int count = 0, length = 0;
@@ -455,48 +426,7 @@ public boolean getWarnings () {
 protected void init () {
 
 	OS.SetFractEnable(false);
-		
-	/* Create the warning and error callbacks */
-	/* AW
-	xErrorCallback = new Callback (this, "xErrorProc", 2);
-	xNullErrorProc = xErrorCallback.getAddress ();
-	if (xNullErrorProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	xtWarningCallback = new Callback (this, "xtWarningProc", 1);
-	xtNullWarningProc = xtWarningCallback.getAddress ();
-	if (xtNullWarningProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	xIOErrorCallback = new Callback (this, "xIOErrorProc", 1);
-	xNullIOErrorProc = xIOErrorCallback.getAddress ();
-	if (xNullIOErrorProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	xtErrorCallback = new Callback (this, "xtErrorProc", 1);
-	xtNullErrorProc = xtErrorCallback.getAddress ();
-	if (xtNullErrorProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	*/
-	
-	/* Set the warning and error handlers */
-	/* AW
-	if (debug) OS.XSynchronize (xDisplay, true);
-	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	xErrorProc = OS.XSetErrorHandler (xNullErrorProc);
-	if (!debug) OS.XSetErrorHandler (xErrorProc);
-	xtWarningProc = OS.XtAppSetWarningHandler (xtContext, xtNullWarningProc);
-	if (!debug) OS.XtAppSetWarningHandler (xtContext, xtWarningProc);
-	xIOErrorProc = OS.XSetIOErrorHandler (xNullIOErrorProc);
-	if (!debug) OS.XSetIOErrorHandler (xIOErrorProc);
-	xtErrorProc = OS.XtAppSetErrorHandler (xtContext, xtNullErrorProc);
-	if (!debug) OS.XtAppSetErrorHandler (xtContext, xtErrorProc);
-	*/
-	
-	/* Only use palettes for <= 8 bpp default visual */
-	/* AW
-	int xScreenPtr = OS.XDefaultScreenOfDisplay (xDisplay);
-	int defaultDepth = OS.XDefaultDepthOfScreen (xScreenPtr);
-	if (defaultDepth <= 8) {
-		int numColors = 1 << defaultDepth;
-		colorRefCount = new int [numColors];
-		xcolors = new XColor [numColors];
-	}
-	*/
-	
+			
 	/*
 	* The following colors are listed in the Windows
 	* Programmer's Reference as the colors in the default
@@ -586,75 +516,10 @@ void new_Object (Object object) {
 	errors = newErrors;
 }
 
-protected void release () {
-	/*
-	* Free the palette.  Note that this disposes all colors on
-	* the display that were allocated using the Color constructor.
-	*/
-	/* AW
-	if (xcolors != null) {
-		int xScreen = OS.XDefaultScreen (xDisplay);
-		int xColormap = OS.XDefaultColormap (xDisplay, xScreen);
-		int [] pixel = new int [1];
-		for (int i = 0; i < xcolors.length; i++) {
-			XColor color = xcolors [i];
-			if (color != null) {
-				pixel [0] = color.pixel;
-				while (colorRefCount [i] > 0) {
-					OS.XFreeColors (xDisplay, xColormap, pixel, 1, 0);
-					--colorRefCount [i];
-				}
-			}
-		}
-	}
-	xcolors = null;
-	*/
-	colorRefCount = null;
-	
+protected void release () {	
 	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW =
 	COLOR_DARK_BLUE = COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
-	
-	/* Free the Xt error handler */
-	/* AW
-	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	OS.XtAppSetErrorHandler (xtContext, xtErrorProc);
-	xtErrorCallback.dispose (); xtErrorCallback = null;
-	xtNullErrorProc = xtErrorProc = 0;
-	*/
-	
-	/* Free the Xt Warning handler */
-	/* AW
-	OS.XtAppSetWarningHandler (xtContext, xtWarningProc);
-	xtWarningCallback.dispose (); xtWarningCallback = null;
-	xtNullWarningProc = xtWarningProc = 0;
-	*/
-	
-	/* Free the X IO error handler */
-	/* AW
-	OS.XSetIOErrorHandler (xIOErrorProc);
-	xIOErrorCallback.dispose (); xIOErrorCallback = null;
-	xNullIOErrorProc = xIOErrorProc = 0;
-	*/
-	
-	/* Free the X error handler */
-	/*
-	* Bug in Motif.  For some reason, when a pixmap is
-	* set into a button or label, despite the fact that
-	* the pixmap is cleared from the widget before it
-	* is disposed, Motif still references the pixmap
-	* and attempts to dispose it in XtDestroyApplicationContext().
-	* The fix is to install the null error handler to avoid the
-	* warning.
-	*
-	* NOTE: The warning callback is leaked.
-	*/
-	/* AW
-	OS.XSetErrorHandler (xNullErrorProc);
-	*/
-//	OS.XSetErrorHandler (xErrorProc);
-//	xErrorCallback.dispose (); xErrorCallback = null;
-//	xNullErrorProc = xErrorProc = 0;
 }
 
 /**
@@ -673,56 +538,5 @@ public void setWarnings (boolean warnings) {
 	checkDevice ();
 	this.warnings = warnings;
 	if (debug) return;
-	/* AW
-	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	if (warnings) {
-		OS.XSetErrorHandler (xErrorProc);
-		OS.XtAppSetWarningHandler (xtContext, xtWarningProc);
-	} else {
-		OS.XSetErrorHandler (xNullErrorProc);
-		OS.XtAppSetWarningHandler (xtContext, xtNullWarningProc);
-	}
-	*/
 }
-
-int xErrorProc (int xDisplay, int xErrorEvent) {
-	if (debug) {
-		new SWTError ().printStackTrace ();
-		/* AW
-		OS.Call (xErrorProc, xDisplay, xErrorEvent);
-		*/
-	}
-	return 0;
-}
-
-int xIOErrorProc (int xDisplay) {
-	if (debug) {
-		new SWTError ().printStackTrace ();
-		/* AW
-		OS.Call (xIOErrorProc, xDisplay, 0);
-		*/
-	}
-	return 0;
-}
-
-int xtErrorProc (int message) {
-	if (debug) {
-		new SWTError ().printStackTrace ();
-		/* AW
-		OS.Call (xtErrorProc, message, 0);
-		*/
-	}
-	return 0;
-}
-
-int xtWarningProc (int message) {
-	if (debug) {
-		new SWTError ().printStackTrace ();
-		/* AW
-		OS.Call (xtWarningProc, message, 0);
-		*/
-	}
-	return 0;
-}
-
 }

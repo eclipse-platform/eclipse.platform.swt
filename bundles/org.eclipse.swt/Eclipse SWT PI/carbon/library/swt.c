@@ -488,6 +488,57 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CallNextEventHand
 	return (jint) CallNextEventHandler((EventHandlerCallRef) nextHandler, (EventRef) eventRefHandle);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventHICommand(JNIEnv *env, jclass zz,
+			jint eRefHandle, jintArray outParamType) {
+	jint status;
+ 	HICommand command;
+	
+	status= (jint) RC(GetEventParameter((EventRef)eRefHandle, kEventParamDirectObject, typeHICommand, 
+			NULL, sizeof(HICommand), NULL, &command));
+	
+	if (outParamType != NULL) {
+		jint *sa= (*env)->GetIntArrayElements(env, outParamType, 0);
+		sa[0]= (jint) command.attributes;
+		sa[1]= (jint) command.commandID;
+		sa[2]= (jint) command.menu.menuRef;
+		sa[3]= (jint) command.menu.menuItemIndex;
+		(*env)->ReleaseIntArrayElements(env, outParamType, sa, 0);
+	}
+
+	return status;
+}
+
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3I_3I_3B(JNIEnv *env, jclass zz,
+			jint eRefHandle, jint paramName, jint paramType, jintArray outParamType, jintArray outActualSize, jbyteArray data) {
+	jint status;
+    jint *sa= NULL;
+    jint *sb= NULL;
+    jbyte *sc= NULL;
+	int size= 0;
+	
+	if (outParamType != NULL)
+		sa= (*env)->GetIntArrayElements(env, outParamType, 0);
+	if (outActualSize != NULL)
+		sb= (*env)->GetIntArrayElements(env, outActualSize, 0);
+	if (data != NULL) {
+		sc= (*env)->GetByteArrayElements(env, data, 0);
+		size= (*env)->GetArrayLength(env, data);
+	}
+	
+	status= (jint) RC(GetEventParameter((EventRef)eRefHandle, (EventParamName)paramName, (EventParamType)paramType, 
+			(EventParamType*)sa, size * sizeof(jbyte), (UInt32*)sb, (void*)sc));
+	
+	if (sa != NULL)
+		(*env)->ReleaseIntArrayElements(env, outParamType, sa, 0);
+	if (sb != NULL)
+		(*env)->ReleaseIntArrayElements(env, outActualSize, sb, 0);
+	if (sc != NULL)
+		(*env)->ReleaseByteArrayElements(env, data, sc, 0);
+
+	return status;
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3I_3I_3C(JNIEnv *env, jclass zz,
 			jint eRefHandle, jint paramName, jint paramType, jintArray outParamType, jintArray outActualSize, jcharArray data) {
 	jint status;
@@ -794,6 +845,10 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventClass(JNI
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventKind(JNIEnv *env, jclass zz, jint eHandle) {
 	return (jint) GetEventKind((EventRef) eHandle);
+}
+
+JNIEXPORT jdouble JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventTime(JNIEnv *env, jclass zz, jint eHandle) {
+	return (jdouble) GetEventTime((EventRef) eHandle);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMouseLocation(JNIEnv *env, jclass zz, jint eHandle, jshortArray loc) {

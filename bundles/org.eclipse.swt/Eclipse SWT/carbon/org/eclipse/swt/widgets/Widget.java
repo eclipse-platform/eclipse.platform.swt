@@ -806,25 +806,23 @@ void sendEvent (int eventType) {
 	sendEvent (eventType, new Event ());
 }
 void setInputState (Event event, MacEvent mEvent) {
-	int modifiers= mEvent.getModifiers();
-	if ((modifiers & OS.optionKey) != 0) event.stateMask |= SWT.ALT;
-	if ((modifiers & OS.shiftKey) != 0) event.stateMask |= SWT.SHIFT;
 	
-	switch (mEvent.getWhat()) {
-	case OS.mouseDown:
-	case OS.mouseUp:
-	case 12345:
-		if ((modifiers & OS.controlKey) != 0) {
-			event.stateMask |= SWT.CONTROL;
-			if ((modifiers & OS.btnState) == 0) event.stateMask |= SWT.BUTTON3;
-		} else {
-			if ((modifiers & OS.btnState) == 0) event.stateMask |= SWT.BUTTON1;
-		}
-		break;
+	event.stateMask= getDisplay().fMouseButtonState;
+	
+	int modifiers= mEvent.getModifiers();
+	
+	if ((modifiers & OS.shiftKey) != 0)
+		event.stateMask |= SWT.SHIFT;
+	
+	if (false) {
+		// map option modifier to ALT modifier
+		if ((modifiers & OS.optionKey) != 0)
+			event.stateMask |= SWT.ALT;
+	} else {
+		// map control modifier to ALT modifier
+		if ((modifiers & OS.controlKey) != 0)
+			event.stateMask |= SWT.ALT;
 	}
-	/*
-	if ((modifiers & 2) != 0) event.stateMask |= SWT.BUTTON2;
-	*/
 }
 void setKeyState (Event event, MacEvent mEvent) {
 	if (mEvent.getKeyCode() != 0) {

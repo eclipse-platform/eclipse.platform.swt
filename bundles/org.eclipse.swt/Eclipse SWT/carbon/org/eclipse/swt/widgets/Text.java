@@ -1415,25 +1415,24 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		return new String(chars);
 	}
 	
-	int sendKeyEvent(int nextHandler, int eRefHandle) {
+	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
 	
 		int status= OS.kNoErr;	// we handled the event
 		
 		if (hooks (SWT.Verify)) {
 
 			// extract characters from event
-			int[] actualSize= new int[1];
-			OS.GetEventParameter(eRefHandle, OS.kEventParamTextInputSendText, OS.typeUnicodeText, null, actualSize, (char[])null);
-			char[] text= new char[actualSize[0]/2];
-			OS.GetEventParameter(eRefHandle, OS.kEventParamTextInputSendText, OS.typeUnicodeText, null, null, text);
+			MacEvent mEvent= new MacEvent(eRefHandle);
+			String unicode= mEvent.getText();
+			String text= unicode != null ? unicode : "";
 			String original= new String(text);
 			
 			// send verify event
 			int[] start= new int[1], end= new int[1];
 			OS.TXNGetSelection(fTX, start, end);
 			
-			if (text.length == 1) {
-				switch (text[0]) {
+			if (text.length() == 1) {
+				switch (text.charAt(0)) {
 				case 0x08:
 					if (start[0] == end[0]) {
 						if (start[0] == 0)
