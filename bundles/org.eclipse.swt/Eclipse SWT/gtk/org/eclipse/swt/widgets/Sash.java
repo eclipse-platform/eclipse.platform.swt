@@ -409,4 +409,8 @@ void setCursor (int /*long*/ cursor) {
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
 }
 
+int traversalCode (int key, GdkEventKey event) {
+	return 0;
+}
+
 }
