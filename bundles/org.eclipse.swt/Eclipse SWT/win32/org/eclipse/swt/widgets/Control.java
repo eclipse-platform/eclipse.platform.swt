@@ -2879,6 +2879,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_TIMER:				result = WM_TIMER (wParam, lParam); break;
 		case OS.WM_UNDO:				result = WM_UNDO (wParam, lParam); break;
 		case OS.WM_VSCROLL:			result = WM_VSCROLL (wParam, lParam); break;
+		case OS.WM_WINDOWPOSCHANGED:	result = WM_WINDOWPOSCHANGED (wParam, lParam); break;
 		case OS.WM_WINDOWPOSCHANGING:	result = WM_WINDOWPOSCHANGING (wParam, lParam); break;
 	}
 	if (result != null) return result.value;
@@ -4162,6 +4163,10 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	Control control = WidgetTable.get (lParam);
 	if (control == null) return null;
 	return control.wmScrollChild (wParam, lParam);
+}
+
+LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
+	return null;
 }
 
 LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {

@@ -1210,6 +1210,7 @@ public class OS {
 	public static final int WM_UNDO = 0x304;
 	public static final int WM_USER = 0x400;
 	public static final int WM_VSCROLL = 0x115;
+	public static final int WM_WINDOWPOSCHANGED = 0x47;
 	public static final int WM_WINDOWPOSCHANGING = 0x46;
 	public static final int WS_BORDER = 0x800000;
 	public static final int WS_CAPTION = 0xc00000;

@@ -165,19 +165,6 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isFocus) caret.setFocus ();
 }
 
-void setBounds(int x, int y, int width, int height, int flags) {
-	/*
-	* Bug in Windows.  When a window with style WS_EX_LAYOUTRTL
-	* that contains a caret is resized, Windows does not move the
-	* caret in relation to the mirrored origin in the top right.
-	* The fix is to save and restore the caret.
-	*/
-	boolean isFocus = (style & SWT.RIGHT_TO_LEFT) != 0 && caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	super.setBounds (x, y, width, height, flags);
-	if (isFocus) caret.setFocus ();
-}
-
 /**
  * Sets the receiver's caret.
  * <p>
@@ -227,6 +214,36 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result  = super.WM_SETFOCUS (wParam, lParam);
 	if (caret != null) caret.setFocus ();
+	return result;
+}
+
+LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
+	LRESULT result  = super.WM_WINDOWPOSCHANGED (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  When a window with style WS_EX_LAYOUTRTL
+	* that contains a caret is resized, Windows does not move the
+	* caret in relation to the mirrored origin in the top right.
+	* The fix is to hide the caret in WM_WINDOWPOSCHANGING and
+	* show the caret in WM_WINDOWPOSCHANGED.
+	*/
+	boolean isFocus = (style & SWT.RIGHT_TO_LEFT) != 0 && caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.setFocus ();
+	return result;
+}
+
+LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+	LRESULT result  = super.WM_WINDOWPOSCHANGING (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  When a window with style WS_EX_LAYOUTRTL
+	* that contains a caret is resized, Windows does not move the
+	* caret in relation to the mirrored origin in the top right.
+	* The fix is to hide the caret in WM_WINDOWPOSCHANGING and
+	* show the caret in WM_WINDOWPOSCHANGED.
+	*/
+	boolean isFocus = (style & SWT.RIGHT_TO_LEFT) != 0 && caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
 	return result;
 }
 
