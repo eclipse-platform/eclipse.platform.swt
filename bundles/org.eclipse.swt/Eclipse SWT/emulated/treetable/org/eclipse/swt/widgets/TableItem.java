@@ -223,11 +223,11 @@ Point drawImage(GC gc, Point destinationPosition, int index) {
  */
 void drawText(String label, GC gc, Point position, int index) {
 	Table parent = getParent();
-	boolean drawSelection;
 	int textOffset, alignmentOffset;
 
 	if (label != null) {
-		drawSelection = (index == TableColumn.FIRST || (parent.getStyle() & SWT.FULL_SELECTION) != 0);
+		boolean drawSelection = (index == TableColumn.FIRST || (parent.getStyle() & SWT.FULL_SELECTION) != 0) &&
+			((parent.style & SWT.HIDE_SELECTION) == 0 || parent.isFocusControl());
 		if (isSelected() == true && drawSelection == true) {
 			gc.setForeground(getSelectionForegroundColor());
 		} else {
