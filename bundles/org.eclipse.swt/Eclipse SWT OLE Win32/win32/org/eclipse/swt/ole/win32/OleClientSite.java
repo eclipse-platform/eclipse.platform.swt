@@ -12,6 +12,7 @@ package org.eclipse.swt.ole.win32;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.Compatibility;
@@ -279,12 +280,8 @@ public OleClientSite(Composite parent, int style, String progId) {
  */
 public OleClientSite(Composite parent, int style, String progId, File file) {
 	this(parent, style);
-	
 	try {
-
-		if (file == null || file.isDirectory() || !file.exists())
-			OLE.error(OLE.ERROR_INVALID_ARGUMENT);
-			
+		if (file == null || file.isDirectory() || !file.exists()) OLE.error(OLE.ERROR_INVALID_ARGUMENT);				
 		appClsid = getClassID(progId);
 		
 		// Are we opening this file with the preferred OLE object?
@@ -293,74 +290,98 @@ public OleClientSite(Composite parent, int style, String progId, File file) {
 		COM.GetClassFile(fileName, fileClsid);
 	
 		if (COM.IsEqualGUID(appClsid, fileClsid)){
-			// use default mechanism
-			// Open a temporary storage object
+			// Using the same application that created file, therefore, use default mechanism.
 			tempStorage = createTempStorage();
-
 			// Create ole object with storage object
 			int[] address = new int[1];
 			int result = COM.OleCreateFromFile(appClsid, fileName, COM.IIDIUnknown, COM.OLERENDER_DRAW, null, 0, tempStorage.getAddress(), address);
-			if (result != COM.S_OK)
-				OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
-
+			if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 			objIUnknown = new IUnknown(address[0]);
 		} else {
-			// use a conversion mechanism
+			// Not using the same application that created file, therefore, copy from original file to a new storage file
+			IStorage storage = null;
+			if (COM.StgIsStorageFile(fileName) == COM.S_OK) {
+				int[] address = new int[1];
+				int mode = COM.STGM_READ | COM.STGM_TRANSACTED | COM.STGM_SHARE_EXCLUSIVE;
+				int result = COM.StgOpenStorage(fileName, 0, mode, 0, 0, address); //Does an AddRef if successful
+				if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_OPEN_FILE, result);
+				storage = new IStorage(address[0]);
+			} else {
+				// Original file is not a Storage file so copy contents to a stream in a new storage file
+				int[] address = new int[1];
+				int mode = COM.STGM_READWRITE | COM.STGM_DIRECT | COM.STGM_SHARE_EXCLUSIVE | COM.STGM_CREATE;
+				int result = COM.StgCreateDocfile(null, mode | COM.STGM_DELETEONRELEASE, 0, address); // Increments ref count if successful
+				if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_OPEN_FILE, result);
+				storage = new IStorage(address[0]);
+				// Create a stream on the storage object.
+				// Word does not follow the standard and does not use "CONTENTS" as the name of
+				// its primary stream
+				String streamName = "CONTENTS"; //$NON-NLS-1$
+				GUID wordGUID = getClassID(WORDPROGID);
+				if (COM.IsEqualGUID(appClsid, wordGUID)) streamName = "WordDocument"; //$NON-NLS-1$
+				address = new int[1];
+				result = storage.CreateStream(streamName, mode, 0, 0, address); // Increments ref count if successful
+				if (result != COM.S_OK) {
+					storage.Release();
+					OLE.error(OLE.ERROR_CANNOT_OPEN_FILE, result);
+				}
+				IStream stream = new IStream(address[0]);
+				try {
+					// Copy over data in file to named stream
+					FileInputStream fileInput = new FileInputStream(file);
+					int increment = 1024*4;
+					byte[] buffer = new byte[increment];
+					int count = 0;
+					while((count = fileInput.read(buffer)) > 0){
+						int pv = COM.CoTaskMemAlloc(count);
+						OS.MoveMemory(pv, buffer, count);
+						result = stream.Write(pv, count, null) ;
+						COM.CoTaskMemFree(pv);
+						if (result != COM.S_OK) {
+							fileInput.close();
+							stream.Release();
+							storage.Release();
+							OLE.error(OLE.ERROR_CANNOT_OPEN_FILE, result);
+						}
+					}
+					fileInput.close();
+					stream.Commit(COM.STGC_DEFAULT);
+					stream.Release();
+				} catch (IOException err) {
+					stream.Release();
+					storage.Release();
+					OLE.error(OLE.ERROR_CANNOT_OPEN_FILE);
+				}
+			}
 			
-			// Word does not follow the standard and does not use "CONTENTS" as the name of
-			// its primary stream
-			String contentStream = "CONTENTS"; //$NON-NLS-1$
-			GUID wordGUID = getClassID(WORDPROGID);
-			if (COM.IsEqualGUID(appClsid, wordGUID)) contentStream = "WordDocument"; //$NON-NLS-1$
-
-			// Copy over the contents of the file into a new temporary storage object
-			OleFile oleFile = new OleFile(file, contentStream, OleFile.READ);
-			IStorage storage = oleFile.getRootStorage();
-			storage.AddRef();
 			// Open a temporary storage object
 			tempStorage = createTempStorage();
 			// Copy over contents of file
 			int result = storage.CopyTo(0, null, null, tempStorage.getAddress());
 			storage.Release();
-			if (result != COM.S_OK)
-				OLE.error(OLE.ERROR_CANNOT_OPEN_FILE, result);
-			oleFile.dispose();
+			if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_OPEN_FILE, result);
 
 			// create ole client
 			int[] ppv = new int[1];
 			result = COM.CoCreateInstance(appClsid, 0, COM.CLSCTX_INPROC_HANDLER | COM.CLSCTX_INPROC_SERVER, COM.IIDIUnknown, ppv);
-			if (result != COM.S_OK){		
-				tempStorage.Release();
-				OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
-			}
+			if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 			objIUnknown = new IUnknown(ppv[0]);
-
 			// get the persistant storage of the ole client
 			ppv = new int[1];
 			result = objIUnknown.QueryInterface(COM.IIDIPersistStorage, ppv);
-			if (result != COM.S_OK){
-				tempStorage.Release();
-				objIUnknown.Release();
-				OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
-			}
+			if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 			IPersistStorage iPersistStorage = new IPersistStorage(ppv[0]);
-
 			// load the contents of the file into the ole client site
 			result = iPersistStorage.Load(tempStorage.getAddress());
 			iPersistStorage.Release();
-			if (result != COM.S_OK){
-				tempStorage.Release();
-				tempStorage = null;
-				objIUnknown.Release();
-				objIUnknown = null;
-				OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
-			}
+			if (result != COM.S_OK)OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 		}
 		
 		// Init sinks
 		addObjectReferences();
 		
 		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state = STATE_RUNNING;
+		
 	} catch (SWTException e) {
 		dispose();
 		disposeCOMInterfaces();
@@ -489,8 +510,7 @@ protected IStorage createTempStorage() {
 	int[] tempStorage = new int[1];
 	int grfMode = COM.STGM_READWRITE | COM.STGM_SHARE_EXCLUSIVE | COM.STGM_DELETEONRELEASE;
 	int result = COM.StgCreateDocfile(null, grfMode, 0, tempStorage);
-	if (result != COM.S_OK)
-		OLE.error(OLE.ERROR_CANNOT_CREATE_FILE, result);
+	if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_CREATE_FILE, result);
 	return new IStorage(tempStorage[0]);
 }
 /**
@@ -1130,39 +1150,40 @@ private int SaveObject() {
  * @return true if the save was successful
  */
 private boolean saveToStorageFile(File file) {
-	// Note: if the file already exists, some applications will not overwrite the file
-	// In these cases, you should delete the file first (probably save the contents of the file in case the
-	// save fails)
-	if (file == null || file.isDirectory())
-		return false;
-		
-	if (!updateStorage())
-		return false;
-	
-	// get access to the persistant storage mechanism
-	int[] address = new int[1];
-	if (objIOleObject.QueryInterface(COM.IIDIPersistStorage, address) != COM.S_OK)
-		return false;
-	IPersistStorage permStorage = new IPersistStorage(address[0]);
-	
 	// The file will be saved using the formating of the current application - this
 	// may not be the format of the application that was originally used to create the file
 	// e.g. if an Excel file is opened in Word, the Word application will save the file in the 
 	// Word format
-
-	boolean success = false;
-	OleFile oleFile = new OleFile(file, null, OleFile.WRITE);
-	IStorage storage = oleFile.getRootStorage();
-	storage.AddRef();
-	if (COM.OleSave(permStorage.getAddress(), storage.getAddress(), false) == COM.S_OK) {
-		if (storage.Commit(COM.STGC_DEFAULT) == COM.S_OK)
-			success = true;
-	}
-	storage.Release();
-	oleFile.dispose();
-	permStorage.Release();
+	// Note: if the file already exists, some applications will not overwrite the file
+	// In these cases, you should delete the file first (probably save the contents of the file in case the
+	// save fails)
+	if (file == null || file.isDirectory()) return false;
+	if (!updateStorage()) return false;
 	
-	return success;
+	// get access to the persistant storage mechanism
+	int[] address = new int[1];
+	if (objIOleObject.QueryInterface(COM.IIDIPersistStorage, address) != COM.S_OK) return false;
+	IPersistStorage permStorage = new IPersistStorage(address[0]);
+	try {
+		address = new int[1];
+		char[] path = (file.getAbsolutePath()+"\0").toCharArray();
+		int mode = COM.STGM_TRANSACTED | COM.STGM_READWRITE | COM.STGM_SHARE_EXCLUSIVE | COM.STGM_CREATE;
+		int result = COM.StgCreateDocfile(path, mode, 0, address); //Does an AddRef if successful
+		if (result != COM.S_OK) return false;
+		IStorage storage =  new IStorage(address[0]);
+		try {
+			if (COM.OleSave(permStorage.getAddress(), storage.getAddress(), false) == COM.S_OK) {
+				if (storage.Commit(COM.STGC_DEFAULT) == COM.S_OK) {
+					return true;
+				}
+			}
+		} finally {
+			storage.Release();
+		}
+	} finally {
+		permStorage.Release();
+	}
+	return false;
 }
 /**
  * Saves the document to the specified file.  This method must be used for
