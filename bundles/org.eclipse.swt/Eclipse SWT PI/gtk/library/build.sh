@@ -19,6 +19,7 @@ CC=gcc
 LD=gcc
 GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
 MODEL=`uname -m`
+QT_HOME=$QTDIR
 
 case $MODEL in
 	"x86_64")
@@ -34,6 +35,6 @@ case $MODEL in
 		;;
 esac
 
-export CC LD JAVA_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK SWT_PTR_CFLAGS
+export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK SWT_PTR_CFLAGS
 
 make -f $makefile ${1} ${2} ${3} ${4}
