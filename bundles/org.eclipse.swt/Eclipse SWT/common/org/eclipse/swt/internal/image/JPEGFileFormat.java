@@ -339,11 +339,11 @@ void convertMultiRGBToYCbCr(ImageData image) {
 				int pixel = buffer[xPos];
 				int dstDataIndex = dstRowIndex + xPos;
 				int r = pixel & redMask;
-				r = (redShift < 0) ? r >> -redShift : r << redShift;
+				r = (redShift < 0) ? r >>> -redShift : r << redShift;
 				int g = pixel & greenMask;
-				g = (greenShift < 0) ? g >> -greenShift : g << greenShift;
+				g = (greenShift < 0) ? g >>> -greenShift : g << greenShift;
 				int b = pixel & blueMask;
-				b = (blueShift < 0) ? b >> -blueShift : b << blueShift;
+				b = (blueShift < 0) ? b >>> -blueShift : b << blueShift;				
 				dataYComp[dstDataIndex] = (byte)((RYTable[r] + GYTable[g] + BYTable[b]) / 65536);
 				dataCbComp[dstDataIndex] = (byte)((RCbTable[r] + GCbTable[g] + BCbTable[b]) / 65536);
 				dataCrComp[dstDataIndex] = (byte)((RCrTable[r] + GCrTable[g] + BCrTable[b]) / 65536);
