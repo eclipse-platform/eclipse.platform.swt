@@ -881,10 +881,20 @@ int processKeyDown (int callData, int arg1, int int2) {
 		case OS.GDK_space: {
 			int focus_row = OS.GTK_CLIST_FOCUS_ROW (handle);
 			if (focus_row != -1) {
+				TableItem item =  items [focus_row];
+				if (key == OS.GDK_space && (style & SWT.CHECK) != 0) {
+					if (item != null) item.setChecked (!item.getChecked ());
+				}
 				Event event = new Event ();
-				event.item = items [focus_row];
+				event.item = item;
 				int type = key == OS.GDK_space ? SWT.Selection : SWT.DefaultSelection;
 				postEvent (type, event);
+				if (key == OS.GDK_space && (style & SWT.CHECK) != 0) {
+					event = new Event ();
+					event.item = item;
+					event.detail = SWT.CHECK;
+					postEvent (SWT.Selection, event);
+				}
 			}
 			break;
 		}
