@@ -667,6 +667,8 @@ int /*long*/ menuPositionProc (int /*long*/ menu, int /*long*/ x, int /*long*/ y
 	* add a scroll arrow at the bottom and position the first menu entry at
 	* the specified position.  The fix is to flip the menu location to be
 	* completely inside the screen.
+	* 
+	* NOTE: This code doesn't work for multiple monitors.
 	*/
     GtkRequisition requisition = new GtkRequisition ();
     OS.gtk_widget_size_request (menu, requisition);
