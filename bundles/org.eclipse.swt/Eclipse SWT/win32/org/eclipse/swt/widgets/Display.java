@@ -160,6 +160,9 @@ public class Display extends Device {
 	int hwndMessage, messageProc;
 	int [] systemFonts;
 	
+	/* System Images */
+	int errorImage, infoImage, questionImage, warningImage;
+
 	/* ImageList Cache */	
 	ImageList[] imageList, toolImageList, toolHotImageList, toolDisabledImageList;
 
@@ -1547,6 +1550,69 @@ public Font getSystemFont () {
 }
 
 /**
+ * Returns the matching standard platform image for the given
+ * constant, which should be one of the icon constants
+ * specified in class <code>SWT</code>. This image should
+ * not be free'd because it was allocated by the system,
+ * not the application.  A value of <code>null</code> will
+ * be returned either if the supplied constant is not an
+ * swt icon constant or if the platform does not define an
+ * image that corresponds to the constant. 
+ *
+ * @param id the swt icon constant
+ * @return the corresponding image or <code>null</code>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see SWT#ICON_ERROR
+ * @see SWT#ICON_INFORMATION
+ * @see SWT#ICON_QUESTION
+ * @see SWT#ICON_WARNING
+ * @see SWT#ICON_WORKING
+ * @since 3.0
+ */
+public Image getSystemImage (int id) {
+	checkDevice ();
+	int image = 0;
+	switch (id) {
+		case SWT.ICON_ERROR: {
+			if (errorImage == 0) {
+				errorImage = OS.LoadImage (0, OS.MAKEINTRESOURCE (OS.OIC_HAND), OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			}
+			image = errorImage;
+			break;
+		}
+		case SWT.ICON_INFORMATION:
+		case SWT.ICON_WORKING: {
+			if (infoImage == 0) {
+				infoImage = OS.LoadImage (0, OS.MAKEINTRESOURCE (OS.OIC_INFORMATION), OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			}
+			image = infoImage;
+			break;
+		}
+		case SWT.ICON_QUESTION: {
+			if (questionImage == 0) {
+				questionImage = OS.LoadImage (0, OS.MAKEINTRESOURCE (OS.OIC_QUES), OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			}
+			image = questionImage;
+			break;
+		}
+		case SWT.ICON_WARNING: {
+			if (warningImage == 0) {
+				warningImage = OS.LoadImage (0, OS.MAKEINTRESOURCE (OS.OIC_BANG), OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			}
+			image = warningImage; break;
+		}
+		default: return null;
+	}
+	if (image == 0) error (SWT.ERROR_NO_HANDLES);
+	return Image.win32_new (this, SWT.ICON, image);
+}
+
+/**
  * Returns the single instance of the system tray.
  *
  * @return the receiver's user-interface thread
@@ -2382,6 +2448,12 @@ void releaseDisplay () {
 	}
 	systemFonts = null;
 	
+	/* Release the System Images */
+	if (errorImage != 0) OS.DestroyIcon (errorImage);
+	if (infoImage != 0) OS.DestroyIcon (infoImage);
+	if (questionImage != 0) OS.DestroyIcon (questionImage);
+	if (warningImage != 0) OS.DestroyIcon (warningImage);
+
 	/* Release Custom Colors for ChooseColor */
 	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
 	lpCustColors = 0;

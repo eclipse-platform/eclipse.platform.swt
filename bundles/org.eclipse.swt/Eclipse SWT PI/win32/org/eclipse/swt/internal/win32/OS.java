@@ -572,6 +572,7 @@ public class OS {
 	public static final int LOGPIXELSY = 0x5a;
 	public static final int LPSTR_TEXTCALLBACK = 0xffffffff;
 	public static final int LR_DEFAULTCOLOR = 0x0;
+	public static final int LR_SHARED = 0x8000;
 	public static final int LVCFMT_CENTER = 0x2;
 	public static final int LVCFMT_IMAGE = 0x800;
 	public static final int LVCFMT_LEFT = 0x0;
@@ -772,6 +773,10 @@ public class OS {
 	public static final int OFN_EXPLORER = 0x80000;
 	public static final int OFN_HIDEREADONLY = 0x4;
 	public static final int OFN_NOCHANGEDIR = 0x8;
+	public static final int OIC_BANG = 0x7F03;
+	public static final int OIC_HAND = 0x7F01;
+	public static final int OIC_INFORMATION = 0x7F04;
+	public static final int OIC_QUES = 0x7F02;
 	public static final int OPAQUE = 0x2;
 	public static final int PATCOPY = 0xf00021;
 	public static final int PATINVERT = 0x5a0049;
@@ -2431,6 +2436,7 @@ public static final native int LoadCursorW (int hInstance, int lpCursorName);
 public static final native int LoadCursorA (int hInstance, int lpCursorName);
 public static final native int LoadIconW (int hInstance, int lpIconName);
 public static final native int LoadIconA (int hInstance, int lpIconName);
+public static final native int LoadImage (int hinst, int lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 public static final native int LoadImageW (int hinst, char [] lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 public static final native int LoadImageA (int hinst, byte [] lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 public static final native int LoadStringW (int hinst, int uID, char [] lpBuffer, int nBufferMax);
@@ -2438,6 +2444,7 @@ public static final native int LoadStringA (int hinst, int uID, byte [] lpBuffer
 public static final native int LoadLibraryW (char [] lpLibFileName);
 public static final native int LoadLibraryA (byte [] lpLibFileName);
 public static final native int LocalFree(int hMem);
+public static final native int MAKEINTRESOURCE (int wInteger);
 public static final native int MapVirtualKeyW (int uCode, int uMapType);
 public static final native int MapVirtualKeyA (int uCode, int uMapType);
 public static final native int MapWindowPoints (int hWndFrom, int hWndTo, POINT lpPoints, int cPoints);

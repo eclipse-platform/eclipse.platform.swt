@@ -2042,43 +2042,6 @@ void setMSGFields(JNIEnv *env, jobject lpObject, MSG *lpStruct)
 }
 #endif
 
-#ifndef NO_NMHDR
-typedef struct NMHDR_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID hwndFrom, idFrom, code;
-} NMHDR_FID_CACHE;
-
-NMHDR_FID_CACHE NMHDRFc;
-
-void cacheNMHDRFields(JNIEnv *env, jobject lpObject)
-{
-	if (NMHDRFc.cached) return;
-	NMHDRFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NMHDRFc.hwndFrom = (*env)->GetFieldID(env, NMHDRFc.clazz, "hwndFrom", "I");
-	NMHDRFc.idFrom = (*env)->GetFieldID(env, NMHDRFc.clazz, "idFrom", "I");
-	NMHDRFc.code = (*env)->GetFieldID(env, NMHDRFc.clazz, "code", "I");
-	NMHDRFc.cached = 1;
-}
-
-NMHDR *getNMHDRFields(JNIEnv *env, jobject lpObject, NMHDR *lpStruct)
-{
-	if (!NMHDRFc.cached) cacheNMHDRFields(env, lpObject);
-	lpStruct->hwndFrom = (HWND)(*env)->GetIntField(env, lpObject, NMHDRFc.hwndFrom);
-	lpStruct->idFrom = (*env)->GetIntField(env, lpObject, NMHDRFc.idFrom);
-	lpStruct->code = (*env)->GetIntField(env, lpObject, NMHDRFc.code);
-	return lpStruct;
-}
-
-void setNMHDRFields(JNIEnv *env, jobject lpObject, NMHDR *lpStruct)
-{
-	if (!NMHDRFc.cached) cacheNMHDRFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, NMHDRFc.hwndFrom, (jint)lpStruct->hwndFrom);
-	(*env)->SetIntField(env, lpObject, NMHDRFc.idFrom, (jint)lpStruct->idFrom);
-	(*env)->SetIntField(env, lpObject, NMHDRFc.code, (jint)lpStruct->code);
-}
-#endif
-
 #ifndef NO_NMCUSTOMDRAW
 typedef struct NMCUSTOMDRAW_FID_CACHE {
 	int cached;
@@ -2134,6 +2097,43 @@ void setNMCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMCUSTOMDRAW *lpStruct
 	(*env)->SetIntField(env, lpObject, NMCUSTOMDRAWFc.dwItemSpec, (jint)lpStruct->dwItemSpec);
 	(*env)->SetIntField(env, lpObject, NMCUSTOMDRAWFc.uItemState, (jint)lpStruct->uItemState);
 	(*env)->SetIntField(env, lpObject, NMCUSTOMDRAWFc.lItemlParam, (jint)lpStruct->lItemlParam);
+}
+#endif
+
+#ifndef NO_NMHDR
+typedef struct NMHDR_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hwndFrom, idFrom, code;
+} NMHDR_FID_CACHE;
+
+NMHDR_FID_CACHE NMHDRFc;
+
+void cacheNMHDRFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMHDRFc.cached) return;
+	NMHDRFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMHDRFc.hwndFrom = (*env)->GetFieldID(env, NMHDRFc.clazz, "hwndFrom", "I");
+	NMHDRFc.idFrom = (*env)->GetFieldID(env, NMHDRFc.clazz, "idFrom", "I");
+	NMHDRFc.code = (*env)->GetFieldID(env, NMHDRFc.clazz, "code", "I");
+	NMHDRFc.cached = 1;
+}
+
+NMHDR *getNMHDRFields(JNIEnv *env, jobject lpObject, NMHDR *lpStruct)
+{
+	if (!NMHDRFc.cached) cacheNMHDRFields(env, lpObject);
+	lpStruct->hwndFrom = (HWND)(*env)->GetIntField(env, lpObject, NMHDRFc.hwndFrom);
+	lpStruct->idFrom = (*env)->GetIntField(env, lpObject, NMHDRFc.idFrom);
+	lpStruct->code = (*env)->GetIntField(env, lpObject, NMHDRFc.code);
+	return lpStruct;
+}
+
+void setNMHDRFields(JNIEnv *env, jobject lpObject, NMHDR *lpStruct)
+{
+	if (!NMHDRFc.cached) cacheNMHDRFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, NMHDRFc.hwndFrom, (jint)lpStruct->hwndFrom);
+	(*env)->SetIntField(env, lpObject, NMHDRFc.idFrom, (jint)lpStruct->idFrom);
+	(*env)->SetIntField(env, lpObject, NMHDRFc.code, (jint)lpStruct->code);
 }
 #endif
 

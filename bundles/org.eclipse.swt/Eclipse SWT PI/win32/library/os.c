@@ -4283,6 +4283,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(LoadIconW)
 }
 #endif
 
+#ifndef NO_LoadImage__IIIIII
+JNIEXPORT jint JNICALL OS_NATIVE(LoadImage__IIIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, LoadImage__IIIIII_FUNC);
+	rc = (jint)LoadImage((HINSTANCE)arg0, (LPCTSTR)arg1, arg2, arg3, arg4, arg5);
+	OS_NATIVE_EXIT(env, that, LoadImage__IIIIII_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_LoadImageA
 JNIEXPORT jint JNICALL OS_NATIVE(LoadImageA)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jint arg4, jint arg5)
@@ -4381,6 +4393,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(LocalFree)
 	OS_NATIVE_ENTER(env, that, LocalFree_FUNC);
 	rc = (jint)LocalFree((HLOCAL)arg0);
 	OS_NATIVE_EXIT(env, that, LocalFree_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_MAKEINTRESOURCE
+JNIEXPORT jint JNICALL OS_NATIVE(MAKEINTRESOURCE)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, MAKEINTRESOURCE_FUNC);
+	rc = (jint)MAKEINTRESOURCE(arg0);
+	OS_NATIVE_EXIT(env, that, MAKEINTRESOURCE_FUNC);
 	return rc;
 }
 #endif
