@@ -291,7 +291,7 @@ public Control getControl () {
 * @exception SWTError(ERROR_WIDGET_DISPOSED)
 *	when the widget has been disposed
 */
-public Image getDisabledmage () {
+public Image getDisabledImage () {
 	checkWidget();
 	return disabledImage;
 }
