@@ -31,7 +31,7 @@ abstract class StyledTextRenderer {
  * Creates an instance of <class>StyledTextRenderer</class>.
  * </p>
  * @param device Device to render on
- * @param regularFont Font to use for regular (non-bold) text
+ * @param regularFont Font to use for regular text
  * @param leftMargin margin to the left of the text
  */
 StyledTextRenderer(Device device, Font regularFont) {

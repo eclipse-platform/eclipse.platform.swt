@@ -37,7 +37,7 @@ class PrintRenderer extends StyledTextRenderer {
  * Creates an instance of <class>PrintRenderer</class>.
  * </p>
  * @param device Device to render on
- * @param regularFont Font to use for regular (non-bold) text.
+ * @param regularFont Font to use for regular text.
  * @param gc printer GC to use for rendering. There can be only one GC for 
  * 	each printer device at any given time.
  * @param logicalContent StyledTextContent to print.

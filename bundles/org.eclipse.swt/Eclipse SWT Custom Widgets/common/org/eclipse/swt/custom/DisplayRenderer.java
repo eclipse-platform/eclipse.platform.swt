@@ -26,7 +26,7 @@ class DisplayRenderer extends StyledTextRenderer {
  * Creates an instance of <class>DisplayRenderer</class>.
  * </p>
  * @param device Device to render on
- * @param regularFont Font to use for regular (non-bold) text
+ * @param regularFont Font to use for regular text
  * @param isBidi true=bidi platform, false=no bidi platform
  * @param leftMargin margin to the left of the text
  * @param parent <class>StyledText</class> widget to render
