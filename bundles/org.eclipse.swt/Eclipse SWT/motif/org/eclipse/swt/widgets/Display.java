@@ -284,6 +284,21 @@ public class Display extends Device {
 //		PACKAGE_PREFIX = name.substring (0, index + 1);
 //	}
 	
+	/*
+	* In order to support CLDC, .class cannot be used because
+	* it does not compile on some Java compilers when they are
+	* targeted for CLDC.  Use Class.forName() instead.
+	*/
+	static final Class OS_LOCK;
+	static {
+		Class lock = null;
+		try {
+			lock = Class.forName ("org.eclipse.swt.internal.motif.OS");
+		} catch (Throwable th) {
+		}
+		OS_LOCK = lock;
+	}
+	
 	/* Mouse Hover */
 	Callback mouseHoverCallback;
 	int mouseHoverID, mouseHoverProc;
@@ -2716,20 +2731,35 @@ public boolean sleep () {
 //	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
 //	return result;
 	
-	int display_fd = OS.ConnectionNumber (xDisplay);
-	int max_fd = display_fd > read_fd ? display_fd : read_fd;
+//	int display_fd = OS.ConnectionNumber (xDisplay);
+//	int max_fd = display_fd > read_fd ? display_fd : read_fd;
+//	do {
+//		OS.FD_ZERO (fd_set);
+//		OS.FD_SET (display_fd, fd_set);
+//		OS.FD_SET (read_fd, fd_set);
+//		timeout [0] = 0;
+//		timeout [1] = 100000;
+//		if (OS.select (max_fd + 1, fd_set, null, null, timeout) != 0) break;
+//		if (getMessageCount () != 0) return true;
+//		int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+//		if (OS.XtAppPending (xtContext) != 0) return true;
+//	} while (true);
+//	return OS.FD_ISSET (display_fd, fd_set);
+
+	//TODO need to sleep waiting for the next event
+	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	do {
-		OS.FD_ZERO (fd_set);
-		OS.FD_SET (display_fd, fd_set);
-		OS.FD_SET (read_fd, fd_set);
-		timeout [0] = 0;
-		timeout [1] = 100000;
-		if (OS.select (max_fd + 1, fd_set, null, null, timeout) != 0) break;
-		if (getMessageCount () != 0) return true;
-		int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+		if (getMessageCount () != 0) break;
 		if (OS.XtAppPending (xtContext) != 0) return true;
+		try {
+			synchronized (OS_LOCK) {
+				OS_LOCK.wait (50);
+			}
+		} catch (Exception e) {
+			return false;
+		}
 	} while (true);
-	return OS.FD_ISSET (display_fd, fd_set);
+	return true;
 }
 /**
  * Causes the <code>run()</code> method of the runnable to

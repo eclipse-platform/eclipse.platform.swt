@@ -286,6 +286,21 @@ public class Display extends Device {
 		PACKAGE_NAME = name.substring (0, index + 1);
 	}*/
 
+	/*
+	* In order to support CLDC, .class cannot be used because
+	* it does not compile on some Java compilers when they are
+	* targeted for CLDC.  Use Class.forName() instead.
+	*/
+	static final Class OS_LOCK;
+	static {
+		Class lock = null;
+		try {
+			lock = Class.forName ("org.eclipse.swt.internal.gtk.OS");
+		} catch (Throwable th) {
+		}
+		OS_LOCK = lock;
+	}
+	
 	/* #define in gdkevents.h */
 	static final int DOUBLE_CLICK_TIME = 250;
 
@@ -2108,12 +2123,14 @@ void showIMWindow (Control control) {
  */
 public boolean sleep () {
 	checkDevice ();
-	//NOT DONE - need to sleep waiting for the next event
+	//TODO need to sleep waiting for the next event
 	do {
 		if (getMessageCount () != 0) break;
 		if (OS.gtk_events_pending () != 0) break;
 		try {
-			Thread.sleep (50);
+			synchronized (OS_LOCK) {
+				OS_LOCK.wait (50);
+			}
 		} catch (Exception e) {
 			return false;
 		}
