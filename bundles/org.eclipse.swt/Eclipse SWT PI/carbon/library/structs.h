@@ -163,6 +163,14 @@ void setFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQ
 #define setFontSelectionQDStyleFields(a,b,c)
 #endif /* NO_FontSelectionQDStyle */
 
+#ifndef NO_GDevice
+GDevice *getGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct);
+void setGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct);
+#else
+#define getGDeviceFields(a,b,c) NULL
+#define setGDeviceFields(a,b,c)
+#endif /* NO_GDevice */
+
 #ifndef NO_HICommand
 HICommand *getHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);
 void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);

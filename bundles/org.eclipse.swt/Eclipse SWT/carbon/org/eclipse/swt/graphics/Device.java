@@ -151,7 +151,14 @@ protected void destroy () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	return new Rectangle(0, 0, 0, 0);
+	int gdevice = OS.GetMainDevice();
+	int[] ptr = new int[1];
+	OS.memcpy(ptr, gdevice, 4);
+	GDevice device = new GDevice();
+	OS.memcpy(device, ptr[0], GDevice.sizeof);
+	Rect rect = new Rect();
+	OS.GetPixBounds(device.gdPMap, rect);
+	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 /**
@@ -204,7 +211,10 @@ public DeviceData getDeviceData () {
  */
 public Rectangle getClientArea () {
 	checkDevice ();
-	return getBounds ();
+	int gdevice = OS.GetMainDevice();
+	Rect rect = new Rect();
+	OS.GetAvailableWindowPositioningBounds(gdevice, rect);
+	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 /**
@@ -220,8 +230,14 @@ public Rectangle getClientArea () {
  * </ul>
  */
 public int getDepth () {
-	checkDevice ();
-	return 0;
+	checkDevice ();	
+	int gdevice = OS.GetMainDevice();
+	int[] ptr = new int[1];
+	OS.memcpy(ptr, gdevice, 4);
+	GDevice device = new GDevice();
+	OS.memcpy(device, ptr[0], GDevice.sizeof);
+	int depth = OS.GetPixDepth(device.gdPMap);
+	return depth;
 }
 
 /**
@@ -237,7 +253,15 @@ public int getDepth () {
  */
 public Point getDPI () {
 	checkDevice ();
-	return new Point (72, 72);
+	int gdevice = OS.GetMainDevice();
+	int[] ptr = new int[1];
+	OS.memcpy(ptr, gdevice, 4);
+	GDevice device = new GDevice();
+	OS.memcpy(device, ptr[0], GDevice.sizeof);
+	OS.memcpy(ptr, device.gdPMap, 4);
+	PixMap pixmap = new PixMap();
+	OS.memcpy(pixmap, ptr[0], PixMap.sizeof);
+	return new Point (pixmap.hRes >> 16, pixmap.vRes >> 16);
 }
 
 /**

@@ -1018,6 +1018,97 @@ void setFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQ
 }
 #endif /* NO_FontSelectionQDStyle */
 
+#ifndef NO_GDevice
+typedef struct GDevice_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID gdRefNum, gdID, gdType, gdITable, gdResPref, gdSearchProc, gdCompProc, gdFlags, gdPMap, gdRefCon, gdNextGD, left, top, right, bottom, gdMode, gdCCBytes, gdCCDepth, gdCCXData, gdCCXMask, gdExt;
+} GDevice_FID_CACHE;
+
+GDevice_FID_CACHE GDeviceFc;
+
+void cacheGDeviceFids(JNIEnv *env, jobject lpObject)
+{
+	if (GDeviceFc.cached) return;
+	GDeviceFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GDeviceFc.gdRefNum = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdRefNum", "S");
+	GDeviceFc.gdID = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdID", "S");
+	GDeviceFc.gdType = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdType", "S");
+	GDeviceFc.gdITable = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdITable", "I");
+	GDeviceFc.gdResPref = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdResPref", "S");
+	GDeviceFc.gdSearchProc = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdSearchProc", "I");
+	GDeviceFc.gdCompProc = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdCompProc", "I");
+	GDeviceFc.gdFlags = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdFlags", "S");
+	GDeviceFc.gdPMap = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdPMap", "I");
+	GDeviceFc.gdRefCon = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdRefCon", "I");
+	GDeviceFc.gdNextGD = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdNextGD", "I");
+	GDeviceFc.left = (*env)->GetFieldID(env, GDeviceFc.clazz, "left", "S");
+	GDeviceFc.top = (*env)->GetFieldID(env, GDeviceFc.clazz, "top", "S");
+	GDeviceFc.right = (*env)->GetFieldID(env, GDeviceFc.clazz, "right", "S");
+	GDeviceFc.bottom = (*env)->GetFieldID(env, GDeviceFc.clazz, "bottom", "S");
+	GDeviceFc.gdMode = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdMode", "I");
+	GDeviceFc.gdCCBytes = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdCCBytes", "S");
+	GDeviceFc.gdCCDepth = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdCCDepth", "S");
+	GDeviceFc.gdCCXData = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdCCXData", "I");
+	GDeviceFc.gdCCXMask = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdCCXMask", "I");
+	GDeviceFc.gdExt = (*env)->GetFieldID(env, GDeviceFc.clazz, "gdExt", "I");
+	GDeviceFc.cached = 1;
+}
+
+GDevice *getGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct)
+{
+	if (!GDeviceFc.cached) cacheGDeviceFids(env, lpObject);
+	lpStruct->gdRefNum = (*env)->GetShortField(env, lpObject, GDeviceFc.gdRefNum);
+	lpStruct->gdID = (*env)->GetShortField(env, lpObject, GDeviceFc.gdID);
+	lpStruct->gdType = (*env)->GetShortField(env, lpObject, GDeviceFc.gdType);
+	lpStruct->gdITable = (ITabHandle)(*env)->GetIntField(env, lpObject, GDeviceFc.gdITable);
+	lpStruct->gdResPref = (*env)->GetShortField(env, lpObject, GDeviceFc.gdResPref);
+	lpStruct->gdSearchProc = (SProcHndl)(*env)->GetIntField(env, lpObject, GDeviceFc.gdSearchProc);
+	lpStruct->gdCompProc = (CProcHndl)(*env)->GetIntField(env, lpObject, GDeviceFc.gdCompProc);
+	lpStruct->gdFlags = (*env)->GetShortField(env, lpObject, GDeviceFc.gdFlags);
+	lpStruct->gdPMap = (PixMapHandle)(*env)->GetIntField(env, lpObject, GDeviceFc.gdPMap);
+	lpStruct->gdRefCon = (*env)->GetIntField(env, lpObject, GDeviceFc.gdRefCon);
+	lpStruct->gdNextGD = (GDHandle)(*env)->GetIntField(env, lpObject, GDeviceFc.gdNextGD);
+	lpStruct->gdRect.left = (*env)->GetShortField(env, lpObject, GDeviceFc.left);
+	lpStruct->gdRect.top = (*env)->GetShortField(env, lpObject, GDeviceFc.top);
+	lpStruct->gdRect.right = (*env)->GetShortField(env, lpObject, GDeviceFc.right);
+	lpStruct->gdRect.bottom = (*env)->GetShortField(env, lpObject, GDeviceFc.bottom);
+	lpStruct->gdMode = (*env)->GetIntField(env, lpObject, GDeviceFc.gdMode);
+	lpStruct->gdCCBytes = (*env)->GetShortField(env, lpObject, GDeviceFc.gdCCBytes);
+	lpStruct->gdCCDepth = (*env)->GetShortField(env, lpObject, GDeviceFc.gdCCDepth);
+	lpStruct->gdCCXData = (Handle)(*env)->GetIntField(env, lpObject, GDeviceFc.gdCCXData);
+	lpStruct->gdCCXMask = (Handle)(*env)->GetIntField(env, lpObject, GDeviceFc.gdCCXMask);
+	lpStruct->gdExt = (Handle)(*env)->GetIntField(env, lpObject, GDeviceFc.gdExt);
+	return lpStruct;
+}
+
+void setGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct)
+{
+	if (!GDeviceFc.cached) cacheGDeviceFids(env, lpObject);
+	(*env)->SetShortField(env, lpObject, GDeviceFc.gdRefNum, (jshort)lpStruct->gdRefNum);
+	(*env)->SetShortField(env, lpObject, GDeviceFc.gdID, (jshort)lpStruct->gdID);
+	(*env)->SetShortField(env, lpObject, GDeviceFc.gdType, (jshort)lpStruct->gdType);
+	(*env)->SetIntField(env, lpObject, GDeviceFc.gdITable, (jint)lpStruct->gdITable);
+	(*env)->SetShortField(env, lpObject, GDeviceFc.gdResPref, (jshort)lpStruct->gdResPref);
+	(*env)->SetIntField(env, lpObject, GDeviceFc.gdSearchProc, (jint)lpStruct->gdSearchProc);
+	(*env)->SetIntField(env, lpObject, GDeviceFc.gdCompProc, (jint)lpStruct->gdCompProc);
+	(*env)->SetShortField(env, lpObject, GDeviceFc.gdFlags, (jshort)lpStruct->gdFlags);
+	(*env)->SetIntField(env, lpObject, GDeviceFc.gdPMap, (jint)lpStruct->gdPMap);
+	(*env)->SetIntField(env, lpObject, GDeviceFc.gdRefCon, (jint)lpStruct->gdRefCon);
+	(*env)->SetIntField(env, lpObject, GDeviceFc.gdNextGD, (jint)lpStruct->gdNextGD);
+	(*env)->SetShortField(env, lpObject, GDeviceFc.left, (jshort)lpStruct->gdRect.left);
+	(*env)->SetShortField(env, lpObject, GDeviceFc.top, (jshort)lpStruct->gdRect.top);
+	(*env)->SetShortField(env, lpObject, GDeviceFc.right, (jshort)lpStruct->gdRect.right);
+	(*env)->SetShortField(env, lpObject, GDeviceFc.bottom, (jshort)lpStruct->gdRect.bottom);
+	(*env)->SetIntField(env, lpObject, GDeviceFc.gdMode, (jint)lpStruct->gdMode);
+	(*env)->SetShortField(env, lpObject, GDeviceFc.gdCCBytes, (jshort)lpStruct->gdCCBytes);
+	(*env)->SetShortField(env, lpObject, GDeviceFc.gdCCDepth, (jshort)lpStruct->gdCCDepth);
+	(*env)->SetIntField(env, lpObject, GDeviceFc.gdCCXData, (jint)lpStruct->gdCCXData);
+	(*env)->SetIntField(env, lpObject, GDeviceFc.gdCCXMask, (jint)lpStruct->gdCCXMask);
+	(*env)->SetIntField(env, lpObject, GDeviceFc.gdExt, (jint)lpStruct->gdExt);
+}
+#endif /* NO_GDevice */
+
 #ifndef NO_HICommand
 typedef struct HICommand_FID_CACHE {
 	int cached;

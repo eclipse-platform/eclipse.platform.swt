@@ -977,6 +977,7 @@ public static final native void memcpy(int[] dest, int src, int n);
 public static final native void memcpy(int dest, int[] src, int n);
 public static final native void memcpy(int dest, PixMap src, int n);
 public static final native void memcpy(int dest, Cursor src, int n);
+public static final native void memcpy(GDevice dest, int src, int n);
 public static final native void memcpy(PixMap dest, int src, int n);
 public static final native void memcpy(FontSelectionQDStyle dest, int src, int n);
 public static final native void memcpy(int dest, BitMap src, int n);

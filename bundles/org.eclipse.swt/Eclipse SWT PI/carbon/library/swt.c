@@ -6815,6 +6815,21 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3II)
 }
 #endif
 
+
+#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	GDevice _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II\n")
+
+	if (arg0) lparg0 = getGDeviceFields(env, arg0, &_arg0);
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setGDeviceFields(env, arg0, lparg0);
+}
+#endif
+
 #ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_BitMap_2I
 JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_BitMap_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
