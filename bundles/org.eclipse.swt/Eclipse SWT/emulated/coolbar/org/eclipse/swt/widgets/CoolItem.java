@@ -34,7 +34,7 @@ public class CoolItem extends Item {
 	static final int MARGIN_HEIGHT = 2;
 	static final int GRABBER_WIDTH = 2;
 	
-	private int CHEVRON_HORIZONTAL_TRIM = -1;			//platform depended values
+	private int CHEVRON_HORIZONTAL_TRIM = -1;			//platform dependent values
 	private int CHEVRON_VERTICAL_TRIM = -1;	
 	private static final int CHEVRON_LEFT_MARGIN = 2;
 	private static final int CHEVRON_IMAGE_WIDTH = 8;	//Width to draw the double arrow
@@ -155,8 +155,8 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-/* (Non-javadoc)
- *  Find the trim size of the Toolbar widget in the current plataform.
+/* 
+ * Find the trim size of the Toolbar widget in the current platform.
  */
 void calculatedBorders() {
 	ToolBar tb = new ToolBar (parent, SWT.FLAT);
@@ -214,7 +214,7 @@ public void dispose () {
 	control = null;
 	
 	/* 
-	 * Although The parent for the chevron is the Coolbar (CoolItem can not be the parent)
+	 * Although the parent for the chevron is the CoolBar (CoolItem can not be the parent)
 	 * it has to be disposed with the item 
 	 */
 	if (chevron != null && !chevron.isDisposed()) chevron.dispose();
@@ -355,8 +355,8 @@ int internalGetMinimumWidth () {
 	}
 	return width;
 }
-/**
- *  Called on the chevron is select
+/*
+ *  Called when the chevron is selected.
  */
 void onSelection (Event ev) {
 	Rectangle bounds = chevron.getBounds();
