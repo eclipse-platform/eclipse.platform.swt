@@ -591,6 +591,11 @@ public String [] getItems () {
 	}
 	return result;
 }
+
+String getNameText () {
+	return getText ();
+}
+
 /**
  * Returns a <code>Point</code> whose x coordinate is the start
  * of the selection in the receiver's text field, and whose y
