@@ -1,7 +1,7 @@
 package org.eclipse.swt.ole.win32;
 
 /*
- * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
+ * Copyright (c) 2000, 2003 IBM Corp.  All rights reserved.
  * This file is made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
@@ -68,8 +68,10 @@ public Variant(float val) {
 /**
  * Create a Variant object which contains a reference to the data being transferred.
  *
- * <p>When creating a VT_BYREF Variant, you must give the full Variant type including VT_BYREF
- * (such as <code>short byRefType = OLE.VT_BSTR | OLE.VT_BYREF</code>).
+ * <p>When creating a VT_BYREF Variant, you must give the full Variant type 
+ * including VT_BYREF such as
+ * 
+ * <pre><code>short byRefType = OLE.VT_BSTR | OLE.VT_BYREF</code></pre>.
  *
  * @param ptr a pointer to the data being transferred.
  * @param byRefType the type of the data being transferred such as OLE.VT_BSTR | OLE.VT_BYREF
@@ -84,6 +86,8 @@ public Variant(int ptr, short byRefType) {
  *
  * @param automation the OleAutomation object that this Variant represents
  *
+ * @deprecated use public Variant(Dispatch idispatch)
+ * 
  */
 public Variant(OleAutomation automation) {
 	type = COM.VT_DISPATCH;
@@ -91,15 +95,34 @@ public Variant(OleAutomation automation) {
 }
 /**
  * Create a Variant object which represents an IDispatch interface as a VT_Dispatch.
- *
+ * <p>The caller is expected to have appropriately invoked unknown.AddRef() before creating 
+ * this Variant.
+ * 
  * @since 2.0
  * 
  * @param idispatch the IDispatch object that this Variant represents
  *
+ * @deprecated use public Variant(Dispatch idispatch)
+ * 
  */
 public Variant(IDispatch idispatch) {
 	type = COM.VT_DISPATCH;
 	dispatchData = idispatch;
+}
+/**
+ * Create a Variant object which represents an IDispatch interface as a VT_Dispatch.
+ * An AddRef is called on the Dispatch object in this constructor.
+ * Use Variant.dispose to free this object when no longer required.
+ *
+ * @since 2.1
+ * 
+ * @param idispatch the Dispatch object that this Variant represents
+ *
+ */
+public Variant(Dispatch idispatch) {
+	type = COM.VT_DISPATCH;
+	dispatchData = new IDispatch(idispatch.getAddress());
+	dispatchData.AddRef();
 }
 /**
  * Create a Variant object which represents an IUnknown interface as a VT_UNKNOWN.
@@ -108,11 +131,27 @@ public Variant(IDispatch idispatch) {
  * this Variant.
  *
  * @param unknown the IUnknown object that this Variant represents
- *
+ * 
+ * @deprecated use public Variant(Unknown unknown)
  */
 public Variant(IUnknown unknown) {
 	type = COM.VT_UNKNOWN;
 	unknownData = unknown;
+}
+/**
+ * Create a Variant object which represents an IUnknown interface as a VT_UNKNOWN.
+ * An AddRef is called on the Unknown object in this constructor.
+ * Use Variant.dispose to free this object when no longer required.
+ * 
+ * @since 2.1
+ * 
+ * @param unknown the IUnknown object that this Variant represents
+ *
+ */
+public Variant(Unknown unknown) {
+	type = COM.VT_UNKNOWN;
+	unknownData = new IUnknown(unknown.getAddress());
+	unknownData.AddRef();
 }
 /**
  * Create a Variant object which represents a Java String as a VT_BSTR.
@@ -144,12 +183,42 @@ public Variant(boolean val) {
 	type = COM.VT_BOOL;
 	booleanData = val;
 }
+
+/**
+ * 
+ * 
+ * @since 2.1
+ */
+public void dispose() {
+	if ((type & COM.VT_BYREF) == COM.VT_BYREF) {
+		OS.GlobalFree(byRefPtr);
+		return;
+	}
+		
+	switch (type) {
+		case COM.VT_EMPTY :
+		case COM.VT_BOOL :
+		case COM.VT_R4 :
+		case COM.VT_I4 :
+		case COM.VT_I2 :
+		case COM.VT_BSTR :
+			break;
+		case COM.VT_DISPATCH :
+			dispatchData.Release();
+			break;
+		case COM.VT_UNKNOWN :
+			unknownData.Release();
+			break;
+	}
+	
+}
 /**
  * Returns the OleAutomation object represented by this Variant.
  *
  * <p>If this Variant does not contain an OleAutomation object, an attempt is made to
  * coerce the Variant type into an OleAutomation object.  If this fails, an error is
- * thrown.
+ * thrown.  Note that OleAutomation objects must be disposed when no longer
+ * needed.
  *
  * @return the OleAutomation object represented by this Variant
  *

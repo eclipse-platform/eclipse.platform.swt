@@ -24,6 +24,10 @@ public class OLE extends SWT {
 
 	public static final int S_FALSE = 1; // Used for functions that semantically return a Boolean FALSE result to indicate that the function succeeded.
 	public static final int S_OK    = 0; // Function succeeded.
+	public static final int E_FAIL = -2147467259;  // Unspecified failure.
+	public static final int E_INVALIDARG = -2147024809; // Invalid argument
+	public static final int E_NOINTERFACE = -2147467262;  // QueryInterface did not recognize the requested interface.
+	public static final int E_NOTIMPL = -2147467263; // Not implemented
 	
 	// Verbs that can be invoked on this client
 	public static final int OLEIVERB_DISCARDUNDOSTATE = -6; // close the OLE object and discard the undo state
