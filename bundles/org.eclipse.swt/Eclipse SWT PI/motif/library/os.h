@@ -27,7 +27,7 @@
 #endif
 
 #ifdef NO_XINERAMA_EXTENSIONS
-#define NO__1XineramaScreenInfo
+#define NO_XineramaScreenInfo
 #define NO__1XineramaIsActive
 #define NO__1XineramaQueryScreens
 #define NO_memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II
