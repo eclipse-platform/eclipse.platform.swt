@@ -215,7 +215,11 @@ public Browser(Composite parent, int style) {
 		rect.width = 1;
 		rect.height = 1;
 	}
-	rc = baseWindow.InitWindow(handle, 0, 0, 0, rect.width, rect.height);
+	/*
+	* Note. The following code compiles without warning on a 
+	* 64 bit platform but won't run. 
+	*/
+	rc = baseWindow.InitWindow((int)/*64*/handle, 0, 0, 0, rect.width, rect.height);
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
 	rc = baseWindow.Create();
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
@@ -1724,7 +1728,11 @@ int GetSiteWindow(int aSiteWindow) {
 	* dialog comes up. If no handle is returned, the print dialog
 	* does not come up on this platform.  
 	*/
-	XPCOM.memmove(aSiteWindow, new int[] {handle}, 4);
+	/*
+	* Note. The following code compiles without warning on a 
+	* 64 bit platform but won't run. 
+	*/
+	XPCOM.memmove(aSiteWindow, new int[] {(int)/*64*/handle}, 4);
 	return XPCOM.NS_OK;     	
 }  
  

@@ -28,7 +28,11 @@ public XPCOMObject(int[] argCounts) {
 		if ((Callbacks[i][argCounts[i]]) == null) {
 			Callbacks[i][argCounts[i]] = new Callback(this.getClass(), "callback"+i, argCounts[i] + 1, true); //$NON-NLS-1$
 		}
-		callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress();
+		/*
+		* Note. The following code compiles without warning on a 
+		* 64 bit platform but won't run. 
+		*/
+		callbackAddresses[i] = (int)/*64*/Callbacks[i][argCounts[i]].getAddress();
 	}	
 
 	int pVtable = XPCOM.PR_Malloc(4 * argCounts.length);
