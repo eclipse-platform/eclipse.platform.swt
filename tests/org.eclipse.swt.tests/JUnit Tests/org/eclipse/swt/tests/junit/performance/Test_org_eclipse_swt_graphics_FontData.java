@@ -15,7 +15,6 @@ import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.tests.junit.SwtJunit;
 import org.eclipse.test.performance.PerformanceMeter;
 
 /**
