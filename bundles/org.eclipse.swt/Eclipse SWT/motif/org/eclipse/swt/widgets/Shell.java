@@ -1630,7 +1630,11 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 		case OS.ReparentNotify: {
 			reparented = true;
 			adjustTrim ();
-			if (OS.IsLinux) updateResizable (xEvent.width, xEvent.height);
+			if (OS.IsLinux) {
+				int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+				OS.XtGetValues (shellHandle, argList, argList.length / 2);
+				updateResizable (argList [1], argList [3]);
+			}
 			break;
 		}
 		case OS.ConfigureNotify:
