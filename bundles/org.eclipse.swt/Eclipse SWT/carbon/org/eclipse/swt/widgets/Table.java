@@ -99,8 +99,6 @@ void createHandle () {
 	OS.AddDataBrowserListViewColumn (handle, column, position);
 	//NOT DONE
 	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)300);
-	OS.HIViewAddSubview (parent.handle, handle);
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 }
 
 void createItem (TableColumn column, int index) {
@@ -669,7 +667,7 @@ public void setSelection (int [] indices) {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
+	if (ids.length > 0) OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
 }
 
 public void setSelection (TableItem [] items) {
@@ -686,7 +684,7 @@ public void setSelection (TableItem [] items) {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
+	if (ids.length > 0) OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
 }
 
 public void setTopIndex (int index) {

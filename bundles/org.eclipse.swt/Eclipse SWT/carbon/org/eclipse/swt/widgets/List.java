@@ -500,7 +500,7 @@ public void setSelection (int start, int end) {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
+	if (ids.length > 0) OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
 }
 
 public void setSelection (int [] indices) {
@@ -516,7 +516,7 @@ public void setSelection (int [] indices) {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
+	if (ids.length > 0) OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
 }
 
 public void setSelection (String [] items) {
@@ -533,7 +533,7 @@ public void setSelection (String [] items) {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
+	if (ids.length > 0) OS.RevealDataBrowserItem (handle, ids [0], COLUMN_ID, (byte) OS.kDataBrowserRevealOnly);
 }
 
 public void setTopIndex (int index) {
