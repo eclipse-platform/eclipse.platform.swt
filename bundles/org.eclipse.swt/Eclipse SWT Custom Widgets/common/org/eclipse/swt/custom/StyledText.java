@@ -3194,7 +3194,7 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
 				// Note that there is no need to deal with segments when checking for
 				// the ligatures.
 				int lineLength = line.length();
-				StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, null, null, new int[] {0, lineLength});
+				StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, new int[] {0, lineLength});
 				for (int i=0; i<event.styles.length; i++) {
 					StyleRange range = event.styles[i];
 					StyleRange newRange = null;
@@ -5008,7 +5008,7 @@ void modifyContent(Event event, boolean updateCaret) {
 			int offsetInLine = caretOffset - lineStartOffset;
 			String lineText = content.getLine(line);
 			GC gc = new GC(this);
-			StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, lineText, null, null, getBidiSegments(lineText, lineStartOffset));
+			StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, lineText, getBidiSegments(lineText, lineStartOffset));
 			
 			isDirectionBoundary = (offsetInLine > 0 && bidi.isRightToLeft(offsetInLine) != bidi.isRightToLeft(offsetInLine - 1));
 			gc.dispose();
@@ -5803,7 +5803,7 @@ void setBidiKeyboardLanguage() {
 	int lineLength = lineText.length();
 
 	// Don't supply the bold styles/font since we don't want to measure anything
-	bidi = new StyledTextBidi(gc, tabWidth, lineText, null, null, getBidiSegments(lineText, lineStartOffset));
+	bidi = new StyledTextBidi(gc, tabWidth, lineText, getBidiSegments(lineText, lineStartOffset));
 	if (offsetInLine == 0) {
 		bidi.setKeyboardLanguage(offsetInLine);
 	}
