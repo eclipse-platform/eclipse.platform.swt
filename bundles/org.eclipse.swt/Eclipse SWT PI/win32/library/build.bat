@@ -31,5 +31,10 @@ rem ******
 set Mssdk=j:\teamswt\swt-builddir\mssdk
 call %mssdk%\setenv.bat
 
+rem *****
+rem mozilla dist folder
+rem *****
+set MOZILLA_HOME=W:\mozilla\1.4\win32\mozilla\dist
+
 :MAKE
 nmake -f make_win32.mak %1 %2 %3 %4

@@ -33,6 +33,11 @@ AWT_LIB    = $(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 AWT_LIBS   = $(JAVA_HOME)\jre\bin\jawt.lib
 AWT_OBJS   = swt_awt.obj
 
+MOZILLA_PREFIX	= swt-mozilla
+MOZILLA_LIB     = $(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
+MOZILLA_LIBS	= nspr4.lib xpcom.lib embed_base_s.lib
+MOZILLA_OBJS	= xpcom.obj
+
 # note: thoroughly test all examples after changing any optimization flags
 SWT_CDEBUG = #-Zi -Odi
 SWT_LDEBUG = #/DEBUG /DEBUGTYPE:both
@@ -40,11 +45,22 @@ CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUI
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
 
+MOZILLA_INCLUDES = -I$(MOZILLA_HOME)/include \
+	-I$(MOZILLA_HOME)/include/xpcom \
+	-I$(MOZILLA_HOME)/include/string \
+	-I$(MOZILLA_HOME)/include/nspr \
+	-I$(MOZILLA_HOME)/include/embed_base \
+	-I$(MOZILLA_HOME)/include/gfx
+MOZILLACFLAGS = $(CFLAGS) -DXP_WIN -DXP_WIN32 $(MOZILLA_INCLUDES)
+MOZILLALFLAGS = $(LFLAGS) /NODEFAULTLIB:MSVCRT.lib /libpath:"$(MOZILLA_HOME)\lib"
 
-all: $(SWT_LIB) $(AWT_LIB)
+all: $(SWT_LIB) $(AWT_LIB) $(MOZILLA_LIB)
 
 .c.obj:
 	cl $(CFLAGS) $*.c
+
+.cpp.obj:
+	cl $(MOZILLACFLAGS) $*.cpp
 
 $(SWT_LIB): $(SWT_OBJS) swt.res
 	echo $(LFLAGS) >templrf
@@ -67,12 +83,27 @@ $(AWT_LIB): $(AWT_OBJS) swt_awt.res
 	echo swt_awt.res >>templrf
 	link @templrf
 	del templrf
+
+$(MOZILLA_LIB): $(MOZILLA_OBJS) xpcom.res
+	echo $(MOZILLALFLAGS) >templrf
+	echo $(MOZILLA_LIBS) >>templrf
+	echo -machine:IX86 >>templrf
+	echo -subsystem:windows >>templrf
+	echo -out:$(MOZILLA_LIB) >>templrf
+	echo $(MOZILLA_OBJS) >>templrf
+	echo xpcom.res >>templrf
+	link @templrf
+	del templrf
 	
 swt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(SWT_LIB)\" -r -fo swt.res swt.rc
 
 swt_awt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(AWT_LIB)\" -r -fo swt_awt.res swt_awt.rc
+
+xpcom.res:
+	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(MOZILLA_LIB)\" -r -fo xpcom.res xpcom.rc
+	
 
 clean:
     del *.obj *.res *.dll *.lib *.exp
