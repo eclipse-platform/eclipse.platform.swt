@@ -15,6 +15,9 @@
 #include "callback.h"
 #include <string.h>
 
+/* define this to print out debug statements */
+/* #define DEBUG_CALL_PRINTS */
+
 /* --------------- callback globals ----------------- */
 
 static JavaVM *jvm = NULL;

@@ -71,21 +71,4 @@ void throwOutOfMemory(JNIEnv *env);
 		return 0; \
 	}
 
-/* define this to print out debug statements */
-/* #define DEBUG_CALL_PRINTS */
-/* #define DEBUG_CHECK_NULL_EXCEPTIONS */
-
-#ifdef DEBUG_CHECK_NULL_EXCEPTIONS
-#define DEBUG_CHECK_NULL(env, address) \
-	if (address == 0) { \
-		jclass clazz = (*env)->FindClass(env, "org/eclipse/swt/SWTError"); \
-		if (clazz != NULL) { \
-			(*env)->ThrowNew(env, clazz, "Argument cannot be NULL"); \
-		} \
-		return; \
-	}
-#else
-#define DEBUG_CHECK_NULL(env, address)
-#endif
-
 #endif /* ifndef INC_swt_H */
