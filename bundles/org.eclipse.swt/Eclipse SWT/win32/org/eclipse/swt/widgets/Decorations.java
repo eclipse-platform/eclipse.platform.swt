@@ -1197,7 +1197,7 @@ int widgetStyle () {
 	}
 
 	/* Set the system menu and close box bits */
-	if (!OS.IsPPC) {
+	if (!OS.IsPPC && !OS.IsSP) {
 		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_SYSMENU;
 	}
 	
@@ -1255,6 +1255,32 @@ LRESULT WM_CLOSE (int wParam, int lParam) {
 	// the widget could be disposed at this point
 	if (event.doit && !isDisposed ()) dispose ();
 	return LRESULT.ZERO;
+}
+
+LRESULT WM_HOTKEY (int wParam, int lParam) {
+	LRESULT result = super.WM_HOTKEY (wParam, lParam);
+	if (result != null) return result;
+	if (OS.IsSP) {
+		/*
+		* Feature on WinCE SP.  The Back key is either used to close
+		* the foreground Dialog or used as a regular Back key in an EDIT
+		* control. The article 'Back Key' in MSDN for Smartphone 
+		* describes how an application should handle it.  The 
+		* workaround is to override the Back key when creating
+		* the menubar and handle it based on the style of the Shell.
+		* If the Shell has the SWT.CLOSE style, close the Shell.
+		* Otherwise, send the Back key to the window with focus.
+		*/
+		if (((lParam >> 16) & 0xFFFF) == OS.VK_ESCAPE) {
+			if ((style & SWT.CLOSE) != 0) {
+				OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
+			} else {
+				OS.SHSendBackToFocusWindow (OS.WM_HOTKEY, wParam, lParam);
+			}
+			return LRESULT.ZERO;
+		}
+	}
+	return result;
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {

@@ -1046,10 +1046,12 @@ int widgetExtStyle () {
 }
 
 TCHAR windowClass () {
+	if (OS.IsSP) return DialogClass;
 	return parent != null ? DialogClass : super.windowClass ();
 }
 
 int windowProc () {
+	if (OS.IsSP) return DialogProc;
 	return parent != null ? DialogProc : super.windowProc ();
 }
 
@@ -1071,7 +1073,10 @@ int widgetStyle () {
 	* NOTE: WS_POPUP causes CreateWindowEx () to ignore CW_USEDEFAULT
 	* and causes the default window location and size to be zero.
 	*/
-	if (OS.IsWinCE) return parent == null ? bits : bits | OS.WS_POPUP;
+	if (OS.IsWinCE) {
+		if (OS.IsSP) return bits | OS.WS_POPUP;
+		return parent == null ? bits : bits | OS.WS_POPUP;
+	}
 	
 	/*
 	* Use WS_OVERLAPPED for all windows, either dialog or top level

@@ -344,6 +344,15 @@ void createHandle () {
 			}
 			info.idCommand = id1 = item.id;
 			OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, ID_SPSOFTKEY1, info);
+
+			/*
+			* Override the Back key.  For some reason, the owner of the menubar
+			* must be a Dialog or it won't receive the WM_HOTKEY message.  As
+			* a result, Shell on WinCE SP must use the class Dialog.
+			*/
+			int dwMask = OS.SHMBOF_NODEFAULT | OS.SHMBOF_NOTIFY;
+			int lParam = dwMask << 16 | dwMask;
+			OS.SendMessage (hwndCB, OS.SHCMBM_OVERRIDEKEY, OS.VK_ESCAPE, lParam);
 			return;
 		}
 		handle = OS.CreateMenu ();
