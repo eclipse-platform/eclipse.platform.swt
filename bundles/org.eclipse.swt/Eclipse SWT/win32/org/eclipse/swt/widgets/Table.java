@@ -1392,7 +1392,8 @@ public void select (int index) {
  * Selects the items at the given zero-relative indices in the receiver.
  * If the item at the index was already selected, it remains
  * selected. The range of the indices is inclusive. Indices that are
- * out of range are ignored.
+ * out of range are ignored and no items will be selected if start is
+ * greater than end.
  *
  * @param start the start of the range
  * @param end the end of the range
@@ -1920,8 +1921,10 @@ public void setSelection (int index) {
 
 /**
  * Selects the items at the given zero-relative indices in the receiver. 
- * The current selected if first cleared, then the new items are selected.
- *
+ * The current selection is first cleared, then the new items are selected.
+ * Indices that are out of range are ignored and no items will be selected
+ * if start is greater than end.
+ * 
  * @param start the start index of the items to select
  * @param end the end index of the items to select
  *
