@@ -105,6 +105,7 @@ public class StyledText extends Canvas {
 	int verticalScrollOffset = 0;		// pixel based
 	int horizontalScrollOffset = 0;		// pixel based
 	int topIndex = 0;					// top visible line
+	int lastPaintTopIndex = -1;
 	int topOffset = 0;					// offset of first character in top line
 	int clientAreaHeight = 0;			// the client area height. Needed to calculate content width for new 
 										// visible lines during Resize callback
@@ -5054,13 +5055,13 @@ void handleResize(Event event) {
 	clientAreaHeight = clientArea.height;
 	clientAreaWidth = clientArea.width;
 	/* Redraw the old or new right/bottom margin if needed */
-    if (oldWidth != clientAreaWidth) {	
+    if (oldWidth != clientAreaWidth) {
 		if (rightMargin > 0) {
 			int x = (oldWidth < clientAreaWidth ? oldWidth : clientAreaWidth)- rightMargin; 
 			redraw(x, 0, rightMargin, oldHeight, false);
 		}
     }
-    if (oldHeight != clientAreaHeight) {	
+    if (oldHeight != clientAreaHeight) {
 		if (bottomMargin > 0) {
 			int y = (oldHeight < clientAreaHeight ? oldHeight : clientAreaHeight)- bottomMargin; 
 			redraw(0, y, oldWidth, bottomMargin, false);
@@ -5616,7 +5617,10 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 		int paintY, paintHeight;
 		Image lineBuffer;
 		GC lineGC;
-		if (DOUBLE_BUFFERED) {
+		int topIndex = getTopIndex();
+		boolean doubleBuffer = DOUBLE_BUFFERED && lastPaintTopIndex == topIndex;
+		lastPaintTopIndex = topIndex;
+		if (doubleBuffer) {
 			paintY = 0;
 			paintHeight = renderHeight;
 			lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
@@ -5638,7 +5642,7 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 			lineGC.setBackground(background);
 			lineGC.fillRectangle(0, paintY, clientArea.width, paintHeight - paintY);
 		}
-		if (DOUBLE_BUFFERED) {
+		if (doubleBuffer) {
 			clearMargin(lineGC, background, clientArea, startY);
 			gc.drawImage(lineBuffer, 0, startY);
 			lineGC.dispose();
