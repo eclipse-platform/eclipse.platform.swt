@@ -117,7 +117,7 @@ public class ATK extends OS {
 	public static final synchronized native int /*long*/ g_type_class_peek (int /*long*/ g_class);
 	public static final synchronized native int /*long*/ g_type_class_peek_parent (int /*long*/ g_class);
 	public static final synchronized native int g_type_from_name (byte[] name);
-	public static final synchronized native int g_type_interface_peek_parent (int /*long*/ iface);
+	public static final synchronized native int /*long*/ g_type_interface_peek_parent (int /*long*/ iface);
 	public static final synchronized native boolean g_type_is_a (int type, int is_a_type);
 	public static final synchronized native int /*long*/ g_type_name (int /*long*/ handle);
 	public static final synchronized native int g_type_parent (int type);
