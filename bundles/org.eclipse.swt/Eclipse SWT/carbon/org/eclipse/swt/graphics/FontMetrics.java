@@ -26,6 +26,16 @@ public final class FontMetrics {
 FontMetrics() {
 }
 
+public static FontMetrics carbon_new(int ascent, int descent, int averageCharWidth, int leading, int height) {
+	FontMetrics fontMetrics = new FontMetrics();
+	fontMetrics.ascent = ascent;
+	fontMetrics.descent = descent;
+	fontMetrics.averageCharWidth = averageCharWidth;
+	fontMetrics.leading = leading;
+	fontMetrics.height = height;
+	return fontMetrics;
+}
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class

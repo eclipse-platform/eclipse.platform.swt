@@ -1436,16 +1436,14 @@ public FontMetrics getFontMetrics() {
 	Font font = data.font;
 	FontInfo info = new FontInfo();
 	OS.FetchFontInfo(font.id, font.size, font.style, info);
-	FontMetrics fm = new FontMetrics();
-	fm.ascent = info.ascent;
-	fm.descent = info.descent;
-	fm.leading = info.leading;
+	int ascent = info.ascent;
+	int descent = info.descent;
+	int leading = info.leading;
 	/* This code is intentionaly comment. Not right for fixed width fonts. */
 	//fm.averageCharWidth = info.widMax / 3;
 	String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
-	fm.averageCharWidth = stringExtent(s).x / s.length();
-	fm.height = fm.ascent + fm.descent;
-	return fm;
+	int averageCharWidth = stringExtent(s).x / s.length();
+	return FontMetrics.carbon_new(ascent, descent, averageCharWidth, leading, ascent + descent);
 }
 
 /** 
