@@ -353,6 +353,8 @@ void destroyAccelerators () {
 }
 
 public void dispose () {
+	if (isDisposed()) return;
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!(this instanceof Shell)) {
 		setVisible (false);
 		if (!traverseDecorations (false)) {

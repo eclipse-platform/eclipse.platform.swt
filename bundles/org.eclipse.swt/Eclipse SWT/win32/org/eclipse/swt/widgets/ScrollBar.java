@@ -179,6 +179,8 @@ void createWidget () {
 }
 
 public void dispose () {
+	if (isDisposed()) return;
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
 	super.dispose ();
 	if (OS.IsWinCE) {
