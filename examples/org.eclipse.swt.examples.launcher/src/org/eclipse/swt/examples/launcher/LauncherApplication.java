@@ -1,7 +1,7 @@
-package org.eclipse.swt.examples.launcher;import java.lang.reflect.*;import java.util.*;import org.eclipse.core.boot.*;import org.eclipse.core.runtime.*;
+package org.eclipse.swt.examples.launcher;/* * (c) Copyright IBM Corp. 2000, 2001. * All Rights Reserved */import java.lang.reflect.*;import java.util.*;import org.eclipse.core.boot.*;import org.eclipse.core.runtime.*;/** * LauncherApplication provides a mechanism for launching arbitrary executable programs * from within the Eclipse Platform.  This class binds to the * <core>org.eclipse.core.runtime.applications</code> extension point. */
 public class LauncherApplication implements IPlatformRunnable {
 	public static final String APPLICATION_ID = "org.eclipse.swt.examples.launcher.application";
-	
+		/**	 * Invokes the program specified in the arguments.	 * 	 * @param argsVanilla a String[] containing the arguments, one token per array index.	 * <ul>	 *   <li>-appclass &lt;class name&gt; the name of the class whose main() method is to be invoked	 *       [note: do not add a .java or .class suffix]	 *   <li>-appplugin &lt;pluginid&gt; the id of the plugin containing the specified class	 *   <li>-appargs &lt;args&gt; all remaining tokens to the right of this switch are passed as	 *       arguments to the main() method when the program is launched	 * </ul>	 * @return null	 */
 	public Object run(Object argsVanilla) throws Exception {
 		final String[] args = (String[]) argsVanilla;
 		String   programPluginId = null; // id of plugin containing the program
@@ -24,13 +24,13 @@ public class LauncherApplication implements IPlatformRunnable {
 				}
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new IllegalArgumentException("Malformed argument list");
+			throw new IllegalArgumentException("run.error.MalformedArgumentList");
 		}
 		
 		if (programPluginId == null) throw new IllegalArgumentException(
-			"Must specify plugin containing program with -appplugin argument");
+			"run.error.MissingAppPlugin");
 		if (programClass == null) throw new IllegalArgumentException(
-			"Must program class containing main() method with -appclass argument");
+			"run.error.MissincAppClass");
 		if (programArgs == null) programArgs = new String[0];
 
 		// get the platform's public plugin registry
@@ -68,8 +68,7 @@ public class LauncherApplication implements IPlatformRunnable {
 				Method programMainMethod = programMainClass.getMethod("main", parameterList);
 	
 				final Object[] parameters = { new String[0] };
-				programMainMethod.invoke(null, parameters);				return null; // SUCCESS!
-			} catch (InvocationTargetException e) {
+				programMainMethod.invoke(null, parameters);				// SUCCESS!				return null;			} catch (InvocationTargetException e) {
 				LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.Execution"), e);
 				break; // it ran so stop searching
 			} catch (Throwable e) {

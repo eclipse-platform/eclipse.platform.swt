@@ -1,4 +1,4 @@
-package org.eclipse.swt.examples.launcher;import java.io.*;import java.util.*;import org.eclipse.core.boot.*;import org.eclipse.core.runtime.*;import org.eclipse.debug.core.*;import org.eclipse.debug.core.model.*;import org.eclipse.jdt.launching.*;
+package org.eclipse.swt.examples.launcher;/* * (c) Copyright IBM Corp. 2000, 2001. * All Rights Reserved */import java.io.*;import java.util.*;import org.eclipse.core.boot.*;import org.eclipse.core.runtime.*;import org.eclipse.debug.core.*;import org.eclipse.debug.core.model.*;import org.eclipse.jdt.launching.*;/** * ApplicationRunner provides an interface to run registered Eclipse Platform applications * standalone in their own VM. */
 public class ApplicationRunner {
 	protected String   appName;
 	protected String[] appArgs;
