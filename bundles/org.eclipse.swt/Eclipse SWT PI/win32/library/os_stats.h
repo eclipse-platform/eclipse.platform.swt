@@ -604,5 +604,6 @@ typedef enum {
 	WideCharToMultiByte__II_3CI_3BI_3B_3Z_FUNC,
 	WindowFromDC_FUNC,
 	WindowFromPoint_FUNC,
+	strlen_FUNC,
 	wcslen_FUNC,
 } OS_FUNCS;

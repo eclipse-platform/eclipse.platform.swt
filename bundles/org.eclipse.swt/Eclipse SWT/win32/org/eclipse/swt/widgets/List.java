@@ -410,7 +410,7 @@ public String getItem (int index) {
 	} else {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	return null;
+	return "";
 }
 
 /**

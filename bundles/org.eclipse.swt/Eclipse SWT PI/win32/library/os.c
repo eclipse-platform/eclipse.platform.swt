@@ -8975,6 +8975,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(WindowFromPoint)
 }
 #endif
 
+#ifndef NO_strlen
+JNIEXPORT jint JNICALL OS_NATIVE(strlen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, strlen_FUNC);
+	rc = (jint)strlen((const char *)arg0);
+	OS_NATIVE_EXIT(env, that, strlen_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_wcslen
 JNIEXPORT jint JNICALL OS_NATIVE(wcslen)
 	(JNIEnv *env, jclass that, jint arg0)

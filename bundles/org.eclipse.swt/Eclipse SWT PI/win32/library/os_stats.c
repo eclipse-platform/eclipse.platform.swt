@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 584;
-int OS_nativeFunctionCallCount[584];
+int OS_nativeFunctionCount = 585;
+int OS_nativeFunctionCallCount[585];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc", 
 	"ActivateKeyboardLayout", 
@@ -600,6 +600,7 @@ char * OS_nativeFunctionNames[] = {
 	"WideCharToMultiByte__II_3CI_3BI_3B_3Z", 
 	"WindowFromDC", 
 	"WindowFromPoint", 
+	"strlen", 
 	"wcslen", 
 };
 

@@ -1353,6 +1353,7 @@ public class OS {
 	public static final int WM_SETFONT = 0x30;
 	public static final int WM_SETICON = 0x80;
 	public static final int WM_SETREDRAW = 0xb;
+	public static final int WM_SETTEXT = 12;
 	public static final int WM_SETTINGCHANGE = 0x1A;
 	public static final int WM_SHOWWINDOW = 0x18;
 	public static final int WM_SIZE = 0x5;
@@ -2742,5 +2743,6 @@ public static final native int WideCharToMultiByte (int CodePage, int dwFlags, c
 public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, int lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
 public static final native int WindowFromDC (int hDC);
 public static final native int WindowFromPoint (POINT lpPoint);
+public static final native int strlen (int s);
 public static final native int wcslen (int string);
 }
