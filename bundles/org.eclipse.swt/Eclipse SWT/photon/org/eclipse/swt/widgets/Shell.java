@@ -783,6 +783,10 @@ void realizeWidget() {
 	/* Do nothing */
 }
 
+void releaseChild () {
+	/* Do nothing */
+}
+
 void releaseHandle () {
 	super.releaseHandle ();
 	shellHandle = 0;

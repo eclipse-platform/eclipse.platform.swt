@@ -1046,6 +1046,10 @@ void register () {
 	display.addWidget (theRoot [0], this);
 }
 
+void releaseChild () {
+	/* Do nothing */
+}
+
 void releaseHandle () {
 	super.releaseHandle ();
 	shellHandle = 0;
