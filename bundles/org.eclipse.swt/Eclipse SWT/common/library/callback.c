@@ -224,7 +224,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_unbind
 }
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_Callback_getEnabled
-  (JNIEnv *env, jclass that, jboolean enable)
+  (JNIEnv *env, jclass that)
 {
 	return (jboolean)callbackEnabled;
 }
