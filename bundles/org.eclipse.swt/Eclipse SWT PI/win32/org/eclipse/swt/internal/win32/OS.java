@@ -203,6 +203,8 @@ public class OS {
 	public static final int CC_ANYCOLOR = 0x100;
 	public static final int CC_ENABLEHOOK = 0x10;
 	public static final int CC_RGBINIT = 0x1;
+	public static final int CDDS_POSTERASE = 0x00000004;
+	public static final int CDDS_PREERASE = 0x00000003;
 	public static final int CDDS_PREPAINT = 0x00000001;
 	public static final int CDDS_ITEM = 0x00010000;
 	public static final int CDDS_ITEMPREPAINT = CDDS_ITEM | CDDS_PREPAINT;
@@ -210,6 +212,7 @@ public class OS {
 	public static final int CDRF_DODEFAULT = 0x00000000;
 	public static final int CDRF_NEWFONT = 0x00000002;
 	public static final int CDRF_NOTIFYITEMDRAW = 0x00000020;
+	public static final int CDRF_NOTIFYPOSTERASE = 0x00000040;
 	public static final int CDRF_NOTIFYSUBITEMDRAW = 0x00000020;
 	public static final int CFE_AUTOCOLOR = 0x40000000;
 	public static final int CFE_ITALIC = 0x2;
@@ -911,6 +914,7 @@ public class OS {
 	public static final int TBN_DROPDOWN = 0xfffffd3a;
 	public static final int TBN_FIRST = 0xfffffd44;
 	public static final int TBSTATE_CHECKED = 0x1;
+	public static final int TBSTYLE_CUSTOMERASE = 0x2000;
 	public static final int TBSTYLE_DROPDOWN = 0x8;
 	public static final int TBSTATE_ENABLED = 0x4;
 	public static final int TBSTYLE_AUTOSIZE = 0x10;
@@ -2319,6 +2323,7 @@ public static final native void MoveMemory (LOGFONTA Destination, int Source, in
 public static final native void MoveMemory (MEASUREITEMSTRUCT Destination, int Source, int Length);
 public static final native void MoveMemory (NMHDR Destination, int Source, int Length);
 public static final native void MoveMemory (NMRGINFO Destination, int Source, int Length);
+public static final native void MoveMemory (NMCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (int Destination, NMLVCUSTOMDRAW Source, int Length);
