@@ -391,11 +391,17 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;
 	
-	/* Strip out mnemonic marker symbols, and remember the mnemonic. */
+	/*
+	 * Strip out mnemonic marker symbols, and remember the mnemonic.
+	 * Also check for lf's while we're at it, to help with Solaris bug
+	 * described down below.
+	 */
+	boolean hasLf = false;
 	char [] unicode = new char [string.length ()];
 	string.getChars (0, unicode.length, unicode, 0);
 	int i=0, j=0, mnemonic=0;
 	while (i < unicode.length) {
+		if (unicode [i] == '\n') hasLf = true;
 		if ((unicode [j++] = unicode [i++]) == Mnemonic) {
 			if (i == unicode.length) {continue;}
 			if (unicode [i] == Mnemonic) {i++; continue;}
@@ -436,7 +442,17 @@ public void setText (String string) {
 		parseTable.length,
 		0);
 	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
+	
+	/*
+	 * Solaris bug.  If a mnemonic is defined to be a character
+	 * that only appears in a string in a position that follows
+	 * a newline character in the string then Solaris GP's since
+	 * it cannot find an instance of the mnemonic to underline in
+	 * the first isplay line.  So labels containing newlines are
+	 * not allowed to display mnemonics, which is fine since such
+	 * labels generally just act as descriptive texts anyways.
+	 */ 
+	if (mnemonic == 0 || hasLf) mnemonic = OS.XK_VoidSymbol;
 	int [] argList = {
 		OS.XmNlabelType, OS.XmSTRING,
 		OS.XmNlabelString, xmString,
