@@ -201,8 +201,13 @@ void createHandle (int index) {
 		handle = OS.XmCreateArrowButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		if ((style & SWT.FLAT) != 0) {
-			int [] argList1 = {OS.XmNshadowThickness, 0, OS.XmNborderWidth, 1};
-			OS.XtSetValues (handle, argList1, argList1.length / 2);
+			int [] argList1 = {OS.XmNbottomShadowColor, 0};
+			OS.XtGetValues (handle, argList1, argList1.length / 2);
+			int [] argList2 = {
+				OS.XmNshadowThickness, 1,
+				OS.XmNtopShadowColor, argList1 [1],
+			};
+			OS.XtSetValues (handle, argList2, argList2.length / 2);
 		}
 		return;
 	}
@@ -233,11 +238,10 @@ void createHandle (int index) {
 		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		if ((style & SWT.FLAT) != 0) {
-			int [] argList1 = {
-				OS.XmNshadowThickness, 0,
-				OS.XmNborderWidth, 1,
-				OS.XmNfillOnSelect, 1};
-			OS.XtSetValues (handle, argList1, argList1.length / 2);
+			int [] argList1 = {OS.XmNbottomShadowColor, 0};
+			OS.XtGetValues (handle, argList1, argList1.length / 2);
+			int [] argList2 = {OS.XmNtopShadowColor, argList1 [1]};
+			OS.XtSetValues (handle, argList2, argList2.length / 2);
 		}
 		return;
 	}
@@ -285,8 +289,13 @@ void createHandle (int index) {
 	handle = OS.XmCreatePushButton (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.FLAT) != 0) {
-		int [] argList1 = {OS.XmNshadowThickness, 0, OS.XmNborderWidth, 1};
-		OS.XtSetValues (handle, argList1, argList1.length / 2);
+		int [] argList1 = {OS.XmNbottomShadowColor, 0};
+		OS.XtGetValues (handle, argList1, argList1.length / 2);
+		int [] argList2 = {
+			OS.XmNshadowThickness, 1,
+			OS.XmNtopShadowColor, argList1 [1],
+		};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
 	}
 }
 void createWidget (int index) {
@@ -485,6 +494,7 @@ int processSelection (int callData) {
 			selectRadio ();
 		}
 	}
+	updateShadows ();
 	return super.processSelection (callData);
 }
 void releaseWidget () {
@@ -676,6 +686,7 @@ public void setSelection (boolean selected) {
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	int [] argList = {OS.XmNset, selected ? OS.XmSET : OS.XmUNSET};
 	OS.XtSetValues (handle, argList, argList.length / 2);
+	updateShadows ();
 }
 /**
  * Sets the receiver's text.
@@ -731,5 +742,15 @@ public void setText (String string) {
 }
 int traversalCode (int key, XKeyEvent xEvent) {
 	return super.traversalCode (key, xEvent) | SWT.TRAVERSE_MNEMONIC;
+}
+void updateShadows () {
+	if ((style & SWT.FLAT) != 0 && (style & SWT.TOGGLE) != 0) {
+		int [] argList1 = {OS.XmNset, 0};
+		OS.XtGetValues (handle, argList1, argList1.length / 2);
+		Display display = getDisplay ();
+		int pixel = argList1 [1] == OS.XmUNSET ? display.compositeBottomShadow : display.compositeTopShadow;
+		int [] argList2 = {OS.XmNtopShadowColor, pixel};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
+	}
 }
 }
