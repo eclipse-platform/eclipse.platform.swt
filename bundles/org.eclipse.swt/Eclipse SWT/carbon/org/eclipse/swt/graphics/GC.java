@@ -623,6 +623,10 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.updateClip) setCGClipping();
+	if (x1 == x2 && y1 == y2 && data.lineWidth <= 1) {
+		drawPoint(x1, y1);
+		return;
+	}
 	OS.CGContextBeginPath(handle);
 	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 	OS.CGContextMoveToPoint(handle, x1 + offset, y1 + offset);
