@@ -245,11 +245,13 @@ public void dispose() {
 	if (layout != 0) OS.ATSUDisposeTextLayout(layout);
 	int atsuiStyle = data.atsuiStyle;
 	if (atsuiStyle != 0) OS.ATSUDisposeStyle(atsuiStyle);
-
+	int stringPtr = data.stringPtr;
+	if (stringPtr != 0) OS.DisposePtr(stringPtr);
+	
 	/* Dispose the GC */
 	drawable.internal_dispose_GC(handle, data);
 
-	data.clipRgn = data.atsuiStyle = data.layout = 0;
+	data.clipRgn = data.atsuiStyle = data.stringPtr = data.layout = 0;
 	drawable = null;
 	data.image = null;
 	data = null;
@@ -729,16 +731,20 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 	OS.CGContextScaleCTM(handle, 1, -1);
 	OS.CGContextTranslateCTM(handle, 0, -data.fontAscent);
 	OS.CGContextSetFillColor(handle, data.foreground);
-	char[] buffer = new char[length];
-	string.getChars(0, length, buffer, 0);
-	int ptr = OS.NewPtr(length * 2);
-	OS.memcpy(ptr, buffer, length * 2);
-	OS.ATSUSetTextPointerLocation(data.layout, ptr, 0, length, length);
-	Font font = data.font;
-	int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
-	OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
+	if (string != data.string) {
+		if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
+		char[] buffer = new char[length];
+		string.getChars(0, length, buffer, 0);
+		Font font = data.font;
+		int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
+		int ptr = OS.NewPtr(length * 2);
+		OS.memcpy(ptr, buffer, length * 2);
+		OS.ATSUSetTextPointerLocation(data.layout, ptr, 0, length, length);
+		OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
+		data.string = string;
+		data.stringPtr = ptr;
+	}
 	OS.ATSUDrawText(data.layout, 0, length, x << 16, -y << 16);
-	OS.DisposePtr(ptr);
 	OS.CGContextRestoreGState(handle);
 }
 
@@ -1734,20 +1740,24 @@ public Point stringExtent(String string) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int length = string.length();
 	if (length == 0) return new Point(0, data.fontAscent + data.fontDescent);
-	char[] buffer = new char[length];
-	string.getChars(0, length, buffer, 0);
-	int ptr1 = OS.NewPtr(length * 2);
-	OS.memcpy(ptr1, buffer, length * 2);
-	OS.ATSUSetTextPointerLocation(data.layout, ptr1, 0, length, length);
-	Font font = data.font;
-	int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
-	OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
-	int ptr2 = OS.NewPtr(ATSTrapezoid.sizeof);
-	OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, ptr2, null);
-	OS.DisposePtr(ptr1);
+	if (string != data.string) {
+		if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
+		char[] buffer = new char[length];
+		string.getChars(0, length, buffer, 0);
+		Font font = data.font;
+		int atsuiStyle = font.atsuiStyle != 0 ? font.atsuiStyle : data.atsuiStyle;
+		int ptr = OS.NewPtr(length * 2);
+		OS.memcpy(ptr, buffer, length * 2);
+		OS.ATSUSetTextPointerLocation(data.layout, ptr, 0, length, length);
+		OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
+		data.string = string;
+		data.stringPtr = ptr;
+	}
+	int ptr = OS.NewPtr(ATSTrapezoid.sizeof);
+	OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, ptr, null);
 	ATSTrapezoid trapezoid = new ATSTrapezoid();
-	OS.memcpy(trapezoid, ptr2, ATSTrapezoid.sizeof);
-	OS.DisposePtr(ptr2);
+	OS.memcpy(trapezoid, ptr, ATSTrapezoid.sizeof);
+	OS.DisposePtr(ptr);
 	int width = (trapezoid.upperRight_x >> 16) - (trapezoid.upperLeft_x >> 16);
 	int height = (trapezoid.lowerRight_y >> 16) - (trapezoid.upperRight_y >> 16);
 	return new Point(width, height);

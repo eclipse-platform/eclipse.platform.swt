@@ -37,6 +37,9 @@ public final class GCData {
 	public int layout;
 	public int atsuiStyle;
 	
+	public String string;
+	public int stringPtr;
+	
 	public int paintEvent;
 	public int visibleRgn;
 	public int control;
