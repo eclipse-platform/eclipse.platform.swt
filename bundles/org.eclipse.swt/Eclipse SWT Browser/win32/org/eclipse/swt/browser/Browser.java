@@ -257,12 +257,12 @@ public Browser(Composite parent, int style) {
 					break;
 				}
 				case NewWindow2 : {
-					OpenWindowEvent openEvent = new OpenWindowEvent(Browser.this);
-					openEvent.display = getDisplay();
-					openEvent.widget = Browser.this;
+					WindowEvent newEvent = new WindowEvent(Browser.this);
+					newEvent.display = getDisplay();
+					newEvent.widget = Browser.this;
 					for (int i = 0; i < openWindowListeners.length; i++)
-						openWindowListeners[i].open(openEvent);
-					Browser browser = openEvent.browser;
+						openWindowListeners[i].open(newEvent);
+					Browser browser = newEvent.browser;
 					boolean doit = browser != null && !browser.isDisposed();
 					if (doit) {
 						Variant variant = new Variant(browser.auto);
@@ -287,7 +287,7 @@ public Browser(Composite parent, int style) {
 				case OnVisible : {
 					Variant arg1 = event.arguments[0];
 					boolean visible = arg1.getBoolean();
-					VisibilityWindowEvent newEvent = new VisibilityWindowEvent(Browser.this);
+					WindowEvent newEvent = new WindowEvent(Browser.this);
 					newEvent.display = getDisplay();
 					newEvent.widget = Browser.this;
 					if (visible) {
@@ -334,8 +334,8 @@ public Browser(Composite parent, int style) {
 					break;
 				}
 				case WindowClosing : {
-					CloseWindowEvent newEvent = new CloseWindowEvent(Browser.this);
-					newEvent.data = getDisplay();
+					WindowEvent newEvent = new WindowEvent(Browser.this);
+					newEvent.display = getDisplay();
 					newEvent.widget = Browser.this;
 					for (int i = 0; i < closeWindowListeners.length; i++)
 						closeWindowListeners[i].close(newEvent);

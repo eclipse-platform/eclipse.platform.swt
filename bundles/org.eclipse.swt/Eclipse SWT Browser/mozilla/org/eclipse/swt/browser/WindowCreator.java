@@ -110,7 +110,7 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 
 	Display display = Display.getCurrent();
 	Browser src = (Browser)display.findWidget(aParentNativeWindow[0]);
-	OpenWindowEvent event = new OpenWindowEvent(src);
+	WindowEvent event = new WindowEvent(src);
 	event.display = display;
 	event.widget = src;
 	for (int i = 0; i < src.openWindowListeners.length; i++)

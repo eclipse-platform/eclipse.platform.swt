@@ -1550,8 +1550,8 @@ int SetChromeFlags(int aChromeFlags) {
 }
    
 int DestroyBrowserWindow() {
-	CloseWindowEvent newEvent = new CloseWindowEvent(this);
-	newEvent.data = getDisplay();
+	WindowEvent newEvent = new WindowEvent(this);
+	newEvent.display = getDisplay();
 	newEvent.widget = this;
 	for (int i = 0; i < closeWindowListeners.length; i++)
 		closeWindowListeners[i].close(newEvent);
@@ -1604,7 +1604,7 @@ int GetVisibility(int value) {
 }
    
 int SetVisibility(int value) {
-	VisibilityWindowEvent event = new VisibilityWindowEvent(this);
+	WindowEvent event = new WindowEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
 	if (value == 1) {

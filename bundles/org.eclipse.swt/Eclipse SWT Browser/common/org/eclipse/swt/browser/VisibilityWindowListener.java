@@ -14,7 +14,7 @@ import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * This listener interface may be implemented in order to receive
- * VisibilityWindowEvents.
+ * WindowEvents.
  * 
  * <p>
  * NOTE: The API in the browser package is NOT finalized.
@@ -23,7 +23,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * other teams can try it out.
  * </p>
  * 
- * @see VisibilityWindowEvent
+ * @see WindowEvent
  * 
  * @since 3.0
  */
@@ -35,11 +35,11 @@ public interface VisibilityWindowListener extends SWTEventListener {
  *
  * @param event.widget the browser to hide
  *
- * @see VisibilityWindowEvent
+ * @see WindowEvent
  * 
  * @since 3.0
  */ 
-public void hide(VisibilityWindowEvent event);
+public void hide(WindowEvent event);
 
 /**
  * This method is called when the Browser is requested to be displayed.
@@ -49,10 +49,10 @@ public void hide(VisibilityWindowEvent event);
  * @param event.location if not null, the requested location for the Shell hosting the browser
  * @param event.size if not null, the requested size for the Shell hosting the browser
  *
- * @see VisibilityWindowEvent
+ * @see WindowEvent
  * 
  * @since 3.0
  */ 
-public void show(VisibilityWindowEvent event);
+public void show(WindowEvent event);
 
 }

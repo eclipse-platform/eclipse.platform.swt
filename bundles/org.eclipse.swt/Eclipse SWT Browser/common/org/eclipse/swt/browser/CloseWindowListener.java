@@ -14,7 +14,7 @@ import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * This listener interface may be implemented in order to receive
- * CloseWindowEvents.
+ * WindowEvents.
  * 
  * <p>
  * NOTE: The API in the browser package is NOT finalized.
@@ -23,7 +23,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * other teams can try it out.
  * </p>
  * 
- * @see CloseWindowEvent
+ * @see WindowEvent
  * 
  * @since 3.0
  */
@@ -37,9 +37,9 @@ public interface CloseWindowListener extends SWTEventListener {
  *
  * @param event.widget the browser that is going to be disposed
  *
- * @see CloseWindowEvent
+ * @see WindowEvent
  * 
  * @since 3.0
  */ 
-public void close(CloseWindowEvent event);
+public void close(WindowEvent event);
 }
