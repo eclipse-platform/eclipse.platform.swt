@@ -681,6 +681,7 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	Display display = getDisplay ();
 	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
+	if (isDisposed ()) return result;
 	restoreFocus ();
 	return result;
 }
@@ -719,7 +720,9 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	sendEvent (SWT.Deactivate);
+	//TEMPORARY CODE - should be a send, but GPs on dispose
+	postEvent (SWT.Deactivate);
+	if (isDisposed ()) return result;
 	saveFocus ();
 	if (savedFocus != null) {
 		/*
