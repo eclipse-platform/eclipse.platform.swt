@@ -211,9 +211,11 @@ public CTabFolder(Composite parent, int style) {
 	
 	addMouseTrackListener (new MouseTrackAdapter () {
 		public void mouseExit(MouseEvent e) {
+			if (tip.isDisposed()) return;
 			if (tip.isVisible()) tip.setVisible(false);
 		}
 		public void mouseHover(MouseEvent e) {
+			if (tip.isDisposed()) return;
 			Point pt = new Point (e.x, e.y);
 			CTabItem item = getItem(pt);
 			if (item != null) {
@@ -223,8 +225,8 @@ public CTabFolder(Composite parent, int style) {
 					Label label = (Label) (tip.getChildren() [0]);
 					label.setText(tooltip);
 					tip.pack();
-					
-					pt.y = (onBottom) ? pt.y - 16 : pt.y + 16;
+
+					pt.y += 16;
 					pt = toDisplay(pt);
 					/*
 					* Ensure that the tooltip is on the screen.
@@ -301,6 +303,8 @@ public void addCTabFolderListener(CTabFolderListener listener) {
 	initCloseButtonImages();
 }
 private void closeNotify(CTabItem item, int time) {
+	if (item == null) return;
+	
 	CTabFolderEvent event = new CTabFolderEvent(this);
 	event.widget = this;
 	event.time = time;
