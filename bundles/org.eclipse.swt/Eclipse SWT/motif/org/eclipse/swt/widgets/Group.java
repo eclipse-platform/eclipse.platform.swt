@@ -90,10 +90,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int thickness = argList [5];
 	int marginWidth = argList [7];
 	int marginHeight = argList [9];
-	trimX = x - marginWidth + thickness;
-	trimY = y - marginHeight + thickness;
-	trimWidth = width + ((marginWidth + thickness) * 2);
-	trimHeight = height + ((marginHeight + thickness) * 2);
+	int borderWidth = getBorderWidth();
+	trimX = x - marginWidth + thickness - 2*borderWidth;
+	trimY = y - marginHeight + thickness - 2*borderWidth;
+	trimWidth = width + ((marginWidth + thickness + borderWidth) * 2);
+	trimHeight = height + ((marginHeight + thickness + borderWidth) * 2);
 	if (OS.XtIsManaged (labelHandle)) {
 		int [] argList2 = {OS.XmNy, 0, OS.XmNheight, 0};
 		OS.XtGetValues (labelHandle, argList2, argList2.length / 2);
