@@ -4166,6 +4166,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1scrolled_1window_1new)
 }
 #endif
 
+#ifndef NO_gtk_1scrolled_1window_1set_1placement
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1scrolled_1window_1set_1placement)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "gtk_1scrolled_1window_1set_1placement\n")
+	gtk_scrolled_window_set_placement((GtkScrolledWindow *)arg0, (GtkCornerType)arg1);
+	NATIVE_EXIT(env, that, "gtk_1scrolled_1window_1set_1placement\n")
+}
+#endif
+
 #ifndef NO_gtk_1scrolled_1window_1set_1policy
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1scrolled_1window_1set_1policy)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
