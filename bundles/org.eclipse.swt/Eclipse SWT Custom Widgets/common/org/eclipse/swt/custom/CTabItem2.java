@@ -548,7 +548,7 @@ public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.equals(getImage())) return;
 	super.setImage(image);
-	if (!parent.updateTabHeight(parent.tabHeight)) {
+	if (!parent.updateTabHeight(parent.tabHeight, false)) {
 		parent.updateItems();
 	}
 	parent.redraw();
