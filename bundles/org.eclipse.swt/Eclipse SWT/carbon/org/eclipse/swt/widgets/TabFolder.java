@@ -370,20 +370,6 @@ Rect getInset () {
 	return display.tabFolderInset;
 }
 
-int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	int index = OS.GetControl32BitValue (handle) - 1;
-	if (index != -1) {
-		TabItem item = items [index];
-		Control control = item.control;
-		if (control != null && !control.isDisposed ()) {
-			control.setBounds (getClientArea ());
-		}
-	}
-	return result;
-}
-
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlHit (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -445,6 +431,21 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
+}
+
+int setBounds (int c, int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds(c, x, y, width, height, move, resize);
+	if ((result & RESIZED) != 0) {
+		int index = OS.GetControl32BitValue (handle) - 1;
+		if (index != -1) {
+			TabItem item = items [index];
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea ());
+			}
+		}
+	}
+	return result;
 }
 
 /**

@@ -406,24 +406,6 @@ int kEventControlActivate (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	int [] attributes = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
-	if ((attributes [0] & (OS.kControlBoundsChangePositionChanged | OS.kControlBoundsChangeSizeChanged)) != 0) {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (handle, rect);
-		Rect inset = inset ();
-		rect.left += inset.left;
-		rect.top += inset.top;
-		rect.right -= inset.right;
-		rect.bottom -= inset.bottom;
-		OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
-	}
-	return result;
-}
-
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlClick (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -571,6 +553,21 @@ boolean sendKeyEvent (int type, Event event) {
 	*/
 	postEvent (SWT.Modify);
 	return newText == oldText;
+}
+
+int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds(control, x, y, width, height, move, resize);
+	if (result != 0) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (handle, rect);
+		Rect inset = inset ();
+		rect.left += inset.left;
+		rect.top += inset.top;
+		rect.right -= inset.right;
+		rect.bottom -= inset.bottom;
+		OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
+	}
+	return result;
 }
 
 public void setDoubleClickEnabled (boolean doubleClick) {

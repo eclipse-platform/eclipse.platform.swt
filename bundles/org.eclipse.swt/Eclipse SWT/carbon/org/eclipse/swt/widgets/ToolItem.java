@@ -312,6 +312,9 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int oldRgn = OS.NewRgn ();
 	OS.GetClip (oldRgn);
 	OS.SetClip (clipRgn);
+	if ((style & SWT.SEPARATOR) != 0) {
+		drawBackground (handle, parent.background);
+	}
 	int result = OS.CallNextEventHandler (nextHandler, theEvent);
 	OS.SetClip (oldRgn);
 	OS.DisposeRgn (clipRgn);

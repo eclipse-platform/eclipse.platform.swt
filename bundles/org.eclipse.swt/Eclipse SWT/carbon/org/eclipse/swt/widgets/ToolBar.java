@@ -97,6 +97,10 @@ void destroyItem (ToolItem item) {
 	items [itemCount] = null;
 }
 
+void draw (int control) {
+	drawBackground (handle, background);
+}
+
 public ToolItem getItem (int index) {
 	checkWidget();
 	if (0 <= index && index < itemCount) return items [index];
@@ -230,11 +234,13 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 
-
-public void setBounds (int x, int y, int width, int height) {
-	super.setBounds (x, y, width, height);
-	Rectangle rect = getClientArea ();
-	relayout (rect.width, rect.height);
+int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds(control, x, y, width, height, move, resize);
+	if (resize && (result & RESIZED) != 0) {
+		Rectangle rect = getClientArea ();
+		relayout (rect.width, rect.height);
+	}
+	return result;
 }
 
 void setFontStyle (Font font) {
@@ -252,12 +258,6 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	super.setRedraw (redraw);
 	if (redraw && drawCount == 0) relayout();
-}
-
-public void setSize (int width, int height) {
-	super.setSize (width, height);
-	Rectangle rect = getClientArea ();
-	relayout (rect.width, rect.height);
 }
 
 }

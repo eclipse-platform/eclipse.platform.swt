@@ -146,21 +146,7 @@ void draw (int control) {
 	if (control != handle) return;
 	if ((state & CANVAS) == 0) return;
 	if ((style & SWT.NO_BACKGROUND) != 0) return;
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	if (background != null) {
-		int red = (short) (background [0] * 255);
-		int green = (short) (background [1] * 255);
-		int blue = (short) (background [2] * 255);
-		RGBColor color = new RGBColor ();
-		color.red = (short) (red << 8 | red);
-		color.green = (short) (green << 8 | green);
-		color.blue = (short) (blue << 8 | blue);
-		OS.RGBForeColor (color);
-		OS.PaintRect (rect);
-	} else {
-		OS.EraseRect (rect);
-	}
+	drawBackground (handle, background);
 }
 
 public Control [] getChildren () {
@@ -201,21 +187,6 @@ public Control [] getTabList () {
 		}
 	}
 	return tabList;
-}
-
-int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	int [] theControl = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	if (theControl [0] == handle && layout != null) {
-		int [] attributes = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
-		if ((attributes [0] & OS.kControlBoundsChangeSizeChanged) != 0) {
-			layout.layout (this, false);
-		}
-	}
-	return OS.eventNotHandledErr;
 }
 
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
@@ -285,6 +256,14 @@ void releaseWidget () {
 	super.releaseWidget ();
 	layout = null;
 	tabList = null;
+}
+
+int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds(control, x, y, width, height, move, resize);
+	if (resize && layout != null && (result & RESIZED) != 0) {
+		layout.layout (this, false);
+	}
+	return result;
 }
 
 public boolean setFocus () {

@@ -402,13 +402,9 @@ void hookEvents () {
 		OS.kEventClassControl, OS.kEventControlHit,
 		OS.kEventClassControl, OS.kEventControlSetCursor,
 		OS.kEventClassControl, OS.kEventControlSetFocusPart,
-		//MUST BE LAST
-		OS.kEventClassControl, OS.kEventControlBoundsChanged,
 	};
-	//TEMPORARY CODE - hooking kEventControlBoundsChanged on the root control draws garbage
-	int length = mask.length - (this instanceof Shell ? 1 : 0);
 	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, controlProc, length / 2, mask, handle, null);
+	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
 }
@@ -512,20 +508,6 @@ Decorations menuShell () {
 	return parent.menuShell ();
 }
 
-int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
-	int [] attributes = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
-	if ((attributes [0] & OS.kControlBoundsChangePositionChanged) != 0) {
-		sendEvent (SWT.Move);
-		if (isDisposed ()) return OS.noErr;
-	}
-	if ((attributes [0] & OS.kControlBoundsChangeSizeChanged) != 0) {
-		sendEvent (SWT.Resize);
-		if (isDisposed ()) return OS.noErr;
-	}
-	return OS.eventNotHandledErr;
-}
-
 int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
 	if (menu != null && !menu.isDisposed ()) {
 		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
@@ -547,8 +529,8 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int oldRgn = OS.NewRgn ();
 	OS.GetClip (oldRgn);
 	OS.SetClip (clipRgn);
-	int result = OS.CallNextEventHandler (nextHandler, theEvent);
 	draw (theControl [0]);
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
 	OS.SetClip (oldRgn);
 	OS.DisposeRgn (clipRgn);
 	OS.DisposeRgn (oldRgn);
@@ -905,7 +887,9 @@ public void setBackground (Color color) {
 
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	setBounds (topHandle (), x, y, width, height, true, true);
+	int result = setBounds (topHandle (), x, y, width, height, true, true);
+	if ((result & MOVED) != 0) sendEvent (SWT.Move);
+	if ((result & RESIZED) != 0) sendEvent (SWT.Resize);
 }
 
 public void setBounds (Rectangle rect) {
@@ -1022,7 +1006,9 @@ public void setLayoutData (Object layoutData) {
 
 public void setLocation (int x, int y) {
 	checkWidget();
-	setBounds (topHandle (), x, y, 0, 0, true, false);
+	if (setBounds (topHandle (), x, y, 0, 0, true, false) != 0) {
+		sendEvent (SWT.Move);
+	}
 }
 
 public void setLocation (Point location) {
@@ -1071,7 +1057,9 @@ boolean setRadioSelection (boolean value){
 
 public void setSize (int width, int height) {
 	checkWidget();
-	setBounds (topHandle (), 0, 0, width, height, false, true);
+	if (setBounds (topHandle (), 0, 0, width, height, false, true) != 0) {
+		sendEvent (SWT.Resize);
+	}
 }
 
 public void setSize (Point size) {
@@ -1113,7 +1101,9 @@ void setZOrder () {
 	/* Place the child at (0, 0) in the parent */
 	Rect rect = new Rect ();
 	OS.GetControlBounds (parentHandle, rect);
-	OS.MoveControl (topHandle, (short) rect.left, (short) rect.top);
+	rect.right = rect.left;
+	rect.bottom = rect.top;
+	OS.SetControlBounds (topHandle, rect);
 }
 
 void sort (int [] items) {

@@ -87,29 +87,10 @@ void hookEvents () {
 		int controlProc = display.controlProc;
 		int [] mask = new int [] {
 			OS.kEventClassControl, OS.kEventControlDraw,
-			OS.kEventClassControl, OS.kEventControlBoundsChanged,
 		};
 		int controlTarget = OS.GetControlEventTarget (scrolledHandle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, scrolledHandle, null);
 	}
-}
-
-int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
-	int [] theControl = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	int [] attributes = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
-	if ((attributes [0] & OS.kControlBoundsChangePositionChanged) != 0) {
-		if (theControl [0] == scrolledHandle) super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-	}
-	if ((attributes [0] & OS.kControlBoundsChangeSizeChanged) != 0) {
-		if (theControl [0] == handle) {
-			super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-		} else {
-			layoutControl ();
-		}
-	}
-	return OS.eventNotHandledErr;
 }
 
 void layoutControl () {
@@ -152,6 +133,12 @@ void releaseWidget () {
 	if (verticalBar != null) verticalBar.releaseResources ();
 	horizontalBar = verticalBar = null;
 	super.releaseWidget ();
+}
+
+int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds(control, x, y, width, height, move, resize);
+	if (control == scrolledHandle) layoutControl ();
+	return result;
 }
 
 int topHandle () {

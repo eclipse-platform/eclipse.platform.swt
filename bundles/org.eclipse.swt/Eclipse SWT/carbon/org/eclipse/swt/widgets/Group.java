@@ -114,6 +114,10 @@ int defaultThemeFont () {
 	return OS.kThemeEmphasizedSystemFont;
 }
 
+void draw (int control) {
+	drawBackground (handle, background);
+}
+
 public Rectangle getClientArea () {
 	checkWidget();
 	Rect bounds = new Rect ();

@@ -9,6 +9,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.PixMap;
 import org.eclipse.swt.internal.carbon.BitMap;
@@ -38,6 +39,8 @@ public abstract class Widget {
 	static final int DISPOSED	= 1 << 10;
 //	static final int HANDLE		= 1 << 11;
 	static final int CANVAS		= 1 << 12;
+	static final int MOVED		= 1 << 13;
+	static final int RESIZED	= 1 << 14;
 
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -104,7 +107,6 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
 		case OS.kEventControlActivate:				return kEventControlActivate (nextHandler, theEvent, userData);
-		case OS.kEventControlBoundsChanged:		return kEventControlBoundsChanged (nextHandler, theEvent, userData);
 		case OS.kEventControlClick:				return kEventControlClick (nextHandler, theEvent, userData);
 		case OS.kEventControlContextualMenuClick:	return kEventControlContextualMenuClick (nextHandler, theEvent, userData);
 		case OS.kEventControlDeactivate:			return kEventControlDeactivate (nextHandler, theEvent, userData);
@@ -249,6 +251,24 @@ public void dispose () {
 	releaseChild ();
 	releaseWidget ();
 	destroyWidget ();
+}
+
+void drawBackground (int control, float [] background) {
+	Rect rect = new Rect ();
+	OS.GetControlBounds (control, rect);
+	if (background != null) {
+		int red = (short) (background [0] * 255);
+		int green = (short) (background [1] * 255);
+		int blue = (short) (background [2] * 255);
+		RGBColor color = new RGBColor ();
+		color.red = (short) (red << 8 | red);
+		color.green = (short) (green << 8 | green);
+		color.blue = (short) (blue << 8 | blue);
+		OS.RGBForeColor (color);
+		OS.PaintRect (rect);
+	} else {
+		OS.EraseRect (rect);
+	}
 }
 
 void error (int code) {
@@ -422,10 +442,6 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 }
 	
 int kEventControlActivate (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -656,14 +672,22 @@ void sendEvent (int eventType, Event event, boolean send) {
 	}
 }
 
-void setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize) {
 	Rect inset = getInset ();
+	Rect oldBounds = new Rect ();
+	OS.GetControlBounds (control, oldBounds);
+	oldBounds.left -= inset.left;
+	oldBounds.top -= inset.top;
+	oldBounds.right += inset.right;
+	oldBounds.bottom += inset.bottom;
+	boolean visible = (state & HIDDEN) == 0;
+	int window = OS.GetControlOwner (control);
+	if (visible) OS.InvalWindowRect (window, oldBounds);
 	x += inset.left;
 	y += inset.top;
 	width -= (inset.left + inset.right);
 	height -= (inset.top + inset.bottom);
 	if (move) {
-		int window = OS.GetControlOwner (control);
 		int [] theRoot = new int [1];
 		OS.GetRootControl (window, theRoot);
 		int [] parentHandle = new int [1];
@@ -674,13 +698,29 @@ void setBounds (int control, int x, int y, int width, int height, boolean move, 
 			x += rect.left;
 			y += rect.top;
 		}
-		OS.MoveControl (control, (short) x, (short) y);	
+	} else {
+		x = oldBounds.left;
+		y = oldBounds.top;
 	}
-	if (resize) {
-		width = Math.max (0, width);
-		height = Math.max (0, height);
-		OS.SizeControl (control, (short) width, (short) height);
+	if (!resize) {
+		width = oldBounds.right - oldBounds.left;
+		height = oldBounds.bottom - oldBounds.top;
 	}
+	width = Math.max (0, width);
+	height = Math.max (0, height);
+	boolean sameOrigin = x == oldBounds.left && y == oldBounds.top;
+	boolean sameExtent = width == (oldBounds.right - oldBounds.left) && height == (oldBounds.bottom - oldBounds.top);
+	Rect newBounds = new Rect ();
+	newBounds.left = (short) x;
+	newBounds.top = (short) y;
+	newBounds.right = (short) (x + width);
+	newBounds.bottom = (short) (y + height);
+	OS.SetControlBounds (control, newBounds);
+	if (visible) OS.InvalWindowRect (window, newBounds);
+	int result = 0;
+	if (!sameOrigin) result |= MOVED;
+	if (!sameExtent) result |= RESIZED;
+	return result;
 }
 
 public void setData (Object data) {

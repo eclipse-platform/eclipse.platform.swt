@@ -59,6 +59,10 @@ void createHandle () {
 	handle = outControl [0];
 }
 
+void draw (int control) {
+	drawBackground (handle, background);
+}
+
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
