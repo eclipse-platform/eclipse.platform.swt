@@ -65,7 +65,7 @@ class CLabelTab extends AlignableTab {
 		label2 = new CLabel (textLabelGroup, style);
 		label2.setImage (instance.images[ControlExample.ciTarget]);
 		label3 = new CLabel (textLabelGroup, style);
-		label3.setText(ControlExample.getResourceString("Three"));
+		label3.setText(ControlExample.getResourceString("Example_string"));
 	}
 	
 	/**
