@@ -389,7 +389,6 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 }
 
 public void test_addVerifyKeyListenerLorg_eclipse_swt_custom_VerifyKeyListener() {
-	String line = "Line1";
 	boolean exceptionThrown = false;
 	VerifyKeyListener listener = new VerifyKeyListener() {
 		public void verifyKey(VerifyEvent event) {
@@ -828,8 +827,6 @@ public void test_getCharCount() {
 }
 
 public void test_getLineBackgroundI() {
-	StyleRange[] styles;
-	
 	String textString = "L1\nL2\nL3\nL4";
 	text.setText(textString);
 	assertTrue(":1:", text.getLineBackground(0) == null);
@@ -1108,7 +1105,6 @@ public void test_getSelectionRange() {
 	String testText = "Line1\r\nLine2";
 	int invalidRanges [][] = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {12, 1}, {11, 2}, {2, -3}, {50, -1}};
 	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 3}, {12, 0}, {2, -2}, {5, -1}};
-	int textLength;
 	boolean exceptionThrown;
 	
 	for (int i = 0; i < invalidRanges.length; i++) {
@@ -1128,7 +1124,6 @@ public void test_getSelectionRange() {
 	text.setSelectionRange(0, 0);
 	assertTrue(":b:", text.getSelectionRange().x == 0 && text.getSelectionRange().y == 0);
 	text.setText(testText);
-	textLength = text.getCharCount();
 	for (int i = 0; i < selectionRanges.length; i++) {
 		int start = selectionRanges[i][0];
 		int length = selectionRanges[i][1];
@@ -1177,12 +1172,10 @@ public void test_getSelectionCount(){
 public void test_getSelectionText() {
 	String testText = "Line1\r\nLine2";
 	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 3}, {12, 0}};
-	int textLength;
 	
 	text.setSelectionRange(0, 0);
 	assertEquals(":b:", "", text.getSelectionText());
 	text.setText(testText);
-	textLength = text.getCharCount();
 	for (int i = 0; i < selectionRanges.length; i++) {
 		int start = selectionRanges[i][0];
 		int length = selectionRanges[i][1];
@@ -2719,8 +2712,7 @@ public void test_setHorizontalPixelI(){
 }
 
 public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
-	StyleRange[] styles;
-	String textString = "";
+	String textString;
 
 	textString = "L1\nL2\nL3\nL4";
 	text.setText(textString);
@@ -4218,7 +4210,6 @@ protected void runTest() throws Throwable {
  */
 protected void testRtfCopy() {
 	String lines = "Line0\nLine1\nLine2\nLine3\nLine4\nLine5";
-	boolean exceptionThrown = false;
 	final int[] linesCalled = new int[] {0};
 	LineStyleListener listener = new LineStyleListener() {
 		public void lineGetStyle(LineStyleEvent event) {
