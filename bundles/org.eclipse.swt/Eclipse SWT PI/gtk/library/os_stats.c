@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 806;
-int OS_nativeFunctionCallCount[806];
+int OS_nativeFunctionCount = 813;
+int OS_nativeFunctionCallCount[813];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -87,8 +87,13 @@ char * OS_nativeFunctionNames[] = {
 	"PangoLayoutRun_1sizeof", 
 	"PangoLogAttr_1sizeof", 
 	"PangoRectangle_1sizeof", 
+	"XAnyEvent_1sizeof", 
+	"XCheckMaskEvent", 
+	"XCheckWindowEvent", 
 	"XClientMessageEvent_1sizeof", 
 	"XDefaultScreen", 
+	"XEvent_1sizeof", 
+	"XExposeEvent_1sizeof", 
 	"XGetSelectionOwner", 
 	"XKeysymToKeycode", 
 	"XReconfigureWMWindow", 
@@ -278,6 +283,7 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1window_1get_1user_1data", 
 	"gdk_1window_1invalidate_1rect", 
 	"gdk_1window_1invalidate_1region", 
+	"gdk_1window_1lookup", 
 	"gdk_1window_1lower", 
 	"gdk_1window_1process_1all_1updates", 
 	"gdk_1window_1process_1updates", 
@@ -745,6 +751,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutLine_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutRun_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II", 
+	"memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II", 
 	"memmove___3BII", 
 	"memmove___3CII", 
 	"memmove___3III", 

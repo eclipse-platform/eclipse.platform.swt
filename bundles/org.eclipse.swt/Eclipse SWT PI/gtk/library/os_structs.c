@@ -1440,6 +1440,49 @@ void setPangoRectangleFields(JNIEnv *env, jobject lpObject, PangoRectangle *lpSt
 }
 #endif
 
+#ifndef NO_XAnyEvent
+typedef struct XAnyEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID serial, send_event, display, window;
+} XAnyEvent_FID_CACHE;
+
+XAnyEvent_FID_CACHE XAnyEventFc;
+
+void cacheXAnyEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XAnyEventFc.cached) return;
+	cacheXEventFields(env, lpObject);
+	XAnyEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XAnyEventFc.serial = (*env)->GetFieldID(env, XAnyEventFc.clazz, "serial", "I");
+	XAnyEventFc.send_event = (*env)->GetFieldID(env, XAnyEventFc.clazz, "send_event", "I");
+	XAnyEventFc.display = (*env)->GetFieldID(env, XAnyEventFc.clazz, "display", "I");
+	XAnyEventFc.window = (*env)->GetFieldID(env, XAnyEventFc.clazz, "window", "I");
+	XAnyEventFc.cached = 1;
+}
+
+XAnyEvent *getXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct)
+{
+	if (!XAnyEventFc.cached) cacheXAnyEventFields(env, lpObject);
+	getXEventFields(env, lpObject, (XEvent *)lpStruct);
+	lpStruct->serial = (*env)->GetIntField(env, lpObject, XAnyEventFc.serial);
+	lpStruct->send_event = (*env)->GetIntField(env, lpObject, XAnyEventFc.send_event);
+	lpStruct->display = (Display *)(*env)->GetIntField(env, lpObject, XAnyEventFc.display);
+	lpStruct->window = (Window)(*env)->GetIntField(env, lpObject, XAnyEventFc.window);
+	return lpStruct;
+}
+
+void setXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct)
+{
+	if (!XAnyEventFc.cached) cacheXAnyEventFields(env, lpObject);
+	setXEventFields(env, lpObject, (XEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XAnyEventFc.serial, (jint)lpStruct->serial);
+	(*env)->SetIntField(env, lpObject, XAnyEventFc.send_event, (jint)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, XAnyEventFc.display, (jint)lpStruct->display);
+	(*env)->SetIntField(env, lpObject, XAnyEventFc.window, (jint)lpStruct->window);
+}
+#endif
+
 #ifndef NO_XClientMessageEvent
 typedef struct XClientMessageEvent_FID_CACHE {
 	int cached;
@@ -1495,6 +1538,83 @@ void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageE
 	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
 	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / 4, (void *)lpStruct->data.l);
 	}
+}
+#endif
+
+#ifndef NO_XEvent
+typedef struct XEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type;
+} XEvent_FID_CACHE;
+
+XEvent_FID_CACHE XEventFc;
+
+void cacheXEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XEventFc.cached) return;
+	XEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XEventFc.type = (*env)->GetFieldID(env, XEventFc.clazz, "type", "I");
+	XEventFc.cached = 1;
+}
+
+XEvent *getXEventFields(JNIEnv *env, jobject lpObject, XEvent *lpStruct)
+{
+	if (!XEventFc.cached) cacheXEventFields(env, lpObject);
+	lpStruct->type = (*env)->GetIntField(env, lpObject, XEventFc.type);
+	return lpStruct;
+}
+
+void setXEventFields(JNIEnv *env, jobject lpObject, XEvent *lpStruct)
+{
+	if (!XEventFc.cached) cacheXEventFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XEventFc.type, (jint)lpStruct->type);
+}
+#endif
+
+#ifndef NO_XExposeEvent
+typedef struct XExposeEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height, count;
+} XExposeEvent_FID_CACHE;
+
+XExposeEvent_FID_CACHE XExposeEventFc;
+
+void cacheXExposeEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XExposeEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XExposeEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XExposeEventFc.x = (*env)->GetFieldID(env, XExposeEventFc.clazz, "x", "I");
+	XExposeEventFc.y = (*env)->GetFieldID(env, XExposeEventFc.clazz, "y", "I");
+	XExposeEventFc.width = (*env)->GetFieldID(env, XExposeEventFc.clazz, "width", "I");
+	XExposeEventFc.height = (*env)->GetFieldID(env, XExposeEventFc.clazz, "height", "I");
+	XExposeEventFc.count = (*env)->GetFieldID(env, XExposeEventFc.clazz, "count", "I");
+	XExposeEventFc.cached = 1;
+}
+
+XExposeEvent *getXExposeEventFields(JNIEnv *env, jobject lpObject, XExposeEvent *lpStruct)
+{
+	if (!XExposeEventFc.cached) cacheXExposeEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XExposeEventFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XExposeEventFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, XExposeEventFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, XExposeEventFc.height);
+	lpStruct->count = (*env)->GetIntField(env, lpObject, XExposeEventFc.count);
+	return lpStruct;
+}
+
+void setXExposeEventFields(JNIEnv *env, jobject lpObject, XExposeEvent *lpStruct)
+{
+	if (!XExposeEventFc.cached) cacheXExposeEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XExposeEventFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XExposeEventFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XExposeEventFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, XExposeEventFc.height, (jint)lpStruct->height);
+	(*env)->SetIntField(env, lpObject, XExposeEventFc.count, (jint)lpStruct->count);
 }
 #endif
 

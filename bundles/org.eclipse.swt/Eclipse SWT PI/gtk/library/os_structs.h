@@ -305,6 +305,16 @@ void setPangoRectangleFields(JNIEnv *env, jobject lpObject, PangoRectangle *lpSt
 #define PangoRectangle_sizeof() 0
 #endif
 
+#ifndef NO_XAnyEvent
+XAnyEvent *getXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct);
+void setXAnyEventFields(JNIEnv *env, jobject lpObject, XAnyEvent *lpStruct);
+#define XAnyEvent_sizeof() sizeof(XAnyEvent)
+#else
+#define getXAnyEventFields(a,b,c) NULL
+#define setXAnyEventFields(a,b,c)
+#define XAnyEvent_sizeof() 0
+#endif
+
 #ifndef NO_XClientMessageEvent
 XClientMessageEvent *getXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct);
 void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct);
@@ -313,6 +323,26 @@ void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageE
 #define getXClientMessageEventFields(a,b,c) NULL
 #define setXClientMessageEventFields(a,b,c)
 #define XClientMessageEvent_sizeof() 0
+#endif
+
+#ifndef NO_XEvent
+XEvent *getXEventFields(JNIEnv *env, jobject lpObject, XEvent *lpStruct);
+void setXEventFields(JNIEnv *env, jobject lpObject, XEvent *lpStruct);
+#define XEvent_sizeof() sizeof(XEvent)
+#else
+#define getXEventFields(a,b,c) NULL
+#define setXEventFields(a,b,c)
+#define XEvent_sizeof() 0
+#endif
+
+#ifndef NO_XExposeEvent
+XExposeEvent *getXExposeEventFields(JNIEnv *env, jobject lpObject, XExposeEvent *lpStruct);
+void setXExposeEventFields(JNIEnv *env, jobject lpObject, XExposeEvent *lpStruct);
+#define XExposeEvent_sizeof() sizeof(XExposeEvent)
+#else
+#define getXExposeEventFields(a,b,c) NULL
+#define setXExposeEventFields(a,b,c)
+#define XExposeEvent_sizeof() 0
 #endif
 
 #ifndef NO_XWindowChanges

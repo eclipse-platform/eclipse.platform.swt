@@ -792,15 +792,22 @@ public Widget findWidget (int /*long*/ handle) {
 
 void flushExposes () {
 	OS.gdk_flush ();
-	/*
-	* Feature in GTK.  Calling gdk_event_get() accumulates
-	* the outstanding damage for pending GTK expose events.
-	* In order to flush all paint events, get all of the
-	* events from the queue.
-	*/
-	int /*long*/ event = 0;
-	while ((event = OS.gdk_event_get ()) != 0) {
-		addGdkEvent (event);
+	OS.gdk_flush ();
+	if (OS.GDK_WINDOWING_X11 ()) {
+		GdkRectangle rect = new GdkRectangle ();
+		XExposeEvent exposeEvent = new XExposeEvent ();
+		int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+		int /*long*/ xEvent = OS.g_malloc (XEvent.sizeof);
+		while (OS.XCheckMaskEvent (xDisplay, OS.ExposureMask, xEvent)) {
+			OS.memmove (exposeEvent, xEvent, XExposeEvent.sizeof);
+			rect.x = exposeEvent.x;
+			rect.y = exposeEvent.y;
+			rect.width = exposeEvent.width;
+			rect.height = exposeEvent.height;
+			int window = OS.gdk_window_lookup (exposeEvent.window);
+			if (window != 0) OS.gdk_window_invalidate_rect (window, rect, true);
+		}
+		OS.g_free (xEvent);
 	}
 }
 

@@ -792,6 +792,42 @@ JNIEXPORT jint JNICALL OS_NATIVE(PangoRectangle_1sizeof)
 }
 #endif
 
+#ifndef NO_XAnyEvent_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(XAnyEvent_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XAnyEvent_1sizeof_FUNC);
+	rc = (jint)XAnyEvent_sizeof();
+	OS_NATIVE_EXIT(env, that, XAnyEvent_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XCheckMaskEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(XCheckMaskEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc;
+	OS_NATIVE_ENTER(env, that, XCheckMaskEvent_FUNC);
+	rc = (jboolean)XCheckMaskEvent((Display *)arg0, (long)arg1, (XEvent *)arg2);
+	OS_NATIVE_EXIT(env, that, XCheckMaskEvent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XCheckWindowEvent
+JNIEXPORT jboolean JNICALL OS_NATIVE(XCheckWindowEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jboolean rc;
+	OS_NATIVE_ENTER(env, that, XCheckWindowEvent_FUNC);
+	rc = (jboolean)XCheckWindowEvent((Display *)arg0, (Window)arg1, (long)arg2, (XEvent *)arg3);
+	OS_NATIVE_EXIT(env, that, XCheckWindowEvent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_XClientMessageEvent_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(XClientMessageEvent_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -812,6 +848,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(XDefaultScreen)
 	OS_NATIVE_ENTER(env, that, XDefaultScreen_FUNC);
 	rc = (jint)XDefaultScreen((Display *)arg0);
 	OS_NATIVE_EXIT(env, that, XDefaultScreen_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XEvent_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(XEvent_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XEvent_1sizeof_FUNC);
+	rc = (jint)XEvent_sizeof();
+	OS_NATIVE_EXIT(env, that, XEvent_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XExposeEvent_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(XExposeEvent_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XExposeEvent_1sizeof_FUNC);
+	rc = (jint)XExposeEvent_sizeof();
+	OS_NATIVE_EXIT(env, that, XExposeEvent_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -3290,6 +3350,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1invalidate_1region)
 	OS_NATIVE_ENTER(env, that, gdk_1window_1invalidate_1region_FUNC);
 	gdk_window_invalidate_region((GdkWindow *)arg0, (GdkRegion *)arg1, (gboolean)arg2);
 	OS_NATIVE_EXIT(env, that, gdk_1window_1invalidate_1region_FUNC);
+}
+#endif
+
+#ifndef NO_gdk_1window_1lookup
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1lookup)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gdk_1window_1lookup_FUNC);
+	rc = (jint)gdk_window_lookup(arg0);
+	OS_NATIVE_EXIT(env, that, gdk_1window_1lookup_FUNC);
+	return rc;
 }
 #endif
 
@@ -8773,7 +8845,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoIte
 {
 	PangoItem _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoItem_2II_FUNC);
-	if (arg0) lparg0 = getPangoItemFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setPangoItemFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoItem_2II_FUNC);
@@ -8799,7 +8871,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoLay
 {
 	PangoLayoutRun _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutRun_2II_FUNC);
-	if (arg0) lparg0 = getPangoLayoutRunFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setPangoLayoutRunFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutRun_2II_FUNC);
@@ -8812,10 +8884,23 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoLog
 {
 	PangoLogAttr _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II_FUNC);
-	if (arg0) lparg0 = getPangoLogAttrFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setPangoLogAttrFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XExposeEvent _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II_FUNC);
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXExposeEventFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II_FUNC);
 }
 #endif
 
