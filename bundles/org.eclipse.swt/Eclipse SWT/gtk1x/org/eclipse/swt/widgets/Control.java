@@ -10,6 +10,9 @@ import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+/* Start ACCESSIBILITY */
+import org.eclipse.swt.accessibility.*;
+/* End ACCESSIBILITY */
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -33,6 +36,9 @@ public abstract class Control extends Widget implements Drawable {
 	String toolTipText;
 	Object layoutData;
 	static private final int aux_info_quark = OS.g_quark_from_string (Converter.wcsToMbcs (null, "gtk-aux-info", true));
+/* Start ACCESSIBILITY */
+	Accessible accessible;
+/* End ACCESSIBILITY */
 
 
 /*
@@ -243,6 +249,31 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	return _computeSize (wHint, hHint, changed);	
 }
+
+/* Start ACCESSIBILITY */
+/**
+ * Returns the accessible object for the receiver.
+ * If this is the first time this object is requested,
+ * then the object is created and returned.
+ *
+ * @return the accessible object
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see addAccessibleListener
+ * @see addAccessibleControlListener
+ */
+public Accessible getAccessible () {
+	checkWidget ();
+	if (accessible == null) {
+		accessible = Accessible.internal_new_accessible (this);
+	}
+	return accessible;
+}
+/* End ACCESSIBILITY */
 
 /**
  * Returns a rectangle describing the receiver's size and location
