@@ -308,19 +308,16 @@ public Browser(Composite parent, int style) {
 		c = c.getParent();
 	} while (c != shell);
 	
-	if (Callback3 == null) {
-		Callback3 = new Callback(this.getClass(), "eventProc3", 3); //$NON-NLS-1$
-		int[] keyboardMask = new int[] {OS.kEventClassKeyboard, OS.kEventRawKeyDown};
-		int controlTarget = OS.GetControlEventTarget(webViewHandle);
-		OS.InstallEventHandler(controlTarget, Callback3.getAddress(), keyboardMask.length / 2, keyboardMask, webViewHandle, null);
-	}
+	if (Callback3 == null) Callback3 = new Callback(this.getClass(), "eventProc3", 3); //$NON-NLS-1$
+	int[] keyboardMask = new int[] {OS.kEventClassKeyboard, OS.kEventRawKeyDown};
+	int controlTarget = OS.GetControlEventTarget(webViewHandle);
+	OS.InstallEventHandler(controlTarget, Callback3.getAddress(), keyboardMask.length / 2, keyboardMask, webViewHandle, null);
 	
 	if (Callback7 == null) Callback7 = new Callback(this.getClass(), "eventProc7", 7); //$NON-NLS-1$
 	
-	int eventProc = Callback7.getAddress();
 	// delegate = [[WebResourceLoadDelegate alloc] init eventProc];
 	delegate = WebKit.objc_msgSend(WebKit.C_WebKitDelegate, WebKit.S_alloc);
-	delegate = WebKit.objc_msgSend(delegate, WebKit.S_initWithProc, eventProc, webViewHandle);
+	delegate = WebKit.objc_msgSend(delegate, WebKit.S_initWithProc, Callback7.getAddress(), webViewHandle);
 				
 	// [webView setFrameLoadDelegate:delegate];
 	WebKit.objc_msgSend(webView, WebKit.S_setFrameLoadDelegate, delegate);
