@@ -1809,14 +1809,4 @@ public String toString () {
 	return "GC {" + handle + "}";
 }
 
-private int _getGCFont() {
-	GdkGCValues values = new GdkGCValues();
-	OS.gdk_gc_get_values(handle, values);
-	if (values.font==0) {
-		values.font = OS.gdk_font_load(Converter.wcsToMbcs(null, "fixed", true));
-		if (values.font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	return values.font;
-}
-
 }

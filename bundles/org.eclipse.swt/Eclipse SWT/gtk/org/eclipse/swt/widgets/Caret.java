@@ -86,7 +86,7 @@ boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
 	
-	int window = OS.GTK_WIDGET_WINDOW(parent.handle);
+	int window = OS.GTK_WIDGET_WINDOW (parent.handle);
 	int gc = OS.gdk_gc_new (window);
 
 	/* Actually, we should look at the background and foreground colors.
@@ -96,9 +96,9 @@ boolean drawCaret () {
 	 * In general, it's not easy to find out the RGB value of a GdkColor
 	 * (somebody please correct me if I am wrong).
 	 */
-	GdkColor c = new GdkColor();
-	c.red = c.green = c.blue = (short)0xFFFF;
-	OS.gdk_color_alloc (OS.gdk_colormap_get_system(), c);
+	GdkColor c = new GdkColor ();
+	c.red = c.green = c.blue = (short) 0xFFFF;
+	OS.gdk_color_alloc (OS.gdk_colormap_get_system (), c);
 	OS.gdk_gc_set_foreground (gc, c);
 	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
 	
@@ -110,8 +110,8 @@ boolean drawCaret () {
 		nHeight = rect.height;
 	}
 	if (nWidth <= 0) nWidth = 2;
-	OS.gdk_draw_rectangle(window, gc, 1, x, y, nWidth, nHeight);
-	OS.g_object_unref(gc);
+	OS.gdk_draw_rectangle (window, gc, 1, x, y, nWidth, nHeight);
+	OS.g_object_unref (gc);
 	return true;
 }
 
