@@ -828,9 +828,8 @@ public void setSelection (TreeItem [] items) {
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_unselect_all (selection);
-	int i = 0;
 	boolean first = true;
-	while (i < items.length) {
+	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items [i];
 		if (item == null) continue;
 		if (item.isDisposed ()) break;
@@ -842,14 +841,12 @@ public void setSelection (TreeItem [] items) {
 			first = false;
 		}
 		OS.gtk_tree_selection_select_iter (selection, item.handle);
-		i++;
 		if ((style & SWT.SINGLE) != 0) {
 			OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			return;
 		}
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	if (i < items.length) error (SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /**
