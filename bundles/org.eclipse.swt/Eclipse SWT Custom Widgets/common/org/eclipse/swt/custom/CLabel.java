@@ -563,7 +563,7 @@ public void setBackground (Color color) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the values of colors and percents are not consistant</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the values of colors and percents are not consistent</li>
  * </ul>
  */
 public void setBackground(Color[] colors, int[] percents) {
@@ -592,7 +592,7 @@ public void setBackground(Color[] colors, int[] percents) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the values of colors and percents are not consistant</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the values of colors and percents are not consistent</li>
  * </ul>
  * 
  * @since 3.0
