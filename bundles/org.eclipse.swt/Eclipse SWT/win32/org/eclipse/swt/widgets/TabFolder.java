@@ -45,13 +45,13 @@ public class TabFolder extends Composite {
 	TabItem [] items;
 	ImageList imageList;
 	static final int TabFolderProc;
-	static final TCHAR TabFolderClass = new TCHAR (0, "SWT_" + OS.WC_TABCONTROL, true);
+	static final TCHAR TabFolderClass = new TCHAR (0, OS.WC_TABCONTROL, true);
 	
 	/*
-	 * These are the undocumented control id's for the children of
-	 * a tab control.  Since there are no constants for these values,
-	 * they may change with different versions of Windows.
-	 */
+	* These are the undocumented control id's for the children of
+	* a tab control.  Since there are no constants for these values,
+	* they may change with different versions of Windows.
+	*/
 	static final int ID_UPDOWN = 1;
 	
 	static {
@@ -69,17 +69,15 @@ public class TabFolder extends Composite {
 		OS.GetClassInfo (0, WC_TABCONTROL, lpWndClass);
 		TabFolderProc = lpWndClass.lpfnWndProc;
 		int hInstance = OS.GetModuleHandle (null);
-		if (!OS.GetClassInfo (hInstance, TabFolderClass, lpWndClass)) {
-			int hHeap = OS.GetProcessHeap ();
-			lpWndClass.hInstance = hInstance;
-			lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW);
-			int byteCount = TabFolderClass.length () * TCHAR.sizeof;
-			int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-			OS.MoveMemory (lpszClassName, TabFolderClass, byteCount);
-			lpWndClass.lpszClassName = lpszClassName;
-			OS.RegisterClass (lpWndClass);
-//			OS.HeapFree (hHeap, 0, lpszClassName);
-		}
+		int hHeap = OS.GetProcessHeap ();
+		lpWndClass.hInstance = hInstance;
+		lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW | OS.CS_GLOBALCLASS);
+		int byteCount = TabFolderClass.length () * TCHAR.sizeof;
+		int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (lpszClassName, TabFolderClass, byteCount);
+		lpWndClass.lpszClassName = lpszClassName;
+		OS.RegisterClass (lpWndClass);
+//		OS.HeapFree (hHeap, 0, lpszClassName);	
 	}
 
 /**
