@@ -65,9 +65,13 @@ public Rectangle getBounds () {
 	checkWidget ();
 	Rect rect = new Rect();
 	OS.GetDataBrowserItemPartBounds (parent.handle, id, Tree.COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect);
+	int x = rect.left, y = rect.top;
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	return new Rectangle (rect.left, rect.top, width, height);
+	OS.GetControlBounds (parent.handle, rect);
+	x -= rect.left;
+	y -= rect.top;
+	return new Rectangle (x, y, width, height);
 }
 
 public boolean getChecked () {

@@ -850,13 +850,13 @@ int menuProc (int nextHandler, int theEvent, int userData) {
 }
 
 int mouseProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, where.sizeof, null, where);
 	int [] theWindow = new int [1];
 	int part = OS.FindWindow (where, theWindow);
 	switch (part) {
 		case OS.inMenuBar: {
-			int eventKind = OS.GetEventKind (theEvent);
 			if (eventKind == OS.kEventMouseDown) {
 				OS.MenuSelect (where);
 				return OS.noErr;
@@ -864,7 +864,6 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			break;
 		}
 		case OS.inContent: {
-			int eventKind = OS.GetEventKind (theEvent);
 			Rect windowRect = new Rect ();
 			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, windowRect);
 			CGPoint inPoint = new CGPoint ();
@@ -874,7 +873,6 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			OS.GetRootControl (theWindow [0], theRoot);
 			int [] theControl = new int [1];
 			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
-			//TEMPOARY CODE
 			if (theControl [0] == 0) theControl [0] = theRoot [0];
 			Widget widget = WidgetTable.get (theControl [0]);
 			switch (eventKind) {
@@ -914,6 +912,11 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			if (widget != null) return widget.mouseProc (nextHandler, theEvent, userData);
 			break;
 		}
+	}
+	switch (eventKind) {
+		case OS.kEventMouseDragged:
+		case OS.kEventMouseMoved:
+			OS.InitCursor ();
 	}
 	if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
 	mouseHoverID = 0;

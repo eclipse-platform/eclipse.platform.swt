@@ -43,7 +43,8 @@ public Color getBackground () {
 
 public Rectangle getBounds (int index) {
 	checkWidget();
-	return null; //new Rectangle (rect.left + gridWidth, rect.top + gridWidth, width, height);
+	//NOT DONE
+	return new Rectangle (0, 0, 0, 0);
 }
 
 public boolean getChecked () {
@@ -82,9 +83,8 @@ public Image getImage (int index) {
 
 public Rectangle getImageBounds (int index) {
 	checkWidget();
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-	return null;
+	//NOT DONE
+	return new Rectangle (0, 0, 0, 0);
 }
 
 public int getImageIndent () {

@@ -104,8 +104,10 @@ void createHandle () {
 	* bars to be created by temporarily giving the widget a size and
 	* then restoring it to zero.
 	*/
+	OS.HIViewSetVisible (handle, false);
 	OS.SizeControl (handle, (short) 0xFF, (short) 0xFF);
 	OS.SizeControl (handle, (short) 0, (short) 0);
+	OS.HIViewSetVisible (handle, true);
 }
 
 void createItem (TableColumn column, int index) {
@@ -300,13 +302,15 @@ public TableItem getItem (int index) {
 public TableItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	//NOT DONE - OPTIMIZE
-	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-	OS.SetPt (pt, (short) point.x, (short) point.y);
 	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	OS.SetPt (pt, (short) (point.x + rect.left), (short) (point.y + rect.top));
+	//NOT DONE - OPTIMIZE
 	for (int i=0; i<itemCount; i++) {
-		OS.GetDataBrowserItemPartBounds (handle, i, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect);
-		if (OS.PtInRect (pt, rect)) return items [i];
+		if (OS.GetDataBrowserItemPartBounds (handle, i + 1, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+			if (OS.PtInRect (pt, rect)) return items [i];
+		}
 	}
 	return null;
 }

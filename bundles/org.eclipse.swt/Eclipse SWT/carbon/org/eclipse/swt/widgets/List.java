@@ -114,8 +114,10 @@ void createHandle () {
 	* bars to be created by temporarily giving the widget a size and
 	* then restoring it to zero.
 	*/
+	OS.HIViewSetVisible (handle, false);
 	OS.SizeControl (handle, (short) 0xFF, (short) 0xFF);
 	OS.SizeControl (handle, (short) 0, (short) 0);
+	OS.HIViewSetVisible (handle, true);
 }
 
 void createWidget () {
