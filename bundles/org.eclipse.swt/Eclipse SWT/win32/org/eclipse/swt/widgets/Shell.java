@@ -1213,7 +1213,7 @@ int widgetExtStyle () {
 	*/
 	if (!OS.IsWinCE) {
 		if (parent == null) {
-			if ((style & SWT.NO_TRIM) != 0 || (style & SWT.TITLE) == 0) {
+			if ((style & SWT.ON_TOP) != 0) {
 				bits |= OS.WS_EX_TOOLWINDOW;
 			}
 		}
