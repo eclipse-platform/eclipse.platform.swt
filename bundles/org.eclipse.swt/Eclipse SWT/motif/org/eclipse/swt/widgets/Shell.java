@@ -1400,7 +1400,7 @@ public void setVisible (boolean visible) {
 			if (isDisposed ()) return;
 			iconic = shell != null && shell.minimized;
 		} while (!isVisible () && !iconic);
-		if (iconic) adjustTrim ();
+		if (!iconic) adjustTrim ();
 		
 		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.APPLICATION_MODAL;
 		if ((style & mask) != 0) {
