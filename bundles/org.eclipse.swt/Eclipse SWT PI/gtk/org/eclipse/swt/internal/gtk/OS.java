@@ -304,6 +304,7 @@ public class OS {
 	public static final byte[] button_press_event = signal("button_press_event");
 	public static final byte[] button_release_event = signal("button_release_event");
 	public static final byte[] changed = signal("changed");
+	public static final byte[] change_current_page = signal("change_current_page");
 	public static final byte[] clicked = signal("clicked");
 	public static final byte[] commit = signal("commit");
 	public static final byte[] configure_event = signal("configure_event");

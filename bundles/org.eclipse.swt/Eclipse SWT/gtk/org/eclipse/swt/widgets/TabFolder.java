@@ -670,4 +670,9 @@ public void setSelection (TabItem [] items) {
 	}
 }
 
+boolean traversePage (boolean next) {
+	OS.g_signal_emit_by_name (handle, OS.change_current_page, next ? 1 : -1);
+	return true;
+}
+
 }
