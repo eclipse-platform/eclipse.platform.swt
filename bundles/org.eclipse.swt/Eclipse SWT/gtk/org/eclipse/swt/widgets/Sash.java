@@ -259,6 +259,20 @@ int gtk_motion_notify_event (int widget, int eventPtr) {
 	return result;
 }
 
+int gtk_realize (int widget) {
+	int window = OS.GTK_WIDGET_WINDOW (handle);
+	if (window == 0 || cursor == 0) return 0;
+	OS.gdk_window_set_cursor (window, cursor);
+	return 0;	
+}
+
+void hookEvents () {
+	super.hookEvents ();
+	Display display = getDisplay ();
+	int windowProc2 = display.windowProc2;
+	OS.g_signal_connect_after (handle, OS.realize, windowProc2, REALIZE);
+}	
+
 void releaseWidget () {
 	super.releaseWidget ();
 	if (cursor != 0) OS.gdk_cursor_destroy (cursor);

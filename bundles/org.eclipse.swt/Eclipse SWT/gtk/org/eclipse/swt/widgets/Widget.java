@@ -101,6 +101,7 @@ public abstract class Widget {
 	static final int MOTION_NOTIFY_EVENT = 24;
 	static final int POPUP_MENU = 25;
 	static final int PREEDIT_CHANGED = 26;
+	static final int REALIZE = 40;
 	static final int ROW_ACTIVATED = 27;
 	static final int ROW_COLLAPSED = 28;
 	static final int ROW_EXPANDED = 29;
@@ -588,6 +589,10 @@ int gtk_popup_menu (int widget) {
 }
 
 int gtk_preedit_changed (int imcontext) {
+	return 0;
+}
+
+int gtk_realize (int widget) {
 	return 0;
 }
 
@@ -1135,6 +1140,7 @@ int windowProc (int handle, int user_data) {
 		case HIDE: return gtk_hide (handle);
 		case POPUP_MENU: return gtk_popup_menu (handle);
 		case PREEDIT_CHANGED: return gtk_preedit_changed (handle);
+		case REALIZE: return gtk_realize (handle);
 		case SELECT: return gtk_select (handle);
 		case SHOW: return gtk_show (handle);
 		case VALUE_CHANGED: return gtk_value_changed (handle);

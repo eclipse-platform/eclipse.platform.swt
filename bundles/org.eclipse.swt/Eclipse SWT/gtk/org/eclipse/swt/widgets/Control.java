@@ -132,7 +132,7 @@ boolean hasFocus () {
 }
 
 void hookEvents () {
-	//TO DO - get rid of enter/exit for mouse crossing border
+	//TODO - get rid of enter/exit for mouse crossing border
 	int eventHandle = eventHandle ();
 	int mask =
 		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |

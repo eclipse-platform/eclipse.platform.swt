@@ -242,7 +242,8 @@ public class OS {
 	public static final byte[] mnemonic_activate = signal("mnemonic_activate");
 	public static final byte[] motion_notify_event = signal("motion_notify_event");
 	public static final byte[] popup_menu = signal("popup_menu");
-	public static final byte[] preedit_changed = signal("preedit_changed");			
+	public static final byte[] preedit_changed = signal("preedit_changed");
+	public static final byte[] realize = signal("realize");
 	public static final byte[] row_activated = signal("row_activated");
 	public static final byte[] row_collapsed = signal("row_collapsed");
 	public static final byte[] row_expanded = signal("row_expanded");
