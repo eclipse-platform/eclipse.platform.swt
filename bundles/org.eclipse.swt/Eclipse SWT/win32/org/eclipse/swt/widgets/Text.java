@@ -1020,6 +1020,7 @@ int mbcsToWcsPos (int mbcsPos) {
 			if (mbcsSize + delimiterSize > buffer.length) {
 				buffer = new byte [mbcsSize + delimiterSize];
 			}
+			//ENDIAN
 			buffer [0] = (byte) (mbcsSize & 0xFF);
 			buffer [1] = (byte) (mbcsSize >> 8);
 			mbcsSize = OS.SendMessageA (handle, OS.EM_GETLINE, line, buffer);
