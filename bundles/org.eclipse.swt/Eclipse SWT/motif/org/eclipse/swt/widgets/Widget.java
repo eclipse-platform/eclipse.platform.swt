@@ -976,6 +976,21 @@ boolean translateMnemonic (int key, XKeyEvent xEvent) {
 boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return false;
 }
+boolean XmProcessTraversal (int widget, int direction) {
+	/*
+	* Bug in Motif.  When XtDestroyWidget() is called from
+	* within a FocusOut event handler, Motif GP's.  The fix
+	* is to post focus events and run them when the handler
+	* has returned.
+	*/
+	Display display = getDisplay ();
+	boolean oldFocusOut = display.postFocusOut;
+	display.postFocusOut = true;
+	boolean result = OS.XmProcessTraversal (widget, direction);
+	display.postFocusOut = oldFocusOut;
+	if (!display.postFocusOut) display.runDeferredEvents ();
+	return result;
+}
 int wcsToMbcs (char ch) {
 	return wcsToMbcs (ch, null);
 }

@@ -1077,7 +1077,11 @@ void setActiveControl (Control control) {
 	*/
 	for (int i=deactivate.length-1; i>=index; --i) {
 		if (!deactivate [i].isDisposed ()) {
-			deactivate [i].sendEvent (SWT.Deactivate);
+			if (display.postFocusOut) {
+				deactivate [i].postEvent (SWT.Deactivate);
+			} else {
+				deactivate [i].sendEvent (SWT.Deactivate);
+			}
 		}
 	}
 	for (int i=activate.length-1; i>=index; --i) {

@@ -102,6 +102,7 @@ public class Display extends Device {
 	Event [] eventQueue;
 	XKeyEvent keyEvent = new XKeyEvent ();
 	EventTable eventTable;
+	boolean postFocusOut;
 	
 	/* Default Fonts, Colors, Insets, Widths and Heights. */
 	Font defaultFont;

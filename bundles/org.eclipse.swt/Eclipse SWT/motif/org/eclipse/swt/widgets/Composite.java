@@ -221,21 +221,36 @@ int defaultForeground () {
 }
 public boolean forceFocus () {
 	checkWidget();
+	/*
+	* Bug in Motif.  When XtDestroyWidget() is called from
+	* within a FocusOut event handler, Motif GP's.  The fix
+	* is to post focus events and run them when the handler
+	* has returned.
+	*/
+	Display display = getDisplay ();
+	boolean oldFocusOut = display.postFocusOut;
 	Control [] children = _getChildren ();
 	int [] traversals = new int [children.length];
 	int [] argList = new int [] {OS.XmNtraversalOn, 0};
 	for (int i=0; i<children.length; i++) {
 		OS.XtGetValues (children [i].handle, argList, argList.length / 2);
-		traversals [i] = argList [1];
-		argList [1] = 0;
-		OS.XtSetValues (children [i].handle, argList, argList.length / 2);
+		if ((traversals [i] = argList [1]) != 0) {
+			argList [1] = 0;
+			display.postFocusOut = true;
+			OS.XtSetValues (children [i].handle, argList, argList.length / 2);
+		}
 	}
 	boolean result = super.forceFocus ();
 	for (int i=0; i<children.length; i++) {
 		argList [1] = traversals [i];
-		OS.XtSetValues (children [i].handle, argList, argList.length / 2);
-		if (argList [1] != 0) children [i].overrideTranslations ();
+		Control control = children [i];
+		if (!control.isDisposed ()) {
+			OS.XtSetValues (control.handle, argList, argList.length / 2);
+			if (argList [1] != 0) control.overrideTranslations ();
+		}
 	}
+	display.postFocusOut = oldFocusOut;
+	if (!display.postFocusOut) display.runDeferredEvents ();
 	return result;
 }
 /**

@@ -521,7 +521,7 @@ public boolean forceFocus () {
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	shell.bringToTop (false);
-	return OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
+	return XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 }
 
 /**
@@ -1302,9 +1302,14 @@ int processFocusIn () {
 	return 0;
 }
 int processFocusOut () {
-	sendEvent (SWT.FocusOut);
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
+	Display display = getDisplay ();
+	if (display.postFocusOut) {
+		postEvent (SWT.FocusOut);
+	} else {
+		sendEvent (SWT.FocusOut);
+		// widget could be disposed at this point
+		if (handle == 0) return 0;
+	}
 	processIMEFocusOut ();
 	return 0;
 }
@@ -1377,7 +1382,7 @@ int processMouseDown (int callData) {
 		postEvent (SWT.DragDetect);
 	}
 	if (xEvent.button == 3 && menu != null) {
-		OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
+		setFocus ();
 		menu.setVisible (true);
 	}
 	int clickTime = display.getDoubleClickTime ();
@@ -2142,7 +2147,7 @@ public boolean setFocus () {
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	shell.bringToTop (false);
-	return OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
+	return XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 }
 /**
  * Sets the font that the receiver will use to paint textual information
