@@ -5342,6 +5342,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(ReleaseDC)
 }
 #endif
 
+#ifndef NO_RestoreDC
+JNIEXPORT jboolean JNICALL OS_NATIVE(RestoreDC)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "RestoreDC\n")
+	rc = (jboolean)RestoreDC((HDC)arg0, (int)arg1);
+	NATIVE_EXIT(env, that, "RestoreDC\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_RemoveMenu
 JNIEXPORT jboolean JNICALL OS_NATIVE(RemoveMenu)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -5516,6 +5528,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SHSipPreference)
 	NATIVE_ENTER(env, that, "SHSipPreference\n")
 	rc = (jboolean)SHSipPreference((HWND)arg0, arg1);
 	NATIVE_EXIT(env, that, "SHSipPreference\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_SaveDC
+JNIEXPORT jint JNICALL OS_NATIVE(SaveDC)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "SaveDC\n")
+	rc = (jint)SaveDC((HDC)arg0);
+	NATIVE_EXIT(env, that, "SaveDC\n")
 	return rc;
 }
 #endif

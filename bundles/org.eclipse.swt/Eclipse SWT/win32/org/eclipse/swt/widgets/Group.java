@@ -345,9 +345,9 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	* and restore the current font.
 	*/
 	if (COMCTL32_MAJOR >= 6) {
-		int hFont = OS.GetCurrentObject (wParam, OS.OBJ_FONT);
+		int nSavedDC = OS.SaveDC (wParam);
 		int code = callWindowProc (OS.WM_PRINTCLIENT, wParam, lParam);
-		OS.SelectObject (wParam, hFont);
+		OS.RestoreDC (wParam, nSavedDC);
 		return new LRESULT (code);
 	}
 	return result;

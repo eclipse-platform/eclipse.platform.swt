@@ -2406,7 +2406,9 @@ public static final native int RegQueryValueExA (int hKey, byte[] lpValueName, i
 public static final native boolean ReleaseCapture ();
 public static final native int ReleaseDC (int hWnd, int hDC);
 public static final native boolean RemoveMenu (int hMenu, int uPosition, int uFlags);
+public static final native boolean  RestoreDC(int hdc, int nSavedDC);
 public static final native boolean RoundRect (int hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidth, int nHeight);
+public static final native int SaveDC(int hdc);
 public static final native boolean ScreenToClient (int hWnd, POINT lpPoint);
 public static final native int ScrollWindowEx (int hWnd, int dx, int dy, RECT prcScroll, RECT prcClip, int hrgnUpdate, RECT prcUpdate, int flags);
 public static final native  int SelectClipRgn (int hdc, int hrgn);

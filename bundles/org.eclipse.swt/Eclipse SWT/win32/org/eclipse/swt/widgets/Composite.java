@@ -815,6 +815,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
+		int nSavedDC = OS.SaveDC (wParam);
 		forceResize ();
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
@@ -833,6 +834,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 		sendEvent (SWT.Paint, event);
 		event.gc = null;
 		gc.dispose ();
+		OS.RestoreDC (wParam, nSavedDC);
 	}
 	return result;
 }
