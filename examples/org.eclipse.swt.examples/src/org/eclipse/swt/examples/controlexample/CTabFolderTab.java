@@ -23,8 +23,7 @@ class CTabFolderTab extends Tab {
 	
 	/* Example widgets and groups that contain them */
 	CTabFolder tabFolder1;
-	CTabItem tabItem0;
-	Group tabFolderGroup, tabItemGroup;
+	Group tabFolderGroup, itemGroup;
 	
 	/* Style widgets added to the "Style" group */
 	Button topButton, bottomButton, flatButton, closeButton;
@@ -34,9 +33,10 @@ class CTabFolderTab extends Tab {
 								  ControlExample.getResourceString("CTabItem1_2")};
 
 	/* Controls and resources added to the "Colors" group */
-	Button itemForegroundButton, itemBackgroundButton;
+	Button itemForegroundButton, itemBackgroundButton, itemFontButton;
 	Color itemForegroundColor, itemBackgroundColor;
 	Image itemForegroundImage, itemBackgroundImage;
+	Font itemFont;
 	
 	/* Other widgets added to the "Other" group */
 	Button setSimpleTabButton, setImageButton;
@@ -54,20 +54,24 @@ class CTabFolderTab extends Tab {
 	void createColorGroup () {
 		super.createColorGroup();
 		
-		tabItemGroup = new Group (colorGroup, SWT.NONE);
-		tabItemGroup.setText (ControlExample.getResourceString ("CTab_Item_Colors"));
+		itemGroup = new Group (colorGroup, SWT.NONE);
+		itemGroup.setText (ControlExample.getResourceString ("CTab_Item_Colors"));
 		GridData data = new GridData ();
 		data.horizontalSpan = 2;
-		tabItemGroup.setLayoutData (data);
-		tabItemGroup.setLayout (new GridLayout (2, false));
-		new Label (tabItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Item_Foreground_Color"));
-		itemForegroundButton = new Button (tabItemGroup, SWT.PUSH);
-		new Label (tabItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Item_Background_Color"));
-		itemBackgroundButton = new Button (tabItemGroup, SWT.PUSH);
+		itemGroup.setLayoutData (data);
+		itemGroup.setLayout (new GridLayout (2, false));
+		new Label (itemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Foreground_Color"));
+		itemForegroundButton = new Button (itemGroup, SWT.PUSH);
+		new Label (itemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Background_Color"));
+		itemBackgroundButton = new Button (itemGroup, SWT.PUSH);
+		itemFontButton = new Button (itemGroup, SWT.PUSH);
+		itemFontButton.setText(ControlExample.getResourceString("Font"));
+		itemFontButton.setLayoutData(new GridData (GridData.HORIZONTAL_ALIGN_FILL));
 		
 		Shell shell = colorGroup.getShell ();
 		final ColorDialog foregroundDialog = new ColorDialog (shell);
 		final ColorDialog backgroundDialog = new ColorDialog (shell);
+		final FontDialog fontDialog = new FontDialog (shell);
 
 		int imageSize = 12;
 		Display display = shell.getDisplay ();
@@ -79,7 +83,7 @@ class CTabFolderTab extends Tab {
 		itemForegroundButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				Color oldColor = itemForegroundColor;
-				if (oldColor == null) oldColor = tabItem0.getForeground ();
+				if (oldColor == null) oldColor = tabFolder1.getItem (0).getForeground ();
 				foregroundDialog.setRGB(oldColor.getRGB());
 				RGB rgb = foregroundDialog.open();
 				if (rgb == null) return;
@@ -93,7 +97,7 @@ class CTabFolderTab extends Tab {
 		itemBackgroundButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				Color oldColor = itemBackgroundColor;
-				if (oldColor == null) oldColor = tabItem0.getBackground ();
+				if (oldColor == null) oldColor = tabFolder1.getItem (0).getBackground ();
 				backgroundDialog.setRGB(oldColor.getRGB());
 				RGB rgb = backgroundDialog.open();
 				if (rgb == null) return;
@@ -103,14 +107,30 @@ class CTabFolderTab extends Tab {
 				if (oldColor != null) oldColor.dispose ();
 			}
 		});
+		itemFontButton.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				Font oldFont = itemFont;
+				if (oldFont == null) oldFont = tabFolder1.getItem (0).getFont ();
+				fontDialog.setFontList(oldFont.getFontData());
+				FontData fontData = fontDialog.open ();
+				if (fontData == null) return;
+				oldFont = itemFont;
+				itemFont = new Font (event.display, fontData);
+				setItemFont ();
+				setExampleWidgetSize ();
+				if (oldFont != null) oldFont.dispose ();
+			}
+		});
 		shell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent event) {
 				if (itemBackgroundImage != null) itemBackgroundImage.dispose();
 				if (itemForegroundImage != null) itemForegroundImage.dispose();
 				if (itemBackgroundColor != null) itemBackgroundColor.dispose();
 				if (itemForegroundColor != null) itemForegroundColor.dispose();
+				if (itemFont != null) itemFont.dispose();
 				itemBackgroundColor = null;
-				itemForegroundColor = null;			
+				itemForegroundColor = null;	
+				itemFont = null;
 			}
 		});
 	}
@@ -174,7 +194,6 @@ class CTabFolderTab extends Tab {
 			Label label = new Label(tabFolder1, SWT.NONE);
 			label.setText(ControlExample.getResourceString("CTabItem_content") + ": " + i);
 			item.setControl(label);
-			if (i == 0) tabItem0 = item;
 		}
 		tabFolder1.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
@@ -286,6 +305,11 @@ class CTabFolderTab extends Tab {
 		itemBackgroundColor = null;
 		setItemBackground ();
 		if (oldColor != null) oldColor.dispose();
+		Font oldFont = font;
+		itemFont = null;
+		setItemFont ();
+		setExampleWidgetSize ();
+		if (oldFont != null) oldFont.dispose();
 	}
 	
 	/**
@@ -297,6 +321,8 @@ class CTabFolderTab extends Tab {
 		setImages ();
 		setItemBackground ();
 		setItemForeground ();
+		setItemFont ();
+		setExampleWidgetSize ();
 	}
 	
 	/**
@@ -323,26 +349,33 @@ class CTabFolderTab extends Tab {
 	}
 
 	/**
-	 * Sets the background color of the Node 1 TreeItems.
+	 * Sets the background color of CTabItem 0.
 	 */
 	void setItemBackground () {
-		tabItem0.setBackground (itemBackgroundColor);
+		tabFolder1.getItem (0).setBackground (itemBackgroundColor);
 		/* Set the background button's color to match the color just set. */
 		Color color = itemBackgroundColor;
-		if (color == null) color = tabItem0.getBackground ();
-		drawImage (itemForegroundImage, color);
-		itemBackgroundButton.setImage (itemForegroundImage);
+		if (color == null) color = tabFolder1.getItem (0).getBackground ();
+		drawImage (itemBackgroundImage, color);
+		itemBackgroundButton.setImage (itemBackgroundImage);
 	}
 	
 	/**
-	 * Sets the foreground color of Node 1 TreeItems.
+	 * Sets the foreground color of CTabItem 0.
 	 */
 	void setItemForeground () {
-		tabItem0.setForeground (itemForegroundColor);
+		tabFolder1.getItem (0).setForeground (itemForegroundColor);
 		/* Set the foreground button's color to match the color just set. */
 		Color color = itemForegroundColor;
-		if (color == null) color = tabItem0.getForeground ();
-		drawImage (itemBackgroundImage, color);
-		itemForegroundButton.setImage (itemBackgroundImage);
+		if (color == null) color = tabFolder1.getItem (0).getForeground ();
+		drawImage (itemForegroundImage, color);
+		itemForegroundButton.setImage (itemForegroundImage);
+	}
+
+	/**
+	 * Sets the font of CTabItem 0.
+	 */
+	void setItemFont () {
+		tabFolder1.getItem (0).setFont (itemFont);
 	}
 }

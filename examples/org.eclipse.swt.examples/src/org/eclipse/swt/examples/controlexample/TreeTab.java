@@ -27,9 +27,10 @@ class TreeTab extends ScrollableTab {
 	Button checkButton;
 
 	/* Controls and resources added to the "Colors" group */
-	Button itemForegroundButton, itemBackgroundButton;
+	Button itemForegroundButton, itemBackgroundButton, itemFontButton;
 	Color itemForegroundColor, itemBackgroundColor;
 	Image itemForegroundImage, itemBackgroundImage;
+	Font itemFont;
 	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -50,14 +51,18 @@ class TreeTab extends ScrollableTab {
 		data.horizontalSpan = 2;
 		treeItemGroup.setLayoutData (data);
 		treeItemGroup.setLayout (new GridLayout (2, false));
-		new Label (treeItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Item_Foreground_Color"));
+		new Label (treeItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Foreground_Color"));
 		itemForegroundButton = new Button (treeItemGroup, SWT.PUSH);
-		new Label (treeItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Item_Background_Color"));
+		new Label (treeItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Background_Color"));
 		itemBackgroundButton = new Button (treeItemGroup, SWT.PUSH);
+		itemFontButton = new Button (treeItemGroup, SWT.PUSH);
+		itemFontButton.setText(ControlExample.getResourceString("Font"));
+		itemFontButton.setLayoutData(new GridData (GridData.HORIZONTAL_ALIGN_FILL));
 		
 		Shell shell = colorGroup.getShell ();
 		final ColorDialog foregroundDialog = new ColorDialog (shell);
 		final ColorDialog backgroundDialog = new ColorDialog (shell);
+		final FontDialog fontDialog = new FontDialog (shell);
 
 		int imageSize = 12;
 		Display display = shell.getDisplay ();
@@ -93,14 +98,30 @@ class TreeTab extends ScrollableTab {
 				if (oldColor != null) oldColor.dispose ();
 			}
 		});
+		itemFontButton.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				Font oldFont = itemFont;
+				if (oldFont == null) oldFont = textNode1.getFont ();
+				fontDialog.setFontList(oldFont.getFontData());
+				FontData fontData = fontDialog.open ();
+				if (fontData == null) return;
+				oldFont = itemFont;
+				itemFont = new Font (event.display, fontData);
+				setItemFont ();
+				setExampleWidgetSize ();
+				if (oldFont != null) oldFont.dispose ();
+			}
+		});
 		shell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent event) {
 				if (itemBackgroundImage != null) itemBackgroundImage.dispose();
 				if (itemForegroundImage != null) itemForegroundImage.dispose();
 				if (itemBackgroundColor != null) itemBackgroundColor.dispose();
 				if (itemForegroundColor != null) itemForegroundColor.dispose();
+				if (itemFont != null) itemFont.dispose();
 				itemBackgroundColor = null;
 				itemForegroundColor = null;			
+				itemFont = null;
 			}
 		});
 	}
@@ -228,6 +249,11 @@ class TreeTab extends ScrollableTab {
 		itemBackgroundColor = null;
 		setItemBackground ();
 		if (oldColor != null) oldColor.dispose();
+		Font oldFont = font;
+		itemFont = null;
+		setItemFont ();
+		setExampleWidgetSize ();
+		if (oldFont != null) oldFont.dispose();
 	}
 	
 	/**
@@ -237,6 +263,8 @@ class TreeTab extends ScrollableTab {
 		super.setExampleWidgetState ();
 		setItemBackground ();
 		setItemForeground ();
+		setItemFont ();
+		setExampleWidgetSize ();
 		checkButton.setSelection ((tree1.getStyle () & SWT.CHECK) != 0);
 	}
 	
@@ -249,12 +277,12 @@ class TreeTab extends ScrollableTab {
 		/* Set the background button's color to match the color just set. */
 		Color color = itemBackgroundColor;
 		if (color == null) color = textNode1.getBackground ();
-		drawImage (itemForegroundImage, color);
-		itemBackgroundButton.setImage (itemForegroundImage);
+		drawImage (itemBackgroundImage, color);
+		itemBackgroundButton.setImage (itemBackgroundImage);
 	}
 	
 	/**
-	 * Sets the foreground color of Node 1 TreeItems.
+	 * Sets the foreground color of the Node 1 TreeItems.
 	 */
 	void setItemForeground () {
 		textNode1.setForeground (itemForegroundColor);
@@ -262,8 +290,15 @@ class TreeTab extends ScrollableTab {
 		/* Set the foreground button's color to match the color just set. */
 		Color color = itemForegroundColor;
 		if (color == null) color = textNode1.getForeground ();
-		drawImage (itemBackgroundImage, color);
-		itemForegroundButton.setImage (itemBackgroundImage);
+		drawImage (itemForegroundImage, color);
+		itemForegroundButton.setImage (itemForegroundImage);
 	}
 	
+	/**
+	 * Sets the font of the Node 1 TreeItems.
+	 */
+	void setItemFont () {
+		textNode1.setFont (itemFont);
+		imageNode1.setFont (itemFont);
+	}
 }
