@@ -948,11 +948,24 @@ public void setVisible (boolean visible) {
 		// widget could be disposed at this point
 		if (isDisposed ()) return;
 		OS.gtk_widget_show (shellHandle);
-		while (!isDisposed () && !OS.GTK_WIDGET_MAPPED (shellHandle)) {
+		
+		//TEMPORARY CODE
+		final boolean[] mapped = new boolean [1];
+		Callback proc = new Callback(new Object() {
+			public int proc(int widget, int event, int userdata) {
+				mapped [0] = true;
+				return 0;
+			}
+		}, "proc", 3);
+		int id = OS.g_signal_connect (shellHandle, OS.map_event, proc.getAddress (), 0);		
+		while (!isDisposed () && !mapped [0]) {
 			OS.gtk_main_iteration ();
 		}
+		proc.dispose();
 		// widget could be disposed at this point
 		if (isDisposed ()) return;
+		OS.g_signal_handler_disconnect (shellHandle, id);
+		
 		adjustTrim ();
 	} else {	
 		OS.gtk_widget_hide (shellHandle);

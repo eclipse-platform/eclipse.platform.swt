@@ -820,6 +820,19 @@ int gtk_activate (int widget) {
 	return 0;
 }
 
+int gtk_button_press_event (int widget, int event) {
+	int result = super.gtk_button_press_event (widget, event) ;
+	if (result != 0) return result;
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	if (gdkEvent.button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+		if (showMenu ((int)gdkEvent.x_root, (int)gdkEvent.y_root)) {
+			return 1;
+		}
+	}	
+	return 0;
+}
+
 int gtk_changed (int widget) {
 	sendEvent (SWT.Modify);
 	return 0;
@@ -872,6 +885,20 @@ int gtk_delete_text (int widget, int start_pos, int end_pos) {
 	String newText = verifyText ("", start_pos, end_pos);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (handle, OS.delete_text);
+	}
+	return 0;
+}
+
+int gtk_event_after (int widget, int gdkEvent) {
+	GdkEvent event = new GdkEvent ();
+	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
+	switch (event.type) {
+		case OS.GDK_FOCUS_CHANGE: {
+			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+			sendFocusEvent (gdkEventFocus.in != 0 ? SWT.FocusIn : SWT.FocusOut);
+			break;
+		}
 	}
 	return 0;
 }
@@ -934,6 +961,12 @@ int gtk_key_press_event (int widget, int event) {
 		if (OS.gtk_im_context_filter_keypress (imContext, event)) return 1;
 	}
 	return super.gtk_key_press_event (widget, event);
+}
+
+int gtk_popup_menu (int widget) {
+	int [] x = new int [1], y = new int [1];
+	OS.gdk_window_get_pointer (0, x, y, null);
+	return showMenu (x [0], y [0]) ? 1 : 0;
 }
 
 void hookEvents () {
