@@ -619,20 +619,18 @@ boolean sendKeyEvent (int type, Event event) {
 	if (event.character == 0) return true;
 	if ((style & SWT.READ_ONLY) != 0) return false;
 	String oldText = "";
-	//int charCount = getCharCount ();
-	//Point selection = getSelection ();
-	int [] ptr = new int [1];
-	int [] actualSize = new int [1];
 	int charCount;
-	int result = OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
+	int [] ptr = new int [1];
+	int result = OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, null);
 	if (result == OS.noErr) {
 		charCount = OS.CFStringGetLength (ptr [0]);
 		OS.CFRelease (ptr [0]);
 	} else {
 		charCount = 0;
 	}
-	Point selection = new Point (0, charCount - 1);
-	int start = selection.x, end = selection.y;
+	short [] s = new short [2];
+	OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s, null);
+	int start = s [0], end = s [1];
 	switch (event.character) {
 		case SWT.BS:
 			if (start == end) {
@@ -647,11 +645,8 @@ boolean sendKeyEvent (int type, Event event) {
 			}
 			break;
 		case SWT.CR:
-			if ((style & SWT.SINGLE) != 0) {
-				postEvent (SWT.DefaultSelection);
-				return true;
-			}
-			break;
+			postEvent (SWT.DefaultSelection);
+			return true;
 		default:
 			if (event.character != '\t' && event.character < 0x20) return true;
 			oldText = new String (new char [] {event.character});
