@@ -3725,17 +3725,22 @@ int [] getBidiSegments(String line, int lineOffset) {
  * Supports deprecated setBidiColoring API. Remove when API is removed.
  */
 int [] getBidiSegmentsCompatibility(String line, int lineOffset) {
-	StyledTextEvent event = getLineStyleData(lineOffset, line);
+	StyledTextEvent event;
 	StyleRange [] styles = new StyleRange [0];
+	int lineLength = line.length();
+
+	if (bidiColoring == false) {
+		return new int[] {0, lineLength};
+	}
+	event = getLineStyleData(lineOffset, line);
 	if (event != null) {
 		styles = event.styles;
 	}
-	if (styles.length == 0 || !bidiColoring) {
-		return new int[] {0, line.length()};
+	if (styles.length == 0) {
+		return new int[] {0, lineLength};
 	}
-
 	int k=0, count = 1;
-	while (k < styles.length && styles[k].start == 0 && styles[k].length == line.length()) {
+	while (k < styles.length && styles[k].start == 0 && styles[k].length == lineLength) {
 		k++;
 	}
 	int[] offsets = new int[(styles.length - k) * 2 + 2];
@@ -3760,8 +3765,8 @@ int [] getBidiSegmentsCompatibility(String line, int lineOffset) {
 		}
 	}
 	// add offset for last non-colored segment in line, if any
-	if (line.length() > offsets[count-1]) {
-		offsets [count] = line.length();
+	if (lineLength > offsets[count-1]) {
+		offsets [count] = lineLength;
 		count++;
 	}		
 	if (count == offsets.length) {
@@ -5617,8 +5622,6 @@ public void setCaret(Caret caret) {
 }
 /**
  * Moves the Caret to the current caret offset.
- * 
- * @deprecated use BidiSegmentListener instead.
  */
 void setBidiCaretLocation() {
 	int line = content.getLineAtOffset(caretOffset);
@@ -5663,7 +5666,7 @@ void setBidiCaretLocation() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * <p>
- * IMPORTANT: This API is in-progress and may change in the future.
+ * @deprecated use BidiSegmentListener instead.
  * </p>
  */
 public void setBidiColoring(boolean mode) {
