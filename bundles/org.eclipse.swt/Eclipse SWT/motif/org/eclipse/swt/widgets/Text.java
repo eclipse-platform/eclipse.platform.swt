@@ -780,8 +780,7 @@ public String getText (int start, int end) {
 		if (hiddenText.length () <= end) error (SWT.ERROR_INVALID_RANGE);
 		return hiddenText.substring (start, end + 1);
 	}
-	int textLength = OS.XmTextGetLastPosition (handle);
-	if (textLength <= end) error (SWT.ERROR_INVALID_RANGE);
+	if (OS.XmTextGetLastPosition (handle) <= end) error (SWT.ERROR_INVALID_RANGE);
 	int numChars = end - start + 1;
 	int length = (numChars * 4 /* MB_CUR_MAX */) + 1;
 	byte [] buffer = new byte [length];
