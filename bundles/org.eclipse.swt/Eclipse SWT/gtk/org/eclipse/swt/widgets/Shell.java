@@ -856,6 +856,7 @@ int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
 public void open () {
 	checkWidget ();
 	setVisible (true);
+	if (isDisposed ()) return;
 	bringToTop (false);
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
@@ -977,6 +978,7 @@ void resizeBounds (int width, int height, boolean notify) {
 	if (notify) {
 		resized = true;
 		sendEvent (SWT.Resize);
+		if (isDisposed ()) return;
 		if (layout != null) layout.layout (this, false);
 	}
 }
@@ -992,6 +994,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			oldX = x;
 			oldY = y;
 			sendEvent (SWT.Move);
+			if (isDisposed ()) return 0;
 			result |= MOVED;
 		}
 	}
@@ -999,6 +1002,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		width = Math.max (1, Math.max (minWidth, width - trimWidth ()));
 		height = Math.max (1, Math.max (minHeight, height - trimHeight ()));
 		OS.gtk_window_resize (shellHandle, width, height);
+		if (isDisposed ()) return 0;
 		boolean changed = width != oldWidth || height != oldHeight;
 		if (changed) {
 			oldWidth = width;
@@ -1228,6 +1232,7 @@ public void setVisible (boolean visible) {
 		*/
 		mapped = false;
 		OS.gtk_widget_show (shellHandle);
+		if (isDisposed ()) return;
 		display.dispatchEvents = new int [] {
 			OS.GDK_EXPOSE,
 			OS.GDK_FOCUS_CHANGE,
@@ -1264,6 +1269,7 @@ public void setVisible (boolean visible) {
 			oldX = location.x;
 			oldY = location.y;
 			sendEvent (SWT.Move);
+			if (isDisposed ()) return;
 		}
 		if (!resized) {
 			resized = true;
@@ -1271,6 +1277,7 @@ public void setVisible (boolean visible) {
 			oldWidth = size.x - trimWidth ();
 			oldHeight = size.y - trimHeight ();
 			sendEvent (SWT.Resize);
+			if (isDisposed ()) return;
 			if (layout != null) layout.layout (this, false);
 		}
 	} else {	
