@@ -119,13 +119,13 @@ public Browser(Composite parent, int style) {
 			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
 		} catch (UnsatisfiedLinkError e) {
 			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES);
+			SWT.error(SWT.ERROR_NO_HANDLES, e);
 		}
 		
 		String mozillaPath = GRE.mozillaPath;
 		if (mozillaPath == null) {
 			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES);
+			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown mozilla path]");
 		}
 
 		int[] retVal = new int[1];
@@ -155,7 +155,7 @@ public Browser(Composite parent, int style) {
 			if (LocProvider != null) LocProvider.Release();
 			LocProvider = null;
 			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES);
+			SWT.error(SWT.ERROR_NO_HANDLES, null, " [NS_InitEmbedding "+mozillaPath+" error "+rc+"]");
 		}
 
 		rc = XPCOM.NS_GetComponentManager(result);
