@@ -682,11 +682,6 @@ boolean filterEvent (XAnyEvent event) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return false;
 
-	/* Filter the event for the IME */
-	if (!OS.IsLinux) { 
-		if (OS.XFilterEvent (event, OS.XtWindow (handle))) return true;
-	}
-	
 	/* Get the unaffected character and keysym */
 	int oldState = keyEvent.state;
 	keyEvent.state = 0;
@@ -698,7 +693,14 @@ boolean filterEvent (XAnyEvent event) {
 	}
 	int keysym = buffer2 [0] & 0xFFFF;
 	keyEvent.state = oldState;
-				
+
+	/* Filter the event for the IME */
+	if (!OS.IsLinux) {
+		if (keysym == OS.XK_Return || keysym == OS.XK_KP_Enter) {
+			if (OS.XFilterEvent (event, OS.XtWindow (handle))) return true;
+		}
+	}
+
 	/* Check for an accelerator key */
 	if (widget.translateAccelerator (key, keysym, keyEvent)) return true;
 	
