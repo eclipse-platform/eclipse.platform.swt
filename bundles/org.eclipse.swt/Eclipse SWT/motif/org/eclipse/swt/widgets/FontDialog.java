@@ -23,7 +23,8 @@ public /*final*/ class FontDialog extends Dialog {
 	private static final String TEXT_SAMPLE = "AaBbYyZz";
 	private static final String TEXT_FONT_NOT_LOADED = "Could not load selected font";	// text used in place of sample text when the selected font could not be loaded
 	private static final String SCALABLE_SIZES[] = new String[] {"8", "10", "11", "12", "14", "16", "18", "22", "24", "26"};
-	private static final int SELECTION_SIZE = 14;
+	private static final int DEFAULT_SIZE = 14;
+	private static final String DEFAULT_STYLE = FontExtStyles.MEDIUM;
 	
 	private Shell shell;						// the dialog shell
 	private Combo characterSet;
@@ -587,7 +588,7 @@ void initSizeCombo(FontExtStyles fontExtStyles) {
 
 	if (fontExtStyles.isScalable()) {
 		sizeCombo.setItems(SCALABLE_SIZES);
-		selectionIndex = sizeCombo.indexOf(String.valueOf(SELECTION_SIZE));
+		selectionIndex = sizeCombo.indexOf(String.valueOf(DEFAULT_SIZE));
 	}
 	else {
 		Vector sizes = fontExtStyles.getSizes(getExtStyleCombo().getText());
@@ -596,7 +597,7 @@ void initSizeCombo(FontExtStyles fontExtStyles) {
 			sizeCombo.add(size.toString());
 			// select the largest height if there's no font
 			// size that is at least as high as SelectionSize
-			if (size.intValue() >= SELECTION_SIZE && selectionIndex == -1)
+			if (size.intValue() >= DEFAULT_SIZE && selectionIndex == -1)
 				selectionIndex = i;
 		}
 	}
@@ -615,20 +616,20 @@ void initSizeCombo(FontExtStyles fontExtStyles) {
  * is available in.
  */
 void initStyleCombo(FontExtStyles fontExtStyles) {
-	Vector styleVector = fontExtStyles.getStyles(getExtStyleCombo().getText());
-	Enumeration styleEnum = styleVector.elements();
 	Combo styleCombo = getStyleCombo();
-	int selectionIndex = styleVector.indexOf(FontExtStyles.MEDIUM);
-	String style;
-
+	String previousStyle = styleCombo.getText();
 	styleCombo.removeAll();
-	while (styleEnum.hasMoreElements() == true) {
-		style = (String) styleEnum.nextElement();
-		styleCombo.add(style);
-	}		
-	if (selectionIndex == -1) {
+	
+	Enumeration styleEnum = fontExtStyles.getStyles(getExtStyleCombo().getText()).elements();
+	while (styleEnum.hasMoreElements())
+		styleCombo.add((String)styleEnum.nextElement());
+
+	int selectionIndex = styleCombo.indexOf(previousStyle);
+	if (selectionIndex == -1)
+		selectionIndex = styleCombo.indexOf(DEFAULT_STYLE);
+	if (selectionIndex == -1)	// last resort
 		selectionIndex = 0;
-	}
+
 	styleCombo.select(selectionIndex);
 }
 
