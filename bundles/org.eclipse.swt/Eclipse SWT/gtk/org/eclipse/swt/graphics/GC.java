@@ -1499,6 +1499,32 @@ public Color getForeground() {
 	return Color.gtk_new(data.device, color);	
 }
 
+public int getLineCap() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
+	int cap = SWT.CAP_FLAT;
+	switch (values.cap_style) {
+		case OS.GDK_CAP_ROUND: cap = SWT.CAP_ROUND; break;
+		case OS.GDK_CAP_BUTT: cap = SWT.CAP_FLAT; break;
+		case OS.GDK_CAP_PROJECTING: cap = SWT.CAP_SQUARE; break;
+	}
+	return cap;
+}
+
+public int getLineJoin() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
+	int join = SWT.JOIN_ROUND;
+	switch (values.join_style) {
+		case OS.GDK_JOIN_MITER: join = SWT.JOIN_MITER; break;
+		case OS.GDK_JOIN_ROUND: join = SWT.JOIN_ROUND; break;
+		case OS.GDK_JOIN_BEVEL: join = SWT.JOIN_BEVEL; break;
+	}
+	return join;
+}
+
 /** 
  * Returns the receiver's line style, which will be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
@@ -1813,6 +1839,50 @@ public void setForeground(Color color) {
 	OS.gdk_gc_set_foreground(handle, color.handle);
 }
 
+public void setLineCap(int cap) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int cap_style = 0;
+	switch (cap) {
+		case SWT.CAP_ROUND:
+			cap_style = OS.GDK_CAP_ROUND;
+			break;
+		case SWT.CAP_FLAT:
+			cap_style = OS.GDK_CAP_BUTT;
+			break;
+		case SWT.CAP_SQUARE:
+			cap_style = OS.GDK_CAP_PROJECTING;
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
+	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.GDK_LINE_SOLID : OS.GDK_LINE_ON_OFF_DASH;
+	OS.gdk_gc_set_line_attributes(handle, values.line_width, line_style, cap_style, values.join_style);
+}
+
+public void setLineJoin(int join) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int join_style = 0;
+	switch (join) {
+		case SWT.JOIN_MITER:
+			join_style = OS.GDK_JOIN_MITER;
+			break;
+		case SWT.JOIN_ROUND:
+			join_style = OS.GDK_JOIN_ROUND;
+			break;
+		case SWT.JOIN_BEVEL:
+			join_style = OS.GDK_JOIN_BEVEL;
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
+	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.GDK_LINE_SOLID : OS.GDK_LINE_ON_OFF_DASH;
+	OS.gdk_gc_set_line_attributes(handle, values.line_width, line_style, values.cap_style, join_style);
+}
+
 /** 
  * Sets the receiver's line style to the argument, which must be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
@@ -1850,7 +1920,7 @@ public void setLineStyle(int lineStyle) {
 	data.lineStyle = lineStyle;
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
-	OS.gdk_gc_set_line_attributes(handle, values.line_width, line_style, OS.GDK_CAP_ROUND, OS.GDK_JOIN_MITER);
+	OS.gdk_gc_set_line_attributes(handle, values.line_width, line_style, values.cap_style, values.join_style);
 }
 
 /** 
@@ -1867,8 +1937,10 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int width) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
 	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.GDK_LINE_SOLID : OS.GDK_LINE_ON_OFF_DASH;
-	OS.gdk_gc_set_line_attributes(handle, width, line_style, OS.GDK_CAP_ROUND, OS.GDK_JOIN_MITER);
+	OS.gdk_gc_set_line_attributes(handle, width, line_style, values.cap_style, values.join_style);
 }
 
 void setString(String string, int flags) {

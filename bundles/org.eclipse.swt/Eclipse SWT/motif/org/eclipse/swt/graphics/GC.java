@@ -2195,6 +2195,30 @@ public Color getForeground() {
 	return Color.motif_new(data.device, xColor);
 	
 }
+public int getLineCap() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	XGCValues values = new XGCValues();
+	OS.XGetGCValues(data.display, handle, OS.GCCapStyle, values);
+	int cap = SWT.CAP_FLAT;
+	switch (values.cap_style) {
+		case OS.CapRound: cap = SWT.CAP_ROUND; break;
+		case OS.CapButt: cap = SWT.CAP_FLAT; break;
+		case OS.CapProjecting: cap = SWT.CAP_SQUARE; break;
+	}
+	return cap;
+}
+public int getLineJoin() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	XGCValues values = new XGCValues();
+	OS.XGetGCValues(data.display, handle, OS.GCJoinStyle, values);
+	int join = SWT.JOIN_MITER;
+	switch (values.join_style) {
+		case OS.JoinMiter: join = SWT.JOIN_MITER; break;
+		case OS.JoinRound: join = SWT.JOIN_ROUND; break;
+		case OS.JoinBevel: join = SWT.JOIN_BEVEL; break;
+	}
+	return join;
+}
 /** 
  * Returns the receiver's line style, which will be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
@@ -2527,6 +2551,50 @@ public void setForeground (Color color) {
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.XSetForeground(data.display, handle, color.handle.pixel);
 }
+public void setLineCap(int cap) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int cap_style = 0;
+	switch (cap) {
+		case SWT.CAP_ROUND:
+			cap_style = OS.CapRound;
+			break;
+		case SWT.CAP_FLAT:
+			cap_style = OS.CapButt;
+			break;
+		case SWT.CAP_SQUARE:
+			cap_style = OS.CapProjecting;
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int xDisplay = data.display;
+	XGCValues values = new XGCValues();
+	OS.XGetGCValues(xDisplay, handle, OS.GCLineWidth | OS.GCJoinStyle, values);
+	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.LineSolid : OS.LineOnOffDash;
+	OS.XSetLineAttributes(xDisplay, handle, values.line_width, line_style, cap_style, values.join_style);
+}
+public void setLineJoin(int join) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int join_style = 0;
+	switch (join) {
+		case SWT.JOIN_MITER:
+			join_style = OS.JoinMiter;
+			break;
+		case SWT.JOIN_ROUND:
+			join_style = OS.JoinRound;
+			break;
+		case SWT.JOIN_BEVEL:
+			join_style = OS.JoinBevel;
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int xDisplay = data.display;
+	XGCValues values = new XGCValues();
+	OS.XGetGCValues(xDisplay, handle, OS.GCLineWidth | OS.GCCapStyle, values);
+	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.LineSolid : OS.LineOnOffDash;
+	OS.XSetLineAttributes(xDisplay, handle, values.line_width, line_style, values.cap_style, join_style);
+}
 /** 
  * Sets the receiver's line style to the argument, which must be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
@@ -2564,8 +2632,8 @@ public void setLineStyle(int lineStyle) {
 	}
 	data.lineStyle = lineStyle;
 	XGCValues values = new XGCValues();
-	OS.XGetGCValues(xDisplay, handle, OS.GCLineWidth, values);
-	OS.XSetLineAttributes(xDisplay, handle, values.line_width, line_style, OS.CapRound, OS.JoinMiter);
+	OS.XGetGCValues(xDisplay, handle, OS.GCLineWidth | OS.GCCapStyle | OS.GCJoinStyle, values);
+	OS.XSetLineAttributes(xDisplay, handle, values.line_width, line_style, values.cap_style, values.join_style);
 }
 /** 
  * Sets the width that will be used when drawing lines
@@ -2581,8 +2649,11 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int width) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int xDisplay = data.display;
+	XGCValues values = new XGCValues();
+	OS.XGetGCValues(xDisplay, handle, OS.GCLineWidth | OS.GCCapStyle | OS.GCJoinStyle, values);
 	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.LineSolid : OS.LineOnOffDash;
-	OS.XSetLineAttributes(data.display, handle, width, line_style, OS.CapRound, OS.JoinMiter);	
+	OS.XSetLineAttributes(data.display, handle, width, line_style, values.cap_style, values.join_style);	
 }
 void setString(String string) {
 	if (string == data.string) return;

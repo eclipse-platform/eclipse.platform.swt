@@ -1594,6 +1594,16 @@ public Color getForeground() {
 	return Color.carbon_new(data.device, data.foreground);	
 }
 
+public int getLineCap() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.lineCap;
+}
+
+public int getLineJoin() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.lineJoin;
+}
+
 /** 
  * Returns the receiver's line style, which will be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
@@ -1695,8 +1705,7 @@ void init(Drawable drawable, GCData data, int context) {
 	float[] foreground = data.foreground;
 	if (foreground != null) OS.CGContextSetStrokeColor(context, foreground);
 	float[] background = data.background;
-	if (background != null) OS.CGContextSetFillColor(context, background);	
-	OS.CGContextSetLineCap(context, OS.kCGLineCapRound);
+	if (background != null) OS.CGContextSetFillColor(context, background);
 
 	Image image = data.image;
 	if (image != null) image.memGC = this;
@@ -1938,6 +1947,46 @@ public void setForeground(Color color) {
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.foreground = color.handle;
 	OS.CGContextSetStrokeColor(handle, color.handle);
+}
+
+public void setLineCap(int cap) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int cap_style = 0;
+	switch (cap) {
+		case SWT.CAP_ROUND:
+			cap_style = OS.kCGLineCapRound;
+			break;
+		case SWT.CAP_FLAT:
+			cap_style = OS.kCGLineCapButt;
+			break;
+		case SWT.CAP_SQUARE:
+			cap_style = OS.kCGLineCapSquare;
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	data.lineCap = cap;
+	OS.CGContextSetLineCap(handle, cap_style);
+}
+
+public void setLineJoin(int join) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int join_style = 0;
+	switch (join) {
+		case SWT.JOIN_MITER:
+			join_style = OS.kCGLineJoinMiter;
+			break;
+		case SWT.JOIN_ROUND:
+			join_style = OS.kCGLineJoinRound;
+			break;
+		case SWT.JOIN_BEVEL:
+			join_style = OS.kCGLineJoinBevel;
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	data.lineJoin = join;
+	OS.CGContextSetLineJoin(handle, join_style);
 }
 
 /** 
