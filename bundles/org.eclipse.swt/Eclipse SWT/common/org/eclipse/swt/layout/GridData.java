@@ -209,6 +209,19 @@ public final class GridData {
 	public int minimumHeight = 0;
 	
 	/**
+	 * exclude is used to stop a widget from being managed by the
+	 * layout.  If this value is <code>true</code>, the widget size and
+	 * position will not be managed by the layout.  If this value is 
+	 * <code>false</code>, then the size and position of the widget will
+	 * be modified by the layout.
+	 * 
+	 * The default value is <code>false</code>.
+	 * 
+	 * @since 3.1
+	 */
+	public boolean exclude = false;
+	
+	/**
 	 * Value for horizontalAlignment or verticalAlignment.
 	 * Position the control at the top or left of the cell.
 	 * Not recommended. Use SWT.BEGINNING, SWT.TOP or SWT.LEFT instead.
@@ -519,6 +532,7 @@ public String toString () {
  	if (grabExcessVerticalSpace) string += "grabExcessVerticalSpace="+grabExcessVerticalSpace+" ";
  	if (heightHint != SWT.DEFAULT) string += "heightHint="+heightHint+" ";
  	if (minimumHeight != 0) string += "minimumHeight="+minimumHeight+" ";
+ 	if (exclude) string += "exclude="+exclude+" ";
  	string = string.trim();
  	string += "}";
 	return string;

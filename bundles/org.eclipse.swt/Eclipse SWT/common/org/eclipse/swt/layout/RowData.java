@@ -52,6 +52,19 @@ public final class RowData {
 	 */
 	public int height = SWT.DEFAULT;
 	
+	/**
+	 * exclude is used to stop a widget from being managed by the
+	 * layout.  If this value is <code>true</code>, the widget size and
+	 * position will not be managed by the layout.  If this value is 
+	 * <code>false</code>, then the size and position of the widget will
+	 * be modified by the layout.
+	 * 
+	 * The default value is <code>false</code>.
+	 * 
+	 * @since 3.1
+	 */
+	public boolean exclude = false;
+	
 public RowData () {
 }
 
@@ -75,6 +88,7 @@ public String toString () {
 	String string = getName ()+" {";
 	if (width != SWT.DEFAULT) string += "width="+width+" ";
 	if (height != SWT.DEFAULT) string += "height="+height+" ";
+	if (exclude) string += "exclude="+exclude+" ";
 	string = string.trim();
 	string += "}";
 	return string;

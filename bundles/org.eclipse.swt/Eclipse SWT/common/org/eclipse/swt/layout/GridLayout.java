@@ -187,9 +187,19 @@ protected void layout (Composite composite, boolean flushCache) {
 }
 
 Point layout (Composite composite, boolean move, int x, int y, int width, int height, boolean flushCache) {
-	if (numColumns < 1) return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
+	if (numColumns < 1) {
+		return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
+	}
+	int count = 0;
 	Control [] children = composite.getChildren ();
 	for (int i=0; i<children.length; i++) {
+		Control control = children [i];
+		GridData data = (GridData) control.getLayoutData ();
+		if (data == null || !data.exclude) {
+			children [count++] = children [i];
+		} 
+	}
+	for (int i=0; i<count; i++) {
 		Control child = children [i];
 		GridData data = (GridData) child.getLayoutData ();
 		if (data == null) child.setLayoutData (data = new GridData ());
@@ -217,7 +227,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	/* Build the grid */
 	int row = 0, column = 0, rowCount = 0, columnCount = numColumns;
 	Control [][] grid = new Control [4] [columnCount];
-	for (int i=0; i<children.length; i++) {	
+	for (int i=0; i<count; i++) {	
 		Control child = children [i];
 		GridData data = (GridData) child.getLayoutData ();
 		int hSpan = Math.max (1, Math.min (data.horizontalSpan, columnCount));
@@ -357,9 +367,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			for (int i=0; i<columnCount; i++) {
 				totalWidth += widths [i];
 			}
-			int count = expandCount;
-			int delta = (availableWidth - totalWidth) / count;
-			int remainder = (availableWidth - totalWidth) % count;
+			int c = expandCount;
+			int delta = (availableWidth - totalWidth) / c;
+			int remainder = (availableWidth - totalWidth) % c;
 			int last = -1;
 			while (totalWidth != availableWidth) {
 				for (int j=0; j<columnCount; j++) {
@@ -369,7 +379,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 						} else {
 							widths [j] = minWidths [j];
 							expandColumn [j] = false;
-							count--;
+							c--;
 						}
 					}
 				}
@@ -408,13 +418,13 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 						}
 					}
 				}
-				if (count == 0) break;
+				if (c == 0) break;
 				totalWidth = 0;
 				for (int i=0; i<columnCount; i++) {
 					totalWidth += widths [i];
 				}
-				delta = (availableWidth - totalWidth) / count;
-				remainder = (availableWidth - totalWidth) % count;
+				delta = (availableWidth - totalWidth) / c;
+				remainder = (availableWidth - totalWidth) % c;
 				last = -1;
 			}
 		}
@@ -450,7 +460,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 							if (data.grabExcessVerticalSpace && data.minimumHeight > 0) {
 								data.cacheHeight = Math.max (data.cacheHeight, data.minimumHeight);
 							}
-							if (flush == null) flush = new GridData [children.length];
+							if (flush == null) flush = new GridData [count];
 							flush [flushLength++] = data;
 						}
 					}
@@ -542,9 +552,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		for (int i=0; i<rowCount; i++) {
 			totalHeight += heights [i];
 		}
-		int count = expandCount;
-		int delta = (availableHeight - totalHeight) / count;
-		int remainder = (availableHeight - totalHeight) % count;
+		int c = expandCount;
+		int delta = (availableHeight - totalHeight) / c;
+		int remainder = (availableHeight - totalHeight) % c;
 		int last = -1;
 		while (totalHeight != availableHeight) {
 			for (int i=0; i<rowCount; i++) {
@@ -554,7 +564,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					} else {
 						heights [i] = minHeights [i];
 						expandRow [i] = false;
-						count--;
+						c--;
 					}
 				}
 			}
@@ -593,13 +603,13 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					}
 				}
 			}
-			if (count == 0) break;
+			if (c == 0) break;
 			totalHeight = 0;
 			for (int i=0; i<rowCount; i++) {
 				totalHeight += heights [i];
 			}
-			delta = (availableHeight - totalHeight) / count;
-			remainder = (availableHeight - totalHeight) % count;
+			delta = (availableHeight - totalHeight) / c;
+			remainder = (availableHeight - totalHeight) % c;
 			last = -1;
 		}
 	}
