@@ -147,8 +147,20 @@ public String open () {
 	/* Copy the message to OS memory */
 	int lpszTitle = 0;
 	if (message != null && message.length () != 0) {
+		String string = message;
+		if (string.indexOf ('&') != -1) {
+			int length = string.length ();
+			char [] buffer = new char [length * 2];
+			int index = 0;
+			for (int i=0; i<length; i++) {
+				char ch = string.charAt (i);
+				if (ch == '&') buffer [index++] = '&';
+				buffer [index++] = ch;
+			}
+			string = new String (buffer, 0, index);
+		}
 		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR (0, message, true);
+		TCHAR buffer = new TCHAR (0, string, true);
 		int byteCount = buffer.length () * TCHAR.sizeof;
 		lpszTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 		OS.MoveMemory (lpszTitle, buffer, byteCount);

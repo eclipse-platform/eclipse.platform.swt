@@ -544,9 +544,9 @@ char findMnemonic (String string) {
 	int index = 0;
 	int length = string.length ();
 	do {
-		while (index < length && string.charAt (index) != Mnemonic) index++;
+		while (index < length && string.charAt (index) != '&') index++;
 		if (++index >= length) return '\0';
-		if (string.charAt (index) != Mnemonic) return string.charAt (index);
+		if (string.charAt (index) != '&') return string.charAt (index);
 		index++;
 	} while (index < length);
  	return '\0';

@@ -70,7 +70,6 @@ public abstract class Widget {
 	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
-	static final char Mnemonic = '&';
 
 	/* COMCTL32.DLL flags */
 	static final int MAJOR = 4, MINOR = 71;
