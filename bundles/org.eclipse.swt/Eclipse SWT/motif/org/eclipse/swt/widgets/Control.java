@@ -1157,11 +1157,11 @@ void manageChildren () {
 				if (focusHandle != 0) {
 					focusHandle = OS.XmGetFocusWidget (focusHandle);
 					if (focusHandle != 0) {
-						int parentHandle = parent.handle;
+						int tempHandle = handle;
 						do {
-							if (parentHandle == focusHandle) break;
-						} while ((parentHandle = OS.XtParent (parentHandle)) != 0);
-						fixFocus = parentHandle != 0;
+							if (tempHandle == focusHandle) break;
+						} while ((tempHandle = OS.XtParent (tempHandle)) != 0);
+						fixFocus = tempHandle != 0;
 					}
 				}
 			}
