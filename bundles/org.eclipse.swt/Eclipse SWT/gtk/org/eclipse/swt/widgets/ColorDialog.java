@@ -119,9 +119,9 @@ public RGB open () {
 		color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
 		OS.gtk_color_selection_set_current_color (dialog.colorsel, color);
 	}
-	rgb = null;
 	int response = OS.gtk_dialog_run(handle);
-	if (response == OS.GTK_RESPONSE_OK) {
+	boolean success = response == OS.GTK_RESPONSE_OK; 
+	if (success) {
 		OS.gtk_color_selection_get_current_color (dialog.colorsel, color);
 		int red = (color.red >> 8) & 0xFF;
 		int green = (color.green >> 8) & 0xFF;
@@ -129,6 +129,7 @@ public RGB open () {
 		rgb = new RGB (red, green, blue);
 	}
 	OS.gtk_widget_destroy(handle);
+	if (!success) return null;
 	return rgb;
 }
 /**
