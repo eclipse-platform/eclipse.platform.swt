@@ -42,6 +42,7 @@ public class TabFolder extends Composite {
 	int topTabIndex = 0;									// index of the first visible tab. Used for tab scrolling
 	boolean scrollButtonDown = false;						// true=one of the scroll buttons is being pushed
 	boolean inDispose = false;
+	String toolTipText = "";
 
 	// internal constants
 	static final int SCROLL_BUTTON_SIZE = 20;				// width/height of the scroll button used for scrolling tab items
@@ -85,6 +86,7 @@ public TabFolder(Composite parent, int style) {
 	addListener (SWT.Dispose, listener);
 	addListener (SWT.MouseDown, listener);
 	addListener (SWT.MouseUp, listener);	
+	addListener (SWT.MouseHover, listener);
 	addListener (SWT.Paint, listener);
 	addListener (SWT.Resize, listener);
 	addListener (SWT.Traverse, listener);
@@ -586,6 +588,10 @@ public int getSelectionIndex() {
 	checkWidget();
 	return selectedIndex;
 }
+public String getToolTipText () {
+	checkWidget();
+	return toolTipText;
+}
 /**
  * Handle the events that I have hooked on the canvas.
  */
@@ -605,6 +611,9 @@ void handleEvents (Event event){
 			break;
 		case SWT.MouseUp:
 			mouseUp(event);
+			break;
+		case SWT.MouseHover:
+			mouseHover(event);
 			break;
 		case SWT.Traverse:
 			traversal(event); 
@@ -770,6 +779,22 @@ void mouseDown(Event event) {
 				return;
 			}
 		}
+	}
+}
+void mouseHover(Event event) {
+	String current = super.getToolTipText();
+	Point point = new Point(event.x, event.y);
+	for (int i=0; i<items.length; i++) {
+		if (items[i].getBounds().contains(point)) {
+			String string = items[i].getToolTipText();
+			if (!string.equals(current)) {
+				super.setToolTipText(string);
+			}
+			return;
+		}
+	}
+	if (!toolTipText.equals(current)) {
+		super.setToolTipText(toolTipText);
 	}
 }
 /** 
@@ -1028,7 +1053,11 @@ void setSelection(int index, boolean notify) {
 		}
 	}
 }
-
+public void setToolTipText (String string) {
+	checkWidget();
+	super.setToolTipText (string);
+	toolTipText = string
+}
 void traversal(Event event) {
 	switch (event.detail) {
 		case SWT.TRAVERSE_ESCAPE:

@@ -26,7 +26,7 @@ import org.eclipse.swt.graphics.*;
 public class TabItem extends Item {
 	TabFolder parent;
 	int x,y,width,height = 0;
-	String toolTipText;
+	String toolTipText = "";
 	Control control;									// the tab page
 	
 	// internal constants
