@@ -4732,6 +4732,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1bin_1get_1child)
 }
 #endif
 
+#ifndef NO_gtk_1box_1set_1child_1packing
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1box_1set_1child_1packing)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jboolean arg3, jint arg4, jint arg5)
+{
+	OS_NATIVE_ENTER(env, that, gtk_1box_1set_1child_1packing_FUNC);
+	gtk_box_set_child_packing((GtkBox *)arg0, (GtkWidget *)arg1, arg2, arg3, arg4, arg5);
+	OS_NATIVE_EXIT(env, that, gtk_1box_1set_1child_1packing_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1button_1new
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1button_1new)
 	(JNIEnv *env, jclass that)

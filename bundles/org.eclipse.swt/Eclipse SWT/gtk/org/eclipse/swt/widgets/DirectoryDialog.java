@@ -209,6 +209,8 @@ String openClassicDialog () {
 		OS.gtk_label_set_line_wrap (labelHandle, true);		
 		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
 		OS.gtk_container_add (selection.main_vbox, labelHandle);
+		OS.gtk_box_set_child_packing (
+			selection.main_vbox, labelHandle, false, false, 0, OS.GTK_PACK_START);
 		OS.gtk_widget_show (labelHandle);
 	}
 	int response = OS.gtk_dialog_run (handle);
