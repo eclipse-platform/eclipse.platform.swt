@@ -38,6 +38,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Label extends Control {
+	String text = "";
 	Image image;
 	int font;
 	static final int LabelProc;
@@ -229,11 +230,7 @@ String getNameText () {
 public String getText () {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return "";
-	int length = OS.GetWindowTextLength (handle);
-	if (length == 0) return "";
-	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
-	OS.GetWindowText (handle, buffer, length + 1);
-	return buffer.toString (0, length);
+	return text;
 }
 
 /*
@@ -272,6 +269,7 @@ boolean mnemonicMatch (char key) {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	text = null;
 	image = null;
 }
 
@@ -408,6 +406,14 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
+	/*
+	* Feature in Windows.  For some reason, SetWindowText() for
+	* static controls redraws the control, even when the text has
+	* has not changed.  The fix is to check for this case and do
+	* nothing.
+	*/
+	if (string.equals (text)) return;
+	text = string;
 	int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE), oldBits = newBits;
 	newBits &= ~(OS.SS_BITMAP | OS.SS_ICON | OS.SS_REALSIZEIMAGE | OS.SS_CENTERIMAGE);
 	if ((style & SWT.LEFT) != 0 && (style & SWT.WRAP) == 0) newBits |= OS.SS_LEFTNOWORDWRAP;
