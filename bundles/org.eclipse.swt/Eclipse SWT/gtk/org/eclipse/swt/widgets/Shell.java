@@ -96,7 +96,6 @@ import org.eclipse.swt.events.*;
 public class Shell extends Decorations {
 	Display display;
 	int shellHandle, tooltipsHandle;
-	int modal;
 	boolean hasFocus;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
