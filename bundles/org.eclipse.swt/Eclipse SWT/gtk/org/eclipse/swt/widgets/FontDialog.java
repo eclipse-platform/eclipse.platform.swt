@@ -98,12 +98,15 @@ public FontData getFontData() {
 	return fontData;
 }
 int okFunc (int widget, int callData) {
-	int hFontName = OS.gtk_font_selection_dialog_get_font_name (callData);
-	int fontSize = OS.strlen (hFontName);
-	byte [] buffer = new byte [fontSize];
-	OS.memmove (buffer, hFontName, fontSize);
-	char [] fontName = Converter.mbcsToWcs (null, buffer);
-	//fontData = FontData.gtk_new(new String (fontName));
+	int fontName = OS.gtk_font_selection_dialog_get_font_name (callData);
+	int length = OS.strlen (fontName);
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, fontName, length);
+	int fontDesc = OS.pango_font_description_from_string (buffer);
+	Display display = parent != null ? parent.getDisplay () : Display.getCurrent ();
+	Font font = Font.gtk_new (display, fontDesc);
+	fontData = font.getFontData () [0];
+	OS.pango_font_description_free (fontDesc);
 	OS.gtk_widget_destroy (callData);
 	return 0;
 }
@@ -129,8 +132,15 @@ public FontData open () {
 		OS.gtk_window_set_transient_for(handle, parent.topHandle());
 	}
 	if (fontData != null) {
-		byte[] buffer = Converter.wcsToMbcs(null, fontData.gtk_getXlfd(), true);
-		OS.gtk_font_selection_dialog_set_font_name(handle, buffer);
+		Display display = parent != null ? parent.getDisplay () : Display.getCurrent ();
+		Font font = new Font (display, fontData);
+		int fontName = OS.pango_font_description_to_string (font.handle);
+		int length = OS.strlen (fontName);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, fontName, length);
+		font.dispose();
+		OS.g_free (fontName);
+		OS.gtk_font_selection_dialog_set_font_name (handle, buffer);
 	}
 	Callback destroyCallback = new Callback (this, "destroyFunc", 2);
 	int destroyFunc = destroyCallback.getAddress ();

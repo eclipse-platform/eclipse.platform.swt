@@ -78,27 +78,23 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1descrip
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1from_1string
-  (JNIEnv *env, jclass that, jstring str)
+  (JNIEnv *env, jclass that, jbyteArray str)
 {
-   const jbyte *str1 = NULL;
+   jbyte *str1 = NULL;
    jint rc;
 
-   if (str != NULL) str1 = (*env)->GetStringUTFChars(env, str, NULL);
+   if (str != NULL) str1 = (*env)->GetByteArrayElements(env, str, NULL);
    rc = (jint)pango_font_description_from_string(str1);
-   if (str != NULL) (*env)->ReleaseStringUTFChars(env, str, str1);
+   if (str != NULL) (*env)->ReleaseByteArrayElements(env, str, str1, 0);
    return rc;
 }
 
 
-JNIEXPORT jstring JNICALL
+JNIEXPORT jint JNICALL
 Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1to_1string
   (JNIEnv *env, jclass that, jint descr)
 {
-   jstring rc;
-   char *canswer = pango_font_description_to_string((PangoFontDescription*)descr);
-   rc = (*env)->NewStringUTF(env, canswer);
-   g_free(canswer);
-   return rc;
+   return (jint)pango_font_description_to_string((PangoFontDescription*)descr);
 }
 
 JNIEXPORT jboolean JNICALL
@@ -115,24 +111,22 @@ Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1free
    pango_font_description_free((PangoFontDescription*)descr);
 }
 
-JNIEXPORT jstring JNICALL
+JNIEXPORT jint JNICALL
 Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1get_1family
   (JNIEnv *env, jclass that, jint descr)
 {
-   const char *canswer = pango_font_description_get_family((PangoFontDescription*)descr);
-   return (*env)->NewStringUTF(env, canswer);
-   /* don't free */
+   return (jint)pango_font_description_get_family((PangoFontDescription*)descr);
 }
 
 JNIEXPORT void JNICALL
 Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1set_1family
   (JNIEnv *env, jclass that, jint descr, jstring family)
 {
-   const jbyte *family1 = NULL;
+   jbyte *family1 = NULL;
    
-   if (family != NULL) family1 = (*env)->GetStringUTFChars(env, family, NULL);
+   if (family != NULL) family1 = (*env)->GetByteArrayElements(env, family, NULL);
    pango_font_description_set_family((PangoFontDescription*)descr, family1);
-   if (family != NULL) (*env)->ReleaseStringUTFChars(env, family, family1);
+   if (family != NULL) (*env)->ReleaseByteArrayElements(env, family, family1, 0);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1get_1size

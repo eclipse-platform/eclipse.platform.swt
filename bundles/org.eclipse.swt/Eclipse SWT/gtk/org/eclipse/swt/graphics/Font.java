@@ -129,7 +129,11 @@ public boolean equals(Object object) {
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
-	String name = OS.pango_font_description_get_family(handle);
+	int family = OS.pango_font_description_get_family(handle);
+	int length = OS.strlen(family);
+	byte[] buffer = new byte[length];
+	OS.memmove(buffer, family, length);
+	String name = new String(Converter.mbcsToWcs(null, buffer));
 	int height = OS.pango_font_description_get_size(handle) / OS.PANGO_SCALE();
 	int pangoStyle = OS.pango_font_description_get_style(handle);
 	int pangoWeight = OS.pango_font_description_get_weight(handle);
@@ -184,7 +188,8 @@ void init(Device device, String name, int height, int style) {
 	
 	handle = OS.pango_font_description_new();
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.pango_font_description_set_family(handle, name);
+	byte[] buffer = Converter.wcsToMbcs(null, name, true);
+	OS.pango_font_description_set_family(handle, buffer);
 	OS.pango_font_description_set_size(handle, height * OS.PANGO_SCALE());
 	OS.pango_font_description_set_stretch(handle, OS.PANGO_STRETCH_NORMAL());
 	int pangoStyle = OS.PANGO_STYLE_NORMAL();

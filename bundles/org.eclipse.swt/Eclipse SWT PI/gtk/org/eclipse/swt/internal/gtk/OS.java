@@ -767,12 +767,12 @@ public static final native void pango_layout_set_text(int layout, byte[] text, i
 public static final native void pango_layout_get_size(int layout, int[] width, int[] height);
 
 public static final native int pango_font_description_new();
-public static final native int pango_font_description_from_string(String str);
-public static final native String pango_font_description_to_string(int desc);
+public static final native int pango_font_description_from_string(byte[] str);
+public static final native int pango_font_description_to_string(int desc);
 public static final native boolean pango_font_description_equal(int desc1, int desc2);
 public static final native void pango_font_description_free(int desc);
-public static final native String pango_font_description_get_family(int desc);
-public static final native void pango_font_description_set_family(int desc, String style);
+public static final native int pango_font_description_get_family(int desc);
+public static final native void pango_font_description_set_family(int desc, byte[] family);
 public static final native int pango_font_description_get_size(int desc);
 public static final native void pango_font_description_set_size(int desc, int size);
 public static final native void pango_font_description_set_stretch(int desc, int stretch);
