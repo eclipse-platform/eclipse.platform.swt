@@ -154,7 +154,7 @@ void releaseWidget () {
  */
 public void setMaximum (int maximum) {
 	checkWidget ();
-	if (maximum < 0 || maximum <= min) return;
+	if (maximum <= min) return;
 	max = maximum;
 	if (value > maximum) value = maximum;
 	updateBar (value, min, max);

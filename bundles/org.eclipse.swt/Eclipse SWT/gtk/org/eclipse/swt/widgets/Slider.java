@@ -372,10 +372,10 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	if (value < 0 || value <= getMinimum()) return;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
+	if (value <= adjustment.lower) return;
 	adjustment.upper = (double) value;
 	OS.memmove (hAdjustment, adjustment);
 	OS.g_signal_handlers_block_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
@@ -398,10 +398,11 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	if (value < 0 || value >= getMaximum()) return;
+	if (value < 0) return;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
+	if (value >= adjustment.upper) return;
 	adjustment.lower = (double) value;
 	OS.memmove (hAdjustment, adjustment);
 	OS.g_signal_handlers_block_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
