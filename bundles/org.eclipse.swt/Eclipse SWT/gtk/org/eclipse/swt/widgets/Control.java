@@ -2210,6 +2210,7 @@ void releaseWidget () {
 		OS.gtk_im_context_set_client_window (imHandle, 0);
 	}
 	if (enableWindow != 0) {
+		OS.gdk_window_set_user_data (enableWindow, 0);
 		OS.gdk_window_destroy (enableWindow);
 		enableWindow = 0;
 	}
