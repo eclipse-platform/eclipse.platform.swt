@@ -405,6 +405,9 @@ public void removeSelectionListener(SelectionListener listener) {
 public boolean setFocus () {
 	int [] argList = new int [] {OS.XmNtraversalOn, 1};
 	OS.XtSetValues (handle, argList, argList.length / 2);
+	Display display = getDisplay ();
+	OS.XtOverrideTranslations (handle, display.tabTranslations);
+	OS.XtOverrideTranslations (handle, display.arrowTranslations);
 	boolean result = super.setFocus ();
 	if (!result) {
 		argList [1] = 0;

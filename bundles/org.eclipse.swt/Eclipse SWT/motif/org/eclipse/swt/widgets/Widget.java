@@ -618,6 +618,11 @@ void propagateHandle (boolean enabled, int widgetHandle) {
 	OS.XChangeWindowAttributes (xDisplay, xWindow, OS.CWDontPropagate | OS.CWEventMask, attributes);
 	int [] argList = {OS.XmNtraversalOn, enabled ? 1 : 0};
 	OS.XtSetValues (widgetHandle, argList, argList.length / 2);
+	if (argList [1] != 0) {
+		Display display = getDisplay ();
+		OS.XtOverrideTranslations (handle, display.tabTranslations);
+		OS.XtOverrideTranslations (handle, display.arrowTranslations);
+	}
 }
 void redrawHandle (int x, int y, int width, int height, int widgetHandle) {
 	int display = OS.XtDisplay (widgetHandle);

@@ -164,9 +164,6 @@ void createHandle (int index) {
 		};
 		handle = OS.XmCreateDrawingArea (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		Display display = getDisplay ();
-		OS.XtOverrideTranslations (handle, display.tabTranslations);
-		OS.XtOverrideTranslations (handle, display.arrowTranslations);
 	} else {
 		createScrolledHandle (parentHandle);
 	}
@@ -175,8 +172,8 @@ void createScrolledHandle (int topHandle) {
 	int [] argList = {OS.XmNancestorSensitive, 1};
 	scrolledHandle = OS.XmCreateMainWindow (topHandle, null, argList, argList.length / 2);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	Display display = getDisplay ();
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+		Display display = getDisplay ();
 		int thickness = display.buttonShadowThickness;
 		int [] argList1 = {
 			OS.XmNmarginWidth, 3,
@@ -208,8 +205,6 @@ void createScrolledHandle (int topHandle) {
 		handle = OS.XmCreateDrawingArea (scrolledHandle, null, argList3, argList3.length / 2);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.XtOverrideTranslations (handle, display.tabTranslations);
-	OS.XtOverrideTranslations (handle, display.arrowTranslations);
 }
 int defaultBackground () {
 	return getDisplay ().compositeBackground;
@@ -232,6 +227,11 @@ public boolean forceFocus () {
 	for (int i=0; i<children.length; i++) {
 		argList [1] = traversals [i];
 		OS.XtSetValues (children [i].handle, argList, argList.length / 2);
+		if (argList [1] != 0) {
+			Display display = getDisplay ();
+			OS.XtOverrideTranslations (handle, display.tabTranslations);
+			OS.XtOverrideTranslations (handle, display.arrowTranslations);
+		}
 	}
 	return result;
 }
