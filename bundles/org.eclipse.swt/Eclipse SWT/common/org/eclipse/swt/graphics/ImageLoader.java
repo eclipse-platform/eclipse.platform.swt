@@ -244,11 +244,15 @@ public void save(String filename, int format) {
  * GIF/PNG or progressive JPEG images.
  *
  * @param listener the ImageLoaderListener to add
- *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
  * @see ImageLoaderListener
  * @see ImageLoaderEvent
  */
 public void addImageLoaderListener(ImageLoaderListener listener) {
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (imageLoaderListeners == null) {
 		imageLoaderListeners = new Vector();
 	}
@@ -259,10 +263,14 @@ public void addImageLoaderListener(ImageLoaderListener listener) {
  * Removes a listener that was receiving image loader events.
  *
  * @param listener the ImageLoaderListener to remove
- *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
  * @see #addImageLoaderListener
  */
 public void removeImageLoaderListener(ImageLoaderListener listener) {
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (imageLoaderListeners == null) return;
 	imageLoaderListeners.removeElement(listener);
 }
