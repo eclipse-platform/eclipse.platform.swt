@@ -201,6 +201,21 @@ Point adjustResizeCursor (int xDisplay, int xWindow) {
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, actualX, actualY, unused, unused, unused);
 	return new Point (actualX[0], actualY[0]);
 }
+void adjustResizeOrientation (int xChange, int yChange) {
+	/*
+	 * If the cursor orientation has not been set in the orientation of
+	 * this change then try to set it here.
+	 */
+	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
+		cursorOrientation |= SWT.LEFT;
+	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
+		cursorOrientation |= SWT.RIGHT;
+	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
+		cursorOrientation |= SWT.UP;
+	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
+		cursorOrientation |= SWT.DOWN;
+	}
+}
 static int checkStyle (int style) {
 	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN)) == 0) {
 		style |= SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN;
@@ -260,7 +275,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 	return result;
 }
 
-void drawRectangles () {
+void drawRectangles (Rectangle [] rects) {
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		parent.getShell ().update ();
@@ -289,8 +304,8 @@ void drawRectangles () {
 		OS.XSetFillStyle (xDisplay, gc, OS.FillStippled);
 		OS.XSetLineAttributes (xDisplay, gc, 3, OS.LineSolid, OS.CapButt, OS.JoinMiter);
 	}
-	for (int i=0; i<rectangles.length; i++) {
-		Rectangle rect = rectangles [i];
+	for (int i=0; i<rects.length; i++) {
+		Rectangle rect = rects [i];
 		OS.XDrawRectangle (xDisplay, xWindow, gc, rect.x, rect.y, rect.width, rect.height);
 	}
 	if (stippled) {
@@ -334,6 +349,7 @@ void moveRectangles (int xChange, int yChange) {
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) return;
 	if (yChange < 0 && ((style & SWT.UP) == 0)) return;
 	if (yChange > 0 && ((style & SWT.DOWN) == 0)) return;
+	bounds.x += xChange; bounds.y += yChange;
 	for (int i = 0; i < rectangles.length; i++) {
 		rectangles [i].x += xChange;
 		rectangles [i].y += yChange;
@@ -363,7 +379,7 @@ public boolean open () {
 	}
 	boolean cancelled = false;
 	tracking = true;
-	drawRectangles ();
+	drawRectangles (rectangles);
 	int [] oldX = new int [1], oldY = new int [1];
 	int [] unused = new int [1], mask = new int [1];
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, oldX, oldY, unused, unused, mask);
@@ -417,7 +433,7 @@ public boolean open () {
 		OS.CurrentTime);
 				
 	/*
-	 *  Tracker behaves like a Dialog with its own OS event loop.
+	 * Tracker behaves like a Dialog with its own OS event loop.
 	 */
 	while (tracking) {
 		if (parent != null && parent.isDisposed ()) break;
@@ -436,31 +452,97 @@ public boolean open () {
 			case OS.ButtonRelease:
 				OS.XQueryPointer (xDisplay, xWindow, unused, unused, newX, newY, unused, unused, unused);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
-					drawRectangles ();
+					Rectangle [] oldRectangles = rectangles;
 					Event event = new Event ();
 					event.x = newX [0];
 					event.y = newY [0];
 					if ((style & SWT.RESIZE) != 0) {
-						resizeRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Resize, event);
+						/*
+						 * It is possible (but unlikely) that application code
+						 * could have disposed the widget in the resize event.
+						 * If this happens then return false to indicate that
+						 * the move failed.
+						 */
+						if (isDisposed ()) {
+							cancelled = true;
+							break;
+						}
+						/*
+						 * It is possible that application code could have
+						 * changed the rectangles in the resize event.  If this
+						 * happens then use these new rectangles instead of
+						 * recomputing them based on the last mouse move, and
+						 * only erase the tracker if the rectangles have changed.
+						 */
+						if (rectangles != oldRectangles) {
+							int length = rectangles.length;
+							boolean changed = false;
+							if (length != oldRectangles.length) {
+								changed = true;
+							} else {
+								for (int i = 0; i < length; i++) {
+									if (!rectangles [i].equals (oldRectangles [i])) {
+										changed = true;
+										break;
+									}
+								}
+							}
+							if (changed) {
+								drawRectangles (oldRectangles);
+								drawRectangles (rectangles);
+							}
+							adjustResizeOrientation (newX [0] - oldX [0], newY [0] - oldY [0]);
+						} else {
+							drawRectangles (oldRectangles);
+							resizeRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
+							drawRectangles (rectangles);
+						}
 						cursorPos = adjustResizeCursor (xDisplay, xWindow);
-						newX [0] = cursorPos.x; newY [0] = cursorPos.y;
 					} else {
-						moveRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Move, event);
+						/*
+						 * It is possible (but unlikely) that application code
+						 * could have disposed the widget in the move event.
+						 * If this happens then return false to indicate that
+						 * the move failed.
+						 */
+						if (isDisposed ()) {
+							cancelled = true;
+							break;
+						}
+						/*
+						 * It is possible that application code could have
+						 * changed the rectangles in the move event.  If this
+						 * happens then use these new rectangles instead of
+						 * recomputing them based on the last mouse move, and
+						 * only erase the tracker if the rectangles have changed.
+						 */
+						if (rectangles != oldRectangles) {
+							int length = rectangles.length;
+							boolean changed = false;
+							if (length != oldRectangles.length) {
+								changed = true;
+							} else {
+								for (int i = 0; i < length; i++) {
+									if (!rectangles [i].equals (oldRectangles [i])) {
+										changed = true;
+										break;
+									}
+								}
+							}
+							if (changed) {
+								drawRectangles (oldRectangles);
+								drawRectangles (rectangles);
+							}
+						} else {
+							drawRectangles (oldRectangles);
+							moveRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
+							drawRectangles (rectangles);
+						}
+						cursorPos = adjustMoveCursor (xDisplay, xWindow);
 					}
-					/*
-					 * It is possible (but unlikely) that application code
-					 * could have disposed the widget in the move event.
-					 * If this happens then return false to indicate that
-					 * the move failed.
-					 */
-					if (isDisposed ()) {
-						cancelled = true;
-						break;
-					}
-					drawRectangles ();
-					oldX [0] = newX [0];  oldY [0] = newY [0];
+					oldX [0] = cursorPos.x;  oldY [0] = cursorPos.y;
 				}
 				tracking = anyEvent.type != OS.ButtonRelease;
 				break;
@@ -504,31 +586,97 @@ public boolean open () {
 							break;
 					}
 					if (xChange != 0 || yChange != 0) {
-						drawRectangles ();
+						Rectangle [] oldRectangles = rectangles;
 						Event event = new Event ();
-						event.x = oldX[0] + xChange;
-						event.y = oldY[0] + yChange;
+						event.x = oldX [0] + xChange;
+						event.y = oldY [0] + yChange;
 						if ((style & SWT.RESIZE) != 0) {
-							resizeRectangles (xChange, yChange);
 							sendEvent (SWT.Resize, event);
+							/*
+							 * It is possible (but unlikely) that application code
+							 * could have disposed the widget in the resize event.
+							 * If this happens then return false to indicate that
+							 * the move failed.
+							 */
+							if (isDisposed ()) {
+								cancelled = true;
+								break;
+							}
+							/*
+							 * It is possible that application code could have
+							 * changed the rectangles in the resize event.  If this
+							 * happens then use these new rectangles instead of
+							 * recomputing them based on the last mouse move, and
+							 * only erase the tracker if the rectangles have changed.
+							 */
+							if (rectangles != oldRectangles) {
+								int length = rectangles.length;
+								boolean changed = false;
+								if (length != oldRectangles.length) {
+									changed = true;
+								} else {
+									for (int i = 0; i < length; i++) {
+										if (!rectangles [i].equals (oldRectangles [i])) {
+											changed = true;
+											break;
+										}
+									}
+								}
+								if (changed) {
+									drawRectangles (oldRectangles);
+									drawRectangles (rectangles);
+								}
+								adjustResizeOrientation (xChange, yChange);
+							} else {
+								drawRectangles (oldRectangles);
+								resizeRectangles (xChange, yChange);
+								drawRectangles (rectangles);
+							}
 							cursorPos = adjustResizeCursor (xDisplay, xWindow);
 						} else {
-							moveRectangles (xChange, yChange);
 							sendEvent (SWT.Move, event);
+							/*
+							 * It is possible (but unlikely) that application code
+							 * could have disposed the widget in the move event.
+							 * If this happens then return false to indicate that
+							 * the move failed.
+							 */
+							if (isDisposed ()) {
+								cancelled = true;
+								break;
+							}
+							/*
+							 * It is possible that application code could have
+							 * changed the rectangles in the move event.  If this
+							 * happens then use these new rectangles instead of
+							 * recomputing them based on the last mouse move, and
+							 * only erase the tracker if the rectangles have changed.
+							 */
+							if (rectangles != oldRectangles) {
+								int length = rectangles.length;
+								boolean changed = false;
+								if (length != oldRectangles.length) {
+									changed = true;
+								} else {
+									for (int i = 0; i < length; i++) {
+										if (!rectangles [i].equals (oldRectangles [i])) {
+											changed = true;
+											break;
+										}
+									}
+								}
+								if (changed) {
+									drawRectangles (oldRectangles);
+									drawRectangles (rectangles);
+								}
+							} else {
+								drawRectangles (oldRectangles);
+								moveRectangles (xChange, yChange);
+								drawRectangles (rectangles);
+							}
 							cursorPos = adjustMoveCursor (xDisplay, xWindow);
 						}
-						/*
-						 * It is possible (but unlikely) that application code
-						 * could have disposed the widget in the move event.
-						 * If this happens then return false to indicate that
-						 * the move failed.
-						 */
-						if (isDisposed ()) {
-							cancelled = true;
-							break;
-						}
-						drawRectangles ();
-						oldX[0] = cursorPos.x;  oldY[0] = cursorPos.y;
+						oldX [0] = cursorPos.x;  oldY [0] = cursorPos.y;
 					}
 				}
 				break;
@@ -543,7 +691,7 @@ public boolean open () {
 		}
 	}
 	OS.XtFree (xEvent);
-	if (!isDisposed()) drawRectangles ();
+	if (!isDisposed()) drawRectangles (rectangles);
 	if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
 	if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);
 	return !cancelled;
@@ -573,19 +721,7 @@ public void removeControlListener (ControlListener listener) {
 	eventTable.unhook (SWT.Move, listener);
 }
 void resizeRectangles (int xChange, int yChange) {
-	/*
-	* If the cursor orientation has not been set in the orientation of
-	* this change then try to set it here.
-	*/
-	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
-		cursorOrientation |= SWT.LEFT;
-	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
-		cursorOrientation |= SWT.RIGHT;
-	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
-		cursorOrientation |= SWT.UP;
-	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
-		cursorOrientation |= SWT.DOWN;
-	}
+	adjustResizeOrientation (xChange, yChange);
 	
 	/*
 	 * If the bounds will flip about the x or y axis then apply the adjustment
