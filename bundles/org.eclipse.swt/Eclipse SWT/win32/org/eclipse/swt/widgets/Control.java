@@ -2823,7 +2823,9 @@ CREATESTRUCT widgetCreateStruct () {
 
 int widgetExtStyle () {
 	int bits = 0;
-	if ((style & SWT.BORDER) != 0) bits |= OS.WS_EX_CLIENTEDGE;
+	if (!OS.IsPPC) {
+		if ((style & SWT.BORDER) != 0) bits |= OS.WS_EX_CLIENTEDGE;
+	}
 //	if ((style & SWT.BORDER) != 0) {
 //		if ((style & SWT.FLAT) == 0) bits |= OS.WS_EX_CLIENTEDGE;
 //	}
@@ -2850,6 +2852,9 @@ int widgetStyle () {
 //	if ((style & SWT.BORDER) != 0) {
 //		if ((style & SWT.FLAT) != 0) bits |= OS.WS_BORDER;
 //	}
+	if (OS.IsPPC) {
+		if ((style & SWT.BORDER) != 0) bits |= OS.WS_BORDER;
+	}
 	return bits;
 	
 	/*
