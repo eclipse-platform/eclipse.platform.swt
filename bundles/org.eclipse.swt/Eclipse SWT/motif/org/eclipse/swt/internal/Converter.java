@@ -24,6 +24,9 @@ public final class Converter {
 	static final byte [] EMPTY_BYTE_ARRAY = new byte [0];
 	static final char [] EMPTY_CHAR_ARRAY = new char [0];
 	
+	static final String CLASS_NAME = "org.eclipse.swt.internal.Converter";
+	static Class CONVERTER_CLASS;
+
 	static String CodePage;
 	static byte[] Unicode;
 	
@@ -39,6 +42,10 @@ public final class Converter {
 	static int BufferTimes4;
 	
 	static {	
+		try {
+			CONVERTER_CLASS = Class.forName (CLASS_NAME);
+		} catch (Exception e) {}
+		
 		Unicode = getAsciiBytes("UCS-2");
 
 		int length, item = OS.nl_langinfo (OS.CODESET);
@@ -124,7 +131,14 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 		if ((buffer [i] & 0xFF) <= 0x7F) {
 			wideCharStr [i] = (char) buffer [i]; // all bytes <= 0x7F, so no ((char) (buffer[i]&0xFF)) needed
 		} else {
-			synchronized (Converter.class) {
+			/*
+			 * This code is intentionally commented.  In order
+			 * to support CLDC, .class cannot be used because
+			 * it does not compile on some Java compilers when
+			 * they are targeted for CLDC.
+			 */
+			// synchronized (Converter.class) {
+			synchronized (CONVERTER_CLASS) {
 				String cp = codePage != null ? codePage : CodePage;
 				if (LastMBToWC != 0 && !cp.equals (LastMBToWCCodePage)) {
 					OS.iconv_close (LastMBToWC);
@@ -169,7 +183,14 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
  * Free any cached resources.
  */	
 public static void release () {
-	synchronized (Converter.class) {
+	/*
+	 * This code is intentionally commented.  In order
+	 * to support CLDC, .class cannot be used because
+	 * it does not compile on some Java compilers when
+	 * they are targeted for CLDC.
+	 */
+	// synchronized (Converter.class) {
+	synchronized (CONVERTER_CLASS) {
 		if (BufferTimes2 != 0) OS.XtFree (BufferTimes2);
 		if (BufferTimes4 != 0) OS.XtFree (BufferTimes4);
 		if (LastWCToMB != 0) OS.iconv_close (LastWCToMB);
@@ -223,7 +244,14 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 		if ((buffer [i] & 0xFFFF) <= 0x7F) {
 			mbcs [i] = (byte) buffer [i];
 		} else {
-			synchronized (Converter.class) {
+			/*
+			 * This code is intentionally commented.  In order
+			 * to support CLDC, .class cannot be used because
+			 * it does not compile on some Java compilers when
+			 * they are targeted for CLDC.
+			 */
+			// synchronized (Converter.class) {
+			synchronized (CONVERTER_CLASS) {
 				String cp = codePage != null ? codePage : CodePage;
 				if (LastWCToMB != 0 && !cp.equals (LastWCToMBCodePage)) {
 					OS.iconv_close (LastWCToMB);
