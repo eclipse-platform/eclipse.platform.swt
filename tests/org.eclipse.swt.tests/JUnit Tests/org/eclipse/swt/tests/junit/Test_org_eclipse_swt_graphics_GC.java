@@ -37,12 +37,13 @@ protected void setUp() {
 	display = Display.getDefault();
 	shell = new Shell(display);
 	shell.setBounds(0,30,240,290);
-	shell.open();
-	gc = new GC(shell);
+	image = new Image(display, 200, 200);
+	gc = new GC(image);
 }
 
 protected void tearDown() {
 	gc.dispose();
+	image.dispose();
 	shell.dispose();
 }
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
@@ -158,26 +159,21 @@ public void test_copyAreaIIIIII() {
 
 	gc.setBackground(white);
 	gc.setForeground(white);
-	gc.fillRectangle(shell.getClientArea());
+	gc.fillRectangle(image.getBounds());
 	gc.setForeground(blue);
 	gc.drawLine(5, 0, 10, 0);
 	gc.copyArea(0, 0, width, height, destX, destY);
-
-	Image image = new Image(display, 100, 100);
-	gc.copyArea(image, 0, 0);
 
 	ImageData imageData = image.getImageData();
 	PaletteData palette = imageData.palette; 
 	int pixel = imageData.getPixel(destX + 4, destY);
 	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(destX + 5, destY);
-// Causes failure - bug 71329
-/* 	assertEquals(":b:", blueRGB, palette.getRGB(pixel));	
+ 	assertEquals(":b:", blueRGB, palette.getRGB(pixel));	
 	pixel = imageData.getPixel(destX + 10, destY);
 	assertEquals(":c:", blueRGB, palette.getRGB(pixel));	
 	pixel = imageData.getPixel(destX + 11, destY);
-	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));*/
-	image.dispose();
+	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
 }
 
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
@@ -188,7 +184,7 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	
 	gc.setBackground(white);
 	gc.setForeground(white);
-	gc.fillRectangle(shell.getClientArea());
+	gc.fillRectangle(image.getBounds());
 	gc.setForeground(blue);
 	gc.drawLine(5, 0, 10, 0);
 	Image image = new Image(display, 12, 12);
@@ -198,12 +194,11 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	int pixel = imageData.getPixel(4, 0);
 	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(5, 0);
-// Causes failure - bug 71329
-/*	assertEquals(":b:", blueRGB, palette.getRGB(pixel));
+	assertEquals(":b:", blueRGB, palette.getRGB(pixel));
 	pixel = imageData.getPixel(10, 0);
 	assertEquals(":c:", blueRGB, palette.getRGB(pixel));	
 	pixel = imageData.getPixel(11, 0);
-	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));*/
+	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
 	image.dispose();
 }
 
@@ -789,6 +784,7 @@ protected void runTest() throws Throwable {
 /* custom */
 Display display;
 Shell shell;
+Image image;
 GC gc;
 
 /**
