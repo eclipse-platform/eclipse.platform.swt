@@ -27,7 +27,6 @@ public final class Program {
 	String name;
 	String command;
 	String iconName;
-	String openVerb;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -158,7 +157,6 @@ static Program getProgram (String key) {
 	program.name = name;
 	program.command = command;
 	program.iconName = iconName;
-	program.openVerb = defaultCommand;
 	return program;
 }
 
@@ -215,39 +213,20 @@ public static Program [] getPrograms () {
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	
-	Program program = null;
-	int separatorIndex = fileName.lastIndexOf ('.');
-	if (separatorIndex >= 0) {
-		String extension = fileName.substring (separatorIndex);
-		program = findProgram (extension);
-	}
-	String verb;
-	if (program != null) {
-		verb = program.openVerb;
-	} else {
-		verb = "open"; //$NON-NLS-1$
-	}
-
 	/* Use the character encoding for the default locale */
 	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer1 = new TCHAR (0, verb, true); //$NON-NLS-1$
-	int byteCount1 = buffer1.length () * TCHAR.sizeof;
-	int lpVerb = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount1);
-	OS.MoveMemory (lpVerb, buffer1, byteCount1);
-	TCHAR buffer2 = new TCHAR (0, fileName, true);
-	int byteCount2 = buffer2.length () * TCHAR.sizeof;
-	int lpFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount2);
-	OS.MoveMemory (lpFile, buffer2, byteCount2);
+	TCHAR buffer = new TCHAR (0, fileName, true);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	int lpFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (lpFile, buffer, byteCount);
 	
 	SHELLEXECUTEINFO info = new SHELLEXECUTEINFO ();
 	info.cbSize = SHELLEXECUTEINFO.sizeof;
-	info.lpVerb = lpVerb;
 	info.lpFile = lpFile;
 	info.nShow = OS.SW_SHOW;
 	
 	boolean result = OS.ShellExecuteEx (info);
 		
-	if (lpVerb != 0) OS.HeapFree (hHeap, 0, lpVerb);	
 	if (lpFile != 0) OS.HeapFree (hHeap, 0, lpFile);
 	
 	return result;
