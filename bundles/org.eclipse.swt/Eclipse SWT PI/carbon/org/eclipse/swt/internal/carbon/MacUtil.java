@@ -278,21 +278,31 @@ public class MacUtil {
 	// so we have to do it ourselves
 
 	public static int findControlUnderMouse(MacPoint where, int wHandle, short[] cpart) {
-		Point w= where.toPoint();
-		int[] rootHandle= new int[1];
-		int rc= OS.GetRootControl(wHandle, rootHandle);
-		if (rc != OS.kNoErr) {
-			System.out.println("MacUtil.findControlUnderMouse: " + rc);
+		
+		if (HIVIEW)
 			return 0;
+			
+		int root;
+		if (true) {
+			int[] rootHandle= new int[1];
+			int rc= OS.GetRootControl(wHandle, rootHandle);
+			if (rc != OS.kNoErr) {
+				System.out.println("MacUtil.findControlUnderMouse: " + rc);
+				return 0;
+			}
+			root= rootHandle[0];
+		} else {
+			root= OS.HIViewGetRoot(wHandle);
 		}
-		int cHandle= find(rootHandle[0], null, new MacRect(), w);
+		Point w= where.toPoint();
+		int cHandle= find(root, null, new MacRect(), w);
 		if (cHandle != 0 && cpart != null && cpart.length > 0) {
 			cpart[0]= OS.TestControl(cHandle, where.getData());
 			//System.out.println("findControlUnderMouse: " + cpart[0]);
 		}
 		return cHandle;
 	}
-	
+
 	private static int countSubControls(int cHandle) {
 		short[] cnt= new short[1];
 		int status= OS.CountSubControls(cHandle, cnt);
