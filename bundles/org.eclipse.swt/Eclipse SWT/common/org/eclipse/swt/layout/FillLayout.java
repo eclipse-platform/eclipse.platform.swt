@@ -8,6 +8,32 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
+/**
+ * <code>FillLayout</code> is the simplest layout class. It lays out 
+ * widgets in a single row or column, forcing them to be the same size. 
+ * <p>
+ * Initially, the widgets will all be as tall as the tallest widget, 
+ * and as wide as the widest. <code>FillLayout</code> does not wrap, 
+ * and you cannot specify margins or spacing. You might use it to 
+ * lay out buttons in a task bar or tool bar, or to stack checkboxes 
+ * in a <code>Group</code>. <code>FillLayout</code> can also be used 
+ * when a <code>Composite</code> only has one child. For example, 
+ * if a <code>Shell</code> has a single <code>Group</code> child, 
+ * <code>FillLayout</code> will cause the <code>Group</code> to 
+ * completely fill the <code>Shell</code>.
+ * </p>
+ * <p>
+ * Example code: first a <code>FillLayout</code> is created and
+ * its type field is set, and then the layout is set into the 
+ * <code>Composite</code>. Note that in a <code>FillLayout</code>,
+ * children are always the same size, and they fill all available space.
+ * <pre>
+ * 		FillLayout fillLayout = new FillLayout();
+ * 		fillLayout.type = SWT.VERTICAL;
+ * 		shell.setLayout(fillLayout);
+ * </pre>
+ * </p>
+ */
 public final class FillLayout extends Layout {
 	/**
 	 * type specifies how controls will be positioned 
