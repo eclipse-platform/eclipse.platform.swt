@@ -401,11 +401,20 @@ public void test_getSelection() {
 
 	assertEquals(new TableItem[] {}, table.getSelection());
 
-	table.setSelection(new TableItem[]{items[10], items[number-1], items[2]});
+	table.setSelection(new TableItem[]{items[10]});
 	assertEquals(new TableItem[] {items[10]}, table.getSelection());
 	
+	table.setSelection(new TableItem[]{items[number-1]});
+	assertEquals(new TableItem[] {items[number-1]}, table.getSelection());
+	
+	table.setSelection(new TableItem[]{items[2]});
+	assertEquals(new TableItem[] {items[2]}, table.getSelection());
+	
+	table.setSelection(new TableItem[]{items[10], items[number-1], items[2]});
+	assertEquals(new TableItem[] {}, table.getSelection());
+	
 	table.setSelection(items);
-	assertEquals(new TableItem[] {items[0]}, table.getSelection());
+	assertEquals(new TableItem[] {}, table.getSelection());
 }
 
 public void test_getSelectionCount() {
@@ -430,11 +439,20 @@ public void test_getSelectionCount() {
 
 	assertEquals(0, table.getSelectionCount());
 
-	table.setSelection(new TableItem[]{items[2], items[number-1], items[10]});
+	table.setSelection(new TableItem[]{items[2]});
 	assertEquals(1, table.getSelectionCount());
 	
-	table.setSelection(items);
+	table.setSelection(new TableItem[]{items[number-1]});
 	assertEquals(1, table.getSelectionCount());
+	
+	table.setSelection(new TableItem[]{items[10]});
+	assertEquals(1, table.getSelectionCount());
+	
+	table.setSelection(new TableItem[]{items[2], items[number-1], items[10]});
+	assertEquals(0, table.getSelectionCount());
+	
+	table.setSelection(items);
+	assertEquals(0, table.getSelectionCount());
 }
 
 public void test_getSelectionIndex() {
@@ -459,11 +477,20 @@ public void test_getSelectionIndex() {
 
 	assertEquals(-1, table.getSelectionIndex());
 
-	table.setSelection(new TableItem[]{items[2], items[number-1], items[10]});
+	table.setSelection(new TableItem[]{items[2]});
 	assertEquals(2, table.getSelectionIndex());
 	
+	table.setSelection(new TableItem[]{items[number-1]});
+	assertEquals(number - 1, table.getSelectionIndex());
+	
+	table.setSelection(new TableItem[]{items[10]});
+	assertEquals(10, table.getSelectionIndex());
+	
+	table.setSelection(new TableItem[]{items[2], items[number-1], items[10]});
+	assertEquals(-1, table.getSelectionIndex());
+	
 	table.setSelection(items);
-	assertEquals(0, table.getSelectionIndex());
+	assertEquals(-1, table.getSelectionIndex());
 }
 
 public void test_getSelectionIndices() {
@@ -490,11 +517,20 @@ public void test_getSelectionIndices() {
 
 	assertEquals(new int[]{}, table.getSelectionIndices());
 
-	table.setSelection(new TableItem[]{items[2], items[number-1], items[10]});
+	table.setSelection(new TableItem[]{items[2]});
 	assertEquals(new int[]{2}, table.getSelectionIndices());
 
+	table.setSelection(new TableItem[]{items[number-1]});
+	assertEquals(new int[]{number-1}, table.getSelectionIndices());
+
+	table.setSelection(new TableItem[]{items[10]});
+	assertEquals(new int[]{10}, table.getSelectionIndices());
+
+	table.setSelection(new TableItem[]{items[2], items[number-1], items[10]});
+	assertEquals(new int[]{}, table.getSelectionIndices());
+
 	table.setSelection(items);
-	assertEquals(new int[]{0}, table.getSelectionIndices());
+	assertEquals(new int[]{}, table.getSelectionIndices());
 }
 
 public void test_getTopIndex() {
@@ -616,7 +652,7 @@ public void test_isSelectedI() {
 		items[i] = new TableItem(table, 0);
 	for (int i = 0; i < number; i++)
 		assertTrue(":d:" + i, !table.isSelected(i));
-	table.setSelection(new TableItem[] {items[10], items[number-1], items[2]});
+	table.setSelection(new TableItem[] {items[10]});
 	for (int i = 0; i < number; i++) {
 		if (i == 10)
 			assertTrue(":e:" + i, table.isSelected(i));
@@ -626,10 +662,7 @@ public void test_isSelectedI() {
 	
 	table.setSelection(items);
 	for (int i = 0; i < number; i++){
-			if (i == 0)
-			assertTrue(":f:" + i, table.isSelected(i));
-		else
-			assertTrue(":f:" + i, !table.isSelected(i));
+		assertTrue(":f:" + i, !table.isSelected(i));
 	}
 }
 
@@ -904,18 +937,85 @@ public void test_select$I() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
 
+	table.select(new int[] {2, 10, 14});
+	assertSame(new int[] {2, 10, 14}, table.getSelectionIndices());
+	
+	table.deselectAll();
 	table.select(new int[] {10, 2, 14});
 	assertSame(new int[] {2, 10, 14}, table.getSelectionIndices());
 	
+	table.deselectAll();
+	table.select(new int[] {number, 0, number-1});
+	assertSame(new int[] {0, number-1}, table.getSelectionIndices());
+	
+	table.deselectAll();
+	table.select(new int[] {number, 0, -1});
+	assertSame(new int[] {0}, table.getSelectionIndices());
+	
+	table.deselectAll();
+	table.select(new int[] {0});
+	assertSame(new int[] {0}, table.getSelectionIndices());
+	
+	table.select(new int[] {10});
+	assertSame(new int[] {0, 10}, table.getSelectionIndices());
+	
+	table.select(new int[] {2});
+	assertSame(new int[] {0, 2, 10}, table.getSelectionIndices());
+	
+	table.select(new int[] {14});
+	assertSame(new int[] {0, 2, 10, 14}, table.getSelectionIndices());
+	
+	table.deselectAll();
+	table.select(new int[] {15});
+	assertSame(new int[] {}, table.getSelectionIndices());
+	
+	table.select(new int[] {-1});
+	assertSame(new int[] {}, table.getSelectionIndices());
+	
+	table.select(new int[] {4, 4, 4});
+	assertSame(new int[] {4}, table.getSelectionIndices());
+
 	// note: SWT.SINGLE
 	makeCleanEnvironment(true); 
 	
+	items = new TableItem[number];
+	for (int i = 0; i < number; i++)
+		items[i] = new TableItem(table, 0);
+
 	try {
 		table.select(null);
 		fail("No exception thrown for selection == null");
 	}
 	catch (IllegalArgumentException e) {
 	}
+	finally {
+		assertEquals(0, table.getSelectionCount());
+	}
+
+	table.select(new int[] {0});
+	assertSame(new int[] {0}, table.getSelectionIndices());
+	
+	table.select(new int[] {10});
+	assertSame(new int[] {10}, table.getSelectionIndices());
+	
+	table.select(new int[] {2});
+	assertSame(new int[] {2}, table.getSelectionIndices());
+	
+	table.select(new int[] {14});
+	assertSame(new int[] {14}, table.getSelectionIndices());
+	
+	table.deselectAll();
+	table.select(new int[] {15});
+	assertSame(new int[] {}, table.getSelectionIndices());
+	
+	table.select(new int[] {-1});
+	assertSame(new int[] {}, table.getSelectionIndices());
+	
+	table.select(new int[] {10, 2, 14});
+	assertSame(new int[] {}, table.getSelectionIndices());
+	
+	table.select(new int[] {4, 4, 4});
+	assertSame(new int[] {}, table.getSelectionIndices());
 }
 
 public void test_selectAll() {
@@ -958,20 +1058,26 @@ public void test_selectI() {
 
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	table.select(new int[] {number - 1, 10, 2 });
-	assertEquals(number - 1, table.getSelectionIndex());
-	table.setSelection(new int[] {number - 1,10, 2});
-	assertEquals(number - 1, table.getSelectionIndex()); // for SINGLE setSelection and select are the same
-
-	table.select(7);
-	assertEquals(new int[] {7}, table.getSelectionIndices());
-	table.setSelection(7);
-	assertEquals(new int[] {7}, table.getSelectionIndices()); // for SINGLE setSelection and select are the same
 
 	table.select(0);
 	assertEquals(new int[] {0}, table.getSelectionIndices());
-	table.setSelection(0);
-	assertEquals(new int[] {0}, table.getSelectionIndices()); // for SINGLE setSelection and select are the same
+
+	table.select(1);
+	assertEquals(new int[] {1}, table.getSelectionIndices());
+
+	table.select(10);
+	assertEquals(new int[] {10}, table.getSelectionIndices());
+
+	table.select(number-1);
+	assertEquals(new int[] {number-1}, table.getSelectionIndices());
+
+	table.deselectAll();
+	table.select(number);
+	assertEquals(new int[] {}, table.getSelectionIndices());
+
+	table.select(-1);
+	assertEquals(new int[] {}, table.getSelectionIndices());
+
 }
 
 public void test_selectII() {
@@ -1032,100 +1138,41 @@ public void test_selectII() {
 
 	// note: SWT.SINGLE
 	makeCleanEnvironment(true);
-
-	table.setSelection(0);
-		
-	if (fCheckSWTPolicy) {
-		table.select(4, 10);
-		assertEquals(new int[] {4}, table.getSelectionIndices());
-		table.setSelection(4, 10);
-		assertEquals(new int[] {4}, table.getSelectionIndices()); //for SINGLE setSelection and select are the same
-
-		table.select(5, number - 1);
-		assertEquals(new int[] {5}, table.getSelectionIndices());
-		table.setSelection(5, number - 1);
-		assertEquals(new int[] {5}, table.getSelectionIndices()); //for SINGLE setSelection and select are the same
-
-		table.select(0, 7);
-		assertEquals(new int[] {0}, table.getSelectionIndices());
-		table.setSelection(0, 7);
-		assertEquals(new int[] {0}, table.getSelectionIndices()); //for SINGLE setSelection and select are the same
-
-		table.select(9, 5);
-		assertEquals(new int[] {7}, table.getSelectionIndices());
-		table.setSelection(9, 5);
-		assertEquals(new int[] {}, table.getSelectionIndices()); //for SINGLE setSelection and select are the same
-	} // ?? in this case maybe the sel. should be cleared
-	
-	makeCleanEnvironment(true);
-	
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	if (fCheckSWTPolicy) {
-		table.select(-100, 1000);
-		assertEquals(1, table.getSelectionCount());
-		assertEquals(new int[] {number - 1}, table.getSelectionIndices());
-	}
-	table.deselectAll();
-	assertEquals(0, table.getSelectionCount());
-	table.select(0, 1000);
-	assertEquals(1, table.getSelectionCount());
-	if (fCheckSWTPolicy)
-		assertEquals(new int[] {number - 1}, table.getSelectionIndices());
-	table.deselectAll();
-	table.select(0, number - 1);
-	assertEquals(1, table.getSelectionCount());
-	if (fCheckSWTPolicy)
-		assertEquals(new int[] {number - 1}, table.getSelectionIndices());
-	table.deselectAll();
+
 	table.select(0, 0);
 	assertEquals(1, table.getSelectionCount());
+	assertEquals(0, table.getSelectionIndex());
 	assertEquals(new int[] {0}, table.getSelectionIndices());
-	table.deselectAll();
-	table.select(number - 1, number);
-	assertEquals(1, table.getSelectionCount());
-	assertEquals(new int[] {number - 1}, table.getSelectionIndices());
+
+	table.select(4, 4);
+	assertEquals(new int[] {4}, table.getSelectionIndices());
+
+	table.select(10, 10);
+	assertEquals(new int[] {10}, table.getSelectionIndices());
+
+	table.select(number-1, number-1);
+	assertEquals(new int[] {number-1}, table.getSelectionIndices());
+
 	table.deselectAll();
 	table.select(number, number);
-	assertEquals(0, table.getSelectionCount());
 	assertEquals(new int[] {}, table.getSelectionIndices());
-	table.deselectAll();
-	
-	makeCleanEnvironment(true);
 
-	for (int i = 0; i < number; i++)
-		items[i] = new TableItem(table, 0);
-	table.select(-100, 1000);
-	if (fCheckSWTPolicy) {
-		assertEquals(1, table.getSelectionCount());
-		assertEquals(new int[] {number - 1}, table.getSelectionIndices());
-	}
-	table.deselectAll();
-	assertEquals(0, table.getSelectionCount());
-	table.select(1000, 0);
-	assertEquals(0, table.getSelectionCount());
+	table.select(0, number-1);
 	assertEquals(new int[] {}, table.getSelectionIndices());
-	table.deselectAll();
-	table.select(number - 1, 0);
-	if (fCheckSWTPolicy)
-		assertEquals(0, table.getSelectionCount());
-	table.deselectAll();
-	table.select(0, 0);
-	assertEquals(1, table.getSelectionCount());
-	assertEquals(new int[] {0}, table.getSelectionIndices());
-	table.deselectAll();
+
+	table.select(-1, number);
+	assertEquals(new int[] {}, table.getSelectionIndices());
+
+	table.select(4, 5);
+	assertEquals(new int[] {}, table.getSelectionIndices());
+
+	table.select(5, 4);
+	assertEquals(new int[] {}, table.getSelectionIndices());
+
 	table.select(-1, -1);
-	if (fCheckSWTPolicy) {
-		assertEquals(0, table.getSelectionCount());
-		assertEquals(new int[] {}, table.getSelectionIndices());
-	}
-	table.deselectAll();
-	table.select(number, number);
-	if (fCheckSWTPolicy) {
-		assertEquals(0, table.getSelectionCount());
-		assertEquals(new int[] {}, table.getSelectionIndices());
-	}
-	table.deselectAll();
+	assertEquals(new int[] {}, table.getSelectionIndices());
 }
 
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
@@ -1192,45 +1239,9 @@ public void test_setSelection$I() {
 	
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
+	
 	try {
 		table.setSelection((int[]) null);
-		fail("No exception thrown for selection range == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	
-	makeCleanEnvironment(true);
-	
-	for (int i = 0; i < number; i++)
-		items[i] = new TableItem(table, 0);
-	table.setSelection(new int[] {});
-	assertEquals(new int[] {}, table.getSelectionIndices());
-	table.setSelection(new int[] {0, 3, 2});
-	if (fCheckSWTPolicy)
-		assertEquals(new int[] {2}, table.getSelectionIndices());
-	table.setSelection(new int[] {3, 2, 1});
-	if (fCheckSWTPolicy)
-		assertEquals(new int[] {1}, table.getSelectionIndices());
-	table.setSelection(new int[] {1, 4, 0});
-	if (fCheckSWTPolicy)
-		assertEquals(new int[] {0}, table.getSelectionIndices());
-	table.setSelection(new int[] {0, 4, 1});
-	if (fCheckSWTPolicy)
-		assertEquals(new int[] {0}, table.getSelectionIndices());
-	table.setSelection(new int[] {2, 3, 4});
-	if (fCheckSWTPolicy)
-		assertEquals(new int[] {4}, table.getSelectionIndices());
-	table.setSelection(new int[] {4, 4, 4, 4, 4, 4, 4});
-	assertEquals(new int[] {4}, table.getSelectionIndices());
-	table.setSelection(new int[] {4});
-	assertEquals(new int[] {4}, table.getSelectionIndices());
-	
-	makeCleanEnvironment(true);
-	
-	for (int i = 0; i < number; i++)
-		items[i] = new TableItem(table, 0);
-	try {
-		table.setSelection((TableItem[]) null);
 		fail("No exception thrown for selection range == null");
 	}
 	catch (IllegalArgumentException e) {
@@ -1238,6 +1249,37 @@ public void test_setSelection$I() {
 	finally {
 		assertEquals(0, table.getSelectionCount());
 	}
+	
+	table.setSelection(new int[] {});
+	assertEquals(new int[] {}, table.getSelectionIndices());
+
+	table.setSelection(new int[] {0});
+	assertEquals(new int[] {0}, table.getSelectionIndices());
+
+	table.setSelection(new int[] {2});
+	assertEquals(new int[] {2}, table.getSelectionIndices());
+
+	table.setSelection(new int[] {4});
+	assertEquals(new int[] {4}, table.getSelectionIndices());
+
+	table.setSelection(new int[] {number-1});
+	assertEquals(new int[] {number-1}, table.getSelectionIndices());
+
+	table.deselectAll();
+	table.setSelection(new int[] {number});
+	assertEquals(new int[] {}, table.getSelectionIndices());
+
+	table.setSelection(new int[] {-1});
+	assertEquals(new int[] {}, table.getSelectionIndices());
+
+	table.setSelection(new int[] {0, 3, 2});
+	assertEquals(new int[] {}, table.getSelectionIndices());
+	
+	table.setSelection(new int[] {3, 2, 1});
+	assertEquals(new int[] {}, table.getSelectionIndices());
+	
+	table.setSelection(new int[] {4, 4, 4, 4, 4, 4, 4});
+	assertEquals(new int[] {}, table.getSelectionIndices());
 }
 
 public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem() {
@@ -1304,29 +1346,23 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem() {
 	assertEquals(0, table.getSelectionCount());
 
 	table.setSelection(new TableItem[]{items[0], items[3], items[2]});
-	assertEquals(new TableItem[]{items[0]}, table.getSelection());	
+	assertEquals(new TableItem[]{}, table.getSelection());	
 
 	table.setSelection(new TableItem[]{items[3], items[2], items[1]});
-	assertEquals(new TableItem[]{items[3]}, table.getSelection());	
+	assertEquals(new TableItem[]{}, table.getSelection());	
 
 	table.setSelection(new TableItem[]{items[1], items[4], items[0]});
-	assertEquals(new TableItem[]{items[1]}, table.getSelection());	
+	assertEquals(new TableItem[]{}, table.getSelection());	
 
 	table.setSelection(new TableItem[]{items[0], items[4], items[0]});
-	assertEquals(new TableItem[]{items[0]}, table.getSelection());
+	assertEquals(new TableItem[]{}, table.getSelection());
 
 	table.setSelection(new TableItem[]{items[2], items[3], items[4]});
-	assertEquals(new TableItem[]{items[2]}, table.getSelection());	
-
-	table.setSelection(new TableItem[]{items[4], items[4], items[4], items[4], items[4], items[4]});
-	assertEquals(new TableItem[]{items[4]}, table.getSelection());	
+	assertEquals(new TableItem[]{}, table.getSelection());	
 
 	table.setSelection(new TableItem[]{items[4]});
 	assertEquals(new TableItem[]{items[4]}, table.getSelection());
 	
-	for (int i = 0; i < number; i++)
-		items[i] = new TableItem(table, 0);
-
 	table.setSelection(new TableItem[] {items[0]});
 	assertEquals(new TableItem[] {items[0]}, table.getSelection());
 
@@ -1341,6 +1377,9 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem() {
 
 	table.setSelection(new TableItem[] {items[1]});
 	assertEquals(new TableItem[] {items[1]}, table.getSelection());			
+
+	table.setSelection(new TableItem[]{items[4], items[4], items[4], items[4], items[4], items[4]});
+	assertEquals(new TableItem[]{}, table.getSelection());	
 }
 
 public void test_setSelectionI() {

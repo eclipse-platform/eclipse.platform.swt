@@ -662,10 +662,9 @@ public void removeTreeListener (TreeListener listener) {
 }
 
 /**
- * Selects all items.
+ * Selects all of the items in the receiver.
  * <p>
- * If an item is not selected, it is selected.
- * If an item is selected, it remains selected.
+ * If the receiver is single-select, do nothing.
  *
  * @exception SWTError <ul>
  *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
@@ -706,8 +705,11 @@ public void setMenu (Menu menu) {
 
 /**
  * Sets the receiver's selection to be the given array of items.
- * The current selected is first cleared, then the new items are
- * selected.
+ * The current selection is cleared before the new items are selected.
+ * <p>
+ * Items that are not in the receiver are ignored.
+ * If the receiver is single-select and multiple items are specified,
+ * then all items are ignored.
  *
  * @param items the array of items
  *
@@ -724,6 +726,11 @@ public void setMenu (Menu menu) {
  */
 public void setSelection (TableTreeItem[] items) {
 	checkWidget();
+	if (items == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if ((table.getStyle() & SWT.SINGLE) != 0 && items.length > 1) {
+		deselectAll();
+		return;
+	}
 	TableItem[] tableItems = new TableItem[items.length];
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

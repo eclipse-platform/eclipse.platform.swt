@@ -141,7 +141,7 @@ public void test_getParentItem() {
 }
 
 public void test_getSelection() {
-	warnUnimpl("Test test_getSelection not written");
+	// Tested in setSelection.
 }
 
 public void test_getSelectionCount() {
@@ -154,11 +154,20 @@ public void test_getSelectionCount() {
 
 	assertEquals(0, tree.getSelectionCount());
 
-	tree.setSelection(new TreeItem[]{items[2], items[number-1], items[10]});
+	tree.setSelection(new TreeItem[]{items[2]});
 	assertEquals(1, tree.getSelectionCount());
 	
-	tree.setSelection(items);
+	tree.setSelection(new TreeItem[]{items[number-1]});
 	assertEquals(1, tree.getSelectionCount());
+	
+	tree.setSelection(new TreeItem[]{items[10]});
+	assertEquals(1, tree.getSelectionCount());
+	
+	tree.setSelection(new TreeItem[]{items[2], items[number-1], items[10]});
+	assertEquals(0, tree.getSelectionCount());
+	
+	tree.setSelection(items);
+	assertEquals(0, tree.getSelectionCount());
 }
 
 public void test_getTopItem() {
@@ -167,12 +176,15 @@ public void test_getTopItem() {
 
 public void test_removeAll() {
 	tree.removeAll();
+	assertEquals(0, tree.getItemCount());
 
 	int number = 20;
 	TreeItem[] items = new TreeItem[number];
 	for (int i = 0; i < number; i++) {
 		items[i] = new TreeItem(tree, 0);
 	}
+	assertEquals(number, tree.getItemCount());
+
 	tree.removeAll();
 	assertEquals(0, tree.getItemCount());
 }
@@ -319,13 +331,22 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TreeItem(tree, 0);
 
-	assertEquals(":a:", new TreeItem[] {}, tree.getSelection());
+	assertEquals(new TreeItem[] {}, tree.getSelection());
 
+	tree.setSelection(new TreeItem[]{items[10]});
+	assertEquals(new TreeItem[] {items[10]}, tree.getSelection());
+	
+	tree.setSelection(new TreeItem[]{items[number-1]});
+	assertEquals(new TreeItem[] {items[number-1]}, tree.getSelection());
+	
+	tree.setSelection(new TreeItem[]{items[2]});
+	assertEquals(new TreeItem[] {items[2]}, tree.getSelection());
+	
 	tree.setSelection(new TreeItem[]{items[10], items[number-1], items[2]});
-	assertEquals(":b:", new TreeItem[] {items[10]}, tree.getSelection());
+	assertEquals(new TreeItem[] {}, tree.getSelection());
 	
 	tree.setSelection(items);
-	assertEquals(":c:", new TreeItem[] {items[0]}, tree.getSelection());
+	assertEquals(new TreeItem[] {}, tree.getSelection());
 
 	makeCleanEnvironment(true); //single-selection tree
 		
@@ -352,32 +373,25 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	assertEquals(0, tree.getSelectionCount());
 
 	tree.setSelection(new TreeItem[]{items[0], items[3], items[2]});
-	assertEquals(":b:", new TreeItem[]{items[0]}, tree.getSelection());	
+	assertEquals(":b:", new TreeItem[]{}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[3], items[2], items[1]});
-	assertEquals(":c:", new TreeItem[]{items[3]}, tree.getSelection());	
+	assertEquals(":c:", new TreeItem[]{}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[1], items[4], items[0]});
-	assertEquals(":d:", new TreeItem[]{items[1]}, tree.getSelection());	
+	assertEquals(":d:", new TreeItem[]{}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[0], items[4], items[0]});
-	assertEquals(":e:", new TreeItem[]{items[0]}, tree.getSelection());
+	assertEquals(":e:", new TreeItem[]{}, tree.getSelection());
 
 	tree.setSelection(new TreeItem[]{items[2], items[3], items[4]});
-	assertEquals(":f:", new TreeItem[]{items[2]}, tree.getSelection());	
+	assertEquals(":f:", new TreeItem[]{}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[4], items[4], items[4], items[4], items[4], items[4]});
-	assertEquals(":g:", new TreeItem[]{items[4]}, tree.getSelection());	
+	assertEquals(":g:", new TreeItem[]{}, tree.getSelection());	
 
 	tree.setSelection(new TreeItem[]{items[4]});
 	assertEquals(":h:", new TreeItem[]{items[4]}, tree.getSelection());	
-
-	makeCleanEnvironment(true); //single-selection tree
-	
-	number = 5;
-	items = new TreeItem[number];
-	for (int i = 0; i < number; i++)
-		items[i] = new TreeItem(tree, 0);
 
 	tree.setSelection(new TreeItem[] {items[0]});
 	assertEquals(":a:", new TreeItem[] {items[0]}, tree.getSelection());

@@ -1467,10 +1467,13 @@ public void removeSelectionListener(SelectionListener listener) {
 
 /**
  * Selects the items at the given zero-relative indices in the receiver.
- * If the item at the given zero-relative index in the receiver 
- * is not selected, it is selected.  If the item at the index
- * was selected, it remains selected. Indices that are out
- * of range and duplicate indices are ignored.
+ * The current selection is not cleared before the new items are selected.
+ * <p>
+ * If the item at a given index is not selected, it is selected.
+ * If the item at a given index was already selected, it remains selected.
+ * Indices that are out of range and duplicate indices are ignored.
+ * If the receiver is single-select and multiple indices are specified,
+ * then all indices are ignored.
  *
  * @param indices the array of indices for the items to select
  *
@@ -1481,12 +1484,13 @@ public void removeSelectionListener(SelectionListener listener) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Table#setSelection(int[])
  */
 public void select (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int length = indices.length;
-	if (length == 0) return;
+	if ((style & SWT.SINGLE) != 0 && indices.length > 1) return;
 	LVITEM lvItem = new LVITEM ();
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
@@ -1531,11 +1535,16 @@ public void select (int index) {
 }
 
 /**
- * Selects the items at the given zero-relative indices in the receiver.
- * If the item at the index was already selected, it remains
- * selected. The range of the indices is inclusive. Indices that are
- * out of range are ignored and no items will be selected if start is
- * greater than end.
+ * Selects the items in the range specified by the given zero-relative
+ * indices in the receiver. The range of indices is inclusive.
+ * The current selection is not cleared before the new items are selected.
+ * <p>
+ * If an item in the given range is not selected, it is selected.
+ * If an item in the given range was already selected, it remains selected.
+ * Indices that are out of range are ignored and no items will be selected
+ * if start is greater than end.
+ * If the receiver is single-select and there is more than one item in the
+ * given range, then all indices are ignored.
  *
  * @param start the start of the range
  * @param end the end of the range
@@ -1544,9 +1553,13 @@ public void select (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Table#setSelection(int,int)
  */
 public void select (int start, int end) {
 	checkWidget ();
+	if (start > end) return;
+	if ((style & SWT.SINGLE) != 0 && start != end) return;
 	LVITEM lvItem = new LVITEM ();
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
@@ -1563,7 +1576,9 @@ public void select (int start, int end) {
 }
 
 /**
- * Selects all the items in the receiver.
+ * Selects all of the items in the receiver.
+ * <p>
+ * If the receiver is single-select, do nothing.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2017,8 +2032,12 @@ void setScrollWidth (boolean force) {
 }
 
 /**
- * Selects the items at the given zero-relative indices in the receiver. 
- * The current selected is first cleared, then the new items are selected.
+ * Selects the items at the given zero-relative indices in the receiver.
+ * The current selection is cleared before the new items are selected.
+ * <p>
+ * Indices that are out of range and duplicate indices are ignored.
+ * If the receiver is single-select and multiple indices are specified,
+ * then all indices are ignored.
  *
  * @param indices the indices of the items to select
  *
@@ -2037,6 +2056,7 @@ public void setSelection (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
+	if ((style & SWT.SINGLE) != 0 && indices.length > 1) return;
 	select (indices);
 	if (indices.length != 0) {
 		int focusIndex = indices [0];
@@ -2047,14 +2067,17 @@ public void setSelection (int [] indices) {
 
 /**
  * Sets the receiver's selection to be the given array of items.
- * The current selected is first cleared, then the new items are
- * selected.
+ * The current selection is cleared before the new items are selected.
+ * <p>
+ * Items that are not in the receiver are ignored.
+ * If the receiver is single-select and multiple items are specified,
+ * then all items are ignored.
  *
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if one of the item has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the items has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2062,17 +2085,16 @@ public void setSelection (int [] indices) {
  * </ul>
  *
  * @see Table#deselectAll()
- * @see Table#select(int)
+ * @see Table#select(int[])
+ * @see Table#setSelection(int[])
  */
 public void setSelection (TableItem [] items) {
 	checkWidget ();  
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
-	int length = items.length;
-	if (length == 0) return;
+	if ((style & SWT.SINGLE) != 0 && items.length > 1) return;
 	int focusIndex = -1;
-	if ((style & SWT.SINGLE) != 0) length = 1;
-	for (int i=length-1; i>=0; --i) {
+	for (int i=items.length-1; i>=0; --i) {
 		int index = indexOf (items [i]);
 		if (index != -1) {
 			select (focusIndex = index);
@@ -2105,10 +2127,14 @@ public void setSelection (int index) {
 }
 
 /**
- * Selects the items at the given zero-relative indices in the receiver. 
- * The current selection is first cleared, then the new items are selected.
+ * Selects the items in the range specified by the given zero-relative
+ * indices in the receiver. The range of indices is inclusive.
+ * The current selection is cleared before the new items are selected.
+ * <p>
  * Indices that are out of range are ignored and no items will be selected
  * if start is greater than end.
+ * If the receiver is single-select and there is more than one item in the
+ * given range, then all indices are ignored.
  * 
  * @param start the start index of the items to select
  * @param end the end index of the items to select
@@ -2124,14 +2150,10 @@ public void setSelection (int index) {
 public void setSelection (int start, int end) {
 	checkWidget ();
 	deselectAll ();
+	if (start > end) return;
+	if ((style & SWT.SINGLE) != 0 && start != end) return;
 	select (start, end);
-	/*
-	* NOTE: This code relies on the select (int, int)
-	* selecting the last item in the range for a single
-	* selection table.
-	*/
-	int focusIndex = (style & SWT.SINGLE) != 0 ? end : start;
-	if (focusIndex != -1) setFocusIndex (focusIndex);
+	if (start != -1) setFocusIndex (start);
 	showSelection ();
 }
 
