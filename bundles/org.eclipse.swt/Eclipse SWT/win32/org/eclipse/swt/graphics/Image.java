@@ -1268,7 +1268,8 @@ void init(Device device, ImageData i) {
 	if ((i.depth == 1 && i.getTransparencyType() != SWT.TRANSPARENCY_MASK) || i.depth == 2) {
 		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
 		ImageData.blit(ImageData.BLIT_SRC, 
-			i.data, i.depth, i.bytesPerLine, ImageData.MSB_FIRST, 0, 0, i.width, i.height, null, null, null, -1, null, 0,
+			i.data, i.depth, i.bytesPerLine, ImageData.MSB_FIRST, 0, 0, i.width, i.height, null, null, null,
+			ImageData.ALPHA_OPAQUE, null, 0,
 			img.data, img.depth, img.bytesPerLine, ImageData.MSB_FIRST, 0, 0, img.width, img.height, null, null, null, 
 			false, false);
 		img.transparentPixel = i.transparentPixel;
@@ -1314,7 +1315,8 @@ void init(Device device, ImageData i) {
 		if (newPalette != null) {
 			ImageData img = new ImageData(i.width, i.height, i.depth, newPalette);
 			ImageData.blit(ImageData.BLIT_SRC, 
-					i.data, i.depth, i.bytesPerLine, order, 0, 0, i.width, i.height, redMask, greenMask, blueMask, -1, null, 0,
+					i.data, i.depth, i.bytesPerLine, order, 0, 0, i.width, i.height, redMask, greenMask, blueMask,
+					ImageData.ALPHA_OPAQUE, null, 0,
 					img.data, img.depth, img.bytesPerLine, order, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
 					false, false);
 			if (i.transparentPixel != -1) {

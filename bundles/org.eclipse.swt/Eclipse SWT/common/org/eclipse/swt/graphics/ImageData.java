@@ -1562,6 +1562,47 @@ private static final int
 
 /**
  * Blits a direct palette image into a direct palette image.
+ * <p>
+ * Note: When the source and destination depth, order and masks
+ * are pairwise equal and the blitter operation is BLIT_SRC,
+ * the masks are ignored.  Hence when not changing the image
+ * data format, 0 may be specified for the masks.
+ * </p>
+ * 
+ * @param op the blitter operation: a combination of BLIT_xxx flags
+ *        (see BLIT_xxx constants)
+ * @param srcData the source byte array containing image data
+ * @param srcDepth the source depth: one of 8, 16, 24, 32
+ * @param srcStride the source number of bytes per line
+ * @param srcOrder the source byte ordering: one of MSB_FIRST or LSB_FIRST;
+ *        ignored if srcDepth is not 16 or 32
+ * @param srcX the top-left x-coord of the source blit region
+ * @param srcY the top-left y-coord of the source blit region
+ * @param srcWidth the width of the source blit region
+ * @param srcHeight the height of the source blit region
+ * @param srcRedMask the source red channel mask
+ * @param srcGreenMask the source green channel mask
+ * @param srcBlueMask the source blue channel mask
+ * @param alphaMode the alpha blending or mask mode, may be
+ *        an integer 0-255 for global alpha; ignored if BLIT_ALPHA
+ *        not specified in the blitter operations
+ *        (see ALPHA_MODE_xxx constants)
+ * @param alphaData the alpha blending or mask data, varies depending
+ *        on the value of alphaMode and sometimes ignored
+ * @param destData the destination byte array containing image data
+ * @param destDepth the destination depth: one of 8, 16, 24, 32
+ * @param destStride the destination number of bytes per line
+ * @param destOrder the destination byte ordering: one of MSB_FIRST or LSB_FIRST;
+ *        ignored if destDepth is not 16 or 32
+ * @param destX the top-left x-coord of the destination blit region
+ * @param destY the top-left y-coord of the destination blit region
+ * @param destWidth the width of the destination blit region
+ * @param destHeight the height of the destination blit region
+ * @param destRedMask the destination red channel mask
+ * @param destGreenMask the destination green channel mask
+ * @param destBlueMask the destination blue channel mask
+ * @param flipX if true the resulting image is flipped along the vertical axis
+ * @param flipY if true the resulting image is flipped along the horizontal axis
  */
 static final void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
@@ -1641,19 +1682,24 @@ static final void blit(int op,
 		switch (alphaMode) {
 			case ALPHA_MASK_UNPACKED:
 			case ALPHA_CHANNEL_SEPARATE:
+				if (alphaData == null) alphaMode = 0x10000;
 				apr = srcY * alphaStride + srcX;
 				break;
 			case ALPHA_MASK_PACKED:
+				if (alphaData == null) alphaMode = 0x10000;
 				alphaStride <<= 3;
 				apr = srcY * alphaStride + srcX;
 				break;
 			case ALPHA_MASK_INDEX:
 				//throw new IllegalArgumentException("Invalid alpha type");
 				return;
+			case ALPHA_MASK_RGB:
+				if (alphaData == null) alphaMode = 0x10000;
+				apr = 0;
+				break;
 			default:
 				alphaMode = (alphaMode << 16) / 255; // prescale
 			case ALPHA_CHANNEL_SOURCE:
-			case ALPHA_MASK_RGB:
 				apr = 0;
 				break;
 		}
@@ -1939,6 +1985,46 @@ static final void blit(int op,
 
 /**
  * Blits an index palette image into an index palette image.
+ * <p>
+ * Note: The source and destination red, green, and blue
+ * arrays may be null if no alpha blending or dither is to be
+ * performed.
+ * </p>
+ * 
+ * @param op the blitter operation: a combination of BLIT_xxx flags
+ *        (see BLIT_xxx constants)
+ * @param srcData the source byte array containing image data
+ * @param srcDepth the source depth: one of 1, 2, 4, 8
+ * @param srcStride the source number of bytes per line
+ * @param srcOrder the source byte ordering: one of MSB_FIRST or LSB_FIRST;
+ *        ignored if srcDepth is not 1
+ * @param srcX the top-left x-coord of the source blit region
+ * @param srcY the top-left y-coord of the source blit region
+ * @param srcWidth the width of the source blit region
+ * @param srcHeight the height of the source blit region
+ * @param srcReds the source palette red component intensities
+ * @param srcGreens the source palette green component intensities
+ * @param srcBlues the source palette blue component intensities
+ * @param alphaMode the alpha blending or mask mode, may be
+ *        an integer 0-255 for global alpha; ignored if BLIT_ALPHA
+ *        not specified in the blitter operations
+ *        (see ALPHA_MODE_xxx constants)
+ * @param alphaData the alpha blending or mask data, varies depending
+ *        on the value of alphaMode and sometimes ignored
+ * @param destData the destination byte array containing image data
+ * @param destDepth the destination depth: one of 1, 2, 4, 8
+ * @param destStride the destination number of bytes per line
+ * @param destOrder the destination byte ordering: one of MSB_FIRST or LSB_FIRST;
+ *        ignored if destDepth is not 1
+ * @param destX the top-left x-coord of the destination blit region
+ * @param destY the top-left y-coord of the destination blit region
+ * @param destWidth the width of the destination blit region
+ * @param destHeight the height of the destination blit region
+ * @param destReds the destination palette red component intensities
+ * @param destGreens the destination palette green component intensities
+ * @param destBlues the destination palette blue component intensities
+ * @param flipX if true the resulting image is flipped along the vertical axis
+ * @param flipY if true the resulting image is flipped along the horizontal axis
  */
 static final void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
@@ -2013,20 +2099,22 @@ static final void blit(int op,
 		switch (alphaMode) {
 			case ALPHA_MASK_UNPACKED:
 			case ALPHA_CHANNEL_SEPARATE:
+				if (alphaData == null) alphaMode = 0x10000;
 				apr = srcY * alphaStride + srcX;
 				break;
 			case ALPHA_MASK_PACKED:
+				if (alphaData == null) alphaMode = 0x10000;
 				alphaStride <<= 3;
 				apr = srcY * alphaStride + srcX;
 				break;
-			case ALPHA_CHANNEL_SOURCE:
-				alphaMode = 0x10000;
+			case ALPHA_MASK_INDEX:
+			case ALPHA_MASK_RGB:
+				if (alphaData == null) alphaMode = 0x10000;
 				apr = 0;
 				break;
 			default:
 				alphaMode = (alphaMode << 16) / 255; // prescale
-			case ALPHA_MASK_RGB:
-			case ALPHA_MASK_INDEX:
+			case ALPHA_CHANNEL_SOURCE:
 				apr = 0;
 				break;
 		}
@@ -2421,6 +2509,45 @@ static final void blit(int op,
 
 /**
  * Blits an index palette image into a direct palette image.
+ * <p>
+ * Note: The source and destination masks and palettes must
+ * always be fully specified.
+ * </p>
+ * 
+ * @param op the blitter operation: a combination of BLIT_xxx flags
+ *        (see BLIT_xxx constants)
+ * @param srcData the source byte array containing image data
+ * @param srcDepth the source depth: one of 1, 2, 4, 8
+ * @param srcStride the source number of bytes per line
+ * @param srcOrder the source byte ordering: one of MSB_FIRST or LSB_FIRST;
+ *        ignored if srcDepth is not 1
+ * @param srcX the top-left x-coord of the source blit region
+ * @param srcY the top-left y-coord of the source blit region
+ * @param srcWidth the width of the source blit region
+ * @param srcHeight the height of the source blit region
+ * @param srcReds the source palette red component intensities
+ * @param srcGreens the source palette green component intensities
+ * @param srcBlues the source palette blue component intensities
+ * @param alphaMode the alpha blending or mask mode, may be
+ *        an integer 0-255 for global alpha; ignored if BLIT_ALPHA
+ *        not specified in the blitter operations
+ *        (see ALPHA_MODE_xxx constants)
+ * @param alphaData the alpha blending or mask data, varies depending
+ *        on the value of alphaMode and sometimes ignored
+ * @param destData the destination byte array containing image data
+ * @param destDepth the destination depth: one of 8, 16, 24, 32
+ * @param destStride the destination number of bytes per line
+ * @param destOrder the destination byte ordering: one of MSB_FIRST or LSB_FIRST;
+ *        ignored if destDepth is not 16 or 32
+ * @param destX the top-left x-coord of the destination blit region
+ * @param destY the top-left y-coord of the destination blit region
+ * @param destWidth the width of the destination blit region
+ * @param destHeight the height of the destination blit region
+ * @param destRedMask the destination red channel mask
+ * @param destGreenMask the destination green channel mask
+ * @param destBlueMask the destination blue channel mask
+ * @param flipX if true the resulting image is flipped along the vertical axis
+ * @param flipY if true the resulting image is flipped along the horizontal axis
  */
 static final void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
@@ -2499,20 +2626,22 @@ static final void blit(int op,
 		switch (alphaMode) {
 			case ALPHA_MASK_UNPACKED:
 			case ALPHA_CHANNEL_SEPARATE:
+				if (alphaData == null) alphaMode = 0x10000;
 				apr = srcY * alphaStride + srcX;
 				break;
 			case ALPHA_MASK_PACKED:
+				if (alphaData == null) alphaMode = 0x10000;
 				alphaStride <<= 3;
 				apr = srcY * alphaStride + srcX;
 				break;
-			case ALPHA_CHANNEL_SOURCE:
-				alphaMode = 0x10000;
+			case ALPHA_MASK_INDEX:
+			case ALPHA_MASK_RGB:
+				if (alphaData == null) alphaMode = 0x10000;
 				apr = 0;
 				break;
 			default:
 				alphaMode = (alphaMode << 16) / 255; // prescale
-			case ALPHA_MASK_RGB:
-			case ALPHA_MASK_INDEX:
+			case ALPHA_CHANNEL_SOURCE:
 				apr = 0;
 				break;
 		}
@@ -2716,6 +2845,45 @@ static final void blit(int op,
 
 /**
  * Blits a direct palette image into an index palette image.
+ * <p>
+ * Note: The source and destination masks and palettes must
+ * always be fully specified.
+ * </p>
+ * 
+ * @param op the blitter operation: a combination of BLIT_xxx flags
+ *        (see BLIT_xxx constants)
+ * @param srcData the source byte array containing image data
+ * @param srcDepth the source depth: one of 8, 16, 24, 32
+ * @param srcStride the source number of bytes per line
+ * @param srcOrder the source byte ordering: one of MSB_FIRST or LSB_FIRST;
+ *        ignored if srcDepth is not 16 or 32
+ * @param srcX the top-left x-coord of the source blit region
+ * @param srcY the top-left y-coord of the source blit region
+ * @param srcWidth the width of the source blit region
+ * @param srcHeight the height of the source blit region
+ * @param srcRedMask the source red channel mask
+ * @param srcGreenMask the source green channel mask
+ * @param srcBlueMask the source blue channel mask
+ * @param alphaMode the alpha blending or mask mode, may be
+ *        an integer 0-255 for global alpha; ignored if BLIT_ALPHA
+ *        not specified in the blitter operations
+ *        (see ALPHA_MODE_xxx constants)
+ * @param alphaData the alpha blending or mask data, varies depending
+ *        on the value of alphaMode and sometimes ignored
+ * @param destData the destination byte array containing image data
+ * @param destDepth the destination depth: one of 1, 2, 4, 8
+ * @param destStride the destination number of bytes per line
+ * @param destOrder the destination byte ordering: one of MSB_FIRST or LSB_FIRST;
+ *        ignored if destDepth is not 1
+ * @param destX the top-left x-coord of the destination blit region
+ * @param destY the top-left y-coord of the destination blit region
+ * @param destWidth the width of the destination blit region
+ * @param destHeight the height of the destination blit region
+ * @param destReds the destination palette red component intensities
+ * @param destGreens the destination palette green component intensities
+ * @param destBlues the destination palette blue component intensities
+ * @param flipX if true the resulting image is flipped along the vertical axis
+ * @param flipY if true the resulting image is flipped along the horizontal axis
  */
 static final void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
@@ -2794,20 +2962,24 @@ static final void blit(int op,
 		switch (alphaMode) {
 			case ALPHA_MASK_UNPACKED:
 			case ALPHA_CHANNEL_SEPARATE:
+				if (alphaData == null) alphaMode = 0x10000;
 				apr = srcY * alphaStride + srcX;
 				break;
 			case ALPHA_MASK_PACKED:
+				if (alphaData == null) alphaMode = 0x10000;
 				alphaStride <<= 3;
 				apr = srcY * alphaStride + srcX;
 				break;
-			case ALPHA_CHANNEL_SOURCE:
-				alphaMode = 0x10000;
+			case ALPHA_MASK_INDEX:
+				//throw new IllegalArgumentException("Invalid alpha type");
+				return;
+			case ALPHA_MASK_RGB:
+				if (alphaData == null) alphaMode = 0x10000;
 				apr = 0;
 				break;
 			default:
 				alphaMode = (alphaMode << 16) / 255; // prescale
-			case ALPHA_MASK_RGB:
-			case ALPHA_MASK_INDEX:
+			case ALPHA_CHANNEL_SOURCE:
 				apr = 0;
 				break;
 		}
@@ -3084,126 +3256,6 @@ static {
 	}
 }
 private static final byte[] oneToOneMapping = anyToEight[8];
-
-/**
- * Stretches the source, a 32-bit image, into the destination, a 32-bit image.
- * The images must have the same red, green, and blue masks.
- */
-static void stretch32(
-	byte[] srcData, int srcStride,
-	int srcX, int srcY, int srcWidth, int srcHeight,
-	byte[] destData, int destStride,
-	int destX, int destY, int destWidth, int destHeight,
-	boolean flipX, boolean flipY) {
-	blit(BLIT_SRC,
-		srcData, 32, srcStride, MSB_FIRST, srcX, srcY, srcWidth, srcHeight, 0, 0, 0,
-		ALPHA_OPAQUE, null, 0,
-		destData, 32, destStride, MSB_FIRST, destX, destY, destWidth, destHeight, 0, 0, 0,
-		flipX, flipY);
-}
-
-/**
- * Stretches the source, a 24-bit image, into the destination, a 24-bit image.
- * The images must have the same red, green, and blue masks.
- * The image are assumed to have 24 bits per pixel; many 24-bit images
- * use 32 bits per pixel.
- */
-static void stretch24(
-	byte[] srcData, int srcStride,
-	int srcX, int srcY, int srcWidth, int srcHeight,
-	byte[] destData, int destStride,
-	int destX, int destY, int destWidth, int destHeight,
-	boolean flipX, boolean flipY) {
-	blit(BLIT_SRC,
-		srcData, 24, srcStride, MSB_FIRST, srcX, srcY, srcWidth, srcHeight, 0, 0, 0,
-		ALPHA_OPAQUE, null, 0,
-		destData, 24, destStride, MSB_FIRST, destX, destY, destWidth, destHeight, 0, 0, 0,
-		flipX, flipY);
-}
-
-/**
- * Stretches the source, a 16-bit image, into the destination, a 16-bit image.
- * The images are assumed to have the same red, green, and blue masks.
- */
-static void stretch16(
-	byte[] srcData, int srcStride,
-	int srcX, int srcY, int srcWidth, int srcHeight,
-	byte[] destData, int destStride,
-	int destX, int destY, int destWidth, int destHeight,
-	boolean flipX, boolean flipY) {
-	blit(BLIT_SRC,
-		srcData, 16, srcStride, MSB_FIRST, srcX, srcY, srcWidth, srcHeight, 0, 0, 0,
-		ALPHA_OPAQUE, null, 0,
-		destData, 16, destStride, MSB_FIRST, destX, destY, destWidth, destHeight, 0, 0, 0,
-		flipX, flipY);
-}
-
-/**
- * Stretches the source, an 8-bit image, into the destination, an 8-bit image.
- * NOTE: Palette mapping ignored (for now)
- */
-static void stretch8(
-	byte[] srcData, int srcStride,
-	int srcX, int srcY, int srcWidth, int srcHeight,
-	byte[] destData, int destStride,
-	int destX, int destY, int destWidth, int destHeight,
-	int[] paletteMapping, boolean flipX, boolean flipY) {
-	blit(BLIT_SRC,
-		srcData, 8, srcStride, MSB_FIRST, srcX, srcY, srcWidth, srcHeight, null, null, null,
-		ALPHA_OPAQUE, null, 0,
-		destData, 8, destStride, MSB_FIRST, destX, destY, destWidth, destHeight, null, null, null,
-		flipX, flipY);
-}
-
-/**
- * Stretches the source, a 4-bit image, into the destination, a 4-bit image.
- * NOTE: Palette mapping ignored (for now)
- */
-static void stretch4(
-	byte[] srcData, int srcStride,
-	int srcX, int srcY, int srcWidth, int srcHeight,
-	byte[] destData, int destStride,
-	int destX, int destY, int destWidth, int destHeight,
-	int[] paletteMapping, boolean flipX, boolean flipY) {
-	blit(BLIT_SRC,
-		srcData, 4, srcStride, MSB_FIRST, srcX, srcY, srcWidth, srcHeight, null, null, null,
-		ALPHA_OPAQUE, null, 0,
-		destData, 4, destStride, MSB_FIRST, destX, destY, destWidth, destHeight, null, null, null,
-		flipX, flipY);
-}
-
-/**
- * Stretches the source, a 2-bit image, into the destination, a 2-bit image.
- * NOTE: Palette mapping ignored (for now)
- */
-static void stretch2(
-	byte[] srcData, int srcStride,
-	int srcX, int srcY, int srcWidth, int srcHeight,
-	byte[] destData, int destStride,
-	int destX, int destY, int destWidth, int destHeight,
-	int[] paletteMapping, boolean flipX, boolean flipY) {
-	blit(BLIT_SRC,
-		srcData, 2, srcStride, MSB_FIRST, srcX, srcY, srcWidth, srcHeight, null, null, null,
-		ALPHA_OPAQUE, null, 0,
-		destData, 2, destStride, MSB_FIRST, destX, destY, destWidth, destHeight, null, null, null,
-		flipX, flipY);
-}
-
-/**
- * Stretches the source, a 1-bit image, into the destination, a 1-bit image.
- */
-static void stretch1(
-	byte[] srcData, int srcStride, int srcOrder,
-	int srcX, int srcY, int srcWidth, int srcHeight,
-	byte[] destData, int destStride, int destOrder,
-	int destX, int destY, int destWidth, int destHeight,
-	boolean flipX, boolean flipY) {
-	blit(BLIT_SRC,
-		srcData, 1, srcStride, srcOrder, srcX, srcY, srcWidth, srcHeight, null, null, null,
-		ALPHA_OPAQUE, null, 0,
-		destData, 1, destStride, destOrder, destX, destY, destWidth, destHeight, null, null, null,
-		flipX, flipY);
-}
 
 }
 
