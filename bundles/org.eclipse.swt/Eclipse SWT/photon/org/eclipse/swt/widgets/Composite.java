@@ -250,9 +250,12 @@ void resizeClientArea (int width, int height) {
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	if (resize) resizeClientArea (width, height);
 	super.setBounds (x, y, width, height, move, resize);
-	if (layout != null) layout (false);
+	if (resize) {
+		resizeClientArea (width, height);
+		// BOGUS
+		if (layout != null) layout (false);
+	}
 }
 
 public void setLayout (Layout layout) {
