@@ -10,6 +10,7 @@
 <runtime>
    <library name="$ws$/swt.jar">
       <export name="*"/>
+      <packages prefixes="org.eclipse.swt"/>
    </library>
 </runtime>
 </plugin>
