@@ -1369,6 +1369,7 @@ public void setItems (String [] items) {
 	int codePage = getCodePage ();
 	for (int i=0; i<items.length; i++) {
 		String string = items [i];
+		if (string == null) break;
 		TCHAR buffer = new TCHAR (codePage, string, true);
 		int code = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 		if (code == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
