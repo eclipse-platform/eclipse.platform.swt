@@ -154,12 +154,37 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 		OS.RedrawWindow (handle, null, 0, flags);
 	}
-	RECT rect = new RECT ();
-	OS.SetRect (rect, x, y, x + width, y + height);
+	RECT lpRect = new RECT ();
+	OS.SetRect (lpRect, x, y, x + width, y + height);
 	int deltaX = destX - x, deltaY = destY - y;
 	int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
-	if (all) flags |= OS.SW_SCROLLCHILDREN;
-	OS.ScrollWindowEx (handle, deltaX, deltaY, rect, null, 0, null, flags);
+	/*
+	* Feature in Windows.  If any child in the widget tree partially
+	* intersects the scrolling rectangle, Windows moves the child
+	* and copies the bits that intersect the scrolling rectangle but
+	* does not redraw the child.
+	* 
+	* Feature in Windows.  When any child in the widget tree does
+	* not intersect the scrolling rectangle but the parent does intersect,
+	* Windows does not move the child.  This is the documented (but
+	* strange) Windows behavior.
+	* 
+	* The fix is to not use SW_SCROLLCHILDREN and move the children
+	* explicitly after scrolling.  
+	*/
+	//if (all) flags |= OS.SW_SCROLLCHILDREN;
+	OS.ScrollWindowEx (handle, deltaX, deltaY, lpRect, null, 0, null, flags);
+	if (all) {
+		Control [] children = _getChildren ();
+		for (int i=0; i<children.length; i++) {
+			Control child = children [i];
+			Rectangle rect = child.getBounds ();
+			if (Math.min(x + width, rect.x + rect.width) > Math.max (x, rect.x) && 
+				Math.min(y + height, rect.y + rect.height) > Math.max (y, rect.y)) {
+					child.setLocation (rect.x + deltaX, rect.y + deltaY);
+			}
+		}
+	}
 
 	/* Restore the caret */
 	if (isFocus) caret.setFocus ();
