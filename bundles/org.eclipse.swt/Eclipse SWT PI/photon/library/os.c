@@ -40,8 +40,8 @@ JNIEXPORT jobject JNICALL OS_NATIVE(PfExtentText__Lorg_eclipse_swt_internal_phot
 	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
 	rc = (jobject)PfExtentText(lparg0, lparg1, (const char *)arg2, (const char *)arg3, arg4);
-	if (arg0) setPhRect_tFields(env, arg0, lparg0);
 	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III\n")
 	return rc;
 }
@@ -62,10 +62,10 @@ JNIEXPORT jobject JNICALL OS_NATIVE(PfExtentText__Lorg_eclipse_swt_internal_phot
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
 	rc = (jobject)PfExtentText(lparg0, lparg1, (const char *)lparg2, (const char *)lparg3, arg4);
-	if (arg0) setPhRect_tFields(env, arg0, lparg0);
-	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2_3B_3BI\n")
 	return rc;
 }
@@ -86,10 +86,10 @@ JNIEXPORT jobject JNICALL OS_NATIVE(PfExtentWideText)
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL);
 	rc = (jobject)PfExtentWideText(lparg0, lparg1, (const char *)lparg2, (const uint16_t *)lparg3, arg4);
-	if (arg0) setPhRect_tFields(env, arg0, lparg0);
-	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PfExtentWideText\n")
 	return rc;
 }
@@ -169,8 +169,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PfQueryFontInfo)
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	if (arg1) lparg1 = getFontQueryInfoFields(env, arg1, &_arg1);
 	rc = (jint)PfQueryFontInfo((const char *)lparg0, (FontQueryInfo *)lparg1);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	if (arg1) setFontQueryInfoFields(env, arg1, lparg1);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "PfQueryFontInfo\n")
 	return rc;
 }
@@ -241,8 +241,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawArc)
 	if (arg0) lparg0 = getPhPoint_tFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
 	rc = (jint)PgDrawArc(lparg0, lparg1, arg2, arg3, arg4);
-	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
 	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PgDrawArc\n")
 	return rc;
 }
@@ -272,8 +272,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawBitmap)
 	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
 	if (arg3) lparg3 = getPhDim_tFields(env, arg3, &_arg3);
 	rc = (jint)PgDrawBitmap((void const *)arg0, (int)arg1, (PhPoint_t *)lparg2, (PhPoint_t *)lparg3, (int)arg4, (long)arg5);
-	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
 	if (arg3) setPhDim_tFields(env, arg3, lparg3);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
 	NATIVE_EXIT(env, that, "PgDrawBitmap\n")
 	return rc;
 }
@@ -290,8 +290,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawEllipse)
 	if (arg0) lparg0 = getPhPoint_tFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
 	rc = (jint)PgDrawEllipse(lparg0, lparg1, arg2);
-	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
 	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PgDrawEllipse\n")
 	return rc;
 }
@@ -310,9 +310,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawGradient)
 	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
 	if (arg10) lparg10 = (*env)->GetByteArrayElements(env, arg10, NULL);
 	rc = (jint)PgDrawGradient(lparg0, lparg1, arg2, arg3, arg4, (PgColor_t)arg5, (PgColor_t)arg6, (PgColor_t)arg7, (PgColor_t)arg8, arg9, (unsigned char *)lparg10);
-	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
-	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
 	if (arg10) (*env)->ReleaseByteArrayElements(env, arg10, lparg10, 0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PgDrawGradient\n")
 	return rc;
 }
@@ -353,8 +353,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawImage)
 	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
 	if (arg3) lparg3 = getPhDim_tFields(env, arg3, &_arg3);
 	rc = (jint)PgDrawImage((void const *)arg0, arg1, lparg2, lparg3, arg4, arg5);
-	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
 	if (arg3) setPhDim_tFields(env, arg3, lparg3);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
 	NATIVE_EXIT(env, that, "PgDrawImage\n")
 	return rc;
 }
@@ -371,8 +371,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawMultiTextArea)
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	if (arg2) lparg2 = getPhRect_tFields(env, arg2, &_arg2);
 	rc = (jint)PgDrawMultiTextArea((char *)lparg0, arg1, lparg2, arg3, arg4, arg5);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	if (arg2) setPhRect_tFields(env, arg2, lparg2);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "PgDrawMultiTextArea\n")
 	return rc;
 }
@@ -389,8 +389,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawPhImageRectmx)
 	if (arg0) lparg0 = getPhPoint_tFields(env, arg0, &_arg0);
 	if (arg2) lparg2 = getPhRect_tFields(env, arg2, &_arg2);
 	rc = (jint)PgDrawPhImageRectmx(lparg0, (PhImage_t const *)arg1, lparg2, arg3);
-	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
 	if (arg2) setPhRect_tFields(env, arg2, lparg2);
+	if (arg0) setPhPoint_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PgDrawPhImageRectmx\n")
 	return rc;
 }
@@ -407,8 +407,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawPolygon)
 	if (arg0) lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL);
 	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
 	rc = (jint)PgDrawPolygon((PhPoint_t const *)lparg0, arg1, (PhPoint_t const *)lparg2, arg3);
-	if (arg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
 	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	if (arg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "PgDrawPolygon\n")
 	return rc;
 }
@@ -425,8 +425,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawRoundRect)
 	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
 	rc = (jint)PgDrawRoundRect((PhRect_t const *)lparg0, (PhPoint_t const *)lparg1, arg2);
-	if (arg0) setPhRect_tFields(env, arg0, lparg0);
 	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PgDrawRoundRect\n")
 	return rc;
 }
@@ -443,8 +443,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawTImage)
 	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
 	if (arg3) lparg3 = getPhDim_tFields(env, arg3, &_arg3);
 	rc = (jint)PgDrawTImage((void const *)arg0, arg1, (PhPoint_t const *)lparg2, (PhDim_t const *)lparg3, arg4, arg5, (void const *)arg6, arg7);
-	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
 	if (arg3) setPhDim_tFields(env, arg3, lparg3);
+	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
 	NATIVE_EXIT(env, that, "PgDrawTImage\n")
 	return rc;
 }
@@ -461,8 +461,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawText)
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
 	rc = (jint)PgDrawText((char const *)lparg0, arg1, (PhPoint_t *)lparg2, arg3);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "PgDrawText\n")
 	return rc;
 }
@@ -483,10 +483,10 @@ JNIEXPORT jobject JNICALL OS_NATIVE(PgExtentMultiText)
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
 	rc = (jobject)PgExtentMultiText((PhRect_t *)lparg0, (PhPoint_t *)lparg1, (char *)lparg2, (char *)lparg3, arg4, arg5);
-	if (arg0) setPhRect_tFields(env, arg0, lparg0);
-	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PgExtentMultiText\n")
 	return rc;
 }
@@ -819,8 +819,8 @@ JNIEXPORT void JNICALL OS_NATIVE(PhAreaToRect)
 	if (arg0) lparg0 = getPhArea_tFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
 	PhAreaToRect((PhArea_t const *)lparg0, (PhRect_t *)lparg1);
-	if (arg0) setPhArea_tFields(env, arg0, lparg0);
 	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	if (arg0) setPhArea_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PhAreaToRect\n")
 }
 #endif
@@ -835,8 +835,8 @@ JNIEXPORT void JNICALL OS_NATIVE(PhBlit)
 	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
 	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
 	PhBlit((PhRid_t)arg0, (const PhRect_t *)lparg1, (const PhPoint_t *)lparg2);
-	if (arg1) setPhRect_tFields(env, arg1, lparg1);
 	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "PhBlit\n")
 }
 #endif
@@ -1101,13 +1101,13 @@ JNIEXPORT jint JNICALL OS_NATIVE(PhInitDrag)
 	if (arg8) lparg8 = getPhPoint_tFields(env, arg8, &_arg8);
 	if (arg9) lparg9 = (*env)->GetShortArrayElements(env, arg9, NULL);
 	rc = (jint)PhInitDrag((PhRid_t)arg0, arg1, (const PhRect_t *)lparg2, (const PhRect_t *)lparg3, arg4, (PhDim_t *)lparg5, (PhDim_t *)lparg6, (PhDim_t *)lparg7, (PhPoint_t *)lparg8, (PhCursorDescription_t *)lparg9);
-	if (arg2) setPhRect_tFields(env, arg2, lparg2);
-	if (arg3) setPhRect_tFields(env, arg3, lparg3);
-	if (arg5) setPhDim_tFields(env, arg5, lparg5);
-	if (arg6) setPhDim_tFields(env, arg6, lparg6);
-	if (arg7) setPhDim_tFields(env, arg7, lparg7);
-	if (arg8) setPhPoint_tFields(env, arg8, lparg8);
 	if (arg9) (*env)->ReleaseShortArrayElements(env, arg9, lparg9, 0);
+	if (arg8) setPhPoint_tFields(env, arg8, lparg8);
+	if (arg7) setPhDim_tFields(env, arg7, lparg7);
+	if (arg6) setPhDim_tFields(env, arg6, lparg6);
+	if (arg5) setPhDim_tFields(env, arg5, lparg5);
+	if (arg3) setPhRect_tFields(env, arg3, lparg3);
+	if (arg2) setPhRect_tFields(env, arg2, lparg2);
 	NATIVE_EXIT(env, that, "PhInitDrag\n")
 	return rc;
 }
@@ -1212,8 +1212,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PhQueryRids)
 	if (arg6) lparg6 = getPhRect_tFields(env, arg6, &_arg6);
 	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
 	rc = (jint)PhQueryRids(arg0, (PhRid_t)arg1, arg2, arg3, arg4, (PhRid_t)arg5, (const PhRect_t *)lparg6, (PhRid_t *)lparg7, arg8);
-	if (arg6) setPhRect_tFields(env, arg6, lparg6);
 	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg6) setPhRect_tFields(env, arg6, lparg6);
 	NATIVE_EXIT(env, that, "PhQueryRids\n")
 	return rc;
 }
@@ -1254,8 +1254,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PhRectUnion__Lorg_eclipse_swt_internal_photon_P
 	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
 	rc = (jint)PhRectUnion((PhRect_t *)lparg0, (PhRect_t const *)lparg1);
-	if (arg0) setPhRect_tFields(env, arg0, lparg0);
 	if (arg1) setPhRect_tFields(env, arg1, lparg1);
+	if (arg0) setPhRect_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PhRectUnion__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhRect_1t_2\n")
 	return rc;
 }
@@ -1284,8 +1284,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PhRegionQuery)
 	if (arg1) lparg1 = getPhRegion_tFields(env, arg1, &_arg1);
 	if (arg2) lparg2 = getPhRect_tFields(env, arg2, &_arg2);
 	rc = (jint)PhRegionQuery((PhRid_t)arg0, (PhRegion_t *)lparg1, (PhRect_t *)lparg2, (void *)arg3, arg4);
-	if (arg1) setPhRegion_tFields(env, arg1, lparg1);
 	if (arg2) setPhRect_tFields(env, arg2, lparg2);
+	if (arg1) setPhRegion_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "PhRegionQuery\n")
 	return rc;
 }
@@ -1396,8 +1396,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PmMemCreateMC)
 	if (arg1) lparg1 = getPhDim_tFields(env, arg1, &_arg1);
 	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
 	rc = (jint)PmMemCreateMC((PhImage_t *)arg0, (PhDim_t *)lparg1, (PhPoint_t *)lparg2);
-	if (arg1) setPhDim_tFields(env, arg1, lparg1);
 	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	if (arg1) setPhDim_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "PmMemCreateMC\n")
 	return rc;
 }
@@ -1508,12 +1508,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtAlert)
 	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
 	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
 	rc = (jint)PtAlert((PtWidget_t *)arg0, (PhPoint_t const *)lparg1, (char const *)lparg2, (PhImage_t const *)arg3, (char const *)lparg4, (char const *)lparg5, arg6, (char const **)lparg7, (char const **)lparg8, arg9, arg10, arg11);
-	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
-	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
-	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "PtAlert\n")
 	return rc;
 }
@@ -1632,8 +1632,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtBlit)
 	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
 	if (arg2) lparg2 = getPhPoint_tFields(env, arg2, &_arg2);
 	rc = (jint)PtBlit((PtWidget_t const *)arg0, (PhRect_t const *)lparg1, (PhPoint_t const *)lparg2);
-	if (arg1) setPhRect_tFields(env, arg1, lparg1);
 	if (arg2) setPhPoint_tFields(env, arg2, lparg2);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "PtBlit\n")
 	return rc;
 }
@@ -1729,8 +1729,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtColorSelect)
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = getPtColorSelectInfo_tFields(env, arg2, &_arg2);
 	rc = (jint)PtColorSelect((PtWidget_t *)arg0, (char *)lparg1, lparg2);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	if (arg2) setPtColorSelectInfo_tFields(env, arg2, lparg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "PtColorSelect\n")
 	return rc;
 }
@@ -2005,14 +2005,14 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtFileSelection)
 	if (arg7) lparg7 = (*env)->GetByteArrayElements(env, arg7, NULL);
 	if (arg8) lparg8 = getPtFileSelectionInfo_tFields(env, arg8, &_arg8);
 	rc = (jint)PtFileSelection((PtWidget_t *)arg0, (PhPoint_t const *)lparg1, (char const *)lparg2, (char const *)lparg3, (char const *)lparg4, (char const *)lparg5, (char const *)lparg6, (char const *)lparg7, (PtFileSelectionInfo_t *)lparg8, arg9);
-	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
-	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
-	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
-	if (arg7) (*env)->ReleaseByteArrayElements(env, arg7, lparg7, 0);
 	if (arg8) setPtFileSelectionInfo_tFields(env, arg8, lparg8);
+	if (arg7) (*env)->ReleaseByteArrayElements(env, arg7, lparg7, 0);
+	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "PtFileSelection\n")
 	return rc;
 }
@@ -2057,10 +2057,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtFontSelection)
 	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
 	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
 	rc = (jint)PtFontSelection((PtWidget_t *)arg0, (const PhPoint_t *)lparg1, (const char *)lparg2, (const char *)lparg3, arg4, arg5, (const char *)lparg6);
-	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "PtFontSelection\n")
 	return rc;
 }
@@ -2095,10 +2095,10 @@ JNIEXPORT void JNICALL OS_NATIVE(PtFrameSize)
 	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
 	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
 	PtFrameSize(arg0, arg1, lparg2, lparg3, lparg4, lparg5);
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "PtFrameSize\n")
 }
 #endif
@@ -2113,8 +2113,8 @@ JNIEXPORT void JNICALL OS_NATIVE(PtGetAbsPosition)
 	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
 	PtGetAbsPosition((PtWidget_t *)arg0, lparg1, lparg2);
-	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "PtGetAbsPosition\n")
 }
 #endif
@@ -2244,8 +2244,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtInflateBalloon)
 	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
 	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
 	rc = (jint)PtInflateBalloon((PtWidget_t *)arg0, (PtWidget_t *)arg1, arg2, (char const *)lparg3, (char const *)lparg4, (PgColor_t)arg5, (PgColor_t)arg6);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	NATIVE_EXIT(env, that, "PtInflateBalloon\n")
 	return rc;
 }
@@ -2669,8 +2669,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtSetAreaFromWidgetCanvas)
 	if (arg1) lparg1 = getPhRect_tFields(env, arg1, &_arg1);
 	if (arg2) lparg2 = getPhArea_tFields(env, arg2, &_arg2);
 	rc = (jint)PtSetAreaFromWidgetCanvas((PtWidget_t *)arg0, lparg1, lparg2);
-	if (arg1) setPhRect_tFields(env, arg1, lparg1);
 	if (arg2) setPhArea_tFields(env, arg2, lparg2);
+	if (arg1) setPhRect_tFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "PtSetAreaFromWidgetCanvas\n")
 	return rc;
 }
@@ -2772,8 +2772,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtTextGetSelection)
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	rc = (jint)PtTextGetSelection((PtWidget_t *)arg0, lparg1, lparg2);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "PtTextGetSelection\n")
 	return rc;
 }
@@ -2817,8 +2817,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtTextSetSelection)
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	rc = (jint)PtTextSetSelection((PtWidget_t *)arg0, lparg1, lparg2);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "PtTextSetSelection\n")
 	return rc;
 }
@@ -3603,8 +3603,8 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3BLorg_eclipse_swt_internal_photon_Ph
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	if (arg1) lparg1 = getPhClipHeaderFields(env, arg1, &_arg1);
 	memmove((void *)lparg0, (const void *)lparg1, arg2);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	if (arg1) setPhClipHeaderFields(env, arg1, lparg1);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I\n")
 }
 #endif
