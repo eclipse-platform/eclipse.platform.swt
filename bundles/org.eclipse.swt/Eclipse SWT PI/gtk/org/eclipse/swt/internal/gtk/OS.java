@@ -259,6 +259,7 @@ public static final native int GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT(int clist);
 public static final native int GTK_CLIST_FOCUS_ROW(int clist);
 public static final native int GTK_CLIST_HADJUSTMENT(int clist);
 public static final native int GTK_CLIST_HOFFSET(int clist);
+public static final native void GTK_CLIST_RESYNC_SELECTION(int clist);
 public static final native int GTK_CLIST_ROW_HEIGHT(int clist);
 public static final native int GTK_CLIST_ROWS(int clist);
 public static final native int GTK_CLIST_SELECTION(int clist);

@@ -72,6 +72,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1HOFFSET
 	return (jint)((GtkCList *)arg0)->hoffset;
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1RESYNC_1SELECTION
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1CLIST_1RESYNC_1SELECTION\n")
+
+	GTK_CLIST_GET_CLASS (arg0)->resync_selection ((GtkCList *)arg0, NULL);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1ROWS
 	(JNIEnv *env, jclass that, jint arg0)
 {
