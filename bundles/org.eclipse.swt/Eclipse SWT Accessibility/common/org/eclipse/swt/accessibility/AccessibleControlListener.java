@@ -51,10 +51,10 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>x, y [IN] - the specified point in display coordinates</li>
 	 *    <li>childID [OUT] - the ID of the child at point, or CHILDID_SELF, or CHILDID_NONE</li>
+	 *    <li>accessible [Optional OUT] - the accessible object for the control or child may be returned instead of the childID</li>
 	 * </ul>
 	 */
 	public void hitTest(AccessibleControlEvent e);
-// possibly also IAcc [OUT]
 
 	/**
 	 * Sent when an accessibility client requests the location
@@ -112,10 +112,11 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * of the control, or the default action of a child of the control.
 	 * The default behavior is to do nothing.
 	 * <p>
+	 * This string is typically... ***************
+	 * </p><p>
 	 * Return a string describing the default action of the specified
 	 * control or child in the <code>result</code> field of the event object.
-	 * This string is typically... ***************
-	 * Return null if ********
+	 * Returning null tells the client to use the platform default action string.
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
@@ -138,9 +139,9 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 *
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>childID [OUT] - the ID of the child with focus, or CHILDID_SELF, or CHILDID_NONE</li>
+	 *    <li>accessible [Optional OUT] - the accessible object for the control or child may be returned instead of the childID</li>
 	 * </ul>
 	 */
-// OUT can be IAcc also
 	public void getFocus(AccessibleControlEvent e);
 	
 	/**
@@ -161,8 +162,19 @@ public interface AccessibleControlListener extends SWTEventListener {
 	public void getRole(AccessibleControlEvent e);
 	
 	/**
+	 * Sent when an accessibility client requests the identity of
+	 * the child or control that is currently selected.
+	 * The default behavior is to do nothing.
+	 * <p>
+	 * Return the identifier of the selected child in the
+	 * <code>childID</code> field of the event object.
+	 * Return CHILDID_SELF if ***********
+	 * Return CHILDID_NONE if ************
+	 * </p>
+	 *
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>childID [OUT] - the ID of the selected child, or CHILDID_SELF, or CHILDID_MULTIPLE, or CHILDID_NONE</li>
+	 *    <li>accessible [Optional OUT] - the accessible object for the control or child may be returned instead of the childID</li>
 	 * </ul>
 	 */
 // OUT can be IAcc also - but can it be childid-self?
@@ -190,10 +202,15 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * of the control, or the value of a child of the control.
 	 * The default behavior is to do nothing.
 	 * <p>
+	 * Many controls do not return a value. Examples of controls
+	 * that do are: Combo returns the text string, Text returns
+	 * its contents, ProgressBar returns a string representing a
+	 * percentage, and Tree items return a string representing
+	 * their level in the tree.
+	 * </p><p>
 	 * Return a string describing the value of the specified control
 	 * or child in the <code>result</code> field of the event object.
-	 * This string is typically... ***************
-	 * Return null if ********
+	 * Returning null tells the client to use the platform value string.
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
@@ -204,10 +221,17 @@ public interface AccessibleControlListener extends SWTEventListener {
 	public void getValue(AccessibleControlEvent e);
 	
 	/**
+	 * Sent when an accessibility client requests the children of the control.
+	 * The default behavior is to do nothing.
+	 * <p>
+	 * Return the children as an array of childIDs in the <code>children</code>
+	 * field of the event object.
+	 * </p>
+	 *
 	 * @param e an event object containing the following fields:<ul>
-	 *    <li>children [OUT] - </li>
+	 *    <li>children [OUT] - an array of childIDs</li>
+	 *    <li>accessible [Optional OUT] - an array of accessible objects for the children may be returned instead of the childIDs</li>
 	 * </ul>
 	 */
-// OUT can contain IAcc's also
 	public void getChildren(AccessibleControlEvent e);
 }
