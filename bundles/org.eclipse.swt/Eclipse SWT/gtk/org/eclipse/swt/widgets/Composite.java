@@ -219,10 +219,6 @@ void createScrolledHandle (int parentHandle) {
 	}
 	OS.gtk_widget_show (handle);
 	
-	OS.gtk_widget_set_double_buffered(handle, false);
-	if ((style & SWT.NO_BACKGROUND) != 0) {
-		setBackgroundPixmap ();
-	}
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
 	}
@@ -321,18 +317,6 @@ int gtk_button_press_event (int widget, int event) {
 int gtk_expose_event (int widget, int eventPtr) {
 	if ((state & CANVAS) == 0) {
 		return super.gtk_expose_event (widget, eventPtr);
-	}
-	if ((style & SWT.NO_BACKGROUND) == 0) {
-		int window = paintWindow ();
-		int gc = OS.gdk_gc_new (window);
-		OS.gdk_gc_set_foreground (gc, getBackgroundColor ());
-		GdkEventExpose gdkEvent = new GdkEventExpose ();
-		OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
-		int x = gdkEvent.area_x, y = gdkEvent.area_y;
-		int width = gdkEvent.area_width, height = gdkEvent.area_height;
-		OS.gdk_gc_set_clip_region (gc, gdkEvent.region);
-		OS.gdk_draw_rectangle (window, gc, 1, x, y, width, height);
-		OS.g_object_unref (gc);
 	}
 	if ((style & SWT.NO_MERGE_PAINTS) == 0) {
 		return super.gtk_expose_event (widget, eventPtr);
@@ -560,19 +544,6 @@ void releaseWidget () {
 	layout = null;
 }
 
-void setBackgroundPixmap () {
-	if ((style & SWT.NO_BACKGROUND) != 0) {
-		OS.gtk_widget_realize (handle);
-		int window = OS.GTK_WIDGET_WINDOW (handle);
-		OS.gdk_window_set_back_pixmap (window, 0, false);
-	}
-}
-
-void setBackgroundColor (GdkColor color) {
-	super.setBackgroundColor (color);
-	if ((state & CANVAS) != 0) setBackgroundPixmap ();
-}
-
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	if (changed && resize && layout != null) layout.layout (this, false);
@@ -587,16 +558,6 @@ public boolean setFocus () {
 		if (child.getVisible () && child.setFocus ()) return true;
 	}
 	return super.setFocus ();
-}
-
-void setFontDescription (int font) {
-	super.setFontDescription (font);
-	if ((state & CANVAS) != 0) setBackgroundPixmap ();
-}
-
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
-	if ((state & CANVAS) != 0) setBackgroundPixmap ();
 }
 
 /**
