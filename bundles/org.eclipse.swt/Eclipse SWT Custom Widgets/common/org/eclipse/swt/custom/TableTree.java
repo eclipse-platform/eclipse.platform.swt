@@ -332,26 +332,6 @@ public int getSelectionCount () {
 	return table.getSelectionCount();
 }
 
-/**
- * Returns the receiver's style information.
- * <p>
- * Note that the value which is returned by this method <em>may
- * not match</em> the value which was provided to the constructor
- * when the receiver was created. This can occur when the underlying
- * operating system does not support a particular combination of
- * requested styles. For example, if the platform widget used to
- * implement a particular SWT widget always has scroll bars, the
- * result of calling this method would always have the
- * <code>SWT.H_SCROLL</code> and <code>SWT.V_SCROLL</code> bits set.
- * </p>
- *
- * @return the style bits
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
 public int getStyle () {
 	checkWidget();
 	return table.getStyle();
