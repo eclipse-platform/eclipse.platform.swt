@@ -869,7 +869,6 @@ public ImageData getImageData() {
 	OS.memmove(srcData, xSrcImage.data, length);
     */
 	OS.copyPixmapData(srcData, pixmap, length);
-	System.out.println("Image.getImageData: depth: " + xSrcImage.depth);
 	
 	switch (xSrcImage.depth) {
 		case 1:

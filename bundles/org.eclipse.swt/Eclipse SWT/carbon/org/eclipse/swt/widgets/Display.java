@@ -905,7 +905,7 @@ void hideToolTip () {
 protected void init () {
 	super.init ();
 	
-	System.out.println("Display: Mon 3.6.2002");
+	//System.out.println("Display: Mon 3.6.2002");
 	
 	/* Create the callbacks */
 	fApplicationProc= OS.NewApplicationCallbackUPP(this, "handleApplicationCallback");
@@ -1170,6 +1170,13 @@ public boolean readAndDispatch () {
 	switch (rc) {
 	case OS.kNoErr:
 		int target= OS.GetEventDispatcherTarget();
+		
+		/*
+		int eventClass= OS.GetEventClass(evt[0]);
+		System.out.println("readAndDispatch: " + MacUtil.toString(eventClass));
+		*/
+		
+		
 		OS.SendEventToEventTarget(evt[0], target);
 		OS.ReleaseEvent(evt[0]);
 		repairPending();
@@ -1964,36 +1971,54 @@ static String convertToLf(String text) {
 		//return OS.CallNextEventHandler(nextHandler, eRefHandle);
 		return OS.eventNotHandledErr;
 	}
+	
+	private int fActiveWindow;
 
 	private int handleWindowCallback(int nextHandler, int eRefHandle, int whichWindow) {
 		//whichWindow= getDirectObject(eRefHandle);
+		int eventClass= OS.GetEventClass(eRefHandle);
 		int eventKind= OS.GetEventKind(eRefHandle);
-		switch (eventKind) {
-		case OS.kEventWindowActivated:
-			windowProc(whichWindow, SWT.FocusIn, new Boolean(true));
-			return OS.kNoErr;
-		case OS.kEventWindowDeactivated:
-			windowProc(whichWindow, SWT.FocusIn, new Boolean(false));
-			return OS.kNoErr;
-		case OS.kEventWindowBoundsChanged:
-			int[] attr= new int[1];
-			OS.GetEventParameter(eRefHandle, OS.kEventParamAttributes, OS.typeUInt32, null, null, attr);	
-			windowProc(whichWindow, SWT.Resize, new Integer(attr[0]));
-			return OS.kNoErr;
-		case OS.kEventWindowClose:
-			windowProc(whichWindow, SWT.Dispose, null);
-			return OS.kNoErr;
-		case OS.kEventWindowDrawContent:
-			if (toolTipWindowHandle == whichWindow) {
-				processPaintToolTip(whichWindow);
+		
+		switch (eventClass) {
+			
+		case OS.kEventClassMouse:
+			return handleMouseCallback(nextHandler, eRefHandle);
+			
+		case OS.kEventClassWindow:
+			switch (eventKind) {
+			case OS.kEventWindowActivated:
+				fActiveWindow= whichWindow;
+				windowProc(whichWindow, SWT.FocusIn, new Boolean(true));
 				return OS.kNoErr;
-			} else {
-				updateWindow2(whichWindow);
+			case OS.kEventWindowDeactivated:
+				fActiveWindow= 0;
+				windowProc(whichWindow, SWT.FocusIn, new Boolean(false));
 				return OS.kNoErr;
+			case OS.kEventWindowBoundsChanged:
+				int[] attr= new int[1];
+				OS.GetEventParameter(eRefHandle, OS.kEventParamAttributes, OS.typeUInt32, null, null, attr);	
+				windowProc(whichWindow, SWT.Resize, new Integer(attr[0]));
+				return OS.kNoErr;
+			case OS.kEventWindowClose:
+				windowProc(whichWindow, SWT.Dispose, null);
+				return OS.kNoErr;
+			case OS.kEventWindowDrawContent:
+				if (toolTipWindowHandle == whichWindow) {
+					processPaintToolTip(whichWindow);
+					return OS.kNoErr;
+				} else {
+					updateWindow2(whichWindow);
+					return OS.kNoErr;
+				}
+				//break;
+			default:
+				System.out.println("handleWindowCallback: kEventClassWindow kind:" + eventKind);
+				break;
 			}
-			//break;
+			break;
+			
 		default:
-			System.out.println("handleWindowCallback: " + eventKind);
+			System.out.println("handleWindowCallback: unexpected event class: " + MacUtil.toString(eventClass));
 			break;
 		}
 		return OS.eventNotHandledErr;
@@ -2006,15 +2031,17 @@ static String convertToLf(String text) {
 		int eventClass= OS.GetEventClass(eRefHandle);
 		int eventKind= OS.GetEventKind(eRefHandle);
 		
+		//System.out.println("handleApplicationCallback: " + MacUtil.toString(eventClass));
+
 		switch (eventClass) {
 				
 		case OS.kEventClassMenu:
 			switch (eventKind) {
 			case OS.kEventMenuBeginTracking:
-				System.out.println("kEventMenuBeginTracking");
+				//System.out.println("kEventMenuBeginTracking");
 				break;
 			case OS.kEventMenuEndTracking:
-				System.out.println("kEventMenuEndTracking");
+				//System.out.println("kEventMenuEndTracking");
 				break;
 			}
 			break;
@@ -2049,7 +2076,27 @@ static String convertToLf(String text) {
 			break;
 			
 		case OS.kEventClassMouse:
-			return handleMouseCallback(nextHandler, eRefHandle);
+			if (eventKind == OS.kEventMouseDown) {
+					
+				hideToolTip ();
+	
+				OS.ConvertEventRefToEventRecord(eRefHandle, mEvent.getData());
+				
+				MacPoint where= mEvent.getWhere();
+				int[] w= new int[1];
+				short part= OS.FindWindow(where.getData(), w);
+								
+				int oldPort= OS.GetPort();
+				OS.SetPortWindowPort(w[0]);
+				OS.GlobalToLocal(where.getData());
+				OS.SetPort(oldPort);
+				
+				if (part == OS.inMenuBar) {
+					doMenuCommand(OS.MenuSelect(mEvent.getWhere().getData()));
+					return OS.kNoErr;
+				}
+			}		
+			return OS.eventNotHandledErr;
 						
 		case SWT_USER_EVENT:	// SWT1 user event
 			//System.out.println("handleApplicationCallback: user event " + eventKind);
@@ -2066,9 +2113,10 @@ static String convertToLf(String text) {
 		
 		int eventKind= OS.GetEventKind(eRefHandle);
 		
-		if (eventKind == OS.kEventMouseDown)
+		if (eventKind == OS.kEventMouseDown) {
 			fTrackedControl= 0;
-	
+		}
+		
 		MacEvent me= new MacEvent();
 		OS.ConvertEventRefToEventRecord(eRefHandle, me.getData());
 		
@@ -2085,7 +2133,7 @@ static String convertToLf(String text) {
 			//part= getWindowDefPart(eRefHandle);
 			//whichWindow= getDirectObject(eRefHandle);
 		}
-		
+				
 		/*
 		if (eventKind == OS.kEventMouseDown) {
 			Widget w= findWidget(whichWindow);
@@ -2101,26 +2149,20 @@ static String convertToLf(String text) {
 		switch (eventKind) {
 		
 		case OS.kEventMouseDown:
-		
+					
 			hideToolTip ();
 		
-			/*
-			if (whichWindow != OS.FrontNonFloatingWindow()) {
-				System.out.println("  front click");
-				//OS.SelectWindow(whichWindow);
+			//if (whichWindow != OS.FrontNonFloatingWindow()) {
+			//if (whichWindow != OS.FrontWindow()) {
+			//if (OS.IsWindowActive(whichWindow)) {
+			if (whichWindow != fActiveWindow) {
+				//System.out.println("  front click");
+				//OS.CallNextEventHandler(nextHandler, eRefHandle);
 				return OS.eventNotHandledErr;
 			}
-			*/
 		
 			fTrackedControl= 0;
-			
-			if (part == OS.inMenuBar) {
-				System.out.println("---> menu click");
-				doMenuCommand(OS.MenuSelect(me.getWhere().getData()));
-				return OS.kNoErr;
-				//return OS.eventNotHandledErr;
-			}
-		
+					
 			if (part == OS.inContent) {
 				if (handleContentClick(me, whichWindow))
 					return OS.eventNotHandledErr;
@@ -2173,7 +2215,7 @@ static String convertToLf(String text) {
 					
 		return OS.kNoErr;
 	}
-	
+
 	boolean setMacFocusHandle(int wHandle, int focusHandle) {
 	
 		/*

@@ -922,23 +922,19 @@ void hookEvents () {
     */
 	Display display= getDisplay();	
 	int ref= OS.GetWindowEventTarget(shellHandle);
-
 	int[] mask= new int[] {
-		OS.kEventClassMouse, OS.kEventMouseDown,
-		OS.kEventClassMouse, OS.kEventMouseMoved,
-		OS.kEventClassMouse, OS.kEventMouseDragged,
-		OS.kEventClassMouse, OS.kEventMouseUp
-	};
-	OS.InstallEventHandler(ref, display.fApplicationProc, mask, shellHandle);
-
-	int[] mask2= new int[] {
 		OS.kEventClassWindow, OS.kEventWindowActivated,
 		OS.kEventClassWindow, OS.kEventWindowDeactivated,
 		OS.kEventClassWindow, OS.kEventWindowBoundsChanged,
 		OS.kEventClassWindow, OS.kEventWindowClose,
 		OS.kEventClassWindow, OS.kEventWindowDrawContent,
+
+		OS.kEventClassMouse, OS.kEventMouseDown,
+		OS.kEventClassMouse, OS.kEventMouseMoved,
+		OS.kEventClassMouse, OS.kEventMouseDragged,
+		OS.kEventClassMouse, OS.kEventMouseUp
 	};
-	OS.InstallEventHandler(ref, display.fWindowProc, mask2, shellHandle);
+	OS.InstallEventHandler(ref, display.fWindowProc, mask, shellHandle);
 }
 int imeHeight () {
     /* AW

@@ -33,7 +33,7 @@ static int checkStatus(int line, int rc) {
 	case errControlIsNotEmbedder:
 		break;
 	default:
-        fprintf(stderr, "OS: line: %d %d\n", line, rc);
+        //fprintf(stderr, "OS: line: %d %d\n", line, rc);
 		break;
 	}
     return rc;
@@ -2919,7 +2919,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogDispose(
 //---- Misc
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_Init(JNIEnv *env, jclass zz) {
-	fprintf(stderr, "swt.c: Mon 06/28/2002\n");
+	//fprintf(stderr, "swt.c: Mon 06/28/2002\n");
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitCursor(JNIEnv *env, jclass zz) {
