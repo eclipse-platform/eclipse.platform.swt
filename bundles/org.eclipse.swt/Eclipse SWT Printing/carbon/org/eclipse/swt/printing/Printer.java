@@ -325,6 +325,7 @@ public int internal_new_GC(GCData data) {
 		data.device = this;
 		data.background = getSystemColor(SWT.COLOR_WHITE).handle;
 		data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
+		data.font = getSystemFont ();
 		isGCCreated = true;
 	}
 	return context;
