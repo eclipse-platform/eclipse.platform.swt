@@ -369,6 +369,15 @@ public void setClasspath(String classpath) {
 public void setMainClass(String str) {
 	mainClass = str;
 	metaData = loadMetaData();
+	String mainClasses = getMetaData().getMetaData("swt_main_classes", null);
+	if (mainClasses != null) {
+		String[] list = ItemData.split(mainClasses, ",");
+		for (int i = 0; i < list.length - 1; i += 2) {
+			if (mainClass.equals(list[i].trim())) {
+				setOutputDir(list[i + 1].trim());
+			}
+		}
+	}
 }
 
 public void setOutputDir(String str) {
@@ -384,10 +393,6 @@ public static String getDefaultMainClass() {
 	return "org.eclipse.swt.internal." + getDefaultPlatform() + ".OS";
 }
 
-public static String getDefaultOutputDir() {
-	return "../org.eclipse.swt/Eclipse SWT PI/" + getDefaultPlatform() + "/library/";
-}
-
 public static String getDefaultPlatform() {
 	return SWT.getPlatform();
 }
@@ -400,7 +405,6 @@ public static void main(String[] args) {
 		if (args.length > 2) gen.setClasspath(args[2]);
 	} else {
 		gen.setMainClass(getDefaultMainClass());
-		gen.setOutputDir(getDefaultOutputDir());
 	}
 	gen.generate();
 }

@@ -1065,15 +1065,9 @@ void updateMainClass() {
 		if (mainClassCb.indexOf(mainClassStr) == -1) {
 			mainClassCb.add(mainClassStr);
 		}
-		String mainClasses = app.getMetaData().getMetaData("swt_main_classes", null);
-		if (mainClasses != null) {
-			String[] list = ItemData.split(mainClasses, ",");
-			for (int i = 0; i < list.length - 1; i += 2) {
-				if (mainClassStr.equals(list[i].trim())) {
-					int index = outputDirCb.indexOf(list[i + 1].trim());
-					if (index != -1) outputDirCb.select(index);
-				}
-			}
+		if (app.getOutputDir() != null) {
+			int index = outputDirCb.indexOf(app.getOutputDir());
+			if (index != -1) outputDirCb.select(index);
 		}
 	}
 }
@@ -1085,7 +1079,6 @@ public static void main(String[] args) {
 		if (args.length > 1) gen.setOutputDir(args[1]);
 	} else {
 		gen.setMainClass(JNIGeneratorApp.getDefaultMainClass());
-		gen.setOutputDir(JNIGeneratorApp.getDefaultOutputDir());
 	}
 	JNIGeneratorAppUI ui = new JNIGeneratorAppUI(gen);
 	ui.open();
