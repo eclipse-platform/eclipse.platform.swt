@@ -92,7 +92,7 @@ import org.eclipse.swt.graphics.*;
  * @see Device#dispose
  */
 public class Display extends Device {
-	
+
 	/* Events Dispatching and Callback */
 	int gdkEventCount;
 	int /*long*/ [] gdkEvents;
@@ -924,7 +924,6 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		}
 	}
 	OS.gtk_main_do_event (event);
-	
 	if (dispatchEvents == null) putGdkEvents ();
 	if (control != null ) {
 		if (shell != null && !shell.isDisposed () && (shell.style & SWT.ON_TOP) != 0) {
