@@ -421,6 +421,24 @@ void hookEvents () {
 	signal_connect(handle, "enter-notify-event", SWT.MouseEnter, 3);
 	signal_connect(handle, "leave-notify-event", SWT.MouseExit,  3);
 	if (arrowButtonHandle!=0) signal_connect(arrowButtonHandle, "clicked",   SWT.DefaultSelection, 2);
+
+	/*
+	 * Feature in GTK.
+	 * Usually, GTK widgets propagate all events to their parent when they
+	 * are done their own processing.  However, in contrast to other widgets,
+	 * the buttons that make up the tool items, do not propagate the mouse
+	 * up/down events.
+	 * (It it interesting to note that they DO propagate mouse motion events.)
+	 */
+	int mask =
+		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
+		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
+		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
+		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
+		OS.GDK_FOCUS_CHANGE_MASK;
+	OS.gtk_widget_add_events (handle, mask);
+	signal_connect (handle, "button_press_event", SWT.MouseDown, 3);
+	signal_connect (handle, "button_release_event", SWT.MouseUp, 3);
 }
 
 /**
@@ -443,6 +461,14 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+int processMouseDown (int callData, int arg1, int int2) {
+	parent.processMouseDown (callData, arg1, int2);
+	return 0;
+}
+int processMouseUp (int callData, int arg1, int int2) {
+	parent.processMouseUp (callData, arg1, int2);
+	return 0;
+}
 int processMouseEnter (int int0, int int1, int int2) {
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
 	if ( drawHotImage && (currentpixmap != 0) ) { 
