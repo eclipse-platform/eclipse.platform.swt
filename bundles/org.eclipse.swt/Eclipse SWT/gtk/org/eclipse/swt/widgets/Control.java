@@ -2109,6 +2109,15 @@ char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
 			setInputState (event, keyEvent.state);
 		}
 		sendEvent (type, event);
+		// widget could be disposed at this point
+	
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the key
+		* events.  If this happens, end the processing of
+		* the key by returning null.
+		*/
+		if (isDisposed ()) return null;
 		if (event.doit) chars [count++] = chars [index];
 		index++;
 	}
@@ -2128,6 +2137,15 @@ boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 		event.time = keyEvent.time;
 		setKeyState (event, keyEvent);
 		sendEvent (type, event);
+		// widget could be disposed at this point
+	
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the key
+		* events.  If this happens, end the processing of
+		* the key by returning false.
+		*/
+		if (isDisposed ()) return false;
 		return event.doit;
 	}
 	byte [] buffer = new byte [length];
