@@ -5975,3 +5975,44 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1model_1ge
 
 	return (jint)gtk_tree_model_get_iter((GtkTreeModel*)arg0, (GtkTreeIter*)arg1, (GtkTreePath*)arg2);
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1model_1iter_1n_1children
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1model_1iter_1n_1children\n")
+
+	return (jint)gtk_tree_model_iter_n_children((GtkTreeModel*)arg0, (GtkTreeIter*)arg1);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1model_1iter_1children
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("gtk_1tree_1model_1iter_1children\n")
+
+	return (jboolean)gtk_tree_model_iter_children((GtkTreeModel*)arg0, (GtkTreeIter*)arg1, (GtkTreeIter*)arg2);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1model_1iter_1next
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1model_1iter_1next\n")
+
+	return (jboolean)gtk_tree_model_iter_next((GtkTreeModel*)arg0, (GtkTreeIter*)arg1);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1expand_1row
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	DEBUG_CALL("gtk_1tree_1view_1expand_1row\n")
+
+	return (jboolean)gtk_tree_view_expand_row((GtkTreeView*)arg0, (GtkTreePath*)arg1, (gboolean)arg2);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1row_1expanded
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1view_1row_1expanded\n")
+
+	return (jboolean)gtk_tree_view_row_expanded((GtkTreeView*)arg0, (GtkTreePath*)arg1);
+}
+
