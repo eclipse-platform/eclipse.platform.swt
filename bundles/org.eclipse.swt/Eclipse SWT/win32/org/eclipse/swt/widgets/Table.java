@@ -2808,6 +2808,7 @@ int windowProc () {
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
+	if (!OS.IsWindowEnabled (handle)) return result;
 	/*
 	* Feature in Windows.  When WM_ERASEBKGND is called,
 	* it clears the damaged area by filling it with the
