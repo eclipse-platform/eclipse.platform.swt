@@ -1045,6 +1045,16 @@ boolean setKeyState (Event event, int type, int wParam, int lParam) {
 		*/
 		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
 		
+		/*
+		* Feature in Windows.  When the user presses Ctrl+Pause, the
+		* VK_CANCEL key is generated and a WM_CHAR is sent with 0x03,
+		* possibly to allow an application to look for Ctrl+C and the
+		* the Break key at the same time.  This is unexpected and
+		* unwanted.  The fix is to detect the case and set the character
+		* to zero. 
+		*/
+		if (display.lastKey == OS.VK_CANCEL) display.lastAscii = 0x0;
+		
 		event.keyCode = Display.translateKey (display.lastKey);
 	} else {
 		event.keyCode = display.lastKey;
