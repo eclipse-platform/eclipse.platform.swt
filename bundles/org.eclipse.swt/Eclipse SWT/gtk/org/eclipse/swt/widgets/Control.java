@@ -2507,7 +2507,7 @@ boolean translateTraversal (int gdkEvent) {
 	Event event = new Event ();
 	event.doit = (code & detail) != 0;
 	event.detail = detail;
-	event.time = OS.gdk_event_get_time (gdkEvent);
+	event.time = keyEvent.time;
 	setInputState (event, gdkEvent);
 	Shell shell = getShell ();
 	Control control = this;
