@@ -1459,7 +1459,7 @@ public void setSelection (int start, int end) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end, true);
 	if ((style & SWT.MULTI) != 0) {
-		if (start >= 0) setFocusIndex (start);
+		if (0 <= start && start <= end) setFocusIndex (start);
 	}
 }
 
