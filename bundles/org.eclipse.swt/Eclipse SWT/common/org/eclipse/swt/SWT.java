@@ -839,18 +839,6 @@ public class SWT {
 	public static final int ROMAN = 1 << 5;
 
 	/**
-	 * ASCII character convenience constant for the escape character
-	 * (value is the <code>char</code> with value 27)
-	 */
-	public static final char ESC = 27;
-
-	/**
-	 * ASCII character convenience constant for the delete character
-	 * (value is the <code>char</code> with value 127)
-	 */
-	public static final char DEL = 0x7F;
- 
-	/**
 	 * ASCII character convenience constant for the backspace character
 	 * (value is the <code>char</code> '\b')
 	 */
@@ -863,11 +851,31 @@ public class SWT {
 	public static final char CR = '\r';
 
 	/**
+	 * ASCII character convenience constant for the delete character
+	 * (value is the <code>char</code> with value 127)
+	 */
+	public static final char DEL = 0x7F;
+ 
+	/**
+	 * ASCII character convenience constant for the escape character
+	 * (value is the <code>char</code> with value 27)
+	 */
+	public static final char ESC = 0x1B;
+
+	/**
 	 * ASCII character convenience constant for the line feed character
 	 * (value is the <code>char</code> '\n')
 	 */
 	public static final char LF = '\n';
-					
+
+	/**
+	 * ASCII character convenience constant for the tab character
+	 * (value is the <code>char</code> '\t')
+	 * 
+	 * @since 2.1
+	 */
+	public static final char TAB = '\t';
+						
 	/**
 	 * keyboard and/or mouse event mask indicating that the ALT key
 	 * was pushed on the keyboard when the event was generated

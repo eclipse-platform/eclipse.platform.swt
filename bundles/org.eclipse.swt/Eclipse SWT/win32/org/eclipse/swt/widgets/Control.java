@@ -3027,7 +3027,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	
 	/* Map the virtual key */
 	/*
-	* Bug on WinCE.  MapVirtualKey returns incorrect values.
+	* Bug on WinCE.  MapVirtualKey90 returns incorrect values.
 	* The fix is to rely on a key mappings table to determine
 	* whether the key event must be sent now or if a WM_CHAR
 	* event will follow.
@@ -3115,8 +3115,8 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	} else {
 		/*
 		* Get the shifted state or convert to lower case if necessary.
-		* If the user types Ctrl+A, LastKey should be $a, not $A.  If
-		* the user types Ctrl+Shift+A, LastKey should be $A.  If the user 
+		* If the user types Ctrl+A, LastKey should be 'a', not 'A'.  If
+		* the user types Ctrl+Shift+A, LastKey should be 'A'.  If the user 
 		* types Ctrl+Shift+6, the value of LastKey will depend on the 
 		* international keyboard.
 		*/
@@ -3163,8 +3163,9 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		/*
 		* Virtual keys such as VK_RETURN are both virtual and ASCII keys.
 		* Normally, these are marked virtual in WM_CHAR.  Since we will not
-		* be getting a WM_CHAR for the key at this point, we need to test LastKey 
-		* to see if it is virtual.  This happens when the user types Ctrl+Tab.
+		* be getting a WM_CHAR for the key at this point, we need to test
+		* LastKey to see if it is virtual.  This happens when the user types
+		* Ctrl+Tab.
 		*/
 		display.lastVirtual = display.isVirtualKey (display.lastKey);
 		display.lastAscii = display.controlKey (display.lastKey);
@@ -3204,6 +3205,12 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	}
 	
 	/* Map the virtual key. */
+	/*
+	* Bug on WinCE.  MapVirtualKey() returns incorrect values.
+	* The fix is to rely on a key mappings table to determine
+	* whether the key event must be sent now or if a WM_CHAR
+	* event will follow.
+	*/
 	int mapKey = OS.IsWinCE ? 0 : OS.MapVirtualKey (wParam, 2);
 
 	/*
@@ -3944,6 +3951,12 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 	}
 
 	/* If are going to get a WM_SYSCHAR, ignore this message. */
+	/*
+	* Bug on WinCE.  MapVirtualKey() returns incorrect values.
+	* The fix is to rely on a key mappings table to determine
+	* whether the key event must be sent now or if a WM_SYSCHAR
+	* event will follow.
+	*/
 	if (!OS.IsWinCE) {
 		if (OS.MapVirtualKey (wParam, 2) != 0) return null;
 	}
