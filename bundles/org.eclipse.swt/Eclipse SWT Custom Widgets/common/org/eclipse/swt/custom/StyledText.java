@@ -138,6 +138,9 @@ public class StyledText extends Canvas {
 	PaletteData caretPalette = null;	
 	int lastCaretDirection = SWT.NULL;
 	
+	//TEMPORARY CODE
+	Runnable updater = null;
+	
 	/**
 	 * The <code>RTFWriter</code> class is used to write widget content as
 	 * rich text. The implementation complies with the RTF specification 
@@ -5298,6 +5301,19 @@ void handleTraverse(Event event) {
  * Scrolls the widget vertically.
  */
 void handleVerticalScroll(Event event) {
+	//TEMPORARY CODE		
+	if (event.detail == SWT.DRAG && !SWT.getPlatform().equals("win32")) {	
+		if (updater != null) return;
+		updater = new Runnable(){
+			public void run(){
+				if (isDisposed()) return;
+				setVerticalScrollOffset(getVerticalBar().getSelection(), false);
+				updater = null;
+			}
+		};	
+		getDisplay().timerExec(100, updater); 
+		return;
+	}
 	setVerticalScrollOffset(getVerticalBar().getSelection(), false);
 }
 /** 
