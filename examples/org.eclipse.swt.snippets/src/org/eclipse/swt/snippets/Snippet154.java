@@ -40,8 +40,7 @@ public class Snippet154 {
 		Frame frame = SWT_AWT.new_Frame(composite);
 		Panel panel = new Panel(new BorderLayout());
 		frame.add(panel);
-		JPanel root = new JPanel();
-		root.setLayout(new BorderLayout());
+		JRootPane root = new JRootPane();
 		panel.add(root);
 
 		/* Creating components */
@@ -62,7 +61,9 @@ public class Snippet154 {
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.createDefaultColumnsFromModel();
 		JScrollPane scrollPane = new JScrollPane(table);
-		root.add(scrollPane);
+		java.awt.Container contentPane = root.getContentPane();
+		contentPane.setLayout(new BorderLayout());
+		contentPane.add(scrollPane);
 		
 		shell.open();
 		while(!shell.isDisposed()) {
