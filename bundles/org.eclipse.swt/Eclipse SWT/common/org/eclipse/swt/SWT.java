@@ -1960,6 +1960,12 @@ public class SWT {
 	public static final int ERROR_CANNOT_GET_SELECTION = 9;
 
 	/** 
+	 * SWT error constant indicating that the matrix is not invertible
+	 * (value is 10).
+	 */
+	public static final int ERROR_CANNOT_INVERT_MATRIX = 10;
+
+	/** 
 	 * SWT error constant indicating that the underlying operating
 	 * system was unable to provide the height of an item
 	 * (value is 11).
@@ -1993,6 +1999,13 @@ public class SWT {
 	 * (value is 15).
 	 */
 	public static final int ERROR_ITEM_NOT_REMOVED = 15;
+
+	/** 
+	 * SWT error constant indicating that the graphics library
+	 * is not available
+	 * (value is 16).
+	 */
+	public static final int ERROR_NO_GRAPHICS_LIBRARY = 16;
 
 	/** 
 	 * SWT error constant indicating that a particular feature has
@@ -2681,6 +2694,8 @@ static String findErrorText (int code) {
 		case ERROR_DEVICE_DISPOSED:        return "Device is disposed"; //$NON-NLS-1$
 		case ERROR_FAILED_EXEC:            return "Failed to execute runnable"; //$NON-NLS-1$
 		case ERROR_FAILED_LOAD_LIBRARY:    return "Unable to load library"; //$NON-NLS-1$
+		case ERROR_CANNOT_INVERT_MATRIX:    return "Cannot invert matrix"; //$NON-NLS-1$
+		case ERROR_NO_GRAPHICS_LIBRARY:    return "Unable to load graphics library"; //$NON-NLS-1$
 	}
 	return "Unknown error"; //$NON-NLS-1$
 }
@@ -2706,7 +2721,7 @@ public static String getMessage(String key) {
  * @return the SWT platform name
  */
 public static String getPlatform () {
-	return Library.getPlatform ();
+	return Platform.PLATFORM;
 }
 
 /**
@@ -2716,7 +2731,7 @@ public static String getPlatform () {
  * @return the SWT version number
  */
 public static int getVersion () {
-	return Library.getVersion ();
+	return Library.SWT_VERSION;
 }
 
 /**
@@ -2818,7 +2833,7 @@ public static void error (int code, Throwable throwable, String detail) {
 			throw new IllegalArgumentException (message);
 		}
 		
-		/* SWT Errors (non-fatal) */
+		/* SWT Exceptions (non-fatal) */
 		case ERROR_INVALID_SUBCLASS:
 		case ERROR_THREAD_INVALID_ACCESS:
 		case ERROR_WIDGET_DISPOSED:
@@ -2828,13 +2843,15 @@ public static void error (int code, Throwable throwable, String detail) {
 		case ERROR_UNSUPPORTED_DEPTH:
 		case ERROR_UNSUPPORTED_FORMAT:
 		case ERROR_FAILED_EXEC:
+		case ERROR_CANNOT_INVERT_MATRIX:
+		case ERROR_NO_GRAPHICS_LIBRARY:
 		case ERROR_IO: {
 			SWTException exception = new SWTException (code, message);
 			exception.throwable = throwable;
 			throw exception;
 		}
 		
-		/* OS Failure/Limit (fatal, may occur only on some platforms) */
+		/* Operation System Errors (fatal, may occur only on some platforms) */
 		case ERROR_CANNOT_GET_COUNT:
 		case ERROR_CANNOT_GET_ENABLED:
 		case ERROR_CANNOT_GET_ITEM:
@@ -2850,7 +2867,7 @@ public static void error (int code, Throwable throwable, String detail) {
 		case ERROR_NO_HANDLES:
 		//FALL THROUGH
 		
-		/* SWT Failure/Limit (fatal, may occur only on some platforms) */
+		/* SWT Errors (fatal, may occur only on some platforms) */
 		case ERROR_FAILED_LOAD_LIBRARY:
 		case ERROR_NO_MORE_CALLBACKS:
 		case ERROR_NOT_IMPLEMENTED:

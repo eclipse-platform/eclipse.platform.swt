@@ -49,14 +49,9 @@ public class SWT_AWT {
 	 */
 	public static String embeddedFrameClass;
 
-	static final boolean JDK1_3;
 	static boolean loaded, swingInitialized;
 	static Object menuSelectionManager;
 	static Method clearSelectionPath;
-
-static {
-	JDK1_3 = "1.3".equals(System.getProperty("java.specification.version"));
-}
 
 static native final int getAWTHandle (Canvas canvas);
 
@@ -173,7 +168,7 @@ public static Frame new_Frame (final Composite parent) {
 		public void handleEvent (Event e) {
 			EventQueue.invokeLater(new Runnable () {
 				public void run () {
-					if (JDK1_3) {
+					if (Library.JAVA_VERSION >= Library.JAVA_VERSION(1, 4, 0)) {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
 					} else {
@@ -188,17 +183,19 @@ public static Frame new_Frame (final Composite parent) {
 		public void handleEvent (Event e) {
 			EventQueue.invokeLater(new Runnable () {
 				public void run () {
-					if (JDK1_3) {
+					if (Library.JAVA_VERSION >= Library.JAVA_VERSION(1, 4, 0)) {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
 					} else {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 					}
-					if (menuSelectionManager != null && clearSelectionPath != null) {
-						try {
-							clearSelectionPath.invoke(menuSelectionManager, new Object[0]);
-						} catch (Throwable e) {}
+					if (Library.JAVA_VERSION >= Library.JAVA_VERSION(1, 4, 2)) {
+						if (menuSelectionManager != null && clearSelectionPath != null) {
+							try {
+								clearSelectionPath.invoke(menuSelectionManager, new Object[0]);
+							} catch (Throwable e) {}
+						}
 					}
 				}
 			});
