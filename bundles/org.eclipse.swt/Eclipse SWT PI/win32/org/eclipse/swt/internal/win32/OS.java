@@ -968,6 +968,7 @@ public class OS {
 	public static final int TCM_SETITEM = IsUnicode ? 0x133d : 0x1306;
 	public static final int TCN_SELCHANGE = 0xfffffdd9;
 	public static final int TCN_SELCHANGING = 0xfffffdd8;
+	public static final int TCS_BOTTOM = 0x0002;
 	public static final int TCS_FOCUSNEVER = 0x8000;
 	public static final int TCS_MULTILINE = 0x200;
 	public static final int TCS_TABS = 0x0;
