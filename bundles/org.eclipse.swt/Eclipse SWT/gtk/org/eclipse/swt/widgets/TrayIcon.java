@@ -164,9 +164,8 @@ void setMenu (Menu menu) {
 public void setToolTipText (String string) {
 	checkWidget ();
 	toolTipText = string;
-	if (string == null) string = "";
 	byte [] buffer = null;
-	if (string.length () > 0) {
+	if (string != null && string.length () > 0) {
 		buffer = Converter.wcsToMbcs (null, string, true);
 	}
 	if (tooltipsHandle == 0) {
