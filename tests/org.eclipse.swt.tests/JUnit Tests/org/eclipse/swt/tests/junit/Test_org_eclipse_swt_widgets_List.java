@@ -1620,6 +1620,18 @@ public void test_setSelectionI() {
 	assertEquals(list.getSelectionIndices(), new int[0]);
 	assertEquals(list.getFocusIndex(), number - 1);
 	
+	list.removeAll();
+
+	list.setSelection(-2);
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 0);
+	list.setSelection(0);
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 0);
+	list.setSelection(-1);
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 0);
+	
 	setSingleList();
 
 	for (int i = 0; i < number; i++) {
@@ -1644,6 +1656,18 @@ public void test_setSelectionI() {
 	list.setSelection(-1);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
 	assertEquals(list.getFocusIndex(), number - 1);
+	
+	list.removeAll();
+	
+	list.setSelection(0);
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 0);
+	list.setSelection(-1);
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 0);
+	list.setSelection(-2);
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 0);
 }
 
 public void test_setSelectionII() {
