@@ -169,7 +169,32 @@ int processSelection (int info) {
 			return OS.Pt_CONTINUE;
 		}
 	}
-	postEvent (SWT.Selection);
+	Event event = new Event ();
+	if (info != 0) {
+		PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+		OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+		if (cbinfo.event != 0) {
+			PhEvent_t ev = new PhEvent_t ();
+			OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+			int data = OS.PhGetData (cbinfo.event);
+			if (data != 0) {
+				switch (ev.type) {
+					case OS.Ph_EV_KEY:
+						PhKeyEvent_t ke = new PhKeyEvent_t ();
+						OS.memmove (ke, data, PhKeyEvent_t.sizeof);
+						setKeyState (event, ke);
+						break;
+					case OS.Ph_EV_BUT_PRESS:
+					case OS.Ph_EV_BUT_RELEASE:
+						PhPointerEvent_t pe = new PhPointerEvent_t ();
+						OS.memmove (pe, data, PhPointerEvent_t.sizeof);
+						setMouseState (ev.type, event, pe);
+						break;
+				}	
+			}
+		}
+	}
+	postEvent (SWT.Selection, event);
 	return OS.Pt_CONTINUE;
 }
 
