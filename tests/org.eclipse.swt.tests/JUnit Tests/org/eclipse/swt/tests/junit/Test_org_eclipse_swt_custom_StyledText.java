@@ -16,6 +16,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.printing.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.BidiUtil;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledText
@@ -78,11 +79,7 @@ private String textString() {
 	return "This is the text component in testing\nNew Line1\nNew Line2\nNew Line3\nNew Line4.";
 }
 private boolean isBidi() {
-	String codePage = System.getProperty("file.encoding").toUpperCase();
-	boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-	
-	// Running on Windows and with Hebrew or Arabic codepage?
-	return isWindows && ("CP1255".equals(codePage) || "CP1256".equals(codePage));
+	return BidiUtil.isBidiPlatform();
 }
 // this method must not be public so that the auto-gen tool keeps it
 private StyleRange getStyle(int start, int length, RGB fg, RGB bg) {

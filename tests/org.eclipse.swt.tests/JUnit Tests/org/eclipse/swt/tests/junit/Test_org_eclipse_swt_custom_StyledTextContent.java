@@ -11,6 +11,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.BidiUtil;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.StyledTextContent
@@ -63,11 +64,7 @@ public Test_org_eclipse_swt_custom_StyledTextContent(String name) {
 	super(name);
 }
 private boolean isBidi() {
-	String codePage = System.getProperty("file.encoding").toUpperCase();
-	boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-	
-	// Running on Windows and with Hebrew or Arabic codepage?
-	return isWindows && ("CP1255".equals(codePage) || "CP1256".equals(codePage));
+	return BidiUtil.isBidiPlatform();
 }
 protected void setUp() {
 	if (isBidi()) XINSET = 3;
