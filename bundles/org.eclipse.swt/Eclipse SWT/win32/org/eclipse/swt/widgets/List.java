@@ -1001,7 +1001,9 @@ public void removeSelectionListener(SelectionListener listener) {
 public void select (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.SINGLE) != 0 && indices.length > 1) return;
+	int length = indices.length;
+	if (length == 0) return;
+	if ((style & SWT.SINGLE) != 0 && length > 1) return;
 	select (indices, false);
 }
 
@@ -1035,9 +1037,9 @@ public void select (int index) {
 }
 
 void select (int index, boolean scroll) {
-	if (index == -1) return;
+	if (index < 0) return;
 	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
-	if (!(0 <= index && index < count)) return;
+	if (index >= count) return;
 	if (scroll) {
 		if ((style & SWT.SINGLE) != 0) {
 			OS.SendMessage (handle, OS.LB_SETCURSEL, index, 0);
@@ -1106,28 +1108,24 @@ void select (int index, boolean scroll) {
  */
 public void select (int start, int end) {
 	checkWidget ();
-	if (start > end) return;
+	if (end < 0 || start > end) return;
+	if ((style & SWT.SINGLE) != 0 && start != end) return;
+	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+	if (count == 0 || start >= count) return;
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
 	if ((style & SWT.SINGLE) != 0) {
-		if (start == end) {
-			select (start, false);
-		}
-		return;
+		select (start, false);
+	} else {
+		select (start, end, false);
 	}
-	select (start, end, false);
 }
 
 void select (int start, int end, boolean scroll) {
 	/*
-	* Ensure that at least one item is contained in
-	* the range from start to end.  Note that when
-	* start = end, LB_SELITEMRANGEEX deselects the
-	* item.
+	* Note that when start = end, LB_SELITEMRANGEEX
+	* deselects the item.
 	*/
-	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
-	if (start < 0 && end < 0) return;
-	if (start >= count && end >= count) return;
-	start = Math.min (count - 1, Math.max (0, start));
-	end = Math.min (count - 1, Math.max (0, end));
 	if (start == end) {
 		select (start, scroll);
 		return;
@@ -1371,13 +1369,13 @@ public void setSelection(int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
-	if ((style & SWT.SINGLE) != 0 && indices.length > 1) return;
+	int length = indices.length;
+	if (length == 0) return;
+	if ((style & SWT.SINGLE) != 0 && length > 1) return;
 	select (indices, true);
 	if ((style & SWT.MULTI) != 0) {
-		if (indices.length > 0) {
-			int focusIndex = indices [0];
-			if (focusIndex >= 0) setFocusIndex (focusIndex);
-		}
+		int focusIndex = indices [0];
+		if (focusIndex >= 0) setFocusIndex (focusIndex);
 	}
 }
 
@@ -1407,9 +1405,11 @@ public void setSelection (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
-	if ((style & SWT.SINGLE) != 0 && items.length > 1) return;
+	int length = items.length;
+	if (length == 0) return;
+	if ((style & SWT.SINGLE) != 0 && length > 1) return;
 	int focusIndex = -1;
-	for (int i=items.length-1; i>=0; --i) {
+	for (int i=length-1; i>=0; --i) {
 		String string = items [i];
 		int index = 0;
 		if (string != null) {
@@ -1479,15 +1479,16 @@ public void setSelection (int index) {
 public void setSelection (int start, int end) {
 	checkWidget ();
 	deselectAll ();
-	if (start > end) return;
+	if (end < 0 || start > end) return;
+	if ((style & SWT.SINGLE) != 0 && start != end) return;
+	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+	if (count == 0 || start >= count) return;
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
 	if ((style & SWT.SINGLE) != 0) {
-		if (start == end) {
-			select (start, true);
-		}
-		return;
-	}
-	select (start, end, true);
-	if (0 <= start && start <= end) {
+		select (start, true);
+	} else {
+		select (start, end, true);
 		setFocusIndex (start);
 	}
 }
