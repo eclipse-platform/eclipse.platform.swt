@@ -2330,7 +2330,7 @@ int shiftedKey (int key) {
  */
 public boolean sleep () {
 	checkDevice ();
-	if (getMessageCount () != 0) return false;
+	if (getMessageCount () != 0) return true;
 	if (OS.IsWinCE) {
 		OS.MsgWaitForMultipleObjectsEx (0, 0, OS.INFINITE, OS.QS_ALLINPUT, OS.MWMO_INPUTAVAILABLE);
 		return true;

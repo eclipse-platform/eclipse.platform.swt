@@ -1078,6 +1078,9 @@ public int getIconDepth () {
 int getLastEventTime () {
 	return OS.XtLastTimestampProcessed (xDisplay);
 }
+int getMessageCount () {
+	return synchronizer.getMessageCount ();
+}
 /**
  * Returns an array of monitors attached to the device.
  * 
@@ -2390,6 +2393,8 @@ void showToolTip (int handle, String toolTipText) {
  */
 public boolean sleep () {
 	checkDevice ();
+	if (getMessageCount () != 0) return true;
+	
 	/*
 	* This code is intentionally commented.
 	*/
@@ -2413,6 +2418,7 @@ public boolean sleep () {
 		timeout [0] = 0;
 		timeout [1] = 100000;
 		if (OS.select (max_fd + 1, fd_set, null, null, timeout) != 0) break;
+		if (getMessageCount () != 0) return true;
 		int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 		if (OS.XtAppPending (xtContext) != 0) return true;
 	} while (true);
