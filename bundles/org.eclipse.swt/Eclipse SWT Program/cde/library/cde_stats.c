@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int CDE_nativeFunctionCount = 10;
-int CDE_nativeFunctionCallCount[10];
+int CDE_nativeFunctionCount = 11;
+int CDE_nativeFunctionCallCount[11];
 char * CDE_nativeFunctionNames[] = {
 	"_1DtActionInvoke",
 	"_1DtAppInitialize",
@@ -27,6 +27,7 @@ char * CDE_nativeFunctionNames[] = {
 	"_1DtDtsFreeAttributeValue",
 	"_1DtDtsFreeDataType",
 	"_1DtDtsFreeDataTypeNames",
+	"_1DtInitialize",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

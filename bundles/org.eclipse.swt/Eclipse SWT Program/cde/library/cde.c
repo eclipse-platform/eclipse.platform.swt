@@ -168,3 +168,22 @@ JNIEXPORT void JNICALL CDE_NATIVE(_1DtDtsFreeDataTypeNames)
 }
 #endif
 
+#ifndef NO__1DtInitialize
+JNIEXPORT jboolean JNICALL CDE_NATIVE(_1DtInitialize)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3)
+{
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jboolean rc = 0;
+	CDE_NATIVE_ENTER(env, that, _1DtInitialize_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jboolean)DtInitialize((Display *)arg0, (Widget)arg1, (char *)lparg2, (char *)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	CDE_NATIVE_EXIT(env, that, _1DtInitialize_FUNC);
+	return rc;
+}
+#endif
+

@@ -30,6 +30,15 @@ public static final boolean DtAppInitialize(int appContext, int display, int top
 	} finally {
 		lock.unlock();
 	}
+}
+public static final native boolean _DtInitialize(int display, int topWiget, byte[] appName, byte[] appClass);
+public static final boolean DtInitialize(int display, int topWiget, byte[] appName, byte[] appClass) {
+	lock.lock();
+	try {
+		return _DtInitialize(display, topWiget, appName, appClass);
+	} finally {
+		lock.unlock();
+	}
 } 
 public static final native void _DtDbLoad();
 public static final void DtDbLoad() {
