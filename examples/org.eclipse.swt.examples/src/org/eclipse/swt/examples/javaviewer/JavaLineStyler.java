@@ -24,8 +24,8 @@ class JavaLineStyler implements LineStyleListener {
 
 	public static final int WORD=		0;
 	public static final int WHITE=		1;
-	public static final int KEY=		2;
-	public static final int COMMENT=	3;	// single line comment:	//
+	public static final int KEY=			2;
+	public static final int COMMENT=		3;	
 	public static final int STRING=		5;
 	public static final int OTHER=		6;
 	public static final int NUMBER=		7;
@@ -60,8 +60,8 @@ void initializeColors() {
 	Display display = Display.getDefault();
 	colors= new Color[] {
 		new Color(display, new RGB(0, 0, 0)),		// black
-		new Color(display, new RGB(255, 0, 0)),		// red
-		new Color(display, new RGB(0, 255, 0)),		// green
+		new Color(display, new RGB(255, 0, 0)),	// red
+		new Color(display, new RGB(0, 255, 0)),	// green
 		new Color(display, new RGB(0,   0, 255))	// blue
 	};
 	tokenColors= new int[MAXIMUM_TOKEN];
@@ -90,30 +90,25 @@ public void lineGetStyle(LineStyleEvent event) {
 	Vector styles = new Vector();
 	int token;
 	StyleRange lastStyle;
+	// If the line is part of a block comment, create one style for the entire line.
 	if (inBlockComment(event.lineOffset, event.lineOffset + event.lineText.length())) {
-		styles.addElement(new StyleRange(event.lineOffset, event.lineText.length(), colors[1], null));
+		styles.addElement(new StyleRange(event.lineOffset, event.lineText.length(), getColor(COMMENT), null));
 		event.styles = new StyleRange[styles.size()];
 		styles.copyInto(event.styles);
 		return;
 	}
+	Color defaultFgColor = ((Control)event.widget).getForeground();
 	scanner.setRange(event.lineText);
 	token = scanner.nextToken();
 	while (token != EOF) {
 		if (token == OTHER) {
-			// do nothing
-		} else if ((token == WHITE) && (!styles.isEmpty())) {
-			int start = scanner.getStartOffset() + event.lineOffset;
-			lastStyle = (StyleRange)styles.lastElement();
-			if (lastStyle.fontStyle != SWT.NORMAL) {
-				if (lastStyle.start + lastStyle.length == start) {
-					// have the white space take on the style before it to minimize font style
-					// changes
-					lastStyle.length += scanner.getLength();
-				}
-			}
-		} else {		
+			// do nothing for non-colored tokens
+		} else if (token != WHITE) {
 			Color color = getColor(token);
-			if (color != colors[0]) {		// hardcoded default foreground color, black
+			// Only create a style if the token color is different than the 
+			// widget's default foreground color and the token's style is not 
+			// bold.  Keywords are bolded.
+			if ((!color.equals(defaultFgColor)) || (token == KEY)) {
 				StyleRange style = new StyleRange(scanner.getStartOffset() + event.lineOffset, scanner.getLength(), color, null);
 				if (token == KEY) {
 					style.fontStyle = SWT.BOLD;
@@ -121,6 +116,7 @@ public void lineGetStyle(LineStyleEvent event) {
 				if (styles.isEmpty()) {
 					styles.addElement(style);
 				} else {
+					// Merge similar styles.  Doing so will improve performance.
 					lastStyle = (StyleRange)styles.lastElement();
 					if (lastStyle.similarTo(style) && (lastStyle.start + lastStyle.length == style.start)) {
 						lastStyle.length += style.length;
@@ -129,13 +125,23 @@ public void lineGetStyle(LineStyleEvent event) {
 					}
 				} 
 			} 
-		}
+		} else if ((!styles.isEmpty()) && ((lastStyle=(StyleRange)styles.lastElement()).fontStyle == SWT.BOLD)) {
+			int start = scanner.getStartOffset() + event.lineOffset;
+			lastStyle = (StyleRange)styles.lastElement();
+			// A font style of SWT.BOLD implies that the last style
+			// represents a java keyword.
+			if (lastStyle.start + lastStyle.length == start) {
+				// Have the white space take on the style before it to 
+				// minimize the number of style ranges created and the
+				// number of font style changes during rendering.
+				lastStyle.length += scanner.getLength();
+			}
+		} 
 		token= scanner.nextToken();
 	}
 	event.styles = new StyleRange[styles.size()];
 	styles.copyInto(event.styles);
 }
-
 public void parseBlockComments(String text) {
 	blockComments = new Vector();
 	StringReader buffer = new StringReader(text);
