@@ -1666,15 +1666,18 @@ int OnStartURIOpen(int aURI, int retval) {
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsCString_delete(aSpec);
 	
-	boolean cancel = false;
+	boolean doit = true;
 	if (request == 0) {
 		LocationEvent event = new LocationEvent(this);
+		event.display = getDisplay();
+		event.widget = this;
 		event.location = new String(dest);
+		event.doit = true;
 		for (int i = 0; i < locationListeners.length; i++)
 			locationListeners[i].changing(event);
-		cancel = event.cancel;
+		doit = event.doit;
 	}
-	XPCOM.memmove(retval, new int[] {cancel ? 1 : 0}, 4);
+	XPCOM.memmove(retval, new int[] {doit ? 0 : 1}, 4);
 	return XPCOM.NS_OK;
 }
 

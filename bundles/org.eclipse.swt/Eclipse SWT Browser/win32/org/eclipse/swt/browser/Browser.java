@@ -145,12 +145,13 @@ public Browser(Composite parent, int style) {
 						newEvent.display = getDisplay();
 						newEvent.widget = Browser.this;
 						newEvent.location = url;
+						newEvent.doit = true;
 						for (int i = 0; i < locationListeners.length; i++)
 							locationListeners[i].changing(newEvent);
 						Variant cancel = event.arguments[6];
 						if (cancel != null) {
 							int pCancel = cancel.getByRef();
-							COM.MoveMemory(pCancel, new short[]{newEvent.cancel ? COM.VARIANT_TRUE : COM.VARIANT_FALSE}, 2);
+							COM.MoveMemory(pCancel, new short[]{newEvent.doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
 					   }
 					}
 					

@@ -102,7 +102,7 @@ public class Browser1 {
 					shell.close();
 					return;
 				}
-				event.cancel = true;
+				event.doit = false;
 				new Thread() {
 					public void run() {
 						System.out.println("timer start");

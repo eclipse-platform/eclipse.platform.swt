@@ -618,13 +618,12 @@ int Pt_CB_WEB_URL(int info) {
 	event.display = getDisplay();
 	event.widget = this;
 	event.location = url;
+	event.doit = true;
 	for (int i = 0; i < locationListeners.length; i++)
 		locationListeners[i].changing(event);
 	/* Widget could have been disposed */
 	if (isDisposed()) return OS.Pt_CONTINUE;
-	if (event.cancel) {
-		stop();
-	}
+	if (!event.doit) stop();
 	return OS.Pt_CONTINUE;
 }
 

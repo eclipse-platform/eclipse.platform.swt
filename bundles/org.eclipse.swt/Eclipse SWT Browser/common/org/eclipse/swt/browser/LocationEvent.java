@@ -34,8 +34,11 @@ public class LocationEvent extends TypedEvent {
 	/** current location */
 	public String location;
 	
-	/** cancel location loading */
-	public boolean cancel;
+	/**
+	 * A flag indicating whether the location loading should be allowed.
+	 * Setting this field to <code>false</code> will cancel the operation.
+	 */
+	public boolean doit;
 
 LocationEvent(Widget w) {
 	super(w);
