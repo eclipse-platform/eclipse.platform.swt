@@ -224,6 +224,8 @@ public DropTarget(Control control, int style) {
 					selectedOperation = event.detail;
 				}
 			}
+			control = DropTarget.this.control;
+			if (control == null || control.isDisposed()) return;
 			control.getDisplay().timerExec(delay, dragOverHeartbeat);
 		}
 	};
