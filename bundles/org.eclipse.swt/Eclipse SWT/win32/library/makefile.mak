@@ -23,7 +23,8 @@ copyright = "Copyright (C) IBM Corporation 1999, 2000.  All rights reserved."
 # assumes JAVA_HOME is set in the environment from which nmake is run
 
 DLLPREFIX=swt
-DLLNAME=$(DLLPREFIX)$(maj_ver)$(min_ver).dll
+OSPREFIX=win32
+DLLNAME=$(DLLPREFIX)-$(OSPREFIX)-$(maj_ver)$(min_ver).dll
 
 LIBNAME=swt# declaration
 

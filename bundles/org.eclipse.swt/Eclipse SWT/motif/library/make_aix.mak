@@ -22,7 +22,8 @@ MOTIF_HOME = /bluebird/teamswt/swt-builddir/motif21
 # Define the various DLL (shared) libraries to be made.
 
 SWT_PREFIX   = swt
-SWT_DLL      = lib$(SWT_PREFIX)$(DLL_VERSION).so
+OS_PREFIX    = aix
+SWT_DLL      = lib$(SWT_PREFIX)-$(OS_PREFIX)-$(DLL_VERSION).so
 SWT_OBJ      = callback.o globals.o library.o structs.o swt.o 
 SWT_LIB      = -L$(MOTIF_HOME) -G -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm -lXt -lX11 -lXext
 
