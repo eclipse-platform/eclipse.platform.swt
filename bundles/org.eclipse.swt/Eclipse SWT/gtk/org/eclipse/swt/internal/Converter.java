@@ -37,10 +37,10 @@ public static String defaultCodePage () {
 }
 
 public static char [] mbcsToWcs (String codePage, byte [] buffer) {
-	int [] items_written = new int [1];
+	int /*long*/ [] items_written = new int /*long*/ [1];
 	int /*long*/ ptr = OS.g_utf8_to_utf16 (buffer, buffer.length, null, items_written, null);
 	if (ptr == 0) return EmptyCharArray;
-	int length = items_written [0];
+	int length = (int)/*64*/items_written [0];
 	char [] chars = new char [length];
 	OS.memmove (chars, ptr, length * 2);
 	OS.g_free (ptr);
@@ -55,14 +55,14 @@ public static byte [] wcsToMbcs (String codePage, String string, boolean termina
 }
 
 public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean terminate) {
-	int [] items_read = new int [1], items_written = new int [1];
+	int /*long*/ [] items_read = new int /*long*/ [1], items_written = new int /*long*/ [1];
 	/*
 	* Note that g_utf16_to_utf8()  stops converting 
 	* when it finds the first NULL.
 	*/
 	int /*long*/ ptr = OS.g_utf16_to_utf8 (buffer, buffer.length, items_read, items_written, null);
 	if (ptr == 0) return terminate ? NullByteArray : EmptyByteArray;
-	int written = items_written [0];
+	int written = (int)/*64*/items_written [0];
 	byte [] bytes = new byte [written + (terminate ? 1 : 0)];
 	OS.memmove (bytes, ptr, written);
 	OS.g_free (ptr);

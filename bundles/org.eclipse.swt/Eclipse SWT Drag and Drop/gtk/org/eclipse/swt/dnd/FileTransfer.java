@@ -160,10 +160,10 @@ public Object nativeToJava(TransferData transferData) {
 		int /*long*/ utf8Ptr = OS.g_locale_to_utf8(localePtr, -1, null, null, error);
 		OS.g_free(localePtr);
 		if (error[0] != 0 || utf8Ptr == 0) continue;
-		int[] items_written = new int[1];
+		int /*long*/[] items_written = new int /*long*/[1];
 		int /*long*/ utf16Ptr = OS.g_utf8_to_utf16(utf8Ptr, -1, null, items_written, null);
 		OS.g_free(utf8Ptr);
-		length = items_written[0];
+		length = (int)/*64*/items_written[0];
 		char[] buffer = new char[length];
 		OS.memmove(buffer, utf16Ptr, length * 2);
 		OS.g_free(utf16Ptr);
