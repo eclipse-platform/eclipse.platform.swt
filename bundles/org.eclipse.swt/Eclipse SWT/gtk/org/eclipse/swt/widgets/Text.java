@@ -1423,8 +1423,8 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	/*
 	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and 
-	* insertion of the text.  This is not wrong, but is inconsistent with other platforms.  The workaround
-	* is to block the firing of these events and fire them ourselves in a consistent manner. 
+	* insertion of the text.  This is not wrong, but is inconsistent with other platforms.  The
+	* fix is to block the firing of these events and fire them ourselves in a consistent manner. 
 	*/
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		string = verifyText (string, 0, getCharCount ());
