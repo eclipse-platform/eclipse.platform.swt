@@ -239,12 +239,17 @@ public String open () {
 	struct.lpstrInitialDir = lpstrInitialDir;
 	struct.lpstrFilter = lpstrFilter;
 	struct.nFilterIndex = 0;
-	
+
+	/*
+	* Set the default extension to an empty string.  If the
+	* user fails to type an extension and this extension is
+	* empty, Windows uses the current value of the filter
+	* extension at the time that the dialog is closed.
+	*/
 	int lpstrDefExt = 0;
 	boolean save = (style & SWT.SAVE) != 0;
 	if (save) {
 		lpstrDefExt = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
-		OS.MoveMemory (lpstrDefExt, new TCHAR (0, "", true), TCHAR.sizeof);
 		struct.lpstrDefExt = lpstrDefExt;
 	}
 
@@ -352,7 +357,7 @@ public String open () {
 	OS.HeapFree (hHeap, 0, lpstrFilter);
 	OS.HeapFree (hHeap, 0, lpstrInitialDir);
 	OS.HeapFree (hHeap, 0, lpstrTitle);
-	if (save) OS.HeapFree (hHeap, 0, lpstrDefExt);
+	if (lpstrDefExt != 0) OS.HeapFree (hHeap, 0, lpstrDefExt);
 	
 	/* Restore the old cursor */
 	OS.SetCursor (hCursor);
