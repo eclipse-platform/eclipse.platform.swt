@@ -1505,7 +1505,7 @@ public class SWT {
 	public static final int NUM_LOCK = KEYCODE_BIT + 83;
 	
 	/**
-	 * Keyboard event constant representing the num
+	 * Keyboard event constant representing the scroll
 	 * lock key (value is (1&lt;&lt;24)+84).
 	 * 
 	 * @since 3.0
