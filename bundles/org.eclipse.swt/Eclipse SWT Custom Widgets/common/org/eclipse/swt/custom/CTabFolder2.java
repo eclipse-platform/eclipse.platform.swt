@@ -139,16 +139,14 @@ public class CTabFolder2 extends Composite {
 	int cornerWidth = 5;
 	int[] topLeftCorner = new int[] {0,5, 1,4, 1,3, 2,2, 3,1, 4,1, 5,0,};
 	int[] topRightCorner = new int[] {-5,0, -4,1, -3,1, -2,2, -1,3, -1,4, 0,5};
-	int[] bottomLeftCorner = new int[] {0,-5, 1,-5, 1,-3, 2,-3, 2,-2, 3,-2, 3,-2, 5,-1, 5,0};
+	int[] bottomLeftCorner = new int[] {0,-5, 1,-5, 1,-3, 2,-3, 2,-2, 3,-2, 3,-1, 5,-1, 5,0};
 	int[] bottomRightCorner = new int[] {-5,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-5};
-	int[] topLeftOutsideCorner = new int[] {0,8, 1,8, 1,6, 2,5, 3,4, 4,3, 5,2, 6,1, 8,1, 8,0};
-	int[] topRightOutsideCorner = new int[] {-8,0, -8,1, -6,1, -6,2, -5,2, -5,3, -4,3, -4,4, -3,4, -3,5, -2,5, -2,6, -1, 6, -1,8, 0,8};
-	int[] bottomLeftOutsideCorner = new int[] {0,-8, 1,-8, 1,-6, 2,-6, 2,-5, 3,-5, 3,-4, 4,-4, 4,-3, 5,-3, 5,-2, 6,-2, 6,-1, 8,-1, 8,0};
-	int[] bottomRightOutsideCorner = new int[] {-8,0, -8,-1, -6,-1, -6,-2, -5,-2, -5,-3, -4,-3, -4,-4, -3,-4, -3,-5, -2,-5, -2,-6, -1,-6, -1,-8, 0,-8};
+	int[] topLeftOutsideCorner = new int[] {0,7, 1,7, 1,5, 2,4, 3,3, 4,2, 5,1, 7,1, 7,0};
+	int[] topRightOutsideCorner = new int[] {-7,0, -7,1, -5,1, -4,2, -3,3, -2,4, -1,5, -1,7, 0,7};
+	int[] bottomLeftOutsideCorner = new int[] {0,-7, 1,-7, 1,-6, 2,-5, 3,-4, 4,-3, 5,-2, 6,-1, 7,-1, 7,0};
+	int[] bottomRightOutsideCorner = new int[] {-7,0, -7,-1, -6,-1, -5,-2, -4,-3, -3,-4, -2,-5, -1,-6, -1,-7, 0,-7};
 
 	int[] curve;
-	int curveWidth = 50;
-	int curveS = 35;
 	
 	// when disposing CTabFolder, don't try to layout the items or 
 	// change the selection as each child is destroyed.
@@ -166,6 +164,11 @@ public class CTabFolder2 extends Composite {
 	// internal constants
 	static final int DEFAULT_WIDTH = 64;
 	static final int DEFAULT_HEIGHT = 64;
+	
+	static final int SELECTION_BORDER = 4;
+	static final int CURVE_WIDTH = 50;
+	static final int CURVE_TOP = 25;
+	static final int CURVE_BOTTOM = 25;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -201,7 +204,7 @@ public class CTabFolder2 extends Composite {
 public CTabFolder2(Composite parent, int style) {
 	super(parent, checkStyle (style));
 	onBottom = (getStyle() & SWT.BOTTOM) != 0;
-	border = (style & SWT.BORDER) != 0 ? 5 : 0;
+	border = (style & SWT.BORDER) != 0 ? 3 : 0;
 	single = (style & SWT.SINGLE) != 0;
 	
 	//set up default colors
@@ -348,13 +351,13 @@ public void addCTabFolderExpandListener(CTabFolderExpandListener listener) {
 		showExpand = true;
 		if (onBottom) {
 			expandRect.x = border;
-			expandRect.y = getSize().y - border - tabHeight + CTabItem2.SELECTION_BORDER;
+			expandRect.y = getSize().y - border - tabHeight + SELECTION_BORDER;
 			expandRect.width = decoratorWidth;
-			expandRect.height = tabHeight - CTabItem2.SELECTION_BORDER;
+			expandRect.height = tabHeight - SELECTION_BORDER;
 		} else {
 			expandRect.x = expandRect.y = border;
 			expandRect.width = decoratorWidth;
-			expandRect.height = tabHeight - CTabItem2.SELECTION_BORDER;
+			expandRect.height = tabHeight - SELECTION_BORDER;
 		}
 		updateItems();
 		redrawTabArea();
@@ -1420,15 +1423,22 @@ void onPaint(Event event) {
 		return;
 	}
 
+	// draw close
+	drawClose(gc);
+	// draw chevron
+	drawChevron(gc);
+	// draw expand 
+	drawExpand(gc);
+	
 	if (single) {
 		// Fill in the empty spaces to the right and left of the tab
 		// with the background color
 		if (selectedIndex != -1) {
 			CTabItem2 item = items[selectedIndex];
 			int x = border;
-			int y = onBottom ? size.y-border-tabHeight+CTabItem2.SELECTION_BORDER: border;
+			int y = onBottom ? size.y-border-tabHeight+SELECTION_BORDER: border;
 			int width = item.x - x;
-			int height = tabHeight-CTabItem2.SELECTION_BORDER;
+			int height = tabHeight-SELECTION_BORDER;
 			gc.setBackground(background);
 			gc.fillRectangle(x, y, width, height);
 			x = item.x + item.width;
@@ -1442,9 +1452,9 @@ void onPaint(Event event) {
 		int edge = lastItem.x+lastItem.width;
 		if (edge < size.x) {
 			int x = edge;
-			int y = onBottom ? size.y-border-tabHeight+CTabItem2.SELECTION_BORDER : border;
+			int y = onBottom ? size.y-border-tabHeight+SELECTION_BORDER : border;
 			int width = size.x-edge-border;
-			int height = tabHeight-CTabItem2.SELECTION_BORDER;
+			int height = tabHeight-SELECTION_BORDER;
 			gc.setBackground(parentBackground);
 			gc.fillRectangle(x, y, width, height);
 		}
@@ -1456,25 +1466,49 @@ void onPaint(Event event) {
 			}
 		}
 	}
+	
+	// redraw the Border
+	drawBorder(gc);
+	
+	// Draw selection border across all tabs
+	int x1 = border;
+	int y1 = onBottom ? size.y - border - tabHeight : border+tabHeight-SELECTION_BORDER+1;
+	int width1 = size.x - 2*border;
+	int height1 = SELECTION_BORDER-1;
+	if (selectedIndex != -1) {
+		int[] shape = new int[] {x1,y1, x1+width1,y1, x1+width1,y1+height1, x1,y1+height1};
+		drawSelectionBackground(gc, y1, shape);
+	} else {
+		gc.setBackground(background);
+		gc.fillRectangle(x1, y1, width1, height1);
+	}
+	if (border > 0) {
+		Color c = new Color(getDisplay(), borderRGB);
+		gc.setForeground(c);
+		int[] points = null;
+		if (onBottom) {
+			points = new int[] {border-1, size.y - border - tabHeight + SELECTION_BORDER - 1,
+			                    size.x-border, size.y - border - tabHeight + SELECTION_BORDER - 1,
+			                    size.x-border, border-1,
+			                    border-1, border-1,
+			                    border-1, size.y - border - tabHeight + SELECTION_BORDER - 1,};
+		} else {
+			points = new int[] {border-1,  border+tabHeight-SELECTION_BORDER,
+			                    size.x-border, border+tabHeight-SELECTION_BORDER,
+			                    size.x-border, size.y - border,
+			                    border-1, size.y - border,
+			                    border-1,  border+tabHeight-SELECTION_BORDER,};
+		}
+		gc.drawPolyline(points);
+		c.dispose();
+	}
+	
 	// Draw selected tab
 	if (selectedIndex != -1) {
 		CTabItem2 item = items[selectedIndex];
 		if (event.getBounds().intersects(item.getBounds())) {
 			item.onPaint(gc, true);
 		}
-	}
-	
-	// Draw selection border across all tabs
-	int x = border;
-	int y = onBottom ? size.y - border - tabHeight : border+tabHeight-CTabItem2.SELECTION_BORDER;
-	int width = size.x - 2*border;
-	int height = CTabItem2.SELECTION_BORDER;
-	if (selectedIndex != -1) {
-		int[] shape = new int[] {x,y, x+width,y, x+width,y+height, x,y+height};
-		drawSelectionBackground(gc, y, shape);
-	} else {
-		gc.setBackground(background);
-		gc.fillRectangle(x, y, width, height);
 	}
 	
 	// draw insertion mark
@@ -1497,15 +1531,6 @@ void onPaint(Event event) {
 //			gc.drawLine(bounds.x + bounds.width - 2, bounds.y + bounds.height - 1, bounds.x + bounds.width + 2, bounds.y + bounds.height - 1);
 //		}
 //	}
-	
-	// draw close
-	drawClose(gc);
-	// draw chevron
-	drawChevron(gc);
-	// draw expand 
-	drawExpand(gc);
-	// redraw the Border
-	drawBorder(gc);
 	
 	gc.setForeground(getForeground());
 	gc.setBackground(getBackground());	
@@ -1758,8 +1783,8 @@ boolean setButtonBounds() {
 	closeRect.x = closeRect.y = closeRect.height = closeRect.width = 0;
 	if (showClose && selectedIndex != -1) {
 		closeRect.x = size.x - border - decoratorWidth;
-		closeRect.y = onBottom ? size.y - border - tabHeight + CTabItem2.SELECTION_BORDER : border;
-		closeRect.height = tabHeight - CTabItem2.SELECTION_BORDER;
+		closeRect.y = onBottom ? size.y - border - tabHeight + SELECTION_BORDER : border;
+		closeRect.height = tabHeight - SELECTION_BORDER;
 		closeRect.width = decoratorWidth;
 	}
 	if (oldX != closeRect.x || oldWidth != closeRect.width) changed = true;
@@ -1772,8 +1797,8 @@ boolean setButtonBounds() {
 		int rightEdge = size.x - border - closeRect.width;
 		if (single || topTabIndex > 0 || item.x + item.width > rightEdge) {
 			chevronRect.x = size.x - border - closeRect.width - decoratorWidth;
-			chevronRect.y = onBottom ? size.y - border - tabHeight + CTabItem2.SELECTION_BORDER: border;
-			chevronRect.height = tabHeight - CTabItem2.SELECTION_BORDER;
+			chevronRect.y = onBottom ? size.y - border - tabHeight + SELECTION_BORDER: border;
+			chevronRect.height = tabHeight - SELECTION_BORDER;
 			chevronRect.width = decoratorWidth;
 		}
 	}
@@ -1782,9 +1807,9 @@ boolean setButtonBounds() {
 	int oldY = expandRect.y;
 	if (showExpand && onBottom) {
 		expandRect.x = border;
-		expandRect.y = size.y - border - tabHeight + CTabItem2.SELECTION_BORDER;
+		expandRect.y = size.y - border - tabHeight + SELECTION_BORDER;
 		expandRect.width = decoratorWidth;
-		expandRect.height = tabHeight - CTabItem2.SELECTION_BORDER;
+		expandRect.height = tabHeight - SELECTION_BORDER;
 	}
 	if (oldY != expandRect.y) changed = true;
 	return changed;
@@ -2422,16 +2447,16 @@ boolean updateTabHeight(int oldHeight){
 	oldSize = null;
 	if (onBottom) {
 		curve = bezier(0, tabHeight+1,
-		               curveS, tabHeight+1,
-				       curveWidth-curveS, CTabItem2.SELECTION_BORDER,
-		               curveWidth, CTabItem2.SELECTION_BORDER,
-		               curveWidth);
+		               CURVE_TOP, tabHeight+1,
+				       CURVE_WIDTH-CURVE_BOTTOM, SELECTION_BORDER+1,
+		               CURVE_WIDTH, SELECTION_BORDER+1,
+		               CURVE_WIDTH);
 	} else {
 		curve = bezier(0, 0,
-		               curveS, 0, 
-		               curveWidth-curveS, tabHeight-CTabItem2.SELECTION_BORDER+1,
-		               curveWidth, tabHeight-CTabItem2.SELECTION_BORDER+1,
-		               curveWidth);
+		               CURVE_BOTTOM, 0, 
+		               CURVE_WIDTH-CURVE_TOP, tabHeight-SELECTION_BORDER,
+		               CURVE_WIDTH, tabHeight-SELECTION_BORDER,
+		               CURVE_WIDTH);
 	}
 	
 	notifyListeners(SWT.Resize, new Event());
