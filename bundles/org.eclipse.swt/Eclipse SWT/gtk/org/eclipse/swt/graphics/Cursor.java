@@ -284,6 +284,105 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	if (device.tracking) device.new_Object(this);
 }
 
+public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (hotspotX >= source.width || hotspotX < 0 ||
+		hotspotY >= source.height || hotspotY < 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	ImageData mask = source.getTransparencyMask();
+
+	/* Ensure depth and scanline pad are equal to 1 */
+	if (source.depth > 1 || source.scanlinePad != 1) {
+		/* Create a destination image with no data */
+		ImageData newSource = new ImageData(
+			source.width, source.height, 1, ImageData.bwPalette(),
+			1, null, 0, null, null, -1, -1, source.type,
+			source.x, source.y, source.disposalMethod, source.delayTime);
+
+		/* Convert the source to a black and white image of depth 1 */
+		PaletteData palette = source.palette;
+		if (palette.isDirect) ImageData.blit(ImageData.BLIT_SRC,
+			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, 0, 0, 0,
+			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+			newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, 0, 0, 0,
+			false, false);
+		else ImageData.blit(ImageData.BLIT_SRC,
+			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, null, null, null,
+			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+			newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, null, null, null,
+			false, false);
+		source = newSource;
+	}
+	
+	/*
+	 * Make sure the mask is padded properly. Unix requires icon masks
+	 * to have a scanline pad of 1.
+	 */
+	if (mask.scanlinePad != 1) {
+		int bytesPerLine = (mask.width + 7) / 8;
+		byte[] newMaskData = new byte[bytesPerLine * mask.height];
+		ImageData newMask = new ImageData(mask.width, mask.height, 1, mask.palette, 1, newMaskData);
+		int[] maskPixels = new int[mask.width];
+		for (int y = 0; y < mask.height; y++) {
+			mask.getPixels(0, y, mask.width, maskPixels, 0);
+			newMask.setPixels(0, y, newMask.width, maskPixels, 0);
+		}
+		mask = newMask;
+	}
+	
+	/* Swap the bits in each byte */
+	byte[] sourceData = new byte[source.data.length];
+	byte[] maskData = new byte[mask.data.length];
+	byte[] data = source.data;
+	for (int i = 0; i < data.length; i++) {
+		byte s = data[i];
+		sourceData[i] = (byte)(((s & 0x80) >> 7) |
+			((s & 0x40) >> 5) |
+			((s & 0x20) >> 3) |
+			((s & 0x10) >> 1) |
+			((s & 0x08) << 1) |
+			((s & 0x04) << 3) |
+			((s & 0x02) << 5) |
+			((s & 0x01) << 7));
+	}
+	data = mask.data;
+	for (int i = 0; i < data.length; i++) {
+		byte s = data[i];
+		maskData[i] = (byte)(((s & 0x80) >> 7) |
+			((s & 0x40) >> 5) |
+			((s & 0x20) >> 3) |
+			((s & 0x10) >> 1) |
+			((s & 0x08) << 1) |
+			((s & 0x04) << 3) |
+			((s & 0x02) << 5) |
+			((s & 0x01) << 7));
+	}
+	int sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, source.width, source.height);
+	if (sourcePixmap==0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, source.width, source.height);
+	if (maskPixmap==0) SWT.error(SWT.ERROR_NO_HANDLES);
+
+	/* Get the colors */
+	GdkColor foreground = new GdkColor();
+	foreground.red = (short)65535;
+	foreground.green = (short)65535;
+	foreground.blue = (short)65535;
+	GdkColor background = new GdkColor();
+
+	/* Create the cursor */
+	handle = OS.gdk_cursor_new_from_pixmap (sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
+	
+	/* Dispose the pixmaps */
+	OS.g_object_unref (sourcePixmap);
+	OS.g_object_unref (maskPixmap);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the cursor. Applications must dispose of all cursors which
