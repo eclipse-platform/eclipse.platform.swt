@@ -505,8 +505,8 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	if (srcImage.transparentPixel != -1) srcImage.createMask();
 	try {
 		if (focus(true, null)) {
-			int srcBits= OS.getBitMapForCopyBits(srcImage.pixmap);
-			int maskBits= OS.getBitMapForCopyBits(srcImage.mask);
+			int srcBits= OS.DerefHandle(srcImage.pixmap);
+			int maskBits= OS.DerefHandle(srcImage.mask);
 			int destBits= OS.GetPortBitMapForCopyBits(handle);
 			if (srcBits != 0 && maskBits != 0 && destBits != 0) {
 				MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
@@ -526,7 +526,7 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, int depth) {
 	try {
 		if (focus(true, null)) {
-			int srcBits= OS.getBitMapForCopyBits(srcImage.pixmap);
+			int srcBits= OS.DerefHandle(srcImage.pixmap);
 			int destBits= OS.GetPortBitMapForCopyBits(handle);
 			if (srcBits != 0 && destBits != 0) {
 				MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
@@ -1204,8 +1204,8 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		final RGB toRGB = new RGB((xColor.red & 0xffff) >>> 8, (xColor.green & 0xffff) >>> 8, (xColor.blue & 0xffff) >>> 8);
 		*/
 		
-		RGB fromRGB = Color.carbon_new(data.device, fromColor).getRGB();
-		RGB toRGB = Color.carbon_new(data.device, toColor).getRGB();
+		RGB fromRGB = Color.carbon_new(data.device, fromColor, false).getRGB();
+		RGB toRGB = Color.carbon_new(data.device, toColor, false).getRGB();
 	
 		final int redBits, greenBits, blueBits;
 		if (directColor) {
@@ -1475,7 +1475,7 @@ public Color getBackground() {
 	xColor.pixel = values.background;
 	OS.XQueryColor(xDisplay,data.colormap,xColor);
 	*/
-	return Color.carbon_new(data.device, data.background);
+	return Color.carbon_new(data.device, data.background, false);
 }
 /**
  * Returns the width of the specified character in the font
@@ -1655,7 +1655,7 @@ public Color getForeground() {
 	OS.XQueryColor(xDisplay,data.colormap,xColor);
 	return Color.motif_new(data.device, xColor);
 	*/
-	return Color.carbon_new(data.device, data.foreground);
+	return Color.carbon_new(data.device, data.foreground, false);
 }
 /** 
  * Returns the receiver's line style, which will be one
