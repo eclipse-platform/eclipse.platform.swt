@@ -2686,21 +2686,6 @@ boolean translateTraversal (int key, int theEvent) {
 			int [] modifiers = new int [1];
 			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
 			boolean next = (modifiers [0] & OS.shiftKey) == 0;
-			/*
-			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
-			* always attempt traversal which is not correct.
-			* The default should be the same as a plain Tab key.
-			* This behavior is currently relied on by StyledText.
-			* 
-			* The correct behavior is to give every key to any
-			* control that wants to see every key.  The default
-			* behavior for a Canvas should be to see every key.
-			*/
-			switch (modifiers [0]) {
-				case OS.controlKey:
-				case OS.shiftKey:
-					code |= SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT;
-			}
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
@@ -2718,16 +2703,6 @@ boolean translateTraversal (int key, int theEvent) {
 			int [] modifiers = new int [1];
 			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
 			if ((modifiers [0] & OS.controlKey) == 0) return false;
-			/*
-			* NOTE: This code causes Ctrl+PgUp and Ctrl+PgDn to always
-			* attempt traversal which is not correct.  This behavior is
-			* currently relied on by StyledText.
-			* 
-			* The correct behavior is to give every key to any
-			* control that wants to see every key.  The default
-			* behavior for a Canvas should be to see every key.
-			*/
-			code |= SWT.TRAVERSE_PAGE_NEXT | SWT.TRAVERSE_PAGE_PREVIOUS;
 			detail = key == 121 /* Page down */ ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;
 		}
