@@ -2,21 +2,27 @@
 
 <project default="build_gtk_lib" basedir="../../..">
 
+<target name="init">
+	<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite" />
+	<eclipse.refreshLocal resource="org.eclipse.swt.tools" depth="infinite" />	
+   	<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr" />
+</target>
+	
 <!-- Build swt.so for GTK -->
-<target name="build_gtk_lib">
+<target name="build_gtk_lib" depends="init">
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="make_mozilla"/>
-		<arg line="install"/>		
+		<arg line="install"/>
 	</exec>
-	<eclipse.refreshLocal resource="org.eclipse.swt.gtk" depth="infinite" />	
+	<eclipse.refreshLocal resource="org.eclipse.swt.gtk" depth="infinite" />
 </target>
 
 <!-- Build swt.so for GTK 64 -->
-<target name="build_gtk64_lib">
+<target name="build_gtk64_lib" depends="init">
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
-		<arg line="install"/>		
+		<arg line="install"/>
 	</exec>
 	<eclipse.refreshLocal resource="org.eclipse.swt.gtk64" depth="infinite" />	
 </target>

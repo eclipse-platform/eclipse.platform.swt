@@ -5,7 +5,7 @@
 <target name="init">
 	<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite" />
 	<eclipse.refreshLocal resource="org.eclipse.swt.tools" depth="infinite" />	
-   	<eclipse.incrementalBuild project="${plugin}" kind="incr" />
+   	<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr" />
 </target>
 	
 <!-- Build swt.dll for Windows -->
