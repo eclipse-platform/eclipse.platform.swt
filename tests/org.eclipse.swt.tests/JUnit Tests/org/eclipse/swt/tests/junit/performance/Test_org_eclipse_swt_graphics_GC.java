@@ -25,7 +25,6 @@ import org.eclipse.test.performance.*;
  * @see org.eclipse.swt.graphics.GC
  */
 public class Test_org_eclipse_swt_graphics_GC extends SwtPerformanceTestCase {
-	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_GC(String name) {
 	super(name);
@@ -51,7 +50,8 @@ protected void tearDown() throws Exception {
 	shell.dispose();
 }
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
-	final int count = COUNT / 10;
+	int count = 4000;	// 5000 causes No More Handles
+
 	Image[] images = new Image [count];
 	for (int i = 0; i < count; i++) {
 		images[i] = new Image(display, 10, 10);		
@@ -72,7 +72,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	
 	disposeMeter(meter);
 
-	final int count2 = COUNT % 100;
+	count /= 10;
 	
 	Class printerClass = null;
 	try {
@@ -81,9 +81,9 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 		// Printer class not present (eSWT). Skip test.
 		return;
 	}
-	Object[] printers = new Object[count2];
+	Object[] printers = new Object[count];
 	try {
-		for (int i = 0; i < count2; i++) {
+		for (int i = 0; i < count; i++) {
 			printers[i] = printerClass.newInstance();
 		}
 	} catch (InstantiationException e1) {
@@ -94,20 +94,21 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 
 	meter = createMeter("printer");
 	meter.start();
-	for (int i = 0; i < count2; i++) {
+	for (int i = 0; i < count; i++) {
 		gcs[i] = new GC((Printer) printers[i]);
 	}
 	meter.stop();
 
-	for (int i = 0; i < count2; i++) {
+	for (int i = 0; i < count; i++) {
 		gcs[i].dispose();
+		((Printer)printers[i]).dispose();
 	}
 
 	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
-	final int count = COUNT / 10;
+	int count = 4000;	// 5000 causes No More Handles
 	
 	Image[] images = new Image[count];
 	for (int i = 0; i < count; i++) {
@@ -129,7 +130,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 	
 	disposeMeter(meter);
 
-	final int count2 = COUNT / 100;
+	count /= 10;
+	
 	Class printerClass = null;
 	try {
 		printerClass = Class.forName("org.eclipse.swt.printing.Printer");
@@ -137,9 +139,9 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 		// Printer class not present (eSWT). Skip test.
 		return;
 	}
-	Object[] printers = new Object[count2];
+	Object[] printers = new Object[count];
 	try {
-		for (int i = 0; i < count2; i++) {
+		for (int i = 0; i < count; i++) {
 			printers[i] = printerClass.newInstance();
 		}
 	} catch (InstantiationException e1) {
@@ -150,19 +152,22 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 
 	meter = createMeter("printer");
 	meter.start();
-	for (int i = 0; i < count2; i++) {
+	for (int i = 0; i < count; i++) {
 		gcs[i] = new GC((Printer) printers[i], SWT.RIGHT_TO_LEFT);
 	}
 	meter.stop();
 
-	for (int i = 0; i < count2; i++) {
+	for (int i = 0; i < count; i++) {
 		gcs[i].dispose();
+		((Printer)printers[i]).dispose();
 	}
 
 	disposeMeter(meter);
 }
 
 public void test_copyAreaIIIIII() {
+	final int COUNT = 1500000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -191,6 +196,8 @@ public void test_copyAreaIIIIII() {
 }
 
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
+	final int COUNT = 4000;	// 5000 causes No More Handles
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -208,21 +215,19 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	gc.drawLine(5, 5, 10, 10);
 	gc.drawLine(5, 10, 10, 5);
 	
-	final int count = COUNT / 10;
-	
-	Image[] images = new Image[count];
-	for (int i = 0; i < count; i++) {
+	Image[] images = new Image[COUNT];
+	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, 15, 15);
 	}
 
 	PerformanceMeter meter = createMeter();
 	meter.start();
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		gc.copyArea(images[i], coords[i][0], coords[i][1]);
 	}
 	meter.stop();
 
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		images[i].dispose();
 	}
 
@@ -230,24 +235,23 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 }
 
 public void test_dispose() {
-	final int count = COUNT / 10;
-	Image[] images = new Image [count];
-	for (int i = 0; i < count; i++) {
-		images[i] = new Image(display, 10, 10); 
-	}
-	GC[] gcs = new GC [count];
-	for (int i = 0; i < count; i++) {
+	final int COUNT = 2000;	// 4000 causes No More Handles
+
+	Image[] images = new Image [COUNT];
+	GC[] gcs = new GC [COUNT];
+	for (int i = 0; i < COUNT; i++) {
+		images[i] = new Image(display, 10, 10);
 		gcs[i] = new GC(images[i]);
 	}
-
+	
 	PerformanceMeter meter = createMeter("not disposed");
 	meter.start();
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		gcs[i].dispose();	// dispose
 	}
 	meter.stop();
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < COUNT; i++) {
     	images[i].dispose();
     }
 
@@ -255,7 +259,7 @@ public void test_dispose() {
 
 	meter = createMeter("disposed");
 	meter.start();
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		gcs[i].dispose();	// dispose disposed
 	}
 	meter.stop();
@@ -264,6 +268,8 @@ public void test_dispose() {
 }
 
 public void test_drawArcIIIIII() {
+	final int COUNT = 200000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -285,6 +291,8 @@ public void test_drawArcIIIIII() {
 }
 
 public void test_drawFocusIIII() {
+	final int COUNT = 750000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -306,11 +314,13 @@ public void test_drawFocusIIII() {
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
+	int count = 120000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
-	final int[][] coords = new int[COUNT][];
+	final int[][] coords = new int[count][];
 	int y = 0;
-	for (int i = 0; i < COUNT; i++) {
+	for (int i = 0; i < count; i++) {
 		int x = i % bounds.width;
 		coords[i] = new int[] {x,y};
 		if (x == 0) y += 3;
@@ -346,27 +356,31 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	try {
 		PerformanceMeter meter = createMeter("normal");
 		meter.start();
-		for (int i = 0; i < COUNT; i++) {
+		for (int i = 0; i < count; i++) {
 			gc.drawImage(imageNormal, coords[i][0], coords[i][1]);	// normal image
 		}
 		meter.stop();
 		
 		disposeMeter(meter);
 	
+		count /= 100;
+		
 		meter = createMeter("transparent");
 		Performance performance = Performance.getDefault();
-		performance.tagAsGlobalSummary(meter, "GC.drawImage() transparent * " + COUNT, Dimension.CPU_TIME);
+		performance.tagAsGlobalSummary(meter, "GC.drawImage() transparent * " + count, Dimension.CPU_TIME);
 		meter.start();
-		for (int i = 0; i < COUNT; i++) {
+		for (int i = 0; i < count; i++) {
 			gc.drawImage(imageTransparent, coords[i][0], coords[i][1]);	// transparent image
 		}
 		meter.stop();
 		
 		disposeMeter(meter);
 	
+		count *= 10;
+		
 		meter = createMeter("alpha");
 		meter.start();
-		for (int i = 0; i < COUNT; i++) {
+		for (int i = 0; i < count; i++) {
 			gc.drawImage(imageAlpha, coords[i][0], coords[i][1]);	// alpha image
 		}
 		meter.stop();
@@ -421,6 +435,8 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
 }
 
 public void test_drawLineIIII() {
+	final int COUNT = 750000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -442,6 +458,8 @@ public void test_drawLineIIII() {
 }
 
 public void test_drawOvalIIII() {
+	final int COUNT = 700000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -463,6 +481,8 @@ public void test_drawOvalIIII() {
 }
 
 public void test_drawPointII() {
+	final int COUNT = 1500000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -484,6 +504,8 @@ public void test_drawPointII() {
 }
 
 public void test_drawPolygon$I() {
+	final int COUNT = 750000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -505,6 +527,8 @@ public void test_drawPolygon$I() {
 }
 
 public void test_drawPolyline$I() {
+	final int COUNT = 550000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -526,6 +550,8 @@ public void test_drawPolyline$I() {
 }
 
 public void test_drawRectangleIIII() {
+	final int COUNT = 1200000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -547,6 +573,8 @@ public void test_drawRectangleIIII() {
 }
 
 public void test_drawRectangleLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 1200000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final Rectangle[] coords = new Rectangle[COUNT];
@@ -568,6 +596,8 @@ public void test_drawRectangleLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_drawRoundRectangleIIIIII() {
+	final int COUNT = 400000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -589,6 +619,9 @@ public void test_drawRoundRectangleIIIIII() {
 }
 
 public void test_drawStringLjava_lang_StringII() {
+	final int COUNT = 600000;
+	final String STRING = "test string";
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -602,7 +635,7 @@ public void test_drawStringLjava_lang_StringII() {
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawString("test string", coords[i][0], coords[i][1]);				
+		gc.drawString(STRING, coords[i][0], coords[i][1]);				
 	}
 	meter.stop();
 	
@@ -610,6 +643,9 @@ public void test_drawStringLjava_lang_StringII() {
 }
 
 public void test_drawStringLjava_lang_StringIIZ() {
+	final int COUNT = 600000;
+	final String STRING = "test string";
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -625,7 +661,7 @@ public void test_drawStringLjava_lang_StringIIZ() {
 	performance.tagAsGlobalSummary(meter, "GC.drawString () transparent * " + COUNT, Dimension.CPU_TIME);
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawString("test string", coords[i][0], coords[i][1], true);				
+		gc.drawString(STRING, coords[i][0], coords[i][1], true);				
 	}
 	meter.stop();
 	
@@ -634,7 +670,7 @@ public void test_drawStringLjava_lang_StringIIZ() {
 	meter = createMeter("not transparent");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawString("test string", coords[i][0], coords[i][1], false);				
+		gc.drawString(STRING, coords[i][0], coords[i][1], false);				
 	}
 	meter.stop();
 	
@@ -642,6 +678,9 @@ public void test_drawStringLjava_lang_StringIIZ() {
 }
 
 public void test_drawTextLjava_lang_StringII() {
+	final int COUNT = 100000;
+	final String STRING = "test string";
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -655,7 +694,7 @@ public void test_drawTextLjava_lang_StringII() {
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawText("test string", coords[i][0], coords[i][1], true);				
+		gc.drawText(STRING, coords[i][0], coords[i][1], true);				
 	}
 	meter.stop();
 	
@@ -663,6 +702,9 @@ public void test_drawTextLjava_lang_StringII() {
 }
 
 public void test_drawTextLjava_lang_StringIII() {
+	final int COUNT = 130000;
+	final String STRING = "\t\r\na&bc&";
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -676,7 +718,7 @@ public void test_drawTextLjava_lang_StringIII() {
 	PerformanceMeter meter = createMeter("transparent");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawText("\t\r\na&bc&", coords[i][0], coords[i][1], SWT.DRAW_TRANSPARENT);				
+		gc.drawText(STRING, coords[i][0], coords[i][1], SWT.DRAW_TRANSPARENT);				
 	}
 	meter.stop();
 	
@@ -685,7 +727,7 @@ public void test_drawTextLjava_lang_StringIII() {
 	meter = createMeter("delimiter");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawText("\t\r\na&bc&", coords[i][0], coords[i][1], SWT.DRAW_DELIMITER);				
+		gc.drawText(STRING, coords[i][0], coords[i][1], SWT.DRAW_DELIMITER);				
 	}
 	meter.stop();
 	
@@ -694,7 +736,7 @@ public void test_drawTextLjava_lang_StringIII() {
 	meter = createMeter("mnemonic");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawText("\t\r\na&bc&", coords[i][0], coords[i][1], SWT.DRAW_MNEMONIC);				
+		gc.drawText(STRING, coords[i][0], coords[i][1], SWT.DRAW_MNEMONIC);				
 	}
 	meter.stop();
 	
@@ -703,7 +745,7 @@ public void test_drawTextLjava_lang_StringIII() {
 	meter = createMeter("tab");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawText("\t\r\na&bc&", coords[i][0], coords[i][1], SWT.DRAW_TAB);				
+		gc.drawText(STRING, coords[i][0], coords[i][1], SWT.DRAW_TAB);				
 	}
 	meter.stop();
 	
@@ -712,7 +754,7 @@ public void test_drawTextLjava_lang_StringIII() {
 	meter = createMeter("no flags");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawText("\t\r\na&bc&", coords[i][0], coords[i][1], SWT.NONE);				
+		gc.drawText(STRING, coords[i][0], coords[i][1], SWT.NONE);				
 	}
 	meter.stop();
 	
@@ -720,6 +762,8 @@ public void test_drawTextLjava_lang_StringIII() {
 }
 
 public void test_drawTextLjava_lang_StringIIZ() {
+	final int COUNT = 120000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -750,6 +794,8 @@ public void test_drawTextLjava_lang_StringIIZ() {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 500000000;
+	
 	GC gc1 = new GC(display);
 	
 	PerformanceMeter meter = createMeter("equal");
@@ -780,6 +826,8 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_fillArcIIIIII() {
+	final int COUNT = 200000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -801,6 +849,8 @@ public void test_fillArcIIIIII() {
 }
 
 public void test_fillGradientRectangleIIIIZ() {
+	final int COUNT = 500000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -831,6 +881,8 @@ public void test_fillGradientRectangleIIIIZ() {
 }
 
 public void test_fillOvalIIII() {
+	final int COUNT = 750000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -852,6 +904,8 @@ public void test_fillOvalIIII() {
 }
 
 public void test_fillPolygon$I() {
+	final int COUNT = 700000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -873,6 +927,8 @@ public void test_fillPolygon$I() {
 }
 
 public void test_fillRectangleIIII() {
+	final int COUNT = 2000000;	// 3000000 caises OOM
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -894,6 +950,8 @@ public void test_fillRectangleIIII() {
 }
 
 public void test_fillRectangleLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 2000000;	// 3000000 causes OOM
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final Rectangle[] coords = new Rectangle[COUNT];
@@ -915,6 +973,8 @@ public void test_fillRectangleLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_fillRoundRectangleIIIIII() {
+	final int COUNT = 400000;
+	
 	// precompute points
 	Rectangle bounds = gc.getClipping();
 	final int[][] coords = new int[COUNT][];
@@ -936,6 +996,8 @@ public void test_fillRoundRectangleIIIIII() {
 }
 
 public void test_getAdvanceWidthC() {
+	final int COUNT = 2200000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -947,6 +1009,8 @@ public void test_getAdvanceWidthC() {
 }
 
 public void test_getBackground() {
+	final int COUNT = 15000000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -958,10 +1022,13 @@ public void test_getBackground() {
 }
 
 public void test_getCharWidthC() {
+	final int COUNT = 700000;
+	final char CHAR = 'a';
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.getCharWidth('a');
+		gc.getCharWidth(CHAR);
 	}
 	meter.stop();
 	
@@ -969,6 +1036,8 @@ public void test_getCharWidthC() {
 }
 
 public void test_getClipping() {
+	final int COUNT = 1200000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -980,20 +1049,21 @@ public void test_getClipping() {
 }
 
 public void test_getClippingLorg_eclipse_swt_graphics_Region() {
-	final int count = COUNT / 10;
-	Region[] regions = new Region[count];
-	for (int i = 0; i < count; i++) {
+	final int COUNT = 4000;	// 5000 causes No More Handles
+	
+	Region[] regions = new Region[COUNT];
+	for (int i = 0; i < COUNT; i++) {
 		regions[i] = new Region(display);
 	}
 	
 	PerformanceMeter meter = createMeter();
 	meter.start();
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		gc.getClipping(regions[i]);
 	}
 	meter.stop();
 	
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < COUNT; i++) {
 		regions[i].dispose();
 	}
 	
@@ -1001,6 +1071,8 @@ public void test_getClippingLorg_eclipse_swt_graphics_Region() {
 }
 
 public void test_getFont() {
+	final int COUNT = 2000000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -1012,6 +1084,8 @@ public void test_getFont() {
 }
 
 public void test_getFontMetrics() {
+	final int COUNT = 1500000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -1023,6 +1097,8 @@ public void test_getFontMetrics() {
 }
 
 public void test_getForeground() {
+	final int COUNT = 15000000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -1034,6 +1110,8 @@ public void test_getForeground() {
 }
 
 public void test_getLineStyle() {
+	final int COUNT = 1200000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -1045,6 +1123,8 @@ public void test_getLineStyle() {
 }
 
 public void test_getLineWidth() {
+	final int COUNT = 1200000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -1056,6 +1136,8 @@ public void test_getLineWidth() {
 }
 
 public void test_getStyle() {
+	final int COUNT = 250000000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -1067,6 +1149,8 @@ public void test_getStyle() {
 }
 
 public void test_getXORMode() {
+	final int COUNT = 25000000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -1078,6 +1162,8 @@ public void test_getXORMode() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 500000000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -1089,6 +1175,8 @@ public void test_hashCode() {
 }
 
 public void test_isClipped() {
+	final int COUNT = 1000000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -1100,6 +1188,8 @@ public void test_isClipped() {
 }
 
 public void test_isDisposed() {
+	final int COUNT = 500000000;
+	
 	GC gc = new GC(display);
 	
 	PerformanceMeter meter = createMeter("not disposed");
@@ -1124,6 +1214,8 @@ public void test_isDisposed() {
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
+	final int COUNT = 22000000;
+	
 	final Color color = display.getSystemColor(SWT.COLOR_RED);
 	PerformanceMeter meter = createMeter();
 	meter.start();
@@ -1179,12 +1271,11 @@ public void test_setClippingLorg_eclipse_swt_graphics_Region() {
 
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	// TODO
-	gc.setFont(shell.getDisplay().getSystemFont());
-	Font font = gc.getFont();
-	assertTrue(font.equals(shell.getDisplay().getSystemFont()));
 }
 
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
+	final int COUNT = 25000000;
+	
 	final Color color = display.getSystemColor(SWT.COLOR_RED);
 	PerformanceMeter meter = createMeter();
 	meter.start();
@@ -1197,6 +1288,8 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 }
 
 public void test_setLineStyleI() {
+	final int COUNT = 450000;
+	
 	// precompute the styles
 	final int[] styles = new int[COUNT];
 	for (int i = 0; i < COUNT; i++) {
@@ -1220,6 +1313,8 @@ public void test_setLineStyleI() {
 }
 
 public void test_setLineWidthI() {
+	final int COUNT = 400000;
+	
 	// precompute the widths
 	final int[] widths = new int[COUNT];
 	for (int i = 0; i < COUNT; i++) {
@@ -1237,6 +1332,8 @@ public void test_setLineWidthI() {
 }
 
 public void test_setXORModeZ() {
+	final int COUNT = 25000000;
+	
 	// precompute the values
 	final boolean[] values = new boolean[COUNT];
 	for (int i = 0; i < COUNT; i++) {
@@ -1254,30 +1351,39 @@ public void test_setXORModeZ() {
 }
 
 public void test_stringExtentLjava_lang_String() {
+	final int COUNT = 1500000;
+	final String STRING = "test \t\nstring";
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.stringExtent("test \t\nstring");
+		gc.stringExtent(STRING);
 	}
 	meter.stop();
 	disposeMeter(meter);
 }
 
 public void test_textExtentLjava_lang_String() {
+	final int COUNT = 200000;
+	final String STRING = "test \t\nstring";
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.textExtent("test \t\nstring");
+		gc.textExtent(STRING);
 	}
 	meter.stop();
 	disposeMeter(meter);
 }
 
 public void test_textExtentLjava_lang_StringI() {
+	final int COUNT = 300000;
+	final String STRING = "\t\r\na&bc&";
+	
 	PerformanceMeter meter = createMeter("transparent");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.textExtent("\t\r\na&bc&", SWT.DRAW_TRANSPARENT);				
+		gc.textExtent(STRING, SWT.DRAW_TRANSPARENT);				
 	}
 	meter.stop();
 	
@@ -1286,7 +1392,7 @@ public void test_textExtentLjava_lang_StringI() {
 	meter = createMeter("delimiter");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.textExtent("\t\r\na&bc&", SWT.DRAW_DELIMITER);				
+		gc.textExtent(STRING, SWT.DRAW_DELIMITER);				
 	}
 	meter.stop();
 	
@@ -1318,14 +1424,6 @@ public void test_textExtentLjava_lang_StringI() {
 	meter.stop();
 	
 	disposeMeter(meter);
-}
-
-public void test_win32_newILorg_eclipse_swt_graphics_GCData() {
-	// do not test - Windows only
-}
-
-public void test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData() {
-	// do not test - Windows only
 }
 
 public static Test suite() {
@@ -1396,8 +1494,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_stringExtentLjava_lang_String");
 	methodNames.addElement("test_textExtentLjava_lang_String");
 	methodNames.addElement("test_textExtentLjava_lang_StringI");
-	methodNames.addElement("test_win32_newILorg_eclipse_swt_graphics_GCData");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -1458,8 +1554,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_stringExtentLjava_lang_String")) test_stringExtentLjava_lang_String();
 	else if (getName().equals("test_textExtentLjava_lang_String")) test_textExtentLjava_lang_String();
 	else if (getName().equals("test_textExtentLjava_lang_StringI")) test_textExtentLjava_lang_StringI();
-	else if (getName().equals("test_win32_newILorg_eclipse_swt_graphics_GCData")) test_win32_newILorg_eclipse_swt_graphics_GCData();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData")) test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData();
 }
 
 /* custom */

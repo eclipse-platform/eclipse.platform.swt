@@ -59,7 +59,7 @@ public PerformanceTests() {
 	addTest(Test_org_eclipse_swt_graphics_Image.suite());
 	addTest(Test_org_eclipse_swt_graphics_Cursor.suite());
 	addTest(Test_org_eclipse_swt_graphics_DeviceData.suite());
-	addTest(Test_org_eclipse_swt_graphics_ImageLoaderEvent.suite());
+//	addTest(Test_org_eclipse_swt_graphics_ImageLoaderEvent.suite());
 	addTest(Test_org_eclipse_swt_graphics_RGB.suite());
 	addTest(Test_org_eclipse_swt_graphics_Font.suite());
 	addTest(Test_org_eclipse_swt_graphics_Rectangle.suite());
@@ -91,7 +91,7 @@ public PerformanceTests() {
 //	addTest(Test_org_eclipse_swt_widgets_Shell.suite());
 //	//addTest(Test_org_eclipse_swt_widgets_Decorations.suite());
 //	addTest(Test_org_eclipse_swt_widgets_Label.suite());
-//	addTest(Test_org_eclipse_swt_widgets_Button.suite());
+	addTest(Test_org_eclipse_swt_widgets_Button.suite());
 //	addTest(Test_org_eclipse_swt_widgets_List.suite());
 //	addTest(Test_org_eclipse_swt_widgets_Text.suite());
 //	addTest(Test_org_eclipse_swt_widgets_ScrollBar.suite());

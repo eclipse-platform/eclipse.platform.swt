@@ -27,7 +27,6 @@ import org.eclipse.test.performance.PerformanceMeter;
  * @see org.eclipse.swt.graphics.Cursor
  */
 public class Test_org_eclipse_swt_graphics_Cursor extends SwtPerformanceTestCase {
-	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_Cursor(String name) {
 	super(name);
@@ -43,6 +42,8 @@ protected void setUp() throws Exception {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
+	final int COUNT = 600000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	Cursor[] cursors = new Cursor [COUNT];
@@ -63,6 +64,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII() {
+	final int COUNT = 1000000;
+	
 	int numFormats = imageFormats.length;
 	String fileName = imageFilenames[0];
 	for (int i = 0; i < numFormats; i++) {
@@ -100,6 +103,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	}
 }
 public void test_dispose() {
+	final int COUNT = 2000000;
+	
 	Cursor[] cursors = new Cursor [COUNT];
 	for (int i = 0; i < COUNT; i++) {
 		cursors[i] = new Cursor(display, SWT.CURSOR_ARROW);
@@ -125,6 +130,8 @@ public void test_dispose() {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 60000000;
+	
 	/* 
 	 * Note: Two cursors are only considered equal if their handles are equal.
 	 * So since Windows reuses cursor handles, and other platforms do not,
@@ -147,6 +154,8 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 600000000;
+	
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	
 	PerformanceMeter meter = createMeter();
@@ -162,6 +171,8 @@ public void test_hashCode() {
 }
 
 public void test_isDisposed() {
+	final int COUNT = 500000000;
+	
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	
 	PerformanceMeter meter = createMeter("not disposed");
@@ -185,10 +196,6 @@ public void test_isDisposed() {
 	disposeMeter(meter);
 }
 
-public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
-	// do not test - Windows only
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -207,7 +214,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_isDisposed");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceI");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -218,7 +224,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
 }
 
 /* custom */

@@ -22,7 +22,6 @@ import org.eclipse.test.performance.PerformanceMeter;
  * @see org.eclipse.swt.graphics.Rectangle
  */
 public class Test_org_eclipse_swt_graphics_Rectangle extends SwtPerformanceTestCase {
-	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_Rectangle(String name) {
 	super(name);
@@ -33,6 +32,8 @@ public static void main(String[] args) {
 }
 
 public void test_ConstructorIIII() {
+	final int COUNT = 40000000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -53,6 +54,8 @@ public void test_ConstructorIIII() {
  * </ul>
  */
 public void test_addLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 60000000;
+	
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);
 
@@ -71,6 +74,8 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle() {
  * arguments is inside the area specified by the receiver.
  */
 public void test_containsII() {
+	final int COUNT = 60000000;
+	
 	Rectangle r = new Rectangle(1, 2, 3, 4);
 
 	PerformanceMeter meter = createMeter("contains");
@@ -101,6 +106,8 @@ public void test_containsII() {
  * </ul>
  */
 public void test_containsLorg_eclipse_swt_graphics_Point() {
+	final int COUNT = 60000000;
+	
 	Rectangle rect = new Rectangle(1, 2, 3, 4);
 	Point p1 = new Point(2, 3);
 	Point p2 = new Point(9, 10);
@@ -125,6 +132,8 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 60000000;
+	
 	Rectangle r1 = new Rectangle(5, 4, 3, 2);
 	Rectangle r2 = new Rectangle(5, 4, 3, 2);
 	
@@ -150,6 +159,8 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 400000000;
+	
 	Rectangle rect = new Rectangle(5, 4, 3, 2);
 	PerformanceMeter meter = createMeter();
 	meter.start();
@@ -162,6 +173,8 @@ public void test_hashCode() {
 }
 
 public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 50000000;
+	
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	
@@ -187,6 +200,8 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 25000000;
+	
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	
@@ -212,6 +227,8 @@ public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_intersectsIIII() {
+	final int COUNT = 60000000;
+	
 	Rectangle rect = new Rectangle(10, 10, 50, 50);
 	
 	PerformanceMeter meter = createMeter("intersect");
@@ -234,6 +251,8 @@ public void test_intersectsIIII() {
 }
 
 public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 40000000;
+	
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	
@@ -259,6 +278,8 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_isEmpty() {
+	final int COUNT = 500000000;
+	
 	Rectangle rect = new Rectangle (10, 10, 0, 0);
 	
 	PerformanceMeter meter = createMeter("empty");
@@ -283,6 +304,8 @@ public void test_isEmpty() {
 }
 
 public void test_unionLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 30000000;
+	
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	

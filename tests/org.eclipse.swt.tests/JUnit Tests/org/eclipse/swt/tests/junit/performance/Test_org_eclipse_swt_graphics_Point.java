@@ -23,7 +23,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.Point
  */
 public class Test_org_eclipse_swt_graphics_Point extends SwtPerformanceTestCase {
-	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_Point(String name) {
 	super(name);
@@ -34,6 +33,8 @@ public static void main(String[] args) {
 }
 
 public void test_ConstructorII() {
+	final int COUNT = 60000000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -45,6 +46,8 @@ public void test_ConstructorII() {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 70000000;
+	
 	Point p1 = new Point (5, 3);
 	Point p2 = new Point (5, 3);
 	Point p3 = new Point (4, 6);
@@ -69,6 +72,8 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 500000000;
+	
 	Point point = new Point(5, 5);
 	
 	PerformanceMeter meter = createMeter();

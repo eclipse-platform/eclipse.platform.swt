@@ -24,7 +24,6 @@ import org.eclipse.test.performance.PerformanceMeter;
  * @see org.eclipse.swt.graphics.FontMetrics
  */
 public class Test_org_eclipse_swt_graphics_FontMetrics extends SwtPerformanceTestCase {
-	static final int COUNT = 1000;
 
 public Test_org_eclipse_swt_graphics_FontMetrics(String name) {
 	super(name);
@@ -48,6 +47,8 @@ protected void tearDown() throws Exception {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 50000000;
+	
 	FontMetrics fm1 = gc.getFontMetrics();
 	
 	Font oldFont = gc.getFont();
@@ -80,6 +81,8 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_getAscent() {
+	final int COUNT = 500000000;
+	
 	FontMetrics fm = gc.getFontMetrics();
 	
 	PerformanceMeter meter = createMeter();
@@ -92,6 +95,8 @@ public void test_getAscent() {
 }
 
 public void test_getAverageCharWidth() {
+	final int COUNT = 500000000;
+	
 	FontMetrics fm = gc.getFontMetrics();
 	
 	PerformanceMeter meter = createMeter();
@@ -105,6 +110,8 @@ public void test_getAverageCharWidth() {
 }
 
 public void test_getDescent() {
+	final int COUNT = 500000000;
+	
 	FontMetrics fm = gc.getFontMetrics();
 	
 	PerformanceMeter meter = createMeter();
@@ -118,6 +125,8 @@ public void test_getDescent() {
 }
 
 public void test_getHeight() {
+	final int COUNT = 500000000;
+	
 	FontMetrics fm = gc.getFontMetrics();
 	
 	PerformanceMeter meter = createMeter();
@@ -131,6 +140,8 @@ public void test_getHeight() {
 }
 
 public void test_getLeading() {
+	final int COUNT = 500000000;
+	
 	FontMetrics fm = gc.getFontMetrics();
 	
 	PerformanceMeter meter = createMeter();
@@ -144,6 +155,8 @@ public void test_getLeading() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 70000000;
+	
 	FontMetrics fm = gc.getFontMetrics();
 	
 	PerformanceMeter meter = createMeter();

@@ -27,7 +27,6 @@ import org.eclipse.test.performance.PerformanceMeter;
  * @see org.eclipse.swt.graphics.Image
  */
 public class Test_org_eclipse_swt_graphics_Image extends SwtPerformanceTestCase {
-	static final int COUNT = 1000;
 
 public Test_org_eclipse_swt_graphics_Image(String name) {
 	super(name);
@@ -43,6 +42,8 @@ protected void setUp() throws Exception {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
+	final int COUNT = 7000;	// 8000 causes No More Handles error
+	
 	Image[] images = new Image[COUNT];
 	
 	PerformanceMeter meter = createMeter();
@@ -60,6 +61,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI() {
+	final int COUNT = 5000;
 	String name = getPath(imageFilenames[0] + "." + imageFormats[0]);
 	FileInputStream inStream = null;
 	try {
@@ -119,6 +121,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 5000;
+	
 	Image[] images = new Image[COUNT];
 	Rectangle rectangle = new Rectangle(0, 0, 100, 100);
 	
@@ -137,6 +141,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData() {
+	final int COUNT = 7000;	// 8000 causes No More Handles error
+	
 	String name = getPath(imageFilenames[0] + "." + imageFormats[0]);
 	FileInputStream inStream = null;
 	try {
@@ -167,6 +173,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData() {
+	final int COUNT = 4000;	// 5000 causes an error
+	
 	Image[] images = new Image[COUNT];
 	String name = getPath(imageFilenames[0] + "." + imageFormats[0]);
 	FileInputStream inStream = null;
@@ -202,9 +210,11 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() {
+	final int COUNT = 2000;
+	
 	int numFileNames = imageFilenames.length;
 	int numFormats = imageFormats.length;
-	for (int k=0; k<numFileNames; k++) {
+	for (int k = 0; k < numFileNames; k++) {
 		String fileName = imageFilenames[k];
 		for (int i=0; i<numFormats; i++) {
 			String format = imageFormats[i];
@@ -228,6 +238,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 }
 
 public void test_dispose() {
+	final int COUNT = 7000;	// 8000 causes No More Handles error
+	
 	Image[] images = new Image [COUNT];
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, 100, 100);
@@ -253,6 +265,8 @@ public void test_dispose() {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 70000000;
+	
 	ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	Image image1 = new Image(display, imageData);
 	Image image2 = new Image(display, imageData);
@@ -286,6 +300,8 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_getBackground() {
+	final int COUNT = 60000000;
+	
 	Image image = new Image(display, 100, 100);
 	image.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
 	
@@ -302,6 +318,8 @@ public void test_getBackground() {
 }
 
 public void test_getBounds() {
+	final int COUNT = 1200000;
+	
 	Image image = new Image(display, 10, 20);
 	
 	PerformanceMeter meter = createMeter();
@@ -317,6 +335,8 @@ public void test_getBounds() {
 }
 
 public void test_getImageData() {
+	final int COUNT = 50000;
+	
 	ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	Image image = new Image(display, imageData);
 	
@@ -333,6 +353,8 @@ public void test_getImageData() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 700000000;
+	
 	ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	Image image = new Image(display, imageData);
 	
@@ -348,19 +370,9 @@ public void test_hashCode() {
 	disposeMeter(meter);
 }
 
-public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
-	// javadoc states:
-	// <b>IMPORTANT:</b> This method is <em>not</em> part of the public
-	// API for <code>Image</code>
-}
-
-public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
-	// javadoc states:
-	// <b>IMPORTANT:</b> This method is <em>not</em> part of the public
-	// API for <code>Image</code>
-}
-
 public void test_isDisposed() {
+	final int COUNT = 500000000;
+	
 	Image image = new Image(display, 10, 10);
 	
 	PerformanceMeter meter = createMeter("not disposed");
@@ -385,6 +397,8 @@ public void test_isDisposed() {
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
+	final int COUNT = 70000000;
+	
 	Image image = new Image(display, 100, 100);
 	Color color1 = display.getSystemColor(SWT.COLOR_GREEN);
 	Color color2 = display.getSystemColor(SWT.COLOR_RED);
@@ -400,10 +414,6 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	image.dispose();
 	
 	disposeMeter(meter);
-}
-
-public void test_win32_newLorg_eclipse_swt_graphics_DeviceII() {
-	// do not test - Windows only
 }
 
 public static Test suite() {
@@ -430,11 +440,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_getImageData");
 	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData");
-	methodNames.addElement("test_internal_new_GCLorg_eclipse_swt_graphics_GCData");
 	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceII");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -451,11 +458,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getImageData")) test_getImageData();
 	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData")) test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData();
-	else if (getName().equals("test_internal_new_GCLorg_eclipse_swt_graphics_GCData")) test_internal_new_GCLorg_eclipse_swt_graphics_GCData();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceII")) test_win32_newLorg_eclipse_swt_graphics_DeviceII();
 }
 /* custom */
 Display display;

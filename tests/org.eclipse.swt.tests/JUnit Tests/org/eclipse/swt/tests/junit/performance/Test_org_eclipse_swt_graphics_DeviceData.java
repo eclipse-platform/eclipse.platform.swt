@@ -22,7 +22,6 @@ import org.eclipse.test.performance.PerformanceMeter;
  * @see org.eclipse.swt.graphics.DeviceData
  */
 public class Test_org_eclipse_swt_graphics_DeviceData extends SwtPerformanceTestCase {
-	static final int COUNT = 1000;
 
 public Test_org_eclipse_swt_graphics_DeviceData(String name) {
 	super(name);
@@ -33,6 +32,8 @@ public static void main(String[] args) {
 }
 
 public void test_Constructor() {
+	final int COUNT = 40000000;
+	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {

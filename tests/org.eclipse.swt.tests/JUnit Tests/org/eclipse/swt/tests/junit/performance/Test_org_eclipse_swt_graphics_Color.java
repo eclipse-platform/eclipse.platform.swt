@@ -23,7 +23,6 @@ import org.eclipse.test.performance.PerformanceMeter;
  * @see org.eclipse.swt.graphics.Color
  */
 public class Test_org_eclipse_swt_graphics_Color extends SwtPerformanceTestCase {
-	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_Color(String name) {
 	super(name);
@@ -39,6 +38,8 @@ protected void setUp() throws Exception {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
+	final int COUNT = 3000000;
+	
 	Color[] colors = new Color [COUNT];
 
 	PerformanceMeter meter = createMeter();
@@ -56,6 +57,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB() {
+	final int COUNT = 2500000;	// 5000000 causes OOM
+	
 	Color[] colors = new Color [COUNT];
 	RGB rgb = new RGB(102, 255, 3);
 
@@ -74,6 +77,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_dispose() {
+	final int COUNT = 1000000;	// 5000000 causes OOM 
+	
 	Color[] colors = new Color [COUNT];
 	for (int i = 0; i < COUNT; i++) {
 		colors[i] = new Color(display, 255,0,128);
@@ -99,6 +104,8 @@ public void test_dispose() {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 60000000;
+	
 	Color color1 = new Color(display, 0, 128, 255);
 	Color color2 = new Color(display, 0, 128, 255);
 	
@@ -131,6 +138,8 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_getBlue() {
+	final int COUNT = 300000000;
+	
 	Color color = new Color(display, 128, 64, 255);
 	
 	PerformanceMeter meter = createMeter();
@@ -146,6 +155,8 @@ public void test_getBlue() {
 }
 
 public void test_getGreen() {
+	final int COUNT = 300000000;
+	
 	Color color = new Color(display, 128, 64, 255);
 	
 	PerformanceMeter meter = createMeter();
@@ -161,6 +172,8 @@ public void test_getGreen() {
 }
 
 public void test_getRGB() {
+	final int COUNT = 20000000;
+	
 	Color color = new Color(display, 128, 64, 255);
 	
 	PerformanceMeter meter = createMeter();
@@ -176,6 +189,8 @@ public void test_getRGB() {
 }
 
 public void test_getRed() {
+	final int COUNT = 300000000;
+	
 	Color color = new Color(display, 128, 64, 255);
 	
 	PerformanceMeter meter = createMeter();
@@ -191,6 +206,8 @@ public void test_getRed() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 600000000;
+	
 	Color color = new Color(display, 128, 64, 255);
 	
 	PerformanceMeter meter = createMeter();
@@ -206,6 +223,8 @@ public void test_hashCode() {
 }
 
 public void test_isDisposed() {
+	final int COUNT = 600000000;
+	
 	Color color = new Color(display, 128, 128, 128);
 	
 	PerformanceMeter meter = createMeter("not disposed");
@@ -229,10 +248,6 @@ public void test_isDisposed() {
 	disposeMeter(meter);
 }
 
-public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
-	// do not test - Windows platform only
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -254,7 +269,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getRed");
 	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_isDisposed");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceI");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -268,7 +282,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getRed")) test_getRed();
 	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
 }
 
 /* custom */

@@ -26,7 +26,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.Font
  */
 public class Test_org_eclipse_swt_graphics_Font extends SwtPerformanceTestCase {
-	static final int COUNT = 1000;
 	Display display;
 
 public Test_org_eclipse_swt_graphics_Font(String name) {
@@ -43,6 +42,8 @@ protected void setUp() throws Exception {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData() {
+	final int COUNT = 10000;	// 20000 causes No More Handles
+	
 	FontData[] data = new FontData [1];
 	data[0] = new FontData (SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC); 
 	Font[] fonts = new Font[COUNT];
@@ -62,6 +63,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData() {
+	final int COUNT = 10000;	// 20000 causes No More Handles
+	
 	FontData data = new FontData (SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC);
 	Font[] fonts = new Font[COUNT];
 	
@@ -80,6 +83,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII() {
+	final int COUNT = 10000;	// 20000 causes No More Handles
+	
 	Font[] fonts = new Font[COUNT];
 	
 	PerformanceMeter meter = createMeter("no name");
@@ -182,6 +187,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 }
 
 public void test_dispose() {
+	final int COUNT = 10000;	// 20000 causes No More Handles
+	
 	Font[] fonts = new Font [COUNT];
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i] = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
@@ -207,6 +214,8 @@ public void test_dispose() {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 60000000;
+	
 	// Fonts are only equal if their handles are the same
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 
@@ -238,6 +247,8 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_getFontData() {
+	final int COUNT = 300000;
+	
 	Font font = new Font(display, SwtJunit.testFontName, 40, SWT.BOLD | SWT.ITALIC);
 	
 	PerformanceMeter meter = createMeter();
@@ -253,6 +264,8 @@ public void test_getFontData() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 600000000;
+	
 	Font font = new Font(display, SwtJunit.testFontName, 40, SWT.BOLD | SWT.ITALIC);
 	
 	PerformanceMeter meter = createMeter();
@@ -268,6 +281,8 @@ public void test_hashCode() {
 }
 
 public void test_isDisposed() {
+	final int COUNT = 500000000;
+	
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	
 	PerformanceMeter meter = createMeter("not disposed");
