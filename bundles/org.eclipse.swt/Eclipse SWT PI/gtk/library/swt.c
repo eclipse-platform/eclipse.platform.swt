@@ -4002,6 +4002,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1set_1de
 	gdk_window_set_decorations((GdkWindow*)window, (GdkWMDecoration)decorations);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1show
+  (JNIEnv *env, jclass that, jint window)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gdk_window_show");
+#endif
+
+	gdk_window_show((GdkWindow*)window);
+}
+
 /*
  * Class:	org_eclipse_swt_internal_gtk_OS
  * Method:	gdk_cursor_new
