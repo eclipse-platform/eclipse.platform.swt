@@ -46,7 +46,6 @@ import org.eclipse.swt.events.*;
  */
 
 public class Combo extends Composite {
-	int fixedHandle;
 	int entryHandle, listHandle;
 	int glist;
 	int textLimit = LIMIT;
@@ -271,33 +270,25 @@ public void clearSelection () {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	fixedHandle = OS.eclipse_fixed_new();
+	fixedHandle = OS.gtk_fixed_new ();
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_combo_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	GtkCombo combo = new GtkCombo (handle);
 	entryHandle = combo.entry;
 	listHandle = combo.list;
-}
-void setHandleStyle() {
-	boolean isEditable = (style & SWT.READ_ONLY) == 0;
-	OS.gtk_entry_set_editable (entryHandle, isEditable);
-}
-
-void configure () {
-	parent._connectChild(topHandle());
-	OS.gtk_container_add(fixedHandle, handle);
-}
-
-void showHandle() {
-	OS.gtk_widget_show(fixedHandle);
-	OS.gtk_widget_show(handle);	
-	OS.gtk_widget_realize (handle);
+	boolean editable = (style & SWT.READ_ONLY) == 0;
+	OS.gtk_entry_set_editable (entryHandle, editable);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
+	OS.gtk_container_add (fixedHandle, handle);
+	OS.gtk_widget_show (fixedHandle);
+	OS.gtk_widget_show (handle);
 }
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (fixedHandle);
 	WidgetTable.remove (entryHandle);
 	WidgetTable.remove (listHandle);
 }
@@ -312,54 +303,26 @@ void hookEvents () {
 		OS.GDK_POINTER_MOTION_MASK | 
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK;
-
-	OS.gtk_widget_add_events (entryHandle, mask);
-	OS.gtk_widget_add_events (listHandle, mask);
-
-	signal_connect_after (entryHandle, "motion_notify_event", SWT.MouseMove, 3);
-	signal_connect_after (entryHandle, "button_press_event", SWT.MouseDown, 3);
-	signal_connect_after (entryHandle, "button_release_event", SWT.MouseUp, 3);
-	signal_connect_after (entryHandle, "key_press_event", SWT.KeyDown, 3);
-	signal_connect_after (entryHandle, "key_release_event", SWT.KeyUp, 3);
-
-	signal_connect_after (listHandle, "motion_notify_event", SWT.MouseMove, 3);
-	signal_connect_after (listHandle, "button_press_event", SWT.MouseDown, 3);
-	signal_connect_after (listHandle, "button_release_event", SWT.MouseUp, 3);
-	signal_connect_after (listHandle, "key_press_event", SWT.KeyDown, 3);
-	signal_connect_after (listHandle, "key_release_event", SWT.KeyUp, 3);
-
-	signal_connect_after (handle, "motion_notify_event", SWT.MouseMove, 3);
-	signal_connect_after (handle, "button_press_event", SWT.MouseDown, 3);
-	signal_connect_after (handle, "button_release_event", SWT.MouseUp, 3);
-	signal_connect_after (handle, "key_press_event", SWT.KeyDown, 3);
-	signal_connect_after (handle, "key_release_event", SWT.KeyUp, 3);
-}
-
-int topHandle() { return fixedHandle; }
-int parentingHandle() { return fixedHandle; }
-boolean isMyHandle(int h) {
-	if (h==fixedHandle) return true;
-	if (h==handle) return true;
-	if (h== entryHandle) return true;
-	if (h== listHandle) return true;
-	return false;
-}
-
-Point _getClientAreaSize () {
-	//return _getSize();
-	/* FIXME */
-	return new Point(70, 20);
-}
-
-void _setSize(int width, int height) {
-	width = 70; height = 20;
-	super._setSize(width, height);
-	OS.eclipse_fixed_set_size(fixedHandle, handle, width, height);
+	//FIXME - missing button handle
+	int [] handles = new int [] {entryHandle, listHandle, /*combo.button*/};
+	for (int i=0; i<handles.length; i++) {
+		int handle = handles [i];
+		if (!OS.GTK_WIDGET_NO_WINDOW (handle)) {
+			OS.gtk_widget_add_events (handle, mask);
+		}
+		signal_connect_after (handle, "event", SWT.MouseDown, 3);
+		signal_connect_after (handle, "motion_notify_event", SWT.MouseMove, 3);
+//		signal_connect_after (handle, "button_press_event", SWT.MouseDown, 3);
+//		signal_connect_after (handle, "button_release_event", SWT.MouseUp, 3);
+		signal_connect_after (handle, "key_press_event", SWT.KeyDown, 3);
+		signal_connect_after (handle, "key_release_event", SWT.KeyUp, 3);
+	}
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	return new Point (70,20);
+	//FIXME - hardcoded and wrong for SIMPLE
+	return new Point (50, 20);
 }
 
 /**
@@ -397,13 +360,6 @@ public void deselectAll () {
 	checkWidget();
 	setItems (getItems ());
 }
-
-/*
- * FIXME
-protected boolean hasFocus () {
-	return super.hasFocus();
-}
-*/
 
 /**
  * Returns the item at the given, zero-relative index in the
@@ -559,16 +515,14 @@ public int getSelectionIndex () {
  */
 public String getText () {
 	checkWidget();
+	/*
+	 * The GTK documentation explicitly states
+	 * that this address should not be freed.
+	 */
 	int address = OS.gtk_entry_get_text (entryHandle);
 	int length = OS.strlen (address);
 	byte [] buffer1 = new byte [length];
 	OS.memmove (buffer1, address, length);
-	/*
-	* This code is intentionally commented.
-	* The GTK documentation explicitly states
-	* that this address should not be freed.
-	*/
-//	OS.g_free (address);
 	char [] buffer2 = Converter.mbcsToWcs (null, buffer1);
 	return new String (buffer2, 0, buffer2.length);
 }
@@ -597,13 +551,8 @@ String getText (int start, int stop) {
  */
 public int getTextHeight () {
 	checkWidget();
-	/* A native approach, just measuring the entry:
-	 * return UtilFuncs.getSize(_entryHandle).y;
-	 * does not work - the entry is the same size as
-	 * the whole combo.
-	 */
-	 error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
-	 return 0;
+	//FIXME
+	return 20;
 }
 
 /**
@@ -674,6 +623,10 @@ public int indexOf (String string, int start) {
 	return -1;
 }
 
+int parentingHandle() {
+	return fixedHandle;
+}
+
 int processModify (int arg0, int arg1, int int2) {
 	sendEvent (SWT.Modify);
 	return 0;
@@ -685,15 +638,14 @@ int processSelection (int int0, int int1, int int2) {
 }
 
 void register () {
-	WidgetTable.put (handle, this);
-	WidgetTable.put (fixedHandle, this);
+	super.register ();
 	WidgetTable.put (entryHandle, this);
 	WidgetTable.put (listHandle, this);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
-	int padHandle = 0;
+	entryHandle = listHandle = 0;
 }
 
 void releaseWidget () {
@@ -881,6 +833,12 @@ public void select (int index) {
 	OS.gtk_signal_handler_unblock_by_data (listHandle, SWT.Selection);
 }
 
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	checkWidget();
+	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
+	return super.setBounds (x, y, width, newHeight, move, resize);
+}
+
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument. This is equivalent
@@ -928,7 +886,7 @@ public void setItem (int index, String string) {
  */
 public void setItems (String [] items) {
 	checkWidget();
-	/*if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (items.length == 0) {
 		OS.gtk_list_clear_items (listHandle, 0, -1);
 		//LEAK
@@ -961,7 +919,7 @@ public void setItems (String [] items) {
 	}
 	OS.gtk_signal_handler_block_by_data (entryHandle, SWT.Modify);
 	OS.gtk_editable_delete_text (entryHandle, 0, -1);
-	OS.gtk_signal_handler_unblock_by_data (entryHandle, SWT.Modify);*/
+	OS.gtk_signal_handler_unblock_by_data (entryHandle, SWT.Modify);
 }
 
 /**
@@ -985,10 +943,6 @@ public void setSelection (Point selection) {
 	/*if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.gtk_editable_set_position (entryHandle, selection.x);
 	OS.gtk_editable_select_region (entryHandle, selection.x, selection.y);*/
-}
-
-protected boolean setTabGroupFocus () {
-	return setFocus ();
 }
 
 /**

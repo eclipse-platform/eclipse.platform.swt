@@ -335,10 +335,6 @@ void createItem (TableItem item, int index) {
 	items [index] = item;
 }
 
-ScrollBar createScrollBar (int type) {
-	return new ScrollBar (this, type);
-}
-
 void createWidget () {
 	super.createWidget ();
 	items = new TableItem [4];

@@ -170,33 +170,31 @@ static int checkStyle (int style) {
 
 void createHandle (int index) {
 	state |= HANDLE;
+	fixedHandle = OS.gtk_fixed_new ();
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = OS.gtk_clist_new (1);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-}
-
-void setHandleStyle() {
-	int selectionMode = ((style & SWT.MULTI) != 0)?
-		OS.GTK_SELECTION_EXTENDED :
-		OS.GTK_SELECTION_BROWSE;
-	OS.gtk_clist_set_selection_mode (handle, selectionMode);
-	
-	int border = OS.GTK_SHADOW_NONE;
-	if ((style&SWT.BORDER)!=0) {
-		border = OS.GTK_SHADOW_ETCHED_IN;
-		if ((style&SWT.SHADOW_IN)!=0) border = OS.GTK_SHADOW_IN;
-		if ((style&SWT.SHADOW_OUT)!=0) border = OS.GTK_SHADOW_OUT;
-		if ((style&SWT.SHADOW_ETCHED_IN)!=0) border = OS.GTK_SHADOW_ETCHED_IN;
-		if ((style&SWT.SHADOW_ETCHED_OUT)!=0) border = OS.GTK_SHADOW_ETCHED_OUT;
-	}
-	OS.gtk_clist_set_shadow_type(handle, border);
-	setScrollingPolicy();
-}
-
-void configure() {
-	parent._connectChild(topHandle());
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
+	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);
+	OS.gtk_widget_show (fixedHandle);
+	OS.gtk_widget_show (scrolledHandle);
+	OS.gtk_widget_show (handle);
+	
+	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_EXTENDED :OS.GTK_SELECTION_BROWSE;
+	OS.gtk_clist_set_selection_mode (handle, mode);
+	
+	//CHECK POLICY
+	if ((style & SWT.BORDER) != 0) {
+		OS.gtk_clist_set_shadow_type(handle, OS.GTK_SHADOW_ETCHED_IN);
+	}
+	int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_AUTOMATIC;
+	int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_AUTOMATIC;
+	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 }
 
 void hookEvents () {
@@ -204,12 +202,6 @@ void hookEvents () {
 	super.hookEvents();
 	signal_connect (handle, "select_row", SWT.Selection, 5);
 	signal_connect (handle, "unselect_row", SWT.Selection, 5);
-}
-
-void showHandle() {
-	OS.gtk_widget_show (scrolledHandle);
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_realize (handle);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -624,6 +616,12 @@ public boolean isSelected (int index) {
 		if (index == OS.g_list_nth_data (list, i)) return true;
 	}
 	return false;
+}
+
+int paintWindow () {
+	OS.gtk_widget_realize (handle);
+	GtkCList clist = new GtkCList (handle);
+	return clist.clist_window;
 }
 
 int processMouseDown (int callData, int arg1, int int2) {

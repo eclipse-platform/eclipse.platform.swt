@@ -5,8 +5,6 @@ package org.eclipse.swt.internal.ole.win32;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.ole.win32.*;
-
 public class IAccessible extends IDispatch {
 
 public IAccessible(int address) {

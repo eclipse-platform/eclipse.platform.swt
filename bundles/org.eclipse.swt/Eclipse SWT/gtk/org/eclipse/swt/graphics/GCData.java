@@ -26,6 +26,9 @@ public final class GCData {
 	public int drawable;
 	public GdkColor foreground;
 	public GdkColor background;
+	public int font;
+	public int context;
+	public int layout;
 	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
 }

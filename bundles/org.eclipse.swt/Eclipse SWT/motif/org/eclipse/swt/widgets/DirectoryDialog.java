@@ -192,6 +192,7 @@ public String open () {
 		OS.XmNdialogTitle, xmStringPtr1,
 		OS.XmNpattern, xmStringPtr2,
 		OS.XmNdirectory, xmStringPtr3,
+		OS.XmNpathMode, OS.XmPATH_MODE_FULL,
 		OS.XmNfilterLabelString, xmStringPtr4
 	};
 

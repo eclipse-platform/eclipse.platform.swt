@@ -74,40 +74,26 @@ public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-
-
-
-/*
- *   ===  HANDLE CODE 1  ===
- */
-
 void createHandle (int index) {
 	state |= HANDLE;
-
-	boxHandle = OS.gtk_event_box_new();
-	if (boxHandle==0) error(SWT.ERROR_NO_HANDLES);
-	
-	fixedHandle = OS.eclipse_fixed_new();
+	fixedHandle = OS.gtk_fixed_new ();
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-	handle = OS.gtk_clist_new (MAX_COLUMNS);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-}
-void configure() {
-	parent._connectChild(topHandle());
-	OS.gtk_container_add (boxHandle, fixedHandle);
+	handle = OS.gtk_clist_new (MAX_COLUMNS);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);
-}
-void setHandleStyle () {
+	OS.gtk_widget_show (fixedHandle);
+	OS.gtk_widget_show (scrolledHandle);
+	OS.gtk_widget_show (handle);
+	
 	/* Single or Multiple Selection */
-	int selectionMode;
-	if ((style & SWT.MULTI) != 0) selectionMode = OS.GTK_SELECTION_EXTENDED;
-		else selectionMode = OS.GTK_SELECTION_BROWSE;
-	OS.gtk_clist_set_selection_mode (handle, selectionMode);
+	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_EXTENDED : OS.GTK_SELECTION_BROWSE;
+	OS.gtk_clist_set_selection_mode (handle, mode);
 
 	/* We fake the number of columns, because we have to know beforehand.
 	 * Initially all those fake columns are invisible
@@ -122,21 +108,14 @@ void setHandleStyle () {
 	int hscrollbar_policy = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_AUTOMATIC;
 	int vscrollbar_policy = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_AUTOMATIC;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hscrollbar_policy, vscrollbar_policy);		
-}
 
-
-void showHandle() {
-	OS.gtk_widget_show (boxHandle);
-	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (scrolledHandle);
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_realize (handle);
-	
 	if ((style & SWT.CHECK) != 0) {
+		OS.gtk_widget_realize (handle);
 		uncheck = createCheckPixmap(false);
 		check = createCheckPixmap(true);
 	}
 }
+
 void hookEvents () {
 	//TO DO - get rid of enter/exit for mouse crossing border
 	super.hookEvents ();
@@ -144,70 +123,53 @@ void hookEvents () {
 }
 
 int createCheckPixmap(boolean checked) {
-		/*
-		 * The box will occupy the whole item width.
-		 */
-		GtkCList clist = new GtkCList (handle);
-		check_height = clist.row_height-1;
-		check_width = check_height;
+	/*
+	 * The box will occupy the whole item width.
+	 */
+	GtkCList clist = new GtkCList (handle);
+	check_height = clist.row_height-1;
+	check_width = check_height;
 
-		GdkVisual visual = new GdkVisual(OS.gdk_visual_get_system());
-		int pixmap = OS.gdk_pixmap_new(0, check_width, check_height, visual.depth);
-		
-		int gc = OS.gdk_gc_new(pixmap);
-		
-		GdkColor fgcolor = new GdkColor();
-		fgcolor.pixel = 0xFFFFFFFF;
-		fgcolor.red = (short) 0xFFFF;
-		fgcolor.green = (short) 0xFFFF;
-		fgcolor.blue = (short) 0xFFFF;
-		OS.gdk_gc_set_foreground(gc, fgcolor);
-		OS.gdk_draw_rectangle(pixmap, gc, 1, 0,0, check_width,check_height);
+	GdkVisual visual = new GdkVisual(OS.gdk_visual_get_system());
+	int pixmap = OS.gdk_pixmap_new(0, check_width, check_height, visual.depth);
+	
+	int gc = OS.gdk_gc_new(pixmap);
+	
+	GdkColor fgcolor = new GdkColor();
+	fgcolor.pixel = 0xFFFFFFFF;
+	fgcolor.red = (short) 0xFFFF;
+	fgcolor.green = (short) 0xFFFF;
+	fgcolor.blue = (short) 0xFFFF;
+	OS.gdk_gc_set_foreground(gc, fgcolor);
+	OS.gdk_draw_rectangle(pixmap, gc, 1, 0,0, check_width,check_height);
 
-		fgcolor = new GdkColor();
-		fgcolor.pixel = 0;
-		fgcolor.red = (short) 0;
-		fgcolor.green = (short) 0;
-		fgcolor.blue = (short) 0;
-		OS.gdk_gc_set_foreground(gc, fgcolor);
-		
-		OS.gdk_draw_line(pixmap, gc, 0,0, 0,check_height-1);
-		OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,check_height-1);
-		OS.gdk_draw_line(pixmap, gc, check_width-1,check_height-1, check_width-1,0);
-		OS.gdk_draw_line(pixmap, gc, check_width-1,0, 0,0);
+	fgcolor = new GdkColor();
+	fgcolor.pixel = 0;
+	fgcolor.red = (short) 0;
+	fgcolor.green = (short) 0;
+	fgcolor.blue = (short) 0;
+	OS.gdk_gc_set_foreground(gc, fgcolor);
+	
+	OS.gdk_draw_line(pixmap, gc, 0,0, 0,check_height-1);
+	OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,check_height-1);
+	OS.gdk_draw_line(pixmap, gc, check_width-1,check_height-1, check_width-1,0);
+	OS.gdk_draw_line(pixmap, gc, check_width-1,0, 0,0);
 
-		/* now the cross check */
-		if (checked) {
-			OS.gdk_draw_line(pixmap, gc, 0,0, check_width-1,check_height-1);
-			OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,0);
-		}
-		
-		OS.g_object_unref(gc);
-		return pixmap;
+	/* now the cross check */
+	if (checked) {
+		OS.gdk_draw_line(pixmap, gc, 0,0, check_width-1,check_height-1);
+		OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,0);
+	}
+	
+	OS.g_object_unref(gc);
+	return pixmap;
 }
-
 
 void createWidget (int index) {
 	super.createWidget (index);
 	items = new TableItem [4];
 	columns = new TableColumn [4];
 	itemCount = columnCount = 0;
-}
-
-/*
- * HANDLE CODE 2
- */
-int topHandle() { return boxHandle; }
-int parentingHandle() { return fixedHandle; }
-
-
-/*
- *   ===  GEOMETRY  ===
- */
-
-void _setSize(int width, int height) {
-	OS.eclipse_fixed_set_size(parent.parentingHandle(), topHandle(), width, height);
-	OS.eclipse_fixed_set_size(fixedHandle, scrolledHandle, width, height);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -250,7 +212,6 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-
 /* The real work to create a new column */
 void createItem (TableColumn column, int index) {
 	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -264,6 +225,7 @@ void createItem (TableColumn column, int index) {
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 }
+
 void createItem (TableItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (itemCount == items.length) {
@@ -279,6 +241,11 @@ void createItem (TableItem item, int index) {
 	int result = OS.gtk_clist_insert (handle, index, strings);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 //	OS.g_free (ptr);
+	if ((style & SWT.CHECK) != 0) {
+		byte [] spacing = new byte [1];
+		OS.gtk_clist_get_pixtext (handle, index, 0, null, spacing, null, null);
+		OS.gtk_clist_set_pixtext (handle, index, 0, null, spacing [0], uncheck, 0);
+	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 }
@@ -473,11 +440,8 @@ public TableColumn [] getColumns () {
  */
 public int getGridLineWidth () {
 	checkWidget();
-	/* FIXME */
 	return 0;
 }
-
-
 
 /**
  * Returns the item at the given, zero-relative index in the
@@ -585,12 +549,6 @@ public TableItem [] getItems () {
 	return result;
 }
 
-
-
-/*
- *   ===  SELECTION STORY  ===
- */
-
 /**
  * Returns an array of <code>TableItem</code>s that are currently
  * selected in the receiver. An empty array indicates that no
@@ -622,10 +580,8 @@ private TableItem[] _getNativeSelection () {
 		case OS.GTK_SELECTION_BROWSE:   return getSelection_browse();
 		case OS.GTK_SELECTION_MULTIPLE: return getSelection_multiple();
 		case OS.GTK_SELECTION_EXTENDED: return getSelection_extended();
-		default: error(SWT.ERROR_UNSPECIFIED);
 	}
-	/* can never get here */
-	return null;
+	return new TableItem [0];
 }
 private TableItem[] getSelection_single () {
 	GtkCList clist = new GtkCList(handle);
@@ -756,10 +712,6 @@ public boolean isSelected (int index) {
 	return false;
 }
 
-
-
-
-
 /**
  * Returns the zero-relative index of the item which is currently
  * at the top of the receiver. This index can change when items are
@@ -830,14 +782,11 @@ public int indexOf (TableItem item) {
 }
 
 void releaseWidget () {
-	int columnCount = 0;
 	for (int i=0; i<columnCount; i++) {
 		TableColumn column = columns [i];
-//		if (!column.isDisposed ()) column.releaseWidget ();
-		if (column != null && !column.isDisposed ()) column.releaseWidget ();
+		if (!column.isDisposed ()) column.releaseWidget ();
 	}
 	columns = null;
-	int itemCount = 0;
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
 		if (!item.isDisposed ()) item.releaseWidget ();
@@ -1118,11 +1067,11 @@ public void setHeaderVisible (boolean show) {
  * VERY WEIRD.
  */
 
-/*	if (show) {
+	if (show) {
 		OS.gtk_clist_column_titles_show (handle);
 	} else {
 		OS.gtk_clist_column_titles_hide (handle);
-	}*/
+	}
 }
 /**
  * Returns <code>true</code> if the receiver's lines are visible,
@@ -1327,7 +1276,14 @@ int processSelection (int int0, int int1, int int2) {
 	return 0;
 }
 
+int paintWindow () {
+	OS.gtk_widget_realize (handle);
+	GtkCList clist = new GtkCList (handle);
+	return clist.clist_window;
+}
+
 int processMouseDown (int callData, int arg1, int int2) {
+	int result = super.processMouseDown (callData, arg1, int2);
 	OS.gtk_widget_grab_focus(handle);
 	
 	// First, see if we have a single or double click
@@ -1344,41 +1300,35 @@ int processMouseDown (int callData, int arg1, int int2) {
 		event.item=itemBeingSelected;
 		event.x = ppx[0]; event.y = ppy[0];	
 		sendEvent (SWT.DefaultSelection, event);
-		return 1;
+		return result;
 	}
 	
 	eventType = SWT.MouseDown;
-	int[] pMod = new int[1];
-	OS.gdk_event_get_state(callData, pMod);
-	int time = OS.gdk_event_get_time(callData);
-	double[] px = new double[1];
-	double[] py = new double[1];
-	OS.gdk_event_get_coords(callData, px, py);
 	int button = OS.gdk_event_button_get_button(callData);
-	sendMouseEvent (eventType, button, pMod[0], time, (int)(px[0]), (int)(py[0]));
+	sendMouseEvent (eventType, button, callData);
 	if (button == 3 && menu != null) menu.setVisible (true);
 
 	if ((style&SWT.CHECK) != 0) {
 		GtkCList clist = new GtkCList (handle);
 		int clientX = ppx[0];
 		int clientY = ppy[0] - clist.column_title_area_height;
-		if (clientY <= 0) return 1;
+		if (clientY <= 0) return result;
 		int[] row = new int[1], column = new int[1];
 		row[0] = -1;
 		OS.gtk_clist_get_selection_info(handle, clientX, clientY, row, column);
-		if (row[0] == -1) return -1;
+		if (row[0] == -1) return result;
 		int leftmost = 2;
-		if (clientX < leftmost) return 1;
-		if (clientX > leftmost+check_width) return 1;
+		if (clientX < leftmost) return result;
+		if (clientX > leftmost+check_width) return result;
 		
 		TableItem item = items [row[0]];
-		item._setChecked(!item._getChecked());
+		item.setChecked(!item.getChecked());
 		Event event = new Event ();
 		event.detail = SWT.CHECK;
 		event.item = item;
 		postEvent (SWT.Selection, event);
 	}
-	return 1;
+	return result;
 }
 
 static int checkStyle (int style) {

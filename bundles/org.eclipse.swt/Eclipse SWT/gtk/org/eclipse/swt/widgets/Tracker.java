@@ -27,8 +27,11 @@ import org.eclipse.swt.events.*;
 public class Tracker extends Widget {
 	Composite parent;
 	Display display;
+	int cursor, lastCursor;
 	boolean tracking, stippled;
 	Rectangle [] rectangles = new Rectangle [0];
+	int xWindow;
+	int ptrGrabResult;
 	
 
 /**
@@ -60,9 +63,10 @@ public class Tracker extends Widget {
  * @see Widget#getStyle
  */
 public Tracker (Composite parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle(style));
 	this.parent = parent;
 	display = parent.getDisplay ();
+	xWindow = calculateWindow();
 }
 
 /**
@@ -100,10 +104,10 @@ public Tracker (Display display, int style) {
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
-	this.style = style;
+	this.style = checkStyle (style);
 	this.display = display;
+	xWindow = calculateWindow();
 }
-
 
 
 /*
@@ -260,7 +264,6 @@ public void close () {
  */
 public boolean open () {
 	checkWidget();
-	int xWindow = calculateWindow();
 	boolean cancelled=false;
 	tracking = true;
 	drawRectangles ();
@@ -270,13 +273,18 @@ public boolean open () {
 	int[] oldX = new int[1];
 	int[] oldY = new int[1];
 	OS.gdk_window_get_pointer(xWindow, oldX,oldY, 0);
+	grab();
 
+	/*
+	 *  Tracker behaves like a Dialog with its own OS event loop.
+	 */
 	while (tracking) {
 		if (parent != null && parent.isDisposed ()) break;
 		int eventType = waitEvent();
 		switch (eventType) {
 			case OS.GDK_BUTTON_RELEASE:
 			case OS.GDK_MOTION_NOTIFY:
+				if (cursor != lastCursor) { ungrab(); grab(); }
 				OS.gdk_window_get_pointer(xWindow, newX,newY, 0);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
 					drawRectangles ();
@@ -308,15 +316,15 @@ public boolean open () {
 				break;
 			}  // switch
 		}  // while
-	drawRectangles();  // clean up our mess
+	drawRectangles();
 	tracking = false;
+	ungrab();
 	return !cancelled;
 }
 
 
 
 private void drawRectangles () {
-	int xWindow = calculateWindow();
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		parent.getShell ().update ();
@@ -374,15 +382,35 @@ private int waitEvent() {
  */
 private int calculateWindow() {
 	int answer;
-	if (parent == null) {
-		answer = OS.GDK_ROOT_PARENT();
-	} else {
-		answer = /*parent._gdkWindow();*/ 0;
-	}
+	if (parent == null) answer = OS.GDK_ROOT_PARENT();
+		else answer = OS.GTK_WIDGET_WINDOW(parent.paintHandle());
 	if (answer==0) error(SWT.ERROR_UNSPECIFIED);
 	return answer;
 }
 
 public void setCursor (Cursor value) {
+	checkWidget ();
+	cursor = 0;
+	if (value != null) cursor = value.handle;
+}
+void grab() {
+	ptrGrabResult = OS.gdk_pointer_grab(xWindow,
+	                                    false,
+	                                    OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK,
+	                                    xWindow,
+	                                    cursor,
+	                                    OS.GDK_CURRENT_TIME());
+	lastCursor = cursor;
+}
+void ungrab() {
+	if (ptrGrabResult == OS.GDK_GRAB_SUCCESS)
+		OS.gdk_pointer_ungrab(OS.GDK_CURRENT_TIME());
+
+}
+static int checkStyle (int style) {
+	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN)) == 0) {
+		style |= SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN;
+	}
+	return style;
 }
 }

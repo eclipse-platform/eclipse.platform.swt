@@ -192,9 +192,6 @@ void createHandle (int index) {
 	}
 }
 
-/* Already done in createHandle() */
-void configure()  {}
-void showHandle() {}
 
 void register() {
 	super.register ();
@@ -206,9 +203,8 @@ void deregister() {
 }
 
 int topHandle() {
-	return (boxHandle==0)? handle : boxHandle;
+	return boxHandle == 0 ? handle : boxHandle;
 }
-
 
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -223,9 +219,11 @@ int topHandle() {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	/*GtkWidget widget = new GtkWidget (handle);
-	return new Rectangle (widget.alloc_x, widget.alloc_y, widget.alloc_width, widget.alloc_height);*/
-	return new Rectangle(2,2, 15,15);
+	int x = OS.GTK_WIDGET_X (handle);
+	int y = OS.GTK_WIDGET_Y (handle);
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	return new Rectangle (x, y, width, height);
 }
 
 /**
@@ -375,6 +373,7 @@ public int getWidth () {
 	return 15;
 }
 void hookEvents () {
+	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	signal_connect(handle, "clicked",   SWT.Selection, 2);
 	signal_connect(handle, "enter-notify-event", SWT.MouseEnter, 3);

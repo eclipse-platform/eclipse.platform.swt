@@ -25,7 +25,6 @@ import org.eclipse.swt.graphics.*;
  */
 
 public abstract class Scrollable extends Control {
-	
 	ScrollBar horizontalBar, verticalBar;
 
 /**
@@ -108,8 +107,10 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 ScrollBar createScrollBar (int type) {
 	ScrollBar bar = new ScrollBar (this, type);
-	bar.setMaximum (100);
-	bar.setThumb (10);
+	if ((state & CANVAS) != 0) {
+		bar.setMaximum (100);
+		bar.setThumb (10);
+	}
 	return bar;
 }
 

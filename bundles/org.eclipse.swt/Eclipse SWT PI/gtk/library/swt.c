@@ -1168,33 +1168,59 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1style_1unref
 	gtk_style_unref((GtkStyle*)style);
 }
 
+
 /*
- * Class:	org_eclipse_swt_internal_gtk_OS
- * Method:	gtk_text_new
- * Signature:	
+ * GtkEditable
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1get_1selection_1start
+  (JNIEnv *env, jclass that, jint editable)
+{
+	return (jint)gtk_editable_get_selection_start((GtkEditable*)editable);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1get_1selection_1end
+  (JNIEnv *env, jclass that, jint editable)
+{
+	return (jint)gtk_editable_get_selection_end((GtkEditable*)editable);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1get_1editable
+  (JNIEnv *env, jclass that, jint editable)
+{
+	return gtk_editable_get_editable ((GtkEditable*)editable);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1copy_1clipboard
+  (JNIEnv *env, jclass that, jint editable)
+{
+	gtk_editable_copy_clipboard((GtkEditable*)editable);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1cut_1clipboard
+  (JNIEnv *env, jclass that, jint editable)
+{
+	gtk_editable_cut_clipboard((GtkEditable*)editable);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1paste_1clipboard
+  (JNIEnv *env, jclass that, jint editable)
+{
+	gtk_editable_paste_clipboard((GtkEditable*)editable);
+}
+
+
+/*
+ * GtkText
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1new
   (JNIEnv *env, jclass that, jint hadj, jint vadj)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "gtk_text_new");
-#endif
-
 	return (jint)gtk_text_new((GtkAdjustment*)hadj, (GtkAdjustment*)vadj);
 }
 
-/*
- * Class:	org_eclipse_swt_internal_gtk_OS
- * Method:	gtk_text_set_word_wrap
- * Signature:	
- */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1set_1word_1wrap
   (JNIEnv *env, jclass that, jint text, jint word_wrap)
 {
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "gtk_text_set_word_wrap");
-#endif
-
 	gtk_text_set_word_wrap((GtkText*)text, (gint)word_wrap);
 }
 
@@ -1724,5 +1750,19 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_XListFonts
     if (actual_count_return)
         (*env)->ReleaseIntArrayElements(env, actual_count_return, actual_count_return1, 0);
     return rc;
+}
+
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect_1swapped
+  (JNIEnv *env, jclass that, jint instance, jbyteArray detailed_signal, jint c_handler, jint data)
+{
+	jint rc;
+	jbyte *detailed_signal1 = NULL;
+	if (detailed_signal) detailed_signal1 = (*env)->GetByteArrayElements(env, detailed_signal, NULL);
+
+	rc = (jint)gtk_signal_connect((gpointer)instance, (const char*)detailed_signal1, (GCallback)c_handler, (gpointer)data);
+
+	if (detailed_signal) (*env)->ReleaseByteArrayElements(env, detailed_signal, detailed_signal1, 0);
+	return rc;
 }
 

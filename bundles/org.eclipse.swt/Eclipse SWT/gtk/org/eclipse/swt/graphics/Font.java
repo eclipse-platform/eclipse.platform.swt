@@ -8,7 +8,6 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class manage operating system resources that
@@ -29,8 +28,15 @@ public final class Font {
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
+
+	/**
+	 * The device where this image was created.
+	 */
+	Device device;
+	
 Font() {
 }
+
 /**	 
  * Constructs a new font given a device and font data
  * which describes the desired font's appearance.
@@ -49,16 +55,12 @@ Font() {
  * </ul>
  */
 public Font(Device display, FontData fd) {
-	if (fd == null) error(SWT.ERROR_NULL_ARGUMENT);
-	/* FIXME */
-	String xlfd = fd.getXlfd();
-	byte[] buffer = Converter.wcsToMbcs(null, xlfd, true);
-	handle = OS.gdk_font_load(buffer);
-	if (handle == 0) {
-		handle = OS.gdk_font_load(Converter.wcsToMbcs(null, "fixed", true));
-		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-	}
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(device, fd.getName(), fd.getHeight(), fd.getStyle());
 }
+
 /**	 
  * Constructs a new font given a device, a font name,
  * the height of the desired font in points, and a font
@@ -80,27 +82,22 @@ public Font(Device display, FontData fd) {
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given arguments</li>
  * </ul>
  */
-public Font(Device display, String fontFamily, int height, int style) {
-	if (fontFamily == null) error(SWT.ERROR_NULL_ARGUMENT);
-	FontData fd = new FontData(fontFamily, height, style);
-	byte[] buffer = Converter.wcsToMbcs(null, fd.getXlfd(), true);
-	handle = OS.gdk_font_load(buffer);
-	if (handle == 0) {
-		/* Temporary, FIXME */
-		buffer = Converter.wcsToMbcs(null, "fixed", true);
-		handle = OS.gdk_font_load(buffer);
-		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-	}
+public Font(Device display, String name, int height, int style) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(device, name, height, style);
 }
+
 /**
  * Disposes of the operating system resources associated with
  * the font. Applications must dispose of all fonts which
  * they allocate.
  */
 public void dispose() {
-	if (handle != 0) OS.gdk_font_unref(handle);
+	if (handle != 0) OS.pango_font_description_free(handle);
 	handle = 0;
 }
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -116,9 +113,6 @@ public boolean equals(Object object) {
 	if (!(object instanceof Font)) return false;
 	return OS.gdk_font_equal(handle, ((Font)object).handle);
 }
-void error(int code) {
-	throw new SWTError (code);
-}
 
 /**
  * Returns an array of <code>FontData</code>s representing the receiver.
@@ -133,29 +127,47 @@ void error(int code) {
  * </ul>
  */
 public FontData[] getFontData() {
-	if (handle==0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	/* REWRITE ME.
-	 * THIS WILL NEVER WORK CORRECTLY.
-	 * WE USED TO REACH DOWN TO GDK INTERNAL MEMORY
-	 */
-	FontData[] answer = new FontData[1];
-	FontData data = new FontData();
-	data.fontFamily = "fixed";
-	data.weight = "normal";
-	data.points = 120;
-	answer[0] = data;
-	return answer;
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+
+	int family = OS.pango_font_description_get_family(handle);
+	int length = OS.strlen(family);
+	byte[] buffer = new byte[length];
+	OS.memmove(buffer, family, length);
+	String name = new String(Converter.mbcsToWcs(null, buffer));
+	int height = OS.pango_font_description_get_size(handle) / OS.PANGO_SCALE();
+	int pangoStyle = OS.pango_font_description_get_style(handle);
+	int pangoWeight = OS.pango_font_description_get_weight(handle);
+	int style = SWT.NORMAL;
+	if (pangoStyle == OS.PANGO_STYLE_ITALIC()) style |= SWT.ITALIC;
+	if (pangoStyle == OS.PANGO_STYLE_OBLIQUE()) style |= SWT.ROMAN;
+	/* Anything bolder than NORMAL, is BOLD */
+	if (pangoWeight > OS.PANGO_WEIGHT_NORMAL()) style |= SWT.BOLD;
+	return new FontData[]{new FontData(name, height, style)};
 }
 
-public static Font gtk_new(int handle) {
-	if (handle == 0) {
-		handle = OS.gdk_font_load(Converter.wcsToMbcs(null, "fixed", true));
-		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	}
+/**	 
+ * Invokes platform specific functionality to allocate a new font.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Font</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param handle the handle for the font
+ * 
+ * @private
+ */
+public static Font gtk_new(Device device, int handle) {
+	if (device == null) device = Device.getDevice();
 	Font font = new Font();
 	font.handle = handle;
+	font.device = device;
 	return font;
 }
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
@@ -169,6 +181,26 @@ public static Font gtk_new(int handle) {
 public int hashCode() {
 	return handle;
 }
+
+void init(Device device, String name, int height, int style) {
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (height < 0) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	
+	handle = OS.pango_font_description_new();
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	byte[] buffer = Converter.wcsToMbcs(null, name, true);
+	OS.pango_font_description_set_family(handle, buffer);
+	OS.pango_font_description_set_size(handle, height * OS.PANGO_SCALE());
+	OS.pango_font_description_set_stretch(handle, OS.PANGO_STRETCH_NORMAL());
+	int pangoStyle = OS.PANGO_STYLE_NORMAL();
+	int pangoWeight = OS.PANGO_WEIGHT_NORMAL();
+	if ((style & SWT.ITALIC) != 0) pangoStyle = OS.PANGO_STYLE_ITALIC();
+	if ((style & SWT.ROMAN) != 0) pangoStyle = OS.PANGO_STYLE_OBLIQUE();
+	if ((style & SWT.BOLD) != 0) pangoWeight = OS.PANGO_WEIGHT_BOLD();
+	OS.pango_font_description_set_style(handle, pangoStyle);
+	OS.pango_font_description_set_weight(handle, pangoWeight);
+}
+
 /**
  * Returns <code>true</code> if the font has been disposed,
  * and <code>false</code> otherwise.

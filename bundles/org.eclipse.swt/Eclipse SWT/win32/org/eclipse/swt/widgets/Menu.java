@@ -755,7 +755,9 @@ public void setEnabled (boolean enabled) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
-	this.x = x;  this.y = y;
+	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
+	this.x = x;
+	this.y = y;
 	hasLocation = true;
 }
 

@@ -227,10 +227,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-ScrollBar createScrollBar (int type) {
-	return new ScrollBar (this, type);
-}
-
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }

@@ -174,7 +174,7 @@ public String open () {
 	BROWSEINFO lpbi = new BROWSEINFO ();
 	lpbi.hwndOwner = hwndOwner;
 	lpbi.lpszTitle = lpszTitle;
-	lpbi.ulFlags = OS.BIF_RETURNONLYFSDIRS | OS.BIF_EDITBOX | OS.BIF_VALIDATE;
+	lpbi.ulFlags = OS.BIF_NEWDIALOGSTYLE | OS.BIF_RETURNONLYFSDIRS | OS.BIF_EDITBOX | OS.BIF_VALIDATE;
 	lpbi.lpfn = address;
 	int lpItemIdList = OS.SHBrowseForFolder (lpbi);
 	if (lpItemIdList != 0) {

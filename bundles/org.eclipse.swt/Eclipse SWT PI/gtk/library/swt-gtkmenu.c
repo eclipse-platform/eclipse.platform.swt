@@ -94,7 +94,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1check_1menu_1it
 	gtk_check_menu_item_set_show_toggle((GtkCheckMenuItem*)menu_item, (gboolean)always);
 }
 
+/*
+ * Class:	org_eclipse_swt_internal_gtk_OS
+ * Method:	gtk_check_menu_item_set_active
+ * Signature:	
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1check_1menu_1item_1get_1active
+  (JNIEnv *env, jclass that, jint check_menu_item)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_check_menu_item_set_active");
+#endif
 
-
-
+	return (jboolean) gtk_check_menu_item_get_active((GtkCheckMenuItem*)check_menu_item);
+}
 

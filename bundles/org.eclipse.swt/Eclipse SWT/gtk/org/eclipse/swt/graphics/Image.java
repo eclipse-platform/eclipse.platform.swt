@@ -371,6 +371,7 @@ public Image(Device device, ImageData data) {
  * </ul>
  */
 public Image(Device display, ImageData source, ImageData mask) {
+	if (device == null) device = Device.getDevice();
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (source.width != mask.width || source.height != mask.height) {
@@ -804,6 +805,7 @@ public int internal_new_GC (GCData data) {
 	if (data != null) {
 		data.device = device;
 		data.drawable = pixmap;
+		data.font = device.systemFont.handle;
 		data.image = this;
 	}
 	return gdkGC;

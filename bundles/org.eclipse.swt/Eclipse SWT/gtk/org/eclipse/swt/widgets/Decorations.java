@@ -318,7 +318,15 @@ void releaseWidget () {
  */
 public void setDefaultButton (Button button) {
 	checkWidget();
+	if (button != null) {
+		if (button.isDisposed()) return;
+		OS.GTK_WIDGET_SET_FLAGS(button.handle, OS.GTK_CAN_DEFAULT);
+		OS.gtk_window_set_default(topHandle(), button.handle);
+		return;
+	}
+	else OS.gtk_window_set_default(topHandle(), 0);
 }
+
 /**
  * Sets the receiver's image to the argument, which may
  * be null. The image is typically displayed by the window

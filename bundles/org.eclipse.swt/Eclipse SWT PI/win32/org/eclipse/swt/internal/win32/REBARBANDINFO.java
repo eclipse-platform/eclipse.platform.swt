@@ -25,5 +25,5 @@ public class REBARBANDINFO {
 	public int cxIdeal;
 	public int lParam;
 	public int cxHeader;
-	public static final int sizeof = 80;
+	public static final int sizeof = OS.IsWinCE ? 76 : 80;
 }

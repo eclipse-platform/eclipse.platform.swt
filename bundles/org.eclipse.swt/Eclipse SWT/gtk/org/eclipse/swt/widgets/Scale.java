@@ -94,6 +94,9 @@ static int checkStyle (int style) {
 
 void createHandle (int index) {
 	state |= HANDLE;
+	fixedHandle = OS.gtk_fixed_new ();
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	int hAdjustment = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (hAdjustment == 0) error (SWT.ERROR_NO_HANDLES);	
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -102,16 +105,13 @@ void createHandle (int index) {
 		handle = OS.gtk_vscale_new (hAdjustment);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-}
-
-void setHandleStyle() {
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
+	OS.gtk_container_add (fixedHandle, handle);
+	OS.gtk_widget_show (fixedHandle);
+	OS.gtk_widget_show (handle);
 	OS.gtk_scale_set_digits (handle, 0); 
 	OS.gtk_scale_set_draw_value (handle, false);
-}
-
-void showHandle() {
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_realize (handle);
 }
 
 void hookEvents () {

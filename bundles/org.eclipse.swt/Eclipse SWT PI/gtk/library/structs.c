@@ -572,7 +572,6 @@ void cacheGtkCTreeFids(JNIEnv *env, jobject lpGtkCTree, PGtkCTree_FID_CACHE lpCa
 	if (lpCache->cached) return;
 
 	lpCache->GtkCTreeClass = (*env)->GetObjectClass(env, lpGtkCTree);
-	cacheGtkCListFids(env, lpGtkCTree, &PGLOB(GtkCListFc));
 	lpCache->tree_indent = (*env)->GetFieldID(env, lpCache->GtkCTreeClass, "tree_indent", "I");
 	lpCache->tree_column = (*env)->GetFieldID(env, lpCache->GtkCTreeClass, "tree_column", "I");
 
@@ -585,7 +584,6 @@ void cacheGtkCTreeRowFids(JNIEnv *env, jobject lpGtkCTreeRow, PGtkCTreeRow_FID_C
 	if (lpCache->cached) return;
 
 	lpCache->GtkCTreeRowClass = (*env)->GetObjectClass(env, lpGtkCTreeRow);
-	cacheGtkCListRowFids(env, lpGtkCTreeRow, &PGLOB(GtkCListRowFc));
 	lpCache->parent = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "parent", "I");
 	lpCache->sibling = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "sibling", "I");
 	lpCache->children = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "children", "I");
@@ -1362,23 +1360,23 @@ void setGtkStyleClassFields(JNIEnv *env, jobject lpObject, GtkStyleClass *lpGtkS
 void getGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpGtkAdjustment, GtkAdjustment_FID_CACHE *lpGtkAdjustmentFc)
 {
 	DECL_GLOB(pGlob)
-	lpGtkAdjustment->lower = (*env)->GetFloatField(env, lpObject, lpGtkAdjustmentFc->lower);
-	lpGtkAdjustment->upper = (*env)->GetFloatField(env, lpObject, lpGtkAdjustmentFc->upper);
-	lpGtkAdjustment->value = (*env)->GetFloatField(env, lpObject, lpGtkAdjustmentFc->value);
-	lpGtkAdjustment->step_increment = (*env)->GetFloatField(env, lpObject, lpGtkAdjustmentFc->step_increment);
-	lpGtkAdjustment->page_increment = (*env)->GetFloatField(env, lpObject, lpGtkAdjustmentFc->page_increment);
-	lpGtkAdjustment->page_size = (*env)->GetFloatField(env, lpObject, lpGtkAdjustmentFc->page_size);
+	lpGtkAdjustment->lower = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->lower);
+	lpGtkAdjustment->upper = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->upper);
+	lpGtkAdjustment->value = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->value);
+	lpGtkAdjustment->step_increment = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->step_increment);
+	lpGtkAdjustment->page_increment = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->page_increment);
+	lpGtkAdjustment->page_size = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->page_size);
 }
 
 void setGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpGtkAdjustment, GtkAdjustment_FID_CACHE *lpGtkAdjustmentFc)
 {
 	DECL_GLOB(pGlob)
-	(*env)->SetFloatField(env, lpObject, lpGtkAdjustmentFc->lower, (jfloat)lpGtkAdjustment->lower);
-	(*env)->SetFloatField(env, lpObject, lpGtkAdjustmentFc->upper, (jfloat)lpGtkAdjustment->upper);
-	(*env)->SetFloatField(env, lpObject, lpGtkAdjustmentFc->value, (jfloat)lpGtkAdjustment->value);
-	(*env)->SetFloatField(env, lpObject, lpGtkAdjustmentFc->step_increment, (jfloat)lpGtkAdjustment->step_increment);
-	(*env)->SetFloatField(env, lpObject, lpGtkAdjustmentFc->page_increment, (jfloat)lpGtkAdjustment->page_increment);
-	(*env)->SetFloatField(env, lpObject, lpGtkAdjustmentFc->page_size, (jfloat)lpGtkAdjustment->page_size);
+	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->lower, (jdouble)lpGtkAdjustment->lower);
+	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->upper, (jdouble)lpGtkAdjustment->upper);
+	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->value, (jdouble)lpGtkAdjustment->value);
+	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->step_increment, (jdouble)lpGtkAdjustment->step_increment);
+	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->page_increment, (jdouble)lpGtkAdjustment->page_increment);
+	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->page_size, (jdouble)lpGtkAdjustment->page_size);
 }
 
 void getGtkCListRowFields(JNIEnv *env, jobject lpObject, GtkCListRow *lpGtkCListRow, GtkCListRow_FID_CACHE *lpGtkCListRowFc)
@@ -1464,7 +1462,6 @@ void setGtkCListColumnFields(JNIEnv *env, jobject lpObject, GtkCListColumn *lpGt
 void getGtkCTreeFields(JNIEnv *env, jobject lpObject, GtkCTree *lpGtkCTree, GtkCTree_FID_CACHE *lpGtkCTreeFc)
 {
 	DECL_GLOB(pGlob)
-	getGtkCListFields(env, lpObject, &lpGtkCTree->clist, &PGLOB(GtkCListFc));
 	lpGtkCTree->tree_indent = (*env)->GetIntField(env, lpObject, lpGtkCTreeFc->tree_indent);
 	lpGtkCTree->tree_column = (*env)->GetIntField(env, lpObject, lpGtkCTreeFc->tree_column);	
 }
@@ -1472,7 +1469,6 @@ void getGtkCTreeFields(JNIEnv *env, jobject lpObject, GtkCTree *lpGtkCTree, GtkC
 void setGtkCTreeFields(JNIEnv *env, jobject lpObject, GtkCTree *lpGtkCTree, GtkCTree_FID_CACHE *lpGtkCTreeFc)
 {
 	DECL_GLOB(pGlob)
-	setGtkCListFields(env, lpObject, &lpGtkCTree->clist, &PGLOB(GtkCListFc));
 	(*env)->SetIntField(env, lpObject, lpGtkCTreeFc->tree_indent, (jint)lpGtkCTree->tree_indent);
 	(*env)->SetIntField(env, lpObject, lpGtkCTreeFc->tree_column, (jint)lpGtkCTree->tree_column);	
 }
@@ -1480,7 +1476,6 @@ void setGtkCTreeFields(JNIEnv *env, jobject lpObject, GtkCTree *lpGtkCTree, GtkC
 void getGtkCTreeRowFields(JNIEnv *env, jobject lpObject, GtkCTreeRow *lpGtkCTreeRow, GtkCTreeRow_FID_CACHE *lpGtkCTreeRowFc)
 {
 	DECL_GLOB(pGlob)
-	getGtkCListRowFields(env, lpObject, &lpGtkCTreeRow->row, &PGLOB(GtkCListRowFc));
 	lpGtkCTreeRow->parent = (GtkCTreeNode*)(*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->parent);
 	lpGtkCTreeRow->sibling = (GtkCTreeNode*)(*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->sibling);
 	lpGtkCTreeRow->children = (GtkCTreeNode*)(*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->children);
@@ -1496,7 +1491,6 @@ void getGtkCTreeRowFields(JNIEnv *env, jobject lpObject, GtkCTreeRow *lpGtkCTree
 void setGtkCTreeRowFields(JNIEnv *env, jobject lpObject, GtkCTreeRow *lpGtkCTreeRow, GtkCTreeRow_FID_CACHE *lpGtkCTreeRowFc)
 {
 	DECL_GLOB(pGlob)
-	setGtkCListRowFields(env, lpObject, &lpGtkCTreeRow->row, &PGLOB(GtkCListRowFc));
 	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->parent, (jint)lpGtkCTreeRow->parent);
 	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->sibling, (jint)lpGtkCTreeRow->sibling);
 	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->children, (jint)lpGtkCTreeRow->children);

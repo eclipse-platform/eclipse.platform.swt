@@ -849,6 +849,21 @@ void setItemSizes (Point[] sizes) {
 	}
 }
 /**
+ * Returns whether or not the coolbar is 'locked'. When a coolbar
+ * is locked, its items cannot be repositioned.
+ *
+ * @return true if the coolbar is locked, false otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean getLocked () {
+	checkWidget ();
+	return false; // currently cannot lock an emulated coolbar
+}
+/**
  * Returns an array of ints which describe the zero-relative
  * row number of the row which each of the items in the 
  * receiver occurs in.
@@ -870,6 +885,21 @@ public int[] getWrapIndices () {
 		nextWrap += items[row].length;
 	}
 	return data;
+}
+/**
+ * Sets whether the reciever is 'locked' or not. When a coolbar
+ * is locked, its items cannot be repositioned.
+ *
+ * @param locked lock the coolbar if true, otherwise unlock the coolbar
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setLocked (boolean locked) {
+	checkWidget ();
+	// currently cannot lock an emulated coolbar
 }
 /**
  * Sets the row that each of the receiver's items will be

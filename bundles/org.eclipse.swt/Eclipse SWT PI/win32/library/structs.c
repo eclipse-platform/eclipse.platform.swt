@@ -68,6 +68,7 @@ WNDCLASS_FID_CACHE WNDCLASSFc;
 	GRADIENT_RECT_FID_CACHE GRADIENT_RECTFc;
 	HELPINFO_FID_CACHE HELPINFOFc;
 	MENUINFO_FID_CACHE MENUINFOFc;
+	NMREBARCHEVRON_FID_CACHE NMREBARCHEVRONFc;
 	NMTTDISPINFO_FID_CACHE NMTTDISPINFOFc;
 	NONCLIENTMETRICS_FID_CACHE NONCLIENTMETRICSFc;
 	PRINTDLG_FID_CACHE PRINTDLGFc;
@@ -1797,6 +1798,59 @@ void setNMLISTVIEWFields(JNIEnv *env, jobject lpObject, NMLISTVIEW *lpStruct, PN
 	(*env)->SetIntField(env, lpObject, lpCache->y, lpStruct->ptAction.y);
 	(*env)->SetIntField(env, lpObject, lpCache->lParam, lpStruct->lParam);
 }
+
+#ifndef _WIN32_WCE
+void cacheNMREBARCHEVRONFids(JNIEnv *env, jobject lpObject, PNMREBARCHEVRON_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->hwndFrom = (*env)->GetFieldID(env, lpCache->clazz, "hwndFrom", "I");
+	lpCache->idFrom = (*env)->GetFieldID(env, lpCache->clazz, "idFrom", "I");
+	lpCache->code = (*env)->GetFieldID(env, lpCache->clazz, "code", "I");
+	lpCache->uBand = (*env)->GetFieldID(env, lpCache->clazz, "uBand", "I");
+	lpCache->wID = (*env)->GetFieldID(env, lpCache->clazz, "wID", "I");
+	lpCache->lParam = (*env)->GetFieldID(env, lpCache->clazz, "lParam", "I");
+	lpCache->left = (*env)->GetFieldID(env, lpCache->clazz, "left", "I");
+	lpCache->top = (*env)->GetFieldID(env, lpCache->clazz, "top", "I");
+	lpCache->right = (*env)->GetFieldID(env, lpCache->clazz, "right", "I");
+	lpCache->bottom = (*env)->GetFieldID(env, lpCache->clazz, "bottom", "I");
+	lpCache->lParamNM = (*env)->GetFieldID(env, lpCache->clazz, "lParamNM", "I");
+	lpCache->cached = 1;
+}
+
+NMREBARCHEVRON* getNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject, NMREBARCHEVRON *lpStruct, PNMREBARCHEVRON_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNMREBARCHEVRONFids(env, lpObject, lpCache);
+	lpStruct->hdr.hwndFrom = (HWND)(*env)->GetIntField(env, lpObject, lpCache->hwndFrom);
+	lpStruct->hdr.idFrom = (*env)->GetIntField(env, lpObject, lpCache->idFrom);
+	lpStruct->hdr.code = (*env)->GetIntField(env, lpObject, lpCache->code);
+	lpStruct->uBand = (*env)->GetIntField(env, lpObject, lpCache->uBand);
+	lpStruct->wID = (*env)->GetIntField(env, lpObject, lpCache->wID);
+	lpStruct->lParam = (*env)->GetIntField(env, lpObject, lpCache->lParam);
+	lpStruct->rc.left = (*env)->GetIntField(env, lpObject, lpCache->left);
+	lpStruct->rc.top = (*env)->GetIntField(env, lpObject, lpCache->top);
+	lpStruct->rc.right = (*env)->GetIntField(env, lpObject, lpCache->right);
+	lpStruct->rc.bottom = (*env)->GetIntField(env, lpObject, lpCache->bottom);
+	lpStruct->lParamNM = (*env)->GetIntField(env, lpObject, lpCache->lParamNM);
+	return lpStruct;
+}
+
+void setNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject, NMREBARCHEVRON *lpStruct, PNMREBARCHEVRON_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNMREBARCHEVRONFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->hwndFrom, (jint)lpStruct->hdr.hwndFrom);
+	(*env)->SetIntField(env, lpObject, lpCache->idFrom, lpStruct->hdr.idFrom);
+	(*env)->SetIntField(env, lpObject, lpCache->code, lpStruct->hdr.code);
+	(*env)->SetIntField(env, lpObject, lpCache->uBand, lpStruct->uBand);
+	(*env)->SetIntField(env, lpObject, lpCache->wID, lpStruct->wID);
+	(*env)->SetIntField(env, lpObject, lpCache->lParam, lpStruct->lParam);
+	(*env)->SetIntField(env, lpObject, lpCache->left, lpStruct->rc.left);
+	(*env)->SetIntField(env, lpObject, lpCache->top, lpStruct->rc.top);
+	(*env)->SetIntField(env, lpObject, lpCache->right, lpStruct->rc.right);
+	(*env)->SetIntField(env, lpObject, lpCache->bottom, lpStruct->rc.bottom);
+	(*env)->SetIntField(env, lpObject, lpCache->lParamNM, lpStruct->lParamNM);
+}
+#endif // _WIN32_WCE
 
 void cacheNMTOOLBARFids(JNIEnv *env, jobject lpObject, PNMTOOLBAR_FID_CACHE lpCache)
 {

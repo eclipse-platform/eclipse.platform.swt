@@ -89,11 +89,6 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
-void _setSize(int width, int height) {
-	OS.eclipse_fixed_set_size(parent.parentingHandle(), topHandle(), width, height);
-	OS.eclipse_fixed_set_size(fixedHandle, scrolledHandle, width, height);
-}
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's selection changes, by sending
@@ -163,24 +158,35 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-
-	boxHandle = OS.gtk_event_box_new();
-	if (boxHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-
-	fixedHandle = OS.eclipse_fixed_new ();
-	if (fixedHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-		
-	scrolledHandle = OS.gtk_scrolled_window_new(0,0);
+	fixedHandle = OS.gtk_fixed_new ();
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
+	scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	
 	handle = OS.gtk_ctree_new (1, 0);
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-}
-void configure() {
-	parent._connectChild(topHandle());
-	OS.gtk_container_add (boxHandle, fixedHandle);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);
+	OS.gtk_widget_show (fixedHandle);
+	OS.gtk_widget_show (scrolledHandle);
+	OS.gtk_widget_show (handle);
+	
+	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_EXTENDED : OS.GTK_SELECTION_BROWSE;
+	OS.gtk_clist_set_selection_mode (handle, mode);
+	
+	//BUG - need realize to get scrollbars 
+	OS.gtk_widget_realize (handle);
+	int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
+	int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
+	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
+	
+	if ((style & SWT.CHECK) != 0) {
+		OS.gtk_widget_realize (handle);
+		uncheck = createCheckPixmap (false);
+		check = createCheckPixmap (true);
+	}
 }
 
 void hookEvents () {
@@ -192,50 +198,47 @@ void hookEvents () {
 	signal_connect (handle, "tree_collapse", SWT.Collapse, 3);
 }
 
-int topHandle() { return boxHandle; }
-int parentingHandle() { return fixedHandle; }
-
 int createCheckPixmap(boolean checked) {
-		/*
-		 * The box will occupy the whole item width.
-		 */
-		GtkCList clist = new GtkCList (handle);
-		int check_height = clist.row_height-1;
-		int check_width = check_height;
+	/*
+	 * The box will occupy the whole item width.
+	 */
+	GtkCList clist = new GtkCList (handle);
+	int check_height = clist.row_height-1;
+	int check_width = check_height;
 
-		GdkVisual visual = new GdkVisual(OS.gdk_visual_get_system());
-		int pixmap = OS.gdk_pixmap_new(0, check_width, check_height, visual.depth);
-		
-		int gc = OS.gdk_gc_new(pixmap);
-		
-		GdkColor fgcolor = new GdkColor();
-		fgcolor.pixel = 0xFFFFFFFF;
-		fgcolor.red = (short) 0xFFFF;
-		fgcolor.green = (short) 0xFFFF;
-		fgcolor.blue = (short) 0xFFFF;
-		OS.gdk_gc_set_foreground(gc, fgcolor);
-		OS.gdk_draw_rectangle(pixmap, gc, 1, 0,0, check_width,check_height);
+	GdkVisual visual = new GdkVisual(OS.gdk_visual_get_system());
+	int pixmap = OS.gdk_pixmap_new(0, check_width, check_height, visual.depth);
+	
+	int gc = OS.gdk_gc_new(pixmap);
+	
+	GdkColor fgcolor = new GdkColor();
+	fgcolor.pixel = 0xFFFFFFFF;
+	fgcolor.red = (short) 0xFFFF;
+	fgcolor.green = (short) 0xFFFF;
+	fgcolor.blue = (short) 0xFFFF;
+	OS.gdk_gc_set_foreground(gc, fgcolor);
+	OS.gdk_draw_rectangle(pixmap, gc, 1, 0,0, check_width,check_height);
 
-		fgcolor = new GdkColor();
-		fgcolor.pixel = 0;
-		fgcolor.red = (short) 0;
-		fgcolor.green = (short) 0;
-		fgcolor.blue = (short) 0;
-		OS.gdk_gc_set_foreground(gc, fgcolor);
-		
-		OS.gdk_draw_line(pixmap, gc, 0,0, 0,check_height-1);
-		OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,check_height-1);
-		OS.gdk_draw_line(pixmap, gc, check_width-1,check_height-1, check_width-1,0);
-		OS.gdk_draw_line(pixmap, gc, check_width-1,0, 0,0);
+	fgcolor = new GdkColor();
+	fgcolor.pixel = 0;
+	fgcolor.red = (short) 0;
+	fgcolor.green = (short) 0;
+	fgcolor.blue = (short) 0;
+	OS.gdk_gc_set_foreground(gc, fgcolor);
+	
+	OS.gdk_draw_line(pixmap, gc, 0,0, 0,check_height-1);
+	OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,check_height-1);
+	OS.gdk_draw_line(pixmap, gc, check_width-1,check_height-1, check_width-1,0);
+	OS.gdk_draw_line(pixmap, gc, check_width-1,0, 0,0);
 
-		/* now the cross check */
-		if (checked) {
-			OS.gdk_draw_line(pixmap, gc, 0,0, check_width-1,check_height-1);
-			OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,0);
-		}
-		
-		OS.g_object_unref(gc);
-		return pixmap;
+	/* now the cross check */
+	if (checked) {
+		OS.gdk_draw_line(pixmap, gc, 0,0, check_width-1,check_height-1);
+		OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,0);
+	}
+	
+	OS.g_object_unref(gc);
+	return pixmap;
 }
 
 void createItem (TreeItem item, int node, int index) {
@@ -255,17 +258,17 @@ void createItem (TreeItem item, int node, int index) {
 	 * selectionMode field just for the insertion.  Do not use the policy
 	 * changing API because this will cause a selection callback.
 	 */ 
-//	GtkCTree ctree = new GtkCTree ();
-//	OS.memmove (ctree, handle, GtkCTree.sizeof);
-//	int selection_mode = ctree.selection_mode;
-//	ctree.selection_mode = OS.GTK_SELECTION_MULTIPLE;
-//	OS.memmove (handle, ctree, GtkCTree.sizeof);
-	int [] sm = new int [1];
-	OS.memmove (sm, handle+148, 1);
-	int selectionMode = sm[0];
-	sm [0] = OS.GTK_SELECTION_MULTIPLE;
-	OS.memmove (handle+148, sm, 1);
-// FIXME		
+////	GtkCTree ctree = new GtkCTree ();
+////	OS.memmove (ctree, handle, GtkCTree.sizeof);
+////	int selection_mode = ctree.selection_mode;
+////	ctree.selection_mode = OS.GTK_SELECTION_MULTIPLE;
+////	OS.memmove (handle, ctree, GtkCTree.sizeof);
+//	int [] sm = new int [1];
+//	OS.memmove (sm, handle+148, 1);
+//	int selectionMode = sm[0];
+//	sm [0] = OS.GTK_SELECTION_MULTIPLE;
+//	OS.memmove (handle+148, sm, 1);
+//// FIXME		
 	int sibling = index == -1 ? 0 : findSibling (node, index);
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	item.handle = OS.gtk_ctree_insert_node (handle, node, sibling, null, (byte) 2, uncheck, 0, uncheck, 0, false, false);
@@ -276,8 +279,8 @@ void createItem (TreeItem item, int node, int index) {
 //	OS.memmove (ctree, handle, GtkCTree.sizeof);
 //	ctree.selection_mode = selection_mode;
 //	OS.memmove (handle, ctree, GtkCTree.sizeof);
-	sm [0] = selectionMode;
-	OS.memmove (handle+148, sm, 1);
+//	sm [0] = selectionMode;
+//	OS.memmove (handle+148, sm, 1);
 	items [id] = item;
 }
 
@@ -554,6 +557,12 @@ int GtkCTreeDispose (int ctree, int node, int data) {
 	return 0;
 }
 
+int paintWindow () {
+	OS.gtk_widget_realize (handle);
+	GtkCList clist = new GtkCList (handle);
+	return clist.clist_window;
+}
+
 int processCollapse (int int0, int int1, int int2) {
 	int index = OS.gtk_ctree_node_get_row_data (handle, int0) - 1;
 	Event event = new Event ();
@@ -589,10 +598,9 @@ int processExpand (int int0, int int1, int int2) {
 int processMouseDown (int callData, int arg1, int int2) {
 	doubleSelected = false;
 	int result = super.processMouseDown (callData, arg1, int2);
-/*	if ((style & SWT.MULTI) != 0) selected = true;
-	double[] px = new double[1];
-	double[] py = new double[1];
-	OS.gdk_event_get_coords(callData, px, py);
+	if ((style & SWT.MULTI) != 0) selected = true;
+	double [] px = new double [1], py = new double [1];
+	OS.gdk_event_get_coords (callData, px, py);
 	int x = (int)(px[0]), y = (int)(py[0]);	
 	if ((style & SWT.CHECK) != 0) {
 		if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
@@ -602,11 +610,14 @@ int processMouseDown (int callData, int arg1, int int2) {
 				int node = OS.gtk_ctree_node_nth (handle, row [0]);
 				int crow = OS.g_list_nth_data (node, 0);
 				GtkCTreeRow row_data = new GtkCTreeRow (crow);
-				GtkCTree ctree = new GtkCTree(handle);
-				int nX = ctree.hoffset + ctree.tree_indent * row_data.level - 2;
-				int nY = ctree.voffset + (ctree.row_height + 1) * row [0] + 2;
-				int [] unused = new int [1], check_width = new int [1], check_height = new int [1];
- 				OS.gdk_window_get_geometry (check, unused, unused, check_width, check_height, unused);
+				GtkCTree ctree = new GtkCTree (handle);
+				GtkCList clist = new GtkCList (handle);
+				int nX = clist.hoffset + ctree.tree_indent * row_data.level - 2;
+				int nY = clist.voffset + (clist.row_height + 1) * row [0] + 2;
+//				int [] unused = new int [1], check_width = new int [1], check_height = new int [1];
+//				OS.gdk_window_get_geometry (check, unused, unused, check_width, check_height, unused);
+				int [] check_width = new int [1], check_height = new int [1];
+				OS.gdk_drawable_get_size (check, check_width, check_height);
 				if (nX <= x && x <= nX + check_width [0]) {
 					if (nY <= y && y <= nY + check_height [0]) {
 						byte [] spacing = new byte [1];
@@ -626,14 +637,13 @@ int processMouseDown (int callData, int arg1, int int2) {
 			}
 		}
 	}
-	GdkEvent gdkEvent = new GdkEvent(callData);
-	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
+	if (OS.GDK_EVENT_TYPE (callData) == OS.GDK_2BUTTON_PRESS) {
 		if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
 			int [] row = new int [1], column = new int [1];
 			int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
 			if (code != 0) doubleSelected = true;
 		}
-	}*/
+	}
 	return result;
 }
 
@@ -651,8 +661,7 @@ int processMouseUp (int callData, int arg1, int int2) {
 	* that caused the select signal is not included when the select
 	* signal is issued.
 	*/
-	double[] px = new double[1];
-	double[] py = new double[1];
+	double[] px = new double [1], py = new double [1];
 	OS.gdk_event_get_coords(callData, px, py);
 	int x = (int)(px[0]), y = (int)(py[0]);	
 	if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
@@ -818,11 +827,6 @@ public void selectAll () {
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_ctree_select_recursive (handle, root);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);	
-}
-
-void setHandleStyle () {
-	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_EXTENDED : OS.GTK_SELECTION_BROWSE;
-	OS.gtk_clist_set_selection_mode (handle, mode);
 }
 
 /**

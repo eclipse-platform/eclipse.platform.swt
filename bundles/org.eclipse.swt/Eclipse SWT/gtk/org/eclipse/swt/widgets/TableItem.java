@@ -27,42 +27,7 @@ import org.eclipse.swt.graphics.*;
 
 public class TableItem extends Item {
 	Table parent;
-/**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Table</code>) and a style value
- * describing its behavior and appearance. The item is added
- * to the end of the items maintained by its parent.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#checkSubclass
- * @see Widget#getStyle
- */
-public TableItem (Table parent, int style) {
-	super (parent, style);
-	this.parent = parent;
-	parent.createItem (this, parent.getItemCount ());
-	_setChecked(false);
-}
+	
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>), a style value
@@ -98,8 +63,63 @@ public TableItem (Table parent, int style, int index) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, index);
-	_setChecked(false);
 }
+
+/**
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Table</code>) and a style value
+ * describing its behavior and appearance. The item is added
+ * to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
+public TableItem (Table parent, int style) {
+	super (parent, style);
+	this.parent = parent;
+	parent.createItem (this, parent.getItemCount ());
+}
+
+/**
+ * Returns the receiver's background color.
+ *
+ * @return the background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public Color getBackground () {
+	checkWidget ();
+	Table parent = getParent();
+	return parent.getBackground();
+}
+
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent at a column in the table.
@@ -119,7 +139,6 @@ public Rectangle getBounds (int index) {
 	int columnHandle = table.column;
 	columnHandle= columnHandle+index*GtkCListColumn.sizeof;
 	GtkCListColumn column=new GtkCListColumn(columnHandle);
-	
 	double haj = OS.gtk_adjustment_get_value(table.hadjustment);
 	double vaj = OS.gtk_adjustment_get_value(table.vadjustment);
 	int x=(short)column.area_x+table.hoffset;
@@ -128,14 +147,6 @@ public Rectangle getBounds (int index) {
 	int row=parent.indexOf(this);
 	int y=table.column_title_area_height+height*row+(row+2)*CELL_SPACING-(int)vaj;
 	return new Rectangle (x, y, width, height);
-}
-
-/**
- * Return whether or not the receiver has a check box and can 
- * be checked.
- */
-boolean isCheckable() {
-	return (parent.style & SWT.CHECK) != 0;
 }
 
 /**
@@ -153,21 +164,12 @@ boolean isCheckable() {
 public boolean getChecked () {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	return _getChecked();
-}
-
-boolean _getChecked () {
 	int row = parent.indexOf (this);
 	if (row == -1) return false;
 	int clist = parent.handle;
-	
-	int[] text = new int[1];
-	int[] spacing = new int[1];
-	int[] pixmap = new int[1];
-	int[] mask = new int[1];
-	OS.gtk_clist_get_pixtext(clist, row, 0, text, spacing, pixmap, mask);
-	
-	return pixmap[0]==parent.check;
+	int [] pixmap = new int [1];
+	OS.gtk_clist_get_pixtext (clist, row, 0, null, null, pixmap, null);
+	return pixmap [0] == parent.check;
 }
 
 public Display getDisplay () {
@@ -175,6 +177,26 @@ public Display getDisplay () {
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+
+/**
+ * Returns the foreground color that the receiver will use to draw.
+ *
+ * @return the receiver's foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public Color getForeground () {
+	checkWidget ();
+	Table parent = getParent();
+	return parent.getForeground();
+}
+
 /**
  * Returns <code>true</code> if the receiver is grayed,
  * and false otherwise. When the parent does not have
@@ -188,8 +210,8 @@ public Display getDisplay () {
  * </ul>
  */
 public boolean getGrayed () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
+	//NOT DONE
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	return false;
 }
@@ -212,10 +234,17 @@ public boolean getGrayed () {
 *	when the widget has been disposed
 */
 public Image getImage (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return null;
+	checkWidget ();
+	if (index == 0) return getImage ();
+	int row = parent.indexOf (this);
+	if (row == -1) return null;
+	int clist = parent.handle;
+	int [] pixmap = new int [1], mask = new int [1];
+	OS.gtk_clist_get_pixtext (clist, row, index, null, null, pixmap, null);
+	Display display = getDisplay ();
+	return Image.gtk_new (display, mask [0] == 0 ? SWT.BITMAP : SWT.ICON, pixmap [0], mask [0]);
 }
+
 /**
  * Returns a rectangle describing the size and location
  * relative to its parent of an image at a column in the
@@ -230,10 +259,11 @@ public Image getImage (int index) {
  * </ul>
  */
 public Rectangle getImageBounds (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
+	//NOT IMPLEMENTED
 	return new Rectangle (0, 0, 0, 0);
 }
+
 /**
  * Gets the image indent.
  *
@@ -245,10 +275,11 @@ public Rectangle getImageBounds (int index) {
  * </ul>
  */
 public int getImageIndent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
+	/* Image indent is not supported on GTK */
 	return 0;
 }
+
 /**
  * Returns the receiver's parent, which must be a <code>Table</code>.
  *
@@ -260,10 +291,10 @@ public int getImageIndent () {
  * </ul>
  */
 public Table getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return parent;
 }
+
 /**
 * Gets the item text at an index.
 * <p>
@@ -284,276 +315,31 @@ public Table getParent () {
 *	when the operation fails
 */
 public String getText (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return "";
+	checkWidget ();
+	if (index == 0) return getText ();
+	int row = parent.indexOf (this);
+	if (row == -1) return null;
+	int clist = parent.handle;
+//	int ptr = 0;
+	int ptr = OS.g_malloc (256);
+	int [] address = new int [] {ptr};
+	OS.gtk_clist_get_pixtext (clist, row, index, address, null, null, null);
+	byte [] buffer = new byte [OS.strlen (address [0])];
+	OS.memmove (buffer, address [0], buffer.length);
+	OS.g_free (ptr);
+	return new String (Converter.mbcsToWcs (null, buffer));
 }
+
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
 }
+
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
 }
-/**
- * Sets the checked state of the receiver.
- *
- * @param checked the new checked state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setChecked (boolean checked) {
-	checkWidget();
-	_setChecked (checked);
-}
-void _setChecked (boolean checked) {
-	if ((parent.style & SWT.CHECK) == 0) return;  /* needed here because we don't verify in the constructor */
 
-	int row = parent.indexOf (this);
-	if (row == -1) return;
-	int ctable = parent.handle;
-	byte [] buffer = Converter.wcsToMbcs (null, text, true);
-	if (checked) OS.gtk_clist_set_pixtext (ctable, row, 0, buffer, (byte) 2, parent.check, 0);
-		else OS.gtk_clist_set_pixtext (ctable, row, 0, buffer, (byte) 2, parent.uncheck, 0);
-}
-
-/**
- * Sets the grayed state of the receiver.
- *
- * @param checked the new grayed state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setGrayed (boolean grayed) {
-	checkWidget();
-}
-/**
- * Sets the receiver's image at a column.
- *
- * @param index the column index
- * @param image the new image
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setImage (int index, Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-//	if (index == 0) {
-//		setImage (image);
-//		return;
-//	}
-	int row = parent.indexOf (this);
-	if (row == -1) return;
-	int pixmap = 0, mask = 0;
-	if (image != null) {
-		pixmap = image.pixmap;
-		mask = image.mask;
-	}
-	int ctable = parent.handle;
-	if (text != null) {
-		byte [] buffer = Converter.wcsToMbcs (null, text, true);
-		OS.gtk_clist_set_pixtext (ctable, row, index, buffer, (byte) 2, pixmap, mask);
-	} else {
-		OS.gtk_clist_set_pixmap (ctable, row, index, pixmap, mask);
-	}
-}
-public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	int row = parent.indexOf (this);
-	if (row == -1) return;
-	super.setImage (image);
-	int ctable = parent.handle;
-	int pixmap = 0, mask = 0;
-	if (image != null) {
-		pixmap = image.pixmap;
-		mask = image.mask;
-	}
-	if (text != null) {
-		byte [] buffer = Converter.wcsToMbcs (null, text, true);
-		OS.gtk_clist_set_pixtext (ctable, row, 0, buffer, (byte) 2, pixmap, mask);
-	} else {
-		OS.gtk_clist_set_pixmap (ctable, row, 0, pixmap, mask);
-	}
-}
-/**
- * Sets the image for multiple columns in the Table. 
- * 
- * @param images the array of new images
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if one of the images has been disposed</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setImage (Image [] images) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (images == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i=0; i<images.length; i++) {
-		setImage (i, images [i]);
-	}
-}
-/**
- * Sets the image indent.
- *
- * @param indent the new indent
- *
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setImageIndent (int indent) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-}
-/**
- * Sets the receiver's text at a column
- *
- * @param index the column index
- * @param string the new text
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setText (int index, String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (index == 0) {
-		setText (string);
-		return;
-	}
-	int row = parent.indexOf (this);
-	if (row == -1) return;
-	int ctree = parent.handle;
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	if (image != null) {
-		OS.gtk_clist_set_pixtext(ctree, row, index, buffer, (byte) 2, image.pixmap, image.mask);
-	} else {
-		OS.gtk_clist_set_text (ctree, row, index, buffer);
-	}
-}
-public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int row = parent.indexOf (this);
-	if (row == -1) return;
-	super.setText (string);
-	int ctree = parent.handle;
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	if (image != null) {
-		OS.gtk_clist_set_pixtext(ctree, row, 0, buffer, (byte) 2, image.pixmap, image.mask);
-	} else {
-		OS.gtk_clist_set_text (ctree, row, 0, buffer);
-	}
-}
-/**
- * Sets the text for multiple columns in the table. 
- * 
- * @param strings the array of new strings
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setText (String [] strings) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (strings == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i=0; i<strings.length; i++) {
-		String string = strings [i];
-		if (string != null) setText (i, string);
-	}
-}
-/**
- * Returns the foreground color that the receiver will use to draw.
- *
- * @return the receiver's foreground color
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- * 
- */
-public Color getForeground () {
-	checkWidget ();
-	Table parent = getParent();
-	return parent.getForeground();
-}
-/**
- * Sets the receiver's foreground color to the color specified
- * by the argument, or to the default system color for the item
- * if the argument is null.
- *
- * @param color the new color (or null)
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- * 
- */
-public void setForeground (Color color){
-	checkWidget ();
-	if (color != null && color.isDisposed ())
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-}
-/**
- * Returns the receiver's background color.
- *
- * @return the background color
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- * 
- */
-public Color getBackground () {
-	checkWidget ();
-	Table parent = getParent();
-	return parent.getBackground();
-}
 /**
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the item
@@ -574,7 +360,234 @@ public Color getBackground () {
  */
 public void setBackground (Color color) {
 	checkWidget ();
-	if (color != null && color.isDisposed ())
+	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 }
+
+/**
+ * Sets the checked state of the receiver.
+ *
+ * @param checked the new checked state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setChecked (boolean checked) {
+	checkWidget();
+	int row = parent.indexOf (this);
+	if (row == -1) return;
+	int ctable = parent.handle;
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	int pixmap = checked ? parent.check : parent.uncheck;
+	byte [] spacing = new byte [1];
+	OS.gtk_clist_get_pixtext(ctable, row, 0, null, spacing, null, null);
+	OS.gtk_clist_set_pixtext (ctable, row, 0, buffer, spacing [0], pixmap, 0);
+}
+
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setForeground (Color color){
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+}
+
+/**
+ * Sets the grayed state of the receiver.
+ *
+ * @param checked the new grayed state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setGrayed (boolean grayed) {
+	checkWidget();
+	//NOT IMPLEMENTED
+}
+
+/**
+ * Sets the receiver's image at a column.
+ *
+ * @param index the column index
+ * @param image the new image
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setImage (int index, Image image) {
+	checkWidget ();
+	if (index == 0) {
+		setImage (image);
+		return;
+	}
+	int row = parent.indexOf (this);
+	if (row == -1) return;
+	int clist = parent.handle;
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	if (image == null) {
+		OS.gtk_clist_set_text (clist, row, 0, buffer);
+	} else {
+		byte [] spacing = new byte [1];
+		OS.gtk_clist_get_pixtext(clist, row, index, null, spacing, null, null);
+		OS.gtk_clist_set_pixtext(clist, row, index, buffer, spacing [0], image.pixmap, image.mask);
+	}
+}
+
+public void setImage (Image image) {
+	checkWidget ();
+	if ((parent.style & SWT.CHECK) != 0) return;
+	int row = parent.indexOf (this);
+	if (row == -1) return;
+	super.setImage (image);
+	int clist = parent.handle;
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	if (image == null) {
+		OS.gtk_clist_set_text (clist, row, 0, buffer);
+	} else {
+		byte [] spacing = new byte [1];
+		OS.gtk_clist_get_pixtext(clist, row, 0, null, spacing, null, null);
+		OS.gtk_clist_set_pixtext(clist, row, 0, buffer, spacing [0], image.pixmap, image.mask);
+	}
+}
+
+/**
+ * Sets the image for multiple columns in the Table. 
+ * 
+ * @param images the array of new images
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the images has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setImage (Image [] images) {
+	checkWidget ();
+	if (images == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<images.length; i++) {
+		setImage (i, images [i]);
+	}
+}
+
+/**
+ * Sets the image indent.
+ *
+ * @param indent the new indent
+ *
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setImageIndent (int indent) {
+	checkWidget ();
+	/* Image indent is not supported on GTK */
+}
+
+/**
+ * Sets the receiver's text at a column
+ *
+ * @param index the column index
+ * @param string the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setText (int index, String string) {
+	checkWidget ();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (index == 0) {
+		setText (string);
+		return;
+	}
+	int row = parent.indexOf (this);
+	if (row == -1) return;
+	int clist = parent.handle;
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] spacing = new byte [1];
+	int [] pixmap = new int [1], mask = new int [1];
+	OS.gtk_clist_get_pixtext (clist, row, index, null, spacing, pixmap, mask);
+	if (pixmap [0] == 0) {
+		OS.gtk_clist_set_text (clist, row, index, buffer);
+	} else {
+		OS.gtk_clist_set_pixtext (clist, row, index, buffer, spacing [0], pixmap [0], mask [0]);
+	}
+}
+
+public void setText (String string) {
+	checkWidget ();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int row = parent.indexOf (this);
+	if (row == -1) return;
+	super.setText (string);
+	int clist = parent.handle;
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] spacing = new byte [1];
+	int [] pixmap = new int [1], mask = new int [1];
+	OS.gtk_clist_get_pixtext (clist, row, 0, new int [1], spacing, pixmap, mask);
+	if (pixmap [0] == 0) {
+		OS.gtk_clist_set_text (clist, row, 0, buffer);
+	} else {
+		OS.gtk_clist_set_pixtext (clist, row, 0, buffer, spacing [0], pixmap [0], mask [0]);
+	}
+}
+
+/**
+ * Sets the text for multiple columns in the table. 
+ * 
+ * @param strings the array of new strings
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setText (String [] strings) {
+	checkWidget ();
+	if (strings == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<strings.length; i++) {
+		String string = strings [i];
+		if (string != null) setText (i, string);
+	}
+}
+
 }

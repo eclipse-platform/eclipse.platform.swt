@@ -29,8 +29,8 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Group extends Composite {
-	int frameHandle;
-	String text="";  int bogus;
+	int clientHandle;
+	String text = "";
 
 /**
  * Constructs a new instance of this class given its parent
@@ -63,6 +63,7 @@ public class Group extends Composite {
 public Group (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+
 static int checkStyle (int style) {
 	/*
 	* Even though it is legal to create this widget
@@ -76,47 +77,43 @@ static int checkStyle (int style) {
 
 void createHandle(int index) {
 	state |= HANDLE;
-	
-	frameHandle = OS.gtk_frame_new(null);
-	if (frameHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	boxHandle = OS.gtk_event_box_new();
-	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-	handle = OS.eclipse_fixed_new();
+	fixedHandle = OS.gtk_fixed_new ();
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
+	handle = OS.gtk_frame_new(null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-}
-
-void _setHandleStyle() {
-	int shadow = OS.GTK_SHADOW_IN;
-	if ((style & SWT.SHADOW_IN) != 0) shadow = OS.GTK_SHADOW_IN;
-	if ((style & SWT.SHADOW_OUT) != 0) shadow = OS.GTK_SHADOW_OUT;
-	if ((style & SWT.SHADOW_ETCHED_IN) != 0) shadow = OS.GTK_SHADOW_ETCHED_IN;
-	if ((style & SWT.SHADOW_ETCHED_OUT) != 0) shadow = OS.GTK_SHADOW_ETCHED_OUT;
-	OS.gtk_frame_set_shadow_type(frameHandle, shadow);
-}
-
-void configure() {
-	parent._connectChild(frameHandle);
-	OS.gtk_container_add(frameHandle, boxHandle);
-	OS.gtk_container_add(boxHandle, handle);
-}
-
-void showHandle() {
-	OS.gtk_widget_show (frameHandle);
-	OS.gtk_widget_show (boxHandle);
+	clientHandle = OS.gtk_fixed_new();
+	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
+	OS.gtk_container_add (fixedHandle, handle);
+	OS.gtk_container_add (handle, clientHandle);
 	OS.gtk_widget_show (handle);
-	OS.gtk_widget_realize (handle);
+	OS.gtk_widget_show (clientHandle);
+	OS.gtk_widget_show (fixedHandle);
+	
+	if ((style & SWT.SHADOW_IN) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_IN);
+	}
+	if ((style & SWT.SHADOW_OUT) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_OUT);
+	}
+	if ((style & SWT.SHADOW_ETCHED_IN) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_IN);
+	}
+	if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_OUT);
+	}
 }
 
 void register () {
 	super.register ();
-	WidgetTable.put (frameHandle, this);
+	WidgetTable.put (clientHandle, this);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
-	frameHandle = 0;
+	clientHandle = 0;
 }
 
 void releaseWidget () {
@@ -126,17 +123,16 @@ void releaseWidget () {
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (frameHandle);
+	WidgetTable.remove (clientHandle);
 }
 
-int topHandle () { return frameHandle; }
-int parentingHandle() { return handle; }
+int parentingHandle() {
+	return clientHandle;
+}
 
-
-/*
- *   ===  GEOMETRY  ===
- */
-
+int clientHandle () {
+	return clientHandle;
+}
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
@@ -177,26 +173,22 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	int[] trims = new int[4];
-	OS.swt_frame_get_trim(frameHandle, trims);	
+	//FIXME - custom C code and wrong X,Y
+	OS.swt_frame_get_trim(handle, trims);	
 	return new Rectangle (x-trims[1], y-trims[0], width+trims[1]+trims[2], height+trims[0]+trims[3]);
 }
 
 public Rectangle getClientArea () {
 	checkWidget();
-	/* The Group coordinates originate at the client area */
-	int width, height;
-	Point size = _getSize();
-	int[] trims = new int[4];
-	OS.swt_frame_get_trim(frameHandle, trims);
-	return new Rectangle(0,0, size.x - trims[1] - trims[2], size.y - trims[0] - trims[3]);
+	int width = OS.GTK_WIDGET_WIDTH (clientHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (clientHandle);
+	return new Rectangle (0, 0, width, height);
 }
-
-
-/*   =========  Model Logic  =========   */
 
 String getNameText () {
 	return getText ();
 }
+
 /**
  * Returns the receiver's text, which is the string that the
  * is used as the <em>title</em>. If the text has not previously
@@ -214,6 +206,22 @@ public String getText () {
 	return text;
 }
 
+void resizeHandle (int width, int height) {
+	int topHandle = topHandle ();
+	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
+	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_widget_set_size_request (fixedHandle, width, height);
+	OS.gtk_widget_set_size_request (handle, width, height);
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	OS.gtk_container_resize_children (parentHandle);
+	display.setWarnings (warnings);
+	if ((flags & OS.GTK_VISIBLE) == 0) {
+		OS.GTK_WIDGET_UNSET_FLAGS(topHandle, OS.GTK_VISIBLE);	
+	}
+}
 
 /**
  * Sets the receiver's text, which is the string that will
@@ -240,8 +248,13 @@ public void setText (String string) {
 	for (int i=0; i<length; i++) {
 		if (text [i] == '&') text [i] = '_';
 	}
-	int label = OS.gtk_frame_get_label_widget (frameHandle);
+	//FIXME - create label widget when frame handle is created
 	byte [] buffer = Converter.wcsToMbcs (null, text);
+	int label = OS.gtk_frame_get_label_widget (handle);
+	if (label == 0) {
+		OS.gtk_frame_set_label (handle, buffer);
+		label = OS.gtk_frame_get_label_widget (handle);
+	}
 	OS.gtk_label_set_text_with_mnemonic (label, buffer);
 }
 

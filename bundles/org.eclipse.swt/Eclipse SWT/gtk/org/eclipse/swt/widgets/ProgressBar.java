@@ -70,18 +70,13 @@ void createHandle (int index) {
 	handle = OS.gtk_progress_bar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_progress_configure (handle, value, min, max);
-}
-
-void setHandleStyle() {
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, handle);
+	OS.gtk_widget_show (handle);
 	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_PROGRESS_TOP_TO_BOTTOM : OS.GTK_PROGRESS_LEFT_TO_RIGHT;
 	OS.gtk_progress_bar_set_orientation (handle, orientation);		
 	int style = (this.style & SWT.SMOOTH) == 0 ? OS.GTK_PROGRESS_DISCRETE : OS.GTK_PROGRESS_CONTINUOUS;
 	OS.gtk_progress_bar_set_bar_style (handle, style);
-}
-
-void showHandle() {
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_realize (handle);
 }
 
 /**

@@ -25,7 +25,6 @@ import org.eclipse.swt.graphics.*;
  */
 
 public abstract class Scrollable extends Control {
-
 	int scrolledHandle;
 	ScrollBar horizontalBar, verticalBar;
 
@@ -66,6 +65,10 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
+int clientHandle () {
+	return handle;
+}
+
 /**
  * Given a desired <em>client area</em> for the receiver
  * (as described by the arguments), returns the bounding
@@ -90,31 +93,13 @@ public Scrollable (Composite parent, int style) {
  * @see #getClientArea
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
+	checkWidget ();
 	int hs=0, vs=0;
 	/* FIXME - just measured the width on one particular theme */
 	if ((style&SWT.H_SCROLL)!=0) hs=18;
 	if ((style&SWT.V_SCROLL)!=0) vs=18;	
 	return new Rectangle (x, y, width+vs, height+hs);
 }
-
-void _fillBin(int binHandle, int childHandle) {
-	/*
-	GtkBin bin = new GtkBin();
-	OS.memmove(bin, binHandle, GtkBin.sizeof);
-	bin.child = childHandle;
-	OS.memmove(binHandle, bin, GtkBin.sizeof);
-	OS.gtk_widget_set_parent(childHandle, binHandle);
-	*/
-	OS.gtk_container_add(binHandle, childHandle);}
-
-/*
- * Subclasses must only use super.configure()
- * to connect their topHandle to the parent.
- * It is the responsibility of the conrete subclass
- * to configure the scrolled handles.
- */
-abstract void configure ();
 
 ScrollBar createScrollBar (int style) {
 	if (scrolledHandle == 0) return null;
@@ -131,17 +116,18 @@ ScrollBar createScrollBar (int style) {
 	bar.register ();
 	return bar;
 }
+
 void createWidget (int index) {
 	super.createWidget (index);
 	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
 }
+
 void deregister () {
 	super.deregister ();
-	if (scrolledHandle != 0) {
-		WidgetTable.remove (scrolledHandle);
-	}
+	if (scrolledHandle != 0) WidgetTable.remove (scrolledHandle);
 }
+
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data (that is,
@@ -157,9 +143,17 @@ void deregister () {
  * @see #computeTrim
  */
 public Rectangle getClientArea () {
-	checkWidget();
-	/* FIXME.  Why do we do it here, in the first place?  Scrollable is abstract... */
-	return new Rectangle (0, 0, 10, 10);
+	checkWidget ();
+	//FIXME - List, Table, Tree, ...
+	int clientHandle = clientHandle ();
+	int width = OS.GTK_WIDGET_WIDTH (clientHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (clientHandle);
+	if ((state & CANVAS) != 0) {
+		return new Rectangle (0, 0, width, height);
+	}
+	int x = OS.GTK_WIDGET_X (clientHandle);
+	int y = OS.GTK_WIDGET_Y (clientHandle);
+	return new Rectangle (x, y, width, height);
 }
 /**
  * Returns the receiver's horizontal scroll bar if it has
@@ -173,8 +167,7 @@ public Rectangle getClientArea () {
  * </ul>
  */
 public ScrollBar getHorizontalBar () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return horizontalBar;
 }
 /**
@@ -189,23 +182,13 @@ public ScrollBar getHorizontalBar () {
  * </ul>
  */
 public ScrollBar getVerticalBar () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return verticalBar;
-}
-
-void setScrollingPolicy() {
-	if (scrolledHandle==0) return;
-	int hsp = ((style&SWT.H_SCROLL)==0)? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
-	int vsp = ((style&SWT.V_SCROLL)==0)? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
-	OS.gtk_scrolled_window_set_policy(scrolledHandle, hsp,vsp);
 }
 
 void register () {
 	super.register ();
-	if (scrolledHandle != 0) {
-		WidgetTable.put (scrolledHandle, this);
-	}
+	if (scrolledHandle != 0) WidgetTable.put (scrolledHandle, this);
 }
 
 void releaseHandle () {
@@ -225,8 +208,34 @@ void releaseWidget () {
 	horizontalBar = verticalBar = null;
 	super.releaseWidget ();
 }
-int topHandle () {
-	if (scrolledHandle != 0) return scrolledHandle;
-	return handle;
+
+void resizeHandle (int width, int height) {
+	int topHandle = topHandle ();
+	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
+	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
+	int parentHandle = parent.parentingHandle ();
+	if (fixedHandle != 0) {
+		OS.gtk_widget_set_size_request (fixedHandle, width, height);
+	}
+	if (scrolledHandle != 0) {
+		OS.gtk_widget_set_size_request (scrolledHandle, width, height);
+	} else {
+		OS.gtk_widget_set_size_request (handle, width, height);
+	}
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	OS.gtk_container_resize_children (parentHandle);
+	display.setWarnings (warnings);
+	if ((flags & OS.GTK_VISIBLE) == 0) {
+		OS.GTK_WIDGET_UNSET_FLAGS(topHandle, OS.GTK_VISIBLE);	
+	}
 }
+
+int topHandle () {
+	if (fixedHandle != 0) return fixedHandle;
+	if (scrolledHandle != 0) return scrolledHandle;
+	return super.topHandle ();
+}
+
 }

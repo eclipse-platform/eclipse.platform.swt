@@ -307,6 +307,11 @@ public String getText () {
 	return buffer.toString (0, length);
 }
 
+boolean isTabItem () {
+	if ((style & SWT.PUSH) != 0) return true;
+	return super.isTabItem ();
+}
+
 boolean mnemonicHit (char ch) {
 	if (!setFocus ()) return false;
 	/*

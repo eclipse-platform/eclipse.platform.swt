@@ -28,9 +28,10 @@ public abstract class Device implements Drawable {
 	/* Warning and Error Handlers */
 	int logProc;
 	Callback logCallback;
-	String [] log_domains = {"Gtk", /*"Gdk", "GLib", "GdkPixbuf"*/};
+	//NOT DONE - get list of valid names
+	String [] log_domains = {"GLib-GObject", "GLib", "GObject", "Pango", "ATK", "GdkPixbuf", "Gdk", "Gtk"};
 	int [] handler_ids = new int [log_domains.length];
-	boolean warnings = true;
+	int warningLevel;
 	
 	/*
 	* The following colors are listed in the Windows
@@ -40,6 +41,9 @@ public abstract class Device implements Drawable {
 	Color COLOR_BLACK, COLOR_DARK_RED, COLOR_DARK_GREEN, COLOR_DARK_YELLOW, COLOR_DARK_BLUE;
 	Color COLOR_DARK_MAGENTA, COLOR_DARK_CYAN, COLOR_GRAY, COLOR_DARK_GRAY, COLOR_RED;
 	Color COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE;
+
+	/* System Font */
+	Font systemFont;
 	
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -94,6 +98,9 @@ public Device(DeviceData data) {
 		errors = new Error [128];
 		objects = new Object [128];
 	}
+
+	/* Initialize the system font slot */
+	systemFont = getSystemFont ();
 }
 
 protected void checkDevice () {
@@ -149,7 +156,6 @@ protected void destroy () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	return new Rectangle(0, 0, 0, 0);
 }
 
@@ -220,7 +226,6 @@ public Rectangle getClientArea () {
  */
 public int getDepth () {
 	checkDevice ();
-	SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	return 0;
 }
 
@@ -237,7 +242,6 @@ public int getDepth () {
  */
 public Point getDPI () {
 	checkDevice ();
-	SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	return new Point (72, 72);
 }
 
@@ -256,29 +260,45 @@ public Point getDPI () {
  */
 public FontData[] getFontList (String faceName, boolean scalable) {	
 	checkDevice ();
-	
-	/* Temporary code.
-	 * For now, we know that on Pango at least three font families are guaranteed
-	 * to be present: Sans, Serif, and Monspace.
-	 */
-	if (scalable) return getScalableFontList(faceName);
-	return getNonScalableFontList(faceName);
-}
-FontData[] getScalableFontList(String faceName) {
-	FontData[] answer;
-//	if (faceName==null) {
-		answer = new FontData[2];
-		answer[0] = new FontData("helvetica", 12, SWT.ROMAN);
-//	}
-	return answer;
-}
-FontData[] getNonScalableFontList(String faceName) {
-	FontData[] answer;
-//	if (faceName==null) {
-		answer = new FontData[1];
-		answer[0] = new FontData("fixed", 12, SWT.ROMAN);
-//	}
-	return answer;
+
+	//FIXME - check scalable flag
+	int[] family = new int[1];
+	int[] face = new int[1];
+	int[] families = new int[1];
+	int[] n_families = new int[1];
+	int[] faces = new int[1];
+	int[] n_faces = new int[1];
+	int context = OS.gdk_pango_context_get();
+	OS.pango_context_list_families(context, families, n_families);
+	int nFds = 0;
+	FontData[] fds = new FontData[faceName != null ? 4 : n_families[0]];
+	for (int i=0; i<n_families[0]; i++) {
+		OS.memmove(family, families[0] + i * 4, 4);
+		OS.pango_font_family_list_faces(family[0], faces, n_faces);
+		for (int j=0; j<n_faces[0]; j++) {
+			OS.memmove(face, faces[0] + j * 4, 4);
+			int fontDesc = OS.pango_font_face_describe(face[0]);
+			Font font = Font.gtk_new(this, fontDesc);
+			FontData data = font.getFontData()[0];
+			if (faceName == null || Compatibility.equalsIgnoreCase(faceName, data.name)) {
+				if (nFds == fds.length) {
+					FontData[] newFds = new FontData[fds.length + n_families[0]];
+					System.arraycopy(fds, 0, newFds, 0, nFds);
+					fds = newFds;
+				}
+				fds[nFds++] = data;
+			}
+			OS.pango_font_description_free(fontDesc);
+		}
+		OS.g_free(faces[0]);
+	}
+	OS.g_free(families[0]);
+	OS.g_object_unref(context);
+
+	if (nFds == fds.length) return fds;
+	FontData[] result = new FontData[nFds];
+	System.arraycopy(fds, 0, result, 0, nFds);
+	return result;
 }
 
 /**
@@ -344,7 +364,7 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return null;
+	return systemFont;
 }
 
 /**
@@ -360,7 +380,7 @@ public Font getSystemFont () {
  */
 public boolean getWarnings () {
 	checkDevice ();
-	return this.warnings;
+	return warningLevel == 0;
 }
 
 protected void init () {
@@ -447,7 +467,7 @@ public boolean isDisposed () {
 }
 
 int logProc (int log_domain, int log_level, int message, int user_data) {
-	if (DEBUG || (debug && warnings)) {
+	if (DEBUG || (debug && warningLevel == 0)) {
 		new Error ().printStackTrace ();
 		OS.g_log_default_handler (log_domain, log_level, message, 0);
 	}
@@ -498,6 +518,7 @@ protected void release () {
 		if (handler_ids [i] != 0) {
 			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
 			OS.g_log_remove_handler (log_domain, handler_ids [i]);
+			handler_ids [i] = 0;
 		}
 	}
 	logCallback.dispose ();  logCallback = null;
@@ -519,19 +540,25 @@ protected void release () {
  */
 public void setWarnings (boolean warnings) {
 	checkDevice ();
-	this.warnings = warnings;
-	if (debug) return;
-	for (int i=0; i<handler_ids.length; i++) {
-		if (handler_ids [i] != 0) {
-			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
-			OS.g_log_remove_handler (log_domain, handler_ids [i]);
-		}
-	}
 	if (warnings) {
-		int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
-		for (int i=0; i<log_domains.length; i++) {
-			byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
-			handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
+		if (--warningLevel == 0) {
+			if (debug) return;
+			for (int i=0; i<handler_ids.length; i++) {
+				if (handler_ids [i] != 0) {
+					byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+					OS.g_log_remove_handler (log_domain, handler_ids [i]);
+					handler_ids [i] = 0;
+				}
+			}
+		}
+	} else {
+		if (warningLevel++ == 0) {
+			if (debug) return;
+			int flags = OS.G_LOG_LEVEL_MASK | OS.G_LOG_FLAG_FATAL | OS.G_LOG_FLAG_RECURSION;
+			for (int i=0; i<log_domains.length; i++) {
+				byte [] log_domain = Converter.wcsToMbcs (null, log_domains [i], true);
+				handler_ids [i] = OS.g_log_set_handler (log_domain, flags, logProc, 0);
+			}
 		}
 	}
 }

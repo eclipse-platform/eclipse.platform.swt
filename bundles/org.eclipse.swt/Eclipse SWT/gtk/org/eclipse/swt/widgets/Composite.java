@@ -28,13 +28,8 @@ import org.eclipse.swt.graphics.*;
  * @see Canvas
  */
 public class Composite extends Scrollable {
-	/* boxHandle is temporarily here, until eclipsefixed gets fixed */
-	int boxHandle, fixedHandle, radioHandle;
+	int radioHandle;
 	Layout layout;
-
-/*
- *   ===  CONSTRUCTORS  ===
- */
 
 Composite () {
 	/* Do nothing */
@@ -72,121 +67,105 @@ public Composite (Composite parent, int style) {
 	super (parent, style);
 }
 
-/*
- * === Handle code begins ===
- */
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	
-	scrolledHandle = OS.gtk_scrolled_window_new(0,0);
-	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	boxHandle = OS.gtk_event_box_new();
-	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	fixedHandle = OS.eclipse_fixed_new();
-	if (fixedHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	
-	handle = OS.gtk_drawing_area_new();
+	createScrolledHandle (parent.parentingHandle ());
+}
+
+void createScrolledHandle (int parentHandle) {
+	//TEMPORARY CODE
+//	boolean isScrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
+	boolean isScrolled = true;
+	if (isScrolled) {
+		fixedHandle = OS.gtk_fixed_new ();
+		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_fixed_set_has_window (fixedHandle, true);
+		int vadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
+		int hadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		if (hadj == 0) error (SWT.ERROR_NO_HANDLES);
+		scrolledHandle = OS.gtk_scrolled_window_new (hadj, vadj);
+		if (scrolledHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	}
+	handle = OS.gtk_fixed_new ();
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (handle, true);
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
+	if (isScrolled) {
+		OS.gtk_container_add (parentHandle, fixedHandle);
+		OS.gtk_container_add (fixedHandle, scrolledHandle);
+
+//		/*
+//		* Force the scrolledWindow to have a single child that is
+//		* not scrolled automatically.  Calling gtk_container_add
+//		* seems to add the child correctly but cause a warning.
+//		*/
+//		OS.GTK_BIN_SET_CHILD(scrolledHandle, handle);
+//		OS.gtk_widget_set_parent(handle, scrolledHandle);
+		Display display = getDisplay ();
+		boolean warnings = display.getWarnings ();
+		display.setWarnings (false);
+		OS.gtk_container_add (scrolledHandle, handle);
+		display.setWarnings (warnings);
+		
+		OS.gtk_widget_show (fixedHandle);
+		OS.gtk_widget_show (scrolledHandle);
+		int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
+		int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
+		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
+		//CHECK WITH IS THERE ALREADY THEN DON'T SET
+		if ((style & SWT.BORDER) != 0) {
+			OS.gtk_scrolled_window_set_shadow_type(scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
+		}
+	} else {
+		OS.gtk_container_add (parentHandle, handle);		
+	}
+	OS.gtk_widget_show (handle);
+	
+	//DOESN'T WORK RIGHT NOW
+	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
+		OS.gtk_widget_set_redraw_on_allocate (handle, false);
+	}
 }
 
-void configure() {
-	parent._connectChild(scrolledHandle);
-	OS.gtk_container_add(scrolledHandle, boxHandle);
-	OS.gtk_container_add(boxHandle, fixedHandle);
-	OS.gtk_container_add(fixedHandle, handle);
+int parentingHandle () {
+	if ((state & CANVAS) != 0) return handle;
+	return fixedHandle != 0 ? fixedHandle : handle;
 }
 
-void setHandleStyle() {
-	setScrollingPolicy();
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize && layout != null) layout.layout (this, false);
+	return changed;
 }
 
-void showHandle() {
-	OS.gtk_widget_show_now (scrolledHandle);
-	OS.gtk_widget_show_now (boxHandle);
-	OS.gtk_widget_show_now (fixedHandle);
-	OS.gtk_widget_realize (handle);
-	OS.gtk_widget_show_now (handle);
-}
-
-void hookEvents () {
-	signal_connect_after (handle, "expose_event", SWT.Paint, 3);
-	int mask =
-		OS.GDK_POINTER_MOTION_MASK | 
-		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
-		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
-		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
-		OS.GDK_FOCUS_CHANGE_MASK;
-	OS.gtk_widget_add_events (handle, mask);
-	signal_connect_after (handle, "motion_notify_event", SWT.MouseMove, 3);
-	signal_connect_after (handle, "button_press_event", SWT.MouseDown, 3);
-	signal_connect_after (handle, "button_release_event", SWT.MouseUp, 3);
-	signal_connect_after (handle, "enter_notify_event", SWT.MouseEnter, 3);
-	signal_connect_after (handle, "leave_notify_event", SWT.MouseExit, 3);
-	signal_connect_after (handle, "key_press_event", SWT.KeyDown, 3);
-	signal_connect_after (handle, "key_release_event", SWT.KeyUp, 3);
-	signal_connect_after (handle, "focus_in_event", SWT.FocusIn, 3);
-	signal_connect_after (handle, "focus_out_event", SWT.FocusOut, 3);
-}
-
-int topHandle() { return scrolledHandle; }
-int parentingHandle() { return fixedHandle; }
-boolean isMyHandle(int h) {
-	if (h==boxHandle) return true;
-	if (h==fixedHandle) return true;
-	return super.isMyHandle(h);
-}
-
-
-/*
- *   ===  GEOMETRY - PHYSICAL  ===
- */
-
-
-public void setBounds (int x, int y, int width, int height) {
-	super.setBounds (x, y, width, height);
-	layout();
-}
-
-public void setSize (int width, int height) {
-	super.setSize(width, height);
-	layout();
-}
-Point getScrollableTrim() {
-	/*
-	 * This is very tricky.
-	 * In SWT/GTK, layout is not managed by the GtkContainers.
-	 * Therefore, the native preferred minimum sizes are
-	 * generally ignored.  This allows us to set the native
-	 * size of the fixed to whatever value we want, and it is
-	 * guaranteed to be disregarded by the layout code.
-	 * At this point, that size is requested by the Scrollable,
-	 * gets added to by whatever is between the scrollable
-	 * and the fixed, and serves as the basis for the native
-	 * Scrollable size requisition (which is also guaranteed
-	 * to be thrown away).
-	 */
-	OS.GTK_WIDGET_SET_FLAGS(parentingHandle(), OS.GTK_VISIBLE);
-	OS.GTK_WIDGET_SET_FLAGS(boxHandle, OS.GTK_VISIBLE);
-	GtkRequisition clientReq = new GtkRequisition();
-	GtkRequisition req = new GtkRequisition();
-	OS.gtk_widget_size_request(parentingHandle(), clientReq);
-	OS.gtk_widget_size_request(scrolledHandle, req);
-	if ((style&SWT.H_SCROLL&SWT.V_SCROLL)!=0) return new Point (req.width-clientReq.width, req.height-clientReq.height);
-	if ((style&SWT.H_SCROLL)!=0) return new Point (0, req.height-clientReq.height);
-	if ((style&SWT.V_SCROLL)!=0) return new Point (req.width-clientReq.width, 0);
-	return new Point (0,0);
-}
-void _setSize(int width, int height) {
-	OS.eclipse_fixed_set_size(parent.parentingHandle(), topHandle(), width, height);
-	/* This is the trim on the right caused by the scrollbars */
-	Point st = getScrollableTrim();
-	if ((style&SWT.V_SCROLL) != 0) width  -= st.x;  width  = Math.max(width, 0);
-	if ((style&SWT.H_SCROLL) != 0) height -= st.y;  height = Math.max(height, 0);
-	OS.eclipse_fixed_set_size(fixedHandle, handle, width, height);
-}
+// USE FOR TRIM ????
+// 
+//Point getScrollableTrim() {
+//	/*
+//	 * This is very tricky.
+//	 * In SWT/GTK, layout is not managed by the GtkContainers.
+//	 * Therefore, the native preferred minimum sizes are
+//	 * generally ignored.  This allows us to set the native
+//	 * size of the fixed to whatever value we want, and it is
+//	 * guaranteed to be disregarded by the layout code.
+//	 * At this point, that size is requested by the Scrollable,
+//	 * gets added to by whatever is between the scrollable
+//	 * and the fixed, and serves as the basis for the native
+//	 * Scrollable size requisition (which is also guaranteed
+//	 * to be thrown away).
+//	 */
+//	OS.GTK_WIDGET_SET_FLAGS(parentingHandle(), OS.GTK_VISIBLE);
+//	OS.GTK_WIDGET_SET_FLAGS(boxHandle, OS.GTK_VISIBLE);
+//	GtkRequisition clientReq = new GtkRequisition();
+//	GtkRequisition req = new GtkRequisition();
+//	OS.gtk_widget_size_request(parentingHandle(), clientReq);
+//	OS.gtk_widget_size_request(scrolledHandle, req);
+//	if ((style&SWT.H_SCROLL&SWT.V_SCROLL)!=0) return new Point (req.width-clientReq.width, req.height-clientReq.height);
+//	if ((style&SWT.H_SCROLL)!=0) return new Point (0, req.height-clientReq.height);
+//	if ((style&SWT.V_SCROLL)!=0) return new Point (req.width-clientReq.width, 0);
+//	return new Point (0,0);
+//}
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
@@ -207,11 +186,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Rectangle trim = computeTrim (0, 0, size.x, size.y);
 	return new Point (trim.width, trim.height);
 }
-
-
-/*
- *   ===  GEOMETRY - LAYOUT  ===
- */
 
 /**
  * Returns layout which is associated with the receiver, or
@@ -278,56 +252,33 @@ public void setLayout (Layout layout) {
  */
 public Control [] getChildren () {
 	checkWidget();
-	return _getChildren(parentingHandle());
+	return _getChildren ();
 }
 
-/**
- * Answer the array of the children of the specified handle,
- * filtering out widgets we don't consider our children.
- * That is, the OS may return some children that don't qualify
- * as such under SWT terminology - e.g., Items are not children.
- */
-Control [] _getChildren (int h) {
-	if (h==0) {
-		error(SWT.ERROR_UNSPECIFIED);
-	}
-	int list = OS.gtk_container_children (h);
-	int count = OS.g_list_length (list);
-	java.util.Vector children = new java.util.Vector();
-	for (int i=0; i<count; i++) {
-		int data = OS.g_list_nth_data (list, i);
-		if (!isMyHandle(data)) {
-			Control child = _childFromHandle(data);
-			if (child != null) children.addElement(child);
+Control [] _getChildren () {
+	int parentHandle = parentingHandle ();
+	int list = OS.gtk_container_children (parentHandle);
+	int count = (list != 0) ? OS.g_list_length (list) : 0;
+	if (count == 0) return new Control [0];
+	Control [] children = new Control [count];
+	int i = 0, j = 0;
+	while (i < count) {
+		int handle = OS.g_list_nth_data (list, i);
+		if (handle != 0) {
+			Widget widget = WidgetTable.get (handle);
+			if (widget != null && widget != this) {
+				if (widget instanceof Control) {
+					children [j++] = (Control) widget;
+				}
+			}
 		}
+		i++;
 	}
-	Control[] answer = new Control[children.size()];
-	children.copyInto(answer);
-	return answer;
+	if (i == j) return children;
+	Control [] newChildren = new Control [j];
+	System.arraycopy (children, 0, newChildren, 0, j);
+	return newChildren;
 }
-/**
- * Consider the argument a handle of one of the receiver's children.
- * If the argument is not a handle to a widget, or the widget is
- * not our child in SWT (not OS) terminology, return null.
- */
-Control _childFromHandle(int h) {
-	Widget child = WidgetTable.get(h);
-	return (Control)child;
-}
-
-public Rectangle getClientArea () {
-	checkWidget();
-	/* We can not measure the actual size of the client area,
-	 * because it may not have propagated down yet.
-	 */
-	Point size = _getSize();
-	/* FIXME - this code assumes the scrollbars are to the right */
-	/* FIXME - I just measured the size on one particular theme. */
-	if ((style & SWT.V_SCROLL) != 0) size.x -= 18;
-	if ((style & SWT.H_SCROLL) != 0) size.y -= 18;
-	return new Rectangle(0,0, size.x, size.y);
-}
-
 
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
@@ -345,6 +296,7 @@ public Rectangle getClientArea () {
 public void layout () {
 	layout (true);
 }
+
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
  * (that is, set the size and location of) the receiver's children. 
@@ -369,7 +321,7 @@ public void layout (boolean changed) {
 }
 
 Point minimumSize () {
-	Control [] children = _getChildren (parentingHandle());
+	Control [] children = _getChildren ();
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {
 		Rectangle rect = children [i].getBounds ();
@@ -392,15 +344,8 @@ void _initializeRadioGroup() {
 	radioHandle = OS.gtk_radio_button_new(0);
 }
 
-/**
- * Adopt the widget h as our child.
- */
-void _connectChild (int h) {
-	OS.gtk_container_add (parentingHandle(), h);
-}
-
 void releaseChildren () {
-	Control [] children = _getChildren (parentingHandle());
+	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		if (child != null && !child.isDisposed ()) {
@@ -416,19 +361,37 @@ void releaseWidget () {
 }
 void releaseHandle () {
 	super.releaseHandle ();
-	boxHandle = radioHandle = 0;
+	radioHandle = 0;
 }
 
 int processMouseDown (int callData, int arg1, int int2) {
-	//NOT DONE - only grab when not already grabbing
-	if ((state & CANVAS) != 0) OS.gtk_grab_add (handle);
-	return super.processMouseDown (callData, arg1, int2);
+	int result = super.processMouseDown (callData, arg1, int2);
+	if ((state & CANVAS) != 0) {
+		//NOT DONE - only grab when not already grabbing
+		OS.gtk_grab_add (handle);
+		if ((style & SWT.NO_FOCUS) == 0) {
+			int list = OS.gtk_container_children (handle);
+			int count = list != 0 ? OS.g_list_length (list) : 0;
+			if (count == 0) OS.gtk_widget_grab_focus (handle);
+		}
+		return 1;
+	}
+	return result;
+}
+
+int processMouseMove (int callData, int arg1, int int2) {
+	int result = super.processMouseMove (callData, arg1, int2);
+	return (state & CANVAS) != 0 ? 1 : result;
 }
 
 int processMouseUp (int callData, int arg1, int int2) {
+	int result = super.processMouseUp (callData, arg1, int2);
 	//NOT DONE - only release when last button goes up
-	if ((state & CANVAS) != 0) OS.gtk_grab_remove (handle);
-	return super.processMouseUp (callData, arg1, int2);
+	if ((state & CANVAS) != 0) {
+		OS.gtk_grab_remove (handle);
+		return 1;
+	}
+	return result;
 }
 
 int processFocusIn(int int0, int int1, int int2) {
@@ -442,12 +405,33 @@ int processFocusOut(int int0, int int1, int int2) {
 
 public boolean setFocus () {
 	checkWidget();
-	Control [] children = _getChildren (parentingHandle());
+	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		if (child.getVisible () && child.setFocus ()) return true;
 	}
 	return super.setFocus ();
+}
+
+void setInitialSize () {
+	if (scrolledHandle != 0) {
+		super.setInitialSize ();
+		return;
+	}
+	/*
+	* Bug in GTK. The scrollbars are not visible when a scrolled window
+	* is resize and then shown. The fix is to change the scrolling policy
+	* before and after resizing.
+	*/
+	if ((state & CANVAS) != 0) {
+		OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, OS.GTK_POLICY_NEVER);
+	}
+	super.setInitialSize ();
+	if ((state & CANVAS) != 0) {
+		int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
+		int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
+		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
+	}
 }
 
 /**

@@ -328,10 +328,6 @@ public void copy () {
 	OS.SendMessage (handle, OS.WM_COPY, 0, 0);
 }
 
-ScrollBar createScrollBar (int type) {
-	return new ScrollBar (this, type);
-}
-
 void createWidget () {
 	super.createWidget ();
 	doubleClick = true;

@@ -39,7 +39,7 @@
 #define ECLIPSE_FIXED(obj)                  (GTK_CHECK_CAST ((obj), ECLIPSE_TYPE_FIXED, EclipseFixed))
 #define ECLIPSE_FIXED_CLASS(klass)          (GTK_CHECK_CLASS_CAST ((klass), ECLIPSE_TYPE_FIXED, EclipseFixedClass))
 #define GTK_IS_ECLIPSE_FIXED(obj)               (GTK_CHECK_TYPE ((obj), ECLIPSE_TYPE_FIXED))
-#define GTK_IS_FIXED_CLASS(klass)       (GTK_CHECK_CLASS_TYPE ((klass), ECLIPSE_TYPE_FIXED))
+#define GTK_IS_ECLIPSE_FIXED_CLASS(klass)       (GTK_CHECK_CLASS_TYPE ((klass), ECLIPSE_TYPE_FIXED))
 
 typedef struct _EclipseFixed        EclipseFixed;
 typedef struct _EclipseFixedClass   EclipseFixedClass;

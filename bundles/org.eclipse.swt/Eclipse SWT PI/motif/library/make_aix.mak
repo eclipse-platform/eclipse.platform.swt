@@ -10,10 +10,10 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 CC=cc_r
 
 # Define the installation directories for various products.
-#    IVE_HOME   - IBM's version of Java (J9)
+#    JAVA_HOME   - IBM's version of Java
 #    CDE_HOME - CDE includes and libraries
 #    MOTIF_HOME - Motif includes and libraries
-IVE_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
+JAVA_HOME   = /usr/java131
 MOTIF_HOME = /bluebird/teamswt/swt-builddir/motif21
 CDE_HOME   = /usr/dt
 
@@ -21,14 +21,14 @@ CDE_HOME   = /usr/dt
 
 SWT_PREFIX   = swt
 WS_PREFIX    = motif
-SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
 SWT_OBJ      = callback.o structs.o swt.o 
-SWT_LIB      = -L$(MOTIF_HOME) -G -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm -lXt -lX11 -lXext
+SWT_LIB      = -L$(MOTIF_HOME) -G -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm -lXt -lX11 -lXext -liconv
 
 CDE_PREFIX   = swt-cde
-CDE_DLL      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+CDE_DLL      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
 CDE_OBJ      = cde.o
-CDE_LIB      = -L$(CDE_HOME)/lib -G -lc -bnoentry -bexpall -lDtSvc
+CDE_LIB      = -L$(CDE_HOME)/lib -bnoentry -bexpall -lDtSvc -lc
 
 #
 # The following CFLAGS are for compiling both the SWT library and the CDE
@@ -37,8 +37,8 @@ CDE_LIB      = -L$(CDE_HOME)/lib -G -lc -bnoentry -bexpall -lDtSvc
 CFLAGS = -O -s \
 	-DSWT_VERSION=$(SWT_VERSION) \
 	-DAIX -DMOTIF -DCDE -DNO_XPRINTING_EXTENSIONS \
-	-q mbcs -qlanglvl=extended -qarch=ppc -qtune=604 -qmaxmem=8192 \
-	-I$(IVE_HOME)/include \
+	-q mbcs -qlanglvl=extended -qmaxmem=8192 \
+	-I$(JAVA_HOME)/include \
 	-I$(MOTIF_HOME)/include \
 	-I$(CDE_HOME)/include
 
@@ -56,4 +56,4 @@ $(CDE_DLL): $(CDE_OBJ)
 
 
 clean:
-	rm -f *.o *.so
+	rm -f *.o *.so *.a

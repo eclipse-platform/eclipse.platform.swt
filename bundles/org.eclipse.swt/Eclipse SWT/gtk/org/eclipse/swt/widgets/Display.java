@@ -112,12 +112,11 @@ public class Display extends Device {
 	int textHighlightThickness = 1; /* for emulated widgets */
 		
 	/* Colors */
-	Color NORMAL_fg,   NORMAL_bg,   NORMAL_dark,   NORMAL_mid,   NORMAL_light,   NORMAL_text,   NORMAL_base;
-	Color ACTIVE_fg,   ACTIVE_bg,   ACTIVE_dark,   ACTIVE_mid,   ACTIVE_light,   ACTIVE_text,   ACTIVE_base;
-	Color PRELIGHT_fg, PRELIGHT_bg, PRELIGHT_dark, PRELIGHT_mid, PRELIGHT_light, PRELIGHT_text, PRELIGHT_base;
-	Color SELECTED_fg, SELECTED_bg, SELECTED_dark, SELECTED_mid, SELECTED_light, SELECTED_text, SELECTED_base;
-	Color INSENSITIVE_fg, INSENSITIVE_bg, INSENSITIVE_dark, INSENSITIVE_mid, INSENSITIVE_light, INSENSITIVE_text, INSENSITIVE_base;
-	
+	GdkColor COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
+	GdkColor COLOR_WIDGET_HIGHLIGHT_SHADOW, COLOR_WIDGET_BACKGROUND, COLOR_WIDGET_FOREGROUND, COLOR_WIDGET_BORDER;
+	GdkColor COLOR_LIST_FOREGROUND, COLOR_LIST_BACKGROUND, COLOR_LIST_SELECTION, COLOR_LIST_SELECTION_TEXT;
+	GdkColor COLOR_INFO_BACKGROUND;
+		
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
 		
@@ -764,143 +763,129 @@ public Thread getSyncThread () {
  */
 public Color getSystemColor (int id) {
 	checkDevice ();
+	GdkColor gdkColor = null;
 	switch (id) {
-		case SWT.COLOR_INFO_FOREGROUND: 		return NORMAL_fg;
-		case SWT.COLOR_INFO_BACKGROUND: 		return NORMAL_bg;
-		
-		case SWT.COLOR_TITLE_FOREGROUND:		return SELECTED_text;
-		case SWT.COLOR_TITLE_BACKGROUND:		return SELECTED_bg;
-		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:	return SELECTED_light;
-		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:	return INSENSITIVE_fg;
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:	return INSENSITIVE_bg;
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT: return INSENSITIVE_light;
-		
-		case SWT.COLOR_WIDGET_DARK_SHADOW:		return NORMAL_dark;
-		case SWT.COLOR_WIDGET_NORMAL_SHADOW:	return NORMAL_mid;
-		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 	return NORMAL_light;
-		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:	return NORMAL_light;
-		case SWT.COLOR_WIDGET_BACKGROUND: 	return NORMAL_bg;
-		case SWT.COLOR_WIDGET_FOREGROUND:	return NORMAL_fg;
-		case SWT.COLOR_WIDGET_BORDER: 		return super.getSystemColor (SWT.COLOR_BLACK);
-		
-		case SWT.COLOR_LIST_FOREGROUND: 	return super.getSystemColor (SWT.COLOR_BLACK);
-		case SWT.COLOR_LIST_BACKGROUND: 	return super.getSystemColor (SWT.COLOR_WHITE);
-		case SWT.COLOR_LIST_SELECTION: 		return SELECTED_bg;
-		case SWT.COLOR_LIST_SELECTION_TEXT: 	return SELECTED_text;
+		case SWT.COLOR_INFO_FOREGROUND: 					return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_INFO_BACKGROUND: 					gdkColor = COLOR_INFO_BACKGROUND;
+		case SWT.COLOR_TITLE_FOREGROUND:					return super.getSystemColor (SWT.COLOR_WHITE);
+		case SWT.COLOR_TITLE_BACKGROUND:					return super.getSystemColor (SWT.COLOR_DARK_BLUE);
+		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			return super.getSystemColor (SWT.COLOR_BLUE);
+		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:			return super.getSystemColor (SWT.COLOR_DARK_GRAY);
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	return super.getSystemColor (SWT.COLOR_GRAY);
+		case SWT.COLOR_WIDGET_DARK_SHADOW:					gdkColor = COLOR_WIDGET_DARK_SHADOW; break;
+		case SWT.COLOR_WIDGET_NORMAL_SHADOW:				gdkColor = COLOR_WIDGET_NORMAL_SHADOW; break;
+		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				gdkColor = COLOR_WIDGET_LIGHT_SHADOW; break;
+		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:				gdkColor = COLOR_WIDGET_HIGHLIGHT_SHADOW; break;
+		case SWT.COLOR_WIDGET_BACKGROUND: 					gdkColor = COLOR_WIDGET_BACKGROUND; break;
+		case SWT.COLOR_WIDGET_FOREGROUND: 					gdkColor = COLOR_WIDGET_FOREGROUND; break;
+		case SWT.COLOR_WIDGET_BORDER: 						gdkColor = COLOR_WIDGET_BORDER; break;
+		case SWT.COLOR_LIST_FOREGROUND: 					gdkColor = COLOR_LIST_FOREGROUND; break;
+		case SWT.COLOR_LIST_BACKGROUND: 					gdkColor = COLOR_LIST_BACKGROUND; break;
+		case SWT.COLOR_LIST_SELECTION: 						gdkColor = COLOR_LIST_SELECTION; break;
+		case SWT.COLOR_LIST_SELECTION_TEXT: 				gdkColor = COLOR_LIST_SELECTION_TEXT; break;
+		default:
+			return super.getSystemColor (id);	
 	}
-	return super.getSystemColor (id);
+	if (gdkColor == null) return super.getSystemColor (SWT.COLOR_BLACK);
+	return Color.gtk_new (this, gdkColor);
 }
 
 final void initializeSystemColors() {
 	
 	/* Get the theme colors */
-	GtkStyle defaultStyle = new GtkStyle(OS.gtk_widget_get_default_style());
-	
-	GdkColor gdk_NORMAL_dark = new GdkColor();
-	gdk_NORMAL_dark.pixel = defaultStyle.dark0_pixel;
-	gdk_NORMAL_dark.red   = defaultStyle.dark0_red;
-	gdk_NORMAL_dark.green = defaultStyle.dark0_green;
-	gdk_NORMAL_dark.blue  = defaultStyle.dark0_blue;
-	NORMAL_dark = Color.gtk_new(this, gdk_NORMAL_dark);
+	int colormap = OS.gdk_colormap_get_system();
+	GtkStyle style = new GtkStyle(OS.gtk_widget_get_default_style());	
+		
+	GdkColor gdkColor;
 
-	GdkColor gdk_NORMAL_mid = new GdkColor();
-	gdk_NORMAL_mid.pixel = defaultStyle.mid0_pixel;
-	gdk_NORMAL_mid.red   = defaultStyle.mid0_red;
-	gdk_NORMAL_mid.green = defaultStyle.mid0_green;
-	gdk_NORMAL_mid.blue  = defaultStyle.mid0_blue;
-	NORMAL_mid = Color.gtk_new(this, gdk_NORMAL_mid);
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.dark0_pixel;
+	gdkColor.red   = style.dark0_red;
+	gdkColor.green = style.dark0_green;
+	gdkColor.blue  = style.dark0_blue;
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_WIDGET_DARK_SHADOW = gdkColor;
 
-	GdkColor gdk_NORMAL_light = new GdkColor();
-	gdk_NORMAL_light.pixel = defaultStyle.light0_pixel;
-	gdk_NORMAL_light.red   = defaultStyle.light0_red;
-	gdk_NORMAL_light.green = defaultStyle.light0_green;
-	gdk_NORMAL_light.blue  = defaultStyle.light0_blue;
-	NORMAL_light = Color.gtk_new(this, gdk_NORMAL_light);
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.mid0_pixel;
+	gdkColor.red   = style.mid0_red;
+	gdkColor.green = style.mid0_green;
+	gdkColor.blue  = style.mid0_blue;
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_WIDGET_NORMAL_SHADOW = gdkColor;
 
-	GdkColor gdk_NORMAL_fg = new GdkColor();
-	gdk_NORMAL_fg.pixel = defaultStyle.fg0_pixel;
-	gdk_NORMAL_fg.red   = defaultStyle.fg0_red;
-	gdk_NORMAL_fg.green = defaultStyle.fg0_green;
-	gdk_NORMAL_fg.blue  = defaultStyle.fg0_blue;
-	NORMAL_fg = Color.gtk_new(this, gdk_NORMAL_fg);
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.light0_pixel;
+	gdkColor.red   = style.light0_red;
+	gdkColor.green = style.light0_green;
+	gdkColor.blue  = style.light0_blue;
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_WIDGET_LIGHT_SHADOW = gdkColor;
 
-	GdkColor gdk_NORMAL_bg = new GdkColor();
-	gdk_NORMAL_bg.pixel = defaultStyle.bg0_pixel;
-	gdk_NORMAL_bg.red   = defaultStyle.bg0_red;
-	gdk_NORMAL_bg.green = defaultStyle.bg0_green;
-	gdk_NORMAL_bg.blue  = defaultStyle.bg0_blue;
-	NORMAL_bg = Color.gtk_new(this, gdk_NORMAL_bg);
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.light0_pixel;
+	gdkColor.red   = style.light0_red;
+	gdkColor.green = style.light0_green;
+	gdkColor.blue  = style.light0_blue;
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_WIDGET_HIGHLIGHT_SHADOW = gdkColor;
 
-	GdkColor gdk_NORMAL_text = new GdkColor();
-	gdk_NORMAL_text.pixel = defaultStyle.text0_pixel;
-	gdk_NORMAL_text.red   = defaultStyle.text0_red;
-	gdk_NORMAL_text.green = defaultStyle.text0_green;
-	gdk_NORMAL_text.blue  = defaultStyle.text0_blue;
-	NORMAL_text = Color.gtk_new(this, gdk_NORMAL_text);
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.fg0_pixel;
+	gdkColor.red   = style.fg0_red;
+	gdkColor.green = style.fg0_green;
+	gdkColor.blue  = style.fg0_blue;
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_WIDGET_FOREGROUND = gdkColor;
 
-	GdkColor gdk_NORMAL_base = new GdkColor();
-	gdk_NORMAL_base.pixel = defaultStyle.base0_pixel;
-	gdk_NORMAL_base.red   = defaultStyle.base0_red;
-	gdk_NORMAL_base.green = defaultStyle.base0_green;
-	gdk_NORMAL_base.blue  = defaultStyle.base0_blue;
-	NORMAL_base = Color.gtk_new(this, gdk_NORMAL_base);
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.bg0_pixel;
+	gdkColor.red   = style.bg0_red;
+	gdkColor.green = style.bg0_green;
+	gdkColor.blue  = style.bg0_blue;
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_WIDGET_BACKGROUND = gdkColor;
 
-	GdkColor gdk_SELECTED_text = new GdkColor();
-	gdk_SELECTED_text.pixel = defaultStyle.text3_pixel;
-	gdk_SELECTED_text.red   = defaultStyle.text3_red;
-	gdk_SELECTED_text.green = defaultStyle.text3_green;
-	gdk_SELECTED_text.blue  = defaultStyle.text3_blue;
-	SELECTED_text = Color.gtk_new(this, gdk_SELECTED_text);
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.text0_pixel;
+	gdkColor.red   = style.text0_red;
+	gdkColor.green = style.text0_green;
+	gdkColor.blue  = style.text0_blue;
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_LIST_FOREGROUND = gdkColor;
 
-	GdkColor gdk_SELECTED_bg = new GdkColor();
-	gdk_SELECTED_bg.pixel = defaultStyle.bg3_pixel;
-	gdk_SELECTED_bg.red   = defaultStyle.bg3_red;
-	gdk_SELECTED_bg.green = defaultStyle.bg3_green;
-	gdk_SELECTED_bg.blue  = defaultStyle.bg3_blue;
-	SELECTED_bg = Color.gtk_new(this, gdk_SELECTED_bg);
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.base0_pixel;
+	gdkColor.red   = style.base0_red;
+	gdkColor.green = style.base0_green;
+	gdkColor.blue  = style.base0_blue;
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_LIST_BACKGROUND = gdkColor;
 
-	GdkColor gdk_SELECTED_base = new GdkColor();
-	gdk_SELECTED_base.pixel = defaultStyle.base3_pixel;
-	gdk_SELECTED_base.red   = defaultStyle.base3_red;
-	gdk_SELECTED_base.green = defaultStyle.base3_green;
-	gdk_SELECTED_base.blue  = defaultStyle.base3_blue;
-	SELECTED_base = Color.gtk_new(this, gdk_SELECTED_base);
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.fg3_pixel;
+	gdkColor.red   = style.fg3_red;
+	gdkColor.green = style.fg3_green;
+	gdkColor.blue  = style.fg3_blue;
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_LIST_SELECTION_TEXT = gdkColor;
 
-	GdkColor gdk_SELECTED_light = new GdkColor();
-	gdk_SELECTED_light.pixel = defaultStyle.light3_pixel;
-	gdk_SELECTED_light.red   = defaultStyle.light3_red;
-	gdk_SELECTED_light.green = defaultStyle.light3_green;
-	gdk_SELECTED_light.blue  = defaultStyle.light3_blue;
-	SELECTED_light = Color.gtk_new(this, gdk_SELECTED_light);
-	
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.bg3_pixel;
+	gdkColor.red   = style.bg3_red;
+	gdkColor.green = style.bg3_green;
+	gdkColor.blue  = style.bg3_blue;
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_LIST_SELECTION = gdkColor;
 
-	GdkColor gdk_PRELIGHT_light = new GdkColor();
-	gdk_PRELIGHT_light.pixel = defaultStyle.light2_pixel;
-	gdk_PRELIGHT_light.red   = defaultStyle.light2_red;
-	gdk_PRELIGHT_light.green = defaultStyle.light2_green;
-	gdk_PRELIGHT_light.blue  = defaultStyle.light2_blue;
-	PRELIGHT_light = Color.gtk_new(this, gdk_PRELIGHT_light);
-
-	GdkColor gdk_INSENSITIVE_light = new GdkColor();
-	gdk_INSENSITIVE_light.pixel = defaultStyle.light4_pixel;
-	gdk_INSENSITIVE_light.red   = defaultStyle.light4_red;
-	gdk_INSENSITIVE_light.green = defaultStyle.light4_green;
-	gdk_INSENSITIVE_light.blue  = defaultStyle.light4_blue;
-	INSENSITIVE_light = Color.gtk_new(this, gdk_INSENSITIVE_light);
-
-	GdkColor gdk_INSENSITIVE_fg = new GdkColor();
-	gdk_INSENSITIVE_fg.pixel = defaultStyle.fg4_pixel;
-	gdk_INSENSITIVE_fg.red   = defaultStyle.fg4_red;
-	gdk_INSENSITIVE_fg.green = defaultStyle.fg4_green;
-	gdk_INSENSITIVE_fg.blue  = defaultStyle.fg4_blue;
-	INSENSITIVE_fg = Color.gtk_new(this, gdk_INSENSITIVE_fg);
-
-	GdkColor gdk_INSENSITIVE_bg = new GdkColor();
-	gdk_INSENSITIVE_bg.pixel = defaultStyle.bg4_pixel;
-	gdk_INSENSITIVE_bg.red   = defaultStyle.bg4_red;
-	gdk_INSENSITIVE_bg.green = defaultStyle.bg4_green;
-	gdk_INSENSITIVE_bg.blue  = defaultStyle.bg4_blue;
-	INSENSITIVE_bg = Color.gtk_new(this, gdk_INSENSITIVE_bg);
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.base3_pixel;
+	gdkColor.red   = style.base3_red;
+	gdkColor.green = style.base3_green;
+	gdkColor.blue  = style.base3_blue;
+	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	COLOR_INFO_BACKGROUND = gdkColor;
 }
 
 /**
@@ -1154,12 +1139,10 @@ void releaseDisplay () {
 	messages = null;  messageLock = null; thread = null;
 	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
 	
-	NORMAL_fg = NORMAL_bg = NORMAL_dark = NORMAL_mid = NORMAL_light = NORMAL_text = NORMAL_base =
-	ACTIVE_fg = ACTIVE_bg = ACTIVE_dark = ACTIVE_mid = ACTIVE_light = ACTIVE_text = ACTIVE_base =
-	PRELIGHT_fg = PRELIGHT_bg = PRELIGHT_dark = PRELIGHT_mid = PRELIGHT_light = PRELIGHT_text = PRELIGHT_base =
-	SELECTED_fg = SELECTED_bg = SELECTED_dark = SELECTED_mid = SELECTED_light = SELECTED_text = SELECTED_base =
-	INSENSITIVE_fg = INSENSITIVE_bg = INSENSITIVE_dark = INSENSITIVE_mid = INSENSITIVE_light = INSENSITIVE_text =
-	INSENSITIVE_base = null;
+	COLOR_WIDGET_DARK_SHADOW = COLOR_WIDGET_NORMAL_SHADOW = COLOR_WIDGET_LIGHT_SHADOW =
+	COLOR_WIDGET_HIGHLIGHT_SHADOW = COLOR_WIDGET_BACKGROUND = COLOR_WIDGET_BORDER =
+	COLOR_LIST_FOREGROUND = COLOR_LIST_BACKGROUND = COLOR_LIST_SELECTION = COLOR_LIST_SELECTION_TEXT =
+	COLOR_INFO_BACKGROUND = null;
 }
 
 RunnableLock removeFirst () {

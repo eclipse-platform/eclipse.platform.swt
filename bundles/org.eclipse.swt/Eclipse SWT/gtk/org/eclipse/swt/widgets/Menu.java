@@ -26,14 +26,18 @@ import org.eclipse.swt.events.*;
  */
 
 public class Menu extends Widget {
+	int x, y;
+	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
+	
 /**
 * Creates a new instance of the widget.
 */
 public Menu (Control parent) {
 	this (parent.getShell (), SWT.POP_UP);
 }
+
 /**
 * Creates a new instance of the widget.
 */
@@ -42,18 +46,25 @@ public Menu (Decorations parent, int style) {
 	this.parent = parent;
 	createWidget (0);
 }
+
 /**
 * Creates a new instance of the widget.
 */
 public Menu (Menu parentMenu) {
 	this (parentMenu.parent, SWT.DROP_DOWN);
 }
+
 /**
 * Creates a new instance of the widget.
 */
 public Menu (MenuItem parentItem) {
 	this (parentItem.parent);
 }
+
+static int checkStyle (int style) {
+	return checkBits (style, SWT.POP_UP, SWT.BAR, SWT.DROP_DOWN, 0, 0, 0);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the help events are generated for the control, by sending
@@ -74,8 +85,7 @@ public Menu (MenuItem parentItem) {
  * @see #removeMenuListener
  */
 public void addMenuListener (MenuListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Hide,typedListener);
@@ -102,21 +112,18 @@ public void addMenuListener (MenuListener listener) {
  * @see #removeHelpListener
  */
 public void addHelpListener (HelpListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Help, typedListener);
 }
 
-static int checkStyle (int style) {
-	return checkBits (style, SWT.POP_UP, SWT.BAR, SWT.DROP_DOWN, 0, 0, 0);
-}
 void createHandle (int index) {
 	state |= HANDLE;
 	if ((style & SWT.BAR) != 0) {
 		handle = OS.gtk_menu_bar_new ();
-		OS.gtk_widget_show (handle);
+		int parentHandle = parent.fixedHandle;
+		OS.gtk_container_add (parentHandle, handle);
 	} else {
 		handle = OS.gtk_menu_new ();
 	}
@@ -141,15 +148,16 @@ void createWidget (int index) {
  * </ul>
  */
 public MenuItem getDefaultItem () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return null;
 }
+
 public Display getDisplay () {
 	Decorations parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -165,11 +173,9 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget();
-	/* FIXME - this just checks for the SENSITIVE flag in the widget.
-	 * SN: Should we look at the effective sensitivity instead?
-	 */
-	return OS.GTK_WIDGET_SENSITIVE(handle);     
+	return OS.GTK_WIDGET_SENSITIVE (handle);     
 }
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -186,13 +192,14 @@ public boolean getEnabled () {
  * </ul>
  */
 public MenuItem getItem (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int list = OS.gtk_container_children (handle);
+	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	int data = OS.g_list_nth_data (list, index);
 	if (data == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	return (MenuItem) WidgetTable.get (data);
 }
+
 /**
  * Returns the number of items contained in the receiver.
  *
@@ -204,11 +211,11 @@ public MenuItem getItem (int index) {
  * </ul>
  */
 public int getItemCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int list = OS.gtk_container_children (handle);
-	return OS.g_list_length (list);
+	return list != 0 ? OS.g_list_length (list) : 0;
 }
+
 /**
  * Returns an array of <code>MenuItem</code>s which are the items
  * in the receiver. 
@@ -226,10 +233,9 @@ public int getItemCount () {
  * </ul>
  */
 public MenuItem [] getItems () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int list = OS.gtk_container_children (handle);
-	int count = OS.g_list_length (list);
+	int count = list != 0 ? OS.g_list_length (list) : 0;
 	MenuItem [] items = new MenuItem [count];
 	for (int i=0; i<count; i++) {
 		int data = OS.g_list_nth_data (list, i);
@@ -237,6 +243,7 @@ public MenuItem [] getItems () {
 	}
 	return items;
 }
+
 /**
  * Returns the receiver's parent, which must be a <code>Decorations</code>.
  *
@@ -248,10 +255,10 @@ public MenuItem [] getItems () {
  * </ul>
  */
 public Decorations getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
+
 /**
  * Returns the receiver's parent item, which must be a
  * <code>MenuItem</code> or null when the receiver is a
@@ -265,10 +272,10 @@ public Decorations getParent () {
  * </ul>
  */
 public MenuItem getParentItem () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return cascade;
 }
+
 /**
  * Returns the receiver's parent item, which must be a
  * <code>Menu</code> or null when the receiver is a
@@ -282,11 +289,11 @@ public MenuItem getParentItem () {
  * </ul>
  */
 public Menu getParentMenu () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (cascade == null) return null;
 	return cascade.getParent ();
 }
+
 /**
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
@@ -303,10 +310,10 @@ public Menu getParentMenu () {
  * @see #getParent
  */
 public Shell getShell () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent.getShell ();
 }
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
@@ -326,8 +333,15 @@ public Shell getShell () {
  */
 public boolean getVisible () {
 	checkWidget();
-	return OS.GTK_WIDGET_MAPPED(handle);    
+	return OS.GTK_WIDGET_MAPPED (handle);    
 }
+
+int GtkMenuPositionFunc (int menu, int x, int y, int push_in, int user_data) {
+	if (x != 0) OS.memmove (x, new int [] {this.x}, 4);
+	if (y != 0) OS.memmove (y, new int [] {this.y}, 4);
+	return 0;
+}
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -346,8 +360,7 @@ public boolean getVisible () {
  * </ul>
  */
 public int indexOf (MenuItem item) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
@@ -355,6 +368,7 @@ public int indexOf (MenuItem item) {
 	}
 	return -1;
 }
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -369,10 +383,10 @@ public int indexOf (MenuItem item) {
  * </ul>
  */
 public boolean isEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getEnabled () && getParent ().getEnabled ();
 }
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
@@ -391,10 +405,10 @@ public boolean isEnabled () {
  * </ul>
  */
 public boolean isVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getVisible ();
 }
+
 void releaseChild () {
 	super.releaseChild ();
 	if (cascade != null) cascade.setMenu (null);
@@ -402,6 +416,7 @@ void releaseChild () {
 		parent.setMenuBar (null);
 	}
 }
+
 void releaseWidget () {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
@@ -416,6 +431,7 @@ void releaseWidget () {
 	parent = null;
 	cascade = null;
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the menu events are generated for the control.
@@ -434,8 +450,7 @@ void releaseWidget () {
  * @see #addMenuListener
  */
 public void removeMenuListener (MenuListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Hide, listener);
@@ -460,8 +475,7 @@ public void removeMenuListener (MenuListener listener) {
  * @see #addHelpListener
  */
 public void removeHelpListener (HelpListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
@@ -482,9 +496,9 @@ public void removeHelpListener (HelpListener listener) {
  * </ul>
  */
 public void setDefaultItem (MenuItem item) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
+
 /**
  * Enables the receiver if the argument is <code>true</code>,
  * and disables it otherwise. A disabled control is typically
@@ -499,8 +513,7 @@ public void setDefaultItem (MenuItem item) {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.gtk_widget_set_sensitive (handle, enabled);
 }
 
@@ -521,12 +534,11 @@ public void setEnabled (boolean enabled) {
  * </ul>
  */
 public void setLocation (int x, int y) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-//	OS.gtk_widget_set_uposition(handle, x, y);
-//	OS.gtk_widget_set_uposition(handle, 0, 0);
-	sendEvent(SWT.Move);	
+	this.x = x;
+	this.y = y;
+	hasLocation = true;	
 }
 
 /**
@@ -546,12 +558,18 @@ public void setLocation (int x, int y) {
  * </ul>
  */
 public void setVisible (boolean visible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	if ((style & SWT.BAR) != 0) return;
+	checkWidget();
+	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible) {
+		int address = 0;
+		Callback GtkMenuPositionFunc = null;
+		if (hasLocation) {
+			GtkMenuPositionFunc = new Callback (this, "GtkMenuPositionFunc", 5);
+			address = GtkMenuPositionFunc.getAddress ();
+		}
 		sendEvent(SWT.Show);
-		OS.gtk_menu_popup (handle, 0, 0, 0, 0, 3, 0);
+		OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, 0);
+		if (GtkMenuPositionFunc != null) GtkMenuPositionFunc.dispose ();
 	} else {
 		OS.gtk_menu_popdown (handle);
 		sendEvent(SWT.Hide);

@@ -72,22 +72,31 @@ static int checkStyle (int style) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-
+	fixedHandle = OS.gtk_fixed_new ();
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	frameHandle = OS.gtk_frame_new(null);
 	if (frameHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	handle = ((style&SWT.SEPARATOR) != 0)? (((style&SWT.HORIZONTAL)!= 0)?
-		OS.gtk_hseparator_new() : OS.gtk_vseparator_new()):
-		OS.gtk_label_new (null);
+	if ((style & SWT.SEPARATOR) != 0) {
+		if ((style & SWT.HORIZONTAL)!= 0) {
+			handle = OS.gtk_hseparator_new();
+		} else {
+			handle = OS.gtk_vseparator_new();
+		}
+	} else {
+		handle = OS.gtk_label_new (null);
+	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-}
+	
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add(parentHandle, fixedHandle);
+	OS.gtk_container_add(fixedHandle, frameHandle);
+	OS.gtk_container_add(frameHandle, handle);
+	OS.gtk_widget_show (fixedHandle);
+	OS.gtk_widget_show (frameHandle);
+	OS.gtk_widget_show (handle);
 
-void createWidget (int index) {
-	super.createWidget (index);
-	text = "";
-}
-
-void setHandleStyle () {
+	// CHECK THEME
 	int type = (style & SWT.BORDER) != 0 ? OS.GTK_SHADOW_ETCHED_IN : OS.GTK_SHADOW_NONE;	
 	OS.gtk_frame_set_shadow_type (frameHandle, type);
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -109,15 +118,9 @@ void setHandleStyle () {
 	}
 }
 
-void configure() {
-	parent._connectChild(topHandle());
-	OS.gtk_container_add(frameHandle, handle);
-}
-
-void showHandle() {
-	OS.gtk_widget_show (frameHandle);
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_realize (handle);
+void createWidget (int index) {
+	super.createWidget (index);
+	text = "";
 }
 
 void register () {
@@ -140,8 +143,6 @@ void releaseHandle () {
 	super.releaseHandle ();
 	frameHandle = 0;
 }
-
-int topHandle () { return frameHandle; }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
@@ -350,6 +351,24 @@ public void setText (String string) {
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	OS.gtk_label_set_text_with_mnemonic (handle, buffer);
+}
+
+void resizeHandle (int width, int height) {
+	int topHandle = topHandle ();
+	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
+	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
+	OS.gtk_widget_set_size_request (fixedHandle, width, height);
+	OS.gtk_widget_set_size_request (frameHandle, width, height);
+	//FIXME - causes scrollbar problems when button child of table
+	int parentHandle = parent.parentingHandle ();
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	OS.gtk_container_resize_children (parentHandle);
+	display.setWarnings (warnings);
+	if ((flags & OS.GTK_VISIBLE) == 0) {
+		OS.GTK_WIDGET_UNSET_FLAGS(topHandle, OS.GTK_VISIBLE);	
+	}
 }
 
 }
