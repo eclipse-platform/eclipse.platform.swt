@@ -1,13 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+* Copyright (c) 2000, 2004 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 
 #include "swt.h"
 #include "os_structs.h"
@@ -37,12 +37,12 @@ FontDetails *getFontDetailsFields(JNIEnv *env, jobject lpObject, FontDetails *lp
 {
 	if (!FontDetailsFc.cached) cacheFontDetailsFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontDetailsFc.desc);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, FontDetailsFc.desc);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (jbyte *)lpStruct->desc);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontDetailsFc.stem);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->stem), (void *)lpStruct->stem);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, FontDetailsFc.stem);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->stem), (jbyte *)lpStruct->stem);
 	}
 	lpStruct->losize = (*env)->GetShortField(env, lpObject, FontDetailsFc.losize);
 	lpStruct->hisize = (*env)->GetShortField(env, lpObject, FontDetailsFc.hisize);
@@ -54,12 +54,12 @@ void setFontDetailsFields(JNIEnv *env, jobject lpObject, FontDetails *lpStruct)
 {
 	if (!FontDetailsFc.cached) cacheFontDetailsFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontDetailsFc.desc);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, FontDetailsFc.desc);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (jbyte *)lpStruct->desc);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontDetailsFc.stem);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->stem), (void *)lpStruct->stem);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, FontDetailsFc.stem);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->stem), (jbyte *)lpStruct->stem);
 	}
 	(*env)->SetShortField(env, lpObject, FontDetailsFc.losize, (jshort)lpStruct->losize);
 	(*env)->SetShortField(env, lpObject, FontDetailsFc.hisize, (jshort)lpStruct->hisize);
@@ -96,12 +96,12 @@ FontQueryInfo *getFontQueryInfoFields(JNIEnv *env, jobject lpObject, FontQueryIn
 {
 	if (!FontQueryInfoFc.cached) cacheFontQueryInfoFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontQueryInfoFc.font);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->font), (void *)lpStruct->font);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, FontQueryInfoFc.font);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->font), (jbyte *)lpStruct->font);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontQueryInfoFc.desc);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, FontQueryInfoFc.desc);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (jbyte *)lpStruct->desc);
 	}
 	lpStruct->size = (*env)->GetShortField(env, lpObject, FontQueryInfoFc.size);
 	lpStruct->style = (*env)->GetShortField(env, lpObject, FontQueryInfoFc.style);
@@ -117,12 +117,12 @@ void setFontQueryInfoFields(JNIEnv *env, jobject lpObject, FontQueryInfo *lpStru
 {
 	if (!FontQueryInfoFc.cached) cacheFontQueryInfoFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontQueryInfoFc.font);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->font), (void *)lpStruct->font);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, FontQueryInfoFc.font);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->font), (jbyte *)lpStruct->font);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, FontQueryInfoFc.desc);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, FontQueryInfoFc.desc);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (jbyte *)lpStruct->desc);
 	}
 	(*env)->SetShortField(env, lpObject, FontQueryInfoFc.size, (jshort)lpStruct->size);
 	(*env)->SetShortField(env, lpObject, FontQueryInfoFc.style, (jshort)lpStruct->style);
@@ -217,8 +217,8 @@ PgDisplaySettings_t *getPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject,
 	lpStruct->refresh = (*env)->GetIntField(env, lpObject, PgDisplaySettings_tFc.refresh);
 	lpStruct->flags = (*env)->GetIntField(env, lpObject, PgDisplaySettings_tFc.flags);
 	{
-	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, PgDisplaySettings_tFc.reserved);
-	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / 4, (void *)lpStruct->reserved);
+	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PgDisplaySettings_tFc.reserved);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / 4, (jint *)lpStruct->reserved);
 	}
 	return lpStruct;
 }
@@ -232,8 +232,8 @@ void setPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettin
 	(*env)->SetIntField(env, lpObject, PgDisplaySettings_tFc.refresh, (jint)lpStruct->refresh);
 	(*env)->SetIntField(env, lpObject, PgDisplaySettings_tFc.flags, (jint)lpStruct->flags);
 	{
-	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, PgDisplaySettings_tFc.reserved);
-	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / 4, (void *)lpStruct->reserved);
+	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PgDisplaySettings_tFc.reserved);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved) / 4, (jint *)lpStruct->reserved);
 	}
 }
 #endif
@@ -324,8 +324,8 @@ PgVideoModeInfo_t *getPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgV
 	lpStruct->mode_capabilities5 = (*env)->GetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities5);
 	lpStruct->mode_capabilities6 = (*env)->GetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities6);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PgVideoModeInfo_tFc.refresh_rates);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->refresh_rates), (void *)lpStruct->refresh_rates);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PgVideoModeInfo_tFc.refresh_rates);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->refresh_rates), (jbyte *)lpStruct->refresh_rates);
 	}
 	return lpStruct;
 }
@@ -345,8 +345,8 @@ void setPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t
 	(*env)->SetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities5, (jint)lpStruct->mode_capabilities5);
 	(*env)->SetIntField(env, lpObject, PgVideoModeInfo_tFc.mode_capabilities6, (jint)lpStruct->mode_capabilities6);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PgVideoModeInfo_tFc.refresh_rates);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->refresh_rates), (void *)lpStruct->refresh_rates);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PgVideoModeInfo_tFc.refresh_rates);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->refresh_rates), (jbyte *)lpStruct->refresh_rates);
 	}
 }
 #endif
@@ -415,8 +415,8 @@ PhClipHeader *getPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader 
 {
 	if (!PhClipHeaderFc.cached) cachePhClipHeaderFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PhClipHeaderFc.type);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->type), (void *)lpStruct->type);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PhClipHeaderFc.type);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->type), (jbyte *)lpStruct->type);
 	}
 	lpStruct->length = (*env)->GetShortField(env, lpObject, PhClipHeaderFc.length);
 	lpStruct->zero = (*env)->GetShortField(env, lpObject, PhClipHeaderFc.zero);
@@ -428,8 +428,8 @@ void setPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct
 {
 	if (!PhClipHeaderFc.cached) cachePhClipHeaderFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PhClipHeaderFc.type);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->type), (void *)lpStruct->type);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PhClipHeaderFc.type);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->type), (jbyte *)lpStruct->type);
 	}
 	(*env)->SetShortField(env, lpObject, PhClipHeaderFc.length, (jshort)lpStruct->length);
 	(*env)->SetShortField(env, lpObject, PhClipHeaderFc.zero, (jshort)lpStruct->zero);
@@ -1319,8 +1319,8 @@ PtFileSelectionInfo_t *getPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObj
 	if (!PtFileSelectionInfo_tFc.cached) cachePtFileSelectionInfo_tFields(env, lpObject);
 	lpStruct->ret = (*env)->GetShortField(env, lpObject, PtFileSelectionInfo_tFc.ret);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.path);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->path), (void *)lpStruct->path);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.path);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->path), (jbyte *)lpStruct->path);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.dim);
@@ -1331,12 +1331,12 @@ PtFileSelectionInfo_t *getPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObj
 	getPhPoint_tFields(env, lpObject1, &lpStruct->pos);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.format);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->format), (void *)lpStruct->format);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.format);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->format), (jbyte *)lpStruct->format);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.fspec);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->fspec), (void *)lpStruct->fspec);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.fspec);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->fspec), (jbyte *)lpStruct->fspec);
 	}
 	lpStruct->user_data = (void *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.user_data);
 	lpStruct->confirm_display = (void *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.confirm_display);
@@ -1348,8 +1348,8 @@ PtFileSelectionInfo_t *getPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObj
 	lpStruct->args = (void *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.args);
 	lpStruct->minfo = (PtFileSelectorInfo_t *)(*env)->GetIntField(env, lpObject, PtFileSelectionInfo_tFc.minfo);
 	{
-	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.spare);
-	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / 4, (void *)lpStruct->spare);
+	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.spare);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / 4, (jint *)lpStruct->spare);
 	}
 	return lpStruct;
 }
@@ -1359,8 +1359,8 @@ void setPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject, PtFileSelecti
 	if (!PtFileSelectionInfo_tFc.cached) cachePtFileSelectionInfo_tFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, PtFileSelectionInfo_tFc.ret, (jshort)lpStruct->ret);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.path);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->path), (void *)lpStruct->path);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.path);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->path), (jbyte *)lpStruct->path);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.dim);
@@ -1371,12 +1371,12 @@ void setPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject, PtFileSelecti
 	setPhPoint_tFields(env, lpObject1, &lpStruct->pos);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.format);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->format), (void *)lpStruct->format);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.format);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->format), (jbyte *)lpStruct->format);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.fspec);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->fspec), (void *)lpStruct->fspec);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.fspec);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->fspec), (jbyte *)lpStruct->fspec);
 	}
 	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.user_data, (jint)lpStruct->user_data);
 	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.confirm_display, (jint)lpStruct->confirm_display);
@@ -1388,8 +1388,8 @@ void setPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject, PtFileSelecti
 	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.args, (jint)lpStruct->args);
 	(*env)->SetIntField(env, lpObject, PtFileSelectionInfo_tFc.minfo, (jint)lpStruct->minfo);
 	{
-	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.spare);
-	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / 4, (void *)lpStruct->spare);
+	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.spare);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->spare) / 4, (jint *)lpStruct->spare);
 	}
 }
 #endif
@@ -1505,8 +1505,8 @@ PtWebClientData_t *getPtWebClientData_tFields(JNIEnv *env, jobject lpObject, PtW
 	if (!PtWebClientData_tFc.cached) cachePtWebClientData_tFields(env, lpObject);
 	lpStruct->type = (*env)->GetIntField(env, lpObject, PtWebClientData_tFc.type);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebClientData_tFc.url);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (void *)lpStruct->url);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebClientData_tFc.url);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (jbyte *)lpStruct->url);
 	}
 	lpStruct->length = (*env)->GetIntField(env, lpObject, PtWebClientData_tFc.length);
 	lpStruct->data = (char *)(*env)->GetIntField(env, lpObject, PtWebClientData_tFc.data);
@@ -1518,8 +1518,8 @@ void setPtWebClientData_tFields(JNIEnv *env, jobject lpObject, PtWebClientData_t
 	if (!PtWebClientData_tFc.cached) cachePtWebClientData_tFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, PtWebClientData_tFc.type, (jint)lpStruct->type);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebClientData_tFc.url);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (void *)lpStruct->url);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebClientData_tFc.url);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (jbyte *)lpStruct->url);
 	}
 	(*env)->SetIntField(env, lpObject, PtWebClientData_tFc.length, (jint)lpStruct->length);
 	(*env)->SetIntField(env, lpObject, PtWebClientData_tFc.data, (jint)lpStruct->data);
@@ -1551,8 +1551,8 @@ PtWebDataReqCallback_t *getPtWebDataReqCallback_tFields(JNIEnv *env, jobject lpO
 	lpStruct->type = (*env)->GetIntField(env, lpObject, PtWebDataReqCallback_tFc.type);
 	lpStruct->length = (*env)->GetIntField(env, lpObject, PtWebDataReqCallback_tFc.length);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebDataReqCallback_tFc.url);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (void *)lpStruct->url);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebDataReqCallback_tFc.url);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (jbyte *)lpStruct->url);
 	}
 	return lpStruct;
 }
@@ -1563,8 +1563,8 @@ void setPtWebDataReqCallback_tFields(JNIEnv *env, jobject lpObject, PtWebDataReq
 	(*env)->SetIntField(env, lpObject, PtWebDataReqCallback_tFc.type, (jint)lpStruct->type);
 	(*env)->SetIntField(env, lpObject, PtWebDataReqCallback_tFc.length, (jint)lpStruct->length);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebDataReqCallback_tFc.url);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (void *)lpStruct->url);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebDataReqCallback_tFc.url);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (jbyte *)lpStruct->url);
 	}
 }
 #endif
@@ -1591,12 +1591,12 @@ PtWebMetaDataCallback_t *getPtWebMetaDataCallback_tFields(JNIEnv *env, jobject l
 {
 	if (!PtWebMetaDataCallback_tFc.cached) cachePtWebMetaDataCallback_tFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.name);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->name), (void *)lpStruct->name);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.name);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->name), (jbyte *)lpStruct->name);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.value);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->value), (void *)lpStruct->value);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.value);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->value), (jbyte *)lpStruct->value);
 	}
 	return lpStruct;
 }
@@ -1605,12 +1605,12 @@ void setPtWebMetaDataCallback_tFields(JNIEnv *env, jobject lpObject, PtWebMetaDa
 {
 	if (!PtWebMetaDataCallback_tFc.cached) cachePtWebMetaDataCallback_tFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.name);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->name), (void *)lpStruct->name);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.name);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->name), (jbyte *)lpStruct->name);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.value);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->value), (void *)lpStruct->value);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.value);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->value), (jbyte *)lpStruct->value);
 	}
 }
 #endif
@@ -1638,13 +1638,13 @@ PtWebStatusCallback_t *getPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObj
 {
 	if (!PtWebStatusCallback_tFc.cached) cachePtWebStatusCallback_tFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.desc);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.desc);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (jbyte *)lpStruct->desc);
 	}
 	lpStruct->type = (*env)->GetShortField(env, lpObject, PtWebStatusCallback_tFc.type);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.url);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (void *)lpStruct->url);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.url);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (jbyte *)lpStruct->url);
 	}
 	return lpStruct;
 }
@@ -1653,13 +1653,13 @@ void setPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject, PtWebStatusCa
 {
 	if (!PtWebStatusCallback_tFc.cached) cachePtWebStatusCallback_tFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.desc);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.desc);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (jbyte *)lpStruct->desc);
 	}
 	(*env)->SetShortField(env, lpObject, PtWebStatusCallback_tFc.type, (jshort)lpStruct->type);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.url);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (void *)lpStruct->url);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.url);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (jbyte *)lpStruct->url);
 	}
 }
 #endif
@@ -1726,24 +1726,24 @@ utsname *getutsnameFields(JNIEnv *env, jobject lpObject, utsname *lpStruct)
 {
 	if (!utsnameFc.cached) cacheutsnameFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.sysname);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->sysname), (void *)lpStruct->sysname);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, utsnameFc.sysname);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->sysname), (jbyte *)lpStruct->sysname);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.nodename);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->nodename), (void *)lpStruct->nodename);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, utsnameFc.nodename);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->nodename), (jbyte *)lpStruct->nodename);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.release);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->release), (void *)lpStruct->release);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, utsnameFc.release);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->release), (jbyte *)lpStruct->release);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.version);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->version), (void *)lpStruct->version);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, utsnameFc.version);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->version), (jbyte *)lpStruct->version);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.machine);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->machine), (void *)lpStruct->machine);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, utsnameFc.machine);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->machine), (jbyte *)lpStruct->machine);
 	}
 	return lpStruct;
 }
@@ -1752,24 +1752,24 @@ void setutsnameFields(JNIEnv *env, jobject lpObject, utsname *lpStruct)
 {
 	if (!utsnameFc.cached) cacheutsnameFields(env, lpObject);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.sysname);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->sysname), (void *)lpStruct->sysname);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, utsnameFc.sysname);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->sysname), (jbyte *)lpStruct->sysname);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.nodename);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->nodename), (void *)lpStruct->nodename);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, utsnameFc.nodename);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->nodename), (jbyte *)lpStruct->nodename);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.release);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->release), (void *)lpStruct->release);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, utsnameFc.release);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->release), (jbyte *)lpStruct->release);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.version);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->version), (void *)lpStruct->version);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, utsnameFc.version);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->version), (jbyte *)lpStruct->version);
 	}
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.machine);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->machine), (void *)lpStruct->machine);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, utsnameFc.machine);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->machine), (jbyte *)lpStruct->machine);
 	}
 }
 #endif

@@ -28,6 +28,4 @@ void *PtCreateAppContext();
 
 #define utsname struct utsname
 
-#include "os_stats.h"
-
 #endif /* INC_os_H */
