@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.*;
 public class CoolBar extends Composite {
 	CoolItem [] items;
 	CoolItem [] originalItems;
+	boolean locked;
 	static final int ReBarProc;
 	static final TCHAR ReBarClass = new TCHAR (0, OS.REBARCLASSNAME, true);
 	static {
@@ -378,15 +379,7 @@ public Point [] getItemSizes () {
  */
 public boolean getLocked () {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_STYLE;
-	for (int i=0; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		if ((rbBand.fStyle & OS.RBBS_NOGRIPPER) == 0) return false;
-	}
-	return true;
+	return locked;
 }
 
 /**
@@ -586,6 +579,7 @@ void setItemSizes (Point [] sizes) {
  */
 public void setLocked (boolean locked) {
 	checkWidget ();
+	this.locked = locked;
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
