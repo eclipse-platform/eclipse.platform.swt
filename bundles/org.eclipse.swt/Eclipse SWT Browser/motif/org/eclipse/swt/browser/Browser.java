@@ -283,7 +283,6 @@ public boolean back() {
 	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);		 	
-	webNavigation.GoBack();	
 	rc = webNavigation.GoBack();
 	webNavigation.Release();
 	return rc == XPCOM.NS_OK;
