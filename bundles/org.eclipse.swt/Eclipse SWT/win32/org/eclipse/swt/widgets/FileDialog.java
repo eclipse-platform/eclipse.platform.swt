@@ -240,6 +240,14 @@ public String open () {
 	struct.lpstrFilter = lpstrFilter;
 	struct.nFilterIndex = 0;
 	
+	int lpstrDefExt = 0;
+	boolean save = (style & SWT.SAVE) != 0;
+	if (save) {
+		lpstrDefExt = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
+		OS.MoveMemory (lpstrDefExt, new TCHAR (0, "", true), TCHAR.sizeof);
+		struct.lpstrDefExt = lpstrDefExt;
+	}
+
 	/*
 	* Feature in Windows.  The focus window is not saved and
 	* and restored automatically by the call to GetOpenFileName ().
@@ -259,7 +267,6 @@ public String open () {
 	* Open the dialog.  If the open fails due to an invalid
 	* file name, use an empty file name and open it again.
 	*/
-	boolean save = (style & SWT.SAVE) != 0;
 	boolean success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
 	if (OS.CommDlgExtendedError () == OS.FNERR_INVALIDFILENAME) {
 		OS.MoveMemory (lpstrFile, new TCHAR (0, "", true), TCHAR.sizeof);
@@ -345,6 +352,7 @@ public String open () {
 	OS.HeapFree (hHeap, 0, lpstrFilter);
 	OS.HeapFree (hHeap, 0, lpstrInitialDir);
 	OS.HeapFree (hHeap, 0, lpstrTitle);
+	if (save) OS.HeapFree (hHeap, 0, lpstrDefExt);
 	
 	/* Restore the old cursor */
 	OS.SetCursor (hCursor);
