@@ -25,6 +25,17 @@ The org.eclipse.swt.SWTError exception (&quot;No more handles&quot;) is thrown
 on platforms that don't meet the requirements for running the Browser widget.
 Supported platforms and prerequisites are listed on the SWT FAQ item <a href="http://dev.eclipse.org/viewcvs/index.cgi/~checkout~/platform-swt-home/faq.html#browserplatforms">&quot;Which
 platforms are supported by the SWT Browser?&quot;</a>.</p>
+<h4>Eclipse crashes on RedHat Linux 9 (GTK+ only)</h4>
+<p>Users of the Bluecurve theme shipped with RedHat Linux 9 may experience problems running Eclipse.  
+These problems may include crashes or reduced performance.
+(bug <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=38305">38305</a>, 
+bug <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=67906">67906</a>,
+bug <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=37683">37683</a>,
+bug <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=58738">58738</a>)</p>
+<p>We recommend changing to a different theme.
+Under GNOME, open RedHat Menu > Preferences > Theme.  Select a theme other than Bluecurve.  All applications should update at this point.
+Under KDE, open RedHatMenu > Run Command...  And then type in "gnome-theme-manager" and click "Run".  Select a theme other than Bluecurve.  The selection may jump to "Custom Theme" afterward; this is normal, and happens because the GNOME window manager is not running.  All GTK+ applications should update to the new theme at this point.
+</p>
 <h4>Eclipse hangs when pasting from an unresponsive application (GTK only)</h4>
 <p>If the application that is supplying the clipboard material is unresponsive,
 the paste operation hangs Eclipse for several minutes. This situation can be
@@ -33,19 +44,6 @@ workbench at a breakpoint and pasting into the hosting Eclipse workbench. (bug <
 <h4>Drag and drop on Mac (Mac OS X Carbon only)</h4>
 <p>The Mac OS X Carbon implementation of SWT does not support dragging from an SWT application to another application. (bug
 <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=68212">68212</a>)</p>
-<h4>Table.getImageBounds returns incorrect value (GTK only)</h4>
-<p>On some (but not all) GTK installs, clicking on the +/- next to a Tree item
-will not expand or collapse it. The problem is currently under investigation. As
-a workaround, the RIGHT and LEFT arrow keys can be used to expand and collapse
-the item. (bug <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=38855">38855</a>)</p>
-<h4>Eclipse crashes when browsing to import a preferences file (Windows only)</h4>
-<p>On Windows XP, there is an intermittent problem with file dialogs that can,
-on some systems, occasionally cause a Java VM crash when expanding the directory
-tree. The problem is being investigated. Typically this occurs when using the
-dialog that appears when the &quot;Browse...&quot; button next to a field that
-requires a file or directory name is pressed, so if you are seeing this, a
-workaround would be to type the required file or directory name into the field.
-(bug <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=67396">67396</a>)</p>
 <h4>Components in SWT_AWT are not displayed (Motif only)</h4>
 <p>On Motif systems (verified on Linux and Solaris) problems have been reported
 by some developers in the support for embedding AWT widgets within SWT layouts.
@@ -111,6 +109,5 @@ accessible (assume the workspace is at <code>/workspace</code>):</p>
 </blockquote>
 <p>(bug <a href="http://dev.eclipse.org/bugs/show_bug.cgi?id=20305">20305</a>
 describes a related problem)</p>
-<p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
 </html>
