@@ -208,11 +208,11 @@ public static final native int GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT(int clist);
 public static final native int GTK_CLIST_VADJUSTMENT(int clist);
 public static final native int GTK_CLIST_HADJUSTMENT(int clist);
 public static final native int GTK_CTREE_TREE_INDENT(int ctree);
-public static final native int GTK_WIDGET_HEIGHT(int wid);
-public static final native int GTK_WIDGET_WIDTH(int wid);
-public static final native int GTK_WIDGET_WINDOW(int wid);
-public static final native int GTK_WIDGET_X(int wid);
-public static final native int GTK_WIDGET_Y(int wid);
+public static final native int GTK_WIDGET_HEIGHT(int widget);
+public static final native int GTK_WIDGET_WIDTH(int widget);
+public static final native int GTK_WIDGET_WINDOW(int widget);
+public static final native int GTK_WIDGET_X(int widget);
+public static final native int GTK_WIDGET_Y(int widget);
 
 /* Native methods */
 public static final native int GDK_ROOT_PARENT();
