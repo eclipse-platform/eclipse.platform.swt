@@ -14,7 +14,7 @@ import java.util.*;
 import java.text.MessageFormat;
 
 public class ImageAnalyzer {
-	private static ResourceBundle bundle = ResourceBundle.getBundle("examples_images");
+	static ResourceBundle bundle = ResourceBundle.getBundle("examples_images");
 	
 	Shell shell;
 	Canvas imageCanvas, paletteCanvas;
@@ -52,9 +52,9 @@ public class ImageAnalyzer {
 	Image image; // the currently-displayed image
 	Vector incrementalEvents; // incremental image events
 	
-	public static final int ALPHA_CONSTANT = 0;
-	public static final int ALPHA_X = 1;
-	public static final int ALPHA_Y = 2;
+	static final int ALPHA_CONSTANT = 0;
+	static final int ALPHA_X = 1;
+	static final int ALPHA_Y = 2;
 
 	public static void main(String [] args) {
 		ImageAnalyzer imageAnalyzer = new ImageAnalyzer();
@@ -617,6 +617,7 @@ public class ImageAnalyzer {
 
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
+		imageCanvas.setCursor(waitCursor);
 		try {
 			if (alpha_op == ALPHA_CONSTANT) {
 				imageData.alpha = alpha;
@@ -643,6 +644,7 @@ public class ImageAnalyzer {
 			displayImage(imageData);
 		} finally {
 			shell.setCursor(null);
+			imageCanvas.setCursor(crossCursor);
 			waitCursor.dispose();
 		}
 	}
@@ -665,6 +667,7 @@ public class ImageAnalyzer {
 
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
+		imageCanvas.setCursor(waitCursor);
 		try {
 			loader = new ImageLoader();
 			if (incremental) {
@@ -698,6 +701,7 @@ public class ImageAnalyzer {
 			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
 		} finally {
 			shell.setCursor(null);
+			imageCanvas.setCursor(crossCursor);
 			waitCursor.dispose();
 		}
 	}
@@ -768,6 +772,7 @@ public class ImageAnalyzer {
 
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
+		imageCanvas.setCursor(waitCursor);
 		try {
 			// Save the current image to the current file.
 			loader.data = new ImageData[] {imageData};
@@ -777,6 +782,7 @@ public class ImageAnalyzer {
 			showErrorDialog(bundle.getString("Saving_lc"), fileName, e);
 		} finally {
 			shell.setCursor(null);
+			imageCanvas.setCursor(crossCursor);
 			waitCursor.dispose();
 		}
 	}
@@ -817,6 +823,7 @@ public class ImageAnalyzer {
 		
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
+		imageCanvas.setCursor(waitCursor);
 		try {
 			// Save the current image to the specified file.
 			loader.data = new ImageData[] {imageData};
@@ -832,6 +839,7 @@ public class ImageAnalyzer {
 			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
 		} finally {
 			shell.setCursor(null);
+			imageCanvas.setCursor(crossCursor);
 			waitCursor.dispose();
 		}
 	}
@@ -873,6 +881,7 @@ public class ImageAnalyzer {
 		
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
+		imageCanvas.setCursor(waitCursor);
 		try {
 			// Save the mask of the current image to the specified file.
 			ImageData maskImageData = imageData.getTransparencyMask();
@@ -883,6 +892,7 @@ public class ImageAnalyzer {
 			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
 		} finally {
 			shell.setCursor(null);
+			imageCanvas.setCursor(crossCursor);
 			waitCursor.dispose();
 		}
 	}
@@ -895,6 +905,7 @@ public class ImageAnalyzer {
 
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
+		imageCanvas.setCursor(waitCursor);
 		try {
 			loader = new ImageLoader();
 			ImageData[] newImageData = loader.load(fileName);
@@ -905,6 +916,7 @@ public class ImageAnalyzer {
 			showErrorDialog(bundle.getString("Reloading_lc"), fileName, e);
 		} finally {	
 			shell.setCursor(null);
+			imageCanvas.setCursor(crossCursor);
 			waitCursor.dispose();
 		}
 	}
@@ -1298,7 +1310,7 @@ public class ImageAnalyzer {
 	}
 
 	void displayImage(ImageData newImageData) {
-		if (incremental) {
+		if (incremental && incrementalThread != null) {
 			// Tell the incremental thread to stop drawing.
 			synchronized (this) {
 				incrementalEvents = null;
