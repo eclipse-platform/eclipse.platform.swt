@@ -791,6 +791,61 @@ void setDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct)
 }
 #endif
 
+#ifndef NO_EXTLOGPEN
+typedef struct EXTLOGPEN_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID elpPenStyle, elpWidth, elpBrushStyle, elpColor, elpHatch, elpNumEntries, elpStyleEntry;
+} EXTLOGPEN_FID_CACHE;
+
+EXTLOGPEN_FID_CACHE EXTLOGPENFc;
+
+void cacheEXTLOGPENFields(JNIEnv *env, jobject lpObject)
+{
+	if (EXTLOGPENFc.cached) return;
+	EXTLOGPENFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	EXTLOGPENFc.elpPenStyle = (*env)->GetFieldID(env, EXTLOGPENFc.clazz, "elpPenStyle", "I");
+	EXTLOGPENFc.elpWidth = (*env)->GetFieldID(env, EXTLOGPENFc.clazz, "elpWidth", "I");
+	EXTLOGPENFc.elpBrushStyle = (*env)->GetFieldID(env, EXTLOGPENFc.clazz, "elpBrushStyle", "I");
+	EXTLOGPENFc.elpColor = (*env)->GetFieldID(env, EXTLOGPENFc.clazz, "elpColor", "I");
+	EXTLOGPENFc.elpHatch = (*env)->GetFieldID(env, EXTLOGPENFc.clazz, "elpHatch", "I");
+	EXTLOGPENFc.elpNumEntries = (*env)->GetFieldID(env, EXTLOGPENFc.clazz, "elpNumEntries", "I");
+	EXTLOGPENFc.elpStyleEntry = (*env)->GetFieldID(env, EXTLOGPENFc.clazz, "elpStyleEntry", "[I");
+	EXTLOGPENFc.cached = 1;
+}
+
+EXTLOGPEN *getEXTLOGPENFields(JNIEnv *env, jobject lpObject, EXTLOGPEN *lpStruct)
+{
+	if (!EXTLOGPENFc.cached) cacheEXTLOGPENFields(env, lpObject);
+	lpStruct->elpPenStyle = (*env)->GetIntField(env, lpObject, EXTLOGPENFc.elpPenStyle);
+	lpStruct->elpWidth = (*env)->GetIntField(env, lpObject, EXTLOGPENFc.elpWidth);
+	lpStruct->elpBrushStyle = (*env)->GetIntField(env, lpObject, EXTLOGPENFc.elpBrushStyle);
+	lpStruct->elpColor = (*env)->GetIntField(env, lpObject, EXTLOGPENFc.elpColor);
+	lpStruct->elpHatch = (*env)->GetIntField(env, lpObject, EXTLOGPENFc.elpHatch);
+	lpStruct->elpNumEntries = (*env)->GetIntField(env, lpObject, EXTLOGPENFc.elpNumEntries);
+	{
+	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, EXTLOGPENFc.elpStyleEntry);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->elpStyleEntry) / 4, (jint *)lpStruct->elpStyleEntry);
+	}
+	return lpStruct;
+}
+
+void setEXTLOGPENFields(JNIEnv *env, jobject lpObject, EXTLOGPEN *lpStruct)
+{
+	if (!EXTLOGPENFc.cached) cacheEXTLOGPENFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, EXTLOGPENFc.elpPenStyle, (jint)lpStruct->elpPenStyle);
+	(*env)->SetIntField(env, lpObject, EXTLOGPENFc.elpWidth, (jint)lpStruct->elpWidth);
+	(*env)->SetIntField(env, lpObject, EXTLOGPENFc.elpBrushStyle, (jint)lpStruct->elpBrushStyle);
+	(*env)->SetIntField(env, lpObject, EXTLOGPENFc.elpColor, (jint)lpStruct->elpColor);
+	(*env)->SetIntField(env, lpObject, EXTLOGPENFc.elpHatch, (jint)lpStruct->elpHatch);
+	(*env)->SetIntField(env, lpObject, EXTLOGPENFc.elpNumEntries, (jint)lpStruct->elpNumEntries);
+	{
+	jintArray lpObject1 = (jintArray)(*env)->GetObjectField(env, lpObject, EXTLOGPENFc.elpStyleEntry);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->elpStyleEntry) / 4, (jint *)lpStruct->elpStyleEntry);
+	}
+}
+#endif
+
 #ifndef NO_FILETIME
 typedef struct FILETIME_FID_CACHE {
 	int cached;

@@ -831,8 +831,14 @@ public class OS {
 	public static final int PS_DASHDOTDOT = 0x4;
 	public static final int PS_DOT = 0x2;
 	public static final int PS_ENDCAP_FLAT = 0x200;
+	public static final int PS_ENDCAP_SQUARE = 0x100;
+	public static final int PS_ENDCAP_ROUND = 0x000;
+	public static final int PS_ENDCAP_MASK = 0xF00;
 	public static final int PS_GEOMETRIC = 0x10000;
+	public static final int PS_JOIN_BEVEL = 0x1000;
+	public static final int PS_JOIN_MASK = 0xF000;
 	public static final int PS_JOIN_MITER = 0x2000;
+	public static final int PS_JOIN_ROUND = 0x0000;
 	public static final int PS_SOLID = 0x0;
 	public static final int PS_STYLE_MASK = 0xf;
 	public static final int R2_COPYPEN = 0xd;
@@ -1690,6 +1696,11 @@ public static final int GetObject (int hgdiobj, int cbBuffer, DIBSECTION lpvObje
 	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
 }
 
+public static final int GetObject (int hgdiobj, int cbBuffer, EXTLOGPEN lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+}
+
 public static final int GetObject (int hgdiobj, int cbBuffer, LOGBRUSH lpvObject) {
 	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
 	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
@@ -2299,6 +2310,7 @@ public static final native boolean EqualRect (RECT lprc1, RECT lprc2);
 public static final native boolean EqualRgn (int hSrcRgn1, int hSrcRgn2);
 public static final native int ExpandEnvironmentStringsW (char [] lpSrc, char [] lsDst, int nSize);
 public static final native int ExpandEnvironmentStringsA (byte [] lpSrc, byte [] lsDst, int nSize);
+public static final native int ExtCreatePen(int dwPenStyle, int dwWidth, LOGBRUSH lplb, int dwStyleCount, int[] lpStyle);
 public static final native boolean ExtTextOutW(int hdc, int X, int Y, int fuOptions, RECT lprc, char[] lpString, int cbCount, int[] lpDx);
 public static final native boolean ExtTextOutA(int hdc, int X, int Y, int fuOptions, RECT lprc, byte[] lpString, int cbCount, int[] lpDx);
 public static final native int ExtractIconExW (char [] lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons);
@@ -2383,6 +2395,8 @@ public static final native int GetObjectA (int hgdiobj, int cbBuffer, BITMAP lpv
 public static final native int GetObjectW (int hgdiobj, int cbBuffer, BITMAP lpvObject);
 public static final native int GetObjectA (int hgdiobj, int cbBuffer, DIBSECTION lpvObject);
 public static final native int GetObjectW (int hgdiobj, int cbBuffer, DIBSECTION lpvObject);
+public static final native int GetObjectA (int hgdiobj, int cbBuffer, EXTLOGPEN lpvObject);
+public static final native int GetObjectW (int hgdiobj, int cbBuffer, EXTLOGPEN lpvObject);
 public static final native int GetObjectA (int hgdiobj, int cbBuffer, LOGBRUSH lpvObject);
 public static final native int GetObjectW (int hgdiobj, int cbBuffer, LOGBRUSH lpvObject);
 public static final native int GetObjectA (int hgdiobj, int cbBuffer, LOGFONTA lpvObject);

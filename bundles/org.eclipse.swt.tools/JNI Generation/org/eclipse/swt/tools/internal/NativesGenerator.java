@@ -215,7 +215,7 @@ boolean generateGetParameter(Method method, int i, Class paramType, ParameterDat
 			output(")");
 		}
 	}	
-	outputln(") == NULL) goto failTag;");
+	outputln(") == NULL) goto fail;");
 	return true;
 }
 
@@ -700,7 +700,7 @@ void generateFunctionBody(Method method, MethodData methodData, String function,
 		} else {
 			generateFunctionCall(method, methodData, paramTypes, returnType, needsReturn);
 		}
-		if (genFailTag) outputln("failTag:");
+		if (genFailTag) outputln("fail:");
 		generateSetters(method, paramTypes);
 		generateExitMacro(method, function);
 		generateReturn(method, returnType, needsReturn);

@@ -118,7 +118,7 @@ void generateSourceFile(Class clazz) {
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		output("\t\"");
 		output(getFunctionName(method));
-		outputln("\", ");
+		outputln("\",");
 		if (progress != null) progress.step();
 	}
 	outputln("};");

@@ -179,6 +179,18 @@ void setDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct);
 #define DROPFILES_sizeof() 0
 #endif
 
+#ifndef NO_EXTLOGPEN
+void cacheEXTLOGPENFields(JNIEnv *env, jobject lpObject);
+EXTLOGPEN *getEXTLOGPENFields(JNIEnv *env, jobject lpObject, EXTLOGPEN *lpStruct);
+void setEXTLOGPENFields(JNIEnv *env, jobject lpObject, EXTLOGPEN *lpStruct);
+#define EXTLOGPEN_sizeof() sizeof(EXTLOGPEN)
+#else
+#define cacheEXTLOGPENFields(a,b)
+#define getEXTLOGPENFields(a,b,c) NULL
+#define setEXTLOGPENFields(a,b,c)
+#define EXTLOGPEN_sizeof() 0
+#endif
+
 #ifndef NO_FILETIME
 void cacheFILETIMEFields(JNIEnv *env, jobject lpObject);
 FILETIME *getFILETIMEFields(JNIEnv *env, jobject lpObject, FILETIME *lpStruct);
