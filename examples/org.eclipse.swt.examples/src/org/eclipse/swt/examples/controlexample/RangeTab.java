@@ -87,6 +87,7 @@ abstract class RangeTab extends Tab {
 		/* Create a scale widget */
 		minimumScale = new Scale (minimumGroup, SWT.NONE);
 		minimumScale.setMaximum (100);
+		minimumScale.setSelection(0);
 		minimumScale.setPageIncrement (10);
 		minimumScale.setIncrement (5);
 	

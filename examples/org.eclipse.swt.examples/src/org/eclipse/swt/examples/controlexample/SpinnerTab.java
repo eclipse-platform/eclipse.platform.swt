@@ -72,6 +72,26 @@ class SpinnerTab extends RangeTab {
 	}
 	
 	/**
+	 * Create a group of widgets to control the maximum
+	 * attribute of the example widget.
+	 */
+	void createMaximumGroup() {
+		super.createMaximumGroup();
+		maximumScale.setMaximum (1000);
+		maximumScale.setPageIncrement (100);
+	}
+	
+	/**
+	 * Create a group of widgets to control the selection
+	 * attribute of the example widget.
+	 */
+	void createSelectionGroup() {
+		super.createSelectionGroup();
+		selectionScale.setMaximum (1000);
+		selectionScale.setPageIncrement (100);
+	}
+	
+	/**
 	 * Create a group of widgets to control the increment
 	 * attribute of the example widget.
 	 */
@@ -88,7 +108,7 @@ class SpinnerTab extends RangeTab {
 		incrementScale.setMaximum (100);
 		incrementScale.setSelection (1);
 		incrementScale.setPageIncrement (10);
-		incrementScale.setIncrement (1);
+		incrementScale.setIncrement (5);
 
 		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
