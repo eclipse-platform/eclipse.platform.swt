@@ -411,6 +411,10 @@ public static synchronized Display getCurrent () {
 	return findDisplay (Thread.currentThread ());
 }
 
+int getCaretBlinkTime () {
+	return OS.GetCaretTime () * 1000 / 60;
+}
+
 public Control getCursorControl () {
 	checkDevice ();
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();

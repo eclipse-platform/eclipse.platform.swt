@@ -16,7 +16,7 @@ public class Caret extends Widget {
 	Canvas parent;
 	int x, y, width, height;
 	boolean isVisible, isShowing;
-	int blinkRate = OS.GetCaretTime () * 1000 / 60;
+	int blinkRate;
 	Image image;
 
 public Caret (Canvas parent, int style) {
@@ -33,6 +33,8 @@ boolean blinkCaret () {
 }
 
 void createWidget () {
+	Display display = parent.getDisplay ();
+	blinkRate = display.getCaretBlinkTime ();
 	isVisible = true;
 	if (parent.getCaret () == null) {
 		parent.setCaret (this);

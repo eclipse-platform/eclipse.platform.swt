@@ -246,9 +246,11 @@ public TreeItem [] getSelection () {
 	int count = OS.GetHandleSize (ptr) / 4;
 	TreeItem [] result = new TreeItem [count];
 	OS.HLock (ptr);
+	int [] start = new int [1];
+	OS.memcpy (start, ptr, 4);
 	int [] id = new int [1];
 	for (int i=0; i<count; i++) {
-		OS.memcpy (id, ptr + (i * 4), 4);
+		OS.memcpy (id, start [0] + (i * 4), 4);
 		result [i] = items [id [0] - 1];
 	}
 	OS.HUnlock (ptr);
