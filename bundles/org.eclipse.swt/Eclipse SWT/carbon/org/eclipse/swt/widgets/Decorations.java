@@ -360,6 +360,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	image = null;
 	images = null;
+	savedFocus = null;
 	defaultButton = saveDefault = null;
 }
 
@@ -372,7 +373,9 @@ boolean restoreFocus () {
 void saveFocus () {
 	int window = OS.GetControlOwner (handle);
 	Control control = display.getFocusControl (window);
-	if (control != null) savedFocus = control;
+	if (control != null && control != this && this == control.menuShell ()) {
+		setSavedFocus (control);
+	}
 }
 
 /**
@@ -560,11 +563,6 @@ public void setMinimized (boolean minimized) {
 }
 
 void setSavedFocus (Control control) {
-	if (this == control) {
-		savedFocus = null;
-		return;
-	}
-	if (this != control.menuShell ()) return;
 	savedFocus = control;
 }
 
