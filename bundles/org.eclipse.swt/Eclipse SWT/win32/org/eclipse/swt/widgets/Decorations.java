@@ -548,9 +548,16 @@ public String getText () {
 
 boolean isTabGroup () {
 	/*
-	*
+	* Can't test WS_TAB bits because they are the same as WS_MAXIMIZEBOX.
 	*/
 	return true;
+}
+
+boolean isTabItem () {
+	/*
+	* Can't test WS_TAB bits because they are the same as WS_MAXIMIZEBOX.
+	*/
+	return false;
 }
 
 Decorations menuShell () {
