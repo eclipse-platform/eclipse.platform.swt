@@ -35,8 +35,8 @@ public class CTabItem2 extends Item {
 	// internal constants
 	static final int LEFT_MARGIN = 6;
 	static final int RIGHT_MARGIN = 6;
-	static final int TOP_MARGIN = 3;
-	static final int BOTTOM_MARGIN = TOP_MARGIN + CTabFolder2.SELECTION_BORDER;
+	static final int TOP_MARGIN = 1;
+	static final int BOTTOM_MARGIN = 2;
 	static final int INTERNAL_SPACING = 2;
 	static final int FLAGS = SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC;
 	static final String ellipsis = "..."; //$NON-NLS-1$
@@ -200,9 +200,13 @@ void drawSelected(GC gc ) {
 	if (image != null) {
 		Rectangle imageBounds = image.getBounds();
 		int imageX = xDraw;
-		int imageHeight = Math.min(height - 2*TOP_MARGIN, imageBounds.height);
+		int imageHeight = imageBounds.height;
 		int imageY = y;
-		imageY += TOP_MARGIN + (height - 2*TOP_MARGIN - imageHeight) / 2;
+		if (parent.onBottom) {
+			imageY+= BOTTOM_MARGIN + (height - TOP_MARGIN - BOTTOM_MARGIN - imageHeight) / 2;
+		} else {
+			imageY+= TOP_MARGIN + (height - TOP_MARGIN - BOTTOM_MARGIN - imageHeight) / 2;
+		}
 		int imageWidth = imageBounds.width * imageHeight / imageBounds.height;
 		gc.drawImage(image, 
 			         imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height,
@@ -216,8 +220,14 @@ void drawSelected(GC gc ) {
 		shortenedText = shortenText(gc, getText(), textWidth);
 		shortenedTextWidth = textWidth;
 	}
-	Point extent = gc.textExtent(shortenedText, FLAGS);
-	int textY = y + TOP_MARGIN + (height - 2*TOP_MARGIN - extent.y) / 2;	
+	Point extent = gc.textExtent(shortenedText, FLAGS);	
+	int textY = y;
+	if (parent.onBottom) {
+		textY+= BOTTOM_MARGIN + (height - TOP_MARGIN - BOTTOM_MARGIN - extent.y) / 2;
+	} else {
+		textY+= TOP_MARGIN + (height - TOP_MARGIN - BOTTOM_MARGIN - extent.y) / 2;
+	}
+	
 	gc.setForeground(parent.selectionForeground);
 	gc.drawText(shortenedText, xDraw, textY, FLAGS);
 	
@@ -421,7 +431,7 @@ int preferredHeight(GC gc) {
 	int h = (image == null) ? 0 : image.getBounds().height;
 	String text = getText();
 	h = Math.max(h, gc.textExtent(text, FLAGS).y);
-	return h + TOP_MARGIN + BOTTOM_MARGIN;
+	return h + TOP_MARGIN + BOTTOM_MARGIN + CTabFolder2.SELECTION_BORDER;
 }
 int preferredWidth(GC gc, boolean isSelected) {
 	int w = 0;
@@ -497,7 +507,7 @@ public void setImage (Image image) {
 	if (!parent.updateTabHeight(parent.tabHeight)) {
 		parent.updateItems();
 	}
-	parent.redrawTabArea();
+	parent.redraw();
 }
 /**
  * Set the widget text.
@@ -522,7 +532,7 @@ public void setText (String string) {
 	shortenedText = null;
 	shortenedTextWidth = 0;
 	parent.updateItems();
-	parent.redrawTabArea();
+	parent.redraw();
 }
 /**
  * Sets the receiver's tool tip text to the argument, which

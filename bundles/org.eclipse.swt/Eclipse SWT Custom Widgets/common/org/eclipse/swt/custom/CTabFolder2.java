@@ -60,14 +60,14 @@ public class CTabFolder2 extends Composite {
 	 *
 	 * The default value is 0.
 	 */
- 	public int marginWidth = 0;
+ 	public int marginWidth = 3;
 	/**
 	 * marginHeight specifies the number of pixels of vertical margin
 	 * that will be placed along the top and bottom edges of the form.
 	 *
 	 * The default value is 0.
 	 */
- 	public int marginHeight = 0;
+ 	public int marginHeight = 3;
 	
  	/**
 	 * A multiple of the tab height that specifies the minimum width to which a tab 
@@ -154,7 +154,7 @@ public class CTabFolder2 extends Composite {
 	// internal constants
 	static final int DEFAULT_WIDTH = 64;
 	static final int DEFAULT_HEIGHT = 64;
-	static final int SELECTION_BORDER = 3;
+	static final int SELECTION_BORDER = 2;
 	static final int CURVE_WIDTH = 50;
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
@@ -340,7 +340,7 @@ public void addCTabFolderCloseListener(CTabFolderCloseListener listener) {
 		// display close button
 		showClose = true;
 		setButtonBounds();
-		redrawTabArea();
+		redraw();
 	}
 	// add to array
 	CTabFolderCloseListener[] newListeners = new CTabFolderCloseListener[closeListeners.length + 1];
@@ -369,7 +369,7 @@ public void addCTabFolderExpandListener(CTabFolderExpandListener listener) {
 		showExpand = true;
 		setButtonBounds();
 		updateItems();
-		redrawTabArea();
+		redraw();
 	}
 
 	// add to array
@@ -531,7 +531,7 @@ void createItem (CTabItem2 item, int index) {
 		// redraw tabs if new item visible
 		if (index >= topTabIndex && 
 		    item.x+item.width <= getSize().x-borderRight-closeRect.width-chevronRect.width){
-			redrawTabArea();
+			redraw();
 		}
 	}
 }
@@ -577,7 +577,7 @@ void destroyItem (CTabItem2 item) {
 		selectedIndex --;
 	}
 	
-	if (updateItems()) redrawTabArea();
+	if (updateItems()) redraw();
 }
 void drawBorder(GC gc) {
 	Point size = getSize();
@@ -927,22 +927,23 @@ void drawSelectionBackground(GC gc, int y, int[] shape) {
 		region.add(shape);
 		gc.setClipping(region);
 		gc.setBackground(selectionBackground);
-		gc.drawImage(backgroundImage, borderLeft, y);
+		gc.drawImage(backgroundImage, 0, 0);
 		gc.setClipping(clipping);
 		clipping.dispose();
 		region.dispose();
 	} else if (gradientColors != null) {
-		int totalWidth = getSize().x - borderLeft - borderRight;
+		Point size = getSize();
 		// draw a gradient in shape
 		Region clipping = new Region();
 		gc.getClipping(clipping);
 		Region region = new Region();
 		region.add(shape);
 		gc.setClipping(region);
+		
 		if (gradientColors.length == 1) {
 			Color background = gradientColors[0] != null ? gradientColors[0] : selectionBackground;
 			gc.setBackground(background);
-			gc.fillRectangle(borderLeft, y, totalWidth, tabHeight);
+			gc.fillRectangle(0, 0, size.x, size.y);
 		} else {
 			Color background = selectionBackground;
 			Color lastColor = gradientColors[0];
@@ -952,8 +953,8 @@ void drawSelectionBackground(GC gc, int y, int[] shape) {
 				lastColor = gradientColors[i + 1];
 				if (lastColor == null) lastColor = background;
 				gc.setBackground(lastColor);
-				int gradientWidth = (gradientPercents[i] * totalWidth / 100);
-				gc.fillGradientRectangle(borderLeft + pos, y, gradientWidth, tabHeight, false);
+				int gradientWidth = (gradientPercents[i] * size.x / 100);
+				gc.fillGradientRectangle(0, 0, gradientWidth, size.y, false);
 				pos += gradientWidth;
 			}
 		}
@@ -1381,14 +1382,11 @@ void onDispose() {
 
 	selectionBackground = null;
 	selectionForeground = null;
-	border1Color = null;
-	border2Color = null;
-	border3Color = null;
 }
 void onFocus(Event event) {
 	checkWidget();
 	if (selectedIndex >= 0) {
-		redrawTabArea();
+		redraw();
 	} else {
 		setSelection(0, true);
 	}
@@ -1530,7 +1528,7 @@ void onPaint(Event event) {
 		oldFont = font;
 		if (!updateTabHeight(tabHeight)) {
 			updateItems();
-			redrawTabArea();
+			redraw();
 		}
 	}
 	
@@ -1618,9 +1616,12 @@ void onPaint(Event event) {
 //		}
 //	}
 	
-	Rectangle rect = getClientArea();
-	gc.setBackground(getBackground());
-	gc.fillRectangle(rect);
+	// fill in client area
+	int width = size.x  - borderLeft - borderRight;
+	int height = size.y - borderTop - borderBottom - tabHeight;
+	int x = xClient - marginWidth;
+	int y = yClient - marginHeight;
+	drawSelectionBackground(gc, y, new int[] {x,y, x,y+height, x+width,y+height, x+width,y});
 	
 	gc.setForeground(getForeground());
 	gc.setBackground(getBackground());	
@@ -1631,7 +1632,7 @@ void onResize() {
 		redraw();
 		return;
 	}
-	if (updateItems()) redrawTabArea();
+	if (updateItems()) redraw();
 	
 	Point size = getSize();
 	if (oldSize == null) {
@@ -1683,15 +1684,6 @@ void onTraverse (Event event) {
 			event.detail = SWT.TRAVERSE_NONE;
 			break;
 	}
-}
-void redrawTabArea() {
-	Point size = getSize();
-	if (size.x < borderLeft + borderRight || size.y < borderTop + borderBottom) return;
-	int x = borderLeft;
-	int y = onBottom ? Math.max(0, size.y - borderBottom - tabHeight) : borderTop;
-	int width = size.x - borderLeft - borderRight;
-	int height = tabHeight;
-	redraw(x, y, width, height, false);
 }
 /**
  * 
@@ -1757,9 +1749,9 @@ public void removeCTabFolderExpandListener(CTabFolderExpandListener listener) {
 		// hide expand button
 		expandListeners = new CTabFolderExpandListener[0];
 		showExpand = false;
-		expandRect.x = expandRect.y = expandRect.width = expandRect.height = 0;
+		setButtonBounds();
 		updateItems();
-		redrawTabArea();
+		redraw();
 		return;
 	}
 	CTabFolderExpandListener[] newListeners = new CTabFolderExpandListener[expandListeners.length - 1];
@@ -1950,7 +1942,7 @@ void setFirstItem(int index) {
 	if (index == topTabIndex) return;
 	topTabIndex = index;
 	setItemLocation();
-	redrawTabArea();
+	redraw();
 }
 public void setFont(Font font) {
 	checkWidget();
@@ -1959,7 +1951,7 @@ public void setFont(Font font) {
 	oldFont = getFont();
 	if (!updateTabHeight(tabHeight)) {
 		updateItems();
-		redrawTabArea();
+		redraw();
 	}
 }
 public void setForeground (Color color) {
@@ -2152,7 +2144,7 @@ void setLastItem(int index) {
 	if (topTabIndex == index) return;
 	topTabIndex = index;
 	setItemLocation();
-	redrawTabArea();
+	redraw();
 }
 /**
  * Set the selection to the tab at the specified item.
@@ -2208,7 +2200,7 @@ public void setSelection(int index) {
 	setItemLocation();
 	showItem(items[selectedIndex]);
 	setButtonBounds();
-	redrawTabArea();
+	redraw();
 }
 void setSelection(int index, boolean notify) {	
 	int oldSelectedIndex = selectedIndex;
@@ -2227,7 +2219,7 @@ public void setSelectionBackground (Color color) {
 	if (selectionBackground == color) return;
 	if (color == null) color = getDisplay().getSystemColor(SELECTION_BACKGROUND);
 	selectionBackground = color;
-	if (selectedIndex > -1) redrawTabArea();
+	if (selectedIndex > -1) redraw();
 }
 /**
  * Specify a gradient of colours to be draw in the background of the selected tab.
@@ -2316,7 +2308,7 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 	}
 
 	// Refresh with the new settings
-	if (selectedIndex > -1) redrawTabArea();
+	if (selectedIndex > -1) redraw();
 }
 
 /**
@@ -2337,7 +2329,7 @@ public void setSelectionBackground(Image image) {
 		gradientPercents = null;
 	}
 	backgroundImage = image;
-	if (selectedIndex > -1) redrawTabArea();
+	if (selectedIndex > -1) redraw();
 }
 /**
  * Set the foreground color of the selected tab.
@@ -2354,7 +2346,7 @@ public void setSelectionForeground (Color color) {
 	if (selectionForeground == color) return;
 	if (color == null) color = getDisplay().getSystemColor(SELECTION_FOREGROUND);
 	selectionForeground = color;
-	if (selectedIndex > -1) redrawTabArea();
+	if (selectedIndex > -1) redraw();
 }
 /**
  * Specify a fixed height for the tab items.  If no height is specified,
