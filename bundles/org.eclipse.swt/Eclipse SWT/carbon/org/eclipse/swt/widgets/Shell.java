@@ -577,6 +577,10 @@ public boolean getMinimized () {
 	return OS.IsWindowCollapsed (shellHandle);
 }
 
+float [] getParentBackground () {
+	return null;
+}
+
 public Shell getShell () {
 	checkWidget();
 	return this;

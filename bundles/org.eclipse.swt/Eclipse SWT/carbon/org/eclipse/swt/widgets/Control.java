@@ -346,6 +346,7 @@ int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor)
 			return OS.noErr;
 		}
 		case OS.kControlMsgSetUpBackground: {
+			float [] background = this.background != null ? this.background : getParentBackground ();
 			if (background != null) {
 				OS.RGBBackColor (toRGBColor (background));
 			} else {
@@ -799,6 +800,10 @@ public Menu getMenu () {
 public Composite getParent () {
 	checkWidget();
 	return parent;
+}
+
+float [] getParentBackground () {
+	return parent.background;
 }
 
 Control [] getPath () {
