@@ -1504,7 +1504,30 @@ boolean setKeyState (Event event, int type, int theEvent) {
 					display.kchrState [0] = 0;
 				}
 				int result = OS.KeyTranslate (display.kchrPtr, (short)keyCode [0], display.kchrState);
-				event.keyCode = result & 0x7f;
+				if (result <= 0x7f) {
+					event.keyCode = result & 0x7f;
+				} else {
+					short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
+					short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
+					int [] encoding = new int [1];
+					if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
+						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
+							encoding [0] = OS.kTextEncodingMacRoman;
+						}
+					}
+					int [] encodingInfo = new int [1];
+					OS.CreateTextToUnicodeInfoByEncoding (encoding [0], encodingInfo);
+					if (encodingInfo [0] != 0) {
+						char [] chars = new char [1];
+						int [] nchars = new int [1];
+						byte [] buffer = new byte [2];
+						buffer [0] = 1;
+						buffer [1] = (byte) (result & 0xFF);
+						OS.ConvertFromPStringToUnicode (encodingInfo [0], buffer, chars.length * 2, nchars, chars);
+						OS.DisposeTextToUnicodeInfo (encodingInfo);
+						event.keyCode = chars [0];
+					}
+				}
 			}
 			break;
 		}
