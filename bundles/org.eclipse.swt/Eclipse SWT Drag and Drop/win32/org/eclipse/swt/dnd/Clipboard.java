@@ -217,6 +217,9 @@ public void setContents(Object[] data, Transfer[] dataTypes){
 		try {Thread.sleep(10);} catch (InterruptedException e) {}
 		retries++;
 	}
+	if (retries == MAX_RETRIES) {
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD, result);
+	}
 	
 	this.data = new Object[0];
 	this.transferAgents = new Transfer[0];
