@@ -43,7 +43,7 @@ public class BrowserExample {
 	public BrowserExample(Composite parent, boolean top) {
 		this.parent = parent;
 		try {
-			browser = new Browser(parent, SWT.NONE);
+			browser = new Browser(parent, SWT.BORDER);
 		} catch (SWTError e) {
 			error = e;
 			/* Browser widget could not be instantiated */
