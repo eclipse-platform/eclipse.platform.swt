@@ -702,6 +702,11 @@ int hotkeyProc (int w, int data, int info) {
 	return OS.Pt_CONTINUE;
 }
 
+public boolean isLayoutDeferred () {
+	checkWidget ();
+	return layoutCount > 0;
+}
+
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other

@@ -92,7 +92,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point titleSize = getTitleSize();
 	Point size;
 	if (layout != null) {
+		changed |= (state & LAYOUT_CHANGED) != 0;
 		size = layout.computeSize (this, wHint, hHint, changed);
+		state &= ~LAYOUT_CHANGED;
 	} else {
 		size = minimumSize ();
 	}

@@ -164,8 +164,8 @@ public void changed (Control[] changed) {
 		Control child = changed [i];
 		Composite composite = child.parent;
 		while (child != this) {
-			if (layout == null || !layout.flushCache (child)) {
-				state |= LAYOUT_CHANGED;
+			if (composite.layout == null || !composite.layout.flushCache (child)) {
+				composite.state |= LAYOUT_CHANGED;
 			}
 			child = composite;
 			composite = child.parent;

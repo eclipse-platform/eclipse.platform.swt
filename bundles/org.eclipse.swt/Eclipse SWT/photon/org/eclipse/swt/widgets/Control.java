@@ -1134,6 +1134,10 @@ public boolean isVisible () {
 	return OS.PtWidgetIsRealized (handle);
 }
 
+void markLayout (boolean changed, boolean all) {
+	/* Do nothing */
+}
+
 Decorations menuShell () {
 	return parent.menuShell ();
 }
@@ -2769,6 +2773,10 @@ boolean traverseReturn () {
 public void update () {
 	checkWidget();
 	OS.PtFlush ();
+}
+
+void updateLayout (boolean all) {
+	/* Do nothing */
 }
 
 int widgetClass () {
