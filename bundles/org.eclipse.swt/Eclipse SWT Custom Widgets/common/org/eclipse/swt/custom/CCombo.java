@@ -862,6 +862,16 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	text.setTextLimit (limit);
 }
+public void setVisible (boolean visible) {
+	super.setVisible(visible);
+	if (!getVisible()) {
+		Composite parent = getParent();
+		while (parent != null && !parent.isVisible()) {
+			parent = parent.getParent();
+		}
+		if (parent != null) parent.setFocus();
+	}
+}
 void textEvent (Event event) {
 	switch (event.type) {
 		case SWT.KeyDown: {
