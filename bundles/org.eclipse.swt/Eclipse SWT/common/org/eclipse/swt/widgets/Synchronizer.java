@@ -51,7 +51,7 @@ void addLast (RunnableLock lock) {
 			messages = newMessages;
 		}
 		messages [messageCount++] = lock;
-		if (messageCount == 1) display.wake ();
+		if (messageCount == 1) display.wakeThread ();
 	}
 }
 

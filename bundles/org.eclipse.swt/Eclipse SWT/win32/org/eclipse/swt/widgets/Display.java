@@ -2033,7 +2033,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			}
 			break;
 		case OS.WM_NULL:
-			runAsyncMessages ();
+			if (runAsyncMessages ()) wakeThread ();
 			break;
 		case OS.WM_QUERYENDSESSION:
 			Event event = new Event ();
@@ -2076,7 +2076,9 @@ int monitorEnumProc (int hmonitor, int hdc, int lprcMonitor, int dwData) {
 int msgFilterProc (int code, int wParam, int lParam) {
 	if (code >= 0) {
 		OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
-		if (hookMsg.message == OS.WM_NULL) runAsyncMessages ();
+		if (hookMsg.message == OS.WM_NULL) {
+			if (runAsyncMessages ()) wakeThread ();
+		}
 	}
 	return OS.CallNextHookEx (filterHook, code, wParam, lParam);
 }
