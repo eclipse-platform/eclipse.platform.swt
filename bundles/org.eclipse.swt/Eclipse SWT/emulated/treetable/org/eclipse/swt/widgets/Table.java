@@ -3012,14 +3012,16 @@ public void setLinesVisible (boolean value) {
 public void setRedraw (boolean value) {
 	checkWidget();
 	redraw = value;
-	super.setRedraw (value);
 	if (value) {
 		if (items.length - itemsCount > 3) {
 			TableItem[] newItems = new TableItem [itemsCount];
 			System.arraycopy (items, 0, newItems, 0, itemsCount);
 			items = newItems;
 		}
+		updateVerticalBar ();
+		updateHorizontalBar ();
 	}
+	super.setRedraw (value);
 }
 /**
  * Sets the receiver's selection to be the given array of items.
@@ -3369,6 +3371,8 @@ void updateColumnWidth (TableColumn column, int width) {
  * This is a naive implementation that computes the value from scratch.
  */
 void updateHorizontalBar () {
+	if (!redraw) return;
+
 	ScrollBar hBar = getHorizontalBar ();
 	int maxX = 0;
 	if (columns.length > 0) {
@@ -3413,6 +3417,8 @@ void updateHorizontalBar () {
  * newRightX (so oldRightX + rightXchange = newRightX)
  */
 void updateHorizontalBar (int newRightX, int rightXchange) {
+	if (!redraw) return;
+
 	newRightX += horizontalOffset;
 	ScrollBar hBar = getHorizontalBar ();
 	int barMaximum = hBar.getMaximum ();
@@ -3439,6 +3445,8 @@ void updateHorizontalBar (int newRightX, int rightXchange) {
 	updateHorizontalBar ();		/* must search for the new rightmost item */
 }
 void updateVerticalBar () {
+	if (!redraw) return;
+
 	int pageSize = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	int maximum = Math.max (1, itemsCount);
 	ScrollBar vBar = getVerticalBar ();

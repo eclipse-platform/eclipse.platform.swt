@@ -48,7 +48,7 @@ public class Tree extends Composite {
 	TreeItem focusItem, anchorItem, insertMarkItem;
 	TreeItem lastClickedItem;
 	boolean insertMarkPrecedes = false;
-	boolean linesVisible;
+	boolean linesVisible, redraw = true;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
 	int col0ImageWidth = 0;
@@ -2681,6 +2681,15 @@ public void setLinesVisible (boolean value) {
 	linesVisible = value;
 	redraw ();
 }
+public void setRedraw (boolean value) {
+	checkWidget();
+	redraw = value;
+	if (value) {
+		updateVerticalBar ();
+		updateHorizontalBar ();
+	}
+	super.setRedraw (value);
+}
 /**
  * Sets the receiver's selection to be the given array of items.
  * The current selection is cleared before the new items are selected.
@@ -2939,6 +2948,8 @@ void updateColumnWidth (TreeColumn column, int width) {
  * This is a naive implementation that computes the value from scratch.
  */
 void updateHorizontalBar () {
+	if (!redraw) return;
+
 	ScrollBar hBar = getHorizontalBar ();
 	int maxX = 0;
 	if (columns.length > 0) {
@@ -2983,6 +2994,8 @@ void updateHorizontalBar () {
  * newRightX (so oldRightX + rightXchange = newRightX)
  */
 void updateHorizontalBar (int newRightX, int rightXchange) {
+	if (!redraw) return;
+
 	newRightX += horizontalOffset;
 	ScrollBar hBar = getHorizontalBar ();
 	int barMaximum = hBar.getMaximum ();
@@ -3009,6 +3022,8 @@ void updateHorizontalBar (int newRightX, int rightXchange) {
 	updateHorizontalBar ();		/* must search for the new rightmost item */
 }
 void updateVerticalBar () {
+	if (!redraw) return;
+
 	int pageSize = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	int maximum = Math.max (1, availableItems.length);
 	ScrollBar vBar = getVerticalBar ();
