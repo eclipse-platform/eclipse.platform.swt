@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.*;
  * <ul>
  * <li>getStyleRangeAtOffset(int)
  * <li>getStyleRanges()
+ * <li>replaceStyleRanges(int,int,StyleRange[])
  * <li>setStyleRange(StyleRange)
  * <li>setStyleRanges(StyleRange[])
  * </ul>
