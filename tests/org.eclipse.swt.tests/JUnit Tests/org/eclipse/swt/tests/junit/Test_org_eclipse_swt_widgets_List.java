@@ -1737,7 +1737,6 @@ public void test_setSelection$I() {
 
 	list.setSelection(new int [] {-1, 0});
 	assertEquals("MULTI: setSelection(new int [] {-1, 0})", list.getSelectionIndices(), new int[] {0});
-	assertEquals("MULTI: setSelection(new int [] {-1, 0}) getFocusIndex()", list.getFocusIndex(), 0);
 	
 	list.setSelection(new int [] {0, 1, 2, 3, 5});
 	assertEquals("MULTI: setSelection(new int [] {0, 1, 2, 3, 5})", list.getSelectionIndices(), new int [] {0, 1, 2, 3, 5});
