@@ -33,7 +33,7 @@ public TreeItem (Tree parent, int style, int index) {
 	int validItemIndex = parent.getItemCount ();
 	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
-	parent.addItem (this, index);
+	parent.createItem (this, index);
 	int validColumnCount = Math.max (1, parent.getColumnCount ());
 	if (validColumnCount > 1) {
 		texts = new String [validColumnCount];
@@ -58,33 +58,7 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 		images = new Image [validColumnCount];
 	}
 }
-void addItem (TreeItem item, int index) {
-	/* adds a child item to the receiver */
-	TreeItem[] newChildren = new TreeItem [items.length + 1];
-	System.arraycopy (items, 0, newChildren, 0, index);
-	newChildren[index] = item;
-	System.arraycopy (items, index, newChildren, index + 1, items.length - index);
-	items = newChildren;
-
-	/* if item should be available immediately then update parent accordingly */
-	if (item.isAvailable ()) {
-		parent.makeAvailable (item);
-		parent.redrawFromItemDownwards (availableIndex);
-	} else {
-		/* receiver will need update if this is its first child */
-		if (isAvailable () && items.length == 1) redrawItem ();
-	}
-}
-static Tree checkNull (Tree tree) {
-	if (tree == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return tree;
-}
-
-static TreeItem checkNull (TreeItem item) {
-	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return item;
-}
-void columnAdded (TreeColumn column) {
+void addColumn (TreeColumn column) {
 	int index = column.getIndex ();
 	int columnCount = parent.getColumnCount ();
 
@@ -135,72 +109,34 @@ void columnAdded (TreeColumn column) {
 	
 	/* notify all child items as well */
 	for (int i = 0; i < items.length; i++) {
-		items[i].columnAdded (column);
+		items[i].addColumn (column);
 	}
 }
-void columnRemoved (TreeColumn column, int index) {
-	int columnCount = parent.getColumnCount ();
-	if (columnCount == 0) {
-		/* reverts to normal tree when last column disposed */
-		cellBackgrounds = cellForegrounds = null;
-		boolean recomputeTextWidths = cellFonts != null;
-		cellFonts = null;
-		if (recomputeTextWidths) {
-			GC gc = new GC (parent);
-			gc.setFont (getFont ());
-			recomputeTextWidths (gc);
-			gc.dispose ();
-		}
-		/* notify all child items as well */
-		for (int i = 0; i < items.length; i++) {
-			items[i].columnRemoved (column, index);
-		}
-		return;
-	}
+void addItem (TreeItem item, int index) {
+	/* adds a child item to the receiver */
+	TreeItem[] newChildren = new TreeItem [items.length + 1];
+	System.arraycopy (items, 0, newChildren, 0, index);
+	newChildren[index] = item;
+	System.arraycopy (items, index, newChildren, index + 1, items.length - index);
+	items = newChildren;
 
-	String[] newTexts = new String [columnCount];
-	System.arraycopy (texts, 0, newTexts, 0, index);
-	System.arraycopy (texts, index + 1, newTexts, index, columnCount - index);
-	texts = newTexts;
-	
-	Image[] newImages = new Image [columnCount];
-	System.arraycopy (images, 0, newImages, 0, index);
-	System.arraycopy (images, index + 1, newImages, index, columnCount - index);
-	images = newImages;
-
-	int[] newTextWidths = new int [columnCount];
-	System.arraycopy (textWidths, 0, newTextWidths, 0, index);
-	System.arraycopy (textWidths, index + 1, newTextWidths, index, columnCount - index);
-	textWidths = newTextWidths;
-
-	if (cellBackgrounds != null) {
-		Color[] newCellBackgrounds = new Color [columnCount];
-		System.arraycopy (cellBackgrounds, 0, newCellBackgrounds, 0, index);
-		System.arraycopy (cellBackgrounds, index + 1, newCellBackgrounds, index, columnCount - index);
-		cellBackgrounds = newCellBackgrounds;
+	/* if item should be available immediately then update parent accordingly */
+	if (item.isAvailable ()) {
+		parent.makeAvailable (item);
+		parent.redrawFromItemDownwards (availableIndex);
+	} else {
+		/* receiver will need update if this is its first child */
+		if (isAvailable () && items.length == 1) redrawItem ();
 	}
-	if (cellForegrounds != null) {
-		Color[] newCellForegrounds = new Color [columnCount];
-		System.arraycopy (cellForegrounds, 0, newCellForegrounds, 0, index);
-		System.arraycopy (cellForegrounds, index + 1, newCellForegrounds, index, columnCount - index);
-		cellForegrounds = newCellForegrounds;
-	}
-	if (cellFonts != null) {
-		Font[] newCellFonts = new Font [columnCount];
-		System.arraycopy (cellFonts, 0, newCellFonts, 0, index);
-		System.arraycopy (cellFonts, index + 1, newCellFonts, index, columnCount - index);
-		cellFonts = newCellFonts;
+}
+static Tree checkNull (Tree tree) {
+	if (tree == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return tree;
+}
 
-		int[] newFontHeights = new int [columnCount];
-		System.arraycopy (fontHeights, 0, newFontHeights, 0, index);
-		System.arraycopy (fontHeights, index + 1, newFontHeights, index, columnCount - index);
-		fontHeights = newFontHeights;
-	}
-
-	/* notify all child items as well */
-	for (int i = 0; i < items.length; i++) {
-		items[i].columnRemoved (column, index);
-	}
+static TreeItem checkNull (TreeItem item) {
+	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return item;
 }
 /*
  * Returns a collection of all tree items descending from the receiver, including
@@ -303,7 +239,7 @@ public void dispose () {
 void dispose (boolean notifyParent) {
 	if (isDisposed ()) return;
 	super.dispose ();	/* the use of super is intentional here */
-	if (notifyParent) parent.itemDisposing (this);
+	if (notifyParent) parent.destroyItem (this);
 	for (int i = 0; i < items.length; i++) {
 		items[i].dispose (notifyParent);
 	}
@@ -883,6 +819,70 @@ void recomputeTextWidths (GC gc) {
 }
 void redrawItem () {
 	parent.redraw (0, parent.getItemY (this), parent.getClientArea ().width, parent.getItemHeight (), false);
+}
+void removeColumn (TreeColumn column, int index) {
+	int columnCount = parent.getColumnCount ();
+	if (columnCount == 0) {
+		/* reverts to normal tree when last column disposed */
+		cellBackgrounds = cellForegrounds = null;
+		boolean recomputeTextWidths = cellFonts != null;
+		cellFonts = null;
+		if (recomputeTextWidths) {
+			GC gc = new GC (parent);
+			gc.setFont (getFont ());
+			recomputeTextWidths (gc);
+			gc.dispose ();
+		}
+		/* notify all child items as well */
+		for (int i = 0; i < items.length; i++) {
+			items[i].removeColumn (column, index);
+		}
+		return;
+	}
+
+	String[] newTexts = new String [columnCount];
+	System.arraycopy (texts, 0, newTexts, 0, index);
+	System.arraycopy (texts, index + 1, newTexts, index, columnCount - index);
+	texts = newTexts;
+	
+	Image[] newImages = new Image [columnCount];
+	System.arraycopy (images, 0, newImages, 0, index);
+	System.arraycopy (images, index + 1, newImages, index, columnCount - index);
+	images = newImages;
+
+	int[] newTextWidths = new int [columnCount];
+	System.arraycopy (textWidths, 0, newTextWidths, 0, index);
+	System.arraycopy (textWidths, index + 1, newTextWidths, index, columnCount - index);
+	textWidths = newTextWidths;
+
+	if (cellBackgrounds != null) {
+		Color[] newCellBackgrounds = new Color [columnCount];
+		System.arraycopy (cellBackgrounds, 0, newCellBackgrounds, 0, index);
+		System.arraycopy (cellBackgrounds, index + 1, newCellBackgrounds, index, columnCount - index);
+		cellBackgrounds = newCellBackgrounds;
+	}
+	if (cellForegrounds != null) {
+		Color[] newCellForegrounds = new Color [columnCount];
+		System.arraycopy (cellForegrounds, 0, newCellForegrounds, 0, index);
+		System.arraycopy (cellForegrounds, index + 1, newCellForegrounds, index, columnCount - index);
+		cellForegrounds = newCellForegrounds;
+	}
+	if (cellFonts != null) {
+		Font[] newCellFonts = new Font [columnCount];
+		System.arraycopy (cellFonts, 0, newCellFonts, 0, index);
+		System.arraycopy (cellFonts, index + 1, newCellFonts, index, columnCount - index);
+		cellFonts = newCellFonts;
+
+		int[] newFontHeights = new int [columnCount];
+		System.arraycopy (fontHeights, 0, newFontHeights, 0, index);
+		System.arraycopy (fontHeights, index + 1, newFontHeights, index, columnCount - index);
+		fontHeights = newFontHeights;
+	}
+
+	/* notify all child items as well */
+	for (int i = 0; i < items.length; i++) {
+		items[i].removeColumn (column, index);
+	}
 }
 /*
  * Make changes that are needed to handle the disposal of a child item.

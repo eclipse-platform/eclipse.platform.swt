@@ -26,7 +26,7 @@ public TreeColumn (Tree parent, int style, int index) {
 	super (parent, checkStyle (style), index);
 	if (!(0 <= index && index <= parent.getColumnCount ())) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
-	parent.addColumn (this, index);
+	parent.createItem (this, index);
 }
 public void addControlListener (ControlListener listener) {
 	checkWidget ();
@@ -66,7 +66,7 @@ public void dispose () {
 }
 void dispose (boolean notifyParent) {
 	super.dispose ();	/* the use of super is intentional here */
-	if (notifyParent) parent.removeColumn (this);
+	if (notifyParent) parent.destroyItem (this);
 	parent = null;
 }
 public int getAlignment () {

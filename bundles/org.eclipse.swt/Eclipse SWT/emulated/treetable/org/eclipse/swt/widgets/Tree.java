@@ -141,7 +141,36 @@ public Tree (Composite parent, int style) {
 	hBar.addListener (SWT.Selection, listener);
 	hBar.setMaximum (1);
 }
-void addColumn (TreeColumn column, int index) {
+public void addSelectionListener (SelectionListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);	
+	addListener (SWT.Selection, typedListener);
+	addListener (SWT.DefaultSelection, typedListener);
+}
+public void addTreeListener (TreeListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);	
+	addListener (SWT.Expand, typedListener);
+	addListener (SWT.Collapse, typedListener);
+}
+static int checkStyle (int style) {
+	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
+}
+/*
+ * Returns the index of the column that the specified x falls within, or
+ * -1 if the x lies to the right of the last column.
+ */
+int computeColumnIntersect (int x, int startColumn) {
+	int numColumns = getColumnCount ();
+	for (int i = startColumn; i < numColumns; i++) {
+		int endX = columns[i].getX () + columns[i].width;
+		if (x <= endX) return i;
+	}
+	return -1;
+}
+void createItem (TreeColumn column, int index) {
 	/* insert column into the columns collection */
 	TreeColumn[] newColumns = new TreeColumn [columns.length + 1];
 	System.arraycopy (columns, 0, newColumns, 0, index);
@@ -151,12 +180,12 @@ void addColumn (TreeColumn column, int index) {
 	
 	/* allow all items to update their internal structures accordingly */
 	for (int i = 0; i < items.length; i++) {
-		items [i].columnAdded (column);
+		items [i].addColumn (column);
 	}
 
 	/* no visual update needed because column's initial width is 0 */
 }
-void addItem (TreeItem item, int index) {
+void createItem (TreeItem item, int index) {
 	/* insert item into the root items collection */
 	TreeItem[] newItems = new TreeItem [items.length + 1];
 	System.arraycopy (items, 0, newItems, 0, index);
@@ -190,35 +219,6 @@ void addItem (TreeItem item, int index) {
 	if (redrawIndex > 0) redrawIndex--;
 	redrawFromItemDownwards (items[redrawIndex].availableIndex);
 }
-public void addSelectionListener (SelectionListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);	
-	addListener (SWT.Selection, typedListener);
-	addListener (SWT.DefaultSelection, typedListener);
-}
-public void addTreeListener (TreeListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);	
-	addListener (SWT.Expand, typedListener);
-	addListener (SWT.Collapse, typedListener);
-}
-static int checkStyle (int style) {
-	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
-}
-/*
- * Returns the index of the column that the specified x falls within, or
- * -1 if the x lies to the right of the last column.
- */
-int computeColumnIntersect (int x, int startColumn) {
-	int numColumns = getColumnCount ();
-	for (int i = startColumn; i < numColumns; i++) {
-		int endX = columns[i].getX () + columns[i].width;
-		if (x <= endX) return i;
-	}
-	return -1;
-}
 public void deselectAll () {
 	checkWidget ();
 	TreeItem[] oldSelection = selectedItems;
@@ -226,6 +226,91 @@ public void deselectAll () {
 	for (int i = 0; i < oldSelection.length; i++) {
 		redrawItem (oldSelection[i].availableIndex, true);
 	}
+}
+void destroyItem (TreeColumn column) {
+	int numColumns = getColumnCount ();
+	int index = column.getIndex ();
+
+	TreeColumn[] newColumns = new TreeColumn[columns.length - 1];
+	System.arraycopy (columns, 0, newColumns, 0, index);
+	System.arraycopy (columns, index + 1, newColumns, index, newColumns.length - index);
+	columns = newColumns;
+	
+	/* ensure that column 0 always has left-alignment */
+	if (index == 0 && columns.length > 0) {
+		columns [0].style |= SWT.LEFT;
+		columns [0].style &= ~(SWT.CENTER | SWT.RIGHT);
+	}
+	
+	/* allow all items to update their internal structures accordingly */
+	for (int i = 0; i < items.length; i++) {
+		items [i].removeColumn (column, index);
+	}
+	
+	int lastColumnIndex = columns.length - 1;
+	if (lastColumnIndex < 0) {	/* no more columns */
+		updateHorizontalBar ();
+	} else {
+		int newWidth = 0;
+		for (int i = 0; i < columns.length; i++) {
+			newWidth += columns[i].width;
+		}
+		ScrollBar hBar = getHorizontalBar (); 
+		hBar.setMaximum (newWidth);
+		int selection = hBar.getSelection ();
+		if (selection != horizontalOffset) {
+			horizontalOffset = selection;
+			redraw ();
+		}
+	}
+}
+/*
+ * Allows the Tree to update internal structures it has that may contain the
+ * item that is about to be disposed.  The argument is not necessarily a root-level
+ * item.
+ */
+void destroyItem (TreeItem item) {
+	int availableIndex = item.availableIndex; 
+	if (availableIndex != -1) {
+		TreeItem[] newAvailableItems = new TreeItem[availableItems.length - 1];
+		System.arraycopy (availableItems, 0, newAvailableItems, 0, availableIndex);
+		System.arraycopy (
+			availableItems,
+			availableIndex + 1,
+			newAvailableItems,
+			availableIndex,
+			newAvailableItems.length - availableIndex);
+		availableItems = newAvailableItems;
+		/* update the availableIndex on affected items */
+		for (int i = availableIndex; i < availableItems.length; i++) {
+			availableItems[i].availableIndex = i;
+		}
+		item.availableIndex = -1;
+		updateVerticalBar ();
+		updateHorizontalBar ();
+	}
+	if (item.isSelected ()) {
+		int selectionIndex = getSelectionIndex (item);
+		TreeItem[] newSelectedItems = new TreeItem[selectedItems.length - 1];
+		System.arraycopy (selectedItems, 0, newSelectedItems, 0, selectionIndex);
+		System.arraycopy (
+			selectedItems,
+			selectionIndex + 1,
+			newSelectedItems,
+			selectionIndex,
+			newSelectedItems.length - selectionIndex);
+		selectedItems = newSelectedItems;
+	}
+	if (item.isRoot ()) {
+		int index = item.getIndex ();
+		TreeItem[] newItems = new TreeItem[items.length - 1];
+		System.arraycopy (items, 0, newItems, 0, index);
+		System.arraycopy (items, index + 1, newItems, index, newItems.length - index);
+		items = newItems;
+	}
+	if (item == focusItem) reassignFocus ();
+	if (item == anchorItem) anchorItem = null;
+	if (item == insertMarkItem) insertMarkItem = null;
 }
 void doArrowDown (int stateMask) {
 	if ((stateMask & (SWT.SHIFT | SWT.CTRL)) == 0) {
@@ -1508,54 +1593,6 @@ int indexOf (TreeColumn column) {
 	return column.getIndex ();
 }
 /*
- * Allows the Tree to update internal structures it has that may contain the
- * item that is about to be disposed.  The argument is not necessarily a root-level
- * item.
- */
-void itemDisposing (TreeItem item) {
-	int availableIndex = item.availableIndex; 
-	if (availableIndex != -1) {
-		TreeItem[] newAvailableItems = new TreeItem[availableItems.length - 1];
-		System.arraycopy (availableItems, 0, newAvailableItems, 0, availableIndex);
-		System.arraycopy (
-			availableItems,
-			availableIndex + 1,
-			newAvailableItems,
-			availableIndex,
-			newAvailableItems.length - availableIndex);
-		availableItems = newAvailableItems;
-		/* update the availableIndex on affected items */
-		for (int i = availableIndex; i < availableItems.length; i++) {
-			availableItems[i].availableIndex = i;
-		}
-		item.availableIndex = -1;
-		updateVerticalBar ();
-		updateHorizontalBar ();
-	}
-	if (item.isSelected ()) {
-		int selectionIndex = getSelectionIndex (item);
-		TreeItem[] newSelectedItems = new TreeItem[selectedItems.length - 1];
-		System.arraycopy (selectedItems, 0, newSelectedItems, 0, selectionIndex);
-		System.arraycopy (
-			selectedItems,
-			selectionIndex + 1,
-			newSelectedItems,
-			selectionIndex,
-			newSelectedItems.length - selectionIndex);
-		selectedItems = newSelectedItems;
-	}
-	if (item.isRoot ()) {
-		int index = item.getIndex ();
-		TreeItem[] newItems = new TreeItem[items.length - 1];
-		System.arraycopy (items, 0, newItems, 0, index);
-		System.arraycopy (items, index + 1, newItems, index, newItems.length - index);
-		items = newItems;
-	}
-	if (item == focusItem) reassignFocus ();
-	if (item == anchorItem) anchorItem = null;
-	if (item == insertMarkItem) insertMarkItem = null;
-}
-/*
  * Important: Assumes that item just became available (ie.- was either created
  * or the parent item was expanded) and the parent is available.
  */
@@ -1750,43 +1787,6 @@ public void removeAll () {
 	getVerticalBar ().setMaximum (1);
 	getHorizontalBar ().setMaximum (1);
 	redraw ();
-}
-void removeColumn (TreeColumn column) {
-	int numColumns = getColumnCount ();
-	int index = column.getIndex ();
-
-	TreeColumn[] newColumns = new TreeColumn[columns.length - 1];
-	System.arraycopy (columns, 0, newColumns, 0, index);
-	System.arraycopy (columns, index + 1, newColumns, index, newColumns.length - index);
-	columns = newColumns;
-	
-	/* ensure that column 0 always has left-alignment */
-	if (index == 0 && columns.length > 0) {
-		columns [0].style |= SWT.LEFT;
-		columns [0].style &= ~(SWT.CENTER | SWT.RIGHT);
-	}
-	
-	/* allow all items to update their internal structures accordingly */
-	for (int i = 0; i < items.length; i++) {
-		items [i].columnRemoved (column, index);
-	}
-	
-	int lastColumnIndex = columns.length - 1;
-	if (lastColumnIndex < 0) {	/* no more columns */
-		updateHorizontalBar ();
-	} else {
-		int newWidth = 0;
-		for (int i = 0; i < columns.length; i++) {
-			newWidth += columns[i].width;
-		}
-		ScrollBar hBar = getHorizontalBar (); 
-		hBar.setMaximum (newWidth);
-		int selection = hBar.getSelection ();
-		if (selection != horizontalOffset) {
-			horizontalOffset = selection;
-			redraw ();
-		}
-	}
 }
 void removeSelectedItem (int index) {
 	TreeItem[] newSelectedItems = new TreeItem[selectedItems.length - 1];
