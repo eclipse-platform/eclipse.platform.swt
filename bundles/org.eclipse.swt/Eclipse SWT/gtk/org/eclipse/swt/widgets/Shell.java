@@ -480,7 +480,10 @@ void createHandle (int index) {
 	if (parent != null) {
 		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 		OS.gtk_window_set_destroy_with_parent (shellHandle, true);
-		OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
+		int orientations = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if (!((style & ~orientations) == SWT.NONE || (style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0)) {
+			OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
+		}
 	}
 	/*
 	* Feature in GTK.  The window size must be set when the window
