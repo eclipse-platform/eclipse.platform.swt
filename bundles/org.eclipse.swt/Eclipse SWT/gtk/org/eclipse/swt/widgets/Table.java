@@ -234,14 +234,14 @@ void createItem (TableItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-//	int ptr = OS.g_malloc (1);
 	int [] strings = new int [MAX_COLUMNS];
-//	for (int i=0; i<strings.length; i++) strings [i] = ptr;
 	for (int i=0; i<strings.length; i++) strings [i] = 0;
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	int result = OS.gtk_clist_insert (handle, index, strings);
+	if ((style & SWT.SINGLE) != 0) {
+		if (itemCount == 0) OS.gtk_clist_unselect_row (handle, 0, 0);
+	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
-//	OS.g_free (ptr);
 	if ((style & SWT.CHECK) != 0) {
 		OS.gtk_clist_set_pixtext (handle, index, 0, new byte [1], (byte) 2, uncheck, 0);
 	}
@@ -347,7 +347,17 @@ public void deselect (int [] indices) {
 public void deselectAll () {
 	checkWidget();
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
-	OS.gtk_clist_unselect_all (handle);
+	if ((style & SWT.SINGLE) != 0) {
+		int selection = OS.GTK_CLIST_SELECTION (handle);
+		if (selection != 0 && OS.g_list_length (selection) > 0) {
+			int index = OS.GTK_CLIST_FOCUS_ROW (handle);
+			if (index == -1) index = 0;
+			OS.gtk_clist_select_row (handle, index, 0);
+			OS.gtk_clist_unselect_row (handle, index, 0);
+		}
+	} else {
+		OS.gtk_clist_unselect_all (handle);
+	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 
@@ -371,7 +381,23 @@ void destroyItem (TableItem item) {
 		index++;
 	}
 	if (index == itemCount) return;
-	OS.gtk_clist_remove (handle, index);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	if ((style & SWT.SINGLE) != 0) {
+		int selectionIndex = -1;
+		int selection = OS.GTK_CLIST_SELECTION (handle);
+		if (selection != 0 && OS.g_list_length (selection) != 0) {
+			selectionIndex = OS.g_list_nth_data (selection, 0);
+		}
+		OS.gtk_clist_remove (handle, index);
+		if (selectionIndex == -1 || selectionIndex == index) {
+			int focusIndex = OS.GTK_CLIST_FOCUS_ROW (handle);
+			if (focusIndex == -1) focusIndex = 0;
+			OS.gtk_clist_unselect_row (handle, focusIndex, 0);
+		}
+	} else {
+		OS.gtk_clist_remove (handle, index);
+	}
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 }
