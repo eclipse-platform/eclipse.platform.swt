@@ -3,7 +3,7 @@
    id="org.eclipse.swt.examples.paint"
    name="%plugin.SWTPaintExample.name"
    version="2.0.0"
-   provider-name="Object Technology International, Inc."
+   provider-name="%providerName"
    class="org.eclipse.swt.examples.paint.PaintPlugin">
 
 <!-- Runtime -->
