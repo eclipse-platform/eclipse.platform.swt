@@ -5463,16 +5463,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1se
 	gtk_list_store_set((GtkListStore*)arg0, (GtkTreeIter*)arg1, arg2, arg3, arg4);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1set__IIILjava_lang_String_2I
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1set__III_3BI
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4)
 {
-	const jbyte *lparg3= NULL;
+	jbyte *lparg3=NULL;
 
-	DEBUG_CALL("gtk_1list_1store_1set__IIILjava_lang_String_2I\n")
+	DEBUG_CALL("gtk_1list_1store_1set__III_3BI\n")
 
-	if (arg3) lparg3 = (*env)->GetStringUTFChars(env, arg3, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
 	gtk_list_store_set((GtkListStore*)arg0, (GtkTreeIter*)arg1, arg2, lparg3, arg4);
-	if (arg3) (*env)->ReleaseStringUTFChars(env, arg3, lparg3);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1cell_1renderer_1text_1new
@@ -5683,30 +5683,30 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1selec
 	return (jboolean)gtk_tree_selection_path_is_selected((GtkTreeSelection*)arg0, (GtkTreePath*)arg1);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1get_1data
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1get_1data__I_3B
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
 {
-	const jbyte *lparg1= NULL;
+	jbyte *lparg1=NULL;
 	jint rc;
 
-	DEBUG_CALL("g_1object_1get_1data\n")
+	DEBUG_CALL("g_1object_1get_1data__I_3B\n")
 
-	if (arg1) lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL);
-	rc = (jint)g_object_get_data((GObject*)arg0, (const gchar*)lparg1);
-	if (arg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)g_object_get_data((GObject*)arg0, lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	return rc;
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1set_1data
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1set_1data__I_3BI
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
 {
-	const jbyte *lparg1= NULL;
+	jbyte *lparg1=NULL;
 
-	DEBUG_CALL("g_1object_1set_1data\n")
+	DEBUG_CALL("g_1object_1set_1data__I_3BI\n")
 
-	if (arg1) lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL);
-	g_object_set_data((GObject*)arg0, (const gchar*)lparg1, (gpointer)arg2);
-	if (arg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	g_object_set_data((GObject*)arg0, lparg1, (gpointer)arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1cell_1area
