@@ -1277,6 +1277,11 @@ public int indexOf (TableColumn column) {
 public int indexOf (TableItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (1 <= lastIndexOf && lastIndexOf < itemCount - 1) {
+		if (items [lastIndexOf] == item) return lastIndexOf;
+		if (items [lastIndexOf + 1] == item) return ++lastIndexOf;
+		if (items [lastIndexOf - 1] == item) return --lastIndexOf;
+	}
 	if (lastIndexOf < itemCount / 2) {
 		for (int i=0; i<itemCount; i++) {
 			if (items [i] == item) return lastIndexOf = i;
