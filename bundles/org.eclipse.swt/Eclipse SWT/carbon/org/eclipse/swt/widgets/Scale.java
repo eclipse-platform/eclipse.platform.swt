@@ -25,6 +25,8 @@ public Scale (Composite parent, int style) {
 int actionProc (int theControl, int partCode) {
 	Event event = new Event ();
 	sendEvent (SWT.Selection);
+	Display display = getDisplay ();
+	display.update ();
 	return 0;
 }
 
