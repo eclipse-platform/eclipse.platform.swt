@@ -659,7 +659,7 @@ void createItem (TableItem item, int index) {
 		* memory usage.
 		*/
 		boolean small = drawCount == 0 && OS.IsWindowVisible (handle);
-		int length = small ? items.length + 4 : items.length * 3 / 2;
+		int length = small ? items.length + 4 : Math.max (4, items.length * 3 / 2);
 		TableItem [] newItems = new TableItem [length];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
@@ -2214,7 +2214,8 @@ public void setItemCount (int count) {
 		index++;
 	}
 	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	TableItem [] newItems =  new TableItem [(count + 3) / 4 * 4];
+	int length = Math.max (4, (count + 3) / 4 * 4);
+	TableItem [] newItems =  new TableItem [length];
 	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
 	items = newItems;
 	if (isVirtual) {
@@ -2978,7 +2979,8 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		/* Resize the item array to match the item count */
 		int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		if (items.length > 4 && items.length - count > 3) {
-			TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
+			int length = Math.max (4, (count + 3) / 4 * 4);
+			TableItem [] newItems = new TableItem [length];
 			System.arraycopy (items, 0, newItems, 0, count);
 			items = newItems;
 		}

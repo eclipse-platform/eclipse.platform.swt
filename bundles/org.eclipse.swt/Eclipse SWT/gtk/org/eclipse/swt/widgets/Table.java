@@ -619,7 +619,7 @@ void createItem (TableColumn column, int index) {
 void createItem (TableItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (itemCount == items.length) {
-		int newLength = drawCount == 0 ? items.length + 4 : items.length * 3 / 2;
+		int newLength = drawCount == 0 ? items.length + 4 : Math.max (4, items.length * 3 / 2);
 		TableItem [] newItems = new TableItem [newLength];	
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
@@ -2071,7 +2071,8 @@ public void setRedraw (boolean redraw) {
 	if (redraw && drawCount == 0) {
 		/* Resize the item array to match the item count */
 		if (items.length > 4 && items.length - itemCount > 3) {
-			TableItem [] newItems = new TableItem [(itemCount + 3) / 4 * 4];
+			int length = Math.max (4, (itemCount + 3) / 4 * 4);
+			TableItem [] newItems = new TableItem [length];
 			System.arraycopy (items, 0, newItems, 0, itemCount);
 			items = newItems;
 		}
