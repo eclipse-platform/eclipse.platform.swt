@@ -36,6 +36,7 @@
 		<!-- assumes the org.eclipse.swt project has been built and contain the 64 bit java classes  -->
 		<swt.jnigen mainclass="org.eclipse.swt.internal.gtk.OS" classpath="${basedir}/${plugindir}/bin" outputdir="${basedir}/${plugindir}/Eclipse SWT PI/gtk/library/"/>
 		<swt.jnigen mainclass="org.eclipse.swt.internal.accessibility.gtk.ATK" classpath="${basedir}/${plugindir}/bin" outputdir="${basedir}/${plugindir}/Eclipse SWT PI/gtk/library/"/>
+		<swt.jnigen mainclass="org.eclipse.swt.internal.gnome.GNOME" classpath="${basedir}/${plugindir}/bin" outputdir="${basedir}/${plugindir}/Eclipse SWT PI/gtk/library/"/>
 	</target>
 
 </project>
