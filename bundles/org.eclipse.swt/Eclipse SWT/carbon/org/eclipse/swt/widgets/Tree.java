@@ -1195,6 +1195,14 @@ void hookEvents () {
 	return -1;
 }
 
+/*public*/ int indexOf (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (item.parentItem != null) return -1;
+	return item.index;
+}
+
 int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
 	int index1 = itemOne - 1;
 	if (!(0 <= index1 && index1 < items.length)) return OS.noErr;
