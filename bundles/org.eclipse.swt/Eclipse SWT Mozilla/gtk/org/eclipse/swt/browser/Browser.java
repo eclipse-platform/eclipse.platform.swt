@@ -110,7 +110,7 @@ public Browser(Composite parent, int style) {
 	int[] result = new int[1];
 	if (!mozilla) {
 		String mozillaPath = null;;
-		int ptr = OS.getenv(Converter.wcsToMbcs(null, XPCOM.MOZILLA_FIVE_HOME, true));
+		int /*long*/ ptr = OS.getenv(Converter.wcsToMbcs(null, XPCOM.MOZILLA_FIVE_HOME, true));
 		if (ptr != 0) {
 			int length = OS.strlen(ptr);
 			byte[] buffer = new byte[length];
