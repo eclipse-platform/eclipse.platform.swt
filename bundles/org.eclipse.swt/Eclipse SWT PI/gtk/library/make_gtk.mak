@@ -74,19 +74,21 @@ SWTPI_OBJECTS	= os.o os_structs.o os_custom.o
 ATK_OBJECTS			= atk.o atk_structs.o atk_custom.o
 GNOME_OBJECTS	= gnome.o
 MOZILLA_OBJECTS = xpcom.o
+ 
+CFLAGS = -O -Wall \
+		-DSWT_VERSION=$(SWT_VERSION) \
+		-DLINUX -DGTK \
+		-I$(JAVA_HOME)/include \
+		-fpic \
+		${SWT_PTR_CFLAGS}
 
-CFLAGS = -O -Wall												\
-		-DSWT_VERSION=$(SWT_VERSION)		\
-		-DLINUX -DGTK 											\
-		-I$(JAVA_HOME)/include
-		
-LIBS = -shared -fpic -fPIC
+LIBS = -shared -fpic
 
 #
 #  Target Rules
 #
 
-all: make_swt make_awt make_atk make_gnome make_mozilla
+all: make_swt make_atk make_gnome make_awt make_mozilla
 
 #
 # SWT libs
