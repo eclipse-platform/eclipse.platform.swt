@@ -1943,9 +1943,10 @@ void showIMWindow (Control control) {
 public boolean sleep () {
 	checkDevice ();
 	//NOT DONE - need to sleep waiting for the next event
-	try {
-		Thread.sleep (50);
-	} catch (Exception e) {};
+	do {
+		if (OS.gtk_events_pending () != 0) break;
+		try {Thread.sleep (50);} catch (Exception e) {return false;}
+	} while (true);
 	return true;
 }
 
