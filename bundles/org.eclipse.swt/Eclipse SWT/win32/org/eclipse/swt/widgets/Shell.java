@@ -1204,6 +1204,19 @@ int widgetParent () {
 
 int widgetExtStyle () {
 	int bits = super.widgetExtStyle () & ~OS.WS_EX_MDICHILD;
+
+	/*
+	* Feature in Windows.  When a window that does not have a parent
+	* is created, it is automatically added to the Windows Task Bar,
+	* even when it has no title.  The fix is to use WS_EX_TOOLWINDOW
+	* which does not cause the window to appear in the Task Bar.
+	*/
+	if (parent == null) {
+		if ((style & SWT.NO_TRIM) != 0 || (style & SWT.TITLE) == 0) {
+			bits |= OS.WS_EX_TOOLWINDOW;
+		}
+	}
+	
 	/*
 	* Bug in Windows 98 and NT.  Creating a window with the
 	* WS_EX_TOPMOST extended style can result in a dialog shell
@@ -1216,9 +1229,11 @@ int widgetExtStyle () {
 	* disallow the WS_EX_TOPMOST extended style on Windows 98
 	* and NT.
 	*/
-	if (OS.IsWin95) return bits;
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
-		return bits;
+	if (parent != null) {
+		if (OS.IsWin95) return bits;
+		if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
+			return bits;
+		}
 	}
 	if ((style & SWT.ON_TOP) != 0) bits |= OS.WS_EX_TOPMOST;
 	return bits;
