@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-
 import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.gtk.OS;
 
@@ -30,13 +29,13 @@ import org.eclipse.swt.internal.gtk.OS;
 public class TextTransfer extends ByteArrayTransfer {
 
 	private static TextTransfer _instance = new TextTransfer();
-	private static final String TYPENAME1 = "COMPOUND_TEXT";
-	private static final int TYPEID1 = registerType(TYPENAME1);
-	private static final String TYPENAME2 = "STRING";
-	private static final int TYPEID2 = registerType(TYPENAME2);
+	private static final String COMPOUND_TEXT = "COMPOUND_TEXT";
+	private static final String STRING = "STRING";
+	private static final int COMPOUND_TEXT_ID = registerType(COMPOUND_TEXT);
+	private static final int STRING_ID = registerType(STRING);
 
-private TextTransfer() {
-}
+private TextTransfer() {}
+
 /**
  * Returns the singleton instance of the TextTransfer class.
  *
@@ -45,6 +44,7 @@ private TextTransfer() {
 public static TextTransfer getInstance () {
 	return _instance;
 }
+
 /**
  * This implementation of <code>javaToNative</code> converts plain text
  * represented by a java <code>String</code> to a platform specific representation.
@@ -54,31 +54,38 @@ public static TextTransfer getInstance () {
  * @param transferData an empty <code>TransferData</code> object; this
  *  object will be filled in on return with the platform specific format of the data
  */
-public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) {
-		transferData.result = 0;
-		return;
-	} 
-	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
-	if  (transferData.type ==  TYPEID1) { // COMPOUND_TEXT
+public void javaToNative (Object object, TransferData transferData) {
+	transferData.result = 0;
+	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
+	String string = (String)object;
+	if (string.length() == 0) return;
+	
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	if  (transferData.type ==  COMPOUND_TEXT_ID) {
 		int[] encoding = new int[1];
 		int[] format = new int[1];
 		int[] ctext = new int[1];
 		int[] length = new int[1];
 		boolean result = OS.gdk_utf8_to_compound_text(buffer, encoding, format, ctext, length);
-		if (!result) {
-			transferData.result = 0;
-		} else {
-			transferData.type = encoding[0];
-			transferData.format = format[0];
-			transferData.length = length[0];
-			transferData.pValue = ctext[0];
-			transferData.result = 1;
-		}
-	} else {
-		super.javaToNative(buffer, transferData);
+		if (!result) return;
+		transferData.type = encoding[0];
+		transferData.format = format[0];
+		transferData.length = length[0];
+		transferData.pValue = ctext[0];
+		transferData.result = 1;
+	} 
+	if (transferData.type == STRING_ID) {
+		int pValue = OS.g_malloc(buffer.length);
+		if (pValue ==  0) return;
+		OS.memmove(pValue, buffer, buffer.length);
+		transferData.type = STRING_ID;
+		transferData.format = 8;
+		transferData.length = buffer.length;
+		transferData.pValue = pValue;
+		transferData.result = 1;
 	}
 }
+
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of plain text to a java <code>String</code>.
@@ -92,21 +99,22 @@ public void javaToNative (Object object, TransferData transferData){
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
 	byte[] buffer = null;
-	if (transferData.type == TYPEID1) { // COMPOUND_TEXT	
+	if (transferData.type == COMPOUND_TEXT_ID) { 	
 		int[] list = new int[1];
 		int count = OS.gdk_text_property_to_utf8_list(transferData.type, transferData.format, transferData.pValue, transferData.length, list);
-		if (count == 0) {
-			transferData.result = 0;
-		} else {
-			int[] ptr = new int[1];
-			OS.memmove(ptr, list[0], 4);
-			int length = OS.strlen(ptr[0]);
-			buffer = new byte[length];
-			OS.memmove(buffer, ptr[0], length);
-			OS.g_strfreev(list[0]);
-		}
-	} else {
-		buffer = (byte[])super.nativeToJava(transferData);
+		if (count == 0) return null;
+		int[] ptr = new int[1];
+		OS.memmove(ptr, list[0], 4);
+		int length = OS.strlen(ptr[0]);
+		buffer = new byte[length];
+		OS.memmove(buffer, ptr[0], length);
+		OS.g_strfreev(list[0]);
+	}
+	if (transferData.type == STRING_ID) {
+		int size = transferData.format * transferData.length / 8;
+		if (size == 0) return null;
+		buffer = new byte[size];
+		OS.memmove(buffer, transferData.pValue, size);
 	}
 	if (buffer == null) return null;
 	// convert byte array to a string
@@ -115,10 +123,13 @@ public Object nativeToJava(TransferData transferData){
 	int end = string.indexOf('\0');
 	return (end == -1) ? string : string.substring(0, end);
 }
-protected String[] getTypeNames(){
-	return new String[]{TYPENAME1, TYPENAME2};
+
+protected int[] getTypeIds() {
+	return new int[] {COMPOUND_TEXT_ID, STRING_ID};
 }
-protected int[] getTypeIds(){
-	return new int[]{TYPEID1, TYPEID2};
+
+protected String[] getTypeNames() {
+	return new String[] {COMPOUND_TEXT, STRING};
 }
+
 }
