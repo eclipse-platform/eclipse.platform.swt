@@ -563,8 +563,8 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			xImage.data = bufPtr;
 			OS.memmove(xImagePtr, xImage, XImage.sizeof);
 			byte[] buf = new byte[bufSize];
-			int srcOrder = xSrcImage.bits_per_pixel == 8 ? xSrcImage.byte_order : xSrcImage.bitmap_bit_order;
-			int destOrder = xImage.bits_per_pixel == 8 ? xImage.byte_order : xImage.bitmap_bit_order;
+			int srcOrder = xSrcImage.bits_per_pixel == 1 ? xSrcImage.bitmap_bit_order : xSrcImage.byte_order;
+			int destOrder = xImage.bits_per_pixel == 1 ? xImage.bitmap_bit_order : xImage.byte_order;
 			ImageData.blit(ImageData.BLIT_SRC,
 				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, null, null, null,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
