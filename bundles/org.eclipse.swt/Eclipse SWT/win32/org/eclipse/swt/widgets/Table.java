@@ -2180,10 +2180,12 @@ public void setColumnOrder (int [] order) {
 		OS.InvalidateRect (handle, null, true);
 		TableColumn[] newColumns = new TableColumn [count];
 		System.arraycopy (columns, 0, newColumns, 0, count);
+		RECT newRect = new RECT ();
 		for (int i=0; i<count; i++) {
-			TableColumn column = newColumns [oldOrder [i]];
+			TableColumn column = newColumns [i];
 			if (!column.isDisposed ()) {
-				if (order [i] != oldOrder [i]) {
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
+				if (newRect.left != oldRects [i].left) {
 					column.sendEvent (SWT.Move);
 				}
 			}
