@@ -216,6 +216,53 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	OS.DisposePtr(ptr);	
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	OS.CGContextSaveGState(gc.handle);
+
+	/* 
+	* Draw the background of styles. There is no API to set a background attribute
+	* in an ATSU style.
+	*/
+	Rectangle rect = null;
+	Region clipping = null, region = null;
+	for (int j = 0; j < styles.length; j++) {
+		StyleItem run = styles[j];
+		if (run.style == null || run.style.background == null) continue;
+		OS.CGContextSetFillColor(gc.handle, run.style.background.handle);
+		if (clipping == null) {
+			region = new Region();
+			clipping = new Region();
+			gc.getClipping(clipping);
+			rect = clipping.getBounds();
+		}
+		int start = run.start;
+		int end = j + 1 < styles.length ? styles[j + 1].start - 1 : length;
+		for (int i=0, lineStart=0, lineY = 0; i<breaks.length; i++) {
+			int lineBreak = breaks[i];
+			int lineEnd = lineBreak - 1;
+			if (!(start > lineEnd || end < lineStart)) {
+				int highStart = Math.max(lineStart, start);
+				int highEnd = Math.min(lineEnd, end);
+				int highLen = skipHardBreak(highEnd) - highStart + 1;
+				if (highLen > 0) {
+					OS.ATSUGetTextHighlight(layout, lineX[i], lineY, highStart, highLen, region.handle);
+					OS.OffsetRgn(region.handle, (short)0, (short)(lineY + lineAscent[i]));
+					OS.OffsetRgn(region.handle, (short)x, (short)y);
+					region.intersect(clipping);
+					gc.setClipping(region);
+					gc.fillRectangle(rect);
+				}
+			}
+			if (lineEnd > end) break;
+			lineY += lineHeight[i];
+			lineStart = lineBreak;
+		}
+	}
+	if (clipping != null) {
+		OS.CGContextRestoreGState(gc.handle);
+		OS.CGContextSaveGState(gc.handle);
+		clipping.dispose();
+		region.dispose();
+	}
+
 	OS.CGContextScaleCTM(gc.handle, 1, -1);
 	OS.CGContextSetFillColor(gc.handle, gc.data.foreground);
 	int drawX = OS.Long2Fix(x);
