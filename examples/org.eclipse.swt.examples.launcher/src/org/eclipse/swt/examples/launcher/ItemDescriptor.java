@@ -11,6 +11,7 @@
 package org.eclipse.swt.examples.launcher;
 
 
+import org.eclipse.core.runtime.*;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -24,6 +25,7 @@ class ItemDescriptor {
 	private String view;
 	private String mainType;
 	private String pluginId;
+	private IConfigurationElement element;
 	
 	
 	/**
@@ -38,7 +40,7 @@ class ItemDescriptor {
 	 * @param pluginId the name of the plugin which contains the main class
 	 */
 	public ItemDescriptor(String id, String name, String description,
-		Image icon, String view, String mainType, String pluginId) {
+		Image icon, String view, String mainType, String pluginId, IConfigurationElement element) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -46,6 +48,18 @@ class ItemDescriptor {
 		this.view = view;
 		this.mainType = mainType;
 		this.pluginId = pluginId;
+		this.element = element;
+	}
+
+	/**
+	 * Creates and returns an instance of the extension's specified type,
+	 * or <code>null</code> if no type was specified by the extension.
+	 * 
+	 * @return an instance of the extension's specified type or <code>null</code>
+	 */
+	public Object createItemInstance() throws CoreException {
+		if (element == null) return null;
+		return element.createExecutableExtension(LauncherPlugin.LAUNCH_ITEMS_XML_PROGRAM_CLASS);
 	}
 
 	/**

@@ -11,6 +11,7 @@
 package org.eclipse.swt.examples.launcher;
 
 
+import org.eclipse.core.runtime.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
@@ -184,15 +185,14 @@ public class LauncherView extends ViewPart {
 		/* Case 2: The launch item is a standalone program */
 		if (workbenchShell == null) return;
 		try {
-			Class cl = Class.forName(itemDescriptor.getMainType());
-			Display display = workbenchShell.getDisplay();
-			Object exampleInstance = cl.newInstance();
-			Method openMethod = cl.getDeclaredMethod("open", new Class[] {Display.class});
-			openMethod.invoke(exampleInstance, new Object[] {display});
+			Object instance = itemDescriptor.createItemInstance();
+			if (instance != null) {
+				Display display = workbenchShell.getDisplay();
+				Method openMethod = instance.getClass().getDeclaredMethod("open", new Class[] {Display.class});
+				openMethod.invoke(instance, new Object[] {display});
+			}
 		} catch (NoSuchMethodException e) {
 			LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.DoesNotImplementMethod"), null);
-		} catch (ClassNotFoundException e) {
-			LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.CouldNotFindClass"), e);
 		} catch (Exception e) {
 			LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.CouldNotInstantiateClass"), e);
 		}		

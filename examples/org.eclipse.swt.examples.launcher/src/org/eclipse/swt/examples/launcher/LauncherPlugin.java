@@ -29,7 +29,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	private static LauncherPlugin plugin;
 	private static ResourceBundle resourceBundle;
 
-	private static final String
+	public static final String
 		LAUNCH_ITEMS_POINT_ID = "org.eclipse.swt.examples.launcher.launchItems",
 		LAUNCH_ITEMS_XML_CATEGORY = "category",
 		LAUNCH_ITEMS_XML_ITEM = "item",
@@ -164,7 +164,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	 */
 	public static ItemTreeNode getLaunchItemTree() {
 		ItemTreeNode categoryTree =
-			new ItemTreeNode(new ItemDescriptor("<<Root>>", "<<Root>>", null, null, null, null, null));
+			new ItemTreeNode(new ItemDescriptor("<<Root>>", "<<Root>>", null, null, null, null, null, null));
 
 		// get the platform's public plugin registry
 		IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
@@ -188,7 +188,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 			if (ceName.equalsIgnoreCase(LAUNCH_ITEMS_XML_CATEGORY)) {
 				final String attribName = getItemName(ce); 
 				ItemDescriptor theDescriptor = new ItemDescriptor(attribId, attribName,
-					getItemDescription(ce), null, null, null, null);
+					getItemDescription(ce), null, null, null, null, ce);
 				idMap.put(attribId, new ItemTreeNode(theDescriptor));
 			}
 		}
@@ -274,7 +274,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 				return null;
 			}
 			return new ItemDescriptor(attribId, attribName, attribDescription,
-					attribIcon, attribView, null, null);
+					attribIcon, attribView, null, null, viewCE);
 		} else {
 			//Item is a standalone
 			IConfigurationElement programCE = getItemElement(ce, LAUNCH_ITEMS_XML_PROGRAM);
@@ -287,7 +287,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 					return null;
 				}
 				return new ItemDescriptor(attribId, attribName, attribDescription,
-					attribIcon, null, attribClass, attribPluginId);
+					attribIcon, null, attribClass, attribPluginId, programCE);
 			} else {
 				logError(getResourceString("error.IncompleteLaunchItem",
 					new Object[] { attribId } ), null);
