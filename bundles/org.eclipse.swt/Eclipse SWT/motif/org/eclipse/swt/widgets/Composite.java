@@ -93,16 +93,15 @@ Control [] _getChildren () {
 }
 Control [] _getTabList () {
 	if (tabList == null) return tabList;
-	int index = 0, count = 0;
-	while (index < tabList.length) {
-		if (!tabList [index].isDisposed ()) count++;
-		index++;
-	}
-	if (index == count) return tabList;
-	Control [] newList = new Control [count];
-	index = 0;
+	int count = 0;
 	for (int i=0; i<tabList.length; i++) {
-		if (!tabList [index].isDisposed ()) {
+		if (!tabList [i].isDisposed ()) count++;
+	}
+	if (count == tabList.length) return tabList;
+	Control [] newList = new Control [count];
+	int index = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (!tabList [i].isDisposed ()) {
 			newList [index++] = tabList [i];
 		}
 	}
