@@ -162,15 +162,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int newWidth = wHint, newHeight = hHint;
 	if (newWidth == SWT.DEFAULT) newWidth = 0x3FFF;
 	if (newHeight == SWT.DEFAULT) newHeight = 0x3FFF;
-	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-	if (redraw) {
-		OS.UpdateWindow (handle);
-		/*
-		* This line is intentionally commented.
-		*/
-//		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-	}
 	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
 	OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
 	int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
@@ -181,21 +172,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = Math.max (height, rect.bottom);
 	}
 	OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
-	if (redraw) {
-		/*
-		* This line is intentionally commented.
-		*/
-//		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-		if (OS.IsWinCE) {
-			OS.InvalidateRect (handle, null, false);
-			OS.UpdateWindow (handle);
-		} else {
-			int uFlags = OS.RDW_INVALIDATE | OS.RDW_UPDATENOW;
-			OS.RedrawWindow (handle, null, 0, uFlags);
-		}
-	}
-	
 	/*
 	* From the Windows SDK for TB_SETBUTTONSIZE:
 	*
@@ -593,6 +569,28 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 
+void setBounds (int x, int y, int width, int height, int flags) {
+	/*
+	* Feature in Windows.  For some reason, when a tool bar is
+	* repositioned more than once using DeferWindowPos () into
+	* the same HDWP, the toolbar redraws more than once, defeating
+	* the puropse of DeferWindowPos ().  The fix is to end the
+	* defered positioning before the next tool bar is added,
+	* ensuring that only one tool bar position is deferred at
+	* any given time.
+	*/
+	if (parent.hdwp != 0) {
+		if (drawCount == 0 && OS.IsWindowVisible (handle)) {
+			int oldHdwp = parent.hdwp;
+			parent.hdwp = 0;
+			OS.EndDeferWindowPos (oldHdwp);
+			int count = parent.getChildrenCount ();
+			parent.hdwp = OS.BeginDeferWindowPos (count);
+		}
+	}
+	super.setBounds (x, y, width, height, flags);
+}
+
 void setDefaultFont () {
 	super.setDefaultFont ();
 	OS.SendMessage (handle, OS.TB_SETBITMAPSIZE, 0, 0);
@@ -780,6 +778,48 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	*/
 	if (isDisposed ()) return result;
 	layoutItems ();
+	return result;
+}
+
+LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  When a flat tool bar is wrapped,
+	* Windows draws a horizontal separator between the
+	* rows.  The tool bar does not draw the first or
+	* the last two pixels of this separator.  When the
+	* toolbar is resized to be bigger, only the new
+	* area is drawn and the last two pixels, which are
+	* blank are drawn over by separator.  This leaves
+	* garbage on the screen.  The fix is to damage the
+	* pixels.
+	*/
+	if (drawCount != 0) return result;
+	if ((style & SWT.WRAP) == 0) return result;
+	if (!OS.IsWindowVisible (handle)) return result;
+	if (OS.SendMessage (handle, OS.TB_GETROWS, 0, 0) == 1) {
+		return result;
+	}
+	WINDOWPOS lpwp = new WINDOWPOS ();
+	OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
+	if ((lpwp.flags & (OS.SWP_NOSIZE | OS.SWP_NOREDRAW)) != 0) {
+		return result;
+	}
+	RECT oldRect = new RECT ();
+	OS.GetClientRect (handle, oldRect);
+	RECT newRect = new RECT ();
+	OS.SetRect (newRect, 0, 0, lpwp.cx, lpwp.cy);
+	OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, newRect);
+	int oldWidth = oldRect.right - oldRect.left;
+	int newWidth = newRect.right - newRect.left;
+	if (newWidth > oldWidth) {
+		RECT rect = new RECT ();
+		rect.left = oldWidth - 2;
+		rect.right = oldWidth;
+		rect.bottom = newRect.bottom - newRect.top;
+		OS.InvalidateRect (handle, rect, false);
+	}
 	return result;
 }
 
