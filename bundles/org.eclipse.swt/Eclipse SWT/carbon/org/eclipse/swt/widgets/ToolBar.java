@@ -56,12 +56,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint == SWT.DEFAULT) width = 0x7FFFFFFF;
 	if (hHint == SWT.DEFAULT) height = 0x7FFFFFFF;
 	int [] result = layout (width, height, false);
-	int border = getBorderWidth () * 2;
 	Point extent = new Point (result [1], result [2]);
 	if (wHint != SWT.DEFAULT) extent.x = wHint;
 	if (hHint != SWT.DEFAULT) extent.y = hHint;
-	extent.x += border;
-	extent.y += border;
 	return extent;
 }
 
@@ -92,7 +89,7 @@ void createItem (ToolItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	item.createWidget (index);
+	item.createWidget ();
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 }
@@ -163,7 +160,7 @@ public int indexOf (ToolItem item) {
 	return -1;
 }
 
-int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
+int [] layoutHorizontal (int width, int height, boolean resize) {
 	int xSpacing = 0, ySpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2;
 	int marginWidth = 0, marginHeight = 0;
 	ToolItem [] children = getItems ();
@@ -171,17 +168,24 @@ int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
 	int x = marginWidth, y = marginHeight;
 	int maxHeight = 0, maxX = 0, rows = 1;
 	boolean wrap = (style & SWT.WRAP) != 0;
+	int itemHeight = 0;
 	for (int i=0; i<length; i++) {
 		ToolItem child = children [i];
 		Rectangle rect = child.getBounds ();
-		if (wrap && i != 0 && x + rect.width > nWidth) {
+		itemHeight = Math.max (itemHeight, rect.height);
+	}
+	for (int i=0; i<length; i++) {
+		ToolItem child = children [i];
+		Rectangle rect = child.getBounds ();
+		if (wrap && i != 0 && x + rect.width > width) {
 			rows++;
-			x = marginWidth;  y += ySpacing + maxHeight;
+			x = marginWidth;
+			y += ySpacing + maxHeight;
 			maxHeight = 0;
 		}
 		maxHeight = Math.max (maxHeight, rect.height);
 		if (resize) {
-			child.setBounds (x, y, rect.width, rect.height);
+			child.setBounds (x, y, rect.width, itemHeight);
 		}
 		x += xSpacing + rect.width;
 		maxX = Math.max (maxX, x);
@@ -189,7 +193,7 @@ int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
 	return new int [] {rows, maxX, y + maxHeight};
 }
 
-int [] layoutVertical (int nWidth, int nHeight, boolean resize) {
+int [] layoutVertical (int width, int height, boolean resize) {
 	int xSpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2, ySpacing = 0;
 	int marginWidth = 0, marginHeight = 0;
 	ToolItem [] children = getItems ();
@@ -197,17 +201,24 @@ int [] layoutVertical (int nWidth, int nHeight, boolean resize) {
 	int x = marginWidth, y = marginHeight;
 	int maxWidth = 0, maxY = 0, cols = 1;
 	boolean wrap = (style & SWT.WRAP) != 0;
+	int itemWidth = 0;
 	for (int i=0; i<length; i++) {
 		ToolItem child = children [i];
 		Rectangle rect = child.getBounds ();
-		if (wrap && i != 0 && y + rect.height > nHeight) {
+		itemWidth = Math.max (itemWidth, rect.width);
+	}
+	for (int i=0; i<length; i++) {
+		ToolItem child = children [i];
+		Rectangle rect = child.getBounds ();
+		if (wrap && i != 0 && y + rect.height > height) {
 			cols++;
-			x += xSpacing + maxWidth;  y = marginHeight;
+			x += xSpacing + maxWidth;
+			y = marginHeight;
 			maxWidth = 0;
 		}
 		maxWidth = Math.max (maxWidth, rect.width);
 		if (resize) {
-			child.setBounds (x, y, rect.width, rect.height);
+			child.setBounds (x, y, itemWidth, rect.height);
 		}
 		y += ySpacing + rect.height;
 		maxY = Math.max (maxY, y);

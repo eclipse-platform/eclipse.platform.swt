@@ -103,8 +103,9 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	if (isImage) {
 		if (image != null) {
-			//NOT CLIPPED
-			GC gc = new GC (this);
+			GCData data = new GCData ();
+			data.paintEvent = theEvent;
+			GC gc = GC.carbon_new (this, data);
 			gc.drawImage (image, 0, 0);
 			gc.dispose ();
 		}

@@ -90,17 +90,12 @@ void createHandle () {
 	int menuProc = display.menuProc;
 	display.addMenu (this);
 	int outMenuRef [] = new int [1];
-	if (OS.CreateNewMenu (id, 0, outMenuRef) != OS.noErr) {
+	OS.CreateNewMenu (id, 0, outMenuRef);
+	if (outMenuRef [0] == 0) {
 		display.removeMenu (this);
 		error (SWT.ERROR_NO_HANDLES);
 	}
 	handle = outMenuRef [0];
-	int [] mask = new int [] {
-		OS.kEventClassMenu, OS.kEventMenuOpening,
-		OS.kEventClassMenu, OS.kEventMenuClosed,
-	};
-	int menuTarget = OS.GetMenuEventTarget (handle);
-	OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, handle, null);
 }
 
 void createItem (MenuItem item, int index) {
@@ -129,6 +124,7 @@ void createItem (MenuItem item, int index) {
 
 void createWidget () {
 	createHandle ();
+	hookEvents ();
 }
 
 void destroyItem (MenuItem item) {
@@ -251,6 +247,17 @@ public boolean getVisible () {
 	}
 	MenuTrackingData outData = new MenuTrackingData ();
 	return OS.GetMenuTrackingData (handle, outData) == OS.noErr;
+}
+
+void hookEvents () {
+	Display display = getDisplay ();
+	int menuProc = display.menuProc;
+	int [] mask = new int [] {
+		OS.kEventClassMenu, OS.kEventMenuOpening,
+		OS.kEventClassMenu, OS.kEventMenuClosed,
+	};
+	int menuTarget = OS.GetMenuEventTarget (handle);
+	OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, handle, null);
 }
 
 int kEventMenuClosed (int nextHandler, int theEvent, int userData) {

@@ -70,18 +70,36 @@ Point computeSize () {
 			height = DEFAULT_HEIGHT;
 		}
 	} else {
-		Rect rect = new Rect ();
-		short [] base = new short [1];
-		OS.GetBestControlRect (handle, rect, base);
-		width = Math.max (DEFAULT_WIDTH, rect.right - rect.left);
-		height = Math.min (DEFAULT_HEIGHT, rect.bottom - rect.top);
+		int space = 0;
+		int stringWidth = 0, stringHeight = 0;
+		if (text.length () != 0) {
+			GC gc = new GC (parent);
+			Point size = gc.stringExtent (text);
+			stringWidth = size.x;
+			stringHeight = size.y;
+			gc.dispose ();
+		}
+		int imageWidth = 0, imageHeight = 0;
+		if (image != null) {
+			if (text.length () != 0) space = 2;
+			Rectangle rect = image.getBounds ();
+			imageWidth = rect.width;
+			imageHeight = rect.height;
+		}
+		if ((parent.style & SWT.RIGHT) != 0) {
+			space = 0;
+			width = stringWidth + imageWidth;
+			height = Math.max (stringHeight, imageHeight);
+		} else {
+			width = Math.max (stringWidth, imageWidth);
+			height = stringHeight + imageHeight;
+		}
+		int inset = (style & SWT.DROP_DOWN) != 0 ? 7 : 2;
+		width += space + inset * 2;
+		height += space + inset * 2;
 	}
-	//WRONG
-//	if (image != null) return new Point (24, 22);
-	if (image != null) return new Point (24+26, 22+ 26);
 	return new Point (width, height);
 }
-
 
 int controlProc (int nextHandler, int theEvent, int userData) {
 	if ((style & SWT.RADIO) != 0) {
@@ -93,9 +111,7 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-void createWidget (int index) {
-	toolTipText = "";
-	
+void createHandle () {
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	Rect rect = new Rect ();
@@ -115,9 +131,7 @@ void createWidget (int index) {
 		OS.CreateNewMenu ((short)0, 0, menuRef);
 		if (menuRef [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		menuHandle = menuRef [0];
-		//FIX ME
-		int kControlBevelButtonMenuRefTag = ('m'<<24) + ('h'<<16) + ('n'<<8) + 'd';
-		OS.SetControlData (handle, OS.kControlEntireControl, kControlBevelButtonMenuRefTag, 4, new int [] {menuHandle});	
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonMenuRefTag, 4, new int [] {menuHandle});	
 		Display display = getDisplay ();
 		int menuProc = display.menuProc;
 		int [] mask = new int [] {
@@ -140,36 +154,33 @@ void createWidget (int index) {
 		} else {
 			OS.SetRect (rect, (short) 0, (short) 0, (short) DEFAULT_WIDTH, (short) DEFAULT_SEPARATOR_WIDTH);
 		}
-//		OS.CreateSeparatorControl (window, rect, outControl);
 		OS.CreateUserPaneControl (window, rect, 0, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
 	} else {
-		Display display = getDisplay ();
-		int controlProc = display.controlProc;
-		int [] mask = new int [] {
-			OS.kEventClassControl, OS.kEventControlHit,
-		};
-		int controlTarget = OS.GetControlEventTarget (handle);
-		OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, parent.handle, null);
-		//FIX ME	
-		int kControlBevelButtonTextPlaceTag = ('t'<<24) + ('p'<<16) + ('l'<<8) + 'c';
-		int placement = 3; // kControlBevelButtonPlaceBelowGraphic
-		if ((parent.style & SWT.RIGHT) != 0) {
-			placement = 1; //kControlBevelButtonPlaceToRightOfGraphic
-		}
-		OS.SetControlData (handle, OS.kControlEntireControl, kControlBevelButtonTextPlaceTag, 2, new short [] {(short) placement});
+		int placement = (parent.style & SWT.RIGHT) != 0 ? OS.kControlBevelButtonPlaceToRightOfGraphic :  OS.kControlBevelButtonPlaceBelowGraphic;
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextPlaceTag, 2, new short [] {(short) placement});
 	}
 	OS.HIViewAddSubview (parent.handle, handle);
 	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 	parent.relayout ();
 }
 
+void createWidget () {
+	createHandle ();
+	hookEvents ();
+	toolTipText = "";
+}
+
 void destroyWidget () {
-	int theControl = handle;
+	int theControl = handle, theMenu = menuHandle;
 	releaseHandle ();
 	if (theControl != 0) {
 		OS.DisposeControl (theControl);
+	}
+	if (theMenu != 0) {
+//		OS.DeleteMenu (OS.GetMenuID (theMenu));
+		OS.DisposeMenu (theMenu);
 	}
 }
 
@@ -234,6 +245,17 @@ public int getWidth () {
 	Rect bounds= new Rect();
 	OS.GetControlBounds(handle, bounds);
 	return bounds.right - bounds.left;
+}
+
+void hookEvents () {
+	if ((style & SWT.SEPARATOR) != 0) return;
+	Display display = getDisplay ();
+	int controlProc = display.controlProc;
+	int [] mask = new int [] {
+		OS.kEventClassControl, OS.kEventControlHit,
+	};
+	int controlTarget = OS.GetControlEventTarget (handle);
+	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, parent.handle, null);	
 }
 
 public boolean isEnabled () {

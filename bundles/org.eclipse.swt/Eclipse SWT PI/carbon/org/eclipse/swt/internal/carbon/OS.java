@@ -61,10 +61,14 @@ public class OS {
 	public static final int kControlBevelButtonAlignTextFlushLeft = -2;
 	public static final int kControlBevelButtonNormalBevelProc = 33;
 	public static final int kControlBevelButtonSmallBevel = 0;
-	public static final int kControlBevelButtonNormalBevel = 1;
 	public static final int kControlBevelButtonLargeBevel = 2;
+	public static final int kControlBevelButtonMenuRefTag = ('m'<<24) + ('h'<<16) + ('n'<<8) + 'd';
+	public static final int kControlBevelButtonNormalBevel = 1;
+	public static final int kControlBevelButtonPlaceBelowGraphic = 3;
+	public static final int kControlBevelButtonPlaceToRightOfGraphic = 1;
 	public static final int kControlBevelButtonKindTag = ('b'<<24) + ('e'<<16) + ('b'<<8) + 'k';
 	public static final int kControlBevelButtonTextAlignTag = ('t'<<24) + ('a'<<16) + ('l'<<8) + 'i';
+	public static final int kControlBevelButtonTextPlaceTag = ('t'<<24) + ('p'<<16) + ('l'<<8) + 'c';
 	public static final int kControlBevelButtonGraphicAlignTag = ('g'<<24) + ('a'<<16) + ('l'<<8) + 'i';
 	public static final int kControlBoundsChangeSizeChanged = 1 << 2;
 	public static final int kControlBoundsChangePositionChanged = 1 << 3;
