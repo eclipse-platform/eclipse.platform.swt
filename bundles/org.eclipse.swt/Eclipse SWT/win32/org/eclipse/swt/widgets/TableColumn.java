@@ -270,6 +270,8 @@ public void pack () {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	int hwnd = parent.handle;
+	parent.ignoreResize = true;
+	int oldWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
 	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
 	if (image != null) {
@@ -285,7 +287,23 @@ public void pack () {
 	}
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		if (image == null) {
+			/*
+			* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
+			* with LVM_SETCOLUMNWIDTH to resize the last column, the last
+			* column is expanded to fill the client area.  The fix is to
+			* insert and remove a temporary column last column for the
+			* duration of LVM_SETCOLUMNWIDTH.
+			*/
+			boolean fixWidth = index == parent.getColumnCount () - 1;
+			if (fixWidth) {
+				LVCOLUMN lvColumn = new LVCOLUMN ();
+				lvColumn.mask = OS.LVCF_WIDTH;
+				OS.SendMessage (hwnd, OS.LVM_INSERTCOLUMN, index + 1, lvColumn);
+			}
 			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
+			if (fixWidth) {
+				OS.SendMessage (hwnd, OS.LVM_DELETECOLUMN, index + 1, 0);
+			}
 		} else {
 			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, headerWidth);
 		}		
@@ -302,13 +320,41 @@ public void pack () {
 		if (index == 0 && parent.imageList == null) columnWidth += 2;
 		if (headerWidth > columnWidth) {
 			if (image == null) {
+				/*
+				* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
+				* with LVM_SETCOLUMNWIDTH to resize the last column, the last
+				* column is expanded to fill the client area.  The fix is to
+				* insert and remove a temporary column last column for the
+				* duration of LVM_SETCOLUMNWIDTH.
+				*/
+				boolean fixWidth = index == parent.getColumnCount () - 1;
+				if (fixWidth) {
+					LVCOLUMN lvColumn = new LVCOLUMN ();
+					lvColumn.mask = OS.LVCF_WIDTH;
+					OS.SendMessage (hwnd, OS.LVM_INSERTCOLUMN, index + 1, lvColumn);
+				}
 				OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
+				if (fixWidth) {
+					OS.SendMessage (hwnd, OS.LVM_DELETECOLUMN, index + 1, 0);
+				}
 			} else {
 				OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, headerWidth);
 			}
 		} else {
 			if (index == 0) {
 				OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
+			}
+		}
+	}
+	parent.ignoreResize = false;
+	int newWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+	if (oldWidth != newWidth) {
+		sendEvent (SWT.Resize);
+		if (isDisposed ()) return;
+		TableColumn [] columns = parent.getColumns ();
+		for (int i=index + 1; i<columns.length; i++) {
+			if (!columns [i].isDisposed ()) {
+				columns [i].sendEvent (SWT.Move);
 			}
 		}
 	}
