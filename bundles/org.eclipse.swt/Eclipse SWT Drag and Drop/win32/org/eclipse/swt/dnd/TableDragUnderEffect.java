@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.internal.win32.LVHITTESTINFO;
-import org.eclipse.swt.internal.win32.LVITEM;
-import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;

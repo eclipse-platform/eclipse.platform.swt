@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.internal.win32.TVHITTESTINFO;
-import org.eclipse.swt.internal.win32.TVITEM;
-import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 	private Tree tree;
