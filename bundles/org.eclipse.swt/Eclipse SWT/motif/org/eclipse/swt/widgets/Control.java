@@ -2406,7 +2406,7 @@ boolean translateMnemonic (int key, XKeyEvent xEvent) {
 	}
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {
-		char ch = mbcsToWcs ((char) key);
+		char ch = mbcsToWcs (key);
 		return ch != 0 && shell.translateMnemonic (ch, xEvent);
 	}
 	return false;

@@ -445,12 +445,12 @@ boolean isValidThread () {
 void manageChildren () {
 	/* Do nothing */
 }
-char mbcsToWcs (char ch) {
+char mbcsToWcs (int ch) {
 	return mbcsToWcs (ch, null);
 }
-char mbcsToWcs (char ch, String codePage) {
+char mbcsToWcs (int ch, String codePage) {
 	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
+	if (key <= 0x7F) return (char) ch;
 	byte [] buffer;
 	if (key <= 0xFF) {
 		buffer = new byte [1];
@@ -726,7 +726,7 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 	if (xEvent.keycode != 0) {
 		byte [] buffer = new byte [1];
 		int [] keysym = new int [1];
-		int lookupLength = OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
+		int length = OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
 		/*
 		* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
 		* translated correctly by XLookupString().  They are mapped
@@ -737,11 +737,11 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			switch (keysym [0]) {
 				case 0x1005FF10: 
 					keysym [0] = OS.XK_F11;
-					lookupLength = 0;
+					length = 0;
 					break;
 				case 0x1005FF11:
 					keysym [0] = OS.XK_F12;
-					lookupLength = 0;
+					length = 0;
 					break;
 			}
 			/*
@@ -752,7 +752,7 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			*/
 			keysym [0] &= 0xFFFF;
 		}
-		if (lookupLength == 0) {
+		if (length == 0) {
 			event.keyCode = Display.translateKey (keysym [0]);
 			/*
 			* If translateKey () could not find a translation for the keysym
@@ -765,7 +765,7 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 				}
 			}
 		} else {
-			event.character = (char) buffer [0];
+			event.character = mbcsToWcs (buffer [0] & 0xFF);
 		}
 	}
 	setInputState (event, xEvent);
@@ -900,10 +900,10 @@ boolean translateMnemonic (int key, XKeyEvent xEvent) {
 boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return false;
 }
-char wcsToMbcs (char ch) {
+int wcsToMbcs (char ch) {
 	return wcsToMbcs (ch, null);
 }
-char wcsToMbcs (char ch, String codePage) {
+int wcsToMbcs (char ch, String codePage) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
 	byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
