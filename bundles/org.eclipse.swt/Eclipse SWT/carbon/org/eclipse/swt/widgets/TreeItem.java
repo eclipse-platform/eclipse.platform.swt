@@ -651,7 +651,7 @@ public String getText (int index) {
 /*public*/ int indexOf (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parentItem != this) return -1;
 	return item.index;
 }

@@ -1189,6 +1189,7 @@ void hookEvents () {
 /*public*/ int indexOf (TreeColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i] == column) return i;
 	}
@@ -1198,7 +1199,7 @@ void hookEvents () {
 /*public*/ int indexOf (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parentItem != null) return -1;
 	return item.index;
 }
