@@ -193,7 +193,6 @@ public void clear (int index) {
 		* cached bounds.
 		*/
 		if ((style & SWT.VIRTUAL) == 0 && item.cached) {
-			int hwnd = parent.handle;
 			LVITEM lvItem = new LVITEM ();
 			lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
 			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
