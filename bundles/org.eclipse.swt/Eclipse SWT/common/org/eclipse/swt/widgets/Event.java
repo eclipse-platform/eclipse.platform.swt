@@ -125,10 +125,10 @@ public class Event {
 	 * depending on the event, the character represented by the key
 	 * that was typed.  This is the final character that results
 	 * after all modifiers have been applied.  For example, when the
-	 * user types Ctrl+A, the character value is 0x01 (NUL).  It is
-	 * important that applications do not attempt to modify the character
-	 * value based on a stateMask (such as SWT.CTRL) or the resulting
- 	 * character will not be correct.
+	 * user types Ctrl+A, the character value is 0x01 (ASCII SOH).
+	 * It is important that applications do not attempt to modify the
+	 * character value based on a stateMask (such as SWT.CTRL) or the
+	 * resulting character will not be correct.
 	 */
 	public char character;
 	
