@@ -158,7 +158,7 @@ public boolean isSupportedType(TransferData transferData){
  *  object will be filled in on return with the platform specific format of the data
  */
 protected void javaToNative (Object object, TransferData transferData) {
-	if (!_validate(object) || !isSupportedType(transferData)) {
+	if (!checkByteArray(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	// Allocate the memory because the caller (DropTarget) has not handed it in
@@ -207,7 +207,7 @@ protected Object nativeToJava(TransferData transferData) {
 	return buffer;
 }
 
-boolean _validate(Object object) {
+boolean checkByteArray(Object object) {
 	return (object != null && object instanceof byte[] && ((byte[])object).length > 0);
 }
 }

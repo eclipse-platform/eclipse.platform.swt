@@ -63,7 +63,7 @@ public static FileTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative(Object object, TransferData transferData) {
-	if (!_validate(object) || !isSupportedType(transferData)) {
+	if (!checkFile(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String[] fileNames = (String[]) object;
@@ -141,7 +141,7 @@ protected int[] getTypeIds(){
 protected String[] getTypeNames(){
 	return new String[] {CF_HDROP};
 }
-boolean _validate(Object object) {
+boolean checkFile(Object object) {
 	if (object == null || !(object instanceof String[]) || ((String[])object).length == 0) return false;
 	String[] strings = (String[])object;
 	for (int i = 0; i < strings.length; i++) {
@@ -151,6 +151,6 @@ boolean _validate(Object object) {
 }
 
 protected boolean validate(Object object) {
-	return _validate(object);
+	return checkFile(object);
 }
 }

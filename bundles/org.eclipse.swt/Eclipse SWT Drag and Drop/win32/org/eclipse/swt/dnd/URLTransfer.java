@@ -36,7 +36,6 @@ import org.eclipse.swt.internal.win32.*;
 	static URLTransfer _instance = new URLTransfer();
 	static final String CFSTR_INETURL = "UniformResourceLocator"; //$NON-NLS-1$
 	static final int CFSTR_INETURLID = registerType(CFSTR_INETURL);
-	static int CodePage = OS.GetACP();
 
 private URLTransfer() {}
 
@@ -59,7 +58,7 @@ public static URLTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (!_validate(object) || !isSupportedType(transferData)) {
+	if (!checkURL(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	transferData.result = COM.E_FAIL;
@@ -68,14 +67,15 @@ public void javaToNative (Object object, TransferData transferData){
 	int count = url.length();
 	char[] chars = new char[count + 1];
 	url.getChars(0, count, chars, 0);
-	int cchMultiByte = OS.WideCharToMultiByte(CodePage, 0, chars, -1, null, 0, null, null);
+	int codePage = OS.GetACP();
+	int cchMultiByte = OS.WideCharToMultiByte(codePage, 0, chars, -1, null, 0, null, null);
 	if (cchMultiByte == 0) {
 		transferData.stgmedium = new STGMEDIUM();
 		transferData.result = COM.DV_E_STGMEDIUM;
 		return;
 	}
 	int lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
-	OS.WideCharToMultiByte(CodePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
+	OS.WideCharToMultiByte(codePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
 	transferData.stgmedium.unionField = lpMultiByteStr;
@@ -109,10 +109,11 @@ public Object nativeToJava(TransferData transferData){
 		int lpMultiByteStr = OS.GlobalLock(hMem);
 		if (lpMultiByteStr == 0) return null;
 		try {
-			int cchWideChar  = OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
+			int codePage = OS.GetACP();
+			int cchWideChar  = OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
 			if (cchWideChar == 0) return null;
 			char[] lpWideCharStr = new char [cchWideChar - 1];
-			OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
+			OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
 			return new String[]{new String(lpWideCharStr)};
 		} finally {
 			OS.GlobalUnlock(hMem);
@@ -130,7 +131,7 @@ protected String[] getTypeNames(){
 	return new String[] {CFSTR_INETURL}; 
 }
 
-boolean _validate(Object object) {
+boolean checkURL(Object object) {
 	if (object == null  || !(object instanceof String[]) || ((String[])object).length == 0) return false;
 	String[] strings = (String[])object;
 	if (strings[0] == null || strings[0].length() == 0) return false;
@@ -143,6 +144,6 @@ boolean _validate(Object object) {
 }
 
 protected boolean validate(Object object) {
-	return _validate(object);
+	return checkURL(object);
 }
 }
