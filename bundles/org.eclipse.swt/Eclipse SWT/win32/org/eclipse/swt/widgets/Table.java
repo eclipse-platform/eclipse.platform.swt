@@ -953,10 +953,37 @@ void releaseWidget () {
 	}
 	columns = null;
 	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<itemCount; i++) {
+	
+	/*
+	* Feature in Windows.  When there are a large number
+	* of items in a table (>1000), it is much faster to
+	* delete each item with LVM_DELETEITEM rather than
+	* using LVM_DELETEALLITEMS.  The fix is to delete the
+	* items, one by one.
+	*
+	* NOTE: LVM_DELETEALLITEMS is also sent by the table
+	* when the table is destroyed.
+	*/
+	/* Turn off redraw and leave it off */
+	OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+	for (int i=itemCount-1; i>=0; --i) {
+		ignoreSelect = true;
+		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
+		ignoreSelect = false;
 		TableItem item = items [i];
 		if (!item.isDisposed ()) item.releaseWidget ();
 	}
+	
+	/*
+	* This code is intentionally commmented.  This is
+	* the correct code, assuming that the problem with
+	* LVM_DELETEALLITEMS did not occur.
+	*/
+//	for (int i=0; i<itemCount; i++) {
+//		TableItem item = items [i];
+//		if (!item.isDisposed ()) item.releaseWidget ();
+//	}
+
 	items = null;
 	super.releaseWidget ();
 	if (imageList != null) {
@@ -1108,14 +1135,57 @@ public void remove (int start, int end) {
 public void removeAll () {
 	checkWidget ();
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	ignoreSelect = true;
-	int code = OS.SendMessage (handle, OS.LVM_DELETEALLITEMS, 0, 0);
-	ignoreSelect = false;
-	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	for (int i=0; i<count; i++) {
-		TableItem item = items [i];
-		if (!item.isDisposed ()) item.releaseWidget ();
+	
+	/*
+	* Feature in Windows.  When there are a large number
+	* of items in a table (>1000), it is much faster to
+	* delete each item with LVM_DELETEITEM rather than
+	* using LVM_DELETEALLITEMS.  The fix is to delete the
+	* items, one by one.
+	*
+	* NOTE: LVM_DELETEALLITEMS is also sent by the table
+	* when the table is destroyed.
+	*/
+	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+	if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+	int index = count - 1;
+	while (index >= 0) {
+		ignoreSelect = true;
+		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
+		ignoreSelect = false;
+		if (code == 0) break;
+		
+		// BUG - disposed callback could remove an item
+		items [index].releaseWidget ();
+		--index;
 	}
+	if (redraw) {
+		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+		/*
+		* This code is intentionally commented.  The window proc
+		* for the table implements WM_SETREDRAW to invalidate
+		* and erase the table so it is not necessary to do this
+		* again.
+		*/
+//		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+//		OS.RedrawWindow (handle, null, 0, flags);
+	}
+	if (index != -1) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	
+	/*
+	* This code is intentionally commmented.  This is
+	* the correct code, assuming that the problem with
+	* LVM_DELETEALLITEMS did not occur.
+	*/
+//	ignoreSelect = true;
+//	int code = OS.SendMessage (handle, OS.LVM_DELETEALLITEMS, 0, 0);
+//	ignoreSelect = false;
+//	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
+//	for (int i=0; i<count; i++) {
+//		TableItem item = items [i];
+//		if (!item.isDisposed ()) item.releaseWidget ();
+//	}
+
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
 		imageList.dispose ();
@@ -2073,8 +2143,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
-		case OS.LVN_MARQUEEBEGIN:
-			return LRESULT.ONE;
+		case OS.LVN_MARQUEEBEGIN: return LRESULT.ONE;
 		case OS.LVN_BEGINDRAG:
 		case OS.LVN_BEGINRDRAG:
 			dragStarted = true;
