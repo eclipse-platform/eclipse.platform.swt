@@ -376,7 +376,21 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		outputDelimiter();
 		output("\t\tstatic void *handle = NULL;");
 		outputDelimiter();
-		output("\t\tstatic int (*fptr)();");
+		output("\t\tstatic ");
+		output(getTypeSignature2(returnType));
+		output(" (*fptr)(");
+		for (int i = 0; i < paramTypes.length; i++) {
+			if (i != 0) output(", ");
+			Class paramType = paramTypes[i];
+			ParameterData paramData = getMetaData().getMetaData(method, i);
+			String cast = paramData.getCast();
+			if (cast.length() > 2) {
+				output(cast.substring(1, cast.length() - 1));
+			} else {
+				output(getTypeSignature2(paramType));
+			}
+		}
+		output(");");
 		outputDelimiter();
 		if (returnType != Void.TYPE) {
 			if (needsReturn) {
