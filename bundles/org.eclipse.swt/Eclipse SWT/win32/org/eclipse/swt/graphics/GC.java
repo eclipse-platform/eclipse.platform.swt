@@ -2053,7 +2053,7 @@ void init(Drawable drawable, GCData data, int hDC) {
 				flags &= ~OS.LAYOUT_RTL;
 				OS.SetLayout(hDC, flags | layout);
 			}
-			if ((flags & OS.LAYOUT_RTL) != 0) data.style |= SWT.MIRRORED;
+			if ((data.style & SWT.RIGHT_TO_LEFT) != 0) data.style |= SWT.MIRRORED;
 		}
 	}	
 	this.drawable = drawable;
