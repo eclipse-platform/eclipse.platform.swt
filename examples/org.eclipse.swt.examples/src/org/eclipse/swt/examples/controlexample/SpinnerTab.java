@@ -25,21 +25,23 @@ class SpinnerTab extends RangeTab {
 	/* Style widgets added to the "Style" group */
 	Button readOnlyButton;
 	
-	static String [] ListData = {ControlExample.getResourceString("ListData0_0"),
-								 ControlExample.getResourceString("ListData0_1"),
-								 ControlExample.getResourceString("ListData0_2"),
-								 ControlExample.getResourceString("ListData0_3"),
-								 ControlExample.getResourceString("ListData0_4"),
-								 ControlExample.getResourceString("ListData0_5"),
-								 ControlExample.getResourceString("ListData0_6"),
-								 ControlExample.getResourceString("ListData0_7"),
-								 ControlExample.getResourceString("ListData0_8")};
+	/* Scale widgets added to the "Control" group */
+	Scale incrementScale, pageIncrementScale;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	SpinnerTab(ControlExample instance) {
 		super(instance);
+	}
+	
+	/**
+	 * Creates the "Control" widget children.
+	 */
+	void createControlWidgets () {
+		super.createControlWidgets ();
+		createIncrementGroup ();
+		createPageIncrementGroup ();
 	}
 	
 	/**
@@ -67,6 +69,68 @@ class SpinnerTab extends RangeTab {
 		
 		/* Create the example widgets */
 		spinner1 = new Spinner (spinnerGroup, style);
+	}
+	
+	/**
+	 * Create a group of widgets to control the increment
+	 * attribute of the example widget.
+	 */
+	void createIncrementGroup() {
+	
+		/* Create the group */
+		Group incrementGroup = new Group (controlGroup, SWT.NONE);
+		incrementGroup.setLayout (new GridLayout ());
+		incrementGroup.setText (ControlExample.getResourceString("Increment"));
+		incrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+	
+		/* Create the scale widget */
+		incrementScale = new Scale (incrementGroup, SWT.NONE);
+		incrementScale.setMaximum (100);
+		incrementScale.setSelection (1);
+		incrementScale.setPageIncrement (10);
+		incrementScale.setIncrement (1);
+
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
+		data.widthHint = 100;
+		incrementScale.setLayoutData (data);
+	
+		/* Add the listeners */
+		incrementScale.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {		
+				setWidgetIncrement ();
+			};
+		});
+	}
+	
+	/**
+	 * Create a group of widgets to control the page increment
+	 * attribute of the example widget.
+	 */
+	void createPageIncrementGroup() {
+	
+		/* Create the group */
+		Group pageIncrementGroup = new Group (controlGroup, SWT.NONE);
+		pageIncrementGroup.setLayout (new GridLayout ());
+		pageIncrementGroup.setText (ControlExample.getResourceString("Page_Increment"));
+		pageIncrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+			
+		/* Create the scale widget */
+		pageIncrementScale = new Scale (pageIncrementGroup, SWT.NONE);
+		pageIncrementScale.setMaximum (100);
+		pageIncrementScale.setSelection (10);
+		pageIncrementScale.setPageIncrement (10);
+		pageIncrementScale.setIncrement (5);
+	
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
+		data.widthHint = 100;
+		pageIncrementScale.setLayoutData (data);
+
+		/* Add the listeners */
+		pageIncrementScale.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setWidgetPageIncrement ();
+			}
+		});
 	}
 	
 	/**
@@ -125,13 +189,15 @@ class SpinnerTab extends RangeTab {
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		readOnlyButton.setSelection ((spinner1.getStyle () & SWT.READ_ONLY) != 0);
+		setWidgetIncrement ();
+		setWidgetPageIncrement ();
 	}
 
 	/**
 	 * Sets the increment of the "Example" widgets.
 	 */
 	void setWidgetIncrement () {
-//		spinner1.setIncrement (incrementScale.getSelection ());
+		spinner1.setIncrement (incrementScale.getSelection ());
 	}
 	
 	/**
@@ -152,7 +218,7 @@ class SpinnerTab extends RangeTab {
 	 * Sets the page increment of the "Example" widgets.
 	 */
 	void setWidgetPageIncrement () {
-//		spinner1.setPageIncrement (pageIncrementScale.getSelection ());
+		spinner1.setPageIncrement (pageIncrementScale.getSelection ());
 	}
 	
 	/**
