@@ -7662,7 +7662,10 @@ void showOffset(int offset) {
 	showLocation(xAtOffset, line);	
 }
 /**
- * Scrolls the selection into view.
+/**
+ * Scrolls the selection into view.  The end of the selection will be scrolled into
+ * view.  Note that if a right-to-left selection exists, the end of the selection is the
+ * visual beginning of the selection (i.e., where the caret is located).
  * <p>
  *
  * @exception SWTException <ul>
@@ -7672,8 +7675,48 @@ void showOffset(int offset) {
  */
 public void showSelection() {
 	checkWidget();
-	showOffset(selection.x);
-	showOffset(selection.y);
+	boolean selectionFits;
+	int startOffset, startLine, startX, endOffset, endLine, endX, offsetInLine;
+
+	// is selection from right-to-left?
+	boolean rightToLeft = caretOffset == selection.x;
+
+	if (rightToLeft) {
+		startOffset = selection.y;
+		endOffset = selection.x;
+	} else {
+		startOffset = selection.x;
+		endOffset = selection.y;
+	}
+	
+	// calculate the logical start and end values for the selection
+	startLine = content.getLineAtOffset(startOffset);
+	offsetInLine = startOffset - content.getOffsetAtLine(startLine);
+	startX = getXAtOffset(content.getLine(startLine), startLine, offsetInLine);	
+	endLine  = content.getLineAtOffset(endOffset);
+	offsetInLine = endOffset - content.getOffsetAtLine(endLine);
+	endX = getXAtOffset(content.getLine(endLine), endLine, offsetInLine);	
+
+	// can the selection be fully displayed within the widget's visible width?
+	int w = getClientArea().width;
+	if (rightToLeft) {
+		selectionFits = startX - endX <= w;
+	} else {
+		selectionFits = endX - startX <= w;
+	}
+	
+	if (selectionFits) {
+		// show as much of the selection as possible by first showing
+		// the start of the selection
+		showLocation(startX, startLine);
+		// endX value could change if showing startX caused a scroll to occur
+		endX = getXAtOffset(content.getLine(endLine), endLine, offsetInLine);	
+		showLocation(endX, endLine);
+	} else {
+		// just show the end of the selection since the selection start 
+		// will not be visible
+		showLocation(endX, endLine);
+	}	 
 }
 /**
  * Updates the caret direction when a delete operation occured based on 
