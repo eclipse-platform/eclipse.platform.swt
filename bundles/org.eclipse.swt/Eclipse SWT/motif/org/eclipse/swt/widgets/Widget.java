@@ -792,15 +792,22 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 		* (1F).  It seems that Motif is applying the algorithm to
 		* convert a character to a control character for characters
 		* that are not valid control characters.  The fix is to test
-		* for 7-bit ASCII keysym, ignoring the valid control character
-		* range, and use the keysym value as the character.
+		* for 7-bit ASCII keysym values that fall outside of the
+		* the valid control character range and use the keysym value
+		* as the character, not the incorrect value that XLookupString()
+		* returns.  Even though lower case values are not strictly
+		* valid control characters, they are included in the range.
 		* 
 		* Some other cases include Ctrl+3..Ctr+8, Ctrl+[.
 		*/
 		if ((xEvent.state & OS.ControlMask) != 0) {
-			if (0 <= keysym [0] && keysym [0] <= 0x7F) {
-				if (!(64 <= keysym [0] && keysym [0] <= 95)) {
-					buffer [0] = (byte) keysym [0];
+			int key = keysym [0];
+			if (0 <= key && key <= 0x7F) {
+				if ('a' <= key && key <= 'z') {
+					key -= 'a' - 'A';
+				}
+				if (!(64 <= key && key <= 95)) {
+					buffer [0] = (byte) key;
 				}
 			}
 		}
