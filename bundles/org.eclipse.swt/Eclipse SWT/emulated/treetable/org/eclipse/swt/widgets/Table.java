@@ -836,17 +836,23 @@ public TableItem getItem(int index) {
 public TableItem getItem(Point point) {
 	checkWidget();
 	if (point == null) error(SWT.ERROR_NULL_ARGUMENT);
-	int headerHeight = getHeaderHeight();
-	TableColumn column = getColumnAtX(point.x);
+	TableColumn column = getColumnAtX(point.x);	
+	if ((style & SWT.FULL_SELECTION) == 0) {
+		if (column != null && column.getIndex() != 0) {
+			return null;
+		}
+	}
 	TableItem item = null;
-
+	int headerHeight = getHeaderHeight();
 	if (column != null && column.getIndex() != TableColumn.FILL && point.y - headerHeight > 0) {
 		int itemIndex = (point.y - headerHeight) / getItemHeight() + getTopIndex();
 		item = (TableItem) getVisibleItem(itemIndex);
-		if (item != null) {
-			Point itemSize = item.getItemExtent(column);
-			if (point.x - column.getBounds().x > itemSize.x) {
-				item = null;
+		if ((style & SWT.FULL_SELECTION) == 0) {
+			if (item != null) {
+				Point itemSize = item.getItemExtent(column);
+				if (point.x - column.getBounds().x > itemSize.x) {
+					item = null;
+				}
 			}
 		}
 	}
