@@ -11,6 +11,86 @@
 <h1>
 Eclipse Platform Release Notes<br>
 SWT</h1>
+SWT Build 108 - Thursday May 17, 2001
+
+<h2><a NAME="API Changes"></a>API Changes</h2>
+
+<h3><a NAME="SWT in its own plugin"></a>SWT in its own plugin</h3>
+
+SWT is now in its own plugin called org.eclipse.swt.
+The jars and dll/library files are now located in this new plugin folder.  
+Formerly, the SWT classes were included in the workbench.jar and the dll/libraries 
+were located in the org.eclipse.ui plugin.
+<p>
+<b>NOTE:</b> You may need to change some of your scripts that invoke SWT examples 
+to point at the new jar and dll/lib location.
+Also, when you launch UI Main you must specify the windowing system in the command line 
+using the "-ws <windowing system>" argument.
+For example, on windows, eclipse.bat now has the following appearance:
+
+<pre>
+	.\jre\bin\java -verify -cp startup.jar org.eclipse.core.launcher.UIMain -application org.eclipse.ui.workbench -ws win32 %1 %2 %3 %4 %5 %6 %7 %8 %9
+</pre>
+
+</b>
+
+<h3><a NAME="Styled Text"></a>Styled Text</h3>
+
+The following API changes have been made to StyledText:
+<p>
+If you are implementing your own StyledTextContent implementation, the semantics of how to handle replaceTextRange have
+changed.  Instead of modifying your content and then sending the TextChangedEvent with how the text was changed, one must now:
+<ol>
+	<li>send the TextChangingEvent (with how the text is to be modified)
+	<li>change your text model content
+	<li>send the TextChangedEvent  
+</ol>
+
+The code changes for this are as follows:
+<ul>
+	<li>renamed:
+	<ul>
+		<li>StyledTextContent.addTextChangedListener -> addTextChangeListener
+		<li>StyledTextContent.removeTextChangedListener -> removeTextChangeListener
+	</ul>
+	<li>new:
+	<ul>
+		<li>TextChangingEvent
+		<li>TextChangeListener, methods to implement
+		<ul>
+			<li>textChanging(TextChangingEvent)
+			<li>textChanged(TextChangedEvent)
+			<li>textSet(TextChangedEvent)
+		</ul>
+	</ul>
+	<li>removed:
+	<ul>
+		<li>All fields of TextChangedEvent, data will be in the TextChangingEvent, differences as follows:
+		<ul>
+			<li>int start; 
+			<li>String newText; (vs. replacedText)
+			<li>int replaceCharCount;  (renamed from replace<d>CharCount)
+			<li>int newCharCount; 		
+			<li>int replaceLineCount; (renamed from replace<d>LineCount)
+			<li>int newLineCount;
+		</ul>	
+		<li>TextChangedListener
+	</ul>
+</ul>
+
+<h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<blockquote>
+1FV0NUA: SWT:WINNT - Exception loading jpg
+<br>1GCHMCZ: SWT:ALL - TabFolder.setLayout should not do anything
+<br>1GC2Y4C: ITPJUI:WINNT - Editor does not correctly refresh
+<br>1GCSZGA: SWT:Linux - Drop down items on ToolBar do not work.
+<br>1GDH148: SWT:ALL - StyledText - flash when mouse select on empty line.
+<br>1GDRSKQ: SWT:ALL - ViewForm calls setVisible incorrectly
+</blockquote>
+
+<h1>
+Eclipse Platform Release Notes<br>
+SWT</h1>
 SWT Build 106 - Monday May 14, 2001
 <h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 <blockquote>
