@@ -81,7 +81,10 @@ public Label (Composite parent, int style) {
 }
 
 static int checkStyle (int style) {
-	if ((style & SWT.SEPARATOR) != 0) return style;
+	if ((style & SWT.SEPARATOR) != 0) {
+		style = checkBits (style, SWT.VERTICAL, SWT.HORIZONTAL, 0, 0, 0, 0);
+		return checkBits (style, SWT.SHADOW_NONE, SWT.SHADOW_IN, SWT.SHADOW_OUT, 0, 0, 0);
+	} 
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
