@@ -129,6 +129,32 @@ public Color getBackground () {
 }
 
 /**
+ * Returns the background color at the given column index in the receiver.
+ *
+ * @param index the column index
+ * @return the background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public Color getBackground (int index) {
+	checkWidget ();
+	int count = parent.columnCount;
+	if (0 > index || index > (count == 0 ? 0 : count - 1)) return getBackground ();
+	int [] ptr = new int [1];
+	int modelIndex = count == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 3, ptr, -1);
+	if (ptr [0] == 0) return getBackground ();
+	GdkColor gdkColor = new GdkColor ();
+	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	return Color.gtk_new (display, gdkColor);
+}
+
+/**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent at a column in the table.
  *
@@ -192,6 +218,33 @@ public Color getForeground () {
 	int [] ptr = new int [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getForeground ();
+	GdkColor gdkColor = new GdkColor ();
+	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
+	return Color.gtk_new (display, gdkColor);
+}
+
+/**
+ * 
+ * Returns the foreground color at the given column index in the receiver.
+ *
+ * @param index the column index
+ * @return the foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public Color getForeground (int index) {
+	checkWidget ();
+	int count = parent.columnCount;
+	if (0 > index || index > (count == 0 ? 0 : count - 1)) return getForeground ();
+	int [] ptr = new int [1];
+	int modelIndex = count == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 2, ptr, -1);
+	if (ptr [0] == 0) return getForeground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
 	return Color.gtk_new (display, gdkColor);
@@ -417,6 +470,49 @@ public void setBackground (Color color) {
 }
 
 /**
+ * Sets the background color at the given column index in the receiver 
+ * to the color specified by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param index the column index
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ * 
+ */
+public void setBackground (int index, Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int count = parent.getColumnCount ();
+	if (0 > index || index > (count == 0 ? 0 : count - 1)) return;
+	GdkColor gdkColor = color != null ? color.handle : null;
+	int parentHandle = parent.handle;
+	int column = OS.gtk_tree_view_get_column (parentHandle, index);
+	if (column == 0) return;
+	int modelIndex = count == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
+	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 3, gdkColor, -1);
+	
+	if (color != null && !parent.customDraw [index]) {
+		int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+		int length = OS.g_list_length (list);
+		int renderer = OS.g_list_nth_data (list, length - 1);
+		OS.g_list_free (list);
+		OS.gtk_tree_view_column_set_cell_data_func (column, renderer, display.cellDataProc, parent.handle, 0);
+		parent.customDraw [index] = true;
+	}
+}
+
+/**
  * Sets the checked state of the checkbox for this item.  This state change 
  * only applies if the Table was created with the SWT.CHECK style.
  *
@@ -458,6 +554,49 @@ public void setForeground (Color color){
 	}
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_list_store_set (parent.modelHandle, handle, Table.FOREGROUND_COLUMN, gdkColor, -1);
+}
+
+/**
+ * Sets the foreground color at the given column index in the receiver 
+ * to the color specified by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param index the column index
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ * 
+ */
+public void setForeground (int index, Color color){
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int count = parent.columnCount;
+	if (0 > index || index > (count == 0 ? 0 : count - 1)) return;
+	GdkColor gdkColor = color != null ? color.handle : null;
+	int parentHandle = parent.handle;
+	int column = OS.gtk_tree_view_get_column (parentHandle, index);
+	if (column == 0) return;
+	int modelIndex = count == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
+	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 2, gdkColor, -1);
+	
+	if (color != null && !parent.customDraw [index]) {
+		int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+		int length = OS.g_list_length (list);
+		int renderer = OS.g_list_nth_data (list, length - 1);
+		OS.g_list_free (list);
+		OS.gtk_tree_view_column_set_cell_data_func (column, renderer, display.cellDataProc, parent.handle, 0);
+		parent.customDraw [index] = true;
+	}
 }
 
 /**

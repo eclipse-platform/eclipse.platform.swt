@@ -47,6 +47,7 @@ public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
 	ImageList imageList;
+	boolean[] customDraw = new boolean [1];
 	
 	static final int CHECKED_COLUMN = 0;
 	static final int GRAYED_COLUMN = 1;
@@ -135,6 +136,32 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+int cellDataProc (int tree_column, int cell, int tree_model, int iter, int data) {
+	int [] ptr = new int [1];
+	int modelIndex = -1;
+	if (columnCount == 0) {
+		modelIndex = Table.FIRST_COLUMN;
+	} else {
+		for (int i = 0; i < columns.length; i++) {
+			if (columns [i] != null && columns [i].handle == tree_column) {
+				modelIndex = columns [i].modelIndex;
+				break;
+			}
+		}
+	}
+	if (modelIndex == -1) return 0;
+	OS.gtk_tree_model_get (tree_model, iter, modelIndex + 2, ptr, -1); //foreground-gdk
+	if (ptr [0] != 0) {
+		OS.g_object_set(cell, OS.foreground_gdk, ptr[0], 0);
+	}
+	ptr = new int [1];
+	OS.gtk_tree_model_get (tree_model, iter, modelIndex + 3, ptr, -1); //background-gdk
+	if (ptr [0] != 0) {
+		OS.g_object_set(cell, OS.background_gdk, ptr[0], 0);
+	}
+	return 0;
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -157,11 +184,13 @@ void createHandle (int index) {
 	* Columns:
 	* 0 - check
 	* 1 - grayed
-	* 2 - foreground
-	* 3 - background
-	* 4 - text
-	* 5 - pixbuf
-	* 6 - ...
+	* 2 - foreground for row
+	* 3 - background for row
+	* 4 - pixbuf
+	* 5 - text
+	* 6 - foreground for cell
+	* 7 - background for cell
+	* 8 - ...
 	*/
 	int [] types = getColumnTypes (1);
 	modelHandle = OS.gtk_list_store_newv (types.length, types);
@@ -199,7 +228,7 @@ void createColumn (TableColumn column, int index) {
 		boolean [] usedColumns = new boolean [modelLength];
 		for (int i=0; i<columnCount; i++) {
 			int columnIndex = columns [i].modelIndex;
-			usedColumns [columnIndex] = usedColumns [columnIndex + 1] = true;
+			usedColumns [columnIndex] = usedColumns [columnIndex + 1] = usedColumns [columnIndex + 2] = usedColumns [columnIndex + 3] = true;
 		}
 		while (modelIndex < modelLength) {
 			if (!usedColumns [modelIndex]) break;
@@ -298,6 +327,23 @@ void createRenderers (int columnHandle, int modelIndex, boolean check, int colum
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", modelIndex + 1);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
+	
+	if (customDraw != null) {
+		boolean setCellDataFunc = false;
+		if (columnCount == 0) {
+			setCellDataFunc = customDraw [0];
+		} else {
+			for (int i = 0; i < columns.length; i++) {
+				if (columns [i] != null && columns [i].handle == columnHandle) {
+					setCellDataFunc = customDraw [i];
+					break;
+				}
+			}
+		}
+		if (setCellDataFunc) {
+			OS.gtk_tree_view_column_set_cell_data_func (columnHandle, textRenderer, display.cellDataProc, handle, 0);
+		}
+	}
 }
 
 void createItem (TableColumn column, int index) {
@@ -332,6 +378,13 @@ void createItem (TableColumn column, int index) {
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 	column.setFontDescription (getFontDescription ());
+	
+	if (customDraw.length < columnCount) {
+		boolean  [] temp = new boolean [columnCount];
+		System.arraycopy (customDraw, 0, temp, 0, index);
+		System.arraycopy (customDraw, index, temp, index+1, columnCount-index-1);
+		customDraw = temp;
+	}
 }
 
 void createItem (TableItem item, int index) {
@@ -495,11 +548,15 @@ void destroyItem (TableColumn column) {
 				OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
 				OS.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
 			}
-			OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex, ptr, -1);
+			OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex, ptr, -1); //image
 			OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN, ptr [0], -1);
-			OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + 1, ptr, -1);
+			OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + 1, ptr, -1); //text
 			OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + 1, ptr [0], -1);
-			OS.g_free ( (ptr [0]));
+			OS.g_free (ptr [0]);
+			OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + 2, ptr, -1); //foreground
+			OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + 2, ptr [0], -1);
+			OS.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + 3, ptr, -1); //background
+			OS.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + 3, ptr [0], -1);
 			OS.gtk_list_store_remove (oldModel, oldItem);
 			OS.g_free (oldItem);
 			item.handle = newItem;
@@ -507,14 +564,21 @@ void destroyItem (TableColumn column) {
 		OS.gtk_tree_view_set_model (handle, newModel);
 		OS.g_object_unref (oldModel);
 		modelHandle = newModel;
+		customDraw = new boolean [] {customDraw [index]};
 		createColumn (null, 0);
 	} else {
 		for (int i=0; i<itemCount; i++) {
 			int item = items [i].handle;
 			int modelIndex = column.modelIndex;
-			OS.gtk_list_store_set (modelHandle, item, modelIndex, 0, -1);
-			OS.gtk_list_store_set (modelHandle, item, modelIndex + 1, 0, -1);
+			OS.gtk_list_store_set (modelHandle, item, modelIndex, 0, -1); //image
+			OS.gtk_list_store_set (modelHandle, item, modelIndex + 1, 0, -1); //text
+			OS.gtk_list_store_set (modelHandle, item, modelIndex + 2, 0, -1); //foreground
+			OS.gtk_list_store_set (modelHandle, item, modelIndex + 3, 0, -1); //background
 		}
+		boolean [] temp = new boolean [columnCount];
+		System.arraycopy (customDraw, 0, temp, 0, index);
+		System.arraycopy (customDraw, index + 1, temp, index, columnCount - index);
+		customDraw = temp;
 		if (index == 0) {
 			TableColumn checkColumn = columns [0];
 			createRenderers (checkColumn.handle, checkColumn.modelIndex, true, checkColumn.style);
@@ -540,6 +604,20 @@ void destroyItem (TableItem item) {
 	item.handle = 0;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
+	
+	if (itemCount == 0) {
+		for (int i = 0; i < customDraw.length; i++) {
+			if (customDraw [i]) {
+				int column = OS.gtk_tree_view_get_column (handle, i);
+				int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+				int length = OS.g_list_length (list);
+				int renderer = OS.g_list_nth_data (list, length - 1);
+				OS.g_list_free (list);
+				OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
+				customDraw [i] = false;
+			}
+		}
+	}
 }
 
 void enableWidget (boolean enabled) {
@@ -599,14 +677,16 @@ public int getColumnCount () {
 }
 
 int[] getColumnTypes (int n) {
-	int[] types = new int [(n * 2) + FIRST_COLUMN];
+	int[] types = new int [(n * 4) + FIRST_COLUMN];
 	types [CHECKED_COLUMN] = OS.G_TYPE_BOOLEAN ();
 	types [GRAYED_COLUMN] = OS.G_TYPE_BOOLEAN ();
 	types [FOREGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
 	types [BACKGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
-	for (int i=FIRST_COLUMN; i<types.length; i+=2) {
-		types [i] = OS.GDK_TYPE_PIXBUF ();
-		types [i + 1] = OS.G_TYPE_STRING ();
+	for (int i=FIRST_COLUMN; i<types.length; i+=4) {
+		types [i] = OS.GDK_TYPE_PIXBUF (); //image
+		types [i + 1] = OS.G_TYPE_STRING (); //text
+		types [i + 2] = OS.GDK_TYPE_COLOR (); //foreground
+		types [i + 3] = OS.GDK_TYPE_COLOR (); //background
 	}
 	return types;
 }
@@ -1354,6 +1434,17 @@ public void removeAll () {
 	}
 	items = new TableItem [4];
 	itemCount = 0;
+	for (int i = 0; i < customDraw.length; i++) {
+		if (customDraw [i]) {
+			int column = OS.gtk_tree_view_get_column (handle, i);
+			int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+			int length = OS.g_list_length (list);
+			int renderer = OS.g_list_nth_data (list, length - 1);
+			OS.g_list_free (list);
+			OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
+			customDraw [i] = false;
+		}
+	}
 }
 
 /**
