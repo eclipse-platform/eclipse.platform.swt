@@ -263,11 +263,12 @@ public int getSelection () {
 	return argList [1];
 }
 /**
- * For horizontal scroll bars, returns the height of the 
- * instance, and for vertical scroll bars, returns the width
- * of the instance.
+ * Returns a point describing the receiver's size. The
+ * x coordinate of the result is the width of the receiver.
+ * The y coordinate of the result is the height of the
+ * receiver.
  *
- * @return the scroll bar size
+ * @return the receiver's size
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
