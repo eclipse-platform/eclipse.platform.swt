@@ -701,7 +701,11 @@ void init(Device device, int width, int height) {
 	/* Fill the image with white */
 	int bpc = OS.CGImageGetBitsPerComponent(handle);
 	int context = OS.CGBitmapContextCreate(this.data, width, height, bpc, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
-	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (context == 0) {
+		OS.CGImageRelease(handle);
+		OS.DisposePtr(data);
+		SWT.error(SWT.ERROR_NO_HANDLES);
+	}
 	CGRect rect = new CGRect();
 	rect.width = width; rect.height = height;
 	OS.CGContextSetRGBFillColor(context, 1, 1, 1, 1);
