@@ -59,9 +59,9 @@ protected void setUp() {
 }
 
 protected void tearDown() {
-	Enumeration enum = colors.keys();
-	while (enum.hasMoreElements()) {
-		Color color = (Color)colors.get((RGB)enum.nextElement());
+	Enumeration elements = colors.keys();
+	while (elements.hasMoreElements()) {
+		Color color = (Color)colors.get((RGB)elements.nextElement());
 		color.dispose();
 	}
 	super.tearDown();

@@ -737,10 +737,10 @@ public class junitGen {
 		}
 		
 		void outputClassDiff() {
-			Enumeration enum = diffs.elements();
+			Enumeration elements = diffs.elements();
 			int changes = 0;
-			while (enum.hasMoreElements()) {
-				DiffClass diff = (DiffClass)enum.nextElement();
+			while (elements.hasMoreElements()) {
+				DiffClass diff = (DiffClass)elements.nextElement();
 				System.out.println("["+changes+"] "+ diff);
 				changes++;
 			}
