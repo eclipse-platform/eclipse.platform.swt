@@ -511,7 +511,7 @@ void createMask() {
 	if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
-int createMask(ImageData image, boolean copy) {
+int /*long*/ createMask(ImageData image, boolean copy) {
 	ImageData mask = image.getTransparencyMask();
 	byte[] data = mask.data;
 	byte[] maskData = copy ? new byte[data.length] : data;
