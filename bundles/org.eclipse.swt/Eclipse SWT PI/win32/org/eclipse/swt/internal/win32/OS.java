@@ -841,6 +841,7 @@ public class OS extends Platform {
 	public static final int PS_JOIN_ROUND = 0x0000;
 	public static final int PS_SOLID = 0x0;
 	public static final int PS_STYLE_MASK = 0xf;
+	public static final int PS_USERSTYLE = 0x7;
 	public static final int R2_COPYPEN = 0xd;
 	public static final int R2_XORPEN = 0x7;
 	public static final int RASTERCAPS = 0x26;
@@ -1721,6 +1722,11 @@ public static final int GetObject (int hgdiobj, int cbBuffer, LOGPEN lpvObject) 
 	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
 }
 
+public static final int GetObject (int hgdiobj, int cbBuffer, int lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+}
+
 public static final boolean GetOpenFileName (OPENFILENAME lpofn) {
 	if (IsUnicode) return GetOpenFileNameW (lpofn);
 	return GetOpenFileNameA (lpofn);
@@ -2411,6 +2417,8 @@ public static final native int GetObjectA (int hgdiobj, int cbBuffer, LOGFONTA l
 public static final native int GetObjectW (int hgdiobj, int cbBuffer, LOGFONTW lpvObject);
 public static final native int GetObjectA (int hgdiobj, int cbBuffer, LOGPEN lpvObject);
 public static final native int GetObjectW (int hgdiobj, int cbBuffer, LOGPEN lpvObject);
+public static final native int GetObjectA (int hgdiobj, int cbBuffer, int lpvObject);
+public static final native int GetObjectW (int hgdiobj, int cbBuffer, int lpvObject);
 public static final native boolean GetOpenFileNameW (OPENFILENAME lpofn);
 public static final native boolean GetOpenFileNameA (OPENFILENAME lpofn);
 public static final native int GetPaletteEntries (int hPalette, int iStartIndex, int nEntries, byte[] logPalette);
@@ -2553,6 +2561,7 @@ public static final native void MoveMemory (int Destination, TRIVERTEX Source, i
 public static final native void MoveMemory (int Destination, WINDOWPOS Source, int Length);
 public static final native void MoveMemory (BITMAPINFOHEADER Destination, byte [] Source, int Length);
 public static final native void MoveMemory (DRAWITEMSTRUCT Destination, int Source, int Length);
+public static final native void MoveMemory (EXTLOGPEN Destination, int Source, int Length);
 public static final native void MoveMemory (HDITEM Destination, int Source, int Length);
 public static final native void MoveMemory (HELPINFO Destination, int Source, int Length);
 public static final native void MoveMemory (LOGFONTW Destination, int Source, int Length);

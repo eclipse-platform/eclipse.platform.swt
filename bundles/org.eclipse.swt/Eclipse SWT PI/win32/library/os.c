@@ -3141,6 +3141,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetNearestPaletteIndex)
 }
 #endif
 
+#ifndef NO_GetObjectA__III
+JNIEXPORT jint JNICALL OS_NATIVE(GetObjectA__III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetObjectA__III_FUNC);
+	rc = (jint)GetObjectA((HGDIOBJ)arg0, arg1, (LPVOID)arg2);
+	OS_NATIVE_EXIT(env, that, GetObjectA__III_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2
 JNIEXPORT jint JNICALL OS_NATIVE(GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
@@ -3233,6 +3245,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetObjectA__IILorg_eclipse_swt_internal_win32_L
 fail:
 	if (arg2 && lparg2) setLOGPENFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, GetObjectA__IILorg_eclipse_swt_internal_win32_LOGPEN_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetObjectW__III
+JNIEXPORT jint JNICALL OS_NATIVE(GetObjectW__III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetObjectW__III_FUNC);
+	rc = (jint)GetObjectW((HGDIOBJ)arg0, arg1, (LPVOID)arg2);
+	OS_NATIVE_EXIT(env, that, GetObjectW__III_FUNC);
 	return rc;
 }
 #endif
@@ -5563,6 +5587,20 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_DRA
 fail:
 	if (arg0 && lparg0) setDRAWITEMSTRUCTFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II_FUNC);
+}
+#endif
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	EXTLOGPEN _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setEXTLOGPENFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II_FUNC);
 }
 #endif
 

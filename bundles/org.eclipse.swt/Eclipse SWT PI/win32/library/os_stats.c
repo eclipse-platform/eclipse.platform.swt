@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 593;
-int OS_nativeFunctionCallCount[593];
+int OS_nativeFunctionCount = 596;
+int OS_nativeFunctionCallCount[596];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -211,12 +211,14 @@ char * OS_nativeFunctionNames[] = {
 	"GetMonitorInfoA",
 	"GetMonitorInfoW",
 	"GetNearestPaletteIndex",
+	"GetObjectA__III",
 	"GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2",
 	"GetObjectA__IILorg_eclipse_swt_internal_win32_DIBSECTION_2",
 	"GetObjectA__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2",
 	"GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2",
 	"GetObjectA__IILorg_eclipse_swt_internal_win32_LOGFONTA_2",
 	"GetObjectA__IILorg_eclipse_swt_internal_win32_LOGPEN_2",
+	"GetObjectW__III",
 	"GetObjectW__IILorg_eclipse_swt_internal_win32_BITMAP_2",
 	"GetObjectW__IILorg_eclipse_swt_internal_win32_DIBSECTION_2",
 	"GetObjectW__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2",
@@ -371,6 +373,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__I_3SI",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_BITMAPINFOHEADER_2_3BI",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2II",
