@@ -27,7 +27,6 @@ import org.eclipse.swt.events.*;
  */
 
 public abstract class Control extends Widget implements Drawable {
-
 	/**
 	 * the handle to the OS resource 
 	 * (Warning: This field is platform dependent)
@@ -454,6 +453,7 @@ void createWidget () {
 }
 
 int defaultBackground () {
+	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_WINDOW);
 	return OS.GetSysColor (OS.COLOR_BTNFACE);
 }
 
@@ -546,6 +546,21 @@ public boolean forceFocus () {
 	if (!isEnabled () || !isVisible () || !isActive ()) return false;
 	if (isFocusControl ()) return true;
 	shell.bringToTop ();
+	/*
+	* This code is intentionally commented.
+	*
+	* When setting focus to a control, it is
+	* possible that application code can set
+	* the focus to another control inside of
+	* WM_SETFOCUS.  In this case, the original
+	* control will no longer have the focus
+	* and the call to setFocus() will return
+	* false indicating failure.
+	* 
+	* We are still working on a solution at
+	* this time.
+	*/
+//	if (OS.GetFocus () != OS.SetFocus (handle)) return false;
 	OS.SetFocus (handle);
 	if (!isFocusControl ()) return false;
 	shell.setDefaultButton (null, false);
