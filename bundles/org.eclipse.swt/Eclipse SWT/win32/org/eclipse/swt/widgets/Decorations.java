@@ -946,9 +946,9 @@ int widgetExtStyle () {
 
 int widgetStyle () {
 
-	/* Set WS_POPUP and clear WS_VISIBLE and WS_TABSTOP */
+	/* Set WS_POPUP and clear WS_VISIBLE */
 	int bits = super.widgetStyle () | OS.WS_POPUP;
-	bits &= ~(OS.WS_VISIBLE | OS.WS_TABSTOP);
+	bits &= ~OS.WS_VISIBLE;
 	
 	/* Set the title bits and no-trim bits */
 	bits &= ~OS.WS_BORDER;
