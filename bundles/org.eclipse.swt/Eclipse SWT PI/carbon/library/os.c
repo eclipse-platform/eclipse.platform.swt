@@ -270,7 +270,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetSoftLineBreaks)
 	NATIVE_ENTER(env, that, "ATSUGetSoftLineBreaks\n")
 	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
 	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
-	rc = (jint)ATSUGetSoftLineBreaks((ATSUTextLayout)arg0, arg1, arg2, arg3, (UniCharArrayOffset *)lparg4, (ItemCount *)lparg5);
+	rc = (jint)ATSUGetSoftLineBreaks((ATSUTextLayout)arg0, (UniCharArrayOffset)arg1, (UniCharCount)arg2, (ItemCount)arg3, (UniCharArrayOffset *)lparg4, (ItemCount *)lparg5);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	NATIVE_EXIT(env, that, "ATSUGetSoftLineBreaks\n")
@@ -8468,9 +8468,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3BI)
 {
 	jbyte *lparg1=NULL;
 	NATIVE_ENTER(env, that, "memcpy__I_3BI\n")
-	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memcpy__I_3BI\n")
 }
 #endif
@@ -8481,9 +8481,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3CI)
 {
 	jchar *lparg1=NULL;
 	NATIVE_ENTER(env, that, "memcpy__I_3CI\n")
-	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memcpy__I_3CI\n")
 }
 #endif
@@ -8494,9 +8494,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3II)
 {
 	jint *lparg1=NULL;
 	NATIVE_ENTER(env, that, "memcpy__I_3II\n")
-	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memcpy__I_3II\n")
 }
 #endif
@@ -8585,9 +8585,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3BII)
 {
 	jbyte *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy___3BII\n")
-	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "memcpy___3BII\n")
 }
 #endif
@@ -8599,11 +8599,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3B_3CI)
 	jbyte *lparg0=NULL;
 	jchar *lparg1=NULL;
 	NATIVE_ENTER(env, that, "memcpy___3B_3CI\n")
-	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
-	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
-	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memcpy___3B_3CI\n")
 }
 #endif
@@ -8614,9 +8614,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3CII)
 {
 	jchar *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy___3CII\n")
-	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "memcpy___3CII\n")
 }
 #endif
@@ -8628,11 +8628,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3C_3BI)
 	jchar *lparg0=NULL;
 	jbyte *lparg1=NULL;
 	NATIVE_ENTER(env, that, "memcpy___3C_3BI\n")
-	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
-	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
-	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memcpy___3C_3BI\n")
 }
 #endif
@@ -8643,9 +8643,9 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy___3III)
 {
 	jint *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memcpy___3III\n")
-	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "memcpy___3III\n")
 }
 #endif
