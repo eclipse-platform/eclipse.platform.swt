@@ -22,7 +22,10 @@ void createGtkDialog() {
 	/* create */
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_file_selection_new (titleBytes);
-	
+	if (parent!=null) {
+		OS.gtk_window_set_modal(handle, true);
+		OS.gtk_window_set_transient_for(handle, parent.topHandle());
+	}	
 	/* buttons */
 	GtkFileSelection dialog = new GtkFileSelection ();
 	OS.memmove (dialog, handle, GtkFileSelection.sizeof);
