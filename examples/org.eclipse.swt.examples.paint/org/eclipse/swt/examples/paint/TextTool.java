@@ -80,6 +80,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 			getPaintSurface().commitRubberbandSelection();
 		} else {
 			// set text with right mouse button
+			getPaintSurface().clearRubberbandSelection();
 			InputDialog inputDialog = new InputDialog(getPaintSurface().getShell(),
 				PaintPlugin.getResourceString("tool.Text.dialog.title"),
 				PaintPlugin.getResourceString("tool.Text.dialog.message"),
