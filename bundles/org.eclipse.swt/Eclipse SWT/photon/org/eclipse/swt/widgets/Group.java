@@ -198,7 +198,7 @@ public void setText (String string) {
 	int flags = OS.Pt_SHOW_TITLE | OS.Pt_ETCH_TITLE_AREA;
 	char [] text = new char [string.length ()];
 	string.getChars (0, text.length, text, 0);
-	char mnemonic = fixMnemonic (text);
+	fixMnemonic (text);
 	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	int ptr = OS.malloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);

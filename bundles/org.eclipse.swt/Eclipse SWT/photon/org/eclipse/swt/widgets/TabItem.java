@@ -251,7 +251,7 @@ public void setText (String string) {
 	super.setText (string);
 	char [] text = new char [string.length ()];
 	string.getChars (0, text.length, text, 0);
-	char mnemonic = fixMnemonic (text);
+	fixMnemonic (text);
 	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	int index = parent.indexOf (this);
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};

@@ -454,7 +454,7 @@ int Pt_CB_REALIZED (int widget, int info) {
 	*/
 	int topHandle = topHandle ();
 	int flags = (state & DISABLED) != 0 ? OS.Pt_BLOCKED | OS.Pt_GHOST : 0;
-	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
+	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
 	return OS.Pt_CONTINUE;
 }
 
