@@ -387,6 +387,7 @@ public boolean getVisible () {
 
 void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
+	OS.PtAddCallback (handle, OS.Pt_CB_REALIZED, windowProc, SWT.Show);
 	OS.PtAddCallback (handle, OS.Pt_CB_UNREALIZED, windowProc, SWT.Hide);
 }
 
@@ -471,6 +472,26 @@ int processHide (int info) {
 		OS.PtReParentWidget (handle, shellHandle);
 	}
 	sendEvent (SWT.Hide);
+	Shell shell = getShell ();
+	if (shell.activeMenu == this) {
+		shell.activeMenu = null;
+		if (cascade != null) {
+			Menu parent = cascade.parent;
+			if (parent != null && (parent.style & SWT.BAR) == 0) {
+				if (OS.PtWidgetIsRealized (parent.handle)) {
+					shell.activeMenu = parent;
+				}
+			}
+		}
+	}
+	return OS.Pt_CONTINUE;
+}
+
+int processShow (int info) {
+	if ((style & SWT.BAR) == 0) {
+		Shell shell = getShell ();
+		shell.activeMenu = this;
+	}
 	return OS.Pt_CONTINUE;
 }
 

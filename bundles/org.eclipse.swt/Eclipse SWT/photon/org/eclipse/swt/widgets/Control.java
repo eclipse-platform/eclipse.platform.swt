@@ -328,7 +328,16 @@ public void addTraverseListener (TraverseListener listener) {
  */
 public boolean forceFocus () {
 	checkWidget();
-	int shellHandle = OS.PtFindDisjoint (handle);
+	/*
+	* Bug in Photon. Photon will stop sending key
+	* events, if a menu is up and focus is given to
+	* a widget by calling PtContainerGiveFocus(). The
+	* fix is to detect when a menu is up and avoid
+	* calling this function.
+	*/
+	Shell shell = getShell ();
+	if (shell.activeMenu != null) return false;
+	int shellHandle = shell.shellHandle;
 	OS.PtWindowToFront (shellHandle);
 	OS.PtContainerGiveFocus (handle, null);
 	return hasFocus ();

@@ -401,17 +401,19 @@ void setForegroundPixel (int pixel) {
 	}
 }
 
-boolean setTabGroupFocus () {
-	for (int i=0; i<itemCount;i++) {
-		ToolItem item = items [i];
-		if ((item.style & SWT.SEPARATOR) != 0) continue;
-		int shellHandle = OS.PtFindDisjoint (handle);
-		OS.PtWindowToFront (shellHandle);
-		OS.PtContainerGiveFocus (item.handle, null);
-		if (OS.PtIsFocused(item.handle) != 0) return true;
-	}
-	return super.setTabGroupFocus ();
-}
+//boolean setTabGroupFocus () {
+//	Shell shell = getShell ();
+//	if (shell.activeMenu != null) return false;
+//	int shellHandle = shell.shellHandle;
+//	OS.PtWindowToFront (shellHandle);
+//	for (int i=0; i<itemCount;i++) {
+//		ToolItem item = items [i];
+//		if ((item.style & SWT.SEPARATOR) != 0) continue;
+//		OS.PtContainerGiveFocus (item.handle, null);
+//		if (OS.PtIsFocused(item.handle) != 0) return true;
+//	}
+//	return super.setTabGroupFocus ();
+//}
 
 int topHandle () {
 	return parentingHandle;

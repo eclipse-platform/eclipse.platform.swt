@@ -96,6 +96,7 @@ import org.eclipse.swt.events.*;
 public class Shell extends Decorations {
 	int shellHandle;
 	Display display;
+	Menu activeMenu;
 	int blockedList;
 	Control lastActive;
 

@@ -499,13 +499,6 @@ public void removeHelpListener (HelpListener listener) {
 void removeAccelerator () {
 	if (accelerator == 0) return;
 
-	MenuItem temp = this;
-	while (temp != null && temp.menu != null) {
-		Menu menu = temp.menu;
-		if ((menu.style & SWT.POP_UP) != 0) return;
-		temp = menu.cascade;
-	}
-
 	int keyMods = 0;
 	if ((accelerator & SWT.ALT) != 0) keyMods |= OS.Pk_KM_Alt;
 	if ((accelerator & SWT.SHIFT) != 0) keyMods |= OS.Pk_KM_Shift;
@@ -563,13 +556,6 @@ public void setAccelerator (int accelerator) {
 
 	this.accelerator = accelerator;		
 	if (accelerator == 0) return;
-
-	MenuItem temp = this;
-	while (temp != null && temp.menu != null) {
-		Menu menu = temp.menu;
-		if ((menu.style & SWT.POP_UP) != 0) return;
-		temp = menu.cascade;
-	}
 
 	int keyMods = 0;
 	if ((accelerator & SWT.ALT) != 0) keyMods |= OS.Pk_KM_Alt;
