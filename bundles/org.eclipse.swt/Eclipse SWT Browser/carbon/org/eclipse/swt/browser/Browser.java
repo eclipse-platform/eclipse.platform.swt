@@ -184,12 +184,19 @@ public Browser(Composite parent, int style) {
 					* Feature on Safari. The HIView ignores the call to update its position
 					* because it believes it has not changed. The workaround is to force
 					* it to reposition by changing its size and setting it back to the
-					* original value. 
+					* original value.
+					* 
 					*/
 					/* If the widget is hidden, leave its size to 0,0 as set in the SWT.Hide callback */
 					if (!isVisible()) break;
 					CGRect bounds = new CGRect();
 					OS.HIViewGetFrame(handle, bounds);
+					/* 
+					* Note.  Setting negative width or height causes Safari to always
+					* display incorrectly even if further resize events are correct.
+					*/
+					if (bounds.width < 0) bounds.width = 0;
+					if (bounds.height < 0) bounds.height = 0;
 					bounds.width++;
 					OS.HIViewSetFrame(webViewHandle, bounds);
 					bounds.width--;
@@ -200,6 +207,7 @@ public Browser(Composite parent, int style) {
 		}
 	};
 	addListener(SWT.Dispose, listener);
+	addListener(SWT.Resize, listener);
 	Shell shell = getShell();
 	shell.addListener(SWT.Resize, listener);
 	shell.addListener(SWT.Show, listener);
