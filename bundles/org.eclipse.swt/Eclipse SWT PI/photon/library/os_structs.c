@@ -1569,6 +1569,52 @@ void setPtWebDataReqCallback_tFields(JNIEnv *env, jobject lpObject, PtWebDataReq
 }
 #endif
 
+#ifndef NO_PtWebMetaDataCallback_t
+typedef struct PtWebMetaDataCallback_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID name, value;
+} PtWebMetaDataCallback_t_FID_CACHE;
+
+PtWebMetaDataCallback_t_FID_CACHE PtWebMetaDataCallback_tFc;
+
+void cachePtWebMetaDataCallback_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PtWebMetaDataCallback_tFc.cached) return;
+	PtWebMetaDataCallback_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PtWebMetaDataCallback_tFc.name = (*env)->GetFieldID(env, PtWebMetaDataCallback_tFc.clazz, "name", "[B");
+	PtWebMetaDataCallback_tFc.value = (*env)->GetFieldID(env, PtWebMetaDataCallback_tFc.clazz, "value", "[B");
+	PtWebMetaDataCallback_tFc.cached = 1;
+}
+
+PtWebMetaDataCallback_t *getPtWebMetaDataCallback_tFields(JNIEnv *env, jobject lpObject, PtWebMetaDataCallback_t *lpStruct)
+{
+	if (!PtWebMetaDataCallback_tFc.cached) cachePtWebMetaDataCallback_tFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.name);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->name), (void *)lpStruct->name);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.value);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->value), (void *)lpStruct->value);
+	}
+	return lpStruct;
+}
+
+void setPtWebMetaDataCallback_tFields(JNIEnv *env, jobject lpObject, PtWebMetaDataCallback_t *lpStruct)
+{
+	if (!PtWebMetaDataCallback_tFc.cached) cachePtWebMetaDataCallback_tFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.name);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->name), (void *)lpStruct->name);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebMetaDataCallback_tFc.value);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->value), (void *)lpStruct->value);
+	}
+}
+#endif
+
 #ifndef NO_PtWebStatusCallback_t
 typedef struct PtWebStatusCallback_t_FID_CACHE {
 	int cached;

@@ -53,6 +53,7 @@ public class Browser extends Composite {
 	OpenWindowListener[] openWindowListeners = new OpenWindowListener[0];
 	ProgressListener[] progressListeners = new ProgressListener[0];
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
+	TitleListener[] titleListeners = new TitleListener[0];
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
 	
 	/* Package Name */
@@ -145,6 +146,7 @@ public Browser(Composite parent, int style) {
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_CLOSE_WINDOW, webProc, OS.Pt_CB_WEB_CLOSE_WINDOW);
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_COMPLETE, webProc, OS.Pt_CB_WEB_COMPLETE);
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_DATA_REQ, webProc, OS.Pt_CB_WEB_DATA_REQ);
+	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_METADATA, webProc, OS.Pt_CB_WEB_METADATA);	
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_NEW_WINDOW, webProc, OS.Pt_CB_WEB_NEW_WINDOW);
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_START, webProc, OS.Pt_CB_WEB_START);
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_STATUS, webProc, OS.Pt_CB_WEB_STATUS);
@@ -308,9 +310,30 @@ public void addStatusTextListener(StatusTextListener listener) {
 	statusTextListeners[statusTextListeners.length - 1] = listener;
 }
 
+/**	 
+ * Adds the listener to receive events.
+ * <p>
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
 public void addTitleListener(TitleListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length + 1];
+	System.arraycopy(titleListeners, 0, newTitleListeners, 0, titleListeners.length);
+	titleListeners = newTitleListeners;
+	titleListeners[titleListeners.length - 1] = listener;
 }
 
 /**	 
@@ -371,11 +394,12 @@ int webProc(int data, int info) {
 	switch (data) {
 		case OS.Pt_CB_WEB_CLOSE_WINDOW: return Pt_CB_WEB_CLOSE_WINDOW(info);
 		case OS.Pt_CB_WEB_COMPLETE:	    return Pt_CB_WEB_COMPLETE(info);
+		case OS.Pt_CB_WEB_DATA_REQ:     return Pt_CB_WEB_DATA_REQ(info);
+		case OS.Pt_CB_WEB_METADATA:		return Pt_CB_WEB_METADATA(info);
 		case OS.Pt_CB_WEB_NEW_WINDOW:   return Pt_CB_WEB_NEW_WINDOW(info);
 		case OS.Pt_CB_WEB_START:	    return Pt_CB_WEB_START(info);
 		case OS.Pt_CB_WEB_STATUS:	    return Pt_CB_WEB_STATUS(info);
 		case OS.Pt_CB_WEB_URL:		    return Pt_CB_WEB_URL(info);
-		case OS.Pt_CB_WEB_DATA_REQ:     return Pt_CB_WEB_DATA_REQ(info);
 	}
 	return OS.Pt_CONTINUE;
 }
@@ -549,6 +573,31 @@ int Pt_CB_WEB_DATA_REQ(int info) {
 	OS.PtSetResource(webHandle, OS.Pt_ARG_WEB_DATA, clientData.data, ptr);
 	OS.free(ptr);
 	if (clientData.data != 0) OS.free(clientData.data);
+	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_WEB_METADATA(int info) {
+	PtCallbackInfo_t cbinfo_t = new PtCallbackInfo_t();
+	OS.memmove(cbinfo_t, info, PtCallbackInfo_t.sizeof);
+	final PtWebMetaDataCallback_t webmeta_t = new PtWebMetaDataCallback_t();
+	OS.memmove(webmeta_t, cbinfo_t.cbdata, PtWebMetaDataCallback_t.sizeof);
+	String name = new String(webmeta_t.name, 0, OS.strlen(cbinfo_t.cbdata));
+	if (name.equals("title")) { //$NON-NLS-1$
+		String title = new String(webmeta_t.value, 0, OS.strlen(cbinfo_t.cbdata + webmeta_t.name.length));
+		TitleEvent newEvent = new TitleEvent(Browser.this);
+		newEvent.display = getDisplay();
+		newEvent.widget = this;
+		newEvent.title = title;
+		/*
+		* Feature on Photon.  The Voyager Browser updates the title section
+		* in the window decoration even if the title refers to an inner frame.
+		* Browsers on other platforms only update the title that refers to
+		* the top frame.  As a result, the title event on Photon is sent for 
+		* both top and inner frames.
+		*/
+		for (int i = 0; i < titleListeners.length; i++)
+			titleListeners[i].changed(newEvent);
+	}	
 	return OS.Pt_CONTINUE;
 }
 
@@ -861,9 +910,42 @@ public void removeStatusTextListener(StatusTextListener listener) {
 	statusTextListeners = newStatusTextListeners;
 }
 
+/**	 
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public void removeTitleListener(TitleListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (titleListeners.length == 0) return;
+	int index = -1;
+	for (int i = 0; i < titleListeners.length; i++) {
+		if (listener == titleListeners[i]){
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return;
+	if (titleListeners.length == 1) {
+		titleListeners = new TitleListener[0];
+		return;
+	}
+	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length - 1];
+	System.arraycopy(titleListeners, 0, newTitleListeners, 0, index);
+	System.arraycopy(titleListeners, index + 1, newTitleListeners, index, titleListeners.length - index - 1);
+	titleListeners = newTitleListeners;
 }
 
 /**	 

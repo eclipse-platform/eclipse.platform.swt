@@ -227,6 +227,14 @@ void setPtWebDataReqCallback_tFields(JNIEnv *env, jobject lpObject, PtWebDataReq
 #define setPtWebDataReqCallback_tFields(a,b,c)
 #endif
 
+#ifndef NO_PtWebMetaDataCallback_t
+PtWebMetaDataCallback_t *getPtWebMetaDataCallback_tFields(JNIEnv *env, jobject lpObject, PtWebMetaDataCallback_t *lpStruct);
+void setPtWebMetaDataCallback_tFields(JNIEnv *env, jobject lpObject, PtWebMetaDataCallback_t *lpStruct);
+#else
+#define getPtWebMetaDataCallback_tFields(a,b,c) NULL
+#define setPtWebMetaDataCallback_tFields(a,b,c)
+#endif
+
 #ifndef NO_PtWebStatusCallback_t
 PtWebStatusCallback_t *getPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject, PtWebStatusCallback_t *lpStruct);
 void setPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject, PtWebStatusCallback_t *lpStruct);
