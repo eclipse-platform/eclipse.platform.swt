@@ -52,7 +52,7 @@ public class Text extends Scrollable {
 	*/
 	static {
 		LIMIT = 0x7FFFFFFF;
-		DELIMITER = "\n";
+		DELIMITER = "\r\n";
 	}
 
 /**
