@@ -39,6 +39,7 @@ public class CoolBar extends Composite {
 	static final int CLICK_DISTANCE = 3;
 
 	boolean isLocked = false;
+	boolean inDispose = false;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -363,6 +364,7 @@ void createItem (CoolItem item, int index) {
 	originalItems = newOriginals;
 }
 void destroyItem(CoolItem item) {
+	if (inDispose) return;
 	int row = findItem(item).y;
 	if (row == -1) return;
 	Rectangle bounds = item.getBounds();
@@ -506,6 +508,18 @@ void moveUp(CoolItem item, int x_root) {
 	else layoutItems();
 }
 void onDispose() {
+	/*
+	 * Usually when an item is disposed, destroyItem will change the size of the items array
+	 * and reset the bounds of all the remaining cool items.
+	 * Since the whole cool bar is being disposed, this is not necessary.  For speed
+	 * the inDispose flag is used to skip over this part of the item dispose.
+	 */
+	inDispose = true;
+	for (int i = 0; i < items.length; i++) {
+		for (int j = 0; j < items[i].length; j++) {
+			items[i][j].dispose();
+		}
+	}
 	hoverCursor.dispose();
 	dragCursor.dispose();
 }
