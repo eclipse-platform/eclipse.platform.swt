@@ -17,7 +17,9 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
-* UNDER CONSTRUCTION
+* DO NOT USE - UNDER CONSTRUCTION
+*
+* @ since 3.0
 */
 
 /**
@@ -130,6 +132,7 @@ public class CTabFolder extends Composite {
 	
 	Rectangle chevronRect = new Rectangle(0, 0, 0, 0);
 	int chevronImageState = NORMAL;
+	boolean showList = false;
 	
 	boolean showMin = false;
 	Rectangle minRect = new Rectangle(0, 0, 0, 0);
@@ -259,7 +262,6 @@ public CTabFolder(Composite parent, int style) {
 				case SWT.Dispose:          onDispose(); break;
 				case SWT.FocusIn:          onFocus(event);	break;
 				case SWT.FocusOut:         onFocus(event);	break;
-				case SWT.MenuDetect:       onMenu(event); break;
 				case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
 				case SWT.MouseDown:        onMouse(event);	break;
 				case SWT.MouseExit:        onMouse(event);	break;
@@ -278,7 +280,6 @@ public CTabFolder(Composite parent, int style) {
 		SWT.FocusIn, 
 		SWT.FocusOut, 
 		SWT.KeyDown,
-		SWT.MenuDetect,
 		SWT.MouseDoubleClick, 
 		SWT.MouseDown,
 		SWT.MouseExit,
@@ -1590,23 +1591,6 @@ void onFocus(Event event) {
 		setSelection(0, true);
 	}
 }
-void onMenu(Event event) {
-	if (single && selectedIndex != -1) {
-		final CTabFolderEvent e = new CTabFolderEvent(CTabFolder.this);
-		e.widget = this;
-		e.time = event.time;
-		Rectangle rect = items[selectedIndex].getBounds();
-		rect.y += onBottom ? -HIGHLIGHT_HEADER : HIGHLIGHT_HEADER;
-		e.rect = rect;
-		if (listListeners.length == 0) {
-			showList(e.rect, SWT.LEFT);
-		} else {
-			for (int j = 0; j < listListeners.length; j++) {
-				listListeners[j].showList(e);
-			}
-		}
-	}
-}
 boolean onMnemonic (Event event) {
 	char key = event.character;
 	for (int i = 0; i < items.length; i++) {
@@ -1623,12 +1607,22 @@ boolean onMnemonic (Event event) {
 	return false;
 }
 void onMouseDoubleClick(Event event) {
+	if (event.button != 1 || 
+		(event.stateMask & SWT.BUTTON2) != 0 || 
+		(event.stateMask & SWT.BUTTON3) != 0) return;
 	int x = event.x, y = event.y;
 	if (minRect.contains(x, y)) return;
 	if (maxRect.contains(x, y)) return;
 	if (chevronRect.contains(x, y)) return;
 	
 	if (showMax) {
+		if (single) {
+			// In single mode, only maximize if user clicks outside of selecetd tab
+			if (selectedIndex != -1) {
+				Rectangle bounds = items[selectedIndex].getBounds();
+				if (bounds.contains(event.x, event.y)) return;
+			}
+		}
 		CTabFolderEvent e = new CTabFolderEvent(this);
 		e.widget = this;
 		e.time = event.time;
@@ -1690,6 +1684,7 @@ void onMouse(Event event) {
 			break;
 		}
 		case SWT.MouseDown: {
+			showList = false;
 			if (minRect.contains(x, y)) {
 				if (event.button != 1) return;
 				minImageState = SELECTED;
@@ -1725,6 +1720,9 @@ void onMouse(Event event) {
 					if (!single && i != topTabIndex && bounds.x + bounds.width >= getRightItemEdge())return;
 					setSelection(i, true);
 					setFocus();
+					if (single && event.button == 1 && selectedIndex != -1 && items.length > 1) {
+						showList = true;
+					}
 					return;
 				}
 			}
@@ -1874,7 +1872,7 @@ void onMouse(Event event) {
 			}
 			for (int i=0; i<items.length; i++) {
 				CTabItem item = items[i];
-				if (item.closeRect.contains(x,y)){
+				if (item.closeRect.contains(x,y)) {
 					boolean selected = item.closeImageState == SELECTED;
 					item.closeImageState = HOT;
 					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
@@ -1890,6 +1888,25 @@ void onMouse(Event event) {
 					}
 					if (e.doit) item.dispose();
 					return;
+				}
+			}
+			if (showList && event.button == 1 && single && selectedIndex != -1 && items.length > 1) {
+				Rectangle bounds = items[selectedIndex].getBounds();
+				if (bounds.contains(event.x, event.y)) {
+					Rectangle rect = bounds;
+					rect.y += onBottom ? -HIGHLIGHT_HEADER :HIGHLIGHT_HEADER;
+					if (listListeners.length == 0) {
+						showList(rect, SWT.LEFT);
+					} else {
+						CTabFolderEvent e = new CTabFolderEvent(this);
+						e.widget = this;
+						e.time = event.time;
+						e.rect = rect;
+						
+						for (int i = 0; i < listListeners.length; i++) {
+							listListeners[i].showList(e);
+						}
+					}
 				}
 			}
 			break;
