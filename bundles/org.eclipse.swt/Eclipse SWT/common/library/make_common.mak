@@ -11,5 +11,4 @@
 
 maj_ver=3
 min_ver=105
-bld_num=0
 comma_ver=3,1,0,5
