@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int KDE_nativeFunctionCount = 39;
-int KDE_nativeFunctionCallCount[39];
+int KDE_nativeFunctionCount = 41;
+int KDE_nativeFunctionCallCount[41];
 char * KDE_nativeFunctionNames[] = {
 	"KApplication_1new", 
 	"KGlobal_1iconLoader", 
@@ -56,6 +56,8 @@ char * KDE_nativeFunctionNames[] = {
 	"XpmReadFileToPixmap", 
 	"free", 
 	"malloc", 
+	"sigaction", 
+	"sigaction_1sizeof", 
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

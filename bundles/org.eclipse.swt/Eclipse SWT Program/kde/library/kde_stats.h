@@ -60,4 +60,6 @@ typedef enum {
 	XpmReadFileToPixmap_FUNC,
 	free_FUNC,
 	malloc_FUNC,
+	sigaction_FUNC,
+	sigaction_1sizeof_FUNC,
 } KDE_FUNCS;

@@ -14,10 +14,14 @@ public class KDE {
 
 	/** Constants */
 	public static final int KICON_SMALL = 0;
+	public static final int SIGABRT = 6;
+	public static final int SIGFPE = 8;
+	public static final int SIGILL = 4;
+	public static final int SIGSEGV = 11;
 	public static final int XmUNSPECIFIED_PIXMAP = 0x2;
 
 /** Natives */
-public static final synchronized native int /*long*/ KApplication_new(int argc, int /*long*/ [] argv, int /*long*/ rAppName, boolean allowStyles, boolean GUIenabled);
+public static final synchronized native int /*long*/ KApplication_new(int argc, int /*long*/ argv, int /*long*/ rAppName, boolean allowStyles, boolean GUIenabled);
 public static final synchronized native int /*long*/ KGlobal_iconLoader();
 public static final synchronized native int /*long*/ KIconLoader_iconPath(int /*long*/ loader, int /*long*/ name, int group_or_size, boolean canReturnNull);
 public static final synchronized native void KMimeType_delete(int /*long*/ mimeType);
@@ -56,5 +60,7 @@ public static final synchronized native void free(int /*long*/ mem);
 public static final synchronized native int /*long*/ malloc(int /*long*/ size);
 public static final synchronized native int XpmReadFileToPixmap(int /*long*/ display, int /*long*/ drawable, byte[] filename, int /*long*/ [] pixmap_return, int /*long*/ [] mask_return, int /*long*/ attributes);
 public static final synchronized native void XFreePixmap(int /*long*/ display, int /*long*/ pixmap);
+public static final synchronized native int sigaction(int signum, byte[] act, byte[] oldact);
+public static final synchronized native int sigaction_sizeof();
 
 }

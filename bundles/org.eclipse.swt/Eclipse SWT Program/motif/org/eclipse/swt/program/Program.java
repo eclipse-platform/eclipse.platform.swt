@@ -498,9 +498,6 @@ static String kde_convertQStringAndFree(int /*long*/ qString) {
 }
 
 static boolean kde_init() {
-	//TEMPORARY CODE
-	if (true) return false;
-
 	try {
 		Library.loadLibrary("swt-kde");
 	} catch (Throwable e) {
@@ -510,11 +507,39 @@ static boolean kde_init() {
 	/* Use the character encoding for the default locale */
 	byte[] nameBuffer = Converter.wcsToMbcs(null, "SWT", true);
 	int /*long*/ qcString = KDE.QCString_new(nameBuffer);
+	/*
+	* Feature in KDE. The argv argument passed to KApplication()
+	* is kept by KDE and cannot be freed.
+	*/
 	int /*long*/ ptr = KDE.malloc(nameBuffer.length);
 	OS.memmove(ptr, nameBuffer, nameBuffer.length);
-	int /*long*/ [] argv = new int /*long*/ []{ptr, 0};
-	KDE.KApplication_new(1, argv, qcString, false, false);
-	KDE.free(ptr);
+	int /*long*/ argv = KDE.malloc(OS.PTR_SIZEOF * 2);
+	OS.memmove(argv, new int /*long*/ []{ptr, 0}, OS.PTR_SIZEOF * 2);
+	/*
+	* Feature in KDE.  When a KDE application is initialized, it installs
+	* its own SIGSEGV,SIGFPE,SIGILL,SIGABRT signal handlers so that it can
+	* pop up a dialo box and display an error message should SIGSEGV occur.
+	* After the dialogue box is closed, it terminates the program. Some Java VMs
+	* happen to catch SIGSEGV signals so that it can throw a null pointer exception.
+	* Thus when KDE is initialized, the Java try ... catch mechanism for null pointers
+	* does not work.  The fix is to obtain the VM's signal handlers before
+	* initializing KDE and to reinstall that handlers after the initialization. The
+	* method sigaction() must be used instead of signal() because it returns more
+	* information on how to handle the signal.
+	*/
+	byte[] sigabrt = new byte[KDE.sigaction_sizeof()];
+	KDE.sigaction(KDE.SIGABRT, null, sigabrt);
+	byte[] sigfpe = new byte[KDE.sigaction_sizeof()];
+	KDE.sigaction(KDE.SIGFPE, null, sigfpe);
+	byte[] sigill = new byte[KDE.sigaction_sizeof()];
+	KDE.sigaction(KDE.SIGILL, null, sigill);
+	byte[] sigsegv = new byte[KDE.sigaction_sizeof()];
+	KDE.sigaction(KDE.SIGSEGV, null, sigsegv);
+	KDE.KApplication_new(1, argv, qcString, false, true);
+	KDE.sigaction(KDE.SIGABRT, sigill, null);
+	KDE.sigaction(KDE.SIGFPE, sigill, null);
+	KDE.sigaction(KDE.SIGILL, sigill, null);
+	KDE.sigaction(KDE.SIGSEGV, sigsegv, null);
 	KDE.QCString_delete(qcString);
 	return true;
 }
@@ -525,13 +550,13 @@ boolean kde_execute(String fileName) {
 	byte[] buffer = Converter.wcsToMbcs(null, urlString, true);
 	int /*long*/ qString = KDE.QString_new(buffer);
 	int /*long*/ url = KDE.KURL_new(qString);
-	KDE.QString_delete(qString);
 	/* Use the character encoding for the default locale */
 	buffer = Converter.wcsToMbcs(null, name, true);
 	int /*long*/ mimeTypeName = KDE.QString_new(buffer);
 	int pid = KDE.KRun_runURL(url, mimeTypeName);
-	KDE.KURL_delete(url);
 	KDE.QString_delete(mimeTypeName);
+	KDE.KURL_delete(url);
+	KDE.QString_delete(qString);
 	return pid != 0;
 }
 
@@ -648,7 +673,7 @@ static Program kde_getProgram(Display display, String mimeType) {
  * @param extension the program extension
  * @return the program or <code>null</code>
  *
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
  *		<li>ERROR_NULL_ARGUMENT when extension is null</li>
  *	</ul>
  */
@@ -793,7 +818,7 @@ static Program[] getPrograms(Display display) {
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
  *		<li>ERROR_NULL_ARGUMENT when fileName is null</li>
  *	</ul>
  */
@@ -850,7 +875,7 @@ public boolean equals(Object other) {
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
  *		<li>ERROR_NULL_ARGUMENT when fileName is null</li>
  *	</ul>
  */

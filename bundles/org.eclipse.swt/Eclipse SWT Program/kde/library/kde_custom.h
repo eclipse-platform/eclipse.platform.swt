@@ -9,6 +9,9 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
+/* Special sizeof's */
+#define sigaction_sizeof() sizeof(struct sigaction)
+
 /* Libraries for dynamic loaded functions */
 #define XpmReadFileToPixmap_LIB "libXpm.so"
 

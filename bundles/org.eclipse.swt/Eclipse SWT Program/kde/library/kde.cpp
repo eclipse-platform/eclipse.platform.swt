@@ -19,14 +19,11 @@ extern "C" {
 
 #ifndef NO_KApplication_1new
 JNIEXPORT jint JNICALL KDE_NATIVE(KApplication_1new)
-	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2, jboolean arg3, jboolean arg4)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jboolean arg4)
 {
-	jint *lparg1=NULL;
 	jint rc;
 	KDE_NATIVE_ENTER(env, that, KApplication_1new_FUNC);
-	if (arg1) lparg1 = env->GetIntArrayElements(arg1, NULL);
-	rc = (jint)new KApplication(arg0, (char **)lparg1, *(QCString *)arg2, (bool)arg3, (bool)arg4);
-	if (arg1) env->ReleaseIntArrayElements(arg1, lparg1, 0);
+	rc = (jint)new KApplication(arg0, (char **)arg1, *(QCString *)arg2, (bool)arg3, (bool)arg4);
 	KDE_NATIVE_EXIT(env, that, KApplication_1new_FUNC);
 	return rc;
 }
@@ -560,6 +557,36 @@ JNIEXPORT jint JNICALL KDE_NATIVE(malloc)
 	KDE_NATIVE_ENTER(env, that, malloc_FUNC);
 	rc = (jint)malloc(arg0);
 	KDE_NATIVE_EXIT(env, that, malloc_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_sigaction
+JNIEXPORT jint JNICALL KDE_NATIVE(sigaction)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jint rc;
+	KDE_NATIVE_ENTER(env, that, sigaction_FUNC);
+	if (arg1) lparg1 = env->GetByteArrayElements(arg1, NULL);
+	if (arg2) lparg2 = env->GetByteArrayElements(arg2, NULL);
+	rc = (jint)sigaction(arg0, (struct sigaction *)lparg1, (struct sigaction *)lparg2);
+	if (arg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	if (arg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
+	KDE_NATIVE_EXIT(env, that, sigaction_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_sigaction_1sizeof
+JNIEXPORT jint JNICALL KDE_NATIVE(sigaction_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	KDE_NATIVE_ENTER(env, that, sigaction_1sizeof_FUNC);
+	rc = (jint)sigaction_sizeof();
+	KDE_NATIVE_EXIT(env, that, sigaction_1sizeof_FUNC);
 	return rc;
 }
 #endif
