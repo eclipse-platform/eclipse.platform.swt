@@ -972,7 +972,7 @@ public int getItemHeight () {
 		int height = 0;
 		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		OS.gtk_tree_model_get_iter_first (modelHandle, iter);
-		int columnColumn = Math.max (1, columnCount);
+		int columnCount = Math.max (1, this.columnCount);
 		for (int i=0; i<columnCount; i++) {
 			int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
 			int /*long*/ renderers = OS.gtk_tree_view_column_get_cell_renderers (column);
