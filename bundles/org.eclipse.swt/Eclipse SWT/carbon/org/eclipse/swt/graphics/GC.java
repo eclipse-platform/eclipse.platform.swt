@@ -218,7 +218,7 @@ void copyArea (Image image, int x, int y, int srcImage) {
 	if (context != 0) {
 	 	CGRect rect = new CGRect();
 	 	rect.x = -x;
-	 	rect.y = -y;
+	 	rect.y = y;
 	 	rect.width = OS.CGImageGetWidth(srcImage);
 		rect.height = OS.CGImageGetHeight(srcImage);
 		OS.CGContextTranslateCTM(context, 0, -(rect.height - height));
