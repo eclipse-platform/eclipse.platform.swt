@@ -310,8 +310,24 @@ public void clearSelection () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	// NEEDS WORK
-	int width = 100;
-	int height = 30;
+	int width = 100, height = 21;
+	int [] ptr = new int [1];
+	if ((style & SWT.READ_ONLY) != 0) {
+		int index = OS.GetControlValue (handle) - 1;
+		OS.CopyMenuItemTextAsCFString (menuHandle, (short)(index+1), ptr);
+	} else {
+		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, null);
+	}
+	if (ptr [0] != 0) {
+		org.eclipse.swt.internal.carbon.Point bounds = new org.eclipse.swt.internal.carbon.Point ();
+		// NEEDS work - only works for default font
+		short [] baseLine = new short [1];
+		if (OS.GetThemeTextDimensions (ptr [0], (short)OS.kThemeSystemFont, OS.kThemeStateActive, false, bounds, baseLine) == OS.noErr) {
+			width = Math.max (width, bounds.h);
+			height = Math.max (height, bounds.v);
+		}
+		OS.CFRelease (ptr [0]);
+	}
 	Rect inset = getInset ();
 	width += inset.left + inset.right;
 	height += inset.top + inset.bottom;
