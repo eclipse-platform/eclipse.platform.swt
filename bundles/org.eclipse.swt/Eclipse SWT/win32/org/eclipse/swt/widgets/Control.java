@@ -1634,8 +1634,8 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam) {
 }
 
 boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
-	postEvent (type, event);
-	return true;
+	sendEvent (type, event);
+	return event.doit;
 }
 
 boolean sendFocusEvent (int type, int hwnd) {
@@ -2418,6 +2418,10 @@ public Point toDisplay (Point point) {
 
 boolean translateAccelerator (MSG msg) {
 	return menuShell ().translateAccelerator (msg);
+}
+
+boolean translateMessage (MSG msg) {
+	return false;
 }
 
 boolean translateMnemonic (char key) {

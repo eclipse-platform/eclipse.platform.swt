@@ -987,36 +987,8 @@ public void removeVerifyListener (VerifyListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Verify, listener);	
 }
-void sendIMKeyEvent (int type, XKeyEvent xEvent, byte [] mbcs, char [] chars) {
-	/*
-	* Bug in Motif. On Solaris and Linux, XmImMbLookupString() clears
-	* the characters from the IME. This causes the characters to be
-	* stolen from the text widget. The fix is to detect that the IME
-	* has been cleared and use XmTextInsert() to insert the stolen
-	* characters. This problem does not happen on AIX.
-	*/
-	super.sendIMKeyEvent (type, xEvent, mbcs, chars);
-	if (mbcs == null || xEvent.keycode != 0) return;
-	int [] unused = new int [1];
-	byte [] buffer = new byte [2];
-	int length = OS.XmImMbLookupString (handle, xEvent, buffer, buffer.length, unused, unused);
-	if (length != 0) return;
-	int [] start = new int [1], end = new int [1];
-	OS.XmTextGetSelectionPosition (handle, start, end);
-	if (start [0] == end [0]) {
-		start [0] = end [0] = OS.XmTextGetInsertionPosition (handle);
-	}
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	OS.XmTextReplace (handle, start [0], end [0], mbcs);
-	int index = 0;
-	while (index < chars.length) {
-		if (chars [index] == 0) break;
-		index++;
-	}
-	int position = start [0] + index;
-	OS.XmTextSetInsertionPosition (handle, position);
-	display.setWarnings (warnings);
+boolean sendIMKeyEvent (int type, XKeyEvent xEvent) {
+	return super.sendIMKeyEvent (type, xEvent, handle);
 }
 /**
  * Selects all the text in the receiver.

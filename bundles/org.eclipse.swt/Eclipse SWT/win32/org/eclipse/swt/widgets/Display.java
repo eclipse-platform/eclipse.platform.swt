@@ -321,8 +321,8 @@ int asciiKey (int key) {
 /**
  * Adds the listener to the collection of listeners who will
  * be notifed when an event of the given type occurs anywhere
- * in SWT. When the event does occur, the listener is notified
- * by sending it the <code>handleEvent()</code> message.
+ * in this display. When the event does occur, the listener is
+ * notified by sending it the <code>handleEvent()</code> message.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should be notified when the event occurs
@@ -339,9 +339,9 @@ int asciiKey (int key) {
  * @see #removeFilter
  * @see #removeListener
  * 
- * @since 2.1 
+ * @since 3.0 
  */
-void addFilter (int eventType, Listener listener) {
+public void addFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) filterTable = new EventTable ();
@@ -631,6 +631,7 @@ boolean filterMessage (MSG msg) {
 	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {
 		Control control = findControl (msg.hwnd);
 		if (control != null) {
+			if (control.translateMessage (msg)) return true;
 			if (translateAccelerator (msg, control) || translateMnemonic (msg, control) || translateTraversal (msg, control)) {	
 				lastAscii = lastKey = 0;
 				lastVirtual = lastNull = false;
@@ -1934,7 +1935,8 @@ void releaseToolDisabledImageList (ImageList list) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs anywhere in SWT.
+ * be notifed when an event of the given type occurs anywhere in
+ * this display.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should no longer be notified when the event occurs
@@ -1950,9 +1952,9 @@ void releaseToolDisabledImageList (ImageList list) {
  * @see #addFilter
  * @see #addListener
  * 
- * @since 2.1 
+ * @since 3.0
  */
-void removeFilter (int eventType, Listener listener) {
+public void removeFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) return;

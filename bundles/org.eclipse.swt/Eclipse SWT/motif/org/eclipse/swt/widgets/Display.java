@@ -378,9 +378,9 @@ void addMouseHoverTimeOut (int handle) {
  * @see #removeFilter
  * @see #removeListener
  * 
- * @since 2.1 
+ * @since 3.0
  */
-void addFilter (int eventType, Listener listener) {
+public void addFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) filterTable = new EventTable ();
@@ -2056,9 +2056,9 @@ void removeMouseHoverTimeOut () {
  * @see #addFilter
  * @see #addListener
  * 
- * @since 2.1 
+ * @since 3.0 
  */
-void removeFilter (int eventType, Listener listener) {
+public void removeFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) return;

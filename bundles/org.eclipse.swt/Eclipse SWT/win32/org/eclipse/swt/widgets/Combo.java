@@ -1228,8 +1228,8 @@ public void setTextLimit (int limit) {
 	OS.SendMessage (handle, OS.CB_LIMITTEXT, limit, 0);
 }
 
-boolean translateAccelerator (MSG msg) {
-	if (super.translateAccelerator (msg)) return true;
+boolean translateMessage (MSG msg) {
+	if (super.translateMessage (msg)) return true;
 	
 	/*
 	* In order to see key events for the text widget in a combo box,
@@ -1254,16 +1254,17 @@ boolean translateAccelerator (MSG msg) {
 			}
 		}
 		OS.TranslateMessage (msg);
+		LRESULT result = null;
 		switch (msg.message) {
-			case OS.WM_CHAR:		WM_CHAR (msg.wParam, msg.lParam); break;
-			case OS.WM_IME_CHAR:	WM_IME_CHAR (msg.wParam, msg.lParam); break;
-			case OS.WM_KEYDOWN:	WM_KEYDOWN (msg.wParam, msg.lParam); break;
-			case OS.WM_KEYUP:		WM_KEYUP (msg.wParam, msg.lParam); break;
-			case OS.WM_SYSCHAR:	WM_SYSCHAR (msg.wParam, msg.lParam); break;
-			case OS.WM_SYSKEYDOWN:	WM_SYSKEYDOWN (msg.wParam, msg.lParam); break;
-			case OS.WM_SYSKEYUP:	WM_SYSKEYUP (msg.wParam, msg.lParam); break;
+			case OS.WM_CHAR:		result = WM_CHAR (msg.wParam, msg.lParam); break;
+			case OS.WM_IME_CHAR:	result = WM_IME_CHAR (msg.wParam, msg.lParam); break;
+			case OS.WM_KEYDOWN:		result = WM_KEYDOWN (msg.wParam, msg.lParam); break;
+			case OS.WM_KEYUP:		result = WM_KEYUP (msg.wParam, msg.lParam); break;
+			case OS.WM_SYSCHAR:		result = WM_SYSCHAR (msg.wParam, msg.lParam); break;
+			case OS.WM_SYSKEYDOWN:	result = WM_SYSKEYDOWN (msg.wParam, msg.lParam); break;
+			case OS.WM_SYSKEYUP:	result = WM_SYSKEYUP (msg.wParam, msg.lParam); break;
 		}
-		OS.DispatchMessage (msg);
+		if (result == null) OS.DispatchMessage (msg);
 		return true;
 	}
 	return false;
