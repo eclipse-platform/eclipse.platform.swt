@@ -15,7 +15,7 @@ import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public class PNGFileFormat extends FileFormat {
+final class PNGFileFormat extends FileFormat {
 	static final int SIGNATURE_LENGTH = 8;
 	PngDecodingDataStream decodingStream;
 	PngIhdrChunk headerChunk;
