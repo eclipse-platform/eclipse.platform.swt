@@ -597,6 +597,7 @@ public TableItem getItem (Point pt) {
 	if (OS.gtk_clist_get_selection_info (handle, clientX, clientY, row, column) == 0) {
 		return null;
 	}
+	if (row [0] < 0 || row [0] >= itemCount) return null;
 	return items [row [0]];
 }
 

@@ -386,7 +386,9 @@ public TreeItem getItem (Point point) {
 		return null;
 	}
 	int node = OS.gtk_ctree_node_nth (handle, row [0]);
+	if (node == 0) return null;
 	int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
+	if (index == -1) return null;
 	return items [index];
 }
 
