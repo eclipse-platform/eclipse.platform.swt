@@ -99,6 +99,7 @@ public class ViewForm extends Composite {
 	private boolean separateTopCenter = false;
 	private boolean showBorder = false;
 	
+	private int separator = -1;
 	private int borderTop = 0;
 	private int borderBottom = 0;
 	private int borderLeft = 0;
@@ -213,6 +214,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	}
 	
 	if (content != null) {
+		if (topLeft != null || topRight != null || topCenter != null) size.y += 1; // allow space for a vertical separator
 		Point contentSize = new Point(0, 0);
 		contentSize = content.computeSize(SWT.DEFAULT, SWT.DEFAULT); 
 		size.x = Math.max (size.x, contentSize.x);
@@ -354,8 +356,12 @@ public void layout (boolean changed) {
 		}
 		if (top)y += topHeight + verticalSpacing;
 	}
-
+	separator = -1;
 	if (content != null && !content.isDisposed()) {
+		if (topLeft != null || topRight!= null || topCenter != null){
+			separator = y;
+			y++;
+		}
 		 content.setBounds(rect.x + marginWidth, y, rect.width - 2 * marginWidth, rect.y + rect.height - y - marginHeight);
 	}
 }
@@ -400,6 +406,10 @@ void onPaint(GC gc) {
 			gc.drawLine(2, size.y - 1, size.x - 2, size.y - 1);
 			gc.drawLine(size.x - 1, 2, size.x - 1, size.y - 2);
 		}
+	}
+	if (separator > -1) {
+		gc.setForeground(borderColor1);
+		gc.drawLine(borderLeft, separator, size.x - borderLeft - borderRight, separator);
 	}
 	gc.setForeground(gcForeground);
 }
