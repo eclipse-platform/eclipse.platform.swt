@@ -37,21 +37,21 @@ import java.util.*;
 		cmdRename = 13,
 		cmdSearch = 14;
 	public static final String[] stockImageLocations = {
-		"icons/generic_example.gif",
-		"icons/icon_ClosedDrive.gif",
-		"icons/icon_ClosedFolder.gif",
-		"icons/icon_File.gif",
-		"icons/icon_OpenDrive.gif",
-		"icons/icon_OpenFolder.gif",
-		"icons/cmd_Copy.gif",
-		"icons/cmd_Cut.gif",
-		"icons/cmd_Delete.gif",
-		"icons/cmd_Parent.gif",
-		"icons/cmd_Paste.gif",
-		"icons/cmd_Print.gif",
-		"icons/cmd_Refresh.gif",
-		"icons/cmd_Rename.gif",
-		"icons/cmd_Search.gif"
+		"generic_example.gif",
+		"icon_ClosedDrive.gif",
+		"icon_ClosedFolder.gif",
+		"icon_File.gif",
+		"icon_OpenDrive.gif",
+		"icon_OpenFolder.gif",
+		"cmd_Copy.gif",
+		"cmd_Cut.gif",
+		"cmd_Delete.gif",
+		"cmd_Parent.gif",
+		"cmd_Paste.gif",
+		"cmd_Print.gif",
+		"cmd_Refresh.gif",
+		"cmd_Rename.gif",
+		"cmd_Search.gif"
 	};
 	public static Image stockImages[];
 	
