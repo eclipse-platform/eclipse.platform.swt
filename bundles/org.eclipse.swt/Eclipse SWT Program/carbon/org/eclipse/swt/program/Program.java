@@ -78,8 +78,9 @@ public static String [] getExtensions () {
 	int [] lpcName = new int [] {lpName.length ()};
 	FILETIME ft = new FILETIME ();
 	*/
-	int dwIndex = 0, count = 0;
+	int count = 0;
 	/* AW
+	int dwIndex = 0;
 	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {
 		String extension = lpName.toString (0, lpcName [0]);
 		lpcName [0] = lpName.length ();
@@ -153,8 +154,9 @@ public static Program [] getPrograms () {
 	int [] lpcName = new int [] {lpName.length ()};
 	FILETIME ft = new FILETIME ();
 	*/
-	int dwIndex = 0, count = 0;
+	int count = 0;
 	/*
+	int dwIndex = 0;
 	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {	
 		String path = lpName.toString (0, lpcName [0]);
 		lpcName [0] = lpName.length ();
