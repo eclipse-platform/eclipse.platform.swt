@@ -132,20 +132,7 @@ void createHandle (int index) {
 void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	OS.g_signal_connect (hAdjustment, OS.value_changed, display.windowProc2, VALUE_CHANGED);
-}
-
-void register () {
-	super.register ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	WidgetTable.put (hAdjustment, this);
-}
-
-void deregister () {
-	super.deregister ();
-	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	WidgetTable.remove (hAdjustment);
+	OS.g_signal_connect (handle, OS.value_changed, display.windowProc2, VALUE_CHANGED);
 }
 
 /**
