@@ -384,6 +384,7 @@ public static final native int gdk_colormap_get_system();
 public static final native void gdk_colors_free(int colormap, int[] pixels, int npixels, int planes);
 public static final native boolean gdk_color_alloc(int colormap, GdkColor color);
 public static final native boolean gdk_colormap_alloc_color(int colormap, GdkColor color, boolean writeable, boolean best_match);
+public static final native void gdk_colormap_query_color(int colormap, int pixel, GdkColor result);
 public static final native void gdk_colormap_free_colors(int colormap, GdkColor colors, int ncolors);
 public static final native int gdk_cursor_new(int cursor_type);
 public static final native int gdk_bitmap_create_from_data(int window, byte[] data, int width, int height);
@@ -753,10 +754,13 @@ public static final native int gdk_pango_context_get();
 public static final native int pango_context_new();
 public static final native int pango_context_get_font_description(int context);
 public static final native void pango_context_set_font_description(int context, int descr);
-public static final native int pango_context_get_metrics(int context, int desc, String language);
+public static final native int pango_context_get_metrics(int context, int desc, int language);
+public static final native int pango_context_get_language(int context);
 public static final native void pango_context_list_families(int context, int[] families, int[] n_families);
 public static final native void pango_font_family_list_faces(int family, int[] faces, int[] n_faces);
 public static final native int pango_font_face_describe(int face);
+
+public static final native int pango_language_from_string(byte[] language);
 
 public static final native int  pango_layout_new(int context);
 public static final native void pango_layout_set_text(int layout, byte[] text, int length);

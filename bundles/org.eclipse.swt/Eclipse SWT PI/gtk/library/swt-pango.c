@@ -54,6 +54,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_PANGO_1SCALE
 	return (jint)PANGO_SCALE;
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_PANGO_1PIXELS
+  (JNIEnv *env, jclass that, jint dimension)
+{
+	return (jint)PANGO_PIXELS(dimension);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_PANGO_1STRETCH_1NORMAL
   (JNIEnv *env, jclass that)
 {
@@ -191,10 +197,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1context_1set_
    pango_context_set_font_description((PangoContext*)context, (PangoFontDescription*)descr);
 }
 
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1context_1get_1metrics
-  (JNIEnv *env, jclass that, jint context, jint descr)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1context_1get_1metrics
+  (JNIEnv *env, jclass that, jint context, jint descr, jint language)
 {
-   return (jint)pango_context_get_metrics((PangoContext*)context, (PangoFontDescription*)descr, NULL);
+	return (jint)pango_context_get_metrics((PangoContext*)context, (PangoFontDescription*)descr, (PangoLanguage*)language);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1context_1get_1language
+  (JNIEnv *env, jclass that, jint context)
+{
+	return (jint)pango_context_get_language((PangoContext*)context);
 }
 
 /* metrics */
@@ -277,3 +289,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1face_1d
 {   
    return (jint)pango_font_face_describe((PangoFontFace*)face);
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1language_1from_1string
+  (JNIEnv *env, jclass that, jbyteArray language)
+{
+   jbyte *language1 = NULL;
+   jint rc;
+
+   if (language != NULL) language1 = (*env)->GetByteArrayElements(env, language, NULL);
+   rc = (jint)pango_language_from_string((const char *)language1);
+   if (language != NULL) (*env)->ReleaseByteArrayElements(env, language, language1, 0);
+   return rc;
+}
+

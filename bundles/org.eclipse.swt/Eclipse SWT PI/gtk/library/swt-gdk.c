@@ -534,6 +534,21 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1color_1allo
 	return rc;
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1colormap_1query_1color
+  (JNIEnv *env, jclass that, jint colormap, jint pixel, jobject result)
+{
+	DECL_GLOB(pGlob)
+	GdkColor result_struct, *result1 = NULL;
+	if (result) {
+		result1 = &result_struct;
+		cacheGdkColorFids(env, result, &PGLOB(GdkColorFc));
+		getGdkColorFields(env, result, result1, &PGLOB(GdkColorFc));
+	}
+	gdk_colormap_query_color((GdkColormap*)colormap, pixel, (GdkColor*)result1);
+	if (result) {
+		setGdkColorFields(env, result, result1, &PGLOB(GdkColorFc));
+	}
+}
 
 /*  ***** Visuals *****  */
 

@@ -1220,10 +1220,8 @@ public Color getBackground() {
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
-	color.pixel = values.background_pixel;
-	color.red   = values.background_red;
-	color.green = values.background_green;
-	color.blue  = values.background_blue;
+	int colormap = OS.gdk_colormap_get_system();
+	OS.gdk_colormap_query_color(colormap, values.background_pixel, color);
 	return Color.gtk_new(data.device, color);	
 }
 
@@ -1335,14 +1333,16 @@ public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int context = data.context;
 	int font = OS.pango_context_get_font_description(context);
-	int metrics = OS.pango_context_get_metrics(context, font, null);
+	//FIXME - figure out correct language
+	byte[] buffer = Converter.wcsToMbcs(null, "en_US");
+	int lang = OS.pango_language_from_string(buffer);
+//	int lang = OS.pango_context_get_language(context);
+	int metrics = OS.pango_context_get_metrics(context, font, lang);
 	FontMetrics fm = new FontMetrics();
-	int scale = OS.PANGO_SCALE();
-	fm.ascent = OS.pango_font_metrics_get_ascent(metrics) / scale;
-	fm.descent = OS.pango_font_metrics_get_descent(metrics) / scale;
-	fm.averageCharWidth = OS.pango_font_metrics_get_approximate_char_width(metrics) / scale;
-	//TEMPORARY CODE - why do we have to subtract instead of add???
-	fm.height = fm.ascent - fm.descent;
+	fm.ascent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_ascent(metrics));
+	fm.descent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_descent(metrics));
+	fm.averageCharWidth = OS.PANGO_PIXELS(OS.pango_font_metrics_get_approximate_char_width(metrics));
+	fm.height = fm.ascent + fm.descent;
 	return fm;
 }
 
@@ -1360,10 +1360,8 @@ public Color getForeground() {
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
 	GdkColor color = new GdkColor();
-	color.pixel = values.foreground_pixel;
-	color.red   = values.foreground_red;
-	color.green = values.foreground_green;
-	color.blue  = values.foreground_blue;
+	int colormap = OS.gdk_colormap_get_system();
+	OS.gdk_colormap_query_color(colormap, values.foreground_pixel, color);
 	return Color.gtk_new(data.device, color);	
 }
 
