@@ -194,6 +194,7 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		boolean rightAligned = (parent.style & SWT.RIGHT) != 0;
 		args =  new int [] {
+			OS.Pt_ARG_LABEL_TYPE, 0, 0,
 			OS.Pt_ARG_FLAGS, (style & SWT.NO_FOCUS) != 0 ? 0 : OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS,
 			OS.Pt_ARG_BALLOON_POSITION, rightAligned ? OS.Pt_BALLOON_RIGHT : OS.Pt_BALLOON_BOTTOM, 0,
 			OS.Pt_ARG_BASIC_FLAGS, 0, OS.Pt_RIGHT_ETCH | OS.Pt_RIGHT_OUTLINE,
@@ -215,6 +216,7 @@ void createHandle (int index) {
 		boolean rightAligned = (parent.style & SWT.RIGHT) != 0;
 		boolean toggle = (style & (SWT.CHECK | SWT.RADIO)) != 0;
 		int [] args = {
+			OS.Pt_ARG_LABEL_TYPE, 0, 0,
 			OS.Pt_ARG_FLAGS, (style & SWT.NO_FOCUS) != 0 ? 0 : OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS,
 			OS.Pt_ARG_BALLOON_POSITION, rightAligned ? OS.Pt_BALLOON_RIGHT : OS.Pt_BALLOON_BOTTOM, 0,
 			OS.Pt_ARG_FLAGS, toggle ? OS.Pt_TOGGLE : 0, OS.Pt_TOGGLE,
