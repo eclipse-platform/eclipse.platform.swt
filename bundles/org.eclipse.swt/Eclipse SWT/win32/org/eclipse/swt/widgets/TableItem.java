@@ -145,7 +145,7 @@ public Rectangle getBounds (int index) {
 	* by one pixel.
 	*/
 	if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) >= (5 << 16 | 80)) {
-		--rect.top;
+		rect.top -= gridWidth;
 	}
 	return new Rectangle (rect.left + gridWidth, rect.top + gridWidth, width, height);
 }
