@@ -283,6 +283,19 @@ void destroyItem (TreeItem item) {
 	item.handle = 0;
 }
 
+void destroyWidget () {
+	/*
+	* Bug in GTK. Sometimes GTK causes a segment fault when a tree widget is
+	* destroyed and it has outstanding events or idle handlers.  This only happens
+	* on versions earlier than 2.0.5.  The fix is to flush all outstanding events before
+	* destroying the widget.
+	*/
+	if (OS.gtk_major_version () == 2 && OS.gtk_minor_version () == 0 && OS.gtk_micro_version () < 5) {
+		while (OS.gtk_events_pending () != 0) OS.gtk_main_iteration ();
+	}
+	super.destroyWidget ();
+}
+
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
