@@ -23,12 +23,11 @@ import org.eclipse.swt.widgets.*;
 
 public class Snippet151 {
 
-static int[] values = new int[0];
-static Thread thread;
+static int[] values;
 
 public static void main (String [] args) {
-	final Display display = new Display ();
-	Shell shell = new Shell (display);
+	final Display display = new Display();
+	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	final Table table = new Table(shell, SWT.BORDER | SWT.VIRTUAL);
 	table.addListener(SWT.SetData, new Listener() {
@@ -38,33 +37,25 @@ public static void main (String [] args) {
 			item.setText("item "+values[index]);
 		}
 	});
-	final Random random = new Random();
-	thread = new Thread() {
+	Thread thread = new Thread() {
 		public void run() {
 			int count = 0;
+			Random random = new Random();
 			while (count++ < 2000) {
 				if (table.isDisposed()) return;
-				// add 1000 random numbers to a sorted array
-				for (int j = 0; j < 1000; j++) {
-					int next  = random.nextInt();
-					int[] newItems = new int[values.length + 1];
-					int index = 0;
-					for (int i = 0; i < values.length; i++) {
-						if (values[i] > next) break;
-						index++;
-					}
-					System.arraycopy(values, 0, newItems, 0, index);
-					newItems[index] = next;
-					System.arraycopy(values, index, newItems, index+1, values.length-index);
-					values = newItems;
+				final int[] newValues = new int[1000];
+				for (int i = 0; i < newValues.length; i++) {
+					newValues[i] = random.nextInt();
 				}
+				Arrays.sort(newValues);
 				display.syncExec(new Runnable() {
 					public void run() {
 						if (table.isDisposed()) return;
-						table.setItemCount(values.length);
+						if (values == null) {
+							table.setItemCount(1000);
+						}
+						values = newValues;
 						table.clearAll();
-						// bug 69398 on Windows
-						table.redraw();
 					}
 				});
 				try {Thread.sleep(500);} catch (Throwable t) {}
@@ -72,9 +63,9 @@ public static void main (String [] args) {
 		}
 	};
 	thread.start();
-	shell.open ();
-	while (!shell.isDisposed ()) {
-		if (!display.readAndDispatch ()) display.sleep ();
+	shell.open();
+	while (!shell.isDisposed() || thread.isAlive()) {
+		if (!display.readAndDispatch()) display.sleep();
 	}
 	display.dispose ();
 }
