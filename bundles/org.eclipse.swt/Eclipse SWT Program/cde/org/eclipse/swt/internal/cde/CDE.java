@@ -43,8 +43,8 @@ public static final void DtDbLoad() {
 		lock.unlock();
 	}
 }
-public static final native int _DtDtsDataTypeNames();
-public static final int DtDtsDataTypeNames() {
+public static final native int /*long*/ _DtDtsDataTypeNames();
+public static final int /*long*/ DtDtsDataTypeNames() {
 	lock.lock();
 	try {
 		return _DtDtsDataTypeNames();
@@ -52,8 +52,8 @@ public static final int DtDtsDataTypeNames() {
 		lock.unlock();
 	}
 }
-public static final native int _DtDtsFileToDataType(byte[] fileName);
-public static final int DtDtsFileToDataType(byte[] fileName) {
+public static final native int /*long*/ _DtDtsFileToDataType(byte[] fileName);
+public static final int /*long*/ DtDtsFileToDataType(byte[] fileName) {
 	lock.lock();
 	try {
 		return _DtDtsFileToDataType(fileName);
@@ -70,8 +70,8 @@ public static final boolean DtDtsDataTypeIsAction(byte[] dataType) {
 		lock.unlock();
 	}
 }
-public static final native int _DtDtsDataTypeToAttributeValue(byte[] dataType, byte[] attrName, byte[] optName);
-public static final int DtDtsDataTypeToAttributeValue(byte[] dataType, byte[] attrName, byte[] optName) {
+public static final native int /*long*/ _DtDtsDataTypeToAttributeValue(byte[] dataType, byte[] attrName, byte[] optName);
+public static final int /*long*/ DtDtsDataTypeToAttributeValue(byte[] dataType, byte[] attrName, byte[] optName) {
 	lock.lock();
 	try {
 		return _DtDtsDataTypeToAttributeValue(dataType, attrName, optName);
@@ -106,8 +106,8 @@ public static final void DtDtsFreeAttributeValue(int /*long*/ attrValue) {
 		lock.unlock();
 	}
 }
-public static final native int _DtActionInvoke(int /*long*/ topWidget, byte[] action, DtActionArg args, int argCount, byte[] termOpts, byte[] execHost, byte[] contextDir, int useIndicator, int /*long*/ callback, int /*long*/ clientData);
-public static final int DtActionInvoke(int /*long*/ topWidget, byte[] action, DtActionArg args, int argCount, byte[] termOpts, byte[] execHost, byte[] contextDir, int useIndicator, int /*long*/ callback, int /*long*/ clientData) {
+public static final native long _DtActionInvoke(int /*long*/ topWidget, byte[] action, DtActionArg args, int argCount, byte[] termOpts, byte[] execHost, byte[] contextDir, int useIndicator, int /*long*/ callback, int /*long*/ clientData);
+public static final long DtActionInvoke(int /*long*/ topWidget, byte[] action, DtActionArg args, int argCount, byte[] termOpts, byte[] execHost, byte[] contextDir, int useIndicator, int /*long*/ callback, int /*long*/ clientData) {
 	lock.lock();
 	try {
 		return _DtActionInvoke(topWidget, action, args, argCount, termOpts, execHost, contextDir, useIndicator, callback, clientData);
@@ -115,8 +115,8 @@ public static final int DtActionInvoke(int /*long*/ topWidget, byte[] action, Dt
 		lock.unlock();
 	}
 }
-public static final native int _topLevelShellWidgetClass();
-public static final int topLevelShellWidgetClass() {
+public static final native int /*long*/ _topLevelShellWidgetClass();
+public static final int /*long*/ topLevelShellWidgetClass() {
 	lock.lock();
 	try {
 		return _topLevelShellWidgetClass();
@@ -124,8 +124,8 @@ public static final int topLevelShellWidgetClass() {
 		lock.unlock();
 	}
 }
-public static final native int _XtAppCreateShell(byte[] appName, byte[] appClass, int /*long*/ widgetClass, int /*long*/ display, int /*long*/ [] argList, int argCount);
-public static final int XtAppCreateShell(byte[] appName, byte[] appClass, int /*long*/ widgetClass, int /*long*/ display, int /*long*/ [] argList, int argCount) {
+public static final native int /*long*/ _XtAppCreateShell(byte[] appName, byte[] appClass, int /*long*/ widgetClass, int /*long*/ display, int /*long*/ [] argList, int argCount);
+public static final int /*long*/ XtAppCreateShell(byte[] appName, byte[] appClass, int /*long*/ widgetClass, int /*long*/ display, int /*long*/ [] argList, int argCount) {
 	lock.lock();
 	try {
 		return _XtAppCreateShell(appName, appClass, widgetClass, display, argList, argCount);
@@ -133,8 +133,8 @@ public static final int XtAppCreateShell(byte[] appName, byte[] appClass, int /*
 		lock.unlock();
 	}
 }
-public static final native int _XtCreateApplicationContext();
-public static final int XtCreateApplicationContext() {
+public static final native int /*long*/ _XtCreateApplicationContext();
+public static final int /*long*/ XtCreateApplicationContext() {
 	lock.lock();
 	try {
 		return _XtCreateApplicationContext();

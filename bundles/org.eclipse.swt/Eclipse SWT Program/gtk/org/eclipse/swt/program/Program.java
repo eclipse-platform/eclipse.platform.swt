@@ -126,13 +126,12 @@ boolean cde_execute(String fileName) {
 	/* Use the character encoding for the default locale */
 	byte[] action = Converter.wcsToMbcs(null, command, true);
 	byte[] fileArg = Converter.wcsToMbcs(null, fileName, true);
-	int actionID = 0;
 	int /*long*/ ptr = OS.g_malloc(fileArg.length);
 	OS.memmove(ptr, fileArg, fileArg.length);
 	DtActionArg args = new DtActionArg();
 	args.argClass = CDE.DtACTION_FILE;
 	args.name = ptr;
-	actionID = CDE.DtActionInvoke(cdeShell, action, args, 1, null, null, null, 1, 0, 0);
+	long actionID = CDE.DtActionInvoke(cdeShell, action, args, 1, null, null, null, 1, 0, 0);
 	OS.g_free(ptr);
 	return actionID != 0;
 }

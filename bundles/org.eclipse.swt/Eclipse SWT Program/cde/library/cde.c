@@ -28,7 +28,7 @@ JNIEXPORT jint JNICALL CDE_NATIVE(DtActionArg_1sizeof)
 #endif
 
 #ifndef NO__1DtActionInvoke
-JNIEXPORT jint JNICALL CDE_NATIVE(_1DtActionInvoke)
+JNIEXPORT jlong JNICALL CDE_NATIVE(_1DtActionInvoke)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jobject arg2, jint arg3, jbyteArray arg4, jbyteArray arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9)
 {
 	jbyte *lparg1=NULL;
@@ -36,14 +36,14 @@ JNIEXPORT jint JNICALL CDE_NATIVE(_1DtActionInvoke)
 	jbyte *lparg4=NULL;
 	jbyte *lparg5=NULL;
 	jbyte *lparg6=NULL;
-	jint rc = 0;
+	jlong rc = 0;
 	CDE_NATIVE_ENTER(env, that, _1DtActionInvoke_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = getDtActionArgFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	rc = (jint)DtActionInvoke((Widget)arg0, (char *)lparg1, lparg2, arg3, (char *)lparg4, (char *)lparg5, (char *)lparg6, arg7, (DtActionCallbackProc)arg8, (XtPointer)arg9);
+	rc = (jlong)DtActionInvoke((Widget)arg0, (char *)lparg1, lparg2, arg3, (char *)lparg4, (char *)lparg5, (char *)lparg6, arg7, (DtActionCallbackProc)arg8, (XtPointer)arg9);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
