@@ -7,8 +7,6 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.OS;
-
 public class WidgetTable {
 	static int FreeSlot = 0;
 	static int GrowSize = 1024;
@@ -18,12 +16,13 @@ public class WidgetTable {
 		for (int i=0; i<GrowSize-1; i++) IndexTable [i] = i + 1;
 		IndexTable [GrowSize - 1] = -1;
 	}
+	
 public static synchronized Widget get (int handle) {
 	if (handle == 0) return null;
-	int index = getUserData(handle) - 1;
-	if (0 <= index && index < WidgetTable.length) return WidgetTable [index];
+
 	return null;
 }
+
 public synchronized static void put (int handle, Widget widget) {
 	if (handle == 0) return;
 	if (FreeSlot == -1) {
@@ -39,7 +38,7 @@ public synchronized static void put (int handle, Widget widget) {
 		IndexTable = newIndexTable;
 		WidgetTable = newWidgetTable;
 	}
-    setUserData(handle, FreeSlot + 1);
+    
 	int oldSlot = FreeSlot;
 	FreeSlot = IndexTable [oldSlot];
 	IndexTable [oldSlot] = -2;
@@ -48,14 +47,7 @@ public synchronized static void put (int handle, Widget widget) {
 public static synchronized Widget remove (int handle) {
 	if (handle == 0) return null;
 	Widget widget = null;
-    int index= getUserData(handle) - 1;
-	if (0 <= index && index < WidgetTable.length) {
-		widget = WidgetTable [index];
-		WidgetTable [index] = null;
-		IndexTable [index] = FreeSlot;
-		FreeSlot = index;
-        setUserData(handle, 0);
-	}
+
 	return widget;
 }
 public static synchronized Shell [] shells () {
@@ -80,38 +72,4 @@ public static synchronized int size () {
 	}
 	return length;
 }
-/////////////////////////////////////////////////
-// Mac stuff
-/////////////////////////////////////////////////
-
-	private static int getUserData(int handle) {
-		if (OS.IsValidControlHandle(handle))
-			return OS.GetControlReference(handle);
-		if (OS.IsValidMenu(handle)) {
-			int[] refCon= new int[1];
-			OS.GetMenuItemRefCon(handle, (short)0, refCon);
-			//System.out.println("refCon: " + refCon[0]);
-			return refCon[0];
-		}
-		if (OS.IsValidWindowPtr(handle))
-			return OS.GetWRefCon(handle);
-		//System.out.println("WidgetTable.getUserData: unknown handle type");
-		return -1;
-	}
-	
-	private static void setUserData(int handle, int data) {
-		if (OS.IsValidControlHandle(handle)) {
-			OS.SetControlReference(handle, data);
-			return;
-		}
-		if (OS.IsValidMenu(handle)) {
-			OS.SetMenuItemRefCon(handle, (short)0, data);
-			return;
-		}
-		if (OS.IsValidWindowPtr(handle)) {
-			OS.SetWRefCon(handle, data);
-			return;
-		}
-		System.out.println("WidgetTable.setUserData: unknown handle type: " + handle);
-	}
 }
