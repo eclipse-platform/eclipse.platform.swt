@@ -4,7 +4,7 @@ package org.eclipse.swt.custom;
  * All Rights Reserved
  */
 
-import java.util.EventListener;
+import org.eclipse.swt.internal.EventListenerCompatibility;
 
 /**
  * The StyledText widget implements this listener to receive
@@ -14,7 +14,7 @@ import java.util.EventListener;
  * the ModifyEvent or ExtendedModifyEvent that is sent by the StyledText 
  * widget to receive text change notifications.
  */
-public interface TextChangeListener extends EventListener {
+public interface TextChangeListener extends EventListenerCompatibility {
 
 /**
  * @param event.start replace start offset (input)	

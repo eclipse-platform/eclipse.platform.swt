@@ -5,7 +5,7 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import java.util.EventListener;
+import org.eclipse.swt.internal.EventListenerCompatibility;
 
 /**
  * Classes which implement this interface provide a method
@@ -21,7 +21,7 @@ import java.util.EventListener;
  *
  * @see MouseEvent
  */
-public interface MouseMoveListener extends EventListener {
+public interface MouseMoveListener extends EventListenerCompatibility {
 
 /**
  * Sent when the mouse moves.

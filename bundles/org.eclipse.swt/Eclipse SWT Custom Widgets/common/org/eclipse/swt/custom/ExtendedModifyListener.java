@@ -4,9 +4,9 @@ package org.eclipse.swt.custom;
  * All Rights Reserved
  */
 
-import java.util.EventListener;
+import org.eclipse.swt.internal.EventListenerCompatibility;
 
-public interface ExtendedModifyListener extends EventListener {
+public interface ExtendedModifyListener extends EventListenerCompatibility {
 /**
  * This method is called after a text change occurs.
  * <p>

@@ -3,6 +3,7 @@
     <classpathentry kind="var" path="JRE_LIB"/>
     <classpathentry kind="src" path="Eclipse SWT/win32"/>
     <classpathentry kind="src" path="Eclipse SWT/common"/>
+    <classpathentry kind="src" path="Eclipse SWT/common_j2me"/>
     <classpathentry kind="src" path="Eclipse SWT Printing/win32"/>
     <classpathentry kind="src" path="Eclipse SWT Printing/common"/>
     <classpathentry kind="src" path="Eclipse SWT Program/win32"/>

@@ -4,6 +4,7 @@
     <classpathentry kind="src" path="Eclipse SWT/motif"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated"/>
     <classpathentry kind="src" path="Eclipse SWT/common"/>
+    <classpathentry kind="src" path="Eclipse SWT/common_j2se"/>
     <classpathentry kind="src" path="Eclipse SWT Printing/motif"/>
     <classpathentry kind="src" path="Eclipse SWT Printing/common"/>
     <classpathentry kind="src" path="Eclipse SWT Program/motif"/>

@@ -10,7 +10,6 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-import java.util.EventListener;
 
 /**
  * This class is the abstract superclass of all user interface objects.  
@@ -795,7 +794,7 @@ public void removeListener (int eventType, Listener listener) {
  * @see Listener
  * @see #addListener
  */
-protected void removeListener (int eventType, EventListener listener) {
+protected void removeListener (int eventType, EventListenerCompatibility listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;

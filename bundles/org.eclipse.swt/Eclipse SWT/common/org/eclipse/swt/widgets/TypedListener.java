@@ -5,7 +5,7 @@ package org.eclipse.swt.widgets;
  * All Rights Reserved
  */
 
-import java.util.EventListener;
+import org.eclipse.swt.internal.EventListenerCompatibility;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
@@ -29,7 +29,7 @@ public class TypedListener implements Listener {
 	/**
 	 * The receiver's event listener
 	 */
-	protected EventListener eventListener;
+	protected EventListenerCompatibility eventListener;
 
 /**
  * Constructs a new instance of this class for the given event listener.
@@ -42,7 +42,7 @@ public class TypedListener implements Listener {
  *
  * @param listener the event listener to store in the receiver
  */
-public TypedListener (EventListener listener) {
+public TypedListener (EventListenerCompatibility listener) {
 	eventListener = listener;
 }
 
@@ -57,7 +57,7 @@ public TypedListener (EventListener listener) {
  *
  * @return the receiver's event listener
  */
-public EventListener getEventListener () {
+public EventListenerCompatibility getEventListener () {
 	return eventListener;
 }
 

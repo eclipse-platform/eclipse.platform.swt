@@ -5,8 +5,6 @@ package org.eclipse.swt.custom;
  * All Rights Reserved
  */
 
-import java.util.EventListener;
-
 public interface CTabFolderListener {
 	public void itemClosed(CTabFolderEvent event);
 }

@@ -6,8 +6,9 @@ package org.eclipse.swt.custom;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.CloneableCompatibility;
 
-public class StyleRange implements Cloneable {
+public class StyleRange implements CloneableCompatibility {
 	public int start;		// style start offset. 0 based from the document start
 	public int length;		// style length.	
 	public Color foreground; 

@@ -8,6 +8,7 @@ package org.eclipse.swt.graphics;
 import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.image.*;
+import org.eclipse.swt.internal.CloneableCompatibility;
 
 /**
  * Instances of this class are device-independent descriptions
@@ -25,7 +26,7 @@ import org.eclipse.swt.internal.image.*;
  * @see ImageLoader
  */
 
-public final class ImageData implements Cloneable {
+public final class ImageData implements CloneableCompatibility {
 	
 	/**
 	 * the width of the image, in pixels

@@ -5,7 +5,7 @@ package org.eclipse.swt.graphics;
  * All Rights Reserved
  */
 
-import java.io.Serializable;
+import org.eclipse.swt.internal.SerializableCompatibility;
 import org.eclipse.swt.*;
 
 /**
@@ -28,7 +28,7 @@ import org.eclipse.swt.*;
  * @see Point
  */
 
-public final class Rectangle implements Serializable {
+public final class Rectangle implements SerializableCompatibility {
 	
 	/**
 	 * the x coordinate of the rectangle

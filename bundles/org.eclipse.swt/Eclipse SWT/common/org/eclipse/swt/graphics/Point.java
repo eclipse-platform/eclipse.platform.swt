@@ -5,7 +5,7 @@ package org.eclipse.swt.graphics;
  * All Rights Reserved
  */
 
-import java.io.Serializable;
+import org.eclipse.swt.internal.SerializableCompatibility;
 
 /**
  * Instances of this class represent places on the (x, y)
@@ -25,7 +25,7 @@ import java.io.Serializable;
  * @see Rectangle
  */
 
-public final class Point implements Serializable {
+public final class Point implements SerializableCompatibility {
 	
 	/**
 	 * the x coordinate of the point

@@ -5,8 +5,6 @@ package org.eclipse.swt.ole.win32;
  * All Rights Reserved
  */
 
-import java.util.EventListener;
-
 /**
 * The OleEventTable class implements a simple
 * look up mechanism that maps an event type

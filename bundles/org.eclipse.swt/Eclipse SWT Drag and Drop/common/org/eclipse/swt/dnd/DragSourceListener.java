@@ -4,7 +4,7 @@ package org.eclipse.swt.dnd;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-import java.util.EventListener;
+import org.eclipse.swt.internal.EventListenerCompatibility;
 
 /**
  * The <code>DragSourceListener</code> class provides event notification to the application for DragSource events.
@@ -17,7 +17,7 @@ import java.util.EventListener;
  * <b>move</b> operation, the application must remove the data that was transferred.</p>
  *
  */
-public interface DragSourceListener extends EventListener {
+public interface DragSourceListener extends EventListenerCompatibility {
 
 /**
  * The user has begun the actions required to drag the widget. This event gives the application 
