@@ -763,8 +763,13 @@ int processKeyUp (int callData) {
 	keysym [0] &= 0xFFFF;
 	switch (keysym [0]) {
 		case OS.XK_space:
+			click (false, xEvent);
+			break;
 		case OS.XK_Return:
-			click (keysym [0] == OS.XK_Return, xEvent);
+			click (true, xEvent);
+			break;
+		case OS.XK_Down:
+			if ((style & SWT.DROP_DOWN) != 0) click (true, xEvent);
 			break;
 	}
 	/*
@@ -844,6 +849,7 @@ boolean translateMnemonic (int key, XKeyEvent xEvent) {
 	return parent.translateMnemonic (key, xEvent);
 }
 boolean translateTraversal (int key, XKeyEvent xEvent) {
+	if (key == OS.XK_Down) return true;
 	return parent.translateTraversal (key, xEvent);
 }
 int processMouseHover (int id) {
