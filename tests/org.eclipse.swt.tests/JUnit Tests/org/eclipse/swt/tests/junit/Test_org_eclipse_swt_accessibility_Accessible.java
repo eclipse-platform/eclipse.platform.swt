@@ -12,6 +12,8 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.accessibility.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.accessibility.Accessible
@@ -29,17 +31,36 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	shell = new Shell();
+	accessible = shell.getAccessible();
 }
 
 protected void tearDown() {
+	assertEquals(false, shell.isDisposed());
+	shell.dispose();
+	assertTrue(shell.isDisposed());
 }
 
 public void test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener() {
-	warnUnimpl("Test test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener not written");
+	AccessibleControlListener listener = new AccessibleControlAdapter() {
+		public void getValue(AccessibleControlEvent e) {
+		}
+	};
+	accessible.addAccessibleControlListener(listener);
+	accessible.removeAccessibleControlListener(listener);
 }
 
 public void test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener() {
-	warnUnimpl("Test test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener not written");
+	AccessibleListener listener = new AccessibleAdapter() {
+		public void getName(AccessibleEvent e) {
+		}
+	};
+	accessible.addAccessibleListener(listener);
+	accessible.removeAccessibleListener(listener);
+}
+
+public void test_getControl() {
+	assertEquals(shell, accessible.getControl());
 }
 
 public void test_internal_WM_GETOBJECTII() {
@@ -55,11 +76,11 @@ public void test_internal_new_AccessibleLorg_eclipse_swt_widgets_Control() {
 }
 
 public void test_removeAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener() {
-	warnUnimpl("Test test_removeAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener not written");
+	// Tested in test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener.
 }
 
 public void test_removeAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener() {
-	warnUnimpl("Test test_removeAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener not written");
+	// Tested in test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener.
 }
 
 public void test_setFocusI() {
@@ -81,6 +102,7 @@ public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener");
 	methodNames.addElement("test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener");
+	methodNames.addElement("test_getControl");
 	methodNames.addElement("test_internal_WM_GETOBJECTII");
 	methodNames.addElement("test_internal_dispose_Accessible");
 	methodNames.addElement("test_internal_new_AccessibleLorg_eclipse_swt_widgets_Control");
@@ -93,6 +115,7 @@ public static java.util.Vector methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener")) test_addAccessibleControlListenerLorg_eclipse_swt_accessibility_AccessibleControlListener();
 	else if (getName().equals("test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener")) test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener();
+	else if (getName().equals("test_getControl")) test_getControl();
 	else if (getName().equals("test_internal_WM_GETOBJECTII")) test_internal_WM_GETOBJECTII();
 	else if (getName().equals("test_internal_dispose_Accessible")) test_internal_dispose_Accessible();
 	else if (getName().equals("test_internal_new_AccessibleLorg_eclipse_swt_widgets_Control")) test_internal_new_AccessibleLorg_eclipse_swt_widgets_Control();
@@ -100,4 +123,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener")) test_removeAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleListener();
 	else if (getName().equals("test_setFocusI")) test_setFocusI();
 }
+
+/* custom */
+private Shell shell;
+private Accessible accessible;
 }
