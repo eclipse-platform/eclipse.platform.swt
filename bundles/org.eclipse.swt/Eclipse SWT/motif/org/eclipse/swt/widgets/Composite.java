@@ -40,7 +40,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Composite extends Scrollable {
 	Layout layout;
-	int damagedRegion;
+	int focusHandle, damagedRegion;
 	Control [] tabList;
 	
 Composite () {
@@ -86,7 +86,8 @@ Control [] _getChildren () {
 	if (count == 0 || ptr == 0) return new Control [0];
 	int [] handles = new int [count];
 	OS.memmove (handles, ptr, count * 4);
-	Control [] children = new Control [count];
+	int length = focusHandle != 0 ? count - 1 : count;
+	Control [] children = new Control [length];
 	int i = 0, j = 0;
 	while (i < count) {
 		int handle = handles [i];
@@ -100,7 +101,7 @@ Control [] _getChildren () {
 		}
 		i++;
 	}
-	if (i == j) return children;
+	if (j == length) return children;
 	Control [] newChildren = new Control [j];
 	System.arraycopy (children, 0, newChildren, 0, j);
 	return newChildren;
@@ -178,6 +179,10 @@ void createHandle (int index) {
 	} else {
 		createScrolledHandle (parentHandle);
 	}
+	if ((style & SWT.NO_FOCUS) == 0) {
+		focusHandle = OS.XmCreateDrawingArea (handle, null, null, 0);
+		if (focusHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	}
 }
 void createScrolledHandle (int topHandle) {
 	int [] argList = {OS.XmNancestorSensitive, 1};
@@ -223,41 +228,13 @@ int defaultBackground () {
 int defaultForeground () {
 	return getDisplay ().compositeForeground;
 }
-public boolean forceFocus () {
-	checkWidget();
-	/*
-	* Bug in Motif.  When XtDestroyWidget() is called from
-	* within a FocusOut event handler, Motif GP's.  The fix
-	* is to post focus events and run them when the handler
-	* has returned.
-	*/
-	Display display = getDisplay ();
-	boolean oldFocusOut = display.postFocusOut;
-	Control [] children = _getChildren ();
-	int [] traversals = new int [children.length];
-	int [] argList = new int [] {OS.XmNtraversalOn, 0};
-	for (int i=0; i<children.length; i++) {
-		int childHandle = children [i].topHandle ();
-		OS.XtGetValues (childHandle, argList, argList.length / 2);
-		if ((traversals [i] = argList [1]) != 0) {
-			argList [1] = 0;
-			display.postFocusOut = true;
-			OS.XtSetValues (childHandle, argList, argList.length / 2);
-		}
-	}
-	boolean result = super.forceFocus ();
-	for (int i=0; i<children.length; i++) {
-		argList [1] = traversals [i];
-		Control control = children [i];
-		if (!control.isDisposed ()) {
-			int childHandle = control.topHandle ();
-			OS.XtSetValues (childHandle, argList, argList.length / 2);
-			if (argList [1] != 0) control.overrideTranslations ();
-		}
-	}
-	display.postFocusOut = oldFocusOut;
-	if (!display.postFocusOut) display.runFocusOutEvents ();
-	return result;
+void deregister () {
+	super.deregister ();
+	if (focusHandle != 0) WidgetTable.remove (focusHandle);
+}
+int focusHandle () {
+	if (focusHandle == 0) return super.focusHandle ();
+	return focusHandle;
 }
 /**
  * Returns an array containing the receiver's children.
@@ -285,6 +262,7 @@ int getChildrenCount () {
 	* */
 	int [] argList = {OS.XmNnumChildren, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
+	if (focusHandle != 0) return Math.max (0, argList [1] - 1);
 	return argList [1];
 }
 /**
@@ -386,6 +364,17 @@ public void layout (boolean changed) {
 	if (count == 0) return;
 	layout.layout (this, changed);
 }
+void manageChildren () {
+	if (focusHandle != 0) {	
+		OS.XtSetMappedWhenManaged (focusHandle, false);
+		OS.XtManageChild (focusHandle);
+	}
+	super.manageChildren ();
+	if (focusHandle != 0) {
+		OS.XtConfigureWidget(focusHandle, 0, 0, 1, 1, 0);
+		OS.XtSetMappedWhenManaged (focusHandle, true);
+	}
+}
 Point minimumSize () {
 	Control [] children = _getChildren ();
 	int width = 0, height = 0;
@@ -468,6 +457,15 @@ void realizeChildren () {
 	for (int i=0; i<children.length; i++) {
 		children [i].realizeChildren ();
 	}
+	/*
+	* Feature in Motif.  XmProcessTraversal() will not give focus to
+	* a widget that is obscured so the focus handle must be inside the
+	* client area of the parent.  This means that it is visible as a
+	* single pixel widget in the parent.  The fix is to unmap the
+	* focus handle so that it will be traversed by XmProcessTraversal()
+	* and will accept focus but will not be visible in the parent.
+	*/
+	if (focusHandle != 0) OS.XtUnmapWidget (focusHandle);
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0 && (style & SWT.NO_REDRAW_RESIZE) != 0) return;
 		int xDisplay = OS.XtDisplay (handle);
@@ -489,6 +487,10 @@ void realizeChildren () {
 		}
 	}
 }
+void register () {
+	super.register ();
+	if (focusHandle != 0) WidgetTable.put (focusHandle, this);
+}
 void redrawWidget (int x, int y, int width, int height, boolean all) {
 	super.redrawWidget (x, y, width, height, all);
 	if (!all) return;
@@ -505,6 +507,10 @@ void releaseChildren () {
 		Control child = children [i];
 		if (!child.isDisposed ()) child.releaseResources ();
 	}
+}
+void releaseHandle () {
+	super.releaseHandle ();
+	focusHandle = 0;
 }
 void releaseWidget () {
 	releaseChildren ();
@@ -541,7 +547,7 @@ public boolean setFocus () {
 		Control child = children [i];
 		if (child.setFocus ()) return true;
 	}
-	return forceFocus ();
+	return super.setFocus ();
 }
 /**
  * Sets the layout which is associated with the receiver to be
@@ -623,42 +629,6 @@ boolean setTabItemFocus () {
 	}
 	return super.setTabItemFocus ();
 }
-void setScrollbarVisible (int barHandle, boolean visible) {
-	/*
-	* Bug in Motif.  When XtDestroyWidget() is called from
-	* within a FocusOut event handler, Motif GP's.  The fix
-	* is to post focus events and run them when the handler
-	* has returned.
-	*/
-	Display display = getDisplay ();
-	boolean oldFocusOut = display.postFocusOut;
-	Control [] children = _getChildren ();
-	int [] traversals = new int [children.length];
-	int [] argList = new int [] {OS.XmNtraversalOn, 0};
-	for (int i=0; i<children.length; i++) {
-		int childHandle = children [i].topHandle ();
-		OS.XtGetValues (childHandle, argList, argList.length / 2);
-		if ((traversals [i] = argList [1]) != 0) {
-			if (!children[i].hasFocus ()) {
-				argList [1] = 0;
-				display.postFocusOut = true;
-				OS.XtSetValues (children [i].handle, argList, argList.length / 2);
-			}
-		}
-	}
-	super.setScrollbarVisible(barHandle, visible);
-	for (int i=0; i<children.length; i++) {
-		argList [1] = traversals [i];
-		Control control = children [i];
-		if (!control.isDisposed ()) {
-			int childHandle = control.topHandle ();
-			OS.XtSetValues (childHandle, argList, argList.length / 2);
-			if (argList [1] != 0) control.overrideTranslations ();
-		}
-	}
-	display.postFocusOut = oldFocusOut;
-	if (!display.postFocusOut) display.runFocusOutEvents ();
-}
 int traversalCode (int key, XKeyEvent xEvent) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) return 0;
@@ -674,6 +644,20 @@ boolean translateMnemonic (char key, XKeyEvent xEvent) {
 		if (child.translateMnemonic (key, xEvent)) return true;
 	}
 	return false;
+}
+int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	int result = super.XButtonPress (w, client_data, call_data, continue_to_dispatch);
+
+	/* Set focus for a canvas with no children */
+	if ((state & CANVAS) != 0) {
+		XButtonEvent xEvent = new XButtonEvent ();
+		OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
+		if (xEvent.button == 1) {
+			if ((style & SWT.NO_FOCUS) != 0) return result;
+			if (getChildrenCount () == 0) setFocus ();
+		}
+	}
+	return result;
 }
 int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
 	if ((state & CANVAS) == 0) {
