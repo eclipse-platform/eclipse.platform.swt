@@ -33,7 +33,7 @@ public TextStyle (Device device, Font font, Color foreground, Color background) 
 }
 
 int /*long*/[] createAttributes () {
-	int /*long*/[] attributes = new int[6];
+	int /*long*/[] attributes = new int /*long*/[6];
 	int count = 0;
 	if (font != null && !font.isDisposed()) {
 		attributes[count++] = OS.pango_attr_font_desc_new (font.handle);
