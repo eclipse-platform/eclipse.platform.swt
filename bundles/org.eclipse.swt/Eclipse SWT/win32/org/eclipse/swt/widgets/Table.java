@@ -2806,52 +2806,58 @@ int windowProc () {
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
-	if (!OS.IsWindowEnabled (handle)) return result;
 	/*
-	* Feature in Windows.  When WM_ERASEBKGND is called,
-	* it clears the damaged area by filling it with the
-	* background color.  During WM_PAINT, when the table
-	* items are drawn, the background for each item is
-	* also drawn, causing flashing.  The fix is to adjust
-	* the damage by subtracting the bounds of each visible
-	* table item.
+	* This code is intentionally commented.  When a table contains
+	* images that are not in the first column, the work around causes
+	* pixel corruption.
 	*/
-	int itemCount = getItemCount ();
-	if (itemCount == 0) return result;
-	GCData data = new GCData();
-	data.device = display;
-	GC gc = GC.win32_new (wParam, data);
-	Region region = new Region (display);
-	gc.getClipping (region);
-	int columnCount = Math.max (1, getColumnCount ());
-	Rectangle clientArea = getClientArea ();
-	int i = getTopIndex ();
-	int bottomIndex = i + OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0);
-	bottomIndex = Math.min (itemCount, bottomIndex);
-	while (i < bottomIndex) {
-		int j = 0;
-		while (j < columnCount) {
-			if (j != 0 || (!isSelected (i) && i != getFocusIndex ())) {
-				RECT rect = new RECT ();
-				rect.top = j;
-				rect.left = OS.LVIR_LABEL;
-				OS.SendMessage (handle, OS. LVM_GETSUBITEMRECT, i, rect);
-				int width = Math.max (0, rect.right - rect.left);
-				int height = Math.max (0, rect.bottom - rect.top);
-				Rectangle rect2 = new Rectangle (rect.left, rect.top, width, height);
-				if (!rect2.intersects (clientArea)) break;
-				region.subtract (rect2);
-			}
-			j++;
-		}
-		i++;
-	}
-	gc.setClipping (region);
-	drawBackground (wParam);
-	gc.setClipping ((Region) null);
-	region.dispose ();
-	gc.dispose ();
-	return LRESULT.ONE;
+//	if (!OS.IsWindowEnabled (handle)) return result;
+//	/*
+//	* Feature in Windows.  When WM_ERASEBKGND is called,
+//	* it clears the damaged area by filling it with the
+//	* background color.  During WM_PAINT, when the table
+//	* items are drawn, the background for each item is
+//	* also drawn, causing flashing.  The fix is to adjust
+//	* the damage by subtracting the bounds of each visible
+//	* table item.
+//	*/
+//	int itemCount = getItemCount ();
+//	if (itemCount == 0) return result;
+//	GCData data = new GCData();
+//	data.device = display;
+//	GC gc = GC.win32_new (wParam, data);
+//	Region region = new Region (display);
+//	gc.getClipping (region);
+//	int columnCount = Math.max (1, getColumnCount ());
+//	Rectangle clientArea = getClientArea ();
+//	int i = getTopIndex ();
+//	int bottomIndex = i + OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0);
+//	bottomIndex = Math.min (itemCount, bottomIndex);
+//	while (i < bottomIndex) {
+//		int j = 0;
+//		while (j < columnCount) {
+//			if (j != 0 || (!isSelected (i) && i != getFocusIndex ())) {
+//				RECT rect = new RECT ();
+//				rect.top = j;
+//				rect.left = OS.LVIR_LABEL;
+//				OS.SendMessage (handle, OS. LVM_GETSUBITEMRECT, i, rect);
+//				int width = Math.max (0, rect.right - rect.left);
+//				int height = Math.max (0, rect.bottom - rect.top);
+//				Rectangle rect2 = new Rectangle (rect.left, rect.top, width, height);
+//				if (!rect2.intersects (clientArea)) break;
+//				region.subtract (rect2);
+//			}
+//			j++;
+//		}
+//		i++;
+//	}
+//	gc.setClipping (region);
+//	drawBackground (wParam);
+//	gc.setClipping ((Region) null);
+//	region.dispose ();
+//	gc.dispose ();
+//	return LRESULT.ONE;
+	return result;
 }
 
 LRESULT WM_GETOBJECT (int wParam, int lParam) {
