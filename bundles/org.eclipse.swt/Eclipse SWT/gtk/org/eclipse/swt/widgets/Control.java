@@ -1628,11 +1628,22 @@ int gtk_enter_notify_event (int widget, int event) {
 }
 
 int gtk_event_after (int widget, int gdkEvent) {
-	GdkEventButton gdkEventButton = new GdkEventButton ();
-	OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
-	if (gdkEventButton.type == OS.GDK_BUTTON_PRESS) {
-		if (gdkEventButton.button == 3) {
-			showMenu ((int) gdkEventButton.x_root, (int) gdkEventButton.y_root);
+	GdkEvent event = new GdkEvent ();
+	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
+	switch (event.type) {
+		case OS.GDK_BUTTON_PRESS: {
+			GdkEventButton gdkEventButton = new GdkEventButton ();
+			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
+			if (gdkEventButton.button == 3) {
+				showMenu ((int) gdkEventButton.x_root, (int) gdkEventButton.y_root);
+			}
+			break;
+		}
+		case OS.GDK_FOCUS_CHANGE: {
+			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+			sendFocusEvent (gdkEventFocus.in != 0 ? SWT.FocusIn : SWT.FocusOut);
+			break;
 		}
 	}
 	return 0;
@@ -1658,8 +1669,6 @@ int gtk_expose_event (int widget, int eventPtr) {
 }
 
 int gtk_focus_in_event (int widget, int event) {
-	Shell shell = _getShell ();
-	sendEvent (SWT.FocusIn);
 	// widget could be disposed at this point
 	if (handle != 0) {
 		Control oldControl = display.imControl;
@@ -1674,22 +1683,10 @@ int gtk_focus_in_event (int widget, int event) {
 			if (imHandle != 0) OS.gtk_im_context_focus_in (imHandle);
 		}
 	}
-
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/
-	if (!shell.isDisposed ()) {
-		shell.setActiveControl (this);
-	}
 	return 0;
 }
 
 int gtk_focus_out_event (int widget, int event) {
-	Shell shell = _getShell ();
-	sendEvent (SWT.FocusOut);
 	// widget could be disposed at this point
 	if (handle != 0) {
 		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
@@ -1697,20 +1694,6 @@ int gtk_focus_out_event (int widget, int event) {
 			if (imHandle != 0) {
 				OS.gtk_im_context_focus_out (imHandle);
 			}
-		}
-	}
-	
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/
-	if (!shell.isDisposed ()) {
-		Display display = shell.display;
-		Control control = display.getFocusControl ();
-		if (control == null || shell != control.getShell () ) {
-			shell.setActiveControl (null);
 		}
 	}
 	return 0;
@@ -2084,6 +2067,41 @@ void releaseWidget () {
 	parent = null;
 	menu = null;
 	layoutData = null;
+}
+
+void sendFocusEvent (int type) {
+	Shell shell = _getShell ();
+	sendEvent (type);
+	switch (type) {
+		case SWT.FocusIn: {
+			/*
+			* It is possible that the shell may be
+			* disposed at this point.  If this happens
+			* don't send the activate and deactivate
+			* events.
+			*/
+			if (!shell.isDisposed ()) {
+				shell.setActiveControl (this);
+			}			
+			break;
+		}
+		case SWT.FocusOut: {
+			/*
+			* It is possible that the shell may be
+			* disposed at this point.  If this happens
+			* don't send the activate and deactivate
+			* events.
+			*/
+			if (!shell.isDisposed ()) {
+				Display display = shell.display;
+				Control control = display.getFocusControl ();
+				if (control == null || shell != control.getShell () ) {
+					shell.setActiveControl (null);
+				}
+			}
+			break;
+		}
+	}
 }
 
 boolean sendHelpEvent (int helpType) {
