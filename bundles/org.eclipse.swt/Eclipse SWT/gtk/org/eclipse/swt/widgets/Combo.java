@@ -1383,7 +1383,7 @@ public void setText (String string) {
 	*/
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
-		string = verifyText (string, 0, OS.g_utf8_strlen (ptr, -1));
+		string = verifyText (string, 0, (int)/*64*/OS.g_utf8_strlen (ptr, -1));
 		if (string == null) return;
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
