@@ -121,6 +121,7 @@ void createHandle (int index) {
 		int [] args = {
 			OS.Pt_ARG_SEP_FLAGS, orientation, OS.Pt_SEP_VERTICAL | OS.Pt_SEP_HORIZONTAL,
 			OS.Pt_ARG_SEP_TYPE, type, 0,
+			OS.Pt_ARG_FILL_COLOR, display.WIDGET_BACKGROUND, 0,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};		
 		handle = OS.PtCreateWidget (clazz, parentHandle, args.length / 3, args);
@@ -138,6 +139,7 @@ void createHandle (int index) {
 		OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 		OS.Pt_ARG_HORIZONTAL_ALIGNMENT, alignment, 0,
 		OS.Pt_ARG_VERTICAL_ALIGNMENT, verticalAlign, 0,
+		OS.Pt_ARG_FILL_COLOR, display.WIDGET_BACKGROUND, 0,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (clazz, parentHandle, args.length / 3, args);
