@@ -31,7 +31,7 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-class Spinner extends Composite {
+public class Spinner extends Composite {
 	static final int INNER_BORDER = 2;
 	static final int MIN_ARROW_WIDTH = 6;
 	int lastEventTime = 0;

@@ -31,7 +31,7 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-class Spinner extends Composite {	
+public class Spinner extends Composite {	
 	
 /**
  * Constructs a new instance of this class given its parent
