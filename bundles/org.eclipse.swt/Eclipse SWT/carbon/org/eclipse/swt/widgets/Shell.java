@@ -175,11 +175,6 @@ void deregister () {
 	WidgetTable.remove (theRoot [0]);
 }
 
-public void dispose () {
-	if (isDisposed()) return;
-	super.dispose ();
-}
-
 void destroyWidget () {
 	int theWindow = shellHandle;
 //	OS.HideWindow (shellHandle);
