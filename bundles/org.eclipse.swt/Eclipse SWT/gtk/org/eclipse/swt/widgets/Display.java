@@ -185,6 +185,9 @@ public class Display extends Device {
 	/* System Images */
 	int /*long*/ errorImage, infoImage, questionImage, warningImage;
 	
+	/* System Cursors */
+	Cursor[] cursors = new Cursor [22];
+
 	/* Colors */
 	GdkColor COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
 	GdkColor COLOR_WIDGET_HIGHLIGHT_SHADOW, COLOR_WIDGET_BACKGROUND, COLOR_WIDGET_FOREGROUND, COLOR_WIDGET_BORDER;
@@ -1366,6 +1369,15 @@ public Color getSystemColor (int id) {
 	return Color.gtk_new (this, gdkColor);
 }
 
+public Cursor getSystemCursor (int id) {
+	checkDevice ();
+	if (!(0 <= id && id < cursors.length)) return null;
+	if (cursors [id] == null) {
+		cursors [id] = new Cursor (this, id);
+	}
+	return cursors [id];
+}
+
 public Image getSystemImage (int id) {
 	int /*long*/ image = 0;
 	switch (id) {
@@ -2010,7 +2022,14 @@ void releaseDisplay () {
 	if (infoImage != 0) OS.g_object_unref (infoImage);
 	if (questionImage != 0) OS.g_object_unref (questionImage);
 	if (warningImage != 0) OS.g_object_unref (warningImage);
+	errorImage = infoImage = questionImage = warningImage = 0;
 	
+	/* Release the System Cursors */
+	for (int i = 0; i < cursors.length; i++) {
+		if (cursors [i] != null) cursors [i].dispose ();
+	}
+	cursors = null;
+
 	COLOR_WIDGET_DARK_SHADOW = COLOR_WIDGET_NORMAL_SHADOW = COLOR_WIDGET_LIGHT_SHADOW =
 	COLOR_WIDGET_HIGHLIGHT_SHADOW = COLOR_WIDGET_BACKGROUND = COLOR_WIDGET_BORDER =
 	COLOR_LIST_FOREGROUND = COLOR_LIST_BACKGROUND = COLOR_LIST_SELECTION = COLOR_LIST_SELECTION_TEXT =
