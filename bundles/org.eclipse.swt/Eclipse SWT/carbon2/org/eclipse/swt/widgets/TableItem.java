@@ -286,7 +286,6 @@ public Rectangle getImageBounds (int index) {
 	OS.GetControlBounds (parent.handle, rect);
 	x -= rect.left;
 	y -= rect.top;
-	System.out.println(new Rectangle (x, y, width, height));
 	return new Rectangle (x, y, width, height);
 }
 

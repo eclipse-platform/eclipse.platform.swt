@@ -257,7 +257,6 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 			OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, 4, null, wheelDelta);
 			bar.setSelection (Math.max (0, bar.getSelection () - bar.getIncrement () * wheelDelta [0]));
 			Event event = new Event ();
-			System.out.println (wheelDelta [0]);
 		    event.detail = wheelDelta [0] > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
 			bar.sendEvent (SWT.Selection, event);
 //			Display display = getDisplay ();
