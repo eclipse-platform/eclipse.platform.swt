@@ -2473,7 +2473,7 @@ void doBackspace() {
 		else {
 			String lineText = content.getLine(line);
 			TextLayout layout = renderer.getTextLayout(lineText, lineOffset);
-			int start = layout.getPreviousOffset(caretOffset - lineOffset, TextLayout.MOVEMENT_CLUSTER);
+			int start = layout.getPreviousOffset(caretOffset - lineOffset, TextLayout.MOVEMENT_CHAR);
 			renderer.disposeTextLayout(layout); 
 			event.start = start + lineOffset;
 			event.end = caretOffset;
@@ -5141,7 +5141,7 @@ void handleTextChanged(TextChangedEvent event) {
 				caret.setVisible(false);
 			}
 			performPaint(gc, startLine, startY, lineHeight);
-			if (caret != null) {		
+			if (caret != null) {
 				caret.setVisible(caretVisible);
 			}
 			gc.dispose();
