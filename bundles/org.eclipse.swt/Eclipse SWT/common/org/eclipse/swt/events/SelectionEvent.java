@@ -5,8 +5,8 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Widget;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are sent as a result of
@@ -26,7 +26,22 @@ public class SelectionEvent extends TypedEvent {
 	public Widget item;
 	
 	/**
-	 * extra detail information about the selection
+	 * extra detail information about the selection, depending on the widget
+	 * <p><b>Sash and Scrollable</b><ul>
+	 * <li>{@link SWT#DRAG}</li>
+	 * </ul></p><p><b>ScrollBar and Slider</b><ul>
+	 * <li>{@link SWT#DRAG}</li>
+	 * <li>{@link SWT#HOME}</li>
+	 * <li>{@link SWT#END}</li>
+	 * <li>{@link SWT#ARROW_DOWN}</li>
+	 * <li>{@link SWT#ARROW_UP}</li>
+	 * <li>{@link SWT#PAGE_DOWN}</li>
+	 * <li>{@link SWT#PAGE_UP}</li>
+	 * </ul></p><p><b>Table, Tree and TableTree</b><ul>
+	 * <li>{@link SWT#CHECK}</li>
+	 * </ul></p><p><b>CoolItem and ToolItem</b><ul>
+	 * <li>{@link SWT#ARROW}</li>
+	 * </ul></p>
 	 */
 	public int detail;
 

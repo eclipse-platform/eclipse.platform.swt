@@ -468,7 +468,7 @@ String getName () {
  *
  * @return the contents string for the widget
  *
- * @see toString
+ * @see #toString
  */
 String getNameText () {
 	return "";

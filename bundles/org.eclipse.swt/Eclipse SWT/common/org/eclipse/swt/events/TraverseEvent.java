@@ -5,7 +5,8 @@ package org.eclipse.swt.events;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are sent as a result of
@@ -18,6 +19,18 @@ public class TraverseEvent extends KeyEvent {
 	
 	/**
 	 * the type of traversal
+	 * <p><ul>
+	 * <li>{@link SWT#TRAVERSE_NONE}</li>
+	 * <li>{@link SWT#TRAVERSE_ESCAPE}</li>
+	 * <li>{@link SWT#TRAVERSE_RETURN}</li>
+	 * <li>{@link SWT#TRAVERSE_TAB_NEXT}</li>
+	 * <li>{@link SWT#TRAVERSE_TAB_PREVIOUS}</li>
+	 * <li>{@link SWT#TRAVERSE_ARROW_NEXT}</li>
+	 * <li>{@link SWT#TRAVERSE_ARROW_PREVIOUS}</li>
+	 * <li>{@link SWT#TRAVERSE_MNEMONIC}</li>
+	 * <li>{@link SWT#TRAVERSE_PAGE_NEXT}</li>
+	 * <li>{@link SWT#TRAVERSE_PAGE_PREVIOUS}</li>
+	 * </ul></p>
 	 */
 	public int detail;
 	

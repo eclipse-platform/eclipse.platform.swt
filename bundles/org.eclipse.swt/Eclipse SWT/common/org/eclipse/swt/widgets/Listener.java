@@ -32,7 +32,7 @@ package org.eclipse.swt.widgets;
  *
  * @see Widget#addListener
  * @see java.util.EventListener
- * @see org.eclipse.swt.events.*
+ * @see org.eclipse.swt.events
  */
 public interface Listener {
 
