@@ -1523,6 +1523,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1keymap_1translate_1keyboard_1state)
 }
 #endif
 
+#ifndef NO_gdk_1keyval_1to_1lower
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1keyval_1to_1lower)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1keyval_1to_1lower\n")
+	rc = (jint)gdk_keyval_to_lower(arg0);
+	NATIVE_EXIT(env, that, "gdk_1keyval_1to_1lower\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1keyval_1to_1unicode
 JNIEXPORT jint JNICALL OS_NATIVE(gdk_1keyval_1to_1unicode)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1975,6 +1987,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1threads_1leave)
 	NATIVE_ENTER(env, that, "gdk_1threads_1leave\n")
 	gdk_threads_leave();
 	NATIVE_EXIT(env, that, "gdk_1threads_1leave\n")
+}
+#endif
+
+#ifndef NO_gdk_1unicode_1to_1keyval
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1unicode_1to_1keyval)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1unicode_1to_1keyval\n")
+	rc = (jint)gdk_unicode_to_keyval(arg0);
+	NATIVE_EXIT(env, that, "gdk_1unicode_1to_1keyval\n")
+	return rc;
 }
 #endif
 
@@ -3612,6 +3636,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1init_1check)
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "gtk_1init_1check\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1label_1get_1mnemonic_1keyval
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1label_1get_1mnemonic_1keyval)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1label_1get_1mnemonic_1keyval\n")
+	rc = (jint)gtk_label_get_mnemonic_keyval((GtkLabel *)arg0);
+	NATIVE_EXIT(env, that, "gtk_1label_1get_1mnemonic_1keyval\n")
 	return rc;
 }
 #endif
@@ -6168,6 +6204,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1widget_1is_1focus)
 	NATIVE_ENTER(env, that, "gtk_1widget_1is_1focus\n")
 	rc = (jboolean)gtk_widget_is_focus((GtkWidget *)arg0);
 	NATIVE_EXIT(env, that, "gtk_1widget_1is_1focus\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1mnemonic_1activate
+JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1widget_1mnemonic_1activate)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "gtk_1widget_1mnemonic_1activate\n")
+	rc = (jboolean)gtk_widget_mnemonic_activate((GtkWidget *)arg0, (gboolean)arg1);
+	NATIVE_EXIT(env, that, "gtk_1widget_1mnemonic_1activate\n")
 	return rc;
 }
 #endif
