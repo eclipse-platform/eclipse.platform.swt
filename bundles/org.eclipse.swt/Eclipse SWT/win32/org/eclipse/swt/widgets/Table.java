@@ -573,7 +573,7 @@ void destroyItem (TableColumn column) {
 	System.arraycopy (columns, index + 1, columns, index, --count - index);
 	columns [count] = null;
 
-	if (customDraw && items != null) {
+	if (customDraw && items != null && getColumnCount () != 0) {
 		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i = 0; i < itemCount; i++) {
