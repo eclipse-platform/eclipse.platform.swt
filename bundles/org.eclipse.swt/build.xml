@@ -110,7 +110,7 @@
     <property name="destroot" value="${basedir}"/>
     <ant antfile="${template}" target="src">
       <property name="mapping" value="Eclipse SWT PI/gtk/,Eclipse SWT PI/common_j2se/,Eclipse SWT PI/gtk/"/>
-      <property name="includes" value="Eclipse SWT PI/gtk/**/*.java,Eclipse SWT PI/common_j2se/**/*.java,Eclipse SWT PI/gtk/library/"/>
+      <property name="includes" value="Eclipse SWT PI/gtk/about.html,Eclipse SWT PI/gtk/**/*.java,Eclipse SWT PI/common_j2se/**/*.java,Eclipse SWT PI/gtk/library/"/>
       <property name="excludes" value=""/>
       <property name="dest" value="${destroot}/ws/gtk/swt-pisrc.zip"/>
     </ant>
