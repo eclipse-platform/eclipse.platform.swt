@@ -405,9 +405,19 @@ void createWidget (int index) {
 	realizeWidget ();
 }
 
+int defaultBackground () {
+	Display display = getDisplay ();
+	return display.WIDGET_BACKGROUND;
+}
+
 byte [] defaultFont () {
 	Display display = getDisplay ();
 	return display.TEXT_FONT;
+}
+
+int defaultForeground () {
+	Display display = getDisplay ();
+	return display.WIDGET_FOREGROUND;
 }
 
 /**
@@ -1819,7 +1829,7 @@ boolean sendResize () {
  */
 public void setBackground (Color color) {
 	checkWidget();
-	int pixel = OS.Pt_DEFAULT_COLOR;
+	int pixel = defaultBackground ();
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
@@ -1880,7 +1890,7 @@ public void setFont (Font font) {
  */
 public void setForeground (Color color) {
 	checkWidget();
-	int pixel = OS.Pt_DEFAULT_COLOR;
+	int pixel = defaultForeground ();
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;

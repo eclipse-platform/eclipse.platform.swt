@@ -209,7 +209,7 @@ public class Display extends Device {
 	int WIDGET_DARK_SHADOW, WIDGET_NORMAL_SHADOW, WIDGET_LIGHT_SHADOW;
 	int WIDGET_HIGHLIGHT_SHADOW, WIDGET_BACKGROUND, WIDGET_FOREGROUND, WIDGET_BORDER;
 	int LIST_FOREGROUND, LIST_BACKGROUND, LIST_SELECTION, LIST_SELECTION_TEXT;
-	int INFO_FOREGROUND, INFO_BACKGROUND;
+	int INFO_FOREGROUND, INFO_BACKGROUND, TEXT_FOREGROUND, TEXT_BACKGROUND;
 	
 	/* Fonts */
 	byte [] TEXT_FONT, LIST_FONT;
@@ -913,26 +913,35 @@ void initializeWidgetColors () {
 	WIDGET_FOREGROUND = args [1];
 	WIDGET_BACKGROUND = args [4];
 
-	int handle = OS.PtCreateWidget (OS.PtList (), shellHandle, 0, null);
+	int listHandle = OS.PtCreateWidget (OS.PtList (), shellHandle, 0, null);
 	args = new int [] {	
 		OS.Pt_ARG_COLOR, 0, 0,
 		OS.Pt_ARG_FILL_COLOR, 0, 0,
 		OS.Pt_ARG_SELECTION_FILL_COLOR, 0, 0,
 		OS.Pt_ARG_SELECTION_TEXT_COLOR, 0, 0,
 	};
-	OS.PtGetResources (handle, args.length / 3, args);
+	OS.PtGetResources (listHandle, args.length / 3, args);
 	LIST_FOREGROUND = args [1];
 	LIST_BACKGROUND = args [4];
 	LIST_SELECTION = args [7];
 	LIST_SELECTION_TEXT = args [10];
+	
+	int textHandle = OS.PtCreateWidget (OS.PtText (), shellHandle, 0, null);
+	args = new int [] {	
+		OS.Pt_ARG_COLOR, 0, 0,
+		OS.Pt_ARG_FILL_COLOR, 0, 0,
+	};
+	OS.PtGetResources (textHandle, args.length / 3, args);
+	TEXT_FOREGROUND = args [1];
+	TEXT_BACKGROUND = args [4];
 
 	/*
 	* Feature in Photon. The values of Pt_ARG_DARK_BEVEL_COLOR and
 	* Pt_ARG_LIGHT_BEVEL_COLOR are not initialized until the widget
-	* is realized.  The fix is to realize the shell, but don't
-	* display it.
+	* is realized.  The fix is to realize the shell without displaying
+	* it.
 	*/
-	handle = OS.PtCreateWidget (OS.PtButton (), shellHandle, 0, null);
+	int buttonHandle = OS.PtCreateWidget (OS.PtButton (), shellHandle, 0, null);
 	OS.PtRealizeWidget(shellHandle);
 	args = new int [] {	
 		OS.Pt_ARG_OUTLINE_COLOR, 0, 0,
@@ -943,7 +952,7 @@ void initializeWidgetColors () {
 		OS.Pt_ARG_BALLOON_COLOR, 0, 0,
 		OS.Pt_ARG_BALLOON_FILL_COLOR, 0, 0,
 	};
-	OS.PtGetResources (handle, args.length / 3, args);
+	OS.PtGetResources (buttonHandle, args.length / 3, args);
 	WIDGET_BORDER = args [1];
 	WIDGET_DARK_SHADOW = args [4];
 	WIDGET_NORMAL_SHADOW = args [7];

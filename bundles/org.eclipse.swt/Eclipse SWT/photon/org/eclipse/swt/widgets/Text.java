@@ -348,6 +348,16 @@ void deregister () {
 	WidgetTable.remove (child);
 }
 
+int defaultBackground () {
+	Display display = getDisplay ();
+	return display.TEXT_BACKGROUND;
+}
+
+int defaultForeground () {
+	Display display = getDisplay ();
+	return display.TEXT_FOREGROUND;
+}
+
 /**
  * Gets the line number of the caret.
  * <p>

@@ -245,9 +245,19 @@ void createHandle (int index) {
 	createStandardScrollBars ();
 }
 
+int defaultBackground () {
+	Display display = getDisplay ();
+	return display.LIST_BACKGROUND;
+}
+
 byte [] defaultFont () {
 	Display display = getDisplay ();
 	return display.LIST_FONT;
+}
+
+int defaultForeground () {
+	Display display = getDisplay ();
+	return display.LIST_FOREGROUND;
 }
 
 /**
