@@ -3395,6 +3395,7 @@ void showToolTip (int x, int y) {
 }
 boolean updateItems() {
 	boolean changed = false;
+	boolean oldShowChevron = showChevron;
 	if (setItemSize()) changed = true;
 	if (setItemLocation()) changed = true;
 	if (items.length > 0) {
@@ -3411,6 +3412,7 @@ boolean updateItems() {
 		showItem(items[selectedIndex]);
 		if (top != firstIndex) changed = true;
 	}
+	if (showChevron != oldShowChevron) changed = true;
 	if (changed && toolTipShell != null) {
 		Point pt = getDisplay().getCursorLocation();
 		pt = toControl(pt);
