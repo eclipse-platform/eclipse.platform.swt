@@ -1022,7 +1022,9 @@ public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
 	int count = getItemCount ();
-	if (0 > start || start >= count) error (SWT.ERROR_INVALID_RANGE);
+	if (!(0 <= start && start <= end && start < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	int newEnd = Math.min (end, count - 1);
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.DeleteMenuItems (menuHandle, (short)(start+1), newEnd-start+1);

@@ -1911,6 +1911,10 @@ public void remove(int index) {
  */
 public void remove(int start, int end) {
 	checkWidget();
+	if (start > end) return;
+	if (!(0 <= start && start <= end && end < getItemCount())) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}	
 	SelectableItem item;
 	
 	for (int i = end; i >= start; i--) {

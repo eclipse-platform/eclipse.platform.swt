@@ -881,20 +881,19 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
-	if (start < 0) error(SWT.ERROR_INVALID_RANGE);
 	int count =  OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	if (!(0 <= start && start <= end && end < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	for (int index=Math.min(end,count-1); index>=start; index--) {
+	for (int index=end; index>=start; index--) {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		OS.gtk_list_store_remove (modelHandle, iter);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
-	if (count <= end) {
-		 error (SWT.ERROR_INVALID_RANGE);
-	}
 }
 
 /**

@@ -1381,9 +1381,12 @@ public void remove (int index) {
  */
 public void remove (int start, int end) {
 	checkWidget();
+	if (start > end) return;
+	if (!(0 <= start && start <= end && end < itemCount)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	int index = start;
 	while (index <= end) {
-		if (index < 0 || index >= itemCount) break;
 		TableItem item = items [index];
 		OS.gtk_list_store_remove (modelHandle, item.handle);
 		item.releaseResources ();
@@ -1392,7 +1395,6 @@ public void remove (int start, int end) {
 	System.arraycopy (items, index, items, start, itemCount - index);
 	for (int i=itemCount-(index-start); i<itemCount; i++) items [i] = null;
 	itemCount = itemCount - (index - start);
-	if (index <= end) error (SWT.ERROR_INVALID_RANGE);
 }
 
 /**
