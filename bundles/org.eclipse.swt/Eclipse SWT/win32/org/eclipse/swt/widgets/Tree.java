@@ -179,12 +179,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	while (hItem != 0) {
 		rect.left = hItem;
 		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect) != 0) {
-			width = Math.max (width, rect.right - rect.left);
+			width = Math.max (width, rect.right);
 			height += rect.bottom - rect.top;
 		}
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 	}
-	width = width * 2;
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
