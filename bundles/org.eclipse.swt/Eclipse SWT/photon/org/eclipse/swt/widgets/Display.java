@@ -1514,6 +1514,11 @@ void sendEvent (int eventType, Event event) {
 	}
 }
 
+public void setCursorLocation (int x, int y) {
+	checkDevice ();
+	OS.PhMoveCursorAbs (OS.PhInputGroup (0), x, y);	
+}
+
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -1529,9 +1534,7 @@ void sendEvent (int eventType, Event event) {
 public void setCursorLocation (Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int x = point.x;
-	int y = point.y;
-	OS.PhMoveCursorAbs (OS.PhInputGroup (0), x, y);	
+	setCursorLocation (point.x, point.y);
 }
 
 /**
