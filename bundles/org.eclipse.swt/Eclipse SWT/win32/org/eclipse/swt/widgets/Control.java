@@ -3256,16 +3256,29 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	boolean dragging = false;
+	boolean dragging = false, mouseDown = true;
 	if (hooks (SWT.DragDetect)) {
 		POINT pt = new POINT ();
 		pt.x = (short) (lParam & 0xFFFF);
 		pt.y = (short) (lParam >> 16);
-		if (!OS.IsWinCE) dragging = OS.DragDetect (handle, pt);
+		if (!OS.IsWinCE) {
+			/*
+			* Feature in Windows.  It's possible that the drag
+			* operation will not be started while the mouse is
+			* down, meaning that the mouse should be captured.
+			* This can happen when the user types the ESC key
+			* to cancel the drag.  The fix is to query the state
+			* of the mouse and capture the mouse accordingly.
+			*/
+			dragging = OS.DragDetect (handle, pt);
+			mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
+		}
 	}
 	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
-	if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	if (mouseDown) {
+		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	}
 	if (dragging) {
 		postEvent (SWT.DragDetect);
 	} else {
@@ -3301,8 +3314,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
 	int result = callWindowProc (OS.WM_LBUTTONUP, wParam, lParam);
-	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0)
+	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0) {
 		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
+	}
 	return new LRESULT (result);
 }
 
@@ -3337,8 +3351,9 @@ LRESULT WM_MBUTTONDOWN (int wParam, int lParam) {
 LRESULT WM_MBUTTONUP (int wParam, int lParam) {
 	sendMouseEvent (SWT.MouseUp, 2, OS.WM_MBUTTONUP, wParam, lParam);
 	int result = callWindowProc (OS.WM_MBUTTONUP, wParam, lParam);
-	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0)
+	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0) {
 		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
+	}
 	return new LRESULT (result);
 }
 
@@ -3654,8 +3669,9 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 LRESULT WM_RBUTTONUP (int wParam, int lParam) {
 	sendMouseEvent (SWT.MouseUp, 3, OS.WM_RBUTTONUP, wParam, lParam);
 	int result = callWindowProc (OS.WM_RBUTTONUP, wParam, lParam);
-	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0)
+	if ((wParam & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0) {
 		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
+	}
 	return new LRESULT (result);
 }
 
