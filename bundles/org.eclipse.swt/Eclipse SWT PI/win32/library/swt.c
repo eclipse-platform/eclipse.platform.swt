@@ -6463,6 +6463,44 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParamete
 #endif // _WIN32_WCE
 
 #ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoA__II_3II
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3)
+{
+	DECL_GLOB(pGlob)
+	jint *lparg2=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SystemParametersInfoA__II_3II\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+
+	rc = (jboolean)SystemParametersInfoA(arg0, arg1, lparg2, arg3);
+
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoW__II_3II
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3)
+{
+	DECL_GLOB(pGlob)
+	jint *lparg2=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SystemParametersInfoW__II_3II\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+
+	rc = (jboolean)SystemParametersInfoW(arg0, arg1, lparg2, arg3);
+
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ToAscii
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jshortArray arg3, jint arg4)
 {

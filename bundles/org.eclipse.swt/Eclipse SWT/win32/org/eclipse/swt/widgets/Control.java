@@ -3456,15 +3456,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 }
 
 LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
-	/*
-	* Feature in Windows.  If the WM_MOUSEWHEEL is handled by
-	* the control, it may not send WM_VSCROLL and WM_HSCROLL
-	* messages.  The fix is to intercept the WM_MOUSEWHEEL message
-	* and call the DefWindowProc which will convert the message to 
-	* send the appropriate WM_HSCROLL or WM_VSCROLL message.
-	*/
-	int code = OS.DefWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
-	return new LRESULT (code);
+	return null;
 }
 
 LRESULT WM_MOVE (int wParam, int lParam) {

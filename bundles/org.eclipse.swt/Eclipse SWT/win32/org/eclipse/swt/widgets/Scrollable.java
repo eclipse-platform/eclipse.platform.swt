@@ -233,6 +233,69 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
+	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
+	if (result != null) return result;
+	
+	/*
+	* Translate WM_MOUSEWHEEL to WM_VSCROLL or WM_HSCROLL.
+	*/
+	if ((state & CANVAS) != 0) {
+		if ((wParam & (OS.MK_SHIFT | OS.MK_CONTROL)) != 0) return LRESULT.ZERO;
+		int delta = (short) (wParam >> 16);
+		int code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
+		delta = Math.abs (delta);
+		if (delta < OS.WHEEL_DELTA) return LRESULT.ZERO;
+		if (verticalBar != null) {
+			int [] value = new int [1];
+   			OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
+			int count = value [0] * delta / OS.WHEEL_DELTA;
+			for (int i=0; i<count; i++) {
+				OS.SendMessage (handle, OS.WM_VSCROLL, code, 0);
+			}
+			return LRESULT.ZERO;
+		}
+		if (horizontalBar != null) {
+			int count = delta / OS.WHEEL_DELTA;
+			for (int i=0; i<count; i++) {
+				OS.SendMessage (handle, OS.WM_HSCROLL, code, 0);
+			}
+			return LRESULT.ZERO;
+		}
+		return LRESULT.ZERO;
+	}
+		
+	/*
+	* When the native widget scrolls inside WM_MOUSEWHEEL, it
+	* may or may not send a WM_VSCROLL or WM_HSCROLL to do the
+	* actual scrolling.  This depends on the implementation of
+	* each native widget.  In order to ensure that application
+	* code is notified when the scroll bar moves, compare the
+	* scroll bar position before and after the WM_MOUSEWHEEL.
+	* If the native control sends a WM_VSCROLL or WM_HSCROLL,
+	* then the application has already been notified.  If not
+	* explicity send the event.
+	*/
+	int vPosition = verticalBar == null ? 0 : verticalBar.getSelection ();
+	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();
+	int code = callWindowProc (OS.WM_MOUSEWHEEL, wParam, lParam);
+	if (verticalBar != null) {
+		if (verticalBar.getSelection () != vPosition) {
+			Event event = new Event ();
+			event.detail = SWT.DRAG; 
+			verticalBar.sendEvent (SWT.Selection, event);
+		}
+	}
+	if (horizontalBar != null) {
+		if (horizontalBar.getSelection () != hPosition) {
+			Event event = new Event ();
+			event.detail = SWT.DRAG; 
+			horizontalBar.sendEvent (SWT.Selection, event);
+		}
+	}
+	return new LRESULT (code);
+}
+
 LRESULT WM_SIZE (int wParam, int lParam) {
 	int code = callWindowProc (OS.WM_SIZE, wParam, lParam);
 	super.WM_SIZE (wParam, lParam);

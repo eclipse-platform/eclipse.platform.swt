@@ -717,6 +717,7 @@ public class OS {
 	public static final int SM_CYVSCROLL = 0x14;
 	public static final int SPI_GETWORKAREA = 0x30;
 	public static final int SPI_GETNONCLIENTMETRICS = 41;
+	public static final int SPI_GETWHEELSCROLLLINES = 104;
 	public static final int SRCAND = 0x8800c6;
 	public static final int SRCCOPY = 0xcc0020;
 	public static final int SRCINVERT = 0x660046;
@@ -982,6 +983,7 @@ public class OS {
 	public static final String WC_TABCONTROL = "SysTabControl32";
 	public static final String WC_TREEVIEW = "SysTreeView32";
 	public static final int WH_GETMESSAGE = 0x3;
+	public static final int WHEEL_DELTA = 120;
 	public static final int WM_ACTIVATE = 0x6;
 	public static final int WM_APP = 0x8000;
 	public static final int WM_CANCELMODE = 0x1f;
@@ -1749,6 +1751,11 @@ public static final boolean SystemParametersInfo (int uiAction, int uiParam, NON
 	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
 }
 
+public static final boolean SystemParametersInfo (int uiAction, int uiParam, int[] pvParam, int fWinIni) {
+	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, pvParam, fWinIni);
+	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
+}
+
 public static final int TranslateAccelerator (int hWnd, int hAccTable, MSG lpMsg) {
 	if (IsUnicode) return TranslateAcceleratorW (hWnd, hAccTable, lpMsg);
 	return TranslateAcceleratorA (hWnd, hAccTable, lpMsg);
@@ -2223,6 +2230,8 @@ public static final native boolean SystemParametersInfoW (int uiAction, int uiPa
 public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, RECT pvParam, int fWinIni);
 public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
 public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, int[] pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, int[] pvParam, int fWinIni);
 public static final native int ToAscii (int uVirtKey, int uScanCode, byte [] lpKeyState, short [] lpChar, int uFlags);
 public static final native int ToUnicode(int wVirtKey, int wScanCode, byte [] lpKeyState, char [] pwszBuff, int cchBuff, int wFlags);
 public static final native boolean TrackMouseEvent(TRACKMOUSEEVENT lpEventTrack);
