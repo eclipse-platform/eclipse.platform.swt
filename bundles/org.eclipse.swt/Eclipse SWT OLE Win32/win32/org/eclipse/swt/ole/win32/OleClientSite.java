@@ -740,15 +740,20 @@ private int GetWindowContext(int ppFrame, int ppDoc, int lprcPosRect, int lprcCl
 	return COM.S_OK;
 }
 public boolean isDirty() {
+	// Note: this method must return true unless it is absolutely clear that the
+	// contents of the Ole Document do not differ from the contents in the file
+	// on the file system.
+	
 	// Get access to the persistant storage mechanism
 	int[] address = new int[1];
 	if (objIOleObject.QueryInterface(COM.IIDIPersistFile, address) != COM.S_OK)
-		return false;
+		return true;
 	IPersistStorage permStorage = new IPersistStorage(address[0]);
 	// Are the contents of the permanent storage different from the file?
 	int result = permStorage.IsDirty();
 	permStorage.Release();
-	return (result == COM.S_OK);
+	if (result == COM.S_FALSE) return false;
+	return true;
 }
 public boolean isFocusControl () {
 	Control focus = getDisplay().getFocusControl();
@@ -819,10 +824,11 @@ private void onPaint(Event e) {
 }
 private void onResize(Event e) {
 	Rectangle area = frame.getClientArea();
-	setBounds(borderWidths.left, 
-		      borderWidths.top, 
-			  area.width - borderWidths.left - borderWidths.right, 
-			  area.height - borderWidths.top - borderWidths.bottom);
+	int INDENT = 100;
+	setBounds(borderWidths.left + INDENT, 
+		      borderWidths.top + INDENT, 
+			  area.width - borderWidths.left - borderWidths.right - 2 * INDENT, 
+			  area.height - borderWidths.top - borderWidths.bottom - 2 * INDENT);
 
 	setObjectRects();
 }
