@@ -176,7 +176,11 @@ boolean checkScroll (int hItem) {
 	* and a tree item that is not a child of the first root is selected or
 	* scrolled using TVM_SELECTITEM or TVM_ENSUREVISIBLE, then scrolling
 	* does not occur.  The fix is to detect this case, and make sure
-	* that redraw is temporarly enabled.
+	* that redraw is temporarly enabled.  To avoid flashing, DefWindowProc()
+	* is called to disable redrawing.
+	* 
+	* NOTE:  The code that actually works around the problem is in the
+	* callers of this method.
 	*/
 	if (drawCount == 0) return false;
 	int hRoot = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
@@ -1107,14 +1111,20 @@ public void setSelection (TreeItem [] items) {
 		* also requires the work around for scrolling.
 		*/
 		boolean fixScroll = checkScroll (hNewItem);
-		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+		if (fixScroll) {
+			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+		}
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
 		ignoreSelect = false;
 		if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
 			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hNewItem);
 		}
-		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+		if (fixScroll) {
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+		}
 		
 		/*
 		* Feature in Windows.  When the old and new focused item
@@ -1193,9 +1203,15 @@ public void setTopItem (TreeItem item) {
 	if (item.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	int hItem = item.handle;
 	boolean fixScroll = checkScroll (hItem);
-	if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+	if (fixScroll) {
+		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+	}
 	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
-	if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+	if (fixScroll) {
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+	}
 }
 
 void showItem (int hItem) {
@@ -1210,10 +1226,16 @@ void showItem (int hItem) {
 	*/
 	if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
 		boolean fixScroll = checkScroll (hItem);
-		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+		if (fixScroll) {
+			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+		}
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
 		OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
-		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+		if (fixScroll) {
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+		}
 	} else {
 		boolean scroll = true;
 		RECT itemRect = new RECT ();
@@ -1232,9 +1254,15 @@ void showItem (int hItem) {
 		}
 		if (scroll) {
 			boolean fixScroll = checkScroll (hItem);
-			if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+			if (fixScroll) {
+				OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+			}
 			OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
-			if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+			if (fixScroll) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+			}
 		}
 	}
 }
