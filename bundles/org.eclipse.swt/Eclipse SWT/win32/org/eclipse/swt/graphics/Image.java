@@ -1365,8 +1365,10 @@ public ImageData getImageData() {
 					palette = new PaletteData(rgbs);
 				} else if (depth == 16) {
 					palette = new PaletteData(0x7C00, 0x3E0, 0x1F);
-				} else if (depth == 24 || depth == 32) {
+				} else if (depth == 24) {
 					palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+				} else if (depth == 32) {
+					palette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 				} else {
 					SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 				}
