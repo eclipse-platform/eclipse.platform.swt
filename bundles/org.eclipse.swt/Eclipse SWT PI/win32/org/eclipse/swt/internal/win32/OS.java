@@ -311,7 +311,6 @@ public class OS {
 	public static final int EM_GETLINECOUNT = 0xba;
 	public static final int EM_GETMARGINS = 0xd4;
 	public static final int EM_GETPASSWORDCHAR = 0xd2;
-	public static final int EM_GETRECT = 0xb2;
 	public static final int EM_GETSCROLLPOS = 0x4dd;
 	public static final int EM_GETSEL = 0xb0;
 	public static final int EM_LIMITTEXT = 0xc5;
