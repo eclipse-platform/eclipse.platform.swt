@@ -2132,6 +2132,11 @@ public class SWT {
 	public static final int IMAGE_PNG = 5;
 
 	/**
+	 * Image format constant indicating a TIFF format image (value is 6).
+	 */
+	public static final int IMAGE_TIFF = 6;
+
+	/**
 	 * GIF image disposal method constants indicating that the
 	 * disposal method is unspecified (value is 0).
 	 */
