@@ -27,6 +27,8 @@ public class DirectoryDialog extends Dialog {
 	String filterPath = "";
 	boolean cancel = true;
 	String message = "";
+	static final String SEPARATOR = System.getProperty ("file.separator");
+	
 /**
  * Constructs a new instance of this class given only its
  * parent.
@@ -280,10 +282,10 @@ public String open () {
 		OS.XmStringFree (xmString3);
 		int length = directoryPath.length ();
 		if (length != 0) {
-			if (directoryPath.charAt (length -1) == '/') {
+			if (directoryPath.endsWith (SEPARATOR)) {
 				directoryPath = directoryPath.substring (0, length - 1);
 			} else {
-				if (length > 1 && directoryPath.charAt (length - 2) == '/' && directoryPath.charAt (length - 1) == '*') {
+				if (length > 1 && directoryPath.charAt (length - 2) == SEPARATOR.charAt (0) && directoryPath.charAt (length - 1) == '*') {
 					directoryPath = directoryPath.substring (0, length - 2);
 				}
 			}

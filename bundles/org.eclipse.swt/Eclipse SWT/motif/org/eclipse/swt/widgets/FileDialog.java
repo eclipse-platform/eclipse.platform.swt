@@ -40,6 +40,7 @@ public class FileDialog extends Dialog {
 	String fullPath;
 	boolean cancel = false;
 	static final String FILTER = "*";
+	static final String SEPARATOR = System.getProperty ("file.separator");
 
 /**
  * Constructs a new instance of this class given only its
@@ -254,7 +255,7 @@ int okPressed (int widget, int client, int call) {
 				OS.XtFree (address);
 				/* Use the character encoding for the default locale */
 				String fullFilename = new String (Converter.mbcsToWcs (null, buffer));
-				int index = fullFilename.lastIndexOf ('/');
+				int index = fullFilename.lastIndexOf (SEPARATOR);
 				fileNames [i] = fullFilename.substring (index + 1, fullFilename.length ());
 				if (fullFilename.equals (fullPath)) match = true;
 			}
@@ -266,12 +267,12 @@ int okPressed (int widget, int client, int call) {
 			/* The user has modified the text field such that it doesn't match any
 			 * of the selected files, so use this value instead
 			 */
-			int index = fullPath.lastIndexOf ('/');
+			int index = fullPath.lastIndexOf (SEPARATOR);
 			fileName = fullPath.substring (index + 1, fullPath.length ());
 			fileNames = new String [] {fileName};
 		}
 	} else {
-		int index = fullPath.lastIndexOf ('/');
+		int index = fullPath.lastIndexOf (SEPARATOR);
 		fileName = fullPath.substring (index + 1, fullPath.length ());
 		fileNames = new String [] {fileName};
 	}
@@ -305,8 +306,8 @@ int okPressed (int widget, int client, int call) {
 		filterPath = new String (Converter.mbcsToWcs (null, buffer));
 	}
 	OS.XmStringFree (xmString2);
-	if (filterPath.endsWith("/")) {
-		filterPath = filterPath.substring (0, filterPath.length() - 1);
+	if (filterPath.endsWith (SEPARATOR)) {
+		filterPath = filterPath.substring (0, filterPath.length () - 1);
 	}
 
 	this.fullPath = fullPath;
@@ -389,9 +390,9 @@ public String open () {
 
 	/* Compute the filter path */
 	if (filterPath == null) filterPath = "";
-	if (!filterPath.endsWith ("/")) {
+	if (!filterPath.endsWith (SEPARATOR)) {
 		File dir = new File (filterPath);
-		if (dir.exists () && dir.isDirectory ()) filterPath += '/';
+		if (dir.exists () && dir.isDirectory ()) filterPath += SEPARATOR;
 	}
 	/* Use the character encoding for the default locale */
 	byte [] buffer3 = Converter.wcsToMbcs (null, filterPath, true);
