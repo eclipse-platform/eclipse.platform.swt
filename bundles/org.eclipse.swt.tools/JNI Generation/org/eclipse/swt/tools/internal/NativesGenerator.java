@@ -145,12 +145,15 @@ void generateNativeMacro(Class clazz) {
 	outputln();
 }
 
-void generateGetParameter(int i, Class paramType, ParameterData paramData, boolean critical) {
+void generateGetParameter(Method method, int i, Class paramType, ParameterData paramData, boolean critical, int indent) {
 	if (paramType.isPrimitive()) return;
 	String iStr = String.valueOf(i);
-	output("\tif (arg");
+	for (int j = 0; j < indent; j++) output("\t");
+	output("if (arg");
 	output(iStr);
-	output(") lparg");
+	output(") CHECK_NULL");
+	if (method.getReturnType() == Void.TYPE) output("_VOID");
+	output("(lparg");
 	output(iStr);
 	output(" = ");
 	if (paramType.isArray()) {
@@ -163,7 +166,7 @@ void generateGetParameter(int i, Class paramType, ParameterData paramData, boole
 					output("(*env)->GetPrimitiveArrayCritical(env, arg");
 				}
 				output(iStr);
-				output(", NULL);");
+				output(", NULL)");
 			} else {
 				if (isCPP) {
 					output("env->Get");
@@ -177,7 +180,7 @@ void generateGetParameter(int i, Class paramType, ParameterData paramData, boole
 					output("ArrayElements(env, arg");
 				}
 				output(iStr);
-				output(", NULL);");
+				output(", NULL)");
 			}
 		} else {
 			throw new Error("not done");
@@ -190,7 +193,7 @@ void generateGetParameter(int i, Class paramType, ParameterData paramData, boole
 				output("(*env)->GetStringChars(env, arg");
 			}
 			output(iStr);
-			output(", NULL);");
+			output(", NULL)");
 		} else {
 			if (isCPP) {
 				output("env->GetStringUTFChars(arg");
@@ -198,13 +201,12 @@ void generateGetParameter(int i, Class paramType, ParameterData paramData, boole
 				output("(*env)->GetStringUTFChars(env, arg");
 			}
 			output(iStr);
-			output(", NULL);");
+			output(", NULL)");
 		}
 	} else {
 		if (paramData.getFlag("no_in")) {
 			output("&_arg");
 			output(iStr);
-			output(";");
 		} else {
 			output("get");
 			output(getClassName(paramType));
@@ -212,10 +214,10 @@ void generateGetParameter(int i, Class paramType, ParameterData paramData, boole
 			output(iStr);
 			output(", &_arg");
 			output(iStr);
-			output(");");
+			output(")");
 		}
-	}
-	outputln();
+	}	
+	outputln(");");
 }
 
 void generateSetParameter(int i, Class paramType, ParameterData paramData, boolean critical) {
@@ -365,7 +367,7 @@ void generateGetters(Method method, Class[] paramTypes) {
 		Class paramType = paramTypes[i];
 		ParameterData paramData = getMetaData().getMetaData(method, i);
 		if (!isCritical(paramType, paramData)) {
-			generateGetParameter(i, paramType, paramData, false);
+			generateGetParameter(method, i, paramType, paramData, false, 1);
 		} else {
 			criticalCount++;
 		}
@@ -377,8 +379,7 @@ void generateGetters(Method method, Class[] paramTypes) {
 			Class paramType = paramTypes[i];
 			ParameterData paramData = getMetaData().getMetaData(method, i);
 			if (isCritical(paramType, paramData)) {
-				output("\t");
-				generateGetParameter(i, paramType, paramData, true);
+				generateGetParameter(method, i, paramType, paramData, true, 2);
 			}
 		}
 		outputln("\t} else");
@@ -388,8 +389,7 @@ void generateGetters(Method method, Class[] paramTypes) {
 			Class paramType = paramTypes[i];
 			ParameterData paramData = getMetaData().getMetaData(method, i);
 			if (isCritical(paramType, paramData)) {
-				output("\t");
-				generateGetParameter(i, paramType, paramData, false);
+				generateGetParameter(method, i, paramType, paramData, false, 2);
 			}
 		}
 		outputln("\t}");

@@ -57,6 +57,20 @@ extern int IS_JNI_1_2;
 
 #endif
 
+void throwOutOfMemory();
+
+#define CHECK_NULL_VOID(ptr) \
+	if ((ptr) == NULL) { \
+		throwOutOfMemory(env); \
+		return; \
+	}
+
+#define CHECK_NULL(ptr) \
+	if ((ptr) == NULL) { \
+		throwOutOfMemory(env); \
+		return 0; \
+	}
+
 /* define this to print out debug statements */
 /* #define DEBUG_CALL_PRINTS */
 /* #define DEBUG_CHECK_NULL_EXCEPTIONS */
