@@ -22,6 +22,10 @@
 
 #include "jni.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern int IS_JNI_1_2;
 
 /* 64 bit support */
@@ -70,5 +74,9 @@ void throwOutOfMemory(JNIEnv *env);
 		throwOutOfMemory(env); \
 		return 0; \
 	}
+
+#ifdef __cplusplus
+}
+#endif 
 
 #endif /* ifndef INC_swt_H */
