@@ -1946,7 +1946,7 @@ private void onMouseMove(Event event) {
 	int y = item.y + Math.max(0, (item.height - toolbarHeight)/2);
 	
 	Rectangle toolspace = getToolSpace(); 
-	if (!toolspace.contains(x + size.x - 5, y)) {
+	if (toolspace.width == 0 || x + size.x < toolspace.x) {
 		inactiveCloseBar.setBounds(x, y, size.x, toolbarHeight);
 		inactiveCloseBar.setVisible(true);
 		inactiveItem = item;
