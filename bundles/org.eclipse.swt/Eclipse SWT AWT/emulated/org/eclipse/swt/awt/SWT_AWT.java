@@ -21,11 +21,14 @@ import org.eclipse.swt.widgets.Shell;
 public class SWT_AWT {
 
 public static Frame new_Frame (final Composite parent) {
+	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	return null;
 }
 
-public static Shell new_Shell (Display display, final Canvas parent) {
+public static Shell new_Shell (final Display display, final Canvas parent) {
+	if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	return null;
 }
