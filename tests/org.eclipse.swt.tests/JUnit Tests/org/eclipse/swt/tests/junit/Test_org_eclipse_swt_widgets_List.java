@@ -702,7 +702,7 @@ public void test_remove$I() {
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	}
-	assertEquals(":a:", list.getItems(), new String[] { "text0", "text2" });
+	assertEquals(":a:", list.getItems(), items);
 
 	list.setItems(items);
 	assertEquals(list.getItemCount(), 4);
@@ -760,7 +760,7 @@ public void test_remove$I() {
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	} 
-	assertEquals(":h:", list.getItems(), new String[] { "text0", "text2" });
+	assertEquals(":h:", list.getItems(), items);
 
 	
 	list.setItems(items);
