@@ -50,7 +50,7 @@ public class Tree extends Composite {
 	TreeItem [] items;
 	TreeColumn [] columns;
 	GC paintGC;
-	int [] clickCount;
+	int clickCount;
 	int columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
 	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded;
 	Rectangle imageBounds;
@@ -474,7 +474,6 @@ void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];
 	columns = new TreeColumn [4];
-	clickCount = new int [1];
 }
 
 Color defaultBackground () {
@@ -1252,7 +1251,7 @@ int itemNotificationProc (int browser, int id, int message) {
 			for (int i = 0; i < columnCount; i++) {
 				TreeColumn column = columns [i];
 				if (property [0] == column.id) {
-					column.postEvent (clickCount [0] == 2 ? SWT.DefaultSelection : SWT.Selection);
+					column.postEvent (clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
 					break;
 				}
 			}
@@ -1403,7 +1402,9 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
+	int [] outData = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, outData);
+	clickCount = outData [0];
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	Shell shell = getShell ();
