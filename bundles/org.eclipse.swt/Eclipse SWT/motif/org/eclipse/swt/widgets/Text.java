@@ -37,7 +37,6 @@ public class Text extends Scrollable {
 	char echoCharacter;
 	boolean ignoreChange;
 	String hiddenText;
-	XmTextVerifyCallbackStruct textVerify;
 	int drawCount;
 	
 	static final boolean IsGB18030;
@@ -453,11 +452,7 @@ public int getCaretLineNumber () {
 public Point getCaretLocation () {
 	checkWidget();
 	int position;
-	if (textVerify != null) {
-		position = textVerify.currInsert;
-	} else {
-		position = OS.XmTextGetInsertionPosition (handle);
-	}
+	position = OS.XmTextGetInsertionPosition (handle);
 	short [] x = new short [1], y = new short [1];
 	OS.XmTextPosToXY (handle, position, x, y);
 	return new Point (x [0], y [0] - getFontAscent (font.handle));
@@ -687,9 +682,6 @@ public int getOrientation () {
  */
 public Point getSelection () {
 	checkWidget();
-	if (textVerify != null) {
-		return new Point (textVerify.startPos, textVerify.endPos);
-	}
 	int [] start = new int [1], end = new int [1];
 	OS.XmTextGetSelectionPosition (handle, start, end);
 	if (start [0] == end [0]) {
@@ -709,9 +701,6 @@ public Point getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	if (textVerify != null) {
-		return textVerify.endPos - textVerify.startPos;
-	}
 	int [] start = new int [1], end = new int [1];
 	OS.XmTextGetSelectionPosition (handle, start, end);
 	return end [0] - start [0];
@@ -728,7 +717,7 @@ public int getSelectionCount () {
  */
 public String getSelectionText () {
 	checkWidget();
-	if (echoCharacter != '\0' || textVerify != null) {
+	if (echoCharacter != '\0') {
 		Point selection = getSelection ();
 		return getText (selection.x, selection.y);
 	}
@@ -970,7 +959,6 @@ public void paste () {
 void releaseWidget () {
 	super.releaseWidget ();
 	hiddenText = null;
-	textVerify = null;
 }
 /**
  * Removes the listener from the collection of listeners who will
