@@ -10,6 +10,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class are user interface objects that contain
@@ -713,8 +714,15 @@ public void setEnabled (boolean enabled) {
  */
 public void setLocation (int x, int y) {
 	checkWidget();
-	this.x = x;  this.y = y;
+	this.x = x;
+	this.y = y;
 	hasLocation = true;
+}
+
+public void setLocation (Point location) {
+	checkWidget();
+	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setLocation (location.x, location.y);
 }
 
 /**
