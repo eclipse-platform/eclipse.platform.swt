@@ -734,18 +734,25 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			* look for these values explicitly and correct them.
 			*/
 			if (OS.IsSunOS) {
-				if ((keysym [0] == 0x1005FF10) || (keysym [0] == 0x1005FF11)) {
-					if (keysym [0] == 0x1005FF10) keysym [0] = OS.XK_F11;
-					if (keysym [0] == 0x1005FF11) keysym [0] = OS.XK_F12;
+				if (keysym [0] == 0x1005FF10) keysym [0] = OS.XK_F11;
+				if (keysym [0] == 0x1005FF11) keysym [0] = OS.XK_F12;
+				/*
+				* Bug in MOTIF.  On Solaris only, there is garbage in the
+				* high 16-bits for Keysyms such as XK_Down.  Since Keysyms
+				* must be 16-bits to fit into a Character, mask away the
+				* high 16-bits on all platforms.
+				*/
+				keysym [0] &= 0xFFFF;
+			}
+			event.keyCode = Display.translateKey (keysym [0]);
+			/*
+			* Handle known cases for which XLookupString fails.
+			*/
+			if (event.keyCode == 0) {
+				switch (keysym [0]) {
+					case OS.XK_ISO_Left_Tab: event.character = '\t'; break;
 				}
 			}
-			/*
-			* Bug in MOTIF.  On Solaris only, their is garbage in the
-			* high 16-bits for Keysyms such as XK_Down.  Since Keysyms
-			* must be 16-bits to fit into a Character, mask away the
-			* high 16-bits on all platforms.
-			*/
-			event.keyCode = Display.translateKey (keysym [0] & 0xFFFF);
 		} else {
 			event.character = (char) buffer [0];
 		}
