@@ -177,7 +177,8 @@ void destroyAccelGroup () {
 	if (accelGroup != 0) {
 		int shellHandle = topHandle ();
 		OS.gtk_window_remove_accel_group (shellHandle, accelGroup);
-		OS.g_object_unref (accelGroup);
+		//TEMPORARY CODE
+//		OS.g_object_unref (accelGroup);
 	}
 	accelGroup = 0;
 }
