@@ -11,7 +11,7 @@
 
 #include <Carbon/Carbon.h>
 	
-#define USE_ATSUI 1
+//#define USE_ATSUI 1
 
 static const Rect NULL_RECT;
 
@@ -917,6 +917,8 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextMode(JNIEnv *
 	TextMode(mode);
 }
 
+#ifdef USE_ATSUI
+
 static ATSUTextLayout fgTextLayout;
 static ATSUStyle fgStyle;
 static int fgTextLayoutInitialized;
@@ -924,7 +926,6 @@ static ATSUAttributeTag fgATSUAttributeTag[4];
 static ByteCount fgByteCount[4];
 static ATSUAttributeValuePtr fgATSUAttributeValuePtr[4];
 
-#ifdef USE_ATSUI
 static void initATSUI(ATSUFontID font, short size, short face) {
 	ATSUFontID f= 0; 
 	Fixed s= size << 16;
@@ -2184,7 +2185,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_setControlToolTip
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControl(JNIEnv *env, jclass zz,
 			jint wHandle, jboolean visible, jshort initialValue, jshort minValue, jshort maxValue, jshort procID) {
-	return (jint) NewControl((WindowRef) wHandle, &NULL_RECT, "\0", visible, initialValue, minValue, maxValue, procID, 0);
+	return (jint) NewControl((WindowRef) wHandle, &NULL_RECT, "", visible, initialValue, minValue, maxValue, procID, 0);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeControl(JNIEnv *env, jclass zz, jint cHandle) {
@@ -2885,6 +2886,10 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogDispose(
 }
 
 //---- Misc
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_Init(JNIEnv *env, jclass zz) {
+	fprintf(stderr, "swt.c: Mon 3.6.2002\n");
+}
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitCursor(JNIEnv *env, jclass zz) {
 	InitCursor();
