@@ -151,7 +151,7 @@ public Cursor (Device device, int style) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (shape == 0 && style == SWT.CURSOR_APPSTARTING) {
-		handle = createCursor(APPSTARTING_SRC, APPSTARTING_MASK, 32, 32, 2, 2);
+		handle = createCursor(APPSTARTING_SRC, APPSTARTING_MASK, 32, 32, 2, 2, false);
 	} else {
 		handle = OS.XCreateFontCursor(device.xDisplay, shape);
 	}
@@ -244,7 +244,8 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 		maskData[i] = (byte) ~maskData[i];
 	}
 	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
-	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY);
+	/* Note that the mask and source are reversed */
+	handle = createCursor(maskData, sourceData, source.width, source.height, hotspotX, hotspotY, true);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
@@ -338,11 +339,11 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			((s & 0x01) << 7));
 	}
 	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
-	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY);
+	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY, false);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
-int createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY) {
+int createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY, boolean reverse) {
 	int xDisplay = device.xDisplay;
 	int drawable = OS.XDefaultRootWindow(xDisplay);
 	int sourcePixmap = OS.XCreateBitmapFromData(xDisplay, drawable, sourceData, width, height);
@@ -351,10 +352,11 @@ int createCursor(byte[] sourceData, byte[] maskData, int width, int height, int 
 	if (sourcePixmap != 0 && maskPixmap != 0) {
 		int screenNum = OS.XDefaultScreen(xDisplay);
 		XColor foreground = new XColor();
-		foreground.pixel = OS.XWhitePixel(xDisplay, screenNum);
-		foreground.red = foreground.green = foreground.blue = (short)0xFFFF;
+		foreground.pixel = !reverse ? OS.XWhitePixel(xDisplay, screenNum) : OS.XBlackPixel(xDisplay, screenNum);
+		if (!reverse) foreground.red = foreground.green = foreground.blue = (short)0xFFFF;
 		XColor background = new XColor();
-		background.pixel = OS.XBlackPixel(xDisplay, screenNum);
+		background.pixel = reverse ? OS.XWhitePixel(xDisplay, screenNum) : OS.XBlackPixel(xDisplay, screenNum);
+		if (reverse) background.red = background.green = background.blue = (short)0xFFFF;
 		cursor = OS.XCreatePixmapCursor(xDisplay, sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
 	}
 	if (sourcePixmap != 0) OS.XFreePixmap(xDisplay, sourcePixmap);
