@@ -2327,8 +2327,14 @@ public boolean post (Event event) {
 			if (keyCode == 0) {
 				char key = event.character;
 				switch (key) {
-					case '\r': keysym = OS.GDK_Return; break;
-					default: keysym = wcsToMbcs (key);
+					case SWT.BS: keysym = OS.GDK_BackSpace; break;
+					case SWT.CR: keysym = OS.GDK_Return; break;
+					case SWT.DEL: keysym = OS.GDK_Delete; break;
+					case SWT.ESC: keysym = OS.GDK_Escape; break;
+					case SWT.TAB: keysym = OS.GDK_Tab; break;
+					case SWT.LF: keysym = OS.GDK_Linefeed; break;
+					default:
+						keysym = wcsToMbcs (key);
 				}
 				keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
 				if (keyCode == 0) return false;

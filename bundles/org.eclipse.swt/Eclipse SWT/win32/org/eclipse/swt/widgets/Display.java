@@ -2409,13 +2409,23 @@ public boolean post (Event event) {
 			if (inputs.wVk == 0) {
 				char key = event.character;
 				switch (key) {
-					case 27: inputs.wVk = (short) OS.VK_ESCAPE; break;
-					case 127: inputs.wVk = (short) OS.VK_DELETE; break;
-					default : {
+					case SWT.BS: inputs.wVk = (short) OS.VK_BACK; break;
+					case SWT.CR: inputs.wVk = (short) OS.VK_RETURN; break;
+					case SWT.DEL: inputs.wVk = (short) OS.VK_DELETE; break;
+					case SWT.ESC: inputs.wVk = (short) OS.VK_ESCAPE; break;
+					case SWT.TAB: inputs.wVk = (short) OS.VK_TAB; break;
+					/*
+					* Since there is no LF key on then keyboard, do not attempt
+					* to map LF to CR or attempt to post an LF key because no
+					* such key exists on the keyboard.
+					*/
+//					case SWT.LF: inputs.wVk = (short) OS.VK_RETURN; break;
+					case SWT.LF: return false;
+					default: {
 						if (OS.IsWinCE) {
 							inputs.wVk = OS.CharUpper ((short) key);
 						} else {
-							inputs.wVk = OS.VkKeyScan ((short) wcsToMbcs (key,0));
+							inputs.wVk = OS.VkKeyScan ((short) wcsToMbcs (key, 0));
 							if (inputs.wVk == -1) return false;
 						}
 					}

@@ -2563,7 +2563,17 @@ public boolean post (Event event) {
 			int keysym = untranslateKey (event.keyCode);
 			if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
 			if (keyCode == 0) {
-				keysym = wcsToMbcs (event.character);
+				char key = event.character;
+				switch (key) {
+					case SWT.BS: keysym = OS.XK_BackSpace; break;
+					case SWT.CR: keysym = OS.XK_Return; break;
+					case SWT.DEL: keysym = OS.XK_Delete; break;
+					case SWT.ESC: keysym = OS.XK_Escape; break;
+					case SWT.TAB: keysym = OS.XK_Tab; break;
+					case SWT.LF: keysym = OS.XK_Linefeed; break;
+					default:
+						keysym = wcsToMbcs (key);
+				}
 				keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
 				if (keyCode == 0) return false;
 			}
