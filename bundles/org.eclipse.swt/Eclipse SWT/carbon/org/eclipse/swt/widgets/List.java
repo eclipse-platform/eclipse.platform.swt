@@ -1190,6 +1190,16 @@ public void selectAll () {
 	select (null, 0, false);
 }
 
+void setBackground (float [] color) {
+	/*
+	* Bug in the Macintosh.  The default background of a window changes when
+	* the background of a data browser is set using SetControlFontStyle().  This
+	* also affects the background of any TNXObject created on that window.  The
+	* fix is to avoid calling SetControlFontStyle() which has no effect
+	* in a data browser anyways.
+	*/
+}
+
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	/*
 	* Ensure that the top item is visible when the tree is resized
