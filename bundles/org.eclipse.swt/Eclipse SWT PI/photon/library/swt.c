@@ -20,6 +20,13 @@
 #include <assert.h>
 #include <malloc.h>
 
+#ifdef PR_20268
+#include "clip.c"
+#include "pt_blit.c"
+#include "pt_draw_widget.c"
+#define PtBlit PtBlit_
+#define PtClippedBlit PtClippedBlit_
+#endif
 
 JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_photon_OS_getSharedLibraryMajorVersionNumber
   (JNIEnv *env, jclass that)
@@ -650,7 +657,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetMultiClip
     fprintf(stderr, "PgSetMultiClip\n");
 #endif
 	
+#ifdef PR_20268
+	int	ret;
+	extern int call_draw_f_mclip;
+	call_draw_f_mclip = 2;
+	ret = PgSetMultiClip(num, (PhRect_t *)clip_list);
+	call_draw_f_mclip = 0;
+	return (jint)ret;
+#else
 	return (jint)PgSetMultiClip(num, (PhRect_t *)clip_list);
+#endif
 }
 
 /*
