@@ -196,7 +196,6 @@ public void copyArea(Image image, int x, int y) {
 				int bpr = OS.CGDisplayBytesPerRow(display);
 				int bpp = OS.CGDisplayBitsPerPixel(display);
 				int bps = OS.CGDisplayBitsPerSample(display);
-				System.out.println(width + " " + height + " " + bpr + " " + bpp + " " + bps);
 				int provider = OS.CGDataProviderCreateWithData(0, address, bpr * height, 0);
 				int srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, data.device.colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, false, 0);
 				OS.CGDataProviderRelease(provider);
