@@ -28,9 +28,6 @@ public class Snippet157 extends Applet {
 public void init () {
 	Thread thread = new Thread (new Runnable () {
 		public void run () {
-			// This line is a hack required to support multiple restarts
-			org.eclipse.swt.internal.win32.OS.OleInitialize (0);
-			
 			setLayout(new java.awt.GridLayout (1, 1));
 			awtParent = new java.awt.Canvas ();
 			add (awtParent);

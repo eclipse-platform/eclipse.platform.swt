@@ -143,9 +143,6 @@ public String getMessage () {
 public String open () {
 	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	
-	/* Initialize OLE */
-	OS.OleInitialize (0);
-	
 	int hHeap = OS.GetProcessHeap ();
 	
 	/* Get the owner HWND for the dialog */
@@ -255,9 +252,6 @@ public String open () {
 		/* void Free (struct IMalloc *this, void *pv); */
 		OS.VtblCall (5, ppMalloc [0], lpItemIdList);
 	}
-	
-	/* Uninitialize OLE */
-	OS.OleUninitialize ();
 	
 	/*
 	* This code is intentionally commented.  On some

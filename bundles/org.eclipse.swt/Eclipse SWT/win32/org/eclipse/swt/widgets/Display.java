@@ -1855,6 +1855,11 @@ protected void init () {
 	/* Register the task bar created message */
 	SWT_TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true));
 
+	/* Initialize OLE */
+	if (!OS.IsWinCE) {
+		OS.OleInitialize (0);
+	}
+	
 	/* Initialize the Widget Table */
 	indexTable = new int [GROW_SIZE];
 	controlTable = new Control [GROW_SIZE];
@@ -2568,6 +2573,11 @@ void releaseDisplay () {
 	/* Release Custom Colors for ChooseColor */
 	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
 	lpCustColors = 0;
+	
+	/* Uninitialize OLE */
+	if (!OS.IsWinCE) {
+		OS.OleUninitialize ();
+	}
 	
 	/* Release references */
 	thread = null;
