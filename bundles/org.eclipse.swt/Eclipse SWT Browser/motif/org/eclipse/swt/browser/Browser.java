@@ -77,6 +77,7 @@ public class Browser extends Composite {
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
 	static boolean mozilla;
+	static boolean IsWindows;
 	static boolean IsLinux;
 
 	/* Package Name */
@@ -84,6 +85,7 @@ public class Browser extends Composite {
 	
 static {
 	String osName = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
+	IsWindows = osName.startsWith("windows");
 	IsLinux = osName.startsWith("linux");
 }
 
@@ -141,21 +143,31 @@ public Browser(Composite parent, int style) {
 			SWT.error(SWT.ERROR_NO_HANDLES);
 		}
 
-		LocProvider = new AppFileLocProvider();
-		LocProvider.AddRef();
-
 		int[] retVal = new int[1];
 		nsString path = new nsString(mozillaPath);
 		int rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, retVal);
 		path.dispose();
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (retVal[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
-			
+
+		/*
+		* Feature on Mozilla.  On Windows, the mozilla libraries are split
+		* up into 2 locations indicated by the GRE and Mozilla paths.  The
+		* default nsIDirectoryServiceProvider only works when the libraries
+		* are in the same folder.  The workaround is to provide a custom
+		* nsIDirectoryServiceProvider on this platform.  It provides the 
+		* 2 locations set by Mozilla in the Windows registry.
+		*/
+		if (IsWindows) {
+			LocProvider = new AppFileLocProvider();
+			LocProvider.AddRef();
+		}
+		
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
-		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), LocProvider.getAddress());
+		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), IsWindows ? LocProvider.getAddress() : 0);
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
-			LocProvider.Release();
+			if (LocProvider != null) LocProvider.Release();
 			LocProvider = null;
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES);
@@ -852,7 +864,7 @@ void onDispose() {
 //			AppShell.Release();
 //			AppShell = null;
 //		}
-//		LocProvider.Release();
+//		if (LocProvider != null) LocProvider.Release();
 //		LocProvider = null;
 //		WindowCreator.Release();
 //		WindowCreator = null;

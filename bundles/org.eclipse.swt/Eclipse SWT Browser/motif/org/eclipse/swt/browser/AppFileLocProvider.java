@@ -168,7 +168,8 @@ int getFile(int str, int persistent, int nsFile) {
 	}
 	else if (XPCOM.NS_XPCOM_INIT_CURRENT_PROCESS_DIR.equals(prop) || 
 		XPCOM.NS_OS_CURRENT_PROCESS_DIR.equals(prop) ||
-		XPCOM.NS_XPCOM_COMPONENT_DIR.equals(prop)) {
+		XPCOM.NS_XPCOM_COMPONENT_DIR.equals(prop) ||
+		XPCOM.NS_APP_USER_PROFILE_50_DIR.equals(prop)) {
 		if (mozillaPath == null || mozillaPath.length() == 0) return XPCOM.NS_ERROR_FAILURE;
 		int[] result = new int[1];
 		nsString path = new nsString(mozillaPath);
