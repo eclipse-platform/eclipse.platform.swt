@@ -3720,7 +3720,7 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 		Menu menu = shell.activeMenu;
 		while (menu != null) {
 			/*
-			* When the user cancels any meny menu that is not the
+			* When the user cancels any menu that is not the
 			* menu bar, assume a mnemonic key was pressed to open
 			* the menu from WM_SYSCHAR.  When the menu was invoked
 			* using the mouse, this assumption is wrong but not
@@ -4089,7 +4089,7 @@ LRESULT WM_SYSCHAR (int wParam, int lParam) {
 	}
 	display.mnemonicKeyHit = true;
 	int result = callWindowProc (OS.WM_SYSCHAR, wParam, lParam);
-	if (!display.mnemonicKeyHit || menuShell ().menuBar == null) {
+	if (!display.mnemonicKeyHit) {
 		sendKeyEvent (SWT.KeyDown, OS.WM_SYSCHAR, wParam, lParam);
 	}
 	display.mnemonicKeyHit = false;
@@ -4160,27 +4160,35 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 				* matching the mnemonic character.  To allow the application
 				* to see the keystrokes in this case, avoid running the default
 				* window proc.
+				* 
+				* NOTE: When the user types Alt+Space, the System menu is
+				* activated.  In this case the application should not see
+				* the keystroke.
 				*/
 				if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-					Decorations shell = menuShell ();
-					Menu menu = shell.getMenuBar ();
-					if (menu != null) {
-						char key = mbcsToWcs (lParam);
-						if (key != 0) {
-							key = Character.toUpperCase (key);
-							MenuItem [] items = menu.getItems ();
-							for (int i=0; i<items.length; i++) {
-								MenuItem item = items [i];
-								String text = item.getText ();
-								char mnemonic = findMnemonic (text);
-								if (text.length () > 0 && mnemonic == 0) {
-									char ch = text.charAt (0);
-									if (Character.toUpperCase (ch) == key) {
-										display.mnemonicKeyHit = false;
-										return LRESULT.ZERO;
+					if (lParam != ' ') {
+						Decorations shell = menuShell ();
+						Menu menu = shell.getMenuBar ();
+						if (menu != null) {
+							char key = mbcsToWcs (lParam);
+							if (key != 0) {
+								key = Character.toUpperCase (key);
+								MenuItem [] items = menu.getItems ();
+								for (int i=0; i<items.length; i++) {
+									MenuItem item = items [i];
+									String text = item.getText ();
+									char mnemonic = findMnemonic (text);
+									if (text.length () > 0 && mnemonic == 0) {
+										char ch = text.charAt (0);
+										if (Character.toUpperCase (ch) == key) {
+											display.mnemonicKeyHit = false;
+											return LRESULT.ZERO;
+										}
 									}
 								}
 							}
+						} else {
+							display.mnemonicKeyHit = false;
 						}
 					}
 				}
