@@ -1,6 +1,6 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2003 IBM Corporation and others.
-# All rights reserved. This program and the accompanying materials 
+# Copyright (c) 2000, 2004 IBM Corporation and others.
+# All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Common Public License v1.0
 # which accompanies this distribution, and is available at
 # http://www.eclipse.org/legal/cpl-v10.html
@@ -19,7 +19,7 @@ APPVER=5.0
 
 pgm_ver_str="SWT $(maj_ver).$(min_ver) for Windows"
 timestamp_str=__DATE__\" \"__TIME__\" (EST)\"
-copyright = "Copyright (C) 1999, 2003 IBM Corp.  All rights reserved."
+copyright = "Copyright (C) 1999, 2004 IBM Corp.  All rights reserved."
 
 SWT_PREFIX  = swt
 WS_PREFIX   = win32
