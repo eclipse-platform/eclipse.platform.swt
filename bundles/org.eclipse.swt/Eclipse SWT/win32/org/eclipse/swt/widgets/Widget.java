@@ -877,6 +877,7 @@ boolean sendMouseEvent (int type, int button, int hwnd, int msg, int wParam, int
 }
 
 boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int hwnd, int msg, int wParam, int lParam) {
+	if (!hooks (type) && !filters (type)) return true;
 	Event event = new Event ();
 	event.button = button;
 	event.detail = detail;
@@ -1724,6 +1725,7 @@ LRESULT wmMouseHover (int hwnd, int wParam, int lParam) {
 }
 
 LRESULT wmMouseLeave (int hwnd, int wParam, int lParam) {
+	if (!hooks (SWT.MouseExit) && !filters (SWT.MouseExit)) return null;
 	int pos = OS.GetMessagePos ();
 	POINT pt = new POINT ();
 	pt.x = (short) (pos & 0xFFFF);
@@ -1779,6 +1781,7 @@ LRESULT wmMouseMove (int hwnd, int wParam, int lParam) {
 }
 
 LRESULT wmMouseWheel (int hwnd, int wParam, int lParam) {
+	if (!hooks (SWT.MouseWheel) && !filters (SWT.MouseWheel)) return null;
 	int delta = wParam >> 16;
 	int [] value = new int [1];
 	int count, detail;
