@@ -1070,6 +1070,20 @@ public void select (int index) {
 		ignoreSelect = false;
 	}
 }
+void setBackgroundPixel (int pixel) {
+	super.setBackgroundPixel (pixel);
+	int [] argList1 = {OS.XmNtextField, 0, OS.XmNlist, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	int text = argList1 [1], list = argList1 [3];
+	int [] argList2 = {OS.XmNforeground, 0, OS.XmNhighlightColor, 0};
+	OS.XtGetValues (text, argList2, argList2.length / 2);
+	OS.XmChangeColor (text, pixel);
+	OS.XtSetValues (text, argList2, argList2.length / 2);
+	int [] argList3 = {OS.XmNforeground, 0, OS.XmNhighlightColor, 0};
+	OS.XtGetValues (list, argList3, argList3.length / 2);
+	OS.XmChangeColor (list, pixel);
+	OS.XtSetValues (list, argList3, argList3.length / 2);
+}
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	checkWidget();
 	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
@@ -1096,6 +1110,14 @@ public void setFont (Font font) {
 		OS.XtResizeWidget (handle, argList [1], argList [3] + 1, argList [5]);
 		OS.XtResizeWidget (handle, argList [1], argList [3], argList [5]);
 	}
+}
+void setForegroundPixel (int pixel) {
+	int [] argList1 = {OS.XmNtextField, 0, OS.XmNlist, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	int [] argList2 = {OS.XmNforeground, pixel};
+	OS.XtSetValues (argList1 [1], argList2, argList2.length / 2);
+	OS.XtSetValues (argList1 [3], argList2, argList2.length / 2);
+	super.setForegroundPixel (pixel);
 }
 /**
  * Sets the text of the item in the receiver's list at the given
