@@ -365,9 +365,9 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	/*
 	* Feature in the Macintosh.  When some controls get kEventControlClick
-	* (which gets sent from kEventMouseDown), they calls TrackControl() or
+	* (which gets sent from kEventMouseDown), they call TrackControl() or
 	* HandleControlClick() to track the mouse.  Unfortunately, mouse move
-	* events and the mouse up event is consumed.  The fix is to call the
+	* events and the mouse up events are consumed.  The fix is to call the
 	* default handler and send a fake mouse up when tracking is finished.
 	* 
 	* NOTE: No mouse move events are sent while tracking.  There is no
