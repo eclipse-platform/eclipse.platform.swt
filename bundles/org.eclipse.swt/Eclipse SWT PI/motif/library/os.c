@@ -152,6 +152,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(XChangeActivePointerGrab)
 }
 #endif
 
+#ifndef NO_XChangeProperty
+JNIEXPORT void JNICALL OS_NATIVE(XChangeProperty)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jintArray arg6, jint arg7)
+{
+	jint *lparg6=NULL;
+	NATIVE_ENTER(env, that, "XChangeProperty\n")
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	XChangeProperty((Display *)arg0, (Window)arg1, (Atom)arg2, (Atom)arg3, arg4, arg5, (unsigned char *)lparg6, arg7);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	NATIVE_EXIT(env, that, "XChangeProperty\n")
+}
+#endif
+
 #ifndef NO_XChangeWindowAttributes
 JNIEXPORT void JNICALL OS_NATIVE(XChangeWindowAttributes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)

@@ -141,6 +141,7 @@ public class OS {
 	public static final int PointerMotionMask = 1 << 6;
 	public static final int PropertyChangeMask = 1 << 22;
 	public static final int PropertyNotify = 28;
+	public static final int PropModeReplace = 0;
 	public static final int QueuedAfterReading = 1;
 	public static final int RectangleOut = 0x0;
 	public static final int ReparentNotify = 21;
@@ -157,6 +158,7 @@ public class OS {
 	public static final int SunXK_F37 = 0x1005FF11;
 	public static final int UnmapNotify = 18;
 	public static final int Unsorted = 0x0;
+	public static final int XA_ATOM = 4;
 	public static final int XA_FONT = 18;
 	public static final int XBufferOverflow = 0xFFFFFFFF;
 	public static final int XC_X_cursor = 0;
@@ -610,6 +612,7 @@ public static final synchronized native int XAllocColor(int display, int colorma
 public static final synchronized native void XBell(int display, int ms);
 public static final synchronized native int XBlackPixel(int display, int screenNum);
 public static final synchronized native int XChangeActivePointerGrab(int display, int eventMask, int cursor, int time);
+public static final synchronized native void XChangeProperty(int display, int w, int property, int type, int format, int mode, int[] data, int nelements);
 public static final synchronized native void XChangeWindowAttributes(int display, int window, int mask, XSetWindowAttributes attributes);
 public static final synchronized native int XCheckIfEvent(int display, int event_return, int predicate, int arg);
 public static final synchronized native boolean XCheckMaskEvent(int display, int mask, int event);
