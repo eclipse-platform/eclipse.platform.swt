@@ -1819,7 +1819,7 @@ void onMouse(Event event) {
 					final CTabFolderEvent e = new CTabFolderEvent(CTabFolder2.this);
 					e.widget = this;
 					e.time = event.time;
-					int time = display.getDoubleClickTime() + 10;
+					int time = 3 * display.getDoubleClickTime() / 2;
 					display.timerExec (time, new Runnable() {
 						public void run () {
 							if (isDisposed() || selectedIndex == -1 || e.time < upTime) return;
