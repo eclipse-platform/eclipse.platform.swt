@@ -635,9 +635,9 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				* to check if the parent is already on top and neither set or clear
 				* the top most status of the tool tip.
 				*/
-				int hwndParent = 0;
+				int hwndParent = hdr.hwndFrom;
 				do {
-					hwndParent = OS.GetParent (hdr.hwndFrom);
+					hwndParent = OS.GetParent (hwndParent);
 					if (hwndParent == 0) break;
 					int style = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
 					if ((style & OS.WS_EX_TOPMOST) != 0) break;
