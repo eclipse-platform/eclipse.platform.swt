@@ -2748,8 +2748,12 @@ void releaseDisplay () {
 	cursors = null;
 
 	/* Destroy the hidden Override shell parent */
-	if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);
-	shellHandle = 0;
+	if (shellHandle != 0) {
+		if (!OS.IsSunOS) {
+			OS.XtDestroyWidget (shellHandle);
+		}
+		shellHandle = 0;
+	}
 	
 	/* Dispose the caret callback */
 	if (caretID != 0) OS.XtRemoveTimeOut (caretID);
