@@ -164,8 +164,7 @@ void createWidget (int index) {
  * @see #setDefaultButton
  */
 public Button getDefaultButton () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return defaultButton;
 }
 /**
@@ -190,8 +189,7 @@ public Button getDefaultButton () {
  * </ul>
  */
 public Image getImage () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return image;
 }
 /**
@@ -209,8 +207,7 @@ public Image getImage () {
  * @see #setMaximized
  */
 public boolean getMaximized () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return false;
 }
 /**
@@ -225,8 +222,7 @@ public boolean getMaximized () {
  * </ul>
  */
 public Menu getMenuBar () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return menuBar;
 }
 /**
@@ -244,8 +240,7 @@ public Menu getMenuBar () {
  * @see #setMinimized
  */
 public boolean getMinimized () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return false;
 }
 String getNameText () {
@@ -265,8 +260,7 @@ String getNameText () {
  * </ul>
  */
 public String getText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return text;
 }
 Decorations menuShell () {
@@ -323,8 +317,7 @@ void releaseWidget () {
  * </ul>
  */
 public void setDefaultButton (Button button) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
 /**
  * Sets the receiver's image to the argument, which may
@@ -344,8 +337,7 @@ public void setDefaultButton (Button button) {
  * </ul>
  */
 public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	this.image = image;
 	int pixmap = 0, mask = 0;
 	if (image != null) {
@@ -380,8 +372,7 @@ public void setImage (Image image) {
  * @see #setMinimized
  */
 public void setMaximized (boolean maximized) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
 /**
  * Sets the receiver's menu bar to the argument, which
@@ -399,8 +390,7 @@ public void setMaximized (boolean maximized) {
  * </ul>
  */
 public void setMenuBar (Menu menu) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (menuBar == menu) return;
 	if (menu != null) {
 		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
@@ -432,8 +422,7 @@ public void setMenuBar (Menu menu) {
  * @see #setMaximized
  */
 public void setMinimized (boolean minimized) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
 /**
  * Sets the receiver's text, which is the string that the
@@ -451,8 +440,7 @@ public void setMinimized (boolean minimized) {
  * </ul>
  */
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
 }
