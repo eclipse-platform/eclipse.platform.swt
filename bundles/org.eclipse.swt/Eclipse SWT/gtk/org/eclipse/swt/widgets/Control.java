@@ -206,6 +206,7 @@ void hookEvents () {
 }
 
 int /*long*/ hoverProc (int /*long*/ widget) {
+	if(!hooks (SWT.MouseHover) && !filters (SWT.MouseHover)) return 0;
 	Event event = new Event ();
 	int [] x = new int [1], y = new int [1], mask = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, mask);
@@ -2374,6 +2375,7 @@ boolean sendMouseEvent (int type, int button, int time, double x_root, double y_
 }
 
 boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int time, double x_root, double y_root, int state, int /*long*/ eventPtr) {
+	if(!hooks (type) && !filters (type)) return true;
 	Event event = new Event ();
 	event.time = time;
 	event.button = button;
