@@ -128,12 +128,11 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
 		gc.fillRectangle(leftMargin, paintY, getClientArea().width, lineHeight);
 	}
 	if (selectionStart != selectionEnd) {
-		drawLineSelectionBackground(line, lineOffset, styles, paintY, gc, bidi);
-	}
-	if (selectionStart != selectionEnd && 
-		((selectionStart >= lineOffset && selectionStart < lineOffset + lineLength) || 
-		 (selectionStart < lineOffset && selectionEnd > lineOffset))) {
-		styles = mergeSelectionLineStyles(styles);
+		drawLineBreakSelection(line, lineOffset, styles, paintY, gc, bidi);
+		if ((selectionStart >= lineOffset && selectionStart < lineOffset + lineLength) || 
+			(selectionStart < lineOffset && selectionEnd > lineOffset)) {
+			styles = mergeSelectionLineStyles(styles);
+		}
 	}
 	drawStyledLine(line, lineOffset, 0, styles, 0, paintY, gc, lineBackground, widgetForeground, bidi);
 }
@@ -151,7 +150,7 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
  * @param bidi the bidi object to use for measuring and rendering 	text in bidi
  * locales. null when not in bidi mode.
  */
-protected abstract void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, StyledTextBidi bidi);
+protected abstract void drawLineBreakSelection(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, StyledTextBidi bidi);
 /** 
  * Draws the line at the specified location.
  * </p>

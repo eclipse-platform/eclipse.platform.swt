@@ -6056,12 +6056,7 @@ public void redraw() {
  * @see Control#update
  */
 public void redraw(int x, int y, int width, int height, boolean all) {
-	if (isBidi()) {	
-		// workaround for bug 4776
-		super.redraw(x, y, width + 1, height, all);
-	} else {
-		super.redraw(x, y, width, height, all);
-	}	
+	super.redraw(x, y, width, height, all);
 	if (height > 0) {
 		int lineCount = content.getLineCount();
 		int startLine = (getTopPixel() + y) / lineHeight;
