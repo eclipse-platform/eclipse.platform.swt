@@ -104,8 +104,8 @@ void createChildren() {
 	GridLayout layout = new GridLayout (2, false);
 	dialog.setLayout(layout);
 	
-	int colorChooserWidth = colorSwatchExtent * colorGrid.length;
-	int colorChooserHeight = colorSwatchExtent * colorGrid[0].length;
+	int colorChooserWidth = colorSwatchExtent * colorGrid.length - 1;
+	int colorChooserHeight = colorSwatchExtent * colorGrid[0].length - 1;
 	colorsCanvas = new Canvas(dialog, SWT.BORDER);
 	GridData data = new GridData ();
 	data.widthHint = colorChooserWidth;
