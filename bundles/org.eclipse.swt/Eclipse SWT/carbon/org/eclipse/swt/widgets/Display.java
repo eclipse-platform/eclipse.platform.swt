@@ -864,6 +864,7 @@ protected void init () {
 		OS.kEventClassCommand, OS.kEventProcessCommand,
 		
 		//OS.kEventClassAppleEvent, OS.kAEQuitApplication,
+		OS.kEventClassAppleEvent, OS.kEventAppleEvent,
 		
 		// we track down events here because we need to know when the user 
 		// clicked in the menu bar
@@ -1919,6 +1920,14 @@ static String convertToLf(String text) {
 		}
 		return OS.eventNotHandledErr;
 	}
+	
+	private void quit() {
+		if (fMenuRootShell != null) {
+			MenuItem mi= fMenuRootShell.findMenuItem(fMenuRootShell.fExitMenuItemId);
+			if (mi != null)
+				mi.handleMenuSelect();
+		}				
+	}
 
 	private int handleApplicationCallback(int nextHandler, int eRefHandle, int userData) {
 	
@@ -1930,7 +1939,18 @@ static String convertToLf(String text) {
 		switch (eventClass) {
 			
 		case OS.kEventClassAppleEvent:
-			System.out.println("kEventClassAppleEvent");
+		
+			int[] aeclass= new int[1];
+			if (OS.GetEventParameter(eRefHandle, OS.kEventParamAEEventClass, OS.typeType, null, null, aeclass) == OS.kNoErr) {
+				// System.out.println("kEventClassAppleEvent: " + MacUtil.toString(aeclass[0]));
+				int[] aetype= new int[1];
+				if (OS.GetEventParameter(eRefHandle, OS.kEventParamAEEventID, OS.typeType, null, null, aetype) == OS.kNoErr) {
+					System.out.println("kEventParamAEEventID: " + MacUtil.toString(aetype[0]));
+					if (aetype[0] == OS.kAEQuitApplication)
+						quit();
+				}
+			}
+			
 			OS.AEProcessAppleEvent(mEvent.toOldMacEvent());
 			break;
 			
@@ -1941,11 +1961,7 @@ static String convertToLf(String text) {
 				OS.GetEventHICommand(eRefHandle, rc);
 				
 				if (rc[1] == OS.kAEQuitApplication) {
-					if (fMenuRootShell != null) {
-						MenuItem mi= fMenuRootShell.findMenuItem(fMenuRootShell.fExitMenuItemId);
-						if (mi != null)
-							mi.handleMenuSelect();
-					}				
+					quit();
 					OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
 					return OS.kNoErr;
 				}
