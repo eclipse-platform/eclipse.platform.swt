@@ -4363,14 +4363,8 @@ int internalGetLastCaretDirection() {
 LineCache internalGetLineCache() {
 	return lineCache;
 }
-StyledTextContent internalGetLogicalContent() {
-	return logicalContent;
-}
 Point internalGetSelection() {
 	return selection;
-}
-int internalGetTabs() {
-	return tabLength;
 }
 boolean internalGetWordWrap() {
 	return wordWrap;
