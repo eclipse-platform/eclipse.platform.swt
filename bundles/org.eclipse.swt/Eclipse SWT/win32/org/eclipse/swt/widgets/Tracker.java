@@ -610,16 +610,11 @@ public boolean open () {
 				}
 				break;
 		}
-		/*
-		* Don't dispatch mouse and key events in general, EXCEPT once this
-		* tracker has finished its work.
-		*/
-		if (tracking && !cancelled) {
-			if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) continue;
-			if (OS.WM_MOUSEFIRST <= message && message <= OS.WM_MOUSELAST) continue;
-		}
+		if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) continue;
+		if (OS.WM_MOUSEFIRST <= message && message <= OS.WM_MOUSELAST) continue;
 		OS.DispatchMessage (msg);
 	}
+	if (mouseDown) OS.ReleaseCapture ();
 	if (!isDisposed()) drawRectangles (rectangles);
 	/*
 	* Cleanup: If a transparent window was created in order to capture events then
