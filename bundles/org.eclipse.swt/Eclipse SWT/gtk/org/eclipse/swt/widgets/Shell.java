@@ -786,8 +786,9 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 		return super.gtk_focus_out_event (widget, event);
 	}
 	if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
-	hasFocus = false;
 	sendEvent (SWT.Deactivate);
+	setActiveControl (null);
+	hasFocus = false;
 	return 0;
 }
 
@@ -905,6 +906,8 @@ public void setActive () {
 }
 
 void setActiveControl (Control control) {
+	//System.out.println ("control=" + control);
+	//new Error ().printStackTrace (System.out);
 	if (control != null && control.isDisposed ()) control = null;
 	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
 	if (lastActive == control) return;

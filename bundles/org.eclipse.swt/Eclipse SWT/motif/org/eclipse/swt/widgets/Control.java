@@ -3011,9 +3011,10 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 	}
 	
 	/* Process the focus change for the widget */
+	Display display = this.display;
+	Shell shell = getShell ();
 	switch (xEvent.type) {
-		case OS.FocusIn: {
-			Shell shell = getShell ();
+		case OS.FocusIn:
 			xFocusIn (xEvent);
 			// widget could be disposed at this point
 			
@@ -3027,10 +3028,7 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 				shell.setActiveControl (this);
 			}
 			break;
-		}
-		case OS.FocusOut: {
-			Shell shell = getShell ();
-			
+		case OS.FocusOut:
 			xFocusOut (xEvent);
 			// widget could be disposed at this point
 			
@@ -3041,14 +3039,11 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 			* events.
 			*/
 			if (!shell.isDisposed ()) {
-				Display display = shell.display;
-				Control control = display.getFocusControl ();
-				if (control == null || shell != control.getShell () ) {
+				if (shell != display.getActiveShell ()) {
 					shell.setActiveControl (null);
 				}
 			}
 			break;
-		}
 	}
 	return 0;
 }

@@ -2289,8 +2289,7 @@ void sendFocusEvent (int type) {
 				shell.setActiveControl (this);
 				break;
 			case SWT.FocusOut:
-				Control control = display.getFocusControl ();
-				if (control == null || shell != control.getShell () ) {
+				if (shell != display.getActiveShell ()) {
 					shell.setActiveControl (null);
 				}
 				break;
