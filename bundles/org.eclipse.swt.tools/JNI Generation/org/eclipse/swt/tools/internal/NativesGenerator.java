@@ -467,6 +467,11 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		}
 		output("arg0)");
 		paramStart = 1;
+	} else if (method.getName().equals("VtblCall")) {
+		output("((");
+		output(getTypeSignature2(returnType));
+		output(" (STDMETHODCALLTYPE *)())(*(int **)arg1)[arg0])");
+		paramStart = 1;
 	} else {
 		output(method.getName());
 	}
