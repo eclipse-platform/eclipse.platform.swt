@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 962;
-int OS_nativeFunctionCallCount[962];
+int OS_nativeFunctionCount = 964;
+int OS_nativeFunctionCallCount[964];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -33,6 +33,8 @@ char * OS_nativeFunctionNames[] = {
 	"GTK_1SCROLLED_1WINDOW_1VSCROLLBAR",
 	"GTK_1TEXTVIEW_1IM_1CONTEXT",
 	"GTK_1WIDGET_1HEIGHT",
+	"GTK_1WIDGET_1REQUISITION_1HEIGHT",
+	"GTK_1WIDGET_1REQUISITION_1WIDTH",
 	"GTK_1WIDGET_1SET_1HEIGHT",
 	"GTK_1WIDGET_1SET_1WIDTH",
 	"GTK_1WIDGET_1SET_1X",

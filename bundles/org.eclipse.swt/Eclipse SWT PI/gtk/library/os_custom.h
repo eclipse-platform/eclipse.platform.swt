@@ -53,16 +53,18 @@
 #define GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(arg0) (GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing >= 0 ? GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing : 3)		
 #define GTK_SCROLLED_WINDOW_VSCROLLBAR(arg0) (arg0)->vscrollbar
 #define GTK_WIDGET_HEIGHT(arg0) (arg0)->allocation.height
-#define GTK_WIDGET_SET_HEIGHT(arg0, arg1) ((GtkWidget *)arg0)->allocation.height = arg1
+#define GTK_WIDGET_SET_HEIGHT(arg0, arg1) (arg0)->allocation.height = arg1
 #define GTK_WIDGET_WIDTH(arg0) (arg0)->allocation.width
-#define GTK_WIDGET_SET_WIDTH(arg0, arg1) ((GtkWidget *)arg0)->allocation.width = arg1
+#define GTK_WIDGET_SET_WIDTH(arg0, arg1) (arg0)->allocation.width = arg1
 #define GTK_WIDGET_WINDOW(arg0) (arg0)->window
 #define GTK_WIDGET_X(arg0) (arg0)->allocation.x
-#define GTK_WIDGET_SET_X(arg0, arg1) ((GtkWidget *)arg0)->allocation.x = arg1
+#define GTK_WIDGET_SET_X(arg0, arg1) (arg0)->allocation.x = arg1
 #define GTK_ENTRY_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_WIDGET_Y(arg0) ((GtkWidget *)arg0)->allocation.y
-#define GTK_WIDGET_SET_Y(arg0, arg1) ((GtkWidget *)arg0)->allocation.y = arg1
+#define GTK_WIDGET_SET_Y(arg0, arg1) (arg0)->allocation.y = arg1
+#define GTK_WIDGET_REQUISITION_WIDTH(arg0) (arg0)->requisition.width
+#define GTK_WIDGET_REQUISITION_HEIGHT(arg0) (arg0)->requisition.height
 #define g_list_data(arg0) (arg0)->data
 #define g_slist_data(arg0) (arg0)->data
 #define g_list_set_next(arg0, arg1) (arg0)->next = arg1

@@ -496,6 +496,8 @@ public static final native void GTK_WIDGET_SET_HEIGHT(int /*long*/ widget, int h
 public static final native void GTK_WIDGET_SET_WIDTH(int /*long*/ widget, int width);
 public static final native void GTK_WIDGET_SET_X(int /*long*/ widget, int x);
 public static final native void GTK_WIDGET_SET_Y(int /*long*/ widget, int y);
+public static final native int GTK_WIDGET_REQUISITION_WIDTH(int /*long*/ widget);
+public static final native int GTK_WIDGET_REQUISITION_HEIGHT(int /*long*/ widget);
 
 /** X11 Native methods and constants */
 public static final int Above = 0;
