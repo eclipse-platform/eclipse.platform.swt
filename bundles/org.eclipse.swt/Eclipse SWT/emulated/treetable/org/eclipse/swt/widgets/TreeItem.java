@@ -1001,8 +1001,24 @@ public void setExpanded (boolean value) {
 	if (value) {
 		expanded = value;
 		if (availableIndex == -1) return;
+
 		TreeItem[] availableDescendents = computeAvailableDescendents ();
 		int descendentsCount = availableDescendents.length;
+		if (availableIndex != parent.availableItems.length - 1) {
+			/* the receiver is not the last available item */
+			Rectangle clientArea = parent.getClientArea ();
+			int y = parent.getItemY (this) + parent.itemHeight;
+			if (0 < y && y < clientArea.height) {
+				parent.update ();
+				GC gc = new GC (parent);
+				gc.copyArea (
+					0, y,
+					clientArea.width, clientArea.height - y,
+					0, y + ((descendentsCount - 1) * parent.itemHeight));				
+				gc.dispose ();
+			}
+		}
+
 		parent.makeDescendentsAvailable (this, availableDescendents);
 
 		/* update scrollbars */
@@ -1023,39 +1039,26 @@ public void setExpanded (boolean value) {
 			return;
 		}
 
-		int previousNextAvailableIndex = availableIndex + descendentsCount;
-		if (previousNextAvailableIndex != parent.availableItems.length) {
-			/* the receiver was not the last available item before being expanded */
-			Rectangle clientArea = parent.getClientArea ();
-			int y = parent.getItemY (parent.availableItems [availableIndex + 1]);
-			parent.update ();
-			GC gc = new GC (parent);
-			gc.copyArea (
-				0, y,
-				clientArea.width, clientArea.height - y,
-				0, y + ((descendentsCount - 1) * parent.itemHeight));				
-			gc.dispose ();
-		}
 		int redrawStart = availableIndex + 1;
 		int redrawEnd = redrawStart + descendentsCount - 2;
 		parent.redrawItems (redrawStart, redrawEnd, false);
 	} else {
-		int oldAvailableLength = parent.availableItems.length;
 		TreeItem[] descendents = computeAvailableDescendents ();
 		expanded = value;
 		if (availableIndex == -1) return;
 		Rectangle clientArea = parent.getClientArea ();
-		int itemY = parent.getItemY (this);
-		int startY = itemY + descendents.length * parent.itemHeight;
-		int imageHeight = Math.max (0, clientArea.height - startY);
-		Image image = null;
-		GC gc = null;
-		if (imageHeight > 0) {
-			image = new Image (display, clientArea.width, imageHeight);
-			gc = new GC (parent);
-			gc.copyArea (image, 0, startY);
-		}
+
+		int y = parent.getItemY (this) + parent.itemHeight;
+		int startY = y + (descendents.length - 1) * parent.itemHeight;
+		parent.update ();
+		GC gc = new GC (parent);
+		gc.copyArea (0, startY, clientArea.width, clientArea.height - startY, 0, y);
+		gc.dispose ();
+		int redrawY = clientArea.height - startY + y;
+		parent.redraw (0, redrawY, clientArea.width, clientArea.height - redrawY, false);
+
 		parent.makeDescendentsUnavailable (this, descendents);
+
 		parent.updateHorizontalBar ();
 		int oldTopIndex = parent.topIndex;
 		parent.updateVerticalBar ();
@@ -1086,14 +1089,6 @@ public void setExpanded (boolean value) {
 				return;
 			}
 		}
-		itemY = parent.getItemY (this);
-		if (image != null) {
-			gc.drawImage (image, 0, itemY + parent.itemHeight);
-			image.dispose ();
-			gc.dispose ();
-		}
-		int drawY = itemY + parent.itemHeight;
-		parent.redraw (0, drawY, clientArea.width, clientArea.height - drawY, false);
 	}
 	/* redraw the receiver's expander box */
 	Rectangle bounds = getExpanderBounds ();
@@ -1287,13 +1282,17 @@ public void setText (int columnIndex, String value) {
 	texts [columnIndex] = value;
 	if (columnIndex == 0) super.setText (value);	// TODO can remove this
 	
+	int oldWidth = textWidths [columnIndex];
 	GC gc = new GC (parent);
 	gc.setFont (getFont (columnIndex));
 	textWidths [columnIndex] = gc.textExtent (value).x;
 	gc.dispose ();
-	
-	Rectangle bounds = getCellBounds (columnIndex);
-	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	parent.redraw (
+		getTextX (columnIndex),
+		parent.getItemY (this),
+		Math.max (oldWidth, textWidths [columnIndex]) + 2 * MARGIN_TEXT,
+		parent.itemHeight,
+		false);
 }
 /*
  * The parent's font has changed, so if this font was being used by the receiver then
