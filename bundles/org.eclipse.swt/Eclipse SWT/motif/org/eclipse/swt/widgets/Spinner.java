@@ -656,7 +656,7 @@ void updateText () {
 		boolean warnings = display.getWarnings ();
 		display.setWarnings (false);
 		OS.XmTextSetString (argList [1], buffer);
-		display.setWarnings(warnings);	
+		display.setWarnings (warnings);	
 	} else {
 		int [] argList2 = {OS.XmNposition, position};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
