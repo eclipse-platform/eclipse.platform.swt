@@ -4450,14 +4450,16 @@ void internalRedraw() {
  * @param start offset of the first character to redraw
  * @param length number of characters to redraw
  * @param clearBackground true if the background should be cleared as 
- * 	part of the redraw operation.  If true, the entire redraw area will
- *  be cleared before anything is redrawn.  The redraw operation will
- *  be faster and smoother if clearBackground is set to false.  Whether
- *  or not the flag can be set to false depends on the type of change
- *  that has taken place.  If font styles or background colors for the
- *  redraw area have changed, clearBackground should be set to true.  If
- *  only foreground colors have changed for the redraw area, 
- *  clearBackground can be set to false. 
+ * 	part of the redraw operation.  If true, the entire redraw range will
+ *  be cleared before anything is redrawn.  If the redraw range includes
+ *	the last character of a line (i.e., the entire line is redrawn) the 
+ * 	line is cleared all the way to the right border of the widget.
+ *  The redraw operation will be faster and smoother if clearBackground is 
+ * 	set to false.  Whether or not the flag can be set to false depends on 
+ * 	the type of change that has taken place.  If font styles or background 
+ * 	colors for the redraw range have changed, clearBackground should be 
+ * 	set to true.  If only foreground colors have changed for the redraw 
+ * 	range, clearBackground can be set to false. 
  */
 void internalRedrawRange(int start, int length, boolean clearBackground) {
 	int end = start + length;
@@ -5391,8 +5393,8 @@ public void redraw(int x, int y, int width, int height, boolean all) {
  * @param lastLine last line to redraw
  * @param endOffset offset in the last where redrawing should stop
  * @param clearBackground true=clear the background by invalidating
- *  the requested redraw area, false=draw the foreground directly
- *  without invalidating the redraw area.
+ *  the requested redraw range, false=draw the foreground directly
+ *  without invalidating the redraw range.
  */
 void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffset, boolean clearBackground) {
 	int lineCount = lastLine - firstLine + 1;
@@ -5468,8 +5470,11 @@ void redrawLine(int line, int offset) {
  * @param lastLine last line to redraw
  * @param endOffset offset in the last where redrawing should stop
  * @param clearBackground true=clear the background by invalidating
- *  the requested redraw area, false=draw the foreground directly
- *  without invalidating the redraw area.
+ *  the requested redraw range. If the redraw range includes the 
+ * 	last character of a line (i.e., the entire line is redrawn) the 
+ * 	line is cleared all the way to the right border of the widget.
+ *  false=draw the foreground directly without invalidating the 
+ * 	redraw range.
  */
 void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffset, boolean clearBackground) {
 	String line = content.getLine(firstLine);
@@ -5478,8 +5483,15 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 	int redrawStopX;
 	int redrawY = firstLine * lineHeight - verticalScrollOffset;
 	int firstLineOffset = content.getOffsetAtLine(firstLine);
+	boolean fullLineRedraw = ((getStyle() & SWT.FULL_SELECTION) != 0 && lastLine > firstLine);
+
+	// if redraw range includes last character on the first line, 
+	// clear background to right widget border. fixes bug 19595.
+	if (clearBackground && endOffset - firstLineOffset >= line.length()) {
+		fullLineRedraw = true;
+	}
 	// calculate redraw stop location
-	if ((getStyle() & SWT.FULL_SELECTION) != 0 && lastLine > firstLine) {
+	if (fullLineRedraw) {
 		redrawStopX = getClientArea().width - leftMargin;
 	}
 	else {
@@ -5492,7 +5504,17 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 		// no redraw necessary if redraw offset is 0
 		if (offsetInLastLine > 0) {
 			line = content.getLine(lastLine);
-			redrawStopX = getXAtOffset(line, lastLine, offsetInLastLine) - leftMargin;
+			// if redraw range includes last character on the last line, 
+			// clear background to right widget border. fixes bug 19595.
+			if (clearBackground && offsetInLastLine >= line.length()) {
+				fullLineRedraw = true;
+			}
+			if (fullLineRedraw) {
+				redrawStopX = getClientArea().width - leftMargin;
+			}
+			else {
+				redrawStopX = getXAtOffset(line, lastLine, offsetInLastLine) - leftMargin;
+			}
 			redrawY = lastLine * lineHeight - verticalScrollOffset;
 			draw(0, redrawY, redrawStopX, lineHeight, clearBackground);
 		}
@@ -5558,14 +5580,16 @@ void redrawMultiLineChange(int y, int newLineCount, int replacedLineCount) {
  * @param start offset of the first character to redraw
  * @param length number of characters to redraw
  * @param clearBackground true if the background should be cleared as
- *  part of the redraw operation.  If true, the entire redraw area will
- *  be cleared before anything is redrawn.  The redraw operation will
- *  be faster and smoother if clearBackground is set to false.  Whether
- *  or not the flag can be set to false depends on the type of change
- *  that has taken place.  If font styles or background colors for the
- *  redraw area have changed, clearBackground should be set to true.  If
- *  only foreground colors have changed for the redraw area,
- *  clearBackground can be set to false. 
+ *  part of the redraw operation.  If true, the entire redraw range will
+ *  be cleared before anything is redrawn.  If the redraw range includes
+ *	the last character of a line (i.e., the entire line is redrawn) the 
+ * 	line is cleared all the way to the right border of the widget.
+ * 	The redraw operation will be faster and smoother if clearBackground 
+ * 	is set to false.  Whether or not the flag can be set to false depends 
+ * 	on the type of change that has taken place.  If font styles or 
+ * 	background colors for the redraw range have changed, clearBackground 
+ * 	should be set to true.  If only foreground colors have changed for 
+ * 	the redraw range, clearBackground can be set to false. 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
