@@ -3107,6 +3107,11 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 		width = logPen.elpWidth;
 		style = logPen.elpPenStyle;
 		extPen = true;
+		/*
+		* Feature in Windows. PS_GEOMETRIC pens cannot have
+		* zero width. 
+		*/
+		if (newWidth == 0) newWidth = 1;
 	}
 	if (newColor != -1) {
 		if (newColor != color) {
