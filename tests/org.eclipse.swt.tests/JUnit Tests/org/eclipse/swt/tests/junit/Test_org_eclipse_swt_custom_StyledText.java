@@ -192,10 +192,10 @@ public void test_setKeyBindingII(){
 	assertTrue(":a:", text.getKeyBinding(SWT.DEL) == SWT.NULL);
 	text.setKeyBinding(SWT.DEL, ST.LINE_UP);
 	assertTrue(":b:", text.getKeyBinding(SWT.DEL) == ST.LINE_UP);
-	text.setKeyBinding(SWT.DEL | SWT.SHIFT, ST.SELECT_PAGE_UP);
-	assertTrue(":c:", text.getKeyBinding(SWT.DEL | SWT.SHIFT) == ST.SELECT_PAGE_UP);
-	text.setKeyBinding(SWT.DEL | SWT.SHIFT, ST.PAGE_UP);
-	assertTrue(":d:", text.getKeyBinding(SWT.DEL | SWT.SHIFT) == ST.PAGE_UP);
+	text.setKeyBinding(SWT.DEL | SWT.MOD2, ST.SELECT_PAGE_UP);
+	assertTrue(":c:", text.getKeyBinding(SWT.DEL | SWT.MOD2) == ST.SELECT_PAGE_UP);
+	text.setKeyBinding(SWT.DEL | SWT.MOD2, ST.PAGE_UP);
+	assertTrue(":d:", text.getKeyBinding(SWT.DEL | SWT.MOD2) == ST.PAGE_UP);
 	text.setKeyBinding(-1, ST.PAGE_UP);
 	text.setKeyBinding(-1, -1);
 }
@@ -805,10 +805,10 @@ public void test_getKeyBindingI() {
 	assertTrue(":a:", text.getKeyBinding(SWT.DEL) == ST.DELETE_NEXT);
 	text.setKeyBinding(SWT.DEL, ST.LINE_UP);
 	assertTrue(":b:", text.getKeyBinding(SWT.DEL) == ST.LINE_UP);
-	text.setKeyBinding(SWT.DEL | SWT.SHIFT, ST.SELECT_PAGE_UP);
-	assertTrue(":c:", text.getKeyBinding(SWT.DEL | SWT.SHIFT) == ST.SELECT_PAGE_UP);
-	text.setKeyBinding(SWT.DEL | SWT.SHIFT, ST.PAGE_UP);
-	assertTrue(":d:", text.getKeyBinding(SWT.DEL | SWT.SHIFT) == ST.PAGE_UP);
+	text.setKeyBinding(SWT.DEL | SWT.MOD2, ST.SELECT_PAGE_UP);
+	assertTrue(":c:", text.getKeyBinding(SWT.DEL | SWT.MOD2) == ST.SELECT_PAGE_UP);
+	text.setKeyBinding(SWT.DEL | SWT.MOD2, ST.PAGE_UP);
+	assertTrue(":d:", text.getKeyBinding(SWT.DEL | SWT.MOD2) == ST.PAGE_UP);
 	assertTrue(":e:", text.getKeyBinding(-1) == SWT.NULL);
 	assertTrue(":f:", text.getKeyBinding(SWT.F2) == SWT.NULL);
 }
