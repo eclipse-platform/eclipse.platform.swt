@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 819;
-int OS_nativeFunctionCallCount[819];
+int OS_nativeFunctionCount = 823;
+int OS_nativeFunctionCallCount[823];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -66,6 +66,7 @@ char * OS_nativeFunctionNames[] = {
 	"GdkImage_1sizeof", 
 	"GdkRectangle_1sizeof", 
 	"GdkVisual_1sizeof", 
+	"GdkWindowAttr_1sizeof", 
 	"GtkAdjustment_1sizeof", 
 	"GtkAllocation_1sizeof", 
 	"GtkColorSelectionDialog_1sizeof", 
@@ -272,6 +273,7 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1visual_1get_1system", 
 	"gdk_1window_1at_1pointer", 
 	"gdk_1window_1begin_1paint_1rect", 
+	"gdk_1window_1destroy", 
 	"gdk_1window_1end_1paint", 
 	"gdk_1window_1focus", 
 	"gdk_1window_1freeze_1updates", 
@@ -285,9 +287,11 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1window_1invalidate_1region", 
 	"gdk_1window_1lookup", 
 	"gdk_1window_1lower", 
+	"gdk_1window_1new", 
 	"gdk_1window_1process_1all_1updates", 
 	"gdk_1window_1process_1updates", 
 	"gdk_1window_1raise", 
+	"gdk_1window_1resize", 
 	"gdk_1window_1scroll", 
 	"gdk_1window_1set_1accept_1focus", 
 	"gdk_1window_1set_1back_1pixmap", 

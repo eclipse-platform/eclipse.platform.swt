@@ -743,6 +743,76 @@ void setGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpStruct)
 }
 #endif
 
+#ifndef NO_GdkWindowAttr
+typedef struct GdkWindowAttr_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID title, event_mask, x, y, width, height, wclass, visual, colormap, window_type, cursor, wmclass_name, wmclass_class, override_redirect;
+} GdkWindowAttr_FID_CACHE;
+
+GdkWindowAttr_FID_CACHE GdkWindowAttrFc;
+
+void cacheGdkWindowAttrFields(JNIEnv *env, jobject lpObject)
+{
+	if (GdkWindowAttrFc.cached) return;
+	GdkWindowAttrFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GdkWindowAttrFc.title = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "title", "I");
+	GdkWindowAttrFc.event_mask = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "event_mask", "I");
+	GdkWindowAttrFc.x = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "x", "I");
+	GdkWindowAttrFc.y = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "y", "I");
+	GdkWindowAttrFc.width = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "width", "I");
+	GdkWindowAttrFc.height = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "height", "I");
+	GdkWindowAttrFc.wclass = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "wclass", "I");
+	GdkWindowAttrFc.visual = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "visual", "I");
+	GdkWindowAttrFc.colormap = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "colormap", "I");
+	GdkWindowAttrFc.window_type = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "window_type", "I");
+	GdkWindowAttrFc.cursor = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "cursor", "I");
+	GdkWindowAttrFc.wmclass_name = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "wmclass_name", "I");
+	GdkWindowAttrFc.wmclass_class = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "wmclass_class", "I");
+	GdkWindowAttrFc.override_redirect = (*env)->GetFieldID(env, GdkWindowAttrFc.clazz, "override_redirect", "Z");
+	GdkWindowAttrFc.cached = 1;
+}
+
+GdkWindowAttr *getGdkWindowAttrFields(JNIEnv *env, jobject lpObject, GdkWindowAttr *lpStruct)
+{
+	if (!GdkWindowAttrFc.cached) cacheGdkWindowAttrFields(env, lpObject);
+	lpStruct->title = (gchar *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.title);
+	lpStruct->event_mask = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.event_mask);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.height);
+	lpStruct->wclass = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.wclass);
+	lpStruct->visual = (GdkVisual *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.visual);
+	lpStruct->colormap = (GdkColormap *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.colormap);
+	lpStruct->window_type = (*env)->GetIntField(env, lpObject, GdkWindowAttrFc.window_type);
+	lpStruct->cursor = (GdkCursor *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.cursor);
+	lpStruct->wmclass_name = (gchar *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.wmclass_name);
+	lpStruct->wmclass_class = (gchar *)(*env)->GetIntField(env, lpObject, GdkWindowAttrFc.wmclass_class);
+	lpStruct->override_redirect = (*env)->GetBooleanField(env, lpObject, GdkWindowAttrFc.override_redirect);
+	return lpStruct;
+}
+
+void setGdkWindowAttrFields(JNIEnv *env, jobject lpObject, GdkWindowAttr *lpStruct)
+{
+	if (!GdkWindowAttrFc.cached) cacheGdkWindowAttrFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.title, (jint)lpStruct->title);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.event_mask, (jint)lpStruct->event_mask);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.height, (jint)lpStruct->height);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.wclass, (jint)lpStruct->wclass);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.visual, (jint)lpStruct->visual);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.colormap, (jint)lpStruct->colormap);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.window_type, (jint)lpStruct->window_type);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.cursor, (jint)lpStruct->cursor);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.wmclass_name, (jint)lpStruct->wmclass_name);
+	(*env)->SetIntField(env, lpObject, GdkWindowAttrFc.wmclass_class, (jint)lpStruct->wmclass_class);
+	(*env)->SetBooleanField(env, lpObject, GdkWindowAttrFc.override_redirect, (jboolean)lpStruct->override_redirect);
+}
+#endif
+
 #ifndef NO_GtkAdjustment
 typedef struct GtkAdjustment_FID_CACHE {
 	int cached;

@@ -540,6 +540,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkVisual_1sizeof)
 }
 #endif
 
+#ifndef NO_GdkWindowAttr_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkWindowAttr_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GdkWindowAttr_1sizeof_FUNC);
+	rc = (jint)GdkWindowAttr_sizeof();
+	OS_NATIVE_EXIT(env, that, GdkWindowAttr_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GtkAdjustment_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GtkAdjustment_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -3211,6 +3223,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1begin_1paint_1rect)
 }
 #endif
 
+#ifndef NO_gdk_1window_1destroy
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1destroy)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, gdk_1window_1destroy_FUNC);
+	gdk_window_destroy((GdkWindow *)arg0);
+	OS_NATIVE_EXIT(env, that, gdk_1window_1destroy_FUNC);
+}
+#endif
+
 #ifndef NO_gdk_1window_1end_1paint
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1end_1paint)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -3375,6 +3397,21 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1lower)
 }
 #endif
 
+#ifndef NO_gdk_1window_1new
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1new)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	GdkWindowAttr _arg1, *lparg1=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gdk_1window_1new_FUNC);
+	if (arg1) lparg1 = getGdkWindowAttrFields(env, arg1, &_arg1);
+	rc = (jint)gdk_window_new((GdkWindow *)arg0, lparg1, arg2);
+	if (arg1) setGdkWindowAttrFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, gdk_1window_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1window_1process_1all_1updates
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1process_1all_1updates)
 	(JNIEnv *env, jclass that)
@@ -3402,6 +3439,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1raise)
 	OS_NATIVE_ENTER(env, that, gdk_1window_1raise_FUNC);
 	gdk_window_raise((GdkWindow *)arg0);
 	OS_NATIVE_EXIT(env, that, gdk_1window_1raise_FUNC);
+}
+#endif
+
+#ifndef NO_gdk_1window_1resize
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1resize)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, gdk_1window_1resize_FUNC);
+	gdk_window_resize((GdkWindow *)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, gdk_1window_1resize_FUNC);
 }
 #endif
 

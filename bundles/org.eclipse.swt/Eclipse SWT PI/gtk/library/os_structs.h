@@ -171,6 +171,18 @@ void setGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpStruct);
 #define GdkVisual_sizeof() 0
 #endif
 
+#ifndef NO_GdkWindowAttr
+void cacheGdkWindowAttrFields(JNIEnv *env, jobject lpObject);
+GdkWindowAttr *getGdkWindowAttrFields(JNIEnv *env, jobject lpObject, GdkWindowAttr *lpStruct);
+void setGdkWindowAttrFields(JNIEnv *env, jobject lpObject, GdkWindowAttr *lpStruct);
+#define GdkWindowAttr_sizeof() sizeof(GdkWindowAttr)
+#else
+#define cacheGdkWindowAttrFields(a,b)
+#define getGdkWindowAttrFields(a,b,c) NULL
+#define setGdkWindowAttrFields(a,b,c)
+#define GdkWindowAttr_sizeof() 0
+#endif
+
 #ifndef NO_GtkAdjustment
 void cacheGtkAdjustmentFields(JNIEnv *env, jobject lpObject);
 GtkAdjustment *getGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpStruct);
