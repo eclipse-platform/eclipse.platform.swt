@@ -141,6 +141,23 @@ static String getTypeSignature2(Class clazz) {
 	return "jobject";
 }
 
+static String getTypeSignature4(Class clazz) {
+	if (clazz == Void.TYPE) return "void";
+	if (clazz == Integer.TYPE) return "jint";
+	if (clazz == Boolean.TYPE) return "jboolean";
+	if (clazz == Long.TYPE) return "jlong";
+	if (clazz == Short.TYPE) return "jshort";
+	if (clazz == Character.TYPE) return "jchar";
+	if (clazz == Byte.TYPE) return "jbyte";
+	if (clazz == Float.TYPE) return "jfloat";
+	if (clazz == Double.TYPE) return "jdouble";
+	if (clazz.isArray()) {
+		Class componentType = clazz.getComponentType();
+		return getTypeSignature4(componentType) + " *";
+	}
+	return getClassName(clazz) + " *";
+}
+
 static String getTypeSignature3(Field field) {
 	Class clazz = field.getType();
 	return getTypeSignature3(clazz);
