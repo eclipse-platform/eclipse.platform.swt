@@ -19,7 +19,7 @@ set path=%JAVA_HOME%;%path%
 rem *****
 rem mozilla dist folder
 rem *****
-set MOZ_HOME=D:\xp\mozilla2swt\mozilla1.4\mozilla\dist
+set MOZ_HOME=W:\mozilla\1.4\win32\mozilla\dist
 
 rem ********
 rem MSVC 6.0
