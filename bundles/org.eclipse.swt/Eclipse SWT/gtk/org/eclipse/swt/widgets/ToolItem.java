@@ -202,6 +202,7 @@ void createHandle (int index) {
 			arrowButtonHandle = OS.gtk_button_new ();
 			if (arrowButtonHandle==0) error(SWT.ERROR_NO_HANDLES);
 			OS.gtk_button_set_relief(arrowButtonHandle, OS.GTK_RELIEF_NONE);
+			OS.gtk_container_set_border_width(arrowButtonHandle,0);
 			
 			OS.gtk_toolbar_insert_widget (
 				parent.handle,
