@@ -79,6 +79,20 @@ Menu createEditMenu() {
 	return menu;
 }
 
+Menu createFileMenu() {
+	Menu bar = shell.getMenuBar ();
+	Menu menu = new Menu (bar);
+	
+	MenuItem item = new MenuItem (menu, SWT.PUSH);
+	item.setText (resources.getString("Exit_menuitem"));
+	item.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent event) {
+			shell.close ();
+		}
+	});
+
+	return menu;
+}
 
 /*
  * Set the text state to bold.
@@ -135,6 +149,10 @@ void fgColor(int color) {
 void createMenuBar () {
 	Menu bar = new Menu (shell, SWT.BAR);
 	shell.setMenuBar (bar);
+
+	MenuItem fileItem = new MenuItem (bar, SWT.CASCADE);
+	fileItem.setText (resources.getString("File_menuitem"));
+	fileItem.setMenu (createFileMenu ());
 
 	MenuItem editItem = new MenuItem (bar, SWT.CASCADE);
 	editItem.setText (resources.getString("Edit_menuitem"));

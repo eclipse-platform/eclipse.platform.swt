@@ -265,12 +265,10 @@ private void openAddressBook() {
 	fileDialog.setFilterExtensions(new String[] {"*.adr;", "*.*"});
 	fileDialog.setFilterNames(new String[] {resAddressBook.getString("Book_filter_name") + " (*.adr)", 
 											resAddressBook.getString("All_filter_name") + " (*.*)"});
-	fileDialog.open();
-	String name = fileDialog.getFileName();
-	
-	if(name == null) return;
+	String name = fileDialog.open();
 
-	File file = new File(fileDialog.getFilterPath(), name);
+	if(name == null) return;
+	File file = new File(name);
 	if (!file.exists()) {
 		displayError(resAddressBook.getString("File")+file.getName()+" "+resAddressBook.getString("Does_not_exist")); 
 		return;
@@ -479,8 +477,9 @@ private void createFileMenu(Menu menuBar) {
 	subItem.setAccelerator(SWT.MOD1 + 'B');
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
-			closeAddressBook();
-			newAddressBook();
+			if (closeAddressBook()) {
+				newAddressBook();
+			}
 		}
 	});
 
@@ -490,8 +489,9 @@ private void createFileMenu(Menu menuBar) {
 	subItem.setAccelerator(SWT.MOD1 + 'O');
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
-			closeAddressBook();
-			openAddressBook();
+			if (closeAddressBook()) {
+				openAddressBook();
+			}
 		}
 	});
 
@@ -508,6 +508,7 @@ private void createFileMenu(Menu menuBar) {
 	//File -> Save As.
 	subItem = new MenuItem(menu, SWT.NULL);
 	subItem.setText(resAddressBook.getString("Save_book_as"));
+	subItem.setAccelerator(SWT.MOD1 + 'A');
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			saveAs();

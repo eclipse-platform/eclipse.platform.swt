@@ -34,15 +34,16 @@ Menu createFileMenu() {
 	// Open 
 	item = new MenuItem (menu, SWT.CASCADE);
 	item.setText (resources.getString("Open_menuitem"));
+	item.setAccelerator(SWT.MOD1 + 'O');
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
 			openFile();
 		}
 	});
 
-	// Close
+	// Exit
 	item = new MenuItem (menu, SWT.PUSH);
-	item.setText (resources.getString("Close_menuitem"));
+	item.setText (resources.getString("Exit_menuitem"));
 	item.addSelectionListener (new SelectionAdapter () {
 		public void widgetSelected (SelectionEvent e) {
 			menuFileExit ();
