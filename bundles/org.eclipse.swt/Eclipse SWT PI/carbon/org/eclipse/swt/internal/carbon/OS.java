@@ -1154,7 +1154,7 @@ public static final native boolean StillDown();
 public static final native int SyncCGContextOriginWithPort(int inContext, int port);
 public static final native void SysBeep(short duration);
 public static final native int TXNActivate(int txHandle, int frameID, boolean scrollBarState);
-public static final native int TXNAdjustCursor (int iTXNObject, int ioCursorRgn);
+public static final native void TXNAdjustCursor (int iTXNObject, int ioCursorRgn);
 public static final native void TXNClick(int iTXNObject, EventRecord iEvent);
 public static final native int TXNCopy(int txHandle);
 public static final native int TXNCut(int txHandle);
