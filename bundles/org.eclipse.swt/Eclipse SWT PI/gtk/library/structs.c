@@ -805,6 +805,99 @@ void setGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpStruct)
 	(*env)->SetIntField(env, lpObject, lpCache->list, (jint)lpStruct->list);
 }
 
+typedef struct GtkFileSelection_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID
+		dir_list, file_list, selection_entry, selection_text, main_vbox, ok_button, cancel_button,
+		help_button, history_pulldown, history_menu, history_list, fileop_dialog, fileop_entry,
+		fileop_file, cmpl_state, fileop_c_dir, fileop_del_file, fileop_ren_file, button_area,
+		action_area;
+} GtkFileSelection_FID_CACHE;
+typedef GtkFileSelection_FID_CACHE *PGtkFileSelection_FID_CACHE;
+
+GtkFileSelection_FID_CACHE GtkFileSelectionFc;
+
+void cacheGtkFileSelectionFids(JNIEnv *env, jobject lpObject, PGtkFileSelection_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->dir_list = (*env)->GetFieldID(env, lpCache->clazz, "dir_list", "I");
+	lpCache->file_list = (*env)->GetFieldID(env, lpCache->clazz, "file_list", "I");
+	lpCache->selection_entry = (*env)->GetFieldID(env, lpCache->clazz, "selection_entry", "I");
+	lpCache->selection_text = (*env)->GetFieldID(env, lpCache->clazz, "selection_text", "I");
+	lpCache->main_vbox = (*env)->GetFieldID(env, lpCache->clazz, "main_vbox", "I");
+	lpCache->ok_button = (*env)->GetFieldID(env, lpCache->clazz, "ok_button", "I");
+	lpCache->cancel_button = (*env)->GetFieldID(env, lpCache->clazz, "cancel_button", "I");
+	lpCache->help_button = (*env)->GetFieldID(env, lpCache->clazz, "help_button", "I");
+	lpCache->history_pulldown = (*env)->GetFieldID(env, lpCache->clazz, "history_pulldown", "I");
+	lpCache->history_menu = (*env)->GetFieldID(env, lpCache->clazz, "history_menu", "I");
+	lpCache->history_list = (*env)->GetFieldID(env, lpCache->clazz, "history_list", "I");
+	lpCache->fileop_dialog = (*env)->GetFieldID(env, lpCache->clazz, "fileop_dialog", "I");
+	lpCache->fileop_entry = (*env)->GetFieldID(env, lpCache->clazz, "fileop_entry", "I");
+	lpCache->fileop_file = (*env)->GetFieldID(env, lpCache->clazz, "fileop_file", "I");
+	lpCache->cmpl_state = (*env)->GetFieldID(env, lpCache->clazz, "cmpl_state", "I");
+	lpCache->fileop_c_dir = (*env)->GetFieldID(env, lpCache->clazz, "fileop_c_dir", "I");
+	lpCache->fileop_del_file = (*env)->GetFieldID(env, lpCache->clazz, "fileop_del_file", "I");	
+	lpCache->fileop_ren_file = (*env)->GetFieldID(env, lpCache->clazz, "fileop_ren_file", "I");	
+	lpCache->button_area = (*env)->GetFieldID(env, lpCache->clazz, "button_area", "I");
+	lpCache->action_area = (*env)->GetFieldID(env, lpCache->clazz, "action_area", "I");
+	lpCache->cached = 1;
+}
+
+GtkFileSelection *getGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpStruct)
+{
+	PGtkFileSelection_FID_CACHE lpCache = &GtkFileSelectionFc;
+	if (!lpCache->cached) cacheGtkFileSelectionFids(env, lpObject, lpCache);
+	lpStruct->dir_list = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->dir_list);
+	lpStruct->file_list = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->file_list);
+	lpStruct->selection_entry = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->selection_entry);
+	lpStruct->selection_text = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->selection_text);
+	lpStruct->main_vbox = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->main_vbox);
+	lpStruct->ok_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->ok_button);
+	lpStruct->cancel_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->cancel_button);
+	lpStruct->help_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->help_button);
+	lpStruct->history_pulldown = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->history_pulldown);
+	lpStruct->history_menu = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->history_menu);
+	lpStruct->history_list = (GList *)(*env)->GetIntField(env, lpObject, lpCache->history_list);
+	lpStruct->fileop_dialog = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->fileop_dialog);
+	lpStruct->fileop_entry = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->fileop_entry);
+	lpStruct->fileop_file = (gchar *)(*env)->GetIntField(env, lpObject, lpCache->fileop_file);
+	lpStruct->cmpl_state = (gpointer)(*env)->GetIntField(env, lpObject, lpCache->cmpl_state);
+	lpStruct->fileop_c_dir = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->fileop_c_dir);
+	lpStruct->fileop_del_file = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->fileop_del_file);
+	lpStruct->fileop_ren_file = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->fileop_ren_file);
+	lpStruct->button_area = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->button_area);
+	lpStruct->action_area = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->action_area);
+	return lpStruct;
+}
+
+void setGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpStruct)
+{
+	PGtkFileSelection_FID_CACHE lpCache = &GtkFileSelectionFc;
+	if (!lpCache->cached) cacheGtkFileSelectionFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->dir_list, (jint)lpStruct->dir_list);
+	(*env)->SetIntField(env, lpObject, lpCache->file_list, (jint)lpStruct->file_list);
+	(*env)->SetIntField(env, lpObject, lpCache->selection_entry, (jint)lpStruct->selection_entry);
+	(*env)->SetIntField(env, lpObject, lpCache->selection_text, (jint)lpStruct->selection_text);
+	(*env)->SetIntField(env, lpObject, lpCache->main_vbox, (jint)lpStruct->main_vbox);
+	(*env)->SetIntField(env, lpObject, lpCache->ok_button, (jint)lpStruct->ok_button);
+	(*env)->SetIntField(env, lpObject, lpCache->cancel_button, (jint)lpStruct->cancel_button);
+	(*env)->SetIntField(env, lpObject, lpCache->help_button, (jint)lpStruct->help_button);
+	(*env)->SetIntField(env, lpObject, lpCache->history_pulldown, (jint)lpStruct->history_pulldown);
+	(*env)->SetIntField(env, lpObject, lpCache->history_menu, (jint)lpStruct->history_menu);
+	(*env)->SetIntField(env, lpObject, lpCache->history_list, (jint)lpStruct->history_list);
+	(*env)->SetIntField(env, lpObject, lpCache->fileop_dialog, (jint)lpStruct->fileop_dialog);
+	(*env)->SetIntField(env, lpObject, lpCache->fileop_entry, (jint)lpStruct->fileop_entry);
+	(*env)->SetIntField(env, lpObject, lpCache->fileop_file, (jint)lpStruct->fileop_file);
+	(*env)->SetIntField(env, lpObject, lpCache->cmpl_state, (jint)lpStruct->cmpl_state);
+	(*env)->SetIntField(env, lpObject, lpCache->fileop_c_dir, (jint)lpStruct->fileop_c_dir);
+	(*env)->SetIntField(env, lpObject, lpCache->fileop_del_file, (jint)lpStruct->fileop_del_file);
+	(*env)->SetIntField(env, lpObject, lpCache->fileop_ren_file, (jint)lpStruct->fileop_ren_file);
+	(*env)->SetIntField(env, lpObject, lpCache->button_area, (jint)lpStruct->button_area);
+	(*env)->SetIntField(env, lpObject, lpCache->action_area, (jint)lpStruct->action_area);
+}
+
 typedef struct GtkRequisition_FID_CACHE {
 	int cached;
 	jclass clazz;

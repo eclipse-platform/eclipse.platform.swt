@@ -146,20 +146,21 @@ public void setMessage (String string) {
 
 void interpretOsAnswer(String osAnswer) {
 	if (osAnswer==null) return;
-	int separatorIndex = calculateLastSeparatorIndex(osAnswer);
-	if (separatorIndex+1 != osAnswer.length()) {
-		/*
-		 * the selected thing is a file
-		 */
-		answer = null;
-		return;
-	}
 	answer = osAnswer;
+	// add trailing separator if not already present
+	int separatorIndex = calculateLastSeparatorIndex(answer);
+	if (separatorIndex != answer.length() - 1) answer += separator;
 }
 void preset() {
 	if (filterPath != null) {
 		byte [] filterBytes = Converter.wcsToMbcs (null, filterPath, true);
 		OS.gtk_file_selection_set_filename (handle, filterBytes);
 	}
+	GtkFileSelection selection = new GtkFileSelection();
+	OS.memmove(selection, handle);
+	OS.gtk_file_selection_hide_fileop_buttons (handle);
+	int fileListParent = OS.gtk_widget_get_parent(selection.file_list);
+	OS.gtk_widget_hide(selection.file_list);
+	OS.gtk_widget_hide(fileListParent);
 }
 }

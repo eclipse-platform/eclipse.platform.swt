@@ -62,6 +62,9 @@ void setGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSel
 GtkCombo *getGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpStruct);
 void setGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpStruct);
 
+GtkFileSelection *getGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpStruct);
+void setGtkFileSelectionFields(JNIEnv *env, jobject lpObject, GtkFileSelection *lpStruct);
+
 GtkRequisition *getGtkRequisitionFields(JNIEnv *env, jobject lpObject, GtkRequisition *lpStruct);
 void setGtkRequisitionFields(JNIEnv *env, jobject lpObject, GtkRequisition *lpStruct);
 
@@ -84,4 +87,3 @@ GdkEventCrossing *getGdkEventCrossingFields(JNIEnv *env, jobject lpObject, GdkEv
 void setGdkEventCrossingFields(JNIEnv *env, jobject lpObject, GdkEventCrossing *lpStruct);
 
 #endif // INC_structs_H
-

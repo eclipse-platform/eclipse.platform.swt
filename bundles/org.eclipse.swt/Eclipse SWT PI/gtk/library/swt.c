@@ -2710,6 +2710,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection
 }
 #endif
 
+#ifndef NO_gtk_1file_1selection_1hide_1fileop_1buttons
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection_1hide_1fileop_1buttons
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1file_1selection_1hide_1fileop_1buttons\n")
+
+	gtk_file_selection_hide_fileop_buttons((GtkFileSelection *)arg0);
+}
+#endif
+
 #ifndef NO_gtk_1file_1selection_1new
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection_1new
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -5796,6 +5806,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclip
 	DEBUG_CALL("memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2\n")
 
 	if (arg1) getGtkAdjustmentFields(env, arg1, (GtkAdjustment *)arg0);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I\n")
+
+	if (arg0) setGtkFileSelectionFields(env, arg0, (GtkFileSelection *)arg1);
 }
 #endif
 
