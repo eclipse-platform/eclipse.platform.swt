@@ -1325,7 +1325,7 @@ public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int context = data.context;
 	//FIXME - figure out correct language
-	byte[] buffer = Converter.wcsToMbcs(null, "en_US");
+	byte[] buffer = Converter.wcsToMbcs(null, "en_US", true);
 	int lang = OS.pango_language_from_string(buffer);
 //	int lang = OS.pango_context_get_language(context);
 	int metrics = OS.pango_context_get_metrics(context, data.font, lang);
