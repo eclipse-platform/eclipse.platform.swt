@@ -405,13 +405,13 @@ void createHandle () {
 		if ((style & SWT.RESIZE) != 0) {
 			attributes |= OS.kWindowResizableAttribute;
 			/*
-			* Bug in the Macintosh.  For some reason, when SetWindowActivationScope()
-			* is used to set the scope to kWindowActivationScopeNone, no feedback is
-			* given while the shell is resizing.  The fix is to create the window with
-			* kWindowLiveResizeAttribute in this case.  It's inconsistent with other
-			* windows, but at least the user will get feedback when resizing.
+			* Bug in the Macintosh.  For some reason, a window has no title bar
+			* and the kWindowResizableAttribute, no rubber banding feedback is
+			* given while the window is resizing.  The fix is to create the window 
+			* with kWindowLiveResizeAttribute in this case.  This is inconsistent
+			* with other windows, but the user will get feedback when resizing.
 			*/
-			if (true || (style & SWT.ON_TOP) != 0) attributes |= OS.kWindowLiveResizeAttribute;
+			if ((style & SWT.TITLE) == 0) attributes |= OS.kWindowLiveResizeAttribute;
 		}
 	}
 	int windowClass = OS.kDocumentWindowClass;
