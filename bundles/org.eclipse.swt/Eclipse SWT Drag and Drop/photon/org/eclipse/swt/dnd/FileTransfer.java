@@ -4,9 +4,7 @@ package org.eclipse.swt.dnd;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-  
 import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.internal.photon.OS;
 
 /**
  * The <code>FileTransfer</code> class is used to transfer files in a drag and drop operation.
@@ -47,16 +45,17 @@ public static FileTransfer getInstance () {
  */
 public void javaToNative(Object object, TransferData transferData) {
 	if (object == null || !(object instanceof String[])) return;
-	byte [] data = new byte[0];
-	String[] filenames = (String[])object;
-	for (int i = 0; i < filenames.length; i++) {
-		byte [] buffer = Converter.wcsToMbcs (null, filenames[i], true);		
-		byte [] temp = data;
-		data = new byte[ data.length + buffer.length];
-		System.arraycopy(temp, 0, data, 0, temp.length);
-		System.arraycopy(buffer, 0, data, data.length - buffer.length, buffer.length);
+	// build a byte array from data
+	String[] files = (String[])object;
+	
+	// create a string separated by "new lines" to represent list of files
+	String nativeFormat = "";
+	for (int i = 0, length = files.length; i < length; i++){
+		nativeFormat += "file:"+files[i]+"\r";
 	}
-	super.javaToNative(data, transferData);
+	byte[] buffer = Converter.wcsToMbcs(null, nativeFormat, true);
+	// pass byte array on to super to convert to native
+	super.javaToNative(buffer, transferData);
 }
 /**
  * Converts a platform specific representation of a list of file names to a Java array of String.
@@ -66,24 +65,31 @@ public void javaToNative(Object object, TransferData transferData) {
  *         otherwise null
  */
 public Object nativeToJava(TransferData transferData) {
-	if (transferData.pData == 0 || !(isSupportedType(transferData))) return null;
-	int size = transferData.length;
-	if (size == 0) return null;
-	byte[] buffer = new byte[size];
-	OS.memmove(buffer, transferData.pData, size);
-	String[] filenames = new String[0];
-	int lastMark = 0;
-	for (int i = 0; i < buffer.length; i++) {
-		if ( buffer[i] == 0 ) {
-			String s = new String(buffer, lastMark, i - lastMark );
-			String[] temp = filenames;
-			filenames = new String[ filenames.length + 1];
-			System.arraycopy(temp, 0, filenames, 0 , temp.length);		
-			filenames[ filenames.length - 1] = s;
-			lastMark = i + 1;
-		}
+
+	byte[] data = (byte[])super.nativeToJava(transferData);
+	if (data == null) return null;
+	char[] unicode = Converter.mbcsToWcs(null, data);
+	String string  = new String(unicode);
+	// parse data and convert string to array of files
+	int start = string.indexOf("file:");
+	if (start == -1) return null;
+	start += 5;
+	String[] fileNames = new String[0];
+	while (start < string.length()) { 
+		int end = string.indexOf("\r", start);
+		if (end == -1) end = string.length() - 1;
+		String fileName = string.substring(start, end);
+		
+		String[] newFileNames = new String[fileNames.length + 1];
+		System.arraycopy(fileNames, 0, newFileNames, 0, fileNames.length);
+		newFileNames[fileNames.length] = fileName;
+		fileNames = newFileNames;
+
+		start = string.indexOf("file:", end);
+		if (start == -1) break;
+		start += 5;
 	}
-	return filenames;
+	return fileNames;
 }
 protected String[] getTypeNames(){
 	return new String[]{TYPENAME};
