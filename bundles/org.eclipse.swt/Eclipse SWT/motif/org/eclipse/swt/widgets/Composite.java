@@ -360,7 +360,7 @@ void hookEvents () {
 	if ((state & CANVAS) != 0) {
 		OS.XtInsertEventHandler (handle, 0, true, display.windowProc, NON_MASKABLE, OS.XtListTail);
 	}
-	if ((style & SWT.EMBEDDED) != 0) {
+	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		int focusProc = display.focusProc;
 		int windowProc = display.windowProc;
 		OS.XtInsertEventHandler (handle, OS.StructureNotifyMask | OS.SubstructureNotifyMask, false, windowProc, STRUCTURE_NOTIFY, OS.XtListTail);		OS.XtInsertEventHandler (handle, OS.PropertyChangeMask, false, windowProc, PROPERTY_CHANGE, OS.XtListTail);
@@ -425,7 +425,7 @@ void manageChildren () {
 		OS.XtConfigureWidget(focusHandle, 0, 0, 1, 1, 0);
 		OS.XtSetMappedWhenManaged (focusHandle, true);
 	}
-	if ((style & SWT.EMBEDDED) != 0) {
+	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		Shell shell = getShell ();
 		shell.createFocusProxy ();
 		if (!OS.XtIsRealized (handle)) shell.realizeWidget ();
@@ -570,7 +570,7 @@ void releaseHandle () {
 	focusHandle = 0;
 }
 void releaseWidget () {
-	if ((style & SWT.EMBEDDED) != 0) {
+	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		Shell shell = getShell ();
 		int focusProc = display.focusProc;
 		OS.XtRemoveEventHandler (shell.shellHandle, OS.FocusChangeMask, false, focusProc, handle);
@@ -638,7 +638,9 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 			OS.XtConfigureWidget (focusHandle, 0, 0, argList [1], argList [3], 0);
 		}
 		if (layout != null) layout.layout (this, false);
-		if ((style & SWT.EMBEDDED) != 0) resizeClientWindow ();
+		if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
+			resizeClientWindow ();
+		}
 	}
 	return changed;
 }
@@ -742,7 +744,9 @@ boolean setTabGroupFocus () {
 	if ((style & SWT.NO_FOCUS) == 0) {
 		boolean takeFocus = true;
 		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
-		if ((takeFocus || (style & SWT.EMBEDDED) != 0) && setTabItemFocus ()) return true;
+		if ((takeFocus || ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0)) && setTabItemFocus ()) {
+			return true;
+		}
 	}
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -927,7 +931,7 @@ int XPropertyChange (int w, int client_data, int call_data, int continue_to_disp
 }
 int XStructureNotify (int w, int client_data, int call_data, int continue_to_dispatch) {
 	int result = super.XStructureNotify (w, client_data, call_data, continue_to_dispatch);
-	if ((style & SWT.EMBEDDED) != 0) {
+	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		XEvent xEvent = new XEvent ();
 		OS.memmove (xEvent, call_data, XEvent.sizeof);
 		switch (xEvent.type) {
