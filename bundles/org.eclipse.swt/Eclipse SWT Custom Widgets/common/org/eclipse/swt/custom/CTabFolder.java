@@ -14,7 +14,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -3085,66 +3084,30 @@ public void showItem (CTabItem item) {
 	setLastItem(index);
 }
 void showList (Rectangle rect, int alignment) {
-	final Shell shell = new Shell(getShell(), SWT.BORDER | SWT.ON_TOP);
-	shell.setLayout(new FillLayout());
-	final Table table = new Table(shell, SWT.NONE);
-//	table.setBackground(selectionBackground);
-//	table.setForeground(selectionForeground);
+	Menu menu = new Menu(this);
 	for (int i = 0; i < items.length; i++) {
 		CTabItem tab = items[i];
-		TableItem item = new TableItem(table, SWT.NONE);
+		MenuItem item = new MenuItem(menu, SWT.NONE);
 		item.setText(tab.getText());
 		item.setImage(tab.getImage());
-	}
-	if (selectedIndex != -1) {
-		table.setSelection(selectedIndex);
-	}
-	Listener listener = new Listener() {
-		public void handleEvent(Event e) {
-			switch (e.type) {
-				case SWT.FocusOut:
-					shell.dispose();
-					break;
-				case SWT.DefaultSelection:
-				case SWT.MouseUp:
-					int index = table.getSelectionIndex();						
-					if (index != -1) {
-						setSelection(index, true);
-						//setFocus();
-					}
-					shell.dispose();
-					break;
+		item.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				MenuItem item = (MenuItem)e.widget;
+				Menu menu = item.getParent();
+				int index = menu.indexOf(item);
+				CTabFolder.this.setSelection(index, true);
 			}
-		}
-	};
-	table.addListener(SWT.MouseUp, listener);
-	table.addListener(SWT.DefaultSelection, listener);
-	table.addListener(SWT.FocusOut, listener);
-	Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	Rectangle displayRect = getMonitor().getClientArea();
-	Rectangle clientArea = getClientArea();
-	size.y = Math.min(displayRect.height/3, size.y);
-	shell.setSize(size);
-	Point p1 = getDisplay().map(this, null, clientArea.x, clientArea.y);
-	Point p2 = getDisplay().map(this, null, rect.x, rect.y);
-	int x = 0, y = 0;
-	if (alignment == SWT.LEFT) {
-		x = p2.x;
-	} else { // Left
-		x = p2.x + rect.width - size.x;
+		});
 	}
-	if (x < displayRect.x) x = displayRect.x;
-	if (x + size.x > displayRect.x + displayRect.width) x = displayRect.x + displayRect.width - size.x;
-	if (onBottom) {
-		y = p1.y + clientArea.height - size.y;
-		if (y < displayRect.y) y = p2.y + rect.height;
-	} else {
-		y = p1.y;
-		if (y + size.y > displayRect.y + displayRect.height) y = p2.y - size.y;
+	Point location = toDisplay(new Point(alignment == SWT.LEFT ? rect.x : rect.x + rect.width, rect.y + rect.height));
+	menu.setLocation(location.x, location.y);
+	menu.setVisible(true);
+	Display display = getDisplay();
+	while (menu.isVisible()) {
+		if (!display.readAndDispatch())
+			display.sleep();
 	}
-	shell.setLocation(x, y);
-	shell.open();
-	table.setFocus();
+	menu.dispose();
 }
 /**
  * Shows the selection.  If the selection is already showing in the receiver,
