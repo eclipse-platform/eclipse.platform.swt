@@ -14,6 +14,8 @@ import java.lang.reflect.*;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.eclipse.swt.internal.Platform;
+
 public class NativesGenerator extends JNIGenerator {
 	
 boolean nativeMacro, enterExitMacro, useCritical;
@@ -327,34 +329,86 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 	generateFunctionCall(method, methodData, paramTypes, returnType, needsReturn);
 	output("*/");
 	outputDelimiter();
-	
 	output("\t");
 	output("{");
 	outputDelimiter();
-	output("\tvoid *handle = NULL;");
-	outputDelimiter();
-	output("\tint (*fptr)();");
-	outputDelimiter();
-	if (returnType != Void.TYPE) {
-		if (needsReturn) {
-			output("\trc = 0;");
-			outputDelimiter();
+	
+	if (Platform.PLATFORM.equals("win32")) {
+		output("\t\tstatic int initialied = 0;");
+		outputDelimiter();
+		output("\t\tstatic HMODULE hm = NULL;");
+		outputDelimiter();
+		output("\t\tstatic FARPROC fp = NULL;");
+		outputDelimiter();
+		if (returnType != Void.TYPE) {
+			if (needsReturn) {
+				output("\t\trc = 0;");
+				outputDelimiter();
+			}
 		}
+		output("\t\tif (!initialized) {");
+		outputDelimiter();
+		output("\t\t\tif (!(hm = GetModuleHandle(");
+		output(method.getName());
+		output("_LIB))) hm = LoadLibrary(");
+		output(method.getName());
+		output("_LIB);");
+		outputDelimiter();
+		output("\t\t\tif (hm) fp = GetProcAddress(hm, \"");
+		output(method.getName());
+		output("\");");
+		outputDelimiter();
+		output("\t\t\tinitialized = 1;");
+		outputDelimiter();
+		output("\t\t}");
+		outputDelimiter();
+		output("\t\tif (fp) {");
+		outputDelimiter();
+		output("\t\t");
+		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
+		output("fp");
+		generateFunctionCallRightSide(method, methodData, paramTypes);
+		outputDelimiter();
+		output("\t\t}");
+		outputDelimiter();
+	} else {
+		output("\t\tstatic int initialied = 0;");
+		outputDelimiter();
+		output("\t\tstatic void *handle = NULL;");
+		outputDelimiter();
+		output("\t\tstatic int (*fptr)();");
+		outputDelimiter();
+		if (returnType != Void.TYPE) {
+			if (needsReturn) {
+				output("\t\trc = 0;");
+				outputDelimiter();
+			}
+		}
+		output("\t\tif (!initialized) {");
+		outputDelimiter();
+		output("\t\t\tif (!handle) handle = dlopen(");
+		output(method.getName());
+		output("_LIB, RTLD_LAZY);");
+		outputDelimiter();
+		output("\t\t\tif (handle) fptr = dlsym(handle, \"");
+		output(method.getName());
+		output("\");");
+		outputDelimiter();
+		output("\t\t\tinitialized = 1;");
+		outputDelimiter();
+		output("\t\t}");
+		outputDelimiter();
+		output("\t\tif (fptr) {");
+		outputDelimiter();
+		output("\t\t");
+		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
+		output("(*fptr)");
+		generateFunctionCallRightSide(method, methodData, paramTypes);
+		outputDelimiter();
+		output("\t\t}");
+		outputDelimiter();
 	}
-	output("\tif ((handle = dlopen(");
-	output(method.getName());
-	output("_LIB, RTLD_LAZY)) != NULL && (fptr = dlsym(handle, \"");
-	output(method.getName());
-	output("\")) != NULL) {");
-	outputDelimiter();
-	output("\t");
-	generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
-	output("(*fptr)");
-	generateFunctionCallRightSide(method, methodData, paramTypes);
-	outputDelimiter();
-	output("\t");
-	output("}");
-	outputDelimiter();
+
 	output("\t");
 	output("}");
 	outputDelimiter();
