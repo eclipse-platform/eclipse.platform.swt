@@ -528,7 +528,7 @@ Point layout (int width, boolean resize) {
 					available -= (newWidth - CoolItem.MINIMUM_WIDTH);
 				}
 				if (resize) child.setBounds(x, y, newWidth, rowHeight);
-				x += resize ? newWidth : child.requestedWidth;
+				x += resize ? newWidth : child.preferredWidth;
 			}		
 			maxWidth = Math.max(maxWidth, x);
 			y += ROW_SPACING + rowHeight;
