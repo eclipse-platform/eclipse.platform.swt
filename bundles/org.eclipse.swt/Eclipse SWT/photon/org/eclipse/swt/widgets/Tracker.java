@@ -288,12 +288,14 @@ Rectangle computeBounds () {
 Rectangle [] computeProportions (Rectangle [] rects) {
 	Rectangle [] result = new Rectangle [rects.length];
 	Rectangle bounds = computeBounds ();
+	int boundsWidth = Math.max (1, bounds.width);
+	int boundsHeight = Math.max (1, bounds.height);
 	for (int i = 0; i < rects.length; i++) {
 		result[i] = new Rectangle (
-			(rects[i].x - bounds.x) * 100 / bounds.width,
-			(rects[i].y - bounds.y) * 100 / bounds.height,
-			rects[i].width * 100 / bounds.width,
-			rects[i].height * 100 / bounds.height);
+			(rects[i].x - bounds.x) * 100 / boundsWidth,
+			(rects[i].y - bounds.y) * 100 / boundsHeight,
+			rects[i].width * 100 / boundsWidth,
+			rects[i].height * 100 / boundsHeight);
 	}
 	return result;
 }
