@@ -634,7 +634,8 @@ protected void layout(Composite composite, boolean flushCache) {
 				Control child = children[spec.childIndex];
 				Point childExtent;
 				// Check to see if the control needs to be wrapped
-				boolean needsWrap = (child.getStyle() & SWT.WRAP) != 0
+				boolean needsWrap = (child instanceof Label || child instanceof ToolBar || child instanceof Text)
+					&& (child.getStyle() & SWT.WRAP) != 0
 					&& spec.horizontalAlignment == GridData.FILL
 					&& spec.grabExcessHorizontalSpace;
 			 	if (needsWrap) {
