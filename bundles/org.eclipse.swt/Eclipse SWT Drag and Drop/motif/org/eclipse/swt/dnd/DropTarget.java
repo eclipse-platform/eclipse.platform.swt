@@ -198,7 +198,7 @@ public DropTarget(Control control, int style) {
 		c.addListener (SWT.Hide, controlListener);
 		c = c.getParent();
 	}
-	
+
 	this.addListener(SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
 			if (DropTarget.this.control == null || 
@@ -384,6 +384,13 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 		return;
 	}
 	
+	if (callbackData.reason == OS.XmCR_DROP_SITE_ENTER_MESSAGE) {
+		selectedDataType = null;
+		selectedOperation = DND.DROP_NONE;
+		droppedEventData = null;
+		dropTransferObject = 0;
+	}
+	
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(callbackData.operations, callbackData.operation, callbackData.dragContext, callbackData.x, callbackData.y, callbackData.timeStamp, event)) {
 		callbackData.dropSiteStatus = OS.XmDROP_SITE_INVALID;
@@ -399,10 +406,6 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 	switch (callbackData.reason) {
 		case OS.XmCR_DROP_SITE_ENTER_MESSAGE :
 			event.type = DND.DragEnter;
-			selectedDataType = null;
-			selectedOperation = DND.DROP_NONE;
-			droppedEventData = null;
-			dropTransferObject = 0;
 			break;
 		case OS.XmCR_DROP_SITE_MOTION_MESSAGE :
 			event.type = DND.DragOver;
@@ -434,7 +437,7 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 	if (event.dataType != null) {
 		for (int i = 0; i < allowedDataTypes.length; i++) {
 			if (allowedDataTypes[i].type == event.dataType.type) {
-				selectedDataType = event.dataType;
+				selectedDataType = allowedDataTypes[i];
 				break;
 			}
 		}
@@ -457,9 +460,6 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 }
 
 private void dropProcCallback(int widget, int client_data, int call_data) {
-	updateDragOverHover(0, null);
-	effect.show(DND.FEEDBACK_NONE, 0, 0);
-	
 	if (call_data == 0) return;
 	droppedEventData = new XmDropProcCallback();
 	OS.memmove(droppedEventData, call_data, XmDropProcCallback.sizeof);	
@@ -492,7 +492,7 @@ private void dropProcCallback(int widget, int client_data, int call_data) {
 	if (event.dataType != null) {
 		for (int i = 0; i < allowedDataTypes.length; i++) {
 			if (allowedDataTypes[i].type == event.dataType.type) {
-				selectedDataType = event.dataType;
+				selectedDataType = allowedDataTypes[i];
 				break;
 			}
 		}
@@ -831,6 +831,10 @@ private void transferProcCallback(int widget, int client_data, int pSelection, i
 	}
 	OS.XtFree(pValue);
 	
+	if (object == null) {
+		selectedOperation = DND.DROP_NONE;
+	}
+	
 	event.detail = selectedOperation;
 	event.dataType = transferData;
 	event.data = object;
@@ -843,10 +847,11 @@ private void transferProcCallback(int widget, int client_data, int pSelection, i
 	} catch (Throwable e) {
 		selectedOperation = DND.DROP_NONE;
 	}
-	
+	//workaround - restore original timeout
 	int xtContext = OS.XtDisplayToApplicationContext (getDisplay().xDisplay);
 	OS.XtAppSetSelectionTimeout (xtContext, selectionTimeout);
-		
+	
+	//notify source of action taken
 	if ((selectedOperation & DND.DROP_MOVE) == DND.DROP_MOVE) {
 		int[] args = new int[]{control.handle, DELETE_TYPE};
 		OS.XmDropTransferAdd(dropTransferObject, args, args.length / 2);
