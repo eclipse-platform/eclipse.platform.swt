@@ -143,7 +143,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 Control [] computeTabList () {
 	Control result [] = super.computeTabList ();
 	if (result.length == 0) return result;
-	Control [] list = tabList != null ? tabList : _getChildren ();
+	Control [] list = tabList != null ? _getTabList () : _getChildren ();
 	for (int i=0; i<list.length; i++) {
 		Control child = list [i];
 		Control [] childList = child.computeTabList ();
