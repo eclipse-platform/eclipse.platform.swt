@@ -102,8 +102,10 @@ int childrenParent () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-//	if (layout != null) return super.computeSize (wHint, hHint, changed);
 	checkWidget();
+	if (layout != null) {
+		return super.computeSize (wHint, hHint, changed);
+	}
 	PhDim_t dim = new PhDim_t();
 	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
 	OS.PtWidgetPreferredSize(handle, dim);
