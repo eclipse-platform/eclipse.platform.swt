@@ -349,6 +349,27 @@ boolean kde_execute(String fileName) {
 
 ImageData kde_getImageData() {
 	if (iconPath == null) return null;
+	if (iconPath.endsWith("xpm")) {
+		int /*long*/ xDisplay = OS.GDK_DISPLAY();
+		int /*long*/ rootWindow = OS.XDefaultRootWindow(xDisplay);		
+		/* Use the character encoding for the default locale */
+		byte[] iconName = Converter.wcsToMbcs(null, iconPath, true);
+		int /*long*/ [] pixmap = new int /*long*/ [1];
+		int /*long*/ [] mask = new int /*long*/ [1];
+		KDE.XpmReadFileToPixmap(xDisplay, rootWindow, iconName, pixmap, mask, 0);
+		if (pixmap[0] == 0 || pixmap[0] == KDE.XmUNSPECIFIED_PIXMAP) {
+			return null;
+		}
+		int /*long*/ gdkPixmap = OS.gdk_pixmap_foreign_new(pixmap[0]);
+		int /*long*/ gdkMask = mask[0] != 0 ? OS.gdk_pixmap_foreign_new(mask[0]) : 0;
+		Image image = Image.gtk_new(display, gdkMask != 0 ? SWT.ICON : SWT.BITMAP, gdkPixmap, gdkMask);
+		ImageData imageData = image.getImageData();
+		if (gdkPixmap != 0) OS.g_object_unref(gdkPixmap);
+		if (gdkMask != 0) OS.g_object_unref(gdkMask);
+		if (pixmap[0] == 0) KDE.XFreePixmap(xDisplay, pixmap[0]);
+		if (mask[0] == 0) KDE.XFreePixmap(xDisplay, mask[0]);
+		return imageData;	
+	}
 	try {
 		return new ImageData(iconPath);
 	} catch (Exception e) {}

@@ -16,12 +16,15 @@
 
 #include <stdio.h>
 #include <signal.h>
+#include <dlfcn.h>
 
 #include <kapp.h>
 #include <kiconloader.h>
 #include <kmimetype.h>
 #include <krun.h>
 #include <qstring.h>
+#include <X11/xpm.h>
+#include <X11/X.h>
 
 #include "kde_stats.h"
 #include "kde_custom.h"

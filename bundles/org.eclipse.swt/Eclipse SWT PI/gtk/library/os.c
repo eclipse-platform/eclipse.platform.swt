@@ -3180,6 +3180,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1pixbuf_1scale_1simple)
 }
 #endif
 
+#ifndef NO_gdk_1pixmap_1foreign_1new
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1pixmap_1foreign_1new)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gdk_1pixmap_1foreign_1new_FUNC);
+	rc = (jint)gdk_pixmap_foreign_new(arg0);
+	OS_NATIVE_EXIT(env, that, gdk_1pixmap_1foreign_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1pixmap_1new
 JNIEXPORT jint JNICALL OS_NATIVE(gdk_1pixmap_1new)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
@@ -3443,11 +3455,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1default)
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		static jint (*fptr)();
+		typedef jint (*FPTR)();
+		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gdk_screen_get_default_LIB, RTLD_LAZY);
-			if (handle) fptr = dlsym(handle, "gdk_screen_get_default");
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_screen_get_default");
 			initialized = 1;
 		}
 		if (fptr) {
@@ -3471,11 +3484,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1monitor_1at_1window)
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		static jint (*fptr)(GdkScreen *, GdkWindow *);
+		typedef jint (*FPTR)(GdkScreen *, GdkWindow *);
+		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gdk_screen_get_monitor_at_window_LIB, RTLD_LAZY);
-			if (handle) fptr = dlsym(handle, "gdk_screen_get_monitor_at_window");
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_screen_get_monitor_at_window");
 			initialized = 1;
 		}
 		if (fptr) {
@@ -3500,10 +3514,11 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1screen_1get_1monitor_1geometry)
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		static void (*fptr)(GdkScreen *, jint, GdkRectangle *);
+		typedef void (*FPTR)(GdkScreen *, jint, GdkRectangle *);
+		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gdk_screen_get_monitor_geometry_LIB, RTLD_LAZY);
-			if (handle) fptr = dlsym(handle, "gdk_screen_get_monitor_geometry");
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_screen_get_monitor_geometry");
 			initialized = 1;
 		}
 		if (fptr) {
@@ -3527,11 +3542,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1n_1monitors)
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		static jint (*fptr)(GdkScreen *);
+		typedef jint (*FPTR)(GdkScreen *);
+		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gdk_screen_get_n_monitors_LIB, RTLD_LAZY);
-			if (handle) fptr = dlsym(handle, "gdk_screen_get_n_monitors");
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_screen_get_n_monitors");
 			initialized = 1;
 		}
 		if (fptr) {
@@ -3555,11 +3571,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1number)
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		static jint (*fptr)(GdkScreen *);
+		typedef jint (*FPTR)(GdkScreen *);
+		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gdk_screen_get_number_LIB, RTLD_LAZY);
-			if (handle) fptr = dlsym(handle, "gdk_screen_get_number");
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_screen_get_number");
 			initialized = 1;
 		}
 		if (fptr) {
@@ -4009,10 +4026,11 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1accept_1focus)
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		static void (*fptr)(GdkWindow *, gboolean);
+		typedef void (*FPTR)(GdkWindow *, gboolean);
+		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gdk_window_set_accept_focus_LIB, RTLD_LAZY);
-			if (handle) fptr = dlsym(handle, "gdk_window_set_accept_focus");
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_window_set_accept_focus");
 			initialized = 1;
 		}
 		if (fptr) {
@@ -4094,10 +4112,11 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1keep_1above)
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		static void (*fptr)(GdkWindow *, gboolean);
+		typedef void (*FPTR)(GdkWindow *, gboolean);
+		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gdk_window_set_keep_above_LIB, RTLD_LAZY);
-			if (handle) fptr = dlsym(handle, "gdk_window_set_keep_above");
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_window_set_keep_above");
 			initialized = 1;
 		}
 		if (fptr) {
@@ -5009,10 +5028,11 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1entry_1set_1alignment)
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		static void (*fptr)(GtkEntry *, gfloat);
+		typedef void (*FPTR)(GtkEntry *, gfloat);
+		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gtk_entry_set_alignment_LIB, RTLD_LAZY);
-			if (handle) fptr = dlsym(handle, "gtk_entry_set_alignment");
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_entry_set_alignment");
 			initialized = 1;
 		}
 		if (fptr) {
@@ -7650,11 +7670,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1selection_1get_1selected_1rows)
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		static jint (*fptr)(GtkTreeSelection *, GtkTreeModel **);
+		typedef jint (*FPTR)(GtkTreeSelection *, GtkTreeModel **);
+		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gtk_tree_selection_get_selected_rows_LIB, RTLD_LAZY);
-			if (handle) fptr = dlsym(handle, "gtk_tree_selection_get_selected_rows");
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_tree_selection_get_selected_rows");
 			initialized = 1;
 		}
 		if (fptr) {
@@ -7891,11 +7912,12 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1column_1cell_1get_1positio
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		static jboolean (*fptr)(GtkTreeViewColumn *, GtkCellRenderer *, gint *, gint *);
+		typedef jboolean (*FPTR)(GtkTreeViewColumn *, GtkCellRenderer *, gint *, gint *);
+		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gtk_tree_view_column_cell_get_position_LIB, RTLD_LAZY);
-			if (handle) fptr = dlsym(handle, "gtk_tree_view_column_cell_get_position");
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_tree_view_column_cell_get_position");
 			initialized = 1;
 		}
 		if (fptr) {

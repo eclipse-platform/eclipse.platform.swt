@@ -490,6 +490,7 @@ public static final synchronized native int XWarpPointer(int /*long*/ display, i
 public static final synchronized native int /*long*/gdk_x11_atom_to_xatom(int /*long*/ atom);
 public static final synchronized native int /*long*/ gdk_x11_drawable_get_xdisplay(int /*long*/ drawable);
 public static final synchronized native int /*long*/ gdk_x11_drawable_get_xid(int /*long*/ drawable);
+public static final synchronized native int /*long*/ gdk_pixmap_foreign_new(int /*long*/ anid);
 public static final synchronized native int /*long*/ gdk_window_lookup(int /*long*/ xid);
 public static final synchronized native void gdk_window_add_filter(int /*long*/ window, int /*long*/ function, int /*long*/ data);
 public static final native void memmove(int /*long*/ dest, XClientMessageEvent src, int /*long*/ size);

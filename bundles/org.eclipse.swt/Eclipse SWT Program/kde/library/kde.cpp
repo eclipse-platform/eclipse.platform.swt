@@ -493,6 +493,54 @@ JNIEXPORT jint JNICALL KDE_NATIVE(QString_1utf8)
 }
 #endif
 
+#ifndef NO_XFreePixmap
+JNIEXPORT void JNICALL KDE_NATIVE(XFreePixmap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	KDE_NATIVE_ENTER(env, that, XFreePixmap_FUNC);
+	XFreePixmap((Display *)arg0, (Pixmap)arg1);
+	KDE_NATIVE_EXIT(env, that, XFreePixmap_FUNC);
+}
+#endif
+
+#ifndef NO_XpmReadFileToPixmap
+JNIEXPORT jint JNICALL KDE_NATIVE(XpmReadFileToPixmap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jintArray arg3, jintArray arg4, jint arg5)
+{
+	jbyte *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	KDE_NATIVE_ENTER(env, that, XpmReadFileToPixmap_FUNC);
+	if (arg2) lparg2 = env->GetByteArrayElements(arg2, NULL);
+	if (arg3) lparg3 = env->GetIntArrayElements(arg3, NULL);
+	if (arg4) lparg4 = env->GetIntArrayElements(arg4, NULL);
+/*
+	rc = (jint)XpmReadFileToPixmap((Display *)arg0, (Window)arg1, (char *)lparg2, (Pixmap *)lparg3, (Pixmap *)lparg4, (XpmAttributes *)arg5);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(Display *, Window, char *, Pixmap *, Pixmap *, XpmAttributes *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(XpmReadFileToPixmap_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "XpmReadFileToPixmap");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((Display *)arg0, (Window)arg1, (char *)lparg2, (Pixmap *)lparg3, (Pixmap *)lparg4, (XpmAttributes *)arg5);
+		}
+	}
+	if (arg4) env->ReleaseIntArrayElements(arg4, lparg4, 0);
+	if (arg3) env->ReleaseIntArrayElements(arg3, lparg3, 0);
+	if (arg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	KDE_NATIVE_EXIT(env, that, XpmReadFileToPixmap_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_free
 JNIEXPORT void JNICALL KDE_NATIVE(free)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -9,6 +9,9 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
+/* Libraries for dynamic loaded functions */
+#define XpmReadFileToPixmap_LIB "libXpm.so"
+
 #define KMimeTypeListIterator_dereference(arg0) *(*((QValueListIterator<KMimeType::Ptr>*) arg0))
 #define KMimeTypeListIterator_equals(arg0, arg1) (*((QValueListIterator<KMimeType::Ptr>*) arg0) == *((QValueListIterator<KMimeType::Ptr>*) arg1))
 #define KMimeTypeListIterator_increment(arg0) ++(*((QValueListIterator<KMimeType::Ptr>*) arg0))

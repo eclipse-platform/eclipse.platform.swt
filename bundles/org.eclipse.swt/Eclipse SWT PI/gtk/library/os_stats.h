@@ -268,6 +268,7 @@ typedef enum {
 	gdk_1pixbuf_1render_1to_1drawable_1alpha_FUNC,
 	gdk_1pixbuf_1scale_FUNC,
 	gdk_1pixbuf_1scale_1simple_FUNC,
+	gdk_1pixmap_1foreign_1new_FUNC,
 	gdk_1pixmap_1new_FUNC,
 	gdk_1pointer_1grab_FUNC,
 	gdk_1pointer_1is_1grabbed_FUNC,

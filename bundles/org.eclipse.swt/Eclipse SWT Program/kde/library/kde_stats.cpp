@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int KDE_nativeFunctionCount = 37;
-int KDE_nativeFunctionCallCount[37];
+int KDE_nativeFunctionCount = 39;
+int KDE_nativeFunctionCallCount[39];
 char * KDE_nativeFunctionNames[] = {
 	"KApplication_1new", 
 	"KGlobal_1iconLoader", 
@@ -52,6 +52,8 @@ char * KDE_nativeFunctionNames[] = {
 	"QString_1equals", 
 	"QString_1new", 
 	"QString_1utf8", 
+	"XFreePixmap", 
+	"XpmReadFileToPixmap", 
 	"free", 
 	"malloc", 
 };
