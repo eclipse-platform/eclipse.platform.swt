@@ -273,10 +273,8 @@ void createWidget (int index) {
  */
 public void deselectAll() {
 	checkWidget();
-	int root = OS.gtk_ctree_node_nth (handle, 0);
-	if (root == 0) return;
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
-	OS.gtk_ctree_unselect_recursive (handle, root);
+	OS.gtk_ctree_unselect_recursive (handle, 0);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 
@@ -806,10 +804,8 @@ public void removeTreeListener(TreeListener listener) {
  */
 public void selectAll () {
 	checkWidget();
-	int root = OS.gtk_ctree_node_nth (handle, 0);
-	if (root == 0) return;
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
-	OS.gtk_ctree_select_recursive (handle, root);
+	OS.gtk_ctree_select_recursive (handle, 0);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);	
 }
 
@@ -843,10 +839,10 @@ public void setRedraw (boolean redraw) {
 public void setSelection (TreeItem [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int root = OS.gtk_ctree_node_nth (handle, 0);
-	if (root == 0) return; 
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
-	OS.gtk_ctree_unselect_recursive (handle, root);
+	if ((style & SWT.MULTI) != 0) {
+		OS.gtk_ctree_unselect_recursive (handle, 0);
+	}
 	int index = 0, length = items.length;
 	while (index < length) {
 		TreeItem item = items [index];
