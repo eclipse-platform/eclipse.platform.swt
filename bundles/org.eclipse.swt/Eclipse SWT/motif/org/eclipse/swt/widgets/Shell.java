@@ -707,13 +707,6 @@ public void dispose () {
 //	Display oldDisplay = display;
 
 	/*
-	* Feature in Motif.  When an override-redirected shell
-	* is disposed, Motif does not assign a new active top
-	* level shell.  The parent shell appears to be active,
-	* but XGetInputFocus returns the root window, not the
-	* parent.  The fix is to make the parent be the active
-	* top level shell when the child shell is disposed.
-	* 
 	* Feature in Motif.  When the active shell is disposed,
 	* Motif assigns focus temporarily to the root window
 	* unless it has previously been told to do otherwise.
@@ -721,10 +714,8 @@ public void dispose () {
 	* shell when the child shell is disposed.
 	*/
 	if (parent != null) {
-		int [] argList = {OS.XmNoverrideRedirect, 0};
-		OS.XtGetValues (shellHandle, argList, argList.length / 2);
 		Shell activeShell = display.getActiveShell ();
-		if (argList [1] != 0 || activeShell == this) {
+		if (activeShell == this) {
 			Shell shell = parent.getShell ();
 			shell.bringToTop (false);
 		}
