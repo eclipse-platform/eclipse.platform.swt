@@ -813,9 +813,10 @@ public TableItem getItem (int index) {
 public TableItem getItem (Point pt) {
 	checkWidget();
 	int [] path = new int [1];
+	int clientX = pt.x - getBorderWidth ();
 	int clientY = pt.y - getHeaderHeight ();
 	OS.gtk_widget_realize (handle);
-	if (!OS.gtk_tree_view_get_path_at_pos (handle, pt.x, clientY, path, null, null, null)) return null;
+	if (!OS.gtk_tree_view_get_path_at_pos (handle, clientX, clientY, path, null, null, null)) return null;
 	if (path [0] == 0) return null;
 	int indices = OS.gtk_tree_path_get_indices (path [0]);
 	TableItem item = null;
@@ -1042,10 +1043,13 @@ int gtk_button_press_event (int widget, int event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (gdkEvent.window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
+	int border = getBorderWidth ();
 	int headerHeight = getHeaderHeight ();
+	gdkEvent.x += border;
 	gdkEvent.y += headerHeight;
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	int result = super.gtk_button_press_event (widget, event);
+	gdkEvent.x -= border;
 	gdkEvent.y -= headerHeight;
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	if (result != 0) return result;
@@ -1077,10 +1081,13 @@ int gtk_button_release_event (int widget, int event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (gdkEvent.window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
+	int border = getBorderWidth ();
 	int headerHeight = getHeaderHeight ();
+	gdkEvent.x += border;
 	gdkEvent.y += headerHeight;
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	int result = super.gtk_button_release_event (widget, event);
+	gdkEvent.x -= border;
 	gdkEvent.y -= headerHeight;
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	return result;
@@ -1124,10 +1131,13 @@ int gtk_motion_notify_event (int widget, int event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (gdkEvent.window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
+	int border = getBorderWidth ();
 	int headerHeight = getHeaderHeight ();
+	gdkEvent.x += border;
 	gdkEvent.y += headerHeight;
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	int result = super.gtk_motion_notify_event (widget, event);
+	gdkEvent.x -= border;
 	gdkEvent.y -= headerHeight;
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	return result;

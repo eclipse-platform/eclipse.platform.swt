@@ -100,7 +100,10 @@ int clientHandle () {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	int border = getBorderWidth ();
+	int border = 0;
+	if (handle != 0) border += OS.gtk_container_get_border_width (handle);
+	if (fixedHandle != 0) border += OS.gtk_container_get_border_width (fixedHandle);
+	if (scrolledHandle != 0) border += OS.gtk_container_get_border_width (scrolledHandle);
 	int trimX = x - border, trimY = y - border;
 	int trimWidth = width + (border * 2), trimHeight = height + (border * 2);
 	trimHeight += hScrollBarWidth ();
@@ -144,6 +147,22 @@ void createWidget (int index) {
 void deregister () {
 	super.deregister ();
 	if (scrolledHandle != 0) display.removeWidget (scrolledHandle);
+}
+
+public int getBorderWidth () {
+	checkWidget();
+	int border = 0;
+	if (handle != 0) border += OS.gtk_container_get_border_width (handle);
+	if (fixedHandle != 0) border += OS.gtk_container_get_border_width (fixedHandle);
+	if (scrolledHandle != 0) {
+		border += OS.gtk_container_get_border_width (scrolledHandle);
+		if (OS.gtk_scrolled_window_get_shadow_type (scrolledHandle) != OS.GTK_SHADOW_NONE) {
+			GtkStyle style = new GtkStyle ();
+			OS.memmove (style, OS.gtk_widget_get_style (scrolledHandle));
+			border += style.xthickness;
+		}
+	}
+	return border;
 }
 
 /**

@@ -308,12 +308,6 @@ int focusHandle () {
 	return super.focusHandle ();
 }
 
-public int getBorderWidth () {
-	checkWidget();
-	int topHandle = topHandle ();
-	return OS.gtk_container_get_border_width (topHandle);
-}
-
 /**
  * Returns an array containing the receiver's children.
  * <p>
