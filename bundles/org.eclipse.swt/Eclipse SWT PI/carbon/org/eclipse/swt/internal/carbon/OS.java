@@ -414,6 +414,7 @@ public class OS {
 	public static final int kTXNDontDrawCaretWhenInactiveMask = 1 << 12;
 	public static final int kTXNDrawCaretWhenInactiveTag = ('d'<<24)+('c'<<16)+('r'<<8)+'t';
 	public static final int kTXNEndOffset = 2147483647;
+	public static final int kTXNIOPrivilegesTag = ('i'<<24) + ('o'<<16) + ('p'<<8) + 'v';
 	public static final int kTXNMarginsTag = ('m'<<24) + ('a'<<16) + ('r'<<8) + 'g';
 	public static final int kTXNMonostyledTextMask = 1 << 17;
 	public static final int kTXNQDFontFamilyIDAttribute = ('f'<<24) + ('o'<<16) + ('n'<<8) + 't';
