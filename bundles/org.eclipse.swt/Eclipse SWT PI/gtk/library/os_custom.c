@@ -44,12 +44,21 @@ JNIEXPORT SWT_PTR JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1dialog_1new_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 /*
-	rc = (jint)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+	rc = (SWT_PTR)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef jint (*FPTR)(jbyte *, SWT_PTR, jint, SWT_PTR, ...);
+		/*
+		* On AMD64, it is critical that functions which have a variable number of
+		* arguments, indicated by '...', include the '...' in their prototype.  This
+		* changes the calling convention, and leaving it out will cause crashes.
+		*
+		* For some reason, we must also explicitly declare all of the arguments we
+		* are passing in, otherwise it crashes.
+		*/
+/*		typedef SWT_PTR (*FPTR)(jbyte *, SWT_PTR, jint, SWT_PTR, ...); */
+		typedef SWT_PTR (*FPTR)(jbyte *, SWT_PTR, jint, SWT_PTR, jint, SWT_PTR, jint, SWT_PTR, ...);
 		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
