@@ -1018,6 +1018,7 @@ public static final native void memcpy(int dest, char[] src, int n);
 public static final native void memcpy(int dest, int src, int n);
 public static final native void memcpy(int dest, byte[] src, int n);
 public static final native void memcpy(int dest, FontSelectionQDStyle src, int n);
+public static final native void memcpy(Rect dest, int src, int n);
 public static final native void memcpy(int dest, Rect src, int n);
 public static final native void memset(int dest, int value, int size);
 
