@@ -136,8 +136,9 @@ public FontData open () {
 		}
 		fontData = null;
 	}
-	
-	int fontPtr = OS.PtFontSelection (parentHandle, null, title, font, -1, OS.PHFONT_ALL_FONTS | OS.PHFONT_DONT_SHOW_LEGACY, null);
+
+	int flags = OS.PHFONT_ALL_FONTS | OS.PHFONT_DONT_SHOW_LEGACY;
+	int fontPtr = OS.PtFontSelection (parentHandle, null, title, font, OS.PHFONT_ALL_SYMBOLS, flags, null);
 
 	if (fontPtr != 0) {
 		int length = OS.strlen(fontPtr);
