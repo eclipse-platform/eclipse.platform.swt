@@ -578,10 +578,15 @@ public Point getSelection () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	int [] args = new int [] {OS.Pt_ARG_CBOX_SELECTION_ITEM, 0, 0};
+	int [] args = new int [] {
+		OS.Pt_ARG_LIST_SEL_COUNT, 0, 0,
+		OS.Pt_ARG_SELECTION_INDEXES, 0, 0,
+	};
 	OS.PtGetResources (handle, args.length / 3, args);
 	if (args [1] == 0) return -1;
-	return args [1] - 1;
+	short [] buffer = new short [1];
+	OS.memmove (buffer, args [4], 2);
+	return buffer [0] - 1;
 }
 
 /**
