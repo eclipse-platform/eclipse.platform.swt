@@ -311,9 +311,7 @@ public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
 }
 
 public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
-	GCData data = new GCData();
-	int hDC = control.internal_new_GC(data);
-	control.internal_dispose_GC(hDC, data);
+	// intentionally not tested - not public API
 }
 
 public void test_isEnabled() {
