@@ -1126,9 +1126,10 @@ boolean isActive () {
 
 /**
  * Returns <code>true</code> if the receiver is enabled and all
- * of the receiver's ancestors are enabled, and <code>false</code>
- * otherwise. A disabled control is typically not selectable from the
- * user interface and draws with an inactive or "grayed" look.
+ * ancestors up to and including the receiver's nearest ancestor
+ * shell are enabled.  Otherwise, <code>false</code> is returned.
+ * A disabled control is typically not selectable from the user
+ * interface and draws with an inactive or "grayed" look.
  *
  * @return the receiver's enabled state
  *
@@ -1239,8 +1240,8 @@ boolean isTabItem () {
 
 /**
  * Returns <code>true</code> if the receiver is visible and all
- * of the receiver's ancestors are visible and <code>false</code>
- * otherwise.
+ * ancestors up to and including the receiver's nearest ancestor
+ * shell are visible. Otherwise, <code>false</code> is returned.
  *
  * @return the receiver's visibility state
  *
