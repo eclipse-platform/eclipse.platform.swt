@@ -5,11 +5,9 @@ package org.eclipse.swt.examples.controls;
  * All Rights Reserved
  */
  
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.examples.controlexample.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.part.ViewPart;
-import java.util.ResourceBundle;
+import org.eclipse.ui.part.*;
 
 /**
  * <code>Controls</code> is a simple demonstration
@@ -20,48 +18,15 @@ import java.util.ResourceBundle;
  * @see ViewPart
  */
 public class ControlView extends ViewPart {
-	private ShellTab shellTab;
-	private TabFolder tabFolder;
-	private Composite mainFrame;
-
-	/**
-	 * The constructor.
-	 */
-	public ControlView() {
-		ControlPlugin.initResources();
-	}
-
+	ControlExample instance = null;
+	
 	/**
 	 * Create the example
 	 * 
 	 * @see ViewPart#createPartControl
 	 */
 	public void createPartControl(Composite frame) {
-		this.mainFrame = frame;
-
-		/* Create the tab folder */
-		tabFolder = new TabFolder (frame, SWT.NULL);
-		Tab [] tabs = new Tab [] {
-			new ButtonTab (),
-			new ComboTab (),
-			new DialogTab (),
-			new LabelTab (),
-			new ListTab (),
-			new ProgressBarTab (),
-			new SashTab (),
-			shellTab = new ShellTab(),
-			new SliderTab (),
-			new TableTab (),
-			new TextTab (),
-			new ToolBarTab (),
-			new TreeTab (),
-		};
-		for (int i=0; i<tabs.length; i++) {
-			TabItem item = new TabItem (tabFolder, SWT.NULL);
-		    item.setText (tabs [i].getTabText ());
-		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
-		}
-
+		instance = new ControlExample(frame);
 	}
 
 	/**
@@ -69,27 +34,16 @@ public class ControlView extends ViewPart {
 	 * 
 	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
-	public void setFocus()  {
-		//tabFolder.setFocus();
-		mainFrame.setFocus();
+	public void setFocus() {
+		instance.setFocus();
 	}
 
 	/**
 	 * Called when the View is to be disposed
 	 */	
 	public void dispose() {
-		/*
-		 * Destroy any shells that may have been created
-		 * by the Shells tab.  When a shell is disposed,
-		 * all child shells are also disposed.  Therefore
-		 * it is necessary to check for disposed shells
-		 * in the shells list to avoid disposing a shell
-		 * twice.
-		 */
-		if (shellTab != null) shellTab.closeAllShells ();
-		shellTab = null;
-		tabFolder = null;
-		mainFrame = null;
+		instance.dispose();
+		instance = null;
 		super.dispose();
 	}
 }
