@@ -238,6 +238,11 @@ public String toString () {
 /**
  * Returns a new rectangle which represents the union of
  * the receiver and the given rectangle.
+ * <p>
+ * The union of two rectangles is the smallest single rectangle
+ * that completely covers both of the areas covered by the two
+ * given rectangles.
+ * </p>
  *
  * @param rect the rectangle to perform union with
  * @return the union of the receiver and the argument
