@@ -4,7 +4,7 @@
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
 * http://www.eclipse.org/legal/epl-v10.html
-* 
+*
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 635;
-int OS_nativeFunctionCallCount[635];
+int OS_nativeFunctionCount = 637;
+int OS_nativeFunctionCallCount[637];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -416,6 +416,8 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICA_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_TEXTMETRICW_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_UDACCEL_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_WINDOWPOS_2II",

@@ -50,6 +50,8 @@ public abstract class Device implements Drawable {
 	/* Font Enumeration */
 	int nFonts = 256;
 	LOGFONT [] logFonts;
+	TEXTMETRIC metrics;
+	int[] pixels;
 
 	/* Scripts */
 	int [] scripts;
@@ -268,11 +270,29 @@ int EnumFontFamProc (int lpelfe, int lpntme, int FontType, int lParam) {
 			LOGFONT [] newLogFonts = new LOGFONT [logFonts.length + 128];
 			System.arraycopy (logFonts, 0, newLogFonts, 0, nFonts);
 			logFonts = newLogFonts;
+			int[] newPixels = new int[newLogFonts.length];
+			System.arraycopy (pixels, 0, newPixels, 0, nFonts);
+			pixels = newPixels;
 		}
 		LOGFONT logFont = logFonts [nFonts];
 		if (logFont == null) logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
 		OS.MoveMemory (logFont, lpelfe, LOGFONT.sizeof);
-		logFonts [nFonts++] = logFont;
+		logFonts [nFonts] = logFont;
+		if (logFont.lfHeight > 0) {
+			/*
+			 * Feature in Windows. If the lfHeight of the LOGFONT structure
+			 * is positive, the lfHeight measures the height of the entire
+			 * cell, including internal leading, in logical units. Since the
+			 * height of a font in points does not include the internal leading,
+			 * we must subtract the internal leading, which requires a TEXTMETRIC,
+			 * which in turn requires font creation.
+			 */
+			OS.MoveMemory(metrics, lpntme, TEXTMETRIC.sizeof);
+			pixels[nFonts] = logFont.lfHeight - metrics.tmInternalLeading;
+		} else {
+			pixels[nFonts] = -logFont.lfHeight;
+		}
+		nFonts++;
 	}
 	return 1;
 }
@@ -409,6 +429,8 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	int lpEnumFontFamProc = callback.getAddress ();
 		
 	/* Initialize the instance variables */
+	metrics = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+	pixels = new int[nFonts];
 	logFonts = new LOGFONT [nFonts];
 	for (int i=0; i<logFonts.length; i++) {
 		logFonts [i] = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
@@ -451,19 +473,22 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 		 */
 		OS.EnumFontFamilies (hDC, lpFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
 	}
+	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
 	internal_dispose_GC (hDC, null);
 
 	/* Create the fontData from the logfonts */
 	int count = nFonts - offset;
 	FontData [] result = new FontData [count];
 	for (int i=0; i<count; i++) {
-		LOGFONT logFont = logFonts [i+offset];
-		result [i] = FontData.win32_new (logFont, computePoints(logFont));
+		int index = i + offset;
+		result [i] = FontData.win32_new (logFonts [index], Compatibility.round(pixels [index] * 72, logPixelsY));
 	}
 	
 	/* Clean up */
 	callback.dispose ();
 	logFonts = null;
+	pixels = null;
+	metrics = null;
 	return result;
 }
 

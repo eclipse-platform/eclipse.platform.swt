@@ -2067,6 +2067,14 @@ public static final void MoveMemory (NMTTDISPINFO Destination, int Source, int L
 	}
 }
 
+public static final void MoveMemory (TEXTMETRIC Destination, int Source, int Length) {
+	if (IsUnicode) {
+		MoveMemory ((TEXTMETRICW)Destination, Source, Length);
+	} else {
+		MoveMemory ((TEXTMETRICA)Destination, Source, Length);
+	}
+}
+
 public static final boolean PeekMessage (MSG lpMsg, int hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg) {
 	if (IsUnicode) return PeekMessageW (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
 	return PeekMessageA (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
@@ -2773,6 +2781,8 @@ public static final native void MoveMemory (NMREBARCHEVRON Destination, int Sour
 public static final native void MoveMemory (NMTOOLBAR Destination, int Source, int Length);
 public static final native void MoveMemory (NMTTDISPINFOW Destination, int Source, int Length);
 public static final native void MoveMemory (NMTTDISPINFOA Destination, int Source, int Length);
+public static final native void MoveMemory (TEXTMETRICW Destination, int Source, int Length);
+public static final native void MoveMemory (TEXTMETRICA Destination, int Source, int Length);
 public static final native void MoveMemory (TVITEM Destination, int Source, int Length);
 public static final native void MoveMemory (WINDOWPOS Destination, int Source, int Length);
 public static final native void MoveMemory (MSG Destination, int Source, int Length);
