@@ -645,12 +645,13 @@ public String getProgramID(){
 	if (appClsid != null){
 		int[] lplpszProgID = new int[1];
 		if (COM.ProgIDFromCLSID(appClsid, lplpszProgID) == COM.S_OK) {
-			int length = OS.GlobalSize(lplpszProgID[0]);
-			int ptr = OS.GlobalLock(lplpszProgID[0]);
+			int hMem = lplpszProgID[0];
+			int length = OS.GlobalSize(hMem);
+			int ptr = OS.GlobalLock(hMem);
 			char[] buffer = new char[length];
-			COM.MoveMemory(buffer, lplpszProgID[0], length);
-			OS.GlobalUnlock(ptr);
-			OS.GlobalFree(lplpszProgID[0]);
+			COM.MoveMemory(buffer, ptr, length);
+			OS.GlobalUnlock(hMem);
+			OS.GlobalFree(hMem);
 
 			String result = new String(buffer);
 			// remove null terminator
