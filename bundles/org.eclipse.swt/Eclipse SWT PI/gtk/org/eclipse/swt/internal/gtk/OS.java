@@ -26,6 +26,7 @@ public class OS {
 	public static final int GDK_ACTION_LINK = 1 << 3;
 	public static final int GDK_Alt_L = 0xffe9;
 	public static final int GDK_Alt_R = 0xffea;
+	public static final int GDK_AND = 4;
 	public static final int GDK_BackSpace = 0xff08;
 	public static final int GDK_BOTTOM_LEFT_CORNER = 0xc;
 	public static final int GDK_BOTTOM_RIGHT_CORNER = 0xe;
@@ -411,6 +412,7 @@ public static final synchronized native int gdk_pixbuf_get_rowstride(int pixbuf)
 public static final synchronized native int gdk_pixbuf_new(int colorspace, boolean has_alpha, int bits_per_sample, int width, int height);
 public static final synchronized native void gdk_pixbuf_render_to_drawable(int pixbuf, int drawable, int gc, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int dither, int x_dither, int y_dither);
 public static final synchronized native void gdk_pixbuf_render_to_drawable_alpha(int pixbuf, int drawable, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int alpha_mode, int alpha_threshold, int dither, int x_dither, int y_dither);
+public static final synchronized native void gdk_pixbuf_render_pixmap_and_mask(int pixbuf, int[] pixmap_return, int[] mask_return, int alpha_threshold);
 public static final synchronized native void gdk_pixbuf_scale(int src, int dest, int dest_x, int dest_y, int dest_width, int dest_height, double offset_x, double offset_y, double scale_x, double scale_y, int interp_type);
 public static final synchronized native int gdk_pixbuf_scale_simple(int src, int dest_width, int dest_height, int interp_type);
 public static final synchronized native int gdk_pixmap_new(int window, int width, int height, int depth);

@@ -55,9 +55,7 @@ public int add (Image image) {
 			int offset = pixels + (y * stride);
 			OS.memmove (line, offset, stride);
 			for (int x=0; x<width; x++) {
-				if (OS.gdk_image_get_pixel (gdkMaskImagePtr, x, y) != 0) {
-					line[x*4+3] = (byte)0xFF;
-				} else {
+				if (OS.gdk_image_get_pixel (gdkMaskImagePtr, x, y) == 0) {
 					line[x*4+3] = 0;
 				}
 			}

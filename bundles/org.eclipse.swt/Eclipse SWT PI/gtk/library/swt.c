@@ -1519,6 +1519,23 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1new
 }
 #endif
 
+#ifndef NO_gdk_1pixbuf_1render_1pixmap_1and_1mask
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1render_1pixmap_1and_1mask
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2, jint arg3)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+
+	DEBUG_CALL("gdk_1pixbuf_1render_1pixmap_1and_1mask\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	gdk_pixbuf_render_pixmap_and_mask((GdkPixbuf *)arg0, (GdkDrawable **)lparg1, (GdkBitmap **)lparg2, arg3);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+}
+#endif
+
 #ifndef NO_gdk_1pixbuf_1render_1to_1drawable
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1render_1to_1drawable
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)
