@@ -462,7 +462,7 @@ public void setBounds (Rectangle rect) {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	setBounds (x, y, width, height, true, true);
+	setBounds (x, y, Math.max (0, width), Math.max (0, height), true, true);
 }
 
 void moveHandle (int x, int y) {
@@ -674,7 +674,7 @@ public void setSize (Point size) {
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	setBounds (0, 0, width, height, false, true);
+	setBounds (0, 0, Math.max (0, width), Math.max (0, height), false, true);
 }
 
 /**
