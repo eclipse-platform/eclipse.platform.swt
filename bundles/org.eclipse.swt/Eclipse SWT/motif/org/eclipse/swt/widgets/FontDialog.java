@@ -254,19 +254,19 @@ void createControls (Composite parent) {
 	new Label (controls, SWT.NONE).setText (SWT.getMessage ("SWT_Extended_style") + ":");	
 
 	// lists row (2)
-	charSetList = new List (controls, SWT.V_SCROLL);
+	charSetList = new List (controls, SWT.V_SCROLL | SWT.BORDER);
 	GridData gridData = new GridData (GridData.FILL_HORIZONTAL);
 	gridData.heightHint = LIST_HEIGHT;
 	gridData.widthHint = LIST_WIDTH;
 	charSetList.setLayoutData (gridData);
 
-	faceNameList = new List (controls, SWT.V_SCROLL);
+	faceNameList = new List (controls, SWT.V_SCROLL | SWT.BORDER);
 	gridData = new GridData (GridData.FILL_HORIZONTAL);
 	gridData.heightHint = LIST_HEIGHT;
 	gridData.widthHint = LIST_WIDTH;
 	faceNameList.setLayoutData (gridData);
 
-	extStyleList = new List (controls, SWT.V_SCROLL | SWT.MULTI);
+	extStyleList = new List (controls, SWT.V_SCROLL | SWT.MULTI | SWT.BORDER);
 	gridData = new GridData (GridData.FILL_HORIZONTAL);
 	gridData.heightHint = LIST_HEIGHT;
 	gridData.widthHint = EXTSTYLE_WIDTH;
@@ -278,13 +278,13 @@ void createControls (Composite parent) {
 	new Label (controls, SWT.NONE);		// filler
 
 	// lists row (4)
-	fontSizeList = new List (controls, SWT.V_SCROLL);
+	fontSizeList = new List (controls, SWT.V_SCROLL | SWT.BORDER);
 	gridData = new GridData (GridData.FILL_HORIZONTAL);
 	gridData.heightHint = LIST_HEIGHT;
 	gridData.widthHint = LIST_WIDTH;
 	fontSizeList.setLayoutData (gridData);
 
-	fontStyleList = new List (controls, SWT.V_SCROLL);
+	fontStyleList = new List (controls, SWT.V_SCROLL | SWT.BORDER);
 	gridData = new GridData (GridData.FILL_HORIZONTAL);
 	gridData.heightHint = LIST_HEIGHT;
 	gridData.widthHint = LIST_WIDTH;
@@ -302,7 +302,7 @@ void createControls (Composite parent) {
 	data.horizontalSpan = 3;
 	fontSetGroup.setLayoutData (data);
 
-	fontSetList = new List (fontSetGroup, SWT.V_SCROLL);
+	fontSetList = new List (fontSetGroup, SWT.V_SCROLL | SWT.BORDER);
 	data = new GridData (GridData.FILL_BOTH);
 	data.grabExcessHorizontalSpace = true;
 	fontSetList.setLayoutData (data);
