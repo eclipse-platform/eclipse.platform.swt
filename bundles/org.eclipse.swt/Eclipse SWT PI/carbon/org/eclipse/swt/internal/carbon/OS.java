@@ -251,6 +251,8 @@ public class OS {
 	public static final int kEventHIObjectConstruct = 1;
 	public static final int kEventHIObjectDestruct = 3;
 	public static final int kEventMenuClosed = 5;
+	public static final int kEventMenuDrawItemContent = 103;
+	public static final int kEventMenuMeasureItemWidth = 100;
 	public static final int kEventMenuOpening = 4;
 	public static final int kEventMenuPopulate = 9;
 	public static final int kEventMenuTargetItem = 6;
@@ -285,6 +287,8 @@ public class OS {
 	public static final int kEventParamKeyModifiers = ('k'<<24) + ('m'<<16) + ('o'<<8) + 'd';
 	public static final int kEventParamMenuCommand = ('m'<<24) + ('c'<<16) + ('m'<<8) + 'd';
 	public static final int kEventParamMenuItemIndex = ('i'<<24) + ('t'<<16) + ('e'<<8) + 'm';
+	public static final int kEventParamMenuItemBounds = ('m'<<24) + ('i'<<16) + ('t'<<8) + 'b';
+	public static final int kEventParamMenuItemWidth = ('m'<<24) + ('i'<<16) + ('t'<<8) + 'w';
 	public static final int kEventParamMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int kEventParamMouseChord = ('c'<<24) + ('h'<<16) + ('o'<<8) + 'r';
 	public static final int kEventParamMouseLocation = ('m'<<24) + ('l'<<16) + ('o'<<8) + 'c';
@@ -387,8 +391,9 @@ public class OS {
 	public static final int kMenuF8Glyph = 118;
 	public static final int kMenuF9Glyph = 119;
 	public static final int kMenuHelpGlyph = 103;
-	public static final int kMenuItemAttrSeparator = 64;
+	public static final int kMenuItemAttrCustomDraw = 1 << 11;
 	public static final int kMenuItemAttrAutoRepeat = 1 << 9;
+	public static final int kMenuItemAttrSeparator = 64;
 	public static final int kMenuLeftArrowDashedGlyph = 24;
 	public static final int kMenuLeftArrowGlyph = 100;
 	public static final int kMenuNoCommandModifier = (1 << 3);
@@ -500,6 +505,8 @@ public class OS {
 	public static final int kThemeDisclosureLeft = 2;
 	public static final int kThemeEmphasizedSystemFont = 4;
 	public static final int kThemeIBeamCursor = 4;
+	public static final int kThemeMenuItemCmdKeyFont = 103;
+	public static final int kThemeMenuItemHierarchical = 1;
 	public static final int kThemeMetricDisclosureTriangleHeight = 25;
 	public static final int kThemeMetricCheckBoxWidth = 50;
 	public static final int kThemeMetricRadioButtonWidth = 52;
@@ -943,6 +950,7 @@ public static final native int GetSuperControl(int cHandle, int[] parentHandle);
 public static final native int GetThemeBrushAsColor(short inBrush, short inDepth, boolean inColorDev, RGBColor outColor);
 public static final native int GetThemeDrawingState(int[] state);
 public static final native int GetThemeFont(short themeFontId, short scriptCode, byte[] fontName, short[] fontSize, byte[] style);
+public static final native int GetThemeMenuItemExtra(short inItemType, short[] outHeight, short[] outWidth); 
 public static final native int GetThemeMetric(int inMetric, int [] outMetric);
 public static final native int GetThemeTextColor(short inColor, short inDepth, boolean inColorDev, RGBColor outColor);
 public static final native int GetThemeTextDimensions(int sHandle, short fontID, int state, boolean wrapToWidth, Point ioBounds, short[] baseLine);

@@ -4600,6 +4600,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeFont)
 }
 #endif
 
+#ifndef NO_GetThemeMenuItemExtra
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeMenuItemExtra)
+	(JNIEnv *env, jclass that, jshort arg0, jshortArray arg1, jshortArray arg2)
+{
+	jshort *lparg1=NULL;
+	jshort *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "GetThemeMenuItemExtra\n")
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	rc = (jint)GetThemeMenuItemExtra(arg0, lparg1, lparg2);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "GetThemeMenuItemExtra\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetThemeMetric
 JNIEXPORT jint JNICALL OS_NATIVE(GetThemeMetric)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)

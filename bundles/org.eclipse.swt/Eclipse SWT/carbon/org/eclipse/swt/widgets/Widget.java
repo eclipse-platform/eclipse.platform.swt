@@ -892,6 +892,14 @@ int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -995,6 +1003,8 @@ int menuProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
 		case OS.kEventMenuClosed:		return kEventMenuClosed (nextHandler, theEvent, userData);
+		case OS.kEventMenuDrawItemContent: 	return kEventMenuDrawItemContent (nextHandler, theEvent, userData);
+		case OS.kEventMenuMeasureItemWidth: return kEventMenuMeasureItemWidth (nextHandler, theEvent, userData);
 		case OS.kEventMenuOpening:		return kEventMenuOpening (nextHandler, theEvent, userData);
 		case OS.kEventMenuTargetItem:	return kEventMenuTargetItem (nextHandler, theEvent, userData);
 	}
