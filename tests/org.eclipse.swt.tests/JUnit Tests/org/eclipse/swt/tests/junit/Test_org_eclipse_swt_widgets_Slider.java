@@ -41,6 +41,9 @@ protected void setUp() {
 protected void tearDown() {
 	super.tearDown();
 }
+protected String valueString(int[] intArray) {
+	return " ("+intArray[1]+","+intArray[2]+","+intArray[3]+","+intArray[4]+")";
+}
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
@@ -168,7 +171,8 @@ public void test_setMaximumI() {
 		int[] intArray = testValues[i];
 		setDefaults();
 		slider.setMaximum(intArray[0]);
-		report("setMaximum", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+		String valueString = valueString(intArray);
+		report("setMax "+intArray[0]+ valueString, intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
 	}
 }
 
@@ -180,7 +184,8 @@ public void test_setMinimumI() {
 		int[] intArray = testValues[i];
 		setDefaults();
 		slider.setMinimum(intArray[0]);
-		report("setMinimum", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+		String valueString = valueString(intArray);
+		report("setMin "+intArray[0]+valueString, intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
 	}
 }
 
@@ -195,7 +200,8 @@ public void test_setSelectionI() {
 		int[] intArray = testValues[i];
 		setDefaults();
 		slider.setSelection(intArray[0]);
-		report("setSelection", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+		String valueString = valueString(intArray);
+		report("setSel "+intArray[0]+valueString,intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
 	}
 }
 
@@ -207,7 +213,8 @@ public void test_setThumbI() {
 		int[] intArray = testValues[i];
 		setDefaults();
 		slider.setThumb(intArray[0]);
-		report("setThumb", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+		String valueString = valueString(intArray);
+		report("setThmb "+intArray[0]+valueString,intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
 	}
 }
 
@@ -289,24 +296,26 @@ Slider slider;
 private void report(String call, int set, int minExpected, int maxExpected, int selectionExpected, int thumbExpected) {
 	// Uncomment these lines and comment out call to check() if you want the test to report all errors without
 	// stopping.
-	
-	//if (slider.getMinimum() != minExpected)
-		//System.out.println(call + "(" + set + "): Minimum Expected: " + minExpected + "  Actual: " + slider.getMinimum());
-	//if (slider.getMaximum() != maxExpected)
-		//System.out.println(call + "(" + set + "): Maximum Expected: " + maxExpected + "  Actual: " + slider.getMaximum());
-	//if (slider.getSelection() != selectionExpected)
-		//System.out.println(call + "(" + set + "): Selection Expected: " + selectionExpected + "  Actual: " + slider.getSelection());
-	//if (slider.getThumb() != thumbExpected)
-		//System.out.println(call + "(" + set + "): Thumb Expected: " + thumbExpected + "  Actual: " + slider.getThumb());
-
-	check(call, set, minExpected, maxExpected, selectionExpected, thumbExpected);
+//	if (slider.getMinimum() != minExpected) {
+//		System.out.println(call + " : Minimum Expected: " + minExpected + "  Actual: " + slider.getMinimum());
+//	}
+//	if (slider.getMaximum() != maxExpected){
+//		System.out.println(call + " : Maximum Expected: " + maxExpected + "  Actual: " + slider.getMaximum());
+//	}
+//	if (slider.getSelection() != selectionExpected) {
+//		System.out.println(call + " : Selection Expected: " + selectionExpected + "  Actual: " + slider.getSelection());
+//	}
+//	if (slider.getThumb() != thumbExpected) {
+//		System.out.println(call + " : Thumb Expected: " + thumbExpected + "  Actual: " + slider.getThumb());
+//	}
+	check(call, minExpected, maxExpected, selectionExpected, thumbExpected);
 }
 // this method must be private or protected so the auto-gen tool keeps it
-private void check(String call, int set, int minExpected, int maxExpected, int selectionExpected, int thumbExpected) {
-	assertTrue(call + "(" + set + "): Maximum Expected: " + maxExpected + "  Actual: " + slider.getMaximum(), slider.getMaximum() == maxExpected);
-	assertTrue(call + "(" + set + "): Minimum Expected: " + minExpected + "  Actual: " + slider.getMinimum(), slider.getMinimum() == minExpected);
-	assertTrue(call + "(" + set + "): Selection Expected: " + selectionExpected + "  Actual: " + slider.getSelection(), slider.getSelection() == selectionExpected);
-	assertTrue(call + "(" + set + "): Thumb Expected: " + thumbExpected + "  Actual: " + slider.getThumb(), slider.getThumb() == thumbExpected);
+private void check(String call, int minExpected, int maxExpected, int selectionExpected, int thumbExpected) {
+	assertEquals(call+" max ", maxExpected, slider.getMaximum());
+	assertEquals(call+" min ", minExpected, slider.getMinimum());
+	assertEquals(call+" sel ", selectionExpected, slider.getSelection());
+	assertEquals(call+" thmb ", thumbExpected, slider.getThumb());
 }
 // this method must be private or protected so the auto-gen tool keeps it
 private int[][] getSetThumbValues() {
