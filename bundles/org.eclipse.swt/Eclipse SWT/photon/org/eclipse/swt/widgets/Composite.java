@@ -29,6 +29,7 @@ import org.eclipse.swt.graphics.*;
 public class Composite extends Scrollable {
 	Layout layout;
 	Control [] tabList;
+	int cornerHandle;
 	
 Composite () {
 	/* Do nothing */
@@ -199,15 +200,17 @@ void createScrolledHandle (int parentHandle) {
 	scrolledHandle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	Display display = getDisplay ();
-	etches = OS.Pt_TOP_OUTLINE | OS.Pt_LEFT_OUTLINE;
-	args = new int [] {
-		OS.Pt_ARG_FLAGS, OS.Pt_HIGHLIGHTED, OS.Pt_HIGHLIGHTED,
-		OS.Pt_ARG_BASIC_FLAGS, etches, etches,
-		OS.Pt_ARG_WIDTH, display.SCROLLBAR_WIDTH, 0,
-		OS.Pt_ARG_HEIGHT, display.SCROLLBAR_HEIGHT, 0,
-		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
-	};
-	OS.PtCreateWidget (OS.PtContainer (), scrolledHandle, args.length / 3, args);
+	if ((style & SWT.H_SCROLL) != 0 && (style & SWT.V_SCROLL) != 0) {
+		etches = OS.Pt_TOP_OUTLINE | OS.Pt_LEFT_OUTLINE;
+		args = new int [] {
+			OS.Pt_ARG_FLAGS, OS.Pt_HIGHLIGHTED, OS.Pt_HIGHLIGHTED,
+			OS.Pt_ARG_BASIC_FLAGS, etches, etches,
+			OS.Pt_ARG_WIDTH, display.SCROLLBAR_WIDTH, 0,
+			OS.Pt_ARG_HEIGHT, display.SCROLLBAR_HEIGHT, 0,
+			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
+		};
+		cornerHandle = OS.PtCreateWidget (OS.PtContainer (), scrolledHandle, args.length / 3, args);
+	}
 	int clazz = display.PtContainer;
 	args = new int [] {
 		OS.Pt_ARG_CONTAINER_FLAGS, 0, OS.Pt_ENABLE_CUA | OS.Pt_ENABLE_CUA_ARROWS,
@@ -537,6 +540,11 @@ void releaseChildren () {
 	}
 }
 
+void releaseHandle () {
+	super.releaseHandle ();
+	cornerHandle = 0;
+}
+
 void releaseWidget () {
 	releaseChildren ();
 	super.releaseWidget ();
@@ -610,13 +618,15 @@ void resizeClientArea (int width, int height) {
 		OS.Pt_ARG_HEIGHT, Math.max (clientHeight, 0), 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
-	PhPoint_t pt = new PhPoint_t ();
-	pt.x = (short) clientWidth;
-	pt.y = (short) clientHeight;
-	int ptr = OS.malloc (PhPoint_t.sizeof);
-	OS.memmove (ptr, pt, PhPoint_t.sizeof);
-	OS.PtSetResource (OS.PtWidgetChildBack (scrolledHandle), OS.Pt_ARG_POS, ptr, 0);
-	OS.free (ptr);
+	if (cornerHandle != 0) {
+		PhPoint_t pt = new PhPoint_t ();
+		pt.x = (short) clientWidth;
+		pt.y = (short) clientHeight;
+		int ptr = OS.malloc (PhPoint_t.sizeof);
+		OS.memmove (ptr, pt, PhPoint_t.sizeof);
+		OS.PtSetResource (cornerHandle, OS.Pt_ARG_POS, ptr, 0);
+		OS.free (ptr);
+	}
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
