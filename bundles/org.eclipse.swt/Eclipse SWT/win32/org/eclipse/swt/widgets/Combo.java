@@ -1021,7 +1021,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		*/
 		RECT rect = new RECT ();
 		OS.GetWindowRect (handle, rect);
-		if (rect.right - rect.left == 0) {
+		if (rect.right - rect.left != 0) {
 			if (OS.SendMessage (handle, OS.CB_GETDROPPEDCONTROLRECT, 0, rect) != 0) {
 				int oldWidth = rect.right - rect.left, oldHeight = rect.bottom - rect.top;
 				if (oldWidth == width && oldHeight == height) flags |= OS.SWP_NOSIZE;
