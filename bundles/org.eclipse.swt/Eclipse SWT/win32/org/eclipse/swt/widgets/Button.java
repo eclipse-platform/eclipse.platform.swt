@@ -674,8 +674,8 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 		case SWT.LEFT: uState = OS.DFCS_SCROLLLEFT; break;
 		case SWT.RIGHT: uState = OS.DFCS_SCROLLRIGHT; break;
 	}
+	if (!getEnabled ()) uState |= OS.DFCS_INACTIVE;
 	if ((style & SWT.FLAT) == SWT.FLAT) uState |= OS.DFCS_FLAT;
-	if (!OS.IsWindowEnabled (handle)) uState |= OS.DFCS_INACTIVE;
 	if ((struct.itemState & OS.ODS_SELECTED) != 0) uState |= OS.DFCS_PUSHED;
 	RECT rect = new RECT ();
 	OS.SetRect (rect, struct.left, struct.top, struct.right, struct.bottom);

@@ -3669,6 +3669,7 @@ LRESULT WM_NCCALCSIZE (int wParam, int lParam) {
 }
 
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
+	if (!OS.IsWindowEnabled (handle)) return null;
 	if (!isActive ()) return new LRESULT (OS.HTTRANSPARENT);
 	return null;
 }
