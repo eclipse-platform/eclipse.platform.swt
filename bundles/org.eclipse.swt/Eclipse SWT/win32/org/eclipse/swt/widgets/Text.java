@@ -277,7 +277,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 
 	/*
-	* The preferred size of a single-line text widget
+	* The preferred height of a single-line text widget
 	* has been hand-crafted to be the same height as
 	* the single-line text widget in an editable combo
 	* box.
