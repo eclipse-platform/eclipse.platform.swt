@@ -501,6 +501,7 @@ public void setVisible (boolean visible) {
 }
 
 void setZOrder () {
+	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
 }
 
 }
