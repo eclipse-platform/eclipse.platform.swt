@@ -140,6 +140,8 @@ public class StyledText extends Canvas {
 	PaletteData caretPalette = null;	
 	int lastCaretDirection = SWT.NULL;
 	
+	Point pasteToLocation;	// used to support ctrl/select copy/paste behavior
+	
 	/**
 	 * The Printing class implements printing of a range of text.
 	 * An instance of <class>Printing </class> is returned in the 
@@ -4511,6 +4513,11 @@ void installListeners() {
 			handleKeyDown(event);
 		}
 	});
+	addListener(SWT.KeyUp, new Listener() {
+		public void handleEvent(Event event) {
+			handleKeyUp(event);
+		}
+	});
 	addListener(SWT.MouseDown, new Listener() {
 		public void handleEvent(Event event) {
 			handleMouseDown(event);
@@ -4732,10 +4739,30 @@ void handleKeyDown(Event event) {
 	verifyEvent.character = event.character;
 	verifyEvent.keyCode = event.keyCode;
 	verifyEvent.stateMask = event.stateMask;
-	verifyEvent.doit = true;		
+	verifyEvent.doit = true;
+	// handle special copy/paste behavior, see handleKeyUp(Event) for more info	
+	if (event.keyCode == SWT.CTRL) {
+		pasteToLocation = null;
+	}
 	notifyListeners(VerifyKey, verifyEvent);
 	if (verifyEvent.doit == true) {
 		handleKey(event);
+	}
+}
+/**
+ * Support special copy/paste behavior - if ctrl key is down when text is selected, when 
+ * the ctrl key is released, the selected text will be copied and pasted at the position that
+ * the cursor was when the the ctrl key was pressed.
+ */
+void handleKeyUp(Event event) {
+	if (event.keyCode == SWT.CTRL) {
+		if (pasteToLocation != null) {
+			String toCopy = getSelectionText();
+			setSelection(pasteToLocation);
+			insert(toCopy);
+			setSelection(getSelection().x + toCopy.length());
+		}
+		pasteToLocation = null;
 	}
 }
 /** 
@@ -4765,6 +4792,10 @@ void handleMouseDown(Event event) {
 	
 	if (event.button != 1) {
 		return;
+	}
+	// handle special copy/paste behavior, see handleKeyUp(Event) for more info	
+	if ((event.stateMask & SWT.CTRL) != 0 && pasteToLocation == null) {
+		pasteToLocation = new Point(selection.x, selection.y);
 	}
 	mouseDoubleClick = false;
 	event.y -= topMargin;
