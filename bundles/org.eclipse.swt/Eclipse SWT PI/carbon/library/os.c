@@ -1021,6 +1021,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetFontSize)
 }
 #endif
 
+#ifndef NO_CGContextSetLineCap
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineCap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "CGContextSetLineCap\n")
+	CGContextSetLineCap((CGContextRef)arg0, arg1);
+	NATIVE_EXIT(env, that, "CGContextSetLineCap\n")
+}
+#endif
+
 #ifndef NO_CGContextSetLineDash
 JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineDash)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloatArray arg2, jint arg3)

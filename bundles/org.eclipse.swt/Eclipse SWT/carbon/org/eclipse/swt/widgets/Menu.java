@@ -255,7 +255,7 @@ void createItem (MenuItem item, int index) {
 	checkWidget ();
 	int count = OS.CountMenuItems (handle);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-	int attributes = 0;
+	int attributes = OS.kMenuItemAttrAutoRepeat;
 	if ((item.style & SWT.SEPARATOR) != 0) attributes = OS.kMenuItemAttrSeparator;
 	int result = OS.InsertMenuItemTextWithCFString (handle, 0, (short) index, attributes, 0);
 	if (result != OS.noErr) {

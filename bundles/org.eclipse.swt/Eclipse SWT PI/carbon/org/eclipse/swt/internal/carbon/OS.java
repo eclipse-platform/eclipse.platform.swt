@@ -66,6 +66,7 @@ public class OS {
 	public static final int kCGEncodingMacRoman = 1;
 	public static final int kCGImageAlphaFirst = 4;
 	public static final int kCGImageAlphaNoneSkipFirst = 6;
+	public static final int kCGLineCapRound = 1;
 	public static final int kCGTextFill = 0;
 	public static final int kCGTextInvisible = 3;
 	public static final int kColorPickerDialogIsMoveable =  1;
@@ -387,6 +388,7 @@ public class OS {
 	public static final int kMenuF9Glyph = 119;
 	public static final int kMenuHelpGlyph = 103;
 	public static final int kMenuItemAttrSeparator = 64;
+	public static final int kMenuItemAttrAutoRepeat = 1 << 9;
 	public static final int kMenuLeftArrowDashedGlyph = 24;
 	public static final int kMenuLeftArrowGlyph = 100;
 	public static final int kMenuNoCommandModifier = (1 << 3);
@@ -690,6 +692,7 @@ public static final native void CGContextSetFillColorSpace (int ctx, int colorsp
 public static final native void CGContextSetFillColor (int ctx, float[] value);
 public static final native void CGContextSetFont (int ctx, int font);
 public static final native void CGContextSetFontSize (int ctx, float size);
+public static final native void CGContextSetLineCap (int context, int cap); 
 public static final native void CGContextSetLineDash (int ctx, float phase, float[] lengths, int count);
 public static final native void CGContextSetLineWidth (int ctx, float width);
 public static final native void CGContextSetShouldAntialias (int ctx, boolean shouldAntialias);
