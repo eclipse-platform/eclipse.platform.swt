@@ -625,7 +625,10 @@ public void setMenuBar (Menu menu) {
 	OS.XtGetValues (handle, argList2, argList2.length / 2);
 	if (argList1 [1] != argList2 [1] || argList1 [3] != argList2 [3]) {
 		sendEvent (SWT.Resize);
-		if (layout != null) layout (false);
+		if (layout != null) {
+			markLayout (false, false);
+			updateLayout (false);
+		}
 	}
 }
 /**
