@@ -2595,14 +2595,23 @@ boolean traverseReturn () {
  */
 public void update () {
 	checkWidget();
-	int display = OS.XtDisplay (handle);
-	if (display == 0) return;
-	int window = OS.XtWindow (handle);
-	if (window == 0) return;
-	XAnyEvent event = new XAnyEvent ();
-	OS.XSync (display, false);  OS.XSync (display, false);
-	while (OS.XCheckWindowEvent (display, window, OS.ExposureMask, event)) {
-		OS.XtDispatchEvent (event);
+	update (false);
+}
+void update (boolean all) {
+//	checkWidget();
+	if (all) {
+		Display display = getDisplay ();
+		display.update ();		
+	} else {
+		int display = OS.XtDisplay (handle);
+		if (display == 0) return;
+		int window = OS.XtWindow (handle);
+		if (window == 0) return;
+		XAnyEvent event = new XAnyEvent ();
+		OS.XSync (display, false);  OS.XSync (display, false);
+		while (OS.XCheckWindowEvent (display, window, OS.ExposureMask, event)) {
+			OS.XtDispatchEvent (event);
+		}
 	}
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {

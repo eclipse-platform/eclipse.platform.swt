@@ -245,7 +245,9 @@ public Rectangle getBounds () {
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	rect.left = handle;
-	OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect);
+	if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) == 0) {
+		return new Rectangle (0, 0, 0, 0);
+	}
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
