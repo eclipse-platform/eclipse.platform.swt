@@ -53,7 +53,7 @@ public class Tree extends Composite {
 	TreeItem showItem;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
-	static final int EXTRA_WIDTH = 25;
+	static final int EXTRA_WIDTH = 30;
 	static final int CHECK_COLUMN_WIDTH = 25;
 
 /**
@@ -178,7 +178,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 		gc.dispose ();
 		width += EXTRA_WIDTH;
-		if ((style & SWT.CHECK) != 0) width += CHECK_COLUMN_WIDTH + EXTRA_WIDTH;
+		if ((style & SWT.CHECK) != 0) width += CHECK_COLUMN_WIDTH;
 	} else {
 		width = wHint;
 	}
@@ -196,12 +196,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
+	int border = 0;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+	border += outMetric [0];
+	OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+	border += outMetric [0];
 	Rect rect = new Rect ();
 	OS.GetDataBrowserScrollBarInset (handle, rect);
-	x -= rect.left;
-	y -= rect.top;
-	width += (rect.left + rect.right) * 3;
-	height += rect.top + rect.bottom;
+	x -= rect.left + border;
+	y -= rect.top + border;
+	width += rect.left + rect.right + border + border;
+	height += rect.top + rect.bottom + border + border;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -423,11 +429,17 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 
 public Rectangle getClientArea () {
 	checkWidget();
+	int border = 0;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+	border += outMetric [0];
+	OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+	border += outMetric [0];
 	Rect rect = new Rect (), inset = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	OS.GetDataBrowserScrollBarInset (handle, inset);
-	int width = Math.max (0, rect.right - rect.left - inset.right);
-	int height = Math.max (0, rect.bottom - rect.top - inset.bottom);
+	int width = Math.max (0, rect.right - rect.left - inset.right - border - border);
+	int height = Math.max (0, rect.bottom - rect.top - inset.bottom - border - border);
 	return new Rectangle (inset.left, inset.top, width, height);
 }
 
