@@ -218,7 +218,15 @@ int windowProc () {
 LRESULT WM_HSCROLL (int wParam, int lParam) {
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
 	if (result != null) return result;
-	if ((lParam == 0) && (horizontalBar != null)) {
+	
+	/*
+	* Bug on WinCE.  lParam should be NULL when the message is not sent
+	* by a scroll bar control, but it contains the handle to the window.
+	* When the message is sent by a scroll bar control, it correctly
+	* contains the handle to the scroll bar.  The fix is to check for
+	* both.
+	*/
+	if ((lParam == 0 || lParam == handle) && horizontalBar != null) {
 		result = wmScroll (OS.WM_HSCROLL, wParam, lParam);
 		horizontalBar.wmScrollChild (wParam, lParam);
 	}
@@ -236,7 +244,15 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_VSCROLL (int wParam, int lParam) {
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
 	if (result != null) return result;
-	if ((lParam == 0) && (verticalBar != null)) {
+
+	/*
+	* Bug on WinCE.  lParam should be NULL when the message is not sent
+	* by a scroll bar control, but it contains the handle to the window.
+	* When the message is sent by a scroll bar control, it correctly
+	* contains the handle to the scroll bar.  The fix is to check for
+	* both.
+	*/
+	if ((lParam == 0 || lParam == handle) && (verticalBar != null)) {
 		result = wmScroll (OS.WM_VSCROLL, wParam, lParam);
 		verticalBar.wmScrollChild (wParam, lParam);
 	}
@@ -260,7 +276,11 @@ LRESULT wmScroll (int msg, int wParam, int lParam) {
 	switch (code) {
 		case OS.SB_ENDSCROLL:  return null;
 		case OS.SB_THUMBTRACK:
-		case OS.SB_THUMBPOSITION:	
+		case OS.SB_THUMBPOSITION:
+			/* temporary note: on WinCE, the value in Thumbposition is relative to nMin
+			* Same for Thumbtrack 'except' for the very first thumbtrack message
+			* which has the actual value of nMin. This is a problem when nMin is non null.
+			*/
 			info.nPos = info.nTrackPos;
 			break;
 		case OS.SB_TOP:
