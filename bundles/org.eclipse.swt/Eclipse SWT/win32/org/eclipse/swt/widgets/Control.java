@@ -851,6 +851,9 @@ boolean hasFocus () {
 	int hwndFocus = OS.GetFocus ();
 	while (hwndFocus != 0) {
 		if (hwndFocus == handle) return true;
+		if (WidgetTable.get (hwndFocus) != null) {
+			return false;
+		}
 		hwndFocus = OS.GetParent (hwndFocus);
 	}
 	return false;
