@@ -401,6 +401,7 @@ public class OS {
 	public static final int HTHSCROLL = 0x6;
 	public static final int HTMENU = 0x5;
 	public static final int HTNOWHERE = 0x0;
+	public static final int HTSYSMENU = 0x3;        
 	public static final int HTTRANSPARENT = 0xffffffff;
 	public static final int HTVSCROLL = 0x7;
 	public static final int HWND_BOTTOM = 0x1;
@@ -603,6 +604,7 @@ public class OS {
 	public static final int MB_TASKMODAL = 0x2000;
 	public static final int MB_YESNO = 0x4;
 	public static final int MB_YESNOCANCEL = 0x3;
+	public static final int MDIS_ALLCHILDSTYLES = 0x0001;
 	public static final int MFS_CHECKED = 0x8;
 	public static final int MFS_DISABLED = 0x3;
 	public static final int MFS_GRAYED = 0x3;
@@ -774,6 +776,7 @@ public class OS {
 	public static final int SC_KEYMENU = 0xf100;
 	public static final int SC_MAXIMIZE = 0xf030;
 	public static final int SC_MINIMIZE = 0xf020;
+	public static final int SC_NEXTWINDOW = 0xF040;
 	public static final int SC_RESTORE = 0xf120;
 	public static final int SC_SIZE = 0xf000;
 	public static final int SC_TASKLIST = 0xf130;
@@ -1180,6 +1183,7 @@ public class OS {
 	public static final int WM_NCACTIVATE = 0x86;
 	public static final int WM_NCCALCSIZE = 0x83;
 	public static final int WM_NCHITTEST = 0x84;
+	public static final int WM_NCLBUTTONDOWN = 0x00A1;
 	public static final int WM_NOTIFY = 0x4e;
 	public static final int WM_NULL = 0x0;
 	public static final int WM_PAINT = 0xf;
@@ -1221,6 +1225,7 @@ public class OS {
 	public static final int WS_EX_CLIENTEDGE = 0x200;
 	public static final int WS_EX_DLGMODALFRAME = 0x1;
 	public static final int WS_EX_LAYOUTRTL = 0x00400000;
+	public static final int WS_EX_MDICHILD = 0x00000040;
 	public static final int WS_EX_NOINHERITLAYOUT = 0x00100000;
 	public static final int WS_EX_STATICEDGE = 0x20000;
 	public static final int WS_EX_TOOLWINDOW = 0x80;
@@ -1302,6 +1307,15 @@ public static final int CreateWindowEx (int dwExStyle, TCHAR lpClassName, TCHAR 
 	return CreateWindowExA (dwExStyle, lpClassName1, lpWindowName1, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 }
 
+public static final int DefMDIChildProc (int hWnd, int Msg, int wParam, int lParam) {
+	if (IsUnicode) return DefMDIChildProcW (hWnd, Msg, wParam, lParam);
+	return DefMDIChildProcA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int DefFrameProc (int hWnd, int hWndMDIClient, int Msg, int wParam, int lParam) {
+	if (IsUnicode) return DefFrameProcW (hWnd, hWndMDIClient, Msg, wParam, lParam);
+	return DefFrameProcA (hWnd, hWndMDIClient, Msg, wParam, lParam);
+}
 public static final int DefWindowProc (int hWnd, int Msg, int wParam, int lParam) {
 	if (IsUnicode) return DefWindowProcW (hWnd, Msg, wParam, lParam);
 	return DefWindowProcA (hWnd, Msg, wParam, lParam);
@@ -2000,6 +2014,10 @@ public static final native int CreateSolidBrush (int colorRef);
 public static final native int CreateWindowExW (int dwExStyle, char [] lpClassName, char [] lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, int hWndParent, int hMenu, int hInstance, CREATESTRUCT lpParam);
 public static final native int CreateWindowExA (int dwExStyle, byte [] lpClassName, byte [] lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, int hWndParent, int hMenu, int hInstance, CREATESTRUCT lpParam);
 public static final native int DeferWindowPos (int hWinPosInfo, int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
+public static final native int DefMDIChildProcW (int hWnd, int Msg, int wParam, int lParam);
+public static final native int DefMDIChildProcA (int hWnd, int Msg, int wParam, int lParam);
+public static final native int DefFrameProcW (int hWnd, int hWndMDIClient, int Msg, int wParam, int lParam);
+public static final native int DefFrameProcA (int hWnd, int hWndMDIClient, int Msg, int wParam, int lParam);
 public static final native int DefWindowProcW (int hWnd, int Msg, int wParam, int lParam);
 public static final native int DefWindowProcA (int hWnd, int Msg, int wParam, int lParam);
 public static final native boolean DeleteDC (int hdc);
@@ -2439,6 +2457,7 @@ public static final native boolean TrackPopupMenu (int hMenu, int uFlags, int x,
 public static final native int TranslateAcceleratorW (int hWnd, int hAccTable, MSG lpMsg);
 public static final native int TranslateAcceleratorA (int hWnd, int hAccTable, MSG lpMsg);
 public static final native boolean TranslateCharsetInfo(int lpSrc, int [] lpCs, int dwFlags);
+public static final native boolean TranslateMDISysAccel (int hWndClient, MSG lpMsg);
 public static final native boolean TranslateMessage (MSG lpmsg);
 public static final native boolean TransparentImage (int hdcDest, int DstX, int DstY, int DstCx, int DstCy,int hSrc, int SrcX, int SrcY, int SrcCx, int SrcCy, int TransparentColor);public static final native boolean UnhookWindowsHookEx(int hhk);
 public static final native boolean UnregisterClassW (char [] lpClassName, int hInstance);

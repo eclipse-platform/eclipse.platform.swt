@@ -449,12 +449,7 @@ Control [] computeTabList () {
 }
 
 void createHandle () {
-	int hwndParent = 0;
-	if (handle != 0) {
-		hwndParent = handle;
-	} else {
-		if (parent != null) hwndParent = parent.handle;
-	}
+	int hwndParent = widgetParent ();
 	handle = OS.CreateWindowEx (
 		widgetExtStyle (),
 		windowClass (),
@@ -464,13 +459,13 @@ void createHandle () {
 		hwndParent,
 		0,
 		OS.GetModuleHandle (null),
-		null);
+		widgetCreateStruct ());
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.WS_CHILD) != 0) {
 		OS.SetWindowLong (handle, OS.GWL_ID, handle);
 	}
-	if (OS.IsDBLocale && parent != null) {
+	if (OS.IsDBLocale && hwndParent != 0) {
 		int hIMC = OS.ImmGetContext (hwndParent);
 		OS.ImmAssociateContext (handle, hIMC);
 		OS.ImmReleaseContext (hwndParent, hIMC);
@@ -2738,6 +2733,10 @@ void updateFont (Font oldFont, Font newFont) {
 	if (font.equals (oldFont)) setFont (newFont);
 }
 
+CREATESTRUCT widgetCreateStruct () {
+	return null;
+}
+
 int widgetExtStyle () {
 	int bits = 0;
 	if ((style & SWT.BORDER) != 0) bits |= OS.WS_EX_CLIENTEDGE;
@@ -2752,6 +2751,10 @@ int widgetExtStyle () {
 	bits |= OS.WS_EX_NOINHERITLAYOUT;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
 	return bits;
+}
+
+int widgetParent () {
+	return parent.handle;
 }
 
 int widgetStyle () {
@@ -2852,6 +2855,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_NCACTIVATE:			result = WM_NCACTIVATE (wParam, lParam); break;
 		case OS.WM_NCCALCSIZE:			result = WM_NCCALCSIZE (wParam, lParam); break;
 		case OS.WM_NCHITTEST:			result = WM_NCHITTEST (wParam, lParam); break;
+		case OS.WM_NCLBUTTONDOWN:		result = WM_NCLBUTTONDOWN (wParam, lParam); break;
 		case OS.WM_NOTIFY:				result = WM_NOTIFY (wParam, lParam); break;
 		case OS.WM_PAINT:				result = WM_PAINT (wParam, lParam); break;
 		case OS.WM_PALETTECHANGED:		result = WM_PALETTECHANGED (wParam, lParam); break;
@@ -3640,6 +3644,16 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 		Menu menu = shell.activeMenu;
 		while (menu != null) {
 			/*
+			* When the user cancels any meny menu that is not the
+			* menu bar, assume a mnemonic key was pressed to open
+			* the menu from WM_SYSCHAR.  When the menu was invoked
+			* using the mouse, this assumption is wrong but not
+			* harmful.  This variable is only used in WM_SYSCHAR
+			* and WM_SYSCHAR is only sent after the user has pressed
+			* a mnemonic.
+			*/
+			display.mnemonicKeyHit = true;
+			/*
 			* It is possible (but unlikely), that application
 			* code could have disposed the widget in the hide
 			* event.  If this happens, stop searching up the
@@ -3791,6 +3805,10 @@ LRESULT WM_NCCALCSIZE (int wParam, int lParam) {
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
 	if (!OS.IsWindowEnabled (handle)) return null;
 	if (!isActive ()) return new LRESULT (OS.HTTRANSPARENT);
+	return null;
+}
+
+LRESULT WM_NCLBUTTONDOWN (int wParam, int lParam) {
 	return null;
 }
 

@@ -997,6 +997,46 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateWindowExW)
 }
 #endif /* NO_CreateWindowExW */
 
+#ifndef NO_DefMDIChildProcA
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefMDIChildProcA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("DefMDIChildProcA\n")
+
+	return (jint)DefMDIChildProcA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
+}
+#endif
+
+#ifndef NO_DefMDIChildProcW
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefMDIChildProcW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("DefMDIChildProcW\n")
+
+	return (jint)DefMDIChildProcW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
+}
+#endif
+
+#ifndef NO_DefFrameProcA
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefFrameProcA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("DefFrameProcA\n")
+
+	return (jint)DefFrameProcA((HWND)arg0, (HWND)arg1, arg2, (WPARAM)arg3, (LPARAM)arg4);
+}
+#endif
+
+#ifndef NO_DefFrameProcW
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefFrameProcW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("DefFrameProcW\n")
+
+	return (jint)DefFrameProcW((HWND)arg0, (HWND)arg1, arg2, (WPARAM)arg3, (LPARAM)arg4);
+}
+#endif
+
 #ifndef NO_DefWindowProcA
 JNIEXPORT jint JNICALL OS_NATIVE(DefWindowProcA)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
@@ -7232,6 +7272,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(TranslateCharsetInfo)
 	return rc;
 }
 #endif /* NO_TranslateCharsetInfo */
+
+#ifndef NO_TranslateMDISysAccel
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TranslateMDISysAccel
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	MSG _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("TranslateMDISysAccel\n")
+
+	if (arg1) lparg1 = getMSGFields(env, arg1, &_arg1);
+	rc = (jboolean)TranslateMDISysAccel((HWND)arg0, (LPMSG)lparg1);
+	if (arg1) setMSGFields(env, arg1, lparg1);
+	return rc;
+}
+#endif
 
 #ifndef NO_TranslateMessage
 JNIEXPORT jboolean JNICALL OS_NATIVE(TranslateMessage)

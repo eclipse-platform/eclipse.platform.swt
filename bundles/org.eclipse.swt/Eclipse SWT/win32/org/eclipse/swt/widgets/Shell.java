@@ -100,7 +100,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	Menu activeMenu;
-	int hIMC;
+	int hIMC, hwndMDIClient;
 	int [] brushes;
 	boolean showWithParent;
 	int toolTipHandle, lpstrTip;
@@ -390,7 +390,11 @@ int callWindowProc (int msg, int wParam, int lParam) {
 		}
 		return OS.CallWindowProc (DialogProc, handle, msg, wParam, lParam);
 	}
-	return super.callWindowProc (msg, wParam, lParam);
+	if (handle == 0) return 0;
+	if (hwndMDIClient != 0) {
+		return OS.DefFrameProc (handle, hwndMDIClient, msg, wParam, lParam);
+	}
+	return OS.DefWindowProc (handle, msg, wParam, lParam);
 }
 
 /**
@@ -639,6 +643,24 @@ public boolean isEnabled () {
 	return getEnabled ();
 }
 
+int hwndMDIClient () {
+	if (hwndMDIClient == 0) {
+		int widgetStyle = OS.MDIS_ALLCHILDSTYLES | OS.WS_CHILD | OS.WS_CLIPCHILDREN | OS.WS_CLIPSIBLINGS;
+		hwndMDIClient = OS.CreateWindowEx (
+			0,
+			new TCHAR (0, "MDICLIENT", true),
+			null,
+			widgetStyle, 
+			0, 0, 0, 0,
+			handle,
+			0,
+			OS.GetModuleHandle (null),
+			new CREATESTRUCT ());
+//		OS.ShowWindow (hwndMDIClient, OS.SW_SHOW);
+	}
+	return hwndMDIClient;
+}
+
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other
@@ -688,6 +710,11 @@ public void open () {
 	MSG msg = new MSG ();
 	OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE);
 	if (!restoreFocus ()) traverseGroup (true);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	hwndMDIClient = 0;
 }
 
 void releaseShells () {
@@ -1036,6 +1063,12 @@ public void setVisible (boolean visible) {
 	}
 }
 
+boolean translateAccelerator (MSG msg) {
+	if (!isEnabled () || !isActive ()) return false;
+	if (menuBar != null && !menuBar.isEnabled ()) return false;
+	return translateMDIAccelerator (msg) || translateMenuAccelerator (msg);
+}
+
 boolean traverseEscape () {
 	if (parent == null) return false;
 	if (!isVisible () || !isEnabled ()) return false;
@@ -1051,8 +1084,17 @@ void updateModal () {
 	}
 }
 
+CREATESTRUCT widgetCreateStruct () {
+	return null;
+}
+
+int widgetParent () {
+	if (handle != 0) return handle;
+	return parent != null ? parent.handle : 0;
+}
+
 int widgetExtStyle () {
-	int bits = super.widgetExtStyle ();
+	int bits = super.widgetExtStyle () & ~OS.WS_EX_MDICHILD;
 	/*
 	* Bug in Windows 98 and NT.  Creating a window with the
 	* WS_EX_TOPMOST extendes style can result in a dialog shell
@@ -1084,7 +1126,7 @@ int windowProc () {
 }
 
 int widgetStyle () {
-	int bits = super.widgetStyle () & ~OS.WS_POPUP;
+	int bits = super.widgetStyle ();
 	if (handle != 0) return bits | OS.WS_CHILD;
 	bits &= ~OS.WS_CHILD;
 	/*
@@ -1140,6 +1182,7 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 			OS.SHSipPreference (handle, psai.fSipUp == 0 ? OS.SIP_DOWN : OS.SIP_UP);
 		} 
 	}
+
 	/*
 	* Bug in Windows XP.  When a Shell is deactivated, the
 	* IME composition window does not go away. This causes
@@ -1213,8 +1256,36 @@ LRESULT WM_DESTROY (int wParam, int lParam) {
 LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	LRESULT result = super.WM_MOUSEACTIVATE (wParam, lParam);
 	if (result != null) return result;
+	
+	/*
+	* Check for WM_MOUSEACTIVATE when an MDI shell is active
+	* and stop the normal shell activation but allow the mouse
+	* down to be delivered.
+	*/
 	int hittest = lParam & 0xFFFF;
+	switch (hittest) {
+		case OS.HTERROR:
+		case OS.HTTRANSPARENT:
+		case OS.HTNOWHERE:
+		default: {
+			Control control = display.getFocusControl ();
+			if (control != null) {
+				Decorations decorations = control.menuShell ();
+				if (decorations.getShell () == this && decorations != this) {
+					display.ignoreRestoreFocus = true;
+					display.lastHittest = hittest;
+					display.lastHittestControl = null;
+					if (hittest == OS.HTMENU || hittest == OS.HTSYSMENU) {
+						display.lastHittestControl = control;
+						return null;
+					}
+					return new LRESULT (OS.MA_NOACTIVATE);
+				}
+			}
+		}
+	}
 	if (hittest == OS.HTMENU) return null;
+	
 	/*
 	* Get the current location of the cursor,
 	* not the location of the cursor when the
@@ -1237,6 +1308,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	if (hwnd == 0) return null;
 	Control control = display.findControl (hwnd);
 	setActiveControl (control);
+	
 	/*
 	* This code is intentionally commented.  On some platforms,
 	* shells that are created with SWT.NO_TRIM won't take focus
@@ -1267,6 +1339,33 @@ LRESULT WM_NCHITTEST (int wParam, int lParam) {
 		return new LRESULT (hittest);
 	}
 	return null;
+}
+
+LRESULT WM_NCLBUTTONDOWN (int wParam, int lParam) {
+	LRESULT result = super.WM_NCLBUTTONDOWN (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* When the normal activation was interruped in WM_MOUSEACTIVATE
+	* because the active shell was an MDI shell, set the active window
+	* to the top level shell but lock the active window and stop focus
+	* changes.  This allows the user to interact the top level shell
+	* in the normal manner.
+	*/
+	if (!display.ignoreRestoreFocus) return result;
+	Display display = this.display;
+	int hwndActive = OS.GetActiveWindow ();
+	OS.SetActiveWindow (handle);
+	display.lockActiveWindow = true;
+	int code = callWindowProc (OS.WM_NCLBUTTONDOWN, wParam, lParam);
+	display.lockActiveWindow = false;
+	OS.SetActiveWindow (hwndActive);
+	Control lastFocusControl = display.lastHittestControl;
+	if (lastFocusControl != null && !lastFocusControl.isDisposed ()) {
+		lastFocusControl.setFocus ();
+	}
+	display.lastHittestControl = null;
+	display.ignoreRestoreFocus = false;
+	return new LRESULT (code);
 }
 
 LRESULT WM_PALETTECHANGED (int wParam, int lParam) {

@@ -249,6 +249,10 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+int callWindowProc (int msg, int wParam, int lParam) {
+	return OS.DefMDIChildProc (handle, msg, wParam, lParam);
+}
+
 Control computeTabGroup () {
 	return this;
 }
@@ -346,6 +350,17 @@ void createWidget () {
 void destroyAccelerators () {
 	if (hAccel != 0 && hAccel != -1) OS.DestroyAcceleratorTable (hAccel);
 	hAccel = -1;
+}
+
+public void dispose () {
+	if (!(this instanceof Shell)) {
+		setVisible (false);
+		if (!traverseDecorations (false)) {
+			Shell shell = getShell ();
+			shell.setFocus ();
+		}
+	}
+	super.dispose ();
 }
 
 Menu findMenu (int hMenu) {
@@ -640,6 +655,7 @@ void remove (MenuItem item) {
 }
 
 boolean restoreFocus () {
+	if (display.ignoreRestoreFocus) return true;
 	if (savedFocus != null && savedFocus.isDisposed ()) savedFocus = null;
 	if (savedFocus != null && savedFocus.setSavedFocus ()) return true;
 	/*
@@ -650,7 +666,7 @@ boolean restoreFocus () {
 //	if (defaultButton != null && !defaultButton.isDisposed ()) {
 //		if (defaultButton.setFocus ()) return true;
 //	}
-	return false;
+	return traverseGroup (true);
 }
 
 void saveFocus () {
@@ -716,18 +732,6 @@ void setDefaultButton (Button button, boolean save) {
 	if (saveDefault != null && saveDefault.isDisposed ()) saveDefault = null;
 }
 
-public boolean setFocus () {
-	checkWidget ();
-	if (this instanceof Shell) return super.setFocus ();
-	/*
-	* Bug in Windows.  Setting the focus to a child of the
-	* receiver interferes with moving and resizing of the
-	* parent shell.  The fix (for now) is to always set the
-	* focus to the shell.
-	*/
-	int hwndFocus = OS.SetFocus (getShell ().handle);
-	return hwndFocus == OS.GetFocus ();
-}
 /**
  * Sets the receiver's image to the argument, which may
  * be null. The image is typically displayed by the window
@@ -1000,6 +1004,10 @@ void setParent () {
 	if (!OS.IsWindowVisible (hwndParent)) {
 		OS.ShowWindow (handle, OS.SW_SHOWNA);
 	}
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	bits &= ~OS.WS_CHILD;
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.WS_POPUP);
+	OS.SetWindowLong (handle, OS.GWL_ID, 0);
 	display.lockActiveWindow = false;
 }
 
@@ -1148,9 +1156,59 @@ public void setVisible (boolean visible) {
 boolean translateAccelerator (MSG msg) {
 	if (!isEnabled () || !isActive ()) return false;
 	if (menuBar != null && !menuBar.isEnabled ()) return false;
+	if (translateMDIAccelerator (msg) || translateMenuAccelerator (msg)) return true;
+	Decorations decorations = parent.menuShell ();
+	return decorations.translateAccelerator (msg);
+}
+
+boolean translateMenuAccelerator (MSG msg) {
 	if (hAccel == -1) createAccelerators ();
-	if (hAccel == 0) return false;
-	return OS.TranslateAccelerator (handle, hAccel, msg) != 0;
+	return hAccel != 0 && OS.TranslateAccelerator (handle, hAccel, msg) != 0;
+}
+
+boolean translateMDIAccelerator (MSG msg) {
+	if (!(this instanceof Shell)) {
+		Shell shell = getShell ();
+		int hwndMDIClient = shell.hwndMDIClient;
+		if (hwndMDIClient != 0 && OS.TranslateMDISysAccel (hwndMDIClient, msg)) {
+			return true;
+		}
+		if (msg.message == OS.WM_KEYDOWN) {
+			if (OS.GetKeyState (OS.VK_CONTROL) >= 0) return false;
+			switch (msg.wParam) {
+				case OS.VK_F4:
+					OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
+					return true;
+				case OS.VK_F6:
+					if (traverseDecorations (true)) return true;
+			}
+		}
+	}
+	return false;
+}
+
+boolean traverseDecorations (boolean next) {
+	Control [] children = parent._getChildren ();
+	int length = children.length;
+	int index = 0;
+	while (index < length) {
+		if (children [index] == this) break;
+		index++;
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = (index + offset + length) % length) != start) {
+		Control child = children [index];
+		if (!child.isDisposed () && child instanceof Decorations) {
+			if (child.setFocus ()) return true;
+		}
+	}
+	return false;
 }
 
 boolean traverseItem (boolean next) {
@@ -1164,8 +1222,13 @@ boolean traverseReturn () {
 	return true;
 }
 
+CREATESTRUCT widgetCreateStruct () {
+	return new CREATESTRUCT ();
+}
+
 int widgetExtStyle () {
-	int bits = super.widgetExtStyle () & ~OS.WS_EX_CLIENTEDGE;
+	int bits = super.widgetExtStyle () | OS.WS_EX_MDICHILD;
+	bits &= ~OS.WS_EX_CLIENTEDGE;
 	if ((style & SWT.NO_TRIM) != 0) return bits;
 	if (OS.IsPPC) {
 		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_EX_CAPTIONOKBTN;
@@ -1176,14 +1239,18 @@ int widgetExtStyle () {
 	return bits;
 }
 
+int widgetParent () {
+	Shell shell = getShell ();
+	return shell.hwndMDIClient ();
+}
+
 int widgetStyle () {
 	/* 
-	* Set WS_POPUP and clear WS_VISIBLE and WS_TABSTOP.
-	* NOTE: WS_TABSTOP is the same as WS_MAXIMIZEBOX so
-	* it cannot be used to do tabbing with decorations.
+	* Clear WS_VISIBLE and WS_TABSTOP.  NOTE: In Windows, WS_TABSTOP
+	* has the same value as WS_MAXIMIZEBOX so these bits cannot be
+	* used to control tabbing.
 	*/
-	int bits = super.widgetStyle () | OS.WS_POPUP;
-	bits &= ~(OS.WS_VISIBLE | OS.WS_TABSTOP);
+	int bits = super.widgetStyle () & ~(OS.WS_TABSTOP | OS.WS_VISIBLE);
 	
 	/* Set the title bits and no-trim bits */
 	bits &= ~OS.WS_BORDER;
@@ -1242,11 +1309,14 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		* Windows message by returning zero as the result of
 		* the window proc.
 		*/
-		sendEvent (SWT.Activate);
-		if (isDisposed ()) return LRESULT.ZERO;
+		Control control = display.findControl (lParam);
+		if (control == null || control instanceof Shell) {
+			if (this instanceof Shell) {
+				sendEvent (SWT.Activate);
+				if (isDisposed ()) return LRESULT.ZERO;
+			}
+		}
 		if (restoreFocus ()) return LRESULT.ZERO;	
-		if (traverseGroup (true)) return LRESULT.ZERO;
-	
 	} else {
 		/*
 		* It is possible (but unlikely), that application
@@ -1255,11 +1325,16 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		* Windows message by returning zero as the result of
 		* the window proc.
 		*/
-		Shell shell = getShell ();
-		shell.setActiveControl (null);
-		if (isDisposed ()) return LRESULT.ZERO;
-		sendEvent (SWT.Deactivate);
-		if (isDisposed ()) return LRESULT.ZERO;
+		Control control = display.findControl (lParam);
+		if (control == null || control instanceof Shell) {
+			if (this instanceof Shell) {
+				Shell shell = getShell ();
+				shell.setActiveControl (null);
+				if (isDisposed ()) return LRESULT.ZERO;
+				sendEvent (SWT.Deactivate);
+				if (isDisposed ()) return LRESULT.ZERO;
+			}
+		}
 		saveFocus ();
 	}
 	return result;
@@ -1308,10 +1383,27 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_NCACTIVATE (int wParam, int lParam) {
-	LRESULT result  = super.WM_NCACTIVATE (wParam, lParam);
+	LRESULT result = super.WM_NCACTIVATE (wParam, lParam);
 	if (result != null) return result;
 	if (wParam == 0) {
 		if (display.lockActiveWindow) return LRESULT.ZERO;
+		Control control = display.findControl (lParam);
+		if (control != null) {
+			Shell shell = getShell ();
+			Decorations decorations = control.menuShell ();
+			if (decorations.getShell () == shell) {
+				if (this instanceof Shell) return LRESULT.ONE;
+				if (display.ignoreRestoreFocus) {
+					if (display.lastHittest != OS.HTCLIENT) {
+						result = LRESULT.ONE;
+					}
+				}
+			}
+		}
+	}
+	if (!(this instanceof Shell)) {
+		int hwndShell = getShell().handle;
+		OS.SendMessage (hwndShell, OS.WM_NCACTIVATE, wParam, lParam);
 	}
 	return result;
 }
@@ -1326,7 +1418,7 @@ LRESULT WM_QUERYOPEN (int wParam, int lParam) {
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
-	if (!restoreFocus ()) traverseGroup (true);
+	restoreFocus ();
 	return result;
 }
 
@@ -1343,6 +1435,30 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	if (wParam == OS.SIZE_MINIMIZED) {
 		sendEvent (SWT.Iconify);
 		// widget could be disposed at this point
+	}
+	return result;
+}
+
+LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
+	LRESULT result = super.WM_SYSCOMMAND (wParam,lParam);
+	if (result != null) return result;
+	if (!(this instanceof Shell)) {
+		int cmd = wParam & 0xFFF0;
+		switch (cmd) {
+			case OS.SC_CLOSE: {
+				if (lParam == 0) {
+					Shell shell = getShell ();
+					int hwndShell = shell.handle;
+					OS.PostMessage (hwndShell, OS.WM_SYSCOMMAND, wParam, lParam);
+					return LRESULT.ZERO;
+				}
+				break;
+			}
+			case OS.SC_NEXTWINDOW: {
+				traverseDecorations (true);
+				return LRESULT.ZERO;
+			}
+		}
 	}
 	return result;
 }

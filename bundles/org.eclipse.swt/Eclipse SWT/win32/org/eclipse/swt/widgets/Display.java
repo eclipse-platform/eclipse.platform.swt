@@ -127,11 +127,16 @@ public class Display extends Device {
 	Runnable [] timerList;
 	
 	/* Keyboard and Mouse State */
-	boolean lockActiveWindow;
 	boolean lastVirtual, lastNull;
 	int lastKey, lastAscii, lastMouse;
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
+	boolean lockActiveWindow;
+	
+	/* MDI */
+	boolean ignoreRestoreFocus;
+	Control lastHittestControl;
+	int lastHittest;
 	
 	/* Message Only Window */
 	int hwndMessage, messageProc;
