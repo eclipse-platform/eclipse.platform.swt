@@ -388,6 +388,7 @@ GdkColor getForegroundColor () {
 public TreeItem getItem (Point point) {
 	checkWidget ();
 	int [] path = new int [1];	
+	OS.gtk_widget_realize (handle);
 	if (!OS.gtk_tree_view_get_path_at_pos(handle, point.x, point.y, path, null, null, null)) return null;
 	if (path [0] == 0) return null;
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
@@ -581,6 +582,7 @@ public int getSelectionCount () {
 public TreeItem getTopItem () {
 	checkWidget ();
 	int [] path = new int [1];
+	OS.gtk_widget_realize (handle);
 	if (!OS.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return null;
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
 	OS.gtk_tree_model_get_iter (modelHandle, iter, path [0]);
@@ -863,8 +865,11 @@ public void setInsertMark (TreeItem item, boolean before) {
 		OS.gtk_tree_view_unset_rows_drag_dest(handle);
 		return;
 	}
+	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (item.parent != this) return;
 	Rectangle rect = item.getBounds();
 	int [] path = new int [1];
+	OS.gtk_widget_realize (handle);
 	if (!OS.gtk_tree_view_get_path_at_pos(handle, rect.x, rect.y, path, null, null, null)) return;
 	if (path [0] == 0) return;
 	int position = before ? OS.GTK_TREE_VIEW_DROP_BEFORE : OS.GTK_TREE_VIEW_DROP_AFTER;
@@ -942,6 +947,7 @@ public void setSelection (TreeItem [] items) {
 		TreeItem item = items [i];
 		if (item == null) continue;
 		if (item.isDisposed ()) break;
+		if (item.parent != this) continue;
 		int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 		showItem (path, first);
 		OS.gtk_tree_selection_select_iter (selection, item.handle);
@@ -978,6 +984,7 @@ public void setSelection (TreeItem [] items) {
 public void setTopItem (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (item.parent != this) return;
 	int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 	showItem (path, false);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0, 0);
@@ -1056,6 +1063,7 @@ public void showItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (item.parent != this) return;
 	int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 	showItem (path, true);
 	OS.gtk_tree_path_free (path);

@@ -754,6 +754,7 @@ public TableItem getItem (Point pt) {
 	checkWidget();
 	int [] path = new int [1];
 	int clientY = pt.y - getHeaderHeight ();
+	OS.gtk_widget_realize (handle);
 	if (!OS.gtk_tree_view_get_path_at_pos (handle, pt.x, clientY, path, null, null, null)) return null;
 	if (path [0] == 0) return null;
 	int indices = OS.gtk_tree_path_get_indices (path [0]);
@@ -967,6 +968,7 @@ public int [] getSelectionIndices () {
 public int getTopIndex () {
 	checkWidget();
 	int [] path = new int [1];
+	OS.gtk_widget_realize (handle);
 	if (!OS.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return 0;
 	if (path [0] == 0) return 0;
 	int indices = OS.gtk_tree_path_get_indices (path[0]);
@@ -1712,6 +1714,7 @@ public void showItem (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (item.parent != this) return;
 	showItem (item.handle);
 }
 
