@@ -1407,6 +1407,7 @@ public void setLinesVisible (boolean show) {
  * @see Table#select(int)
  */
 public void setSelection (int index) {
+	checkWidget ();
 	deselectAll ();
 	select (index);
 	showSelection ();
