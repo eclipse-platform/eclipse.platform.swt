@@ -219,6 +219,13 @@ boolean isTabGroup() {
 	return super.isTabGroup();
 }
 
+void setOrientation () {
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (scrolledHandle != 0) {
+			OS.gtk_scrolled_window_set_placement (scrolledHandle, OS.GTK_CORNER_TOP_RIGHT);
+		}
+	}
+}
 void register () {
 	super.register ();
 	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);

@@ -155,15 +155,14 @@ void createHandle (int index) {
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	switch (style & bits) {
 		case SWT.ARROW:
-			int alignment = OS.GTK_ARROW_UP;
-			boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
-			if ((style & SWT.UP) != 0) alignment = OS.GTK_ARROW_UP;
-			if ((style & SWT.DOWN) != 0) alignment = OS.GTK_ARROW_DOWN;
-            if ((style & SWT.LEFT) != 0) alignment = isRTL? OS.GTK_ARROW_RIGHT : OS.GTK_ARROW_LEFT;
-            if ((style & SWT.RIGHT) != 0) alignment = isRTL? OS.GTK_ARROW_LEFT : OS.GTK_ARROW_RIGHT;
+			int arrow_type = OS.GTK_ARROW_UP;
+			if ((style & SWT.UP) != 0) arrow_type = OS.GTK_ARROW_UP;
+			if ((style & SWT.DOWN) != 0) arrow_type = OS.GTK_ARROW_DOWN;
+            if ((style & SWT.LEFT) != 0) arrow_type = OS.GTK_ARROW_LEFT;
+            if ((style & SWT.RIGHT) != 0) arrow_type = OS.GTK_ARROW_RIGHT;
 			handle = OS.gtk_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			arrowHandle = OS.gtk_arrow_new (alignment, OS.GTK_SHADOW_OUT);
+			arrowHandle = OS.gtk_arrow_new (arrow_type, OS.GTK_SHADOW_OUT);
 			if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.TOGGLE:
@@ -622,6 +621,20 @@ public void setImage (Image image) {
 	*/
 	GtkRequisition requisition = new GtkRequisition ();
 	OS.gtk_widget_size_request (handle, requisition);
+}
+
+void setOrientation () {
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, OS.GTK_TEXT_DIR_RTL);
+		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, OS.GTK_TEXT_DIR_RTL);
+		if (arrowHandle != 0) {
+			switch (style & (SWT.LEFT | SWT.RIGHT)) {
+				case SWT.LEFT: OS.gtk_arrow_set (arrowHandle, OS.GTK_ARROW_RIGHT, OS.GTK_SHADOW_OUT); break;
+				case SWT.RIGHT: OS.gtk_arrow_set (arrowHandle, OS.GTK_ARROW_LEFT, OS.GTK_SHADOW_OUT); break;
+			}
+		}
+	}
 }
 
 /**

@@ -320,6 +320,7 @@ void createHandle (int index) {
 
 void createWidget (int index) {
 	createHandle (index);
+	setOrientation ();
 	hookEvents ();
 	register ();
 }
@@ -1112,6 +1113,9 @@ void setKeyState (Event event, GdkEventKey keyEvent) {
 		}
 	}
 	setInputState (event, keyEvent.state);
+}
+
+void setOrientation () {
 }
 
 int shellMapProc (int handle, int arg0, int user_data) {
