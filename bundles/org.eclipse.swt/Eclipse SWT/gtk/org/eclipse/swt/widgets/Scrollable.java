@@ -235,9 +235,10 @@ int hScrollBarWidth() {
 }
 
 void setOrientation () {
+	super.setOrientation ();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (scrolledHandle != 0) {
-			OS.gtk_scrolled_window_set_placement (scrolledHandle, OS.GTK_CORNER_TOP_RIGHT);
+			OS.gtk_widget_set_direction (scrolledHandle, OS.GTK_TEXT_DIR_RTL);
 		}
 	}
 }

@@ -248,7 +248,6 @@ void setForegroundColor (GdkColor color) {
 void setOrientation () {
 	super.setOrientation ();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
 		OS.gtk_widget_set_direction (labelHandle, OS.GTK_TEXT_DIR_RTL);
 	}
 }

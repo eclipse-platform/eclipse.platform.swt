@@ -2771,6 +2771,13 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 }
 
+void setOrientation () {
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (handle != 0) OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		if (fixedHandle != 0) OS.gtk_widget_set_direction (fixedHandle, OS.GTK_TEXT_DIR_RTL);
+	}
+}
+
 /**
  * Changes the parent of the widget to be the one provided if
  * the underlying operating system supports this feature.
