@@ -364,6 +364,33 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventRawKey (int nextHandler, int theEvent, int userData) {
+	/*
+	* Feature in the Macintosh.  For some reason, the default handler
+	* does not issue kEventTextInputUnicodeForKeyEvent when the user
+	* types Command+Space.  The fix is to look for the Space key and
+	* send it from kEventRawKeyDown instead, returning noErr to stop
+	* it from being processed multiple times.
+	* 
+	* NOTE: This fix only works for controls that do not process the
+	* Space key.  There is no general fix at this time for every kind
+	* of control.
+	*/	
+	if ((state & CANVAS) != 0) {
+		int [] keyCode = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+		if (keyCode [0] == 49 /* Space */) {
+			int [] modifiers = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+			if (modifiers [0] == OS.cmdKey) {
+				sendKeyEvent (SWT.KeyDown, theEvent);
+				return OS.noErr;
+			}
+		}
+	}
+	return OS.eventNotHandledErr;
+}
+
 int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
 	if ((state & CANVAS) != 0) {
