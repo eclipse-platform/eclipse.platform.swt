@@ -629,22 +629,26 @@ public void setVisible (boolean visible) {
 	if ((style & SWT.POP_UP) == 0) return;
 	if (visible == OS.PtWidgetIsRealized (handle)) return;
 	if (visible) {
-		PhPoint_t pt = new PhPoint_t ();
-		pt.x = (short) x;
-		pt.y = (short) y;
-		if (!hasLocation) {		
-			int ig = OS.PhInputGroup (0);
-			PhCursorInfo_t info = new PhCursorInfo_t ();
-			OS.PhQueryCursor ((short) ig, info);
-			pt.x = info.last_press_x;
-			pt.y = info.last_press_y;
-		}
-		int ptr = OS.malloc (PhPoint_t.sizeof);
-		OS.memmove (ptr, pt, PhPoint_t.sizeof);
-		OS.PtSetResource (handle, OS.Pt_ARG_POS, ptr, 0);
-		OS.free (ptr);
 		sendEvent (SWT.Show);
-		OS.PtRealizeWidget (handle);
+		if (getItemCount () != 0) {
+			PhPoint_t pt = new PhPoint_t ();
+			pt.x = (short) x;
+			pt.y = (short) y;
+			if (!hasLocation) {		
+				int ig = OS.PhInputGroup (0);
+				PhCursorInfo_t info = new PhCursorInfo_t ();
+				OS.PhQueryCursor ((short) ig, info);
+				pt.x = info.last_press_x;
+				pt.y = info.last_press_y;
+			}
+			int ptr = OS.malloc (PhPoint_t.sizeof);
+			OS.memmove (ptr, pt, PhPoint_t.sizeof);
+			OS.PtSetResource (handle, OS.Pt_ARG_POS, ptr, 0);
+			OS.free (ptr);
+			OS.PtRealizeWidget (handle);
+		} else {
+			sendEvent (SWT.Hide);
+		}
 	} else {
 		OS.PtUnrealizeWidget(handle);
 	}
