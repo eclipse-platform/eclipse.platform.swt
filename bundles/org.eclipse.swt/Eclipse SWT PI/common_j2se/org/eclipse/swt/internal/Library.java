@@ -36,18 +36,20 @@ public static int getVersion () {
 }
 
 /**
- * Returns the OS name.
+ * Returns the platform name.
  *
- * @return the os name of the currently running SWT
+ * @return the platform name of the currently running SWT
  */
-static String getOS () {
-	String name = System.getProperty("os.name");
-	if (name == null) return "unknown";
-	name = name.toLowerCase ();
-	if (name.indexOf ("windows ce") == 0) return "win32-ce";
-	if (name.indexOf ("win") == 0) return "win32";
-	if (name.indexOf ("sun") == 0) return "solaris";
-	return name;
+static String getPlatform () {
+	String [] names = new String [] {"motif", "gtk", "win32", "photon",};
+	for (int i = 0; i < names.length; i++) {
+		try {
+			Class.forName("org.eclipse.swt.internal."+names[i]+".OS");
+			return names[i];
+		} catch (ClassNotFoundException e) {
+		}
+	}
+	return "unknown";
 }
 
 /**
@@ -73,28 +75,39 @@ public static int getRevision () {
  */
 public static void loadLibrary (String name) {
 	/*
-     * Include OS name to support same window system
-     * on different operating systems.
+     * Include platform name to support different windowing systems
+     * on same operating system.
 	 */
-	String newName = name + "-" + getOS () + "-" + MAJOR_VERSION;
-
-	/* Force 3 digits in minor version number */
-	if (MINOR_VERSION < 10) {
-		newName += "00";
-	} else {
-		if (MINOR_VERSION < 100) newName += "0";
-	}
-	newName += MINOR_VERSION;
+	String platform = getPlatform ();
 	
-	/* No "r" until first revision */
-	if (REVISION > 0) newName += "r" + REVISION;
+	/*
+	 * Get version qualifier.
+	 */
+	String version = System.getProperty ("swt.version");
+	if (version == null) {
+		version = "" + MAJOR_VERSION;
+		/* Force 3 digits in minor version number */
+		if (MINOR_VERSION < 10) {
+			version += "00";
+		} else {
+			if (MINOR_VERSION < 100) version += "0";
+		}
+		version += MINOR_VERSION;		
+		/* No "r" until first revision */
+		if (REVISION > 0) version += "r" + REVISION;
+	}
+
 	try {
+		String newName = name + "-" + platform + "-" + version;		
 		System.loadLibrary (newName);
-	} catch (UnsatisfiedLinkError e) {
+		return;
+	} catch (UnsatisfiedLinkError e1) {		
 		try {
-			System.loadLibrary (name);
+			String newName = name + "-" + platform;
+			System.loadLibrary (newName);
+			return;
 		} catch (UnsatisfiedLinkError e2) {
-			throw e;
+			throw e1;
 		}
 	}
 }

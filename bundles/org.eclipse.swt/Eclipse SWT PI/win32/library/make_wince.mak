@@ -10,9 +10,9 @@
 CPU=ARM
 
 SWT_PREFIX  = swt
-OS_PREFIX   = win32-ce
+WS_PREFIX   = win32
 SWT_VERSION = $(maj_ver)$(min_ver)
-SWT_LIB     = $(SWT_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).dll
+SWT_LIB     = $(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 
 LINK_LIBS =  aygshell.lib corelibc.lib coredll.lib commdlg.lib commctrl.lib ceshell.lib
 

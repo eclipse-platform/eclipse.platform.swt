@@ -20,14 +20,14 @@ CDE_HOME   = /usr/dt
 # Define the various DLL (shared) libraries to be made.
 
 SWT_PREFIX   = swt
-OS_PREFIX    = solaris
-SWT_DLL      = lib$(SWT_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).so
+WS_PREFIX    = motif
+SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWT_OBJ      = callback.o structs.o swt.o 
 SWT_LIB      = -L$(MOTIF_HOME)/lib -L/usr/lib  \
 	       -G -lXm -lXt -lX11 -lm
 
 CDE_PREFIX   = swt-cde
-CDE_DLL      = lib$(CDE_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).so
+CDE_DLL      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CDE_OBJ      = cde.o
 CDE_LIB      = -G -L$(CDE_HOME)/lib -lDtSvc
 

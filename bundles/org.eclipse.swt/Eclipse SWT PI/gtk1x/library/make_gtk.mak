@@ -29,19 +29,21 @@ LD_LIBRARY_PATH=$(IVE_HOME)/bin
 # Define the various DLL (shared) libraries to be made.
 
 SWT_PREFIX   = swt
-OS_PREFIX    = linux
-SWT_DLL      = lib$(SWT_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).so
-SWTPI_DLL      = lib$(SWT_PREFIX)-pi-$(OS_PREFIX)-$(SWT_VERSION).so
+WS_PREFIX    = gtk
+SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+
+PI_PREFIX   = swt-pi
+SWTPI_DLL   = lib$(PI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 GNOME_PREFIX = swt-gnome
-GNOME_DLL    = lib$(GNOME_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).so
+GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_LIB    = -x -shared \
     -L/usr/lib \
    -lgnome -lglib \
     -lm -ldl
 
 PIXBUF_PREFIX = swt-pixbuf
-PIXBUF_DLL    = lib$(PIXBUF_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).so
+PIXBUF_DLL    = lib$(PIXBUF_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 
 #

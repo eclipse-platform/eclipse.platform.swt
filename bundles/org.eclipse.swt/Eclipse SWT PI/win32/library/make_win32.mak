@@ -14,9 +14,9 @@ timestamp_str=__DATE__\" \"__TIME__\" (EST)\"
 copyright = "Copyright (C) IBM Corporation 1999, 2000.  All rights reserved."
 
 SWT_PREFIX=swt
-OS_PREFIX=win32
+WS_PREFIX=win32
 SWT_VERSION = $(maj_ver)$(min_ver)
-SWT_LIB     = $(SWT_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).dll
+SWT_LIB     = $(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 
 LINK_LIBS = ole32.lib comctl32.lib user32.lib gdi32.lib comdlg32.lib kernel32.lib shell32.lib oleaut32.lib advapi32.lib imm32.lib winspool.lib
 

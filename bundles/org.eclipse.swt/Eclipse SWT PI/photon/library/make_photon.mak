@@ -8,9 +8,9 @@ include make_common.mak
 #assumes IVE_HOME is set in the environment
 
 SWT_PREFIX=swt
-OS_PREFIX=qnx
+WS_PREFIX=photon
 SWT_VERSION=$(maj_ver)$(min_ver)
-SWT_LIB=lib$(SWT_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).so
+SWT_LIB=lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 DEBUG =  
 CFLAGS = -c -shared -DSWT_VERSION=$(SWT_VERSION) -w8 $(DEBUG) -DPHOTON -I$(IVE_HOME)/include
