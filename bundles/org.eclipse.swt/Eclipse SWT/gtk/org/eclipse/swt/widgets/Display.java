@@ -229,6 +229,11 @@ public class Display extends Device {
 	/* #define in gdkevents.h */
 	static final int DOUBLE_CLICK_TIME = 250;
 
+	/* GTK Version */
+	static final int MAJOR = 2;
+	static final int MINOR = 0;
+	static final int MICRO = 6;
+
 	/* Display Data */
 	Object data;
 	String [] keys;
@@ -438,7 +443,7 @@ synchronized void createDisplay (DeviceData data) {
 		return;
 	}
 	OS.gdk_rgb_init ();
-	int ptr = OS.gtk_check_version (2, 0, 1);
+	int ptr = OS.gtk_check_version (MAJOR, MINOR, MICRO);
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
 		byte [] buffer = new byte [length];
@@ -446,7 +451,7 @@ synchronized void createDisplay (DeviceData data) {
 		System.out.println ("***WARNING: " + new String (Converter.mbcsToWcs (null, buffer)));
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
-	OS.gdk_set_program_class(buffer);
+	OS.gdk_set_program_class (buffer);
 }
 
 synchronized void deregister () {
