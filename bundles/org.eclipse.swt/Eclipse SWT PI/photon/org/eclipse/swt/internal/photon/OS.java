@@ -166,7 +166,7 @@ public class OS {
 	public static final int PF_STYLE_BOLD		= 0x1;
 	public static final int PF_STYLE_ITALIC		= 0x2;
 
-	public static final int PFFONT_DONT_SHOW_LEGACY		= 0x40;
+	public static final int PHFONT_DONT_SHOW_LEGACY		= 0x40;
 			
 //	public static final int Pt_ARG_CS_COLOR                                   = ( 150 * 1000 + 1 );
 //	public static final int Pt_ARG_CS_COLOR_MODELS                                   = ( 150 * 1000 + 2 );
