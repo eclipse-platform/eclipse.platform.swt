@@ -133,6 +133,7 @@ public class CTabFolder extends Composite {
 	// keep track of size changes in order to redraw only affected area
 	// on Resize
 	private Point oldSize;
+	private Font oldFont;
 	
 	// insertion marker
 	int insertionIndex = -2; // Index of insert marker.  Marker always shown after index.
@@ -1144,6 +1145,11 @@ private boolean onMnemonic (Event event) {
  * Paint the receiver.
  */
 private void onPaint(Event event) {
+	Font font = getFont();
+	if (oldFont == null || !oldFont.equals(font)) {
+		oldFont = font;
+		resetTabSize(true);
+	}
 	GC gc = event.gc;
 	Rectangle rect = super.getClientArea();
 	if (items.length == 0) {
@@ -1488,6 +1494,7 @@ public void setFont(Font font) {
 	checkWidget();
 	if (font != null && font.equals(getFont())) return;
 	super.setFont(font);
+	oldFont = getFont();
 	resetTabSize(true);
 }
 /**
