@@ -1719,14 +1719,14 @@ LRESULT wmMButtonDblClk (int hwnd, int wParam, int lParam) {
 	sendMouseEvent (SWT.MouseDoubleClick, 2, hwnd, OS.WM_MBUTTONDBLCLK, wParam, lParam);
 	int result = callWindowProc (hwnd, OS.WM_MBUTTONDBLCLK, wParam, lParam);
 	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
-	return new LRESULT (hwnd);
+	return new LRESULT (result);
 }
 
 LRESULT wmMButtonDown (int hwnd, int wParam, int lParam) {
 	sendMouseEvent (SWT.MouseDown, 2, hwnd, OS.WM_MBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (hwnd, OS.WM_MBUTTONDOWN, wParam, lParam);
 	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
-	return new LRESULT (hwnd);
+	return new LRESULT (result);
 }
 
 LRESULT wmMButtonUp (int hwnd, int wParam, int lParam) {
@@ -1881,7 +1881,7 @@ LRESULT wmRButtonDown (int hwnd, int wParam, int lParam) {
 	sendMouseEvent (SWT.MouseDown, 3, hwnd, OS.WM_RBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (hwnd, OS.WM_RBUTTONDOWN, wParam, lParam);
 	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
-	return new LRESULT (hwnd);
+	return new LRESULT (result);
 }
 
 LRESULT wmRButtonUp (int hwnd, int wParam, int lParam) {
