@@ -38,12 +38,12 @@ public interface LocationListener extends SWTEventListener {
  * <p>The following fields in the <code>LocationEvent</code> apply:
  * <ul>
  * <li>(in) location the location to be loaded
- * <li>(in) cancel can be set to <code>true</code> to prevent the location
+ * <li>(in) doit can be set to <code>false</code> to prevent the location
  * from being loaded 
  * <li>(in) widget the <code>Browser</code> whose location is changing
  * </ul>
  * 
- * @param event the <code>LocationEvent</code> that specifies  the location
+ * @param event the <code>LocationEvent</code> that specifies the location
  * to be loaded by a <code>Browser</code>
  * 
  * @since 3.0
