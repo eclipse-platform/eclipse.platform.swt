@@ -109,7 +109,7 @@ public Browser(Composite parent, int style) {
 	
 	int /*long*/[] result = new int /*long*/[1];
 	if (!mozilla) {
-		String mozillaPath = null;;
+		String mozillaPath = null;
 		int /*long*/ ptr = OS.getenv(Converter.wcsToMbcs(null, XPCOM.MOZILLA_FIVE_HOME, true));
 		if (ptr != 0) {
 			int length = OS.strlen(ptr);

@@ -971,7 +971,6 @@ public void setText (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	int /*long*/ parentHandle = parent.handle;
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_TEXT, buffer, -1);

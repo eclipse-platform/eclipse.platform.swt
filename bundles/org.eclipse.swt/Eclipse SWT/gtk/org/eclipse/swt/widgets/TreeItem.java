@@ -621,8 +621,8 @@ public Rectangle getImageBounds (int index) {
 		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
 		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 		rect.width -= buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-		OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
-		int horizontalSeparator = buffer[0];
+		//OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+		//int horizontalSeparator = buffer[0];
 		//rect.x += horizontalSeparator;
 	}
 	
