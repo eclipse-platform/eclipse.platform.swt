@@ -1156,6 +1156,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDGetDirtyRegion(
 	return (jint) RC(QDGetDirtyRegion((CGrafPtr) pHandle, (RgnHandle) rgnHandle));
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSetDirtyRegion(JNIEnv *env, jclass zz, jint pHandle,
+				jint rgnHandle) {
+	return (jint) RC(QDSetDirtyRegion((CGrafPtr) pHandle, (RgnHandle) rgnHandle));
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_LockPortBits(JNIEnv *env, jclass zz, jint pHandle) {
 	return (jint) RC(LockPortBits((GrafPtr) pHandle));
 }
