@@ -2,97 +2,116 @@
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <title>SWT Standalone Examples Manual Setup</title>
+   <title>SWT Standalone Examples Setup</title>
 </head>
 <body>
 
-<h2>Standard Widget Toolkit (SWT) - Standalone Examples Manual Setup</h2>
+<h2>SWT Standalone Examples Setup</h2>
 
-<h3>Setup</h3>
-<p>There are several steps required to run the SWT standalone examples manually.
+<h3>Importing Example Source</h3>
+
+<p>
+*** In the following description, substitute the location in which you installed Eclipse for INSTALLDIR ***
 </p>
 
-<ul>
-<li><p>
-Create a Java Project to contain the examples.&nbsp; Call it <b>SWT Examples</b>.
-</p>
+<p>Import the example code and all its required resources into your workspace:</p>
 
-<li><p>
-Make sure the <b>swt.jar</b> file is on the java classpath, by doing the following:<br>
-Select the SWT Examples Project and bring up the Properties dialog.<br>
-On the Java Build Path page, select the Libraries tab, click on the Add External JARs button and select <b>swt.jar</b>.<br>
-Next, click on the Attach Source button, then click on the Browse File System button and select <b>swtsrc.zip</b>.<br>
-The files can be found in the following directory, depending one which Operating System you are using to run Eclipse:
-<ul>
-<li>Windows - &lt;install-dir&gt;\eclipse\plugins\org.eclipse.swt\
-<li>Motif - &lt;install-dir&gt;/eclipse/plugins/org.eclipse.swt/
-</ul>
-Click OK to save the Project properties.<br>
-</p>
+<ol>
+<li>Create a Java Project called "SWT Examples".
+<li>Select the project "SWT Examples" in the Packages view.
+<li>Select the File &#8594; Import menu.  Select Zip File. Click on Next.
+<li>Locate the source zip file for the SWT examples.  For example:
+	<ul>
+    <li><b>win32: </b><code>INSTALLDIR\eclipse\plugins\org.eclipse.swt.examples_2.0.0\swtexamplessrc.zip</code>
+    <li><b>*nix: </b><code>INSTALLDIR/eclipse/plugins/org.eclipse.swt.examples_2.0.0/swtexamplessrc.zip</code>
+    </ul>
+<li>Click on Finish.
+<li>Select the File &#8594; Import menu. In the Import dialog, select Zip File. Click on Next.
+<li>Locate the jar file for the SWT examples.  For example:
+    <ul>
+    <li><b>win32: </b><code>INSTALLDIR\eclipse\plugins\org.eclipse.swt.examples_2.0.0\swtexamples.jar</code>
+    <li><b>*nix: </b><code>INSTALLDIR/eclipse/plugins/org.eclipse.swt.examples_2.0.0/swtexamples.jar</code>
+    </ul>
+<li>Expand the top level directory of the zip file (/). <b>Uncheck "org" and "META-INF"</b>.
+<li>Click on Finish.
+</ol>
 
-<li><p>
-Make sure the <b>swtexamples.jar</b> is on the java classpath, by doing the following:<br>
-Select the SWT Examples Project and bring up the Properties dialog.<br>
-On the Java Build Path page, select the Libraries tab, click on the Add External JARs button and select <b>swtexamples.jar</b>.<br>
-Next, click on the Attach Source button, then click on the Browse File System button and select <b>swtexamplessrc.zip</b>.<br>
-The files can be found in the following directory, depending one which Operating System you are using to run Eclipse:
-<ul>
-<li>Windows - &lt;install-dir&gt;\eclipse\plugins\org.eclipse.swt.examples\
-<li>Motif - &lt;install-dir&gt;/eclipse/plugins/org.eclipse.swt.examples/
-</ul>
-Click OK to save the Project properties.<br>
-</p>
+<p>Now you need to compile the SWT examples.  In order to do this, you must add the SWT jar(s) to 
+the compile path:</p>
+<ol>
+<li>Select the project "SWT Examples" in the Packages view and from the pop up menu select Properties.
+<li>Select the Java Build Path item.
+<li>Go to the Libraries tab.
+<li>Click on the Add External JARS... button.
+<li>Locate the swt jar for the platform on which you wish to run:<br>
+    <ul>
+    <li><b>win32: </b><code>INSTALLDIR\eclipse\plugins\org.eclipse.swt.win32_2.0.0\ws\win32\swt.jar</code>
+    <li><b>gtk: </b><code>INSTALLDIR/eclipse/plugins/org.eclipse.swt.gtk_2.0.0/ws/gtk/swt.jar</code>
+    <li><b>motif: </b><code>INSTALLDIR/eclipse/plugins/org.eclipse.swt.motif_2.0.0/ws/motif/swt.jar</code>
+    <li><b>photon: </b><code>INSTALLDIR/eclipse/plugins/org.eclipse.swt.photon_2.0.0/ws/photon/swt.jar</code>
+    </ul>
+<li>Click on OK.
+</ol>
+<p><b>NOTE:</b> For some platforms (such as GTK), more than one jar is required to run SWT (on
+GTK there is a swt.jar and a swt-pi.jar file).  In this case, all the required jars must 
+be added to the class path.  This is done by repeating the steps above for each jar file.
+All jar files are located in the same directory/folder.</p>
 
-<li><p>
-Make sure that referenced libraries are visible in the Packages view, by doing the following:<br>
-In the Packages view of the Java Perspective, drop down the View menu.<br>
-Ensure that <b>Show Referenced Libraries</b> is checked.
-</p>
+<p>At this point your SWT examples should be compiled without any errors.  Check the Task 
+view for errors.  If you get an error like "<code>java.lang.Object</code> not found" it means 
+you have not configured a JRE.  Go to the Window &#8594; Preferences dialog.  
+Select Java &#8594; Installed JREs and ensure that a JRE is installed 
+and that the path to the JRE is correct.</p>
 
-<li><p>
-Make sure the <b>SWT runtime library</b> is in the library search path, by doing the following:<br>
-In the Packages view of the Java Perspective, expand <b>swtexamples.jar</b>.<br>
-You will see all of the packages and other resource files present in the jar file, including the executable class for each example.<br>
-Select the executable class (the one containing the main() method) for the particular example that you wish to run and bring up the Properties dialog.<br>
-On the Execution Arguments page, select the VM arguments field and enter <b>-Djava.library.path=&lt;runtime-library-path&gt;</b>.<br>
-The runtime library path is the following directory, depending on which Operating System you are using to run Eclipse:
-<ul>
-<li>Windows - &lt;install-dir&gt;\eclipse\plugins\org.eclipse.swt\os\win32\x86 (or org.eclipse.swt\ws\win32 in Eclipse 1.0)
-<li>Motif - &lt;install-dir&gt;/eclipse/plugins/org.eclipse.swt/os/linux/x86 (or org.eclipse.swt/ws/motif in Eclipse 1.0)
-</ul>
-Click OK to save the Java Resource properties.<br>
-</p>
+<h3><a NAME="Run"></a>Running the Example</h3>
 
-</ul>
+<p>Now you have to configure Eclipse to run the example.  This requires putting the SWT
+JNI libraries on the library path so that the VM can find them:
 
-<h3><a NAME="Run"></a>Running the Examples</h3>
-<p>In the Packages view of the Java Perspective, expand <b>swtexamples.jar</b>.&nbsp;
-You will see all of the packages and other resource files present in the jar file,
-including the executable class for each example.
-</p>
-<p>All of the standalone SWT examples are intended to be run as Java
-Applications.&nbsp; No parameters need be passed to any of these examples,
-other than any required VM arguments.&nbsp; To run an example, simply
-select the executable class for the particular example, then click the Run button on the toolbar.
-</p>
+<ol>
+<li>Open the Java Perspective.
+<li>In the Packages view, select the Main class that you want to run.  
+    For example, the Main class for the Address Book example is 
+    &nbsp;&nbsp;&nbsp;&nbsp;<code>org.eclipse.swt.examples.addressbook.AddressBook</code>.
+<li>SelectRun &#8594; Run... from the main menu.  
+<li>In the Launch Configurations dialog that appears, select Java Application and click 
+    on the New button.
+<li>Fill in the Name, Project and Main class fields according to the example you wish to run.
+<li>Select the Arguments tab.  In the VM Arguements area specify the location of the SWT 
+    library depending on your target platform as follows:
+    <ul>
+	<li><b>win32: </b><code>-Djava.library.path=INSTALLDIR\plugins\org.eclipse.swt.win32_2.0.0\os\win32\x86</code>
+	<li><b>linux gtk: </b><code>-Djava.library.path=INSTALLDIR/eclipse/plugins/org.eclipse.swt.gtk_2.0.0/os/linux/x86</code>
+	<li><b>linux motif: </b><code>-Djava.library.path=INSTALLDIR/eclipse/plugins/org.eclipse.swt.motif_2.0.0/os/linux/x86</code>
+	<li><b>solaris motif: </b><code>-Djava.library.path=INSTALLDIR/eclipse/plugins/org.eclipse.swt.motif_2.0.0/os/solaris/sparc</code>
+	<li><b>aix motif: </b><code>-Djava.library.path=INSTALLDIR/eclipse/plugins/org.eclipse.swt.motif_2.0.0/os/aix/ppc</code>
+	<li><b>hpux motif: </b><code>-Djava.library.path=INSTALLDIR/eclipse/plugins/org.eclipse.swt.motif_2.0.0/os/hpux/PA_RISC</code>
+	<li><b>photon qnx: </b><code>-Djava.library.path=INSTALLDIR/eclipse/plugins/org.eclipse.swt.photon_2.0.0/os/qnx/x86</code>
+	</ul>
+<li>Click on the Run button.
+</ol>
 
-<h3><a NAME="Package"></a>Examples Manifest</h3>
-<p>Consult the documentation of each individual example for the names of
-its executable class(es) and additional details.
+
+<h3>Examples Overview</h3>
+<p>
+Consult the documentation of each individual example for the names of
+its Main class and additional details.
 </p>
 <p>
-<code>swtexamples.jar</code> contains the following examples:
+The following examples are included in the <code>swtexamples.jar</code>:
+</p>
 <ul>
 <li><a href="swt_addressbook_ex.html">Address Book</a>
+<li><a href="swt_control_ex.html">Control Overview</a>
 <li><a href="swt_fileviewer_ex.html">File Viewer</a>
 <li><a href="swt_helloworld_ex.html">Hello World [1-5]</a>
 <li><a href="swt_hoverhelp_ex.html">Hover Help</a>
 <li><a href="swt_imageanalyzer_ex.html">Image Analyzer</a>
 <li><a href="swt_javaviewer_ex.html">Java Viewer</a>
+<li><a href="swt_layout_ex.html">Layout Overview</a>
 <li><a href="swt_texteditor_ex.html">Text Editor</a>
 </ul>
-</p>
 
-<p><br><a href="hglegal.htm"><img SRC="ngibmcpy.gif" ALT="Copyright IBM Corporation 2000, 2001.  All Rights Reserved." BORDER=0 height=12 width=195></a>
+<p><br><a href="hglegal2002.htm"><img SRC="ngibmcpy2002.gif" ALT="Copyright IBM Corporation 2000, 2002.  All Rights Reserved." BORDER=0 height=12 width=195></a>
 </body>
 </html>
