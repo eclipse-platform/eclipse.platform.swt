@@ -63,6 +63,28 @@ Region(Device device, int handle) {
 }
 
 /**
+ * Adds the given polygon to the collection of rectangles
+ * the receiver maintains to describe its area.
+ *
+ * @param pointArray points that describe the polygon to merge with the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+*
+ */
+public void add (int[] pointArray) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	// TODO
+}
+
+/**
  * Adds the given rectangle to the collection of rectangles
  * the receiver maintains to describe its area.
  *
@@ -363,6 +385,27 @@ public boolean isEmpty () {
 
 public static Region photon_new(Device device, int handle) {
 	return new Region(device, handle);
+}
+
+/**
+ * Subtracts the given polygon from the collection of rectangles
+ * the receiver maintains to describe its area.
+ *
+ * param pointArray points that describe the polygon to merge with the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void subtract (int[] pointArray) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	// TODO
 }
 
 public void subtract (Rectangle rect) {

@@ -530,6 +530,29 @@ public Rectangle getBounds () {
 	return new Rectangle (area.pos_x, area.pos_y, width, height);
 }
 
+/** 
+ * Sets the region managed by the argument to the current
+ * shape of the shell.
+ *
+ * @param region the region to fill with the clipping region
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
+ * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public void getClipping (Region region) {
+	checkWidget ();
+	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	// TODO
+}
+
 /**
  * Returns the receiver's input method editor mode. This
  * will be the result of bitwise OR'ing together one or
@@ -939,6 +962,27 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	
 	/* Always return 0 */
 	return 0;
+}
+
+/**
+ * Sets the shape of the shell to the region specified
+ * by the argument.  A null region will restore the default shape.
+ * Shell must be created with the style SWT.NO_TRIM.
+ *
+ * @param rect the clipping region.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public void setClipping(Region region) {
+	checkWidget ();
+	if ((style & SWT.NO_TRIM) == 0) return;
+	// TODO
 }
 
 /**
