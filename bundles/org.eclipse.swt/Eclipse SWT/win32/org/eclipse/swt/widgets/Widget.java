@@ -631,21 +631,15 @@ char mbcsToWcs (int ch, int codePage) {
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (eventTable == null) return;
-	event.type = eventType;
-	event.widget = this;
-	eventTable.sendEvent (event);
-}
-
-void postEvent (int eventType) {
-	if (eventTable == null) return;
-	postEvent (eventType, new Event ());
+	sendEvent (eventType, event);
 }
 
 void postEvent (int eventType, Event event) {
 	if (eventTable == null) return;
+	Display display = getDisplay ();
 	event.type = eventType;
 	event.widget = this;
+	event.display = display;
 	if (event.time == 0) {
 		if (OS.IsWinCE) {
 			event.time = OS.GetTickCount ();
@@ -653,8 +647,12 @@ void postEvent (int eventType, Event event) {
 			event.time = OS.GetMessageTime ();
 		}
 	}
-	Display display = getDisplay ();
 	display.postEvent (event);
+}
+
+void postEvent (int eventType) {
+	if (eventTable == null) return;
+	postEvent (eventType, new Event ());
 }
 
 /*
@@ -822,15 +820,17 @@ public void removeDisposeListener (DisposeListener listener) {
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
-void sendEvent (int eventType) {
+void sendEvent (Event event) {
 	if (eventTable == null) return;
-	sendEvent (eventType, new Event ());
+	eventTable.sendEvent (event);
 }
 
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null) return;
-	event.widget = this;
+	Display display = getDisplay ();
 	event.type = eventType;
+	event.display = display;
+	event.widget = this;
 	if (event.time == 0) {
 		if (OS.IsWinCE) {
 			event.time = OS.GetTickCount ();
@@ -839,6 +839,11 @@ void sendEvent (int eventType, Event event) {
 		}
 	}
 	eventTable.sendEvent (event);
+}
+
+void sendEvent (int eventType) {
+	if (eventTable == null) return;
+	sendEvent (eventType, new Event ());
 }
 
 /**

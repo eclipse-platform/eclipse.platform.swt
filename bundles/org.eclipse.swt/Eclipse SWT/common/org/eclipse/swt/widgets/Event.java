@@ -33,6 +33,11 @@ public class Event {
 	public int type;
 	
 	/**
+	 * the display that the event occurred on
+	 */	
+	public Display display;
+	
+	/**
 	 * the widget that the event occurred in
 	 */
 	public Widget widget;

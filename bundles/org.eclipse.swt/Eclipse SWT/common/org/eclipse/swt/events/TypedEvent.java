@@ -18,6 +18,11 @@ import org.eclipse.swt.internal.SWTEventObject;
 public class TypedEvent extends SWTEventObject {
 	
 	/**
+	 * the display that the event occurred in
+	 */	
+	public Display display;
+		
+	/**
 	 * the widget that issued the event
 	 */
 	public Widget widget;
@@ -49,6 +54,7 @@ public TypedEvent(Object object) {
  */
 public TypedEvent(Event e) {
 	super(e.widget);
+	this.display = e.display;
 	this.widget = e.widget;
 	this.time = e.time;
 }
