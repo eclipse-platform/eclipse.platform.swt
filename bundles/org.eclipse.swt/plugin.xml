@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- File written by PDE 1.0 -->
 <plugin
    id="org.eclipse.swt"
    name="%pluginName"
@@ -7,12 +6,10 @@
    provider-name="Object Technology International, Inc.">
 
 <!-- Runtime -->
-<runtime>
-   <library name="$ws$/swt-pi.jar">
-      <export name="*"/>
-   </library>
-   <library name="$ws$/swt.jar">
-      <export name="*"/>
-   </library>
-</runtime>
+   <runtime>
+      <library name="$ws$/swt.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
 </plugin>
