@@ -1399,21 +1399,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1toolbar_1set_1o
 
 /*
  * Class:	org_eclipse_swt_internal_gtk_OS
- * Method:	gtk_toolbar_set_button_relief
- * Signature:	
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1toolbar_1set_1button_1relief
-  (JNIEnv *env, jclass that, jint toolbar, jint relief)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "gtk_toolbar_set_button_relief");
-#endif
-
-	gtk_toolbar_set_button_relief((GtkToolbar*)toolbar, (GtkReliefStyle)relief);
-}
-
-/*
- * Class:	org_eclipse_swt_internal_gtk_OS
  * Method:	gtk_tooltips_new
  * Signature:	
  */
