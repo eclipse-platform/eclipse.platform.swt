@@ -137,14 +137,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
-	OS.gtk_widget_set_size_request (handle, wHint, hHint);
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
-	OS.gtk_widget_set_size_request (handle, width, height);
-	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
-	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
 		if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_CAN_DEFAULT) != 0) {
 			int /*long*/ [] buffer = new int /*long*/ [1];
@@ -156,11 +149,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				/* Use the GTK+ default value of 1 for each. */
 				border.left = border.right = border.top = border.bottom = 1;
 			}
-			if (wHint != SWT.DEFAULT) width += border.left + border.right;
-			if (hHint != SWT.DEFAULT) height += border.top + border.bottom;
+			if (wHint != SWT.DEFAULT) size.x += border.left + border.right;
+			if (hHint != SWT.DEFAULT) size.y += border.top + border.bottom;
 		}
 	}
-	return new Point (width, height);
+	return size;
 }
 
 void createHandle (int index) {

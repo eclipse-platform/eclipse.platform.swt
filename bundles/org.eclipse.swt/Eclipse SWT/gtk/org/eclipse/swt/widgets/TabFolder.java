@@ -134,10 +134,11 @@ int /*long*/ clientHandle () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	Point size = super.computeSize (wHint, hHint, changed);
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
 	OS.gtk_widget_set_size_request (handle, wHint, hHint);
 	GtkRequisition requisition = new GtkRequisition ();
 	boolean scrollable = OS.gtk_notebook_get_scrollable (handle);
@@ -147,21 +148,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.gtk_widget_set_size_request (handle, width, height);
 	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
 	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
-	Point size;
-	if (layout != null) {
-		size = layout.computeSize (this, wHint, hHint, changed);
-	} else {
-		size = minimumSize (wHint, hHint, changed);
-	}
-	Rectangle trim = computeTrim (0, 0, size.x, size.y);
-	size.x = trim.width;  size.y = trim.height;
-	if (size.x == 0) size.x = DEFAULT_WIDTH;
-	if (size.y == 0) size.y = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) size.x = wHint;
-	if (hHint != SWT.DEFAULT) size.y = hHint;
-	width = Math.max (width, size.x);
-	height = Math.max (height, size.y);
-	return new Point (width, height);
+	size.x = Math.max (width, size.x);
+	size.y = Math.max (height, size.y);
+	return size;
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {

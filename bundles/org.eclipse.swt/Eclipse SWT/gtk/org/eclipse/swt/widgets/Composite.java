@@ -143,7 +143,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			size = new Point (wHint, hHint);
 		}
 	} else {
-		size = minimumSize ();
+		size = minimumSize (wHint, hHint, changed);
 	}
 	if (size.x == 0) size.x = DEFAULT_WIDTH;
 	if (size.y == 0) size.y = DEFAULT_HEIGHT;
@@ -662,7 +662,7 @@ void moveBelow (int /*long*/ child, int /*long*/ sibling) {
 	OS.memmove (parentHandle, fixed);
 }
 
-Point minimumSize () {
+Point minimumSize (int wHint, int hHint, boolean changed) {
 	Control [] children = _getChildren ();
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {

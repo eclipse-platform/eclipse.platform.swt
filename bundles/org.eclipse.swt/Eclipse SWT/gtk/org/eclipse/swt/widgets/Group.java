@@ -96,19 +96,19 @@ int /*long*/ clientHandle () {
 	return clientHandle;
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	Point size = super.computeSize(wHint, hHint, changed);
+	int width = computeNativeSize (handle, SWT.DEFAULT, SWT.DEFAULT, false).x;
+	size.x = Math.max (size.x, width);
+	return size;
+}
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	int clientX = OS.GTK_WIDGET_X (clientHandle);
 	int clientY = OS.GTK_WIDGET_Y (clientHandle);
 	x -= clientX;
 	y -= clientY;
-	int oldWidth = OS.GTK_WIDGET_WIDTH (handle);
-	int oldHeight = OS.GTK_WIDGET_HEIGHT (handle);
-	OS.gtk_widget_set_size_request (handle, -1, -1);
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
-	OS.gtk_widget_set_size_request (handle, oldWidth, oldHeight);
-	width = Math.max (width + clientX + clientX, requisition.width);
+	width += clientX + clientX;
 	height += clientX + clientY;
 	return new Rectangle (x, y, width, height);
 }
