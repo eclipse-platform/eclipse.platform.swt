@@ -99,7 +99,8 @@ public class ControlEditor {
 	Composite parent;
 	Control editor;
 	private boolean hadFocus;
-	private Listener internalListener;
+	private Listener tableListener;
+	private Listener scrollbarListener;
 /**
 * Creates a ControlEditor for the specified Composite.
 *
@@ -109,23 +110,24 @@ public class ControlEditor {
 public ControlEditor (Composite parent) {
 	this.parent = parent;
 
-	internalListener = new Listener() {
+	tableListener = new Listener() {
 		public void handleEvent(Event e) {
-			if (e.widget instanceof ScrollBar && e.type == SWT.Selection)
-				scroll (e);
-			else if (e.type == SWT.Resize)
-				resize ();
+			resize ();
 		}
-	};
+	};	
+	parent.addListener (SWT.Resize, tableListener);
 	
-	parent.addListener (SWT.Resize, internalListener);
-
+	scrollbarListener = new Listener() {
+		public void handleEvent(Event e) {
+			scroll (e);
+		}
+	};			
 	ScrollBar hBar = parent.getHorizontalBar ();
-	if (hBar != null) hBar.addListener (SWT.Selection, internalListener);
+	if (hBar != null) hBar.addListener (SWT.Selection, scrollbarListener);
 	ScrollBar vBar = parent.getVerticalBar ();
-	if (vBar != null) vBar.addListener (SWT.Selection, internalListener);
+	if (vBar != null) vBar.addListener (SWT.Selection, scrollbarListener);
 }
-Rectangle computeBounds (){
+Rectangle computeBounds () {
 	Rectangle clientArea = parent.getClientArea();
 	Rectangle editorRect = new Rectangle(clientArea.x, clientArea.y, minimumWidth, minimumHeight);
 	
@@ -169,17 +171,18 @@ Rectangle computeBounds (){
  */
 public void dispose () {
 	if (!parent.isDisposed()) {
-		parent.removeListener (SWT.Resize, internalListener);
+		parent.removeListener (SWT.Resize, tableListener);
 		ScrollBar hBar = parent.getHorizontalBar ();
-		if (hBar != null) hBar.removeListener (SWT.Selection, internalListener);
+		if (hBar != null) hBar.removeListener (SWT.Selection, scrollbarListener);
 		ScrollBar vBar = parent.getVerticalBar ();
-		if (vBar != null) vBar.removeListener (SWT.Selection, internalListener);
+		if (vBar != null) vBar.removeListener (SWT.Selection, scrollbarListener);
 	}
 	
 	parent = null;
 	editor = null;
 	hadFocus = false;
-	internalListener = null;
+	tableListener = null;
+	scrollbarListener = null;
 }
 /**
 * Returns the Control that is displayed above the composite being edited.
