@@ -26,7 +26,6 @@ public class BrowserDemoView extends ViewPart {
 	final static String ACTION_START_1_PLAYER = "actionstart1player";
 	final static String ACTION_WHITE = "actionwhite";
 	final static String ACTION_BLACK = "actionblack";
-	final static String ACTION_BLACK_COMPUTER = "actionblackcomputer";
 	final static String ACTION_THEME = "actiontheme";
 
 	static byte[][] game = null;
@@ -82,14 +81,20 @@ public class BrowserDemoView extends ViewPart {
 					classPlayerBlack += " winner";
 				}
 			}
+			String white = "<td class=\"white\"/>";
+			String black = "<td class=\"black\"/>";
+			String wall = "<td class=\"wall\"/>";
 			for (int i = 0; i < game.length; i++) {
 				html += "<tr>";
 				for (int j = 0; j < game[0].length; j++) {
 					switch (game[i][j]) {
-						case EMPTY: html += "<td class=\""+(isWhite ? "whitelink" : "blacklink")+"\"><a href=\""+URL+(isWhite ? ACTION_WHITE : computer ? ACTION_BLACK_COMPUTER : ACTION_BLACK)+"/xx"+i+"yy"+j+"\" class=\"empty\"/></td>"; break;
-						case WHITE: html += "<td class=\"white\"/>"; break;
-						case BLACK: html += "<td class=\"black\"/>"; break;
-						case WALL: html += "<td class=\"wall\"/>"; break;
+						case EMPTY: {
+							String empty = "<td class=\""+(isWhite ? "whitelink" : "blacklink")+"\">"+ (isWhite || (!isWhite && !computer) ? "<a href=\""+URL+(isWhite ? ACTION_WHITE : ACTION_BLACK)+"/xx"+i+"yy"+j+"\" class=\"empty\"/>" : "<div class=\"empty\"/>")+"</td>";
+							html += empty; break;
+						}
+						case WHITE: html += white; break;
+						case BLACK: html += black; break;
+						case WALL: html += wall; break;
 					}
 				}
 				html +="</tr>";
