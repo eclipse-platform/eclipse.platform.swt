@@ -65,7 +65,7 @@ public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("Browser1");
 	methodNames.addElement("Browser2");
-	//methodNames.addElement("Browser3");
+	methodNames.addElement("Browser3");
 	return methodNames;
 }
 
@@ -81,7 +81,7 @@ protected void runTest() throws Throwable {
 	
 	if (getName().equals("Browser1")) Browser1();
 	if (getName().equals("Browser2")) Browser2();
-	//if (getName().equals("Browser3")) Browser3();
+	if (getName().equals("Browser3")) Browser3();
 
 	/*
 	 * Ensure we don't leave a Display from the tests we run.
