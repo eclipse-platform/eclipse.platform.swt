@@ -5183,6 +5183,10 @@ void handleTextChanged(TextChangedEvent event) {
 		// Fixes 1GEYJM0
 		claimBottomFreeSpace();
 	}
+	if (lastTextChangeReplaceCharCount > 0) {
+		// fixes bug 8273
+		claimRightFreeSpace();
+	}
 }
 /**
  * Updates the screen to reflect a pending content change.
