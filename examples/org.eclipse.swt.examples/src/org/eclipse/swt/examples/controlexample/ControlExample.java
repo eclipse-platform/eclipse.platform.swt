@@ -66,6 +66,7 @@ public class ControlExample {
 			new GroupTab (this),
 			new LabelTab (this),
 			new ListTab (this),
+			new MenuTab (this),
 			new ProgressBarTab (this),
 			new SashTab (this),
 			shellTab = new ShellTab(this),
