@@ -203,8 +203,9 @@ public class Accessible {
 	}
 	
 	/**
-	 * Gets the control for this Accessible object. 
+	 * Returns the control for this Accessible object. 
 	 *
+	 * @return the receiver's control
 	 * @since 3.0
 	 */
 	public Control getControl() {

@@ -470,7 +470,7 @@ void doArrowRight(int keyMask) {
 /**
  * Expand the selected item and all of its children.
  */
-void doAsterix() {
+void doAsterisk() {
 	expandAll((TreeItem) getLastFocus());
 }
 /**
@@ -978,7 +978,7 @@ void keyDown(Event event) {
 			doMinus();
 			break;
 		case '*':
-			doAsterix();
+			doAsterisk();
 			break;
 	}
 }
