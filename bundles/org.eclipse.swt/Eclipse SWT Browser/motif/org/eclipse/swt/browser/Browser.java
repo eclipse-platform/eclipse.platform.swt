@@ -614,7 +614,12 @@ public void refresh() {
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);		 	
 	rc = webNavigation.Reload(nsIWebNavigation.LOAD_FLAGS_NONE);
-	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));	
+	/*
+	* Feature in Mozilla.  Reload returns an error code NS_ERROR_INVALID_POINTER
+	* when it is called immediately after a request to load a new document using
+	* LoadURI.  The workaround is to ignore this error code. 
+	*/
+	if (rc != XPCOM.NS_OK && rc != XPCOM.NS_ERROR_INVALID_POINTER) throw new SWTError(XPCOM.errorMsg(rc));	
 	webNavigation.Release();
 }
 
