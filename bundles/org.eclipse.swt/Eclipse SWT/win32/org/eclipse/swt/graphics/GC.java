@@ -1235,15 +1235,18 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (string.length() == 0) return;
+	TCHAR buffer = new TCHAR(getCodePage(), string, false);
+	int length = buffer.length();
+	if (length == 0) return;
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
-	TCHAR buffer = new TCHAR(getCodePage(), string, false);
 	int uFormat = OS.DT_LEFT;
 	if ((flags & SWT.DRAW_DELIMITER) == 0) uFormat |= OS.DT_SINGLELINE;
 	if ((flags & SWT.DRAW_TAB) != 0) uFormat |= OS.DT_EXPANDTABS;
 	if ((flags & SWT.DRAW_MNEMONIC) == 0) uFormat |= OS.DT_NOPREFIX;	
 	int oldBkMode = OS.SetBkMode(handle, (flags & SWT.DRAW_TRANSPARENT) != 0 ? OS.TRANSPARENT : OS.OPAQUE);
-	OS.DrawText(handle, buffer, buffer.length(), rect, uFormat);
+	OS.DrawText(handle, buffer, length, rect, uFormat);
 	OS.SetBkMode(handle, oldBkMode);
 }
 

@@ -271,8 +271,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	String text = getText ();
 	TCHAR buffer = new TCHAR (getCodePage (), text, false);
-	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
-	width = rect.right - rect.left;
+	int length = buffer.length ();
+	if (length != 0) {
+		OS.DrawText (hDC, buffer, length, rect, flags); 
+		width = rect.right - rect.left;
+	}
 	if (wrap && hHint == SWT.DEFAULT) {
 		int newHeight = rect.bottom - rect.top;
 		if (newHeight != 0) height = newHeight;
