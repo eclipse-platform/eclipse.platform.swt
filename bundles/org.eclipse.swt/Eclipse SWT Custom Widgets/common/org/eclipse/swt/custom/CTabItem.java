@@ -238,12 +238,12 @@ void drawSelected(GC gc ) {
 				shape[index++] = y + height + left[2*i+1] - 1;
 			}
 			for (int i = 0; i < right.length/2; i++) {
-				shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - parent.curveIndent + right[2*i];
+				shape[index++] = parent.simple ? rightEdge - 1 + right[2*i] : rightEdge - parent.curveIndent + right[2*i];
 				shape[index++] = parent.simple ? y + height + right[2*i+1] - 1 : y + right[2*i+1] - 2;
 			}
-			shape[index++] = parent.simple ? rightEdge : rightEdge + parent.curveWidth - parent.curveIndent;
+			shape[index++] = parent.simple ? rightEdge - 1 : rightEdge + parent.curveWidth - parent.curveIndent;
 			shape[index++] = y - 1;
-			shape[index++] = parent.simple ? rightEdge : rightEdge + parent.curveWidth - parent.curveIndent;
+			shape[index++] = parent.simple ? rightEdge - 1 : rightEdge + parent.curveWidth - parent.curveIndent;
 			shape[index++] = y - 1;
 		} else {
 			int[] left = parent.simple ? CTabFolder.SIMPLE_TOP_LEFT_CORNER : CTabFolder.TOP_LEFT_CORNER;
@@ -259,12 +259,12 @@ void drawSelected(GC gc ) {
 				shape[index++] = y + left[2*i+1];
 			}
 			for (int i = 0; i < right.length/2; i++) {
-				shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - parent.curveIndent + right[2*i];
+				shape[index++] = parent.simple ? rightEdge - 1 + right[2*i] : rightEdge - parent.curveIndent + right[2*i];
 				shape[index++] = y + right[2*i+1];
 			}
-			shape[index++] = parent.simple ? rightEdge : rightEdge + parent.curveWidth - parent.curveIndent;
+			shape[index++] = parent.simple ? rightEdge - 1 : rightEdge + parent.curveWidth - parent.curveIndent;
 			shape[index++] = y + height + 1;
-			shape[index++] = parent.simple ? rightEdge : rightEdge + parent.curveWidth - parent.curveIndent;
+			shape[index++] = parent.simple ? rightEdge - 1 : rightEdge + parent.curveWidth - parent.curveIndent;
 			shape[index++] = y + height + 1;
 		}
 		parent.drawBackground(gc, shape, true);
