@@ -21,6 +21,7 @@ public class ControlExample {
 	private ShellTab shellTab;
 	private TabFolder tabFolder;
 	private EventConsole eventConsole;
+	static boolean standAlone = false;
 
 	static final int
 		ciClosedFolder = 0,
@@ -41,41 +42,80 @@ public class ControlExample {
 	public ControlExample(Composite parent) {
 		initResources();
 		tabFolder = new TabFolder (parent, SWT.NULL);
-		Tab [] tabs = new Tab [] {
-			new ButtonTab (this),
-			new ComboTab (this),
-			new CComboTab (this),
-			new CoolBarTab (this),
-			new CTabFolderTab (this),
-			new DialogTab (this),
-			new LabelTab (this),
-			new CLabelTab (this),
-			new ListTab (this),
-			new ProgressBarTab (this),
-			new SashTab (this),
-			new SashFormTab (this),
-			shellTab = new ShellTab(this),
-			new SliderTab (this),
-			new TableTab (this),
-			new TableTreeTab (this),
-			new TextTab (this),
-			new ToolBarTab (this),
-			new TreeTab (this),
-		};
-		eventConsole = new EventConsole (parent.getShell());
+		Tab [] tabs = createTabs();
 		for (int i=0; i<tabs.length; i++) {
 			TabItem item = new TabItem (tabFolder, SWT.NULL);
 		    item.setText (tabs [i].getTabText ());
 		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
 		}
-		eventConsole.open ();
+		if (standAlone) {
+			createMenus (parent.getShell ());
+		}
 	}
-	
+
 	/**
-	 * Grabs input focus.
+	 * Open the event logger.
 	 */
-	public void setFocus() {
-		tabFolder.setFocus();
+	private void closeEventConsole() {
+		if (eventConsole != null) {
+			eventConsole.close ();
+			eventConsole = null;
+		}
+	}
+
+	/**
+	 * Create this example's menus.
+	 */
+	void createMenus(final Shell shell) {
+		Menu bar = new Menu (shell, SWT.BAR);
+		MenuItem consoleItem = new MenuItem (bar, SWT.CASCADE);
+		consoleItem.setText ("Controls");
+		shell.setMenuBar (bar);
+		Menu dropDown = new Menu (bar);
+		consoleItem.setMenu (dropDown);
+
+		final MenuItem showEvents = new MenuItem (dropDown, SWT.CHECK);
+		showEvents.setAccelerator(SWT.MOD1 + 'C');
+		showEvents.setText ("&Show Events");
+		showEvents.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				if (showEvents.getSelection()) {
+					openEventConsole (shell);
+				} else {
+					closeEventConsole ();
+				}
+			}
+		});
+		
+		final MenuItem exit = new MenuItem (dropDown, SWT.NONE);
+		exit.setText ("E&xit");
+		exit.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event e) {
+				shell.dispose();
+			}
+		});
+	}
+
+	/**
+	 * Answers the set of example Tabs
+	 */
+	Tab[] createTabs() {
+		return new Tab [] {
+			new ButtonTab (this),
+			new ComboTab (this),
+			new CoolBarTab (this),
+			new DialogTab (this),
+			new LabelTab (this),
+			new ListTab (this),
+			new ProgressBarTab (this),
+			new SashTab (this),
+			shellTab = new ShellTab(this),
+			new SliderTab (this),
+			new TableTab (this),
+			new TextTab (this),
+			new ToolBarTab (this),
+			new TreeTab (this),
+		};
 	}
 
 	/**
@@ -98,21 +138,18 @@ public class ControlExample {
 	}
 
 	/**
-	 * Invokes as a standalone program.
+	 * Frees the resources
 	 */
-	public static void main(String[] args) {
-		Display display = new Display();
-		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
-		ControlExample instance = new ControlExample(shell);
-		shell.setText(getResourceString("window.title"));
-		shell.open();
-		while (! shell.isDisposed()) {
-			if (! display.readAndDispatch()) display.sleep();
+	void freeResources() {
+		if (images != null) {
+			for (int i = 0; i < images.length; ++i) {
+				final Image image = images[i];
+				if (image != null) image.dispose();
+			}
+			images = null;
 		}
-		instance.dispose();
 	}
-
+	
 	/**
 	 * Gets a string from the resource bundle.
 	 * We don't want to crash because of a missing String.
@@ -146,7 +183,7 @@ public class ControlExample {
 	/**
 	 * Loads the resources
 	 */
-	private void initResources() {
+	void initResources() {
 		final Class clazz = ControlExample.class;
 		if (resourceBundle != null) {
 			try {
@@ -172,23 +209,44 @@ public class ControlExample {
 	}
 
 	/**
-	 * Frees the resources
-	 */
-	private void freeResources() {
-		if (images != null) {
-			for (int i = 0; i < images.length; ++i) {
-				final Image image = images[i];
-				if (image != null) image.dispose();
-			}
-			images = null;
-		}
-	}
-
-	/**
 	 * Logs an event to the event console.
 	 */
 	void log(Event event) {
-		eventConsole.log(event);	
+		if (eventConsole != null) {
+			eventConsole.log(event);
+		}
+	}
+	
+	/**
+	 * Invokes as a standalone program.
+	 */
+	public static void main(String[] args) {
+		standAlone = true;
+		Display display = new Display();
+		Shell shell = new Shell(display);
+		shell.setLayout(new FillLayout());
+		ControlExample instance = new ControlExample(shell);
+		shell.setText(getResourceString("window.title"));
+		shell.open();
+		while (! shell.isDisposed()) {
+			if (! display.readAndDispatch()) display.sleep();
+		}
+		instance.dispose();
+	}
+	
+	/**
+	 * Open the event logger.
+	 */
+	void openEventConsole(Shell shell) {
+		eventConsole = new EventConsole (shell);
+		eventConsole.open ();
+	}
+	
+	/**
+	 * Grabs input focus.
+	 */
+	public void setFocus() {
+		tabFolder.setFocus();
 	}
 }
 

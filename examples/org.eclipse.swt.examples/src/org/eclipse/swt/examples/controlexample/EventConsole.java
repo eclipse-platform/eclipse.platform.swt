@@ -29,7 +29,7 @@ public class EventConsole {
 	public EventConsole (Shell parent) {
 		super ();
 		shell = new Shell (parent, SWT.SHELL_TRIM);
-		shell.setText ("ControlExample Events");
+		shell.setText ("Events");
 		shell.setLayout (new FillLayout ());
 		Point parentSize = parent.getSize();
 		shell.setBounds(10, parentSize.y - 100, parentSize.x / 2, 200);
@@ -59,14 +59,6 @@ public class EventConsole {
 			}
 		});
 		
-		MenuItem close = new MenuItem (dropDown, SWT.NONE);
-		close.setText ("&Dismiss");
-		close.addListener (SWT.Selection, new Listener () {
-			public void handleEvent (Event e) {
-				shell.dispose ();
-				isActive = false;
-			}
-		});
 		shell.addListener(SWT.Dispose, new Listener() {
 			public void handleEvent(Event event) {
 				isActive = false;
@@ -85,10 +77,9 @@ public class EventConsole {
 	
 	public void log (Event event) {
 		if (isActive && eventsFilter [event.type]) {
-			StringBuffer output = new StringBuffer ("Control: ");
+			StringBuffer output = new StringBuffer (EVENT_TYPES[event.type]);
+			output.append (": ");
 			output.append (event.widget.toString ());
-			output.append (" Type: ");
-			output.append (EVENT_TYPES[event.type]);
 			output.append (" X: ");
 			output.append (event.x);
 			output.append (" Y: ");
