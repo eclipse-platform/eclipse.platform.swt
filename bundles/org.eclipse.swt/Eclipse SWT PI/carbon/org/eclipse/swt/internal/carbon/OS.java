@@ -926,7 +926,7 @@ public static final native double GetEventTime(int eHandle);
 public static final native int GetFlavorData(int theDrag, int theItemRef, int theType, byte[] dataPtr, int[] dataSize, int dataOffset);
 public static final native int GetFlavorDataSize(int theDrag, int theItemRef, int theType, int[] dataSize);
 public static final native int GetFlavorType(int theDrag,int theItemRef, short index, int[] theType);
-public static final native void GetFontInfo(short[] info);
+public static final native void GetFontInfo(FontInfo info);
 public static final native int GetGDevice();
 public static final native void GetGWorld(int[] portHandle, int[] gdHandle);
 public static final native void GetGlobalMouse(Point where);

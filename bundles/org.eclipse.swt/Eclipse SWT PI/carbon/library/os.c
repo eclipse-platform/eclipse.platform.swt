@@ -4040,13 +4040,13 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetFlavorType)
 
 #ifndef NO_GetFontInfo
 JNIEXPORT void JNICALL OS_NATIVE(GetFontInfo)
-	(JNIEnv *env, jclass that, jshortArray arg0)
+	(JNIEnv *env, jclass that, jobject arg0)
 {
-	jshort *lparg0=NULL;
+	FontInfo _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "GetFontInfo\n")
-	if (arg0) lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL);
+	if (arg0) lparg0 = getFontInfoFields(env, arg0, &_arg0);
 	GetFontInfo((FontInfo *)lparg0);
-	if (arg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
+	if (arg0) setFontInfoFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "GetFontInfo\n")
 }
 #endif

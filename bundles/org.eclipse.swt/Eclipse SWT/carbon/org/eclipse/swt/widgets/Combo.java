@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CGRect;
@@ -324,6 +325,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.TextFace (font.style);
 		OS.TextSize (font.size);
 	}
+	FontInfo info = new FontInfo ();
+	OS.GetFontInfo (info);
+	height = info.ascent + info.descent;
 	int [] ptr = new int [1];
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = OS.GetControlValue (handle) - 1;
