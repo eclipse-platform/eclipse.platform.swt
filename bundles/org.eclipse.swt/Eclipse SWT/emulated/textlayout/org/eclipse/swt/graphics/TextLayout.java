@@ -443,7 +443,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 			leading = Math.max (leading, metrics.getLeading());
 			aveCharWidth += metrics.getAverageCharWidth();
 		}
-		metrics = FontMetrics.motif_new(ascent, descent, aveCharWidth / lineRuns.length, leading, height);
+		metrics = FontMetrics.internal_new(ascent, descent, aveCharWidth / lineRuns.length, leading, height);
 	}
 	gc.dispose();
 	return metrics;
