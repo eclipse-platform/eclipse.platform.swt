@@ -558,10 +558,6 @@ void resizeClientArea () {
 	resizeClientArea (args [1], args [4]);
 }
 
-boolean sendResize () {
-	return false;
-}
-
 void resizeClientArea (int width, int height) {
 	if (scrolledHandle == 0) return;
 	
@@ -627,6 +623,10 @@ void resizeClientArea (int width, int height) {
 		OS.PtSetResource (cornerHandle, OS.Pt_ARG_POS, ptr, 0);
 		OS.free (ptr);
 	}
+}
+
+boolean sendResize () {
+	return false;
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
