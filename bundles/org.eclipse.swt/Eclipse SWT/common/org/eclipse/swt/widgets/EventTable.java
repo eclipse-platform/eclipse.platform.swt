@@ -5,7 +5,7 @@ package org.eclipse.swt.widgets;
  * All Rights Reserved
  */
 
-import java.util.EventListener;
+import org.eclipse.swt.internal.EventListenerCompatability;
 
 /**
  * Instances of this class implement a simple
@@ -66,7 +66,7 @@ public void unhook (int eventType, Listener handler) {
 	}
 }
 
-public void unhook (int eventType, EventListener handler) {
+public void unhook (int eventType, EventListenerCompatability handler) {
 	if (handlers == null) return;
 	for (int i=0; i<types.length; i++) {
 		if (types [i] == eventType) {

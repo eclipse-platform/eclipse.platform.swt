@@ -1,7 +1,0 @@
-build.vaj.Eclipse\ SWT=Eclipse SWT/common,Eclipse SWT/win32
-build.vaj.Eclipse\ SWT\ AWT=Eclipse SWT AWT/win32
-build.vaj.Eclipse\ SWT\ Drag\ and\ Drop=Eclipse SWT Drag and Drop/common,Eclipse SWT Drag and Drop/win32
-build.vaj.Eclipse\ SWT\ OLE\ Win32=Eclipse SWT OLE Win32/win32
-build.vaj.Eclipse\ SWT\ Printing=Eclipse SWT Printing/common,Eclipse SWT Printing/win32
-build.vaj.Eclipse\ SWT\ Program=Eclipse SWT Program/common,Eclipse SWT Program/win32
-build.includes=ws/win32
