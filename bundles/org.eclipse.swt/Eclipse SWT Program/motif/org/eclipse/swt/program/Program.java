@@ -498,6 +498,9 @@ static String kde_convertQStringAndFree(int /*long*/ qString) {
 }
 
 static boolean kde_init() {
+	//TEMPORARY CODE
+	if (true) return false;
+	
 	/*
 	* Bug in the JVM.  Under some versions of the JVM,
 	* C++ code that dynaminc_cast causes a segmentation
