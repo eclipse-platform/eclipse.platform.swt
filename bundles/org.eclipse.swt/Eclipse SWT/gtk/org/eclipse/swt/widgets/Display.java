@@ -804,7 +804,7 @@ void flushExposes () {
 			rect.y = exposeEvent.y;
 			rect.width = exposeEvent.width;
 			rect.height = exposeEvent.height;
-			int window = OS.gdk_window_lookup (exposeEvent.window);
+			int /*long*/ window = OS.gdk_window_lookup (exposeEvent.window);
 			if (window != 0) OS.gdk_window_invalidate_rect (window, rect, true);
 		}
 		OS.g_free (xEvent);
