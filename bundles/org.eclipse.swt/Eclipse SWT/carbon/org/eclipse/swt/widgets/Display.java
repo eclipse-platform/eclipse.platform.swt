@@ -1695,7 +1695,6 @@ int mouseHoverProc (int id, int handle) {
 public boolean readAndDispatch () {
 	checkDevice ();
 	runTimers ();
-	runDisposeWidgets ();
 	runEnterExit ();
 	int [] outEvent  = new int [1];
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
