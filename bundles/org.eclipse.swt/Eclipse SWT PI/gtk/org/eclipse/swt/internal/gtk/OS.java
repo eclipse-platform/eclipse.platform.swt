@@ -205,6 +205,7 @@ public class OS {
 	public static final byte[] button_release_event = signal("button_release_event");
 	public static final byte[] changed = signal("changed");
 	public static final byte[] clicked = signal("clicked");
+	public static final byte[] click_column = signal("click_column");
 	public static final byte[] configure_event = signal("configure_event");
 	public static final byte[] delete_event = signal("delete_event");
 	public static final byte[] delete_text = signal("delete_text");
