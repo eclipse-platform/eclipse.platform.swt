@@ -186,8 +186,8 @@ public void removeTextChangeListener(TextChangeListener listener);
  * @param start start offset of text to replace, none of the offsets include 
  *	delimiters of preceeding lines, offset 0 is the first character of the 
  * 	document 
- * @param replaceLength start offset of text to replace
- * @param newText start offset of text to replace
+ * @param replaceLength length of text to replace
+ * @param text text to replace
  * @see TextChangeListener
  */
 public void replaceTextRange(int start, int replaceLength, String text);

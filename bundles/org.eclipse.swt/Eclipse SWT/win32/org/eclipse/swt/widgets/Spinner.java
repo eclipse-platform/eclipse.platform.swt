@@ -684,7 +684,7 @@ void setForegroundPixel (int pixel) {
  * modified by when the up/down arrows are pressed to
  * the argument, which must be at least one.
  *
- * @param increment the new increment (must be greater than zero)
+ * @param value the new increment (must be greater than zero)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -774,7 +774,7 @@ public void setMinimum (int value) {
  * modified by when the page up/down keys are pressed
  * to the argument, which must be at least one.
  *
- * @param pageIncrement the page increment (must be greater than zero)
+ * @param value the page increment (must be greater than zero)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

@@ -117,7 +117,7 @@ public boolean isUnstyled() {
  * same field values for except for start and length.
  * <p>
  *
- * @param object the object to compare with this object
+ * @param style the object to compare with this object
  * @return true if the objects are similar, false otherwise
  */
 public boolean similarTo(StyleRange style) {

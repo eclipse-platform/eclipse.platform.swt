@@ -281,7 +281,7 @@ public void clear (int index) {
  * </ul>
  * 
  * @see SWT#VIRTUAL
- * @see SWT.SetData
+ * @see SWT#SetData
  * 
  * @since 3.0
  */
@@ -353,7 +353,7 @@ public void clear (int start, int end) {
  * </ul>
  * 
  * @see SWT#VIRTUAL
- * @see SWT.SetData
+ * @see SWT#SetData
  * 
  * @since 3.0
  */
@@ -416,7 +416,7 @@ public void clear (int [] indices) {
  * </ul>
  * 
  * @see SWT#VIRTUAL
- * @see SWT.SetData
+ * @see SWT#SetData
  * 
  * @since 3.0
  */

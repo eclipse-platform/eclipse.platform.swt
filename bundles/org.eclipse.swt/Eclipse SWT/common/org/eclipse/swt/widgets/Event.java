@@ -191,10 +191,7 @@ public Rectangle getBounds () {
 /**
 * Sets the bounds.
 * <p>
-* @param x the new x position
-* @param y the new y position
-* @param width the new width
-* @param height the new height
+* @param rect the new rectangle
 */
 public void setBounds (Rectangle rect) {
 	this.x = rect.x;

@@ -208,7 +208,7 @@ public OleClientSite(Composite parent, int style, File file) {
  *
  * @param parent a composite widget; must be an OleFrame
  * @param style the bitwise OR'ing of widget styles
- * @param progID the unique program identifier of am OLE Document application; 
+ * @param progId the unique program identifier of am OLE Document application; 
  *               the value of the ProgID key or the value of the VersionIndependentProgID key specified
  *               in the registry for the desired OLE Document (for example, the VersionIndependentProgID
  *               for Word is Word.Document)
@@ -265,7 +265,7 @@ public OleClientSite(Composite parent, int style, String progId) {
  * </p>
  * @param parent a composite widget; must be an OleFrame
  * @param style the bitwise OR'ing of widget styles
- * @param progID the unique program identifier of am OLE Document application; 
+ * @param progId the unique program identifier of am OLE Document application; 
  *               the value of the ProgID key or the value of the VersionIndependentProgID key specified
  *               in the registry for the desired OLE Document (for example, the VersionIndependentProgID
  *               for Word is Word.Document)

@@ -563,7 +563,7 @@ public void translate (int x, int y) {
  * Translate all of the polygons the receiver maintains to describe
  * its area by the specified point.
  *
- * @param point the point to translate
+ * @param pt the point to translate
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>

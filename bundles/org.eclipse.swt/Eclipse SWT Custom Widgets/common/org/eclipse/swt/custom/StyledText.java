@@ -1645,7 +1645,7 @@ public StyledText(Composite parent, int style) {
  * widget when the widget text has changed.
  * <p>
  *
- * @param listener the listener
+ * @param extendedModifyListener the listener
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1802,7 +1802,7 @@ public void addLineStyleListener(LineStyleListener listener) {
  * has changed.
  * <p>
  *
- * @param listener the listener
+ * @param modifyListener the listener
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1875,7 +1875,7 @@ public void addVerifyKeyListener(VerifyKeyListener listener) {
  * text change.
  * <p>
  *
- * @param listener the listener
+ * @param verifyListener the listener
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6105,7 +6105,7 @@ public void removeBidiSegmentListener(BidiSegmentListener listener) {
  * Removes the specified extended modify listener.
  * <p>
  *
- * @param listener the listener
+ * @param extendedModifyListener the listener
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6173,7 +6173,7 @@ public void removeLineStyleListener(LineStyleListener listener) {
  * Removes the specified modify listener.
  * <p>
  *
- * @param listener the listener
+ * @param modifyListener the listener
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6213,7 +6213,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * Removes the specified verify listener.
  * <p>
  *
- * @param listener the listener
+ * @param verifyListener the listener
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6732,7 +6732,7 @@ void setClipboardContent(int start, int length, int clipboardType) throws SWTErr
  * Sets the content implementation to use for text storage.
  * <p>
  *
- * @param content StyledTextContent implementation to use for text storage.
+ * @param newContent StyledTextContent implementation to use for text storage.
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -7520,7 +7520,7 @@ public void setTextLimit(int limit) {
  * Note: The top index is reset to 0 when new text is set in the widget.
  * </p>
  *
- * @param index new top index. Must be between 0 and 
+ * @param topIndex new top index. Must be between 0 and 
  * 	getLineCount() - fully visible lines per page. If no lines are fully 
  * 	visible the maximum value is getLineCount() - 1. An out of range 
  * 	index will be adjusted accordingly.

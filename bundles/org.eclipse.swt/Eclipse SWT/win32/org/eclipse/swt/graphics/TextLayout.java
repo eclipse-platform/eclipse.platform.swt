@@ -1544,7 +1544,7 @@ public void setAlignment (int alignment) {
  * </ul>
  * 
  * @see #setDescent(int)
- * @see #getLineMetrics()
+ * @see #getLineMetrics(int)
  */
 public void setAscent(int ascent) {
 	checkLayout();
@@ -1570,7 +1570,7 @@ public void setAscent(int ascent) {
  * </ul>
  * 
  * @see #setAscent(int)
- * @see #getLineMetrics()
+ * @see #getLineMetrics(int)
  */
 public void setDescent(int descent) {
 	checkLayout();

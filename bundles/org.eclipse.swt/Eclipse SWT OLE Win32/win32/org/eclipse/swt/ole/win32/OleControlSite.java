@@ -64,7 +64,7 @@ public class OleControlSite extends OleClientSite
  *
  * @param parent a composite widget; must be an OleFrame
  * @param style the bitwise OR'ing of widget styles
- * @param progID the unique program identifier which has been registered for this ActiveX Control; 
+ * @param progId the unique program identifier which has been registered for this ActiveX Control; 
  *               the value of the ProgID key or the value of the VersionIndependentProgID key specified
  *               in the registry for this Control (for example, the VersionIndependentProgID for 
  *               Internet Explorer is Shell.Explorer)

@@ -222,7 +222,7 @@ public String getText () {
  * window manager will typically display as the receiver's
  * <em>title</em>, to the argument, which must not be null. 
  *
- * @param text the new text
+ * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>

@@ -138,7 +138,6 @@ FormAttachment () {
  * denominator of 100. The offset is zero.
  * 
  * @param numerator the percentage of the position
- * @param offset the offset of the side from the position
  * 
  * @since 3.0
  */
