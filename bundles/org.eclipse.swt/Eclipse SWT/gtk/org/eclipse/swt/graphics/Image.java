@@ -56,6 +56,7 @@ import java.io.*;
  * @see ImageData
  * @see ImageLoader
  */
+
 public final class Image implements Drawable{
 
 	/**
@@ -137,7 +138,11 @@ Image() {
  * @param height the height of the new image
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT - if either the width or height is negative or zero</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device display, int width, int height) {
@@ -164,6 +169,7 @@ public Image(Device display, int width, int height) {
  * @param flag the style, either <code>IMAGE_COPY</code>, <code>IMAGE_DISABLE</code> or <code>IMAGE_GRAY</code>
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if srcImage is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the flag is not one of <code>IMAGE_COPY</code>, <code>IMAGE_DISABLE</code> or <code>IMAGE_GRAY</code></li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
@@ -334,8 +340,12 @@ public Image(Device device, Image srcImage, int flag) {
  * @param bounds a rectangle specifying the image's width and height (must not be null)
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the bounds rectangle is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if either the rectangle's width or height is negative</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device display, Rectangle bounds) {
@@ -353,7 +363,11 @@ public Image(Device display, Rectangle bounds) {
  * @param data the image data to create the image from (must not be null)
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the image data is null</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device device, ImageData data) {
@@ -381,10 +395,14 @@ public Image(Device device, ImageData data) {
  * @param mask the mask data for the icon
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if either the source or mask is null </li>
  *    <li>ERROR_INVALID_ARGUMENT - if source and mask are different sizes or
  *          if the mask is not monochrome, or if either the source or mask
  *          is already an icon</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device display, ImageData source, ImageData mask) {
@@ -421,9 +439,16 @@ public Image(Device display, ImageData source, ImageData mask) {
  * @param device the device on which to create the image
  * @param stream the input stream to load the image from
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
  *    <li>ERROR_IO - if an IO error occurs while reading data</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device device, InputStream stream) {
@@ -445,9 +470,16 @@ public Image(Device device, InputStream stream) {
  * @param device the device on which to create the image
  * @param filename the name of the file to load the image from
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
  *    <li>ERROR_IO - if an IO error occurs while reading data</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device display, String filename) {

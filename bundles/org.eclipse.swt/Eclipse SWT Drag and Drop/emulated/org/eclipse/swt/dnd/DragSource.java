@@ -83,6 +83,10 @@ public final class DragSource extends Widget {
  * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
  *					DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
  *
+ * @see DND#DROP_NONE
+ * @see DND#DROP_COPY
+ * @see DND#DROP_MOVE
+ * @see DND#DROP_LINK
  */
 public DragSource(Control control, int style) {
 	super (control, style);

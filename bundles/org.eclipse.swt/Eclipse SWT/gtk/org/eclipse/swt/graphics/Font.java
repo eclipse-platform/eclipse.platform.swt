@@ -22,11 +22,13 @@ import org.eclipse.swt.internal.gtk.*;
  *
  * @see FontData
  */
+
 public final class Font {
 	/**
 	 * the handle to the OS font resource
 	 * (Warning: This field is platform dependent)
 	 */
+
 	public int handle;
 
 	/**
@@ -48,6 +50,7 @@ Font() {
  * @param fd the FontData that describes the desired font (must not be null)
  * 
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the fd argument is null</li>
  * </ul>
  * @exception SWTError <ul>
@@ -75,6 +78,7 @@ public Font(Device display, FontData fd) {
  * @param style a bit or combination of NORMAL, BOLD, ITALIC
  * 
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the name argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the height is negative</li>
  * </ul>
@@ -93,6 +97,7 @@ public Font(Device display, String name, int height, int style) {
  * the font. Applications must dispose of all fonts which
  * they allocate.
  */
+
 public void dispose() {
 	if (handle != 0) OS.pango_font_description_free(handle);
 	handle = 0;
@@ -108,6 +113,7 @@ public void dispose() {
  *
  * @see #hashCode
  */
+
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Font)) return false;
@@ -126,6 +132,7 @@ public boolean equals(Object object) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
@@ -184,6 +191,7 @@ public static Font gtk_new(Device device, int handle) {
  *
  * @see #equals
  */
+
 public int hashCode() {
 	return handle;
 }
@@ -222,6 +230,7 @@ void init(Device device, String name, int height, int style, byte[] fontString) 
  *
  * @return <code>true</code> when the font is disposed and <code>false</code> otherwise
  */
+
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -232,6 +241,7 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
+
 public String toString () {
 	if (isDisposed()) return "Font {*DISPOSED*}";
 	return "Font {" + handle + "}";

@@ -20,6 +20,7 @@ import org.eclipse.swt.*;
  *
  * @private
  */
+
 public final class GCData {
 	public Device device;
 	public Image image;

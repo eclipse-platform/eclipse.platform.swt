@@ -23,6 +23,7 @@ import org.eclipse.swt.*;
  *
  * @see org.eclipse.swt.events.PaintEvent
  */
+
 public final class GC {
 	/**
 	 * the handle to the OS device context
@@ -47,10 +48,14 @@ GC() {
  * @param drawable the drawable to draw on
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the drawable is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT
  *          - if the drawable is an image that is not a bitmap or an icon
  *          - if the drawable is an image or printer that is already selected
  *            into another graphics context</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
  */
 public GC(Drawable drawable) {
@@ -59,22 +64,6 @@ public GC(Drawable drawable) {
 	int gdkGC = drawable.internal_new_GC(data);
 	init(drawable, data, gdkGC);
 }
-
-/**
- * Copies a rectangular area of the receiver at the source
- * position onto the receiver at the destination position.
- *
- * @param srcX the x coordinate in the receiver of the area to be copied
- * @param srcY the y coordinate in the receiver of the area to be copied
- * @param width the width of the area to copy
- * @param height the height of the area to copy
- * @param destX the x coordinate in the receiver of the area to copy to
- * @param destY the y coordinate in the receiver of the area to copy to
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- */
 
 /**
  * Copies a rectangular area of the receiver at the specified

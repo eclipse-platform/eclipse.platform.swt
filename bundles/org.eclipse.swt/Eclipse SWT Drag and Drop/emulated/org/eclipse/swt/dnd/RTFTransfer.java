@@ -6,9 +6,18 @@ package org.eclipse.swt.dnd;
  */
  
 /**
- * The <code>RTFTransfer</code> class is used to transfer text with the RTF format
- * in a drag and drop operation.
+ * The class <code>RTFTransfer</code> provides a platform specific mechanism 
+ * for converting text in RTF format represented as a java <code>String</code> 
+ * to a platform specific representation of the data and vice versa.  See 
+ * <code>Transfer</code> for additional information.
+ * 
+ * <p>An example of a java <code>String</code> containg RTF text is shown 
+ * below:</p>
+ * <code><pre>
+ * String rtfData = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i Hello World}";
+ * </code></pre>
  */
+
 public class RTFTransfer extends ByteArrayTransfer {
 
 	private static RTFTransfer _instance = new RTFTransfer();
@@ -30,32 +39,25 @@ public static RTFTransfer getInstance () {
 	return _instance;
 }
 /**
- * Converts a RTF-formatted Java String to a platform specific representation. 
- * <p>
- * On a successful conversion, the transferData.result field will be set as follows:
- * <ul>
- * <li>Windows: OLE.S_OK
- * <li>Motif: 0
- * </ul>
- * If this transfer agent is unable to perform the conversion,
- * the transferData.result field will be set to a failure value as follows:
- * <ul>
- * <li>Windows: OLE.DV_E_TYMED
- * <li>Motif: 1
- * </ul></p>
- *
- * @param object a Java String containing the data to be transferred
- * @param transferData an empty TransferData object; this object will be filled in on return
- *        with the platform specific format of the data
+ * This implementation of <code>javaToNative</code> converts RTF-formatted text
+ * represented by a java <code>String</code> to a platform specific representation.
+ * For additional information see <code>Transfer#javaToNative</code>.
+ * 
+ * @param object a java <code>String</code> containing RTF text
+ * @param transferData an empty <code>TransferData</code> object; this
+ *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
 }
 /**
- * Converts a platform specific representation of a string to a Java String.
- *
- * @param transferData the platform specific representation of the data that has been transferred
- * @return a Java String containing the transferred data if the conversion was successful;
- *         otherwise null
+ * This implementation of <code>nativeToJava</code> converts a platform specific 
+ * representation of RTF text to a java <code>String</code>.
+ * For additional information see <code>Transfer#nativeToJava</code>.
+ * 
+ * @param transferData the platform specific representation of the data to be 
+ * been converted
+ * @return a java <code>String</code> containing RTF text if the 
+ * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
 	return null;

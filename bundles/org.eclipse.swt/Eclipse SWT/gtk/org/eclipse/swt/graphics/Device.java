@@ -9,6 +9,13 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
+/**
+ * This class is the abstract superclass of all device objects,
+ * such as the Display device and the Printer device. Devices
+ * can have a graphics context (GC) created for them, and they
+ * can be drawn on by sending messages to the associated GC.
+ */
+
 public abstract class Device implements Drawable {
 	
 	/* Debugging */
@@ -247,7 +254,7 @@ public Point getDPI () {
 
 /**
  * Returns <code>FontData</code> objects which describe
- * the fonts which match the given arguments. If the
+ * the fonts that match the given arguments. If the
  * <code>faceName</code> is null, all fonts will be returned.
  *
  * @param faceName the name of the font to look for, or null
