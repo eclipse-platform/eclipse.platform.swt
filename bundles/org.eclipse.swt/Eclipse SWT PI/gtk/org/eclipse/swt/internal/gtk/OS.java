@@ -177,6 +177,7 @@ public class OS {
 	public static final int GTK_PROGRESS_DISCRETE = 0x1;
 	public static final int GTK_PROGRESS_LEFT_TO_RIGHT = 0x0;
 	public static final int GTK_PROGRESS_TOP_TO_BOTTOM = 0x3;
+	public static final int GTK_REALIZED  = 1 << 6;
 	public static final int GTK_RELIEF_NONE = 0x2;
 	public static final int GTK_RESPONSE_OK = 0xfffffffb;
 	public static final int GTK_SELECTION_BROWSE = 0x2;
@@ -242,7 +243,8 @@ public class OS {
 	public static final byte[] mnemonic_activate = signal("mnemonic_activate");
 	public static final byte[] motion_notify_event = signal("motion_notify_event");
 	public static final byte[] popup_menu = signal("popup_menu");
-	public static final byte[] preedit_changed = signal("preedit_changed");			
+	public static final byte[] preedit_changed = signal("preedit_changed");
+	public static final byte[] realize = signal("realize");
 	public static final byte[] row_activated = signal("row_activated");
 	public static final byte[] row_collapsed = signal("row_collapsed");
 	public static final byte[] row_expanded = signal("row_expanded");
