@@ -126,7 +126,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 
 	/*
 	* Feature in WinCE.  The function WindowFromDC is not part of the
-	* WinCE SDK.
+	* WinCE SDK.  The fix is to remember the HWND.
 	*/
 	int hwnd = data.hwnd;
 	if (hwnd == 0) {
