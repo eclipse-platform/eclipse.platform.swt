@@ -792,7 +792,12 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Hide);
 	}
 }
-
+boolean traverseEscape () {
+	if (parent == null) return false;
+	if (!isVisible () || !isEnabled ()) return false;
+	close ();
+	return true;
+}
 int trimHeight () {
 	if ((style & SWT.NO_TRIM) != 0) return 0;
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
