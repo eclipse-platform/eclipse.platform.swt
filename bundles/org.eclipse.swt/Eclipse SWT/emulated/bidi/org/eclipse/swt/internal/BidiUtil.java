@@ -10,10 +10,9 @@ import org.eclipse.swt.graphics.GC;
  * emulated platforms.
  */
 public class BidiUtil {
-	// Keyboard language ids
-	public static final int KEYBOARD_LATIN = 0;
-	public static final int KEYBOARD_HEBREW = 1;
-	public static final int KEYBOARD_ARABIC = 2;
+	// Keyboard language types
+	public static final int KEYBOARD_NON_BIDI = 0;
+	public static final int KEYBOARD_BIDI = 1;
 
 	// bidi rendering input flag constants, not used
 	// on emulated platforms

@@ -20,9 +20,8 @@ import java.util.Hashtable;
 public class BidiUtil {
 
 	// Keyboard language ids
-	public static final int KEYBOARD_LATIN = 0;
-	public static final int KEYBOARD_HEBREW = 1;
-	public static final int KEYBOARD_ARABIC = 2;
+	public static final int KEYBOARD_NON_BIDI = 0;
+	public static final int KEYBOARD_BIDI = 1;
 
 	// getRenderInfo flag values
 	public static final int CLASSIN = 1;
@@ -337,21 +336,21 @@ public static int getFontBidiAttributes(GC gc) {
 	return fontStyle;	
 }
 /**
- * Return the active keyboard language.  
+ * Return the active keyboard language type.  
  * <p>
  *
- * @return an integer representing the active keyboard language (KEYBOARD_HEBREW,
- *  KEYBOARD_ARABIC, KEYBOARD_LATIN)
+ * @return an integer representing the active keyboard language (KEYBOARD_BIDI,
+ *  KEYBOARD_NON_BIDI)
  */
 public static int getKeyboardLanguage() {
 	int layout = OS.GetKeyboardLayout(0);
 	// only interested in low 2 bytes, which is the primary
 	// language identifier
 	layout = layout & 0x000000FF;
-	if (layout == LANG_HEBREW) return KEYBOARD_HEBREW;
-	if (layout == LANG_ARABIC) return KEYBOARD_ARABIC;
-	// return LATIN for all non-bidi languages
-	return KEYBOARD_LATIN;
+	if (layout == LANG_HEBREW) return KEYBOARD_BIDI;
+	if (layout == LANG_ARABIC) return KEYBOARD_BIDI;
+	// return non-bidi for all other languages
+	return KEYBOARD_NON_BIDI;
 }
 /**
  * Return the languages that are installed for the keyboard.  
@@ -399,37 +398,34 @@ public static void removeLanguageListener (int hwnd) {
 	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, proc.intValue());
 }		
 /**
- * Switch the keyboard language to the specified language. 
+ * Switch the keyboard language to the specified language type.  We do
+ * not distinguish between mulitple bidi or multiple non-bidi languages, so
+ * set the keyboard to the first language of the given type.
  * <p>
  *
  * @param language integer representing language. One of 
- * 	KEYBOARD_HEBREW, KEYBOARD_ARABIC, KEYBOARD_LATIN.
+ * 	KEYBOARD_BIDI, KEYBOARD_NON_BIDI.
  */
 public static void setKeyboardLanguage(int language) {
 	// don't switch the keyboard if it doesn't need to be
 	if (language == getKeyboardLanguage()) return;
 	
-	boolean isBidiLang = (language == KEYBOARD_HEBREW) || (language == KEYBOARD_ARABIC);		
-	// get the corresponding WIN language id for the
-	// language
-	if (isBidiLang) {
-		int langId;
-		if (language == KEYBOARD_HEBREW) langId = LANG_HEBREW;
-		else langId = LANG_ARABIC;		
+	if (language == KEYBOARD_BIDI) {
 		// get the list of active languages
 		int[] list = getKeyboardLanguageList();
-		// set to first language of the given type
+		// set to first bidi language
 		for (int i=0; i<list.length; i++) {
 			int id = list[i] & 0x000000FF;
-			if (id == langId) {
+			if ((id == LANG_ARABIC) || (id == LANG_HEBREW)) {
 				OS.ActivateKeyboardLayout(list[i], 0);
 				return;
 			}
 		}
 	} else {
-		// set to the first "Latin" language (anything not
-		// hebrew or arabic)
+		// get the list of active languages
 		int[] list = getKeyboardLanguageList();
+		// set to the first non-bidi language (anything not
+		// hebrew or arabic)
 		for (int i=0; i<list.length; i++) {
 			int id = list[i] & 0x000000FF;
 			if ((id != LANG_HEBREW) && (id != LANG_ARABIC)) {

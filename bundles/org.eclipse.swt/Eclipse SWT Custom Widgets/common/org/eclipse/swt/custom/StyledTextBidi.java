@@ -186,10 +186,7 @@ static void addLanguageListener(Control control, Runnable runnable) {
  */
 static int getKeyboardLanguageDirection() {
 	int language = BidiUtil.getKeyboardLanguage();
-	if (language == BidiUtil.KEYBOARD_HEBREW) {
-		return SWT.RIGHT;
-	}
-	if (language == BidiUtil.KEYBOARD_ARABIC) {
+	if (language == BidiUtil.KEYBOARD_BIDI) {
 		return SWT.RIGHT;
 	}
 	return SWT.LEFT;
@@ -963,29 +960,29 @@ void redrawRange(Control parent, int logicalStart, int length, int xOffset, int 
 /**
  * Sets the keyboard language to match the codepage of the character 
  * at the specified offset.
- * Only distinguishes between left-to-right and right-to-left
- * characters and sets the keyboard language to one of Latin, Hebrew 
- * and Arabic.
+ * Only distinguishes between left-to-right and right-to-left characters and 
+ * sets the keyboard language to a bidi or non-bidi language.
  * <p>
  * 
  * @param logicalIndex logical offset of the character to use for 
  * 	determining the new keyboard language.
  */
-void setKeyboardLanguage(int logicalIndex) {
-	int language = BidiUtil.KEYBOARD_LATIN;
-	
+void setKeyboardLanguage(int logicalIndex) {	
 	if (logicalIndex >= classBuffer.length) {
 		return;
 	}
+	int language;
+	int current = BidiUtil.getKeyboardLanguage();
 	if (isRightToLeftInput(logicalIndex)) {
-		String codePage = System.getProperty("file.encoding").toUpperCase();
-		if ("CP1255".equals(codePage)) {
-			language = BidiUtil.KEYBOARD_HEBREW;
-		}
-		else
-		if ("CP1256".equals(codePage)) {		
-			language = BidiUtil.KEYBOARD_ARABIC;
-		}
+		// keyboard already in bidi mode, since we cannot distinguish between
+		// multiple bidi languages, just return
+		if (current == BidiUtil.KEYBOARD_BIDI) return;
+		language = BidiUtil.KEYBOARD_BIDI;
+	} else {
+		// keyboard already in non-bidi mode, since we cannot distinguish between
+		// multiple non-bidi languages, just return
+		if (current == BidiUtil.KEYBOARD_NON_BIDI) return;
+		language = BidiUtil.KEYBOARD_NON_BIDI;
 	}
 	BidiUtil.setKeyboardLanguage(language);
 }
