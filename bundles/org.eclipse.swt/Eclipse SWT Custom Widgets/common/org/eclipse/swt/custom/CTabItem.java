@@ -380,7 +380,7 @@ private static String shortenText(GC gc, String text, int width) {
 		}
 		end--;
 	}
-	return "";
+	return text + ellipsis;
 }
 /**
  * Answer the preferred height of the receiver for the GC.
