@@ -357,11 +357,10 @@ public boolean open () {
 						if (isDisposed()) return false;
 						drawRectangles ();
 						Rectangle boundingRectangle = computeBounds();
+						newX [0] = boundingRectangle.x + boundingRectangle.width / 2;
 						if ((style & SWT.RESIZE) != 0) {
-							newX [0] = boundingRectangle.x + boundingRectangle.width;
-							newY [0] = boundingRectangle.y + boundingRectangle.height;
+							newY [0] = boundingRectangle.y + boundingRectangle.height / 2;
 						} else {
-							newX [0] = boundingRectangle.x + boundingRectangle.width / 2;
 							newY [0] = boundingRectangle.y;
 						}
 						OS.XWarpPointer (xDisplay, SWT.NONE, xWindow, 0, 0, 0, 0, newX [0], newY [0]);

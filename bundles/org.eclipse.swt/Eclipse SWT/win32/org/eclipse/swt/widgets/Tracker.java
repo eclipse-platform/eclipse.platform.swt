@@ -346,11 +346,10 @@ public boolean open () {
 					if (isDisposed ()) return false;
 					drawRectangles ();
 					Rectangle boundingRectangle = computeBounds();
-					if ((style & SWT.RESIZE) != 0) {
-						newX = boundingRectangle.x + boundingRectangle.width;
-						newY = boundingRectangle.y + boundingRectangle.height;
-					} else {
 						newX = boundingRectangle.x + boundingRectangle.width / 2;
+					if ((style & SWT.RESIZE) != 0) {
+						newY = boundingRectangle.y + boundingRectangle.height / 2;
+					} else {
 						newY = boundingRectangle.y;
 					}
 					POINT pt = new POINT ();
