@@ -366,18 +366,18 @@ void closeWidget () {
 
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	int type = true || parent == null ? OS.GTK_WINDOW_TOPLEVEL : OS.GTK_WINDOW_DIALOG;
+	int type;
+	if ((style&SWT.NO_TRIM) == 0) type = OS.GTK_WINDOW_TOPLEVEL;
+		else type = OS.GTK_WINDOW_POPUP;
 	shellHandle = OS.gtk_window_new (type);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (parent != null) OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 	OS.gtk_window_set_policy (shellHandle, 1, 1, 0);
-	OS.gtk_window_set_title (shellHandle, new byte [1]);
-	if (parent != null) {
-		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
-	}
 	createScrolledHandle (shellHandle);
-
 	boolean modal = (style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
 	OS.gtk_window_set_modal (shellHandle, modal);	
+	OS.gtk_widget_realize (shellHandle);
+	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	int decorations = 0;
 	/*
 	 * High level GTK helpers, like gtk_window_set_decorated, simply
@@ -385,6 +385,7 @@ void createHandle (int index) {
 	 * Therefore we use that function manually.
 	 */
 	if ((style & SWT.NO_TRIM) == 0) {
+		OS.gtk_window_set_title (shellHandle, new byte [1]);
 		if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
 		if ((style & SWT.MAX) != 0) decorations |= OS.GDK_DECOR_MAXIMIZE;
 		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_RESIZEH;
@@ -398,11 +399,9 @@ void createHandle (int index) {
 		 * kind of border is requested.
 		 */
 		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
+		OS.gdk_window_set_decorations (window, decorations);
 	}
-	OS.gtk_widget_realize (shellHandle);
-	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
-	// TEMPORARY CODE - trim does not work for dialogs
-	OS.gdk_window_set_decorations (window, decorations);
+	else OS.gdk_window_set_override_redirect(window, true);
 	
 	accelGroup = OS.gtk_accel_group_new ();
 	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
