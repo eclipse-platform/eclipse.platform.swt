@@ -216,6 +216,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_browser_ProgressAdapter.suite());
 	addTest(Test_org_eclipse_swt_browser_ProgressListener.suite());
 	addTest(Test_org_eclipse_swt_browser_StatusTextListener.suite());
+	addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
 
 
 }

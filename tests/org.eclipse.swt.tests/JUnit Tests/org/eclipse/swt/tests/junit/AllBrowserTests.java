@@ -18,6 +18,7 @@ import junit.textui.*;
  * Suite for testing all of the graphics test cases.
  */
 public class AllBrowserTests {
+	
 public static void main(String[] args) {
 	TestRunner.run (suite());
 }
@@ -29,6 +30,7 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_browser_ProgressAdapter.suite());
 	suite.addTest(Test_org_eclipse_swt_browser_ProgressListener.suite());
 	suite.addTest(Test_org_eclipse_swt_browser_StatusTextListener.suite());
+	suite.addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
 
 	return suite;
 }
