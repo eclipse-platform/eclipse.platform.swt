@@ -1122,6 +1122,10 @@ public void drawPolyline(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	OS.Polyline(handle, pointArray, pointArray.length / 2);
+	int length = pointArray.length;
+	if (length >= 2) {
+		OS.SetPixel (handle, pointArray[length - 2], pointArray[length - 1], OS.GetTextColor (handle));
+	}
 }
 
 /** 
