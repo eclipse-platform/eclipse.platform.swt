@@ -389,7 +389,8 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	* resized to the preferred size but it still
 	* won't draw properly.
 	*/
-	if (resize && labelHandle != 0) OS.gtk_widget_set_size_request (labelHandle, -1, -1);
+	boolean fixWrap = resize && labelHandle != 0 && (style & SWT.WRAP) != 0;
+	if (fixWrap) OS.gtk_widget_set_size_request (labelHandle, -1, -1);
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	/*
 	* Bug in GTK.  For some reason, when the label is
@@ -402,7 +403,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	* This part of the fix forces the label to be
 	* resized so that it will draw wrapped.
 	*/
-	if (resize && labelHandle != 0) {
+	if (fixWrap) {
 		int labelWidth = OS.GTK_WIDGET_WIDTH (handle);
 		int labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
