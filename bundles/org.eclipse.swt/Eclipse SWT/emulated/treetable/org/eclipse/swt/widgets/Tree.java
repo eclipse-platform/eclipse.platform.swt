@@ -1590,9 +1590,10 @@ public TreeItem getItem(Point point) {
 	hitItemIndex = point.y / itemHeight;
 	hitItem = getRoot().getVisibleItem(hitItemIndex + getTopIndex());
 	if (hitItem != null) {
-		point.x -= hitItem.getPaintStartX();
-		point.y -= itemHeight * hitItemIndex;			
-		if (hitItem.isSelectionHit(point) == false) {
+		Point pt = new Point(point.x, point.y);
+		pt.x -= hitItem.getPaintStartX();
+		pt.y -= itemHeight * hitItemIndex;			
+		if (hitItem.isSelectionHit(pt) == false) {
 			hitItem = null;
 		}
 	}
