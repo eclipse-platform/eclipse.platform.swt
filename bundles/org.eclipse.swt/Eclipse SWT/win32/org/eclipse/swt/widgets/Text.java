@@ -257,6 +257,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
+
+	/* Calculate the margin width */
+	int margins = OS.SendMessage(handle, OS.EM_GETMARGINS, 0, 0);
+	int marginWidth = (margins & 0xFFFF) + ((margins >> 16) & 0xFFFF);
+	width += marginWidth;
 	
 	/*
 	* Bug in Windows.  For some reason, despite the fact

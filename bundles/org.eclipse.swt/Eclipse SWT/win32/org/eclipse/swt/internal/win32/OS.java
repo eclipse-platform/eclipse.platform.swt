@@ -1250,7 +1250,7 @@ public class OS {
 	public static final int EM_GETLIMITTEXT = 0xD5;
 	public static final int EM_GETLINE = 0xC4;
 	public static final int EM_GETLINECOUNT = 0xBA;
-//	public static final int EM_GETMARGINS = 0xD4;
+	public static final int EM_GETMARGINS = 0xD4;
 //	public static final int EM_GETMODIFY = 0xB8;
 //	public static final int EM_GETOLEINTERFACE = (WM_USER + 60);
 //	public static final int EM_GETOPTIONS = (WM_USER + 78);
