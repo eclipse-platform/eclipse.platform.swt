@@ -482,10 +482,14 @@ public Point [] getItemSizes () {
 	checkWidget ();	
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	Point [] sizes = new Point [count];
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_CHILDSIZE;
 	for (int i=0; i<count; i++) {
 		RECT rect = new RECT ();
 		OS.SendMessage (handle, OS.RB_GETRECT, i, rect);
-		sizes [i] = new Point (rect.right - rect.left + 2, rect.bottom - rect.top);
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		sizes [i] = new Point (rect.right - rect.left + 2, rbBand.cyChild);
 	}
 	return sizes;
 }
