@@ -840,6 +840,26 @@ void releaseWidget () {
 	cellFont = null;
 }
 
+public void removeAll () {
+	checkWidget ();
+	int length = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
+	if (length == 0) return;
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int [] index = new int [1];
+	boolean valid = OS.gtk_tree_model_iter_children (parent.modelHandle, iter, handle);
+	while (valid) {
+		OS.gtk_tree_model_get (parent.modelHandle, iter, Tree.ID_COLUMN, index, -1);
+		valid = OS.gtk_tree_model_iter_next (parent.modelHandle, iter);
+		TreeItem item = parent.items [index [0]];
+		if (item != null) {
+			item.releaseChild ();
+			item.releaseWidget ();
+			item.destroyWidget ();
+		}
+	}
+	OS.g_free (iter);
+}
+
 /**
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the item
