@@ -551,6 +551,15 @@ public static synchronized Display getCurrent () {
 	return findDisplay (Thread.currentThread ());
 }
 
+public Rectangle getClientArea () {
+	checkDevice ();
+	RECT rect = new RECT ();
+	OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	return new Rectangle (rect.left, rect.top, width, height);
+}
+
 /**
  * Returns the control which the on-screen pointer is currently
  * over top of, or null if it is not currently over one of the

@@ -8284,3 +8284,34 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumSystemLoca
     return (jboolean) EnumSystemLocales((LOCALE_ENUMPROC)lpLocaleEnumProc, (DWORD)dwFlags);
 }
 
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    SystemParametersInfo
+ * Signature: 
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfo
+  (JNIEnv *env, jclass that, jint uiAction, jint uiName, jobject pvParam, jint fWinIni)
+{
+	DECL_GLOB(pGlob)
+    RECT rect, *pvParam1=NULL;
+    jboolean rc;
+    
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "SystemParametersInfo\n");
+#endif
+
+     if (pvParam) {
+        pvParam1 = &rect;
+        cacheRectFids(env, pvParam, &PGLOB(RectFc));
+        getRectFields(env, pvParam, pvParam1, &PGLOB(RectFc));
+    }
+    
+    rc = (jboolean) SystemParametersInfo(uiAction, uiName, pvParam1, fWinIni);
+    
+    if (pvParam) {
+        setRectFields(env, pvParam, pvParam1, &PGLOB(RectFc));
+    }
+
+    return rc;
+}
+
