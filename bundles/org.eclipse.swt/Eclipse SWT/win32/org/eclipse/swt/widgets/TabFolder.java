@@ -69,10 +69,10 @@ public class TabFolder extends Composite {
 		* of assistance.  Therefore, it is critical that the
 		* new window class have the same name.  It is possible
 		* to register a local window class with the same name
-		* as a global class.  Since bits that affect painting
-		* are being cleared, it is possible that other native
+		* as a global class.  Since bits that affect the class
+		* are being changed, it is possible that other native
 		* code, other than SWT, could create a control with
-		* this class name, causing them to get pixel corruption.
+		* this class name, and fail unexpectedly.
 		*/
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		TCHAR WC_TABCONTROL = new TCHAR (0, OS.WC_TABCONTROL, true);
