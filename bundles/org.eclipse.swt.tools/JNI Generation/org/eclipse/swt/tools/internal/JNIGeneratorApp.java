@@ -14,7 +14,6 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Properties;
 import java.util.zip.*;
 import java.util.Arrays;
 
@@ -360,31 +359,13 @@ public Class[] getStructureClasses() {
 	return (Class[])result.toArray(new Class[result.size()]);
 }
 
-MetaData loadMetaData() {
-	int index = 0;
-	Properties propeties = new Properties();
-	int length = mainClassName.length();
-	while (index < length) {
-		index = mainClassName.indexOf('.', index);
-		if (index == -1) index = length;
-		try {
-			InputStream is = getClass().getResourceAsStream(mainClassName.substring(0, index) + ".properties");
-			propeties.load(is);
-			is.close();
-		} catch (Exception e) {
-		}
-		index++;
-	}
-	return new MetaData(propeties);
-}
-
 public void setClasspath(String classpath) {
 	this.classpath = classpath;
 }
 
 public void setMainClassName(String str) {
 	mainClassName = str;
-	metaData = loadMetaData();
+	metaData = new MetaData(mainClassName);
 	String mainClasses = getMetaData().getMetaData("swt_main_classes", null);
 	if (mainClasses != null) {
 		String[] list = ItemData.split(mainClasses, ",");

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Properties;
@@ -17,6 +19,30 @@ import java.util.Properties;
 public class MetaData {
 	
 	Properties data;
+
+public MetaData(String mainClass) {
+	data = new Properties();
+	int index = 0;
+	Class clazz = getClass();
+	int length = mainClass.length();
+	while (index < length) {
+		index = mainClass.indexOf('.', index);
+		if (index == -1) index = length;
+		InputStream is = clazz.getResourceAsStream(mainClass.substring(0, index) + ".properties");
+		if (is != null) {
+			try {
+				data.load(is);
+			} catch (IOException e) {
+			} finally {
+				try {
+					is.close();
+				} catch (IOException e) {}
+			}
+			
+		}
+		index++;
+	}
+}
 
 public MetaData(Properties data) {
 	this.data = data;
