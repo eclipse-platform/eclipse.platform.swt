@@ -199,16 +199,6 @@ private int getLogicalLineOffset(int visualLineOffset) {
 	return logicalContent.getOffsetAtLine(logicalLineIndex);
 }
 /**
- * Return ST.COLUMN_NEXT. Caret direction is irrelevant for 
- * printing since there is no caret.
- * </p>
- * @return ST.COLUMN_NEXT
- * @see StyledTextRenderer#getLastCaretDirection
- */
-protected int getLastCaretDirection() {
-	return ST.COLUMN_NEXT;
-}
-/**
  * Return cached line background data.
  * @see StyledTextRenderer#getLineBackgroundData
  */

@@ -49,31 +49,6 @@ StyledTextRenderer(Device device, Font regularFont, boolean isBidi, int leftMarg
 	this.leftMargin = leftMargin;
 }
 /**
- * Returns the width of the specified text. 
- * </p>
- *
- * @param text text to be measured.
- * @param startOffset offset of the character to start measuring.
- * @param length number of characters to measure. Tabs are counted 
- * 	as one character in this parameter.
- * @param startXOffset x position of "startOffset" in "text". Used for
- * 	calculating tab stops
- * @param bidi the bidi object to use for measuring text in bidi locales. 
- * @return width of the text with tabs expanded to tab stops or 0 if the 
- * 	startOffset or length is outside the specified text.
- */
-int bidiTextWidth(String text, int startOffset, int length, int startXOffset, StyledTextBidi bidi) {
-	int endOffset = startOffset + length;
-	int textLength = text.length();
-	
-	if (startOffset < 0 || startOffset >= textLength || endOffset > textLength) {
-		return 0;
-	}
-	// Use lastCaretDirection in order to get same results as during
-	// caret positioning (setBidiCaretLocation). Fixes 1GKU4C5.
-	return bidi.getCaretPosition(endOffset, getLastCaretDirection()) - startXOffset;
-}
-/**
  * Calculates the line height and space width.
  */
 void calculateLineHeight() {
@@ -159,13 +134,7 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
 		 (selectionStart < lineOffset && selectionEnd > lineOffset))) {
 		styles = mergeSelectionLineStyles(styles);
 	}
-	if (isBidi()) {
-		int paintX = bidiTextWidth(line, 0, 0, 0, bidi);
-		drawStyledLine(line, lineOffset, 0, styles, paintX, paintY, gc, lineBackground, widgetForeground, currentFont, bidi);
-	}
-	else {
-		drawStyledLine(line, lineOffset, 0, styles, 0, paintY, gc, lineBackground, widgetForeground, currentFont, bidi);
-	}
+	drawStyledLine(line, lineOffset, 0, styles, 0, paintY, gc, lineBackground, widgetForeground, currentFont, bidi);
 }
 /** 
  * Draws the background of the line selection.
@@ -460,13 +429,6 @@ protected abstract GC getGC();
  * @return the horizontal scroll position.
  */
 protected abstract int getHorizontalPixel();
-/**
- * Returns the most recent caret direction.
- * Used for measuring caret positions.
- * </p>
- * @return the most recent caret direction.
- */
-protected abstract int getLastCaretDirection();
 /**
  * Method getLeftMargin.
  * @return int

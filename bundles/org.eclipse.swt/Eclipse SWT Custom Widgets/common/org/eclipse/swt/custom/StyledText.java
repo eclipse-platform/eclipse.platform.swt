@@ -1640,6 +1640,31 @@ public void append(String string) {
 	replaceTextRange(lastChar, 0, string);
 }
 /**
+ * Returns the width of the specified text. 
+ * </p>
+ *
+ * @param text text to be measured.
+ * @param startOffset offset of the character to start measuring.
+ * @param length number of characters to measure. Tabs are counted 
+ * 	as one character in this parameter.
+ * @param startXOffset x position of "startOffset" in "text". Used for
+ * 	calculating tab stops
+ * @param bidi the bidi object to use for measuring text in bidi locales. 
+ * @return width of the text with tabs expanded to tab stops or 0 if the 
+ * 	startOffset or length is outside the specified text.
+ */
+int bidiTextWidth(String text, int startOffset, int length, int startXOffset, StyledTextBidi bidi) {
+	int endOffset = startOffset + length;
+	int textLength = text.length();
+	
+	if (startOffset < 0 || startOffset >= textLength || endOffset > textLength) {
+		return 0;
+	}
+	// Use lastCaretDirection in order to get same results as during
+	// caret positioning (setBidiCaretLocation). Fixes 1GKU4C5.
+	return bidi.getCaretPosition(endOffset, lastCaretDirection) - startXOffset;
+}
+/**
  * Calculates the width of the widest visible line.
  */
 void calculateContentWidth() {
@@ -4474,9 +4499,6 @@ StyledTextContent internalGetContent() {
 int internalGetHorizontalPixel() {
 	return horizontalScrollOffset;
 }
-int internalGetLastCaretDirection() {
-	return lastCaretDirection;
-}
 LineCache internalGetLineCache() {
 	return lineCache;
 }
@@ -6167,7 +6189,7 @@ void showBidiCaret() {
 	GC gc = new GC(this);
 	StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
 	// getXAtOffset, inlined for better performance
-	xAtOffset = renderer.bidiTextWidth(lineText, 0, offsetInLine, 0, bidi) + leftMargin;
+	xAtOffset = bidiTextWidth(lineText, 0, offsetInLine, 0, bidi) + leftMargin;
 	if (offsetInLine > lineText.length()) {
 		// offset is not on the line. return an x location one character 
 		// after the line to indicate the line delimiter.
@@ -7333,7 +7355,7 @@ int textWidth(String line, int lineIndex, int length, GC gc) {
 	}	
 	if (isBidi()) {
 		StyledTextBidi bidi = getStyledTextBidi(line, lineOffset, gc, null);
-		width = renderer.bidiTextWidth(line, 0, length, 0, bidi);
+		width = bidiTextWidth(line, 0, length, 0, bidi);
 	}
 	else {
 		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);

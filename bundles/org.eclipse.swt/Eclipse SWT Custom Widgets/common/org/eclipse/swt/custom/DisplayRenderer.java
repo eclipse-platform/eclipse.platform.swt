@@ -79,7 +79,7 @@ protected void drawLineSelectionBackground(String line, int lineOffset, StyleRan
 		return;
 	}
 	if (bidi != null) {
-		paintX = bidiTextWidth(line, 0, selectionStart, 0, bidi);
+		paintX = parent.bidiTextWidth(line, 0, selectionStart, 0, bidi);
 	}
 	else {
 		paintX = textWidth(line, lineOffset, 0, selectionStart, filterLineStyles(styles), 0, gc, currentFont);
@@ -112,7 +112,7 @@ protected void drawLineSelectionBackground(String line, int lineOffset, StyleRan
 			}
 		}
 		if (bidi != null) {
-			selectionBackgroundWidth = bidiTextWidth(line, selectionStart, selectionLength, paintX, bidi);
+			selectionBackgroundWidth = parent.bidiTextWidth(line, selectionStart, selectionLength, paintX, bidi);
 		}
 		else {
 			selectionBackgroundWidth = textWidth(line, lineOffset, selectionStart, selectionLength, styles, paintX, gc, currentFont);
@@ -201,15 +201,6 @@ protected GC getGC() {
  */
 protected int getHorizontalPixel() {
 	return parent.internalGetHorizontalPixel();
-}
-/**
- * Returns the most recent caret direction.
- * Used for measuring caret positions.
- * </p>
- * @return the most recent caret direction.
- */
-protected int getLastCaretDirection() {
-	return parent.internalGetLastCaretDirection();
 }
 /**
  * @see StyledTextRenderer#getLineBackgroundData
