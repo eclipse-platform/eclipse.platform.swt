@@ -754,12 +754,7 @@ int processResize (int callData) {
 		}
 		case OS.ConfigureNotify:
 			if (!reparented) return 0;
-			if (oldX != xEvent.x || oldY != xEvent.y) {
-				Event event = new Event();
-				event.x = xEvent.x;
-				event.y = xEvent.y;
-				sendEvent (SWT.Move,event);
-			}
+			if (oldX != xEvent.x || oldY != xEvent.y) sendEvent (SWT.Move);
 			if (oldWidth != xEvent.width || oldHeight != xEvent.height) {
 				sendEvent (SWT.Resize);
 				if (layout != null) layout (false);

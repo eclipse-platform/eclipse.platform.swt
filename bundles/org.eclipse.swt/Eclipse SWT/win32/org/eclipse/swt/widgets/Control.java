@@ -3259,10 +3259,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 }
 
 LRESULT WM_MOVE (int wParam, int lParam) {
-	Event event = new Event ();
-	event.x = (short) (lParam & 0xFFFF);
-	event.y = (short) (lParam >> 16);
-	sendEvent (SWT.Move,event);
+	sendEvent (SWT.Move);
 	// widget could be disposed at this point
 	return null;
 }
