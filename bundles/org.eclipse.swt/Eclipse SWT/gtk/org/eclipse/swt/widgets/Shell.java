@@ -636,15 +636,18 @@ int gtk_delete_event (int widget, int event) {
 }
 
 int gtk_event_after (int widget, int event) {
-	GdkEvent gdkEvent = new GdkEvent ();
-	OS.memmove (gdkEvent, event, GdkEvent.sizeof);
-	if (gdkEvent.type == OS.GDK_FOCUS_CHANGE) {
-		GdkEventFocus focusEvent = new GdkEventFocus ();
-		OS.memmove (focusEvent, event, GdkEventFocus.sizeof);
-		hasFocus = focusEvent.in != 0;
-		postEvent (hasFocus ? SWT.Activate : SWT.Deactivate);
+	int result = super.gtk_event_after (widget, event);
+	if (widget == shellHandle) {
+		GdkEvent gdkEvent = new GdkEvent ();
+		OS.memmove (gdkEvent, event, GdkEvent.sizeof);
+		if (gdkEvent.type == OS.GDK_FOCUS_CHANGE) {
+			GdkEventFocus focusEvent = new GdkEventFocus ();
+			OS.memmove (focusEvent, event, GdkEventFocus.sizeof);
+			hasFocus = focusEvent.in != 0;
+			postEvent (hasFocus ? SWT.Activate : SWT.Deactivate);
+		}
 	}
-	return 0;
+	return result;
 }
 
 int gtk_map_event (int widget, int event) {
