@@ -12,7 +12,6 @@ package org.eclipse.swt.accessibility;
 
 
 import java.util.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
@@ -28,20 +27,15 @@ public class AccessibleObject {
 	int keybindingPtr = -1;
 	int namePtr = -1;
 	int textPtr = -1;
-	int valuePtr = -1;
-	static boolean DEBUG = Display.DEBUG;
+	static boolean DEBUG =Display.DEBUG;
 
-	AccessibleObject (int type, int widget, Accessible accessible, int parentType) {
-		this (type, widget, accessible, parentType, false);
-	}
-	
 	AccessibleObject (int type, int widget, Accessible accessible, int parentType, boolean isLightweight) {
 		super ();
 		handle = OS.g_object_new (type, 0);
+		this.parentType = parentType;
 		ATK.atk_object_initialize (handle, widget);
 		this.accessible = accessible;
 		this.isLightweight = isLightweight;
-		this.parentType = parentType;
 		if (DEBUG) System.out.println("new AccessibleObject: " + handle);
 	}
 
@@ -51,267 +45,323 @@ public class AccessibleObject {
 	}
 	
 	int atkAction_get_keybinding (int index) {
-		if (accessible.getAccessibleListeners ().length != 0) {
-			AccessibleListener[] listeners = accessible.getAccessibleListeners ();
-			AccessibleEvent event = new AccessibleEvent (this);
-			event.childID = id;
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getKeyboardShortcut (event);	
-			} 
-			if (event.result != null) {
-				if (keybindingPtr != -1) OS.g_free (keybindingPtr);
-				byte[] name = Converter.wcsToMbcs (null, event.result, true);
-				keybindingPtr = OS.g_malloc (name.length);
-				OS.memmove (keybindingPtr, name, name.length);
-				return keybindingPtr; 	
-			}
-		}
+		int parentResult = 0;
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_ACTION_TYPE)) {
-			int superType = OS.g_type_class_peek (parentType);
+			int superType = OS.g_type_interface_peek_parent (ATK.ATK_ACTION_GET_IFACE (handle));
 			AtkActionIface actionIface = new AtkActionIface ();
 			ATK.memmove (actionIface, superType);
 			if (actionIface.get_keybinding != 0) {
-				return OS.call (actionIface.get_keybinding, handle, index);
+				parentResult = OS.call (actionIface.get_keybinding, handle, index);
 			}
 		}
-		return 0;
+		AccessibleListener[] listeners = accessible.getAccessibleListeners ();
+		if (listeners.length == 0) return parentResult;
+
+		AccessibleEvent event = new AccessibleEvent (this);
+		event.childID = id;
+		if (parentResult != 0) {
+			int length = OS.strlen (parentResult);
+			byte [] buffer = new byte [length];
+			OS.memmove (buffer, parentResult, length);
+			event.result = new String (Converter.mbcsToWcs (null, buffer));
+		}
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getKeyboardShortcut (event);	
+		} 
+		if (event.result == null) return parentResult;
+		if (keybindingPtr != -1) OS.g_free (keybindingPtr);
+		byte[] name = Converter.wcsToMbcs (null, event.result, true);
+		keybindingPtr = OS.g_malloc (name.length);
+		OS.memmove (keybindingPtr, name, name.length);
+		return keybindingPtr; 	
 	}
 
 	int atkAction_get_name (int index) {
-		if (accessible.getAccessibleListeners ().length != 0) {
-			AccessibleControlListener[] listeners = accessible.getControlListeners ();
-			AccessibleControlEvent event = new AccessibleControlEvent (this);
-			event.childID = id;
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getDefaultAction (event);				
-			} 
-			if (event.result != null) {
-				if (actionNamePtr != -1) OS.g_free (actionNamePtr);
-				byte[] name = Converter.wcsToMbcs (null, event.result, true);
-				actionNamePtr = OS.g_malloc (name.length);
-				OS.memmove (actionNamePtr, name, name.length);
-				return actionNamePtr;
-			}
-		}	
+		int parentResult = 0;
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_ACTION_TYPE)) {
-			int superType = OS.g_type_class_peek (parentType);
+			int superType = OS.g_type_interface_peek_parent (ATK.ATK_ACTION_GET_IFACE (handle));
 			AtkActionIface actionIface = new AtkActionIface ();
 			ATK.memmove (actionIface, superType);
 			if (actionIface.get_name != 0) {
-				return OS.call (actionIface.get_name, handle, index);
+				parentResult = OS.call (actionIface.get_name, handle, index);
 			}
 		}
-		return 0;
+		AccessibleControlListener[] listeners = accessible.getControlListeners ();
+		if (listeners.length == 0) return parentResult;
+
+		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		event.childID = id;
+		if (parentResult != 0) {
+			int length = OS.strlen (parentResult);
+			byte [] buffer = new byte [length];
+			OS.memmove (buffer, parentResult, length);
+			event.result = new String (Converter.mbcsToWcs (null, buffer));
+		}
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getDefaultAction (event);				
+		} 
+		if (event.result == null) return parentResult;
+		if (actionNamePtr != -1) OS.g_free (actionNamePtr);
+		byte[] name = Converter.wcsToMbcs (null, event.result, true);
+		actionNamePtr = OS.g_malloc (name.length);
+		OS.memmove (actionNamePtr, name, name.length);
+		return actionNamePtr;
 	}	
 
 	int atkComponent_get_extents (int x, int y, int width, int height, int coord_type) {
-		if (accessible.getControlListeners ().length != 0) {
-			AccessibleControlListener[] listeners = accessible.getControlListeners ();
-			AccessibleControlEvent event = new AccessibleControlEvent (this);
-			event.childID = id;
-			event.x = event.y = event.width = event.height = -1;
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getLocation (event);
-			}
-			if (event.x != -1 && event.y != -1 && event.width != -1 && event.height != -1) { 
-				if (coord_type == ATK.ATK_XY_WINDOW) {
-					// translate display -> control 
-					int gtkAccessibleHandle = OS.GTK_ACCESSIBLE (handle);
-					GtkAccessible gtkAccessible = new GtkAccessible ();
-					OS.memmove (gtkAccessible, gtkAccessibleHandle);
-					int topLevel = OS.gtk_widget_get_toplevel (gtkAccessible.widget);
-					int window = OS.GTK_WIDGET_WINDOW (topLevel);
-					int[] topWindowX = new int [1], topWindowY = new int [1];
-					OS.gdk_window_get_origin (window, topWindowX, topWindowY);
-					event.x -= topWindowX [0];
-					event.y -= topWindowY [0];
-				}
-				OS.memmove (x, new int[] {event.x}, 4);
-				OS.memmove (y, new int[] {event.y}, 4);
-				OS.memmove (width, new int[] {event.width}, 4);
-				OS.memmove (height, new int[] {event.height}, 4);
-				return 0;
-			}
-		}
+		int parentResult = 0;
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_COMPONENT_TYPE)) {
-			int superType = OS.g_type_class_peek (parentType);
+			int superType = OS.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (handle));
 			AtkComponentIface componentIface = new AtkComponentIface ();
 			ATK.memmove (componentIface, superType);
 			if (componentIface.get_extents != 0) {
-				return OS.call (componentIface.get_extents, x, y, width, height, coord_type);
+				parentResult = OS.call (componentIface.get_extents, x, y, width, height, coord_type);
 			}
 		}
+		AccessibleControlListener[] listeners = accessible.getControlListeners ();
+		if (listeners.length == 0) return parentResult;
+		
+		int[] parentX = new int [1], parentY = new int [1];
+		int[] parentWidth = new int [1], parentHeight = new int [1];
+		OS.memmove (parentX, x, 4);
+		OS.memmove (parentY, y, 4);
+		OS.memmove (parentWidth, width, 4);
+		OS.memmove (parentHeight, height, 4);
+		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		event.childID = id;
+		event.x = parentX [0]; event.y = parentY [0];
+		event.width = parentWidth [0]; event.height = parentHeight [0];
+		if (coord_type == ATK.ATK_XY_WINDOW) {
+			// translate control -> display, for filling in the event to be dispatched
+			int gtkAccessibleHandle = OS.GTK_ACCESSIBLE (handle);
+			GtkAccessible gtkAccessible = new GtkAccessible ();
+			OS.memmove (gtkAccessible, gtkAccessibleHandle);
+			int topLevel = OS.gtk_widget_get_toplevel (gtkAccessible.widget);
+			int window = OS.GTK_WIDGET_WINDOW (topLevel);				
+			int[] topWindowX = new int [1], topWindowY = new int [1];
+			OS.gdk_window_get_origin (window, topWindowX, topWindowY);
+			event.x += topWindowX [0];
+			event.y += topWindowY [0]; 
+		}
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getLocation (event);
+		}
+		if (coord_type == ATK.ATK_XY_WINDOW) {
+			// translate display -> control, for answering to the OS 
+			int gtkAccessibleHandle = OS.GTK_ACCESSIBLE (handle);
+			GtkAccessible gtkAccessible = new GtkAccessible ();
+			OS.memmove (gtkAccessible, gtkAccessibleHandle);
+			int topLevel = OS.gtk_widget_get_toplevel (gtkAccessible.widget);
+			int window = OS.GTK_WIDGET_WINDOW (topLevel);
+			int[] topWindowX = new int [1], topWindowY = new int [1];
+			OS.gdk_window_get_origin (window, topWindowX, topWindowY);
+			event.x -= topWindowX [0];
+			event.y -= topWindowY [0];
+		}
+		OS.memmove (x, new int[] {event.x}, 4);
+		OS.memmove (y, new int[] {event.y}, 4);
+		OS.memmove (width, new int[] {event.width}, 4);
+		OS.memmove (height, new int[] {event.height}, 4);
 		return 0;
 	}
 
 	int atkComponent_get_position (int x, int y, int coord_type) {
-		if (accessible.getControlListeners ().length != 0) {
-			AccessibleControlListener[] listeners = accessible.getControlListeners ();
-			AccessibleControlEvent event = new AccessibleControlEvent (this);
-			event.childID = id;
-			event.x = event.y = -1;
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getLocation (event);
-			}
-			if (event.x != -1 && event.y != -1) { 
-				if (coord_type == ATK.ATK_XY_WINDOW) {
-					// translate display -> control 
-					int gtkAccessibleHandle = OS.GTK_ACCESSIBLE (handle);
-					GtkAccessible gtkAccessible = new GtkAccessible ();
-					OS.memmove (gtkAccessible, gtkAccessibleHandle);
-					int topLevel = OS.gtk_widget_get_toplevel (gtkAccessible.widget);
-					int window = OS.GTK_WIDGET_WINDOW (topLevel);
-					int[] topWindowX = new int [1], topWindowY = new int [1];
-					OS.gdk_window_get_origin (window, topWindowX, topWindowY);
-					event.x -= topWindowX [0];
-					event.y -= topWindowY [0];
-				}
-				OS.memmove (x, new int[] {event.x}, 4);
-				OS.memmove (y, new int[] {event.y}, 4);
-				return 0;
-			}
-		}
+		int parentResult = 0;
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_COMPONENT_TYPE)) {
-			int superType = OS.g_type_class_peek (parentType);
+			int superType = OS.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (handle));
 			AtkComponentIface componentIface = new AtkComponentIface ();
 			ATK.memmove (componentIface, superType);
-			if (componentIface.get_position != 0) {
-				return OS.call (componentIface.get_position, handle, x, y, coord_type);
+			if (componentIface.get_extents != 0) {
+				parentResult = OS.call (componentIface.get_position, x, y, coord_type);
 			}
 		}
+		AccessibleControlListener[] listeners = accessible.getControlListeners ();
+		if (listeners.length == 0) return parentResult;
+		
+		int[] parentX = new int [1], parentY = new int [1];
+		OS.memmove (parentX, x, 4);
+		OS.memmove (parentY, y, 4);
+		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		event.childID = id;
+		event.x = parentX [0]; event.y = parentY [0];
+		if (coord_type == ATK.ATK_XY_WINDOW) {
+			// translate control -> display, for filling in the event to be dispatched
+			int gtkAccessibleHandle = OS.GTK_ACCESSIBLE (handle);
+			GtkAccessible gtkAccessible = new GtkAccessible ();
+			OS.memmove (gtkAccessible, gtkAccessibleHandle);
+			int topLevel = OS.gtk_widget_get_toplevel (gtkAccessible.widget);
+			int window = OS.GTK_WIDGET_WINDOW (topLevel);				
+			int[] topWindowX = new int [1], topWindowY = new int [1];
+			OS.gdk_window_get_origin (window, topWindowX, topWindowY);
+			event.x += topWindowX [0];
+			event.y += topWindowY [0]; 
+		}
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getLocation (event);
+		}
+		if (coord_type == ATK.ATK_XY_WINDOW) {
+			// translate display -> control, for answering to the OS 
+			int gtkAccessibleHandle = OS.GTK_ACCESSIBLE (handle);
+			GtkAccessible gtkAccessible = new GtkAccessible ();
+			OS.memmove (gtkAccessible, gtkAccessibleHandle);
+			int topLevel = OS.gtk_widget_get_toplevel (gtkAccessible.widget);
+			int window = OS.GTK_WIDGET_WINDOW (topLevel);
+			int[] topWindowX = new int [1], topWindowY = new int [1];
+			OS.gdk_window_get_origin (window, topWindowX, topWindowY);
+			event.x -= topWindowX [0];
+			event.y -= topWindowY [0];
+		}
+		OS.memmove (x, new int[] {event.x}, 4);
+		OS.memmove (y, new int[] {event.y}, 4);
 		return 0;
 	}
 
 	int atkComponent_get_size (int width, int height, int coord_type) {
-		if (accessible.getControlListeners ().length != 0) {
-			AccessibleControlListener[] listeners = accessible.getControlListeners ();
-			AccessibleControlEvent event = new AccessibleControlEvent (this);
-			event.childID = id;
-			event.width = event.height = -1;
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getLocation (event);
-			}
-			if (event.width != -1 && event.height != -1) { 
-				OS.memmove (width, new int[] {event.width}, 4);
-				OS.memmove (height, new int[] {event.height}, 4);
-				return 0;
-			}
-		}
+		int parentResult = 0;
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_COMPONENT_TYPE)) {
-			int superType = OS.g_type_class_peek (parentType);
+			int superType = OS.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (handle));
 			AtkComponentIface componentIface = new AtkComponentIface ();
 			ATK.memmove (componentIface, superType);
-			if (componentIface.get_size != 0) {
-				return OS.call (componentIface.get_size, handle, width, height, coord_type);
+			if (componentIface.get_extents != 0) {
+				parentResult = OS.call (componentIface.get_size, width, height, coord_type);
 			}
 		}
+		AccessibleControlListener[] listeners = accessible.getControlListeners ();
+		if (listeners.length == 0) return parentResult;
+		
+		int[] parentWidth = new int [1], parentHeight = new int [1];
+		OS.memmove (parentWidth, width, 4);
+		OS.memmove (parentHeight, height, 4);
+		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		event.childID = id;
+		event.width = parentWidth [0]; event.height = parentHeight [0];
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getLocation (event);
+		}
+		OS.memmove (width, new int[] {event.width}, 4);
+		OS.memmove (height, new int[] {event.height}, 4);
 		return 0;
 	}
 
 	int atkComponent_ref_accessible_at_point (int x, int y, int coord_type) {
-		if (accessible.getControlListeners ().length != 0) {
-			AccessibleControlListener[] listeners = accessible.getControlListeners ();				
-			AccessibleControlEvent event = new AccessibleControlEvent (this);
-			event.childID = id;
-			event.x = x; event.y = y;
-			if (coord_type == ATK.ATK_XY_WINDOW) {
-				// translate control -> display
-				int gtkAccessibleHandle = OS.GTK_ACCESSIBLE (handle);
-				GtkAccessible gtkAccessible = new GtkAccessible ();
-				OS.memmove (gtkAccessible, gtkAccessibleHandle);
-				int topLevel = OS.gtk_widget_get_toplevel (gtkAccessible.widget);
-				int window = OS.GTK_WIDGET_WINDOW (topLevel);				
-				int[] topWindowX = new int [1], topWindowY = new int [1];
-				OS.gdk_window_get_origin (window, topWindowX, topWindowY);
-				event.x += topWindowX [0];
-				event.y += topWindowY [0]; 
-				Rectangle rect = accessible.control.getBounds ();				
-				event.x -= rect.x;
-				event.y -= rect.y;
-			}
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getChildAtPoint (event);				
-			}
-			if (event.childID == id) event.childID = ACC.CHILDID_SELF;
-			AccessibleObject accObj = getChildByID (event.childID);
-			if (accObj != null) {
-				OS.g_object_ref (accObj.handle);	
-				return accObj.handle;
-			}
-		}
+		int parentResult = 0;
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_COMPONENT_TYPE)) {
-			int superType = OS.g_type_class_peek (parentType);
+			int superType = OS.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (handle));
 			AtkComponentIface componentIface = new AtkComponentIface ();
 			ATK.memmove (componentIface, superType);
 			if (componentIface.ref_accessible_at_point != 0) {
-				return OS.call (componentIface.ref_accessible_at_point, handle, x, y, coord_type);
+				parentResult = OS.call (componentIface.ref_accessible_at_point, handle, x, y, coord_type);
 			}
 		}
-		return 0;
+		AccessibleControlListener[] listeners = accessible.getControlListeners ();
+		if (listeners.length == 0) return parentResult;
+		
+		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		event.childID = id;
+		event.x = x; event.y = y;
+		if (coord_type == ATK.ATK_XY_WINDOW) {
+			// translate control -> display, for filling in the event to be dispatched
+			int gtkAccessibleHandle = OS.GTK_ACCESSIBLE (handle);
+			GtkAccessible gtkAccessible = new GtkAccessible ();
+			OS.memmove (gtkAccessible, gtkAccessibleHandle);
+			int topLevel = OS.gtk_widget_get_toplevel (gtkAccessible.widget);
+			int window = OS.GTK_WIDGET_WINDOW (topLevel);				
+			int[] topWindowX = new int [1], topWindowY = new int [1];
+			OS.gdk_window_get_origin (window, topWindowX, topWindowY);
+			event.x += topWindowX [0];
+			event.y += topWindowY [0]; 
+		}
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getChildAtPoint (event);				
+		}
+		if (event.childID == id) event.childID = ACC.CHILDID_SELF;
+		AccessibleObject accObj = getChildByID (event.childID);
+		if (accObj != null) {
+			if (parentResult > 0) OS.g_object_unref (parentResult);
+			OS.g_object_ref (accObj.handle);	
+			return accObj.handle;
+		}
+		return parentResult;
 	}	
 
 	int atkObject_get_description () {
-		if (accessible.getAccessibleListeners ().length != 0) {
-			AccessibleListener[] listeners = accessible.getAccessibleListeners ();
-			AccessibleEvent event = new AccessibleEvent (this);
-			event.childID = id;
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getDescription (event);				
-			} 
-			if (event.result != null) {
-				if (descriptionPtr != -1) OS.g_free (descriptionPtr);
-				byte[] name = Converter.wcsToMbcs (null, event.result, true);
-				descriptionPtr = OS.g_malloc (name.length);
-				OS.memmove (descriptionPtr, name, name.length);
-				return descriptionPtr; 
-			}
-		} 
+		int parentResult = 0;
 		int superType = OS.g_type_class_peek (parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
-		if (objectClass.get_description == 0) return 0;
-		return OS.call (objectClass.get_description, handle);
+		if (objectClass.get_description != 0) {
+			parentResult = OS.call (objectClass.get_description, handle);
+		}
+		AccessibleListener[] listeners = accessible.getAccessibleListeners ();
+		if (listeners.length == 0) return parentResult;
+			
+		AccessibleEvent event = new AccessibleEvent (this);
+		event.childID = id;
+		if (parentResult != 0) {
+			int length = OS.strlen (parentResult);
+			byte [] buffer = new byte [length];
+			OS.memmove (buffer, parentResult, length);
+			event.result = new String (Converter.mbcsToWcs (null, buffer));
+		}
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getDescription (event);				
+		} 
+		if (event.result == null) return parentResult;
+		if (descriptionPtr != -1) OS.g_free (descriptionPtr);
+		byte[] name = Converter.wcsToMbcs (null, event.result, true);
+		descriptionPtr = OS.g_malloc (name.length);
+		OS.memmove (descriptionPtr, name, name.length);
+		return descriptionPtr; 
 	}
 
 	int atkObject_get_name () {
-		if (accessible.getAccessibleListeners ().length != 0) {
-			AccessibleListener[] listeners = accessible.getAccessibleListeners ();
-			AccessibleEvent event = new AccessibleEvent (this);
-			event.childID = id;
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getName (event);				
-			} 
-			if (event.result != null) {
-				if (namePtr != -1) OS.g_free (namePtr);
-				byte[] name = Converter.wcsToMbcs (null, event.result, true);
-				namePtr = OS.g_malloc (name.length);
-				OS.memmove (namePtr, name, name.length);
-				return namePtr; 
-			}
-		} 
+		int parentResult = 0;
 		int superType = OS.g_type_class_peek (parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
-		if (objectClass.get_name == 0) return 0;
-		return OS.call (objectClass.get_name, handle);
+		if (objectClass.get_name != 0) {
+			parentResult = OS.call (objectClass.get_name, handle);
+		}
+		AccessibleListener[] listeners = accessible.getAccessibleListeners ();
+		if (listeners.length == 0) return parentResult;
+		
+		AccessibleEvent event = new AccessibleEvent (this);
+		event.childID = id;
+		if (parentResult != 0) {
+			int length = OS.strlen (parentResult);
+			byte [] buffer = new byte [length];
+			OS.memmove (buffer, parentResult, length);
+			event.result = new String (Converter.mbcsToWcs (null, buffer));
+		}
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getName (event);				
+		} 
+		if (event.result == null) return parentResult;
+		if (namePtr != -1) OS.g_free (namePtr);
+		byte[] name = Converter.wcsToMbcs (null, event.result, true);
+		namePtr = OS.g_malloc (name.length);
+		OS.memmove (namePtr, name, name.length);
+		return namePtr; 
 	}	
 
 	int atkObject_get_n_children () {
-		if (accessible.getControlListeners ().length != 0) {
-			AccessibleControlListener[] listeners = accessible.getControlListeners ();
-			AccessibleControlEvent event = new AccessibleControlEvent (this);
-			event.childID = id;
-			event.detail = -1;
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getChildCount (event);
-			} 
-			if (event.detail != -1) return event.detail;
-		}
+		int parentResult = 0;
 		int superType = OS.g_type_class_peek (parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
-		if (objectClass.get_n_children == 0) return 0;
-		return OS.call (objectClass.get_n_children, handle);
+		if (objectClass.get_n_children != 0) { 
+			parentResult = OS.call (objectClass.get_n_children, handle);
+		}
+		AccessibleControlListener[] listeners = accessible.getControlListeners ();
+		if (listeners.length == 0) return parentResult;
+			
+		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		event.childID = id;
+		event.detail = parentResult;
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getChildCount (event);
+		} 
+		return event.detail;
 	}
 
 	int atkObject_get_index_in_parent () {
@@ -432,52 +482,55 @@ public class AccessibleObject {
 	}
 
 	int atkSelection_is_child_selected (int index) {
-		if (accessible.getControlListeners ().length != 0) {
-			AccessibleControlListener[] listeners = accessible.getControlListeners ();
-			AccessibleControlEvent event = new AccessibleControlEvent (this);
-			event.childID = id;
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getSelection (event);
-			}
-			AccessibleObject accessibleObject = getChildByID (event.childID);
-			if (accessibleObject != null) { 
-				return accessibleObject.index == index ? 1 : 0;
-			}
-		}
+		int parentResult = 0;
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_SELECTION_TYPE)) {
-			int superType = OS.g_type_class_peek (parentType);
+			int superType = OS.g_type_interface_peek_parent (ATK.ATK_SELECTION_GET_IFACE (handle));
 			AtkSelectionIface selectionIface = new AtkSelectionIface ();
 			ATK.memmove (selectionIface, superType);
 			if (selectionIface.is_child_selected != 0) {
-				return OS.call (selectionIface.is_child_selected, handle, index);
+				parentResult = OS.call (selectionIface.is_child_selected, handle, index);
 			}
 		}
-		return 0;
+		AccessibleControlListener[] listeners = accessible.getControlListeners ();
+		if (listeners.length == 0) return parentResult;
+			
+		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		event.childID = id;
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getSelection (event);
+		}
+		AccessibleObject accessibleObject = getChildByID (event.childID);
+		if (accessibleObject != null) { 
+			return accessibleObject.index == index ? 1 : 0;
+		}
+		return parentResult;
 	}
 
 	int atkSelection_ref_selection (int index) {
-		if (accessible.getControlListeners ().length != 0) {
-			AccessibleControlListener[] listeners = accessible.getControlListeners ();
-			AccessibleControlEvent event = new AccessibleControlEvent (this);
-			event.childID = id;
-			for (int i = 0; i < listeners.length; i++) {
-				listeners [i].getSelection (event);
-			} 
-			AccessibleObject accObj = getChildByID (event.childID);
-			if (accObj != null) {
-				OS.g_object_ref (accObj.handle);	
-				return accObj.handle;
-			}
-		}
+		int parentResult = 0;
 		if (OS.g_type_is_a (parentType, AccessibleType.ATK_SELECTION_TYPE)) {
-			int superType = OS.g_type_class_peek (parentType);
+			int superType = OS.g_type_interface_peek_parent (ATK.ATK_SELECTION_GET_IFACE (handle));
 			AtkSelectionIface selectionIface = new AtkSelectionIface ();
 			ATK.memmove (selectionIface, superType);
 			if (selectionIface.ref_selection != 0) {
-				return OS.call (selectionIface.ref_selection, handle, index);
+				parentResult = OS.call (selectionIface.ref_selection, handle, index);
 			}
 		}
-		return 0;
+		AccessibleControlListener[] listeners = accessible.getControlListeners ();
+		if (listeners.length == 0) return parentResult;
+			
+		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		event.childID = id;
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getSelection (event);
+		} 
+		AccessibleObject accObj = getChildByID (event.childID);
+		if (accObj != null) {
+			if (parentResult > 0) OS.g_object_unref (parentResult);
+			OS.g_object_ref (accObj.handle);	
+			return accObj.handle;
+		}
+		return parentResult;
 	}
 
 	int atkText_get_character_at_offset (int offset) {
@@ -873,8 +926,6 @@ public class AccessibleObject {
 		actionNamePtr = -1;
 		if (textPtr != -1) OS.g_free (textPtr);
 		textPtr = -1;
-		if (valuePtr != -1) OS.g_free (valuePtr);
-		valuePtr = -1;
 	}
 
 	AccessibleObject getChildByHandle (int handle) {
@@ -901,12 +952,34 @@ public class AccessibleObject {
 	}
 	
 	String getText () {
-		if (accessible.getAccessibleListeners ().length == 0) return null;
-		AccessibleControlListener[] listeners = accessible.getControlListeners();
+		int parentResult = 0;
+		String parentText = "";
+		if (OS.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
+			int superType = OS.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (handle));
+			AtkTextIface textIface = new AtkTextIface ();
+			ATK.memmove (textIface, superType);
+			int characterCount = 0;
+			if (textIface.get_character_count != 0) {
+				characterCount = OS.call (textIface.get_character_count, handle);
+			}
+			if (characterCount > 0 && textIface.get_text != 0) {
+				parentResult = OS.call (textIface.get_text, handle, 0, characterCount);
+				if (parentResult != 0) {
+					int length = OS.strlen (parentResult);
+					byte [] buffer = new byte [length];
+					OS.memmove (buffer, parentResult, length);
+					parentText = new String (Converter.mbcsToWcs (null, buffer));
+				}
+			}
+		}
+		AccessibleControlListener[] listeners = accessible.getControlListeners ();
+		if (listeners.length == 0) return parentText;
+		
 		AccessibleControlEvent event = new AccessibleControlEvent (this);
 		event.childID = id;
+		event.result = parentText;
 		for (int i = 0; i < listeners.length; i++) {
-			listeners [i].getValue(event);				
+			listeners [i].getValue (event);				
 		} 
 		return event.result;
 	}
@@ -972,51 +1045,51 @@ public class AccessibleObject {
 	}
 	
 	void updateChildren () {
-		if (accessible.getControlListeners ().length > 0) {
-			AccessibleControlListener[] listener = accessible.getControlListeners ();
-			AccessibleControlEvent event = new AccessibleControlEvent (this);
-			for (int i = 0; i < listener.length; i++) {
-				listener [i].getChildren (event);
-			}
-			if (event.children != null && event.children.length > 0) {
-				Hashtable childrenCopy = (Hashtable)children.clone ();
-				if (event.children [0] instanceof Integer) {
-					//	an array of child id's (Integers) was answered
-					AccessibleType childType = AccessibleType.getInstance ();
-					for (int i = 0; i < event.children.length; i++) {
-						AccessibleObject object = getChildByIndex (i);
-						if (object == null) {
-							object = new AccessibleObject (childType.handle, 0, accessible, childType.handle, true);
-							childType.addInstance (object);
-							addChild (object);
-							object.index = i;
-						}
-						try {
-							object.id = ((Integer)event.children [i]).intValue ();
-						} catch (ClassCastException e) {
-							// a non-ID value was given so don't set the ID
-						}
-						childrenCopy.remove (new Integer (object.handle));
-					}
-				} else {
-					// an array of Accessible children was answered
-					for (int i = 0; i < event.children.length; i++) {
-						AccessibleObject object = null;
-						try {
-							object = ((Accessible)event.children [i]).accessibleObject;
-						} catch (ClassCastException e) {
-							// a non-Accessible value was given so nothing to do here 
-						}
+		AccessibleControlListener[] listeners = accessible.getControlListeners ();
+		if (listeners.length == 0) return;
+
+		AccessibleControlEvent event = new AccessibleControlEvent (this);
+		for (int i = 0; i < listeners.length; i++) {
+			listeners [i].getChildren (event);
+		}
+		if (event.children != null && event.children.length > 0) {
+			Hashtable childrenCopy = (Hashtable)children.clone ();
+			if (event.children [0] instanceof Integer) {
+				//	an array of child id's (Integers) was answered
+				AccessibleType childType = AccessibleFactory.getChildType ();
+				for (int i = 0; i < event.children.length; i++) {
+					AccessibleObject object = getChildByIndex (i);
+					if (object == null) {
+						object = new AccessibleObject (childType.handle, 0, accessible, parentType, true);
+						AccessibleType.addInstance (object);
+						addChild (object);
 						object.index = i;
-						childrenCopy.remove (new Integer (object.handle));
 					}
+					try {
+						object.id = ((Integer)event.children[i]).intValue ();
+					} catch (ClassCastException e) {
+						// a non-ID value was given so don't set the ID
+					}
+					childrenCopy.remove (new Integer (object.handle));
 				}
-				// remove previous children of self which were not answered
-				Enumeration childrenToRemove = childrenCopy.elements ();
-				while (childrenToRemove.hasMoreElements ()) {
-					AccessibleObject object = (AccessibleObject) childrenToRemove.nextElement (); 
-					removeChild (object, true);
+			} else {
+				// an array of Accessible children was answered
+				for (int i = 0; i < event.children.length; i++) {
+					AccessibleObject object = null;
+					try {
+						object = ((Accessible)event.children [i]).accessibleObject;
+					} catch (ClassCastException e) {
+						// a non-Accessible value was given so nothing to do here 
+					}
+					object.index = i;
+					childrenCopy.remove (new Integer (object.handle));
 				}
+			}
+			// remove previous children of self which were not answered
+			Enumeration childrenToRemove = childrenCopy.elements ();
+			while (childrenToRemove.hasMoreElements ()) {
+				AccessibleObject object = (AccessibleObject) childrenToRemove.nextElement (); 
+				removeChild (object, true);
 			}
 		}
 	}
