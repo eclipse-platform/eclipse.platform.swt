@@ -1,15 +1,15 @@
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.motif.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
  
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.motif.*;
+
 /**
  *
  * Class <code>DragSource</code> defines the source object for a drag and drop transfer.
@@ -89,6 +89,15 @@ public class DragSource extends Widget {
 
 	int dragContext;
 
+/**
+ * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
+ * 
+ * @param control the <code>Control</code> that the user clicks on to initiate the drag
+ *
+ * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
+ *					DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
+ *
+ */
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
 	
@@ -117,18 +126,15 @@ public DragSource(Control control, int style) {
 	});
 }
 /**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+ * Adds the listener to receive events.
+ *
+ * @param listener the listener
+ *
+ * @exception SWTError 
+ *	<ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ * 		<li>ERROR_WIDGET_DISPOSED  when the widget has been disposed</li>
+ * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ */
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
@@ -362,6 +368,12 @@ private int dropFinishCallback(int widget, int client_data, int call_data) {
 	
 	return 0;
 }
+/**
+ * Returns the Control which is registered for this DragSource.  This is the control that the 
+ * user clicks in to initiate dragging.
+ *
+ * @return the Control which is registered for this DragSource
+ */
 public Control getControl () {
 	return control;
 }
@@ -373,6 +385,11 @@ public Display getDisplay () {
 	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	return control.getDisplay ();
 }
+/**
+ * Returns the list of data types that can be transferred by this DragSource.
+ *
+ * @return the list of data types that can be transferred by this DragSource
+ */
 public Transfer[] getTransfer(){
 	return transferAgents;
 }
@@ -427,24 +444,26 @@ private int osOpToOp(byte osOperation){
 	return operation;
 }
 /**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
+ * @exception SWTError
+ *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
+ * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ */
 public void removeDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener (DND.DragStart, listener);
 	removeListener (DND.DragSetData, listener);
 	removeListener (DND.DragEnd, listener);
 }
+/**
+ * Specifies the list of data types that can be transferred by this DragSource.
+ * The application must be able to provide data to match each of these types when
+ * a successful drop has occurred.
+ */
 public void setTransfer(Transfer[] transferAgents){
 	this.transferAgents = transferAgents;
 }

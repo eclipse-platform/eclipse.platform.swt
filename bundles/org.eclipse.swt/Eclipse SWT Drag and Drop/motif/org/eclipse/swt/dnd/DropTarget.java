@@ -1,15 +1,15 @@
 package org.eclipse.swt.dnd;
 
+/*
+ * Licensed Materials - Property of IBM,
+ * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
+ */
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
-
-/*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
- */
 
 /**
  *
@@ -81,6 +81,15 @@ public class DropTarget extends Widget {
 	
 	private DragUnderEffect effect;
 	
+/**
+ * Creates a new <code>DropTarget</code> to handle dropping on the specified <code>Control</code>.
+ * 
+ * @param control the <code>Control</code> over which the user positions the cursor to drop data
+ *
+ * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
+ *					DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
+ *
+ */
 public DropTarget(Control control, int style) {
 
 	super (control, checkStyle(style));
@@ -132,18 +141,15 @@ public DropTarget(Control control, int style) {
 	}
 }
 /**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+ * Adds the listener to receive events.
+ *
+ * @param listener the listener
+ *
+ * @exception SWTError 
+ *	<ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ * 		<li>ERROR_WIDGET_DISPOSED  when the widget has been disposed</li>
+ * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ */
 public void addDropListener(DropTargetListener listener) {	
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
@@ -421,18 +427,15 @@ private void releaseDropInfo(){
 	dropTransferObject = 0;
 }
 /**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+ * Removes the listener.
+ *
+ * @param listener the listener
+ *
+ * @exception SWTError
+ *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
+ * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ */
 public void removeDropListener(DropTargetListener listener) {	
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener (DND.DragEnter, listener);
@@ -442,6 +445,12 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.Drop, listener);
 	removeListener (DND.DropAccept, listener);
 }
+/**
+ * Specifies the list of data types that can be transferred to this DropTarget.
+ *
+ * @param transferAgents a list of Transfer objects which define the types of data that can be
+ *						 dropped on this target
+ */
 public void setTransfer(Transfer[] transferAgents){
 	this.transferAgents = transferAgents;
 			
