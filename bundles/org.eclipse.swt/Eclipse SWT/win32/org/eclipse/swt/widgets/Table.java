@@ -47,7 +47,7 @@ public class Table extends Composite {
 	ImageList imageList;
 	int lastIndexOf, lastWidth;
 	boolean customDraw, dragStarted, fixScrollWidth, mouseDown;
-	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreRedraw;
+	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreRedraw, ignoreResize;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
 	static final int HEADER_MARGIN = 10;
@@ -3167,36 +3167,38 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					}
 				}
 				lastWidth = width;
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				if (phdn.pitem != 0) {
-					HDITEM pitem = new HDITEM ();
-					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
-					if ((pitem.mask & OS.HDI_WIDTH) != 0) {
-						TableColumn column = columns [phdn.iItem];
-						if (column != null) {
-							column.sendEvent (SWT.Resize);
-							/*
-							* It is possible (but unlikely), that application
-							* code could have disposed the widget in the resize
-							* event.  If this happens, end the processing of the
-							* Windows message by returning zero as the result of
-							* the window proc.
-							*/
-							if (isDisposed ()) return LRESULT.ZERO;	
-							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-							if (count == 1 && columns [0] == null) count = 0;
-							/*
-							* It is possible (but unlikely), that application
-							* code could have disposed the column in the move
-							* event.  If this happens, process the move event
-							* for those columns that have not been destroyed.
-							*/
-							TableColumn [] newColumns = new TableColumn [count];
-							System.arraycopy (columns, 0, newColumns, 0, count);
-							for (int i=phdn.iItem+1; i<count; i++) {
-								if (newColumns [i] != null && !newColumns [i].isDisposed ()) {
-									newColumns [i].sendEvent (SWT.Move);
+				if (!ignoreResize) {
+					NMHEADER phdn = new NMHEADER ();
+					OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+					if (phdn.pitem != 0) {
+						HDITEM pitem = new HDITEM ();
+						OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
+						if ((pitem.mask & OS.HDI_WIDTH) != 0) {
+							TableColumn column = columns [phdn.iItem];
+							if (column != null) {
+								column.sendEvent (SWT.Resize);
+								/*
+								* It is possible (but unlikely), that application
+								* code could have disposed the widget in the resize
+								* event.  If this happens, end the processing of the
+								* Windows message by returning zero as the result of
+								* the window proc.
+								*/
+								if (isDisposed ()) return LRESULT.ZERO;	
+								int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+								if (count == 1 && columns [0] == null) count = 0;
+								/*
+								* It is possible (but unlikely), that application
+								* code could have disposed the column in the move
+								* event.  If this happens, process the move event
+								* for those columns that have not been destroyed.
+								*/
+								TableColumn [] newColumns = new TableColumn [count];
+								System.arraycopy (columns, 0, newColumns, 0, count);
+								for (int i=phdn.iItem+1; i<count; i++) {
+									if (newColumns [i] != null && !newColumns [i].isDisposed ()) {
+										newColumns [i].sendEvent (SWT.Move);
+									}
 								}
 							}
 						}
