@@ -16,6 +16,7 @@ import java.text.MessageFormat;
 public class ImageAnalyzer {
 	static ResourceBundle bundle = ResourceBundle.getBundle("examples_images");
 	
+	Display display;
 	Shell shell;
 	Canvas imageCanvas, paletteCanvas;
 	Label typeLabel, sizeLabel, depthLabel, transparentPixelLabel,
@@ -26,7 +27,7 @@ public class ImageAnalyzer {
 	Button incrementalCheck, transparentCheck, maskCheck, backgroundCheck;
 	Button previousButton, nextButton, animateButton;
 	Text dataText;
-	Display display;
+	Sash sash;
 	Color whiteColor, blackColor, redColor, greenColor, blueColor, canvasBackground;
 	Font fixedWidthFont;
 	Cursor crossCursor;
@@ -447,11 +448,36 @@ public class ImageAnalyzer {
 		});
 
 		// Sash to see more of image or image data.
-		Sash sash = new Sash(shell, SWT.HORIZONTAL);
+		sash = new Sash(shell, SWT.HORIZONTAL);
 		gridData = new GridData();
 		gridData.horizontalSpan = 2;
 		gridData.horizontalAlignment = GridData.FILL;
 		sash.setLayoutData(gridData);
+		sash.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				if (event.detail != SWT.DRAG) {
+					((GridData)paletteCanvas.getLayoutData()).heightHint = SWT.DEFAULT;
+					Rectangle paletteCanvasBounds = paletteCanvas.getBounds();
+					int minY = paletteCanvasBounds.y + 20;
+					Rectangle dataLabelBounds = dataLabel.getBounds();
+					int maxY = statusLabel.getBounds().y - dataLabelBounds.height - 20;
+					if (event.y > minY && event.y < maxY) {
+						Rectangle oldSash = sash.getBounds();
+						sash.setBounds(event.x, event.y, event.width, event.height);
+						int diff = event.y - oldSash.y;
+						Rectangle bounds = imageCanvas.getBounds();
+						imageCanvas.setBounds(bounds.x, bounds.y, bounds.width, bounds.height + diff);
+						bounds = paletteCanvasBounds;
+						paletteCanvas.setBounds(bounds.x, bounds.y, bounds.width, bounds.height + diff);
+						bounds = dataLabelBounds;
+						dataLabel.setBounds(bounds.x, bounds.y + diff, bounds.width, bounds.height);
+						bounds = dataText.getBounds();
+						dataText.setBounds(bounds.x, bounds.y + diff, bounds.width, bounds.height - diff);
+						//shell.layout(true);
+					}
+				}
+			}
+		});
 
 		// Label to show data-specific fields.
 		dataLabel = new Label(shell, SWT.NULL);
