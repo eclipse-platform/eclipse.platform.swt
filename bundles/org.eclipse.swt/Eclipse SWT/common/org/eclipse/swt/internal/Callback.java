@@ -158,6 +158,20 @@ public static int getVersion () {
 public static native String getPlatform ();
 
 /**
+ * Returns the OS name.
+ *
+ * @return the os name of the currently running SWT
+ */
+public static String getOS () {
+	String[] OS_LIST = { "win32", "linux", "aix", "solaris", "neutrino" };
+	String name = System.getProperty("os.name");
+	for (int i = 0; i < OS_LIST.length; i++) {
+		if (name.regionMatches(true, 0, OS_LIST [i], 0, 3))
+			return OS_LIST [i];
+	}
+	return "unknown";
+}
+/**
  * Returns the SWT revision number as an integer. Revision changes
  * occur as a result of non-API breaking bug fixes.
  *
@@ -227,7 +241,10 @@ public static void loadLibrary () {
  * @param name the name of the library to load
  */
 public static void loadLibrary (String name) {
-	String newName = name + MAJOR_VERSION;
+	/* Include os name to support same window system on 
+	 * different operating systems 
+	 */
+	String newName = name + "-" + getOS () + "-" + MAJOR_VERSION;
 
 	/* Force 3 digits in minor version number */
 	if (MINOR_VERSION < 10) {
