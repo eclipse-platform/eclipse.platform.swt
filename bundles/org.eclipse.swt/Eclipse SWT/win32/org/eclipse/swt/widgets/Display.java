@@ -1287,9 +1287,6 @@ int getMessageCount () {
 	return synchronizer.getMessageCount ();
 }
 
-Object getMessageLock () {
-	return synchronizer.messageLock;
-}
 
 Shell getModalShell () {
 	if (modalShells == null) return null;
@@ -3104,9 +3101,7 @@ void updateFont () {
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
-	synchronized (getMessageLock ()) {
-		if (getMessageCount () == 1) wakeThread ();
-	}
+	wakeThread ();
 }
 
 void wakeThread () {
