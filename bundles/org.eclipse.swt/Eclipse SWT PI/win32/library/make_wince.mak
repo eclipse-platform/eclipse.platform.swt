@@ -22,7 +22,7 @@ CPU=ARM
 
 LINK_LIBS =  aygshell.lib corelibc.lib coredll.lib commdlg.lib commctrl.lib ceshell.lib
 
-CFLAGS = /nologo /c /W3 -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -DREDUCED_CALLBACKS -DJ9WINCE -D_WIN32_WCE=300 -D"WIN32_PLATFORM_PSPC" /DUNDER_CE=300 /D"UNICODE" /D"_MBCS" /Zm200 -DARM -D_ARM_ -DFIXUP_UNALIGNED /I. /I$(JAVA_HOME)\include $*.c
+CFLAGS = /nologo /c /W3 -O1 -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -DREDUCED_CALLBACKS -DJ9WINCE -D_WIN32_WCE=300 -D"WIN32_PLATFORM_PSPC" /DUNDER_CE=300 /D"UNICODE" /D"_MBCS" /Zm200 -DARM -D_ARM_ -DFIXUP_UNALIGNED /I. /I$(JAVA_HOME)\include $*.c
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver) -D"WIN32_PLATFORM_PSPC"
 LFLAGS = $(dlllflags) /dll /entry:"_DllMainCRTStartup" /NODEFAULTLIB:libc.lib /nodefaultlib:oldnames.lib
 
@@ -52,7 +52,7 @@ CPU=ARM
 
 LINK_LIBS =  corelibc.lib coredll.lib commdlg.lib commctrl.lib ceshell.lib
 
-CFLAGS = /nologo /c /W3 -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -DREDUCED_CALLBACKS -DJ9WINCE -D_WIN32_WCE=300 -D"WIN32_PLATFORM_HPC2000" /DUNDER_CE=300 /D"UNICODE" /D"_MBCS" /Zm200 -DARM -D_ARM_ -DFIXUP_UNALIGNED /I. /I$(JAVA_HOME)\include $*.c
+CFLAGS = /nologo /c /W3 -O1 -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -DREDUCED_CALLBACKS -DJ9WINCE -D_WIN32_WCE=300 -D"WIN32_PLATFORM_HPC2000" /DUNDER_CE=300 /D"UNICODE" /D"_MBCS" /Zm200 -DARM -D_ARM_ -DFIXUP_UNALIGNED /I. /I$(JAVA_HOME)\include $*.c
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver) -D"WIN32_PLATFORM_HPC2000"
 LFLAGS = $(dlllflags) /dll /entry:"_DllMainCRTStartup" /NODEFAULTLIB:libc.lib /nodefaultlib:oldnames.lib
 
@@ -81,7 +81,7 @@ clean:
 CPU=ARM
 
 LINK_LIBS =  aygshell.lib corelibc.lib coredll.lib commctrl.lib ceshell.lib
-CFLAGS = /nologo /c /W3 -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -DREDUCED_CALLBACKS -DJ9WINCE -D_WIN32_WCE=300 -D"WIN32_PLATFORM_WFSP=100" /DUNDER_CE=300 /D"UNICODE" /D"_MBCS" /Zm200 -DARM -D_ARM_ -DFIXUP_UNALIGNED /I. /I$(JAVA_HOME)\include $*.c
+CFLAGS = /nologo /c /W3 -O1 -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -DREDUCED_CALLBACKS -DJ9WINCE -D_WIN32_WCE=300 -D"WIN32_PLATFORM_WFSP=100" /DUNDER_CE=300 /D"UNICODE" /D"_MBCS" /Zm200 -DARM -D_ARM_ -DFIXUP_UNALIGNED /I. /I$(JAVA_HOME)\include $*.c
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver) -D"WIN32_PLATFORM_WFSP=100"
 LFLAGS = $(dlllflags) /dll /entry:"_DllMainCRTStartup" /NODEFAULTLIB:libc.lib /nodefaultlib:oldnames.lib
 
