@@ -1,4 +1,10 @@
 package org.eclipse.swt.widgets;
+
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+ 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
