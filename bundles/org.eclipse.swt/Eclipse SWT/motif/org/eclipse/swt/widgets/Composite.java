@@ -126,6 +126,7 @@ protected void checkSubclass () {
 }
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
+	int parentHandle = parent.handle;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
 		int border = (style & SWT.BORDER) != 0 ? 1 : 0;
 		int [] argList = {
@@ -136,14 +137,13 @@ void createHandle (int index) {
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 			OS.XmNtraversalOn, 0,
 		};
-		int parentHandle = parent.handle;
 		handle = OS.XmCreateDrawingArea (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		Display display = getDisplay ();
 		OS.XtOverrideTranslations (handle, display.tabTranslations);
 		OS.XtOverrideTranslations (handle, display.arrowTranslations);
 	} else {
-		createScrolledHandle (parent.handle);
+		createScrolledHandle (parentHandle);
 	}
 }
 void createScrolledHandle (int topHandle) {
@@ -171,7 +171,6 @@ void createScrolledHandle (int topHandle) {
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
-			OS.XmNtraversalOn, 0,
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
 	} else {
