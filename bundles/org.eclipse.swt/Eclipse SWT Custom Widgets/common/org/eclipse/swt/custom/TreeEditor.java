@@ -25,35 +25,47 @@ import org.eclipse.swt.events.*;
 *
 * <p> Here is an example of using a TreeEditor:
 * <code><pre>
-* final Tree tree = new Tree(parent, SWT.FULL_SELECTION);
-* final TreeEditor editor = new TreeEditor (tree);
-* tree.addSelectionListener (new SelectionAdapter() {
-*	public void widgetSelected(SelectionEvent e) {
-*
-*		// Clean up any previous editor control
-*		Control oldEditor = editor.getEditor();
-*		if (oldEditor != null)
-*			oldEditor.dispose();	
-*
-*		// Identify the selected row
-*		TreeItem item = (TreeItem)e.item;
-*
-*		// The control that will be the editor must be a child of the Tree
-*		Text text = new Text(tree, SWT.NONE);
-*
-*		//The text editor must have the same size as the cell and must
-*		//not be any smaller than 50 pixels.
-*		editor.horizontalAlignment = SWT.LEFT;
-*		editor.grabHorizontal = true;
-*		editor.minimumWidth = 50;
-*
-*		// Open the text editor on the selected row.
-*		editor.setEditor (text, item);
-*
-*		// Assign focus to the text control
-*		text.setFocus ();
+*	final Tree tree = new Tree(shell, SWT.BORDER);
+*	for (int i = 0; i &lt 3; i++) {
+*		TreeItem item = new TreeItem(tree, SWT.NONE);
+*		item.setText("item " + i);
+*		for (int j = 0; j &lt 3; j++) {
+*			TreeItem subItem = new TreeItem(item, SWT.NONE);
+*			subItem.setText("item " + i + " " + j);
+*		}
 *	}
-* });
+*	
+*	final TreeEditor editor = new TreeEditor(tree);
+*	//The editor must have the same size as the cell and must
+*	//not be any smaller than 50 pixels.
+*	editor.horizontalAlignment = SWT.LEFT;
+*	editor.grabHorizontal = true;
+*	editor.minimumWidth = 50;
+*	
+*	tree.addSelectionListener(new SelectionAdapter() {
+*		public void widgetSelected(SelectionEvent e) {
+*			// Clean up any previous editor control
+*			Control oldEditor = editor.getEditor();
+*			if (oldEditor != null) oldEditor.dispose();
+*	
+*			// Identify the selected row
+*			TreeItem item = (TreeItem)e.item;
+*			if (item == null) return;
+*	
+*			// The control that will be the editor must be a child of the Table
+*			Text newEditor = new Text(tree, SWT.NONE);
+*			newEditor.setText(item.getText());
+*			newEditor.addModifyListener(new ModifyListener() {
+*				public void modifyText(ModifyEvent e) {
+*					Text text = (Text)editor.getEditor();
+*					editor.getItem().setText(text.getText());
+*				}
+*			});
+*			newEditor.selectAll();
+*			newEditor.setFocus();
+*			editor.setEditor(newEditor, item);
+*		}
+*	});
 * </pre></code>
 */
 public class TreeEditor extends ControlEditor {	
