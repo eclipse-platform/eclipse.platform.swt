@@ -61,6 +61,7 @@ public class Combo extends Composite {
 	 * that the text field in an instance of this class can hold
 	 */
 	public static final int LIMIT;
+	
 	/*
 	 * These values can be different on different platforms.
 	 * Therefore they are not initialized in the declaration
@@ -70,8 +71,6 @@ public class Combo extends Composite {
 		LIMIT = OS.IsWinNT ? 0x7FFFFFFF : 0x7FFF;	
 	}
 	
-	static final int ComboProc;
-	static final TCHAR ComboClass = new TCHAR (0,"COMBOBOX", true);
 	/*
 	 * These are the undocumented control id's for the children of
 	 * a combo box.  Since there are no constants for these values,
@@ -80,6 +79,9 @@ public class Combo extends Composite {
 	 */
 	static final int CBID_LIST = 1000;
 	static final int CBID_EDIT = 1001;
+	
+	static final int ComboProc;
+	static final TCHAR ComboClass = new TCHAR (0,"COMBOBOX", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ComboClass, lpWndClass);
