@@ -121,10 +121,10 @@ public final class GridData {
 	public boolean grabExcessVerticalSpace = false;
 
 	// Alignment constants.
-	public static final int BEGINNING = 1;
+	public static final int BEGINNING = SWT.BEGINNING;
 	public static final int CENTER = 2;
 	public static final int END = 3;
-	public static final int FILL = 4;
+	public static final int FILL = SWT.FILL;
 
 	// Style constants
 	public static final int VERTICAL_ALIGN_BEGINNING =  1 << 1;
@@ -190,6 +190,18 @@ public GridData(int style) {
 		grabExcessVerticalSpace = false;
 		
 }
+
+/*
+* @since 3.0
+*/
+public GridData(int horizontalAlignment, int verticalAlignment, boolean grabExcessHorizontalSpace, boolean grabExcessVerticalSpace) {
+	super();
+	this.horizontalAlignment = horizontalAlignment;
+	this.verticalAlignment = verticalAlignment;
+	this.grabExcessHorizontalSpace = grabExcessHorizontalSpace;
+	this.grabExcessVerticalSpace = grabExcessVerticalSpace;
+}
+
 /*
 * @since 3.0
 */

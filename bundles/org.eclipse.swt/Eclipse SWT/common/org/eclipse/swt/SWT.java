@@ -929,6 +929,22 @@ public class SWT {
 	public static final int VERTICAL = 1 << 9;
 
 	/**
+	 * Style constant for vertical alignment or orientation behavior (value is 1).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>GridLayout</code> type</li>
+	 * </ul></p>
+	 */
+	public static final int BEGINNING = 1;
+	
+	/**
+	 * Style constant for vertical alignment or orientation behavior (value is 4).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>GridLayout</code> type</li>
+	 * </ul></p>
+	 */
+	public static final int FILL = 4;
+	
+	/**
 	 * Input Method Editor style constant for double byte
 	 * input behavior (value is 1&lt;&lt;1).
 	 */

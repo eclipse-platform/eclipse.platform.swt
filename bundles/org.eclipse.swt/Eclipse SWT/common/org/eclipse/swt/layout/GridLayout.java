@@ -649,10 +649,10 @@ protected void layout(Composite composite, boolean flushCache) {
 				widgetX = columnX;
 
 				// Calculate the x and width values for the control.
-				if (hAlign == GridData.CENTER) {
+				if (hAlign == GridData.CENTER || hAlign == SWT.CENTER) {
 					widgetX = widgetX + (spannedWidth / 2) - (childExtent.x / 2);
 				} else
-					if (hAlign == GridData.END) {
+					if (hAlign == GridData.END || hAlign == SWT.END || hAlign == SWT.RIGHT) {
 						widgetX = widgetX + spannedWidth - childExtent.x - spec.horizontalIndent;
 					} else {
 						widgetX = widgetX + spec.horizontalIndent;
@@ -667,10 +667,10 @@ protected void layout(Composite composite, boolean flushCache) {
 				// Calculate the y and height values for the control.
 				vAlign = spec.verticalAlignment;
 				widgetY = rowY;
-				if (vAlign == GridData.CENTER) {
+				if (vAlign == GridData.CENTER || vAlign == SWT.CENTER) {
 					widgetY = widgetY + (spannedHeight / 2) - (childExtent.y / 2);
 				} else
-					if (vAlign == GridData.END) {
+					if (vAlign == GridData.END || vAlign == SWT.END || vAlign == SWT.BOTTOM) {
 						widgetY = widgetY + spannedHeight - childExtent.y;
 					}
 				if (vAlign == GridData.FILL) {
