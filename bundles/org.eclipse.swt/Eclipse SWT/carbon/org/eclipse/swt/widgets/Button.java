@@ -53,7 +53,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	// NEEDS WORK - empty string
 	if ((style & SWT.ARROW) != 0) {
-		int width = 20, height = 20;
+		int [] outMetric = new int [1];
+		OS.GetThemeMetric (OS.kThemeMetricDisclosureTriangleHeight, outMetric);
+		int width = outMetric [0], height = outMetric [0];
 		if (wHint != SWT.DEFAULT) width = wHint;
 		if (hHint != SWT.DEFAULT) height = hHint;
 		return new Point (width, height);
@@ -97,8 +99,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		width += 20;
-		height = Math.max(18, height) + 6;
+		int [] outMetric = new int [1];
+		int metric = ((style & SWT.CHECK) != 0) ? OS.kThemeMetricCheckBoxWidth : OS.kThemeMetricRadioButtonWidth;
+		OS.GetThemeMetric (metric, outMetric);	
+ 		width += outMetric [0] + 3; // +3 for gap between button and text/image
+		height = Math.max(outMetric [0], height);
 	} else {
 		if ((style & SWT.FLAT) != 0 || (style & SWT.TOGGLE) != 0) {
 			width += 10;
@@ -259,6 +264,25 @@ Rect getInset () {
 	return display.buttonInset;
 }
 
+int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
+	if (isImage && image != null && (style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
+		Rect rect = new Rect();
+		OS.GetControlBounds (handle, rect);
+		int width = OS.CGImageGetWidth (image.handle);
+		int height = OS.CGImageGetHeight (image.handle);
+		int x = Math.max (0, (rect.right - rect.left - width) / 2);
+		int y = Math.max (0, (rect.bottom - rect.top - height) / 2);
+		GCData data = new GCData ();
+		data.paintEvent = theEvent;
+		GC gc = GC.carbon_new (this, data);
+		gc.drawImage (image, x, y);
+		gc.dispose ();
+		return OS.noErr;
+	}
+	return result;
+}
+
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlHit (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -395,8 +419,7 @@ public void setImage (Image image) {
 		OS.SetControlTitleWithCFString (handle, ptr);
 		OS.CFRelease (ptr);
 	}
-	
-	// NEEDS WORK - Push button with image not supported
+
 	cIcon = createCIcon (image);
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
 	inContent.contentType = (short)OS.kControlContentCIconHandle;

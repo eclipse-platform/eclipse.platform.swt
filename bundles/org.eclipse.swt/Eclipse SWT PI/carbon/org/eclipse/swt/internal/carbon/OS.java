@@ -395,6 +395,9 @@ public class OS {
 	public static final int kThemeDisclosureLeft = 2;
 	public static final int kThemeEmphasizedSystemFont = 4;
 	public static final int kThemeIBeamCursor = 4;
+	public static final int kThemeMetricDisclosureTriangleHeight = 25;
+	public static final int kThemeMetricCheckBoxWidth = 50;
+	public static final int kThemeMetricRadioButtonWidth = 52;
 	public static final int kThemeMetricEditTextFrameOutset = 5;
 	public static final int kThemeMetricFocusRectOutset = 7;
 	public static final int kThemeMetricHSliderHeight = 41;
