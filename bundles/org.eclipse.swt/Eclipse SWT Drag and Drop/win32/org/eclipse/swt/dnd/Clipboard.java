@@ -19,8 +19,6 @@ public class Clipboard {
 	private COMObject iUnknown;
 	private COMObject iDataObject;
 	private int refCount;
-	
-	private Display display;
 
 	private final int MAX_RETRIES = 10;
 	private Transfer[] transferAgents = new Transfer[0];
@@ -37,8 +35,6 @@ public Clipboard(Display display) {
 	if (display.getThread() != Thread.currentThread()) {
 		SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
-
-	this.display = display;
 	
 	createCOMInterfaces();
 	this.AddRef();
@@ -59,7 +55,7 @@ public Object getContents(Transfer transfer) {
 	while ((COM.OleGetClipboard(ppv) != COM.S_OK) && retries < MAX_RETRIES) {
 		// Clipboard may be in use by some other application.
 		// Wait for 10 milliseconds before trying again.
-		try {display.getThread().sleep(10);} catch (InterruptedException e) {}
+		try {Thread.sleep(10);} catch (InterruptedException e) {}
 		retries++;
 	}
 	if (retries == MAX_RETRIES) return null;
@@ -93,7 +89,7 @@ public void setContents(Object[] data, Transfer[] dataTypes){
 	while ((result = COM.OleSetClipboard(this.iDataObject.getAddress())) != COM.S_OK && retries < MAX_RETRIES){
 		// Clipboard may be in use by some other application.
 		// Wait for 10 milliseconds before trying again.
-		try {display.getThread().sleep(10);} catch (InterruptedException e) {}
+		try {Thread.sleep(10);} catch (InterruptedException e) {}
 		retries++;
 	}
 	if (retries == MAX_RETRIES) {
@@ -104,7 +100,7 @@ public void setContents(Object[] data, Transfer[] dataTypes){
 	
 	retries = 0;
 	while ((COM.OleFlushClipboard() != COM.S_OK)  && (retries < MAX_RETRIES)) {
-		try {display.getThread().sleep(10);} catch (InterruptedException e) {}
+		try {Thread.sleep(10);} catch (InterruptedException e) {}
 		retries++;
 	}
 	
