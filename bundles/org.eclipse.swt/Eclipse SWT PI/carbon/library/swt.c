@@ -64,21 +64,6 @@ static struct Closure *createClosure(JNIEnv *env, jobject target, jstring method
 	return closure;
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlFontStyle(JNIEnv *env, jclass zz,
-				jint cHandle, jshort font, jshort size, jshort style) {
-	ControlFontStyleRec fontRec;
-	fontRec.flags= kControlUseFontMask | kControlUseSizeMask | kControlUseFaceMask;
-	fontRec.font= font;
-	fontRec.size= size;
-	fontRec.style= style;
-	return (jint) RC(SetControlFontStyle((ControlRef) cHandle, &fontRec));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetUpControlBackground(JNIEnv *env, jclass zz,
-				jint cHandle, jshort depth, jboolean isColorDevice) {
-	return (jint) RC(SetUpControlBackground((ControlRef) cHandle, depth, isColorDevice));
-}
-
 //---- callback.c
 
 #define PLATFORM "carbon"
@@ -107,6 +92,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FMGetFontFamilyNa
 	return status;
 }
 
+/*
 void lisAllFonts() {
 	FMFontFamilyIterator iter;
 	FMFontFamily family;
@@ -120,6 +106,7 @@ void lisAllFonts() {
 	}
 	FMDisposeFontFamilyIterator(&iter);
 }
+*/
 
 //---- Appearance Manager
 
@@ -136,14 +123,8 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeTextBox(
 				jint sHandle, jshort fontID, jint state, jboolean wrapToWidth, jshortArray bounds, jshort just, jint context) {
 
     jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	jint status= RC(DrawThemeTextBox(
-		(CFStringRef)      sHandle,
-                (ThemeFontID)      fontID,
-		(ThemeDrawState)   state,
-		(Boolean)          wrapToWidth,
-		(const Rect *)     sa,
-		(SInt16)           just,
-		(void *)           context));
+	jint status= RC(DrawThemeTextBox((CFStringRef)sHandle, (ThemeFontID)fontID, (ThemeDrawState)state,
+		(Boolean)wrapToWidth, (const Rect*)sa, (SInt16)just, (void*)context));
 	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
 	return status;
 }
@@ -152,13 +133,8 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeTextDimen
 				jint sHandle, jshort fontID, jint state, jboolean wrapToWidth, jshortArray size, jshortArray baseLine) {
 
     jshort *sa= (*env)->GetShortArrayElements(env, size, 0);
-	jint status= RC(GetThemeTextDimensions(
-		(CFStringRef)      sHandle,
-		(ThemeFontID)      fontID,
-		(ThemeDrawState)   state,
-		(Boolean)          wrapToWidth,
-		(Point *)     	   sa,
-		(SInt16*)          baseLine));
+	jint status= RC(GetThemeTextDimensions((CFStringRef)sHandle, (ThemeFontID)fontID, (ThemeDrawState)state,
+		(Boolean)wrapToWidth, (Point*)sa, (SInt16*)baseLine));
 	(*env)->ReleaseShortArrayElements(env, size, sa, 0);
 	return status;
 }
@@ -267,16 +243,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeDrawingSt
 
 //---- tabs
 
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateTabFolderControl(JNIEnv *env, jclass zz,
-				jint wHandle, jintArray outControl) {
-	jint *sa= (*env)->GetIntArrayElements(env, outControl, 0);
-	jint status= (jint) RC(CreateTabsControl((WindowRef) wHandle, &NULL_RECT, kControlTabSizeSmall, kControlTabDirectionNorth,  0, NULL, (ControlRef*)sa));
-	(*env)->ReleaseIntArrayElements(env, outControl, sa, 0);
-	return status;
-}
-*/
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_setTabText(JNIEnv *env, jclass zz,
 				jint cHandle, jint index, jint sHandle) {
 	ControlTabInfoRecV1 tab;
@@ -310,31 +276,43 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlPopupMe
 static struct Closure *gDataBrowserDataCallbackClosure;
 static OSStatus dataBrowserDataCallback(ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property,
 								DataBrowserItemDataRef itemData, Boolean setValue) {
-        if (gDataBrowserDataCallbackClosure != NULL) {
-            JNIEnv *env= gDataBrowserDataCallbackClosure->env;
-            return (*env)->CallIntMethod(env, gDataBrowserDataCallbackClosure->target, gDataBrowserDataCallbackClosure->action,
+	if (gDataBrowserDataCallbackClosure != NULL) {
+		JNIEnv *env= gDataBrowserDataCallbackClosure->env;
+		return (*env)->CallIntMethod(env, gDataBrowserDataCallbackClosure->target, gDataBrowserDataCallbackClosure->action,
 						(jint)browser, (jint)item, (jint)property, (jint)itemData);
-        }
-        return noErr;
+	}
+	return noErr;
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewDataBrowserDataCallbackUPP(JNIEnv *env, jclass zz,
 					jobject target, jstring method) {
 					
-	if (gDataBrowserDataCallbackClosure != NULL) {
-		fprintf(stderr, "NewDataBrowserDataCallbackUPP: can't install more than one callback\n");
-		exit(-1);
-	}
+	if (gDataBrowserDataCallbackClosure != NULL)
+		return 0;
 	gDataBrowserDataCallbackClosure= createClosure(env, target, method, "(IIII)I");
 	return (jint) NewDataBrowserItemDataUPP(dataBrowserDataCallback);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setDataBrowserItemDataCallback(JNIEnv *env, jclass zz,
-					jint cHandle, jint upp) {
-	DataBrowserCallbacks callbacks;
-	GetDataBrowserCallbacks((ControlRef) cHandle, &callbacks);
-	callbacks.u.v1.itemDataCallback= (DataBrowserItemDataUPP) upp;
-	SetDataBrowserCallbacks((ControlRef) cHandle, &callbacks);
+///////////////////
+
+static struct Closure *gDataBrowserCompareCallbackClosure;
+static OSStatus dataBrowserCompareCallback(ControlRef browser, DataBrowserItemID item1ID, DataBrowserItemID item2ID,
+								DataBrowserItemDataRef itemData, DataBrowserPropertyID sortID) {
+	if (gDataBrowserCompareCallbackClosure != NULL) {
+		JNIEnv *env= gDataBrowserCompareCallbackClosure->env;
+		return (*env)->CallIntMethod(env, gDataBrowserCompareCallbackClosure->target, gDataBrowserCompareCallbackClosure->action,
+						(jint)browser, (jint)item1ID, (jint)item2ID, (jint)sortID);
+	}
+	return noErr;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewDataBrowserCompareCallbackUPP(JNIEnv *env, jclass zz,
+					jobject target, jstring method) {
+					
+	if (gDataBrowserCompareCallbackClosure != NULL)
+		return 0;
+	gDataBrowserCompareCallbackClosure= createClosure(env, target, method, "(IIII)I");
+	return (jint) NewDataBrowserCompareUPP(dataBrowserCompareCallback);
 }
 
 ///////////////////
@@ -359,14 +337,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewDataBrowserIte
 	return (jint) NewDataBrowserItemNotificationUPP(dataBrowserItemNotificationCallback);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setDataBrowserItemNotificationCallback(JNIEnv *env, jclass zz,
-						jint cHandle, jint upp) {
-	DataBrowserCallbacks callbacks;
-	GetDataBrowserCallbacks((ControlRef) cHandle, &callbacks);
-	callbacks.u.v1.itemNotificationCallback= (DataBrowserItemNotificationUPP) upp;
-	SetDataBrowserCallbacks((ControlRef) cHandle, &callbacks);
-}
-
 ///////////////////
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_createDataBrowserControl(JNIEnv *env, jclass zz, jint wHandle) {
@@ -382,21 +352,32 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_createDataBrowser
 	return (jint) controlRef;
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setDataBrowserCallbacks(JNIEnv *env, jclass zz,
+					jint cHandle, jint dataUPP, jint compareUPP, jint notificationUPP) {
+	DataBrowserCallbacks callbacks;
+	GetDataBrowserCallbacks((ControlRef) cHandle, &callbacks);
+	callbacks.u.v1.itemDataCallback= (DataBrowserItemDataUPP) dataUPP;
+	callbacks.u.v1.itemCompareCallback= (DataBrowserItemCompareUPP) compareUPP;
+	callbacks.u.v1.itemNotificationCallback= (DataBrowserItemNotificationUPP) notificationUPP;
+	SetDataBrowserCallbacks((ControlRef) cHandle, &callbacks);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_newColumnDesc(JNIEnv *env, jclass zz,
 			jint propertyID, jint propertyType, jint propertyFlags, jshort minimumWidth, jshort maximumWidth) {
 
 	DataBrowserListViewColumnDesc *columnDesc= (DataBrowserListViewColumnDesc*) calloc(sizeof(DataBrowserListViewColumnDesc), 1);
 			
+	columnDesc->propertyDesc.propertyID= propertyID;
+	columnDesc->propertyDesc.propertyType= propertyType;
+	columnDesc->propertyDesc.propertyFlags= propertyFlags;
+	
 	columnDesc->headerBtnDesc.version= kDataBrowserListViewLatestHeaderDesc;
 	columnDesc->headerBtnDesc.minimumWidth= minimumWidth;
 	columnDesc->headerBtnDesc.maximumWidth= maximumWidth;
 
 	columnDesc->headerBtnDesc.titleOffset= 0;
 	columnDesc->headerBtnDesc.titleString= NULL;
-	
-	columnDesc->propertyDesc.propertyID= propertyID;
-	columnDesc->propertyDesc.propertyType= propertyType;
-	columnDesc->propertyDesc.propertyFlags= propertyFlags;
+	columnDesc->headerBtnDesc.initialOrder= kDataBrowserOrderIncreasing;
 	
 	/*
 	columnDesc.headerBtnDesc.titleAlignment= teCenter;
@@ -405,6 +386,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_newColumnDesc(JNI
 	*/
 
 	return (jint)columnDesc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AutoSizeDataBrowserListViewColumns(JNIEnv *env, jclass zz,
+		jint cHandle) {
+	return RC(AutoSizeDataBrowserListViewColumns((ControlRef) cHandle));
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserActiveItems(JNIEnv *env, jclass zz,
@@ -457,14 +443,10 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserLis
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_UpdateDataBrowserItems(JNIEnv *env, jclass zz,
 				jint cHandle, jint container, jint numItems, jintArray items, jint preSortProperty, jint propertyID) {
-    jint *sa= NULL;
-	OSStatus status;
-	if (items != 0)
-		sa= (*env)->GetIntArrayElements(env, items, 0);
-	status= RC(UpdateDataBrowserItems((ControlRef)cHandle, (DataBrowserItemID)container, numItems, sa,
+	jint *sa= (*env)->GetIntArrayElements(env, items, 0);
+	jint status= RC(UpdateDataBrowserItems((ControlRef)cHandle, (DataBrowserItemID)container, numItems, sa,
 				(DataBrowserPropertyID)preSortProperty, (DataBrowserPropertyID) propertyID));
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, items, sa, 0);
+	(*env)->ReleaseIntArrayElements(env, items, sa, 0);
 	return status;
 }
 
@@ -493,6 +475,31 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserSel
 	OSStatus status= RC(SetDataBrowserSelectedItems((ControlRef)cHandle, numItems, sa, operation));
 	(*env)->ReleaseIntArrayElements(env, items, sa, 0);
 	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RevealDataBrowserItem(JNIEnv *env, jclass zz,
+				jint cHandle, jint item, jint propertyID, jboolean centerInView) {
+	return RC(RevealDataBrowserItem((ControlRef)cHandle, item, propertyID, centerInView));
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsDataBrowserItemSelected(JNIEnv *env, jclass zz,
+				jint cHandle, jint item) {
+	return IsDataBrowserItemSelected((ControlRef)cHandle, item);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserScrollPosition(JNIEnv *env, jclass zz,
+				jint cHandle, jintArray top, jintArray left) {
+	jint *sa= (*env)->GetIntArrayElements(env, top, 0);
+	jint *sb= (*env)->GetIntArrayElements(env, left, 0);
+	jint status= RC(GetDataBrowserScrollPosition((ControlRef)cHandle, (UInt32*)sa, (UInt32*)sb));
+	(*env)->ReleaseIntArrayElements(env, top, sa, 0);
+	(*env)->ReleaseIntArrayElements(env, left, sb, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserScrollPosition(JNIEnv *env, jclass zz,
+				jint cHandle, jint top, jint left) {
+	return RC(SetDataBrowserScrollPosition((ControlRef)cHandle, (UInt32)top, (UInt32)left));
 }
 
 //---- events
@@ -2548,6 +2555,21 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetBevelButtonCon
 	return RC(SetBevelButtonContentInfo((ControlRef) cHandle, &info));
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlFontStyle(JNIEnv *env, jclass zz,
+				jint cHandle, jshort font, jshort size, jshort style) {
+	ControlFontStyleRec fontRec;
+	fontRec.flags= kControlUseFontMask | kControlUseSizeMask | kControlUseFaceMask;
+	fontRec.font= font;
+	fontRec.size= size;
+	fontRec.style= style;
+	return (jint) RC(SetControlFontStyle((ControlRef) cHandle, &fontRec));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetUpControlBackground(JNIEnv *env, jclass zz,
+				jint cHandle, jshort depth, jboolean isColorDevice) {
+	return (jint) RC(SetUpControlBackground((ControlRef) cHandle, depth, isColorDevice));
+}
+
 // ControlDraw callback
 static struct Closure *gControlDrawClosure;
 static pascal void userPaneDrawProc(ControlRef theControl, SInt16 thePart) {
@@ -2557,10 +2579,8 @@ static pascal void userPaneDrawProc(ControlRef theControl, SInt16 thePart) {
 	}
 }
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControlUserPaneDrawUPP(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gControlDrawClosure != NULL) {
-		fprintf(stderr, "InstallControlDrawHandler: can't install more than one callback\n");
-		exit(-1);
-	}
+	if (gControlDrawClosure != NULL)
+		return 0;
 	gControlDrawClosure= createClosure(env, target, method, "(IS)V");
 	return (jint) NewControlUserPaneDrawUPP(userPaneDrawProc);
 }
@@ -2580,15 +2600,14 @@ static void controlActionProc(ControlRef theControl, ControlPartCode partCode) {
 	}
 }
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControlActionUPP(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gControlActionClosure != NULL) {
-		fprintf(stderr, "NewControlActionUPP: can't install more than one callback\n");
-		exit(-1);
-	}
+	if (gControlActionClosure != NULL)
+		return 0;
 	gControlActionClosure= createClosure(env, target, method, "(IS)V");
 	return (jint) NewControlActionUPP(controlActionProc);
 }
 
 // Quit callback
+/*
 static pascal OSErr QuitAppleEventHandler(const AppleEvent *appleEvt, AppleEvent *reply, long refcon) {
 	struct Closure *closure= (struct Closure*) refcon;
 	JNIEnv *env= closure->env;
@@ -2600,6 +2619,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_installQuitHandle
 	AEInstallEventHandler(kCoreEventClass, kAEQuitApplication, NewAEEventHandlerUPP(QuitAppleEventHandler),
 					   (long)createClosure(env, target, method, "()V"), false);
 }
+*/
 
 // Timer CallBack
 
@@ -2611,16 +2631,13 @@ static void EventLoopTimerProc(EventLoopTimerRef inTimer, void *inUserData) {
 	}
 }
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewEventLoopTimerUPP(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gTimerClosure != NULL) {
-		fprintf(stderr, "NewEventLoopTimerUPP: can't install more than one callback\n");
-		exit(-1);
-	}
+	if (gTimerClosure != NULL)
+		return 0;
 	gTimerClosure= createClosure(env, target, method, "(II)I");
 	return (jint) NewEventLoopTimerUPP(EventLoopTimerProc);
 }
 
 // Caret Timer CallBack
-
 static struct Closure *gTimerClosure2;
 static void EventLoopTimerProc2(EventLoopTimerRef inTimer, void *inUserData) {
 	if (gTimerClosure2 != NULL) {
@@ -2629,16 +2646,13 @@ static void EventLoopTimerProc2(EventLoopTimerRef inTimer, void *inUserData) {
 	}
 }
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewEventLoopTimerUPP2(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gTimerClosure2 != NULL) {
-		fprintf(stderr, "NewEventLoopTimerUPP2: can't install more than one callback\n");
-		exit(-1);
-	}
+	if (gTimerClosure2 != NULL)
+		return 0;
 	gTimerClosure2= createClosure(env, target, method, "(II)I");
 	return (jint) NewEventLoopTimerUPP(EventLoopTimerProc2);
 }
 
 // Caret Timer CallBack
-
 static struct Closure *gTimerClosure3;
 static void EventLoopTimerProc3(EventLoopTimerRef inTimer, void *inUserData) {
 	if (gTimerClosure3 != NULL) {
@@ -2647,10 +2661,8 @@ static void EventLoopTimerProc3(EventLoopTimerRef inTimer, void *inUserData) {
 	}
 }
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewEventLoopTimerUPP3(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gTimerClosure3 != NULL) {
-		fprintf(stderr, "NewEventLoopTimerUPP3: can't install more than one callback\n");
-		exit(-1);
-	}
+	if (gTimerClosure3 != NULL)
+		return 0;
 	gTimerClosure3= createClosure(env, target, method, "(II)I");
 	return (jint) NewEventLoopTimerUPP(EventLoopTimerProc3);
 }
@@ -2665,10 +2677,8 @@ static OSStatus MenuCallbackProc(EventHandlerCallRef nextHandler, EventRef theEv
 	return noErr;	 // Report success      
 } 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewMenuCallbackUPP(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gMenuClosure != NULL) {
-		fprintf(stderr, "NewMenuCallbackUPP: can't install more than one callback\n");
-		exit(-1);
-	}
+	if (gMenuClosure != NULL)
+		return 0;
 	gMenuClosure= createClosure(env, target, method, "(II)I");
 	return (jint) NewEventHandlerUPP(MenuCallbackProc);
 }
@@ -2683,10 +2693,8 @@ static OSStatus ControlCallbackProc(EventHandlerCallRef nextHandler, EventRef th
 	return noErr;	 // Report success      
 } 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControlCallbackUPP(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gControlClosure != NULL) {
-		fprintf(stderr, "NewControlCallbackUPP: can't install more than one callback\n");
-		exit(-1);
-	}
+	if (gControlClosure != NULL)
+		return 0;
 	gControlClosure= createClosure(env, target, method, "(II)I");
 	return (jint) NewEventHandlerUPP(ControlCallbackProc);
 }
@@ -2703,10 +2711,8 @@ static pascal ControlPartCode UserPaneHitTestProc(ControlRef theControl, Point w
 }
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewUserPaneHitTestUPP(JNIEnv *env, jclass zz,
 					jobject target, jstring method) {
-	if (gUserPaneHitTestClosure != NULL) {
-		fprintf(stderr, "NewUserPaneHitTestUPP: can't install more than one callback\n");
-		exit(-1);
-	}
+	if (gUserPaneHitTestClosure != NULL)
+		return 0;
 	gUserPaneHitTestClosure= createClosure(env, target, method, "(III)I");
 	return (jint) NewControlUserPaneHitTestUPP(UserPaneHitTestProc);
 }
@@ -2722,15 +2728,14 @@ static OSStatus TextCallbackProc(EventHandlerCallRef nextHandler, EventRef event
 }
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewTextCallbackUPP(JNIEnv *env, jclass zz,
 					jobject target, jstring method) {
-	if (gTextClosure != NULL) {
-		fprintf(stderr, "NewTextCallbackUPP: can't install more than one callback\n");
-		exit(-1);
-	}
+	if (gTextClosure != NULL)
+		return 0;
 	gTextClosure= createClosure(env, target, method, "(II)I");
 	return (jint) NewEventHandlerUPP(TextCallbackProc);
 }
 
 // Mouse Moved Callback
+/*
 static struct Closure *gMouseMovedClosure;
 static OSStatus MouseMovedCallbackProc(EventHandlerCallRef nextHandler, EventRef eventRef, void *userData) {
 	if (gMouseMovedClosure != NULL) {
@@ -2748,6 +2753,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewMouseMovedCall
 	gMouseMovedClosure= createClosure(env, target, method, "(II)I");
 	return (jint) NewEventHandlerUPP(MouseMovedCallbackProc);
 }
+*/
 
 // Window Callback
 static struct Closure *gWindowClosure;
@@ -2788,10 +2794,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewApplicationCal
 	return (jint) NewEventHandlerUPP(ApplicationCallbackProc);
 }
 
+/*
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RunApplicationEventLoop(JNIEnv *env, jclass zz) {
 	RunApplicationEventLoop();
 }
-
+*/
 
 //---- standard dialogs
 

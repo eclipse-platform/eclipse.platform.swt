@@ -271,7 +271,7 @@ public class OS {
 	public static native int NewEventLoopTimerUPP2(Object target, String method);
 	public static native int NewEventLoopTimerUPP3(Object target, String method);
 	public static native int NewTextCallbackUPP(Object target, String method);
-	public static native int NewMouseMovedCallbackUPP(Object target, String method);
+	//public static native int NewMouseMovedCallbackUPP(Object target, String method);
 	public static native int NewWindowCallbackUPP(Object target, String method);
 	public static native int NewApplicationCallbackUPP(Object target, String method);
 
@@ -985,11 +985,14 @@ public class OS {
 	
 	public static native int createDataBrowserControl(int wHandle);
 	
+	public static native int AutoSizeDataBrowserListViewColumns(int cHandle);
+	
 	public static native int NewDataBrowserDataCallbackUPP(Object target, String method);
-	public static native void setDataBrowserItemDataCallback(int cHandle, int dataBrowserDataCallbackUPP);
-
+	public static native int NewDataBrowserCompareCallbackUPP(Object target, String method);
 	public static native int NewDataBrowserItemNotificationCallbackUPP(Object target, String method);
-	public static native void setDataBrowserItemNotificationCallback(int cHandle, int dataBrowserItemNotificationCallbackUPP);
+	
+	public static native void setDataBrowserCallbacks(int cHandle, int dataCallbackUPP,
+										int compareCallbackUPP, int itemNotificationCallbackUPP);
 	
 	public static native int SetDataBrowserActiveItems(int cHandle, boolean active);
 	public static native int AddDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
@@ -1000,6 +1003,10 @@ public class OS {
 	public static native int UpdateDataBrowserItems(int cHandle, int container, int numItems, int[] items, int preSortProperty, int propertyID);
 	public static native int GetDataBrowserItemCount(int cHandle, int container, boolean recurse, int state, int[] numItems);
 	public static native int GetDataBrowserItems(int cHandle, int container, boolean recurse, int state, int handle);
+	public static native int RevealDataBrowserItem(int cHandle, int itemID, int colID, boolean center);
+	public static native boolean IsDataBrowserItemSelected(int cHandle, int itemID);
+	public static native int GetDataBrowserScrollPosition(int cHandle, int[] top, int[] left);
+    public static native int SetDataBrowserScrollPosition(int cHandle, int top, int left);
 
 	/* Set operations for use with SetDataBrowserSelectedItems */
 	public static final int kDataBrowserItemsAdd          = 0;    /* add specified items to existing set */
@@ -1242,10 +1249,9 @@ public class OS {
 	//public static native void ExitToShell();
  	public static native short HiWord(int doubleWord);
 	public static native short LoWord(int doubleWord);
-	public static native void installQuitHandler(Object target, String method);
+	//public static native void installQuitHandler(Object target, String method);
 	public static native void SysBeep(short duration);
 	public static native int GetDblTime();
 	public static native int GetCaretTime();
 	public static native int GetAvailableWindowPositioningBounds(int gHandle, short[] mainScreenRect);	
-
 }
