@@ -98,6 +98,14 @@ public abstract class Widget {
 		
 		/* Initialize the Common Controls DLL */
 		OS.InitCommonControls ();
+		
+		/* THIS MAY NOT BE NECESSARY */
+		/* Load the accessibility DLL */
+		lpLibFileName = new TCHAR (0, "oleacc.dll", true);
+		hModule = OS.LoadLibrary (lpLibFileName);
+		if (hModule == 0) {
+			System.out.println("***WARNING: Didn't find oleacc.dll");
+		}
 	}
 	
 /**

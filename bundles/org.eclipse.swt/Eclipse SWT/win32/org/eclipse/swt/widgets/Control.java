@@ -10,6 +10,8 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
+import org.eclipse.swt.internal.ole.win32.*;
+
 /**
  * Control is the abstract superclass of all windowed user interface classes.
  * <p>
@@ -2632,6 +2634,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_IME_COMPOSITION:	result = WM_IME_COMPOSITION (wParam, lParam); break;
 		case OS.WM_INITMENUPOPUP:		result = WM_INITMENUPOPUP (wParam, lParam); break;
 		case OS.WM_GETFONT:			result = WM_GETFONT (wParam, lParam); break;
+		case OS.WM_GETOBJECT:			result = WM_GETOBJECT (wParam, lParam); break;
 		case OS.WM_KEYDOWN:			result = WM_KEYDOWN (wParam, lParam); break;
 		case OS.WM_KEYUP:				result = WM_KEYUP (wParam, lParam); break;
 		case OS.WM_KILLFOCUS:			result = WM_KILLFOCUS (wParam, lParam); break;
@@ -2810,6 +2813,13 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 }
 
 LRESULT WM_GETFONT (int wParam, int lParam) {
+	return null;
+}
+
+public LRESULT WM_GETOBJECT (int wParam, int lParam) {
+	if (lParam == COM.OBJID_CLIENT) {
+		System.out.println("WM_GETOBJECT");
+	}
 	return null;
 }
 

@@ -30,6 +30,8 @@
 #include <objbase.h>
 #include <shlwapi.h>
 #include <shellapi.h>
+#include <initguid.h>
+#include <oleacc.h>
 
 #ifdef _WIN32_WCE
 #include <aygshell.h>

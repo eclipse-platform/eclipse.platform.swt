@@ -592,6 +592,7 @@ public class OS {
 	public static final int NULLREGION = 0x1;
 	public static final int NULL_BRUSH = 0x5;
 	public static final int NULL_PEN = 0x8;
+	public static final int OBJID_CLIENT = 0xFFFFFFFC;
 	public static final int OBJ_FONT = 0x6;
 	public static final int OBJ_PEN = 0x1;
 	public static final int OBM_CHECKBOXES = 0x7ff7;
@@ -1024,7 +1025,8 @@ public class OS {
 	public static final int WM_ERASEBKGND = 0x14;
 	public static final int WM_GETDLGCODE = 0x87;
 	public static final int WM_GETFONT = 0x31;
-//	public static final int WM_GETICON = 0x7f;
+	public static final int WM_GETICON = 0x7f;
+	public static final int WM_GETOBJECT = 0x003D;
 	public static final int WM_HELP = 0x53;
 	public static final int WM_HSCROLL = 0x114;
 	public static final int WM_IME_CHAR = 0x286;
