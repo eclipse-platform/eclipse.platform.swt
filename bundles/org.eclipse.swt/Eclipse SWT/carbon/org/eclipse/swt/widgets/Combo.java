@@ -213,6 +213,7 @@ void createHandle () {
 		OS.HIComboBoxCreate(rect, 0, null, 0, inAttributes, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
+		OS.SetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kTXNDrawCaretWhenInactiveTag, 4, new byte [ ]{0});
 		OS.HIViewSetVisible (handle, true);
 	}
 }
