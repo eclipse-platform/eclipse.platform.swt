@@ -1423,7 +1423,7 @@ void doBidiMouseLocationChange(int x, int y, boolean select) {
 	// not in single line mode. fixes 4820.
 	if (line == 0 || (isSingleLine() == false && line > 0)) {
 		int newCaretOffset = getBidiOffsetAtMouseLocation(x, line);	
-		if (x >= horizontalScrollOffset || content.getLineAtOffset(newCaretOffset) != content.getLineAtOffset(caretOffset)) {
+		if (x >= 0 || content.getLineAtOffset(newCaretOffset) != content.getLineAtOffset(caretOffset)) {
 			// Only change the caret offset when the mouse is within the left client area border
 			// or on a different line. Otherwise the autoscroll selection may be reset. Fixes 1GKM3XS
 			caretOffset = newCaretOffset;
