@@ -1387,7 +1387,7 @@ LRESULT WM_DESTROY (int wParam, int lParam) {
 LRESULT WM_ENTERIDLE (int wParam, int lParam) {
 	LRESULT result = super.WM_ENTERIDLE (wParam, lParam);
 	if (result != null) return result;
-	display.runAsyncMessages ();
+	if (display.runAsyncMessages ()) display.wakeThread ();
 	return result;
 }
 
