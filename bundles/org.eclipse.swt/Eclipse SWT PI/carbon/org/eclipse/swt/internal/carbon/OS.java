@@ -299,6 +299,18 @@ public class OS {
 	public static native int FMGetFontFamilyName(short id, byte[] name);
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Cursors
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public static final short iBeamCursor= 1;
+	public static final short crossCursor= 2;
+	public static final short plusCursor= 3;
+	public static final short watchCursor= 4;
+	
+	public static native int GetCCursor(short id);
+	public static native void SetCCursor(int cursorHandle);
+	public static native void DisposeCCursor(int cursorHandle);
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// QuickDraw
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -445,7 +457,7 @@ public class OS {
 	public static native void DisposeGWorld(int offscreenGWorld);
 	public static native void SetGWorld(int portHandle, int gdHandle);
 	public static native void GetGWorld(int[] portHandle, int[] gdHandle);
-	//public static native int GetGDevice();
+	public static native int GetGDevice();
 	public static native int GetMainDevice();
 	public static native int getgdPMap(int gdHandle);
 
@@ -772,13 +784,13 @@ public class OS {
 	public static final short kControlBevelButtonLargeBevelProc= 34;
 	public static final short kControlSliderProc            = 48;
 	public static final short kControlProgressBarProc       = 80;
-	public static final short kControlScrollBarLiveProc     = 386;
+	public static final short kControlTabSmallProc			= 129;
+	public static final short kControlSeparatorLineProc		= 144;
 	public static final short kControlGroupBoxTextTitleProc = 160;
 	public static final short kControlPopupArrowEastProc	= 192;
 	public static final short kControlUserPaneProc			= 256;
 	public static final short kControlEditTextProc			= 272;
 	public static final short kControlStaticTextProc        = 288;
-	public static final short kControlSeparatorLineProc		= 144;
 	public static final short kControlListBoxProc   		= 352;
 	public static final short kControlListBoxAutoSizeProc   = 353;
 	public static final short kControlPushButtonProc   		= 368;
@@ -787,6 +799,7 @@ public class OS {
 	public static final short kControlCheckBoxAutoToggleProc= 371;
 	public static final short kControlRadioButtonAutoToggleProc= 372;
 	public static final short kControlPushButLeftIconProc   = 374;
+	public static final short kControlScrollBarLiveProc     = 386;
 	public static final short kControlPopupButtonProc       = 400;
 	public static final short kControlEditUnicodeTextProc   = 912;
 	public static final short popupMenuProc                 = 1008;
