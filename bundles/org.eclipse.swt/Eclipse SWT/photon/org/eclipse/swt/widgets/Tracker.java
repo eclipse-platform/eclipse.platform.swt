@@ -411,7 +411,7 @@ public boolean open () {
 	int region = 0;
 	if (info.dragger == 0) {
 		PhRect_t rect = new PhRect_t ();
-		OS.PhWindowQueryVisible (OS.Ph_QUERY_CONSOLE, 0, 1, rect);
+		OS.PhWindowQueryVisible (OS.Ph_QUERY_CONSOLE, 0, OS.PhInputGroup (0), rect);
 		int sense = OS.Ph_EV_DRAG | OS.Ph_EV_KEY | OS.Ph_EV_BUT_PRESS |
 			OS.Ph_EV_BUT_RELEASE | OS.Ph_EV_PTR_MOTION;
 		int [] args = {

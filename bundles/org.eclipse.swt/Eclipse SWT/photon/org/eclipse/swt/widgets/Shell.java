@@ -424,7 +424,7 @@ void createHandle (int index) {
 		int parentHandle = 0;
 		if (parent != null) parentHandle = parent.topHandle ();
 		PhRect_t rect = new PhRect_t ();
-		OS.PhWindowQueryVisible (OS.Ph_QUERY_GRAPHICS, 0, 1, rect);
+		OS.PhWindowQueryVisible (OS.Ph_QUERY_GRAPHICS, 0, OS.PhInputGroup (0), rect);
 		int width = (short) ((rect.lr_x - rect.ul_x + 1) * 5 / 8);
 		int height = (short) ((rect.lr_y - rect.ul_y + 1) * 5 / 8);
 		int decorations = 0;
