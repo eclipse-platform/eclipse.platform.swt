@@ -986,6 +986,7 @@ public static final synchronized native int call (int function, int arg0, int ar
 public static final synchronized native int call (int function, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
 public static final synchronized native int g_object_new (int type, int first_property_name);
 public static final synchronized native void g_type_add_interface_static (int instance_type, int interface_type, int info);
+public static final synchronized native int g_type_class_peek (int g_class);
 public static final synchronized native int g_type_class_peek_parent (int g_class);
 public static final synchronized native int g_type_from_name (byte[] name);
 public static final synchronized native int g_type_interface_peek_parent (int iface);

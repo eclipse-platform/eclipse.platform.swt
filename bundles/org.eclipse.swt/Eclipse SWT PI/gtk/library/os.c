@@ -930,6 +930,18 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1type_1add_1interface_1static)
 }
 #endif
 
+#ifndef NO_g_1type_1class_1peek
+JNIEXPORT jint JNICALL OS_NATIVE(g_1type_1class_1peek)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "g_1type_1class_1peek\n")
+	rc = (jint)g_type_class_peek((GType)arg0);
+	NATIVE_EXIT(env, that, "g_1type_1class_1peek\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1type_1class_1peek_1parent
 JNIEXPORT jint JNICALL OS_NATIVE(g_1type_1class_1peek_1parent)
 	(JNIEnv *env, jclass that, jint arg0)
