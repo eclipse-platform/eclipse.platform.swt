@@ -125,6 +125,8 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
+	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int width, height;
 	if (OS.COMCTL32_MAJOR >= 6) {
 		int hDC = OS.GetDC (handle);
@@ -145,10 +147,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.ReleaseDC (handle, hDC);
 	} else {
 		int layoutWidth = layout.getWidth ();
-		layout.setWidth (wHint);
-		Rectangle rect = layout.getBounds ();
-		width = rect.width;
-		height = rect.height;
+		//TEMPORARY CODE
+		if (wHint == 0) {
+			layout.setWidth (1);
+			Rectangle rect = layout.getBounds ();
+			width = 0;
+			height = rect.height;
+		} else {
+			layout.setWidth (wHint);
+			Rectangle rect = layout.getBounds ();
+			width = rect.width;
+			height = rect.height;
+		}
 		layout.setWidth (layoutWidth);
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
