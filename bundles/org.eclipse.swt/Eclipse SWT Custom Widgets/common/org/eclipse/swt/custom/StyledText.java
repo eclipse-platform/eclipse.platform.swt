@@ -7272,15 +7272,19 @@ boolean showLocation(int x, int line) {
 	if (x < leftMargin) {
 		// always make 1/4 of a page visible
 		x = Math.max(horizontalScrollOffset * -1, x - horizontalIncrement);	
-		scrollHorizontalBar(x);
-		scrolled = true;
+		if (x != 0) {
+			scrollHorizontalBar(x);
+			scrolled = true;
+		}
 	}
 	else 
 	if (x >= clientAreaWidth) {
 		// always make 1/4 of a page visible
 		x = Math.min(lineCache.getWidth() - horizontalScrollOffset, x + horizontalIncrement);
-		scrollHorizontalBar(x - clientAreaWidth);
-		scrolled = true;
+		if (x - clientAreaWidth != 0) {
+			scrollHorizontalBar(x - clientAreaWidth);
+			scrolled = true;
+		}
 	}
 	if (line < topIndex) {
 		setVerticalScrollOffset(line * verticalIncrement, true);
@@ -7297,11 +7301,14 @@ boolean showLocation(int x, int line) {
  * Sets the caret location and scrolls the caret offset into view.
  */
 void showCaret() {
-	int caretX = getCaretX();
-	boolean scrolled = showLocation(caretX, caretLine);
+	int lineOffset = content.getOffsetAtLine(caretLine);
+	String lineText = content.getLine(caretLine);
+	int offsetInLine = caretOffset - lineOffset;
+	int xAtOffset = getXAtOffset(lineText, caretLine, offsetInLine);	
+	boolean scrolled = showLocation(xAtOffset, caretLine);
 	
 	if (scrolled == false) {
-		setCaretLocation(caretX, caretLine);
+		setCaretLocation(xAtOffset, caretLine);
 	}
 	if (isBidi()) {
 		setBidiKeyboardLanguage();
