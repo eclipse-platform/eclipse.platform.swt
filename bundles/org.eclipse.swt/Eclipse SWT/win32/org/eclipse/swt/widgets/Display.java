@@ -155,7 +155,6 @@ public class Display extends Device {
 		{OS.VK_MENU,	SWT.ALT},
 		{OS.VK_SHIFT,	SWT.SHIFT},
 		{OS.VK_CONTROL,	SWT.CONTROL},
-		{OS.VK_CONTROL,	SWT.COMMAND},
 
 		/* NOT CURRENTLY USED */		
 //		{OS.VK_LBUTTON, SWT.BUTTON1},

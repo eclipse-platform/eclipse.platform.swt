@@ -955,7 +955,6 @@ boolean setInputState (Event event, int type) {
 	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
 	if (OS.GetKeyState (OS.VK_SHIFT) < 0) event.stateMask |= SWT.SHIFT;
 	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.CONTROL;
-	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.COMMAND;
 	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
 	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
 	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
@@ -976,13 +975,11 @@ boolean setInputState (Event event, int type) {
 			if (event.keyCode == SWT.ALT) event.stateMask &= ~SWT.ALT;
 			if (event.keyCode == SWT.SHIFT) event.stateMask &= ~SWT.SHIFT;
 			if (event.keyCode == SWT.CONTROL) event.stateMask &= ~SWT.CONTROL;
-			if (event.keyCode == SWT.COMMAND) event.stateMask &= ~SWT.COMMAND;
 			break;
 		case SWT.KeyUp:
 			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
 			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
 			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
-			if (event.keyCode == SWT.COMMAND) event.stateMask |= SWT.COMMAND;
 			break;
 	}		
 	return true;

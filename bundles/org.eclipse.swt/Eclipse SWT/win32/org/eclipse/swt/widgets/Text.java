@@ -1018,7 +1018,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 			if (key != 0x08 && key != 0x7F && key != '\r' && key != '\t' && key != '\n') break;
 			// FALL THROUGH
 		case OS.WM_KEYDOWN:
-			int modifiers = SWT.ALT | SWT.SHIFT | SWT.CONTROL | SWT.COMMAND;
+			int modifiers = SWT.ALT | SWT.SHIFT | SWT.CONTROL;
 			if ((stateMask & modifiers) != 0) return false;
 			break;
 	}
