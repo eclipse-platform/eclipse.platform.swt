@@ -753,7 +753,6 @@ void setData(int pData){
 	}
 }
 public String toString () {
-    String str = null;
     switch (type) {
 	    case COM.VT_BOOL :
 	        return "VT_BOOL{"+booleanData+"}";
