@@ -46,9 +46,6 @@ public void generate(Class clazz) {
 	generateMetaData("swt_copyright");
 	generateMetaData("swt_includes");
 	generateNativeMacro(clazz);
-	outputDelimiter();
-	generateNativeClassMacro(clazz);
-	outputDelimiter();
 	Method[] methods = clazz.getDeclaredMethods();
 	generateExcludes(methods);
 	generate(methods);
@@ -135,26 +132,6 @@ void generateNativeMacro(Class clazz) {
 	output(toC(clazz.getName()));
 	output("_##func");
 	outputDelimiter();
-}
-
-void generateNativeClassMacro(Class clazz) {
-	output("#define ");
-	output(getClassName(clazz));
-	output("_CLASS ");	
-	MetaData mt = getMetaData();
-	String data = mt.getMetaData("swt_main_classes", null);
-	int index = 0;
-	if (data != null) {
-		String[] classes = ItemData.split(data, ",");
-		for (int i = 0; i < classes.length; i++) {
-			String className = classes[i];
-			if (className.equals(clazz.getName())) {
-				index = i;
-				break;
-			}
-		}
-	}
-	output(String.valueOf(index));
 	outputDelimiter();
 }
 
@@ -252,23 +229,19 @@ void genereateSetParameter(int i, Class paramType, ParameterData paramData) {
 	}
 }
 
-void generateExitMacro(Method method, String function) {
+void generateExitMacro(String function) {
 	if (!enterExitMacro) return;
-	output("\tNATIVE_EXIT(env, that, ");
-	output(getClassName(method.getDeclaringClass()));
-	output("_CLASS, ");
+	output("\tNATIVE_EXIT(env, that, \"");
 	output(function);
-	output("_FUNC);");
+	output("\\n\")");
 	outputDelimiter();
 }
 
-void generateEnterMacro(Method method, String function) {
+void generateEnterMacro(String function) {
 	if (!enterExitMacro) return;
-	output("\tNATIVE_ENTER(env, that, ");
-	output(getClassName(method.getDeclaringClass()));
-	output("_CLASS, ");
+	output("\tNATIVE_ENTER(env, that, \"");
 	output(function);
-	output("_FUNC);");
+	output("\\n\")");
 	outputDelimiter();
 }
 
@@ -528,7 +501,7 @@ void generateReturn(Method method, Class returnType, boolean needsReturn) {
 }
 
 void generateGTKmemmove(Method method, String function, Class[] paramTypes) {
-	generateEnterMacro(method, function);
+	generateEnterMacro(function);
 	output("\t");
 	boolean get = paramTypes[0].isPrimitive();
 	String className = getClassName(paramTypes[get ? 1 : 0]);
@@ -539,7 +512,7 @@ void generateGTKmemmove(Method method, String function, Class[] paramTypes) {
 	output(get ? " *)arg0)" : " *)arg1)");
 	output(";");
 	outputDelimiter();
-	generateExitMacro(method, function);	
+	generateExitMacro(function);	
 }
 
 void generateFunctionBody(Method method, MethodData methodData, String function, Class[] paramTypes, Class returnType) {
@@ -554,7 +527,7 @@ void generateFunctionBody(Method method, MethodData methodData, String function,
 		generateGTKmemmove(method, function, paramTypes);
 	} else {
 		boolean needsReturn = generateLocalVars(method, paramTypes, returnType);
-		generateEnterMacro(method, function);
+		generateEnterMacro(function);
 		generateGetters(method, paramTypes);
 		if (methodData.getFlag("dynamic")) {
 			generateDynamicFunctionCall(method, methodData, paramTypes, returnType, needsReturn);
@@ -562,7 +535,7 @@ void generateFunctionBody(Method method, MethodData methodData, String function,
 			generateFunctionCall(method, methodData, paramTypes, returnType, needsReturn);
 		}
 		generateSetters(method, paramTypes);
-		generateExitMacro(method, function);
+		generateExitMacro(function);
 		generateReturn(method, returnType, needsReturn);
 	}
 	
