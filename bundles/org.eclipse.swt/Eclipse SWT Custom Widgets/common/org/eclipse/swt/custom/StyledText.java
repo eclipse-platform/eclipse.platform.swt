@@ -4774,10 +4774,9 @@ void handleKeyDown(Event event) {
 	verifyEvent.keyCode = event.keyCode;
 	verifyEvent.stateMask = event.stateMask;
 	verifyEvent.doit = true;
-	// handle special copy/paste behavior, see handleKeyUp(Event) for more info	
-	if (event.keyCode == SWT.CTRL) {
-		pasteToLocation = null;
-	}
+	// handle special copy/paste behavior, see handleKeyUp(Event) for more info
+	// clear the pasteToLocation whenever a key is pressed
+	pasteToLocation = null;
 	notifyListeners(VerifyKey, verifyEvent);
 	if (verifyEvent.doit == true) {
 		handleKey(event);
