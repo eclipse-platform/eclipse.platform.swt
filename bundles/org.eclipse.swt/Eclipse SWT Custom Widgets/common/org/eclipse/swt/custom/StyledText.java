@@ -7719,7 +7719,7 @@ public void setTopIndex(int topIndex) {
  */
 public void setTopPixel(int pixel) {
 	checkWidget();
-	int lineCount = logicalContent.getLineCount();
+	int lineCount =content.getLineCount();
 	int height = getClientArea().height;
 	int maxTopPixel = Math.max(0, lineCount * getVerticalIncrement() - height);
 	
