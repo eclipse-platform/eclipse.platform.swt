@@ -184,7 +184,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 	}
 	byte[] sourceData = new byte[source.data.length];
 	byte[] maskData = new byte[mask.data.length];
-	/* Swap the bits in each byte and convert scanline pad to 2 */
+	/* Swap the bits in each byte and convert to appropriate scanline pad */
 	byte[] data = source.data;
 	for (int i = 0; i < data.length; i++) {
 		byte s = data[i];
@@ -198,7 +198,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 			((s & 0x01) << 7));
 		sourceData[i] = (byte) ~sourceData[i];
 	}
-	sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 2);
+	sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 1);
 	data = mask.data;
 	for (int i = 0; i < data.length; i++) {
 		byte s = data[i];
@@ -212,7 +212,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 			((s & 0x01) << 7));
 		maskData[i] = (byte) ~maskData[i];
 	}
-	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
+	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
 	/* Create bitmaps */
 	int xDisplay = device.xDisplay;
 	int drawable = OS.XDefaultRootWindow(xDisplay);
@@ -268,7 +268,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		source = newSource;
 	}
 
-	/* Swap the bits in each byte and convert scanline pad to 2 */
+	/* Swap the bits in each byte and convert to appropriate scanline pad */
 	byte[] sourceData = new byte[source.data.length];
 	byte[] maskData = new byte[mask.data.length];
 	byte[] data = source.data;
@@ -283,7 +283,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			((s & 0x02) << 5) |
 			((s & 0x01) << 7));
 	}
-	sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 2);
+	sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 1);
 	data = mask.data;
 	for (int i = 0; i < data.length; i++) {
 		byte s = data[i];
@@ -296,7 +296,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			((s & 0x02) << 5) |
 			((s & 0x01) << 7));
 	}
-	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
+	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
 	/* Create bitmaps */
 	int xDisplay = device.xDisplay;
 	int drawable = OS.XDefaultRootWindow(xDisplay);

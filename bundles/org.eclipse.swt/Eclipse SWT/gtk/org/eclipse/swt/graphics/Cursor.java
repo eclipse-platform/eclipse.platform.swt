@@ -184,7 +184,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 
-	/* Swap the bits in each byte and convert scanline pad to 2 */
+	/* Swap the bits in each byte and convert to appropriate scanline pad */
 	byte[] sourceData = new byte[source.data.length];
 	byte[] maskData = new byte[mask.data.length];
 	byte[] data = source.data;
@@ -200,7 +200,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 			((s & 0x01) << 7));
 		sourceData[i] = (byte) ~sourceData[i];
 	}
-	sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 2);
+	sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 1);
 	data = mask.data;
 	for (int i = 0; i < data.length; i++) {
 		byte s = data[i];
@@ -214,7 +214,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 			((s & 0x01) << 7));
 		maskData[i] = (byte) ~maskData[i];
 	}
-	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
+	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
 
 	/* Create bitmaps */
 	int /*long*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, source.width, source.height);
@@ -274,7 +274,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		source = newSource;
 	}
 
-	/* Swap the bits in each byte and convert scanline pad to 2 */
+	/* Swap the bits in each byte and convert to appropriate scanline pad */
 	byte[] sourceData = new byte[source.data.length];
 	byte[] maskData = new byte[mask.data.length];
 	byte[] data = source.data;
@@ -289,7 +289,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			((s & 0x02) << 5) |
 			((s & 0x01) << 7));
 	}
-	sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 2);
+	sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 1);
 	data = mask.data;
 	for (int i = 0; i < data.length; i++) {
 		byte s = data[i];
@@ -302,7 +302,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			((s & 0x02) << 5) |
 			((s & 0x01) << 7));
 	}
-	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
+	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
 	
 	/* Create bitmaps */
 	int /*long*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, source.width, source.height);
