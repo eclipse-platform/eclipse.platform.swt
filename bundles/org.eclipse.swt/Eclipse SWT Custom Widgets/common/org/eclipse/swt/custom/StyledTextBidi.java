@@ -572,7 +572,7 @@ public boolean isRightToLeft(int logicalIndex) {
 /**
  * 
  */
-public boolean isRightToLeftMode(int logicalIndex) {
+public boolean isRightToLeftInput(int logicalIndex) {
 	// for keyboard positioning, consider numbers as RtoL
 	boolean isRightToLeft = false;
 	
@@ -653,7 +653,7 @@ public void setKeyboardLanguage(int logicalIndex) {
 	if (logicalIndex >= classBuffer.length) {
 		return;
 	}
-	if (isRightToLeftMode(logicalIndex)) {
+	if (isRightToLeftInput(logicalIndex)) {
 		String codePage = System.getProperty("file.encoding").toUpperCase();
 		if ("CP1255".equals(codePage)) {
 			language = BidiUtil.KEYBOARD_HEBREW;
