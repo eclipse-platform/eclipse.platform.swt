@@ -351,9 +351,7 @@ int /*long*/ createCursor(byte[] sourceData, byte[] maskData, int width, int hei
 	int /*long*/ cursor = 0;
 	if (sourcePixmap != 0 && maskPixmap != 0) {
 		GdkColor foreground = new GdkColor();
-		foreground.red = (short)65535;
-		foreground.green = (short)65535;
-		foreground.blue = (short)65535;
+		foreground.red = foreground.green = foreground.blue = (short)0xFFFF;
 		GdkColor background = new GdkColor();
 		cursor = OS.gdk_cursor_new_from_pixmap (sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
 	}	
