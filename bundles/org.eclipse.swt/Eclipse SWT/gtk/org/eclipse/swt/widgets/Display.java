@@ -94,14 +94,14 @@ import org.eclipse.swt.graphics.*;
 public class Display extends Device {
 
 	/* Events Dispatching and Callback */
-	boolean wake;
 	int gdkEventCount;
 	int /*long*/ [] gdkEvents;
-	int [] dispatchEvents;
 	Widget [] gdkEventWidgets;
+	int [] dispatchEvents;
 	Event [] eventQueue;
 	int /*long*/ fds;
 	int allocated_nfds;
+	boolean wake;
 	int [] max_priority = new int [1], timeout = new int [1];
 	Callback eventCallback, filterCallback;
 	GdkEventButton gdkEvent = new GdkEventButton ();
@@ -444,15 +444,17 @@ public void addFilter (int eventType, Listener listener) {
 
 void addGdkEvent (int /*long*/ event) {
 	if (gdkEvents == null) {
-		gdkEvents = new int /*long*/ [4];
-		gdkEventWidgets = new Widget [4];
+		int length = GROW_SIZE;
+		gdkEvents = new int /*long*/ [length];
+		gdkEventWidgets = new Widget [length];
 		gdkEventCount = 0;
 	}
 	if (gdkEventCount == gdkEvents.length) {
-		int /*long*/ [] newEvents = new int /*long*/ [gdkEventCount + 4];
+		int length = gdkEventCount + GROW_SIZE;
+		int /*long*/ [] newEvents = new int /*long*/ [length];
 		System.arraycopy (gdkEvents, 0, newEvents, 0, gdkEventCount);
 		gdkEvents = newEvents;
-		Widget [] newWidgets = new Widget [gdkEventCount + 4];
+		Widget [] newWidgets = new Widget [length];
 		System.arraycopy (gdkEventWidgets, 0, newWidgets, 0, gdkEventCount);
 		gdkEventWidgets = newWidgets;
 	}
@@ -2323,13 +2325,15 @@ void postEvent (Event event) {
 void putGdkEvents () {
 	if (gdkEventCount != 0) {
 		for (int i = 0; i < gdkEventCount; i++) {
-			if (gdkEventWidgets [i] == null || !gdkEventWidgets [i].isDisposed ()) {
-				OS.gdk_event_put (gdkEvents [i]);
+			int /*long*/ event = gdkEvents [i];
+			Widget widget = gdkEventWidgets [i];
+			if (widget == null || !widget.isDisposed ()) {
+				OS.gdk_event_put (event);
 			}
-			OS.gdk_event_free (gdkEvents [i]);
+			OS.gdk_event_free (event);
+			gdkEvents [i] = 0;
+			gdkEventWidgets [i] = null;
 		}
-		gdkEvents = null;
-		gdkEventWidgets = null;
 		gdkEventCount = 0;
 	}
 }
@@ -2933,6 +2937,10 @@ void showIMWindow (Control control) {
  */
 public boolean sleep () {
 	checkDevice ();
+	if (gdkEventCount == 0) {
+		gdkEvents = null;
+		gdkEventWidgets = null;
+	}
 	if (getMessageCount () != 0) return true;
 	if (fds == 0) {
 		allocated_nfds = 2;
