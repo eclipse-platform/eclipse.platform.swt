@@ -244,7 +244,22 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	}
 	return result;
 }
-
+int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
+	//TEMPORARY CODE - need to revisit when traversal fully implemented
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	switch (keyCode [0]) {
+		case 36: /* Return */
+			/*
+			* Feature in the Macintosh.  The default behaviour when the return key is pressed is
+			* to select the default button.  This is not the expected behaviour for Composite and
+			* its subclasses.  The fix is to avoid calling the default handler.
+			*/
+			return OS.noErr;
+	}
+	return result;
+}
 boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
