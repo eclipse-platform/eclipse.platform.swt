@@ -1093,21 +1093,24 @@ public void setSelection (TreeItem [] items) {
 		if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		int hOldItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		int hNewItem = hAnchor = item.handle;
+		
+		/*
+		* Bug in Windows.  When TVM_SELECTITEM is used to select and
+		* scroll an item to be visible and the client area of the tree
+		* is smaller that the size of one item, TVM_SELECTITEM makes
+		* the next item in the tree visible by making it the top item
+		* instead of making the desired item visible.  The fix is to
+		* detect the case when the client area is too small and make
+		* the desired visible item be the top item in the tree.
+		* 
+		* Note that TVM_SELECTITEM when called with TVGN_FIRSTVISIBLE
+		* also requires the work around for scrolling.
+		*/
 		boolean fixScroll = checkScroll (hNewItem);
 		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
 		ignoreSelect = false;
-		
-		/*
-		* Bug in Windows.  When TVM_SELECTITEM is used to ensure
-		* that an item is visible and the client area of the tree is
-		* smaller that the size of one item, TVM_SELECTITEM makes
-		* the next item in the tree visible by making it the top item
-		* instead of making the desired item visible.  The fix is to
-		* detect the case when the client area is too small and make
-		* the desired visible item be the top item in the tree.
-		*/
 		if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
 			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hNewItem);
 		}
