@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -163,12 +164,24 @@ public Browser(Composite parent, int style) {
 					Variant varResult = event.arguments[0];
 					IDispatch dispatch = varResult.getDispatch();
 					if (html != null) {
-						TCHAR buffer = new TCHAR(0, html, true);
+						byte[] buffer = null;
+						try {
+							buffer = html.getBytes("UTF-8"); //$NON-NLS-1$
+						} catch (UnsupportedEncodingException e) {
+						}
 						html = null;
-						int byteCount = buffer.length() * TCHAR.sizeof;
-						int hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED, byteCount);
+						/*
+						* Note. Internet Explorer appears to treat the data loaded with 
+						* nsIPersistStreamInit.Load as if it were encoded using the default
+						* local charset.  There does not seem to be an API to set the
+						* desired charset explicitely in this case.  The fix is to
+						* prepend the UTF-8 Byte Order Mark signature to the data.
+						*/
+						byte[] UTF8BOM = {(byte)0xEF, (byte)0xBB, (byte)0xBF};
+						int	hGlobal = buffer != null ? OS.GlobalAlloc(OS.GMEM_FIXED, UTF8BOM.length + buffer.length) : 0;
 						if (hGlobal != 0) {
-							OS.MoveMemory(hGlobal, buffer, byteCount);
+							OS.MoveMemory(hGlobal, UTF8BOM, UTF8BOM.length);
+							OS.MoveMemory(hGlobal + UTF8BOM.length, buffer, buffer.length);
 							int[] ppstm = new int[1];
 							/* 
 							* Note.  CreateStreamOnHGlobal is called with the flag fDeleteOnRelease.
