@@ -500,6 +500,46 @@ Decorations menuShell () {
 	return this;
 }
 
+boolean moveMenu (int hMenuSrc, int hMenuDest) {
+	boolean success = true;
+	TCHAR lpNewItem = new TCHAR (0, "", true);
+	int index = 0, cch = 128;
+	int byteCount = cch * TCHAR.sizeof;
+	int hHeap = OS.GetProcessHeap ();
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	MENUITEMINFO lpmii = new MENUITEMINFO ();
+	lpmii.cbSize = MENUITEMINFO.sizeof;
+	lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA | OS.MIIM_SUBMENU;
+	lpmii.dwTypeData = pszText;
+	lpmii.cch = cch;
+	while (OS.GetMenuItemInfo (hMenuSrc, 0, true, lpmii)) {
+		int uFlags = OS.MF_BYPOSITION | OS.MF_ENABLED;
+		int uIDNewItem = lpmii.wID;
+		if (lpmii.hSubMenu != 0) {
+			uFlags |= OS.MF_POPUP;
+			uIDNewItem = lpmii.hSubMenu;
+		}
+		success = OS.InsertMenu (hMenuDest, index, uFlags, uIDNewItem, lpNewItem);
+		if (!success) break;
+		/* Set application data and text info */
+		lpmii.fMask = OS.MIIM_DATA | OS.MIIM_TYPE;
+		success = OS.SetMenuItemInfo (hMenuDest, index, true, lpmii);
+		if (!success) break;
+		lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA | OS.MIIM_SUBMENU;
+		if ((lpmii.fState & (OS.MFS_DISABLED | OS.MFS_GRAYED)) != 0) {
+			OS.EnableMenuItem (hMenuDest, index, OS.MF_BYPOSITION | OS.MF_GRAYED);
+		}
+		if ((lpmii.fState & OS.MFS_CHECKED) != 0) {
+			OS.CheckMenuItem (hMenuDest, index, OS.MF_BYPOSITION | OS.MF_CHECKED);
+		}
+		OS.RemoveMenu (hMenuSrc, 0, OS.MF_BYPOSITION);
+		index++;
+		lpmii.cch = cch;
+	}
+	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+	return success;
+}
+
 void releaseWidget () {
 	if (menuBar != null) {
 		menuBar.releaseWidget ();
@@ -760,6 +800,21 @@ public void setMaximized (boolean maximized) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+/**
+ * Sets the receiver's menu bar to the argument, which
+ * may be null.
+ *
+ * @param menu the new menu bar
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
+ *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setMenuBar (Menu menu) {
 	checkWidget ();
 	if (menuBar == menu) return;
@@ -767,22 +822,31 @@ public void setMenuBar (Menu menu) {
 		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
-	}
-	menuBar = menu;
-	int hMenu = 0;
-	if (menuBar != null) hMenu = menuBar.handle;
+	}	
 	if (OS.IsWinCE) {
 		if (hwndCB != 0) {
-			// not implemented - switch to a new menu bar
-			SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
-		}
-		if (hMenu != 0) {		
-			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), handle, 1);
-			OS.CommandBar_InsertMenubarEx (hwndCB, 0, hMenu, 0);
-		} else {
+			/*
+			* Because CommandBar_Destroy destroys the menu bar, it
+			* is necessary to move the current items into a new menu
+			* before it is called.
+			*/
+			int hMenu = OS.CreateMenu ();
+			if (!moveMenu (menuBar.handle, hMenu)) {
+				error (SWT.ERROR_CANNOT_SET_MENU);
+			}
+			menuBar.handle = hMenu;
+			OS.CommandBar_Destroy (hwndCB);
 			hwndCB = 0;
 		}
+		menuBar = menu;
+		if (menuBar != null) {		
+			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), handle, 1);
+			OS.CommandBar_InsertMenubarEx (hwndCB, 0, menuBar.handle, 0);
+		}		
 	} else {
+		menuBar = menu;
+		int hMenu = 0;
+		if (menuBar != null) hMenu = menuBar.handle;
 		OS.SetMenu (handle, hMenu);
 	}
 	destroyAcceleratorTable ();
