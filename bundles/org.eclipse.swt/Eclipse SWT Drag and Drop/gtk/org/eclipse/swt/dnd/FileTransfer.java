@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -37,9 +36,8 @@ public class FileTransfer extends ByteArrayTransfer {
 	private static FileTransfer _instance = new FileTransfer();
 	private static final String URI_LIST = "text/uri-list";
 	private static final int URI_LIST_ID = registerType(URI_LIST);
-	private static final String URI_LIST_PREFIX = "file:";
-	private static final String URI_LIST_SEPARATOR = "\r";
-
+	private static final byte[] separator = new byte[]{'\r', '\n'};
+	
 private FileTransfer() {}
 
 /**
@@ -66,22 +64,48 @@ public static FileTransfer getInstance () {
 public void javaToNative(Object object, TransferData transferData) {
 	transferData.result = 0;
 	if (object == null || !(object instanceof String[])) return;
+	if (!isSupportedType(transferData)) return;
 	String[] files = (String[])object;
-	if (files.length == 0) return;
-
-	StringBuffer sb = new StringBuffer();
-	for (int i = 0, length = files.length; i < length; i++){
-		sb.append(URI_LIST_PREFIX);
-		sb.append(files[i]);
-		sb.append(URI_LIST_SEPARATOR);
+	byte[] buffer = new byte[0];
+	for (int i = 0; i < files.length; i++) {
+		String string = files[i];
+		if (string == null) continue;
+		int length = string.length();
+		if (length == 0) continue;
+		char[] chars = new char[length];
+		string.getChars(0, length, chars, 0);		
+		int[] error = new int[1];
+		int utf8Ptr = OS.g_utf16_to_utf8(chars, chars.length, null, null, error);
+		if (error[0] != 0 || utf8Ptr == 0) continue;
+		int localePtr = OS.g_locale_from_utf8(utf8Ptr, -1, null, null, error);
+		OS.g_free(utf8Ptr);
+		if (error[0] != 0 || localePtr == 0) continue;
+		int uriPtr = OS.g_filename_to_uri(localePtr, 0, error);
+		OS.g_free(localePtr);
+		if (error[0] != 0 || uriPtr == 0) continue;
+		length = OS.strlen(uriPtr);
+		byte[] temp = new byte[length];
+		OS.memmove (temp, uriPtr, length);
+		OS.g_free(uriPtr);
+		int newLength = (i > 0) ? buffer.length+separator.length+temp.length :  temp.length;
+		byte[] newBuffer = new byte[newLength];
+		int offset = 0;
+		if (i > 0) {
+			System.arraycopy(buffer, 0, newBuffer, 0, buffer.length);
+			offset +=  buffer.length;
+			System.arraycopy(separator, 0, newBuffer, offset, separator.length);
+			offset += separator.length;
+		}
+		System.arraycopy(temp, 0, newBuffer, offset, temp.length);
+		buffer = newBuffer;
 	}
-	byte[] buffer = Converter.wcsToMbcs(null, sb.toString(), true);
-	int pValue = OS.g_malloc(buffer.length);
-	if (pValue == 0) return;
-	OS.memmove(pValue, buffer, buffer.length);
+	if (buffer.length == 0) return;
+	int ptr = OS.g_malloc(buffer.length+1);
+	OS.memset(ptr, '\0', buffer.length+1);
+	OS.memmove(ptr, buffer, buffer.length);
+	transferData.pValue = ptr;
 	transferData.length = buffer.length;
 	transferData.format = 8;
-	transferData.pValue = pValue;
 	transferData.result = 1;
 }
 /**
@@ -96,31 +120,60 @@ public void javaToNative(Object object, TransferData transferData) {
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData) {
-	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ) return null;
-	int size = transferData.format * transferData.length / 8;
-	if (size == 0) return null;
-	
-	byte[] buffer = new byte[size];
-	OS.memmove(buffer, transferData.pValue, size);
-	char[] chars = Converter.mbcsToWcs(null, buffer);
-	String string  = new String(chars);
-	// parse data and convert string to array of files
-	int start = string.indexOf(URI_LIST_PREFIX);
-	if (start == -1) return null;
-	start += URI_LIST_PREFIX.length();
+	if ( !isSupportedType(transferData) ||  transferData.pValue == 0 ||  transferData.length <= 0 ) return null;
+	int length = transferData.length;
+	byte[] temp = new byte[length];
+	OS.memmove(temp, transferData.pValue, length);
+	int[] files = new int[0];
+	int offset = 0;
+	for (int i = 0; i < temp.length - 1; i++) {
+		if (temp[i] == '\r' && temp[i+1] == '\n') {
+			int size =  i - offset;
+			int file = OS.g_malloc(size + 1);
+			byte[] fileBuffer = new byte[size + 1];
+			System.arraycopy(temp, offset, fileBuffer, 0, size);
+			OS.memmove(file, fileBuffer, size + 1);
+			int[] newFiles = new int[files.length + 1];
+			System.arraycopy(files, 0, newFiles, 0, files.length);
+			newFiles[files.length] = file;
+			files = newFiles;
+			offset = i + 2;
+		}
+	}
+	if (offset < temp.length - 2) {
+		int size =  temp.length - offset;
+		int file = OS.g_malloc(size + 1);
+		byte[] fileBuffer = new byte[size + 1];
+		System.arraycopy(temp, offset, fileBuffer, 0, size);
+		OS.memmove(file, fileBuffer, size + 1);
+		int[] newFiles = new int[files.length + 1];
+		System.arraycopy(files, 0, newFiles, 0, files.length);
+		newFiles[files.length] = file;
+		files = newFiles;
+	}
 	String[] fileNames = new String[0];
-	while (start < string.length()) { 
-		int end = string.indexOf(URI_LIST_SEPARATOR, start);
-		if (end == -1) end = string.length() - 1;
-		String fileName = string.substring(start, end);
+	for (int i = 0; i < files.length; i++) {
+		int[] error = new int[1];
+		int localePtr = OS.g_filename_from_uri(files[i], null, error);
+		OS.g_free(files[i]);
+		if (error[0] != 0 || localePtr == 0) continue;
+		int utf8Ptr = OS.g_locale_to_utf8(localePtr, -1, null, null, error);
+		OS.g_free(localePtr);
+		if (error[0] != 0 || utf8Ptr == 0) continue;
+		int[] items_written = new int[1];
+		int utf16Ptr = OS.g_utf8_to_utf16(utf8Ptr, -1, null, items_written, null);
+		OS.g_free(utf8Ptr);
+		length = items_written[0];
+		char[] buffer = new char[length];
+		OS.memmove(buffer, utf16Ptr, length * 2);
+		OS.g_free(utf16Ptr);
+		String name = new String(buffer);
 		String[] newFileNames = new String[fileNames.length + 1];
 		System.arraycopy(fileNames, 0, newFileNames, 0, fileNames.length);
-		newFileNames[fileNames.length] = fileName;
+		newFileNames[fileNames.length] = name;
 		fileNames = newFileNames;
-		start = string.indexOf(URI_LIST_PREFIX, end);
-		if (start == -1) break;
-		start += URI_LIST_PREFIX.length();
 	}
+	if (fileNames.length == 0) return null;
 	return fileNames;
 }
 

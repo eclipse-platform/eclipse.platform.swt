@@ -230,6 +230,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(PANGO_1PIXELS)
 }
 #endif
 
+#ifndef NO_g_1filename_1from_1uri
+JNIEXPORT jint JNICALL OS_NATIVE(g_1filename_1from_1uri)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "g_1filename_1from_1uri\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)g_filename_from_uri((const char *)arg0, (char **)lparg1, (GError **)lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "g_1filename_1from_1uri\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1filename_1from_1utf8
 JNIEXPORT jint JNICALL OS_NATIVE(g_1filename_1from_1utf8)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
@@ -247,6 +265,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1filename_1from_1utf8)
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	NATIVE_EXIT(env, that, "g_1filename_1from_1utf8\n")
+	return rc;
+}
+#endif
+
+
+#ifndef NO_g_1filename_1to_1uri
+JNIEXPORT jint JNICALL OS_NATIVE(g_1filename_1to_1uri)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "g_1filename_1to_1uri\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)g_filename_to_uri((const char *)arg0, (const char *)arg1, (GError **)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "g_1filename_1to_1uri\n")
 	return rc;
 }
 #endif
@@ -406,6 +440,48 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1list_1reverse)
 	NATIVE_ENTER(env, that, "g_1list_1reverse\n")
 	rc = (jint)g_list_reverse((GList *)arg0);
 	NATIVE_EXIT(env, that, "g_1list_1reverse\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1locale_1from_1utf8
+JNIEXPORT jint JNICALL OS_NATIVE(g_1locale_1from_1utf8)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "g_1locale_1from_1utf8\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)g_locale_from_utf8((const gchar *)arg0, (gssize)arg1, (gsize *)lparg2, (gsize *)lparg3, (GError **)lparg4);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "g_1locale_1from_1utf8\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1locale_1to_1utf8
+JNIEXPORT jint JNICALL OS_NATIVE(g_1locale_1to_1utf8)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "g_1locale_1to_1utf8\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)g_locale_to_utf8((const gchar *)arg0, (gssize)arg1, (gsize *)lparg2, (gsize *)lparg3, (GError **)lparg4);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "g_1locale_1to_1utf8\n")
 	return rc;
 }
 #endif
@@ -6822,6 +6898,16 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3I_3BI)
 	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
 	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memmove___3I_3BI\n")
+}
+#endif
+
+#ifndef NO_memset
+JNIEXPORT void JNICALL OS_NATIVE(memset)
+	(JNIEnv *env, jclass that, jint arg0, jchar arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "memset\n")
+	memset((void *)arg0, (char)arg1, (size_t)arg2);
+	NATIVE_EXIT(env, that, "memset\n")
 }
 #endif
 
