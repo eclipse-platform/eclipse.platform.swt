@@ -95,6 +95,33 @@ fail:
 }
 #endif
 
+#ifndef NO_GraphicsPath_1GetPathPoints
+JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetPathPoints)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jint arg2)
+{
+	PointF *points = NULL;
+	jfloat *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1GetPathPoints_FUNC);
+	if (arg1) if ((lparg1 = env->GetFloatArrayElements(arg1, NULL)) == NULL) goto fail;
+	if (lparg1) {
+		points = new PointF[arg2];
+	}
+	rc = (jint)((GraphicsPath *)arg0)->GetPathPoints(points, arg2);
+fail:
+	if (lparg1 && points) {
+		for (int i=0, j=0; i<arg2; i++, j+=2) {
+			lparg1[j] = points[i].X;
+			lparg1[j + 1] = points[i].Y;
+		}
+		delete points;
+	}
+	if (arg1 && lparg1) env->ReleaseFloatArrayElements(arg1, lparg1, 0);
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1GetPathPoints_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Matrix_1TransformPoints__I_3FI
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformPoints__I_3FI)
 	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jint arg2)

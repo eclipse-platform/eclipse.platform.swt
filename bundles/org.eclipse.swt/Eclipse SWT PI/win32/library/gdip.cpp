@@ -337,6 +337,34 @@ fail:
 }
 #endif
 
+#ifndef NO_GraphicsPath_1GetPathTypes
+JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetPathTypes)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1GetPathTypes_FUNC);
+	if (arg1) if ((lparg1 = env->GetByteArrayElements(arg1, NULL)) == NULL) goto fail;
+	rc = (jint)((GraphicsPath *)arg0)->GetPathTypes((BYTE *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1GetPathTypes_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GraphicsPath_1GetPointCount
+JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetPointCount)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1GetPointCount_FUNC);
+	rc = (jint)((GraphicsPath *)arg0)->GetPointCount();
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1GetPointCount_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GraphicsPath_1IsOutlineVisible
 JNIEXPORT jboolean JNICALL Gdip_NATIVE(GraphicsPath_1IsOutlineVisible)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3, jint arg4)

@@ -59,6 +59,14 @@ public class Gdip extends Platform {
     public static final int InterpolationModeNearestNeighbor = QualityModeHigh + 3;
     public static final int InterpolationModeHighQualityBilinear = QualityModeHigh + 4;
     public static final int InterpolationModeHighQualityBicubic = QualityModeHigh + 5;
+    public static final int PathPointTypeStart = 0;
+    public static final int PathPointTypeLine = 1;
+    public static final int PathPointTypeBezier = 3;
+    public static final int PathPointTypePathTypeMask = 0x7;
+    public static final int PathPointTypePathDashMode = 0x10;
+    public static final int PathPointTypePathMarker = 0x20;
+    public static final int PathPointTypeCloseSubpath = 0x80;
+    public static final int PathPointTypeBezier3 = 3;
     public static final int SmoothingModeDefault = QualityModeDefault;
     public static final int SmoothingModeHighSpeed = QualityModeLow;
     public static final int SmoothingModeHighQuality = QualityModeHigh;
@@ -156,6 +164,9 @@ public static final native int GraphicsPath_AddString(int path, char[] string, i
 public static final native int GraphicsPath_CloseFigure(int path);
 public static final native int GraphicsPath_GetBounds(int path, RectF bounds, int matrix, int pen);
 public static final native int GraphicsPath_GetLastPoint(int path, PointF lastPoint);
+public static final native int GraphicsPath_GetPathPoints(int path, float[] points, int count);
+public static final native int GraphicsPath_GetPathTypes(int path, byte[] types, int count);
+public static final native int GraphicsPath_GetPointCount(int path);
 public static final native boolean GraphicsPath_IsOutlineVisible(int path, float x, float y, int pen, int g);
 public static final native boolean GraphicsPath_IsVisible(int path, float x, float y, int g);
 public static final native int GraphicsPath_SetFillMode(int path, int fillmode);

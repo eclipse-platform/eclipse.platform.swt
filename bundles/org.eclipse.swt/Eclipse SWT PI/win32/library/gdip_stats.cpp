@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 106;
-int Gdip_nativeFunctionCallCount[106];
+int Gdip_nativeFunctionCount = 109;
+int Gdip_nativeFunctionCallCount[109];
 char * Gdip_nativeFunctionNames[] = {
 	"Bitmap_1delete",
 	"Bitmap_1new__I",
@@ -42,6 +42,9 @@ char * Gdip_nativeFunctionNames[] = {
 	"GraphicsPath_1CloseFigure",
 	"GraphicsPath_1GetBounds",
 	"GraphicsPath_1GetLastPoint",
+	"GraphicsPath_1GetPathPoints",
+	"GraphicsPath_1GetPathTypes",
+	"GraphicsPath_1GetPointCount",
 	"GraphicsPath_1IsOutlineVisible",
 	"GraphicsPath_1IsVisible",
 	"GraphicsPath_1SetFillMode",
