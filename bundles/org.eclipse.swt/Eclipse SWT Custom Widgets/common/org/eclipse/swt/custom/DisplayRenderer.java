@@ -76,7 +76,7 @@ protected void drawLineSelectionBackground(String line, int lineOffset, StyleRan
 	int lineEndSpaceWidth = getLineEndSpaceWidth();
 	int lineHeight = getLineHeight();
 	boolean wordWrap = parent.internalGetWordWrap();
-	boolean isRightOriented = (parent.getStyle() & SWT.RIGHT_TO_LEFT) != 0;
+	boolean isRightOriented = (parent.getStyle() & SWT.MIRRORED) != 0;
 	
 	if (selectionEnd == selectionStart || selectionEnd < 0 || selectionStart > lineLength) {
 		return;

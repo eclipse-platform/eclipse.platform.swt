@@ -1596,7 +1596,7 @@ public StyledText(Composite parent, int style) {
 	super.setForeground(getForeground());
 	super.setBackground(getBackground());
 	Display display = getDisplay();
-	boolean isRightOriented = (getStyle() & SWT.RIGHT_TO_LEFT) != 0;
+	boolean isRightOriented = (getStyle() & SWT.MIRRORED) != 0;
 	isBidi = StyledTextBidi.isBidiPlatform() || isRightOriented;
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
@@ -2247,7 +2247,7 @@ void createKeyBindings() {
 	setKeyBinding(SWT.END | SWT.MOD1, ST.TEXT_END);
 	setKeyBinding(SWT.PAGE_UP | SWT.MOD1, ST.WINDOW_START);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1, ST.WINDOW_END);
-	if ((getStyle() & SWT.RIGHT_TO_LEFT) == 0) {
+	if ((getStyle() & SWT.MIRRORED) == 0) {
 		setKeyBinding(SWT.ARROW_LEFT, ST.COLUMN_PREVIOUS);
 		setKeyBinding(SWT.ARROW_RIGHT, ST.COLUMN_NEXT);
 		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD1, ST.WORD_PREVIOUS);
@@ -2271,7 +2271,7 @@ void createKeyBindings() {
 	setKeyBinding(SWT.END | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_END);
 	setKeyBinding(SWT.PAGE_UP | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_START);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_END);
-	if ((getStyle() & SWT.RIGHT_TO_LEFT) == 0) {
+	if ((getStyle() & SWT.MIRRORED) == 0) {
 		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD2, ST.SELECT_COLUMN_PREVIOUS);
 		setKeyBinding(SWT.ARROW_RIGHT | SWT.MOD2, ST.SELECT_COLUMN_NEXT);
 		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_PREVIOUS);
@@ -3278,7 +3278,7 @@ void doVisualPrevious() {
 			}
 			else
 			if (visualOffset == 0) {
-				boolean isRightOriented = (getStyle() & SWT.RIGHT_TO_LEFT) != 0;
+				boolean isRightOriented = (getStyle() & SWT.MIRRORED) != 0;
 
 				//move to visual line end (i.e., behind L2R character/in front of R2L character at visual 0)
 				if ((isRightOriented && bidi.isRightToLeft(offsetInLine) == false) ||
@@ -3361,7 +3361,7 @@ void doVisualNext() {
 			visualOffset++;
 			offsetInLine = bidi.getLogicalOffset(visualOffset);
 			if (offsetInLine > 0 && offsetInLine < lineLength) {
-				boolean isRightOriented = (getStyle() & SWT.RIGHT_TO_LEFT) != 0;
+				boolean isRightOriented = (getStyle() & SWT.MIRRORED) != 0;
 				if (isRightOriented) {
 					boolean leftToRightStart = bidi.isRightToLeft(offsetInLine) == false && bidi.isRightToLeft(offsetInLine - 1);
 					if (leftToRightStart) {
@@ -6900,7 +6900,7 @@ void setBidiCaretLocation(StyledTextBidi bidi, int caretLine) {
 	int lineStartOffset = content.getOffsetAtLine(caretLine);
 	int offsetInLine = caretOffset - lineStartOffset;
 	GC gc = null;
-	boolean isRightOriented = (getStyle() & SWT.RIGHT_TO_LEFT) != 0;
+	boolean isRightOriented = (getStyle() & SWT.MIRRORED) != 0;
 	
 	if (bidi == null) {
 		gc = getGC();
