@@ -27,39 +27,43 @@ public static void main(String[] args) {
 	Shell shell = new Shell (display);
 	Image image = new Image (display, 16, 16);
 	final Tray tray = display.getSystemTray ();
-	final TrayItem item = new TrayItem (tray, SWT.NONE);
-	item.setToolTipText("SWT TrayItem");
-	item.addListener (SWT.Show, new Listener () {
-		public void handleEvent (Event event) {
-			System.out.println("show");
+	if (tray == null) {
+		System.out.println ("The system tray is not available");
+	} else {
+		final TrayItem item = new TrayItem (tray, SWT.NONE);
+		item.setToolTipText("SWT TrayItem");
+		item.addListener (SWT.Show, new Listener () {
+			public void handleEvent (Event event) {
+				System.out.println("show");
+			}
+		});
+		item.addListener (SWT.Hide, new Listener () {
+			public void handleEvent (Event event) {
+				System.out.println("hide");
+			}
+		});
+		item.addListener (SWT.Selection, new Listener () {
+			public void handleEvent (Event event) {
+				System.out.println("selection");
+			}
+		});
+		item.addListener (SWT.DefaultSelection, new Listener () {
+			public void handleEvent (Event event) {
+				System.out.println("default selection");
+			}
+		});
+		final Menu menu = new Menu (shell, SWT.POP_UP);
+		for (int i = 0; i < 8; i++) {
+			MenuItem mi = new MenuItem (menu, SWT.PUSH);
+			mi.setText ("Item" + i);
 		}
-	});
-	item.addListener (SWT.Hide, new Listener () {
-		public void handleEvent (Event event) {
-			System.out.println("hide");
-		}
-	});
-	item.addListener (SWT.Selection, new Listener () {
-		public void handleEvent (Event event) {
-			System.out.println("selection");
-		}
-	});
-	item.addListener (SWT.DefaultSelection, new Listener () {
-		public void handleEvent (Event event) {
-			System.out.println("default selection");
-		}
-	});
-	final Menu menu = new Menu (shell, SWT.POP_UP);
-	for (int i = 0; i < 8; i++) {
-		MenuItem mi = new MenuItem (menu, SWT.PUSH);
-		mi.setText ("Item" + i);
+		item.addListener (SWT.MenuDetect, new Listener () {
+			public void handleEvent (Event event) {
+				menu.setVisible (true);
+			}
+		});
+		item.setImage (image);
 	}
-	item.addListener (SWT.MenuDetect, new Listener () {
-		public void handleEvent (Event event) {
-			menu.setVisible (true);
-		}
-	});
-	item.setImage (image);
 	shell.setBounds(50, 50, 300, 200);
 	shell.open ();
 	while (!shell.isDisposed ()) {
