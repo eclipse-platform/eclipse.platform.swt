@@ -1305,7 +1305,8 @@ public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
  */
 public boolean setText(String html) {
 	checkWidget();
-	
+	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+
 	/* Convert the String containing HTML to an array of
 	 * bytes with UTF-8 data.
 	 */
