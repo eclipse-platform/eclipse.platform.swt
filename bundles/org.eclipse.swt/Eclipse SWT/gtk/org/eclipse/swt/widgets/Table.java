@@ -1409,7 +1409,7 @@ public void setLinesVisible (boolean show) {
 public void setSelection (int index) {
 	deselectAll ();
 	select (index);
-	setTopIndex (getSelectionIndex ());
+	showSelection ();
 }
 
 public void setRedraw (boolean redraw) {
@@ -1440,7 +1440,7 @@ public void setSelection (int start, int end) {
 	checkWidget();
 	deselectAll ();
 	select (start, end);
-	setTopIndex (getSelectionIndex ());
+	showSelection ();
 }
 
 /**
@@ -1465,7 +1465,7 @@ public void setSelection (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	select (indices);
-	setTopIndex (getSelectionIndex ());
+	showSelection ();
 }
 
 /**
@@ -1498,7 +1498,7 @@ public void setSelection (TableItem [] items) {
 		int index = indexOf (items [i]);
 		if (index != -1) select (index);
 	}
-	setTopIndex (getSelectionIndex ());
+	showSelection ();
 }
 
 /**

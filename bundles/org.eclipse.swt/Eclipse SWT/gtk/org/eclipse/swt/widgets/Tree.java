@@ -968,8 +968,8 @@ public void setRedraw (boolean redraw) {
 public void setSelection (TreeItem [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	deselectAll();
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	int index = 0, length = items.length;
 	while (index < length) {
 		TreeItem item = items [index];
