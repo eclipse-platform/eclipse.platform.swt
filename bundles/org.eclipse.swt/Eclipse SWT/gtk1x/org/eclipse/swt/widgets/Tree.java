@@ -199,17 +199,19 @@ void createHandle (int index) {
 //		int height = clist.row_height + 1, width = height;
 		int width = CHECK_WIDTH, height = CHECK_HEIGHT;
 		int style = OS.gtk_widget_get_style (handle);
-
 		GdkVisual visual = new GdkVisual ();
 		OS.memmove(visual, OS.gdk_visual_get_system(), GdkVisual.sizeof);
+
+		check = OS.gdk_pixmap_new(0, width, height, visual.depth);
+		if (check == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		uncheck = OS.gdk_pixmap_new(0, width, height, visual.depth);
 		if (uncheck == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 
-		OS.gtk_draw_check (style, uncheck, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_OUT, 0, 0, width, height);
-
-/*		check = new Image (display, width, height);
-		OS.gtk_draw_check (style, check.pixmap, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_IN, 0, 0, width, height);
-		*/
+		OS.gtk_draw_check (style, check, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_OUT, 0, 0, width, height);
+		OS.gtk_draw_check (style, uncheck, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_IN, 0, 0, width, height);
+		
+		/*check = new Image(Display.getCurrent(), "/home/boris/on.gif").pixmap;
+		uncheck = new Image(Display.getCurrent(), "/home/boris/off.gif").pixmap;*/
 	}
 }
 
