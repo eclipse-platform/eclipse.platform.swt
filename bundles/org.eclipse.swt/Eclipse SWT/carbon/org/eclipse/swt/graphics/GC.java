@@ -612,7 +612,7 @@ public void drawRectangle (int x, int y, int width, int height) {
 		if (focus(true, null)) {
 			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			fRect.set(x, y, width+1, height+1);
+			fRect.set(x-fLineWidth/2, y-fLineWidth/2, width+fLineWidth, height+fLineWidth);
 			OS.FrameRect(fRect.getData());
 		}
 	} finally {
