@@ -21,9 +21,10 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextGetTextPosition)
 {
 	CGPoint _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, CGContextGetTextPosition_FUNC)
-	if (arg1) CHECK_NULL_VOID(lparg1 = getCGPointFields(env, arg1, &_arg1));
+	if (arg1) if ((lparg1 = getCGPointFields(env, arg1, &_arg1)) == NULL) goto failTag;
 	*lparg1 = CGContextGetTextPosition((CGContextRef)arg0);
-	if (arg1) setCGPointFields(env, arg1, lparg1);
+failTag:
+	if (arg1 && lparg1) setCGPointFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, CGContextGetTextPosition_FUNC)
 }
 #endif
