@@ -725,7 +725,7 @@ int processSelection (int int0, int int1, int int2) {
 	int eventType = SWT.Selection;
 	if (int2 != 0) {
 		GdkEvent gdkEvent = new GdkEvent ();
-		OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
+		OS.memmove (gdkEvent, int2, GdkEvent.sizeof);
 		if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
 			eventType = SWT.DefaultSelection;
 		}
