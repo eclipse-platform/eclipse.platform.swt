@@ -178,7 +178,8 @@ public String open () {
 		int[] dialogHandle= new int[1];
 		
 		if ((style & SWT.SAVE) != 0) {
-			status= OS.NavCreatePutFileDialog(flags, titleHandle, parentWindowHandle, dialogHandle, OS.OSType("TEXT"), OS.OSType("KAHL"));
+			status= OS.NavCreatePutFileDialog(flags, titleHandle, parentWindowHandle, dialogHandle,
+							MacUtil.OSType("TEXT"), MacUtil.OSType("KAHL"));
 		} else /* if ((style & SWT.OPEN) != 0) */ {
 			if ((style & SWT.MULTI) != 0)
 				flags |= OS.kNavAllowMultipleFiles;
