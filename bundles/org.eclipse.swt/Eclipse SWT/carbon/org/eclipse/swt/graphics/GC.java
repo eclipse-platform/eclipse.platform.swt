@@ -348,184 +348,54 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  		srcWidth = destWidth = imgWidth;
  		srcHeight = destHeight = imgHeight;
  	} else {
- 		simple = srcX == 0 && srcY == 0 &&
- 			srcWidth == destWidth && destWidth == imgWidth &&
- 			srcHeight == destHeight && destHeight == imgHeight;
 		if (srcX + srcWidth > imgWidth || srcY + srcHeight > imgHeight) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
- 	}	
-	if (srcImage.alpha != -1 || srcImage.alphaData != null) {
-		drawImageAlpha(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
-	} else if (srcImage.transparentPixel != -1 || srcImage.mask != 0) {
-		drawImageMask(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
-	} else {
-		drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
-	}
-}
-void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
-	/* Simple cases */
-	if (srcImage.alpha == 0) return;
-	if (srcImage.alpha == 255) {
-		drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
-		return;
-	}
+ 	}
 
-	/* Check the clipping */
-	Rectangle rect = getClipping();
-	rect = rect.intersection(new Rectangle(destX, destY, destWidth, destHeight));
-	if (rect.isEmpty()) return;
-	
-	/* Optimization. Recalculate the src and dest rectangles so that
-	* only the clipping area is drawn.
-	*/
-	rect.width = Math.max(rect.width, Compatibility.ceil(destWidth, srcWidth));
-	rect.height = Math.max(rect.height, Compatibility.ceil(destHeight, srcHeight));
-	int sx1 = srcX + (((rect.x - destX) * srcWidth) / destWidth);
-	int sx2 = srcX + ((((rect.x + rect.width) - destX) * srcWidth) / destWidth);
-	int sy1 = srcY + (((rect.y - destY) * srcHeight) / destHeight);
-	int sy2 = srcY + ((((rect.y + rect.height) - destY) * srcHeight) / destHeight);
-	destX = rect.x;
-	destY = rect.y;
-	destWidth = rect.width;
-	destHeight = rect.height;
-	srcX = sx1;
-	srcY = sy1;
-	srcWidth = sx2 - sx1;
-	srcHeight = sy2 - sy1;
-	
-	/* AW
-	int xDestImagePtr = 0, xSrcImagePtr = 0;
-	*/
-	try {
-		/* Get the background pixels */
-		/* AW
-		xDestImagePtr = OS.XGetImage(xDisplay, xDrawable, destX, destY, destWidth, destHeight, OS.AllPlanes, OS.ZPixmap);
-		if (xDestImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		XImage xDestImage = new XImage();
-		OS.memmove(xDestImage, xDestImagePtr, XImage.sizeof);
-		byte[] destData = new byte[xDestImage.bytes_per_line * xDestImage.height];
-		OS.memmove(destData, xDestImage.data, destData.length);	
-		*/
-	
-		/* Get the foreground pixels */
-		/* AW
-		xSrcImagePtr = OS.XGetImage(xDisplay, srcImage.pixmap, srcX, srcY, srcWidth, srcHeight, OS.AllPlanes, OS.ZPixmap);
-		if (xSrcImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		XImage xSrcImage = new XImage();
-		OS.memmove(xSrcImage, xSrcImagePtr, XImage.sizeof);
-		byte[] srcData = new byte[xSrcImage.bytes_per_line * xSrcImage.height];
-		OS.memmove(srcData, xSrcImage.data, srcData.length);
-		*/
-		
-		/* Compose the pixels */		
-		/* AW
-		int srcOrder = xSrcImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
-		int destOrder = xDestImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
-		if (xSrcImage.depth <= 8) {
-			XColor[] xcolors = data.device.xcolors;
-			if (xcolors == null) SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
-			byte[] reds = new byte[xcolors.length];
-			byte[] greens = new byte[xcolors.length];
-			byte[] blues = new byte[xcolors.length];
-			for (int i = 0; i < xcolors.length; i++) {
-				XColor color = xcolors[i];
-				if (color == null) continue;
-				reds[i] = (byte)((color.red >> 8) & 0xFF);
-				greens[i] = (byte)((color.green >> 8) & 0xFF);
-				blues[i] = (byte)((color.blue >> 8) & 0xFF);
-			}
-			ImageData.blit(ImageData.BLIT_ALPHA,
-				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, reds, greens, blues,
-				srcImage.alpha, srcImage.alphaData, imgWidth,
-				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, reds, greens, blues,
-				false, false);
-		} else {
-			int srcRedMask = xSrcImage.red_mask;
-			int srcGreenMask = xSrcImage.green_mask;
-			int srcBlueMask = xSrcImage.blue_mask;
-			int destRedMask = xDestImage.red_mask;
-			int destGreenMask = xDestImage.green_mask;
-			int destBlueMask = xDestImage.blue_mask;
-			*/
-			
-			/*
-			* Feature in X.  XGetImage does not retrieve the RGB masks if the drawable
-			* is a Pixmap.  The fix is to detect that the masks are not valid and use
-			* the default visual masks instead.
-			* 
-			* NOTE: It is safe to use the default Visual masks, since we always
-			* create images with these masks. 
-			*/
-			/* AW
-			int visual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
-			Visual xVisual = new Visual();
-			OS.memmove(xVisual, visual, Visual.sizeof);
-			if (srcRedMask == 0 && srcGreenMask == 0 && srcBlueMask == 0) {
-				srcRedMask = xVisual.red_mask;
-				srcGreenMask = xVisual.green_mask;
-				srcBlueMask = xVisual.blue_mask;
-			}
-			if (destRedMask == 0 && destGreenMask == 0 && destBlueMask == 0) {
-				destRedMask = xVisual.red_mask;
-				destGreenMask = xVisual.green_mask;
-				destBlueMask = xVisual.blue_mask;
-			}
-			
-			ImageData.blit(ImageData.BLIT_ALPHA,
-				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, srcRedMask, srcGreenMask, srcBlueMask,
-				srcImage.alpha, srcImage.alphaData, imgWidth,
-				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destRedMask, destGreenMask, destBlueMask,
-				false, false);
-		}
-		*/
-		
-		/* Draw the composed pixels */
-		/* AW
-		OS.memmove(xDestImage.data, destData, destData.length);
-		OS.XPutImage(xDisplay, xDrawable, handle, xDestImagePtr, 0, 0, destX, destY, destWidth, destHeight);
-		*/
-	} finally {
-		/* AW
-		if (xSrcImagePtr != 0) OS.XDestroyImage(xSrcImagePtr);
-		if (xDestImagePtr != 0) OS.XDestroyImage(xDestImagePtr);
-		*/
-	}
-	System.out.println("GC.drawImageAlpha: nyi");
-}
-void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
-	/* Generate the mask if necessary. */
-	if (srcImage.transparentPixel != -1) srcImage.createMask();
-	try {
+	if (srcImage.alpha == 0)	// fully transparent
+		return;
+
+	if (srcImage.pixmap == 0)
+		return;
+	int srcBits= OS.DerefHandle(srcImage.pixmap);
+	if (srcBits == 0)
+		return;
+	int destBits= OS.GetPortBitMapForCopyBits(handle);
+	if (destBits == 0)
+		return;
+
+	MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
+	fRect.set(destX, destY, destWidth, destHeight);
+
+ 	try {
 		if (focus(true, null)) {
-			int srcBits= OS.DerefHandle(srcImage.pixmap);
-			int maskBits= OS.DerefHandle(srcImage.mask);
-			int destBits= OS.GetPortBitMapForCopyBits(handle);
-			if (srcBits != 0 && maskBits != 0 && destBits != 0) {
-				MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
-				fRect.set(destX, destY, destWidth, destHeight);
-				OS.RGBBackColor(0x00FFFFFF);
-				OS.RGBForeColor(0x00000000);
-				OS.CopyDeepMask(srcBits, maskBits, destBits, ib.getData(), ib.getData(), fRect.getData(), (short)0, 0);
-			}
-		}
-	} finally {
-		unfocus(true);
-	}
-	/* Destroy the image mask if the there is a GC created on the image */
-	if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
+			
+			OS.RGBBackColor(0x00FFFFFF);
+			OS.RGBForeColor(0x00000000);
+
+			if (srcImage.alpha != -1 || srcImage.alphaData != null) {
+				
+				if (srcImage.alpha == 255) {	// fully opaque
+					OS.CopyBits(srcBits, destBits, ib.getData(), fRect.getData(), (short)0, 0);
+					return;
+				}
+				
+				//OS.CopyDeepMask(srcBits, maskBits, destBits, ib.getData(), ib.getData(), fRect.getData(), (short)0, 0);
+				System.out.println("GC.drawImage: alpha drawing not nyi");
+
+			} else if (srcImage.transparentPixel != -1 || srcImage.mask != 0) {
+				/* Generate the mask if necessary. */
+				if (srcImage.transparentPixel != -1) srcImage.createMask();
 	
-}
-void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
-	try {
-		if (focus(true, null)) {
-			int srcBits= OS.DerefHandle(srcImage.pixmap);
-			int destBits= OS.GetPortBitMapForCopyBits(handle);
-			if (srcBits != 0 && destBits != 0) {
-				MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
-				fRect.set(destX, destY, destWidth, destHeight);
-				OS.RGBBackColor(0x00FFFFFF);
-				OS.RGBForeColor(0x00000000);
+				int maskBits= srcImage.mask != 0 ? OS.DerefHandle(srcImage.mask) : 0;
+				if (maskBits != 0)
+					OS.CopyMask(srcBits, maskBits, destBits, ib.getData(), ib.getData(), fRect.getData());
+
+				/* Destroy the image mask if there is a GC created on the image */
+				if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
+
+			} else {
 				OS.CopyBits(srcBits, destBits, ib.getData(), fRect.getData(), (short)0, 0);
 			}
 		}
