@@ -244,6 +244,17 @@ int processHide (int info) {
 
 int processShow (int info) {
 	sendEvent (SWT.Show);
+
+	/*
+	* Bug in Photon.  If menu items are created in the event above,
+	* the menu will not layout properly.  The fix is to force
+	* the menu to relayout and position itself again.
+	*/
+	OS.PtExtentWidgetFamily (handle);
+	if ((style & (SWT.POP_UP | SWT.BAR)) == 0) {
+		OS.PtPositionMenu (handle, null);
+	}
+
 	return OS.Pt_CONTINUE;
 }
 

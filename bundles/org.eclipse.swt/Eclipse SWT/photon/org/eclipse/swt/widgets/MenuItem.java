@@ -92,12 +92,6 @@ void createHandle (int index) {
 	}
 	if (OS.PtWidgetIsRealized (parentHandle)) {
 		OS.PtRealizeWidget (topHandle ());
-		if ((parent.style & SWT.BAR) == 0) {
-			OS.PtExtentWidgetFamily (parentHandle);
-			if ((parent.style & SWT.POP_UP) == 0) {
-				OS.PtPositionMenu (parentHandle, null);
-			}
-		}
 	}
 }
 
