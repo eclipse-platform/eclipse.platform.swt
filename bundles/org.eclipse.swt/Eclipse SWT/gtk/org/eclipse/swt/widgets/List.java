@@ -1055,9 +1055,9 @@ public void select (int index) {
  */
 public void select (int start, int end) {
 	checkWidget();
-	if (start < 0 && end < 0) return;
+	if (!(0 <= end && start <= end)) return;
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	if (start >= count && end >= count) return;
+	if (count <= start || count == 0) return;
 	start = Math.min (count - 1, Math.max (0, start));
 	end = Math.min (count - 1, Math.max (0, end));
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
@@ -1131,6 +1131,22 @@ public void selectAll () {
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_select_all (selection);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+}
+
+void selectFocusIndex (int index) {
+	/*
+	 * Note that this method both selects and sets the focus to the
+	 * specified index, so any previous selection in the list will be lost.
+	 * gtk does not provide a way to just set focus to a specified list item.
+	 */
+	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	if (!(0 <= index && index < count))  return;
+	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+	int path = OS.gtk_tree_model_get_path (modelHandle, iter);
+	OS.gtk_tree_view_set_cursor (handle, path, 0, false);
+	OS.gtk_tree_path_free (path);
+	OS.g_free (iter);
 }
 
 void setBackgroundColor (GdkColor color) {
@@ -1247,8 +1263,12 @@ public void setItems (String [] items) {
  */
 public void setSelection (int index) {
 	checkWidget();
-	if ((style & SWT.MULTI) != 0) deselectAll ();
-	select (index);
+	if ((style & SWT.MULTI) != 0) {
+		deselectAll ();
+		if (index >= 0) selectFocusIndex (index);
+	} else {
+		select (index);
+	}
 	showSelection ();
 }
 
@@ -1271,7 +1291,14 @@ public void setSelection (int index) {
  */
 public void setSelection (int start, int end) {
 	checkWidget();
-	if ((style & SWT.MULTI) != 0) deselectAll ();
+	if ((style & SWT.MULTI) != 0) {
+		deselectAll ();
+		if (0 <= end && start <= end) {
+			int focusIndex = Math.max (0, start);
+			selectFocusIndex (focusIndex);
+			start = focusIndex + 1;
+		}
+	}
 	select (start, end);
 	showSelection ();
 }
@@ -1297,6 +1324,17 @@ public void setSelection(int[] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
+	if ((style & SWT.MULTI) != 0) {
+		if (indices.length > 0) {
+			int focusIndex = indices [0];
+			if (focusIndex >= 0) {
+				selectFocusIndex (focusIndex);
+				int [] temp = indices;
+				indices = new int [indices.length - 1];
+				System.arraycopy (temp, 1, indices, 0, indices.length);
+			}
+		}
+	}
 	select (indices);
 	showSelection ();
 }
@@ -1323,21 +1361,35 @@ public void setSelection (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.MULTI) != 0) deselectAll ();
-	for (int i=items.length-1; i>=0; --i) {
+	boolean firstSelect = true;
+	int singleSelectIndex = -1;
+	for (int i = 0; i < items.length; i++) {
 		int index = 0;
 		String string = items [i];
 		if (string != null) {
 			while ((index = indexOf (string, index)) != -1) {
-				select (index);
-				if (((style & SWT.SINGLE) != 0) && isSelected (index)) {
-					showSelection ();
-					return;
+				if ((style & SWT.MULTI) != 0) {
+					if (firstSelect) {
+						firstSelect = false;
+						selectFocusIndex (index);
+					} else {
+						select (index);
+					}
+				} else {	/* SINGLE */
+					singleSelectIndex = index;
+					break;
 				}
 				index++;
 			}
 		}
 	}
-	if ((style & SWT.SINGLE) != 0) deselectAll ();
+	if ((style & SWT.SINGLE) != 0) {
+		if (singleSelectIndex == -1) {
+			deselectAll ();
+		} else {
+			select (singleSelectIndex);
+		}
+	}
 	showSelection ();
 }
 
