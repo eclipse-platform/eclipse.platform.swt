@@ -854,7 +854,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1insert_1
 	return rc;
 }
 
-
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1set_1row_1height
+  (JNIEnv *env, jclass that, jint clist, jint height)
+{
+  gtk_clist_set_row_height ((GtkCList*)clist, (gint)height);
+}
 
 
 
