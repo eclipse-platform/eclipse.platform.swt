@@ -8,6 +8,7 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -147,7 +148,19 @@ void draw (int control) {
 	if ((style & SWT.NO_BACKGROUND) != 0) return;
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
-	OS.EraseRect (rect);
+	if (background != null) {
+		int red = (short) (background [0] * 255);
+		int green = (short) (background [1] * 255);
+		int blue = (short) (background [2] * 255);
+		RGBColor color = new RGBColor ();
+		color.red = (short) (red << 8 | red);
+		color.green = (short) (green << 8 | green);
+		color.blue = (short) (blue << 8 | blue);
+		OS.RGBForeColor (color);
+		OS.PaintRect (rect);
+	} else {
+		OS.EraseRect (rect);
+	}
 }
 
 public Control [] getChildren () {
