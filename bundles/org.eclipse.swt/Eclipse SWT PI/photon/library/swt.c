@@ -6697,3 +6697,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_GetStringUTFRegio
     (*env)->GetStringUTFRegion(env, string, start, length, buffer1);
     if (buffer) (*env)->ReleaseByteArrayElements(env, buffer, (char *)buffer1, 0);
 }
+
+#ifndef NO_uname
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_uname
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	struct utsname _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("uname\n")
+
+	if (arg0) lparg0 = &_arg0;
+	rc = (jint)uname(lparg0);
+	if (arg0) setutsnameFields(env, arg0, lparg0);
+	return rc;
+}
+#endif
+

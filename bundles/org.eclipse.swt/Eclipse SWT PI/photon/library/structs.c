@@ -1330,4 +1330,76 @@ void setPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct
 	(*env)->SetByteField(env, lpObject, lpCache->type_1, lpStruct->type[1]);
 	(*env)->SetByteField(env, lpObject, lpCache->type_0, lpStruct->type[0]);
 }
+#ifndef NO_utsname
+typedef struct utsname_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID sysname, nodename, release, version, machine;
+} utsname_FID_CACHE;
+
+utsname_FID_CACHE utsnameFc;
+
+void cacheutsnameFids(JNIEnv *env, jobject lpObject)
+{
+	if (utsnameFc.cached) return;
+	utsnameFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	utsnameFc.sysname = (*env)->GetFieldID(env, utsnameFc.clazz, "sysname", "[B");
+	utsnameFc.nodename = (*env)->GetFieldID(env, utsnameFc.clazz, "nodename", "[B");
+	utsnameFc.release = (*env)->GetFieldID(env, utsnameFc.clazz, "release", "[B");
+	utsnameFc.version = (*env)->GetFieldID(env, utsnameFc.clazz, "version", "[B");
+	utsnameFc.machine = (*env)->GetFieldID(env, utsnameFc.clazz, "machine", "[B");
+	utsnameFc.cached = 1;
+}
+
+struct utsname *getutsnameFields(JNIEnv *env, jobject lpObject, struct utsname *lpStruct)
+{
+	if (!utsnameFc.cached) cacheutsnameFids(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.sysname);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->sysname), lpStruct->sysname);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.nodename);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->nodename), lpStruct->nodename);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.release);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->release), lpStruct->release);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.version);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->version), lpStruct->version);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.machine);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->machine), lpStruct->machine);
+	}
+	return lpStruct;
+}
+
+void setutsnameFields(JNIEnv *env, jobject lpObject, struct utsname *lpStruct)
+{
+	if (!utsnameFc.cached) cacheutsnameFids(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.sysname);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->sysname), lpStruct->sysname);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.nodename);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->nodename), lpStruct->nodename);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.release);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->release), lpStruct->release);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.version);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->version), lpStruct->version);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, utsnameFc.machine);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->machine), lpStruct->machine);
+	}
+}
+#endif /* NO_utsname */
 

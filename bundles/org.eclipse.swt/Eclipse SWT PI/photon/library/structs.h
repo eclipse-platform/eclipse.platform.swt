@@ -19,6 +19,7 @@
 #include <Ph.h>
 #include <Pt.h>
 #include <photon/PhRender.h>
+#include <sys/utsname.h>
 
 /* PhPoint_t struct */
 typedef struct PhPoint_t_FID_CACHE {
@@ -327,6 +328,14 @@ typedef PhClipHeader_FID_CACHE *PPhClipHeader_FID_CACHE;
 void cachePhClipHeaderFids(JNIEnv *env, jobject lpObject, PPhClipHeader_FID_CACHE lpCache);
 void getPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache);
 void setPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache);
+
+#ifndef NO_utsname
+struct utsname *getutsnameFields(JNIEnv *env, jobject lpObject, struct utsname *lpStruct);
+void setutsnameFields(JNIEnv *env, jobject lpObject, struct utsname *lpStruct);
+#else
+#define getutsnameFields(a,b,c) NULL
+#define setutsnameFields(a,b,c)
+#endif
 
 extern PhPoint_t_FID_CACHE PhPoint_tFc;
 extern PhRect_t_FID_CACHE PhRect_tFc;

@@ -15,9 +15,48 @@ import org.eclipse.swt.internal.*;
 
 public class OS {
 
+	public static final int QNX_MAJOR;
+	public static final int QNX_MINOR;
+	public static final int QNX_MICRO;
+
 	/* Load the SWT library. */
 	static {
 		Library.loadLibrary ("swt");
+		
+		/* Gather machine information (just like "uname -a") */
+		utsname udata = new utsname();
+		OS.uname(udata);
+		
+		/*
+		* Parse out the release information into integers that
+		* can be used at runtime for version checks.
+		*/
+		int value = 0;
+		int i = 0;
+		while( udata.release[i] != '.' ) {
+			value = value * 10;
+			value += udata.release[i] - '0';
+			i++;
+		}
+		QNX_MAJOR = value;
+		
+		value = 0;
+		i++;
+		while( udata.release[i] != '.' ) {
+			value = value * 10;
+			value += udata.release[i] - '0';
+			i++;
+		}
+		QNX_MINOR = value;
+		
+		value = 0;
+		i++;
+		while( udata.release[i] != 0 ) {
+			value = value * 10;
+			value += udata.release[i] - '0';
+			i++;
+		}
+		QNX_MICRO = value;
 	}
 
 /**** BEGIN MANUALLY ADDED/FIXED ***/
@@ -2984,5 +3023,7 @@ public static final native int PfLoadMetrics(byte[] font);
 public static final native String NewStringUTF(byte[] buffer);
 public static final native int GetStringUTFLength(String string);
 public static final native void GetStringUTFRegion(String string, int start, int len, byte[] buffer); 
+
+public static final native int uname(utsname data); 
 
 }

@@ -269,6 +269,12 @@ public Rectangle getClientArea () {
 	checkWidget();
 	PhArea_t area = new PhArea_t ();
 	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
+	/* Check for versions >= 6.2.1 */
+	if (OS.QNX_MAJOR > 6 || (OS.QNX_MAJOR == 6 && (OS.QNX_MINOR > 2 || (OS.QNX_MINOR == 2 && OS.QNX_MICRO >= 1)))) {
+		PhRect_t rect = new PhRect_t();
+		OS.PtCalcCanvas (handle, rect);
+		return new Rectangle (rect.ul_x, rect.ul_y, rect.lr_x - rect.ul_x + 1, rect.lr_y - rect.ul_y + 1);
+	}
 	int clientHandle = OS.PtWidgetChildBack (handle);
 	OS.PtWidgetArea (clientHandle, area);
 	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
