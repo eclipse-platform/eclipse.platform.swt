@@ -89,6 +89,7 @@ FormAttachment getBottomAttachment () {
 		if (top == null) return cacheBottom = new FormAttachment (0, cacheHeight);
 		return cacheBottom = getTopAttachment ().plus (cacheHeight);
 	}
+	if (bottom.control != null && bottom.control.isDisposed ()) bottom.control = null;
 	if (bottom.control == null) return cacheBottom = bottom;
 	isVisited = true;
 	FormData bottomData = (FormData) bottom.control.getLayoutData ();
@@ -111,6 +112,7 @@ FormAttachment getLeftAttachment () {
 		if (right == null) return cacheLeft = new FormAttachment (0, 0);
 		return cacheLeft = getRightAttachment ().minus (cacheWidth);
 	}
+	if (left.control != null && left.control.isDisposed ()) left.control = null;
 	if (left.control == null) return cacheLeft = left;
 	isVisited = true;
 	FormData leftData = (FormData) left.control.getLayoutData ();
@@ -133,6 +135,7 @@ FormAttachment getRightAttachment () {
 		if (left == null) return cacheRight = new FormAttachment (0, cacheWidth);
 		return cacheRight = getLeftAttachment ().plus (cacheWidth);
 	}
+	if (right.control != null && right.control.isDisposed ()) right.control = null;
 	if (right.control == null) return cacheRight = right;
 	isVisited = true;
 	FormData rightData = (FormData) right.control.getLayoutData ();
@@ -155,6 +158,7 @@ FormAttachment getTopAttachment () {
 		if (bottom == null) return cacheTop = new FormAttachment (0, 0);
 		return cacheTop = getBottomAttachment ().minus (cacheHeight);
 	}
+	if (top.control != null && top.control.isDisposed ()) top.control = null;
 	if (top.control == null) return cacheTop = top;
 	isVisited = true;
 	FormData topData = (FormData) top.control.getLayoutData ();
