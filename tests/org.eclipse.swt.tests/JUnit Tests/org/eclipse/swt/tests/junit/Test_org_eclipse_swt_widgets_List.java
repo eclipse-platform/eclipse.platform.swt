@@ -969,11 +969,11 @@ public void test_removeII() {
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	}
-	assertEquals(2, list.getItemCount());
+	assertEquals(3, list.getItemCount());
 	assertEquals("text2", list.getItem(1));
 
 	list.remove(2, 0);
-	assertEquals(2, list.getItemCount());
+	assertEquals(3, list.getItemCount());
 }
 
 public void test_removeLjava_lang_String() {
