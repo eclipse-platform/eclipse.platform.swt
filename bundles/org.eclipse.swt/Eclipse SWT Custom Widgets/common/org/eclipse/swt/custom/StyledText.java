@@ -1596,8 +1596,6 @@ public StyledText(Composite parent, int style) {
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.BORDER) != 0) {
 		leftMargin = topMargin = rightMargin = bottomMargin = 2;
 	}
-	leftMargin = rightMargin = 10;
-	topMargin = bottomMargin = 0;
 	clipboard = new Clipboard(display);
 	installDefaultContent();
 	initializeRenderer();
