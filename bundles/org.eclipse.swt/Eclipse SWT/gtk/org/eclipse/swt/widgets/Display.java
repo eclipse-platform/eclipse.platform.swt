@@ -2485,9 +2485,13 @@ public void update () {
  * @see #sleep
  */
 public void wake () {
-	// NOT IMPLEMENTED - need to wake up the event loop
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
+	wakeThread ();
+}
+
+void wakeThread () {
+	// NOT IMPLEMENTED - need to wake up the event loop
 }
 
 static char wcsToMbcs (char ch) {
