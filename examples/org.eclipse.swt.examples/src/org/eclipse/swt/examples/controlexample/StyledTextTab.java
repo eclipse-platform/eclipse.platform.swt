@@ -27,8 +27,8 @@ class StyledTextTab extends ScrollableTab {
 	Button wrapButton, readOnlyButton, fullSelectionButton;
 	
 	/* Buttons for adding StyleRanges to StyledText */
-	Button boldButton, redButton, yellowButton;
-	Image boldImage, redImage, yellowImage;
+	Button boldButton, italicButton, redButton, yellowButton;
+	Image boldImage, italicImage, redImage, yellowImage;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -114,19 +114,22 @@ class StyledTextTab extends ScrollableTab {
 		final Display display = controlGroup.getDisplay ();
 		styledTextStyleGroup = new Group (controlGroup, SWT.NONE);
 		styledTextStyleGroup.setText (ControlExample.getResourceString ("StyledText_Styles"));
-		styledTextStyleGroup.setLayout (new GridLayout(2, false));
-		styledTextStyleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL));
+		styledTextStyleGroup.setLayout (new GridLayout(5, false));
+		GridData data = new GridData (GridData.HORIZONTAL_ALIGN_FILL);
+		data.horizontalSpan = 2;
+		styledTextStyleGroup.setLayoutData (data);
 		
 		/* Get images */
 		boldImage = createBitmapImage (display, "bold");
+		italicImage = createBitmapImage (display, "italic");
 		redImage = createBitmapImage (display, "red");
 		yellowImage = createBitmapImage (display, "yellow");
 		
 		/* Create controls to modify the StyledText */
 		Label label = new Label (styledTextStyleGroup, SWT.NONE);
 		label.setText (ControlExample.getResourceString ("StyledText_Style_Instructions"));
-		GridData data = new GridData(GridData.FILL_HORIZONTAL);
-		data.horizontalSpan = 2;
+		data = new GridData(GridData.FILL_HORIZONTAL);
+		data.horizontalSpan = 5;
 		label.setLayoutData(data);
 		new Label (styledTextStyleGroup, SWT.NONE).setText (ControlExample.getResourceString ("Bold"));
 		boldButton = new Button (styledTextStyleGroup, SWT.PUSH);
@@ -139,15 +142,34 @@ class StyledTextTab extends ScrollableTab {
 				for (int i = sel.x; i<sel.x+sel.y; i++) {
 					StyleRange range = styledText.getStyleRangeAtOffset(i);
 					if (range == null) {style = new StyleRange(i, 1, null, null, SWT.BOLD);}
-					else {style = new StyleRange(i, 1, range.foreground, range.background, SWT.BOLD);};
+					else {style = new StyleRange(i, 1, range.foreground, range.background, range.fontStyle | SWT.BOLD);};
 					styledText.setStyleRange(style);
 				}
 				styledText.setSelectionRange(sel.x + sel.y, 0);
 			}
 		});
+		new Label (styledTextStyleGroup, SWT.NONE).setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		new Label (styledTextStyleGroup, SWT.NONE).setText (ControlExample.getResourceString ("Foreground_Style"));
 		redButton = new Button (styledTextStyleGroup, SWT.PUSH);
 		redButton.setImage (redImage);
+		new Label (styledTextStyleGroup, SWT.NONE).setText (ControlExample.getResourceString ("Italic"));
+		italicButton = new Button (styledTextStyleGroup, SWT.PUSH);
+		italicButton.setImage (italicImage);
+		italicButton.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {
+				Point sel = styledText.getSelectionRange();
+				if ((sel == null) || (sel.y == 0)) return;
+				StyleRange style;
+				for (int i = sel.x; i<sel.x+sel.y; i++) {
+					StyleRange range = styledText.getStyleRangeAtOffset(i);
+					if (range == null) {style = new StyleRange(i, 1, null, null, SWT.ITALIC);}
+					else {style = new StyleRange(i, 1, range.foreground, range.background, range.fontStyle | SWT.ITALIC);};
+					styledText.setStyleRange(style);
+				}
+				styledText.setSelectionRange(sel.x + sel.y, 0);
+			}
+		});
+		new Label (styledTextStyleGroup, SWT.NONE).setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		new Label (styledTextStyleGroup, SWT.NONE).setText (ControlExample.getResourceString ("Background_Style"));
 		yellowButton = new Button (styledTextStyleGroup, SWT.PUSH);
 		yellowButton.setImage (yellowImage);
@@ -186,6 +208,7 @@ class StyledTextTab extends ScrollableTab {
 		yellowButton.addDisposeListener(new DisposeListener () {
 			public void widgetDisposed (DisposeEvent e) {
 				boldImage.dispose();
+				italicImage.dispose();
 				redImage.dispose();
 				yellowImage.dispose();
 			}
