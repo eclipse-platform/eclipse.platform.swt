@@ -304,7 +304,21 @@ public boolean open () {
 	 */
 	while (tracking) {
 		if (parent != null && parent.isDisposed ()) break;
-		int eventType = waitEvent();
+		// wait for an event		
+		int eventPtr;
+		while (true) {
+			eventPtr = OS.gdk_event_get();
+			if (eventPtr != 0) {
+				break;
+			} 
+			else {
+				try { Thread.sleep(50); } catch (Exception ex) {}
+			}
+		}
+
+		GdkEvent osEvent = new GdkEvent();
+		OS.memmove(osEvent, eventPtr, GdkEvent.sizeof);
+		int eventType = osEvent.type;
 		switch (eventType) {
 			case OS.GDK_BUTTON_RELEASE:
 			case OS.GDK_MOTION_NOTIFY:
@@ -326,22 +340,21 @@ public boolean open () {
 				tracking = (eventType != OS.GDK_BUTTON_RELEASE);
 				break;
 			case OS.GDK_KEY_PRESS:
-//				error(SWT.ERROR_NOT_IMPLEMENTED);
-				/*
-				XKeyEvent keyEvent = new XKeyEvent ();
-				OS.memmove (keyEvent, xEvent, XKeyEvent.sizeof);
-				if (keyEvent.keycode != 0) {
-					int [] keysym = new int [1];
-					OS.XLookupString (keyEvent, null, 0, keysym, null);
-					keysym [0] &= 0xFFFF;
-					tracking = keysym [0] != OS.XK_Escape && keysym [0] != OS.XK_Cancel;
-					cancelled = !tracking;
-				}*/
+				GdkEventKey gdkEvent = new GdkEventKey ();
+				OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+				switch (gdkEvent.keyval) {
+					case OS.GDK_Escape: 
+						cancelled = true;
+						// fallthrough
+					case OS.GDK_Return:
+						tracking = false;
+						break;
+				}
 				break;
 			}  // switch
+			OS.gdk_event_free(eventPtr);
 		}  // while
 	drawRectangles();
-	tracking = false;
 	ungrab();
 	return !cancelled;
 }
@@ -374,27 +387,6 @@ private void drawRectangles () {
 		OS.gdk_draw_rectangle(xWindow, gc, 0, rect.x, rect.y, rect.width, rect.height);
 	}
 	OS.g_object_unref(gc);
-}
-/*
- * Wait for an event to show up.
- * Return the event's type as a GdkEventType.
- */
-private int waitEvent() {
-	int[] eventType = new int[1];
-	int eventPtr;
-
-	while (true) {
-		eventPtr = OS.gdk_event_get();
-		if (eventPtr != 0) {
-			GdkEvent event = new GdkEvent();
-			OS.memmove(event, eventPtr, GdkEvent.sizeof);
-			OS.gdk_event_free(eventPtr);
-			return event.type;
-		}
-		else {
-			try { Thread.sleep(50); } catch (Exception ex) {}
-		}
-	}
 }
 
 /*
