@@ -753,12 +753,12 @@ XImage *getXImageFields(JNIEnv *env, jobject lpObject, XImage *lpStruct)
 	lpStruct->green_mask = (*env)->GetIntField(env, lpObject, XImageFc.green_mask);
 	lpStruct->blue_mask = (*env)->GetIntField(env, lpObject, XImageFc.blue_mask);
 	lpStruct->obdata = (XPointer)(*env)->GetIntField(env, lpObject, XImageFc.obdata);
-	lpStruct->f.create_image = (void *)(*env)->GetIntField(env, lpObject, XImageFc.create_image);
-	lpStruct->f.destroy_image = (void *)(*env)->GetIntField(env, lpObject, XImageFc.destroy_image);
-	lpStruct->f.get_pixel = (void *)(*env)->GetIntField(env, lpObject, XImageFc.get_pixel);
-	lpStruct->f.put_pixel = (void *)(*env)->GetIntField(env, lpObject, XImageFc.put_pixel);
-	lpStruct->f.sub_image = (void *)(*env)->GetIntField(env, lpObject, XImageFc.sub_image);
-	lpStruct->f.add_pixel = (void *)(*env)->GetIntField(env, lpObject, XImageFc.add_pixel);
+	lpStruct->f.create_image = (XImage *(*)())(*env)->GetIntField(env, lpObject, XImageFc.create_image);
+	lpStruct->f.destroy_image = (int(*)())(*env)->GetIntField(env, lpObject, XImageFc.destroy_image);
+	lpStruct->f.get_pixel = (unsigned long(*)())(*env)->GetIntField(env, lpObject, XImageFc.get_pixel);
+	lpStruct->f.put_pixel = (int(*)())(*env)->GetIntField(env, lpObject, XImageFc.put_pixel);
+	lpStruct->f.sub_image = (XImage *(*)())(*env)->GetIntField(env, lpObject, XImageFc.sub_image);
+	lpStruct->f.add_pixel = (int(*)())(*env)->GetIntField(env, lpObject, XImageFc.add_pixel);
 	return lpStruct;
 }
 
