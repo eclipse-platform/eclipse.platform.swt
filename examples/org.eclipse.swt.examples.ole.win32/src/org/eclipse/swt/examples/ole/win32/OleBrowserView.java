@@ -258,9 +258,6 @@ public class OleBrowserView extends ViewPart {
 			webControlSite = new OleControlSite(webFrame, SWT.NONE, "Shell.Explorer");
 			Variant download = new Variant(DLCTL_NO_SCRIPTS);
 			webControlSite.setSiteProperty(DISPID_AMBIENT_DLCONTROL, download);
-			webControlSite.setSiteProperty(DISPID_AMBIENT_DLCONTROL, download);
-			webControlSite.setSiteProperty(DISPID_AMBIENT_DLCONTROL, null);
-			webControlSite.setSiteProperty(DISPID_AMBIENT_DLCONTROL, download);
 			OleAutomation oleAutomation = new OleAutomation(webControlSite);
 			webBrowser = new OleWebBrowser(oleAutomation);
 		} catch (SWTException ex) {
