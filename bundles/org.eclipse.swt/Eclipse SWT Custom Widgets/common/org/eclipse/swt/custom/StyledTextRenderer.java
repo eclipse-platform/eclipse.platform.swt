@@ -212,32 +212,26 @@ protected abstract int[] getBidiSegments(int lineOffset, String lineText);
  *  Returns the Font according with the given style
  */
 Font getFont(int style) {
-	FontData[] fontDatas;
 	switch (style) {
 		case SWT.BOLD:
 			if (boldFont != null) return boldFont;
-			fontDatas = regularFont.getFontData();
-			for (int i = 0; i < fontDatas.length; i++) {
-				fontDatas[i].setStyle(style);
-			}
-			return boldFont = new Font(device, fontDatas);
+			return boldFont = new Font(device, getFontData(style));
 		case SWT.ITALIC:
 			if (italicFont != null) return italicFont;
-			fontDatas = regularFont.getFontData();
-			for (int i = 0; i < fontDatas.length; i++) {
-				fontDatas[i].setStyle(style);
-			}
-			return italicFont = new Font(device, fontDatas);
+			return italicFont = new Font(device, getFontData(style));
 		case SWT.BOLD | SWT.ITALIC:
 			if (boldItalicFont != null) return boldItalicFont;
-			fontDatas = regularFont.getFontData();
-			for (int i = 0; i < fontDatas.length; i++) {
-				fontDatas[i].setStyle(style);
-			}
-			return boldItalicFont = new Font(device, fontDatas);
+			return boldItalicFont = new Font(device, getFontData(style));
 		default:
 			return regularFont;
 	}
+}
+FontData[] getFontData(int style) {
+	FontData[] fontDatas = regularFont.getFontData();
+	for (int i = 0; i < fontDatas.length; i++) {
+		fontDatas[i].setStyle(style);
+	}
+	return fontDatas;
 }
 /**
  * Returns the GC to use for rendering and measuring.
