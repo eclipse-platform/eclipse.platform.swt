@@ -318,7 +318,7 @@ private void selectAll_helper(String message, int expectedCount, TableTreeItem[]
 	tableTree.selectAll();
 	message = (style == SWT.MULTI ? "MULTI" : "SINGLE") + ": " + message;
 	assertEquals(message, expectedCount, tableTree.getSelectionCount());
-	assertEquals(message, expectedSelection, tableTree.getSelection());	
+	assertSame(message, expectedSelection, tableTree.getSelection());	
 }
 
 /*
@@ -329,6 +329,6 @@ private void setSelection_helper(String message, TableTreeItem[] itemsToSelect, 
 	tableTree.setSelection(itemsToSelect);
 	message = (style == SWT.MULTI ? "MULTI" : "SINGLE") + ": " + message;
 	assertEquals(message, expectedCount, tableTree.getSelectionCount());
-	assertEquals(message, expectedSelection, tableTree.getSelection());	
+	assertSame(message, expectedSelection, tableTree.getSelection());	
 }
 }
