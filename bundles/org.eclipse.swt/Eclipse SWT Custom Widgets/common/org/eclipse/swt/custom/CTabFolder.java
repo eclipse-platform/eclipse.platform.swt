@@ -474,7 +474,6 @@ void destroyItem (CTabItem item) {
 			control.setVisible(false);
 		}
 		closeBar.setVisible(false);
-		if (topRight != null) topRight.setVisible(false);
 		if (!fixedTabHeight) tabHeight = 0;
 		redraw();
 		return;
@@ -1622,10 +1621,8 @@ public void setTopRight(Control control) {
 	if (control != null && control.getParent() != this) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (topRight != null) topRight.setVisible (false);
 	topRight = control;
 	resetTabSize(true);
-	if (topRight != null) topRight.setVisible (true);
 }
 
 /**
