@@ -15,6 +15,7 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 import org.eclipse.swt.internal.carbon.DataBrowserCustomCallbacks;
 import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
+import org.eclipse.swt.internal.carbon.DataBrowserListViewHeaderDesc;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -50,11 +51,10 @@ public class Table extends Composite {
 	int lastIndexOf;
 	TableColumn [] columns;
 	GC paintGC;
-	int itemCount, columnCount, idCount, anchorFirst, anchorLast, headerHeight;
+	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
 	boolean ignoreSelect, wasSelected;
 	int showIndex, lastHittest;
 	static final int CHECK_COLUMN_ID = 1024;
-	static final int COLUMN_ID = 1025;
 	static final int EXTRA_WIDTH = 25;
 	static final int CHECK_COLUMN_WIDTH = 25;
 
@@ -221,6 +221,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
+	column_id = 1025;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
@@ -251,13 +252,13 @@ void createHandle () {
 	}
 	DataBrowserListViewColumnDesc column = new DataBrowserListViewColumnDesc ();
 	column.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
-	column.propertyDesc_propertyID = COLUMN_ID;
+	column.propertyDesc_propertyID = column_id;
 	column.propertyDesc_propertyType = OS.kDataBrowserCustomType;
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
 	column.headerBtnDesc_maximumWidth = 0x7fff;
 	column.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) 0);
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) 0);
 
 	/*
 	* Feature in the Macintosh.  Scroll bars are not created until
@@ -288,7 +289,7 @@ void createHandle () {
 
 void createItem (TableColumn column, int index) {
 	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
-	column.id = COLUMN_ID + idCount++;
+	column.id = column_id + idCount++;
 	int position = index + ((style & SWT.CHECK) != 0 ? 1 : 0);
 	if (columnCount != 0) {
 		DataBrowserListViewColumnDesc desc = new DataBrowserListViewColumnDesc ();
@@ -309,17 +310,24 @@ void createItem (TableColumn column, int index) {
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 	//TODO - optimize
-	for (int i=0; i<itemCount; i++) {
-		TableItem item = items [i];
-		for (int j=columnCount-1; j>index; --j) {
-			// TODO - don't call setter
-			item.setText (j, item.getText (j - 1));
-			item.setImage (j, item.getImage (j - 1));
-		}
-		if (columnCount > 1) {		
-			item.setText (index, "");
-			item.setImage (index, null);
-		
+	if (columnCount > 1) {
+		for (int i=0; i<itemCount; i++) {
+			TableItem item = items [i];
+			Image [] images = item.images;
+			if (images != null) {
+				Image [] temp = new Image [columnCount];
+				System.arraycopy (images, 0, temp, 0, index);
+				System.arraycopy (images, index, temp, index+1, columnCount-index-1);
+				items [i].images = temp;
+			}
+			String [] strings = item.strings;
+			if (strings != null) {
+				String [] temp = new String [columnCount];
+				System.arraycopy (strings, 0, temp, 0, index);
+				System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
+				temp [index] = "";
+				items [i].strings = temp;
+			}
 			Color [] cellBackground = items [i].cellBackground;
 			if (cellBackground != null) {
 				Color [] temp = new Color [columnCount];
@@ -482,17 +490,23 @@ void destroyItem (TableColumn column) {
 		index++;
 	}
 	//TODO - optimize
-	for (int i=0; i<itemCount; i++) {
-		TableItem item = items [i];
-		for (int j=index; j<columnCount-1; j++) {
-			// TODO - don't call setter
-			item.setText (j, item.getText (j + 1));
-			item.setImage (j, item.getImage (j + 1));
-		}
-		if (columnCount > 1) {
-			item.setText (columnCount - 1, "");
-			item.setImage (columnCount - 1, null);
-
+	if (columnCount > 1) {
+		for (int i=0; i<itemCount; i++) {
+			TableItem item = items [i];
+			Image [] images = item.images;
+			if (images != null) {
+				Image [] temp = new Image [columnCount - 1];
+				System.arraycopy (images, 0, temp, 0, index);
+				System.arraycopy (images, index +1, temp, index, columnCount - 1 - index);
+				items [i].images = temp;
+			}
+			String [] strings = item.strings;
+			if (strings != null) {
+				String [] temp = new String [columnCount - 1];
+				System.arraycopy (strings, 0, temp, 0, index);
+				System.arraycopy (strings, index + 1, temp, index, columnCount - 1 - index);
+				items [i].strings = temp;
+			}
 			Color [] cellBackground = items [i].cellBackground;
 			if (cellBackground != null) {	
 				Color [] temp = new Color [columnCount - 1];
@@ -510,7 +524,16 @@ void destroyItem (TableColumn column) {
 		}
 	}
 	if (columnCount == 1) {
-		//TODO - reassign COLUMN_ID when last column deleted
+		column_id = column.id; idCount = 0;
+		DataBrowserListViewHeaderDesc desc = new DataBrowserListViewHeaderDesc ();
+		desc.version = OS.kDataBrowserListViewLatestHeaderDesc;
+		short [] width = new short [1];
+		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
+		desc.minimumWidth = desc.maximumWidth = width [0];
+		int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, new char [0], 0);
+		desc.titleString = str;
+		OS.SetDataBrowserListViewHeaderDesc (handle, column_id, desc);
+		OS.CFRelease (str);
 	} else {
 		if (OS.RemoveDataBrowserTableViewColumn (handle, column.id) != OS.noErr) {
 			error (SWT.ERROR_ITEM_NOT_REMOVED);
@@ -819,8 +842,9 @@ public TableItem getItem (Point point) {
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) (point.x + rect.left), (short) (point.y + rect.top));
 	//TODO - optimize
+	int columnId = (columnCount == 0) ? column_id : columns [0].id;
 	for (int i=0; i<itemCount; i++) {
-		if (OS.GetDataBrowserItemPartBounds (handle, i + 1, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+		if (OS.GetDataBrowserItemPartBounds (handle, i + 1, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				if (rect.top <= pt.v && pt.v < rect.bottom) return items [i];
 			} else {
@@ -1425,7 +1449,7 @@ public void removeAll () {
 		if (!item.isDisposed ()) item.releaseResources ();
 	}
 	items = new TableItem [4];
-	itemCount = idCount = anchorFirst = anchorLast = 0;
+	itemCount = anchorFirst = anchorLast = 0;
 }
 
 /**
@@ -1655,10 +1679,10 @@ void setScrollWidth (TableItem [] items, boolean set) {
 	newWidth += EXTRA_WIDTH;
 	if (!set) {
 		short [] width = new short [1];
-		OS.GetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width);
+		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
 		if (width [0] >= newWidth) return;
 	}
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) newWidth);
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
 }
 
 void setScrollWidth (TableItem item) {
@@ -1668,9 +1692,9 @@ void setScrollWidth (TableItem item) {
 	gc.dispose ();
 	newWidth += EXTRA_WIDTH;
 	short [] width = new short [1];
-	OS.GetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width);
+	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
 	if (width [0] < newWidth) {
-		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) newWidth);
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
 	}
 }
 
@@ -1860,7 +1884,7 @@ void showIndex (int index) {
 			if (rect.contains (itemRect.x, itemRect.y)
 				&& rect.contains (itemRect.x, itemRect.y + itemRect.height)) return;
 		}
-		int id = columnCount == 0 ? COLUMN_ID : columns [0].id;
+		int id = columnCount == 0 ? column_id : columns [0].id;
 		if ((style & SWT.CHECK) != 0) id = CHECK_COLUMN_ID;
 		OS.RevealDataBrowserItem (handle, index + 1, id, (byte) OS.kDataBrowserRevealWithoutSelecting);
 	}

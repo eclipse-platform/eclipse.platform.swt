@@ -185,7 +185,7 @@ public Rectangle getBounds (int index) {
 	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
 	int id = itemIndex + 1;
-	int columnId = index == 0 ? Table.COLUMN_ID : parent.columns [index].id;
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
 	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
 		return new Rectangle (0, 0, 0, 0);
 	}
@@ -194,12 +194,12 @@ public Rectangle getBounds (int index) {
 		return new Rectangle (0, 0, 0, 0);
 	}
 	int x = rect2.left, y = rect2.top;
-	int width = rect.right - rect2.left - 1;
-	int height = rect2.bottom - rect2.top - 1;
+	int width = rect.right - rect2.left;
+	int height = rect2.bottom - rect2.top;
 	OS.GetControlBounds (parent.handle, rect);
 	x -= rect.left;
 	y -= rect.top;
-	return new Rectangle (x, y, width, height);
+	return new Rectangle (x, y, width + 1, height + 1);
 }
 
 /**
@@ -318,7 +318,7 @@ public Rectangle getImageBounds (int index) {
 	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
 	int id = itemIndex + 1;
-	int columnId = index == 0 ? Table.COLUMN_ID : parent.columns [index].id;
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
 	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
 		return new Rectangle (0, 0, 0, 0);
 	}
@@ -326,13 +326,13 @@ public Rectangle getImageBounds (int index) {
 	int width = 0;
 	if (index == 0 && image != null) {
 		Rectangle bounds = image.getBounds ();
-		width += bounds.width - 1;
+		width += bounds.width;
 	}
 	if (index != 0 && images != null && images[index] != null) {
 		Rectangle bounds = images [index].getBounds ();
-		width += bounds.width - 1;
+		width += bounds.width;
 	}
-	int height = rect.bottom - rect.top - 1;
+	int height = rect.bottom - rect.top + 1;
 	OS.GetControlBounds (parent.handle, rect);
 	x -= rect.left;
 	y -= rect.top;
@@ -620,13 +620,8 @@ public void setImage (int index, Image image) {
 	int columnCount = parent.columnCount;
 	if (0 <= index && index < columnCount) {
 		if (images == null) images = new Image [columnCount];
-		if (images.length < columnCount) {
-			Image [] newImages = new Image [columnCount];
-			System.arraycopy (images, 0, newImages, 0, images.length);
-			images = newImages;
-		}
-		if (0 <= index && index < images.length) images [index] = image;
-	}	
+		images [index] = image;	
+	}
 	if (parent.drawCount == 0) {
 		if (index == 0) parent.setScrollWidth (this);
 		int [] id = new int [] {itemIndex + 1};
@@ -703,12 +698,7 @@ public void setText (int index, String string) {
 	int columnCount = parent.columnCount;
 	if (0 <= index && index < columnCount) {
 		if (strings == null) strings = new String [columnCount];
-		if (strings.length < columnCount) {
-			String [] newStrings = new String [columnCount];
-			System.arraycopy (strings, 0, newStrings, 0, strings.length);
-			strings = newStrings;
-		}
-		if (0 <= index && index < strings.length) strings [index] = string;
+		strings [index] = string;
 	}
 	if (parent.drawCount == 0) {
 		if (index == 0) parent.setScrollWidth (this);
