@@ -64,10 +64,6 @@ public class Browser extends Composite {
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 
-static {
-	Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
-}
-
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -90,7 +86,10 @@ static {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
- *
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for browser creation</li>
+ * </ul>
+ * 
  * @see #getStyle
  * 
  * @since 3.0
@@ -98,11 +97,20 @@ static {
 public Browser(Composite parent, int style) { 
 	super(parent,style);
 	
-	browserCount++;
 	int[] result = new int[1];
-	if (browserCount == 1) {
+	if (browserCount == 0) {
+		try {
+			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
+		} catch (UnsatisfiedLinkError e) {
+			dispose();
+			SWT.error(SWT.ERROR_NO_HANDLES);
+		}
+		
 		String mozillaPath = GRE.mozillaPath;
-		if (mozillaPath == null) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_FAILURE));
+		if (mozillaPath == null) {
+			dispose();
+			SWT.error(SWT.ERROR_NO_HANDLES);
+		}
 
 		locProvider = new AppFileLocProvider();
 		locProvider.AddRef();
@@ -114,8 +122,13 @@ public Browser(Composite parent, int style) {
 			
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
 		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), locProvider.getAddress());
-		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-		localFile.Release(); 
+		localFile.Release();
+		if (rc != XPCOM.NS_OK) {
+			locProvider.Release();
+			locProvider = null;
+			dispose();
+			SWT.error(SWT.ERROR_NO_HANDLES);
+		}
 
 		rc = XPCOM.NS_GetComponentManager(result);
 		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
@@ -134,6 +147,7 @@ public Browser(Composite parent, int style) {
 		rc = appShell.Spinup();
 		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
 	}
+	browserCount++;
 	int rc = XPCOM.NS_GetComponentManager(result);
 	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
 	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_NOINTERFACE));

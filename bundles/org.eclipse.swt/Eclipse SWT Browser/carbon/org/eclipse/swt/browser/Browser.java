@@ -20,6 +20,7 @@ public class Browser extends Composite {
 	
 public Browser(Composite parent, int style) {
 	super(parent, style);
+	SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
 public void addLocationListener(LocationListener listener) {

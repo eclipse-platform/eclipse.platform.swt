@@ -54,7 +54,10 @@ public class Browser extends Composite {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
- *
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for browser creation</li>
+ * </ul>
+ * 
  * @see #getStyle
  * 
  * @since 3.0
@@ -71,6 +74,10 @@ public Browser(Composite parent, int style) {
 			0xFFFFFF,
 			0 };
 	webHandle = OS.PtCreateWidget(OS.PtWebClient(), handle, args.length / 3, args);
+	if (webHandle == 0) {
+		dispose();
+		SWT.error (SWT.ERROR_NO_HANDLES);
+	}
 
 	/* configure the widget with a specific server */
 	File netfront = new File("/usr/photon/bin/netfront");
