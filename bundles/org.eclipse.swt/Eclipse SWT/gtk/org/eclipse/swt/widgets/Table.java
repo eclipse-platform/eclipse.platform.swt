@@ -253,7 +253,6 @@ void createItem (TableColumn column, int index) {
 		columns = newColumns;
 	}
 	OS.gtk_clist_set_column_visibility (handle, index, true);
-	OS.gtk_clist_column_titles_passive (handle);
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 }
@@ -786,6 +785,12 @@ int paintWindow () {
 	return OS.GTK_CLIST_CLIST_WINDOW (handle);
 }
 
+int processActivate (int columnIndex, int arg1, int int2) {
+	TableColumn column = columns [columnIndex];
+	if (column != null) column.postEvent (SWT.Selection);
+	return 0;
+}
+
 int processEvent (int eventNumber, int int0, int int1, int int2) {
 	if (eventNumber == 0) {
 		GdkEvent gdkEvent = new GdkEvent ();
@@ -798,7 +803,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 					double [] px = new double [1], py = new double [1];
 					OS.gdk_event_get_coords (int0, px, py);
 					int x = (int) (px [0]);
-					int y = (int) (py [0]) - OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT (handle);
+					int y = (int) (py [0]);
 					if (y > 0) {
 						int [] row = new int [1], column = new int [1];
 						if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {	
@@ -947,6 +952,7 @@ void hookEvents () {
 	int windowProc5 = display.windowProc5;
 	OS.gtk_signal_connect (handle, OS.select_row, windowProc5, SWT.Selection);
 	OS.gtk_signal_connect (handle, OS.unselect_row, windowProc5, SWT.Selection);
+	OS.gtk_signal_connect (handle, OS.click_column, windowProc3, SWT.Activate);
 	OS.gtk_signal_connect (handle, OS.event_after, windowProc3, 0);
 }
 
