@@ -1474,18 +1474,20 @@ void onMouseUp(Event event) {
 		return;
 	}
 	if (chevronRect.contains(x, y)) {
+		Rectangle rect = new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
 		if (listListeners.length == 0) {
-			showList();
+			showList(rect, SWT.LEFT);
 		} else {
 			CTabFolderEvent e = new CTabFolderEvent(this);
 			e.widget = this;
 			e.time = event.time;
-			e.rect = new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
+			e.rect = rect;
 			
 			for (int i = 0; i < listListeners.length; i++) {
 				listListeners[i].showList(e);
 			}
 		}
+		return;
 	}
 	if (expandRect.contains(x, y)) {
 		CTabFolderEvent e = new CTabFolderEvent(this);
@@ -1503,7 +1505,27 @@ void onMouseUp(Event event) {
 			expanded = !expanded;
 			redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
 		}
-		
+		return;
+	}
+	if (single && items.length > 1) {
+		for (int i=0; i<items.length; i++) {
+			Rectangle bounds = items[i].getBounds();
+			if (bounds.contains(x, y)) {
+				Rectangle rect = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+				if (listListeners.length == 0) {
+					showList(rect, SWT.RIGHT);
+				} else {
+					CTabFolderEvent e = new CTabFolderEvent(this);
+					e.widget = this;
+					e.time = event.time;
+					e.rect = rect;
+					for (int j = 0; j < listListeners.length; i++) {
+						listListeners[j].showList(e);
+					}
+				}
+				return;
+			}
+		}
 	}
 }
 boolean onPageTraversal(Event event) {
@@ -2424,7 +2446,7 @@ public void showItem (CTabItem2 item) {
 	if (item.x + item.width < rightEdge) return;
 	setLastItem(index);
 }
-void showList () {
+void showList (Rectangle rect, int alignment) {
 	final Shell shell = new Shell(getShell(), SWT.BORDER | SWT.ON_TOP);
 	shell.setLayout(new FillLayout());
 	final Table table = new Table(shell, SWT.NONE);
@@ -2438,7 +2460,6 @@ void showList () {
 	}
 	if (selectedIndex != -1) {
 		table.setSelection(selectedIndex);
-		
 	}
 	Listener listener = new Listener() {
 		public void handleEvent(Event e) {
@@ -2463,12 +2484,27 @@ void showList () {
 	table.addListener(SWT.FocusOut, listener);
 	Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	Rectangle displayRect = getMonitor().getClientArea();
+	Rectangle clientArea = getClientArea();
 	size.y = Math.min(displayRect.height/3, size.y);
 	shell.setSize(size);
-	Point p = getDisplay().map(this, null, chevronRect.x, chevronRect.y);
-	int x = p.x+chevronRect.width - size.x;
-	int y = p.y + chevronRect.height;
-	if (y + size.y > displayRect.y + displayRect.height) y = p.y - size.y;
+	Point p1 = getDisplay().map(this, null, clientArea.x, clientArea.y);
+	Point p2 = getDisplay().map(this, null, rect.x, rect.y);
+	int x = 0, y = 0;
+	//x = p.x+rect.width - size.x;
+	if (alignment == SWT.RIGHT) {
+		x = p2.x;
+	} else { // Left
+		x = p2.x + rect.width - size.x;
+	}
+	if (x < displayRect.x) x = displayRect.x;
+	if (x + size.x > displayRect.x + displayRect.width) x = displayRect.x + displayRect.width - size.x;
+	if (onBottom) {
+		y = p1.y + clientArea.height - size.y;
+		if (y < displayRect.y) y = p2.y + rect.height;
+	} else {
+		y = p1.y;
+		if (y + size.y > displayRect.y + displayRect.height) y = p2.y - size.y;
+	}
 	shell.setLocation(x, y);
 	shell.open();
 	table.setFocus();
