@@ -93,13 +93,22 @@ protected void checkSubclass () {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	Rect bounds = new Rect ();
-	OS.GetControlBounds (handle, bounds);
+	Rect bounds, oldBounds = new Rect ();
+	OS.GetControlBounds (handle, oldBounds);
+	boolean fixBounds = (oldBounds.right - oldBounds.left) < 100 || (oldBounds.bottom - oldBounds.top) < 100;
+	if (fixBounds) {
+		bounds = new Rect ();
+		bounds.right = bounds.bottom = 100;
+		OS.SetControlBounds (handle, bounds);
+	} else {
+		bounds = oldBounds;
+	}
 	int rgnHandle = OS.NewRgn ();
 	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
 	Rect client = new Rect ();
 	OS.GetRegionBounds (rgnHandle, client);
 	OS.DisposeRgn (rgnHandle);
+	if (fixBounds) OS.SetControlBounds (handle, oldBounds);
 	x -= client.left - bounds.left;
 	y -= client.top - bounds.top;
 	width += Math.max (8, (bounds.right - bounds.left) - (client.right - client.left));
