@@ -135,8 +135,8 @@ public TreeItem (Tree parent, int style, int index) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style) {
-	super (checkNull (parentItem).getParent(), style);
-	this.parent = parentItem.getParent ();
+	super (checkNull (parentItem).parent, style);
+	this.parent = parentItem.parent;
 	parent.createItem (this, parentItem.handle, -1);
 }
 
@@ -172,9 +172,9 @@ public TreeItem (TreeItem parentItem, int style) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style, int index) {
-	super (checkNull (parentItem).getParent (), style);
+	super (checkNull (parentItem).parent, style);
 	if (index < 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	this.parent = parentItem.getParent ();
+	this.parent = parentItem.parent;
 	parent.createItem (this, parentItem.handle, index);
 }
 
