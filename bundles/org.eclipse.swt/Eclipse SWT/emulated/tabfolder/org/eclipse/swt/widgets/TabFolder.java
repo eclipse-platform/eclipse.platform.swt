@@ -85,6 +85,7 @@ public TabFolder(Composite parent, int style) {
 	addListener (SWT.MouseUp, listener);	
 	addListener (SWT.Paint, listener);
 	addListener (SWT.Resize, listener);
+	addListener (SWT.Traverse, listener);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -199,7 +200,7 @@ void createChild (TabItem item, int index) {
 	if (getItemCount() == 1) {
 		// select the first added item and send a selection event.
 		// fixes 1GAP79N
-		setSelectionNotify(0);
+		setSelection(0, true);
 	}
 }
 /**
@@ -234,7 +235,7 @@ void destroyChild (TabItem item) {
 					control.setVisible(false);
 				}
 				selectedIndex = -1;
-				setSelectionNotify(Math.max(0, index - 1));
+				setSelection(Math.max(0, index - 1), true);
 			}
 		} else if (selectedIndex > index) {
 			selectedIndex--;
@@ -588,6 +589,9 @@ void handleEvents (Event event){
 		case SWT.MouseUp:
 			mouseUp(event);
 			break;
+		case SWT.Traverse:
+			traversal(event); 
+			break;
 		default:
 			break;
 	}
@@ -736,7 +740,7 @@ void mouseDown(Event event) {
 	else {
 		for (int i=0; i<items.length; i++) {
 			if (items[i].getBounds().contains(new Point(event.x, event.y))) {
-				setSelectionNotify(i);
+				setSelection(i, true);
 				return;
 			}
 		}
@@ -938,29 +942,7 @@ public void setFont(Font font) {
  */
 public void setSelection(int index) {
 	checkWidget();
-	int oldIndex = selectedIndex;
-	
-	if (selectedIndex == index || index >= getItemCount()) return;
-	if (selectedIndex != -1) {
-		Control control = items[selectedIndex].control;
-		if (control != null && !control.isDisposed()) {
-			control.setVisible(false);
-		}		
-	}
-	if (index < 0) {
-		index = -1;										// make sure the index is always -1 if it's negative
-	}
-	selectedIndex = index;
-	layoutItems();
-	ensureVisible(index);	
-	redrawSelectionChange(oldIndex, index);
-	if (index >= 0) {
-		Control control = items[index].control;
-		if (control != null && !control.isDisposed()) {
-			control.setBounds(getClientArea());
-			control.setVisible(true);
-		}
-	}
+	setSelection(index, false);
 }
 /**
  * Sets the receiver's selection to be the given array of items.
@@ -981,19 +963,104 @@ public void setSelection(TabItem selectedItems[]) {
 	if (selectedItems.length > 0) {
 		index = indexOf(selectedItems[0]);
 	}
-	setSelection(index);
+	setSelection(index, false);
 }
 /**
  * Set the selection to the tab at the specified index.
  */
-void setSelectionNotify(int index) {
-	int oldSelectedIndex = selectedIndex;
+void setSelection(int index, boolean notify) {
 	
-	setSelection(index);
-	if (selectedIndex != oldSelectedIndex && selectedIndex != -1) {
-		Event event = new Event();
-		event.item = getSelection()[0];
-		notifyListeners(SWT.Selection, event);
+	int oldIndex = selectedIndex;
+	
+	if (selectedIndex == index || index >= getItemCount()) return;
+	if (selectedIndex != -1) {
+		Control control = items[selectedIndex].control;
+		if (control != null && !control.isDisposed()) {
+			control.setVisible(false);
+		}		
 	}
+	if (index < 0) {
+		index = -1; // make sure the index is always -1 if it's negative
+	}
+	selectedIndex = index;
+	layoutItems();
+	ensureVisible(index);	
+	redrawSelectionChange(oldIndex, index);
+	if (index >= 0) {
+		Control control = items[index].control;
+		if (control != null && !control.isDisposed()) {
+			control.setBounds(getClientArea());
+			control.setVisible(true);
+		}
+	}
+	
+	if (notify) {
+		if (selectedIndex != oldIndex && selectedIndex != -1) {
+			Event event = new Event();
+			event.item = getSelection()[0];
+			notifyListeners(SWT.Selection, event);
+		}
+	}
+}
+
+void traversal(Event event) {
+	switch (event.detail) {
+		case SWT.TRAVERSE_ESCAPE:
+		case SWT.TRAVERSE_RETURN:
+		case SWT.TRAVERSE_TAB_NEXT:
+		case SWT.TRAVERSE_TAB_PREVIOUS:
+			event.doit = true;
+			break;
+		case SWT.TRAVERSE_MNEMONIC:
+			event.doit = mnemonicTraversal(event);
+			if (event.doit) event.detail = SWT.TRAVERSE_NONE;
+			break;
+		case SWT.TRAVERSE_PAGE_NEXT:
+		case SWT.TRAVERSE_PAGE_PREVIOUS:
+			event.doit = pageTraversal(event);
+			if (event.doit) event.detail = SWT.TRAVERSE_NONE;
+			break;
+	}
+}
+
+boolean pageTraversal(Event event) {
+	int count = getItemCount ();
+	if (count == 0) return false;
+	int index = getSelectionIndex ();
+	if (index == -1) {
+		index = 0;
+	} else {
+		int offset = (event.detail == SWT.TRAVERSE_PAGE_NEXT) ? 1 : -1;
+		index = (index + offset + count) % count;
+	}
+	setSelection (index, true);
+	return true;
+}
+
+boolean mnemonicTraversal (Event event) {
+	char key = event.character;
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			char mnemonic = getMnemonic (items[i].getText ());
+			if (mnemonic != '\0') {
+				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+					setSelection(i, true);
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+char getMnemonic (String string) {
+	int index = 0;
+	int length = string.length ();
+	do {
+		while ((index < length) && (string.charAt (index) != '&')) index++;
+		if (++index >= length) return '\0';
+		if (string.charAt (index) != '&') return string.charAt (index);
+		index++;
+	} while (index < length);
+ 	return '\0';
 }
 }
