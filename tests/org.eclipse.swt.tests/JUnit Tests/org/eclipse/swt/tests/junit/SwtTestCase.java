@@ -192,6 +192,32 @@ static private void failNotEquals(String message, Object expected, Object actual
 		formatted= message+" ";
 	fail(formatted+"expected:<"+expected+"> but was:<"+actual+">");
 }
+
+static private void failNotEquals(String message, Object[] expected, Object[] actual) {
+	String formatted= "";
+	if (message != null)
+		formatted= message+" ";
+	formatted += "expected:<";
+	if(expected != null) {
+	    for(int i=0; i<Math.min(expected.length, 5); i++)
+	        formatted += expected[i] +", ";
+	    if(expected.length != 0)
+	        formatted = formatted.substring(0, formatted.length()-2);
+	}
+	if(expected.length > 5)
+	    formatted += "...";
+	formatted += "> but was:<";
+	if(actual != null) {
+	    for(int i=0; i<Math.min(actual.length, 5); i++)
+	        formatted += actual[i] +", ";
+	    if(actual.length != 0)
+	        formatted = formatted.substring(0, formatted.length()-2);
+	}
+	if(actual.length > 5)
+	    formatted += "...";
+	fail(formatted+">");
+}
+
 protected boolean isJ2ME() {
 	try {
 		Compatibility.newFileInputStream("");
