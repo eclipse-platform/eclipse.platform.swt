@@ -401,8 +401,12 @@ void createHandle (int index) {
 	OS.TXNSetData(fTX, OS.kTXNUnicodeTextData, new char[] { ' ' }, 2, 0, 0);
 	OS.TXNSetData(fTX, OS.kTXNUnicodeTextData, new char[0], 0, 0, 1);
 	
-	OS.setTXNMargins(fTX, (short)MARGIN);
-
+	Rect margins= new Rect();
+	margins.top= margins.left= margins.bottom= margins.right= MARGIN;
+	int ptr= OS.NewPtr(Rect.sizeof);
+	OS.memcpy(ptr, margins, Rect.sizeof);
+	OS.TXNSetTXNObjectControls(fTX, false, 1, new int[] { OS.kTXNMarginsTag }, new int[] {ptr});
+	OS.DisposePtr(ptr);
 	OS.TXNSetTXNObjectControls(fTX, false, 1, new int[] { OS.kTXNDoFontSubstitution }, new int[] { 1 });
 }	
 ScrollBar createScrollBar (int type) {

@@ -11,7 +11,6 @@ class OS2 {
 
 /** Custom natives - misc */	
 public static final native int GetEventHICommand(int eRefHandle, int[] outParamType);
-public static final native void setTXNMargins(int txHandle, short margin);
 public static final native void getHandleData(int handle, char[] data);
 public static final native void getHandleData(int handle, int[] data);
 

@@ -376,20 +376,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_getHandleData__I
 	(*env)->ReleaseIntArrayElements(env, data, sa, 0);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_setTXNMargins(JNIEnv *env, jclass zz,
-				jint txHandle, jshort margin) {
-    TXNControlTag controlTag[1];
-    TXNControlData controlData[1];
-    TXNMargins m;
-    m.topMargin= margin;
-    m.leftMargin= margin;
-    m.bottomMargin= margin;
-    m.rightMargin= margin;    
-    controlTag[0]= kTXNMarginsTag;
-	controlData[0].marginsPtr= &m; 
-	TXNSetTXNObjectControls((TXNObject)txHandle, false, 1, controlTag, controlData);
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_NewGWorldFromPtr(JNIEnv *env, jclass zz,
 					jintArray offscreenGWorld, jint pixMapHandle) {
 		

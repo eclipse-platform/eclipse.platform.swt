@@ -4750,19 +4750,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy___3BII
 }
 #endif /* NO_memcpy___3BII */
 
-#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_NavReplyRecord_2II
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__Lorg_eclipse_swt_internal_carbon_NavReplyRecord_2II
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+#ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
-	NavReplyRecord _arg0, *lparg0=NULL;
+	Rect _arg1, *lparg1=NULL;
 
-	DEBUG_CALL("memcpy__Lorg_eclipse_swt_internal_carbon_NavReplyRecord_2II\n")
+	DEBUG_CALL("memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I\n")
 
-	if (arg0) lparg0 = getNavReplyRecordFields(env, arg0, &_arg0);
-	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) setNavReplyRecordFields(env, arg0, lparg0);
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setRectFields(env, arg1, lparg1);
 }
-#endif /* NO_memcpy__Lorg_eclipse_swt_internal_carbon_NavReplyRecord_2II */
+#endif /* NO_memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I */
+
 
 #ifndef NO_memset
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memset

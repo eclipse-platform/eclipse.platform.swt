@@ -282,6 +282,7 @@ public class OS extends OS2 {
 	public static final int kThemeStatePressed = 2;
 	public static final int kThemeSystemFont = 0;
 	public static final int kThemeWatchCursor = 7;
+	public static final int kTXNMarginsTag = ('m'<<24) + ('a'<<16) + ('r'<<8) + 'g';
 	public static final int kUtilityWindowClass = 8;
     public static final int kWindowActivationScopeNone = 0;
     public static final int kWindowActivationScopeIndependent = 1;
@@ -687,7 +688,7 @@ public static final native void TXNSelectAll(int txHandle);
 public static final native int TXNSetData(int iTXNObject, int iDataType, char[] iDataPtr, int iDataSize, int iStartOffset, int iEndOffset);
 public static final native void TXNSetFrameBounds(int txHandle, int top, int left, int bottom, int right, int frameID);
 public static final native int TXNSetSelection(int txHandle, int startOffset, int endOffset);
-public static final native int TXNSetTXNObjectControls(int txHandle, boolean clearAll, int controlCount, int[] controlTags, int[] controlData);
+public static final native int TXNSetTXNObjectControls(int iTXNObject, boolean iClearAll, int iControlCount, int[] iControlTags, int[] iControlData);
 public static final native void TXNShowSelection(int txHandle, boolean showEnd);
 public static final native short TestControl(int control, Point point);
 public static final native void TextFace(short face);
@@ -703,6 +704,7 @@ public static final native int UpdateDataBrowserItems(int cHandle, int container
 public static final native void memcpy(byte[] dest, int src, int n);
 public static final native void memcpy(int dest, int src, int n);
 public static final native void memcpy(int dest, byte[] src, int n);
+public static final native void memcpy(int dest, Rect src, int n);
 public static final native void memset(int dest, int value, int size);
 
 }
