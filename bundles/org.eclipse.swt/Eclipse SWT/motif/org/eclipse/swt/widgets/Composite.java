@@ -681,12 +681,12 @@ void setClientWindow (int window) {
 }
 public boolean setFocus () {
 	checkWidget ();
-	if ((style & SWT.NO_FOCUS) != 0) return false;
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		if (child.setFocus ()) return true;
 	}
+	if ((style & SWT.NO_FOCUS) != 0) return false;
 	return super.setFocus ();
 }
 /**

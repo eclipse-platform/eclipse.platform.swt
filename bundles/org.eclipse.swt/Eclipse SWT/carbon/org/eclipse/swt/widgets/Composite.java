@@ -494,11 +494,11 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 
 public boolean setFocus () {
 	checkWidget ();
-	if ((style & SWT.NO_FOCUS) != 0) return false;
 	Control [] children = _getChildren ();
 	for (int i= 0; i < children.length; i++) {
 		if (children [i].setFocus ()) return true;
 	}
+	if ((style & SWT.NO_FOCUS) != 0) return false;
 	return super.setFocus ();
 }
 

@@ -635,6 +635,7 @@ public boolean setFocus () {
 		Control child = children [i];
 		if (child.getVisible () && child.setFocus ()) return true;
 	}
+	if ((style & SWT.NO_FOCUS) != 0) return false;
 	return super.setFocus ();
 }
 
