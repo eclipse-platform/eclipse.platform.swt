@@ -498,7 +498,7 @@ int findCursor () {
  * @see Decorations#setDefaultButton
  * @see Shell#open
  * @see Shell#setActive
-*/
+ */
 public void forceActive () {
 	checkWidget ();
 	OS.SetForegroundWindow (handle);
@@ -639,7 +639,7 @@ public boolean isEnabled () {
  * @see Decorations#setDefaultButton
  * @see Shell#setActive
  * @see Shell#forceActive
-*/
+ */
 public void open () {
 	checkWidget ();
 	bringToTop ();
@@ -758,7 +758,7 @@ LRESULT selectPalette (int hPalette) {
  * @see Decorations#setDefaultButton
  * @see Shell#open
  * @see Shell#setActive
-*/
+ */
 public void setActive () {
 	checkWidget ();
 	bringToTop ();

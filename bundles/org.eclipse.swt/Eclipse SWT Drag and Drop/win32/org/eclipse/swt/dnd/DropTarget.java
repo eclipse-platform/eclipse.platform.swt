@@ -62,7 +62,6 @@ import org.eclipse.swt.internal.win32.*;
  *                        DND.Drop, DND.DropAccept
  * </dl>
  */
-
 public class DropTarget extends Widget {
 
 	
@@ -473,7 +472,6 @@ private int Drop(
  * user positions the cursor to drop the data.
  *
  * @return the Control which is registered for this DropTarget
- *
  */
 public Control getControl () {
 	return control;
@@ -505,8 +503,7 @@ private int getOperationFromKeyState(int grfKeyState) {
  * Returns the list of data types that can be transferred to this DropTarget.
  *
  * @return the list of data types that can be transferred to this DropTarget
- *
- */ 
+ */
 public Transfer[] getTransfer(){
 	return transferAgents;
 }
