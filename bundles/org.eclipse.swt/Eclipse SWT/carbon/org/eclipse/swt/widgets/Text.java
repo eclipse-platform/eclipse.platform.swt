@@ -682,7 +682,7 @@ public String getText () {
 public String getText (int start, int end) {
 	checkWidget ();
 	if (start < 0 || start > end) return "";
-	return getTXNText (start, end);
+	return getTXNText (start, end + 1);
 }
 
 /**
@@ -756,7 +756,7 @@ public int getTopPixel () {
 
 String getTXNText (int iStartOffset, int iEndOffset) {
 	int [] oDataHandle = new int [1];
-	OS.TXNGetData (txnObject, iStartOffset, iEndOffset + 1, oDataHandle);
+	OS.TXNGetData (txnObject, iStartOffset, iEndOffset, oDataHandle);
 	if (oDataHandle [0] == 0) return "";
 	int length = OS.GetHandleSize (oDataHandle [0]);
 	if (length == 0) return "";
