@@ -924,9 +924,9 @@ public Point getCursorLocation () {
 }
 
 /**
- * Returns the maximum recommended cursor size.
+ * Returns an array containing the recommended cursor sizes.
  *
- * @return the maximum cursor size
+ * @return the array of cursor sizes
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -935,9 +935,10 @@ public Point getCursorLocation () {
  * 
  * @since 3.0
  */
-public Point getCursorSize () {
+public Point [] getCursorSizes () {
 	checkDevice ();
-	return new Point (OS.GetSystemMetrics (OS.SM_CXCURSOR), OS.GetSystemMetrics (OS.SM_CYCURSOR));
+	return new Point [] {
+		new Point (OS.GetSystemMetrics (OS.SM_CXCURSOR), OS.GetSystemMetrics (OS.SM_CYCURSOR))};
 }
 
 /**
@@ -1115,6 +1116,27 @@ public int getIconDepth () {
 	}
 	OS.RegCloseKey (phkResult [0]);
 	return depth;
+}
+
+/**
+ * Returns an array containing the recommended icon sizes.
+ *
+ * @return the array of icon sizes
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Decorations#setImages(Image[])
+ * 
+ * @since 3.0
+ */
+public Point [] getIconSizes () {
+	checkDevice ();
+	return new Point [] {
+		new Point (OS.GetSystemMetrics (OS.SM_CXSMICON), OS.GetSystemMetrics (OS.SM_CYSMICON)),
+		new Point (OS.GetSystemMetrics (OS.SM_CXICON), OS.GetSystemMetrics (OS.SM_CYICON))};	
 }
 
 ImageList getImageList (Point size) {
