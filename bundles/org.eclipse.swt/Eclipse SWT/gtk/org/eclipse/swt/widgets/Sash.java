@@ -300,6 +300,9 @@ public void setCursor (Cursor cursor) {
 	this.cursor = cursor;
 	int gdkCursor = cursor != null ? cursor.handle : defaultCursor;
 	int window = OS.GTK_WIDGET_WINDOW (paintHandle ());
-	if (window != 0) OS.gdk_window_set_cursor (window, gdkCursor);
+	if (window != 0) {
+		OS.gdk_window_set_cursor (window, gdkCursor);
+		OS.gdk_flush ();
+	}
 }
 }
