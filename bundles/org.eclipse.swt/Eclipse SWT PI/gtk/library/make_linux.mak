@@ -68,7 +68,7 @@ AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
-MOZILLA_OBJECTS = xpcom.o
+MOZILLA_OBJECTS = xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
  
 CFLAGS = -O -Wall \
 		-DSWT_VERSION=$(SWT_VERSION) \
@@ -79,7 +79,7 @@ CFLAGS = -O -Wall \
 LIBS = -shared -fpic
 
 
-all: make_swt make_atk make_gnome make_awt make_mozilla
+all: make_swt make_cairo make_atk make_gnome make_awt make_mozilla
 
 all64: make_swt make_atk make_gnome make_awt
 
@@ -159,7 +159,16 @@ $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
 	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
 
 xpcom.o: xpcom.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom.cpp	
+	$(CXX) $(MOZILLACFLAGS) -c xpcom.cpp
+
+xpcom_structs.o: xpcom_structs.cpp
+	$(CXX) $(MOZILLACFLAGS) -c xpcom_structs.cpp
+	
+xpcom_custom.o: xpcom_custom.cpp
+	$(CXX) $(MOZILLACFLAGS) -c xpcom_custom.cpp
+
+xpcom_stats.o: xpcom_stats.cpp
+	$(CXX) $(MOZILLACFLAGS) -c xpcom_stats.cpp	
 
 #
 # Clean

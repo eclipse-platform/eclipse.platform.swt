@@ -34,7 +34,7 @@ public class XPCOM {
 	static final int MINOR = 4;
 	static final String SUPPORTED_VERSION = MAJOR + "." + MINOR; //$NON-NLS-1$
 
-	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
+	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME\0"; //$NON-NLS-1$
 	
 	/* nsDirectoryServiceDefs constants */
 	public static final String NS_GRE_DIR = "GreD"; //$NON-NLS-1$
@@ -120,11 +120,11 @@ public static final native int nsEmbedString_Length(int ptr);
 public static final native int nsEmbedString_get(int ptr);
 public static final native boolean nsEmbedString_Equals(int ptr, int other);
 public static final native void PR_Free(int ptr);
-public static final native String PR_GetEnv(String name); 
+public static final native int PR_GetEnv(byte[] name); 
 public static final native int PR_Malloc(int Length);
 public static final native int strlen(int s);
 
-public static final native int nsWriteSegmentFun(int ptr, int aInStream, int aClosure, byte[] aFromSegment, int aToOffset, int aCount, int[] aWriteCount);
+public static final native int Call(int ptr, int aInStream, int aClosure, byte[] aFromSegment, int aToOffset, int aCount, int[] aWriteCount);
 
 static final native int VtblCall(int fnNumber, int ppVtbl, nsID arg0, int[] arg1);
 static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, nsID arg1, int[] arg2);
