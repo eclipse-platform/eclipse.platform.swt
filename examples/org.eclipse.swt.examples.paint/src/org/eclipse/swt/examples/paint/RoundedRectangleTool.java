@@ -45,7 +45,7 @@ public class RoundedRectangleTool extends DragPaintSession implements PaintTool 
 	 * @return the localized name of this tool
 	 */
 	public String getDisplayName() {
-		return PaintPlugin.getResourceString("tool.RoundedRectangle.displayname");
+		return PaintPlugin.getResourceString("tool.RoundedRectangle.label");
 	}
 
 	/*

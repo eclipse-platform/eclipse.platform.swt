@@ -52,7 +52,7 @@ public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
 	 * @return the localized name of this tool
 	 */
 	public String getDisplayName() {
-		return PaintPlugin.getResourceString("tool.Airbrush.displayname");
+		return PaintPlugin.getResourceString("tool.Airbrush.label");
 	}
 
 	/*

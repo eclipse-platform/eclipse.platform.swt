@@ -39,7 +39,7 @@ public class PencilTool extends ContinuousPaintSession implements PaintTool {
 	 * @return the localized name of this tool
 	 */
 	public String getDisplayName() {
-		return PaintPlugin.getResourceString("tool.Pencil.displayname");
+		return PaintPlugin.getResourceString("tool.Pencil.label");
 	}
 
 	/*

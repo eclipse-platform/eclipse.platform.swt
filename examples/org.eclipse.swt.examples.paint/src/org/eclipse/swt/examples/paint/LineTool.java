@@ -41,7 +41,7 @@ public class LineTool extends DragPaintSession implements PaintTool {
 	 * @return the localized name of this tool
 	 */
 	public String getDisplayName() {
-		return PaintPlugin.getResourceString("tool.Line.displayname");
+		return PaintPlugin.getResourceString("tool.Line.label");
 	}
 
 	/*

@@ -43,7 +43,7 @@ public class EllipseTool extends DragPaintSession implements PaintTool {
 	 * @return the localized name of this tool
 	 */
 	public String getDisplayName() {
-		return PaintPlugin.getResourceString("tool.Ellipse.displayname");
+		return PaintPlugin.getResourceString("tool.Ellipse.label");
 	}
 
 	/*

@@ -55,8 +55,9 @@ public class PaintView extends ViewPart {
 	private static final int numPaletteCols = 50;
 
 	// shared data	
-	Color paintColorBlack, paintColorWhite; // alias for paintColors[0] and [1]
-	Color[] paintColors;
+	private Color paintColorBlack, paintColorWhite; // alias for paintColors[0] and [1]
+	private Color[] paintColors;
+	private Font paintDefaultFont; // do not free
 
 	/**
 	 * Constructs a Paint view.
@@ -68,20 +69,16 @@ public class PaintView extends ViewPart {
 	 * Cleanup
 	 */
 	public void dispose() {
-		if (paintSurface != null) paintSurface.dispose();
-		paintSurface = null;
-		
+		if (paintSurface != null) paintSurface.dispose();		
 		if (paintColors != null) {
 			for (int i = 0; i < paintColors.length; ++i) {
 				final Color color = paintColors[i];
 				if (color != null) color.dispose();
 			}
-			paintColors = null;
 		}
-		
-		if (toolSettings != null) toolSettings.dispose();
-		toolSettings = null;
-
+		paintDefaultFont = null;
+		paintColors = null;
+		paintSurface = null;
 		super.dispose();
 	}
 	
@@ -105,6 +102,8 @@ public class PaintView extends ViewPart {
 		
 		paintColorWhite = new Color(workbenchDisplay, 255, 255, 255);
 		paintColorBlack = new Color(workbenchDisplay, 0, 0, 0);
+		
+		paintDefaultFont = workbenchDisplay.getSystemFont();
 
 		paintColors = new Color[numPaletteCols * numPaletteRows];
 		paintColors[0] = paintColorBlack;
@@ -117,6 +116,7 @@ public class PaintView extends ViewPart {
 		toolSettings = new ToolSettings();
 		toolSettings.commonForegroundColor = paintColorBlack;
 		toolSettings.commonBackgroundColor = paintColorWhite;
+		toolSettings.commonFont = paintDefaultFont;
 
 		/*** Add toolbar contributions ***/
 		final IActionBars actionBars = getViewSite().getActionBars();
@@ -130,6 +130,7 @@ public class PaintView extends ViewPart {
 		toolbarManager.appendToGroup("group.tools", new SelectPaintToolAction("tool.Rectangle"));
 		toolbarManager.appendToGroup("group.tools", new SelectPaintToolAction("tool.RoundedRectangle"));
 		toolbarManager.appendToGroup("group.tools", new SelectPaintToolAction("tool.Ellipse"));
+		toolbarManager.appendToGroup("group.tools", new SelectPaintToolAction("tool.Text"));
 		toolbarManager.add(new Separator());
 		toolbarManager.add(new GroupMarker("group.options"));
 		toolbarManager.appendToGroup("group.options", new SelectFillTypeAction("fill.None"));
@@ -204,6 +205,7 @@ public class PaintView extends ViewPart {
 		paintToolMap.put("tool.Rectangle", new RectangleTool(toolSettings, paintSurface));
 		paintToolMap.put("tool.RoundedRectangle", new RoundedRectangleTool(toolSettings, paintSurface));
 		paintToolMap.put("tool.Ellipse", new EllipseTool(toolSettings, paintSurface));
+		paintToolMap.put("tool.Text", new TextTool(toolSettings, paintSurface));
 		paintToolMap.put("tool.Null", null);
 
 		// paintFillTypeMap

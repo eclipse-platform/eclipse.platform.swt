@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.*;
 /**
  * 2D Rectangle object
  */
-public class TextFigure extends StatelessXORFigureHelper {
+public class TextFigure extends Figure {
 	private Color  color;
 	private Font   font;
 	private String text;
@@ -24,15 +24,33 @@ public class TextFigure extends StatelessXORFigureHelper {
 	 * @param x     the virtual X coordinate of the top-left corner of the text bounding box
 	 * @param y     the virtual Y coordinate of the top-left corner of the text bounding box
 	 */
-	public TextFigure(Color color, int x1, int y1, int x2, int y2) {
+	public TextFigure(Color color, Font font, String text, int x, int y) {
 		this.color = color; this.font = font; this.text = text; this.x = x; this.y = y;
 	}
 	public void draw(GC gc, Point offset) {
-		gc.setForeground(color);
-		gcDraw(gc, offset);
-	}
-	protected void gcDraw(GC gc, Point offset) {
 		gc.setFont(font);
-		gc.drawText(text, x, y, true);
-	}			
+		gc.setForeground(color);
+		gc.drawText(text, x + offset.x, y + offset.y, true);
+	}
+	public Object drawPreview(GC gc, Point offset) {
+		Point textExtent = gc.textExtent(text);
+		Image backingStore = new Image(null, textExtent.x, textExtent.y);
+		gc.copyArea(backingStore, x + offset.x, y + offset.y);
+		
+		gc.setFont(font);
+		Color oldColor = gc.getForeground();
+		gc.setForeground(color);
+		gc.setXORMode(false);
+		gc.drawText(text, x + offset.x, y + offset.y, true);
+		gc.setForeground(oldColor);
+		gc.setXORMode(true);
+		return backingStore;
+	}
+	public void erasePreview(GC gc, Point offset, Object rememberedData) {
+		Image backingStore = (Image) rememberedData;
+		gc.setXORMode(false);
+		gc.drawImage(backingStore, x + offset.x, y + offset.y);
+		gc.setXORMode(true);
+		backingStore.dispose();
+	}
 }

@@ -17,8 +17,10 @@ public abstract class Figure {
 	/**
 	 * Draws an object to the specified GC
 	 * <p>
-	 * The GC will be set up as follows (and must be returned to this state before returning)<br>
-	 * &nbsp; setXORMode(false)
+	 * The GC must be set up as follows (and must be returned to this state before returning)
+	 * <ul>
+	 *   <li>setXORMode(false)
+	 * </ul>
 	 * </p>
 	 * 
 	 * @param gc the GC to draw on
@@ -29,8 +31,12 @@ public abstract class Figure {
 	/**
 	 * Draws a preview copy of the object to the specified GC
 	 * <p>
-	 * The GC will be set up as follows (and must be returned to this state before returning)<br>
-	 * &nbsp; setXORMode(true)
+	 * The GC must be set up as follows (and must be returned to this state before returning)
+	 * <ul>
+	 *   <li>setXORMode(true)
+	 *   <li>setForeground(new Color(display, 255, 255, 255))
+	 *   <li>setBackground(new Color(display, 127, 127, 127))
+	 * </ul>
 	 * </p>
 	 * 
 	 * @param gc the GC to draw on
@@ -46,8 +52,7 @@ public abstract class Figure {
 	 * order and that the GC's contents will be as they were when the drawPreview() that supplied
 	 * <code>rememberedState</code>returned.
 	 * </p><p>
-	 * The GC will be set up as follows (and must be returned to this state before returning)<br>
-	 * &nbsp; setXORMode(true)
+	 * The GC must be set up and restored as with drawPreview().
 	 * </p>
 	 * 
 	 * @param gc the GC to draw on

@@ -86,6 +86,9 @@ public class ContainerFigure extends Figure {
 		
 		final Object[] stateStack = (Object[]) rememberedState;
 		int i = nextIndex;
-		while (--i >= 0) objectStack[i].erasePreview(gc, offset, stateStack[i]);
+		while (--i >= 0) {
+			objectStack[i].erasePreview(gc, offset, stateStack[i]);
+			stateStack[i] = null;
+		}
 	}	
 }

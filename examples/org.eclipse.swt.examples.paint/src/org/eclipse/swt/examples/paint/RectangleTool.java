@@ -43,7 +43,7 @@ public class RectangleTool extends DragPaintSession implements PaintTool {
 	 * @return the localized name of this tool
 	 */
 	public String getDisplayName() {
-		return PaintPlugin.getResourceString("tool.Rectangle.displayname");
+		return PaintPlugin.getResourceString("tool.Rectangle.label");
 	}
 
 	/*
