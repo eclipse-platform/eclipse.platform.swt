@@ -36,7 +36,7 @@ AWT_OBJS   = swt_awt.obj
 MOZILLA_PREFIX	= swt-mozilla
 MOZILLA_LIB     = $(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 MOZILLA_LIBS	= embedstring.lib embed_base_s.lib xpcomglue_s.lib xpcom.lib nspr4.lib plds4.lib plc4.lib
-MOZILLA_OBJS	= xpcom.obj
+MOZILLA_OBJS	= xpcom.obj xpcom_stats.obj xpcom_structs.obj xpcom_custom.obj
 
 # note: thoroughly test all examples after changing any optimization flags
 SWT_CDEBUG = #-Zi -Odi

@@ -122,7 +122,7 @@ int ReadSegments(int aWriter, int aClosure, int aCount, int _retval) {
 	int cnt = max;
 	while (cnt > 0) {
 		int[] aWriteCount = new int[1];
-		int rc = XPCOM.nsWriteSegmentFun(aWriter, getAddress(), aClosure, buffer, index, cnt, aWriteCount);
+		int rc = XPCOM.Call(aWriter, getAddress(), aClosure, buffer, index, cnt, aWriteCount);
 		if (rc != XPCOM.NS_OK) break;
 		index += aWriteCount[0];
 		cnt -= aWriteCount[0];

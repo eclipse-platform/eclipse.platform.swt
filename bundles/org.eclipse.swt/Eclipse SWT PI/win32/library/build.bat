@@ -34,7 +34,7 @@ call %mssdk%\setenv.bat
 rem *****
 rem mozilla dist folder
 rem *****
-set MOZILLA_HOME=W:\mozilla\1.5\win32\mozilla\dist
+set GECKO_SDK=W:\mozilla\1.4\win32\mozilla\dist\sdk
 
 :MAKE
 nmake -f make_win32.mak %1 %2 %3 %4
