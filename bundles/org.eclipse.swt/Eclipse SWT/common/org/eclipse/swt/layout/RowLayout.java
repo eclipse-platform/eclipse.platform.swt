@@ -249,7 +249,7 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 		x += spacing + childWidth;
 		maxX = Math.max (maxX, x);
 	}
-	maxX -= spacing;
+	maxX = Math.max (clientX, maxX - spacing);
 	if (!wrapped) maxX += marginRight;
 	if (move && (justify || fill)) {
 		int space = 0, margin = 0;
@@ -346,7 +346,7 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 		y += spacing + childHeight;
 		maxY = Math.max (maxY, y);
 	}
-	maxY -= spacing;
+	maxY = Math.max (clientY, maxY - spacing);
 	if (!wrapped) maxY += marginBottom;
 	if (move && (justify || fill)) {
 		int space = 0, margin = 0;
