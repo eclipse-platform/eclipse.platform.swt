@@ -787,23 +787,13 @@ public int getLevel (int offset) {
 	computeRuns(null);
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	length = segmentsText.length();
-	offset = translateOffset(offset);	
-	int line;
-	for (line=0; line<runs.length; line++) {
-		if (lineOffset[line + 1] > offset) break;
-	}
-	line = Math.min(line, runs.length - 1);
-	StyleItem[] lineRuns = runs[line];
-	for (int i=0; i<lineRuns.length; i++) {
-		StyleItem run = lineRuns[i];
-		int end = run.start + run.length;
-		if (end == length) end++;
-		if (run.start <= offset && offset < end) {
-			return run.analysis.s.uBidiLevel;
+	offset = translateOffset(offset);
+	for (int i=1; i<allRuns.length; i++) {
+		if (allRuns[i].start > offset) {
+			return allRuns[i - 1].analysis.s.uBidiLevel;
 		}
 	}
-	return 0;
+	return (orientation & SWT.RIGHT_TO_LEFT) != 0 ? 1 : 0;
 }
 
 /**
@@ -1309,11 +1299,14 @@ public int getSpacing () {
 }
 
 /**
- * Gets the style of the receiver at the specified offset.
+ * Gets the style of the receiver at the specified character offset.
  *
  * @param offset the text offset
  * @return the style or <code>null</code> if not set
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the character offset is out of range</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
@@ -1323,8 +1316,7 @@ public TextStyle getStyle (int offset) {
 	int length = text.length();
 	if (!(0 <= offset && offset < length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	for (int i=1; i<styles.length; i++) {
-		StyleItem item = styles[i];
-		if (item.start > offset) {
+		if (styles[i].start > offset) {
 			return styles[i - 1].style;
 		}
 	}
