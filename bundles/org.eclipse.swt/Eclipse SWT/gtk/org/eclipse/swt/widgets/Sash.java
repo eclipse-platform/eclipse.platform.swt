@@ -38,6 +38,9 @@ public class Sash extends Control {
 	int startX, startY, lastX, lastY;
 	int defaultCursor;
 
+	private final static int INCREMENT = 1;
+	private final static int PAGE_INCREMENT = 9;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -128,6 +131,7 @@ void createHandle (int index) {
 	state |= HANDLE;
 	handle = OS.gtk_drawing_area_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, handle);
 	OS.gtk_widget_show (handle);
@@ -217,6 +221,94 @@ int gtk_button_release_event (int widget, int eventPtr) {
 	drawBand (lastX, lastY, width, height);
 	sendEvent (SWT.Selection, event);
 	/* widget could be disposed here */
+	return result;
+}
+
+int gtk_focus_in_event (int widget, int event) {
+	int result = super.gtk_focus_in_event (widget, event);
+	if (result != 0) return result;
+	// widget could be disposed at this point
+	if (handle != 0) {
+			lastX = OS.GTK_WIDGET_X (handle);
+			lastY = OS.GTK_WIDGET_Y (handle);
+	}
+	return 0;
+}
+
+int gtk_key_press_event (int widget, int eventPtr) {
+	int result = super.gtk_key_press_event (widget, eventPtr);
+	if (result != 0) return result;
+	GdkEventKey gdkEvent = new GdkEventKey ();
+	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+	int keyval = gdkEvent.keyval;
+	switch (keyval) {
+		case OS.GDK_Left:
+		case OS.GDK_Right:
+		case OS.GDK_Up:
+		case OS.GDK_Down:
+			int xChange = 0, yChange = 0;
+			int stepSize = PAGE_INCREMENT;
+			if ((gdkEvent.state & OS.GDK_CONTROL_MASK) != 0) stepSize = INCREMENT;
+			if ((style & SWT.VERTICAL) != 0) {
+				if (keyval == OS.GDK_Up || keyval == OS.GDK_Down) break;
+				xChange = keyval == OS.GDK_Left ? -stepSize : stepSize;
+			} else {
+				if (keyval == OS.GDK_Left ||keyval == OS.GDK_Right) break;
+				yChange = keyval == OS.GDK_Up ? -stepSize : stepSize;
+			}
+			
+			int border = 0;
+			int x = OS.GTK_WIDGET_X (handle);
+			int y = OS.GTK_WIDGET_Y (handle);
+			int width = OS.GTK_WIDGET_WIDTH (handle);
+			int height = OS.GTK_WIDGET_HEIGHT (handle);
+			int parentBorder = 0;
+			int parentWidth = OS.GTK_WIDGET_WIDTH (parent.handle);
+			int parentHeight = OS.GTK_WIDGET_HEIGHT (parent.handle);
+			int newX = lastX, newY = lastY;
+			if ((style & SWT.VERTICAL) != 0) {
+				newX = Math.min (Math.max (0, lastX + xChange - parentBorder - startX), parentWidth - width);
+			} else {
+				newY = Math.min (Math.max (0, lastY + yChange - parentBorder - startY), parentHeight - height);
+			}
+			if (newX == lastX && newY == lastY) return result;
+			
+			/* Ensure that the pointer image does not change */
+			int window = OS.GTK_WIDGET_WINDOW (handle);
+			int grabMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK;
+			int gdkCursor = cursor != null ? cursor.handle : defaultCursor;
+			int ptrGrabResult = OS.gdk_pointer_grab (window, false, grabMask, window, gdkCursor, OS.GDK_CURRENT_TIME);
+
+			/* The event must be sent because its doit flag is used. */
+			Event event = new Event ();
+			event.time = gdkEvent.time;
+			event.x = newX;
+			event.y = newY;
+			event.width = width;
+			event.height = height;
+			sendEvent (SWT.Selection, event);
+			if (ptrGrabResult == OS.GDK_GRAB_SUCCESS) OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
+			
+			/*
+			 * It is possible (but unlikely) that client code could have disposed
+			 * the widget in the selection event.  If this happens end the processing
+			 * of this message by returning.
+			 */
+			if (isDisposed ()) break;
+			if (event.doit) {
+				lastX = event.x;  lastY = event.y;
+				/* Adjust the pointer position */
+				int cursorX = newX;  int cursorY = newY;
+				if ((style & SWT.VERTICAL) != 0) {
+					cursorY += height / 2;
+				} else {
+					cursorX += width / 2;
+				}
+				//OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, cursorX, cursorY);
+			}
+			break;
+	}
+
 	return result;
 }
 
