@@ -274,6 +274,8 @@ public void cut () {
 	OS.gtk_editable_cut_clipboard(handle);
 }
 
+boolean enterActivatesDefault() { return (style & SWT.SINGLE) != 0; }
+
 /**
  * Gets the line number of the caret.
  * <p>
