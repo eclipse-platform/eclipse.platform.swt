@@ -551,7 +551,18 @@ public static Font motif_new(Device device, int handle) {
 int wildcardXfld(FontData[] fds, int index) {
 	while (index < fds.length) {
 		FontData fd = fds[index];
-		if (fd.characterSetName != null	|| fd.characterSetRegistry != null || fd.foundry != null) {
+		
+		/* Bug in XLib. In Japanese AIX only, in some cases attempting to load a
+		* bold font might take a very long time if there are no Japanese bold fonts
+		* available. The fix is to wildcard the fields slant, setWidth, and weight first.
+		*/
+		if (OS.IsDBLocale && OS.IsAIX) {
+			fd.slant = null;
+			fd.setWidth = null;
+			fd.weight = null;
+		}	
+			
+		if (fd.characterSetName != null || fd.characterSetRegistry != null || fd.foundry != null) {
 			fd.characterSetName = null;
 			fd.characterSetRegistry = null;
 			fd.foundry = null;
