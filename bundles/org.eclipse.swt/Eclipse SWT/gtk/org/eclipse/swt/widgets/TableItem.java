@@ -177,7 +177,7 @@ public Color getBackground (int index) {
 	if (0 > index || index > count - 1) return getBackground ();
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 3, ptr, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_BACKGROUND, ptr, -1);
 	if (ptr [0] == 0) return getBackground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
@@ -202,11 +202,28 @@ public Rectangle getBounds (int index) {
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
-	GdkRectangle rect = new GdkRectangle ();
 	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
+	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
+	
+	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 1, 3)) {
+			int [] x = new int [1], w = new int [1];
+			OS.gtk_tree_view_column_cell_get_position (column, parent.checkRenderer, x, w);
+			rect.x += x [0] + w [0];
+			rect.width -= x [0] + w [0];
+		} else {
+			int [] w = new int [1];
+			OS.gtk_cell_renderer_get_size (parent.checkRenderer, parentHandle, null, null, null, w, null);
+			int [] buffer = new int [1];
+			OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+			rect.x += w [0]  + buffer [0];
+			rect.width -= w [0]  + buffer [0];
+		}
+	}
+	
 	/* 
 	 * In the horizontal direction, the origin of the bin window is 
 	 * not the same as the origin of the scrolled handle.
@@ -219,17 +236,10 @@ public Rectangle getBounds (int index) {
 	int[] wx = new int[1];
 	OS.gtk_tree_view_tree_to_widget_coords(parentHandle, rect.x, 0, wx, null);
 	rect.x = wx[0];
-	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION (2, 1, 3)) {
-			int [] x = new int [1], w = new int [1];
-			OS.gtk_tree_view_column_cell_get_position (column, parent.checkRenderer, x, w);
-			rect.x += x [0] + w [0];
-			rect.width -= x [0] + w [0];
-		}
-	}
+
 	int border = parent.getBorderWidth ();
 	int headerHeight = parent.getHeaderHeight ();
-	return new Rectangle (rect.x + border, rect.y + headerHeight, rect.width + 1, rect.height + 1);
+	return new Rectangle (rect.x + border, rect.y + (headerHeight == 0 ?  border : headerHeight), rect.width + 1, rect.height + 1);
 }
 
 /**
@@ -295,7 +305,7 @@ public Font getFont (int index) {
 	if (0 > index || index > count - 1) return getFont ();
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 4, ptr, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_FONT, ptr, -1);
 	if (ptr [0] == 0) return getFont ();
 	return Font.gtk_new (display, ptr[0]);
 }
@@ -345,7 +355,7 @@ public Color getForeground (int index) {
 	if (0 > index || index > count - 1) return getForeground ();
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	int modelIndex =  parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 2, ptr, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_FOREGROUND, ptr, -1);
 	if (ptr [0] == 0) return getForeground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
@@ -400,7 +410,7 @@ public Image getImage (int index) {
 	if (column == 0) return null;
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex, ptr, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_PIXBUF, ptr, -1);
 	if (ptr [0] == 0) return null;
 	ImageList imageList = parent.imageList;
 	int imageIndex = imageList.indexOf (ptr [0]);
@@ -427,26 +437,35 @@ public Rectangle getImageBounds (int index) {
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
-	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
-	if (list == 0) return new Rectangle (0, 0, 0, 0);
-	int count = OS.g_list_length (list);
-	int /*long*/ pixbufRenderer = 0;
-	int i = 0;
-	while (i < count) {
-		int /*long*/ renderer = OS.g_list_nth_data (list, i);
-		if (OS.GTK_IS_CELL_RENDERER_PIXBUF (renderer)) {
-			pixbufRenderer = renderer;
-			break;
-		}
-		i++;
-	}
-	OS.g_list_free (list);	
+	int /*long*/ pixbufRenderer = parent.getPixbufRenderer (column);
 	if (pixbufRenderer == 0)  return new Rectangle (0, 0, 0, 0);
 	GdkRectangle rect = new GdkRectangle ();
 	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
+
+	/*
+	* The OS call gtk_cell_renderer_get_size() provides the width of image to be drawn
+	* by the cell renderer.  If there is no image in the cell, the width is zero.  If the table contains
+	* images of varying widths, gtk_cell_renderer_get_size() will return the width of the image, 
+	* not the width of the area in which the image is drawn.
+	* New API was added in GTK 2.1.3 for determining the full width of the renderer area.
+	* For earlier versions of GTK, the result is only correct if all rows have images of the same
+	* width.
+	*/
+	if (OS.GTK_VERSION >= OS.VERSION (2, 1, 3)) {
+		int [] x = new int [1], w = new int[1];
+		OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
+		rect.x += x [0];
+		rect.width = w [0];
+	} else {
+		int [] w = new int [1];
+		OS.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, false, false);
+		OS.gtk_cell_renderer_get_size (pixbufRenderer, parentHandle, null, null, null, w, null);
+		rect.width = w [0];
+	}
+	
 	/* 
 	 * In the horizontal direction, the origin of the bin window is 
 	 * not the same as the origin of the scrolled handle.
@@ -459,27 +478,10 @@ public Rectangle getImageBounds (int index) {
 	int[] wx = new int[1];
 	OS.gtk_tree_view_tree_to_widget_coords(parentHandle, rect.x, 0, wx, null);
 	rect.x = wx[0];
-	/*
-	* The OS call gtk_cell_renderer_get_size() provides the width of image to be drawn
-	* by the cell renderer.  If there is no image in the cell, the width is zero.  If the table contains
-	* images of varying widths, gtk_cell_renderer_get_size() will return the width of the image, 
-	* not the width of the area in which the image is drawn.
-	* New API was added in GTK 2.1.3 for determining the full width of the renderer area.
-	* For earlier versions of GTK, the result is only correct if all rows have images of the same
-	* width.
-	*/
-	int [] w = new int[1];
-	if (OS.GTK_VERSION >= OS.VERSION (2, 1, 3)) {
-		int [] x = new int [1];
-		OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, x, w);
-		rect.x += x [0];
-	} else {
-		OS.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, false, false);
-		OS.gtk_cell_renderer_get_size (pixbufRenderer, parentHandle, null, null, null, w, null);
-	}
+	
 	int border = parent.getBorderWidth ();
 	int headerHeight = parent.getHeaderHeight ();
-	return new Rectangle (rect.x + border, rect.y + headerHeight, w [0], rect.height + 1);
+	return new Rectangle (rect.x + border, rect.y + (headerHeight == 0 ?  border : headerHeight), rect.width, rect.height + 1);
 }
 
 /**
@@ -544,7 +546,7 @@ public String getText (int index) {
 	if (column == 0) error(SWT.ERROR_CANNOT_GET_TEXT);
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 1, ptr, -1);
+	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_TEXT, ptr, -1);
 	if (ptr [0] == 0) return "";
 	int length = OS.strlen (ptr [0]);
 	byte[] buffer = new byte [length];
@@ -619,25 +621,22 @@ public void setBackground (int index, Color color) {
 	}
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
-	GdkColor gdkColor = color != null ? color.handle : null;
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 3, gdkColor, -1);
+	GdkColor gdkColor = color != null ? color.handle : null;
+	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_BACKGROUND, gdkColor, -1);
 	cached = true;
 	
 	if (color != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
-			int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
-			int length = OS.g_list_length (list);
-			int /*long*/ textRenderer = OS.g_list_nth_data (list, length - 1);
-			int /*long*/ pixbufRenderer = OS.g_list_nth_data (list, length - 2);
-			OS.g_list_free (list);
 			if ((parent.style & SWT.VIRTUAL) == 0) {
+				int /*long*/ textRenderer = parent.getTextRenderer (column);
+				int /*long*/ imageRenderer = parent.getPixbufRenderer (column);
 				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
-				OS.gtk_tree_view_column_set_cell_data_func (column, pixbufRenderer, display.pixbufCellDataProc, parent.handle, 0);
+				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parent.handle, 0);
 			}
 			if (parent.columnCount == 0) {
 				parent.firstCustomDraw = true;
@@ -724,20 +723,17 @@ public void setFont (int index, Font font) {
 	if (column == 0) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	int /*long*/ fontHandle  = font != null ? font.handle : 0;
-	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 4, fontHandle, -1);
+	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_FONT, fontHandle, -1);
 	cached = true;
 	
 	if (font != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
-			int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
-			int length = OS.g_list_length (list);
-			int /*long*/ imageRenderer = OS.g_list_nth_data (list, length - 2);
-			int /*long*/ textRenderer = OS.g_list_nth_data (list, length - 1);
-			OS.g_list_free (list);
 			if ((parent.style & SWT.VIRTUAL) == 0) {
-				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parent.handle, 0);
+				int /*long*/ textRenderer = parent.getTextRenderer (column);
+				int /*long*/ imageRenderer = parent.getPixbufRenderer (column);
 				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
+				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parent.handle, 0);
 			}
 			if (parent.columnCount == 0) {
 				parent.firstCustomDraw = true;
@@ -802,23 +798,20 @@ public void setForeground (int index, Color color){
 	}
 	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count - 1) return;
-	GdkColor gdkColor = color != null ? color.handle : null;
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 2, gdkColor, -1);
+	GdkColor gdkColor = color != null ? color.handle : null;
+	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_FOREGROUND, gdkColor, -1);
 	cached = true;
 	
 	if (color != null) {
 		boolean customDraw = (parent.columnCount == 0)  ? parent.firstCustomDraw : parent.columns [index].customDraw;
 		if (!customDraw) {
-			int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
-			int length = OS.g_list_length (list);
-			int /*long*/ textRenderer = OS.g_list_nth_data (list, length - 1);
-			int /*long*/ imageRenderer = OS.g_list_nth_data (list, length - 2);
-			OS.g_list_free (list);
 			if ((parent.style & SWT.VIRTUAL) == 0) {
+				int /*long*/ textRenderer = parent.getTextRenderer (column);
+				int /*long*/ imageRenderer = parent.getPixbufRenderer (column);
 				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parent.handle, 0);
 				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parent.handle, 0);
 			}
@@ -881,7 +874,7 @@ public void setImage (int index, Image image) {
 		pixbuf = imageList.getPixbuf (imageIndex);
 	}
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex, pixbuf, -1);
+	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_PIXBUF, pixbuf, -1);
 	cached = true;
 }
 
@@ -953,7 +946,7 @@ public void setText (int index, String string) {
 	if (column == 0) return;
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 1, buffer, -1);
+	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_TEXT, buffer, -1);
 	cached = true;
 }
 
