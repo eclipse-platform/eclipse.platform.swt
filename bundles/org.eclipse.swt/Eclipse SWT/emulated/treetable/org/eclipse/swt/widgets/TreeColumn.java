@@ -102,8 +102,8 @@ public int getWidth () {
 int getX() {
 	int index = getIndex();
 	if (index == 0) return 0;
-	TreeColumn[] columns = parent.getColumns();
-	return columns[index - 1].getX() + width;
+	TreeColumn previousColumn = parent.getColumns()[index - 1];
+	return previousColumn.getX() + previousColumn.width;
 }
 void paint(GC gc) {
 	int padding = parent.getHeaderPadding();
@@ -146,7 +146,7 @@ void paint(GC gc) {
 		startX += imageBounds.width + Tree2.MARGIN_IMAGE; 
 	}
 	if (text.length() > 0) {
-		int fontHeight = parent.getFontHeight();
+		int fontHeight = parent.fontHeight;
 		gc.drawText(text, startX, (headerHeight - fontHeight) / 2);
 	}
 	
@@ -183,7 +183,7 @@ public void setImage (Image value) {
 	 * If this is the first image being put into the header then the header
 	 * height may be adjusted, in which case a full redraw is needed.
 	 */
-	if (parent.getHeaderImageHeight() == 0) {
+	if (parent.headerImageHeight == 0) {
 		int oldHeaderHeight = parent.getHeaderHeight();
 		parent.setHeaderImageHeight(value.getBounds().height);
 		if (oldHeaderHeight != parent.getHeaderHeight()) {

@@ -171,11 +171,11 @@ public void dispose() {
 		} else {
 			startIndex = availableIndex;
 		}
-		endIndex = parent.getAvailableItemsCount() - 1;
+		endIndex = parent.availableItems.length - 1;
 	}
 
 	/* for performance do this upfront for whole descendent chain */
-	TreeItem2 focusItem = parent.getFocusItem(); 
+	TreeItem2 focusItem = parent.focusItem; 
 	if (focusItem != null && focusItem.hasAncestor(this)) {
 		parent.setFocusItem(this, false);
 		parent.reassignFocus();
@@ -298,7 +298,7 @@ public boolean getExpanded () {
  */ 
 Rectangle getExpanderBounds() {
 	int itemHeight = parent.getItemHeight();
-	int x = parent.getCellPadding() - parent.getHorizontalOffset();
+	int x = parent.getCellPadding() - parent.horizontalOffset;
 	int y = parent.getItemY(this);
 	if (!isRoot()) {
 		int expanderWidth = ExpandedImage.getBounds().width + INDENT_HIERARCHY;
@@ -327,7 +327,7 @@ Rectangle getFocusBounds() {
  */
 int getFocusX() {
 	int result = getContentX(0);
-	int imageSpace = parent.getCol0ImageWidth();
+	int imageSpace = parent.col0ImageWidth;
 	if (imageSpace > 0) {
 		result += imageSpace + Tree2.MARGIN_IMAGE;
 	}
@@ -387,7 +387,8 @@ public Image getImage () {
 }
 public Image getImage (int index) {
 	checkWidget ();
-	if (!(0 <= index && index < parent.getValidColumnCount())) return null;
+	int validColumnCount = Math.max(1, parent.getColumnCount());
+	if (!(0 <= index && index < validColumnCount)) return null;
 	return internalGetImage(index);
 }
 int getIndex() {
@@ -435,7 +436,8 @@ public String getText () {
 }
 public String getText (int index) {
 	checkWidget ();
-	if (!(0 <= index && index < parent.getValidColumnCount())) return "";
+	int validColumnCount = Math.max(1, parent.getColumnCount());
+	if (!(0 <= index && index < validColumnCount)) return "";
 	return internalGetText(index);
 }
 /*
@@ -691,7 +693,7 @@ void paint(GC gc, TreeColumn column, boolean paintCellContent) {
 		 */
 		int drawWidth;
 		if (columnIndex == 0) {
-			int imageSpaceX = parent.getCol0ImageWidth();
+			int imageSpaceX = parent.col0ImageWidth;
 			drawWidth = Math.min (imageSpaceX, imageBounds.width);
 		} else {
 			drawWidth = imageBounds.width;
@@ -715,7 +717,7 @@ void paint(GC gc, TreeColumn column, boolean paintCellContent) {
 			gc.setFont(font);
 			fontHeight = this.fontHeight;
 		} else {
-			fontHeight = parent.getFontHeight();
+			fontHeight = parent.fontHeight;
 		}
 		Color oldForeground = null;
 		if (selected && columnIndex == 0) {
@@ -792,12 +794,12 @@ public void setExpanded(boolean value) {
 		parent.makeDescendentsAvailable(this);
 		parent.redrawFromItemDownwards(availableIndex);
 	} else {
-		int oldAvailableLength = parent.getAvailableItemsCount();
+		int oldAvailableLength = parent.availableItems.length;
 		TreeItem2[] descendents = computeAvailableDescendents();
 		expanded = value;
 		parent.makeDescendentsUnavailable(this, descendents);
 		/* move focus (and selection if SWT.SINGLE) to item if a descendent had focus */
-		TreeItem2 focusItem = parent.getFocusItem();
+		TreeItem2 focusItem = parent.focusItem;
 		if (focusItem != null && focusItem != this && focusItem.hasAncestor(this)) {
 			parent.setFocusItem(this, true);
 			if ((style & SWT.SINGLE) != 0) {
@@ -856,7 +858,8 @@ public void setImage (int index, Image value) {
 	if (value != null && value.isDisposed()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (!(0 <= index && index < parent.getValidColumnCount())) return;
+	int validColumnCount = Math.max(1, parent.getColumnCount());
+	if (!(0 <= index && index < validColumnCount)) return;
 	if (images.length < index + 1) {
 		Image[] newImages = new Image[index + 1];
 		System.arraycopy(images, 0, newImages, 0, images.length);
@@ -872,12 +875,12 @@ public void setImage (int index, Image value) {
 	 * If this is the first image being put into the table then its item height
 	 * may be adjusted, in which case a full redraw is needed.
 	 */
-	if (parent.getImageHeight() == 0) {
+	if (parent.imageHeight == 0) {
 		int oldItemHeight = parent.getItemHeight();
 		parent.setImageHeight(value.getBounds().height);
 		if (oldItemHeight != parent.getItemHeight()) {
 			if (index == 0) {
-				parent.setCol0ImageWidth(value.getBounds().width);
+				parent.col0ImageWidth = value.getBounds().width;
 			}
 			parent.redraw();
 			return;
@@ -888,8 +891,8 @@ public void setImage (int index, Image value) {
 	 * If this is the first image being put into column 0 then all cells
 	 * in the column should also indent accordingly. 
 	 */
-	if (index == 0 && parent.getCol0ImageWidth() == 0) {
-		parent.setCol0ImageWidth(value.getBounds().width);
+	if (index == 0 && parent.col0ImageWidth == 0) {
+		parent.col0ImageWidth = value.getBounds().width;
 		/* redraw the column */
 		if (parent.getColumnCount() == 0) {
 			parent.redraw();
@@ -910,7 +913,8 @@ public void setText (String value) {
 public void setText (int index, String value) {
 	checkWidget ();
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!(0 <= index && index < parent.getValidColumnCount())) return;
+	int validColumnCount = Math.max(1, parent.getColumnCount());
+	if (!(0 <= index && index < validColumnCount)) return;
 	if (index == 0) super.setText(value);	// TODO can remove this
 	if (texts.length < index + 1) {
 		String[] newTexts = new String[index + 1];

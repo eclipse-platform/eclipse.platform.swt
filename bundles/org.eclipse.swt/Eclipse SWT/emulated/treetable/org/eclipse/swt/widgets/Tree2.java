@@ -1161,12 +1161,13 @@ void makeAvailable(TreeItem2 item) {
 	
 	System.arraycopy(availableItems, 0, newAvailableItems, 0, parentAvailableIndex);
 	System.arraycopy(parentAvailableDescendents, 0, newAvailableItems, parentAvailableIndex, parentAvailableDescendents.length);
-	System.arraycopy(			// TODO ugly!
+	int startIndex = parentAvailableIndex + parentAvailableDescendents.length - 1;
+	System.arraycopy(
 			availableItems,
-			parentAvailableIndex + parentAvailableDescendents.length - 1,
+			startIndex,
 			newAvailableItems,
 			parentAvailableIndex + parentAvailableDescendents.length,
-			availableItems.length - (parentAvailableIndex + parentAvailableDescendents.length - 1));
+			availableItems.length - startIndex);
 	availableItems = newAvailableItems;
 	
 	/* update availableIndex as needed */
@@ -1188,12 +1189,13 @@ void makeDescendentsAvailable(TreeItem2 item) {
 	
 	System.arraycopy(availableItems, 0, newAvailableItems, 0, itemAvailableIndex);
 	System.arraycopy(availableDescendents, 0, newAvailableItems, itemAvailableIndex, availableDescendents.length);
-	System.arraycopy(			// TODO ugly!
+	int startIndex = itemAvailableIndex + 1;
+	System.arraycopy(
 			availableItems,
-			itemAvailableIndex + 1,
+			startIndex,
 			newAvailableItems,
 			itemAvailableIndex + availableDescendents.length,
-			availableItems.length - (itemAvailableIndex + 1));
+			availableItems.length - startIndex);
 	availableItems = newAvailableItems;
 	
 	/* update availableIndex as needed */
@@ -1214,12 +1216,13 @@ void makeDescendentsUnavailable(TreeItem2 item, TreeItem2[] removedDescendents) 
 	TreeItem2[] newAvailableItems = new TreeItem2[availableItems.length - descendentsLength + 1];
 	
 	System.arraycopy(availableItems, 0, newAvailableItems, 0, item.availableIndex + 1);
-	System.arraycopy(			// TODO ugly!
+	int startIndex = item.availableIndex + descendentsLength;
+	System.arraycopy(
 			availableItems,
-			item.availableIndex + descendentsLength,
+			startIndex,
 			newAvailableItems,
 			item.availableIndex + 1,
-			availableItems.length - (item.availableIndex + descendentsLength));
+			availableItems.length - startIndex);
 	availableItems = newAvailableItems;
 	
 	/* update availableIndex as needed */
@@ -1249,12 +1252,13 @@ void makeUnavailable(TreeItem2 item) {
 	
 	System.arraycopy(availableItems, 0, newAvailableItems, 0, parentItem.availableIndex);
 	System.arraycopy(parentAvailableDescendents, 0, newAvailableItems, parentItem.availableIndex, parentAvailableDescendents.length);
-	System.arraycopy(			// TODO ugly!
+	int startIndex = parentItem.availableIndex + parentAvailableDescendents.length + 1;
+	System.arraycopy(
 		availableItems,
-		parentItem.availableIndex + parentAvailableDescendents.length + 1,
+		startIndex,
 		newAvailableItems,
 		parentItem.availableIndex + parentAvailableDescendents.length,
-		availableItems.length - (parentItem.availableIndex + parentAvailableDescendents.length + 1));
+		availableItems.length - startIndex);
 	availableItems = newAvailableItems;
 	
 	/* update availableIndex as needed */
