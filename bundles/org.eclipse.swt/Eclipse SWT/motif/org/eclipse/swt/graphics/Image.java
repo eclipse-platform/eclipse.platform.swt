@@ -155,6 +155,7 @@ public Image(Device device, int width, int height) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if srcImage is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the flag is not one of <code>IMAGE_COPY</code>, <code>IMAGE_DISABLE</code> or <code>IMAGE_GRAY</code></li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or
@@ -169,6 +170,7 @@ public Image(Device device, Image srcImage, int flag) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int xDisplay = device.xDisplay;
 	this.type = srcImage.type;
 	this.mask = 0;
@@ -628,8 +630,13 @@ public boolean equals (Object object) {
  * <p>
  *
  * @return the background color of the image, or null if there is no transparency in the image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Color getBackground() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transparentPixel == -1) return null;
 	XColor xColor = new XColor();
 	xColor.pixel = transparentPixel;
@@ -646,11 +653,12 @@ public Color getBackground() {
  * @return a rectangle specifying the image's bounds
  *
  * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
  * </ul>
  */
 public Rectangle getBounds () {
-	if (pixmap == 0) return new Rectangle(0, 0, 0, 0);
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int [] unused = new int [1];  int [] width = new int [1];  int [] height = new int [1];
  	OS.XGetGeometry (device.xDisplay, pixmap, unused, unused, unused, width, height, unused, unused);
 	return new Rectangle(0, 0, width [0], height [0]);
@@ -663,12 +671,14 @@ public Rectangle getBounds () {
  * @return an <code>ImageData</code> containing the image's data and attributes
  *
  * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
  * </ul>
  *
  * @see ImageData
  */
 public ImageData getImageData() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Rectangle srcBounds = getBounds();
 	int width = srcBounds.width;
 	int height = srcBounds.height;
@@ -1166,9 +1176,14 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public void setBackground(Color color) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (transparentPixel == -1) return;
@@ -1192,5 +1207,15 @@ public void setBackground(Color color) {
 	OS.XFreeGC(xDisplay, xGC);
 	/* Destroy the receiver's mask if the there is a GC created on it */
 	if (memGC != null) destroyMask();
+}
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "Image {*DISPOSED*}";
+	return "Image {" + pixmap + "}";
 }
 }
