@@ -270,6 +270,7 @@ int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMenuOpening (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	closed = false;
 	sendEvent (SWT.Show);
 	return OS.eventNotHandledErr;
 }
