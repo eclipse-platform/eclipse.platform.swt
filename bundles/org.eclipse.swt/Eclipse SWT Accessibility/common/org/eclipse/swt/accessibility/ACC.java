@@ -56,6 +56,7 @@ public class ACC {
 	public static final int ROLE_TABLE = 0x18;
 	public static final int ROLE_TABLECOLUMN = 0x19;
 	public static final int ROLE_TREE = 0x23;
+	public static final int ROLE_TREEITEM = 0x24;
 	public static final int ROLE_TABFOLDER = 0x3c;
 	public static final int ROLE_TABITEM = 0x25;
 	public static final int ROLE_PROGRESSBAR = 0x30;
