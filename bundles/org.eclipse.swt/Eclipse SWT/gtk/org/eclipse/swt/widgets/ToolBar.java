@@ -317,7 +317,6 @@ void releaseWidget () {
 
 void removeControl (Control control) {
 	super.removeControl (control);
-	// TEMPORARY CODE
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
