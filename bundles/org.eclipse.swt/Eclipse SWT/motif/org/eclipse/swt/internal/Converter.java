@@ -261,7 +261,7 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 					}
 				}
 				outBytes = outBuf [0] - ptr2;
-				mbcs = new byte [outBytes];
+				mbcs = new byte [terminate ? outBytes + 1 : outBytes];
 				OS.memmove (mbcs, ptr2, outBytes);
 				if (ptr1 != BufferTimes2) OS.XtFree (ptr1);
 				if (ptr2 != BufferTimes4) OS.XtFree (ptr2);
