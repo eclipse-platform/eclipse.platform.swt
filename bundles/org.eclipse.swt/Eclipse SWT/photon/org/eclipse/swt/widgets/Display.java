@@ -140,7 +140,7 @@ public class Display extends Device {
 //		{OS.VK_MBUTTON, SWT.BUTTON3},
 //		{OS.VK_RBUTTON, SWT.BUTTON2},
 		
-		/* Non-Numeric Keypad Constants */
+		/* Non-Numeric Keypad Keys */
 		{OS.Pk_Up,		SWT.ARROW_UP},
 		{OS.Pk_Down,	SWT.ARROW_DOWN},
 		{OS.Pk_Left,	SWT.ARROW_LEFT},
@@ -150,8 +150,16 @@ public class Display extends Device {
 		{OS.Pk_Home,	SWT.HOME},
 		{OS.Pk_End,		SWT.END},
 		{OS.Pk_Insert,	SWT.INSERT},
-//		{OS.Pk_Delete,	SWT.DELETE},
-//		{OS.Pk_Escape, 0x001B},
+
+		/* Virtual and Ascii Keys */
+		{OS.Pk_BackSpace,	SWT.BS},
+		{OS.Pk_Return,		SWT.CR},
+		{OS.Pk_Delete,		SWT.DEL},
+		{OS.Pk_Escape,		SWT.ESC},
+		{OS.Pk_Cancel,		SWT.ESC},
+		{OS.Pk_Linefeed,	SWT.LF},
+		{OS.Pk_Tab,			SWT.TAB},
+		{OS.Pk_KP_Tab,		SWT.TAB},
 	
 		/* Functions Keys */
 		{OS.Pk_F1,	SWT.F1},
@@ -168,7 +176,7 @@ public class Display extends Device {
 		{OS.Pk_F12,	SWT.F12},
 		
 		
-		/* Numeric Keypad Constants */
+		/* Numeric Keypad Keys */
 		/*
 		{OS.XK_KP_Add,		SWT.KP_PLUS},
 		{OS.XK_KP_Subtract,	SWT.KP_MINUS},

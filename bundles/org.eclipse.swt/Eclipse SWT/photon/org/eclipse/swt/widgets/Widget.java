@@ -964,21 +964,20 @@ void setKeyState(Event event, PhKeyEvent_t ke) {
 		}
 	}
 	event.keyCode = Display.translateKey (key);
-	if (event.keyCode == 0) {
-		switch (key) {
-			case OS.Pk_BackSpace:	event.character = '\b'; break;
-			case OS.Pk_KP_Tab:
-			case OS.Pk_Tab: 				event.character = '\t'; break;
-			case OS.Pk_Linefeed:		event.character = '\n'; break;
-			case OS.Pk_Clear: 			event.character = 0xB; break;
-			case OS.Pk_Return: 			event.character = '\r'; break;
-			case OS.Pk_Pause:			event.character = 0x13; break;
-			case OS.Pk_Scroll_Lock:	event.character = 0x14; break;
-			case OS.Pk_Escape:		event.character = 0x1B; break;
-			case OS.Pk_Delete:			event.character = 0x7F; break;
-			default:
-				event.character = (char) key;
-		}
+	switch (key) {
+		case OS.Pk_BackSpace:	event.character = '\b'; break;
+		case OS.Pk_Linefeed:	event.character = '\n'; break;
+		case OS.Pk_Return: 	event.character = '\r'; break;
+		case OS.Pk_Cancel:
+		case OS.Pk_Delete:		event.character = 0x7F; break;
+		case OS.Pk_Escape:		event.character = 0x1B; break;
+		case OS.Pk_KP_Tab:
+		case OS.Pk_Tab: 		event.character = '\t'; break;
+//		case OS.Pk_Clear: 		event.character = 0xB; break;
+//		case OS.Pk_Pause:		event.character = 0x13; break;
+//		case OS.Pk_Scroll_Lock:	event.character = 0x14; break;
+		default:
+			if (event.keyCode == 0) event.character = (char) key;
 	}
 	setInputState(event, ke.key_mods, ke.button_state);
 	switch (event.type) {
