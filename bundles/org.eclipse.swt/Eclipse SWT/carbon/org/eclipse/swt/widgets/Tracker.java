@@ -353,13 +353,6 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 }
 
 void drawRectangles (int window, Rectangle [] rects, boolean erase) {
-	if (parent != null) {
-		if (parent.isDisposed ()) return;
-		Shell shell = parent.getShell ();
-		shell.update (true);
-	} else {
-		display.update ();
-	}
 	int[] context = new int [1];
 	int port = OS.GetWindowPort (window);
 	Rect portRect = new Rect ();
@@ -488,6 +481,7 @@ int kEventMouse (int eventKind, int nextHandler, int theEvent, int userData) {
 			}
 			if (draw) {
 				drawRectangles (window, rectsToErase, true);
+				update ();
 				drawRectangles (window, rectangles, false);
 			}
 			Point cursorPos = adjustResizeCursor ();
@@ -532,6 +526,7 @@ int kEventMouse (int eventKind, int nextHandler, int theEvent, int userData) {
 			}
 			if (draw) {
 				drawRectangles (window, rectsToErase, true);
+				update ();
 				drawRectangles (window, rectangles, false);
 			}
 		}
@@ -626,6 +621,7 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 			}
 			if (draw) {
 				drawRectangles (window, rectsToErase, true);
+				update ();
 				drawRectangles (window, rectangles, false);
 			}
 			cursorPos = adjustResizeCursor ();
@@ -668,6 +664,7 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 			}
 			if (draw) {
 				drawRectangles (window, rectsToErase, true);
+				update ();
 				drawRectangles (window, rectangles, false);
 			}
 			cursorPos = adjustMoveCursor ();
@@ -718,6 +715,7 @@ public boolean open () {
 	tracking = true;
 	window = display.createOverlayWindow ();
 	OS.ShowWindow (window);
+	update ();
 	drawRectangles (window, rectangles, false);
 	
 	/*
@@ -789,7 +787,10 @@ public boolean open () {
 			display.setCursor (clientCursor.handle);
 		}
 	}
-	if (!isDisposed()) drawRectangles (window, rectangles, true);
+	if (!isDisposed()) {
+		update ();
+		drawRectangles (window, rectangles, true);
+	}
 	OS.DisposeWindow (window);
 	tracking = false;
 	display.grabControl = null;
@@ -854,11 +855,14 @@ void resizeRectangles (int xChange, int yChange) {
 	*/
 	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
 		cursorOrientation |= SWT.LEFT;
-	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
+	}
+	if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
 		cursorOrientation |= SWT.RIGHT;
-	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
+	} 
+	if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
 		cursorOrientation |= SWT.UP;
-	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
+	} 
+	if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
 		cursorOrientation |= SWT.DOWN;
 	}
 	
@@ -1014,5 +1018,15 @@ public void setRectangles (Rectangle [] rectangles) {
 public void setStippled (boolean stippled) {
 	checkWidget ();
 	this.stippled = stippled;
+}
+
+void update () {
+	if (parent != null) {
+		if (parent.isDisposed ()) return;
+		Shell shell = parent.getShell ();
+		shell.update (true);
+	} else {
+		display.update ();
+	}
 }
 }

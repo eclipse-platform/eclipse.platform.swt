@@ -340,13 +340,6 @@ Rectangle [] computeProportions (Rectangle [] rects) {
  * Draw the rectangles displayed by the tracker.
  */
 void drawRectangles (Rectangle [] rects, boolean stippled) {
-	if (parent != null) {
-		if (parent.isDisposed ()) return;
-		Shell shell = parent.getShell ();
-		shell.update (true);
-	} else {
-		display.update ();
-	}
 	int bandWidth = 1;
 	int hwndTrack = OS.GetDesktopWindow ();
 	if (parent != null) hwndTrack = parent.handle;
@@ -485,6 +478,7 @@ public boolean open () {
 		OS.SetWindowLong (hwndTransparent, OS.GWL_WNDPROC, newProc.getAddress ());
 	}
 
+	update ();
 	drawRectangles (rectangles, stippled);
 	Point cursorPos;
 	if (mouseDown) {
@@ -507,11 +501,10 @@ public boolean open () {
 		if (parent != null && parent.isDisposed ()) break;
 		OS.GetMessage (msg, 0, 0, 0);
 		OS.TranslateMessage (msg);
-		int message = msg.message;
-		switch (message) {
+		switch (msg.message) {
 			case OS.WM_LBUTTONUP:
 			case OS.WM_MOUSEMOVE:
-				wmMouse (message, msg.wParam, msg.lParam);
+				wmMouse (msg.message, msg.wParam, msg.lParam);
 				break;
 			case OS.WM_IME_CHAR: wmIMEChar (msg.hwnd, msg.wParam, msg.lParam); break;
 			case OS.WM_CHAR: wmChar (msg.hwnd, msg.wParam, msg.lParam); break;
@@ -521,12 +514,22 @@ public boolean open () {
 			case OS.WM_SYSKEYDOWN: wmSysKeyDown (msg.hwnd, msg.wParam, msg.lParam); break;
 			case OS.WM_SYSKEYUP: wmSysKeyUp (msg.hwnd, msg.wParam, msg.lParam); break;
 		}
-		if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) continue;
-		if (OS.WM_MOUSEFIRST <= message && message <= OS.WM_MOUSELAST) continue;
+		if (OS.WM_KEYFIRST <= msg.message && msg.message <= OS.WM_KEYLAST) continue;
+		if (OS.WM_MOUSEFIRST <= msg.message && msg.message <= OS.WM_MOUSELAST) continue;
+		if (msg.message == OS.WM_PAINT) {
+			update ();
+			drawRectangles (rectangles, stippled);
+		}
 		OS.DispatchMessage (msg);
+		if (msg.message == OS.WM_PAINT) {
+			drawRectangles (rectangles, stippled);
+		}
 	}
 	if (mouseDown) OS.ReleaseCapture ();
-	if (!isDisposed()) drawRectangles (rectangles, stippled);
+	if (!isDisposed()) {
+		update ();
+		drawRectangles (rectangles, stippled);
+	}
 	/*
 	* Cleanup: If a transparent window was created in order to capture events then
 	* destroy it and its callback object now.
@@ -607,11 +610,14 @@ void resizeRectangles (int xChange, int yChange) {
 	*/
 	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
 		cursorOrientation |= SWT.LEFT;
-	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
+	}
+	if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
 		cursorOrientation |= SWT.RIGHT;
-	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
+	}
+	if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
 		cursorOrientation |= SWT.UP;
-	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
+	}
+	if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
 		cursorOrientation |= SWT.DOWN;
 	}
 	
@@ -797,6 +803,16 @@ int transparentProc (int hwnd, int msg, int wParam, int lParam) {
 	return OS.CallWindowProc (oldProc, hwnd, msg, wParam, lParam);
 }
 
+void update () {
+	if (parent != null) {
+		if (parent.isDisposed ()) return;
+		Shell shell = parent.getShell ();
+		shell.update (true);
+	} else {
+		display.update ();
+	}
+}
+
 LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
@@ -875,6 +891,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 			}
 			if (draw) {
 				drawRectangles (rectsToErase, oldStippled);
+				update ();
 				drawRectangles (rectangles, stippled);
 			}
 			cursorPos = adjustResizeCursor ();
@@ -917,6 +934,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 			}
 			if (draw) {
 				drawRectangles (rectsToErase, oldStippled);
+				update ();
 				drawRectangles (rectangles, stippled);
 			}
 			cursorPos = adjustMoveCursor ();
@@ -995,6 +1013,7 @@ LRESULT wmMouse (int message, int wParam, int lParam) {
 			}
 			if (draw) {
 				drawRectangles (rectsToErase, oldStippled);
+				update ();
 				drawRectangles (rectangles, stippled);
 			}
 			Point cursorPos = adjustResizeCursor ();
@@ -1042,6 +1061,7 @@ LRESULT wmMouse (int message, int wParam, int lParam) {
 			}
 			if (draw) {
 				drawRectangles (rectsToErase, oldStippled);
+				update ();
 				drawRectangles (rectangles, stippled);
 			}
 		}

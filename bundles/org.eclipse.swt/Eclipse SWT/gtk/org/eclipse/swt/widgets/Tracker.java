@@ -186,7 +186,8 @@ Point adjustMoveCursor () {
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 	
-	display.setCursorLocation (newX, newY);
+	Point point = display.map (parent, null, newX, newY);
+	display.setCursorLocation (point);
 	
 	/*
 	 * The call to XWarpPointer does not always place the pointer on the
@@ -217,7 +218,8 @@ Point adjustResizeCursor () {
 		newY = bounds.y + bounds.height / 2;
 	}
 
-	display.setCursorLocation (newX, newY);
+	Point point = display.map (parent, null, newX, newY);
+	display.setCursorLocation (point);
 	
 	/*
 	 * The call to XWarpPointer does not always place the pointer on the
@@ -292,12 +294,6 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 }
 
 void drawRectangles (Rectangle [] rects) {
-	if (parent != null) {
-		if (parent.isDisposed ()) return;
-		parent.getShell ().update ();
-	} else {
-		display.update ();
-	}	
 	int /*long*/ window = OS.GDK_ROOT_PARENT ();
 	if (parent != null) {
 		window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
@@ -440,6 +436,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			}
 			if (draw) {
 				drawRectangles (rectsToErase);
+				update ();
 				drawRectangles (rectangles);
 			}
 			Point cursorPos = adjustResizeCursor ();
@@ -482,6 +479,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			}
 			if (draw) {
 				drawRectangles (rectsToErase);
+				update ();
 				drawRectangles (rectangles);
 			}
 			Point cursorPos = adjustMoveCursor ();
@@ -556,6 +554,7 @@ int /*long*/ gtk_mouse (int eventType, int /*long*/ widget, int /*long*/ eventPt
 			}
 			if (draw) {
 				drawRectangles (rectsToErase);
+				update ();
 				drawRectangles (rectangles);
 			}
 			Point cursorPos = adjustResizeCursor ();
@@ -598,6 +597,7 @@ int /*long*/ gtk_mouse (int eventType, int /*long*/ widget, int /*long*/ eventPt
 			}
 			if (draw) {
 				drawRectangles (rectsToErase);
+				update ();
 				drawRectangles (rectangles);
 			}
 		}
@@ -643,6 +643,7 @@ public boolean open () {
 	if (window == 0) return false;
 	cancelled = false;
 	tracking = true;
+	update ();
 	drawRectangles (rectangles);
 	int [] oldX = new int [1], oldY = new int [1], state = new int [1];
 	OS.gdk_window_get_pointer (window, oldX, oldY, state);
@@ -705,12 +706,21 @@ public boolean open () {
 			case OS.GDK_LEAVE_NOTIFY:
 				/* Do not dispatch these */
 				break;
+			case OS.GDK_EXPOSE:
+				update ();
+				drawRectangles (rectangles);
+				OS.gtk_main_do_event (eventPtr);
+				drawRectangles (rectangles);
+				break;
 			default:
 				OS.gtk_main_do_event (eventPtr);
 		}
 		OS.gdk_event_free (eventPtr);
 	}
-	if (!isDisposed ()) drawRectangles (rectangles);
+	if (!isDisposed ()) {
+		update ();
+		drawRectangles (rectangles);
+	}
 	ungrab ();
 	window = 0;
 	return !cancelled;
@@ -773,11 +783,14 @@ void resizeRectangles (int xChange, int yChange) {
 	*/
 	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
 		cursorOrientation |= SWT.LEFT;
-	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
+	}
+	if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
 		cursorOrientation |= SWT.RIGHT;
-	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
+	}
+	if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
 		cursorOrientation |= SWT.UP;
-	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
+	}
+	if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
 		cursorOrientation |= SWT.DOWN;
 	}
 	
@@ -935,6 +948,15 @@ public void setStippled (boolean stippled) {
 
 void ungrab () {
 	if (grabbed) OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
+}
+
+void update () {
+	if (parent != null) {
+		if (parent.isDisposed ()) return;
+		parent.getShell ().update ();
+	} else {
+		display.update ();
+	}
 }
 
 }

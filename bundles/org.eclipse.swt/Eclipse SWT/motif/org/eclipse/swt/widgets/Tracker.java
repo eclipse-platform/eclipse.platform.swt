@@ -290,12 +290,6 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 }
 
 void drawRectangles (Rectangle [] rects, boolean stippled) {
-	if (parent != null) {
-		if (parent.isDisposed ()) return;
-		parent.getShell ().update ();
-	} else {
-		display.update ();
-	}
 	int xDisplay = display.xDisplay;
 	int color = OS.XWhitePixel (xDisplay, 0);
 	int xWindow = OS.XDefaultRootWindow (xDisplay);
@@ -401,6 +395,7 @@ public boolean open () {
 	}
 	cancelled = false;
 	tracking = true;
+	update ();
 	drawRectangles (rectangles, stippled);
 	int [] oldX = new int [1], oldY = new int [1];
 	int [] unused = new int [1], mask = new int [1];
@@ -459,13 +454,22 @@ public boolean open () {
 			case OS.LeaveNotify:
 				/* Do not dispatch these */
 				break;
+			case OS.Expose:
+				update ();
+				drawRectangles (rectangles, stippled);
+				OS.XtDispatchEvent (xEvent);
+				drawRectangles (rectangles, stippled);
+				break;
 			default:
 				OS.XtDispatchEvent (xEvent);
 		}
 	}
 	if (xEvent != 0) OS.XtFree (xEvent);
 	if (dispatch != 0) OS.XtFree (dispatch);
-	if (!isDisposed()) drawRectangles (rectangles, stippled);
+	if (!isDisposed()) {
+		update ();
+		drawRectangles (rectangles, stippled);
+	}
 	if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
 	if (kbdGrabResult == OS.GrabSuccess) OS.XUngrabKeyboard (xDisplay, OS.CurrentTime);
 	window = 0;
@@ -526,11 +530,14 @@ void resizeRectangles (int xChange, int yChange) {
 	 */
 	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
 		cursorOrientation |= SWT.LEFT;
-	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
+	}
+	if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
 		cursorOrientation |= SWT.RIGHT;
-	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
+	}
+	if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
 		cursorOrientation |= SWT.UP;
-	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
+	}
+	if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
 		cursorOrientation |= SWT.DOWN;
 	}
 	
@@ -683,7 +690,14 @@ public void setStippled (boolean stippled) {
 	checkWidget ();
 	this.stippled = stippled;
 }
-
+void update () {
+	if (parent != null) {
+		if (parent.isDisposed ()) return;
+		parent.getShell ().update ();
+	} else {
+		display.update ();
+	}
+}
 int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
 	return xMouse (OS.ButtonRelease, w, client_data, call_data, continue_to_dispatch);
 }
@@ -774,6 +788,7 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 				}
 				if (draw) {
 					drawRectangles (rectsToErase, oldStippled);
+					update ();
 					drawRectangles (rectangles, stippled);
 				}
 				cursorPos = adjustResizeCursor ();
@@ -814,6 +829,7 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 				}
 				if (draw) {
 					drawRectangles (rectsToErase, oldStippled);
+					update ();
 					drawRectangles (rectangles, stippled);
 				}
 				cursorPos = adjustMoveCursor ();
@@ -887,6 +903,7 @@ int xMouse (int type, int w, int client_data, int call_data, int continue_to_dis
 			}
 			if (draw) {
 				drawRectangles (rectsToErase, oldStippled);
+				update ();
 				drawRectangles (rectangles, stippled);
 			}
 			Point cursorPos = adjustResizeCursor ();
@@ -929,6 +946,7 @@ int xMouse (int type, int w, int client_data, int call_data, int continue_to_dis
 			}
 			if (draw) {
 				drawRectangles (rectsToErase, oldStippled);
+				update ();
 				drawRectangles (rectangles, stippled);
 			}
 		}
