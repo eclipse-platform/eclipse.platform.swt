@@ -46,18 +46,23 @@ protected void tearDown() {
 }
 
 public void test_dispose() {
+	// TODO
 }
 
 public void test_getDisplay() {
+	// TODO
 }
 
 public void test_getStyle() {
+	// TODO
 }
 
 public void test_isDisposed() {
+	// TODO
 }
 
 public void test_notifyListenersILorg_eclipse_swt_widgets_Event() {
+	// TODO
 }
 
 public static Test suite() {

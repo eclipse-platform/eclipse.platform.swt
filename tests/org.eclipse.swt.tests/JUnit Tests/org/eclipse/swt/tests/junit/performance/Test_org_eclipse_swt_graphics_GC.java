@@ -235,7 +235,7 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 }
 
 public void test_dispose() {
-	final int COUNT = 2000;	// 4000 causes No More Handles
+	final int COUNT = 3000;	// 4000 causes No More Handles
 
 	Image[] images = new Image [COUNT];
 	GC[] gcs = new GC [COUNT];

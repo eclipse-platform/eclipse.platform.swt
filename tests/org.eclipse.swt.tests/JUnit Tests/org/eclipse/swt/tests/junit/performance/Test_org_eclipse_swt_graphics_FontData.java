@@ -239,11 +239,6 @@ public void test_setStyleI() {
 	disposeMeter(meter);
 }
 
-
-public void test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI() {
-	// do not test - Windows only
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -268,7 +263,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setLocaleLjava_lang_String");
 	methodNames.addElement("test_setNameLjava_lang_String");
 	methodNames.addElement("test_setStyleI");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -285,6 +279,5 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setLocaleLjava_lang_String")) test_setLocaleLjava_lang_String();
 	else if (getName().equals("test_setNameLjava_lang_String")) test_setNameLjava_lang_String();
 	else if (getName().equals("test_setStyleI")) test_setStyleI();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI")) test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI();
 }
 }

@@ -42,7 +42,7 @@ protected void setUp() throws Exception {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
-	final int COUNT = 60000;
+	final int COUNT = 30000;
 	
 	PerformanceMeter meter = createMeter("Image constr.(Device,II)");
 	meter.start();
@@ -121,7 +121,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
-	final int COUNT = 60000;
+	final int COUNT = 30000;
 	
 	Rectangle rectangle = new Rectangle(0, 0, 100, 100);
 	
@@ -174,7 +174,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData() {
-	if (true) return;
 	final int COUNT = 4000;	// 5000 causes an error
 	
 	Image[] images = new Image[COUNT];
@@ -212,7 +211,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() {
-	final int COUNT = 2000;
+	final int COUNT = 1000;
 	
 	int numFileNames = imageFilenames.length;
 	int numFormats = imageFormats.length;
