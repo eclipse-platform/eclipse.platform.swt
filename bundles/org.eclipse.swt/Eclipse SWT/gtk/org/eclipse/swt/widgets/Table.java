@@ -47,6 +47,7 @@ public class Table extends Composite {
 	int /*long*/ ignoreTextCell, ignorePixbufCell;
 	TableItem [] items;
 	TableColumn [] columns;
+	TableItem currentItem;
 	ImageList imageList;
 	boolean firstCustomDraw;
 	
@@ -123,8 +124,10 @@ boolean checkData (TableItem item) {
 		int mask = OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		int signal_id = OS.g_signal_lookup (OS.row_changed, OS.gtk_tree_model_get_type ());
 		OS.g_signal_handlers_block_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
+		currentItem = item;
 		sendEvent (SWT.SetData, event);
 		//widget could be disposed at this point
+		currentItem = null;
 		if (isDisposed ()) return false;
 		OS.g_signal_handlers_unblock_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
 		if (item.isDisposed ()) return false;
@@ -1637,6 +1640,7 @@ void releaseWidget () {
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = null;
+	currentItem = null;
 	super.releaseWidget ();
 	if (modelHandle != 0) OS.g_object_unref (modelHandle);
 	modelHandle = 0;

@@ -126,6 +126,7 @@ protected void checkSubclass () {
 }
 
 void clear () {
+	if (parent.currentItem == this) return;
 	if (cached || (parent.style & SWT.VIRTUAL) == 0) {
 		int columnCount = OS.gtk_tree_model_get_n_columns (parent.modelHandle);
 		for (int i=0; i<columnCount; i++) {
