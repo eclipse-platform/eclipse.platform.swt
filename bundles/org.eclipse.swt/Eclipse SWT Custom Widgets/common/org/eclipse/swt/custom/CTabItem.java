@@ -552,7 +552,7 @@ public String getToolTipText () {
 	}
 	return toolTipText;
 }
-boolean isShowing () {
+public boolean isShowing () {
 	int index = parent.indexOf(this);
 	if (parent.single) {
 		if (index == parent.selectedIndex) {
