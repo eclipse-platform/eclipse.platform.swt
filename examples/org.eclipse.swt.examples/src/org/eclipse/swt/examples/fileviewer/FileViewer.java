@@ -294,7 +294,7 @@ public class FileViewer {
 			public void widgetSelected(SelectionEvent e) {
 				doRefresh();
 			}
-		});
+		});
 		SelectionAdapter unimplementedListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
@@ -1048,7 +1048,7 @@ public class FileViewer {
 	void doRefresh() {
 		notifyRefreshFiles(null);
 	}
-
+
 	/**
 	 * Validates a drop target as a candidate for a drop operation.
 	 * <p>

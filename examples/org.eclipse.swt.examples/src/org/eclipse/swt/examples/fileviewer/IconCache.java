@@ -1,4 +1,4 @@
-package org.eclipse.swt.examples.fileviewer;
+package org.eclipse.swt.examples.fileviewer;
 /*
  * (c) Copyright IBM Corp. 2000, 2002.
  * This file is made available under the terms of the Common Public License v1.0
@@ -60,9 +60,9 @@ class IconCache {
 	public final int
 		cursorDefault = 0,
 		cursorWait = 1;
-	public Cursor stockCursors[];
+	public Cursor stockCursors[];
 	// Cached icons
-	private Hashtable iconCache; /* map Program to Image */		public IconCache() {	}
+	private Hashtable iconCache; /* map Program to Image */		public IconCache() {	}
 	/**
 	 * Loads the resources
 	 * 
@@ -89,7 +89,7 @@ class IconCache {
 			};
 		}
 		iconCache = new Hashtable();
-	}
+	}
 	/**
 	 * Frees the resources
 	 */
@@ -107,7 +107,7 @@ class IconCache {
 				image.dispose();
 			}
 		}
-	}
+	}
 	/**
 	 * Creates a stock image
 	 * 
@@ -127,7 +127,7 @@ class IconCache {
 		} catch (Exception e) {
 		}
 		return null;
-	}
+	}
 	/**
 	 * Gets an image for a file associated with a given program
 	 *

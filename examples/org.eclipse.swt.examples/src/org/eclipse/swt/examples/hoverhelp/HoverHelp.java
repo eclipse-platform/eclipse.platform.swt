@@ -7,7 +7,7 @@ package org.eclipse.swt.examples.hoverhelp;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import java.io.*;import java.text.*;import java.util.*;import org.eclipse.swt.*;import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.layout.*;import org.eclipse.swt.widgets.*;
+import java.io.*;import java.text.*;import java.util.*;import org.eclipse.swt.*;import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.eclipse.swt.layout.*;import org.eclipse.swt.widgets.*;
 /**
  * This example demonstrates how to implement hover help feedback
  * using the MouseTrackListener.
