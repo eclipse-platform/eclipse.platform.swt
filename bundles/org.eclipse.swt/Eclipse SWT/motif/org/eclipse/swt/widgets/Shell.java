@@ -1206,7 +1206,6 @@ public void setText (String string) {
 	/* Use the character encoding for the default locale */
 	if (string.length () == 0) string = " ";
 	byte [] buffer1 = Converter.wcsToMbcs (null, string, true);
-	int length = buffer1.length - 1;
 	
 	/* 
 	* Bug in Motif.  For some reason, if the title string
@@ -1215,6 +1214,7 @@ public void setText (String string) {
 	* The fix is to pad the title.
 	*/
 	byte [] buffer2 = buffer1;
+	int length = buffer1.length - 1;
 	if ((length % 4) != 0) {
 		buffer2 = new byte [(length + 3) / 4 * 4];
 		System.arraycopy (buffer1, 0, buffer2, 0, length);
