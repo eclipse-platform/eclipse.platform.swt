@@ -232,12 +232,16 @@ void arrowEvent (Event event) {
 			break;
 		}
 		case SWT.FocusOut: {
-			Control focusControl = getDisplay ().getFocusControl();
-			if (focusControl == list || focusControl == text) return;
-			hasFocus = false;
-			Event e = new Event();
-			e.time = event.time;
-			notifyListeners(SWT.FocusOut, e);
+			event.display.asyncExec(new Runnable() {
+				public void run() {
+					if (CCombo.this.isDisposed()) return;
+					Control focusControl = getDisplay().getFocusControl();
+					if (focusControl == list || focusControl == text) return;
+					hasFocus = false;
+					Event e = new Event();
+					notifyListeners(SWT.FocusOut, e);
+				}
+			});
 			break;
 		}
 		case SWT.Selection: {
@@ -637,12 +641,16 @@ void listEvent (Event event) {
 			break;
 		}
 		case SWT.FocusOut: {
-			Control focusControl = getDisplay ().getFocusControl();
-			if (focusControl == text || focusControl == arrow) return;
-			hasFocus = false;
-			Event e = new Event();
-			e.time = event.time;
-			notifyListeners(SWT.FocusOut, e);
+			event.display.asyncExec(new Runnable() {
+				public void run() {
+					if (CCombo.this.isDisposed()) return;
+					Control focusControl = getDisplay().getFocusControl();
+					if (focusControl == text || focusControl == arrow) return;
+					hasFocus = false;
+					Event e = new Event();
+					notifyListeners(SWT.FocusOut, e);
+				}
+			});
 			break;
 		}
 		case SWT.MouseUp: {
@@ -1057,12 +1065,16 @@ void textEvent (Event event) {
 			break;
 		}
 		case SWT.FocusOut: {
-			Control focusControl = getDisplay ().getFocusControl();
-			if (focusControl == list || focusControl == arrow) return;
-			hasFocus = false;
-			Event e = new Event();
-			e.time = event.time;
-			notifyListeners(SWT.FocusOut, e);
+			event.display.asyncExec(new Runnable() {
+				public void run() {
+					if (CCombo.this.isDisposed()) return;
+					Control focusControl = getDisplay().getFocusControl();
+					if (focusControl == list || focusControl == arrow) return;
+					hasFocus = false;
+					Event e = new Event();
+					notifyListeners(SWT.FocusOut, e);
+				}
+			});
 			break;
 		}
 		case SWT.KeyDown: {
