@@ -134,7 +134,7 @@ public class Display extends Device {
 	Color COLOR_INFO_BACKGROUND;
 	
 	/* System Images and Masks */
-	int errorImage, infoImage, questionImage, warningImage, workingImage;
+	int errorPixmap, infoPixmap, questionPixmap, warningPixmap, workingPixmap;
 	int errorMask, infoMask, questionMask, warningMask, workingMask;
 
 	/* System Cursors */
@@ -696,7 +696,25 @@ void createDisplay (DeviceData data) {
 	}
 	if (ptr1 != 0) OS.XtFree (ptr1);
 }
-int createImage (String name) {
+int createMask (int pixbuf) {
+	if (pixbuf == 0) return 0;
+	int [] unused = new int [1];  int [] width = new int [1];  int [] height = new int [1];
+ 	OS.XGetGeometry (xDisplay, pixbuf, unused, unused, unused, width, height, unused, unused);
+	int mask = OS.XCreatePixmap (xDisplay, pixbuf, width [0], height [0], 1);
+	int gc = OS.XCreateGC (xDisplay, mask, 0, null);
+	OS.XCopyPlane (xDisplay, pixbuf, mask, gc, 0, 0, width [0], height [0], 0, 0, 1);
+	OS.XFreeGC (xDisplay, gc);
+	return mask;
+}
+int createPixmap (String name) {
+	/*
+	* Feature in Motif.  The system pixmaps are initially installed the first
+	* time a system dialog is created, so create and destroy a system dialog
+	* in order to make these pixmaps available.  
+	*/
+	int dialog = OS.XmCreateErrorDialog (shellHandle, null, null, 0);
+	OS.XtDestroyWidget (dialog);
+	
 	int screen  = OS.XDefaultScreenOfDisplay (xDisplay);
 	int fgPixel = OS.XBlackPixel (xDisplay, OS.XDefaultScreen (xDisplay));
 	int bgPixel = OS.XWhitePixel (xDisplay, OS.XDefaultScreen (xDisplay));
@@ -716,16 +734,6 @@ int createImage (String name) {
 		}
 	}
 	return pixmap;
-}
-int createMask (int pixbuf) {
-	if (pixbuf == 0) return 0;
-	int [] unused = new int [1];  int [] width = new int [1];  int [] height = new int [1];
- 	OS.XGetGeometry (xDisplay, pixbuf, unused, unused, unused, width, height, unused, unused);
-	int mask = OS.XCreatePixmap (xDisplay, pixbuf, width [0], height [0], 1);
-	int gc = OS.XCreateGC (xDisplay, mask, 0, null);
-	OS.XCopyPlane (xDisplay, pixbuf, mask, gc, 0, 0, width [0], height [0], 0, 0, 1);
-	OS.XFreeGC (xDisplay, gc);
-	return mask;
 }
 synchronized static void deregister (Display display) {
 	for (int i=0; i<Displays.length; i++) {
@@ -1585,47 +1593,47 @@ public Image getSystemImage (int style) {
 	int mask = 0;
 	switch (style) {
 		case SWT.ICON_ERROR: {
-			if (errorImage == 0) {
-				errorImage = createImage ("xm_error");
-				errorMask = createMask (errorImage);
+			if (errorPixmap == 0) {
+				errorPixmap = createPixmap ("xm_error");
+				errorMask = createMask (errorPixmap);
 			}
-			image = errorImage;
+			image = errorPixmap;
 			mask = errorMask;
 			break;
 		}
 		case SWT.ICON_INFORMATION: {
-			if (infoImage == 0) {
-				infoImage = createImage ("xm_information");
-				infoMask = createMask (infoImage);
+			if (infoPixmap == 0) {
+				infoPixmap = createPixmap ("xm_information");
+				infoMask = createMask (infoPixmap);
 			}
-			image = infoImage;
+			image = infoPixmap;
 			mask = infoMask;
 			break;
 		}
 		case SWT.ICON_QUESTION: {
-			if (questionImage == 0) {
-				questionImage = createImage ("xm_question");
-				questionMask = createMask (questionImage);
+			if (questionPixmap == 0) {
+				questionPixmap = createPixmap ("xm_question");
+				questionMask = createMask (questionPixmap);
 			}
-			image = questionImage;
+			image = questionPixmap;
 			mask = questionMask;
 			break;
 		}
 		case SWT.ICON_WARNING: {
-			if (warningImage == 0) {
-				warningImage = createImage ("xm_warning");
-				warningMask = createMask (warningImage);
+			if (warningPixmap == 0) {
+				warningPixmap = createPixmap ("xm_warning");
+				warningMask = createMask (warningPixmap);
 			}
-			image = warningImage;
+			image = warningPixmap;
 			mask = warningMask;
 			break;
 		}
 		case SWT.ICON_WORKING: {
-			if (workingImage == 0) {
-				workingImage = createImage ("xm_working");
-				workingMask = createMask (workingImage);
+			if (workingPixmap == 0) {
+				workingPixmap = createPixmap ("xm_working");
+				workingMask = createMask (workingPixmap);
 			}
-			image = workingImage;
+			image = workingPixmap;
 			mask = workingMask;
 			break;
 		}
@@ -1868,14 +1876,6 @@ void initializeDisplay () {
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtResizeWidget (shellHandle, OS.XDisplayWidth (xDisplay, xScreen), OS.XDisplayHeight (xDisplay, xScreen), 0);
 	OS.XtRealizeWidget (shellHandle);
-	
-	/*
-	* Feature in Motif.  The system images are initially installed the first
-	* time a system dialog is created, so create and destroy a system dialog
-	* in order to make these images available to us.  
-	*/
-	int dialog = OS.XmCreateErrorDialog (shellHandle, null, null, 0);
-	OS.XtDestroyWidget (dialog);
 }
 void initializeLabel () {
 	int shellHandle, widgetHandle;
@@ -2364,27 +2364,27 @@ protected void release () {
 void releaseDisplay () {
 	/* destroy the System Images */
 	int screen = OS.XDefaultScreenOfDisplay (xDisplay);
-	if (errorImage != 0) {
-		OS.XmDestroyPixmap (screen, errorImage);
+	if (errorPixmap != 0) {
+		OS.XmDestroyPixmap (screen, errorPixmap);
 		OS.XmDestroyPixmap (screen, errorMask);
 	}
-	if (infoImage != 0) {
-		OS.XmDestroyPixmap (screen, infoImage);
+	if (infoPixmap != 0) {
+		OS.XmDestroyPixmap (screen, infoPixmap);
 		OS.XmDestroyPixmap (screen, infoMask);
 	}
-	if (questionImage != 0) {
-		OS.XmDestroyPixmap (screen, questionImage);
+	if (questionPixmap != 0) {
+		OS.XmDestroyPixmap (screen, questionPixmap);
 		OS.XmDestroyPixmap (screen, questionMask);
 	}
-	if (warningImage != 0) {
-		OS.XmDestroyPixmap (screen, warningImage);
+	if (warningPixmap != 0) {
+		OS.XmDestroyPixmap (screen, warningPixmap);
 		OS.XmDestroyPixmap (screen, warningMask);
 	}
-	if (workingImage != 0) {
-		OS.XmDestroyPixmap (screen, workingImage);
+	if (workingPixmap != 0) {
+		OS.XmDestroyPixmap (screen, workingPixmap);
 		OS.XmDestroyPixmap (screen, workingMask);
 	}
-	errorImage = infoImage = questionImage = warningImage = workingImage = 0;
+	errorPixmap = infoPixmap = questionPixmap = warningPixmap = workingPixmap = 0;
 	errorMask = infoMask = questionMask = warningMask = workingMask = 0;
 	
 	/* Release the System Cursors */
