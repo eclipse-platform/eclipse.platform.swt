@@ -453,7 +453,7 @@ public int [] getItemOrder () {
 		CoolItem item = items [rbBand.wID];
 		int index = 0;
 		while (index<originalItems.length) {
-			if (originalItems [j] == item) break;
+			if (originalItems [index] == item) break;
 			index++;
 		}
 		if (index == originalItems.length) error (SWT.ERROR_CANNOT_GET_ITEM);
