@@ -448,4 +448,7 @@ protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }
 
+int traversalCode(int key, int event) {
+	return SWT.TRAVERSE_ESCAPE;  // probably?
+}
 }
