@@ -29,6 +29,9 @@ class StyledTextTab extends ScrollableTab {
 	/* Buttons for adding StyleRanges to StyledText */
 	Button boldButton, italicButton, redButton, yellowButton;
 	Image boldImage, italicImage, redImage, yellowImage;
+	
+	/* Variables for saving state. */
+	StyleRange[] styleRanges;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -90,6 +93,11 @@ class StyledTextTab extends ScrollableTab {
 		styledText.setText (ControlExample.getResourceString("Example_string"));
 		styledText.append ("\n");
 		styledText.append (ControlExample.getResourceString("One_Two_Three"));
+		
+		if (styleRanges != null) {
+			styledText.setStyleRanges(styleRanges);
+			styleRanges = null;
+		}
 	}
 	
 	/**
@@ -237,6 +245,17 @@ class StyledTextTab extends ScrollableTab {
 		});
 		
 		return tabFolderPage;
+	}
+
+	/**
+	 * Disposes the "Example" widgets.
+	 */
+	void disposeExampleWidgets () {
+		/* store the state of the styledText if applicable */
+		if (styledText != null) {
+			styleRanges = styledText.getStyleRanges();
+		}
+		super.disposeExampleWidgets();	
 	}
 
 	/**
