@@ -2460,7 +2460,6 @@ boolean setButtonBounds() {
 						}
 					}
 					topRightRect.x = lastItem.x + lastItem.width;
-					if (single) topRightRect.x += 4 + 3*BUTTON_SIZE/2; // in single mode, always allow space for chevron button
 					topRightRect.width = rightEdge - topRightRect.x;
 				}
 				break;
@@ -2494,12 +2493,7 @@ boolean setButtonBounds() {
 			chevronRect.width = 3*BUTTON_SIZE/2;
 			chevronRect.height = BUTTON_SIZE + 2;
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
-			if (selectedIndex > -1) {
-				CTabItem item = items[selectedIndex];				
-				chevronRect.x = Math.min(item.x + item.width + 3, getRightItemEdge());
-			} else {
-				chevronRect.x = size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width;
-			}
+			chevronRect.x = getRightItemEdge();
 			if (borderRight > 0) chevronRect.x += 1;
 		}
 	} else {
@@ -2617,7 +2611,7 @@ boolean setItemLocation() {
 			item.y = y;
 			if (showClose || item.showClose) {
 				int rightEdge = Math.min(item.x + item.width, getRightItemEdge());
-				item.closeRect.x = rightEdge - BUTTON_SIZE - CTabItem.RIGHT_MARGIN;
+				item.closeRect.x = borderLeft + CTabItem.LEFT_MARGIN;
 				item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 			}
 			if (item.x != oldX || item.y != oldY) changed = true;
@@ -2665,6 +2659,7 @@ boolean setItemLocation() {
 boolean setItemSize() {
 	boolean changed = false;
 	if (isDisposed()) return changed;
+	showChevron = false;
 	Point size = getSize();
 	if (size.x <= 0 || size.y <= 0 || items.length == 0) return changed;
 	xClient = borderLeft + marginWidth + highlight_margin;
@@ -2677,7 +2672,10 @@ boolean setItemSize() {
 		showChevron = true;
 		if (selectedIndex != -1) {
 			CTabItem tab = items[selectedIndex];
-			int width = getRightItemEdge() - borderLeft;
+			GC gc = new GC(this);
+			int width = tab.preferredWidth(gc, true);
+			gc.dispose();
+			width = Math.min(width, getRightItemEdge() - borderLeft);
 			if (tab.height != tabHeight || tab.width != width) {
 				changed = true;
 				tab.shortenedText = null;
@@ -2701,7 +2699,7 @@ boolean setItemSize() {
 		widths[i] = items[i].preferredWidth(gc, i == selectedIndex);
 	}
 	gc.dispose();
-	showChevron = false;
+	
 	if (items.length > 1) {
 		int totalWidth = 0;
 		int tabAreaWidth = size.x - borderLeft - borderRight - 3;

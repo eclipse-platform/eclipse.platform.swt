@@ -294,12 +294,13 @@ void drawSelected(GC gc ) {
 	
 	// draw Image
 	int xDraw = x + LEFT_MARGIN;
+	if (parent.single && (parent.showClose || showClose)) xDraw += CTabFolder.BUTTON_SIZE; 
 	Image image = getImage();
 	if (image != null) {
 		Rectangle imageBounds = image.getBounds();
 		// only draw image if it won't overlap with close button
 		int maxImageWidth = rightEdge - xDraw - RIGHT_MARGIN;
-		if (closeRect.width > 0) maxImageWidth -= closeRect.width + INTERNAL_SPACING;
+		if (!parent.single && closeRect.width > 0) maxImageWidth -= closeRect.width + INTERNAL_SPACING;
 		if (imageBounds.width < maxImageWidth) {
 			int imageX = xDraw;
 			int imageHeight = imageBounds.height;
@@ -315,7 +316,7 @@ void drawSelected(GC gc ) {
 	
 	// draw Text
 	int textWidth = rightEdge - xDraw - RIGHT_MARGIN;
-	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
+	if (!parent.single && closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
 	if (textWidth > 0) {
 		Font gcFont = gc.getFont();
 		gc.setFont(font == null ? parent.getFont() : font);
