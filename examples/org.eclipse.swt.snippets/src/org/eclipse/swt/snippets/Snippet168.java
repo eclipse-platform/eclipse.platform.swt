@@ -26,22 +26,25 @@ public class Snippet168 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setText("PR");
-		shell.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 		shell.addListener(SWT.Paint, new Listener() {
 			public void handleEvent(Event event) {
 				GC gc = event.gc;
 				gc.setLineWidth(10);
 				gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+				int x = 20;
+				int y = 20;
+				int w = 120;
 				int[] caps = {SWT.CAP_FLAT, SWT.CAP_ROUND, SWT.CAP_SQUARE};
 				for (int i = 0; i < caps.length; i++) {
 					gc.setLineCap(caps[i]);
-					gc.drawLine(10,10 + i * 20, 100, 10 + i * 20);
+					gc.drawLine(x, y, x + w, y);
+					y += 20;
 				}
 				int[] joins = {SWT.JOIN_BEVEL, SWT.JOIN_MITER, SWT.JOIN_ROUND};
 				for (int i = 0; i < joins.length; i++) {
 					gc.setLineJoin(joins[i]);
-					gc.drawPolygon(new int[] {10,80 + i * 60, 50, 120 + i * 60, 100, 80 + i * 60});
+					gc.drawPolygon(new int[] {x, y, x + w/2, y + 60, x + w, y});
+					y += 80;
 				}
 			}
 		});
