@@ -1056,7 +1056,7 @@ void setSelection(int index, boolean notify) {
 public void setToolTipText (String string) {
 	checkWidget();
 	super.setToolTipText (string);
-	toolTipText = string
+	toolTipText = string;
 }
 void traversal(Event event) {
 	switch (event.detail) {
