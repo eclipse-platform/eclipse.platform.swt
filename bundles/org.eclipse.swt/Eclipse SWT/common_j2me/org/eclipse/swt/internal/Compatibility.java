@@ -311,8 +311,8 @@ public static String getMessage(String key) {
 	if (key.equals("SWT_A_Sample_Text")) return "A Sample Text"; //$NON-NLS-1$
 	if (key.equals("SWT_Selection")) return "Selection"; //$NON-NLS-1$
 	if (key.equals("SWT_Current_Selection")) return "Current Selection"; //$NON-NLS-1$
-	if (key.equals("SWT_Character_set")) return "Character set"; //$NON-NLS-1$
 	if (key.equals("SWT_Font")) return "Font"; //$NON-NLS-1$
+	if (key.equals("SWT_Color")) return "Color"; //$NON-NLS-1$
 	if (key.equals("SWT_Extended_style")) return "Extended style"; //$NON-NLS-1$
 	if (key.equals("SWT_Size")) return "Size"; //$NON-NLS-1$
 	if (key.equals("SWT_Style")) return "Style"; //$NON-NLS-1$
@@ -320,6 +320,11 @@ public static String getMessage(String key) {
 	if (key.equals("SWT_Character_set")) return "Character set"; //$NON-NLS-1$
 	if (key.equals("SWT_ColorDialog_Title")) return "Colors"; //$NON-NLS-1$
 	if (key.equals("SWT_FontDialog_Title")) return "Fonts"; //$NON-NLS-1$
+	if (key.equals("SWT_FontSet")) return "Font Set"; //$NON-NLS-1$
+	if (key.equals("SWT_NewFont")) return "New Font"; //$NON-NLS-1$
+	if (key.equals("SWT_Remove")) return "Remove"; //$NON-NLS-1$
+	if (key.equals("SWT_Up")) return "Up"; //$NON-NLS-1$
+	if (key.equals("SWT_Down")) return "Down"; //$NON-NLS-1$
 	if (key.equals("SWT_Charset_Western")) return "western"; //$NON-NLS-1$
 	if (key.equals("SWT_Charset_EastEuropean")) return "east european"; //$NON-NLS-1$
 	if (key.equals("SWT_Charset_SouthEuropean")) return "south european"; //$NON-NLS-1$
@@ -345,6 +350,11 @@ public static String getMessage(String key) {
 	if (key.equals("SWT_Password")) return "Password:"; //$NON-NLS-1$
 	if (key.equals("SWT_Username")) return "User Name:"; //$NON-NLS-1$
 	if (key.equals("SWT_Prompt")) return "Prompt"; //$NON-NLS-1$
+	if (key.equals("SWT_Close")) return "Close"; //$NON-NLS-1$
+	if (key.equals("SWT_Minimize")) return "Minimize"; //$NON-NLS-1$
+	if (key.equals("SWT_Maximize")) return "Maximize"; //$NON-NLS-1$
+	if (key.equals("SWT_Restore")) return "Restore"; //$NON-NLS-1$
+	if (key.equals("SWT_ShowList")) return "Show List"; //$NON-NLS-1$
 	if (key.equals("SWT_Download_Started")) return "Downloading..."; //$NON-NLS-1$
 	return key;
 }
