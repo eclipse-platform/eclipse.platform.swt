@@ -594,8 +594,15 @@ void createHandle (int index) {
 		reparented = true;
 	} 
 	
+	/*
+	* Feature in Motif.  When a top level shell has no parent and is
+	* application modal, Motif does not honour the modality.  The fix
+	* is to create the shell as a child of a hidden shell handle, the
+	* same way that XmNoverrideRedirect shells without parents are
+	* created.
+	*/
 	byte [] appClass = display.appClass;
-	if (parent == null && (style & SWT.ON_TOP) == 0) {
+	if (parent == null && (style & SWT.ON_TOP) == 0 && inputMode != OS.MWM_INPUT_FULL_APPLICATION_MODAL) {
 		int xDisplay = display.xDisplay;
 		int widgetClass = OS.TopLevelShellWidgetClass ();
 		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList1, argList1.length / 2);
